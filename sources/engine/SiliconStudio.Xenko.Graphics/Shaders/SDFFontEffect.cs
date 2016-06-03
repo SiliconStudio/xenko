@@ -18,18 +18,18 @@ namespace SiliconStudio.Xenko.Rendering
 {
     internal static partial class ShaderMixins
     {
-        internal partial class FontEffect  : IShaderMixinBuilder
+        internal partial class SDFFontEffect  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-                context.Mixin(mixin, "FontEffectShader");
+                context.Mixin(mixin, "SDFFontEffectShader");
             }
 
             [ModuleInitializer]
             internal static void __Initialize__()
 
             {
-                ShaderMixinManager.Register("FontEffect", new FontEffect());
+                ShaderMixinManager.Register("SDFFontEffect", new SDFFontEffect());
             }
         }
     }

@@ -16,7 +16,7 @@ using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Rendering
 {
-    public static partial class SpriteFontEffectKeys
+    public static partial class SpriteSDFFontEffectKeys
     {
         public static readonly ValueParameterKey<Color4> Color = ParameterKeys.NewValue<Color4>(new Color4(1,1,1,1));
     }

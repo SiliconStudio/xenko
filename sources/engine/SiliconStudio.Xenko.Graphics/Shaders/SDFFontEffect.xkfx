@@ -3,10 +3,10 @@
 namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
-    /// FontEffect shader
+    /// SDFFontEffect shader
     /// </summary>
-    partial shader FontEffect
+    partial shader SDFFontEffect
     {
-        mixin FontEffectShader;
+        mixin SDFFontEffectShader;
    };
 }

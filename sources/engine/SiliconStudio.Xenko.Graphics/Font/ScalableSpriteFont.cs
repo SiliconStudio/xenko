@@ -20,14 +20,12 @@ namespace SiliconStudio.Xenko.Graphics.Font
 
         internal ScalableSpriteFont()
         {
-            IsDynamic = false;
-            IsScalable = true;
+            FontType = SpriteFontType.SDF;
         }
 
         internal ScalableSpriteFont(float size, IList<Glyph> glyphs, IEnumerable<Texture> textures, float baseOffset, float defaultLineSpacing, IList<Kerning> kernings, float extraSpacing, float extraLineSpacing, char defaultCharacter)
         {
-            IsDynamic = false;
-            IsScalable = true;
+            FontType = SpriteFontType.SDF;
 
             Size = size;
             StaticTextures = new List<Texture>();

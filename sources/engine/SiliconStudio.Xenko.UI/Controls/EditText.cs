@@ -768,14 +768,14 @@ namespace SiliconStudio.Xenko.UI.Controls
             if (SynchronousCharacterGeneration)
                 Font.PreGenerateGlyphs(textToMeasure, measureFontSize);
 
-            if (Font.IsDynamic)
+            if (Font.FontType == SpriteFontType.Dynamic)
             {
                 // rescale the real size to the virtual size
                 realSize.X /= sizeRatio.X;
                 realSize.Y /= sizeRatio.Y;
             }
 
-            if (Font.IsScalable)
+            if (Font.FontType == SpriteFontType.SDF)
             {
                 var scaleRatio = TextSize / Font.Size;
                 realSize.X *= scaleRatio;

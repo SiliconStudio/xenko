@@ -493,7 +493,7 @@ namespace SiliconStudio.Xenko.Graphics
             scale.X = scale.X / resolutionRatio.X;
             scale.Y = scale.Y / resolutionRatio.Y;
 
-            var fontSize2 = fontSize * (spriteFont.IsDynamic ? resolutionRatio : Vector2.One);
+            var fontSize2 = fontSize * ((spriteFont.FontType == SpriteFontType.Dynamic) ? resolutionRatio : Vector2.One);
             var drawCommand = new SpriteFont.InternalDrawCommand(this, ref fontSize2, ref position, ref color, rotation, ref origin, ref scale, effects, layerDepth);
 
             // snap the position the closest 'real' pixel

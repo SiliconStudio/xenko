@@ -1,16 +1,16 @@
 ---
 !EffectCompileRequest
-EffectName: SpriteFontEffect
+EffectName: SpriteSDFFontEffect
 UsedParameters:
     EffectSourceCode.Enable: true
     EffectSourceCode.Namespace: SiliconStudio.Xenko.Graphics
     EffectSourceCode.ClassDeclaration: internal partial
-    EffectSourceCode.FieldName: spriteFontBytecodeSDF
+    EffectSourceCode.FieldName: spriteSDFFontBytecode
 ---
 !EffectCompileRequest
-EffectName: FontEffectShader
+EffectName: SDFFontEffectShader
 UsedParameters:
     EffectSourceCode.Enable: true
     EffectSourceCode.Namespace: SiliconStudio.Xenko.Graphics
     EffectSourceCode.ClassDeclaration: internal partial
-    EffectSourceCode.FieldName: fontBytecodeSDF
+    EffectSourceCode.FieldName: sdfFontBytecode

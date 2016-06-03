@@ -9,6 +9,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Font;
 
 namespace SiliconStudio.Xenko.Assets.SpriteFont
@@ -75,28 +76,17 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         [Display(null, "Font")]
         public FontStyle Style { get; set; } = FontStyle.Regular;
 
-        // TODO: Change to Static, Dynamic, Scalable enum
-
         /// <summary>
-        ///  Gets or sets the value determining if the characters are pre-generated off-line or at run-time.
+        ///  Gets or sets the value determining if and how the characters are pre-generated off-line or at run-time.
         /// </summary>
         /// <userdoc>
-        /// If checked, the font textures are generated at execution time. If not, at project build time.
-        /// Note that it is not possible to resize at execution time a font that is not dynamic.
+        /// Static font has fixed font size and is pre-compiled
+        /// Dynamic font which can change its font size at runtime and is also compiled at runtime
+        /// Signed Distance Field font is pre-compiled but can still be scaled at runtime
         /// </userdoc>
         [DataMember(50)]
         [Display(null, "Font")]
-        public bool IsDynamic { get; set; }
-
-        /// <summary>
-        ///  Gets or sets the value determining if the characters are scalable SDF images or not
-        /// </summary>
-        /// <userdoc>
-        /// If checked, the font textures are generated at build time and still allow the text to be scaled and resized at any time.
-        /// </userdoc>
-        [DataMember(51)]
-        [Display(null, "Font")]
-        public bool IsScalable { get; set; }
+        public SpriteFontType FontType { get; set; } = SpriteFontType.Static;
 
         /// <summary>
         /// Gets or sets the fallback character used when asked to render a character that is not

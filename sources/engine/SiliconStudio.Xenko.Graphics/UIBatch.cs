@@ -152,10 +152,10 @@ namespace SiliconStudio.Xenko.Graphics
             //  Load custom font rendering effects here
 
             // For signed distance field font rendering
-            sdfFontEffect = new EffectInstance(new Effect(device, FontEffectShader.Bytecode) { Name = "UIBatchSDFFontEffect" });
+            sdfFontEffect = new EffectInstance(new Effect(device, SDFFontEffectShader.Bytecode) { Name = "UIBatchSDFFontEffect" });
 
             // For signed distance field thumbnail rendering
-            sdfSpriteFontEffect = new EffectInstance(new Effect(device, SpriteFontEffect.Bytecode) { Name = "UIBatchSDFSpriteFontEffect" });
+            sdfSpriteFontEffect = new EffectInstance(new Effect(device, SpriteSDFFontEffect.Bytecode) { Name = "UIBatchSDFSpriteFontEffect" });
         }
 
         /// <summary>
@@ -478,7 +478,7 @@ namespace SiliconStudio.Xenko.Graphics
             Matrix.MultiplyTo(ref worldMatrix, ref viewProjectionMatrix, out drawCommand.Matrix);
 
             // do not snap static fonts when real/virtual resolution does not match.
-            if (font.IsScalable)
+            if (font.FontType == SpriteFontType.SDF)
             {
                 drawCommand.SnapText = false;
 
@@ -486,7 +486,7 @@ namespace SiliconStudio.Xenko.Graphics
                 drawCommand.FontScale = 1f / new Vector2(scaling, scaling);
             }
             else
-            if (!font.IsDynamic && (drawCommand.FontScale.X != 1 || drawCommand.FontScale.Y != 1)) 
+            if ((font.FontType != SpriteFontType.Dynamic) && (drawCommand.FontScale.X != 1 || drawCommand.FontScale.Y != 1)) 
             {
                 drawCommand.SnapText = false;   // we don't want snapping of the resolution of the screen does not match virtual resolution. (character alignment problems)
                 drawCommand.FontScale = Vector2.One; // ensure that static font are not scaled internally

@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         {
             var colorSpace = context.GetColorSpace();
 
-            if (asset.IsScalable)
+            if (asset.FontType == SpriteFontType.SDF)
             {
                 // TODO Build scalable (SDF) font texture
 
@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 result.BuildSteps = new AssetBuildStep(AssetItem) { new ScalableFontCommand(urlInStorage, assetClone) };
             }
             else
-            if (asset.IsDynamic)
+            if (asset.FontType == SpriteFontType.Dynamic)
             {
                 UFile fontPathOnDisk;
 
@@ -170,7 +170,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 Graphics.SpriteFont scalableFont;
                 try
                 {
-                    scalableFont = ScalableFontCompiler.Compile(FontDataFactory, AssetParameters);
+                    scalableFont = SDFFontCompiler.Compile(FontDataFactory, AssetParameters);
                 }
                 catch (FontNotFoundException ex)
                 {

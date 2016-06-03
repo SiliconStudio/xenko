@@ -1,4 +1,5 @@
 ﻿using SiliconStudio.Assets;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets.SpriteFont
 {
@@ -9,8 +10,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             return new SpriteFontAsset
             {
                 FontName = "Arial",
-                IsDynamic = false,
-                IsScalable = false,
+                FontType = SpriteFontType.Static,
                 CharacterRegions = { new CharacterRegion(' ', (char)127) }
             };
         }
@@ -28,8 +28,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             return new SpriteFontAsset
             {
                 FontName = "Arial",
-                IsDynamic = true,
-                IsScalable = false,
+                FontType = SpriteFontType.Dynamic,
             };
         }
 
@@ -46,8 +45,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             return new SpriteFontAsset
             {
                 FontName = "Arial",
-                IsDynamic = false,
-                IsScalable = true,
+                FontType = SpriteFontType.SDF,
                 CharacterRegions = { new CharacterRegion(' ', (char)127) }
             };
         }

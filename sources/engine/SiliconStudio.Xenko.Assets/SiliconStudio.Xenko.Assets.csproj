@@ -235,8 +235,8 @@
     <Compile Include="Physics\ColliderShapeFactories.cs" />
     <Compile Include="Serializers\MaterialNullSerializer.cs" />
     <Compile Include="Skyboxes\SkyboxUsage.cs" />
-    <Compile Include="SpriteFont\Compiler\ScalableFontCompiler.cs" />
-    <Compile Include="SpriteFont\Compiler\ScalableSpriteFontWriter.cs" />
+    <Compile Include="SpriteFont\Compiler\SDFFontCompiler.cs" />
+    <Compile Include="SpriteFont\Compiler\SDFSpriteFontWriter.cs" />
     <Compile Include="SpriteFont\Compiler\SDFImporter.cs" />
     <Compile Include="SpriteFont\PrecompiledSpriteFontAsset.cs" />
     <Compile Include="SpriteFont\PrecompiledSpriteFontAssetCompiler.cs" />

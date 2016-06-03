@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
                 Size = new Vector2(textBlock.ActualWidth, textBlock.ActualHeight)
             };
 
-            if (textBlock.Font.IsScalable)
+            if (textBlock.Font.FontType == SpriteFontType.SDF)
             {
                 Batch.End();
 
@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
 
             Batch.DrawString(textBlock.Font, textBlock.TextToDisplay, ref drawCommand);
 
-            if (textBlock.Font.IsScalable)
+            if (textBlock.Font.FontType == SpriteFontType.SDF)
             {
                 Batch.End();
 

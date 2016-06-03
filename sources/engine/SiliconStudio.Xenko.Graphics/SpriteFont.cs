@@ -80,16 +80,10 @@ namespace SiliconStudio.Xenko.Graphics
         public float ExtraLineSpacing { get; set; }
         
         /// <summary>
-        /// Gets a boolean indicating if the current font is dynamic or not.
+        /// Gets the type indicating if the current font is static, dynamic or SDF.
         /// </summary>
         [DataMemberIgnore]
-        public bool IsDynamic { get; protected set; }
-
-        /// <summary>
-        /// Gets a boolean indicating if the current font is scalable or not.
-        /// </summary>
-        [DataMemberIgnore]
-        public bool IsScalable { get; protected set; }
+        public SpriteFontType FontType { get; protected set; }
 
         [DataMember(0)]
         internal float BaseOffsetY;

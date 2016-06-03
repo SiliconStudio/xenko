@@ -84,13 +84,14 @@ using System.Text;
 using SiliconStudio.Xenko.Graphics.Font;
 
 using System.Linq;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 {
     /// <summary>
     /// Main class used to compile a Font file XML file.
     /// </summary>
-    public class ScalableFontCompiler
+    public class SDFFontCompiler
     {
         /// <summary>
         /// Compiles the specified font description into a <see cref="ScalableSpriteFont" /> object.
@@ -100,7 +101,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
         /// <returns>A SpriteFontData object.</returns>
         public static Graphics.SpriteFont Compile(IFontFactory fontFactory, SpriteFontAsset fontAsset)
         {
-            if (!fontAsset.IsScalable || fontAsset.IsDynamic)
+            if (fontAsset.FontType != SpriteFontType.SDF)
                 throw new ArgumentException("Tried to compile an incompatible sprite font with compiler for scalable fonts");
 
             float lineSpacing;
@@ -110,7 +111,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 
             Bitmap bitmap = GlyphPacker.ArrangeGlyphs(glyphs);
 
-            return ScalableSpriteFontWriter.CreateSpriteFontData(fontFactory, fontAsset, glyphs, lineSpacing, baseLine, bitmap);
+            return SDFSpriteFontWriter.CreateSpriteFontData(fontFactory, fontAsset, glyphs, lineSpacing, baseLine, bitmap);
         }
 
         static Glyph[] ImportFont(SpriteFontAsset options, out float lineSpacing, out float baseLine)

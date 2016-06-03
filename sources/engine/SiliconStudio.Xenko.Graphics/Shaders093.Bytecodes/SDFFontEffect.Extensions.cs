@@ -5,7 +5,7 @@ using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Graphics
 {
-    internal partial class SpriteFontEffect
+    internal partial class SDFFontEffectShader
     {
         private static EffectBytecode bytecode;
 
@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             get
             {
-                return bytecode ?? (bytecode = EffectBytecode.FromBytesSafe(spriteFontBytecodeSDF));
+                return bytecode ?? (bytecode = EffectBytecode.FromBytesSafe(sdfFontBytecode));
             }
         }
     }
