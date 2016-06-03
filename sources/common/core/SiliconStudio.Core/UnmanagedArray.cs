@@ -9,7 +9,7 @@ namespace SiliconStudio.Core
 
         public UnmanagedArray(int length)
         {
-            this.Length = length;
+            Length = length;
             sizeOfT = Utilities.SizeOf<T>();
             var finalSize = length * sizeOfT;
             Pointer = Utilities.AllocateMemory(finalSize);
@@ -18,7 +18,7 @@ namespace SiliconStudio.Core
 
         public UnmanagedArray(int length, IntPtr unmanagedDataPtr)
         {
-            this.Length = length;
+            Length = length;
             sizeOfT = Utilities.SizeOf<T>();
             Pointer = unmanagedDataPtr;
             dontFree = true;
@@ -81,6 +81,21 @@ namespace SiliconStudio.Core
             }        
         }
 
+        public void Read(T[] destination, int pointerByteOffset, int arrayOffset, int arrayLen)
+        {
+            if (arrayOffset + arrayLen > Length)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            unsafe
+            {
+                var ptr = (byte*)Pointer.ToPointer();
+                ptr += pointerByteOffset;
+                Interop.Read(ptr, destination, arrayOffset, arrayLen);
+            }
+        }
+
         public void Write(T[] source, int offset = 0)
         {
             if (offset + source.Length > Length)
@@ -91,6 +106,21 @@ namespace SiliconStudio.Core
             unsafe
             {
                 Interop.Write(Pointer.ToPointer(), source, offset, source.Length);
+            }
+        }
+
+        public void Write(T[] source, int pointerByteOffset, int arrayOffset, int arrayLen)
+        {
+            if (arrayOffset + arrayLen > Length)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            unsafe
+            {
+                var ptr = (byte*)Pointer.ToPointer();
+                ptr += pointerByteOffset;
+                Interop.Write(ptr , source, arrayOffset, arrayLen);
             }
         }
 
