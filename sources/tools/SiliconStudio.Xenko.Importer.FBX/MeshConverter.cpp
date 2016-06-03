@@ -1867,7 +1867,7 @@ private:
 	}
 
 public:
-	EntityInfo^ ExtractEntity(String^ inputFileName)
+	EntityInfo^ ExtractEntity(String^ inputFileName, bool extractTextureDependencies)
 	{
 		try
 		{
@@ -1876,7 +1876,8 @@ public:
 			auto animationConverter = gcnew AnimationConverter(sceneMapping);
 			
 			auto entityInfo = gcnew EntityInfo();
-			entityInfo->TextureDependencies = ExtractTextureDependenciesNoInit();
+			if (extractTextureDependencies)
+				entityInfo->TextureDependencies = ExtractTextureDependenciesNoInit();
 			entityInfo->AnimationNodes = animationConverter->ExtractAnimationNodesNoInit();
 			auto models = ExtractModelNoInit();
 			entityInfo->Models = models->Models;

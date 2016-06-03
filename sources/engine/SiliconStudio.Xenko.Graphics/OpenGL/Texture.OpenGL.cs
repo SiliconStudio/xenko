@@ -134,11 +134,9 @@ namespace SiliconStudio.Xenko.Graphics
                         TextureTarget = TextureTarget.Texture3D;
                         break;
                     case TextureDimension.TextureCube:
-#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                        TextureTarget = ArraySize > 1 ? TextureTarget.TextureCubeMapArray : TextureTarget.TextureCubeMap;
-#else
+                        if (ArraySize > 6)
+                            throw new PlatformNotSupportedException("TextureCubeArray is not implemented under OpenGL");
                         TextureTarget = TextureTarget.TextureCubeMap;
-#endif
                         break;
                     default:
                         throw new ArgumentOutOfRangeException();

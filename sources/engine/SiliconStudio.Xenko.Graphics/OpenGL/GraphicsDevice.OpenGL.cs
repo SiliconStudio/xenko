@@ -100,6 +100,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal bool HasDepthClamp;
 
+        internal bool HasAnisotropicFiltering;
+
         internal bool HasTextureBuffers;
         internal bool HasKhronosDebug;
 
@@ -682,7 +684,7 @@ namespace SiliconStudio.Xenko.Graphics
             // TODO: How to control Debug flags?
             var creationFlags = GraphicsContextFlags.Default;
 
-            if ((deviceCreationFlags & DeviceCreationFlags.Debug) != 0)
+            if (IsDebugMode)
             {
                 creationFlags |= GraphicsContextFlags.Debug;
             }
@@ -826,7 +828,7 @@ namespace SiliconStudio.Xenko.Graphics
             // Restore FBO
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
 
-            if (HasKhronosDebug)
+            if (IsDebugMode && HasKhronosDebug)
             {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 bool useKhronoDebugKHR = false;

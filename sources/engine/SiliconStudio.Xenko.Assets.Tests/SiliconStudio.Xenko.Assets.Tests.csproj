@@ -146,7 +146,6 @@
     <Compile Include="AssetImportTests.cs" />
     <Compile Include="TestDependencyResolver.cs" />
     <Compile Include="TestPrefabAsset.cs" />
-    <Compile Include="ModelAssetTests.cs" />
     <Compile Include="TestPackageArchive.cs" />
     <Compile Include="TestSceneUpgrader.cs" />
     <Compile Include="TexturePackerTests.cs" />

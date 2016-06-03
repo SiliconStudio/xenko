@@ -6,7 +6,7 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Xenko.Assets.Audio
 {
     [DataContract]
-    public abstract class SoundAsset : AssetImport
+    public abstract class SoundAsset : AssetWithSource
     {
         /// <summary>
         /// The default file extension used by the <see cref="SoundMusicAsset"/>.

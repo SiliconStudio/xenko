@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, PrecompiledSpriteFontAsset asset, AssetCompilerResult result)
         {
-            if (!EnsureSourceExists(result, asset, assetAbsolutePath))
+            if (!EnsureSourcesExist(result, asset, assetAbsolutePath))
                 return;
 
             result.BuildSteps = new AssetBuildStep(AssetItem) { new PrecompiledSpriteFontCommand(urlInStorage, asset) };

@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-
+using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
@@ -19,6 +19,7 @@ namespace SiliconStudio.Xenko.Assets.Model
         /// <value>The source.</value>
         /// <userdoc>The source file for the base animation.</userdoc>
         [DataMember(30)]
+        [SourceFileMember(false)]
         public UFile BaseSource { get; set; } = new UFile("");
 
         /// <userdoc>Specifies how to use the base animation.</userdoc>
