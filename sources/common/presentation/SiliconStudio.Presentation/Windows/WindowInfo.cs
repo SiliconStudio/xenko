@@ -71,11 +71,18 @@ namespace SiliconStudio.Presentation.Windows
         /// <summary>
         /// Gets whether the corresponding window is currently modal.
         /// </summary>
+        /// <remarks>
+        /// This methods is heuristic, since there is no absolute flag under Windows indicating whether
+        /// a window is modal. This method might need to be adjusted depending on the use cases.
+        /// </remarks>
         public bool IsModal
         {
             get
             {
                 if (Hwnd == IntPtr.Zero)
+                    return false;
+
+                if (HwndHelper.HasExStyleFlag(Hwnd, NativeHelper.WS_EX_TOOLWINDOW))
                     return false;
 
                 var owner = Owner;

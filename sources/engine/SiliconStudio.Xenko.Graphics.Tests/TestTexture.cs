@@ -167,6 +167,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         [Test]
         public void TestTexture2DUnorderedAccess()
         {
+            IgnoreGraphicPlatform(GraphicsPlatform.Direct3D12);
             IgnoreGraphicPlatform(GraphicsPlatform.OpenGL);
             IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
 
@@ -307,7 +308,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 GraphicsProfile.Level_10_0);
         }
 
-        [Test]
+        [Test, Ignore("Clear on a ReadOnly depth buffer should be undefined or throw exception; should rewrite this test to do actual rendering with ReadOnly depth stencil bound?")]
         public void TestDepthStencilBufferWithNativeReadonly()
         {
             IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);

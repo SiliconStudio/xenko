@@ -368,7 +368,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// The depth stride in bytes (number of bytes per depth slice).
         /// </summary>
-        private int DepthStride { get; set; }
+        internal int DepthStride { get; private set; }
 
         /// <summary>
         /// The underlying parent texture (if this is a view).
@@ -431,7 +431,7 @@ namespace SiliconStudio.Xenko.Graphics
             textureDescription = description;
             textureViewDescription = viewDescription;
             IsBlockCompressed = description.Format.IsCompressed();
-            RowStride = this.Width * description.Format.SizeInBytes();
+            RowStride = ComputeRowPitch(0);
             DepthStride = RowStride * this.Height;
             mipmapDescriptions = Image.CalculateMipMapDescription(description);
 
@@ -1182,6 +1182,54 @@ namespace SiliconStudio.Xenko.Graphics
             if ((flags & TextureFlags.RenderTarget) != 0 || (flags & TextureFlags.UnorderedAccess) != 0)
                 return GraphicsResourceUsage.Default;
             return usage;
+        }
+
+        internal int ComputeSubresourceSize(int subresource)
+        {
+            var mipLevel = subresource % MipLevels;
+
+            var slicePitch = ComputeSlicePitch(mipLevel);
+            var depth = CalculateMipSize(Description.Depth, mipLevel);
+
+            return (slicePitch*depth + TextureSubresourceAlignment - 1) / TextureSubresourceAlignment * TextureSubresourceAlignment;
+        }
+
+        internal int ComputeBufferOffset(int subresource, int depthSlice)
+        {
+            int offset = 0;
+
+            for (var i = 0; i < subresource; ++i)
+            {
+                offset += ComputeSubresourceSize(i);
+            }
+
+            if (depthSlice != 0)
+                offset += ComputeSlicePitch(subresource % Description.MipLevels) * depthSlice;
+
+            return offset;
+        }
+
+        internal int ComputeSlicePitch(int mipLevel)
+        {
+            return ComputeRowPitch(mipLevel) * CalculateMipSize(Height, mipLevel);
+        }
+
+        internal int ComputeRowPitch(int mipLevel)
+        {
+            // Round up to 256
+            return ((CalculateMipSize(Width, mipLevel) * TexturePixelSize) + TextureRowPitchAlignment - 1) / TextureRowPitchAlignment * TextureRowPitchAlignment;
+        }
+
+        internal int ComputeBufferTotalSize()
+        {
+            int result = 0;
+
+            for (int i = 0; i < Description.MipLevels; ++i)
+            {
+                result += Description.ArraySize * ComputeSubresourceSize(i);
+            }
+
+            return result;
         }
 
         private static int CountMips(int width)

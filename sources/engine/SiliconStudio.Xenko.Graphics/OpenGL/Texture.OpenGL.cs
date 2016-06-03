@@ -36,6 +36,9 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     public partial class Texture
     {
+        private const int TextureRowPitchAlignment = 1;
+        private const int TextureSubresourceAlignment = 1;
+
         internal const TextureFlags TextureFlagsCustomResourceId = (TextureFlags)0x1000;
 
         internal SamplerState BoundSamplerState;
@@ -196,7 +199,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                     IsRenderbuffer = false;
 
-                    TextureTotalSize = ComputeTotalSize();
+                    TextureTotalSize = ComputeBufferTotalSize();
 
                     if (Description.Usage == GraphicsResourceUsage.Staging)
                     {
@@ -570,66 +573,6 @@ namespace SiliconStudio.Xenko.Graphics
                     GL.BindBuffer(bufferTarget, 0);
                 }
             }
-        }
-
-        internal int ComputeRowPitch(int mipLevel)
-        {
-            return CalculateMipSize(Width, mipLevel) * TexturePixelSize;
-        }
-
-        internal int ComputeSlicePitch(int mipLevel)
-        {
-            return ComputeRowPitch(mipLevel)*CalculateMipSize(Height, mipLevel);
-        }
-
-        internal int ComputeSubresourceSize(int subresource)
-        {
-            var mipLevel = subresource % MipLevels;
-
-            var width = CalculateMipSize(Description.Width, mipLevel);
-            var height = CalculateMipSize(Description.Height, mipLevel);
-            var depth = CalculateMipSize(Description.Depth, mipLevel);
-
-            return width * height * depth * TexturePixelSize;
-        }
-
-        private int ComputeTotalSize()
-        {
-            int result = 0;
-
-            for (int i = 0; i < Description.MipLevels; ++i)
-            {
-                var width = CalculateMipSize(Description.Width, i);
-                var height = CalculateMipSize(Description.Height, i);
-                var depth = CalculateMipSize(Description.Depth, i);
-
-                result += Description.ArraySize * width * height * depth * TexturePixelSize;
-            }
-
-            return result;
-        }
-
-        internal int ComputeOffset(int subresource, int depthSlice)
-        {
-            int offset = 0;
-
-            for (var arrayIndex = 0; arrayIndex < Description.ArraySize; ++arrayIndex)
-            {
-                for (int i = 0; i < Description.MipLevels; ++i)
-                {
-                    var width = CalculateMipSize(Description.Width, i);
-                    var height = CalculateMipSize(Description.Height, i);
-
-                    if (subresource-- == 0)
-                        return offset + (width * height * TexturePixelSize * depthSlice);
-
-                    var depth = CalculateMipSize(Description.Depth, i);
-
-                    offset += width * height * depth * TexturePixelSize;
-                }
-            }
-
-            return offset;
         }
 
         internal int GeneratePixelBufferObject(BufferTarget target, PixelStoreParameter alignment, BufferUsageHint bufferUsage, int totalSize)

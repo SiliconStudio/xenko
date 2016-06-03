@@ -48,7 +48,9 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             result.Platform = "Windows";
             result.Serial = Environment.MachineName;
-    #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
+    #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
+            result.DeviceName = "Direct3D12";
+    #elif SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
             result.DeviceName = "Direct3D";
     #elif SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             result.DeviceName = "OpenGLES";
