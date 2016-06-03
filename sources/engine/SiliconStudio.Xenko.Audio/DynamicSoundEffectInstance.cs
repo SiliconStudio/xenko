@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Audio
     /// Then he can generate the audio data and submit it to the audio system.
     /// The event <see cref="BufferNeeded"/> is called every time that sound need data.
     /// </summary>
-    public sealed partial class DynamicSoundEffectInstance : SoundEffectInstance
+    public sealed partial class DynamicSoundInstance : SoundInstance
     {
         internal object WorkerLock = new object();
         internal bool IsDisposing;
@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Audio
         /// </list>
         ///  </exception>
         /// <exception cref="ArgumentNullException"><paramref name="engine"/> is null.</exception>
-        public DynamicSoundEffectInstance(AudioEngine engine, int sampleRate, AudioChannels channels, AudioDataEncoding encoding)
+        public DynamicSoundInstance(AudioEngine engine, int sampleRate, AudioChannels channels, AudioDataEncoding encoding) : base()
         {
             AttachEngine(engine);
 

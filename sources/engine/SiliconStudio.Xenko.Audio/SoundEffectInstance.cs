@@ -14,8 +14,8 @@ namespace SiliconStudio.Xenko.Audio
     /// <remarks>
     /// <para>
     /// You can create a SoundEffectInstance by calling <see cref="SoundEffect.CreateInstance"/>. 
-    /// Initially, the SoundEffectInstance is created as stopped, but you can play it by calling <see cref="SoundInstanceBase.Play"/>.
-    /// You can modify the volume and the panning of the SoundEffectInstance by setting the <see cref="SoundInstanceBase.Volume"/> and <see cref="Pan"/> properties 
+    /// Initially, the SoundEffectInstance is created as stopped, but you can play it by calling <see cref="SoundInstance.Play"/>.
+    /// You can modify the volume and the panning of the SoundEffectInstance by setting the <see cref="SoundInstance.Volume"/> and <see cref="Pan"/> properties 
     /// or directly apply a localization to the sound by calling the <see cref="IPositionableSound.Apply3D"/> function.
     /// </para>
     /// <para>
@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Audio
     /// <seealso cref="SoundEffect"/>
     /// <seealso cref="IPositionableSound"/>"/>
     /// <seealso cref="DynamicSoundEffectInstance"/>
-    public partial class SoundEffectInstance : SoundInstanceBase, IPositionableSound
+    public partial class SoundEffectInstance : SoundInstance, IPositionableSound
     {
         private readonly SoundEffect soundEffect;
 

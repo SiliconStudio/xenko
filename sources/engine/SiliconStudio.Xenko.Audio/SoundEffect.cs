@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Audio
     [DataContract]
     [ContentSerializer(typeof(DataContentSerializer<SoundEffect>))]
     [DataSerializerGlobal(typeof(ReferenceSerializer<SoundEffect>), Profile = "Content")]
-    public sealed partial class SoundEffect : SoundBase, IPositionableSound
+    public sealed partial class SoundEffect : Sound, IPositionableSound
     {
         public void Attach(AudioEngine engine)
         {
@@ -71,6 +71,7 @@ namespace SiliconStudio.Xenko.Audio
         /// The number of SoundEffect Created so far. Used only to give a unique name to the SoundEffect.
         /// </summary>
         private static int soundEffectCreationCount;
+
         /// <summary>
         /// The number of Instances Created so far by this SoundEffect. Used only to give a unique name to the SoundEffectInstance.
         /// </summary>

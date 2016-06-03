@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Audio
 
             DisposeImpl();
 
-            if (mediaEngineStarted && nbOfAudioEngineInstances == 0)
+            if (mediaEngineStarted && NbOfAudioEngineInstances == 0)
             {
                 MediaManager.Shutdown();
                 mediaEngineStarted = false;

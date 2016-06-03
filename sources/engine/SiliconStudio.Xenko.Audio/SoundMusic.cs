@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Audio
     [DataContract]
     [ContentSerializer(typeof(DataContentSerializer<SoundMusic>))]
     [DataSerializerGlobal(typeof(ReferenceSerializer<SoundMusic>), Profile = "Content")]
-    public sealed class SoundMusic : SoundInstanceBase
+    public sealed class SoundMusic : SoundInstance
     {
 #if SILICONSTUDIO_PLATFORM_ANDROID
         internal string FileName;
