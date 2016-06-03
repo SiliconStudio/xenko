@@ -15,6 +15,9 @@
          However, that means that Tests dependencies must be compiled properly on Windows (should be the case usually).
     -->
     <SiliconStudioXenkoCompileAssetOptions>--compile-property:SolutionDir=$([System.IO.Path]::GetFullPath('$(SiliconStudioXenkoDir)'))\build\;SolutionName=Xenko;BuildProjectReferences=false</SiliconStudioXenkoCompileAssetOptions>
+
+    <!-- Override asset compiler's output from Xenko.targets for testing project. -->
+    <SiliconStudioCompileAssetOutputPath Condition="'$(SiliconStudioPlatform)' == 'Android'">$(ProjectDir)$(BaseIntermediateOutputPath)$(SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)\$(Configuration)\assets\data</SiliconStudioCompileAssetOutputPath>
   </PropertyGroup>
   
   <!-- On Windows, let's sign the assemblies with fake strong signing (OpenSource Signing, OSS),

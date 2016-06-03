@@ -190,8 +190,8 @@
     <!--asset BuildPath for all platforms (same as package)-->
     <SiliconStudioCompileAssetBuildPath Condition="'$(SiliconStudioCompileAssetBuildPath)' == ''">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\obj\data</SiliconStudioCompileAssetBuildPath>
 
-    <!--asset OutputPath for Android-->
-    <SiliconStudioCompileAssetOutputPath Condition="'$(SiliconStudioCompileAssetOutputPath)' == '' and '$(SiliconStudioPlatform)' == 'Android'">$(ProjectDir)$(BaseIntermediateOutputPath)$(SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)\$(Configuration)\assets\data</SiliconStudioCompileAssetOutputPath>
+    <!--asset OutputPath for Android. Note that this value is overridden for tests projects. See Xenko/targets/Xenko.targets for overridden value.-->
+    <SiliconStudioCompileAssetOutputPath Condition="'$(SiliconStudioCompileAssetOutputPath)' == '' and '$(SiliconStudioPlatform)' == 'Android'">$(ProjectDir)$(BaseIntermediateOutputPath)$(SiliconStudioPlatform)\$(Configuration)\assets\data</SiliconStudioCompileAssetOutputPath>
 
     <!--asset OutputPath for other platforms -->
     <SiliconStudioCompileAssetOutputPath Condition="'$(SiliconStudioCompileAssetOutputPath)' == ''">$(TargetDir)data</SiliconStudioCompileAssetOutputPath>
