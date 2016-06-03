@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Native
             fixed (short* samplesPtr = outputSamples)
             fixed (byte* bufferPtr = inputBuffer)
             {
-                return XenkoCeltDecodeShort(celtPtr, bufferPtr, inputBufferSize, samplesPtr, outputSamples.Length);
+                return XenkoCeltDecodeShort(celtPtr, bufferPtr, inputBufferSize, samplesPtr, outputSamples.Length / Channels);
             }
         }
 
@@ -83,7 +83,7 @@ namespace SiliconStudio.Xenko.Native
             fixed (short* samplesPtr = audioSamples)
             fixed (byte* bufferPtr = outputBuffer)
             {
-                return XenkoCeltEncodeShort(celtPtr, samplesPtr, audioSamples.Length, bufferPtr, outputBuffer.Length);
+                return XenkoCeltEncodeShort(celtPtr, samplesPtr, audioSamples.Length / Channels, bufferPtr, outputBuffer.Length);
             }
         }
 
@@ -99,7 +99,7 @@ namespace SiliconStudio.Xenko.Native
             fixed (float* samplesPtr = outputSamples)
             fixed (byte* bufferPtr = inputBuffer)
             {
-                return XenkoCeltDecodeFloat(celtPtr, bufferPtr, inputBufferSize, samplesPtr, outputSamples.Length);
+                return XenkoCeltDecodeFloat(celtPtr, bufferPtr, inputBufferSize, samplesPtr, outputSamples.Length / Channels);
             }
         }
 
