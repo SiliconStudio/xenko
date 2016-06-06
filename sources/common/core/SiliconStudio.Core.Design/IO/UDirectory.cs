@@ -55,6 +55,17 @@ namespace SiliconStudio.Core.IO
         }
 
         /// <summary>
+        /// Combines the specified left uniform location and right location and return a new <see cref="UDirectory"/>
+        /// </summary>
+        /// <param name="leftPath">The left path.</param>
+        /// <param name="rightPath">The right path.</param>
+        /// <returns>The combination of both paths.</returns>
+        public static UDirectory Combine(UDirectory leftPath, UDirectory rightPath)
+        {
+            return UPath.Combine(leftPath, rightPath);
+        }
+
+        /// <summary>
         /// Determines whether this directory contains the specified path.
         /// </summary>
         /// <param name="path">The path.</param>
@@ -62,10 +73,13 @@ namespace SiliconStudio.Core.IO
         public bool Contains(UPath path)
         {
             if (path == null) throw new ArgumentNullException("path");
-            if (FullPath == null) return false;
-            if (path.FullPath == null) return false;
-
             return path.FullPath.StartsWith(FullPath, StringComparison.OrdinalIgnoreCase) && path.FullPath.Length > FullPath.Length && path.FullPath[FullPath.Length] == DirectorySeparatorChar;
+        }
+
+        public string GetDirectoryName()
+        {
+            var index = FullPath.IndexOfReverse(DirectorySeparatorChar);
+            return index >= 0 ? FullPath.Substring(index + 1) : "";
         }
     }
 }

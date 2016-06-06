@@ -900,7 +900,7 @@ namespace SiliconStudio.Assets
         {
             // find a possible asset location
             UFile newLocation;
-            var path = new UFile(targetDirectory, item.Location.GetFileName(), null);
+            var path = UFile.Combine(targetDirectory, item.Location.GetFileName());
             assetResolver.RegisterLocation(path, out newLocation);
 
             // current location is valid -> nothing to do
