@@ -144,6 +144,7 @@ namespace SiliconStudio.Core.IO
         /// Gets the directory. Can be null.
         /// </summary>
         /// <returns>The directory.</returns>
+        [Obsolete("This method is obsolete. Use GetFullDirectory")]
         public string GetDirectory()
         {
             return DirectorySpan.IsValid ? FullPath.Substring(DirectorySpan) : null;
