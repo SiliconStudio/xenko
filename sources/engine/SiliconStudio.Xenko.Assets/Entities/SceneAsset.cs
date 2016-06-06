@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [Display(200, "Scene")]
     public partial class SceneAsset : EntityHierarchyAssetBase
     {
-        private const string CurrentVersion = "1.7.0-beta02";
+        private const string CurrentVersion = "1.7.0-beta03";
 
         public const string FileSceneExtension = ".xkscene;.pdxscene";
 

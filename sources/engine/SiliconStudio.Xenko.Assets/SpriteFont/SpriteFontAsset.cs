@@ -20,8 +20,9 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     [DataContract("SpriteFont")]
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(SpriteFontAssetCompiler))]
-    [AssetFormatVersion(XenkoConfig.PackageName, "1.5.0-alpha09")]
+    [AssetFormatVersion(XenkoConfig.PackageName, "1.7.0-beta03")]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.5.0-alpha09", typeof(PremultiplyUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.7.0-beta02", "1.7.0-beta03", typeof(FontTypeUpgrader))]    
     [Display(140, "Sprite Font")]
     [CategoryOrder(10, "Font")]
     [CategoryOrder(20, "Characters")]
@@ -238,6 +239,19 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                     asset.IsNotPremultiply = DynamicYamlEmpty.Default;
                 }
             }
+        }
+
+        class FontTypeUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile,
+                OverrideUpgraderHint overrideHint)
+            {
+                if (asset.IsDynamic != null)
+                {
+                    asset.FontType = (asset.IsDynamic == true) ? "Dynamic" : "Static";
+                }
+            }
+
         }
     }
 }
