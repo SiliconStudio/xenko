@@ -43,7 +43,7 @@ namespace SiliconStudio.Assets.Serializers
                 throw new YamlException(fromScalar.Start, fromScalar.End, "Unable to decode asset reference [{0}]. Expecting format GUID:LOCATION".ToFormat(fromScalar.Value));
             }
 
-            var instance = AttachedReferenceManager.CreateSerializableVersion(context.Descriptor.Type, guid, location);
+            var instance = AttachedReferenceManager.CreateProxyObject(context.Descriptor.Type, guid, location);
 
             // If the referenceId is empty, force its creation, else attach it to the reference
             if (referenceId == Guid.Empty)

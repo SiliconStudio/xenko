@@ -3,10 +3,7 @@
 #if SILICONSTUDIO_XENKO_UI_SDL
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using SDL2;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization.Serializers;
 
 namespace SiliconStudio.Xenko.Input
 {
@@ -50,7 +47,7 @@ namespace SiliconStudio.Xenko.Input
                         {
                             var bytes = SDL.SDL_JoystickGetGUID(jPtr).ToByteArray();
                             // Convert or bytes into a string representation. This is important because SDL expects
-                            // the string representation to represent the memory view without hyphe. Using
+                            // the string representation to represent the memory view without hyphen. Using
                             // Guid.ToString() will not do that.
                             string mapping = "";
                             foreach (var b in bytes)

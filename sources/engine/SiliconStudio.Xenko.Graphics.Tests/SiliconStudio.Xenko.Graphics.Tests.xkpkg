@@ -9,7 +9,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.6.0-beta
+            Version: 1.7.0-alpha01
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -17,7 +17,7 @@ Profiles:
         Platform: Shared
         InheritProfiles: []
         AssetFolders:
-            -   Path: Assets
+            -   Path: Assets/Shared
         OutputGroupDirectories: {}
         Properties: {}
         ProjectReferences:
@@ -35,6 +35,17 @@ Profiles:
             -   Id: 9de0aa56-0de7-4adc-baac-cd38b7139ebc
                 Location: SiliconStudio.Xenko.Graphics.Tests.Windows.csproj
                 Type: Executable
+    -   Name: Linux
+        Platform: Linux
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: Assets/Linux
+        OutputGroupDirectories: {}
+        Properties: {}
+        ProjectReferences:
+            -   Id: 9de0aa56-0de7-4adc-baac-cd38b7139ebc
+                Location: SiliconStudio.Xenko.Graphics.Tests.Linux.csproj
+                Type: Executable
     -   Name: Android
         Platform: Android
         InheritProfiles: []
@@ -50,7 +61,7 @@ Profiles:
         Platform: iOS
         InheritProfiles: []
         AssetFolders:
-            -   Path: Assets/iPhone
+            -   Path: Assets/iOS
         OutputGroupDirectories: {}
         Properties: {}
         ProjectReferences:

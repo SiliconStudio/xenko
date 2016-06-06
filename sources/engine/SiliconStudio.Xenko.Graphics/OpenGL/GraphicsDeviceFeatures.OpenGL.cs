@@ -113,6 +113,8 @@ namespace SiliconStudio.Xenko.Graphics
 
             deviceRoot.HasDepthClamp = SupportedExtensions.Contains("GL_ARB_depth_clamp");
 
+            deviceRoot.HasAnisotropicFiltering = SupportedExtensions.Contains("GL_EXT_texture_filter_anisotropic");
+
             HasDriverCommandLists = false;
             HasMultiThreadingConcurrentResources = false;
 

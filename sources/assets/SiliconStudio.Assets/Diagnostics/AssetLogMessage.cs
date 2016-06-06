@@ -23,13 +23,13 @@ namespace SiliconStudio.Assets.Diagnostics
         /// <param name="type">The type.</param>
         /// <param name="messageCode">The message code.</param>
         /// <exception cref="System.ArgumentNullException">asset</exception>
-        public AssetLogMessage(Package package, IContentReference assetReference, LogMessageType type, AssetMessageCode messageCode)
+        public AssetLogMessage(Package package, IReference assetReference, LogMessageType type, AssetMessageCode messageCode)
         {
             this.package = package;
             AssetReference = assetReference;
             Type = type;
             MessageCode = messageCode;
-            Related = new List<IContentReference>();
+            Related = new List<IReference>();
             Text = AssetMessageStrings.ResourceManager.GetString(messageCode.ToString()) ?? messageCode.ToString();
         }
 
@@ -42,13 +42,13 @@ namespace SiliconStudio.Assets.Diagnostics
         /// <param name="messageCode">The message code.</param>
         /// <param name="arguments">The arguments.</param>
         /// <exception cref="System.ArgumentNullException">asset</exception>
-        public AssetLogMessage(Package package, IContentReference assetReference, LogMessageType type, AssetMessageCode messageCode, params object[] arguments)
+        public AssetLogMessage(Package package, IReference assetReference, LogMessageType type, AssetMessageCode messageCode, params object[] arguments)
         {
             this.package = package;
             AssetReference = assetReference;
             Type = type;
             MessageCode = messageCode;
-            Related = new List<IContentReference>();
+            Related = new List<IReference>();
             var message = AssetMessageStrings.ResourceManager.GetString(messageCode.ToString()) ?? messageCode.ToString();
             Text = string.Format(message, arguments);
         }
@@ -63,7 +63,7 @@ namespace SiliconStudio.Assets.Diagnostics
         /// Gets or sets the asset this message applies to (optional).
         /// </summary>
         /// <value>The asset.</value>
-        public IContentReference AssetReference { get; set; }
+        public IReference AssetReference { get; set; }
 
         /// <summary>
         /// Gets or sets the package.
@@ -81,6 +81,6 @@ namespace SiliconStudio.Assets.Diagnostics
         /// Gets or sets the related references.
         /// </summary>
         /// <value>The related.</value>
-        public List<IContentReference> Related { get; private set; }
+        public List<IReference> Related { get; private set; }
     }
 }

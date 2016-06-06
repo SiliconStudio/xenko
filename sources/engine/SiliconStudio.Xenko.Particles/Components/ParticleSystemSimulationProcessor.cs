@@ -74,8 +74,6 @@ namespace SiliconStudio.Xenko.Particles.Components
             }
             else
             {
-                transformComponent.UpdateWorldMatrix();
-
                 Vector3 dummyVector;
                 transformComponent.WorldMatrix.Decompose(out dummyVector, out particleSystem.Rotation, out particleSystem.Translation);
 

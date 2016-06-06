@@ -93,7 +93,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
 
                 foreach (var cell in cells)
                 {
-                    var sprite = new Sprite(cell.Name, AttachedReferenceManager.CreateSerializableVersion<Texture>(Guid.Empty, AssetParameters.BuildTextures[cell.TextureIndex]))
+                    var sprite = new Sprite(cell.Name, AttachedReferenceManager.CreateProxyObject<Texture>(Guid.Empty, AssetParameters.BuildTextures[cell.TextureIndex]))
                     {
                         Region = cell.Rectangle,
                         Center = cell.Pivot,

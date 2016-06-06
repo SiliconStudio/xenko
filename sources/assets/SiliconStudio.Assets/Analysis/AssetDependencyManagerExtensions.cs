@@ -17,7 +17,7 @@ namespace SiliconStudio.Assets.Analysis
             return manager.FindDependencySet(item.Id);
         }
 
-        public static IEnumerable<IContentReference> FindMissingReferences(this AssetDependencyManager manager, AssetItem item)
+        public static IEnumerable<IReference> FindMissingReferences(this AssetDependencyManager manager, AssetItem item)
         {
             if (item == null) throw new ArgumentNullException("item");
             return manager.FindMissingReferences(item.Id);

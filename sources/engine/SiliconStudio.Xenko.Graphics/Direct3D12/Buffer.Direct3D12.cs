@@ -138,6 +138,45 @@ namespace SiliconStudio.Xenko.Graphics
 
                 // TODO D3D12 release uploadResource (using a fence to know when copy is done)
             }
+
+            this.NativeShaderResourceView = GetShaderResourceView(ViewFormat);
+        }
+
+        /// <summary>
+        /// Gets a <see cref="ShaderResourceView"/> for a particular <see cref="PixelFormat"/>.
+        /// </summary>
+        /// <param name="viewFormat">The view format.</param>
+        /// <returns>A <see cref="ShaderResourceView"/> for the particular view format.</returns>
+        /// <remarks>
+        /// The buffer must have been declared with <see cref="Graphics.BufferFlags.ShaderResource"/>. 
+        /// The ShaderResourceView instance is kept by this buffer and will be disposed when this buffer is disposed.
+        /// </remarks>
+        internal CpuDescriptorHandle GetShaderResourceView(PixelFormat viewFormat)
+        {
+            var srv = new CpuDescriptorHandle();
+            if ((ViewFlags & BufferFlags.ShaderResource) != 0)
+            {
+                var description = new ShaderResourceViewDescription
+                {
+                    Shader4ComponentMapping = 0x00001688,
+                    Format = (SharpDX.DXGI.Format)viewFormat,
+                    Dimension = SharpDX.Direct3D12.ShaderResourceViewDimension.Buffer,
+                    Buffer =
+                    {
+                        ElementCount = this.ElementCount,
+                        FirstElement = 0,
+                        Flags = BufferShaderResourceViewFlags.None,
+                        StructureByteStride = StructureByteStride,
+                    }
+                };
+
+                if (((ViewFlags & BufferFlags.RawBuffer) == BufferFlags.RawBuffer))
+                    description.Buffer.Flags |= BufferShaderResourceViewFlags.Raw;
+
+                srv = GraphicsDevice.ShaderResourceViewAllocator.Allocate(1);
+                NativeDevice.CreateShaderResourceView(NativeResource, description, srv);
+            }
+            return srv;
         }
 
         private void InitCountAndViewFormat(out int count, ref PixelFormat viewFormat)

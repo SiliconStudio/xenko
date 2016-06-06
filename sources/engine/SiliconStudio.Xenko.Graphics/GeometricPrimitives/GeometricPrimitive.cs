@@ -114,14 +114,18 @@ namespace SiliconStudio.Xenko.Graphics.GeometricPrimitives
         /// Draws this <see cref="GeometricPrimitive" />.
         /// </summary>
         /// <param name="commandList">The command list.</param>
-        public void Draw(CommandList commandList, EffectInstance effectInstance)
+        public void Draw(GraphicsContext graphicsContext, EffectInstance effectInstance)
         {
+            var commandList = graphicsContext.CommandList;
+
             // Update pipeline state
             PipelineState.State.RootSignature = effectInstance.RootSignature;
             PipelineState.State.EffectBytecode = effectInstance.Effect.Bytecode;
             PipelineState.State.Output.CaptureState(commandList);
             PipelineState.Update();
             commandList.SetPipelineState(PipelineState.CurrentState);
+
+            effectInstance.Apply(graphicsContext);
 
             // Setup the Vertex Buffer
             commandList.SetIndexBuffer(IndexBuffer, 0, IsIndex32Bits);

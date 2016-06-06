@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
     [AssetCompiler(typeof(SpriteStudioAnimationAssetCompiler))] // The compiler used to transform this asset to RangeValues
     [AssetDescription(".xkss4a;.pdxss4a")] // A description used to display in the asset editor
     [Display("Sprite Studio Animation")]
-    public class SpriteStudioAnimationAsset : AssetImportTracked
+    public class SpriteStudioAnimationAsset : AssetWithSource
     {
         [DataMember(1)]
         [DefaultValue(AnimationRepeatMode.LoopInfinite)]

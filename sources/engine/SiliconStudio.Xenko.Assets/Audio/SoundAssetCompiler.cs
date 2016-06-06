@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Assets.Audio
     {
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, SoundAsset asset, AssetCompilerResult result)
         {
-            if (!EnsureSourceExists(result, asset, assetAbsolutePath))
+            if (!EnsureSourcesExist(result, asset, assetAbsolutePath))
                 return;
 
             // Get absolute path of asset source on disk

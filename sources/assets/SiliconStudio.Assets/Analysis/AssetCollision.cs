@@ -100,11 +100,11 @@ namespace SiliconStudio.Assets.Analysis
                 // - If there is no link to update, and the asset has not been cloned, we can exist immediately
                 // - If there is links to update, and the asset has not been cloned, we need to clone it and re-enter the loop
                 //   to perform the update of the clone asset
-                var links = AssetReferenceAnalysis.Visit(item.Asset).Where(link => link.Reference is IContentReference).ToList();
+                var links = AssetReferenceAnalysis.Visit(item.Asset).Where(link => link.Reference is IReference).ToList();
 
                 foreach (var assetLink in links)
                 {
-                    var assetReference = (IContentReference)assetLink.Reference;
+                    var assetReference = (IReference)assetLink.Reference;
 
                     var newId = assetReference.Id;
                     if (idRemap.TryGetValue(newId, out remap) && IsNewReference(remap, assetReference))
@@ -174,7 +174,7 @@ namespace SiliconStudio.Assets.Analysis
             }
         }
 
-        private static bool IsNewReference(Tuple<Guid, UFile> newReference, IContentReference previousReference)
+        private static bool IsNewReference(Tuple<Guid, UFile> newReference, IReference previousReference)
         {
             return newReference.Item1 != previousReference.Id ||
                    newReference.Item2 != previousReference.Location;

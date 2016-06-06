@@ -1,0 +1,19 @@
+!Texture
+Id: eedb5de8-e19f-4218-8389-99c4178b86c1
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../../../data/tests/sphere.png
+ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
+ColorKeyEnabled: true
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Format: Color32Bits
+Alpha: Mask
+~Base:
+    ~Id: bdb72330-3556-49ed-9123-c7677711b2de
+    Location: --import--
+    Asset: !Texture
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.4.0-beta}
+        Tags: []
+        Source: 
+        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

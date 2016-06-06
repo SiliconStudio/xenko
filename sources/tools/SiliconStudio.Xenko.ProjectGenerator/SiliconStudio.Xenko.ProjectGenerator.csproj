@@ -22,6 +22,7 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Build" />
     <Reference Include="Mono.Options">
       <HintPath>$(SiliconStudioDependenciesDir)Mono.Options\Mono.Options.dll</HintPath>
     </Reference>
@@ -92,12 +93,11 @@
     <None Include="Templates\Xenko.UnitTests\%24ProjectName%24.Android.csproj.t4">
       <SubType>Designer</SubType>
     </None>
+    <None Include="Templates\Xenko.UnitTests\%24ProjectName%24.csproj.t4" />
     <None Include="Templates\Xenko.UnitTests\%24ProjectName%24.iOS.csproj.t4">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Templates\Xenko.UnitTests\%24ProjectName%24.Windows.csproj.t4">
-      <SubType>Designer</SubType>
-    </None>
+    <None Include="Templates\Xenko.UnitTests\%24ProjectName%24.Shared.targets.t4" />
     <None Include="Templates\Common.Imports.targets.t4">
       <SubType>Designer</SubType>
     </None>
@@ -111,6 +111,7 @@
     <None Include="Templates\Xenko.UnitTests\Info.plist.t4" />
     <None Include="Templates\Xenko.UnitTests\PackageWindowsPhone.appxmanifest.t4" />
     <None Include="Templates\Xenko.UnitTests\PackageWindowsStore.appxmanifest.t4" />
+    <None Include="Templates\Xenko.UnitTests\readme.md.t4" />
     <None Include="Templates\Xenko.UnitTests\Xenko.UnitTests.ttproj" />
     <None Include="Templates\Xenko.UnitTests\Properties\AndroidManifest.xml.t4">
       <SubType>Designer</SubType>
@@ -125,11 +126,11 @@
     <Folder Include="Templates\Xenko.GraphicsRegressionTests\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Templates\Xenko.UnitTests\Assets\XenkoSplashScreen620x300.png" />
-    <Resource Include="Templates\Xenko.UnitTests\Assets\XenkoSplashScreen480x800.png" />
-    <Resource Include="Templates\Xenko.UnitTests\Assets\XenkoIcon106x106.png" />
-    <Content Include="Templates\Xenko.UnitTests\Assets\XenkoIcon150x150.png" />
-    <Resource Include="Templates\Xenko.UnitTests\Assets\XenkoIcon54x54.png" />
+    <Resource Include="Templates\Xenko.UnitTests\Resources\XenkoSplashScreen620x300.png" />
+    <Resource Include="Templates\Xenko.UnitTests\Resources\XenkoSplashScreen480x800.png" />
+    <Resource Include="Templates\Xenko.UnitTests\Resources\XenkoIcon106x106.png" />
+    <Content Include="Templates\Xenko.UnitTests\Resources\XenkoIcon150x150.png" />
+    <Resource Include="Templates\Xenko.UnitTests\Resources\XenkoIcon54x54.png" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
