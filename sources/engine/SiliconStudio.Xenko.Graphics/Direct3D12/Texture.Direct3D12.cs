@@ -35,6 +35,10 @@ namespace SiliconStudio.Xenko.Graphics
         internal CpuDescriptorHandle NativeDepthStencilView;
         public bool HasStencil;
 
+        private int TexturePixelSize => Format.SizeInBytes();
+        private const int TextureRowPitchAlignment = 256;
+        private const int TextureSubresourceAlignment = 512;
+
         public void Recreate(DataBox[] dataBoxes = null)
         {
             InitializeFromImpl(dataBoxes);
@@ -100,7 +104,7 @@ namespace SiliconStudio.Xenko.Graphics
                     heapType = HeapType.Readback;
                     initialResourceState = ResourceStates.CopyDestination;
                     currentResourceState = ResourceStates.CopyDestination;
-                    nativeDescription = ResourceDescription.Buffer((RowStride + 255)/256*256 * Height * Depth);
+                    nativeDescription = ResourceDescription.Buffer(ComputeBufferTotalSize());
 
                     // TODO: Alloc in readback heap as a buffer
                     //return;
@@ -131,6 +135,8 @@ namespace SiliconStudio.Xenko.Graphics
                     // Trigger copy
                     var commandList = GraphicsDevice.NativeCopyCommandList;
                     commandList.Reset(GraphicsDevice.NativeCopyCommandAllocator, null);
+                    if (Usage == GraphicsResourceUsage.Staging)
+                        throw new NotImplementedException("D3D12: Staging textures can't be created with initial data");
                     commandList.CopyResource(NativeResource, nativeUploadTexture);
                     commandList.ResourceBarrierTransition(NativeResource, ResourceStates.CopyDestination, initialResourceState);
                     commandList.Close();
@@ -678,7 +684,6 @@ namespace SiliconStudio.Xenko.Graphics
         {
             return Math.Min(CalculateMipCountFromSize(width, minimumSizeLastMip), CalculateMipCountFromSize(height, minimumSizeLastMip));
         }
-
 
         internal static bool IsStencilFormat(PixelFormat format)
         {

@@ -603,18 +603,28 @@ namespace SiliconStudio.Xenko.Graphics
 
                 if (destinationTexture.Usage == GraphicsResourceUsage.Staging)
                 {
-                    NativeCommandList.CopyTextureRegion(new TextureCopyLocation(destinationTexture.NativeResource,
-                        new PlacedSubResourceFootprint
+                    int copyOffset = 0;
+                    for (int arraySlice = 0; arraySlice < sourceParent.ArraySize; ++arraySlice)
+                    {
+                        for (int mipLevel = 0; mipLevel < sourceParent.MipLevels; ++mipLevel)
                         {
-                            Footprint =
-                            {
-                                Width = destinationTexture.Width,
-                                Height = destinationTexture.Height,
-                                Depth = destinationTexture.Depth,
-                                Format = (SharpDX.DXGI.Format)destinationTexture.Format,
-                                RowPitch = (destinationTexture.RowStride + 255)/256*256,
-                            }
-                        }), 0, 0, 0, new TextureCopyLocation(sourceTexture.NativeResource, 0), null);
+                            NativeCommandList.CopyTextureRegion(new TextureCopyLocation(destinationTexture.NativeResource,
+                                new PlacedSubResourceFootprint
+                                {
+                                    Footprint =
+                                    {
+                                        Width = Texture.CalculateMipSize(destinationTexture.Width, mipLevel),
+                                        Height = Texture.CalculateMipSize(destinationTexture.Height, mipLevel),
+                                        Depth = Texture.CalculateMipSize(destinationTexture.Depth, mipLevel),
+                                        Format = (SharpDX.DXGI.Format)destinationTexture.Format,
+                                        RowPitch = destinationTexture.ComputeRowPitch(mipLevel),
+                                    },
+                                    Offset = copyOffset,
+                                }), 0, 0, 0, new TextureCopyLocation(sourceTexture.NativeResource, arraySlice * sourceParent.MipLevels + mipLevel), null);
+
+                            copyOffset += destinationTexture.ComputeSubresourceSize(mipLevel);
+                        }
+                    }
 
                     // Set a value that will
                     destinationParent.StagingFenceValue = GraphicsDevice.NextFenceValue;
@@ -640,9 +650,36 @@ namespace SiliconStudio.Xenko.Graphics
             throw new NotImplementedException();
         }
 
-        public void CopyRegion(GraphicsResource source, int sourceSubresource, ResourceRegion? sourecRegion, GraphicsResource destination, int destinationSubResource, int dstX = 0, int dstY = 0, int dstZ = 0)
+        public void CopyRegion(GraphicsResource source, int sourceSubresource, ResourceRegion? sourceRegion, GraphicsResource destination, int destinationSubResource, int dstX = 0, int dstY = 0, int dstZ = 0)
         {
-            throw new NotImplementedException();
+            if (source is Texture && destination is Texture)
+            {
+                if (((Texture)source).Usage == GraphicsResourceUsage.Staging || ((Texture)destination).Usage == GraphicsResourceUsage.Staging)
+                {
+                    throw new NotImplementedException("Copy region of staging resources is not supported yet");
+                }
+
+                NativeCommandList.CopyTextureRegion(
+                    new TextureCopyLocation(destination.NativeResource, sourceSubresource),
+                    dstX, dstY, dstZ,
+                    new TextureCopyLocation(source.NativeResource, sourceSubresource),
+                    sourceRegion.HasValue
+                        ? (SharpDX.Direct3D12.ResourceRegion?)new SharpDX.Direct3D12.ResourceRegion
+                        {
+                            Left = sourceRegion.Value.Left,
+                            Top = sourceRegion.Value.Top,
+                            Front = sourceRegion.Value.Front,
+                            Right = sourceRegion.Value.Right,
+                            Bottom = sourceRegion.Value.Bottom,
+                            Back = sourceRegion.Value.Back
+                        }
+                        : null);
+            }
+            else if (source is Buffer && destination is Buffer)
+            {
+                NativeCommandList.CopyBufferRegion(destination.NativeResource, dstX,
+                    source.NativeResource, sourceRegion?.Left ?? 0, sourceRegion.HasValue ? sourceRegion.Value.Right - sourceRegion.Value.Left : ((Buffer)source).SizeInBytes);
+            }
         }
 
         /// <inheritdoc />
@@ -653,7 +690,26 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal void UpdateSubresource(GraphicsResource resource, int subResourceIndex, DataBox databox)
         {
-            throw new NotImplementedException();
+            ResourceRegion region;
+            var texture = resource as Texture;
+            if (texture != null)
+            {
+                region = new ResourceRegion(0, 0, 0, texture.Width, texture.Height, texture.Depth);
+            }
+            else
+            {
+                var buffer = resource as Buffer;
+                if (buffer != null)
+                {
+                    region = new ResourceRegion(0, 0, 0, buffer.SizeInBytes, 1, 1);
+                }
+                else
+                {
+                    throw new InvalidOperationException("Unknown resource type");
+                }
+            }
+
+            UpdateSubresource(resource, subResourceIndex, databox, region);
         }
 
         internal void UpdateSubresource(GraphicsResource resource, int subResourceIndex, DataBox databox, ResourceRegion region)
@@ -661,16 +717,32 @@ namespace SiliconStudio.Xenko.Graphics
             var texture = resource as Texture;
             if (texture != null)
             {
-                if (texture.Dimension != TextureDimension.Texture2D)
-                    throw new NotImplementedException();
-
                 var width = region.Right - region.Left;
                 var height = region.Bottom - region.Top;
+                var depth = region.Back - region.Front;
+
+                ResourceDescription resourceDescription;
+                switch (texture.Dimension)
+                {
+                    case TextureDimension.Texture1D:
+                        resourceDescription = ResourceDescription.Texture1D((SharpDX.DXGI.Format)texture.Format, width, 1, 1);
+                        break;
+                    case TextureDimension.Texture2D:
+                    case TextureDimension.TextureCube:
+                        resourceDescription = ResourceDescription.Texture2D((SharpDX.DXGI.Format)texture.Format, width, height, 1, 1);
+                        break;
+                    case TextureDimension.Texture3D:
+                        resourceDescription = ResourceDescription.Texture3D((SharpDX.DXGI.Format)texture.Format, width, height, (short)depth, 1);
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
 
                 // TODO D3D12 allocate in upload heap (placed resources?)
                 var nativeUploadTexture = NativeDevice.CreateCommittedResource(new HeapProperties(CpuPageProperty.WriteBack, MemoryPool.L0), HeapFlags.None,
-                    ResourceDescription.Texture2D((SharpDX.DXGI.Format)texture.Format, width, height),
+                    resourceDescription,
                     ResourceStates.GenericRead);
+
 
                 GraphicsDevice.TemporaryResources.Enqueue(new KeyValuePair<long, Pageable>(GraphicsDevice.NextFenceValue, nativeUploadTexture));
 
@@ -685,7 +757,24 @@ namespace SiliconStudio.Xenko.Graphics
             }
             else
             {
-                throw new NotImplementedException();
+                var buffer = resource as Buffer;
+                if (buffer != null)
+                {
+                    SharpDX.Direct3D12.Resource uploadResource;
+                    int uploadOffset;
+                    var uploadSize = region.Right - region.Left;
+                    var uploadMemory = GraphicsDevice.AllocateUploadBuffer(region.Right - region.Left, out uploadResource, out uploadOffset);
+
+                    Utilities.CopyMemory(uploadMemory, databox.DataPointer, uploadSize);
+
+                    NativeCommandList.ResourceBarrierTransition(resource.NativeResource, resource.NativeResourceState, ResourceStates.CopyDestination);
+                    NativeCommandList.CopyBufferRegion(resource.NativeResource, region.Left, uploadResource, uploadOffset, uploadSize);
+                    NativeCommandList.ResourceBarrierTransition(resource.NativeResource, ResourceStates.CopyDestination, resource.NativeResourceState);
+                }
+                else
+                {
+                    throw new InvalidOperationException("Unknown resource type");
+                }
             }
         }
 
@@ -705,6 +794,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (resource == null) throw new ArgumentNullException("resource");
 
             var rowPitch = 0;
+            var depthStride = 0;
             var usage = GraphicsResourceUsage.Default;
 
             var texture = resource as Texture;
@@ -712,8 +802,17 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 usage = texture.Usage;
                 if (lengthInBytes == 0)
-                    lengthInBytes = texture.ViewWidth * texture.ViewHeight * texture.ViewDepth * texture.ViewFormat.SizeInBytes();
-                rowPitch = (texture.RowStride + 255)/256*256;
+                    lengthInBytes = texture.ComputeSubresourceSize(subResourceIndex);
+
+                rowPitch = texture.ComputeRowPitch(subResourceIndex % texture.MipLevels);
+                depthStride = texture.ComputeSlicePitch(subResourceIndex % texture.MipLevels);
+
+                if (texture.Usage == GraphicsResourceUsage.Staging)
+                {
+                    // Internally it's a buffer, so adapt resource index and offset
+                    offsetInBytes = texture.ComputeBufferOffset(subResourceIndex, 0);
+                    subResourceIndex = 0;
+                }
             }
             else
             {
@@ -733,10 +832,9 @@ namespace SiliconStudio.Xenko.Graphics
                 int uploadOffset;
                 var uploadMemory = GraphicsDevice.AllocateUploadBuffer(lengthInBytes, out uploadResource, out uploadOffset);
 
-                return new MappedResource(resource, subResourceIndex, new DataBox(uploadMemory, rowPitch, 0), offsetInBytes, lengthInBytes)
+                return new MappedResource(resource, subResourceIndex, new DataBox(uploadMemory, rowPitch, depthStride), offsetInBytes, lengthInBytes)
                 {
-                    UploadResource = uploadResource,
-                    UploadOffset = uploadOffset,
+                    UploadResource = uploadResource, UploadOffset = uploadOffset,
                 };
             }
             else if (mapMode == MapMode.Read || mapMode == MapMode.ReadWrite || mapMode == MapMode.Write)
@@ -764,7 +862,7 @@ namespace SiliconStudio.Xenko.Graphics
                 }
 
                 var mappedMemory = resource.NativeResource.Map(subResourceIndex) + offsetInBytes;
-                return new MappedResource(resource, subResourceIndex, new DataBox(mappedMemory, rowPitch, 0), offsetInBytes, lengthInBytes);
+                return new MappedResource(resource, subResourceIndex, new DataBox(mappedMemory, rowPitch, depthStride), offsetInBytes, lengthInBytes);
             }
             else
             {
@@ -793,5 +891,5 @@ namespace SiliconStudio.Xenko.Graphics
         }
     }
 }
- 
+
 #endif 

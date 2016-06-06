@@ -384,8 +384,8 @@ namespace SiliconStudio.Xenko.Graphics
                         GL.BindBuffer(BufferTarget.CopyReadBuffer, sourceTexture.PixelBufferObjectId);
                         GL.BindBuffer(BufferTarget.CopyWriteBuffer, destTexture.PixelBufferObjectId);
                         GL.CopyBufferSubData(BufferTarget.CopyReadBuffer, BufferTarget.CopyWriteBuffer,
-                            (IntPtr)sourceTexture.ComputeOffset(sourceSubresource, 0),
-                            (IntPtr)destTexture.ComputeOffset(destinationSubResource, 0),
+                            (IntPtr)sourceTexture.ComputeBufferOffset(sourceSubresource, 0),
+                            (IntPtr)destTexture.ComputeBufferOffset(destinationSubResource, 0),
                             (IntPtr)destTexture.ComputeSubresourceSize(destinationSubResource));
                     }
                 }
@@ -427,7 +427,7 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
                         {
                             GL.BindBuffer(BufferTarget.PixelPackBuffer, destTexture.PixelBufferObjectId);
-                            GL.ReadPixels(sourceRectangle.Left, sourceRectangle.Top, sourceRectangle.Width, sourceRectangle.Height, destTexture.TextureFormat, destTexture.TextureType, (IntPtr)destTexture.ComputeOffset(destinationSubResource, depthSlice));
+                            GL.ReadPixels(sourceRectangle.Left, sourceRectangle.Top, sourceRectangle.Width, sourceRectangle.Height, destTexture.TextureFormat, destTexture.TextureType, (IntPtr)destTexture.ComputeBufferOffset(destinationSubResource, depthSlice));
                             GL.BindBuffer(BufferTarget.PixelPackBuffer, 0);
 
                             destTexture.PixelBufferFrame = GraphicsDevice.FrameCounter;
@@ -1043,7 +1043,7 @@ namespace SiliconStudio.Xenko.Graphics
             int mipLevel = subResourceIndex % texture.MipLevels;
 
             GL.BindBuffer(bufferTarget, pixelBufferObjectId);
-            var mapResult = GL.MapBufferRange(bufferTarget, (IntPtr)offsetInBytes + (adjustOffsetForSubresource ? texture.ComputeOffset(subResourceIndex, 0) : 0), (IntPtr)lengthInBytes, mapMode.ToOpenGLMask());
+            var mapResult = GL.MapBufferRange(bufferTarget, (IntPtr)offsetInBytes + (adjustOffsetForSubresource ? texture.ComputeBufferOffset(subResourceIndex, 0) : 0), (IntPtr)lengthInBytes, mapMode.ToOpenGLMask());
             GL.BindBuffer(bufferTarget, 0);
 
             return new MappedResource(texture, subResourceIndex, new DataBox { DataPointer = mapResult, SlicePitch = texture.ComputeSlicePitch(mipLevel), RowPitch = texture.ComputeRowPitch(mipLevel) }, offsetInBytes, lengthInBytes)

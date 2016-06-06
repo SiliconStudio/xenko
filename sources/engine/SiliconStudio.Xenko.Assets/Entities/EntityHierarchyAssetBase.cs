@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     /// Base class for entity assets (<see cref="SceneAsset"/> and <see cref="PrefabAsset"/>)
     /// </summary>
     [DataContract()]
-    public abstract class EntityHierarchyAssetBase : AssetComposite
+    public abstract partial class EntityHierarchyAssetBase : AssetComposite
     {
         protected EntityHierarchyAssetBase()
         {
