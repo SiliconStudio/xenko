@@ -91,22 +91,24 @@
     <MSBuild Projects="$(ProjectDir)\WindowsProjects\WindowsPhone\WindowsPhone.sln" Targets="Clean" Properties="Configuration=$(Configuration);Platform=ARM" />
   </Target>
   
-  <Target Name="CompileNativeClang_iOS" Inputs="@(CFiles);@(HFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\libxenkonative_armv7.a;$(SiliconStudioXenkoSdkBinDir)\libxenkonative_armv7s.a;$(SiliconStudioXenkoSdkBinDir)\libxenkonative_arm64.a;$(SiliconStudioXenkoSdkBinDir)\libxenkonative_i386.a;$(SiliconStudioXenkoSdkBinDir)\libxenkonative_x86_64.a" Condition="'$(SiliconStudioPlatform)' == 'iOS'" BeforeTargets="Build">
+  <Target Name="CompileNativeClang_iOS" Inputs="@(CFiles);@(HFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\libxenkonative.a" Condition="'$(SiliconStudioPlatform)' == 'iOS'" BeforeTargets="Build">
     <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; $(SiliconStudioXenkoNativeClang) -o &quot;$(ProjectDir)\obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot;  -mios-version-min=6.0 -target armv7-apple-ios" />
-    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(SiliconStudioXenkoSdkBinDir)\libxenkonative_armv7.a&quot; @(CFiles->'&quot;$(ProjectDir)\obj\%(Filename).o&quot;', ' ')" />
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(ProjectDir)\obj\libxenkonative_armv7.a&quot; @(CFiles->'&quot;$(ProjectDir)\obj\%(Filename).o&quot;', ' ')" />
     
     <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; $(SiliconStudioXenkoNativeClang) -o &quot;$(ProjectDir)\obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot;  -mios-version-min=6.0 -target armv7s-apple-ios" />
-    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(SiliconStudioXenkoSdkBinDir)\libxenkonative_armv7s.a&quot; @(CFiles->'&quot;$(ProjectDir)\obj\%(Filename).o&quot;', ' ')" />
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(ProjectDir)\obj\libxenkonative_armv7s.a&quot; @(CFiles->'&quot;$(ProjectDir)\obj\%(Filename).o&quot;', ' ')" />
     
     <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; $(SiliconStudioXenkoNativeClang) -o &quot;$(ProjectDir)\obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot;  -mios-version-min=6.0 -target arm64-apple-ios" />
-    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(SiliconStudioXenkoSdkBinDir)\libxenkonative_arm64.a&quot; @(CFiles->'&quot;$(ProjectDir)\obj\%(Filename).o&quot;', ' ')" />
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(ProjectDir)\obj\libxenkonative_arm64.a&quot; @(CFiles->'&quot;$(ProjectDir)\obj\%(Filename).o&quot;', ' ')" />
     
     <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; $(SiliconStudioXenkoNativeClang) -o &quot;$(ProjectDir)\obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot;  -mios-version-min=6.0 -target i386-apple-ios" />
-    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(SiliconStudioXenkoSdkBinDir)\libxenkonative_i386.a&quot; @(CFiles->'&quot;$(ProjectDir)\obj\%(Filename).o&quot;', ' ')" />
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(ProjectDir)\obj\libxenkonative_i386.a&quot; @(CFiles->'&quot;$(ProjectDir)\obj\%(Filename).o&quot;', ' ')" />
     
     <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; $(SiliconStudioXenkoNativeClang) -o &quot;$(ProjectDir)\obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot;  -mios-version-min=6.0 -target x86_64-apple-ios" />
-    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(SiliconStudioXenkoSdkBinDir)\libxenkonative_x86_64.a&quot; @(CFiles->'&quot;$(ProjectDir)\obj\%(Filename).o&quot;', ' ')" />
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(ProjectDir)\obj\libxenkonative_x86_64.a&quot; @(CFiles->'&quot;$(ProjectDir)\obj\%(Filename).o&quot;', ' ')" />
     
+	<Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\lipo.exe&quot; &quot;$(ProjectDir)\obj\libxenkonative_armv7.a&quot; &quot;$(ProjectDir)\obj\libxenkonative_armv7s.a&quot; &quot;$(ProjectDir)\obj\libxenkonative_arm64.a&quot; &quot;$(ProjectDir)\obj\libxenkonative_i386.a&quot; &quot;$(ProjectDir)\obj\libxenkonative_x86_64.a&quot; -create -output &quot;$(SiliconStudioXenkoSdkBinDir)\libxenkonative.a&quot;" />
+	
     <Copy SourceFiles="$(XenkoDependenciesDir)\NativePath\iOS\libNativePath.a" DestinationFolder="$(SiliconStudioXenkoSdkBinDir)" />
   </Target>
 

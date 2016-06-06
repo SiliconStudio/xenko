@@ -34,6 +34,10 @@ namespace SiliconStudio.Xenko.Graphics
         private DepthStencilView depthStencilView;
         internal bool HasStencil;
 
+        private int TexturePixelSize => Format.SizeInBytes();
+        private const int TextureRowPitchAlignment = 1;
+        private const int TextureSubresourceAlignment = 1;
+
         internal DepthStencilView NativeDepthStencilView
         {
             get
@@ -762,7 +766,6 @@ namespace SiliconStudio.Xenko.Graphics
         {
             return Math.Min(CalculateMipCountFromSize(width, minimumSizeLastMip), CalculateMipCountFromSize(height, minimumSizeLastMip));
         }
-
 
         internal static bool IsStencilFormat(PixelFormat format)
         {

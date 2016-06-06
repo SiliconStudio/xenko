@@ -21,7 +21,7 @@
       <string>UIInterfaceOrientationLandscapeRight</string>
     </array>
     <key>MinimumOSVersion</key>
-    <string>3.2</string>
+    <string>7.0</string>
     <key>CFBundleDisplayName</key>
     <string>SiliconStudioXenkoGraphicsRegressionTests</string>
     <key>CFBundleIdentifier</key>

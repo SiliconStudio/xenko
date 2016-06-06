@@ -1,9 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-
+using SiliconStudio.Assets;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Importer.Common;
 
 namespace SiliconStudio.Xenko.Assets.Model
@@ -22,10 +23,10 @@ namespace SiliconStudio.Xenko.Assets.Model
         public override string SupportedFileExtensions => FileExtensions;
 
         /// <inheritdoc/>
-        public override EntityInfo GetEntityInfo(UFile localPath, Logger logger)
+        public override EntityInfo GetEntityInfo(UFile localPath, Logger logger, AssetImporterParameters importParameters)
         {
             var meshConverter = new Importer.AssimpNET.MeshConverter(logger);
-            var entityInfo = meshConverter.ExtractEntity(localPath.FullPath, null);
+            var entityInfo = meshConverter.ExtractEntity(localPath.FullPath, null, importParameters.IsTypeSelectedForOutput(typeof(TextureAsset)));
             return entityInfo;
         }
     }

@@ -764,7 +764,7 @@ namespace SiliconStudio.BuildEngine
                     CollectContentReferenceDependencies(step, dependencies);
                 }
 
-                // If we have a ContentReference, we don't need to iterate further
+                // If we have a reference, we don't need to iterate further
                 return;
             }
 

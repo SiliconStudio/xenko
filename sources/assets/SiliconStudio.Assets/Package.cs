@@ -68,7 +68,7 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Occurs when an asset dirty changed occurred.
         /// </summary>
-        public event Action<Asset> AssetDirtyChanged;
+        public event DirtyFlagChangedDelegate<Asset> AssetDirtyChanged;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Package"/> class.
@@ -187,8 +187,9 @@ namespace SiliconStudio.Assets
             }
             set
             {
+                var oldValue = isDirty;
                 isDirty = value;
-                OnAssetDirtyChanged(this);
+                OnAssetDirtyChanged(this, oldValue, value);
             }
         }
 
@@ -381,9 +382,10 @@ namespace SiliconStudio.Assets
             }
         }
 
-        internal void OnAssetDirtyChanged(Asset asset)
+        internal void OnAssetDirtyChanged(Asset asset, bool oldValue, bool newValue)
         {
-            AssetDirtyChanged?.Invoke(asset);
+            if (asset == null) throw new ArgumentNullException(nameof(asset));
+            AssetDirtyChanged?.Invoke(asset, oldValue, newValue);
         }
 
         /// <summary>
@@ -444,12 +446,6 @@ namespace SiliconStudio.Assets
 
                     try
                     {
-                        // Notifies the dependency manager that a package with the specified path is being saved
-                        if (session != null && session.HasDependencyManager)
-                        {
-                            session.DependencyManager.AddFileBeingSaveDuringSessionSave(FullPath);
-                        }
-
                         AssetSerializer.Save(FullPath, this);
 
                         // Move the package if the path has changed
@@ -554,12 +550,6 @@ namespace SiliconStudio.Assets
                                         project.AddItem("Compile", codeFile.ToWindowsPath());
                                     }                                
                                 }
-                            }
-
-                            // Notifies the dependency manager that an asset with the specified path is being saved
-                            if (session != null && session.HasDependencyManager)
-                            {
-                                session.DependencyManager.AddFileBeingSaveDuringSessionSave(assetPath);
                             }
 
                             // Inject a copy of the base into the current asset when saving
@@ -790,7 +780,7 @@ namespace SiliconStudio.Assets
                 // Load assets
                 if (loadParameters.AutoLoadTemporaryAssets)
                 {
-                    LoadTemporaryAssets(log, loadParameters.AssetFiles, loadParameters.CancelToken);
+                    LoadTemporaryAssets(log, loadParameters.AssetFiles, loadParameters.CancelToken, loadParameters.AssetFilter);
                 }
 
                 // Convert UPath to absolute
@@ -878,11 +868,12 @@ namespace SiliconStudio.Assets
         /// <param name="log">The log.</param>
         /// <param name="assetFiles">The asset files (loaded from <see cref="ListAssetFiles"/> if null).</param>
         /// <param name="cancelToken">The cancel token.</param>
+        /// <param name="filterFunc">A function that will filter assets loading</param>
         /// <returns>A logger that contains error messages while refreshing.</returns>
         /// <exception cref="System.InvalidOperationException">Package RootDirectory is null
         /// or
         /// Package RootDirectory [{0}] does not exist.ToFormat(RootDirectory)</exception>
-        public void LoadTemporaryAssets(ILogger log, IList<PackageLoadingAssetFile> assetFiles = null, CancellationToken? cancelToken = null)
+        public void LoadTemporaryAssets(ILogger log, IList<PackageLoadingAssetFile> assetFiles = null, CancellationToken? cancelToken = null, Func<PackageLoadingAssetFile, bool> filterFunc = null)
         {
             if (log == null) throw new ArgumentNullException(nameof(log));
 
@@ -917,6 +908,12 @@ namespace SiliconStudio.Assets
             for (int i = 0; i < assetFiles.Count; i++)
             {
                 var assetFile = assetFiles[i];
+
+                if (filterFunc != null && !filterFunc(assetFile))
+                {
+                    continue;
+                }
+
                 // Update the loading progress
                 loggerResult?.Progress(progressMessage, i, assetFiles.Count);
 

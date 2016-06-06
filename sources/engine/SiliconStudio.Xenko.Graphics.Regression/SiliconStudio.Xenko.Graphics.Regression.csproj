@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>SiliconStudio.Xenko.Graphics.Regression</RootNamespace>
     <AssemblyName>SiliconStudio.Xenko.Graphics.Regression</AssemblyName>
-    <XenkoBuildTags>Windows;WindowsStore;WindowsPhone;Android;iOS</XenkoBuildTags>
+    <XenkoBuildTags>Windows;WindowsStore;WindowsPhone;Android;iOS;Linux;Windows10</XenkoBuildTags>
     <DefineConstants>$(DefineConstants);XAMCORE_2_0</DefineConstants>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
@@ -20,7 +20,7 @@
     </StartupObject>
   </PropertyGroup>
   <Choose>
-    <When Condition="'$(SiliconStudioPlatform)' == 'Windows'">
+    <When Condition="('$(SiliconStudioRuntime)' == '') and (('$(SiliconStudioPlatform)' == 'Windows') or ('$(SiliconStudioPlatform)' == 'Linux'))">
       <ItemGroup>
         <Reference Include="nunit.core.interfaces">
           <HintPath>$(SiliconStudioDependenciesDir)NUnit\nunit.core.interfaces.dll</HintPath>
@@ -30,11 +30,25 @@
         </Reference>
       </ItemGroup>
     </When>
+    <When Condition="('$(SiliconStudioRuntime)' == 'CoreCLR') or ('$(SiliconStudioPlatform)' == 'WindowsStore' OR '$(SiliconStudioPlatform)' == 'WindowsPhone' OR '$(SiliconStudioPlatform)' == 'Windows10')">
+      <ItemGroup>
+        <Reference Include="nunitlite">
+          <HintPath>$(SiliconStudioDependenciesDir)NUnitLite\Portable\nunitlite.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+      <ItemGroup>
+        <Reference Include="nunit.framework">
+          <HintPath>$(SiliconStudioDependenciesDir)NUnitLite\Portable\nunit.framework.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
     <When Condition="'$(SiliconStudioPlatform)' == 'iOS'">
       <ItemGroup>
-        <Reference Include="MonoTouch.NUnitLite" />
+        <Reference Include="MonoTouch.NUnitLite"/>
         <Reference Include="MonoTouch.Dialog-1" />
-        <Reference Include="OpenTK-1.0" />
+        <Reference Include="OpenTK-1.1">
+          <HintPath>$(XenkoDependenciesDir)OpenTK\iOS\OpenTK-1.1.dll</HintPath>
+        </Reference>
       </ItemGroup>
       <ItemGroup Condition="'$(SiliconStudioPlatform)' == 'iOS'">
         <Compile Include="TouchRunner\NUnitOutputTextWriter.cs" />
@@ -50,7 +64,7 @@
     </When>
     <When Condition="'$(SiliconStudioPlatform)' == 'Android'">
       <ItemGroup>
-        <Reference Include="Xamarin.Android.NUnitLite" />
+        <Reference Include="Xamarin.Android.NUnitLite"/>
       </ItemGroup>
       <ItemGroup>
         <Compile Include="AndroidGameTestActivity.cs" />
@@ -112,16 +126,6 @@
         <AndroidResource Include="Resources\layout\dialog_textfieldright.axml" />
         <AndroidResource Include="Resources\drawable\dialog_disclosure.png" />
         <AndroidResource Include="Resources\drawable\dialog_expander_ic_minimized.9.png" />
-      </ItemGroup>
-    </When>
-    <When Condition=" '$(SiliconStudioPlatform)' == 'WindowsStore' OR '$(SiliconStudioPlatform)' == 'WindowsPhone'">
-      <ItemGroup>
-        <Reference Include="nunit.framework">
-          <HintPath>$(SiliconStudioDependenciesDir)NUnitLite\Portable\nunit.framework.dll</HintPath>
-        </Reference>
-        <Reference Include="nunitlite">
-          <HintPath>$(SiliconStudioDependenciesDir)NUnitLite\Portable\nunitlite.dll</HintPath>
-        </Reference>
       </ItemGroup>
     </When>
   </Choose>

@@ -100,6 +100,7 @@
     <Compile Include="InputManager.Windows.Store.cs" />
     <Compile Include="InputManager.Windows.Store.Keys.cs" />
     <Compile Include="InputManager.Windows.WPF.cs" />
+    <Compile Include="InputManager.SDL.SDLInput.cs" />
     <Compile Include="InputManager.Windows.XInput.cs" />
     <Compile Include="InputManagerExtensions.cs" />
     <Compile Include="InputManagerFactory.cs" />

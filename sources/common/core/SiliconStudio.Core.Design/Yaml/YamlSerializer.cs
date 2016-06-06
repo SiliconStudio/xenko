@@ -1,14 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Runtime.Remoting.Messaging;
-
 using SharpYaml;
 using SharpYaml.Events;
 using SharpYaml.Serialization;
@@ -26,12 +21,30 @@ namespace SiliconStudio.Core.Yaml
     public static class YamlSerializer
     {
         private static readonly Logger Log = GlobalLogger.GetLogger(typeof(YamlSerializer).Name);
+        private static event Action<SharpYaml.Serialization.Descriptors.ObjectDescriptor, List<IMemberDescriptor>> PrepareMembersEvent;
 
         // TODO: This code is not robust in case of reloading assemblies into the same process
         private static readonly List<Assembly> RegisteredAssemblies = new List<Assembly>();
         private static readonly object Lock = new object();
         private static Serializer globalSerializer;
         private static Serializer globalSerializerWithoutId;
+
+        public static event Action<SharpYaml.Serialization.Descriptors.ObjectDescriptor, List<IMemberDescriptor>> PrepareMembers
+        {
+            add
+            {
+                if (globalSerializer != null)
+                    throw new InvalidOperationException("Event handlers cannot be added or removed after the serializer has been initialized.");
+
+                PrepareMembersEvent += value;
+            }
+            remove
+            {
+                if (globalSerializer != null)
+                    throw new InvalidOperationException("Event handlers cannot be added or removed after the serializer has been initialized.");
+                PrepareMembersEvent -= value;
+            }
+        }
 
         /// <summary>
         /// Deserializes an object from the specified stream (expecting a YAML string).
@@ -52,7 +65,7 @@ namespace SiliconStudio.Core.Yaml
         /// <returns>An instance of the YAML data.</returns>
         public static object Deserialize(Stream stream, object existingObject)
         {
-            if (existingObject == null) throw new ArgumentNullException("existingObject");
+            if (existingObject == null) throw new ArgumentNullException(nameof(existingObject));
             using (var textReader = new StreamReader(stream))
             {
                 var serializer = GetYamlSerializer();
@@ -306,14 +319,13 @@ namespace SiliconStudio.Core.Yaml
         {
             var type = objDesc.Type;
 
-            // Early exit if we don't need to add a unique identifier to a type
-            if (!IdentifiableHelper.IsIdentifiable(type) || typeof(IIdentifiable).IsAssignableFrom(type))
+            if (IdentifiableHelper.IsIdentifiable(type) && !typeof(IIdentifiable).IsAssignableFrom(type))
             {
-                return;
+                memberDescriptors.Add(CustomDynamicMemberDescriptor);
             }
 
-            // Otherwise we can add it
-            memberDescriptors.Add(CustomDynamicMemberDescriptor);
+            // Call custom callbacks to prepare members
+            PrepareMembersEvent?.Invoke(objDesc, memberDescriptors);
         }
 
         private static readonly CustomDynamicMember CustomDynamicMemberDescriptor = new CustomDynamicMember();

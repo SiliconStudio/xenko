@@ -1,0 +1,27 @@
+!SpriteSheet
+Id: 91749410-580d-4ab0-bf03-8db5cc703700
+SerializedVersion: {Xenko: 1.5.0-alpha01}
+Tags: []
+Type: Sprite2D
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Packing:
+    ~Id: 44bc3ad9-6330-4116-99bf-7652ec379cf3
+    Enabled: false
+Sprites:
+    -   ~Id: 83c3e8e3-ea81-4f1e-9554-dbdae60929bd
+        Source: ../../../../data/tests/ImageOrientation.png
+        Name: NoRotation
+        TextureRegion: {X: 0, Y: 0, Width: 128, Height: 64}
+        PixelsPerUnit: 1.0
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
+    -   ~Id: 3618023d-fcd4-4140-b635-8787733ff08d
+        Source: ../../../../data/tests/ImageOrientation.png
+        Name: Rotation90
+        TextureRegion: {X: 128, Y: 0, Width: 64, Height: 128}
+        PixelsPerUnit: 1.0
+        Orientation: Rotated90
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}

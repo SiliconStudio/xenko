@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.Assets.Model
                 skeleton = contentManager.Load<Skeleton>(SkeletonUrl);
 
                 // Assign skeleton to model
-                model.Skeleton = AttachedReferenceManager.CreateSerializableVersion<Skeleton>(Guid.Empty, SkeletonUrl);
+                model.Skeleton = AttachedReferenceManager.CreateProxyObject<Skeleton>(Guid.Empty, SkeletonUrl);
             }
             else
             {

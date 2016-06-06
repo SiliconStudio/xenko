@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using SiliconStudio.Core.Serialization.Assets;
@@ -15,8 +14,8 @@ namespace SiliconStudio.Core.Serialization
     public static class AttachedReferenceManager
     {
         private static readonly object[] EmptyObjectArray = new object[0];
-        private static Dictionary<Type, ConstructorInfo> emptyCtorCache = new Dictionary<Type,ConstructorInfo>();
-        private static ConditionalWeakTable<object, AttachedReference> attachedReferences = new ConditionalWeakTable<object, AttachedReference>();
+        private static readonly Dictionary<Type, ConstructorInfo> EmptyCtorCache = new Dictionary<Type,ConstructorInfo>();
+        private static readonly ConditionalWeakTable<object, AttachedReference> AttachedReferences = new ConditionalWeakTable<object, AttachedReference>();
 
         /// <summary>
         /// Gets the URL of a given object.
@@ -26,7 +25,7 @@ namespace SiliconStudio.Core.Serialization
         public static string GetUrl(object obj)
         {
             AttachedReference attachedReference;
-            return attachedReferences.TryGetValue(obj, out attachedReference) ? attachedReference.Url : null;
+            return AttachedReferences.TryGetValue(obj, out attachedReference) ? attachedReference.Url : null;
         }
 
         /// <summary>
@@ -36,7 +35,7 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="url">The URL.</param>
         public static void SetUrl(object obj, string url)
         {
-            var attachedReference = attachedReferences.GetValue(obj, x => new AttachedReference());
+            var attachedReference = AttachedReferences.GetValue(obj, x => new AttachedReference());
             attachedReference.Url = url;
         }
 
@@ -51,7 +50,7 @@ namespace SiliconStudio.Core.Serialization
                 return null;
 
             AttachedReference attachedReference;
-            attachedReferences.TryGetValue(obj, out attachedReference);
+            AttachedReferences.TryGetValue(obj, out attachedReference);
             return attachedReference;
         }
 
@@ -62,20 +61,20 @@ namespace SiliconStudio.Core.Serialization
         /// <returns></returns>
         public static AttachedReference GetOrCreateAttachedReference(object obj)
         {
-            return attachedReferences.GetValue(obj, x => new AttachedReference());
+            return AttachedReferences.GetValue(obj, x => new AttachedReference());
         }
 
         /// <summary>
         /// Creates a proxy object with <see cref="AttachedReference" /> designing it as a proxy with a given id and location (that can be used with <see cref="ContentManager" />). This allows to construct and save object references without actually loading them.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        /// <param name="contentReference">The content reference.</param>
+        /// <param name="reference">The content reference.</param>
         /// <returns>T.</returns>
-        /// <exception cref="System.ArgumentNullException">contentReference</exception>
-        public static T CreateSerializableVersion<T>(IContentReference contentReference) where T : class, new()
+        /// <exception cref="System.ArgumentNullException">reference</exception>
+        public static T CreateProxyObject<T>(IReference reference) where T : class, new()
         {
-            if (contentReference == null) throw new ArgumentNullException("contentReference");
-            return CreateSerializableVersion<T>(contentReference.Id, contentReference.Location);
+            if (reference == null) throw new ArgumentNullException(nameof(reference));
+            return CreateProxyObject<T>(reference.Id, reference.Location);
         }
 
         /// <summary>
@@ -85,7 +84,7 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="id">The identifier.</param>
         /// <param name="location">The location.</param>
         /// <returns></returns>
-        public static T CreateSerializableVersion<T>(Guid id, string location) where T : class, new()
+        public static T CreateProxyObject<T>(Guid id, string location) where T : class, new()
         {
             var result = new T();
             var attachedReference = GetOrCreateAttachedReference(result);
@@ -102,14 +101,13 @@ namespace SiliconStudio.Core.Serialization
         /// <param name="id">The identifier.</param>
         /// <param name="location">The location.</param>
         /// <returns></returns>
-        public static object CreateSerializableVersion(Type type, Guid id, string location)
+        public static object CreateProxyObject(Type type, Guid id, string location)
         {
             ConstructorInfo emptyCtor;
-            lock (emptyCtorCache)
+            lock (EmptyCtorCache)
             {
-                if (!emptyCtorCache.TryGetValue(type, out emptyCtor))
+                if (!EmptyCtorCache.TryGetValue(type, out emptyCtor))
                 {
-                    emptyCtor = null;
                     foreach (var ctor in type.GetTypeInfo().DeclaredConstructors)
                     {
                         if (!ctor.IsStatic && ctor.GetParameters().Length == 0)
@@ -120,9 +118,9 @@ namespace SiliconStudio.Core.Serialization
                     }
                     if (emptyCtor == null)
                     {
-                        throw new InvalidOperationException(string.Format("Type {0} has no empty ctor", type));
+                        throw new InvalidOperationException($"Type {type} has no empty ctor");
                     }
-                    emptyCtorCache.Add(type, emptyCtor);
+                    EmptyCtorCache.Add(type, emptyCtor);
                 }
             }
             var result = emptyCtor.Invoke(EmptyObjectArray);

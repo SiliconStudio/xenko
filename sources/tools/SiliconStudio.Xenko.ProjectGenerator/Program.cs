@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -10,6 +11,8 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.XPath;
+using Microsoft.Build.Construction;
+using Microsoft.Build.Evaluation;
 using Mono.Options;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Templates;
@@ -21,6 +24,7 @@ using SiliconStudio.Core.VisualStudio;
 using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.ProjectTemplating;
+using Project = SiliconStudio.Core.VisualStudio.Project;
 
 namespace SiliconStudio.Xenko.ProjectGenerator
 {
@@ -35,6 +39,7 @@ namespace SiliconStudio.Xenko.ProjectGenerator
             string outputFile = null;
             string platform = null;
             string projectName = null;
+            string projectNamespace = null;
             string outputDirectory = null;
 
             var p = new OptionSet
@@ -65,13 +70,14 @@ namespace SiliconStudio.Xenko.ProjectGenerator
                     string.Empty,
                     { "project-name=", "Project name", v => projectName = v },
                     { "d|output-directory=", "Output directory", v => outputDirectory = v },
+                    { "n|namespace=", "Namespace", v => projectNamespace = v },
                     string.Empty,
                 };
 
             try
             {
                 var commandArgs = p.Parse(args);
-                if (showHelp)
+                if (showHelp || commandArgs.Count == 0)
                 {
                     p.WriteOptionDescriptions(Console.Out);
                     return 0;
@@ -96,8 +102,11 @@ namespace SiliconStudio.Xenko.ProjectGenerator
                         GenerateUnitTestProject(
                             outputDirectory,
                             Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine(templateFolder, @"Xenko.UnitTests\Xenko.UnitTests.ttproj")),
-                            projectName);
+                            projectName, projectNamespace);
                         break;
+
+                    default:
+                        throw new OptionException("Unknown option", commandArgs[0]);
                 }
             }
             catch (Exception e)
@@ -111,7 +120,7 @@ namespace SiliconStudio.Xenko.ProjectGenerator
             return exitCode;
         }
 
-        private static void GenerateUnitTestProject(string outputDirectory, string templateFile, string name)
+        private static void GenerateUnitTestProject(string outputDirectory, string templateFile, string name, string projectNamespace)
         {
             var projectTemplate = ProjectTemplate.Load(templateFile);
 
@@ -120,6 +129,12 @@ namespace SiliconStudio.Xenko.ProjectGenerator
             projectTemplate.Assemblies.Add(typeof(XenkoConfig).Assembly.FullName);
 
             var options = new Dictionary<string, object>();
+
+            // When generating over an existing set of files, retrieve the existing IDs
+            // for better incrementality
+            Guid projectGuid, assetId;
+            GetExistingGuid(outputDirectory, name + ".Windows.csproj", out projectGuid);
+            GetExistingAssetId(outputDirectory, name + ".xkpkg", out assetId);
 
             var session = new PackageSession();
             var result = new LoggerResult();
@@ -130,6 +145,7 @@ namespace SiliconStudio.Xenko.ProjectGenerator
             templateGeneratorParameters.Name = name;
             templateGeneratorParameters.Logger = result;
             templateGeneratorParameters.Description = new TemplateDescription();
+            templateGeneratorParameters.Id = assetId;
 
             if (!PackageUnitTestGenerator.Default.PrepareForRun(templateGeneratorParameters).Result)
             {
@@ -161,13 +177,12 @@ namespace SiliconStudio.Xenko.ProjectGenerator
                 .Replace('/', '\\');
             xenkoRelativePath = xenkoRelativePath.TrimEnd('\\');
 
-            options["Namespace"] = name;
+            options["Namespace"] = projectNamespace ?? name;
             options["Package"] = package;
             options["Platforms"] = new List<SolutionPlatform>(AssetRegistry.SupportedPlatforms);
             options["XenkoSdkRelativeDir"] = xenkoRelativePath;
 
             // Generate project template
-            var projectGuid = Guid.NewGuid();
             result = projectTemplate.Generate(outputDirectory, name, projectGuid, options);
             if (result.HasErrors)
             {
@@ -181,10 +196,12 @@ namespace SiliconStudio.Xenko.ProjectGenerator
             Directory.CreateDirectory(UPath.Combine(outputDirectory, (UDirectory)"Assets/Shared"));
 
             // Add Windows test as Shared library
-            var projectWindowsRef = new ProjectReference();
-            projectWindowsRef.Id = projectGuid;
-            projectWindowsRef.Location = UPath.Combine(outputDirectory, (UFile)(name + ".Windows.csproj"));
-            projectWindowsRef.Type = SiliconStudio.Assets.ProjectType.Library;
+            var projectWindowsRef = new ProjectReference
+            {
+                Id = projectGuid,
+                Location = UPath.Combine(outputDirectory, (UFile)(name + ".Windows.csproj")),
+                Type = SiliconStudio.Assets.ProjectType.Library
+            };
             sharedProfile.ProjectReferences.Add(projectWindowsRef);
 
             // Generate executable projects for each platform
@@ -197,10 +214,12 @@ namespace SiliconStudio.Xenko.ProjectGenerator
                 var projectName = name + "." + platform.Type;
 
                 // Create project reference
-                var projectPlatformRef = new ProjectReference();
-                projectPlatformRef.Id = projectGuid;
-                projectPlatformRef.Location = UPath.Combine(outputDirectory, (UFile)(projectName + ".csproj"));
-                projectPlatformRef.Type = SiliconStudio.Assets.ProjectType.Executable;
+                var projectPlatformRef = new ProjectReference
+                {
+                    Id = projectGuid,
+                    Location = UPath.Combine(outputDirectory, (UFile)(projectName + ".csproj")),
+                    Type = SiliconStudio.Assets.ProjectType.Executable
+                };
 
                 platformProfile.ProjectReferences.Add(projectPlatformRef);
 
@@ -217,6 +236,64 @@ namespace SiliconStudio.Xenko.ProjectGenerator
             {
                 Console.WriteLine("Error saving package: {0}", result.ToText());
                 return;
+            }
+        }
+
+        /// <summary>
+        /// Given an asset package <paramref name="name"/> located in <paramref name="outputDirectory"/> try to extract the 
+        /// Id setting. If file does not exist or does not contain this property, a new Guid is generated.
+        /// </summary>
+        /// <param name="outputDirectory">Location of the package <paramref name="name"/></param>
+        /// <param name="name">Name on disk of the package file</param>
+        /// <param name="guid">Existing Id for the package, otherwise a new one</param>
+        private static void GetExistingAssetId(string outputDirectory, string name, out Guid guid)
+        {
+            // Initialize to new Guid to avoid complex logic after.
+            guid = Guid.NewGuid();
+
+            try
+            {
+                using (var stream = new FileStream(Path.Combine(outputDirectory, name), FileMode.Open, FileAccess.Read))
+                {
+                    bool b;
+                    var asset = AssetSerializer.Default.Load(stream, null, null, out b) as Asset;
+                    if (asset != null)
+                    {
+                        guid = asset.Id;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+                // Ignore exception
+            }
+        }
+
+        /// <summary>
+        /// Given a project <paramref name="name"/> located in <paramref name="outputDirectory"/> try to extract the 
+        /// ProjectGuid setting. If file does not exist or does not contain this property, a new Guid is generated.
+        /// </summary>
+        /// <param name="outputDirectory">Location of the project <paramref name="name"/></param>
+        /// <param name="name">Name on disk of the project file</param>
+        /// <param name="guid">Existing Guid for the project, otherwise a new one</param>
+        private static void GetExistingGuid(string outputDirectory, string name, out Guid guid)
+        {
+            // Initialize to new Guid to avoid complex logic after.
+            guid = Guid.NewGuid();
+
+            try
+            {
+                Microsoft.Build.Evaluation.Project p = new Microsoft.Build.Evaluation.Project(Path.Combine(outputDirectory, name));
+
+                var property = p.Properties.Where((prop => prop.Name == "ProjectGuid")).FirstOrDefault();
+                if (property != null)
+                {
+                    Guid.TryParse(property.EvaluatedValue, out guid);
+                }
+            }
+            catch (Exception)
+            {
+                // Ignore exception
             }
         }
 
@@ -481,13 +558,14 @@ namespace SiliconStudio.Xenko.ProjectGenerator
                 if (context.Modified)
                 {
                     var projectDirectory = Path.GetDirectoryName(context.Project.FullPath);
+                    Debug.Assert(projectDirectory != null);
                     var projectFileName = Path.GetFileName(context.Project.FullPath);
                     var generatedProjectFileName = projectFileName.Replace(".Windows", string.Empty);
                     var fileExtPosition = generatedProjectFileName.LastIndexOf('.');
                     generatedProjectFileName = generatedProjectFileName.Substring(0, fileExtPosition + 1) + projectSuffix +
                                                    generatedProjectFileName.Substring(fileExtPosition);
 
-                    context.Document.Save(projectDirectory + Path.DirectorySeparatorChar + generatedProjectFileName);
+                    context.Document.Save(Path.Combine(projectDirectory, generatedProjectFileName));
 
                     // Solution should point to new generated file
                     context.Project.Name = context.Project.Name.Replace(".Windows", string.Empty) + "." + projectSuffix;
@@ -507,33 +585,40 @@ namespace SiliconStudio.Xenko.ProjectGenerator
         {
             var configurations = new Dictionary<string, string>();
             bool needDeploy = false;
+            PlatformType requestedPlatform;
+            if (!PlatformType.TryParse(platform, out requestedPlatform))
+            {
+                throw new ArgumentOutOfRangeException(nameof(platform), "Invalid platform specified");
+            }
 
-            if (platform == "WindowsPhone")
+            switch (requestedPlatform)
             {
-                configurations.Add("WindowsPhone", "WindowsPhone");
-                needDeploy = true;
+                case PlatformType.Windows:
+                        // Nothing to do here.
+                    break;
+                case PlatformType.WindowsPhone:
+                case PlatformType.WindowsStore:
+                case PlatformType.Android:
+                    configurations.Add(platform, platform);
+                    needDeploy = true;
+                    break;
+
+                case PlatformType.Linux:
+                case PlatformType.Windows10:
+                    configurations.Add(platform, "Any CPU");
+                    needDeploy = true;
+                    break;
+
+                case PlatformType.iOS:
+                    configurations.Add("iPhone", "iPhone");
+                    configurations.Add("iPhoneSimulator", "iPhoneSimulator");
+                    needDeploy = true;
+                    break;
+
+                default:
+                    throw new InvalidOperationException("Unknown platform " + requestedPlatform);
             }
-            else if (platform == "WindowsStore")
-            {
-                configurations.Add("WindowsStore", "WindowsStore");
-                needDeploy = true;
-            }
-            else if (platform == "Windows10")
-            {
-                configurations.Add("Windows10", "Any CPU");
-                needDeploy = true;
-            }
-            else if (platform == "iOS")
-            {
-                configurations.Add("iPhone", "iPhone");
-                configurations.Add("iPhoneSimulator", "iPhoneSimulator");
-                needDeploy = true;
-            }
-            else if (platform == "Android")
-            {
-                configurations.Add("Android", "Android");
-                needDeploy = true;
-            }
+
 
             // Remove any reference of shared projects in the GlobalSections.
             var projects = solution.GlobalSections.FirstOrDefault(s => s.Name == "SharedMSBuildProjectFiles");

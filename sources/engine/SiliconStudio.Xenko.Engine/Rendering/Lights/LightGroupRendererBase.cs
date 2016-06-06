@@ -39,6 +39,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         {
         }
 
+        public virtual void Unload()
+        {
+        }
+
         public virtual void Reset()
         {
         }

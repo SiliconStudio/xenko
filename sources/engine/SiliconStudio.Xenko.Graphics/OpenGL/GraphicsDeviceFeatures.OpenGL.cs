@@ -73,6 +73,7 @@ namespace SiliconStudio.Xenko.Graphics
             deviceRoot.HasRenderTargetHalf = SupportedExtensions.Contains("GL_EXT_color_buffer_half_float");
             deviceRoot.HasVAO = isOpenGLES3 || SupportedExtensions.Contains("GL_OES_vertex_array_object");
             deviceRoot.HasTextureRG = isOpenGLES3 || SupportedExtensions.Contains("GL_EXT_texture_rg");
+            deviceRoot.HasKhronosDebug = deviceRoot.currentVersion >= 320 || SupportedExtensions.Contains("GL_KHR_debug");
 
             // Either 3.2+, or 3.1+ with GL_EXT_texture_buffer
             // TODO: For now we don't have proper ES3 bindings on Android (and possibly iOS)
@@ -97,6 +98,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             deviceRoot.HasDXT = SupportedExtensions.Contains("GL_EXT_texture_compression_s3tc");
             deviceRoot.HasTextureBuffers = true;
+            deviceRoot.HasKhronosDebug = deviceRoot.currentVersion >= 430 || SupportedExtensions.Contains("GL_KHR_debug");
 
             // Compute shaders available in OpenGL 4.3
             HasComputeShaders = deviceRoot.version >= 430;
@@ -110,6 +112,8 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
 
             deviceRoot.HasDepthClamp = SupportedExtensions.Contains("GL_ARB_depth_clamp");
+
+            deviceRoot.HasAnisotropicFiltering = SupportedExtensions.Contains("GL_EXT_texture_filter_anisotropic");
 
             HasDriverCommandLists = false;
             HasMultiThreadingConcurrentResources = false;

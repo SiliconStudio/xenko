@@ -10,11 +10,6 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Gets or sets the behavior when dealing with asset having <see cref="AssetImport.SourceKeepSideBySide"/> enabled.
-        /// </summary>
-        public PackageSaveSourceFileOperations SaveSourceFileOperations { get; set; } = PackageSaveSourceFileOperations.None;
-
-        /// <summary>
         /// Clones this instance.
         /// </summary>
         /// <returns>PackageLoadParameters.</returns>

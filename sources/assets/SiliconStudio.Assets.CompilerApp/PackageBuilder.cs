@@ -176,7 +176,14 @@ namespace SiliconStudio.Assets.CompilerApp
         private BuildResultCode BuildGetGraphicsPlatform()
         {
             var localLogger = new LoggerResult();
-            var simplePackage = Package.Load(localLogger, builderOptions.PackageFile, new PackageLoadParameters { AutoLoadTemporaryAssets = true, LoadAssemblyReferences = false, AutoCompileProjects = false });
+            var simplePackage = Package.Load(localLogger, builderOptions.PackageFile, new PackageLoadParameters
+            {
+                AutoLoadTemporaryAssets = true,
+                LoadAssemblyReferences = false,
+                AutoCompileProjects = false,
+                AssetFilter = (asset) => asset.AssetPath == GameSettingsAsset.GameSettingsLocation
+            });
+
             if (simplePackage == null
                 || localLogger.HasErrors)
             {

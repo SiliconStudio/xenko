@@ -89,7 +89,7 @@ namespace SiliconStudio.Xenko.Assets.Analysis
 
                     var gameSettingsAsset = GameSettingsFactory.Create();
 
-                    gameSettingsAsset.DefaultScene = AttachedReferenceManager.CreateSerializableVersion<Scene>(defaultScene.Id, defaultScene.Location);
+                    gameSettingsAsset.DefaultScene = AttachedReferenceManager.CreateProxyObject<Scene>(defaultScene.Id, defaultScene.Location);
 
                     gameSettingsAssetItem = new AssetItem(GameSettingsAsset.GameSettingsLocation, gameSettingsAsset);
                     package.Assets.Add(gameSettingsAssetItem);

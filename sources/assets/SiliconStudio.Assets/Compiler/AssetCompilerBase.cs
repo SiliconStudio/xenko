@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.IO;
-
+using SiliconStudio.Assets.Tracking;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Assets.Compiler
@@ -20,8 +20,8 @@ namespace SiliconStudio.Assets.Compiler
 
         public AssetCompilerResult Compile(CompilerContext context, AssetItem assetItem)
         {
-            if (context == null) throw new ArgumentNullException("context");
-            if (assetItem == null) throw new ArgumentNullException("assetItem");
+            if (context == null) throw new ArgumentNullException(nameof(context));
+            if (assetItem == null) throw new ArgumentNullException(nameof(assetItem));
 
             AssetItem = assetItem;
 
@@ -70,40 +70,40 @@ namespace SiliconStudio.Assets.Compiler
         }
 
         /// <summary>
-        /// Ensures that the source of an <see cref="AssetImport"/> exists. If the given asset is not an <see cref="AssetImport"/>, this method simply returns <c>true</c>.
+        /// Ensures that the sources of an <see cref="Asset"/> exist.
         /// </summary>
         /// <param name="result">The <see cref="AssetCompilerResult"/> in which to output log of potential errors.</param>
-        /// <param name="assetImport">The asset to check.</param>
+        /// <param name="asset">The asset to check.</param>
         /// <param name="assetAbsolutePath">The absolute path of the asset on the disk</param>
         /// <returns><c>true</c> if the source file exists, <c>false</c> otherwise.</returns>
         /// <exception cref="ArgumentNullException">Any of the argument is <c>null</c>.</exception>
-        protected static bool EnsureSourceExists(AssetCompilerResult result, T assetImport, UFile assetAbsolutePath)
+        protected static bool EnsureSourcesExist(AssetCompilerResult result, T asset, UFile assetAbsolutePath)
         {
-            if (result == null) throw new ArgumentNullException("result");
-            if (assetImport == null) throw new ArgumentNullException("assetImport");
-            if (assetAbsolutePath == null) throw new ArgumentNullException("assetAbsolutePath");
+            if (result == null) throw new ArgumentNullException(nameof(result));
+            if (asset == null) throw new ArgumentNullException(nameof(asset));
+            if (assetAbsolutePath == null) throw new ArgumentNullException(nameof(assetAbsolutePath));
 
-            var asset = assetImport as AssetImport;
+            var collector = new SourceFilesCollector();
+            var sourceMembers = collector.GetSourceMembers(asset);
 
-            // The asset has no source, so there is no failure
-            if (asset == null)
-                return true;
-
-            if (string.IsNullOrEmpty(asset.Source))
+            foreach (var member in sourceMembers)
             {
-                result.Error("Source is null for Asset [{0}]", asset);
-                return false;
-            }
+                if (string.IsNullOrEmpty(member.Value))
+                {
+                    result.Error($"Source is null for Asset [{asset}] in property [{member.Key}]");
+                    return false;
+                }
 
-            // Get absolute path of asset source on disk
-            var assetDirectory = assetAbsolutePath.GetParent();
-            var assetSource = UPath.Combine(assetDirectory, asset.Source);
+                // Get absolute path of asset source on disk
+                var assetDirectory = assetAbsolutePath.GetParent();
+                var assetSource = UPath.Combine(assetDirectory, member.Value);
 
-            // Ensure the file exists
-            if (!File.Exists(assetSource))
-            {
-                result.Error("Unable to find the source file '{1}' for Asset [{0}]", asset, assetSource);
-                return false;
+                // Ensure the file exists
+                if (!File.Exists(assetSource))
+                {
+                    result.Error($"Unable to find the source file '{assetSource}' for Asset [{asset}]");
+                    return false;
+                }
             }
 
             return true;

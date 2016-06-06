@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <!-- Do not compile unit test when packaging -->
@@ -55,7 +56,7 @@
         <Reference Include="MonoTouch.NUnitLite"/>
       </ItemGroup>
     </When>
-    <When Condition=" '$(SiliconStudioPlatform)' == 'Windows'">
+    <When Condition="('$(SiliconStudioRuntime)' == '') and (('$(SiliconStudioPlatform)' == 'Windows') or ('$(SiliconStudioPlatform)' == 'Linux'))">
       <ItemGroup>
         <Reference Include="nunit.framework">
           <HintPath>$(SiliconStudioDependenciesDir)NUnit\nunit.framework.dll</HintPath>
@@ -65,10 +66,15 @@
         </Reference>
       </ItemGroup>
     </When>
-    <When Condition=" '$(SiliconStudioPlatform)' == 'WindowsStore' OR '$(SiliconStudioPlatform)' == 'WindowsPhone'">
+    <When Condition="('$(SiliconStudioRuntime)' == 'CoreCLR') or ('$(SiliconStudioPlatform)' == 'WindowsStore' OR '$(SiliconStudioPlatform)' == 'WindowsPhone')">
       <ItemGroup>
         <Reference Include="nunitlite">
           <HintPath>$(SiliconStudioDependenciesDir)NUnitLite\Portable\nunitlite.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+      <ItemGroup>
+        <Reference Include="nunit.framework">
+          <HintPath>$(SiliconStudioDependenciesDir)NUnitLite\Portable\nunit.framework.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
