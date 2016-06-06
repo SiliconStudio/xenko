@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 
     // This code was originally taken from DirectXTk but rewritten with DirectWrite
     // for more accuracy in font rendering
-    internal class SDFImporter : IFontImporter
+    internal class SignedDistanceFieldFontImporter : IFontImporter
     {
         // Properties hold the imported font data.
         public IEnumerable<Glyph> Glyphs { get; private set; }

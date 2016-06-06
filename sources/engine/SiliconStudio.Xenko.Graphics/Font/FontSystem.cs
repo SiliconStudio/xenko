@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
 
         public SpriteFont NewScalable(float size, IList<Glyph> glyphs, IList<Image> images, float baseOffset, float defaultLineSpacing, IList<Kerning> kernings = null, float extraSpacing = 0, float extraLineSpacing = 0, char defaultCharacter = ' ')
         {
-            var font = new SDFSpriteFont(size, glyphs, null, baseOffset, defaultLineSpacing, kernings, extraSpacing, extraLineSpacing, defaultCharacter) { FontSystem = this };
+            var font = new SignedDistanceFieldSpriteFont(size, glyphs, null, baseOffset, defaultLineSpacing, kernings, extraSpacing, extraLineSpacing, defaultCharacter) { FontSystem = this };
 
             // affects the textures from the images.
             foreach (var image in images)
@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
 
         public SpriteFont NewScalable(float size, IList<Glyph> glyphs, IList<Texture> textures, float baseOffset, float defaultLineSpacing, IList<Kerning> kernings = null, float extraSpacing = 0, float extraLineSpacing = 0, char defaultCharacter = ' ')
         {
-            return new SDFSpriteFont(size, glyphs, textures, baseOffset, defaultLineSpacing, kernings, extraSpacing, extraLineSpacing, defaultCharacter) { FontSystem = this };
+            return new SignedDistanceFieldSpriteFont(size, glyphs, textures, baseOffset, defaultLineSpacing, kernings, extraSpacing, extraLineSpacing, defaultCharacter) { FontSystem = this };
         }
 
         public SpriteFont NewDynamic(float defaultSize, string fontName, FontStyle style, FontAntiAliasMode antiAliasMode = FontAntiAliasMode.Default, bool useKerning = false, float extraSpacing = 0, float extraLineSpacing = 0, char defaultCharacter = ' ')

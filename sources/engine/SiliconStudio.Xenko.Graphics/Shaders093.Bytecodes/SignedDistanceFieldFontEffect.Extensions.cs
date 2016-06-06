@@ -5,7 +5,7 @@ using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Graphics
 {
-    internal partial class SpriteSDFFontEffect
+    internal partial class SignedDistanceFieldFontEffectShader
     {
         private static EffectBytecode bytecode;
 
@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             get
             {
-                return bytecode ?? (bytecode = EffectBytecode.FromBytesSafe(spriteSDFFontBytecode));
+                return bytecode ?? (bytecode = EffectBytecode.FromBytesSafe(signedDistanceFieldFontBytecode));
             }
         }
     }

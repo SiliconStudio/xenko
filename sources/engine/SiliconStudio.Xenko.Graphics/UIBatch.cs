@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         private readonly Texture whiteTexture;
 
-        private readonly EffectInstance sdfFontEffect;
+        private readonly EffectInstance SignedDistanceFieldFontEffect;
 
         private readonly EffectInstance sdfSpriteFontEffect;
 
@@ -152,10 +152,10 @@ namespace SiliconStudio.Xenko.Graphics
             //  Load custom font rendering effects here
 
             // For signed distance field font rendering
-            sdfFontEffect = new EffectInstance(new Effect(device, SDFFontEffectShader.Bytecode) { Name = "UIBatchSDFFontEffect" });
+            SignedDistanceFieldFontEffect = new EffectInstance(new Effect(device, SignedDistanceFieldFontEffectShader.Bytecode) { Name = "UIBatchSignedDistanceFieldFontEffect" });
 
             // For signed distance field thumbnail rendering
-            sdfSpriteFontEffect = new EffectInstance(new Effect(device, SpriteSDFFontEffect.Bytecode) { Name = "UIBatchSDFSpriteFontEffect" });
+            sdfSpriteFontEffect = new EffectInstance(new Effect(device, SpriteSignedDistanceFieldFontEffect.Bytecode) { Name = "UIBatchSDFSpriteFontEffect" });
         }
 
         /// <summary>
@@ -199,7 +199,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void BeginCustom(GraphicsContext graphicsContext, int overrideEffect)
         {
-            EffectInstance effect = (overrideEffect == 0) ? null : sdfFontEffect;
+            EffectInstance effect = (overrideEffect == 0) ? null : SignedDistanceFieldFontEffect;
 
             Begin(graphicsContext, effect, SpriteSortMode.BackToFront, 
                 currentBlendState, currentSamplerState, currentDepthStencilState, currentRasterizerState, currentStencilValue);

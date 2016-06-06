@@ -91,10 +91,10 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
     /// <summary>
     /// Main class used to compile a Font file XML file.
     /// </summary>
-    public class SDFFontCompiler
+    public class SignedDistanceFieldFontCompiler
     {
         /// <summary>
-        /// Compiles the specified font description into a <see cref="SDFSpriteFont" /> object.
+        /// Compiles the specified font description into a <see cref="SignedDistanceFieldSpriteFont" /> object.
         /// </summary>
         /// <param name="fontFactory">The font factory used to create the fonts</param>
         /// <param name="fontAsset">The font description.</param>
@@ -111,7 +111,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 
             Bitmap bitmap = GlyphPacker.ArrangeGlyphs(glyphs);
 
-            return SDFSpriteFontWriter.CreateSpriteFontData(fontFactory, fontAsset, glyphs, lineSpacing, baseLine, bitmap);
+            return SignedDistanceFieldFontWriter.CreateSpriteFontData(fontFactory, fontAsset, glyphs, lineSpacing, baseLine, bitmap);
         }
 
         static Glyph[] ImportFont(SpriteFontAsset options, out float lineSpacing, out float baseLine)
@@ -127,7 +127,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
                 throw new Exception("SDF Font from image is not supported!");
             }
 
-            importer = new SDFImporter();
+            importer = new SignedDistanceFieldFontImporter();
 
             // create the list of character to import
             var characters = GetCharactersToImport(options);

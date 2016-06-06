@@ -85,7 +85,7 @@ using SiliconStudio.Xenko.Graphics.Font;
 namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 {
     // Writes the output sprite font binary file.
-    internal static class SDFSpriteFontWriter
+    internal static class SignedDistanceFieldFontWriter
     {
         public static Graphics.SpriteFont CreateSpriteFontData(IFontFactory fontFactory, SpriteFontAsset options, Glyph[] glyphs, float lineSpacing, float baseLine, Bitmap bitmap)
         {

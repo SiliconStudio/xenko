@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 assetClone.Source = !string.IsNullOrEmpty(asset.Source) ? UPath.Combine(assetDirectory, asset.Source) : null;
                 assetClone.CharacterSet = !string.IsNullOrEmpty(asset.CharacterSet) ? UPath.Combine(assetDirectory, asset.CharacterSet) : null;
 
-                result.BuildSteps = new AssetBuildStep(AssetItem) { new SDFFontCommand(urlInStorage, assetClone) };
+                result.BuildSteps = new AssetBuildStep(AssetItem) { new SignedDistanceFieldFontCommand(urlInStorage, assetClone) };
             }
             else
             if (asset.FontType == SpriteFontType.Dynamic)
@@ -143,9 +143,9 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// <summary>
         /// Scalable (SDF) font build step
         /// </summary>
-        internal class SDFFontCommand : AssetCommand<SpriteFontAsset>
+        internal class SignedDistanceFieldFontCommand : AssetCommand<SpriteFontAsset>
         {
-            public SDFFontCommand(string url, SpriteFontAsset description)
+            public SignedDistanceFieldFontCommand(string url, SpriteFontAsset description)
                 : base(url, description)
             {
             }
@@ -170,7 +170,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 Graphics.SpriteFont scalableFont;
                 try
                 {
-                    scalableFont = SDFFontCompiler.Compile(FontDataFactory, AssetParameters);
+                    scalableFont = SignedDistanceFieldFontCompiler.Compile(FontDataFactory, AssetParameters);
                 }
                 catch (FontNotFoundException ex)
                 {

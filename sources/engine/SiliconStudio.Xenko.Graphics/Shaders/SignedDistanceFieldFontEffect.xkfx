@@ -3,10 +3,10 @@
 namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
-    /// SDFFontEffect shader
+    /// SignedDistanceFieldFontEffect shader
     /// </summary>
-    partial shader SDFFontEffect
+    partial shader SignedDistanceFieldFontEffect
     {
-        mixin SDFFontEffectShader;
+        mixin SignedDistanceFieldFontEffectShader;
    };
 }

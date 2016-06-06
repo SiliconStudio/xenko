@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         }
     }
 
-    public class SDFSpriteFontFactory : AssetFactory<SpriteFontAsset>
+    public class SignedDistanceFieldSpriteFontFactory: AssetFactory<SpriteFontAsset>
     {
         public static SpriteFontAsset Create()
         {
