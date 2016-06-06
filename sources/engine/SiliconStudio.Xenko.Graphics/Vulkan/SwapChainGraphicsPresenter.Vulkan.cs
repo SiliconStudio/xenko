@@ -23,6 +23,7 @@
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -264,7 +265,21 @@ namespace SiliconStudio.Xenko.Graphics
 
         private unsafe void CreateSwapChain()
         {
-            Description.BackBufferFormat = PixelFormat.B8G8R8A8_UNorm_SRgb;
+            var formats = new[] { PixelFormat.B8G8R8A8_UNorm_SRgb, PixelFormat.R8G8B8A8_UNorm_SRgb, PixelFormat.B8G8R8A8_UNorm, PixelFormat.R8G8B8A8_UNorm };
+
+            foreach (var format in formats)
+            {
+                var nativeFromat = VulkanConvertExtensions.ConvertPixelFormat(format);
+
+                FormatProperties formatProperties;
+                GraphicsDevice.Adapter.PhysicalDevice.GetFormatProperties(nativeFromat, out formatProperties);
+
+                if ((formatProperties.OptimalTilingFeatures & FormatFeatureFlags.ColorAttachment) != 0)
+                {
+                    Description.BackBufferFormat = format;
+                    break;
+                }
+            }
 
             // Queue
             // TODO VULKAN: Queue family is needed when creating the Device, so here we can just do a sanity check?
