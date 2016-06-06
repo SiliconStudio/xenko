@@ -67,15 +67,17 @@
     <Compile Include="AudioVoice.iOS.cs" />
     <Compile Include="AudioEngineFactory.cs" />
     <Compile Include="CompressedSoundPacket.cs" />
+    <Compile Include="CompressedSoundSource.cs" />
     <Compile Include="ConversionExtensions.Android.cs" />
     <Compile Include="ConversionExtensions.Windows.cs" />
     <Compile Include="DynamicSoundEffectInstance.Android.cs" />
-    <Compile Include="DynamicSoundEffectInstance.cs" />
     <Compile Include="DynamicSoundEffectInstance.iOS.cs" />
     <Compile Include="DynamicSoundEffectInstance.SDL.cs" />
+    <Compile Include="DynamicSoundSource.cs" />
     <Compile Include="IPositionableSound.cs" />
     <Compile Include="IPlayableSound.cs" />
     <Compile Include="IRecorder.cs" />
+    <Compile Include="LimitedConcurrencyLevelTaskScheduler.cs" />
     <Compile Include="Microphone.cs" />
     <Compile Include="Microphone.Windows.cs" />
     <Compile Include="NamespaceDoc.cs" />
@@ -98,6 +100,7 @@
     <Compile Include="SoundPlayState.cs" />
     <Compile Include="AudioEngine.Windows.cs" />
     <Compile Include="SoundInstance.Windows.cs" />
+    <Compile Include="SoundSource.cs" />
     <Compile Include="ThreadSafeQueue.cs" />
     <Compile Include="Wave\RiffChunk.cs" />
     <Compile Include="Wave\RiffParser.cs" />

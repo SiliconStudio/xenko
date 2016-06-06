@@ -21,8 +21,11 @@ namespace SiliconStudio.Xenko.Audio
                 throw new InvalidOperationException(msg);
         }
 
+        [DataMemberIgnore]
+        internal SoundSource SoundSource;
+
         #endregion
-        
+
         protected override void Destroy()
         {
             base.Destroy();
@@ -106,8 +109,26 @@ namespace SiliconStudio.Xenko.Audio
             if (stopSiblingInstances)
                 StopConcurrentInstances();
 
-            if (!DataBufferLoaded)
+            if (!DataBufferLoaded && !Sound.StreamFromDisk)
+            {
                 LoadBuffer();
+            }
+
+            if (Sound.StreamFromDisk)
+            {
+                for (var i = 0; i < 64; i++)
+                {
+                    UnmanagedArray<short> samples;
+                    if (SoundSource.ReadSamples(out samples))
+                    {
+                        LoadBuffer(samples, false);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
 
             PlayImpl();
 
@@ -170,6 +191,11 @@ namespace SiliconStudio.Xenko.Audio
         {
             Sound = correspSound;
 
+            if (Sound.StreamFromDisk)
+            {
+                SoundSource = new CompressedSoundSource(Sound.CompressedDataUrl, Sound.SampleRate, Sound.Channels);
+            }
+
             if (Sound.EngineState != AudioEngineState.Invalidated)
                 CreateVoice(Sound.SampleRate, Sound.Channels);
 
@@ -188,7 +214,7 @@ namespace SiliconStudio.Xenko.Audio
         /// <summary>
         /// Play or resume the sound effect instance, specifying explicitly how to deal with sibling instances.
         /// </summary>
-        /// <param name="stopSiblingInstances">Indicate if sibling instances (instances coming from the same <see cref="SoundEffect"/>) currently playing should be stopped or not.</param>
+        /// <param name="stopSiblingInstances">Indicate if sibling instances (instances coming from the same <see cref="Sound"/>) currently playing should be stopped or not.</param>
         public void Play(bool stopSiblingInstances)
         {
             PlayExtended(stopSiblingInstances);

@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Threading;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
@@ -21,10 +20,6 @@ namespace SiliconStudio.Xenko.Audio
     [DataSerializer(typeof(SoundBaseSerializer))]
     public partial class Sound : ComponentBase
     {
-        public Sound()
-        {
-        }
-
         public void Attach(AudioEngine engine)
         {
             AttachEngine(engine);
@@ -44,8 +39,6 @@ namespace SiliconStudio.Xenko.Audio
 
         internal int SampleRate { get; set; } = 44100;
 
-        internal const int SamplesPerFrame = 512;
-
         internal int Channels { get; set; } = 2;
 
         internal bool StreamFromDisk { get; set; }
@@ -55,9 +48,6 @@ namespace SiliconStudio.Xenko.Audio
         internal int NumberOfPackets { get; set; }
 
         internal int MaxPacketLength { get; set; }
-
-        [DataMemberIgnore]
-        internal Stream CompressedDataStream;
 
         [DataMemberIgnore]
         internal UnmanagedArray<short> PreloadedData;
@@ -117,7 +107,7 @@ namespace SiliconStudio.Xenko.Audio
         }
 
         /// <summary>
-        /// Stop all registered instances of the <see cref="SoundEffect"/>.
+        /// Stop all registered instances of the <see cref="Sound"/>.
         /// </summary>
         internal void StopAllInstances()
         {

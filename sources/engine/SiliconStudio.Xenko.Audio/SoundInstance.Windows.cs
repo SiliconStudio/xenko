@@ -3,10 +3,12 @@
 #if SILICONSTUDIO_PLATFORM_WINDOWS && !SILICONSTUDIO_XENKO_SOUND_SDL
 
 using System;
+using System.Collections.Generic;
 using SharpDX;
 using SiliconStudio.Core.Mathematics;
 using SharpDX.XAudio2;
 using SharpDX.X3DAudio;
+using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Audio
 {
@@ -132,16 +134,49 @@ namespace SiliconStudio.Xenko.Audio
         {
             SourceVoice = new SourceVoice(Sound.AudioEngine.XAudio2, new SharpDX.Multimedia.WaveFormat(sampleRate, 16, channels), VoiceFlags.None, 2f, true); // '2f' -> allow to modify pitch up to one octave, 'true' -> enable callback
             SourceVoice.StreamEnd += Stop;
+            SourceVoice.BufferEnd += SourceVoiceOnBufferEnd;
+        }
+
+        private void SourceVoiceOnBufferEnd(IntPtr intPtr)
+        {
+            if (SoundSource == null) return;
+
+            UnmanagedArray<short> samples;
+
+            //release this buffer
+            if (samplesProcessing.TryGetValue(intPtr.ToInt64(), out samples))
+            {
+                SoundSource.ReleaseSamples(samples);
+            }
+
+            //try to read new buffers
+            while (SoundSource.ReadSamples(out samples) && SourceVoice.State.BuffersQueued < 64)
+            {
+                LoadBuffer(samples, false);
+            }
         }
 
         internal void LoadBuffer()
         {
-            var buffer = new AudioBuffer(new DataPointer(Sound.PreloadedData.Pointer, Sound.PreloadedData.Length));
+            var buffer = new AudioBuffer(new DataPointer(Sound.PreloadedData.Pointer, Sound.PreloadedData.Length * sizeof(short)));
             
             if (IsLooped)
                 buffer.LoopCount = AudioBuffer.LoopInfinite;
 
             SourceVoice.SubmitSourceBuffer(buffer, null);
+        }
+
+        private readonly Dictionary<long, UnmanagedArray<short>> samplesProcessing = new Dictionary<long, UnmanagedArray<short>>();
+
+        internal void LoadBuffer(UnmanagedArray<short> samples, bool eos)
+        {
+            var lptr = samples.Pointer.ToInt64();
+
+            var buffer = new AudioBuffer(new DataPointer(samples.Pointer, samples.Length * sizeof(short))) { Context = samples.Pointer, Flags = eos ? BufferFlags.EndOfStream : BufferFlags.None};
+
+            SourceVoice.SubmitSourceBuffer(buffer, null);
+
+            samplesProcessing[lptr] = samples;
         }
 
         private void Reset3DImpl()
