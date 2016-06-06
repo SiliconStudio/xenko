@@ -115,7 +115,7 @@ namespace SiliconStudio.Xenko.Assets
                 var userSettings = dependentPackage.UserSettings;
 
                 // Change package extension
-                dependentPackage.FullPath = new UFile(dependentPackage.FullPath.GetFullPathWithoutExtension(), Package.PackageFileExtension);
+                dependentPackage.FullPath = new UFile(dependentPackage.FullPath.GetFullPathWithoutExtension() + Package.PackageFileExtension);
 
                 // Make sure all assets are upgraded
                 RunAssetUpgradersUntilVersion(log, dependentPackage, XenkoConfig.PackageName, assetFiles, PackageVersion.Parse("1.4.0-beta"));

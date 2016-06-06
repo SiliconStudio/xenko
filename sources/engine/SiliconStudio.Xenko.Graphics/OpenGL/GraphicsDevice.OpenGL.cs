@@ -784,7 +784,7 @@ namespace SiliconStudio.Xenko.Graphics
 #if SILICONSTUDIO_XENKO_UI_SDL
             // Because OpenTK really wants a Sdl2GraphicsContext and not a dummy one, we will create
             // a new one using the dummy one and invalidate the dummy one.
-            graphicsContext = new OpenTK.Graphics.GraphicsContext(gameWindow.DummyGLContext.GraphicsMode, windowInfo, version/100, (version%100)/10, creationFlags);
+            graphicsContext = new OpenTK.Graphics.GraphicsContext(gameWindow.DummyGLContext.GraphicsMode, windowInfo, version / 100, (version % 100) / 10, creationFlags);
             gameWindow.DummyGLContext.Dispose();
 #else
             graphicsContext = gameWindow.Context;
