@@ -83,6 +83,19 @@ namespace SiliconStudio.Presentation.Windows
             return MatchFlag(style, flag);
         }
 
+        /// <summary>
+        /// Gets whether the window corresponding to the given hwnd has the given extended style flag.
+        /// </summary>
+        /// <param name="hwnd">The hwnd of the window.</param>
+        /// <param name="flag">The flag to check.</param>
+        /// <returns><c>True</c> if the window has the given flag, <c>False</c> otherwise.</returns>
+        public static bool HasExStyleFlag(IntPtr hwnd, uint flag)
+        {
+            var style = NativeHelper.GetWindowLong(hwnd, NativeHelper.GWL_EXSTYLE);
+            return MatchFlag(style, flag);
+        }
+
         private static bool MatchFlag(int value, int flag) => (value & flag) == flag;
+        private static bool MatchFlag(int value, uint flag) => (value & flag) == flag;
     }
 }

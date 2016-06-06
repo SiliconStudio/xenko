@@ -233,7 +233,7 @@ namespace SiliconStudio.Presentation.Tests
                 Assert.AreEqual(mainWindow, WindowManager.MainWindow.Window);
                 Assert.AreEqual(null, WindowManager.MainWindow.Owner);
                 Assert.AreEqual(null, WindowManager.MainWindow.Window.Owner);
-                Assert.AreEqual(false, WindowManager.MainWindow.IsModal);
+                Assert.AreEqual(true, WindowManager.MainWindow.IsModal);
                 Assert.AreEqual(WindowManager.ModalWindows.Count > 0, WindowManager.MainWindow.IsDisabled);
                 Assert.AreEqual(true, WindowManager.MainWindow.IsShown);
                 Assert.AreEqual(false, WindowManager.MainWindow.WindowClosed.Task.IsCompleted);

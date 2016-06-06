@@ -217,6 +217,8 @@ namespace SiliconStudio.Xenko.Graphics
             if (samplerUpdater.HasValue)
                 Parameters.Set(samplerUpdater.Value, localSamplerState);
 
+            Effect.UpdateEffect(GraphicsDevice);
+
             // Setup states (Blend, DepthStencil, Rasterizer)
             MutablePipeline.State.SetDefaults();
             MutablePipeline.State.RootSignature = Effect.RootSignature;

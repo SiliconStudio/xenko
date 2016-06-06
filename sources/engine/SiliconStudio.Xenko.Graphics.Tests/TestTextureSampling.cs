@@ -83,6 +83,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             simpleEffect = new EffectInstance(new Effect(GraphicsDevice, SpriteEffect.Bytecode));
             simpleEffect.Parameters.Set(TexturingKeys.Texture0, UVTexture);
+            simpleEffect.UpdateEffect(GraphicsDevice);
 
             // TODO GRAPHICS REFACTOR
             //vao = VertexArrayObject.New(GraphicsDevice, mesh.Draw.IndexBuffer, mesh.Draw.VertexBuffers);
@@ -110,9 +111,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.LightBlue);
             GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
             GraphicsContext.CommandList.SetRenderTargetAndViewport(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
-
-            // Update effect
-            simpleEffect.UpdateEffect(GraphicsDevice);
 
             // Create pipeline state
             pipelineState.State.SetDefaults();

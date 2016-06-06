@@ -36,8 +36,8 @@ namespace SiliconStudio.Xenko.Graphics
             sharedData = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, "PrimitiveQuad::VertexBuffer", d => new SharedData(GraphicsDevice));
 
             simpleEffect = new EffectInstance(new Effect(GraphicsDevice, SpriteEffect.Bytecode));
-            simpleEffect.UpdateEffect(graphicsDevice);
             simpleEffect.Parameters.Set(SpriteBaseKeys.MatrixTransform, Matrix.Identity);
+            simpleEffect.UpdateEffect(graphicsDevice);
 
             pipelineState = new MutablePipelineState(GraphicsDevice);
             pipelineState.State.SetDefaults();
@@ -71,17 +71,22 @@ namespace SiliconStudio.Xenko.Graphics
         /// Draws a quad. The effect must have been applied before calling this method with pixel shader having the signature float2:TEXCOORD.
         /// </summary>
         /// <param name="texture"></param>
-        public void Draw(CommandList commandList, EffectInstance effectInstance)
+        public void Draw(GraphicsContext graphicsContext, EffectInstance effectInstance)
         {
+            effectInstance.UpdateEffect(GraphicsDevice);
+
             pipelineState.State.RootSignature = effectInstance.RootSignature;
             pipelineState.State.EffectBytecode = effectInstance.Effect.Bytecode;
             pipelineState.State.BlendState = BlendStates.Default;
-            pipelineState.State.Output.CaptureState(commandList);
+            pipelineState.State.Output.CaptureState(graphicsContext.CommandList);
             pipelineState.Update();
 
-            commandList.SetPipelineState(pipelineState.CurrentState);
+            graphicsContext.CommandList.SetPipelineState(pipelineState.CurrentState);
 
-            Draw(commandList);
+            // Apply the effect
+            effectInstance.Apply(graphicsContext);
+
+            Draw(graphicsContext.CommandList);
         }
 
         /// <summary>
@@ -104,18 +109,18 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.ArgumentException">Expecting a Texture;texture</exception>
         public void Draw(GraphicsContext graphicsContext, Texture texture, SamplerState samplerState, Color4 color, BlendStateDescription? blendState = null)
         {
-            // Make sure that we are using our vertex shader
-            simpleEffect.Parameters.Set(SpriteEffectKeys.Color, color);
-            simpleEffect.Parameters.Set(TexturingKeys.Texture0, texture);
-            simpleEffect.Parameters.Set(TexturingKeys.Sampler, samplerState ?? GraphicsDevice.SamplerStates.LinearClamp);
-            simpleEffect.Apply(graphicsContext);
-
             pipelineState.State.RootSignature = simpleEffect.RootSignature;
             pipelineState.State.EffectBytecode = simpleEffect.Effect.Bytecode;
             pipelineState.State.BlendState = blendState ?? BlendStates.Default;
             pipelineState.State.Output.CaptureState(graphicsContext.CommandList);
             pipelineState.Update();
             graphicsContext.CommandList.SetPipelineState(pipelineState.CurrentState);
+
+            // Make sure that we are using our vertex shader
+            simpleEffect.Parameters.Set(SpriteEffectKeys.Color, color);
+            simpleEffect.Parameters.Set(TexturingKeys.Texture0, texture);
+            simpleEffect.Parameters.Set(TexturingKeys.Sampler, samplerState ?? GraphicsDevice.SamplerStates.LinearClamp);
+            simpleEffect.Apply(graphicsContext);
 
             Draw(graphicsContext.CommandList);
 

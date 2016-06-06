@@ -206,6 +206,7 @@
     <Compile Include="Effect\EffectShaderAsset.cs" />
     <Compile Include="Entities\ConvertedDescriptor.cs" />
     <Compile Include="Entities\EntityAnalysis.cs" />
+    <Compile Include="Entities\EntityHierarchyAssetBase.Upgraders.cs" />
     <Compile Include="Entities\PrefabAsset.cs" />
     <Compile Include="Entities\EntityHierarchyAssetBase.cs" />
     <Compile Include="Entities\PrefabAssetCompiler.cs" />
