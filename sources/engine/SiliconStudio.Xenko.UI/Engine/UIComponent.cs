@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Engine
         [DataMember(10)]
         [Display("Root Element")]
         [DataMemberIgnore] // TODO this is temporary as long as we don't have an UI editor and UI data asset.
-        public UIElement RootElement { get {return rootElement; } set {SetNewRootElement(rootElement); } }
+        public UIElement RootElement { get {return rootElement; } set {SetNewRootElement(value); } }
 
         private UIElement rootElement;
 
