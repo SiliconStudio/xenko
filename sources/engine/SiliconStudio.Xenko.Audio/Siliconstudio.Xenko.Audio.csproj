@@ -77,7 +77,6 @@
     <Compile Include="IPositionableSound.cs" />
     <Compile Include="IPlayableSound.cs" />
     <Compile Include="IRecorder.cs" />
-    <Compile Include="LimitedConcurrencyLevelTaskScheduler.cs" />
     <Compile Include="Microphone.cs" />
     <Compile Include="Microphone.Windows.cs" />
     <Compile Include="NamespaceDoc.cs" />

@@ -116,12 +116,13 @@ namespace SiliconStudio.Xenko.Audio
 
             if (Sound.StreamFromDisk)
             {
-                for (var i = 0; i < 64; i++)
+                for (var i = 0; i < SoundSource.NumberOfBuffers; i++)
                 {
-                    UnmanagedArray<short> samples;
+                    SoundSourceBuffer samples;
                     if (SoundSource.ReadSamples(out samples))
                     {
-                        LoadBuffer(samples, false);
+                        LoadBuffer(samples, samples.EndOfStream, samples.Length);
+                        if (samples.EndOfStream && !IsLooped) break;
                     }
                     else
                     {
@@ -193,7 +194,7 @@ namespace SiliconStudio.Xenko.Audio
 
             if (Sound.StreamFromDisk)
             {
-                SoundSource = new CompressedSoundSource(Sound.CompressedDataUrl, Sound.SampleRate, Sound.Channels);
+                SoundSource = new CompressedSoundSource(Sound.CompressedDataUrl, Sound.SampleRate, Sound.Channels, Sound.MaxPacketLength);
             }
 
             if (Sound.EngineState != AudioEngineState.Invalidated)

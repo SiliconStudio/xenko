@@ -1,59 +1,51 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Threading;
-using System.Threading.Tasks;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Audio
 {
+    public class SoundSourceBuffer
+    {
+        public UnmanagedArray<short> Buffer;
+        public bool EndOfStream;
+        public int Length;
+    }
+
     public abstract class SoundSource : IDisposable
     {
-        public const int SamplesPerBuffer = 65536;
+        public const int SamplesPerBuffer = 32768;
         internal const int NumberOfBuffers = 4;
 
-        protected readonly BlockingCollection<UnmanagedArray<short>> FreeBuffers = new BlockingCollection<UnmanagedArray<short>>(NumberOfBuffers);
-        protected readonly ConcurrentQueue<UnmanagedArray<short>> DirtyBuffers = new ConcurrentQueue<UnmanagedArray<short>>();
-        protected readonly CancellationTokenSource CancellationTokenSource = new CancellationTokenSource();
-        protected readonly List<UnmanagedArray<short>> BuffersToDispose = new List<UnmanagedArray<short>>();
+        protected ConcurrentQueue<SoundSourceBuffer> FreeBuffers { get; } = new ConcurrentQueue<SoundSourceBuffer>();
 
-        protected static readonly TaskScheduler DecoderScheduler = new LimitedConcurrencyLevelTaskScheduler(2);
-        protected Task FillerTask;
+        protected ConcurrentQueue<SoundSourceBuffer> DirtyBuffers { get; } = new ConcurrentQueue<SoundSourceBuffer>();
+
+        private readonly List<UnmanagedArray<short>> buffersToDispose = new List<UnmanagedArray<short>>();
 
         protected SoundSource(int channels)
         {
             for (var i = 0; i < NumberOfBuffers; i++)
             {
-                var buffer = new UnmanagedArray<short>(channels* SamplesPerBuffer);
-                FreeBuffers.Add(buffer);
-                BuffersToDispose.Add(buffer);
+                var buffer = new SoundSourceBuffer { Buffer = new UnmanagedArray<short>(channels*SamplesPerBuffer) };
+                FreeBuffers.Enqueue(buffer);
+                buffersToDispose.Add(buffer.Buffer);
             }
         }
 
-        protected virtual void Initialize()
+        public bool ReadSamples(out SoundSourceBuffer buffer)
         {
-            FillerTask = Reader();
-            FillerTask.Start(DecoderScheduler);
+            return DirtyBuffers.TryDequeue(out buffer);
         }
 
-        protected abstract Task Reader();
-
-        public bool ReadSamples(out UnmanagedArray<short> outSamples)
+        public void ReleaseSamples(SoundSourceBuffer buffer)
         {
-            return DirtyBuffers.TryDequeue(out outSamples);
-        }
-
-        public void ReleaseSamples(UnmanagedArray<short> samples)
-        {
-            FreeBuffers.Add(samples);
+            FreeBuffers.Enqueue(buffer);
         }
 
         public virtual void Dispose()
         {
-            CancellationTokenSource.Cancel();
-            FillerTask.Wait();
-            foreach (var array in BuffersToDispose)
+            foreach (var array in buffersToDispose)
             {
                 array.Dispose();
             }

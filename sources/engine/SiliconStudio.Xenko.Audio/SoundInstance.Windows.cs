@@ -8,7 +8,6 @@ using SharpDX;
 using SiliconStudio.Core.Mathematics;
 using SharpDX.XAudio2;
 using SharpDX.X3DAudio;
-using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Audio
 {
@@ -141,7 +140,7 @@ namespace SiliconStudio.Xenko.Audio
         {
             if (SoundSource == null) return;
 
-            UnmanagedArray<short> samples;
+            SoundSourceBuffer samples;
 
             //release this buffer
             if (samplesProcessing.TryGetValue(intPtr.ToInt64(), out samples))
@@ -150,9 +149,10 @@ namespace SiliconStudio.Xenko.Audio
             }
 
             //try to read new buffers
-            while (SoundSource.ReadSamples(out samples) && SourceVoice.State.BuffersQueued < 64)
+            while (SoundSource.ReadSamples(out samples) && SourceVoice.State.BuffersQueued < SoundSource.NumberOfBuffers)
             {
-                LoadBuffer(samples, false);
+                LoadBuffer(samples, samples.EndOfStream, samples.Length);
+                if (samples.EndOfStream && !IsLooped) break;
             }
         }
 
@@ -166,13 +166,13 @@ namespace SiliconStudio.Xenko.Audio
             SourceVoice.SubmitSourceBuffer(buffer, null);
         }
 
-        private readonly Dictionary<long, UnmanagedArray<short>> samplesProcessing = new Dictionary<long, UnmanagedArray<short>>();
+        private readonly Dictionary<long, SoundSourceBuffer> samplesProcessing = new Dictionary<long, SoundSourceBuffer>();
 
-        internal void LoadBuffer(UnmanagedArray<short> samples, bool eos)
+        internal void LoadBuffer(SoundSourceBuffer samples, bool eos, int length)
         {
-            var lptr = samples.Pointer.ToInt64();
+            var lptr = samples.Buffer.Pointer.ToInt64();
 
-            var buffer = new AudioBuffer(new DataPointer(samples.Pointer, samples.Length * sizeof(short))) { Context = samples.Pointer, Flags = eos ? BufferFlags.EndOfStream : BufferFlags.None};
+            var buffer = new AudioBuffer(new DataPointer(samples.Buffer.Pointer, samples.Length * sizeof(short))) { Context = samples.Buffer.Pointer, Flags = !IsLooped && eos ? BufferFlags.EndOfStream : BufferFlags.None};
 
             SourceVoice.SubmitSourceBuffer(buffer, null);
 
