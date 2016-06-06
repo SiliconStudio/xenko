@@ -25,6 +25,7 @@
 using System;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using SDL2;
 #if SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF
 using System.Windows.Forms;
@@ -386,13 +387,17 @@ namespace SiliconStudio.Xenko.Graphics
 #elif SILICONSTUDIO_PLATFORM_LINUX
 #if SILICONSTUDIO_XENKO_UI_SDL
             var control = Description.DeviceWindowHandle.NativeHandle as SDL.Window;
-            var createInfo = new XlibSurfaceCreateInfo
+            if (control == null)
             {
-                StructureType = StructureType.XlibSurfaceCreateInfo,
+                throw new NotSupportedException("Non SDL Window used in SDL setup.");
+            }
+            var createInfo = new XcbSurfaceCreateInfo()
+            {
+                StructureType = StructureType.XcbSurfaceCreateInfo,
                 Window = checked((uint) control.Handle),    // On Linux, a Window identifier is 32-bit
-                Dpy = control.Display,
+                Connection = control.XcbConnection,
             };
-            surface = GraphicsAdapterFactory.Instance.CreateXlibSurface(ref createInfo);
+            surface = GraphicsAdapterFactory.Instance.CreateXcbSurface(ref createInfo);
 #else
             throw new NotSupportedException("Only SDL is supported for the time being on Linux");
 #endif
