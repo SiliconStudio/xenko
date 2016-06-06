@@ -85,6 +85,24 @@ namespace SiliconStudio.Xenko.Graphics
             if (HasStencil)
                 NativeImageAspect |= ImageAspectFlags.Stencil;
 
+            // For depth-stencil formats, automatically fall back to a supported one
+            if (IsDepthStencil && HasStencil)
+            {
+                var fallbackFormats = new[] { NativeFormat, SharpVulkan.Format.D32SFloatS8UInt, SharpVulkan.Format.D24UNormS8UInt, SharpVulkan.Format.D16UNormS8UInt };
+
+                foreach (var fallbackFormat in fallbackFormats)
+                {
+                    FormatProperties formatProperties;
+                    GraphicsDevice.Adapter.PhysicalDevice.GetFormatProperties(fallbackFormat, out formatProperties);
+
+                    if ((formatProperties.OptimalTilingFeatures & FormatFeatureFlags.DepthStencilAttachment) != 0)
+                    {
+                        NativeFormat = fallbackFormat;
+                        break;
+                    }
+                }
+            }
+
             if (Usage == GraphicsResourceUsage.Staging)
             {
                 if (NativeImage != SharpVulkan.Image.Null)
