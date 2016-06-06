@@ -3,7 +3,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
@@ -22,21 +21,19 @@ namespace SiliconStudio.Xenko.Audio
 
         private readonly int channels;
 
-        private readonly int maxCompressedSize;
         private readonly byte[] compressedBuffer;
 
         private bool dispose;
 
         private static Thread readFromDiskWorker;
-        private static ConcurrentBag<CompressedSoundSource> NewSources = new ConcurrentBag<CompressedSoundSource>();
-        private static List<CompressedSoundSource> Sources = new List<CompressedSoundSource>();
+        private static readonly ConcurrentBag<CompressedSoundSource> NewSources = new ConcurrentBag<CompressedSoundSource>();
+        private static readonly List<CompressedSoundSource> Sources = new List<CompressedSoundSource>();
 
         public CompressedSoundSource(string soundStreamUrl, int sampleRate, int channels, int maxCompressedSize) : base(channels)
         {
             compressedSoundStream = ContentManager.FileProvider.OpenStream(soundStreamUrl, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read, StreamFlags.Seekable);
             decoder = new Celt(sampleRate, SamplesPerFrame, channels, true);
             this.channels = channels;
-            this.maxCompressedSize = maxCompressedSize;
             compressedBuffer = new byte[maxCompressedSize];
             reader = new BinarySerializationReader(compressedSoundStream);
 
