@@ -374,8 +374,8 @@ namespace SiliconStudio.Xenko.Graphics
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     if (GraphicsDevice.IsOpenGLES2)
                     {
-                        Utilities.CopyMemory(destTexture.StagingData + destTexture.ComputeOffset(destinationSubResource, 0),
-                            sourceTexture.StagingData + sourceTexture.ComputeOffset(sourceSubresource, 0),
+                        Utilities.CopyMemory(destTexture.StagingData + destTexture.ComputeBufferOffset(destinationSubResource, 0),
+                            sourceTexture.StagingData + sourceTexture.ComputeBufferOffset(sourceSubresource, 0),
                             destTexture.ComputeSubresourceSize(destinationSubResource));
                     }
                     else
@@ -421,7 +421,7 @@ namespace SiliconStudio.Xenko.Graphics
                                 type = PixelType.UnsignedByte;
                             }
 
-                            GL.ReadPixels(sourceRectangle.Left, sourceRectangle.Top, sourceRectangle.Width, sourceRectangle.Height, format, type, destTexture.StagingData + destTexture.ComputeOffset(destinationSubResource, depthSlice));
+                            GL.ReadPixels(sourceRectangle.Left, sourceRectangle.Top, sourceRectangle.Width, sourceRectangle.Height, format, type, destTexture.StagingData + destTexture.ComputeBufferOffset(destinationSubResource, depthSlice));
                         }
                         else
 #endif
@@ -888,7 +888,7 @@ namespace SiliconStudio.Xenko.Graphics
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     if (GraphicsDevice.IsOpenGLES2 || texture.StagingData != IntPtr.Zero)
                     {
-                        return new MappedResource(resource, subResourceIndex, new DataBox { DataPointer = texture.StagingData + offsetInBytes + texture.ComputeOffset(subResourceIndex, 0), SlicePitch = texture.ComputeSlicePitch(mipLevel), RowPitch = texture.ComputeRowPitch(mipLevel) }, offsetInBytes, lengthInBytes);
+                        return new MappedResource(resource, subResourceIndex, new DataBox { DataPointer = texture.StagingData + offsetInBytes + texture.ComputeBufferOffset(subResourceIndex, 0), SlicePitch = texture.ComputeSlicePitch(mipLevel), RowPitch = texture.ComputeRowPitch(mipLevel) }, offsetInBytes, lengthInBytes);
                     }
                     else
 #endif
