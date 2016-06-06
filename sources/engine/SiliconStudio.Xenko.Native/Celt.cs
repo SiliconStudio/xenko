@@ -73,6 +73,21 @@ namespace SiliconStudio.Xenko.Native
         }
 
         /// <summary>
+        /// Decodes compressed celt data into PCM 16 bit shorts
+        /// </summary>
+        /// <param name="inputBuffer">The input buffer</param>
+        /// <param name="inputBufferSize">The size of the valid bytes in the input buffer</param>
+        /// <param name="outputSamples">The output buffer, the size of frames should be the same amount that is contained in the input buffer</param>
+        /// <returns></returns>
+        public unsafe int Decode(byte[] inputBuffer, int inputBufferSize, short* outputSamples)
+        {
+            fixed (byte* bufferPtr = inputBuffer)
+            {
+                return XenkoCeltDecodeShort(celtPtr, bufferPtr, inputBufferSize, outputSamples, BufferSize);
+            }
+        }
+
+        /// <summary>
         /// Encode PCM audio into celt compressed format
         /// </summary>
         /// <param name="audioSamples">A buffer containing interleaved channels (as from constructor channels) and samples (can be any number of samples)</param>
