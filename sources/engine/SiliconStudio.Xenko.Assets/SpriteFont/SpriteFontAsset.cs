@@ -20,9 +20,9 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     [DataContract("SpriteFont")]
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(SpriteFontAssetCompiler))]
-    [AssetFormatVersion(XenkoConfig.PackageName, "1.7.0-beta03")]
+    [AssetFormatVersion(XenkoConfig.PackageName, "1.7.0-beta02")]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.5.0-alpha09", typeof(PremultiplyUpgrader))]
-    [AssetUpgrader(XenkoConfig.PackageName, "1.7.0-beta02", "1.7.0-beta03", typeof(FontTypeUpgrader))]    
+    [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha09", "1.7.0-beta02", typeof(FontTypeUpgrader))]    
     [Display(140, "Sprite Font")]
     [CategoryOrder(10, "Font")]
     [CategoryOrder(20, "Characters")]
@@ -248,7 +248,12 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             {
                 if (asset.IsDynamic != null)
                 {
-                    asset.FontType = (asset.IsDynamic == true) ? "Dynamic" : "Static";
+                    var isDynamic = (bool)asset.IsDynamic;
+
+                    // There is also SDF type, but old assets don't have it yet
+                    asset.AddChild("FontType", isDynamic ? "Dynamic" : "Static");
+
+                    asset.RemoveChild("IsDynamic");
                 }
             }
 
