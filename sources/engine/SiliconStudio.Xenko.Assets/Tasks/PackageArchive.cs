@@ -75,6 +75,12 @@ namespace SiliconStudio.Xenko.Assets.Tasks
                 newPackage.Profiles.Add(targetProfile);
             }
 
+            //Handle RootAssets
+            foreach (var rootAsset in package.RootAssets)
+            {
+                newPackage.RootAssets.Add(rootAsset);
+            }
+
             // Handle templates
             var targetFolder = new TemplateFolder("Templates");
 
