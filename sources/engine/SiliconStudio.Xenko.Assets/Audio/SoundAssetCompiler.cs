@@ -31,8 +31,11 @@ namespace SiliconStudio.Xenko.Assets.Audio
 
         private class DecodeSoundFileCommand : AssetCommand<SoundAsset>
         {
+            private readonly TagSymbol disableCompressionSymbol;
+
             public DecodeSoundFileCommand(string url, SoundAsset asset) : base(url, asset)
-            {             
+            {
+                disableCompressionSymbol = RegisterTag(Builder.DoNotCompressTag, () => Builder.DoNotCompressTag);
             }
 
             private static int RunProcessAndGetOutput(string command, string parameters)
@@ -88,9 +91,9 @@ namespace SiliconStudio.Xenko.Assets.Audio
                     throw new AssetException($"Failed to compile a sound asset, ffmpeg failed to convert {assetSource}");
                 }
 
-                var encoder = new Celt(AssetParameters.SampleRate, Sound.SamplesPerFrame, AssetParameters.Channels, false);
+                var encoder = new Celt(AssetParameters.SampleRate, CompressedSoundSource.SamplesPerFrame, AssetParameters.Channels, false);
 
-                var uncompressed = Sound.SamplesPerFrame * AssetParameters.Channels * sizeof(short); //compare with int16 for CD quality comparison.. but remember we are dealing with 32 bit floats for encoding!!
+                var uncompressed = CompressedSoundSource.SamplesPerFrame * AssetParameters.Channels * sizeof(short); //compare with int16 for CD quality comparison.. but remember we are dealing with 32 bit floats for encoding!!
                 var target = (int)Math.Floor(uncompressed / (float)AssetParameters.CompressionRatio);
 
                 var dataUrl = Url + "_Data";
@@ -103,9 +106,12 @@ namespace SiliconStudio.Xenko.Assets.Audio
                     Spatialized = AssetParameters.Spatialized,
                 };
 
-                var frameSize = Sound.SamplesPerFrame*AssetParameters.Channels;
+                //make sure we don't compress celt data
+                commandContext.AddTag(new ObjectUrl(UrlType.ContentLink, dataUrl), disableCompressionSymbol);
+
+                var frameSize = CompressedSoundSource.SamplesPerFrame*AssetParameters.Channels;
                 using (var reader = new BinaryReader(new FileStream(tempPcmFile, FileMode.Open, FileAccess.Read)))
-                using (var outputStream = ContentManager.FileProvider.OpenStream(dataUrl, VirtualFileMode.Create, VirtualFileAccess.Write))
+                using (var outputStream = ContentManager.FileProvider.OpenStream(dataUrl, VirtualFileMode.Create, VirtualFileAccess.Write, VirtualFileShare.Read, StreamFlags.Seekable))
                 {
                     var writer = new BinarySerializationWriter(outputStream);
 
