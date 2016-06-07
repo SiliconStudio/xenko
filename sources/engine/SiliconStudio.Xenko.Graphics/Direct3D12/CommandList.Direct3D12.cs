@@ -39,6 +39,26 @@ namespace SiliconStudio.Xenko.Graphics
             ResetSamplerHeap(true);
         }
 
+        /// <inheritdoc/>
+        protected internal override void OnDestroyed()
+        {
+            // Recycle heaps
+            ResetSrvHeap(false);
+            ResetSamplerHeap(false);
+
+            // Available right now (NextFenceValue - 1)
+            // TODO: Note that it won't be available right away because CommandAllocators is currently not using a PriorityQueue but a simple Queue
+            if (nativeCommandAllocator != null)
+            {
+                GraphicsDevice.CommandAllocators.RecycleObject(GraphicsDevice.NextFenceValue - 1, nativeCommandAllocator);
+                nativeCommandAllocator = null;
+            }
+
+            Utilities.Dispose(ref NativeCommandList);
+
+            base.OnDestroyed();
+        }
+
         public void Reset()
         {
             GraphicsDevice.ReleaseTemporaryResources();
