@@ -1258,7 +1258,7 @@ namespace SiliconStudio.Xenko.Graphics
                 {
                     if (!renderTarget.IsInitialized)
                     {
-                        Clear(renderTargets[index], Color4.Black);
+                        Clear(renderTargets[index], Color.Transparent);
                     }
                 }
 
