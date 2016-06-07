@@ -13,9 +13,8 @@ namespace SiliconStudio.Xenko.Audio
     /// </summary>
     /// <remarks>Functions <see cref="Pan"/> and <see cref="Apply3D"/> cannot be used together. 
     /// A call to <see cref="Apply3D"/> will reset <see cref="Pan"/> to its default value and inverse.</remarks>
-    /// <seealso cref="SoundEffect"/>
-    /// <seealso cref="SoundEffectInstance"/>
-    /// <seealso cref="DynamicSoundEffectInstance"/>
+    /// <seealso cref="Sound"/>
+    /// <seealso cref="SoundInstance"/>
     public interface IPositionableSound : IPlayableSound
     {
         /// <summary>

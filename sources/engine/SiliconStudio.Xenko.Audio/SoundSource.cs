@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Audio
@@ -22,6 +23,8 @@ namespace SiliconStudio.Xenko.Audio
         protected ConcurrentQueue<SoundSourceBuffer> DirtyBuffers { get; } = new ConcurrentQueue<SoundSourceBuffer>();
 
         private readonly List<UnmanagedArray<short>> buffersToDispose = new List<UnmanagedArray<short>>();
+
+        public TaskCompletionSource<bool> ReadyToPlay { get; } = new TaskCompletionSource<bool>(false);
 
         protected SoundSource(int channels)
         {

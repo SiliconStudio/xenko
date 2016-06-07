@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
@@ -11,181 +12,33 @@ namespace SiliconStudio.Xenko.Audio
     /// </summary>
     public partial class SoundInstance: ComponentBase, IPositionableSound
     {
-        #region Buffer Management
-
         internal bool DataBufferLoaded;
-
-        private void CheckBufferNotLoaded(string msg)
-        {
-            if (DataBufferLoaded)
-                throw new InvalidOperationException(msg);
-        }
 
         [DataMemberIgnore]
         internal SoundSource SoundSource;
 
-        #endregion
-
-        protected override void Destroy()
-        {
-            base.Destroy();
-
-            if (IsDisposed)
-                return;
-
-            Stop();
-            DestroyImpl();
-        }
-
-        #region IPlayableSound
-
-        public virtual float Volume
-        {
-            get
-            {
-                Sound.CheckNotDisposed(); 
-                return volume;
-            }
-            set
-            {
-                Sound.CheckNotDisposed();
-                volume = MathUtil.Clamp(value, 0, 1);
-
-                if(Sound.EngineState != AudioEngineState.Invalidated)
-                    UpdateVolume();
-            }
-        }
-
-        private float volume;
-
-        public virtual bool IsLooped
-        {
-            get
-            {
-                Sound.CheckNotDisposed(); 
-                return isLooped;
-            }
-            set
-            {
-                Sound.CheckNotDisposed();
-
-                if (isLooped == value)
-                    return;
-
-                CheckBufferNotLoaded("The looping status of the sound can not be modified after it started playing.");
-                isLooped = value;
-
-                if (Sound.EngineState != AudioEngineState.Invalidated)
-                    UpdateLooping();
-            }
-        }
+        /// <summary>
+        /// Multiplicative factor to apply to the pitch that comes from the Doppler effect.
+        /// </summary>
+        private float dopplerPitchFactor;
 
         private bool isLooped;
 
-        public virtual SoundPlayState PlayState { get; internal set; } = SoundPlayState.Stopped;
+        /// <summary>
+        /// Channel Volume multiplicative factors that come from the 3D localization.
+        /// </summary>
+        private float[] localizationChannelVolumes;
 
-        public virtual void Play()
-        {
-            PlayExtended(true);
-        }
+        private float pan;
 
         /// <summary>
-        /// Play or resume the current sound instance with extended parameters.
+        /// Channel Volume multiplicative factors that come from the user panning.
         /// </summary>
-        /// <param name="stopSiblingInstances">Indicate if the sibling instances should be stopped or not</param>
-        protected void PlayExtended(bool stopSiblingInstances)
-        {
-            Sound.CheckNotDisposed();
+        private float[] panChannelVolumes = { 1f, 1f };
 
-            if (Sound.EngineState == AudioEngineState.Invalidated)
-                return;
+        private float pitch;
 
-            if (Sound.AudioEngine.State == AudioEngineState.Paused) // drop the call to play if the audio engine is paused.
-                return;
-
-            if (PlayState == SoundPlayState.Playing)
-                return;
-
-            if (stopSiblingInstances)
-                StopConcurrentInstances();
-
-            if (!DataBufferLoaded && !Sound.StreamFromDisk)
-            {
-                LoadBuffer();
-            }
-
-            if (Sound.StreamFromDisk)
-            {
-                for (var i = 0; i < SoundSource.NumberOfBuffers; i++)
-                {
-                    SoundSourceBuffer samples;
-                    if (SoundSource.ReadSamples(out samples))
-                    {
-                        LoadBuffer(samples, samples.EndOfStream, samples.Length);
-                        if (samples.EndOfStream && !IsLooped) break;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
-            }
-
-            PlayImpl();
-
-            DataBufferLoaded = true;
-
-            PlayState = SoundPlayState.Playing;
-        }
-
-        public virtual void Pause()
-        {
-            Sound.CheckNotDisposed();
-
-            if (Sound.EngineState == AudioEngineState.Invalidated)
-                return;
-
-            if(PlayState != SoundPlayState.Playing)
-                return; 
-
-            PauseImpl();
-
-            PlayState = SoundPlayState.Paused;
-        }
-
-        public virtual void Stop()
-        {
-            Sound.CheckNotDisposed();
-
-            if (Sound.EngineState == AudioEngineState.Invalidated)
-                return;
-
-            if (PlayState == SoundPlayState.Stopped)
-                return;
-
-            StopImpl();
-
-            DataBufferLoaded = false;
-
-            PlayState = SoundPlayState.Stopped;
-        }
-
-        public virtual void ExitLoop()
-        {
-            Sound.CheckNotDisposed();
-
-            if (Sound.EngineState == AudioEngineState.Invalidated)
-                return;
-
-            if (PlayState == SoundPlayState.Stopped || IsLooped == false)
-                return;
-
-            ExitLoopImpl();
-        }
-
-        #endregion
-
-        public Sound Sound { get; }
+        private float volume;
 
         //prevent creation of SoundEffectInstance to the user
         internal SoundInstance(Sound correspSound)
@@ -203,25 +56,27 @@ namespace SiliconStudio.Xenko.Audio
             ResetStateToDefault();
         }
 
-        internal void ResetStateToDefault()
+        public virtual bool IsLooped
         {
-            Reset3D();
-            Pan = 0;
-            Volume = 1;
-            IsLooped = false;
-            Stop();
-        }
+            get
+            {
+                Sound.CheckNotDisposed();
+                return isLooped;
+            }
+            set
+            {
+                Sound.CheckNotDisposed();
 
-        /// <summary>
-        /// Play or resume the sound effect instance, specifying explicitly how to deal with sibling instances.
-        /// </summary>
-        /// <param name="stopSiblingInstances">Indicate if sibling instances (instances coming from the same <see cref="Sound"/>) currently playing should be stopped or not.</param>
-        public void Play(bool stopSiblingInstances)
-        {
-            PlayExtended(stopSiblingInstances);
-        }
+                if (isLooped == value)
+                    return;
 
-        #region Implementation of the ILocalizable Interface
+                CheckBufferNotLoaded("The looping status of the sound can not be modified after it started playing.");
+                isLooped = value;
+
+                if (Sound.EngineState != AudioEngineState.Invalidated)
+                    UpdateLooping();
+            }
+        }
 
         public float Pan
         {
@@ -244,37 +99,26 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-        private float pan;
+        public virtual SoundPlayState PlayState { get; internal set; } = SoundPlayState.Stopped;
 
-        /// <summary>
-        /// Channel Volume multiplicative factors that come from the user panning.
-        /// </summary>
-        private float[] panChannelVolumes = { 1f, 1f };
+        public Sound Sound { get; }
 
-        public void Apply3D(AudioListener listener, AudioEmitter emitter)
+        public virtual float Volume
         {
-            Sound.CheckNotDisposed();
+            get
+            {
+                Sound.CheckNotDisposed();
+                return volume;
+            }
+            set
+            {
+                Sound.CheckNotDisposed();
+                volume = MathUtil.Clamp(value, 0, 1);
 
-            if (listener == null)
-                throw new ArgumentNullException(nameof(listener));
-
-            if (emitter == null)
-                throw new ArgumentNullException(nameof(emitter));
-
-            if (Sound.Channels > 1)
-                throw new InvalidOperationException("Apply3D cannot be used on multi-channels sounds.");
-
-            // reset Pan its default values.
-            if (Pan != 0)
-                Pan = 0;
-
-            if (Sound.EngineState != AudioEngineState.Invalidated)
-                Apply3DImpl(listener, emitter);
+                if (Sound.EngineState != AudioEngineState.Invalidated)
+                    UpdateVolume();
+            }
         }
-        /// <summary>
-        /// Channel Volume multiplicative factors that come from the 3D localization.
-        /// </summary>
-        private float[] localizationChannelVolumes;
 
         internal float Pitch
         {
@@ -294,12 +138,199 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-        private float pitch;
+        public void Apply3D(AudioListener listener, AudioEmitter emitter)
+        {
+            if (!Sound.Spatialized) return;
+
+            Sound.CheckNotDisposed();
+
+            if (listener == null)
+                throw new ArgumentNullException(nameof(listener));
+
+            if (emitter == null)
+                throw new ArgumentNullException(nameof(emitter));
+
+            if (Sound.Channels > 1)
+                throw new InvalidOperationException("Apply3D cannot be used on multi-channels sounds.");
+
+            // reset Pan its default values.
+            if (Pan != 0)
+                Pan = 0;
+
+            if (Sound.EngineState != AudioEngineState.Invalidated)
+                Apply3DImpl(listener, emitter);
+        }
+
+        public virtual void ExitLoop()
+        {
+            Sound.CheckNotDisposed();
+
+            if (Sound.EngineState == AudioEngineState.Invalidated)
+                return;
+
+            if (PlayState == SoundPlayState.Stopped || IsLooped == false)
+                return;
+
+            ExitLoopImpl();
+        }
+
+        public virtual void Pause()
+        {
+            Sound.CheckNotDisposed();
+
+            if (Sound.EngineState == AudioEngineState.Invalidated)
+                return;
+
+            if (PlayState != SoundPlayState.Playing)
+                return;
+
+            PauseImpl();
+
+            PlayState = SoundPlayState.Paused;
+        }
 
         /// <summary>
-        /// Multiplicative factor to apply to the pitch that comes from the Doppler effect.
+        /// Play or resume the sound effect instance, stopping sibling instances.
         /// </summary>
-        private float dopplerPitchFactor;
+        public void Play()
+        {
+            //todo Our current interface requires a void Play() method.. should we change this to be async as well?
+            // ReSharper disable once UnusedVariable
+            var task = Play(true);
+        }
+
+        /// <summary>
+        /// Play or resume the sound effect instance, specifying explicitly how to deal with sibling instances.
+        /// </summary>
+        /// <param name="stopSiblingInstances">Indicate if sibling instances (instances coming from the same <see cref="Sound"/>) currently playing should be stopped or not.</param>
+        public async Task Play(bool stopSiblingInstances)
+        {
+            await PlayExtended(stopSiblingInstances);
+        }
+
+        public void Reset3D()
+        {
+            if (!Sound.Spatialized) return;
+
+            dopplerPitchFactor = 1f;
+            localizationChannelVolumes = new[] { 0.5f, 0.5f };
+
+            if (Sound.EngineState == AudioEngineState.Invalidated)
+                return;
+
+            UpdatePitch();
+            UpdateStereoVolumes();
+
+            Reset3DImpl();
+        }
+
+        public virtual void Stop()
+        {
+            Sound.CheckNotDisposed();
+
+            if (Sound.EngineState == AudioEngineState.Invalidated)
+                return;
+
+            if (PlayState == SoundPlayState.Stopped)
+                return;
+
+            StopImpl();
+
+            DataBufferLoaded = false;
+
+            PlayState = SoundPlayState.Stopped;
+        }
+
+        internal void DestroyImpl()
+        {
+            Sound?.UnregisterInstance(this);
+
+            PlatformSpecificDisposeImpl();
+
+            SoundSource.Dispose();
+        }
+
+        internal void ResetStateToDefault()
+        {
+            Reset3D();
+            Pan = 0;
+            Volume = 1;
+            IsLooped = false;
+            Stop();
+        }
+
+        protected override void Destroy()
+        {
+            base.Destroy();
+
+            if (IsDisposed)
+                return;
+
+            Stop();
+            DestroyImpl();
+        }
+
+        /// <summary>
+        /// Play or resume the current sound instance with extended parameters.
+        /// </summary>
+        /// <param name="stopSiblingInstances">Indicate if the sibling instances should be stopped or not</param>
+        protected async Task PlayExtended(bool stopSiblingInstances)
+        {
+            Sound.CheckNotDisposed();
+
+            if (Sound.EngineState == AudioEngineState.Invalidated)
+                return;
+
+            if (Sound.AudioEngine.State == AudioEngineState.Paused) // drop the call to play if the audio engine is paused.
+                return;
+
+            if (PlayState == SoundPlayState.Playing)
+                return;
+
+            if (stopSiblingInstances)
+                StopConcurrentInstances();
+
+            if (!DataBufferLoaded && !Sound.StreamFromDisk)
+            {
+                LoadBuffer();
+            }
+
+            if (Sound.StreamFromDisk)
+            {
+                await SoundSource.ReadyToPlay.Task;
+
+                for (var i = 0; i < SoundSource.NumberOfBuffers; i++)
+                {
+                    SoundSourceBuffer samples;
+                    if (SoundSource.ReadSamples(out samples))
+                    {
+                        LoadBuffer(samples, samples.EndOfStream, samples.Length);
+                        if (samples.EndOfStream && !IsLooped) break;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+
+            PlayImpl();
+
+            DataBufferLoaded = true;
+
+            PlayState = SoundPlayState.Playing;
+        }
+
+        protected void StopConcurrentInstances()
+        {
+            Sound?.StopConcurrentInstances(this);
+        }
+
+        private void CheckBufferNotLoaded(string msg)
+        {
+            if (DataBufferLoaded)
+                throw new InvalidOperationException(msg);
+        }
 
         private void ComputeDopplerFactor(AudioListener listener, AudioEmitter emitter)
         {
@@ -340,34 +371,6 @@ namespace SiliconStudio.Xenko.Audio
             var timeBetweenTwoWaves = timeSinceLastWaveArrived + (nextWaveDistToListener - lastWaveDistToListener) / soundSpeed;
             var apparentFrequency = 1 / timeBetweenTwoWaves;
             dopplerPitchFactor = (float)Math.Pow(apparentFrequency / soundFreq, emitter.DopplerScale);
-        }
-
-        #endregion
-
-        internal void DestroyImpl()
-        {
-            Sound?.UnregisterInstance(this);
-
-            PlatformSpecificDisposeImpl();
-        }
-
-        public void Reset3D()
-        {
-            dopplerPitchFactor = 1f;
-            localizationChannelVolumes = new[] { 0.5f, 0.5f };
-
-            if (Sound.EngineState == AudioEngineState.Invalidated)
-                return;
-
-            UpdatePitch();
-            UpdateStereoVolumes();
-
-            Reset3DImpl();
-        }
-
-        protected void StopConcurrentInstances()
-        {
-            Sound?.StopConcurrentInstances(this);
         }
     }
 }

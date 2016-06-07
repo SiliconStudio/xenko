@@ -20,56 +20,42 @@ namespace SiliconStudio.Xenko.Audio
     [DataSerializer(typeof(SoundBaseSerializer))]
     public partial class Sound : ComponentBase
     {
-        public void Attach(AudioEngine engine)
-        {
-            AttachEngine(engine);
+        /// <summary>
+        /// Current instances of the SoundEffect.
+        /// We need to keep track of them to stop and dispose them when the soundEffect is disposed.
+        /// </summary>
+        [DataMemberIgnore]
+        internal readonly List<SoundInstance> Instances = new List<SoundInstance>();
 
-            Name = "Sound Effect " + Interlocked.Add(ref soundEffectCreationCount, 1);
-
-            // register the sound to the AudioEngine so that it will be properly freed if AudioEngine is disposed before this.
-            AudioEngine.RegisterSound(this);
-        }
+        [DataMemberIgnore]
+        internal UnmanagedArray<short> PreloadedData;
 
         /// <summary>
         /// The number of SoundEffect Created so far. Used only to give a unique name to the SoundEffect.
         /// </summary>
         private static int soundEffectCreationCount;
 
-        internal string CompressedDataUrl { get; set; }
-
-        internal int SampleRate { get; set; } = 44100;
-
-        internal int Channels { get; set; } = 2;
-
-        internal bool StreamFromDisk { get; set; }
-
-        internal bool Spatialized { get; set; }
-
-        internal int NumberOfPackets { get; set; }
-
-        internal int MaxPacketLength { get; set; }
-
-        [DataMemberIgnore]
-        internal UnmanagedArray<short> PreloadedData;
-
-        [DataMemberIgnore]
-        internal AudioEngineState EngineState => AudioEngine.State;
-
-        #region Disposing Utilities
-        
-        internal void CheckNotDisposed()
-        {
-            if(IsDisposed)
-                throw new ObjectDisposedException("this");
-        }
-
-        #endregion
-
-
         /// <summary>
         /// The number of Instances Created so far by this SoundEffect. Used only to give a unique name to the SoundEffectInstance.
         /// </summary>
         private int intancesCreationCount;
+
+        internal int Channels { get; set; } = 2;
+
+        internal string CompressedDataUrl { get; set; }
+
+        [DataMemberIgnore]
+        internal AudioEngineState EngineState => AudioEngine.State;
+
+        internal int MaxPacketLength { get; set; }
+
+        internal int NumberOfPackets { get; set; }
+
+        internal int SampleRate { get; set; } = 44100;
+
+        internal bool Spatialized { get; set; }
+
+        internal bool StreamFromDisk { get; set; }
 
         /// <summary>
         /// Create a new sound effect instance of the sound effect. 
@@ -91,19 +77,20 @@ namespace SiliconStudio.Xenko.Audio
             return newInstance;
         }
 
-        /// <summary>
-        /// Current instances of the SoundEffect.
-        /// We need to keep track of them to stop and dispose them when the soundEffect is disposed.
-        /// </summary>
-        internal readonly List<SoundInstance> Instances = new List<SoundInstance>();
-
-        /// <summary>
-        /// Register a new instance to the soundEffect.
-        /// </summary>
-        /// <param name="instance">new instance to register.</param>
-        private void RegisterInstance(SoundInstance instance)
+        internal void Attach(AudioEngine engine)
         {
-            Instances.Add(instance);
+            AttachEngine(engine);
+
+            Name = "Sound Effect " + Interlocked.Add(ref soundEffectCreationCount, 1);
+
+            // register the sound to the AudioEngine so that it will be properly freed if AudioEngine is disposed before this.
+            AudioEngine.RegisterSound(this);
+        }
+
+        internal void CheckNotDisposed()
+        {
+            if(IsDisposed)
+                throw new ObjectDisposedException("this");
         }
 
         /// <summary>
@@ -136,6 +123,15 @@ namespace SiliconStudio.Xenko.Audio
         {
             if (!Instances.Remove(instance))
                 throw new AudioSystemInternalException("Tried to unregister soundEffectInstance while not contained in the instance list.");
+        }
+
+        /// <summary>
+        /// Register a new instance to the soundEffect.
+        /// </summary>
+        /// <param name="instance">new instance to register.</param>
+        private void RegisterInstance(SoundInstance instance)
+        {
+            Instances.Add(instance);
         }
     }
 }

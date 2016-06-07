@@ -14,28 +14,33 @@ namespace SiliconStudio.Xenko.Audio
     {
         internal const int SamplesPerFrame = 512;
 
-        private readonly Stream compressedSoundStream;
-        private readonly BinarySerializationReader reader;
+        private Stream compressedSoundStream;
+        private BinarySerializationReader reader;
 
-        private readonly Celt decoder;
+        private Celt decoder;
+
+        private readonly string soundStreamUrl;
 
         private readonly int channels;
+        private readonly int sampleRate;
 
-        private readonly byte[] compressedBuffer;
+        private readonly int maxCompressedSize;
+        private byte[] compressedBuffer;
 
         private bool dispose;
+        private bool readyToPlay;
 
         private static Thread readFromDiskWorker;
         private static readonly ConcurrentBag<CompressedSoundSource> NewSources = new ConcurrentBag<CompressedSoundSource>();
         private static readonly List<CompressedSoundSource> Sources = new List<CompressedSoundSource>();
+        
 
         public CompressedSoundSource(string soundStreamUrl, int sampleRate, int channels, int maxCompressedSize) : base(channels)
         {
-            compressedSoundStream = ContentManager.FileProvider.OpenStream(soundStreamUrl, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read, StreamFlags.Seekable);
-            decoder = new Celt(sampleRate, SamplesPerFrame, channels, true);
             this.channels = channels;
-            compressedBuffer = new byte[maxCompressedSize];
-            reader = new BinarySerializationReader(compressedSoundStream);
+            this.maxCompressedSize = maxCompressedSize;
+            this.soundStreamUrl = soundStreamUrl;
+            this.sampleRate = sampleRate;
 
             if (readFromDiskWorker == null)
             {
@@ -56,27 +61,26 @@ namespace SiliconStudio.Xenko.Audio
                 while (!NewSources.IsEmpty)
                 {
                     CompressedSoundSource source;
-                    if (NewSources.TryTake(out source))
-                    {
-                        Sources.Add(source);
-                    }
+                    if (!NewSources.TryTake(out source)) continue;
+
+                    source.compressedSoundStream = ContentManager.FileProvider.OpenStream(source.soundStreamUrl, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read, StreamFlags.Seekable);
+                    source.decoder = new Celt(source.sampleRate, SamplesPerFrame, source.channels, true);
+                    source.compressedBuffer = new byte[source.maxCompressedSize];
+                    source.reader = new BinarySerializationReader(source.compressedSoundStream);
+
+                    Sources.Add(source);
                 }
 
                 foreach (var source in Sources)
                 {
-                    if (source.dispose)
-                    {
-                        source.Dispose2();
-                        toRemove.Add(source);
-                    }
-                    else
+                    if (!source.dispose)
                     {
                         SoundSourceBuffer buffer;
                         while (source.FreeBuffers.TryDequeue(out buffer))
                         {
                             buffer.EndOfStream = false;
-                            buffer.Length = SamplesPerBuffer * source.channels;
-                            const int passes = SamplesPerBuffer / SamplesPerFrame;
+                            buffer.Length = SamplesPerBuffer*source.channels;
+                            const int passes = SamplesPerBuffer/SamplesPerFrame;
                             var offset = 0;
                             var bufferPtr = (short*)buffer.Buffer.Pointer.ToPointer();
                             for (var i = 0; i < passes; i++)
@@ -90,7 +94,7 @@ namespace SiliconStudio.Xenko.Audio
                                     throw new Exception("Celt decoder returned a wrong decoding buffer size.");
                                 }
 
-                                offset += SamplesPerFrame * source.channels;
+                                offset += SamplesPerFrame*source.channels;
 
                                 if (source.compressedSoundStream.Position != source.compressedSoundStream.Length) continue;
 
@@ -101,11 +105,22 @@ namespace SiliconStudio.Xenko.Audio
                             }
                             source.DirtyBuffers.Enqueue(buffer);
                         }
+
+                        if (!source.readyToPlay)
+                        {
+                            source.readyToPlay = true;
+                            source.ReadyToPlay.TrySetResult(true);
+                        }
+                    }
+                    else
+                    {
+                        toRemove.Add(source);
                     }
                 }
 
                 foreach (var source in toRemove)
                 {
+                    source.Destroy();
                     Sources.Remove(source);
                 }
 
@@ -118,7 +133,7 @@ namespace SiliconStudio.Xenko.Audio
             dispose = true;
         }
 
-        public void Dispose2()
+        private void Destroy()
         {
             base.Dispose();
             compressedSoundStream.Dispose();

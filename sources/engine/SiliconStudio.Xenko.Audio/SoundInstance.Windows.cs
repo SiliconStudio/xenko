@@ -13,7 +13,9 @@ namespace SiliconStudio.Xenko.Audio
 {
     public partial class SoundInstance
     {
-        #region Implementation of the ILocalizable Interface
+        internal SourceVoice SourceVoice;
+
+        private readonly Dictionary<long, SoundSourceBuffer> samplesProcessing = new Dictionary<long, SoundSourceBuffer>();
 
         internal void Apply3DImpl(AudioListener listener, AudioEmitter emitter)
         {
@@ -58,10 +60,37 @@ namespace SiliconStudio.Xenko.Audio
             UpdateStereoVolumes();
         }
 
-        internal void UpdateLooping()
+        internal void CreateVoice(int sampleRate, int channels)
         {
-            // Nothing to do here for windows version.
-            // All the work is done in LoadBuffer.
+            SourceVoice = new SourceVoice(Sound.AudioEngine.XAudio2, new SharpDX.Multimedia.WaveFormat(sampleRate, 16, channels), VoiceFlags.None, 2f, true); // '2f' -> allow to modify pitch up to one octave, 'true' -> enable callback
+            SourceVoice.StreamEnd += Stop;
+            SourceVoice.BufferEnd += SourceVoiceOnBufferEnd;
+        }
+
+        internal void ExitLoopImpl()
+        {
+            SourceVoice.ExitLoop();
+        }
+
+        internal void LoadBuffer()
+        {
+            var buffer = new AudioBuffer(new DataPointer(Sound.PreloadedData.Pointer, Sound.PreloadedData.Length * sizeof(short)));
+
+            if (IsLooped)
+                buffer.LoopCount = AudioBuffer.LoopInfinite;
+
+            SourceVoice.SubmitSourceBuffer(buffer, null);
+        }
+
+        internal void LoadBuffer(SoundSourceBuffer samples, bool eos, int length)
+        {
+            var lptr = samples.Buffer.Pointer.ToInt64();
+
+            var buffer = new AudioBuffer(new DataPointer(samples.Buffer.Pointer, samples.Length * sizeof(short))) { Context = samples.Buffer.Pointer, Flags = !IsLooped && eos ? BufferFlags.EndOfStream : BufferFlags.None };
+
+            SourceVoice.SubmitSourceBuffer(buffer, null);
+
+            samplesProcessing[lptr] = samples;
         }
 
         internal void PauseImpl()
@@ -69,9 +98,13 @@ namespace SiliconStudio.Xenko.Audio
             SourceVoice.Stop();
         }
 
-        internal void ExitLoopImpl()
+        internal void PlatformSpecificDisposeImpl()
         {
-            SourceVoice.ExitLoop();
+            if (SourceVoice == null)
+                return;
+
+            SourceVoice.DestroyVoice();
+            SourceVoice.Dispose();
         }
 
         internal void PlayImpl()
@@ -85,55 +118,19 @@ namespace SiliconStudio.Xenko.Audio
             SourceVoice.FlushSourceBuffers();
         }
 
-        private void UpdateStereoVolumes()
+        internal void UpdateLooping()
         {
-            var sourceChannelCount = Sound.Channels;
-
-            // then update the volume of each channel
-            Single[] matrix;
-            if (sourceChannelCount == 1)
-            {   // panChannelVolumes and localizationChannelVolumes are both in [0,1] so multiplication too, no clamp is needed
-                matrix = new[] { panChannelVolumes[0] * localizationChannelVolumes[0], panChannelVolumes[1] * localizationChannelVolumes[1] };
-            }
-            else if (sourceChannelCount == 2)
-            {
-                matrix = new[] { panChannelVolumes[0], 0, 0, panChannelVolumes[1] }; // no localization on stereo sounds.
-            }
-            else
-            {
-                throw new AudioSystemInternalException("The sound is not supposed to contain more than 2 channels");
-            }
-
-            SourceVoice.SetOutputMatrix(sourceChannelCount, Sound.MasterVoice.VoiceDetails.InputChannelCount, matrix);
+            // Nothing to do here for windows version.
+            // All the work is done in LoadBuffer.
+        }
+        internal void UpdateVolume()
+        {
+            SourceVoice.SetVolume(Volume);
         }
 
-        private void UpdatePitch()
+        private void Reset3DImpl()
         {
-            SourceVoice.SetFrequencyRatio(MathUtil.Clamp((float)Math.Pow(2, Pitch) * dopplerPitchFactor, 0.5f, 2f)); // conversion octave to frequencyRatio
-        }
-
-        #endregion
-
-        #region Implementation of the IDisposable Interface
-
-        internal void PlatformSpecificDisposeImpl()
-        {
-            if(SourceVoice == null)
-                return;
-
-            SourceVoice.DestroyVoice();
-            SourceVoice.Dispose();
-        }
-
-        #endregion
-
-        internal SourceVoice SourceVoice;
-
-        internal void CreateVoice(int sampleRate, int channels)
-        {
-            SourceVoice = new SourceVoice(Sound.AudioEngine.XAudio2, new SharpDX.Multimedia.WaveFormat(sampleRate, 16, channels), VoiceFlags.None, 2f, true); // '2f' -> allow to modify pitch up to one octave, 'true' -> enable callback
-            SourceVoice.StreamEnd += Stop;
-            SourceVoice.BufferEnd += SourceVoiceOnBufferEnd;
+            // nothing to do here.
         }
 
         private void SourceVoiceOnBufferEnd(IntPtr intPtr)
@@ -156,42 +153,36 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-        internal void LoadBuffer()
-        {
-            var buffer = new AudioBuffer(new DataPointer(Sound.PreloadedData.Pointer, Sound.PreloadedData.Length * sizeof(short)));
-            
-            if (IsLooped)
-                buffer.LoopCount = AudioBuffer.LoopInfinite;
-
-            SourceVoice.SubmitSourceBuffer(buffer, null);
-        }
-
-        private readonly Dictionary<long, SoundSourceBuffer> samplesProcessing = new Dictionary<long, SoundSourceBuffer>();
-
-        internal void LoadBuffer(SoundSourceBuffer samples, bool eos, int length)
-        {
-            var lptr = samples.Buffer.Pointer.ToInt64();
-
-            var buffer = new AudioBuffer(new DataPointer(samples.Buffer.Pointer, samples.Length * sizeof(short))) { Context = samples.Buffer.Pointer, Flags = !IsLooped && eos ? BufferFlags.EndOfStream : BufferFlags.None};
-
-            SourceVoice.SubmitSourceBuffer(buffer, null);
-
-            samplesProcessing[lptr] = samples;
-        }
-
-        private void Reset3DImpl()
-        {
-            // nothing to do here.
-        }
-
-        internal void UpdateVolume()
-        {
-            SourceVoice.SetVolume(Volume);
-        }
-
         private void UpdatePan()
         {
             UpdateStereoVolumes();
+        }
+
+        private void UpdatePitch()
+        {
+            SourceVoice.SetFrequencyRatio(MathUtil.Clamp((float)Math.Pow(2, Pitch) * dopplerPitchFactor, 0.5f, 2f)); // conversion octave to frequencyRatio
+        }
+
+        private void UpdateStereoVolumes()
+        {
+            var sourceChannelCount = Sound.Channels;
+
+            // then update the volume of each channel
+            Single[] matrix;
+            if (sourceChannelCount == 1)
+            {   // panChannelVolumes and localizationChannelVolumes are both in [0,1] so multiplication too, no clamp is needed
+                matrix = new[] { panChannelVolumes[0] * localizationChannelVolumes[0], panChannelVolumes[1] * localizationChannelVolumes[1] };
+            }
+            else if (sourceChannelCount == 2)
+            {
+                matrix = new[] { panChannelVolumes[0], 0, 0, panChannelVolumes[1] }; // no localization on stereo sounds.
+            }
+            else
+            {
+                throw new AudioSystemInternalException("The sound is not supposed to contain more than 2 channels");
+            }
+
+            SourceVoice.SetOutputMatrix(sourceChannelCount, Sound.MasterVoice.VoiceDetails.InputChannelCount, matrix);
         }
     }
 }
