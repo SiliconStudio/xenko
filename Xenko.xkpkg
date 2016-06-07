@@ -75,7 +75,10 @@ TemplateFolders:
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/SpriteSheetUI.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/StaticSpriteFont.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Textures/DefaultTexture.xktpl
-        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/UI/DefaultUI.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/UI/Canvas.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/UI/Grid.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/UI/StackPanel.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/UI/UniformGrid.xktpl
     - Path: sources/engine/SiliconStudio.Xenko.SpriteStudio.Offline/Templates/Assets
       Group: Assets
       Files:

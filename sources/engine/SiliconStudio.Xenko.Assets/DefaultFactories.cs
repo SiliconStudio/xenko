@@ -1,5 +1,4 @@
-﻿using System;
-using SiliconStudio.Assets;
+﻿using SiliconStudio.Assets;
 using SiliconStudio.Xenko.Assets.Audio;
 using SiliconStudio.Xenko.Assets.Effect;
 using SiliconStudio.Xenko.Assets.Entities;
@@ -7,8 +6,6 @@ using SiliconStudio.Xenko.Assets.Materials;
 using SiliconStudio.Xenko.Assets.RenderFrames;
 using SiliconStudio.Xenko.Assets.Skyboxes;
 using SiliconStudio.Xenko.Assets.Textures;
-using SiliconStudio.Xenko.Assets.UI;
-using SiliconStudio.Xenko.UI;
 
 namespace SiliconStudio.Xenko.Assets
 {
@@ -49,10 +46,6 @@ namespace SiliconStudio.Xenko.Assets
     }
 
     public class DefaultTextureFactory : DefaultAssetFactory<TextureAsset>
-    {
-    }
-
-    public class DefaultUIFactory : DefaultAssetFactory<UIAsset>
     {
     }
 }

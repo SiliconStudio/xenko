@@ -9,9 +9,9 @@ using SiliconStudio.Xenko.UI;
 
 namespace SiliconStudio.Xenko.Assets.UI
 {
-    public class UIAssetCompiler : AssetCompilerBase<UIAsset>
+    public class UIPageAssetCompiler : AssetCompilerBase<UIPageAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, UIAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, UIPageAsset asset, AssetCompilerResult result)
         {
             if (!EnsureSourcesExist(result, asset, assetAbsolutePath))
                 return;
@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Assets.UI
             {
                 var assetManager = new ContentManager();
 
-                var rootElement = (UIElement)AssetCloner.Clone(AssetParameters.UIAsset.RootElement, AssetClonerFlags.ReferenceAsNull);
+                var rootElement = (UIElement)AssetCloner.Clone(AssetParameters.UiPageAsset.RootElement, AssetClonerFlags.ReferenceAsNull);
                 assetManager.Save(Url, rootElement);
 
                 return Task.FromResult(ResultStatus.Successful);
@@ -44,13 +44,13 @@ namespace SiliconStudio.Xenko.Assets.UI
         [DataContract]
         public class UIConvertParameters
         {
-            public UIConvertParameters(UIAsset uiAsset)
+            public UIConvertParameters(UIPageAsset uiPageAsset)
             {
-                UIAsset = uiAsset;
+                UiPageAsset = uiPageAsset;
             }
 
             [DataMember]
-            public UIAsset UIAsset { get; set; }
+            public UIPageAsset UiPageAsset { get; set; }
         }
     }
 }

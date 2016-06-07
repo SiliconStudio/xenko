@@ -6,24 +6,23 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Xenko.UI;
-using SiliconStudio.Xenko.UI.Panels;
 
 namespace SiliconStudio.Xenko.Assets.UI
 {
     /// <summary>
     /// This assets represents a tree of UI elements. 
     /// </summary>
-    [DataContract("UIAsset")]
+    [DataContract(nameof(UIPageAsset))]
     [AssetDescription(FileExtension)]
-    [AssetCompiler(typeof(UIAssetCompiler))]
+    [AssetCompiler(typeof(UIPageAssetCompiler))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [Display("UI")]
-    public sealed class UIAsset : Asset
+    public sealed class UIPageAsset : Asset
     {
-        private const string CurrentVersion = "1.7.0-alpha01";
+        private const string CurrentVersion = "1.7.0-beta01";
 
         /// <summary>
-        /// The default file extension used by the <see cref="UIAsset"/>.
+        /// The default file extension used by the <see cref="UIPageAsset"/>.
         /// </summary>
         public const string FileExtension = ".xkui";
 
@@ -34,6 +33,6 @@ namespace SiliconStudio.Xenko.Assets.UI
         [DataMember]
         [NotNull]
         [Display("Root Element")]
-        public UIElement RootElement { get; set; } = new Grid();
+        public UIElement RootElement { get; set; }
     }
 }
