@@ -34,10 +34,63 @@ namespace SiliconStudio.Quantum
             Index,
         }
 
-        private class NodePathElement
+        private struct NodePathElement : IEquatable<NodePathElement>
         {
-            public ElementType Type;
-            public object Value;
+            public readonly ElementType Type;
+            public readonly object Value;
+
+            private NodePathElement(object value, ElementType type)
+            {
+                Value = value;
+                Type = type;
+            }
+
+            public static NodePathElement CreateMember(string name)
+            {
+                return new NodePathElement(name, ElementType.Member);
+            }
+
+            public static NodePathElement CreateTarget()
+            {
+                // We use a guid to allow equality test to fail between two different instances returned by CreateTarget
+                return new NodePathElement(Guid.NewGuid(), ElementType.Target);
+            }
+
+            public static NodePathElement CreateIndex(Index index)
+            {
+                // We use a guid to allow equality test to fail between two different instances returned by CreateTarget
+                return new NodePathElement(index, ElementType.Index);
+            }
+
+            public bool Equals(NodePathElement other)
+            {
+                return Type == other.Type && Equals(Value, other.Value);
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj))
+                    return false;
+                return obj is NodePathElement && Equals((NodePathElement)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    return ((int)Type*397) ^ (Value?.GetHashCode() ?? 0);
+                }
+            }
+
+            public static bool operator ==(NodePathElement left, NodePathElement right)
+            {
+                return left.Equals(right);
+            }
+
+            public static bool operator !=(NodePathElement left, NodePathElement right)
+            {
+                return !left.Equals(right);
+            }
 
             public override string ToString()
             {
@@ -55,12 +108,14 @@ namespace SiliconStudio.Quantum
             }
         }
 
-        private readonly List<NodePathElement> path = new List<NodePathElement>();
+        private const int DefaultCapacity = 16;
+        private readonly List<NodePathElement> path;
 
-        private GraphNodePath(IGraphNode rootNode, bool isEmpty)
+        private GraphNodePath(IGraphNode rootNode, bool isEmpty, int defaultCapacity)
         {
             RootNode = rootNode;
             IsEmpty = isEmpty;
+            path = new List<NodePathElement>(defaultCapacity);
         }
 
         /// <summary>
@@ -68,7 +123,7 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="rootNode">The root node to represent with this instance of <see cref="GraphNodePath"/>.</param>
         public GraphNodePath(IGraphNode rootNode)
-            : this(rootNode, true)
+            : this(rootNode, true, DefaultCapacity)
         {
         }
 
@@ -141,7 +196,7 @@ namespace SiliconStudio.Quantum
         /// <param name="type">The type of child to append.</param>
         /// <param name="index">The index of the target if it is in an enumerable reference.</param>
         /// <returns></returns>
-        public GraphNodePath Append(IGraphNode parentNode, IGraphNode target, ElementType type, object index)
+        public GraphNodePath Append(IGraphNode parentNode, IGraphNode target, ElementType type, Index index)
         {
             if (parentNode == target)
                 return Clone();
@@ -151,13 +206,13 @@ namespace SiliconStudio.Quantum
             switch (type)
             {
                 case ElementType.Member:
-                    result.path.Add(new NodePathElement { Type = ElementType.Member, Value = target.Name });
+                    result.path.Add(NodePathElement.CreateMember(target.Name));
                     return result;
                 case ElementType.Target:
-                    result.path.Add(new NodePathElement { Type = ElementType.Target });
+                    result.path.Add(NodePathElement.CreateTarget());
                     return result;
                 case ElementType.Index:
-                    result.path.Add(new NodePathElement { Type = ElementType.Index, Value = index });
+                    result.path.Add(NodePathElement.CreateIndex(index));
                     return result;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type), type, null);
@@ -194,22 +249,24 @@ namespace SiliconStudio.Quantum
             switch (type)
             {
                 case ElementType.Member:
-                    if (!(elementValue is string))
-                        throw new ArgumentException("The value must be a string when type is ElementType.Member.");
-                    break;
+                    var name = elementValue as string;
+                    if (name == null)
+                        throw new ArgumentException("The value must be a non-null string when type is ElementType.Member.");
+                    result.path.Add(NodePathElement.CreateMember(name));
+                    return result;
                 case ElementType.Target:
                     if (elementValue != null)
                         throw new ArgumentException("The value must be null when type is ElementType.Target.");
-                    break;
+                    result.path.Add(NodePathElement.CreateTarget());
+                    return result;
                 case ElementType.Index:
                     if (!(elementValue is Index))
                         throw new ArgumentException("The value must be an Index when type is ElementType.Index.");
-                    break;
+                    result.path.Add(NodePathElement.CreateIndex((Index)elementValue));
+                    return result;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type));
             }
-            result.path.Add(new NodePathElement { Type = type, Value = elementValue });
-            return result;
         }
 
         public GraphNodePath SubPath(int nodeCount)
@@ -270,7 +327,7 @@ namespace SiliconStudio.Quantum
 
         private GraphNodePath Clone(IGraphNode newRoot, bool isEmpty)
         {
-            var clone = new GraphNodePath(newRoot, isEmpty);
+            var clone = new GraphNodePath(newRoot, isEmpty, Math.Max(path.Count, DefaultCapacity));
             clone.path.AddRange(path);
             return clone;
         }
