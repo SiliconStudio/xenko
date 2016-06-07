@@ -48,15 +48,17 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             result.Platform = "Windows";
             result.Serial = Environment.MachineName;
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
+    #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
+            result.DeviceName = "Direct3D12";
+    #elif SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
             result.DeviceName = "Direct3D";
-#elif SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+    #elif SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             result.DeviceName = "OpenGLES";
-#elif SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+    #elif SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
             result.DeviceName = "OpenGL";
-#elif SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
+    #elif SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
             result.DeviceName = "Vulkan";
-#endif
+    #endif
 #elif SILICONSTUDIO_PLATFORM_ANDROID
             result.Platform = "Android";
             result.DeviceName = Android.OS.Build.Manufacturer + " " + Android.OS.Build.Model;
@@ -66,11 +68,13 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             result.DeviceName = iOSDeviceType.Version.ToString();
             result.Serial = UIKit.UIDevice.CurrentDevice.Name;
 #elif SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
-#if SILICONSTUDIO_PLATFORM_WINDOWS_PHONE
+    #if SILICONSTUDIO_PLATFORM_WINDOWS_PHONE
             result.Platform = "WindowsPhone";
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_STORE
+    #elif SILICONSTUDIO_PLATFORM_WINDOWS_STORE
             result.Platform = "WindowsStore";
-#endif
+    #else
+            result.Platform = "Windows10";
+    #endif
             var deviceInfo = new EasClientDeviceInformation();
             result.DeviceName = deviceInfo.SystemManufacturer + " " + deviceInfo.SystemProductName;
             try
@@ -79,13 +83,17 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             }
             catch (Exception)
             {
+    #if SILICONSTUDIO_PLATFORM_WINDOWS_PHONE || SILICONSTUDIO_PLATFORM_WINDOWS_STORE
                 var token = HardwareIdentification.GetPackageSpecificToken(null);
                 var hardwareId = token.Id;
 
                 var hasher = HashAlgorithmProvider.OpenAlgorithm("MD5");
                 var hashed = hasher.HashData(hardwareId);
 
-                result.Serial =  CryptographicBuffer.EncodeToHexString(hashed);
+                result.Serial = CryptographicBuffer.EncodeToHexString(hashed);
+    #else
+                // Ignored on Windows 10
+    #endif
             }
 #endif
 

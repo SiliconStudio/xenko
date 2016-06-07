@@ -20,7 +20,7 @@ namespace SiliconStudio.Quantum
     {
         private readonly Stack<GraphNode> contextStack = new Stack<GraphNode>();
         private readonly HashSet<IContent> referenceContents = new HashSet<IContent>();
-        private static readonly Type[] InternalPrimitiveTypes = { typeof(string), typeof(Guid) };
+        private static readonly Type[] InternalPrimitiveTypes = { typeof(decimal), typeof(string), typeof(Guid) };
         private GraphNode rootNode;
         private Guid rootGuid;
         private NodeFactoryDelegate currentNodeFactory;
@@ -187,20 +187,9 @@ namespace SiliconStudio.Quantum
         /// <param name="descriptor">The descriptor of the root object being constructed.</param>
         /// <param name="shouldProcessReference">Indicates whether the reference that will be created in the node should be processed or not.</param>
         /// <returns><c>true</c> if the node should be constructed, <c>false</c> if it should be discarded.</returns>
-        /// <remarks>This method is internal so it can be used by the <see cref="ModelConsistencyCheckVisitor"/>.</remarks>
         private void NotifyNodeConstructing(ObjectDescriptor descriptor, out bool shouldProcessReference)
         {
-            var handler = NodeConstructing;
-            if (handler != null)
-            {
-                var args = new NodeConstructingArgs(descriptor, null);
-                handler(this, args);
-                shouldProcessReference = args.ShouldProcessReference;
-            }
-            else
-            {
-                shouldProcessReference = true;
-            }
+            NotifyNodeConstructing(descriptor, null, out shouldProcessReference);
         }
 
         /// <summary>
@@ -210,8 +199,7 @@ namespace SiliconStudio.Quantum
         /// <param name="member">The member descriptor of the member being constructed.</param>
         /// <param name="shouldProcessReference">Indicates whether the reference that will be created in the node should be processed or not.</param>
         /// <returns><c>true</c> if the node should be constructed, <c>false</c> if it should be discarded.</returns>
-        /// <remarks>This method is internal so it can be used by the <see cref="ModelConsistencyCheckVisitor"/>.</remarks>
-        internal void NotifyNodeConstructing(ObjectDescriptor containerDescriptor, IMemberDescriptor member, out bool shouldProcessReference)
+        private void NotifyNodeConstructing(ObjectDescriptor containerDescriptor, IMemberDescriptor member, out bool shouldProcessReference)
         {
             var handler = NodeConstructing;
             if (handler != null)
@@ -237,7 +225,7 @@ namespace SiliconStudio.Quantum
 
             // If this member should contains a reference, create it now.
             GraphNode containerNode = GetContextNode();
-            IContent content = ContentFactory.CreateMemberContent(this, containerNode.Content, member, IsPrimitiveType(member.Type), value, shouldProcessReference);
+            IContent content = ContentFactory.CreateMemberContent(this, (ContentBase)containerNode.Content, member, IsPrimitiveType(member.Type), value, shouldProcessReference);
             var node = (GraphNode)currentNodeFactory(member.Name, content, Guid.NewGuid());
             containerNode.AddChild(node);
 
@@ -259,15 +247,16 @@ namespace SiliconStudio.Quantum
 
         public IReference CreateReferenceForNode(Type type, object value)
         {
-            // We don't create references for primitive types
+            // We don't create references for primitive types and structs
             if (IsPrimitiveType(type) || type.IsStruct())
                 return null;
 
+            // At this point it is either a reference type or a collection
             ITypeDescriptor descriptor = value != null ? TypeDescriptorFactory.Find(value.GetType()) : null;
             var valueType = GetElementValueType(descriptor);
 
-            // This is either an object reference or a enumerable reference of non-primitive type (excluding custom primitive type)
-            if (valueType == null || (!IsPrimitiveType(valueType) && !valueType.IsStruct()))
+            // We create reference only for structs (in case of collection of structs) and classes (in a collection or not) 
+            if (valueType == null || !IsPrimitiveType(valueType))
                 return Reference.CreateReference(value, type, Reference.NotInCollection);
 
             return null;

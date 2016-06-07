@@ -13,7 +13,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <summary>
         /// The reference to the element at the opposite side of the link.
         /// </summary>
-        IContentReference Element { get; }
+        IReference Element { get; }
 
         /// <summary>
         /// The type of the link.

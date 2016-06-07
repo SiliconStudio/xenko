@@ -1,11 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using SiliconStudio.Core.Serialization;
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Serialization.Serializers;
 
@@ -16,10 +13,10 @@ namespace SiliconStudio.Core.Serialization.Contents
     [DataSerializerGlobal(typeof(ListSerializer<ChunkReference>))]
     public class ContentSerializerContext
     {
-        internal readonly List<ChunkReference> chunkReferences = new List<ChunkReference>();
+        private readonly List<ChunkReference> chunkReferences = new List<ChunkReference>();
         private readonly Dictionary<Type, int> objectsPerType = new Dictionary<Type, int>();
         private readonly HashSet<object> generatedUrlObjects = new HashSet<object>();
-        private string generatedUrlPrefix;
+        private readonly string generatedUrlPrefix;
 
         public enum AttachedReferenceSerialization
         {
@@ -29,18 +26,18 @@ namespace SiliconStudio.Core.Serialization.Contents
         }
 
         public static PropertyKey<ContentSerializerContext> ContentSerializerContextProperty = new PropertyKey<ContentSerializerContext>("ContentSerializerContext", typeof(ContentSerializerContext));
+
         public static PropertyKey<AttachedReferenceSerialization> SerializeAttachedReferenceProperty = new PropertyKey<AttachedReferenceSerialization>("SerializeAttachedReference", typeof(ContentSerializerContext));
 
-        public ContentManager ContentManager { get; private set; }
-        public string Url { get; protected set; }
-        public ArchiveMode Mode { get; protected set; }
+        public ContentManager ContentManager { get; }
 
-        public List<ContentReference> ContentReferences { get; set; }
+        public string Url { get; }
 
-        public bool RegenerateUrls { get; set; }
+        public ArchiveMode Mode { get; }
 
-        internal ContentManager.AssetReference AssetReference { get; set; }
-        public bool LoadContentReferences { get; set; }
+        internal List<ContentReference> ContentReferences { get; }
+
+        internal bool LoadContentReferences { get; set; }
 
         internal ContentSerializerContext(string url, ArchiveMode mode, ContentManager contentManager)
         {
@@ -51,43 +48,56 @@ namespace SiliconStudio.Core.Serialization.Contents
             generatedUrlPrefix = Url + "/gen/";
         }
 
-        public int AddContentReference(ContentReference contentReference)
+        internal void SerializeContent(SerializationStream stream, IContentSerializer serializer, object objToSerialize)
         {
-            if (contentReference == null)
+            stream.Context.SerializerSelector = ContentManager.Serializer.LowLevelSerializerSelector;
+            serializer.Serialize(this, stream, objToSerialize);
+        }
+
+        internal void SerializeReferences(SerializationStream stream)
+        {
+            var references = chunkReferences;
+            stream.Context.SerializerSelector = ContentManager.Serializer.LowLevelSerializerSelector;
+            stream.Serialize(ref references, Mode);
+        }
+
+        internal int AddContentReference(ContentReference reference)
+        {
+            if (reference == null)
                 return ChunkReference.NullIdentifier;
 
             // TODO: This behavior should be controllable
-            if (contentReference.State != ContentReferenceState.NeverLoad && contentReference.ObjectValue != null)
+            if (reference.State != ContentReferenceState.NeverLoad && reference.ObjectValue != null)
             {
                 // Auto-generate URL if necessary
-                BuildUrl(contentReference);
-                //Executor.ProcessObject(this, contentReference.Type, contentReference);
-                ContentReferences.Add(contentReference);
+                BuildUrl(reference);
+                //Executor.ProcessObject(this, reference.Type, reference);
+                ContentReferences.Add(reference);
             }
 
-            return AddChunkReference(contentReference.Location, contentReference.Type);
+            return AddChunkReference(reference.Location, reference.Type);
         }
 
-        public ContentReference<T> GetContentReference<T>(int index) where T : class
+        internal ContentReference<T> GetContentReference<T>(int index) where T : class
         {
             if (index == ChunkReference.NullIdentifier)
                 return null;
 
             var chunkReference = GetChunkReference(index);
 
-            var contentReference = new ContentReference<T>(Guid.Empty, chunkReference.Location);
+            var contentReference = new ContentReference<T>(chunkReference.Location);
 
             ContentReferences.Add(contentReference);
 
             return contentReference;
         }
 
-        public ChunkReference GetChunkReference(int index)
+        private ChunkReference GetChunkReference(int index)
         {
             return chunkReferences[index];
         }
 
-        public int AddChunkReference(string url, Type type)
+        private int AddChunkReference(string url, Type type)
         {
             // Starting search from the end is maybe more likely to hit quickly (and cache friendly)?
             for (int i = chunkReferences.Count - 1; i >= 0; --i)
@@ -106,21 +116,20 @@ namespace SiliconStudio.Core.Serialization.Contents
         }
 
 
-        public void BuildUrl(ContentReference contentReference)
+        private void BuildUrl(ContentReference reference)
         {
-            var content = contentReference.ObjectValue;
-            string url = contentReference.Location;
+            var content = reference.ObjectValue;
+            string url = reference.Location;
 
             if (content == null)
                 return;
 
-            // If URL has been auto-generated previously, regenerates it (so that no collision occurs if item has been modified)
-            if (url == null || (RegenerateUrls && url.StartsWith(generatedUrlPrefix) && !generatedUrlObjects.Contains(content)))
+            if (url == null)
             {
                 // Already registered?
                 if (ContentManager.TryGetAssetUrl(content, out url))
                 {
-                    contentReference.Location = url;
+                    reference.Location = url;
                     return;
                 }
 
@@ -135,25 +144,12 @@ namespace SiliconStudio.Core.Serialization.Contents
                 objectsPerType.TryGetValue(contentType, out currentCount);
                 objectsPerType[contentType] = ++currentCount;
 
-                contentReference.Location = string.Format("{0}{1}_{2}", generatedUrlPrefix, content.GetType().Name, currentCount);
+                reference.Location = $"{generatedUrlPrefix}{content.GetType().Name}_{currentCount}";
             }
 
             // Register it
-            //if (contentReference.Location != null)
-            //    ContentManager.RegisterAsset(contentReference.Location, contentReference.ObjectValue, serializationType, false);
-        }
-
-        public void SerializeContent(SerializationStream stream, IContentSerializer serializer, object objToSerialize)
-        {
-            stream.Context.SerializerSelector = ContentManager.Serializer.LowLevelSerializerSelector;
-            serializer.Serialize(this, stream, objToSerialize);
-        }
-
-        public void SerializeReferences(SerializationStream stream)
-        {
-            var references = chunkReferences;
-            stream.Context.SerializerSelector = ContentManager.Serializer.LowLevelSerializerSelector;
-            stream.Serialize(ref references, Mode);
+            //if (reference.Location != null)
+            //    ContentManager.RegisterAsset(reference.Location, reference.ObjectValue, serializationType, false);
         }
     }
 }

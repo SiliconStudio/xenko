@@ -189,7 +189,11 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         {
             await base.LoadContent();
 
+#if !SILICONSTUDIO_XENKO_UI_SDL
+            // Disabled for SDL as a positio of (0,0) actually means that the client area of the
+            // window will be at (0,0) not the top left corner of the non-client area of the window.
             Window.Position = Int2.Zero; // avoid possible side effects due to position of the window in the screen.
+#endif
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             // Register 3D card name

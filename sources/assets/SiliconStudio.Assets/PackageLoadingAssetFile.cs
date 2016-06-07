@@ -3,6 +3,7 @@
 using System;
 using System.IO;
 using System.Text;
+using SharpYaml;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Yaml;
 
@@ -62,7 +63,18 @@ namespace SiliconStudio.Assets
 
         public YamlAsset AsYamlAsset()
         {
-            return new YamlAsset(this);
+            try
+            {
+                return new YamlAsset(this);
+            }
+            catch (SyntaxErrorException)
+            {
+                return null;
+            }
+            catch (YamlException)
+            {
+                return null;
+            }
         }
 
         internal Stream OpenStream()

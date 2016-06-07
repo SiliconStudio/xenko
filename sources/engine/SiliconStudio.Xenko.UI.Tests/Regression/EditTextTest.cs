@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             var middleOfScreen = new Vector3(UIComponent.Resolution.X, UIComponent.Resolution.Y, 0) / 2;
 
-            edit1 = new EditText(Services)
+            edit1 = new EditText()
             {
                 Name = "TestEdit1",
                 Font = Content.Load<SpriteFont>("MSMincho10"),
@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             edit1.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, new Vector3(middleOfScreen.X, 100, 0));
             edit1.TextChanged += Edit1OnTextChanged;
 
-            edit2 = new EditText(Services)
+            edit2 = new EditText()
             {
                 Name = "TestEdit2",
                 Font = Content.Load<SpriteFont>("MicrosoftSansSerif15"),
@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             edit2.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, new Vector3(middleOfScreen.X, 200, 0));
             edit2.TextChanged += Edit2OnTextChanged;
 
-            edit3 = new EditText(Services)
+            edit3 = new EditText()
             {
                 Name = "TestEdit3",
                 Font = Content.Load<SpriteFont>("MSMincho10"),
@@ -77,8 +77,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             };
             edit3.DependencyProperties.Set(Canvas.PinOriginPropertyKey, 0.5f * Vector3.One);
             edit3.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, new Vector3(middleOfScreen.X, 300, 0));
-
-            edit4 = new EditText(Services)
+            
+            edit4 = new EditText()
             {
                 Name = "TestEdit4",
                 Font = Content.Load<SpriteFont>("MicrosoftSansSerif15"),
@@ -95,6 +95,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             canvas.Children.Add(edit2);
             canvas.Children.Add(edit3);
             canvas.Children.Add(edit4);
+
+            canvas.UIElementServices = new UIElementServices { Services = this.Services };
 
             UIComponent.RootElement = canvas;
         }

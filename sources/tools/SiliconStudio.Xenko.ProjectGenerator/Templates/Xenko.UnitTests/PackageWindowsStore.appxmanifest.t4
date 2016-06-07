@@ -1,6 +1,6 @@
 ﻿<#@ template inherits="ProjectTemplateTransformation" language="C#" #>
 <# var identityGuid = System.Guid.NewGuid(); #>
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
 
   <Identity Name="<#= identityGuid.ToString().ToLowerInvariant() #>"
@@ -28,12 +28,12 @@
         EntryPoint="<#= Properties.Namespace #>.App">
         <m2:VisualElements
             DisplayName="<#= ProjectName #>"
-            Square150x150Logo="AssetsWindowsStore\Logo.png"
-            Square30x30Logo="AssetsWindowsStore\SmallLogo.png"
+            Square150x150Logo="Resources\WindowsStore\Logo.png"
+            Square30x30Logo="Resources\WindowsStore\SmallLogo.png"
             Description="<#= ProjectName #>"
             ForegroundText="light"
             BackgroundColor="#464646">
-            <m2:SplashScreen Image="AssetsWindowsStore\SplashScreen.png"/>
+            <m2:SplashScreen Image="Resources\WindowsStore\SplashScreen.png"/>
         </m2:VisualElements>
     </Application>
   </Applications>

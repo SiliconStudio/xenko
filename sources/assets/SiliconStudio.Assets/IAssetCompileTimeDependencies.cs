@@ -16,6 +16,6 @@ namespace SiliconStudio.Assets
         /// Enumerates the compile time dependencies.
         /// </summary>
         /// <returns></returns>
-        IEnumerable<IContentReference> EnumerateCompileTimeDependencies();
+        IEnumerable<IReference> EnumerateCompileTimeDependencies();
     }
 }

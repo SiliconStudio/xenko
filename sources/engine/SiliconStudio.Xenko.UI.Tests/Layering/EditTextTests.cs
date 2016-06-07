@@ -27,7 +27,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             var services = new ServiceRegistry();
             services.AddService(typeof(IGame), new Game());
 
-            var edit = new EditText(services);
+            var edit = new EditText();
+            edit.UIElementServices = new UIElementServices { Services = services };
 
             // - test the properties that are supposed to invalidate the object measurement
             UIElementLayeringTests.TestMeasureInvalidation(edit, () => edit.Font = null);

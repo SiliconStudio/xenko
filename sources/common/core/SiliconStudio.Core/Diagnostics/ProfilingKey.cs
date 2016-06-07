@@ -43,18 +43,14 @@ namespace SiliconStudio.Core.Diagnostics
             if (name == null) throw new ArgumentNullException("name");
             Children = new List<ProfilingKey>();
             Parent = parent;
-
-            // TODO: add a lock because the currently passed parent is static and might crash in the game studio where we have multiple concurrent games - this need to be reviewed.
-            lock (parent.Children)
-            {
-                // Register ourself in parent's children.
-                parent.Children.Add(this);
-            }
-            Name = string.Format("{0}.{1}", Parent, name);
+            Name = $"{Parent}.{name}";
             Flags = flags;
 
             lock (AllKeys)
             {
+                // Register ourself in parent's children.
+                parent.Children?.Add(this);
+
                 AllKeys.Add(this);
             }
         }

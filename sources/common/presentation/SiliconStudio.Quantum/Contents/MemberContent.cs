@@ -16,7 +16,7 @@ namespace SiliconStudio.Quantum.Contents
     {
         private readonly NodeContainer nodeContainer;
 
-        public MemberContent(INodeBuilder nodeBuilder, IContent container, IMemberDescriptor member, bool isPrimitive, IReference reference)
+        public MemberContent(INodeBuilder nodeBuilder, ContentBase container, IMemberDescriptor member, bool isPrimitive, IReference reference)
             : base(nodeBuilder.TypeDescriptorFactory.Find(member.Type), isPrimitive, reference)
         {
             if (container == null) throw new ArgumentNullException(nameof(container));
@@ -38,7 +38,7 @@ namespace SiliconStudio.Quantum.Contents
         /// <summary>
         /// Gets the container content of this member content.
         /// </summary>
-        public IContent Container { get; }
+        public ContentBase Container { get; }
 
         /// <inheritdoc/>
         public sealed override object Value { get { if (Container.Value == null) throw new InvalidOperationException("Container's value is null"); return Member.Get(Container.Value); } }
@@ -70,7 +70,7 @@ namespace SiliconStudio.Quantum.Contents
                 Member.Set(containerValue, newValue);
 
                 if (Container.Value.GetType().GetTypeInfo().IsValueType)
-                    Container.Update(containerValue);
+                    Container.UpdateFromMember(containerValue, Index.Empty);
             }
             UpdateReferences();
             NotifyContentChanged(index, ContentChangeType.ValueChange, oldValue, newValue);
@@ -153,6 +153,12 @@ namespace SiliconStudio.Quantum.Contents
 
             UpdateReferences();
             NotifyContentChanged(itemIndex, ContentChangeType.CollectionRemove, item, null);
+        }
+
+        protected internal override void UpdateFromMember(object newValue, Index index)
+        {
+            // TODO: shouldn't we prevent to send notification events in this scenario?
+            Update(newValue, index);
         }
 
         private void UpdateReferences()

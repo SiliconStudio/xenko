@@ -51,7 +51,10 @@
     <Compile Include="Controls\ModalElement.cs" />
     <Compile Include="Controls\ScrollBar.cs" />
     <Compile Include="Controls\Slider.cs" />
+    <Compile Include="Engine\Processors\UIElementLinkProcessor.cs" />
     <Compile Include="Engine\UIComponent.cs" />
+    <Compile Include="Engine\UIElementLinkComponent.cs" />
+    <Compile Include="Engine\UIElementTransformLink.cs" />
     <Compile Include="IScrollAnchorInfo.cs" />
     <Compile Include="IScrollInfo.cs" />
     <Compile Include="KeyEventArgs.cs" />
@@ -128,6 +131,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UIElementExtensions.cs" />
     <Compile Include="UIElementCollection.cs" />
+    <Compile Include="UIElementServices.cs" />
     <Compile Include="UIInternalException.cs" />
     <Compile Include="UIProfilerKeys.cs" />
     <Compile Include="UISystem.cs" />

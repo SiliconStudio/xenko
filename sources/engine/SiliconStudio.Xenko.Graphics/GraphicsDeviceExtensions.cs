@@ -24,11 +24,8 @@ namespace SiliconStudio.Xenko.Graphics
         {
             if (effectInstance == null) throw new ArgumentNullException("effectInstance");
 
-            // Apply the effect
-            effectInstance.Apply(graphicsContext);
-
             // Draw a full screen quad
-            graphicsContext.CommandList.GraphicsDevice.PrimitiveQuad.Draw(graphicsContext.CommandList, effectInstance);
+            graphicsContext.CommandList.GraphicsDevice.PrimitiveQuad.Draw(graphicsContext, effectInstance);
         }
 
         #region DrawQuad/DrawTexture Helpers

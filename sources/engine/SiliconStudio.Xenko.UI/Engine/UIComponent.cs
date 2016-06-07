@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Engine
         [Display("Root Element")]
         [DataMemberIgnore] // TODO this is temporary as long as we don't have an UI editor and UI data asset.
         public UIElement RootElement { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the value indicating whether the UI should be full screen.
         /// </summary>
