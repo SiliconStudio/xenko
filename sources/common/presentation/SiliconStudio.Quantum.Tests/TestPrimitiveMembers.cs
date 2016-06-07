@@ -61,7 +61,7 @@ namespace SiliconStudio.Quantum.Tests
 
             // Construction
             var containerNode = (GraphNode)container.GetOrCreateNode(obj);
-            Helper.TestObjectContentNode(containerNode, obj, 1);
+            Helper.TestNonCollectionObjectContentNode(containerNode, obj, 1);
             var memberNode = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(IntMember.Member), false);
 
@@ -82,7 +82,7 @@ namespace SiliconStudio.Quantum.Tests
 
             // Construction
             var containerNode = (GraphNode)container.GetOrCreateNode(obj);
-            Helper.TestObjectContentNode(containerNode, obj, 1);
+            Helper.TestNonCollectionObjectContentNode(containerNode, obj, 1);
             var memberNode = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(StringMember.Member), false);
 
@@ -103,7 +103,7 @@ namespace SiliconStudio.Quantum.Tests
 
             // Construction
             var containerNode = (GraphNode)container.GetOrCreateNode(obj);
-            Helper.TestObjectContentNode(containerNode, obj, 1);
+            Helper.TestNonCollectionObjectContentNode(containerNode, obj, 1);
             var memberNode = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(GuidMember.Member), false);
 
@@ -124,7 +124,7 @@ namespace SiliconStudio.Quantum.Tests
 
             // Construction
             var containerNode = (GraphNode)container.GetOrCreateNode(obj);
-            Helper.TestObjectContentNode(containerNode, obj, 1);
+            Helper.TestNonCollectionObjectContentNode(containerNode, obj, 1);
             var memberNode = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(EnumMember.Member), false);
 
@@ -146,7 +146,7 @@ namespace SiliconStudio.Quantum.Tests
 
             // Construction
             var containerNode = (GraphNode)container.GetOrCreateNode(obj);
-            Helper.TestObjectContentNode(containerNode, obj, 1);
+            Helper.TestNonCollectionObjectContentNode(containerNode, obj, 1);
             var memberNode = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(RegisteredPrimitiveClassMember.Member), false);
 
@@ -168,7 +168,7 @@ namespace SiliconStudio.Quantum.Tests
 
             // Construction
             var containerNode = (GraphNode)container.GetOrCreateNode(obj);
-            Helper.TestObjectContentNode(containerNode, obj, 1);
+            Helper.TestNonCollectionObjectContentNode(containerNode, obj, 1);
             var memberNode = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, memberNode, obj, obj.Member, nameof(RegisteredPrimitiveStructMember.Member), false);
 

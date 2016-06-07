@@ -15,8 +15,9 @@ namespace SiliconStudio.Quantum.Contents
         {
         }
 
-        public override void Update(object newValue, Index index)
+        protected internal override void UpdateFromMember(object newValue, Index index)
         {
+            // TODO: shouldn't we prevent to send notification events in this scenario?
             var oldValue = Retrieve(index);
             NotifyContentChanging(index, ContentChangeType.ValueChange, oldValue, Value);
             if (!index.IsEmpty)
