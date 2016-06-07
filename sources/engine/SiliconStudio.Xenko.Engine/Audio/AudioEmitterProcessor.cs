@@ -168,7 +168,8 @@ namespace SiliconStudio.Xenko.Audio
                             instance.Volume = controller.Volume; // ensure that instance volume is valid
                             if(instance.PlayState == SoundPlayState.Stopped)
                                 instance.IsLooped = controller.IsLooped && !controller.ShouldExitLoop;    // update instances' IsLooped value, if was set by the user when when not listeners where activated.
-                            instance.Play(false);
+                            // ReSharper disable once UnusedVariable
+                            var task = instance.Play(false);
                         }
                     }
                     controller.ShouldBePlayed = false;
