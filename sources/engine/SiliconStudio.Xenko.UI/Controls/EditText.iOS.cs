@@ -50,10 +50,10 @@ namespace SiliconStudio.Xenko.UI.Controls
 
         internal GameBase GetGame()
         {
-            if (uiElementServices == null || uiElementServices.Services == null)
-                throw new ArgumentNullException("services");
+            if (UIElementServices.Services == null)
+                throw new InvalidOperationException("services");
 
-            var game = uiElementServices.Services.GetService(typeof(IGame)) as GameBase;
+            var game = UIElementServices.Services.GetService(typeof(IGame)) as GameBase;
             if (game == null)
                 throw new ArgumentException("Provided services need to contain a provider for the IGame interface.");
 

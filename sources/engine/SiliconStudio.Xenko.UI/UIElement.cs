@@ -337,7 +337,7 @@ namespace SiliconStudio.Xenko.UI
             }
         }
 
-        protected internal UIElementServices uiElementServices;
+        private UIElementServices uiElementServices;
 
         public UIElementServices UIElementServices
         {
