@@ -10,23 +10,23 @@ using SiliconStudio.Core.Serialization.Assets;
 
 namespace SiliconStudio.Xenko.Assets.UI
 {
-    public class UIPageAssetCompiler : AssetCompilerBase<UIPageAsset>
+    public class UILibraryAssetCompiler : AssetCompilerBase<UILibraryAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, UIPageAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, UILibraryAsset asset, AssetCompilerResult result)
         {
             if (!EnsureSourcesExist(result, asset, assetAbsolutePath))
                 return;
 
-            var parameters = new UIConvertParameters(asset);
+            var parameters = new UILibraryConvertParameters(asset);
             result.BuildSteps = new AssetBuildStep(AssetItem) { new UIConvertCommand(urlInStorage, parameters) };
         }
 
         /// <summary>
         /// Command used to convert the texture in the storage
         /// </summary>
-        public class UIConvertCommand : AssetCommand<UIConvertParameters>
+        public class UIConvertCommand : AssetCommand<UILibraryConvertParameters>
         {
-            public UIConvertCommand(string url, UIConvertParameters parameters)
+            public UIConvertCommand(string url, UILibraryConvertParameters parameters)
                 : base(url, parameters)
             {
             }
@@ -35,23 +35,24 @@ namespace SiliconStudio.Xenko.Assets.UI
             {
                 var assetManager = new ContentManager();
 
-                var uiPage = new Engine.UIPage { RootElement = AssetParameters.UIPageAsset.RootElement };
-                assetManager.Save(Url, uiPage);
+                var uiLibrary = new Engine.UILibrary();
+                uiLibrary.UIElements.AddRange(AssetParameters.UILibraryAsset.UIElements);
+                assetManager.Save(Url, uiLibrary);
 
                 return Task.FromResult(ResultStatus.Successful);
             }
         }
 
         [DataContract]
-        public class UIConvertParameters
+        public class UILibraryConvertParameters
         {
-            public UIConvertParameters(UIPageAsset uiPageAsset)
+            public UILibraryConvertParameters(UILibraryAsset uiLibraryAsset)
             {
-                UIPageAsset = uiPageAsset;
+                UILibraryAsset = uiLibraryAsset;
             }
 
             [DataMember]
-            public UIPageAsset UIPageAsset { get; set; }
+            public UILibraryAsset UILibraryAsset { get; set; }
         }
     }
 }

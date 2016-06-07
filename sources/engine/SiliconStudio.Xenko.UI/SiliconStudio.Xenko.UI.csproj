@@ -57,6 +57,7 @@
     <Compile Include="Engine\UIComponent.cs" />
     <Compile Include="Engine\UIElementLinkComponent.cs" />
     <Compile Include="Engine\UIElementTransformLink.cs" />
+    <Compile Include="Engine\UILibrary.cs" />
     <Compile Include="Engine\UIPage.cs" />
     <Compile Include="ImageSizeHelper.cs" />
     <Compile Include="IScrollAnchorInfo.cs" />
