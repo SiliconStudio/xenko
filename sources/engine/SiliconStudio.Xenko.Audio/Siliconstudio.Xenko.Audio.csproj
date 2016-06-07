@@ -70,9 +70,6 @@
     <Compile Include="CompressedSoundSource.cs" />
     <Compile Include="ConversionExtensions.Android.cs" />
     <Compile Include="ConversionExtensions.Windows.cs" />
-    <Compile Include="DynamicSoundEffectInstance.Android.cs" />
-    <Compile Include="DynamicSoundEffectInstance.iOS.cs" />
-    <Compile Include="DynamicSoundEffectInstance.SDL.cs" />
     <Compile Include="DynamicSoundSource.cs" />
     <Compile Include="IPositionableSound.cs" />
     <Compile Include="IPlayableSound.cs" />
