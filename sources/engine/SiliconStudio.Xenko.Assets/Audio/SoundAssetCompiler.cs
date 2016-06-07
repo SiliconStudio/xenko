@@ -82,25 +82,25 @@ namespace SiliconStudio.Xenko.Assets.Audio
                     throw new AssetException("Failed to compile a sound asset, ffmpeg was not found.");
                 }
 
+                var channels = AssetParameters.Spatialized ? 1 : 2;
                 var tempPcmFile = Path.GetTempFileName();
-                //todo add samplerate control and maybe channels too?
-                var ret = RunProcessAndGetOutput(ffmpeg, $"-i \"{assetSource}\" -f f32le -acodec pcm_f32le -ac {AssetParameters.Channels} -ar {AssetParameters.SampleRate} -y \"{tempPcmFile}\"");
+                var ret = RunProcessAndGetOutput(ffmpeg, $"-i \"{assetSource}\" -f f32le -acodec pcm_f32le -ac {channels} -ar {AssetParameters.SampleRate} -y \"{tempPcmFile}\"");
                 if (ret != 0)
                 {
                     File.Delete(tempPcmFile);
                     throw new AssetException($"Failed to compile a sound asset, ffmpeg failed to convert {assetSource}");
                 }
 
-                var encoder = new Celt(AssetParameters.SampleRate, CompressedSoundSource.SamplesPerFrame, AssetParameters.Channels, false);
+                var encoder = new Celt(AssetParameters.SampleRate, CompressedSoundSource.SamplesPerFrame, channels, false);
 
-                var uncompressed = CompressedSoundSource.SamplesPerFrame * AssetParameters.Channels * sizeof(short); //compare with int16 for CD quality comparison.. but remember we are dealing with 32 bit floats for encoding!!
+                var uncompressed = CompressedSoundSource.SamplesPerFrame * channels * sizeof(short); //compare with int16 for CD quality comparison.. but remember we are dealing with 32 bit floats for encoding!!
                 var target = (int)Math.Floor(uncompressed / (float)AssetParameters.CompressionRatio);
 
                 var dataUrl = Url + "_Data";
                 var newSound = new Sound
                 {
                     CompressedDataUrl = dataUrl,
-                    Channels = AssetParameters.Channels,
+                    Channels = channels,
                     SampleRate = AssetParameters.SampleRate,
                     StreamFromDisk = AssetParameters.StreamFromDisk,
                     Spatialized = AssetParameters.Spatialized,
@@ -109,7 +109,7 @@ namespace SiliconStudio.Xenko.Assets.Audio
                 //make sure we don't compress celt data
                 commandContext.AddTag(new ObjectUrl(UrlType.ContentLink, dataUrl), disableCompressionSymbol);
 
-                var frameSize = CompressedSoundSource.SamplesPerFrame*AssetParameters.Channels;
+                var frameSize = CompressedSoundSource.SamplesPerFrame* channels;
                 using (var reader = new BinaryReader(new FileStream(tempPcmFile, FileMode.Open, FileAccess.Read)))
                 using (var outputStream = ContentManager.FileProvider.OpenStream(dataUrl, VirtualFileMode.Create, VirtualFileAccess.Write, VirtualFileShare.Read, StreamFlags.Seekable))
                 {

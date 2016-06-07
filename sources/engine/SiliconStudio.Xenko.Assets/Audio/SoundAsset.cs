@@ -19,12 +19,10 @@ namespace SiliconStudio.Xenko.Assets.Audio
 
         public int SampleRate { get; set; } = 44100;
 
-        public int Channels { get; set; } = 2;
+        public int CompressionRatio { get; set; } = 10;
 
         public bool StreamFromDisk { get; set; }
 
-        public bool Spatialized { get; set; }
-
-        public int CompressionRatio { get; set; } = 10;
+        public bool Spatialized { get; set; }  
     }
 }
