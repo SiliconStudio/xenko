@@ -91,6 +91,5 @@ namespace SiliconStudio.Xenko.Engine
         [Display("Snap Text")]
         [DefaultValue(true)]
         public bool SnapText { get; set; }
-
     }
 }

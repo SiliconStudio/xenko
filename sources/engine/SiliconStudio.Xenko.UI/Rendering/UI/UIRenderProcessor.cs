@@ -4,7 +4,6 @@
 using System.Collections.Generic;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.UI;
 
 namespace SiliconStudio.Xenko.Rendering.UI
 {
