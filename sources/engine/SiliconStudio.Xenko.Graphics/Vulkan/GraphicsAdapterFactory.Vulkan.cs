@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.Graphics
 #elif SILICONSTUDIO_PLATFORM_ANDROID
                 Marshal.StringToHGlobalAnsi("VK_KHR_android_surface"),
 #elif SILICONSTUDIO_PLATFORM_LINUX
-                Marshal.StringToHGlobalAnsi("VK_KHR_xlib_surface"),
+                Marshal.StringToHGlobalAnsi("VK_KHR_xcb_surface"),
 #endif
             };
 

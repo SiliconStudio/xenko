@@ -6,9 +6,9 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Graphics.SDL
 {
-        // Using is here otherwise it would conflict with the current namespace that also defines SDL.
+    // Using is here otherwise it would conflict with the current namespace that also defines SDL.
     using SDL2;
-
+    using System.Runtime.InteropServices;
     public class Window: IDisposable
     {
 #region Initialization
@@ -513,12 +513,38 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         /// Display of current Window.
         /// </summary>
         public IntPtr Display { get; private set;}
-#endif
 
         /// <summary>
-        /// The SDL window handle.
+        /// Given a Xlib display pointer, returns the corresponding Xcb connection.
         /// </summary>
-        public IntPtr SdlHandle { get; private set; }
+        /// <param name="display">The Xlib display pointer.</param>
+        /// <returns>A Xcb connection pointer.</returns>
+        [DllImport("libX11-xcb")]
+        private static extern IntPtr XGetXCBConnection(IntPtr display);
+
+        /// <summary>
+        /// Associated XcbConnection for <see cref="Display"/>. Null pointer if none available.
+        /// </summary>
+        public IntPtr XcbConnection
+        {
+            get
+            {
+                try
+                {
+                    return XGetXCBConnection(Display);
+                }
+                catch (Exception)
+                {
+                    return IntPtr.Zero;
+                }
+            }
+        }
+#endif
+
+    /// <summary>
+    /// The SDL window handle.
+    /// </summary>
+    public IntPtr SdlHandle { get; private set; }
 
         /// <summary>
         /// Is the Window still alive?
