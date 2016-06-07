@@ -127,10 +127,46 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 
             if (File.Exists(outputFile))
             {
-                return (Bitmap)Bitmap.FromFile(outputFile);
+                var bitmap = (Bitmap)Bitmap.FromFile(outputFile);
+
+                Normalize(bitmap);
+
+                return bitmap;
             }
 
             return new Bitmap(1, 1, PixelFormat.Format32bppArgb);
+        }
+
+        /// <summary>
+        /// Inverts the color channels if the signed distance appears to be negative.
+        /// Msdfgen will produce an inverted picture on occasion.
+        /// Because we use offset we can easily detect if the corner pixel has negative (correct) or positive distance (incorrect)
+        /// </summary>
+        /// <param name="bitmap"></param>
+        private void Normalize(Bitmap bitmap)
+        {
+            // Case 1 - corner pixel is negative (outside), do not invert
+            var firstPixel = bitmap.GetPixel(0, 0);
+            var colorChannels = 0;
+            if (firstPixel.R > 0) colorChannels++;
+            if (firstPixel.G > 0) colorChannels++;
+            if (firstPixel.B > 0) colorChannels++;
+            if (colorChannels <= 1)
+                return;
+
+            // Case 2 - corner pixel is positive (inside), invert the image
+            for (var i = 0; i < bitmap.Width; i++)
+                for (var j = 0; j < bitmap.Height; j++)
+                {
+                    var pixel = bitmap.GetPixel(i, j);
+
+                    int invertR = ((int)255 - pixel.R);
+                    int invertG = ((int)255 - pixel.G);
+                    int invertB = ((int)255 - pixel.B);
+                    var invertedPixel = Color.FromArgb((invertR << 16) + (invertG << 8) + (invertB));
+
+                    bitmap.SetPixel(i, j, invertedPixel);
+                }
         }
         
         private FontFace GetFontFaceFromSource(Factory factory, SpriteFontAsset options)
