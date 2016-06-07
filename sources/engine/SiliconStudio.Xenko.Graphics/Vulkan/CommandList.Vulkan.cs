@@ -617,6 +617,8 @@ namespace SiliconStudio.Xenko.Graphics
                 DestinationAccessMask = depthStencilBuffer.NativeAccessMask,
             };
             NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 0, null, 1, &memoryBarrier);
+
+            depthStencilBuffer.IsInitialized = true;
         }
 
         /// <summary>
@@ -657,6 +659,8 @@ namespace SiliconStudio.Xenko.Graphics
                 DestinationAccessMask = renderTarget.NativeAccessMask,
             };
             NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 0, null, 1, &memoryBarrier);
+
+            renderTarget.IsInitialized = true;
         }
 
         /// <summary>
@@ -1246,6 +1250,21 @@ namespace SiliconStudio.Xenko.Graphics
                         }
                     }
                     framebufferDirty = false;
+                }
+
+                // Clear attachments if needed
+                // TODO VULKAN: Can we use a custom render pass for this?
+                for (int index = 0; index < RenderTargetCount; index++)
+                {
+                    if (!renderTarget.IsInitialized)
+                    {
+                        Clear(renderTargets[index], Color4.Black);
+                    }
+                }
+
+                if (depthStencilBuffer != null && !depthStencilBuffer.IsInitialized)
+                {
+                    Clear(depthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
                 }
 
                 // Start new render pass

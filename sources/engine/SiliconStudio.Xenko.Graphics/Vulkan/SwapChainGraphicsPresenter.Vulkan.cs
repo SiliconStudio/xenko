@@ -190,6 +190,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         public override void BeginDraw(CommandList commandList)
         {
+            // Backbuffer needs to be cleared
+            backbuffer.IsInitialized = false;
         }
 
         public override void EndDraw(CommandList commandList, bool present)
@@ -349,7 +351,7 @@ namespace SiliconStudio.Xenko.Graphics
                 ImageExtent = new Extent2D((uint)Description.BackBufferWidth, (uint)Description.BackBufferHeight),
                 ImageFormat = backBufferFormat,
                 ImageColorSpace = Description.ColorSpace == ColorSpace.Gamma ? SharpVulkan.ColorSpace.SRgbNonlinear : 0,
-                ImageUsage = ImageUsageFlags.ColorAttachment | ImageUsageFlags.TransferSource,
+                ImageUsage = ImageUsageFlags.ColorAttachment,
                 PresentMode = swapChainPresentMode,
                 CompositeAlpha = CompositeAlphaFlags.Opaque,
                 MinImageCount = desiredImageCount,
@@ -449,6 +451,10 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 StructureType = StructureType.ImageMemoryBarrier,
                 SubresourceRange = new ImageSubresourceRange(ImageAspectFlags.Color, 0, 1, 0, 1),
+                OldLayout = ImageLayout.Undefined,
+                NewLayout = ImageLayout.PresentSource,
+                SourceAccessMask = AccessFlags.None,
+                DestinationAccessMask = AccessFlags.MemoryRead
             };
 
             var commandBuffer = GraphicsDevice.NativeCopyCommandBuffer;
@@ -457,6 +463,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             var buffers = GraphicsDevice.NativeDevice.GetSwapchainImages(swapChain);
             swapchainImages = new SwapChainImageInfo[buffers.Length];
+
             for (int i = 0; i < buffers.Length; i++)
             {
                 // Create image views
@@ -465,21 +472,6 @@ namespace SiliconStudio.Xenko.Graphics
 
                 // Transition to default layout
                 imageMemoryBarrier.Image = buffers[i];
-
-                // Clear swapchain images initially
-                imageMemoryBarrier.OldLayout = ImageLayout.Undefined;
-                imageMemoryBarrier.NewLayout = ImageLayout.TransferDestinationOptimal;
-                imageMemoryBarrier.SourceAccessMask = AccessFlags.None;
-                imageMemoryBarrier.DestinationAccessMask = AccessFlags.TransferWrite;
-                commandBuffer.PipelineBarrier(PipelineStageFlags.AllCommands, PipelineStageFlags.AllCommands, DependencyFlags.None, 0, null, 0, null, 1, &imageMemoryBarrier);
-
-                var range = new ImageSubresourceRange(ImageAspectFlags.Color, 0, 1, 0, 1);
-                commandBuffer.ClearColorImage(buffers[i], ImageLayout.TransferDestinationOptimal, new ClearColorValue(), 1, &range);
-
-                imageMemoryBarrier.OldLayout = ImageLayout.TransferDestinationOptimal;
-                imageMemoryBarrier.NewLayout = ImageLayout.PresentSource;
-                imageMemoryBarrier.SourceAccessMask = AccessFlags.TransferWrite;
-                imageMemoryBarrier.DestinationAccessMask = AccessFlags.MemoryRead;
                 commandBuffer.PipelineBarrier(PipelineStageFlags.AllCommands, PipelineStageFlags.AllCommands, DependencyFlags.None, 0, null, 0, null, 1, &imageMemoryBarrier);
             }
 

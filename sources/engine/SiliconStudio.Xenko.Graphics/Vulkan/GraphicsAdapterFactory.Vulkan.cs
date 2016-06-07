@@ -107,7 +107,7 @@ namespace SiliconStudio.Xenko.Graphics
                 var createInfo = new DebugReportCallbackCreateInfo
                 {
                     StructureType = StructureType.DebugReportCallbackCreateInfo,
-                    Flags = (uint)(DebugReportFlags.Error | DebugReportFlags.Warning | DebugReportFlags.PerformanceWarning/* | DebugReportFlags.Information | DebugReportFlags.Debug*/),
+                    Flags = (uint)(DebugReportFlags.Error | DebugReportFlags.Warning/* | DebugReportFlags.PerformanceWarning | DebugReportFlags.Information | DebugReportFlags.Debug*/),
                     Callback = Marshal.GetFunctionPointerForDelegate(debugReport)
                 };
                 createDebugReportCallback(NativeInstance, ref createInfo, null, out callback);

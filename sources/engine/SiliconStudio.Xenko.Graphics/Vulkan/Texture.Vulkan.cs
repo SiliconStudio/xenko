@@ -38,6 +38,7 @@ namespace SiliconStudio.Xenko.Graphics
         internal ImageView NativeImageView;
 
         private bool isNotOwningResources;
+        internal bool IsInitialized;
 
         internal Format NativeFormat;
         internal bool HasStencil;
@@ -346,6 +347,8 @@ namespace SiliconStudio.Xenko.Graphics
                 {
                     commandBuffer.CopyBufferToImage(uploadResource, NativeImage, ImageLayout.TransferDestinationOptimal, (uint)copies.Length, copiesPointer);
                 }
+
+                IsInitialized = true;
             }
 
             // Transition to default layout
