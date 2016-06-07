@@ -3,7 +3,6 @@
 using System.Threading.Tasks;
 
 using NUnit.Framework;
-
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI.Controls;
@@ -66,7 +65,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             grid.Children.Add(button2);
             grid.Children.Add(text);
 
-            UIComponent.RootElement = grid;
+            UIComponent.Page = new Engine.UIPage { RootElement = grid };
         }
 
         [Test]

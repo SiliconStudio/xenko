@@ -3,16 +3,16 @@
 
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.UI;
-using SiliconStudio.Xenko.UI;
 
 namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
-    /// Add an <see cref="UIElement"/> to an <see cref="Entity"/>.
+    /// Add an <see cref="UIPage"/> to an <see cref="Entity"/>.
     /// </summary>
     [DataContract("UIComponent")]
     [Display("UI", Expand = ExpandRule.Once)]
@@ -27,12 +27,12 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         /// <summary>
-        /// Gets or sets the root element of the UI hierarchy.
+        /// Gets or sets the UI page.
         /// </summary>
-        /// <userdoc>The root element of the UI hierarchy.</userdoc>
+        /// <userdoc>The UI page.</userdoc>
         [DataMember(10)]
-        [Display("Root Element")]
-        public UIElement RootElement { get; set; }
+        [Display("Page")]
+        public UIPage Page { get; set; }
 
         /// <summary>
         /// Gets or sets the value indicating whether the UI should be full screen.

@@ -54,7 +54,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             canvas.Children.Add(element1);
             canvas.Children.Add(element2);
 
-            UIComponent.RootElement = canvas;
+            UIComponent.Page = new Engine.UIPage { RootElement = canvas };
         }
 
         protected override void Update(GameTime gameTime)

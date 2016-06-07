@@ -102,7 +102,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             uniformGrid.Children.Add(lifeBar);
             uniformGrid.Children.Add(quitGameButton);
             
-            UIComponent.RootElement = uniformGrid;
+            UIComponent.Page = new Engine.UIPage { RootElement = uniformGrid };
         }
 
         private void Modal1OnOutsideClick(object sender, RoutedEventArgs routedEventArgs)

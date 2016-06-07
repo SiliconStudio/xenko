@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 BackgroundImage = (SpriteFromTexture)new Sprite(Content.Load<Texture>("DumbWhite"))
             };
 
-            UIComponent.RootElement = decorator;
+            UIComponent.Page = new Engine.UIPage { RootElement = decorator };
         }
 
         protected override void Update(GameTime gameTime)

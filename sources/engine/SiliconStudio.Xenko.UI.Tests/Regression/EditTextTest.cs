@@ -102,7 +102,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             canvas.UIElementServices = new UIElementServices { Services = this.Services };
 
-            UIComponent.RootElement = canvas;
+            UIComponent.Page = new Engine.UIPage { RootElement = canvas };
         }
 
         private bool IsLetter(char c)

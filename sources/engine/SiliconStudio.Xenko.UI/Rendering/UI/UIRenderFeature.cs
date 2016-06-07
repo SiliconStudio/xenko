@@ -153,7 +153,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
             foreach (var uiElementState in uiElementStates)
             {
                 var uiComponent = uiElementState.UIComponent;
-                var rootElement = uiComponent.RootElement;
+                var rootElement = uiComponent.Page?.RootElement;
                 if (rootElement == null)
                     continue;
 
@@ -189,7 +189,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 {
                     foreach (var uiState in uiElementStates)
                     {
-                        if (uiState.UIComponent.RootElement == null)
+                        if (uiState.UIComponent.Page == null)
                             continue;
 
                         UpdateMouseOver(uiState);
@@ -369,7 +369,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
         private void UpdateTouchEvents(RenderUIElement state, GameTime gameTime)
         {
-            var rootElement = state.UIComponent.RootElement;
+            var rootElement = state.UIComponent.Page.RootElement;
             var intersectionPoint = Vector3.Zero;
             var lastTouchPosition = new Vector2(float.NegativeInfinity);
 
@@ -466,7 +466,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
             var intersectionPoint = Vector3.Zero;
             var mousePosition = input.MousePosition;
-            var rootElement = state.UIComponent.RootElement;
+            var rootElement = state.UIComponent.Page.RootElement;
             var lastOveredElement = state.LastOveredElement;
             var overredElement = lastOveredElement;
 

@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Assets.UI
     /// <summary>
     /// This assets represents a tree of UI elements. 
     /// </summary>
-    [DataContract(nameof(UIPageAsset))]
+    [DataContract("UIPageAsset")]
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(UIPageAssetCompiler))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]

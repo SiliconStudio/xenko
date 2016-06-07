@@ -96,7 +96,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             scrollViewer = new TestScrollViewer { Name = "sv", Content = randomStackPanel, ScrollMode = ScrollingMode.HorizontalVertical, SnapToAnchors = true };
 
             // set the scroll viewer as the root
-            UIComponent.RootElement = scrollViewer;
+            UIComponent.Page = new Engine.UIPage { RootElement = scrollViewer };
         }
 
         private Button CreateButton(int col, int row, float minimumHeight = 0, float minimumWidth = 0, bool randomMinHeight = false, bool randowMinWidth = false)

@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             mainGrid.Children.Add(buttonLeftTop0);
             mainGrid.Children.Add(bottomButton);
 
-            UIComponent.RootElement = mainGrid;
+            UIComponent.Page = new Engine.UIPage { RootElement = mainGrid };
         }
 
         protected override void RegisterTests()

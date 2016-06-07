@@ -103,7 +103,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             baseGrid.Children.Add(grid);
             baseGrid.Children.Add(canvas);
 
-            UIComponent.RootElement = baseGrid;
+            UIComponent.Page = new Engine.UIPage { RootElement = baseGrid };
         }
 
         private void CreateAndInsertButton(UniformGrid grid, int c, int r)

@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             };
             ApplyToggleButtonBlockDefaultStyle(toggle);
 
-            UIComponent.RootElement = toggle;
+            UIComponent.Page = new Engine.UIPage { RootElement = toggle };
         }
 
         protected override void Update(GameTime gameTime)

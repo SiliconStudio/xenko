@@ -67,7 +67,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             elements = new List<Button> { element1, element2, element3, element4 };
 
-            UIComponent.RootElement = canvas;
+            UIComponent.Page = new Engine.UIPage { RootElement = canvas };
         }
 
         protected override void Update(GameTime gameTime)

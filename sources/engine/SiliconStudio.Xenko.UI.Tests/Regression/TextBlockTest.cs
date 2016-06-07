@@ -44,7 +44,7 @@ This is the last line.",
                 BackgroundColor = Color.LightSkyBlue
             };
 
-            UIComponent.RootElement = textBlock;
+            UIComponent.Page = new Engine.UIPage { RootElement = textBlock };
         }
 
         protected override void Update(GameTime gameTime)
