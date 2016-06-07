@@ -32,6 +32,10 @@
       <HintPath>..\..\common\deps\SharpYaml\SharpYaml.dll</HintPath>
     </Reference>
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Threading.Tasks.Dataflow, Version=4.5.25.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\System.Threading.Tasks.Dataflow.4.5.25\lib\dotnet\System.Threading.Tasks.Dataflow.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq" />
@@ -55,6 +59,7 @@
     <Compile Include="Analysis\AssetInheritanceSearchOptions.cs" />
     <Compile Include="Analysis\AssetReferenceAnalysis.cs" />
     <Compile Include="Analysis\AssetReferenceLink.cs" />
+    <Compile Include="Tracking\AssetSourceTracker.cs" />
     <Compile Include="Analysis\CommonAnalysis.cs" />
     <Compile Include="Analysis\IContentLink.cs" />
     <Compile Include="Analysis\ContentLinkType.cs" />
@@ -62,19 +67,19 @@
     <Compile Include="Analysis\PackageAnalysisParameters.cs" />
     <Compile Include="Analysis\PackageAssetTemplatingAnalysis.cs" />
     <Compile Include="Analysis\PackageSessionAnalysisBase.cs" />
+    <Compile Include="Tracking\SourceFileChangeType.cs" />
+    <Compile Include="Tracking\SourceFilesCollector.cs" />
+    <Compile Include="Tracking\SourceHashesHelper.cs" />
+    <Compile Include="Tracking\TrackedAsset.cs" />
+    <Compile Include="Tracking\SourceFileChangedData.cs" />
     <Compile Include="AssetCloner.cs" />
     <Compile Include="Analysis\AssetCollision.cs" />
     <Compile Include="AssetClonerFlags.cs" />
     <Compile Include="AssetComposite.cs" />
     <Compile Include="AssetFactory.cs" />
     <Compile Include="AssetHash.cs" />
-    <Compile Include="AssetImport.cs" />
+    <Compile Include="AssetWithSource.cs" />
     <Compile Include="AssetImporterParameters.cs" />
-    <Compile Include="AssetImportExtensions.cs" />
-    <Compile Include="AssetImportSessionEvent.cs" />
-    <Compile Include="AssetImportSessionStepType.cs" />
-    <Compile Include="AssetImportSessionEventType.cs" />
-    <Compile Include="AssetImportTracked.cs" />
     <Compile Include="AssetItemCollection.cs" />
     <Compile Include="AssetMember.cs" />
     <Compile Include="AssetMigrationContext.cs" />
@@ -83,10 +88,6 @@
     <Compile Include="AssetReferenceDataSerializer.cs" />
     <Compile Include="AssetSelector.cs" />
     <Compile Include="AssetFormatVersionAttribute.cs" />
-    <Compile Include="AssetToImportMergeGroup.cs" />
-    <Compile Include="AssetToImportMerge.cs" />
-    <Compile Include="AssetToImportByImporter.cs" />
-    <Compile Include="AssetUpdater.cs" />
     <Compile Include="AssetUpgraderAttribute.cs" />
     <Compile Include="AssetUpgraderBase.cs" />
     <Compile Include="AssetUpgraderCollection.cs" />
@@ -95,8 +96,6 @@
     <Compile Include="Compiler\AssetBuildStep.cs" />
     <Compile Include="Compiler\AssetDependenciesCompiler.cs" />
     <Compile Include="AssetImporterBase.cs" />
-    <Compile Include="AssetToImport.cs" />
-    <Compile Include="AssetImportSession.cs" />
     <Compile Include="Compiler\ICompilerRegistry.cs" />
     <Compile Include="Compiler\IPackageCompilerSource.cs" />
     <Compile Include="Compiler\IPackageCompiler.cs" />
@@ -112,6 +111,7 @@
     <Compile Include="Diff\IDiffKey.cs" />
     <Compile Include="Diff\IDiffProxy.cs" />
     <Compile Include="DirectoryHelper.cs" />
+    <Compile Include="DirtyFlagChangedDelegate.cs" />
     <Compile Include="EmptyAssetUpgrader.cs" />
     <Compile Include="FileVersionManager.cs" />
     <Compile Include="Compiler\AssetCommand.cs" />
@@ -129,9 +129,7 @@
     <Compile Include="IAssetComposite.cs" />
     <Compile Include="IAssetFactory.cs" />
     <Compile Include="IAssetUpgrader.cs" />
-    <Compile Include="IDirtyable.cs" />
     <Compile Include="IFileSynchronizable.cs" />
-    <Compile Include="ImportResult.cs" />
     <Compile Include="Analysis\AssetResolver.cs" />
     <Compile Include="IO\FileExtensionCollection.cs" />
     <Compile Include="NugetLogEventArgs.cs" />
@@ -144,7 +142,6 @@
     <Compile Include="PackageExtensions.cs" />
     <Compile Include="PackageLoadingAssetFile.cs" />
     <Compile Include="PackageReferenceBase.cs" />
-    <Compile Include="PackageSaveSourceFileOperations.cs" />
     <Compile Include="PackageSessionHelper.cs" />
     <Compile Include="PackageSessionHelper.Solution.cs" />
     <Compile Include="PackageLoadParameters.cs" />
@@ -183,6 +180,7 @@
     <Compile Include="Serializers\InvariantObjectCloneSerializer.cs" />
     <Compile Include="Serializers\YamlForwardLogger.cs" />
     <Compile Include="SolutionPlatformCollection.cs" />
+    <Compile Include="SourceFileMemberAttribute.cs" />
     <Compile Include="TemplateFolder.cs" />
     <Compile Include="Templates\SessionTemplateGenerator.cs" />
     <Compile Include="Templates\TemplateAssetDescription.cs" />
@@ -312,8 +310,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="Diagrams\AssetsDiagram.cd" />
     <None Include="Diagrams\BuildCommands.cd" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

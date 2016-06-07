@@ -111,6 +111,12 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
                     atlas.Clear();
                 }
 
+                // Clear atlases
+                foreach (var atlas in atlases)
+                {
+                    atlas.Clear();
+                }
+
                 // Collect all required shadow maps
                 CollectShadowMaps(renderViewData.Key, renderViewData.Value);
 

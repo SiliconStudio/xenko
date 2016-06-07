@@ -50,11 +50,11 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             button1 = new Button { Content = new TextBlock { Text = "text block button 1", Font = Content.Load<SpriteFont>("CourierNew12"), SynchronousCharacterGeneration = true } };
             button1.SetCanvasRelativePosition(new Vector3(0.025f, 0.05f, 0f));
 
-            edit1 = new EditText(Services) { Text = "Edit text 1", Font = Content.Load<SpriteFont>("CourierNew12"), SynchronousCharacterGeneration = true, };
+            edit1 = new EditText() { Text = "Edit text 1", Font = Content.Load<SpriteFont>("CourierNew12"), SynchronousCharacterGeneration = true, };
             edit1.SetCanvasRelativePosition(new Vector3(0.025f, 0.15f, 0f));
 
             button2 = new Button { Content = new TextBlock { Text = "text block button 2", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15"), SynchronousCharacterGeneration = true } };
-            edit2 = new EditText(Services) { Text = "Edit text 2", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15"), };
+            edit2 = new EditText() { Text = "Edit text 2", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15"), };
 
             stackPanel = new StackPanel
             {
@@ -74,6 +74,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             edit2.MouseOverStateChanged += (sender, args) => { triggeredEdit2 = true;};
             canvas.MouseOverStateChanged += (sender, args) => { triggeredCanvas = true;};
             stackPanel.MouseOverStateChanged += (sender, args) => { triggeredStackPanel = true;};
+
+            canvas.UIElementServices = new UIElementServices { Services = this.Services };
 
             UIComponent.RootElement = canvas;
         }

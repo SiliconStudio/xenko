@@ -8,6 +8,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Rendering;
@@ -22,12 +23,24 @@ namespace SiliconStudio.Xenko.Assets.Model
     [AssetUpgrader(XenkoConfig.PackageName, 0, 2, typeof(Upgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.2", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.5.0-alpha02", typeof(EmptyAssetUpgrader))]
-    public sealed class ModelAsset : AssetImportTracked, IModelAsset, IAssetCompileTimeDependencies
+    public sealed class ModelAsset : Asset, IModelAsset, IAssetCompileTimeDependencies
     {
         /// <summary>
         /// The default file extension used by the <see cref="ModelAsset"/>.
         /// </summary>
         public const string FileExtension = ".xkm3d;pdxm3d";
+
+        /// <summary>
+        /// Gets or sets the source file of this asset.
+        /// </summary>
+        /// <value>The source.</value>
+        /// <userdoc>
+        /// The source file of this asset.
+        /// </userdoc>
+        [DataMember(-50)]
+        [DefaultValue(null)]
+        [SourceFileMember(true)]
+        public UFile Source { get; set; } = new UFile("");
 
         /// <summary>
         /// Gets or sets the scale import.
@@ -51,6 +64,9 @@ namespace SiliconStudio.Xenko.Assets.Model
         /// </userdoc>
         [DataMember(50)]
         public Skeleton Skeleton { get; set; }
+
+        [DataMemberIgnore]
+        public override UFile MainSource => Source;
 
         protected override int InternalBuildOrder => -100; // We want Model to be scheduled early since they tend to take the longest (bad concurrency at end of build)
 

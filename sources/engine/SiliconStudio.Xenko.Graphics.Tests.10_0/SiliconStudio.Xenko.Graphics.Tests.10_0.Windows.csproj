@@ -27,13 +27,14 @@
   <Import Project="$(SolutionDir)$(SolutionName).PreSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).PreSettings.Local.targets')" />
   <PropertyGroup>
     <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Xenko.Graphics.Tests.10_0.xkpkg</SiliconStudioCurrentPackagePath>
+    <OutputPath>..\..\..\Bin\$(SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)</OutputPath>
+    <OutputPath Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(OutputPath)-$(SiliconStudioBuildDirExtension)</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP</DefineConstants>
-    <OutputPath>..\..\..\Bin\Windows-$(SiliconStudioXenkoGraphicsApi)\</OutputPath>
     <IntermediateOutputPath>obj\Windows\Debug\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -44,7 +45,6 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP</DefineConstants>
-    <OutputPath>..\..\..\Bin\Windows-$(SiliconStudioXenkoGraphicsApi)\</OutputPath>
     <IntermediateOutputPath>obj\Windows\Release\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>

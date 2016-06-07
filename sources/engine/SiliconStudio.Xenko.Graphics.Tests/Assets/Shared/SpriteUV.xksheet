@@ -1,0 +1,42 @@
+!SpriteSheet
+Id: c3cb3d3b-8e27-4a1a-9e35-26a92fdc18b0
+SerializedVersion: {Xenko: 1.5.0-alpha01}
+Tags: []
+Type: Sprite2D
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Format: AsIs
+Alpha: None
+GenerateMipmaps: true
+PremultiplyAlpha: false
+Packing:
+    ~Id: f334139e-243c-4f7d-a04d-0307f25c360e
+    Enabled: false
+Sprites:
+    -   ~Id: 309dd47a-655b-4773-b430-161b51a80687
+        Source: ../../../../data/tests/small_uv.png
+        Name: uv1
+        TextureRegion: {X: 0, Y: 0, Width: 128, Height: 128}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
+    -   ~Id: a5bcc510-bf08-4094-a9be-9c161f8d4388
+        Source: ../../../../data/tests/small_uv.png
+        Name: uv2
+        TextureRegion: {X: 128, Y: 0, Width: 128, Height: 128}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
+    -   ~Id: 00712ab1-4eb0-4e84-aeb1-faea2cbe6bae
+        Source: ../../../../data/tests/small_uv.png
+        Name: uv3
+        TextureRegion: {X: 0, Y: 128, Width: 128, Height: 128}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
+    -   ~Id: 4087d4dd-0cf0-417b-b871-a1b4b737fe89
+        Source: ../../../../data/tests/small_uv.png
+        Name: uv4
+        TextureRegion: {X: 128, Y: 128, Width: 128, Height: 128}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}

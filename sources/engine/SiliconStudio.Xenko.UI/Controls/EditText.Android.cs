@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.UI.Controls
 
                 var editLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent);
                 editLayoutParams.SetMargins(75, 200, 75, 0);
-                ((GameContextAndroid) game.Context).EditTextLayout.AddView(staticEditText, editLayoutParams);
+                GetGameContext().EditTextLayout.AddView(staticEditText, editLayoutParams);
             }
         }
 
@@ -164,7 +164,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             editText.AfterTextChanged += AndroidEditTextOnAfterTextChanged;
 
             // add the edit to the overlay layout and show the layout
-            ((GameContextAndroid) game.Context).EditTextLayout.Visibility = ViewStates.Visible;
+            GetGameContext().EditTextLayout.Visibility = ViewStates.Visible;
 
             // set the focus to the edit box
             editText.RequestFocus();
@@ -189,7 +189,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             activeEditText = null;
 
             // remove the edit text from the layout and hide the layout
-            ((GameContextAndroid) game.Context).EditTextLayout.Visibility = ViewStates.Gone;
+            GetGameContext().EditTextLayout.Visibility = ViewStates.Gone;
 
             // deactivate the ime (hide the keyboard)
             if (staticEditText != null) // staticEditText can be null if window have already been detached.
@@ -197,6 +197,18 @@ namespace SiliconStudio.Xenko.UI.Controls
             inputMethodManager = null;
 
             FocusedElement = null;
+        }
+
+        private GameContextAndroid GetGameContext()
+        {
+            if (UIElementServices.Services == null)
+                throw new InvalidOperationException("services");
+
+            var game = UIElementServices.Services.GetService(typeof(IGame)) as GameBase;
+            if(game == null)
+                throw new ArgumentException("Provided services need to contain a provider for the IGame interface.");
+
+            return ((GameContextAndroid) game.Context);
         }
 
         private static void OnTouchMoveImpl(TouchEventArgs args)

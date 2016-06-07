@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Assets.Model
     [Display(180, "Animation")]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.5.0-alpha02")]
     [AssetUpgrader(XenkoConfig.PackageName, "0", "1.5.0-alpha02", typeof(EmptyAssetUpgrader))]
-    public class AnimationAsset : AssetImport, IAssetCompileTimeDependencies
+    public class AnimationAsset : AssetWithSource, IAssetCompileTimeDependencies
     {
         /// <summary>
         /// The default file extension used by the <see cref="AnimationAsset"/>.

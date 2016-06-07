@@ -1,0 +1,153 @@
+﻿<#@ template inherits="ProjectTemplateTransformation" language="C#" #>
+﻿<?xml version="1.0" encoding="utf-8"?>
+<#
+var curPlatform = (SiliconStudio.Core.PlatformType)System.Enum.Parse(typeof(SiliconStudio.Core.PlatformType), Properties.CurrentPlatform);
+var needSigning = (curPlatform != SiliconStudio.Core.PlatformType.WindowsPhone) && (curPlatform != SiliconStudio.Core.PlatformType.WindowsStore);
+#>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <!--Import Local Pre Settings for the solution being loaded -->
+  <Import Project="$(SolutionDir)$(SolutionName).PreSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).PreSettings.Local.targets')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{<#= ProjectGuid.ToString().ToUpperInvariant() #>}</ProjectGuid>
+<# if (curPlatform == SiliconStudio.Core.PlatformType.Android) { #>
+    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AndroidApplication>true</AndroidApplication>
+    <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
+    <AndroidUseLatestPlatformSdk></AndroidUseLatestPlatformSdk>
+    <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
+    <AndroidSupportedAbis>armeabi,armeabi-v7a,x86</AndroidSupportedAbis>
+    <AndroidStoreUncompressedFileExtensions />
+    <MandroidI18n />
+    <JavaMaximumHeapSize />
+    <JavaOptions />
+    <AssemblyName><#= ProjectName #></AssemblyName>
+<# } else if (curPlatform == SiliconStudio.Core.PlatformType.iOS) { #>
+    <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Exe</OutputType>
+    <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
+    <AssemblyName><#= ProjectName.Replace(".", "") #></AssemblyName>
+<# } else if (curPlatform == SiliconStudio.Core.PlatformType.WindowsPhone) { #>
+    <ProjectTypeGuids>{76F1466A-8B6D-4E39-A767-685A06062A39};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>AppContainerExe</OutputType>
+    <AssemblyName><#= ProjectName #></AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <TargetPlatformIdentifier>WindowsPhoneApp</TargetPlatformIdentifier>
+    <TargetPlatformVersion>8.1</TargetPlatformVersion>
+    <MinimumVisualStudioVersion>12</MinimumVisualStudioVersion>
+    <FileAlignment>512</FileAlignment>
+<# } else if (curPlatform == SiliconStudio.Core.PlatformType.WindowsStore) { #>
+    <ProjectTypeGuids>{BC8A1FFA-BEE3-4634-8014-F334798102B3};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>AppContainerExe</OutputType>
+    <AssemblyName><#= ProjectName #></AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <TargetPlatformVersion>8.1</TargetPlatformVersion>
+    <MinimumVisualStudioVersion>12</MinimumVisualStudioVersion>
+    <FileAlignment>512</FileAlignment>
+    <PackageCertificateKeyFile>SiliconStudio.Xenko.Graphics.Tests.WindowsStore_TemporaryKey.pfx</PackageCertificateKeyFile>
+<# } else { #>
+    <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Exe</OutputType>
+    <XenkoBuildTags>*</XenkoBuildTags>
+    <AssemblyName><#= ProjectName #></AssemblyName>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+<# } #>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace><#= Properties.Namespace #></RootNamespace>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+    <SiliconStudioBuildProfile>$(SiliconStudioPlatform)</SiliconStudioBuildProfile>
+    <SiliconStudioXenkoDir>$(MSBuildThisFileDirectory)<#= Properties.XenkoSdkRelativeDir #></SiliconStudioXenkoDir>
+    <SiliconStudioAssemblySign><#= needSigning.ToString().ToLowerInvariant() #></SiliconStudioAssemblySign>
+    <!-- Force msbuild to check to rebuild this assembly instead of letting VS IDE guess -->
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+<#@ include file="..\Common.PropertyGroups.targets.t4" #>
+  <ItemGroup>
+    <None Include="README.md" />
+    <Compile Include="TestClass1.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+<# if (curPlatform == SiliconStudio.Core.PlatformType.Android) { #>
+  <ItemGroup>
+    <Reference Label="Xenko.DoNotSync" Include="Mono.Android" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Label="Xenko.DoNotSync" Include="Properties\AndroidManifest.xml" />
+    <AndroidResource Label="Xenko.DoNotSync" Include="Resources\Drawable\Icon.png" />
+    <Compile Label="Xenko.DoNotSync" Include="Resources\Resource.Designer.cs" />
+    <Compile Label="Xenko.DoNotSync" Include="<#= Properties.XenkoSdkRelativeDir #>\sources\common\shared\tests\nunitlite\NUnitLiteLauncher.Android.cs">
+      <Link>NUnitLiteLauncher.Android.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
+<# } else if (curPlatform == SiliconStudio.Core.PlatformType.iOS) { #>
+  <ItemGroup>
+    <Reference Label="Xenko.DoNotSync" Include="Xamarin.iOS" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Label="Xenko.DoNotSync" Include="Info.plist" />
+    <Compile Label="Xenko.DoNotSync" Include="<#= Properties.XenkoSdkRelativeDir #>\sources\common\shared\tests\nunitlite\NUnitLiteLauncher.iPhone.cs">
+      <Link>NUnitLiteLauncher.iPhone.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
+<# } else if ((curPlatform == SiliconStudio.Core.PlatformType.WindowsPhone) || (curPlatform == SiliconStudio.Core.PlatformType.WindowsStore)) { #>
+  <ItemGroup>
+    <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <SDKReference Label="Xenko.DoNotSync" Include="Microsoft.VCLibs, Version=12.0">
+      <Name>Microsoft Visual C++ 2013 Runtime Package for Windows</Name>
+    </SDKReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile  Label="Xenko.DoNotSync" Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+    </Compile>
+    <Compile Label="Xenko.DoNotSync" Include="SiliconStudio.Xenko.Graphics.TestsMainPage.xaml.cs">
+      <DependentUpon>SiliconStudio.Xenko.Graphics.TestsMainPage.xaml</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Label="Xenko.DoNotSync" Include="Package<#= curPlatform #>.appxmanifest">
+      <SubType>Designer</SubType>
+    </AppxManifest>
+    <Content Label="Xenko.DoNotSync" Include="Resources\<#= curPlatform #>\Logo.png" />
+    <Content Label="Xenko.DoNotSync" Include="Resources\<#= curPlatform #>\SmallLogo.png" />
+    <Content Label="Xenko.DoNotSync" Include="Resources\<#= curPlatform #>\SplashScreen.png" />
+<# if (curPlatform == SiliconStudio.Core.PlatformType.WindowsStore) { #>
+    <None Label="Xenko.DoNotSync" Include="SiliconStudio.Xenko.Graphics.Tests.WindowsStore_TemporaryKey.pfx" />
+<# } #>
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Label="Xenko.DoNotSync" Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Page Label="Xenko.DoNotSync" Include="SiliconStudio.Xenko.Graphics.TestsMainPage.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
+  <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '12.0' ">
+    <VisualStudioVersion>12.0</VisualStudioVersion>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Microsoft\WindowsXaml\v$(VisualStudioVersion)\Microsoft.Windows.UI.Xaml.CSharp.targets" />
+<# } else { #>
+  <Import Condition="'$(SiliconStudioRuntime)' == ''" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+<# } #>
+<#@ include file="..\Common.Imports.targets.t4" #>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
+    Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
+
