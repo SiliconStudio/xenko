@@ -464,7 +464,7 @@ namespace SiliconStudio.Xenko.Graphics
             var createInfo = new ImageViewCreateInfo
             {
                 StructureType = StructureType.ImageViewCreateInfo,
-                Format = VulkanConvertExtensions.ConvertPixelFormat(ViewFormat),
+                Format = NativeFormat, //VulkanConvertExtensions.ConvertPixelFormat(ViewFormat),
                 Image = NativeImage,
                 Components = ComponentMapping.Identity,
                 SubresourceRange = new ImageSubresourceRange(NativeImageAspect, (uint)arrayOrDepthSlice, (uint)layerCount, (uint)mipIndex, (uint)mipCount)
@@ -534,16 +534,11 @@ namespace SiliconStudio.Xenko.Graphics
             int mipCount;
             GetViewSliceBounds(viewType, ref arrayOrDepthSlice, ref mipIndex, out arrayOrDepthCount, out mipCount);
 
-            Format backBufferFormat;
-            int pixelSize;
-            bool compressed;
-            VulkanConvertExtensions.ConvertPixelFormat(ViewFormat, out backBufferFormat, out pixelSize, out compressed);
-
             var createInfo = new ImageViewCreateInfo
             {
                 StructureType = StructureType.ImageViewCreateInfo,
                 ViewType = ImageViewType.Image2D,
-                Format = backBufferFormat,
+                Format = NativeFormat, // VulkanConvertExtensions.ConvertPixelFormat(ViewFormat),
                 Image = NativeImage,
                 Components = ComponentMapping.Identity,
                 SubresourceRange = new ImageSubresourceRange
@@ -584,11 +579,6 @@ namespace SiliconStudio.Xenko.Graphics
             if (!IsDepthStencil)
                 return ImageView.Null;
 
-            Format nativeFormat;
-            int pixelSize;
-            bool compressed;
-            VulkanConvertExtensions.ConvertPixelFormat(ViewFormat, out nativeFormat, out pixelSize, out compressed);
-
             // Check that the format is supported
             //if (ComputeShaderResourceFormatFromDepthFormat(ViewFormat) == PixelFormat.None)
             //    throw new NotSupportedException("Depth stencil format [{0}] not supported".ToFormat(ViewFormat));
@@ -598,7 +588,7 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 StructureType = StructureType.ImageViewCreateInfo,
                 ViewType = ImageViewType.Image2D,
-                Format = nativeFormat,
+                Format = NativeFormat, //VulkanConvertExtensions.ConvertPixelFormat(ViewFormat),
                 Image = NativeImage,
                 Components = ComponentMapping.Identity,
                 SubresourceRange = new ImageSubresourceRange(NativeImageAspect, 0, 1, 0, 1)
