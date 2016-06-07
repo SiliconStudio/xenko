@@ -56,33 +56,37 @@ namespace SiliconStudio.Quantum
         }
 
         private readonly List<NodePathElement> path = new List<NodePathElement>();
-        private readonly bool targetIsRootNode;
 
-        private GraphNodePath(IGraphNode rootNode, bool targetIsRootNode)
+        private GraphNodePath(IGraphNode rootNode, bool isEmpty)
         {
             RootNode = rootNode;
-            this.targetIsRootNode = targetIsRootNode;
+            IsEmpty = isEmpty;
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphNodePath"/> with the given root node.
         /// </summary>
         /// <param name="rootNode">The root node to represent with this instance of <see cref="GraphNodePath"/>.</param>
-        /// <remarks>This constructor should be used for path to a root node only. To create a path to a child node, use <see cref="GetChildPath"/>.</remarks>
         public GraphNodePath(IGraphNode rootNode)
             : this(rootNode, true)
         {
         }
 
         /// <summary>
-        /// Gets whether this path is a valid path.
-        /// </summary>
-        public bool IsValid => path.Count > 0 || targetIsRootNode;
-
-        /// <summary>
         /// Gets the root node of this path.
         /// </summary>
         public IGraphNode RootNode { get; }
+
+        /// <summary>
+        /// Gets whether this path is a valid path.
+        /// </summary>
+        public bool IsValid => path.Count > 0 || IsEmpty;
+
+        /// <summary>
+        /// Gets whether this path is empty.
+        /// </summary>
+        /// <remarks>An empty path resolves to <see cref="RootNode"/>.</remarks>
+        public bool IsEmpty { get; }
 
         /// <summary>
         /// Gets the source node corresponding to this path.
@@ -130,85 +134,6 @@ namespace SiliconStudio.Quantum
         }
         
         /// <summary>
-        /// Gets the source node corresponding to this path.
-        /// </summary>
-        /// <returns>The node corresponding to this path.</returns>
-        /// <exception cref="InvalidOperationException">The path is invalid.</exception>
-        public IGraphNode GetSourceNode()
-        {
-            Index index;
-            return GetSourceNode(out index);
-        }
-
-        /// <summary>
-        /// Computes a <see cref="GraphNodePath"/> corresponding to the given <see cref="target"/> node, which must be a direct child or a direct reference of the <see cref="parentNode"/>.
-        /// </summary>
-        /// <param name="parentNode">The parent node which must be a direct child or a direct reference of the <see cref="target"/>.</param>
-        /// <param name="target">The target node for which to build a <see cref="GraphNodePath"/> instance.</param>
-        /// <returns></returns>
-        public GraphNodePath GetChildPath(IGraphNode parentNode, IGraphNode target)
-        {
-            if (parentNode == target)
-                return Clone();
-
-            var result = Clone(RootNode, false);
-
-            // TODO: Would make more sense to return null in this case but a lot of code here and there should be fixed then
-            if (target == null)
-                return result;
-
-            var member = parentNode.Children.FirstOrDefault(x => x == target);
-            if (member != null)
-            {
-                // The target is a direct member of the parent.
-                result.path.Add(new NodePathElement { Type = ElementType.Member, Value = member.Name });
-                return result;
-            }
-            var objectReference = parentNode.Content.Reference as ObjectReference;
-            if (objectReference != null && objectReference.TargetNode == target)
-            {
-                // The target is the node referenced by the parent.
-                result.path.Add(new NodePathElement { Type = ElementType.Target });
-                return result;
-            }
-
-            member = parentNode.Children.FirstOrDefault(x => x.Content.Reference is ObjectReference && ((ObjectReference)x.Content.Reference).TargetNode == target);
-            if (member != null)
-            {
-                // The target is the node referenced by one of the children of the parent.
-                result.path.Add(new NodePathElement { Type = ElementType.Member, Value = member.Name });
-                result.path.Add(new NodePathElement { Type = ElementType.Target });
-                return result;
-            }
-
-            var enumerableReference = parentNode.Content.Reference as ReferenceEnumerable;
-            if (enumerableReference != null)
-            {
-                ObjectReference reference = enumerableReference.FirstOrDefault(x => x.TargetNode == target);
-                if (reference != null)
-                {
-                    // The target is the node referenced by the parent at a given index.
-                    result.path.Add(new NodePathElement { Type = ElementType.Index, Value = reference.Index });
-                    return result;
-                }
-            }
-            
-            foreach (var child in parentNode.Children)
-            {
-                enumerableReference = child.Content.Reference as ReferenceEnumerable;
-                var reference = enumerableReference?.FirstOrDefault(x => x.TargetNode == target);
-                if (reference != null)
-                {
-                    // The target is the node referenced by one of the children of the parent at a given index.
-                    result.path.Add(new NodePathElement { Type = ElementType.Member, Value = child.Name });
-                    result.path.Add(new NodePathElement { Type = ElementType.Index, Value = reference.Index });
-                    return result;
-                }
-            }
-            return null;
-        }
-
-        /// <summary>
         /// Appends an elemnt to this path a <see cref="GraphNodePath"/> corresponding to the given <see cref="target"/> node, which must be a direct child or a direct reference of the <see cref="parentNode"/>.
         /// </summary>
         /// <param name="parentNode">The parent node which must be a direct child or a direct reference of the <see cref="target"/>.</param>
@@ -247,15 +172,23 @@ namespace SiliconStudio.Quantum
 
         public GraphNodePath Clone(IGraphNode newRoot)
         {
-            return Clone(newRoot, targetIsRootNode);
+            return Clone(newRoot, IsEmpty);
         }
 
         public GraphNodePath Clone()
         {
-            return Clone(RootNode, targetIsRootNode);
+            return Clone(RootNode, IsEmpty);
         }
 
-        public GraphNodePath PushElement(object elementValue, ElementType type)
+        // TODO: re-implement each of the method below in an optimized way.
+
+        public GraphNodePath PushMember(string memberName) => PushElement(memberName, ElementType.Member);
+
+        public GraphNodePath PushTarget() => PushElement(null, ElementType.Target);
+
+        public GraphNodePath PushIndex(Index index) => PushElement(index, ElementType.Index);
+
+        private GraphNodePath PushElement(object elementValue, ElementType type)
         {
             var result = Clone();
             switch (type)
@@ -269,8 +202,8 @@ namespace SiliconStudio.Quantum
                         throw new ArgumentException("The value must be null when type is ElementType.Target.");
                     break;
                 case ElementType.Index:
-                    if (elementValue == null)
-                        throw new ArgumentException("The value must be non-null when type is ElementType.Target.");
+                    if (!(elementValue is Index))
+                        throw new ArgumentException("The value must be an Index when type is ElementType.Index.");
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type));
@@ -335,9 +268,9 @@ namespace SiliconStudio.Quantum
             return memberPath;
         }
 
-        private GraphNodePath Clone(IGraphNode newRoot, bool newTargetIsRootNode)
+        private GraphNodePath Clone(IGraphNode newRoot, bool isEmpty)
         {
-            var clone = new GraphNodePath(newRoot, newTargetIsRootNode);
+            var clone = new GraphNodePath(newRoot, isEmpty);
             clone.path.AddRange(path);
             return clone;
         }

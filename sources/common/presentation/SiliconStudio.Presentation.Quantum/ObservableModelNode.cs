@@ -79,10 +79,10 @@ namespace SiliconStudio.Presentation.Quantum
             return node;
         }
 
-        internal protected virtual void Initialize()
+        protected internal virtual void Initialize()
         {
-            var targetNode = GetTargetNode(SourceNode, Index);
-            var targetNodePath = SourceNodePath.GetChildPath(SourceNode, targetNode);
+            GraphNodePath targetNodePath;
+            var targetNode = GetTargetNode(SourceNode, Index, SourceNodePath, out targetNodePath);
             if (targetNodePath == null || !targetNodePath.IsValid)
                 throw new InvalidOperationException("Unable to retrieve the path of the given model node.");
 
@@ -91,7 +91,7 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 // When the references are not processed or when the value is null, there is no actual target node.
                 // However, the commands need the index to be able to properly set the modified value
-                commandPath = targetNodePath.PushElement(Index, GraphNodePath.ElementType.Index);
+                commandPath = targetNodePath.PushIndex(Index);
             }
 
             if (targetNode != SourceNode && targetNode != null)
@@ -175,7 +175,8 @@ namespace SiliconStudio.Presentation.Quantum
         internal void CheckConsistency()
         {
 #if DEBUG
-            var targetNode = GetTargetNode(SourceNode, Index);
+            GraphNodePath unused;
+            var targetNode = GetTargetNode(SourceNode, Index, null, out unused);
             if (SourceNode != targetNode)
             {
                 var objectReference = SourceNode.Content.Reference as ObjectReference;
@@ -329,7 +330,7 @@ namespace SiliconStudio.Presentation.Quantum
                         bool shouldConstruct = Owner.PropertiesProvider.ShouldConstructNode(child, Index.Empty);
                         if (shouldConstruct)
                         {
-                            var childPath = graphNodePath.GetChildPath(modelNode, child);
+                            var childPath = graphNodePath.PushMember(child.Name);
                             var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, child.Name, child.Content.IsPrimitive, child, childPath, child.Content.Type, Index.Empty);
                             AddChild(observableChild);
                             observableChild.Initialize();
@@ -377,22 +378,30 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         /// <param name="sourceNode">The source node for which to retrieve the target node.</param>
         /// <param name="index">The index of the target node to retrieve, if the source node contains a sequence of references. <see cref="Index.Empty"/> otherwise.</param>
+        /// <param name="sourceNodePath">The path to the given <paramref name="sourceNode"/>.</param>
+        /// <param name="targetNodePath">The path to the returned target node.</param>
         /// <returns>The corresponding target node if available, or the source node itself if it does not contain any reference or if its content should not process references.</returns>
         /// <remarks>This method can return null if the target node is null.</remarks>
         /// <seealso cref="IContent.ShouldProcessReference"/>
-        protected static IGraphNode GetTargetNode(IGraphNode sourceNode, Index index)
+        protected static IGraphNode GetTargetNode(IGraphNode sourceNode, Index index, GraphNodePath sourceNodePath, out GraphNodePath targetNodePath)
         {
             if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
+
             var objectReference = sourceNode.Content.Reference as ObjectReference;
-            var referenceEnumerable = sourceNode.Content.Reference as ReferenceEnumerable;
             if (objectReference != null && sourceNode.Content.ShouldProcessReference)
             {
+                targetNodePath = sourceNodePath?.PushTarget();
                 return objectReference.TargetNode;
             }
+
+            var referenceEnumerable = sourceNode.Content.Reference as ReferenceEnumerable;
             if (referenceEnumerable != null && sourceNode.Content.ShouldProcessReference && !index.IsEmpty)
             {
+                targetNodePath = sourceNodePath?.PushIndex(index);
                 return referenceEnumerable[index].TargetNode;
             }
+
+            targetNodePath = sourceNodePath?.Clone();
             return sourceNode;
         }
     }
@@ -426,7 +435,7 @@ namespace SiliconStudio.Presentation.Quantum
         public override Type Type => typeof(T);
 
         /// <inheritdoc/>
-        public override sealed object Value { get { return TypedValue; } set { TypedValue = (T)value; } }
+        public sealed override object Value { get { return TypedValue; } set { TypedValue = (T)value; } }
 
         /// <inheritdoc/>
         public override void Destroy()
