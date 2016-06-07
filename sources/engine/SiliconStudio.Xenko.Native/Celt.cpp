@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 #include "../../../deps/NativePath/NativePath.h"
-#include "../../../../opus/include/opus_custom.h"
+#include "../../../deps/Celt/include/opus_custom.h"
 
 extern "C" {
 
