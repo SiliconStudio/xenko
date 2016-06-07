@@ -34,8 +34,8 @@ namespace SiliconStudio.Xenko.Assets.UI
             {
                 var assetManager = new ContentManager();
 
-                var rootElement = (UIElement)AssetCloner.Clone(AssetParameters.UiPageAsset.RootElement, AssetClonerFlags.ReferenceAsNull);
-                assetManager.Save(Url, rootElement);
+                var uiPage = new Engine.UIPage { RootElement = AssetParameters.UIPageAsset.RootElement };
+                assetManager.Save(Url, uiPage);
 
                 return Task.FromResult(ResultStatus.Successful);
             }
@@ -46,11 +46,11 @@ namespace SiliconStudio.Xenko.Assets.UI
         {
             public UIConvertParameters(UIPageAsset uiPageAsset)
             {
-                UiPageAsset = uiPageAsset;
+                UIPageAsset = uiPageAsset;
             }
 
             [DataMember]
-            public UIPageAsset UiPageAsset { get; set; }
+            public UIPageAsset UIPageAsset { get; set; }
         }
     }
 }
