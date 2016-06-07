@@ -118,6 +118,7 @@ TemplateFolders:
         - samples\Physics\VolumeTrigger\VolumeTrigger.xktpl
         - samples\UI\GameMenu\GameMenu.xktpl
         - samples\UI\UIParticles\UIParticles.xktpl
+        - samples\UI\UIElementLink\UIElementLink.xktpl
         - samples\Others\NativeLinking\NativeLinking.xktpl
         - samples\Others\CustomAnimation\CustomAnimation.xktpl
 RootAssets:

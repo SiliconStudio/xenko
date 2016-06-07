@@ -22,39 +22,6 @@ namespace SiliconStudio.Core.IO
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="UPath" /> class.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <param name="extension">The extension.</param>
-        public UFile(string name, string extension)
-            : this(null, null, name, extension)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UPath" /> class.
-        /// </summary>
-        /// <param name="directory">The directory.</param>
-        /// <param name="name">The name.</param>
-        /// <param name="extension">The extension.</param>
-        public UFile(string directory, string name, string extension)
-            : this(null, directory, name, extension)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="UPath" /> class.
-        /// </summary>
-        /// <param name="drive">The drive.</param>
-        /// <param name="directory">The directory.</param>
-        /// <param name="name">The name.</param>
-        /// <param name="extension">The extension.</param>
-        public UFile(string drive, string directory, string name, string extension)
-            : base(drive, directory, name, extension)
-        {
-        }
-
-        /// <summary>
         /// Gets the file path (<see cref="UPath.GetDirectory()"/> + '/' + <see cref="UFile.GetFileName()"/>) without the extension or drive. Can be an null if no filepath.
         /// </summary>
         /// <returns>The path.</returns>
@@ -112,6 +79,17 @@ namespace SiliconStudio.Core.IO
                 span.Length = NameSpan.Next;
             }
             return span.IsValid ? FullPath.Substring(span) : null;
+        }
+
+        /// <summary>
+        /// Combines the specified left uniform location and right location and return a new <see cref="UFile"/>
+        /// </summary>
+        /// <param name="leftPath">The left path.</param>
+        /// <param name="rightPath">The right path.</param>
+        /// <returns>The combination of both paths.</returns>
+        public static UFile Combine(UDirectory leftPath, UFile rightPath)
+        {
+            return UPath.Combine(leftPath, rightPath);
         }
 
         /// <summary>

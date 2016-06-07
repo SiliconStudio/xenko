@@ -107,7 +107,6 @@ namespace SiliconStudio.Xenko.UI.Controls
             InitializeStaticImpl();
         }
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX
         /// <summary>
         /// Create a new instance of <see cref="EditText"/>.
         /// </summary>
@@ -122,38 +121,8 @@ namespace SiliconStudio.Xenko.UI.Controls
             CaretWidth = 1f;
             CaretFrequency = 1f;
         }
-#endif
-
-        /// <summary>
-        /// Create a new instance of <see cref="EditText"/>.
-        /// </summary>
-        /// <param name="services">The game services</param>
-        /// <exception cref="ArgumentNullException"><paramref name="services"/> is null</exception>
-        /// <exception cref="ArgumentException"><paramref name="services"/> does not contain an <see cref="IGame"/> service.</exception>
-        // FIXME: remove this constructor (see XK-3307)
-        public EditText(IServiceRegistry services)
-        {
-            if (services == null)
-                throw new ArgumentNullException(nameof(services));
-
-            game = services.GetService(typeof(IGame)) as GameBase;
-            if(game == null)
-                throw new ArgumentException("Provided services need to contain a provider for the IGame interface.");
-
-            InitializeImpl();
-
-            CanBeHitByUser = true;
-            IsSelectionActive = false;
-            Padding = new Thickness(8, 4, 0, 8, 8, 0);
-            DrawLayerNumber += 4; // ( 1: image, 2: selection, 3: Text, 4:Cursor) 
-            CaretWidth = 1f;
-            CaretFrequency = 1f;
-        }
 
         private bool isSelectionActive;
-
-        // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
-        private readonly GameBase game;
 
         private Func<char, bool> characterFilterPredicate;
         private int minLines = 1;

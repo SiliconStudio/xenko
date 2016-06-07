@@ -20,6 +20,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         public SwapChainGraphicsPresenter(GraphicsDevice device, PresentationParameters presentationParameters) : base(device, presentationParameters)
         {
+            gameWindow = (AndroidGameView)Description.DeviceWindowHandle.NativeHandle;
+
             graphicsDevice = device;
             startingPresentationParameters = presentationParameters;
             device.InitDefaultRenderTarget(Description);
@@ -40,34 +42,6 @@ namespace SiliconStudio.Xenko.Graphics
             set
             {
                 gameWindow.WindowState = value ? WindowState.Fullscreen : WindowState.Normal;
-            }
-        }
-
-        protected override void ProcessPresentationParameters()
-        {
-            // Use aspect ratio of device
-            gameWindow = (AndroidGameView)Description.DeviceWindowHandle.NativeHandle;
-            var windowWidth = gameWindow.Size.Width;
-            var windowHeight = gameWindow.Size.Height;
-
-            var handler = ProcessPresentationParametersOverride; // TODO remove this hack when swap chain creation process is properly designed and flexible.
-            if(handler != null) // override
-            {
-                handler(windowWidth, windowHeight, Description);
-            }
-            else // default behavior
-            {
-                var desiredWidth = Description.BackBufferWidth;
-                var desiredHeight = Description.BackBufferHeight;
-
-                if (windowWidth >= windowHeight) // Landscape => use height as base
-                {
-                    Description.BackBufferHeight = (int)(desiredWidth * (float)windowHeight / (float)windowWidth);
-                }
-                else // Portrait => use width as base
-                {
-                    Description.BackBufferWidth = (int)(desiredHeight * (float)windowWidth / (float)windowHeight);
-                }
             }
         }
 

@@ -19,6 +19,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     public partial class SceneAsset
     {
         // All upgraders for SceneAsset
+
         class RemoveSourceUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
@@ -985,84 +986,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
                             }
                         }
                     }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Upgrader from version 1.6.0-beta03 to 1.7.0-beta01.
-        /// </summary>
-        /// <remarks>
-        /// CurrentFrame is now serialized in <see cref="ISpriteProvider"/> (was previously serialized at the <see cref="SpriteComponent"/> level.
-        /// </remarks>
-        private sealed class SpriteComponentUpgrader : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
-            {
-                var hierarchy = asset.Hierarchy;
-                var entities = hierarchy.Entities;
-                foreach (var entityAndDesign in entities)
-                {
-                    var entity = entityAndDesign.Entity;
-                    foreach (var component in entity.Components)
-                    {
-                        var componentTag = component.Node.Tag;
-                        if (componentTag != "!SpriteComponent")
-                            continue;
-
-                        var provider = component.SpriteProvider;
-                        if (provider == null || provider.Node.Tag != "!SpriteFromSheet")
-                            continue;
-
-                        provider.AddChild("CurrentFrame", component.CurrentFrame);
-                        component.RemoveChild("CurrentFrame");
-                    }
-                }
-            }
-        }
-
-        /// <summary>
-        /// Upgrader from version 1.7.0-beta01 to 1.7.0-beta02.
-        /// </summary>
-        /// <remarks>
-        /// UIComponent now has Rasolution and ResolutionStretch properties.
-        /// </remarks>
-        class UIComponentRenamingResolutionUpgrader : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
-            {
-                var hierarchy = asset.Hierarchy;
-                var entities = (DynamicYamlArray)hierarchy.Entities;
-                foreach (dynamic entityAndDesign in entities)
-                {
-                    var entity = entityAndDesign.Entity;
-
-                    foreach (var component in entity.Components)
-                    {
-                        var componentTag = component.Node.Tag;
-                        if (componentTag == "!UIComponent")
-                        {
-                            // VirtualResolution
-                            var virtualResolution = component.VirtualResolution;
-                            var vrAsMap = virtualResolution as DynamicYamlMapping;
-                            if (vrAsMap != null)
-                            {
-                                component.AddChild("Resolution", virtualResolution);
-                                component.RemoveChild("VirtualResolution");
-                            }
-
-                            // VirtualResolutionMode
-                            var resolutionStretch = component.VirtualResolutionMode;
-                            var vrmAsMap = resolutionStretch as DynamicYamlScalar;
-                            if (vrmAsMap != null)
-                            {
-                                component.AddChild("ResolutionStretch", resolutionStretch);
-                                component.RemoveChild("VirtualResolutionMode");
-                            }
-                        }
-                    }
-
-
                 }
             }
         }

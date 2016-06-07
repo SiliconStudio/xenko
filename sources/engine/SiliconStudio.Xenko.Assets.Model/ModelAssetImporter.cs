@@ -139,7 +139,7 @@ namespace SiliconStudio.Xenko.Assets.Model
             if (entityInfo.AnimationNodes != null && entityInfo.AnimationNodes.Count > 0)
                 asset.PreserveNodes(entityInfo.AnimationNodes);
 
-            var skeletonUrl = new UFile(localPath.GetFileName() + " Skeleton", null);
+            var skeletonUrl = new UFile(localPath.GetFileName() + " Skeleton");
             var assetItem = new AssetItem(skeletonUrl, asset);
             assetReferences.Add(assetItem);
             return assetItem;
@@ -175,7 +175,7 @@ namespace SiliconStudio.Xenko.Assets.Model
                         Name = material.Key,
                         MaterialInstance = new MaterialInstance()
                     };
-                    var foundMaterial = loadedMaterials.FirstOrDefault(x => x.Location == new UFile(material.Key, null));
+                    var foundMaterial = loadedMaterials.FirstOrDefault(x => x.Location == new UFile(material.Key));
                     if (foundMaterial != null)
                     {
                         var reference = AttachedReferenceManager.CreateProxyObject<Material>(foundMaterial.Id, foundMaterial.Location);
@@ -196,7 +196,7 @@ namespace SiliconStudio.Xenko.Assets.Model
             if (skeletonAsset != null)
                 asset.Skeleton = AttachedReferenceManager.CreateProxyObject<Skeleton>(skeletonAsset.Id, skeletonAsset.Location);
 
-            var modelUrl = new UFile(localPath.GetFileName() + (shouldPostFixName?" Model": ""), null);
+            var modelUrl = new UFile(localPath.GetFileName() + (shouldPostFixName?" Model": ""));
             var assetItem = new AssetItem(modelUrl, asset);
             assetReferences.Add(assetItem);
             return assetItem;

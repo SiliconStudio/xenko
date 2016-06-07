@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Assets.Tasks
                     NewFile(@"deps\AssemblyProcessor\*.dll", @"deps/AssemblyProcessor"),
                     NewFile($@"Bin\{mainPlatformDirectory}\ios-tcprelay\*.py",$@"Bin\{mainPlatformDirectory}\ios-tcprelay"),
                     NewFile(@"Targets\*.targets", "Targets"),
-                    NewFile($@"Bin\{mainPlatformDirectory}\SiliconStudio.*.pdb", $@"Bin\{mainPlatformDirectory}", @"Bin\**\SiliconStudio.Xenko.Importer*.pdb;Bin\**\SiliconStudio.Assets.Editor.pdb;Bin\**\SiliconStudio.Xenko.Assets.Presentation.pdb;Bin\**\SiliconStudio.Xenko.GameStudio*.pdb;Bin\**\SiliconStudio.Xenko.Assimp.Translation.pdb"),
+                    NewFile($@"Bin\{mainPlatformDirectory}\SiliconStudio.*.pdb", $@"Bin\{mainPlatformDirectory}", @"Bin\**\SiliconStudio.Xenko.Importer*.pdb;Bin\**\SiliconStudio.Xenko.Assimp.Translation.pdb"),
                 };
 
             // Handle Assets
@@ -73,6 +73,12 @@ namespace SiliconStudio.Xenko.Assets.Tasks
                 var targetProfile = new PackageProfile(profile.Name);
                 targetProfile.AssetFolders.Add(new AssetFolder(target));
                 newPackage.Profiles.Add(targetProfile);
+            }
+
+            //Handle RootAssets
+            foreach (var rootAsset in package.RootAssets)
+            {
+                newPackage.RootAssets.Add(rootAsset);
             }
 
             // Handle templates
