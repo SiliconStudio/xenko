@@ -3,16 +3,13 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using NuGet;
 using SiliconStudio.Assets.Analysis;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Assets.Diagnostics;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using ILogger = SiliconStudio.Core.Diagnostics.ILogger;
 using Microsoft.Build.Evaluation;
@@ -24,17 +21,15 @@ namespace SiliconStudio.Assets
     /// <summary>
     /// A session for editing a package.
     /// </summary>
-    public sealed class PackageSession : IDisposable, IDirtyable
+    public sealed class PackageSession : IDisposable
     {
         private readonly DefaultConstraintProvider constraintProvider = new DefaultConstraintProvider();
         private readonly PackageCollection packagesCopy;
-        private readonly PackageCollection packages;
-        private readonly AssemblyContainer assemblyContainer;
         private readonly object dependenciesLock = new object();
         private Package currentPackage;
         private AssetDependencyManager dependencies;
 
-        public event Action<Asset> AssetDirtyChanged;
+        public event DirtyFlagChangedDelegate<Asset> AssetDirtyChanged;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PackageSession"/> class.
@@ -50,10 +45,10 @@ namespace SiliconStudio.Assets
         {
             constraintProvider.AddConstraint(PackageStore.Instance.DefaultPackageName, new VersionSpec(PackageStore.Instance.DefaultPackageVersion.ToSemanticVersion()));
 
-            packages = new PackageCollection();
+            Packages = new PackageCollection();
             packagesCopy = new PackageCollection();
-            assemblyContainer = new AssemblyContainer();
-            packages.CollectionChanged += PackagesCollectionChanged;
+            AssemblyContainer = new AssemblyContainer();
+            Packages.CollectionChanged += PackagesCollectionChanged;
             if (package != null)
             {
                 Packages.Add(package);
@@ -67,25 +62,13 @@ namespace SiliconStudio.Assets
         /// Gets the packages.
         /// </summary>
         /// <value>The packages.</value>
-        public PackageCollection Packages
-        {
-            get
-            {
-                return packages;
-            }
-        }
+        public PackageCollection Packages { get; }
 
         /// <summary>
         /// Gets the user packages (excluding system packages).
         /// </summary>
         /// <value>The user packages.</value>
-        public IEnumerable<Package> LocalPackages
-        {
-            get
-            {
-                return packages.Where(package => !package.IsSystem);
-            }
-        }
+        public IEnumerable<Package> LocalPackages => Packages.Where(package => !package.IsSystem);
 
         /// <summary>
         /// Gets or sets the solution path (sln) in case the session was loaded from a solution.
@@ -93,22 +76,16 @@ namespace SiliconStudio.Assets
         /// <value>The solution path.</value>
         public UFile SolutionPath { get; set; }
 
-        public AssemblyContainer AssemblyContainer
-        {
-            get { return assemblyContainer; }
-        }
+        public AssemblyContainer AssemblyContainer { get; }
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
         {
-            if (dependencies != null)
-            {
-                dependencies.Dispose();
-            }
+            dependencies?.Dispose();
 
-            var loadedAssemblies = packages.SelectMany(x => x.LoadedAssemblies).ToList();
+            var loadedAssemblies = Packages.SelectMany(x => x.LoadedAssemblies).ToList();
             for (int index = loadedAssemblies.Count - 1; index >= 0; index--)
             {
                 var loadedAssembly = loadedAssemblies[index];
@@ -122,7 +99,7 @@ namespace SiliconStudio.Assets
                 DataSerializerFactory.UnregisterSerializationAssembly(loadedAssembly.Assembly);
 
                 // Unload assembly
-                assemblyContainer.UnloadAssembly(loadedAssembly.Assembly);
+                AssemblyContainer.UnloadAssembly(loadedAssembly.Assembly);
             }
         }
 
@@ -239,9 +216,9 @@ namespace SiliconStudio.Assets
         /// <exception cref="System.IO.FileNotFoundException">Unable to find package</exception>
         public Package AddExistingPackage(UFile packagePath, ILogger logger, PackageLoadParameters loadParametersArg = null)
         {
-            if (packagePath == null) throw new ArgumentNullException("packagePath");
-            if (logger == null) throw new ArgumentNullException("logger");
-            if (!packagePath.IsAbsolute) throw new ArgumentException("Invalid relative path. Expecting an absolute package path", "packagePath");
+            if (packagePath == null) throw new ArgumentNullException(nameof(packagePath));
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (!packagePath.IsAbsolute) throw new ArgumentException(@"Invalid relative path. Expecting an absolute package path", nameof(packagePath));
             if (!File.Exists(packagePath)) throw new FileNotFoundException("Unable to find package", packagePath);
 
             var loadParameters = loadParametersArg ?? PackageLoadParameters.Default();
@@ -287,13 +264,13 @@ namespace SiliconStudio.Assets
             if (package == null) throw new ArgumentNullException(nameof(package));
             if (logger == null) throw new ArgumentNullException(nameof(logger));
 
-            if (packages.Contains(package))
+            if (Packages.Contains(package))
             {
                 return;
             }
 
             // Preset the session on the package to allow the session to look for existing asset
-            this.Packages.Add(package);
+            Packages.Add(package);
 
             // Run analysis after
             var analysis = new PackageAnalysis(package, GetPackageAnalysisParametersForLoad());
@@ -312,8 +289,8 @@ namespace SiliconStudio.Assets
         /// <exception cref="System.ArgumentException">File [{0}] must exist.ToFormat(filePath);filePath</exception>
         public static void Load(string filePath, PackageSessionResult sessionResult, PackageLoadParameters loadParameters = null)
         {
-            if (filePath == null) throw new ArgumentNullException("filePath");
-            if (sessionResult == null) throw new ArgumentNullException("sessionResult");
+            if (filePath == null) throw new ArgumentNullException(nameof(filePath));
+            if (sessionResult == null) throw new ArgumentNullException(nameof(sessionResult));
 
             // Make sure with have valid parameters
             loadParameters = loadParameters ?? PackageLoadParameters.Default();
@@ -321,7 +298,7 @@ namespace SiliconStudio.Assets
             // Make sure to use a full path.
             filePath = FileUtility.GetAbsolutePath(filePath);
 
-            if (!File.Exists(filePath)) throw new ArgumentException("File [{0}] must exist".ToFormat(filePath), "filePath");
+            if (!File.Exists(filePath)) throw new ArgumentException($"File [{filePath}] must exist", nameof(filePath));
 
             try
             {
@@ -510,6 +487,7 @@ namespace SiliconStudio.Assets
         /// Saves all packages and assets.
         /// </summary>
         /// <param name="log">The <see cref="LoggerResult"/> in which to report result.</param>
+        /// <param name="saveParameters">The parameters for the save operation.</param>
         public void Save(LoggerResult log, PackageSaveParameters saveParameters = null)
         {
             bool packagesSaved = false;
@@ -533,124 +511,20 @@ namespace SiliconStudio.Assets
                     //    }
                     //}
 
-                    // Depending on saveParameters, select the list of source file operations to do
-                    List<SourceFileOperation> sourceFileOperations;
-                    switch (saveParameters.SaveSourceFileOperations)
-                    {
-                        case PackageSaveSourceFileOperations.All:
-                            sourceFileOperations = BuildSourceFileOperations(assetsOrPackagesToRemove);
-                            break;
-                        case PackageSaveSourceFileOperations.ReversibleOnly:
-                            sourceFileOperations = BuildSourceFileOperations(assetsOrPackagesToRemove).Where(x => !x.Irreversible).ToList();
-                            break;
-                        case PackageSaveSourceFileOperations.None:
-                            sourceFileOperations = new List<SourceFileOperation>();
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-
                     // If package are not modified, return immediately
-                    if (!CheckModifiedPackages() && assetsOrPackagesToRemove.Count == 0 && sourceFileOperations.Count == 0)
+                    if (!CheckModifiedPackages() && assetsOrPackagesToRemove.Count == 0)
                     {
                         return;
                     }
 
                     // Suspend tracking when saving as we don't want to receive
                     // all notification events
-                    if (dependencies != null)
-                    {
-                        dependencies.BeginSavingSession();
-                    }
+                    dependencies?.SourceTracker.BeginSavingSession();
 
                     // Return immediately if there is any error
                     if (log.HasErrors)
-                    {
                         return;
-                    }
-
-                    // Perform source file operations
-                    foreach (var sourceFileOperation in sourceFileOperations)
-                    {
-                        switch (sourceFileOperation.Type)
-                        {
-                            case SourceFileOperationType.Move:
-                                try
-                                {
-                                    // Move target already exists: try to copy and then delete
-                                    if (File.Exists(sourceFileOperation.Destination))
-                                    {
-                                        // Use upper try/catch
-                                        File.Copy(sourceFileOperation.Source, sourceFileOperation.Destination, true);
-
-                                        // Try to delete source
-                                        try
-                                        {
-                                            File.Delete(sourceFileOperation.Source);
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            // File locked?
-                                            log.Warning(sourceFileOperation.AssetItem.Package, sourceFileOperation.AssetItem.ToReference(), AssetMessageCode.AssetCannotDelete, ex, sourceFileOperation.Source);
-                                        }
-                                    }
-                                    else
-                                    {
-                                        try
-                                        {
-                                            File.Move(sourceFileOperation.Source, sourceFileOperation.Destination);
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            // Could not Move, revert back to a Copy instead
-                                            // Use upper try/catch
-                                            File.Copy(sourceFileOperation.Source, sourceFileOperation.Destination, true);
-                                            log.Warning(sourceFileOperation.AssetItem.Package, sourceFileOperation.AssetItem.ToReference(), AssetMessageCode.AssetCannotDelete, ex,
-                                                sourceFileOperation.Source);
-                                        }
-                                    }
-
-                                    // Update AssetItem
-                                    var assetItem = sourceFileOperation.AssetItem;
-                                    ((AssetImport)assetItem.Asset).Source = sourceFileOperation.Destination;
-                                    assetItem.IsDirty = true;
-                                }
-                                catch (Exception ex)
-                                {
-                                    log.Error(sourceFileOperation.AssetItem.Package, sourceFileOperation.AssetItem.ToReference(), AssetMessageCode.AssetCannotSave, ex, sourceFileOperation.Destination);
-                                }
-                                break;
-                            case SourceFileOperationType.Copy:
-                                try
-                                {
-                                    File.Copy(sourceFileOperation.Source, sourceFileOperation.Destination, true);
-
-                                    // Update AssetItem
-                                    var assetItem = sourceFileOperation.AssetItem;
-                                    ((AssetImport)assetItem.Asset).Source = sourceFileOperation.Destination;
-                                    assetItem.IsDirty = true;
-                                }
-                                catch (Exception ex)
-                                {
-                                    log.Error(sourceFileOperation.AssetItem.Package, sourceFileOperation.AssetItem.ToReference(), AssetMessageCode.AssetCannotSave, ex, sourceFileOperation.Destination);
-                                }
-                                break;
-                            case SourceFileOperationType.Delete:
-                                try
-                                {
-                                    File.Delete(sourceFileOperation.Source);
-                                }
-                                catch (Exception ex)
-                                {
-                                    // File locked?
-                                    log.Warning(sourceFileOperation.AssetItem.Package, sourceFileOperation.AssetItem.ToReference(), AssetMessageCode.AssetCannotDelete, ex, sourceFileOperation.Source);
-                                }
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException();
-                        }
-                    }
-
+       
                     //batch projects
                     var vsProjs = new Dictionary<string, Project>();
 
@@ -750,10 +624,7 @@ namespace SiliconStudio.Assets
                 }
                 finally
                 {
-                    if (dependencies != null)
-                    {
-                        dependencies.EndSavingSession();
-                    }
+                    dependencies?.SourceTracker.EndSavingSession();
 
                     // Once all packages and assets have been saved, we can save the solution (as we need to have fullpath to
                     // be setup for the packages)
@@ -797,75 +668,6 @@ namespace SiliconStudio.Assets
                 }
             }
             return assetsOrPackagesToRemove;
-        }
-
-        /// <summary>
-        /// Builds list of operations on files referenced by <see cref="AssetImport.Source"/> that will happen on save.
-        /// </summary>
-        /// <param name="assetsOrPackagesToRemove">The lists of removed assets (it will be filtered for AssetItem).</param>
-        /// <returns></returns>
-        public List<SourceFileOperation> BuildSourceFileOperations(Dictionary<UFile, object> assetsOrPackagesToRemove = null)
-        {
-            if (assetsOrPackagesToRemove == null)
-                assetsOrPackagesToRemove = BuildAssetsOrPackagesToRemove();
-
-            // Copy source assets marked copy local (if not done yet)
-            var deletedImportAssetsWithCopyLocal = assetsOrPackagesToRemove
-                .Where(x => x.Value is AssetItem)
-                .Select(x => new KeyValuePair<UFile, AssetItem>(x.Key, (AssetItem)x.Value))
-                .Where(x => FilterAssetWithCopyLocal(x.Value)) // Has copy local
-                .ToDictionary(x => new UFile(x.Key.GetFullPathWithoutExtension() + ((AssetImport)x.Value.Asset).Source.GetFileExtension()), x => x); // Compute expected source name
-            deletedImportAssetsWithCopyLocal.RemoveWhere(x => !File.Exists(x.Key));
-
-            var importAssetsWithCopyLocal = LocalPackages.SelectMany(x => x.Assets)
-                .Where(FilterAssetWithCopyLocal) // Has copy local
-                .Where(x => x.FullPath.GetFullPathWithoutExtension() != ((AssetImport)x.Asset).Source.GetFullPathWithoutExtension()) // Not copied yet
-                .Where(x => File.Exists(((AssetImport)x.Asset).Source.ToWindowsPath())) // Source must exists
-                .GroupBy(x => new UFile(x.FullPath.GetFullPathWithoutExtension() + ((AssetImport)x.Asset).Source.GetFileExtension())); // Group by expected source file name
-
-            var sourceFileOperations = new List<SourceFileOperation>();
-
-            // First, generate move and copy operations
-            foreach (var assetItemGroup in importAssetsWithCopyLocal)
-            {
-                var sourceCopyPath = assetItemGroup.Key;
-
-                foreach (var assetItem in assetItemGroup)
-                {
-                    // Copy raw asset alongside new asset location
-                    var assetImport = (AssetImport)assetItem.Asset;
-                    var sourcePath = assetImport.Source;
-
-                    bool irreversible = File.Exists(sourceCopyPath.ToWindowsPath());
-
-                    // We try to combine Copy + Delete into Move (some programs like that better)
-                    if (assetItemGroup.Count() == 1 && deletedImportAssetsWithCopyLocal.ContainsKey(sourcePath))
-                    {
-                        sourceFileOperations.Add(new SourceFileOperation(assetItem, SourceFileOperationType.Move, sourcePath.ToWindowsPath(), sourceCopyPath.ToWindowsPath(), irreversible));
-                        deletedImportAssetsWithCopyLocal.Remove(sourcePath); // No need to delete anymore
-                    }
-                    else
-                    {
-                        sourceFileOperations.Add(new SourceFileOperation(assetItem, SourceFileOperationType.Copy, sourcePath.ToWindowsPath(), sourceCopyPath.ToWindowsPath(), irreversible));
-                    }
-                }
-            }
-
-            // Delete source assets not needed anymore
-            foreach (var assetItemWithName in deletedImportAssetsWithCopyLocal)
-            {
-                var assetItem = assetItemWithName.Value.Value;
-                var sourcePath = assetItemWithName.Key;
-
-                sourceFileOperations.Add(new SourceFileOperation(assetItem, SourceFileOperationType.Delete, sourcePath.ToWindowsPath(), null, true));
-            }
-
-            return sourceFileOperations;
-        }
-
-        private static bool FilterAssetWithCopyLocal(AssetItem x)
-        {
-            return x.Asset is AssetImport && ((AssetImport)x.Asset).Source != null && ((AssetImport)x.Asset).SourceKeepSideBySide;
         }
 
         /// <summary>
@@ -920,7 +722,7 @@ namespace SiliconStudio.Assets
                         UnRegisterPackage(oldPackage);
                     }
 
-                    foreach (var packageToCopy in packages)
+                    foreach (var packageToCopy in Packages)
                     {
                         RegisterPackage(packageToCopy);
                     }
@@ -972,19 +774,18 @@ namespace SiliconStudio.Assets
             IsDirty = true;
         }
 
-        private void OnAssetDirtyChanged(Asset asset)
+        private void OnAssetDirtyChanged(Asset asset, bool oldValue, bool newValue)
         {
-            Action<Asset> handler = AssetDirtyChanged;
-            if (handler != null) handler(asset);
+            AssetDirtyChanged?.Invoke(asset, oldValue, newValue);
         }
 
         private static Package PreLoadPackage(PackageSession session, ILogger log, string filePath, bool isSystemPackage, PackageCollection loadedPackages, PackageLoadParameters loadParameters)
         {
-            if (session == null) throw new ArgumentNullException("session");
-            if (log == null) throw new ArgumentNullException("log");
-            if (filePath == null) throw new ArgumentNullException("filePath");
-            if (loadedPackages == null) throw new ArgumentNullException("loadedPackages");
-            if (loadParameters == null) throw new ArgumentNullException("loadParameters");
+            if (session == null) throw new ArgumentNullException(nameof(session));
+            if (log == null) throw new ArgumentNullException(nameof(log));
+            if (filePath == null) throw new ArgumentNullException(nameof(filePath));
+            if (loadedPackages == null) throw new ArgumentNullException(nameof(loadedPackages));
+            if (loadParameters == null) throw new ArgumentNullException(nameof(loadParameters));
 
             try
             {
@@ -1095,7 +896,7 @@ namespace SiliconStudio.Assets
                     }
 
                     // Check for upgraders
-                    var packageUpgrader = session.CheckPackageUpgrade(log, package, packageDependency, dependencyPackage);
+                    var packageUpgrader = CheckPackageUpgrade(log, package, packageDependency, dependencyPackage);
                     if (packageUpgrader != null)
                     {
                         pendingPackageUpgrades.Add(new PendingPackageUpgrade(packageUpgrader, packageDependency, dependencyPackage));
@@ -1104,7 +905,7 @@ namespace SiliconStudio.Assets
 
                 // Prepare asset loading
                 var newLoadParameters = loadParameters.Clone();
-                newLoadParameters.AssemblyContainer = session.assemblyContainer;
+                newLoadParameters.AssemblyContainer = session.AssemblyContainer;
 
                 // Default package version override
                 newLoadParameters.ExtraCompileProperties = new Dictionary<string, string>();
@@ -1215,7 +1016,7 @@ namespace SiliconStudio.Assets
             }
         }
 
-        PackageUpgrader CheckPackageUpgrade(ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage)
+        private static PackageUpgrader CheckPackageUpgrade(ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage)
         {
             // Don't do anything if source is a system (read-only) package for now
             // We only want to process local packages
@@ -1241,7 +1042,7 @@ namespace SiliconStudio.Assets
                     if (dependency.Version.MinVersion < packageUpgrader.Attribute.PackageMinimumVersion)
                     {
                         // Throw an exception, because the package update is not allowed and can't be done
-                        throw new InvalidOperationException(string.Format("Upgrading package [{0}] to use [{1}] from version [{2}] to [{3}] is not supported", dependentPackage.Meta.Name, dependencyPackage.Meta.Name, dependentPackagePreviousMinimumVersion, dependencyPackage.Meta.Version));
+                        throw new InvalidOperationException($"Upgrading package [{dependentPackage.Meta.Name}] to use [{dependencyPackage.Meta.Name}] from version [{dependentPackagePreviousMinimumVersion}] to [{dependencyPackage.Meta.Version}] is not supported");
                     }
 
                     log.Info("Upgrading package [{0}] to use [{1}] from version [{2}] to [{3}] will be required", dependentPackage.Meta.Name, dependencyPackage.Meta.Name, dependentPackagePreviousMinimumVersion, dependencyPackage.Meta.Version);
@@ -1254,10 +1055,10 @@ namespace SiliconStudio.Assets
         
         private static void PreLoadPackageDependencies(PackageSession session, ILogger log, Package package, PackageCollection loadedPackages, PackageLoadParameters loadParameters)
         {
-            if (session == null) throw new ArgumentNullException("session");
-            if (log == null) throw new ArgumentNullException("log");
-            if (package == null) throw new ArgumentNullException("package");
-            if (loadParameters == null) throw new ArgumentNullException("loadParameters");
+            if (session == null) throw new ArgumentNullException(nameof(session));
+            if (log == null) throw new ArgumentNullException(nameof(log));
+            if (package == null) throw new ArgumentNullException(nameof(package));
+            if (loadParameters == null) throw new ArgumentNullException(nameof(loadParameters));
 
             bool packageDependencyErrors = false;
 
@@ -1343,31 +1144,6 @@ namespace SiliconStudio.Assets
                 IsLoggingAssetNotFoundAsError = true,
                 AssetTemplatingMergeModifiedAssets = true
             };
-        }
-
-        public enum SourceFileOperationType
-        {
-            Move,
-            Copy,
-            Delete,
-        }
-
-        public struct SourceFileOperation
-        {
-            public readonly AssetItem AssetItem;
-            public readonly SourceFileOperationType Type;
-            public readonly string Source;
-            public readonly string Destination;
-            public readonly bool Irreversible;
-
-            public SourceFileOperation(AssetItem assetItem, SourceFileOperationType type, string source, string destination, bool irreversible)
-            {
-                AssetItem = assetItem;
-                Type = type;
-                Source = source;
-                Destination = destination;
-                Irreversible = irreversible;
-            }
         }
     }
 }

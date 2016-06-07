@@ -47,6 +47,12 @@ namespace SiliconStudio.Quantum.Contents
             throw new InvalidOperationException("An ObjectContent value cannot be modified after it has been constructed");
         }
 
+        /// <inheritdoc/>
+        protected internal override void UpdateFromMember(object newValue, Index index)
+        {
+            throw new InvalidOperationException("An ObjectContent value cannot be modified after it has been constructed");
+        }
+
         protected void SetValue(object newValue)
         {
             value = newValue;

@@ -9,5 +9,6 @@ namespace SiliconStudio.Xenko.ProjectGenerator
         WindowsStore,
         WindowsPhone,
         Windows10,
+        Linux
     }
 }

@@ -88,7 +88,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
         }
 
         /// <inheritdoc/>
-        public IEnumerable<IContentReference> EnumerateCompileTimeDependencies()
+        public IEnumerable<IReference> EnumerateCompileTimeDependencies()
         {
             foreach (var materialReference in FindMaterialReferences())
             {

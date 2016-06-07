@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             return new ShaderClassSource("ComputeSkyboxCubeMapColor", key);
         }
 
-        public IEnumerable<IContentReference> GetDependencies()
+        public IEnumerable<IReference> GetDependencies()
         {
             if (CubeMap != null)
             {

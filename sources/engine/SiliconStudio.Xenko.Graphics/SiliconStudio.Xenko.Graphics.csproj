@@ -149,6 +149,7 @@
     <Compile Include="BufferPoolAllocationResult.cs" />
     <Compile Include="CommandList.cs" />
     <Compile Include="OpenGL\GraphicsResource.OpenGL.cs" />
+    <Compile Include="OpenGL\MappedResource.OpenGL.cs" />
     <Compile Include="RenderingSettings.cs" />
     <Compile Include="Data\TextureContentSerializer.cs" />
     <Compile Include="DescriptorPool.cs" />

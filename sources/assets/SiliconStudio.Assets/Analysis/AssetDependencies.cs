@@ -304,7 +304,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <param name="reference">the reference to the missing element</param>
         /// <param name="contentLinkType">The type of link</param>
         /// <exception cref="ArgumentException">A broken link to this element already exists</exception>
-        public void AddBrokenLinkOut(IContentReference reference, ContentLinkType contentLinkType)
+        public void AddBrokenLinkOut(IReference reference, ContentLinkType contentLinkType)
         {
             AddLink(ref missingChildren, new AssetLink(reference, contentLinkType));
         }

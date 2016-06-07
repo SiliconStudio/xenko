@@ -13,7 +13,7 @@ namespace SiliconStudio.Assets.Analysis
 {
     /// <summary>
     /// An analysis to check the validity of a <see cref="Package"/>, convert <see cref="UFile"/> or <see cref="UDirectory"/>
-    /// references to absolute/relative paths, check asset references...etc, change <see cref="IContentReference"/> location
+    /// references to absolute/relative paths, check asset references...etc, change <see cref="IReference"/> location
     /// if location changed.
     /// </summary>
     public sealed class PackageAnalysis
@@ -190,7 +190,7 @@ namespace SiliconStudio.Assets.Analysis
 
         /// <summary>
         /// Fix and/or remove invalid RootAssets entries.
-        /// Note: at some point, we might want to make IContentReference be part of the same workflow as standard asset references.
+        /// Note: at some point, we might want to make IReference be part of the same workflow as standard asset references.
         /// </summary>
         /// <param name="rootAssets">The root assets to check.</param>
         /// <param name="referencedPackage">The package where to look for root reference.</param>
@@ -199,7 +199,7 @@ namespace SiliconStudio.Assets.Analysis
         {
             foreach (var rootAsset in rootAssets.ToArray())
             {
-                // Update Asset references (AssetReference, AssetBase, ContentReference)
+                // Update Asset references (AssetReference, AssetBase, reference)
                 var id = rootAsset.Id;
                 var newItemReference = referencedPackage.Assets.Find(id);
 

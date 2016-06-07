@@ -23,7 +23,6 @@ namespace SiliconStudio.Xenko.Games
         private WindowHandle nativeWindow;
 
         private UIInterfaceOrientation currentOrientation;
-        
 
         public override WindowHandle NativeWindow
         {
@@ -192,10 +191,7 @@ namespace SiliconStudio.Xenko.Games
             set { }
         }
 
-        public override Rectangle ClientBounds
-        {
-            get { return new Rectangle(0, 0, (int)(gameForm.Window.Screen.Bounds.Width*gameForm.ContentScaleFactor), (int)(gameForm.Window.Screen.Bounds.Height*gameForm.ContentScaleFactor)); }
-        }
+        public override Rectangle ClientBounds => new Rectangle(0, 0, (int)(gameForm.Size.Width*gameForm.ContentScaleFactor), (int)(gameForm.Size.Height*gameForm.ContentScaleFactor));
 
         public override DisplayOrientation CurrentOrientation
         {

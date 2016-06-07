@@ -25,6 +25,7 @@ namespace SiliconStudio.Xenko.Graphics
         internal PixelInternalFormat TextureInternalFormat;
         internal PixelFormatGl TextureFormat;
         internal PixelType TextureType;
+        internal int TexturePixelSize;
     }
 }
  

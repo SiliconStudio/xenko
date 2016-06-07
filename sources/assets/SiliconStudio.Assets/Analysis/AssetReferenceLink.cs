@@ -33,7 +33,7 @@ namespace SiliconStudio.Assets.Analysis
         public readonly MemberPath Path;
 
         /// <summary>
-        /// A <see cref="IContentReference"/> or <see cref="UFile"/>.
+        /// A <see cref="IReference"/> or <see cref="UFile"/>.
         /// </summary>
         public object Reference
         {

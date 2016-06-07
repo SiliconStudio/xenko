@@ -8,6 +8,13 @@ namespace SiliconStudio.Xenko.Audio
 {
     public class AudioEngineSDL : AudioEngine
     {
+        static AudioEngineSDL()
+        {
+            // Preload proper SDL native library (depending on CPU type)
+            Core.NativeLibrary.PreloadLibrary("SDL2.dll");
+            Core.NativeLibrary.PreloadLibrary("SDL2_mixer.dll");
+        }
+
         /// <inheritDoc/>
         internal override void InitializeAudioEngine(AudioDevice device)
         {

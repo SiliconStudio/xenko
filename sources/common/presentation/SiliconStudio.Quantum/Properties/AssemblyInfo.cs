@@ -3,8 +3,8 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly: AssemblyProduct("Xenko.ViewModel")]
-[assembly: AssemblyTitle("Xenko.ViewModel")]
+[assembly: AssemblyTitle("SiliconStudio.Quantum")]
+[assembly: AssemblyDescription("Quantum assembly")]
+[assembly: AssemblyProduct("SiliconStudio.Quantum")]
 
-[assembly: InternalsVisibleTo("Xenko.Presentation")]
-
+[assembly: InternalsVisibleTo("SiliconStudio.Quantum.Tests")]
