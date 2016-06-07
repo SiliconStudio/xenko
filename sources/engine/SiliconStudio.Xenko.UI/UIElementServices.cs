@@ -8,8 +8,15 @@ namespace SiliconStudio.Xenko.UI
     /// <summary>
     /// Provides a services class for all the User Interface elements in Xenko applications.
     /// </summary>
-    public class UIElementServices
+    public struct UIElementServices
     {
         public IServiceRegistry Services { get; set; }
+
+        public bool Equals(ref UIElementServices other)
+        {
+            return (Services == other.Services);
+        }
+
     }
+
 }

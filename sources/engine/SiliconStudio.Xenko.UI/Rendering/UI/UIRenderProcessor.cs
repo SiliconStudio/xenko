@@ -48,13 +48,11 @@ namespace SiliconStudio.Xenko.Rendering.UI
         protected override void OnEntityComponentAdding(Entity entity, UIComponent uiComponent, RenderUIElement renderUIElement)
         {
             VisibilityGroup.RenderObjects.Add(renderUIElement);
-            uiComponent.UIElementServices = new UIElementServices { Services = this.Services };
         }
 
         protected override void OnEntityComponentRemoved(Entity entity, UIComponent uiComponent, RenderUIElement renderUIElement)
         {
             VisibilityGroup.RenderObjects.Remove(renderUIElement);
-            uiComponent.UIElementServices = null;
         }
 
         protected override RenderUIElement GenerateComponentData(Entity entity, UIComponent component)

@@ -220,6 +220,9 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 var projectedVirtualWidth = viewportSize * (transformedVirtualWidth.XY() / transformedVirtualWidth.W - projectedOrigin);
                 var projectedVirtualHeight = viewportSize * (transformedVirtualHeight.XY() / transformedVirtualHeight.W - projectedOrigin);
 
+                // Set default services
+                rootElement.UIElementServices = new UIElementServices { Services = RenderSystem.Services };
+
                 // set default resource dictionary
                 rootElement.ResourceDictionary = uiSystem.DefaultResourceDictionary;
 

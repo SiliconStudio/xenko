@@ -343,7 +343,7 @@ namespace SiliconStudio.Xenko.UI
         {
             get
             {
-                if (Parent != null && uiElementServices != Parent.UIElementServices)
+                if (Parent != null && !Parent.UIElementServices.Equals(ref uiElementServices))
                     uiElementServices = Parent.UIElementServices;
 
                 return uiElementServices;
@@ -1309,7 +1309,7 @@ namespace SiliconStudio.Xenko.UI
         /// <param name="time">The current time of the game</param>
         protected virtual void Update(GameTime time)
         {
-            if (Parent != null && uiElementServices != Parent.UIElementServices)
+            if (Parent != null && !Parent.UIElementServices.Equals(ref uiElementServices))
                 uiElementServices = Parent.UIElementServices;
         }
 

@@ -37,9 +37,7 @@ namespace SiliconStudio.Xenko.Engine
         [DataMember(10)]
         [Display("Root Element")]
         [DataMemberIgnore] // TODO this is temporary as long as we don't have an UI editor and UI data asset.
-        public UIElement RootElement { get {return rootElement; } set {SetNewRootElement(value); } }
-
-        private UIElement rootElement;
+        public UIElement RootElement { get; set; }
 
         /// <summary>
         /// Gets or sets the value indicating whether the UI should be full screen.
@@ -94,29 +92,5 @@ namespace SiliconStudio.Xenko.Engine
         [DefaultValue(true)]
         public bool SnapText { get; set; }
 
-        [DataMemberIgnore]
-        public UIElementServices UIElementServices
-        {
-            get {return uiElementServices; }
-            set
-            {
-                uiElementServices = value;
-                if (rootElement != null)
-                    rootElement.UIElementServices = uiElementServices;
-            }
-        }
-
-        private UIElementServices uiElementServices;
-
-        private void SetNewRootElement(UIElement newRootElement)
-        {
-            if (rootElement != null)
-                rootElement.UIElementServices = null;
-
-            rootElement = newRootElement;
-
-            if (rootElement != null)
-                rootElement.UIElementServices = uiElementServices;
-        }
     }
 }
