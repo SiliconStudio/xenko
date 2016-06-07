@@ -15,7 +15,10 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial class PipelineState
     {
-        internal SharpVulkan.DescriptorSetLayout[] NativeDescriptorSetLayouts;
+        internal SharpVulkan.DescriptorSetLayout NativeDescriptorSetLayout;
+        internal uint[] DescriptorTypeCounts;
+        internal DescriptorSetLayout DescriptorSetLayout;
+
         internal PipelineLayout NativeLayout;
         internal Pipeline NativePipeline;
         internal RenderPass NativeRenderPass;
@@ -294,10 +297,7 @@ namespace SiliconStudio.Xenko.Graphics
                 GraphicsDevice.NativeDevice.DestroyPipeline(NativePipeline);
                 GraphicsDevice.NativeDevice.DestroyPipelineLayout(NativeLayout);
 
-                foreach (var nativeDescriptorSetLayout in NativeDescriptorSetLayouts)
-                {
-                    GraphicsDevice.NativeDevice.DestroyDescriptorSetLayout(nativeDescriptorSetLayout);
-                }
+                GraphicsDevice.NativeDevice.DestroyDescriptorSetLayout(NativeDescriptorSetLayout);
             }
 
             base.OnDestroyed();
@@ -330,7 +330,6 @@ namespace SiliconStudio.Xenko.Graphics
             var destinationEntries = new DescriptorSetLayoutBuilder.Entry[maxBindingIndex + 1];
 
             DescriptorBindingMapping = new List<DescriptorSetInfo>();
-            NativeDescriptorSetLayouts = new SharpVulkan.DescriptorSetLayout[1];
 
             for (int i = 0; i < resourceGroups.Count; i++)
             {
@@ -371,14 +370,15 @@ namespace SiliconStudio.Xenko.Graphics
             };
 
             // Create descriptor set layout
-            NativeDescriptorSetLayouts[0] = DescriptorSetLayout.CreateNativeDescriptorSetLayout(GraphicsDevice, destinationEntries);
+            NativeDescriptorSetLayout = DescriptorSetLayout.CreateNativeDescriptorSetLayout(GraphicsDevice, destinationEntries, out DescriptorTypeCounts);
 
             // Create pipeline layout
+            var nativeDescriptorSetLayout = NativeDescriptorSetLayout;
             var pipelineLayoutCreateInfo = new PipelineLayoutCreateInfo
             {
                 StructureType = StructureType.PipelineLayoutCreateInfo,
-                SetLayoutCount = (uint)NativeDescriptorSetLayouts.Length,
-                SetLayouts = NativeDescriptorSetLayouts.Length > 0 ? new IntPtr(Interop.Fixed(NativeDescriptorSetLayouts)) : IntPtr.Zero,
+                SetLayoutCount = 1,
+                SetLayouts = new IntPtr(&nativeDescriptorSetLayout)
             };
             NativeLayout = GraphicsDevice.NativeDevice.CreatePipelineLayout(ref pipelineLayoutCreateInfo);
         }

@@ -32,6 +32,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         private SharpVulkan.DescriptorPool descriptorPool;
         private SharpVulkan.DescriptorSet descriptorSet;
+        private uint[] allocatedTypeCounts;
+        private uint allocatedSetCount;
 
         public CommandList(GraphicsDevice device) : base(device)
         {
@@ -43,6 +45,10 @@ namespace SiliconStudio.Xenko.Graphics
             commandBufferPool = new CommandBufferPool(GraphicsDevice);
 
             framebufferCollector = new FramebufferCollector(GraphicsDevice);
+
+            descriptorPool = GraphicsDevice.descriptorPools.GetObject();
+            allocatedTypeCounts = new uint[DescriptorSetLayout.DescriptorTypeCount];
+            allocatedSetCount = 0;
 
             Reset();
         }
@@ -58,8 +64,6 @@ namespace SiliconStudio.Xenko.Graphics
             framebuffers.Clear();
             framebufferDirty = true;
 
-            descriptorPool = GraphicsDevice.descriptorPools.GetObject();
-
             NativeCommandBuffer = commandBufferPool.GetObject();
 
             var beginInfo = new CommandBufferBeginInfo
@@ -72,7 +76,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void Close()
         {
-            End(false);
+            End();
 
             // Submit
             GraphicsDevice.ExecuteCommandListInternal(NativeCommandBuffer);
@@ -80,7 +84,7 @@ namespace SiliconStudio.Xenko.Graphics
             activePipeline = null;
         }
 
-        private void End(bool keepDescriptorPool)
+        private void End()
         {
             // End active render pass
             CleanupRenderPass();
@@ -88,16 +92,12 @@ namespace SiliconStudio.Xenko.Graphics
             // Close
             NativeCommandBuffer.End();
 
-            // TODO VULKAN: Handle recycling based on available set coun
-            if (!keepDescriptorPool)
-                GraphicsDevice.descriptorPools.RecycleObject(GraphicsDevice.NextFenceValue, descriptorPool);
-
             commandBufferPool.RecycleObject(GraphicsDevice.NextFenceValue, NativeCommandBuffer);
         }
 
         private unsafe long FlushInternal(bool wait)
         {
-            End(true);
+            End();
 
             var fenceValue = GraphicsDevice.ExecuteCommandListInternal(NativeCommandBuffer);
 
@@ -235,12 +235,39 @@ namespace SiliconStudio.Xenko.Graphics
             // Lazily set the render pass and frame buffer
             EnsureRenderPass();
 
+            // Keep track of descriptor pool usage
+            bool isPoolExhausted = ++allocatedSetCount > GraphicsDevice.MaxDescriptorSetCount;
+            for (int i = 0; i < DescriptorSetLayout.DescriptorTypeCount; i++)
+            {
+                allocatedTypeCounts[i] += activePipeline.DescriptorTypeCounts[i];
+                if (allocatedTypeCounts[i] > GraphicsDevice.MaxDescriptorTypeCounts[i])
+                {
+                    isPoolExhausted = true;
+                    break;
+                }
+            }
+
+            if (isPoolExhausted)
+            {
+                // Retrive a new pool
+                GraphicsDevice.descriptorPools.RecycleObject(GraphicsDevice.NextFenceValue, descriptorPool);
+                descriptorPool = GraphicsDevice.descriptorPools.GetObject();
+
+                allocatedSetCount = 1;
+                for (int i = 0; i < DescriptorSetLayout.DescriptorTypeCount; i++)
+                {
+                    allocatedTypeCounts[i] = activePipeline.DescriptorTypeCounts[i];
+                }
+            }
+
+            // Allocate descriptor set
+            var nativeDescriptorSetLayout = activePipeline.NativeDescriptorSetLayout;
             var allocateInfo = new DescriptorSetAllocateInfo
             {
                 StructureType = StructureType.DescriptorSetAllocateInfo,
                 DescriptorPool = descriptorPool,
-                DescriptorSetCount = 1, //(uint)activePipeline.NativeDescriptorSetLayouts.Length,
-                SetLayouts = new IntPtr(Interop.Fixed(activePipeline.NativeDescriptorSetLayouts))
+                DescriptorSetCount = 1,
+                SetLayouts = new IntPtr(&nativeDescriptorSetLayout)
             };
 
             SharpVulkan.DescriptorSet localDescriptorSet;
@@ -1196,6 +1223,12 @@ namespace SiliconStudio.Xenko.Graphics
         protected internal override void OnDestroyed()
         {
             GraphicsDevice.NativeDevice.WaitIdle();
+
+            if (descriptorPool != SharpVulkan.DescriptorPool.Null)
+            {
+                GraphicsDevice.descriptorPools.RecycleObject(GraphicsDevice.NextFenceValue, descriptorPool);
+                descriptorPool = SharpVulkan.DescriptorPool.Null;
+            }
 
             commandBufferPool.Dispose();
             framebufferCollector.Dispose();

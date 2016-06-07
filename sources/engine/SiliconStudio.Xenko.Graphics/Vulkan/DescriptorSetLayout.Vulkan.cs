@@ -17,6 +17,10 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal SharpVulkan.DescriptorSetLayout NativeLayout;
 
+        internal const int DescriptorTypeCount = 11;
+
+        internal uint[] TypeCounts;
+
         private DescriptorSetLayout(GraphicsDevice device, DescriptorSetLayoutBuilder builder) : base(device)
         {
             this.Builder = builder;
@@ -25,15 +29,17 @@ namespace SiliconStudio.Xenko.Graphics
 
         private void Recreate()
         {
-            NativeLayout = CreateNativeDescriptorSetLayout(GraphicsDevice, Builder.Entries);
+            NativeLayout = CreateNativeDescriptorSetLayout(GraphicsDevice, Builder.Entries, out TypeCounts);
         }
 
-        internal static unsafe SharpVulkan.DescriptorSetLayout CreateNativeDescriptorSetLayout(GraphicsDevice device, IList<DescriptorSetLayoutBuilder.Entry> entries)
+        internal static unsafe SharpVulkan.DescriptorSetLayout CreateNativeDescriptorSetLayout(GraphicsDevice device, IList<DescriptorSetLayoutBuilder.Entry> entries, out uint[] typeCounts)
         {
             var bindings = new DescriptorSetLayoutBinding[entries.Count];
             var immutableSamplers = new Sampler[entries.Count];
 
             int usedBindingCount = 0;
+
+            typeCounts = new uint[DescriptorTypeCount];
 
             fixed (Sampler* immutableSamplersPointer = &immutableSamplers[0])
             {
@@ -66,6 +72,8 @@ namespace SiliconStudio.Xenko.Graphics
                         //bindings[i].DescriptorType = DescriptorType.CombinedImageSampler;
                         bindings[usedBindingCount].ImmutableSamplers = new IntPtr(immutableSamplersPointer + i);
                     }
+
+                    typeCounts[(int)bindings[usedBindingCount].DescriptorType] += bindings[usedBindingCount].DescriptorCount;
 
                     usedBindingCount++;
                 }

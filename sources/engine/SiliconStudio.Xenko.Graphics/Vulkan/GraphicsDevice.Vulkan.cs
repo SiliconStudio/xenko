@@ -42,6 +42,21 @@ namespace SiliconStudio.Xenko.Graphics
         internal Queue<BufferInfo> TemporaryResources = new Queue<BufferInfo>();
 
         internal HeapPool descriptorPools;
+        internal const uint MaxDescriptorSetCount = 256;
+        internal readonly uint[] MaxDescriptorTypeCounts = new uint[DescriptorSetLayout.DescriptorTypeCount]
+        {
+            256, // Sampler
+            0, // CombinedImageSampler
+            512, // SampledImage
+            0, // StorageImage
+            64, // UniformTexelBuffer
+            0, // StorageTexelBuffer
+            512, // UniformBuffer
+            0, // StorageBuffer
+            0, // UniformBufferDynamic
+            0, // StorageBufferDynamic
+            0 // InputAttachment
+        };
 
         internal struct BufferInfo
         {
@@ -660,26 +675,22 @@ namespace SiliconStudio.Xenko.Graphics
         protected override unsafe SharpVulkan.DescriptorPool CreateObject()
         {
             // No allocator ready to be used, let's create a new one
-            var poolSizes = new[]
-            {
-                new DescriptorPoolSize { Type = DescriptorType.SampledImage, DescriptorCount = heapSize },
-                new DescriptorPoolSize { Type = DescriptorType.Sampler, DescriptorCount = heapSize },
-                new DescriptorPoolSize { Type = DescriptorType.UniformBuffer, DescriptorCount = heapSize },
-                new DescriptorPoolSize { Type = DescriptorType.UniformTexelBuffer, DescriptorCount = heapSize },
-            };
+            var poolSizes = GraphicsDevice.MaxDescriptorTypeCounts
+                .Select((count, index) => new DescriptorPoolSize { Type = (DescriptorType)index, DescriptorCount = count })
+                .Where(size => size.DescriptorCount > 0)
+                .ToArray();
 
             var descriptorPoolCreateInfo = new DescriptorPoolCreateInfo
             {
                 StructureType = StructureType.DescriptorPoolCreateInfo,
                 PoolSizeCount = (uint)poolSizes.Length,
                 PoolSizes = new IntPtr(Interop.Fixed(poolSizes)),
-                MaxSets = heapSize,
-                //Flags = DescriptorPoolCreateFlags.FreeDescriptorSet,
+                MaxSets = GraphicsDevice.MaxDescriptorSetCount,
             };
             return GraphicsDevice.NativeDevice.CreateDescriptorPool(ref descriptorPoolCreateInfo);
         }
 
-        protected override unsafe void ResetObject(SharpVulkan.DescriptorPool obj)
+        protected override void ResetObject(SharpVulkan.DescriptorPool obj)
         {
             GraphicsDevice.NativeDevice.ResetDescriptorPool(obj, DescriptorPoolResetFlags.None);
         }
