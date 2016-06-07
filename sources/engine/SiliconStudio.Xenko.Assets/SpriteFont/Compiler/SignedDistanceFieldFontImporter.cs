@@ -111,7 +111,8 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 
             var startInfo = new ProcessStartInfo();
             startInfo.FileName = msdfgenExe;
-            startInfo.Arguments = "msdf -font " + fontSource + " " + characterCode + " -o " + outputFile + exportSize + translate + " -autoframe";
+            startInfo.Arguments = "msdf -font " + '"' + fontSource + '"' + " " + characterCode + " -o " + '"' + outputFile + '"' + exportSize + translate + " -autoframe";
+//            startInfo.Arguments = "msdf -font " + fontSource + " " + characterCode + " -o " + outputFile + exportSize + translate + " -autoframe";
             startInfo.CreateNoWindow = true;
             startInfo.WindowStyle = ProcessWindowStyle.Hidden;
             startInfo.RedirectStandardError = true;
