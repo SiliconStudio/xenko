@@ -287,25 +287,10 @@ namespace SiliconStudio.Xenko.Graphics
                 var uploadMemory = GraphicsDevice.AllocateUploadBuffer(totalSize, out uploadResource, out uploadOffset);
 
                 // Upload buffer barrier
-                var bufferMemoryBarrier = new BufferMemoryBarrier
-                {
-                    StructureType = StructureType.BufferMemoryBarrier,
-                    Buffer = uploadResource,
-                    SourceAccessMask = AccessFlags.HostWrite,
-                    DestinationAccessMask = AccessFlags.TransferRead,
-                };
+                var bufferMemoryBarrier = new BufferMemoryBarrier(uploadResource, AccessFlags.HostWrite, AccessFlags.TransferRead, (ulong)uploadOffset, (ulong)totalSize);
 
                 // Image barrier
-                var initialBarrier = new ImageMemoryBarrier
-                {
-                    StructureType = StructureType.ImageMemoryBarrier,
-                    OldLayout = ImageLayout.Undefined,
-                    NewLayout = ImageLayout.TransferDestinationOptimal,
-                    Image = NativeImage,
-                    SubresourceRange = new ImageSubresourceRange(NativeImageAspect, 0, (uint)ArraySize, 0, (uint)MipLevels),
-                    SourceAccessMask = AccessFlags.None,
-                    DestinationAccessMask = AccessFlags.TransferWrite
-                };
+                var initialBarrier = new ImageMemoryBarrier(NativeImage, ImageLayout.Undefined, ImageLayout.TransferDestinationOptimal, AccessFlags.None, AccessFlags.TransferWrite, new ImageSubresourceRange(NativeImageAspect));
                 commandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, 1, &bufferMemoryBarrier, 1, &initialBarrier);
 
                 // Copy data boxes to upload buffer
@@ -319,7 +304,7 @@ namespace SiliconStudio.Xenko.Graphics
                     var mipMapDescription = GetMipMapDescription(mipSlice);
 
                     SubresourceLayout layout;
-                    GraphicsDevice.NativeDevice.GetImageSubresourceLayout(NativeImage, new ImageSubresource { AspectMask = NativeImageAspect, ArrayLayer = (uint)arraySlice, MipLevel = (uint)mipSlice }, out layout);
+                    GraphicsDevice.NativeDevice.GetImageSubresourceLayout(NativeImage, new ImageSubresource(NativeImageAspect, (uint)arraySlice, (uint)mipSlice), out layout);
 
                     var alignment = ((uploadOffset + 3) & ~3) - uploadOffset;
                     uploadMemory += alignment;
@@ -331,9 +316,9 @@ namespace SiliconStudio.Xenko.Graphics
                     copies[i] = new BufferImageCopy
                     {
                         BufferOffset = (ulong)uploadOffset,
-                        ImageSubresource = new ImageSubresourceLayers { AspectMask = ImageAspectFlags.Color, BaseArrayLayer = (uint)arraySlice, LayerCount = 1, MipLevel = (uint)mipSlice },
-                        BufferRowLength = 0,//(uint)(dataBoxes[i].RowPitch / pixelSize),
-                        BufferImageHeight = 0,//(uint)(dataBoxes[i].SlicePitch / dataBoxes[i].RowPitch),
+                        ImageSubresource = new ImageSubresourceLayers(ImageAspectFlags.Color, (uint)arraySlice, 1, (uint)mipSlice),
+                        BufferRowLength = 0, //(uint)(dataBoxes[i].RowPitch / pixelSize),
+                        BufferImageHeight = 0, //(uint)(dataBoxes[i].SlicePitch / dataBoxes[i].RowPitch),
                         ImageOffset = new Offset3D(0, 0, arraySlice),
                         ImageExtent = new Extent3D((uint)mipMapDescription.Width, (uint)mipMapDescription.Height, 1)
                     };
@@ -352,16 +337,9 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             // Transition to default layout
-            var imageMemoryBarrier = new ImageMemoryBarrier
-            {
-                StructureType = StructureType.ImageMemoryBarrier,
-                OldLayout = dataBoxes == null || dataBoxes.Length == 0 ? ImageLayout.Undefined : ImageLayout.TransferDestinationOptimal,
-                NewLayout = NativeLayout,
-                Image = NativeImage,
-                SubresourceRange = new ImageSubresourceRange(NativeImageAspect, 0, (uint)ArraySize, 0, (uint)MipLevels),
-                SourceAccessMask = dataBoxes == null || dataBoxes.Length == 0 ? AccessFlags.None : AccessFlags.TransferWrite,
-                DestinationAccessMask = NativeAccessMask
-            };
+            var imageMemoryBarrier = new ImageMemoryBarrier(NativeImage,
+                dataBoxes == null || dataBoxes.Length == 0 ? ImageLayout.Undefined : ImageLayout.TransferDestinationOptimal, NativeLayout,
+                dataBoxes == null || dataBoxes.Length == 0 ? AccessFlags.None : AccessFlags.TransferWrite, NativeAccessMask, new ImageSubresourceRange(NativeImageAspect));
             commandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, PipelineStageFlags.AllCommands, DependencyFlags.None, 0, null, 0, null, 1, &imageMemoryBarrier);
 
             // Close and submit
@@ -544,14 +522,7 @@ namespace SiliconStudio.Xenko.Graphics
                 Format = NativeFormat, // VulkanConvertExtensions.ConvertPixelFormat(ViewFormat),
                 Image = NativeImage,
                 Components = ComponentMapping.Identity,
-                SubresourceRange = new ImageSubresourceRange
-                {
-                    BaseArrayLayer = (uint)arrayOrDepthSlice,
-                    LayerCount = 1,
-                    BaseMipLevel = (uint)mipIndex,
-                    LevelCount = (uint)mipCount,
-                    AspectMask = ImageAspectFlags.Color
-                }
+                SubresourceRange = new ImageSubresourceRange(ImageAspectFlags.Color, (uint)arrayOrDepthSlice, 1, (uint)mipIndex, (uint)mipCount)
             };
 
             if (IsMultiSample)

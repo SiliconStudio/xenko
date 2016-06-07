@@ -381,16 +381,7 @@ namespace SiliconStudio.Xenko.Graphics
                 // End render pass, so barrier effects all commands in the buffer
                 CleanupRenderPass();
 
-                var memoryBarrier = new ImageMemoryBarrier
-                {
-                    StructureType = StructureType.ImageMemoryBarrier,
-                    Image = texture.NativeImage,
-                    SubresourceRange = new ImageSubresourceRange(texture.NativeImageAspect, 0, (uint)texture.ArraySize, 0, (uint)texture.MipLevels),
-                    OldLayout = oldLayout,
-                    NewLayout = texture.NativeLayout,
-                    SourceAccessMask = oldAccessMask,
-                    DestinationAccessMask = texture.NativeAccessMask,
-                };
+                var memoryBarrier = new ImageMemoryBarrier(texture.NativeImage, oldLayout, texture.NativeLayout, oldAccessMask, texture.NativeAccessMask, new ImageSubresourceRange(texture.NativeImageAspect));
                 NativeCommandBuffer.PipelineBarrier(sourceStages, destinationStages, DependencyFlags.None, 0, null, 0, null, 1, &memoryBarrier);
             }
             else
@@ -401,7 +392,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         private readonly FastList<SharpVulkan.DescriptorSet> boundDescriptorSets = new FastList<SharpVulkan.DescriptorSet>();
 
-        public unsafe void SetDescriptorSets(int index, DescriptorSet[] descriptorSets)
+        public void SetDescriptorSets(int index, DescriptorSet[] descriptorSets)
         {
             if (index != 0)
                 throw new NotImplementedException();
@@ -411,38 +402,6 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 boundDescriptorSets.Add(descriptorSets[i].NativeDescriptorSet);
             }
-        }
-
-        private void ResetSrvHeap()
-        {
-            //// Running out of space, create new heap and restart everything (to make sure everything is copied)
-            //// TODO D3D12 probably could do a count before copying to avoid copying part of it for nothing?
-            //srvHeap = NativeDevice.CreateDescriptorHeap(new DescriptorHeapDescription
-            //{
-            //    DescriptorCount = SrvHeapSize,
-            //    Flags = DescriptorHeapFlags.ShaderVisible,
-            //    Type = DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView,
-            //});
-            //GraphicsDevice.TemporaryResources.Add(srvHeap);
-            //srvHeapOffset = 0;
-            //srvMapping.Clear();
-            //descriptorHeaps[0] = srvHeap;
-        }
-
-        private void ResetSamplerHeap()
-        {
-            //// Running out of space, create new heap and restart everything (to make sure everything is copied)
-            //// TODO D3D12 probably could do a count before copying to avoid copying part of it for nothing?
-            //samplerHeap = NativeDevice.CreateDescriptorHeap(new DescriptorHeapDescription
-            //{
-            //    DescriptorCount = SamplerHeapSize,
-            //    Flags = DescriptorHeapFlags.ShaderVisible,
-            //    Type = DescriptorHeapType.Sampler,
-            //});
-            //GraphicsDevice.TemporaryResources.Add(samplerHeap);
-            //samplerHeapOffset = 0;
-            //samplerMapping.Clear();
-            //descriptorHeaps[1] = samplerHeap;
         }
 
         /// <inheritdoc />
@@ -604,25 +563,7 @@ namespace SiliconStudio.Xenko.Graphics
             // Barriers need to be global to command buffer
             CleanupRenderPass();
 
-            var memoryBarrier = new ImageMemoryBarrier
-            {
-                StructureType = StructureType.ImageMemoryBarrier,
-                Image = depthStencilBuffer.NativeImage,
-                SubresourceRange = new ImageSubresourceRange(depthStencilBuffer.NativeImageAspect, 0, (uint)depthStencilBuffer.ArraySize, 0, (uint)depthStencilBuffer.MipLevels),
-                OldLayout = depthStencilBuffer.NativeLayout,
-                NewLayout = ImageLayout.TransferDestinationOptimal,
-                SourceAccessMask = depthStencilBuffer.NativeAccessMask,
-                DestinationAccessMask = AccessFlags.TransferWrite,
-            };
-            NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 0, null, 1, &memoryBarrier);
-
-            var clearRange = new ImageSubresourceRange
-            {
-                BaseMipLevel = (uint)depthStencilBuffer.MipLevel,
-                LevelCount = (uint)depthStencilBuffer.MipLevels,
-                BaseArrayLayer = (uint)depthStencilBuffer.ArraySlice,
-                LayerCount = (uint)depthStencilBuffer.ArraySize,
-            };
+            var clearRange = new ImageSubresourceRange(depthStencilBuffer.NativeImageAspect, (uint)depthStencilBuffer.ArraySlice, (uint)depthStencilBuffer.ArraySize, (uint)depthStencilBuffer.MipLevel, (uint)depthStencilBuffer.MipLevels);
 
             if ((options & DepthStencilClearOptions.DepthBuffer) != 0)
                 clearRange.AspectMask |= ImageAspectFlags.Depth & depthStencilBuffer.NativeImageAspect;
@@ -630,19 +571,13 @@ namespace SiliconStudio.Xenko.Graphics
             if ((options & DepthStencilClearOptions.Stencil) != 0)
                 clearRange.AspectMask |= ImageAspectFlags.Stencil & depthStencilBuffer.NativeImageAspect;
 
-            var clearValue = new ClearDepthStencilValue { Depth = depth, Stencil = stencil };
-            NativeCommandBuffer.ClearDepthStencilImage(depthStencilBuffer.NativeImage, ImageLayout.TransferDestinationOptimal, clearValue, 1, &clearRange);
+            
+            var memoryBarrier = new ImageMemoryBarrier(depthStencilBuffer.NativeImage, depthStencilBuffer.NativeLayout, ImageLayout.TransferDestinationOptimal, depthStencilBuffer.NativeAccessMask, AccessFlags.TransferWrite, clearRange);
+            NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 0, null, 1, &memoryBarrier);
 
-            memoryBarrier = new ImageMemoryBarrier
-            {
-                StructureType = StructureType.ImageMemoryBarrier,
-                Image = depthStencilBuffer.NativeImage,
-                SubresourceRange = new ImageSubresourceRange(depthStencilBuffer.NativeImageAspect, 0, (uint)depthStencilBuffer.ArraySize, 0, (uint)depthStencilBuffer.MipLevels),
-                OldLayout = ImageLayout.TransferDestinationOptimal,
-                NewLayout = depthStencilBuffer.NativeLayout,
-                SourceAccessMask = AccessFlags.TransferWrite,
-                DestinationAccessMask = depthStencilBuffer.NativeAccessMask,
-            };
+            NativeCommandBuffer.ClearDepthStencilImage(depthStencilBuffer.NativeImage, ImageLayout.TransferDestinationOptimal, new ClearDepthStencilValue(depth, stencil), 1, &clearRange);
+
+            memoryBarrier = new ImageMemoryBarrier(depthStencilBuffer.NativeImage, ImageLayout.TransferDestinationOptimal, depthStencilBuffer.NativeLayout, AccessFlags.TransferWrite, depthStencilBuffer.NativeAccessMask, clearRange);
             NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 0, null, 1, &memoryBarrier);
 
             depthStencilBuffer.IsInitialized = true;
@@ -660,31 +595,14 @@ namespace SiliconStudio.Xenko.Graphics
             // Barriers need to be global to command buffer
             CleanupRenderPass();
 
-            var memoryBarrier = new ImageMemoryBarrier
-            {
-                StructureType = StructureType.ImageMemoryBarrier,
-                Image = renderTarget.NativeImage,
-                SubresourceRange = new ImageSubresourceRange(ImageAspectFlags.Color, 0, (uint)renderTarget.ArraySize, 0, (uint)renderTarget.MipLevels),
-                OldLayout = renderTarget.NativeLayout,
-                NewLayout = ImageLayout.TransferDestinationOptimal,
-                SourceAccessMask = renderTarget.NativeAccessMask,
-                DestinationAccessMask = AccessFlags.TransferWrite,
-            };
+            var clearRange = new ImageSubresourceRange(ImageAspectFlags.Color, (uint)renderTarget.ArraySlice, (uint)renderTarget.ArraySize, (uint)renderTarget.MipLevel, (uint)renderTarget.MipLevels);
+
+            var memoryBarrier = new ImageMemoryBarrier(renderTarget.NativeImage, renderTarget.NativeLayout, ImageLayout.TransferDestinationOptimal, renderTarget.NativeAccessMask, AccessFlags.TransferWrite, clearRange);
             NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 0, null, 1, &memoryBarrier);
 
-            var clearRange = new ImageSubresourceRange(ImageAspectFlags.Color, (uint)renderTarget.ArraySlice, (uint)renderTarget.ArraySize, (uint)renderTarget.MipLevel, (uint)renderTarget.MipLevels);
             NativeCommandBuffer.ClearColorImage(renderTarget.NativeImage, ImageLayout.TransferDestinationOptimal, ColorHelper.Convert(color), 1, &clearRange);
 
-            memoryBarrier = new ImageMemoryBarrier
-            {
-                StructureType = StructureType.ImageMemoryBarrier,
-                Image = renderTarget.NativeImage,
-                SubresourceRange = new ImageSubresourceRange(ImageAspectFlags.Color, 0, (uint)renderTarget.ArraySize, 0, (uint)renderTarget.MipLevels),
-                OldLayout = ImageLayout.TransferDestinationOptimal,
-                NewLayout = renderTarget.NativeLayout,
-                SourceAccessMask = AccessFlags.TransferWrite,
-                DestinationAccessMask = renderTarget.NativeAccessMask,
-            };
+            memoryBarrier = new ImageMemoryBarrier(renderTarget.NativeImage, ImageLayout.TransferDestinationOptimal, renderTarget.NativeLayout, AccessFlags.TransferWrite, renderTarget.NativeAccessMask, clearRange);
             NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 0, null, 1, &memoryBarrier);
 
             renderTarget.IsInitialized = true;
@@ -782,58 +700,28 @@ namespace SiliconStudio.Xenko.Graphics
                 uint bufferBarrierCount = 0;
                 uint imageBarrierCount = 0;
 
+                // Initial barriers
                 if (sourceTexture.Usage == GraphicsResourceUsage.Staging)
                 {
-                    bufferBarriers[bufferBarrierCount++] = new BufferMemoryBarrier
-                    {
-                        StructureType = StructureType.BufferMemoryBarrier,
-                        Buffer = sourceParent.NativeBuffer,
-                        Size = ~0UL,
-                        SourceAccessMask = sourceTexture.NativeAccessMask,
-                        DestinationAccessMask = AccessFlags.TransferRead,
-                    };
+                    bufferBarriers[bufferBarrierCount++] = new BufferMemoryBarrier(sourceParent.NativeBuffer, sourceTexture.NativeAccessMask, AccessFlags.TransferRead);
                 }
                 else
                 {
-                    imageBarriers[imageBarrierCount++] = new ImageMemoryBarrier
-                    {
-                        StructureType = StructureType.ImageMemoryBarrier,
-                        Image = sourceParent.NativeImage,
-                        SubresourceRange = new ImageSubresourceRange(sourceParent.NativeImageAspect, (uint)sourceTexture.ArraySlice, (uint)sourceTexture.ArraySize, (uint)sourceTexture.MipLevel, (uint)sourceTexture.MipLevels),
-                        OldLayout = sourceTexture.NativeLayout,
-                        NewLayout = ImageLayout.TransferSourceOptimal,
-                        SourceAccessMask = sourceTexture.NativeAccessMask,
-                        DestinationAccessMask = AccessFlags.TransferRead,
-                    };
+                    imageBarriers[imageBarrierCount++] = new ImageMemoryBarrier(sourceParent.NativeImage, sourceTexture.NativeLayout, ImageLayout.TransferSourceOptimal, sourceTexture.NativeAccessMask, AccessFlags.TransferRead, new ImageSubresourceRange(sourceParent.NativeImageAspect));
                 }
 
                 if (destinationTexture.Usage == GraphicsResourceUsage.Staging)
                 {
-                    bufferBarriers[bufferBarrierCount++] = new BufferMemoryBarrier
-                    {
-                        StructureType = StructureType.BufferMemoryBarrier,
-                        Buffer = destinationParent.NativeBuffer,
-                        Size = ~0UL,
-                        SourceAccessMask = destinationTexture.NativeAccessMask,
-                        DestinationAccessMask = AccessFlags.TransferWrite,
-                    };
+                    bufferBarriers[bufferBarrierCount++] = new BufferMemoryBarrier(destinationParent.NativeBuffer, destinationTexture.NativeAccessMask, AccessFlags.TransferWrite);
                 }
                 else
                 {
-                    imageBarriers[imageBarrierCount++] = new ImageMemoryBarrier
-                    {
-                        StructureType = StructureType.ImageMemoryBarrier,
-                        Image = destinationParent.NativeImage,
-                        SubresourceRange = new ImageSubresourceRange(sourceParent.NativeImageAspect, (uint)sourceTexture.ArraySlice, (uint)sourceTexture.ArraySize, (uint)sourceTexture.MipLevel, (uint)sourceTexture.MipLevels),
-                        OldLayout = destinationTexture.NativeLayout,
-                        NewLayout = ImageLayout.TransferDestinationOptimal,
-                        SourceAccessMask = destinationTexture.NativeAccessMask,
-                        DestinationAccessMask = AccessFlags.TransferWrite,
-                    };
+                    imageBarriers[imageBarrierCount++] = new ImageMemoryBarrier(destinationParent.NativeImage, destinationTexture.NativeLayout, ImageLayout.TransferDestinationOptimal, destinationTexture.NativeAccessMask, AccessFlags.TransferWrite, new ImageSubresourceRange(destinationParent.NativeImageAspect));
                 }
 
                 NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.AllCommands, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, bufferBarrierCount, bufferBarriers, imageBarrierCount, imageBarriers);
 
+                // Copy
                 if (destinationTexture.Usage == GraphicsResourceUsage.Staging)
                 {
                     if (sourceTexture.Usage == GraphicsResourceUsage.Staging)
@@ -850,7 +738,7 @@ namespace SiliconStudio.Xenko.Graphics
                     {
                         var copy = new BufferImageCopy
                         {
-                            ImageSubresource = new ImageSubresourceLayers { AspectMask = sourceParent.NativeImageAspect, BaseArrayLayer = (uint)sourceTexture.ArraySlice, LayerCount = (uint)sourceTexture.ArraySize, MipLevel = (uint)sourceTexture.MipLevel },
+                            ImageSubresource = new ImageSubresourceLayers(sourceParent.NativeImageAspect, (uint)sourceTexture.ArraySlice, (uint)sourceTexture.ArraySize, (uint)sourceTexture.MipLevel),
                             ImageExtent = new Extent3D((uint)destinationTexture.Width, (uint)destinationTexture.Height, (uint)destinationTexture.Depth)
                         };
                         NativeCommandBuffer.CopyImageToBuffer(sourceParent.NativeImage, ImageLayout.TransferSourceOptimal, destinationParent.NativeBuffer, 1, &copy);
@@ -861,7 +749,7 @@ namespace SiliconStudio.Xenko.Graphics
                 }
                 else
                 {
-                    var destinationSubresource = new ImageSubresourceLayers { AspectMask = destinationParent.NativeImageAspect, BaseArrayLayer = (uint)destinationTexture.ArraySlice, LayerCount = (uint)destinationTexture.ArraySize, MipLevel = (uint)destinationTexture.MipLevel };
+                    var destinationSubresource = new ImageSubresourceLayers(destinationParent.NativeImageAspect, (uint)destinationTexture.ArraySlice, (uint)destinationTexture.ArraySize, (uint)destinationTexture.MipLevel);
 
                     if (sourceTexture.Usage == GraphicsResourceUsage.Staging)
                     {
@@ -876,7 +764,7 @@ namespace SiliconStudio.Xenko.Graphics
                     {
                         var copy = new ImageCopy
                         {
-                            SourceSubresource = new ImageSubresourceLayers { AspectMask = sourceParent.NativeImageAspect, BaseArrayLayer = (uint)sourceTexture.ArraySlice, LayerCount = (uint)sourceTexture.ArraySize, MipLevel = (uint)sourceTexture.MipLevel },
+                            SourceSubresource = new ImageSubresourceLayers(sourceParent.NativeImageAspect, (uint)sourceTexture.ArraySlice, (uint)sourceTexture.ArraySize, (uint)sourceTexture.MipLevel),
                             DestinationSubresource = destinationSubresource,
                             Extent = new Extent3D((uint)sourceTexture.ViewWidth, (uint)sourceTexture.ViewHeight, (uint)sourceTexture.ViewDepth),
                         };
@@ -887,6 +775,7 @@ namespace SiliconStudio.Xenko.Graphics
                 imageBarrierCount = 0;
                 bufferBarrierCount = 0;
 
+                // Final barriers
                 if (sourceTexture.Usage == GraphicsResourceUsage.Staging)
                 {
                     bufferBarriers[bufferBarrierCount].SourceAccessMask = AccessFlags.TransferRead;
@@ -975,30 +864,16 @@ namespace SiliconStudio.Xenko.Graphics
 
             Utilities.CopyMemory(uploadMemory + alignment, databox.DataPointer, databox.SlicePitch);
 
-            var uploadBufferMemoryBarrier = new BufferMemoryBarrier
-            {
-                StructureType = StructureType.BufferMemoryBarrier,
-                Buffer = uploadResource,
-                SourceAccessMask = AccessFlags.HostWrite,
-                DestinationAccessMask = AccessFlags.TransferRead,
-            };
-
+            var uploadBufferMemoryBarrier = new BufferMemoryBarrier(uploadResource, AccessFlags.HostWrite, AccessFlags.TransferRead);
+            
             var texture = resource as Texture;
             if (texture != null)
             {               
                 var mipSlice = subResourceIndex % texture.MipLevels;
                 var arraySlice = subResourceIndex / texture.MipLevels;
+                var subresourceRange = new ImageSubresourceRange(ImageAspectFlags.Color, (uint)arraySlice, 1, (uint)mipSlice, 1);
 
-                var memoryBarrier = new ImageMemoryBarrier
-                {
-                    StructureType = StructureType.ImageMemoryBarrier,
-                    Image = texture.NativeImage,
-                    SubresourceRange = new ImageSubresourceRange(ImageAspectFlags.Color, (uint)arraySlice, 1, (uint)mipSlice, 1),
-                    OldLayout = texture.NativeLayout,
-                    NewLayout = ImageLayout.TransferDestinationOptimal,
-                    SourceAccessMask = texture.NativeAccessMask,
-                    DestinationAccessMask = AccessFlags.TransferWrite,
-                };
+                var memoryBarrier = new ImageMemoryBarrier(texture.NativeImage, texture.NativeLayout, ImageLayout.TransferDestinationOptimal, texture.NativeAccessMask, AccessFlags.TransferWrite, subresourceRange);
                 NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.AllCommands, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, 1, &uploadBufferMemoryBarrier, 1, &memoryBarrier);
 
                 // TODO VULKAN: Handle depth-stencil (NOTE: only supported on graphics queue)
@@ -1015,16 +890,7 @@ namespace SiliconStudio.Xenko.Graphics
                 };
                 NativeCommandBuffer.CopyBufferToImage(uploadResource, texture.NativeImage, ImageLayout.TransferDestinationOptimal, 1, &bufferCopy);
 
-                memoryBarrier = new ImageMemoryBarrier
-                {
-                    StructureType = StructureType.ImageMemoryBarrier,
-                    Image = texture.NativeImage,
-                    SubresourceRange = new ImageSubresourceRange(ImageAspectFlags.Color, (uint)arraySlice, 1, (uint)mipSlice, 1),
-                    OldLayout = ImageLayout.TransferDestinationOptimal,
-                    NewLayout = texture.NativeLayout,
-                    SourceAccessMask = AccessFlags.TransferWrite,
-                    DestinationAccessMask = texture.NativeAccessMask,
-                };
+                memoryBarrier = new ImageMemoryBarrier(texture.NativeImage, ImageLayout.TransferDestinationOptimal, texture.NativeLayout, AccessFlags.TransferWrite, texture.NativeAccessMask, subresourceRange);
                 NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, PipelineStageFlags.AllCommands, DependencyFlags.None, 0, null, 0, null, 1, &memoryBarrier);
             }
             else
@@ -1035,13 +901,7 @@ namespace SiliconStudio.Xenko.Graphics
                     var memoryBarriers = stackalloc BufferMemoryBarrier[2];
 
                     memoryBarriers[0] = uploadBufferMemoryBarrier;
-                    memoryBarriers[1] = new BufferMemoryBarrier
-                    {
-                        StructureType = StructureType.BufferMemoryBarrier,
-                        Buffer = buffer.NativeBuffer,
-                        SourceAccessMask = buffer.NativeAccessMask,
-                        DestinationAccessMask = AccessFlags.TransferWrite,
-                    };
+                    memoryBarriers[1] = new BufferMemoryBarrier(buffer.NativeBuffer, buffer.NativeAccessMask, AccessFlags.TransferWrite);
                     NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, PipelineStageFlags.AllCommands, DependencyFlags.None, 0, null, 2, memoryBarriers, 0, null);
 
                     var bufferCopy = new BufferCopy
@@ -1052,13 +912,7 @@ namespace SiliconStudio.Xenko.Graphics
                     };
                     NativeCommandBuffer.CopyBuffer(uploadResource, buffer.NativeBuffer, 1, &bufferCopy);
 
-                    var memoryBarrier = new BufferMemoryBarrier
-                    {
-                        StructureType = StructureType.BufferMemoryBarrier,
-                        Buffer = buffer.NativeBuffer,
-                        SourceAccessMask = AccessFlags.TransferWrite,
-                        DestinationAccessMask = buffer.NativeAccessMask,
-                    };
+                    var memoryBarrier = new BufferMemoryBarrier(buffer.NativeBuffer, AccessFlags.TransferWrite, buffer.NativeAccessMask);
                     NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, PipelineStageFlags.AllCommands, DependencyFlags.None, 0, null, 1, &memoryBarrier, 0, null);
                 }
                 else
@@ -1175,15 +1029,7 @@ namespace SiliconStudio.Xenko.Graphics
                 {
                     CleanupRenderPass();
 
-                    var memoryBarrier = new BufferMemoryBarrier
-                    {
-                        StructureType = StructureType.BufferMemoryBarrier,
-                        Buffer = buffer.NativeBuffer,
-                        Offset = (uint)unmapped.OffsetInBytes,
-                        Size = (uint)unmapped.SizeInBytes,
-                        SourceAccessMask = buffer.NativeAccessMask,
-                        DestinationAccessMask = AccessFlags.TransferWrite,
-                    };
+                    var memoryBarrier = new BufferMemoryBarrier(buffer.NativeBuffer, buffer.NativeAccessMask, AccessFlags.TransferWrite, (ulong)unmapped.OffsetInBytes, (ulong)unmapped.SizeInBytes);
                     NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.AllCommands, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, 1, &memoryBarrier, 0, null);
 
                     var bufferCopy = new BufferCopy
@@ -1194,15 +1040,7 @@ namespace SiliconStudio.Xenko.Graphics
                     };
                     NativeCommandBuffer.CopyBuffer(unmapped.UploadResource, buffer.NativeBuffer, 1, &bufferCopy);
 
-                    memoryBarrier = new BufferMemoryBarrier
-                    {
-                        StructureType = StructureType.BufferMemoryBarrier,
-                        Buffer = buffer.NativeBuffer,
-                        Offset = (uint)unmapped.OffsetInBytes,
-                        Size = (uint)unmapped.SizeInBytes,
-                        SourceAccessMask = AccessFlags.TransferWrite,
-                        DestinationAccessMask = buffer.NativeAccessMask,
-                    };
+                    memoryBarrier = new BufferMemoryBarrier(buffer.NativeBuffer, AccessFlags.TransferWrite, buffer.NativeAccessMask, (ulong)unmapped.OffsetInBytes, (ulong)unmapped.SizeInBytes);
                     NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, PipelineStageFlags.AllCommands, DependencyFlags.None, 0, null, 1, &memoryBarrier, 0, null);
                 }
             }

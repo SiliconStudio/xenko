@@ -8,12 +8,10 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial class DescriptorPool
     {
-        //internal DescriptorHeap SrvHeap;
-        //internal DescriptorHeap SamplerHeap;
-
-        internal SharpVulkan.DescriptorPool NativeDescriptorPool;
         private uint[] allocatedTypeCounts;
         private uint allocatedSetCount;
+
+        internal SharpVulkan.DescriptorPool NativeDescriptorPool;
 
         public void Reset()
         {
@@ -82,7 +80,7 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <inheritdoc/>
-        protected internal override unsafe void OnDestroyed()
+        protected internal override void OnDestroyed()
         {
             GraphicsDevice.descriptorPools.RecycleObject(GraphicsDevice.NextFenceValue, NativeDescriptorPool);
 

@@ -177,14 +177,8 @@ namespace SiliconStudio.Xenko.Graphics
                     Utilities.CopyMemory(uploadMemory, dataPointer, sizeInBytes);
 
                     // Barrier
-                    var bufferMemoryBarrier2 = new BufferMemoryBarrier
-                    {
-                        StructureType = StructureType.BufferMemoryBarrier,
-                        Buffer = uploadResource,
-                        SourceAccessMask = AccessFlags.HostWrite,
-                        DestinationAccessMask = AccessFlags.TransferRead
-                    };
-                    commandBuffer.PipelineBarrier(PipelineStageFlags.Host, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, 1, &bufferMemoryBarrier2, 0, null);
+                    var memoryBarrier = new BufferMemoryBarrier(uploadResource, AccessFlags.HostWrite, AccessFlags.TransferRead, (ulong)uploadOffset, (ulong)sizeInBytes);
+                    commandBuffer.PipelineBarrier(PipelineStageFlags.Host, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, 1, &memoryBarrier, 0, null);
 
                     // Copy
                     var bufferCopy = new BufferCopy
@@ -201,13 +195,7 @@ namespace SiliconStudio.Xenko.Graphics
                 }
 
                 // Barrier
-                var bufferMemoryBarrier = new BufferMemoryBarrier
-                {
-                    StructureType = StructureType.BufferMemoryBarrier,
-                    Buffer = NativeBuffer,
-                    SourceAccessMask = AccessFlags.TransferWrite,
-                    DestinationAccessMask = NativeAccessMask
-                };
+                var bufferMemoryBarrier = new BufferMemoryBarrier(NativeBuffer, AccessFlags.TransferWrite, NativeAccessMask);
                 commandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, PipelineStageFlags.AllCommands, DependencyFlags.None, 0, null, 1, &bufferMemoryBarrier, 0, null);
 
                 // Close and submit
@@ -288,16 +276,6 @@ namespace SiliconStudio.Xenko.Graphics
                 viewFormat = PixelFormat.None;
             }
         }
-
-        //private static SharpDX.Direct3D12.ResourceDescription ConvertToNativeDescription(BufferDescription bufferDescription)
-        //{
-        //    var size = bufferDescription.SizeInBytes;
-
-        //    // TODO D3D12 for now, ensure size is multiple of 256 (for cbuffer views)
-        //    size = (size + 255) & ~255;
-
-        //    return SharpDX.Direct3D12.ResourceDescription.Buffer(size);
-        //}
     }
 } 
 #endif 

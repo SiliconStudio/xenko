@@ -1,16 +1,13 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading;
 using SharpVulkan;
 
 using SiliconStudio.Core;
-using SiliconStudio.Core.Collections;
 using Semaphore = SharpVulkan.Semaphore;
 
 namespace SiliconStudio.Xenko.Graphics
@@ -304,14 +301,6 @@ namespace SiliconStudio.Xenko.Graphics
 
             NativeCommandQueue = nativeDevice.GetQueue(0, 0);
 
-            //SrvHandleIncrementSize = NativeDevice.GetDescriptorHandleIncrementSize(DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView);
-            //SamplerHandleIncrementSize = NativeDevice.GetDescriptorHandleIncrementSize(DescriptorHeapType.Sampler);
-
-            //// Prepare descriptor allocators
-            //ShaderResourceViewAllocator = new DescriptorAllocator(this, DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView);
-            //DepthStencilViewAllocator = new DescriptorAllocator(this, DescriptorHeapType.DepthStencilView);
-            //RenderTargetViewAllocator = new DescriptorAllocator(this, DescriptorHeapType.RenderTargetView);
-
             //// Prepare copy command list (start it closed, so that every new use start with a Reset)
             var commandPoolCreateInfo = new CommandPoolCreateInfo
             {
@@ -331,11 +320,8 @@ namespace SiliconStudio.Xenko.Graphics
             CommandBuffer nativeCommandBuffer;
             NativeDevice.AllocateCommandBuffers(ref commandBufferAllocationInfo, &nativeCommandBuffer);
             NativeCopyCommandBuffer = nativeCommandBuffer;
-            //NativeCopyCommandAllocator = NativeDevice.CreateCommandAllocator(CommandListType.Direct);
-            //NativeCopyCommandList = NativeDevice.CreateCommandList(CommandListType.Direct, NativeCopyCommandAllocator, null);
-            //NativeCopyCommandList.Close();
 
-            descriptorPools = new HeapPool(this, 1 << 16);
+            descriptorPools = new HeapPool(this);
 
             semaphoreCollector = new SemaphoreCollector(this);
         }
@@ -665,11 +651,8 @@ namespace SiliconStudio.Xenko.Graphics
 
     internal class HeapPool : ResourcePool<SharpVulkan.DescriptorPool>
     {
-        private readonly uint heapSize;
-
-        public HeapPool(GraphicsDevice graphicsDevice, uint heapSize) : base(graphicsDevice)
+        public HeapPool(GraphicsDevice graphicsDevice) : base(graphicsDevice)
         {
-            this.heapSize = heapSize;
         }
 
         protected override unsafe SharpVulkan.DescriptorPool CreateObject()
