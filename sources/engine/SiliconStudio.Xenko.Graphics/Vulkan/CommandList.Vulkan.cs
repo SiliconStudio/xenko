@@ -563,14 +563,13 @@ namespace SiliconStudio.Xenko.Graphics
             // Barriers need to be global to command buffer
             CleanupRenderPass();
 
-            var clearRange = new ImageSubresourceRange(depthStencilBuffer.NativeImageAspect, (uint)depthStencilBuffer.ArraySlice, (uint)depthStencilBuffer.ArraySize, (uint)depthStencilBuffer.MipLevel, (uint)depthStencilBuffer.MipLevels);
+            var clearRange = new ImageSubresourceRange(ImageAspectFlags.None, (uint)depthStencilBuffer.ArraySlice, (uint)depthStencilBuffer.ArraySize, (uint)depthStencilBuffer.MipLevel, (uint)depthStencilBuffer.MipLevels);
 
             if ((options & DepthStencilClearOptions.DepthBuffer) != 0)
                 clearRange.AspectMask |= ImageAspectFlags.Depth & depthStencilBuffer.NativeImageAspect;
 
             if ((options & DepthStencilClearOptions.Stencil) != 0)
                 clearRange.AspectMask |= ImageAspectFlags.Stencil & depthStencilBuffer.NativeImageAspect;
-
             
             var memoryBarrier = new ImageMemoryBarrier(depthStencilBuffer.NativeImage, depthStencilBuffer.NativeLayout, ImageLayout.TransferDestinationOptimal, depthStencilBuffer.NativeAccessMask, AccessFlags.TransferWrite, clearRange);
             NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 0, null, 1, &memoryBarrier);
