@@ -9,31 +9,31 @@ extern "C" {
 	class XenkoCelt
 	{
 	public:
-		XenkoCelt(int sampleRate, int bufferSize, int channels, bool decoderOnly): mode_(NULL), decoder_(nullptr), encoder_(nullptr), sample_rate_(sampleRate), buffer_size_(bufferSize), channels_(channels), decoder_only_(decoderOnly)
+		XenkoCelt(int sampleRate, int bufferSize, int channels, bool decoderOnly): mode_(nullptr), decoder_(nullptr), encoder_(nullptr), sample_rate_(sampleRate), buffer_size_(bufferSize), channels_(channels), decoder_only_(decoderOnly)
 		{
 		}
 
 		~XenkoCelt()
 		{
 			if (encoder_) opus_custom_encoder_destroy(encoder_);
-			encoder_ = NULL;
+			encoder_ = nullptr;
 			if (decoder_) opus_custom_decoder_destroy(decoder_);
-			decoder_ = NULL;
+			decoder_ = nullptr;
 			if (mode_) opus_custom_mode_destroy(mode_);
-			mode_ = NULL;
+			mode_ = nullptr;
 		}
 
 		bool Init()
 		{
-			mode_ = opus_custom_mode_create(sample_rate_, buffer_size_, NULL);
+			mode_ = opus_custom_mode_create(sample_rate_, buffer_size_, nullptr);
 			if (!mode_) return false;
 
-			decoder_ = opus_custom_decoder_create(mode_, channels_, NULL);
+			decoder_ = opus_custom_decoder_create(mode_, channels_, nullptr);
 			if (!decoder_) return false;
 
 			if(!decoder_only_)
 			{
-				encoder_ = opus_custom_encoder_create(mode_, channels_, NULL);
+				encoder_ = opus_custom_encoder_create(mode_, channels_, nullptr);
 				if (!encoder_) return false;
 			}
 
@@ -66,7 +66,7 @@ extern "C" {
 		if(!celt->Init())
 		{
 			delete celt;
-			return NULL;
+			return nullptr;
 		}
 		return celt;
 	}
