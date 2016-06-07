@@ -1,6 +1,6 @@
 ---
 !EffectCompileRequest
-EffectName: SpriteSignedDistanceFieldFontEffect
+EffectName: SpriteSignedDistanceFieldFontShader
 UsedParameters:
     EffectSourceCode.Enable: true
     EffectSourceCode.Namespace: SiliconStudio.Xenko.Graphics
@@ -8,7 +8,7 @@ UsedParameters:
     EffectSourceCode.FieldName: spriteSignedDistanceFieldFontBytecode
 ---
 !EffectCompileRequest
-EffectName: SignedDistanceFieldFontEffectShader
+EffectName: SignedDistanceFieldFontShader
 UsedParameters:
     EffectSourceCode.Enable: true
     EffectSourceCode.Namespace: SiliconStudio.Xenko.Graphics

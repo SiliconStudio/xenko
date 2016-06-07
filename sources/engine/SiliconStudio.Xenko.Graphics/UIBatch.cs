@@ -152,10 +152,10 @@ namespace SiliconStudio.Xenko.Graphics
             //  Load custom font rendering effects here
 
             // For signed distance field font rendering
-            SignedDistanceFieldFontEffect = new EffectInstance(new Effect(device, SignedDistanceFieldFontEffectShader.Bytecode) { Name = "UIBatchSignedDistanceFieldFontEffect" });
+            SignedDistanceFieldFontEffect = new EffectInstance(new Effect(device, SignedDistanceFieldFontShader.Bytecode) { Name = "UIBatchSignedDistanceFieldFontEffect" });
 
             // For signed distance field thumbnail rendering
-            sdfSpriteFontEffect = new EffectInstance(new Effect(device, SpriteSignedDistanceFieldFontEffect.Bytecode) { Name = "UIBatchSDFSpriteFontEffect" });
+            sdfSpriteFontEffect = new EffectInstance(new Effect(device, SpriteSignedDistanceFieldFontShader.Bytecode) { Name = "UIBatchSDFSpriteFontEffect" });
         }
 
         /// <summary>

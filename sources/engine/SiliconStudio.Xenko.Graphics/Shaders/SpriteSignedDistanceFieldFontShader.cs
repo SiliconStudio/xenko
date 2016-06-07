@@ -16,21 +16,8 @@ using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Rendering
 {
-    internal static partial class ShaderMixins
+    public static partial class SpriteSignedDistanceFieldFontShaderKeys
     {
-        internal partial class SignedDistanceFieldFontEffect  : IShaderMixinBuilder
-        {
-            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
-            {
-                context.Mixin(mixin, "SignedDistanceFieldFontEffectShader");
-            }
-
-            [ModuleInitializer]
-            internal static void __Initialize__()
-
-            {
-                ShaderMixinManager.Register("SignedDistanceFieldFontEffect", new SignedDistanceFieldFontEffect());
-            }
-        }
+        public static readonly ValueParameterKey<Color4> Color = ParameterKeys.NewValue<Color4>(new Color4(1,1,1,1));
     }
 }

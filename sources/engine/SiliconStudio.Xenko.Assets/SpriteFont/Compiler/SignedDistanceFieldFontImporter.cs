@@ -105,14 +105,13 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
         private Bitmap LoadSDFBitmap(char c, int width, int height, int offsetx, int offsety)
         {
             var characterCode = "0x" + Convert.ToUInt32(c).ToString("x4");
-            var outputFile = tempDir + characterCode + ".bmp";
-            var exportSize = " -size " + width + " " + height + " ";
-            var translate = " -translate " + offsetx + " " + offsety + " ";
+            var outputFile = $"{tempDir}{characterCode}.bmp";
+            var exportSize = $" -size {width} {height} ";
+            var translate  = $" -translate {offsetx} {offsety} ";
 
             var startInfo = new ProcessStartInfo();
             startInfo.FileName = msdfgenExe;
-            startInfo.Arguments = "msdf -font " + '"' + fontSource + '"' + " " + characterCode + " -o " + '"' + outputFile + '"' + exportSize + translate + " -autoframe";
-//            startInfo.Arguments = "msdf -font " + fontSource + " " + characterCode + " -o " + outputFile + exportSize + translate + " -autoframe";
+            startInfo.Arguments = $"msdf -font \"{fontSource}\"  {characterCode} -o \"{outputFile}\" {exportSize} {translate} -autoframe";
             startInfo.CreateNoWindow = true;
             startInfo.WindowStyle = ProcessWindowStyle.Hidden;
             startInfo.RedirectStandardError = true;
