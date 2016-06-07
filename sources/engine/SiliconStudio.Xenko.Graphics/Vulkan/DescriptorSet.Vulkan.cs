@@ -11,27 +11,13 @@ namespace SiliconStudio.Xenko.Graphics
     {
         internal readonly SharpVulkan.DescriptorSet NativeDescriptorSet;
         internal readonly GraphicsDevice GraphicsDevice;
-        internal readonly DescriptorSetLayout Description;
         
-        public bool IsValid => Description != null;
+        public bool IsValid => NativeDescriptorSet != SharpVulkan.DescriptorSet.Null;
 
-        private unsafe DescriptorSet(GraphicsDevice graphicsDevice, DescriptorPool pool, DescriptorSetLayout desc)
+        private DescriptorSet(GraphicsDevice graphicsDevice, DescriptorPool pool, DescriptorSetLayout desc)
         {
-            Description = desc;
             GraphicsDevice = graphicsDevice;
-
-            var nativeLayoutCopy = desc.NativeLayout;
-            var allocateInfo = new DescriptorSetAllocateInfo
-            {
-                StructureType = StructureType.DescriptorSetAllocateInfo,
-                DescriptorPool = pool.NativeDescriptorPool,
-                DescriptorSetCount = 1,
-                SetLayouts = new IntPtr(&nativeLayoutCopy)
-            };
-
-            SharpVulkan.DescriptorSet descriptorSet;
-            graphicsDevice.NativeDevice.AllocateDescriptorSets(ref allocateInfo, &descriptorSet);
-            NativeDescriptorSet = descriptorSet;
+            NativeDescriptorSet = pool.AllocateDescriptorSet(desc);
         }
 
         /// <summary>

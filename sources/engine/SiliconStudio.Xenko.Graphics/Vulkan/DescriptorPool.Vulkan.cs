@@ -3,7 +3,6 @@
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
 using System;
 using SharpVulkan;
-using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -12,59 +11,67 @@ namespace SiliconStudio.Xenko.Graphics
         //internal DescriptorHeap SrvHeap;
         //internal DescriptorHeap SamplerHeap;
 
-        private readonly DescriptorTypeCount[] counts;
-        internal int Offset;
-        internal int Count;
-
         internal SharpVulkan.DescriptorPool NativeDescriptorPool;
+        private uint[] allocatedTypeCounts;
+        private uint allocatedSetCount;
 
         public void Reset()
         {
-            Offset = 0;
-            GraphicsDevice.NativeDevice.ResetDescriptorPool(NativeDescriptorPool, DescriptorPoolResetFlags.None);
+            GraphicsDevice.descriptorPools.RecycleObject(GraphicsDevice.NextFenceValue, NativeDescriptorPool);
+            NativeDescriptorPool = GraphicsDevice.descriptorPools.GetObject();
+
+            allocatedSetCount = 0;
+            for (int i = 0; i < DescriptorSetLayout.DescriptorTypeCount; i++)
+            {
+                allocatedTypeCounts[i] = 0;
+            }
         }
 
         private DescriptorPool(GraphicsDevice graphicsDevice, DescriptorTypeCount[] counts) : base(graphicsDevice)
         {
-            this.counts = counts;
             Recreate();
         }
 
-        private unsafe void Recreate()
+        internal unsafe SharpVulkan.DescriptorSet AllocateDescriptorSet(DescriptorSetLayout descriptorSetLayout)
         {
-            // For now, we put everything together so let's compute total count
-            Count = counts.Length;
-
-            var poolSizes = new[]
+            // Keep track of descriptor pool usage
+            bool isPoolExhausted = ++allocatedSetCount > GraphicsDevice.MaxDescriptorSetCount;
+            for (int i = 0; i < DescriptorSetLayout.DescriptorTypeCount; i++)
             {
-                new DescriptorPoolSize { Type = DescriptorType.UniformBuffer, DescriptorCount = 1 << 15 },
-                new DescriptorPoolSize { Type = DescriptorType.Sampler, DescriptorCount = 1 << 12 },
-                new DescriptorPoolSize { Type = DescriptorType.SampledImage, DescriptorCount = 1 << 15 },
-                new DescriptorPoolSize { Type = DescriptorType.UniformTexelBuffer, DescriptorCount = 1 << 10 },
+                allocatedTypeCounts[i] += descriptorSetLayout.TypeCounts[i];
+                if (allocatedTypeCounts[i] > GraphicsDevice.MaxDescriptorTypeCounts[i])
+                {
+                    isPoolExhausted = true;
+                    break;
+                }
+            }
+
+            if (isPoolExhausted)
+            {
+                return SharpVulkan.DescriptorSet.Null;
+            }
+
+            // Allocate new descriptor set
+            var nativeLayoutCopy = descriptorSetLayout.NativeLayout;
+            var allocateInfo = new DescriptorSetAllocateInfo
+            {
+                StructureType = StructureType.DescriptorSetAllocateInfo,
+                DescriptorPool = NativeDescriptorPool,
+                DescriptorSetCount = 1,
+                SetLayouts = new IntPtr(&nativeLayoutCopy)
             };
 
-            //var poolSizes = new DescriptorPoolSize[Count];
-            //for (int i = 0; i < Count; i++)
-            //{
-            //    poolSizes[i] = new DescriptorPoolSize
-            //    {
-            //        Type = VulkanConvertExtensions.ConvertDescriptorType(counts[i].Type),
-            //        DescriptorCount = (uint)counts[i].Count
-            //    };
-            //}
+            SharpVulkan.DescriptorSet descriptorSet;
+            GraphicsDevice.NativeDevice.AllocateDescriptorSets(ref allocateInfo, &descriptorSet);
+            return descriptorSet;
+        }
 
-            fixed (DescriptorPoolSize* poolSizesPointer = &poolSizes[0])
-            {
-                var descriptorPoolCreateInfo = new DescriptorPoolCreateInfo
-                {
-                    StructureType = StructureType.DescriptorPoolCreateInfo,
-                    PoolSizeCount = (uint)poolSizes.Length,
-                    PoolSizes = new IntPtr(poolSizesPointer),
-                    MaxSets = 16384, // TODO VULKAN API: Expose
-                };
-
-                NativeDescriptorPool = GraphicsDevice.NativeDevice.CreateDescriptorPool(ref descriptorPoolCreateInfo);
-            }
+        private void Recreate()
+        {
+            NativeDescriptorPool = GraphicsDevice.descriptorPools.GetObject();
+            
+            allocatedTypeCounts = new uint[DescriptorSetLayout.DescriptorTypeCount];
+            allocatedSetCount = 0;
         }
 
         /// <inheritdoc/>
@@ -77,9 +84,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// <inheritdoc/>
         protected internal override unsafe void OnDestroyed()
         {
-            // TODO VULKAN: Defer?
-            GraphicsDevice.NativeDevice.DestroyDescriptorPool(NativeDescriptorPool);
-            
+            GraphicsDevice.descriptorPools.RecycleObject(GraphicsDevice.NextFenceValue, NativeDescriptorPool);
+
             base.OnDestroyed();
         }
     }
