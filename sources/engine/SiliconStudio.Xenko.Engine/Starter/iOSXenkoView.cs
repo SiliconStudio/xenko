@@ -9,6 +9,7 @@ using CoreGraphics;
 using Foundation;
 using ObjCRuntime;
 using OpenGLES;
+using OpenTK;
 using OpenTK.Graphics.ES30;
 using OpenTK.Platform.iPhoneOS;
 using SiliconStudio.Xenko.Games;
@@ -103,7 +104,7 @@ namespace SiliconStudio.Xenko.Starter
         [Export("drawFrame")]
         void DrawFrame()
         {
-            OnRenderFrame(new OpenTK.FrameEventArgs());
+            OnRenderFrame(new FrameEventArgs());
         }
     }
 }
