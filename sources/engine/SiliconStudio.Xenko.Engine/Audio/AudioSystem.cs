@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Audio
         }
 
         /// <summary>
-        /// The underlying <see cref="AudioEngine" />. This instance can be used to possibly create <see cref="DynamicSoundEffectInstance" />.
+        /// The underlying <see cref="AudioEngine" />. This instance can be used to possibly create <see cref="DynamicSoundInstance" />.
         /// </summary>
         /// <value>The audio engine.</value>
         public AudioEngine AudioEngine { get; private set; }

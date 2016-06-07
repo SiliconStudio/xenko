@@ -92,8 +92,8 @@ namespace SiliconStudio.Xenko.Audio
         {
             base.OnSystemRemove();
 
-            // Destroy all the SoundEffectInstance created by the processor before closing.
-            foreach (var soundInstance in ComponentDatas.Values.SelectMany(x => x.AudioEmitterComponent.SoundEffectToController.Values))
+            // Destroy all the SoundInstance created by the processor before closing.
+            foreach (var soundInstance in ComponentDatas.Values.SelectMany(x => x.AudioEmitterComponent.SoundToController.Values))
                 soundInstance.DestroyAllSoundInstances();
 
             audioSystem.Listeners.CollectionChanged -= OnListenerCollectionChanged;
@@ -107,10 +107,10 @@ namespace SiliconStudio.Xenko.Audio
             data.TransformComponent.UpdateWorldMatrix(); // ensure the worldMatrix is correct
             data.AudioEmitter = new AudioEmitter { Position = data.TransformComponent.WorldMatrix.TranslationVector }; // valid position is needed at first Update loop to compute velocity.
 
-            // create a SoundEffectInstance for each listener activated and for each sound controller of the EmitterComponent.
+            // create a SoundInstance for each listener activated and for each sound controller of the EmitterComponent.
             foreach (var listener in audioSystem.Listeners.Keys)
             {
-                foreach (var soundController in data.AudioEmitterComponent.SoundEffectToController.Values)
+                foreach (var soundController in data.AudioEmitterComponent.SoundToController.Values)
                     data.ListenerControllerToSoundInstance[Tuple.Create(listener, soundController)] = soundController.CreateSoundInstance();
             }
 
@@ -141,7 +141,7 @@ namespace SiliconStudio.Xenko.Audio
 
                 // Then apply 3D localization
                 var performedAtLeastOneApply = false;
-                foreach (var controller in associatedData.AudioEmitterComponent.SoundEffectToController.Values)
+                foreach (var controller in associatedData.AudioEmitterComponent.SoundToController.Values)
                 {
                     foreach (var listenerComponent in audioSystem.Listeners.Keys)
                     {
@@ -184,8 +184,8 @@ namespace SiliconStudio.Xenko.Audio
         {
             base.OnEntityComponentRemoved(entity, component, data);
 
-            // dispose and delete all SoundEffectInstances associated to the EmitterComponent.
-            foreach (var soundController in data.AudioEmitterComponent.SoundEffectToController.Values)
+            // dispose and delete all SoundInstances associated to the EmitterComponent.
+            foreach (var soundController in data.AudioEmitterComponent.SoundToController.Values)
                 soundController.DestroyAllSoundInstances();
 
             data.AudioEmitterComponent.ControllerCollectionChanged -= OnSoundControllerListChanged;
@@ -197,12 +197,12 @@ namespace SiliconStudio.Xenko.Audio
                 return;
             
             // A listener have been Added or Removed. 
-            // We need to create/destroy all SoundEffectInstances associated to that listener for each AudioEmitterComponent.
+            // We need to create/destroy all SoundInstances associated to that listener for each AudioEmitterComponent.
 
             foreach (var associatedData in ComponentDatas.Values)
             {
                 var listenerControllerToSoundInstance = associatedData.ListenerControllerToSoundInstance;
-                var soundControllers = associatedData.AudioEmitterComponent.SoundEffectToController.Values;
+                var soundControllers = associatedData.AudioEmitterComponent.SoundToController.Values;
 
                 foreach (var soundController in soundControllers)
                 {
@@ -227,8 +227,8 @@ namespace SiliconStudio.Xenko.Audio
             if (!ComponentDatas.TryGetValue(args.EmitterComponent, out associatedData))
                 return;
 
-            // A new SoundEffect have been associated to the AudioEmitterComponenent or an old SoundEffect have been deleted.
-            // We need to create/destroy the corresponding SoundEffectInstances.
+            // A new Sound have been associated to the AudioEmitterComponenent or an old Sound have been deleted.
+            // We need to create/destroy the corresponding SoundInstances.
 
             var listeners = audioSystem.Listeners.Keys;
             foreach (var listener in listeners)
