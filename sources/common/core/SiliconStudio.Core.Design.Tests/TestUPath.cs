@@ -194,6 +194,7 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.AreEqual(new UDirectory("/"), new UDirectory("/").GetFullDirectory());
             Assert.AreEqual(new UDirectory("E:/"), new UDirectory("E:/").GetFullDirectory());
             Assert.AreEqual(new UDirectory(null), new UFile("a.txt").GetFullDirectory());
+            Assert.AreEqual(new UDirectory(null), new UFile("").GetFullDirectory());
             Assert.AreEqual(new UDirectory("E:/"), new UDirectory("E:").GetFullDirectory());
         }
 
