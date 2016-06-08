@@ -106,11 +106,12 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 
             try
             {
-                bitmap = new Bitmap(options.Source);
+                // TODO Check if source can be used as is from here
+                bitmap = new Bitmap(options.FontSource.GetFontPath());
             }
             catch
             {
-                throw new FontNotFoundException(options.Source);
+                throw new FontNotFoundException(options.FontSource.GetFontPath());
             }
 
             // Convert to our desired pixel format.
