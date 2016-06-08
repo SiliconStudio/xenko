@@ -185,16 +185,6 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         [Display(null, "Rendering")]
         public float LineGapBaseLineFactor { get; set; } = 1.0f;
 
-        /// <summary>
-        /// Gets or sets the value specifying whether to use kerning information when rendering the font. Default value is false (NOT SUPPORTED YET).
-        /// </summary>
-        /// <userdoc>
-        /// If checked, kerning information is imported from the font. (NOT SUPPORTED YET)
-        /// </userdoc>
-        [DataMember(170)]
-        [Display(null, "Rendering")]
-        public bool UseKerning { get; set; }
-
         internal string SafeCharacterSet => CharacterSet ?? "";
 
         class PremultiplyUpgrader : AssetUpgraderBase

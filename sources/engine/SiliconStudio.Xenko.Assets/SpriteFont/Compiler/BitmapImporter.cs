@@ -146,7 +146,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
             }
         }
 
-
+        // Seems to be the same as this one: http://www.tonicodes.net/blog/creating-custom-fonts-with-outline-for-wp7-and-xna/
         // Searches a 2D bitmap for characters that are surrounded by a marker pink color.
         static IEnumerable<Rectangle> FindGlyphs(Bitmap bitmap)
         {
