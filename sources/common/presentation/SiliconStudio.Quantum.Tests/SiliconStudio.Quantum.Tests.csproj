@@ -33,6 +33,7 @@
     <Compile Include="Obsolete\ObsoleteTestDictionaries.cs" />
     <Compile Include="Obsolete\ObsoleteTestLists.cs" />
     <Compile Include="TestGraphNodePath.cs" />
+    <Compile Include="TestGraphVisitor.cs" />
     <Compile Include="TestPrimitiveMembers.cs" />
     <Compile Include="TestReferences.cs" />
     <Compile Include="TestStructs.cs" />

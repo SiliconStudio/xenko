@@ -14,12 +14,33 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Retrieve the child node of the given <see cref="IGraphNode"/> that matches the given name.
         /// </summary>
-        /// <param name="modelNode">The view model node to look into.</param>
+        /// <param name="graphNode">The graph node to look into.</param>
         /// <param name="name">The name of the child to retrieve.</param>
         /// <returns>The child node that matches the given name, or <c>null</c> if no child matches.</returns>
-        public static IGraphNode GetChild(this IGraphNode modelNode, string name)
+        public static IGraphNode GetChild(this IGraphNode graphNode, string name)
         {
-            return modelNode.Children.FirstOrDefault(x => x.Name == name);
+            return graphNode.Children.FirstOrDefault(x => x.Name == name);
+        }
+
+        /// <summary>
+        /// Retrieve the target node of the given <see cref="IGraphNode"/>.
+        /// </summary>
+        /// <param name="graphNode">The graph node to look into.</param>
+        /// <returns>The target node of the given <see cref="IGraphNode"/>.</returns>
+        public static IGraphNode GetTarget(this IGraphNode graphNode)
+        {
+            return graphNode.Content.Reference.AsObject.TargetNode;
+        }
+
+        /// <summary>
+        /// Retrieve the target node of the given <see cref="IGraphNode"/> at the given index.
+        /// </summary>
+        /// <param name="graphNode">The graph node to look into.</param>
+        /// <param name="index">The index to look into.</param>
+        /// <returns>The target node of the given <see cref="IGraphNode"/>.</returns>
+        public static IGraphNode GetTarget(this IGraphNode graphNode, Index index)
+        {
+            return graphNode.Content.Reference.AsEnumerable[index].TargetNode;
         }
 
         /// <summary>
