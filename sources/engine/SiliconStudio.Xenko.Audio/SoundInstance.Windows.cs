@@ -188,8 +188,7 @@ namespace SiliconStudio.Xenko.Audio
         public SoundPlayState PlayState { get; internal set; } = SoundPlayState.Stopped;
 
         private void PreparePlay()
-        {
-            
+        {            
         }
     }
 }
