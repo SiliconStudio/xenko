@@ -26,7 +26,7 @@ using System.Diagnostics;
 namespace SiliconStudio.Xenko.Games.Time
 {
     /// <summary>
-    /// This provides timing information similar to <see cref="System.Diagnostics.Stopwatch"/> but an update occuring only on a <see cref="Tick"/> method.
+    /// This provides timing information similar to <see cref="System.Diagnostics.Stopwatch"/> but an update occurring only on a <see cref="Tick"/> method.
     /// </summary>
     public class TimerTick
     {
