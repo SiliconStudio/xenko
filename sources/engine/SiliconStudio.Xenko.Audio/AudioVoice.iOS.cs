@@ -9,7 +9,6 @@ using System.Runtime.InteropServices;
 using AudioToolbox;
 using AudioUnit;
 using SiliconStudio.Core;
-using SiliconStudio.Xenko.Audio.Wave;
 using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Xenko.Audio
@@ -31,8 +30,7 @@ namespace SiliconStudio.Xenko.Audio
         public const int AudioUnitOutputSampleRate = 44100;
 
         private readonly AudioEngine audioEngine;
-        private readonly SoundEffectInstance soundEffectInstance;
-        private readonly WaveFormat waveFormat;
+        private readonly SoundInstance soundInstance;
         private const int MaxNumberOfTracks = 16;
 
         private static readonly Logger Log = GlobalLogger.GetLogger("AudioVoice");
@@ -43,6 +41,9 @@ namespace SiliconStudio.Xenko.Audio
         private static AUGraph audioGraph;
         private static AudioUnit.AudioUnit unitChannelMixer;
         private static AudioUnit.AudioUnit unit3DMixer;
+
+        private readonly int channels;
+        private readonly int sampleRate;
 
         private readonly AudioDataRendererInfo* pAudioDataRendererInfo;
 
@@ -95,7 +96,7 @@ namespace SiliconStudio.Xenko.Audio
             CheckUnitStatus(unitChannelMixer.SetParameter(AudioUnitParameterType.MultiChannelMixerEnable,
                 !Is3D && shouldBeEnabled ? 1f : 0f, AudioUnitScopeType.Input, BusIndexMixer), "Failed to enable/disable the ChannelMixerInput.");
 
-            if(waveFormat.Channels == 1) // no 3D mixer for stereo sounds
+            if(channels == 1 && soundInstance.Sound.Spatialized) // no 3D mixer for stereo sounds
                 CheckUnitStatus(unit3DMixer.SetParameter(AudioUnitParameterType.Mixer3DEnable,
                     Is3D && shouldBeEnabled ? 1f : 0f, AudioUnitScopeType.Input, BusIndexMixer), "Failed to enable/disable the 3DMixerInput.");
 
@@ -137,18 +138,16 @@ namespace SiliconStudio.Xenko.Audio
             return retFormat;
         }
 
-        public AudioVoice(AudioEngine engine, SoundEffectInstance effectInstance, WaveFormat desiredFormat)
+        public AudioVoice(AudioEngine engine, SoundInstance instance, int sampleRate, int channels)
         {
-            if (engine == null) throw new ArgumentNullException("engine");
-            if (desiredFormat == null) throw new ArgumentNullException("desiredFormat");
+            if (engine == null) throw new ArgumentNullException(nameof(engine));
+
+            this.channels = channels;
+            this.sampleRate = sampleRate;
 
             audioEngine = engine;
-            soundEffectInstance = effectInstance;
-            waveFormat = desiredFormat;
+            soundInstance = instance;
             BusIndexMixer = uint.MaxValue;
-
-            if (desiredFormat.BitsPerSample != 16)
-                throw new AudioSystemInternalException("Invalid Audio Format. " + desiredFormat.BitsPerSample + " bits by sample is not supported.");
 
             lock (StaticMembersLock)
             {
@@ -180,16 +179,18 @@ namespace SiliconStudio.Xenko.Audio
                     
                     // Set the mixers' output formats (the stream format is propagated along the linked input during the graph initialization)
                     var desiredSampleRate = (engine.AudioSampleRate != 0) ? engine.AudioSampleRate : AudioUnitOutputSampleRate;
-                    unit3DMixer.SetAudioFormat(CreateLinear16BitsPcm(2, desiredSampleRate), AudioUnitScopeType.Output);
-                    unitChannelMixer.SetAudioFormat(CreateLinear16BitsPcm(2, desiredSampleRate), AudioUnitScopeType.Output);
+                    unit3DMixer.SetFormat(CreateLinear16BitsPcm(2, desiredSampleRate), AudioUnitScopeType.Output);
+                    unitChannelMixer.SetFormat(CreateLinear16BitsPcm(2, desiredSampleRate), AudioUnitScopeType.Output);
 
                     // set the element count to the max number of possible tracks before initializing the audio graph
-                    CheckUnitStatus(unitChannelMixer.SetElementCount(AudioUnitScopeType.Input, MaxNumberOfTracks+1), string.Format("Failed to set element count on ChannelMixer [{0}]", MaxNumberOfTracks+1)); // +1 for the 3DMixer output
-                    CheckUnitStatus(unit3DMixer.SetElementCount(AudioUnitScopeType.Input, MaxNumberOfTracks), string.Format("Failed to set element count on 3DMixer [{0}]", MaxNumberOfTracks));
+                    CheckUnitStatus(unitChannelMixer.SetElementCount(AudioUnitScopeType.Input, MaxNumberOfTracks+1), $"Failed to set element count on ChannelMixer [{MaxNumberOfTracks + 1}]"); // +1 for the 3DMixer output
+                    CheckUnitStatus(unit3DMixer.SetElementCount(AudioUnitScopeType.Input, MaxNumberOfTracks), $"Failed to set element count on 3DMixer [{MaxNumberOfTracks}]");
 
                     // set a null renderer callback to the channel and 3d mixer input bus
                     for (uint i = 0; i < MaxNumberOfTracks; i++)
                     {
+//                        CheckUnitStatus((AudioUnitStatus)Native.AudioUnitHelpers.SetInputRenderCallbackToNull_(unit3DMixer.Handle, i), "Failed to set the render callback");
+//                        CheckUnitStatus((AudioUnitStatus)Native.AudioUnitHelpers.SetInputRenderCallbackToNull_(unitChannelMixer.Handle, i), "Failed to set the render callback");
                         CheckUnitStatus((AudioUnitStatus)SetInputRenderCallbackToNull(unit3DMixer.Handle, i), "Failed to set the render callback");
                         CheckUnitStatus((AudioUnitStatus)SetInputRenderCallbackToNull(unitChannelMixer.Handle, i), "Failed to set the render callback");
                     }
@@ -275,6 +276,8 @@ namespace SiliconStudio.Xenko.Audio
             if (BusIndexMixer != uint.MaxValue)
             {
                 // reset the mixer callbacks to null renderers
+//                CheckUnitStatus((AudioUnitStatus)Native.AudioUnitHelpers.SetInputRenderCallbackToNull_(unit3DMixer.Handle, BusIndexMixer), "Failed to set the render callback");
+//                CheckUnitStatus((AudioUnitStatus)Native.AudioUnitHelpers.SetInputRenderCallbackToNull_(unitChannelMixer.Handle, BusIndexMixer), "Failed to set the render callback");
                 CheckUnitStatus((AudioUnitStatus)SetInputRenderCallbackToNull(unit3DMixer.Handle, BusIndexMixer), "Failed to set the render callback");
                 CheckUnitStatus((AudioUnitStatus)SetInputRenderCallbackToNull(unitChannelMixer.Handle, BusIndexMixer), "Failed to set the render callback");
 
@@ -282,7 +285,7 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
         
-        public void SetAudioData(SoundEffect soundEffect)
+        public void PreparePlay()
         {
             BusIndexMixer = uint.MaxValue; // invalid index value (when no bus are free)
 
@@ -292,7 +295,7 @@ namespace SiliconStudio.Xenko.Audio
             else
             {
                 // force the update of all sound effect instance to free bus indices
-                audioEngine.ForceSoundEffectInstanceUpdate();
+                audioEngine.ForceSoundInstanceUpdate();
 
                 // retry to get an free bus index
                 if (availableMixerBusIndices.Count > 0)
@@ -302,7 +305,7 @@ namespace SiliconStudio.Xenko.Audio
                 else // try to stop another instance
                 {
                     // try to get a sound effect to stop
-                    var soundEffectToStop = audioEngine.GetLeastSignificativeSoundEffect();
+                    var soundEffectToStop = audioEngine.GetLeastSignificativeSound();
                     if (soundEffectToStop == null) // no available sound effect to stop -> give up the creation of the track
                         return;
 
@@ -318,20 +321,22 @@ namespace SiliconStudio.Xenko.Audio
             }
 
             // Set the audio stream format of the current mixer input bus.
-            unitChannelMixer.SetAudioFormat(CreateLinear16BitsPcm(waveFormat.Channels, waveFormat.SampleRate), AudioUnitScopeType.Input, BusIndexMixer);
+            unitChannelMixer.SetFormat(CreateLinear16BitsPcm(channels, sampleRate), AudioUnitScopeType.Input, BusIndexMixer);
 
             // set the channel input bus callback
+            //CheckUnitStatus((AudioUnitStatus)Native.AudioUnitHelpers.SetInputRenderCallbackToChannelMixerDefault_(unitChannelMixer.Handle, BusIndexMixer, (IntPtr)pAudioDataRendererInfo), "Failed to set the render callback");
             CheckUnitStatus((AudioUnitStatus)SetInputRenderCallbackToChannelMixerDefault(unitChannelMixer.Handle, BusIndexMixer, (IntPtr)pAudioDataRendererInfo), "Failed to set the render callback");
                     
             ResetChannelMixerParameter();
 
             // initialize the 3D mixer input bus, if the sound can be used as 3D sound.
-            if (waveFormat.Channels == 1)
+            if (channels == 1 && soundInstance.Sound.Spatialized)
             {
                 // Set the audio stream format of the current mixer input bus.
-                unit3DMixer.SetAudioFormat(CreateLinear16BitsPcm(waveFormat.Channels, waveFormat.SampleRate), AudioUnitScopeType.Input, BusIndexMixer);
+                unit3DMixer.SetFormat(CreateLinear16BitsPcm(channels, sampleRate), AudioUnitScopeType.Input, BusIndexMixer);
 
                 // set the 3D mixer input bus callback
+                //CheckUnitStatus((AudioUnitStatus)Native.AudioUnitHelpers.SetInputRenderCallbackTo3DMixerDefault_(unit3DMixer.Handle, BusIndexMixer, (IntPtr)pAudioDataRendererInfo), "Failed to set the render callback");
                 CheckUnitStatus((AudioUnitStatus)SetInputRenderCallbackTo3DMixerDefault(unit3DMixer.Handle, BusIndexMixer, (IntPtr)pAudioDataRendererInfo), "Failed to set the render callback");
 
                 Reset3DMixerParameter();
@@ -340,16 +345,22 @@ namespace SiliconStudio.Xenko.Audio
             // Disable the input by default so that it started in Stopped mode.
             EnableMixerCurrentInput(false);
 
-            // set render info data 
-            pAudioDataRendererInfo->AudioDataBuffer = soundEffect.WaveDataPtr;
-            pAudioDataRendererInfo->TotalNumberOfFrames = (soundEffect.WaveDataSize / waveFormat.BlockAlign);
-            pAudioDataRendererInfo->NumberOfChannels = waveFormat.Channels;
-
             // reset playback to the beginning of the track and set the looping status
             pAudioDataRendererInfo->CurrentFrame = 0;
             SetLoopingPoints(0, int.MaxValue, 0, pAudioDataRendererInfo->IsInfiniteLoop);
-            SetVolume(soundEffectInstance.Volume);
-            SetPan(soundEffectInstance.Pan);
+            SetVolume(soundInstance.Volume);
+            SetPan(soundInstance.Pan);
+        }
+
+        public void LoadBuffer()
+        {
+            // set render info data 
+            if (!soundInstance.Sound.StreamFromDisk) //this is ok for preloaded, but in case of stream we don't write that yet
+            {
+                pAudioDataRendererInfo->AudioDataBuffer = soundInstance.Sound.PreloadedData.Pointer;
+                pAudioDataRendererInfo->TotalNumberOfFrames = soundInstance.Sound.PreloadedData.Length / channels;
+                pAudioDataRendererInfo->NumberOfChannels = channels;
+            }
         }
 
         public void SetVolume(float volume)
@@ -421,7 +432,6 @@ namespace SiliconStudio.Xenko.Audio
             CheckUnitStatus(unitChannelMixer.SetParameter(AudioUnitParameterType.MultiChannelMixerPan, 0, AudioUnitScopeType.Input, BusIndexMixer), "Failed to set the mixer bus Pan parameter.");
         }
         
-        [DebuggerDisplay("AudioDataMixer for input bus {parent.BusIndexChannelMixer}-{parent.BusIndex3DMixer}")]
         [StructLayout(LayoutKind.Sequential)]
         struct AudioDataRendererInfo
         {

@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Audio
             ResetStateToDefault();
         }
 
-        public virtual bool IsLooped
+        public bool IsLooped
         {
             get
             {
@@ -99,11 +99,9 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-        public virtual SoundPlayState PlayState { get; internal set; } = SoundPlayState.Stopped;
-
         public Sound Sound { get; }
 
-        public virtual float Volume
+        public float Volume
         {
             get
             {
@@ -161,7 +159,7 @@ namespace SiliconStudio.Xenko.Audio
                 Apply3DImpl(listener, emitter);
         }
 
-        public virtual void ExitLoop()
+        public void ExitLoop()
         {
             Sound.CheckNotDisposed();
 
@@ -174,7 +172,7 @@ namespace SiliconStudio.Xenko.Audio
             ExitLoopImpl();
         }
 
-        public virtual void Pause()
+        public void Pause()
         {
             Sound.CheckNotDisposed();
 
@@ -224,7 +222,7 @@ namespace SiliconStudio.Xenko.Audio
             Reset3DImpl();
         }
 
-        public virtual void Stop()
+        public void Stop()
         {
             Sound.CheckNotDisposed();
 
@@ -290,10 +288,7 @@ namespace SiliconStudio.Xenko.Audio
             if (stopSiblingInstances)
                 StopConcurrentInstances();
 
-            if (!DataBufferLoaded && !Sound.StreamFromDisk)
-            {
-                LoadBuffer();
-            }
+            PreparePlay();
 
             if (Sound.StreamFromDisk)
             {
@@ -311,6 +306,13 @@ namespace SiliconStudio.Xenko.Audio
                     {
                         break;
                     }
+                }
+            }
+            else
+            {
+                if (!DataBufferLoaded)
+                {
+                    LoadBuffer();
                 }
             }
 

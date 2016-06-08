@@ -82,7 +82,7 @@ namespace SiliconStudio.Xenko.Audio
                             buffer.Length = SamplesPerBuffer*source.channels;
                             const int passes = SamplesPerBuffer/SamplesPerFrame;
                             var offset = 0;
-                            var bufferPtr = (short*)buffer.Buffer.Pointer.ToPointer();
+                            var bufferPtr = (short*)buffer.Buffer.Pointer;
                             for (var i = 0; i < passes; i++)
                             {
                                 var len = source.reader.ReadInt16();

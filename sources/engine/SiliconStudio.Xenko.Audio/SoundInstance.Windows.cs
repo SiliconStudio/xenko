@@ -29,15 +29,15 @@ namespace SiliconStudio.Xenko.Audio
 
             var list = new Listener
                 {
-                    Position = listener.Position.ToSharpDX(), 
-                    Velocity = listener.Velocity.ToSharpDX(),
-                    OrientFront = listener.Forward.ToSharpDX(),
-                    OrientTop = listener.Up.ToSharpDX()
+                    Position = listener.Position.ToSharpDx(), 
+                    Velocity = listener.Velocity.ToSharpDx(),
+                    OrientFront = listener.Forward.ToSharpDx(),
+                    OrientTop = listener.Up.ToSharpDx()
                 };
             var emit = new Emitter
                 {
-                    Position = emitter.Position.ToSharpDX(),
-                    Velocity = emitter.Velocity.ToSharpDX(),
+                    Position = emitter.Position.ToSharpDx(),
+                    Velocity = emitter.Velocity.ToSharpDx(),
                     DopplerScaler = emitter.DopplerScale,
                     CurveDistanceScaler = emitter.DistanceScale,
                     ChannelRadius = 0f, // Multi-channels localizable sound are considered as source of multiple sounds coming from the same location.
@@ -183,6 +183,13 @@ namespace SiliconStudio.Xenko.Audio
             }
 
             SourceVoice.SetOutputMatrix(sourceChannelCount, Sound.MasterVoice.VoiceDetails.InputChannelCount, matrix);
+        }
+
+        public SoundPlayState PlayState { get; internal set; } = SoundPlayState.Stopped;
+
+        private void PreparePlay()
+        {
+            
         }
     }
 }
