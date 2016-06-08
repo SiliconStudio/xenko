@@ -46,16 +46,16 @@ namespace SiliconStudio.Quantum
                     yield return item;
 
                 // Add child nodes
-                node.Children.ForEach(x => nodeStack.Push(Tuple.Create(x, path?.Append(node, x, GraphNodePath.ElementType.Member, Index.Empty))));
+                node.Children.ForEach(x => nodeStack.Push(Tuple.Create(x, path?.PushMember(x.Name))));
 
                 // Add object reference target node
                 var objectReference = node.Content.Reference as ObjectReference;
                 if (objectReference?.TargetNode != null)
-                    nodeStack.Push(Tuple.Create(objectReference.TargetNode, path?.Append(node, objectReference.TargetNode, GraphNodePath.ElementType.Target, Index.Empty)));
+                    nodeStack.Push(Tuple.Create(objectReference.TargetNode, path?.PushTarget()));
 
                 // Add enumerable reference target nodes
                 var enumerableReference = node.Content.Reference as ReferenceEnumerable;
-                enumerableReference?.Where(x => x.TargetNode != null).ForEach(x => nodeStack.Push(Tuple.Create(x.TargetNode, path?.Append(node, x.TargetNode, GraphNodePath.ElementType.Index, x.Index))));
+                enumerableReference?.Where(x => x.TargetNode != null).ForEach(x => nodeStack.Push(Tuple.Create(x.TargetNode, path?.PushIndex(x.Index))));
             }
         }
 

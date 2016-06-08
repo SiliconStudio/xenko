@@ -167,7 +167,7 @@ namespace SiliconStudio.Quantum
 
                             if (addedNode != null)
                             {
-                                var addedNodePath = path?.Append(node, addedNode, GraphNodePath.ElementType.Index, index);
+                                var addedNodePath = path?.PushIndex(index);
                                 RegisterNode(addedNode, addedNodePath);
                                 foreach (var child in addedNode.GetAllChildNodes())
                                 {

@@ -188,37 +188,6 @@ namespace SiliconStudio.Quantum
             return node;
         }
         
-        /// <summary>
-        /// Appends an elemnt to this path a <see cref="GraphNodePath"/> corresponding to the given <see cref="target"/> node, which must be a direct child or a direct reference of the <see cref="parentNode"/>.
-        /// </summary>
-        /// <param name="parentNode">The parent node which must be a direct child or a direct reference of the <see cref="target"/>.</param>
-        /// <param name="target">The target node for which to build a <see cref="GraphNodePath"/> instance.</param>
-        /// <param name="type">The type of child to append.</param>
-        /// <param name="index">The index of the target if it is in an enumerable reference.</param>
-        /// <returns></returns>
-        public GraphNodePath Append(IGraphNode parentNode, IGraphNode target, ElementType type, Index index)
-        {
-            if (parentNode == target)
-                return Clone();
-
-            var result = Clone(RootNode, false);
-
-            switch (type)
-            {
-                case ElementType.Member:
-                    result.path.Add(NodePathElement.CreateMember(target.Name));
-                    return result;
-                case ElementType.Target:
-                    result.path.Add(NodePathElement.CreateTarget());
-                    return result;
-                case ElementType.Index:
-                    result.path.Add(NodePathElement.CreateIndex(index));
-                    return result;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
-            }
-        }
-
         /// <inheritdoc/>
         public override string ToString()
         {
