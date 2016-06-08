@@ -69,19 +69,26 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             if (!Connect())
                 throw new InvalidOperationException("Could not connect to image comparer server");
 
-            if (testName == null && NUnit.Framework.TestContext.CurrentContext != null)
+            try
             {
-                testName = NUnit.Framework.TestContext.CurrentContext.Test.FullName;
+                if (testName == null && NUnit.Framework.TestContext.CurrentContext != null)
+                {
+                    testName = NUnit.Framework.TestContext.CurrentContext.Test.FullName;
+                }
+
+                var binaryWriter = new BinaryWriter(ImageComparisonServer.WriteStream);
+                var binaryReader = new BinaryReader(ImageComparisonServer.ReadStream);
+
+                // Header
+                binaryWriter.Write((int)ImageServerMessageType.RequestImageComparisonStatus);
+                binaryWriter.Write(testName ?? "Unable to fetch test name");
+
+                return binaryReader.ReadBoolean();
             }
-
-            var binaryWriter = new BinaryWriter(ImageComparisonServer.WriteStream);
-            var binaryReader = new BinaryReader(ImageComparisonServer.ReadStream);
-
-            // Header
-            binaryWriter.Write((int)ImageServerMessageType.RequestImageComparisonStatus);
-            binaryWriter.Write(testName ?? "Unable to fetch test name");
-
-            return binaryReader.ReadBoolean();
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -93,21 +100,28 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             if (!Connect())
                 throw new InvalidOperationException("Could not connect to image comparer server");
 
-            if (testResultImage.TestName == null && NUnit.Framework.TestContext.CurrentContext != null)
+            try
             {
-                testResultImage.TestName = NUnit.Framework.TestContext.CurrentContext.Test.FullName;
+                if (testResultImage.TestName == null && NUnit.Framework.TestContext.CurrentContext != null)
+                {
+                    testResultImage.TestName = NUnit.Framework.TestContext.CurrentContext.Test.FullName;
+                }
+
+                var binaryWriter = new BinaryWriter(ImageComparisonServer.WriteStream);
+                var binaryReader = new BinaryReader(ImageComparisonServer.ReadStream);
+
+                // Header
+                binaryWriter.Write((int)ImageServerMessageType.SendImage);
+
+                GameTestBase.TestGameLogger.Info(@"Sending image information...");
+                testResultImage.Write(binaryWriter);
+
+                return binaryReader.ReadBoolean();
             }
-
-            var binaryWriter = new BinaryWriter(ImageComparisonServer.WriteStream);
-            var binaryReader = new BinaryReader(ImageComparisonServer.ReadStream);
-
-            // Header
-            binaryWriter.Write((int)ImageServerMessageType.SendImage);
-
-            GameTestBase.TestGameLogger.Info(@"Sending image information...");
-            testResultImage.Write(binaryWriter);
-
-            return binaryReader.ReadBoolean();
+            catch (Exception)
+            {
+                return false;
+            }
         }
     }
 }
