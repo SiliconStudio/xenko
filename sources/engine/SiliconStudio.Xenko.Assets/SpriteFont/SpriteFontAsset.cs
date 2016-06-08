@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
         [NotNull]
         [DataMember(10)]
-        [Display(null, "Font Source")]
+        [Display(null, "Font")]
         public FontProviderBase FontSource { get; set; } = new SystemFontProvider();
 
         /// <summary>

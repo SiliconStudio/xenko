@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// The path to the file containing the font data to use.
         /// </userdoc>
         [DataMember(10)]
-        [Display(null, "Font")]
+        [Display("Source")]
         public UFile Source { get; set; } = new UFile("");
 
         /// <inheritdoc/>

@@ -2,10 +2,11 @@
 Id: c90f3988-0544-4cbe-993f-13af7d9c23c6
 SerializedVersion: {Xenko: 1.5.0-alpha09}
 Tags: []
-Source: null
-FontName: Courier New
+FontSource: !SystemFontProvider
+    ~Id: 94f50f65-4c0c-4ed4-8d8d-0135e1640aeb
+    FontName: Courier New
+    Style: Bold
 Size: 8.0
-Style: Bold
 FontType: Dynamic
 DefaultCharacter: ' '
 CharacterSet: null
