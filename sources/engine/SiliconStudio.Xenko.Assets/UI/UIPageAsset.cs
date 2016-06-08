@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Assets.UI
     [Display("UI")]
     public sealed class UIPageAsset : Asset
     {
-        private const string CurrentVersion = "1.7.0-beta01";
+        private const string CurrentVersion = "0.0.0";
 
         /// <summary>
         /// The default file extension used by the <see cref="UIPageAsset"/>.

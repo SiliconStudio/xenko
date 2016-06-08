@@ -36,9 +36,13 @@ namespace SiliconStudio.Xenko.Assets.UI
                 var assetManager = new ContentManager();
 
                 var uiLibrary = new Engine.UILibrary();
-                uiLibrary.UIElements.AddRange(AssetParameters.UILibraryAsset.UIElements);
-                assetManager.Save(Url, uiLibrary);
+                foreach (var kv in AssetParameters.UILibraryAsset.UIElements)
+                {
+                    // Copy Key/Value pair
+                    uiLibrary.UIElements.Add(kv.Key, kv.Value);
+                }
 
+                assetManager.Save(Url, uiLibrary);
                 return Task.FromResult(ResultStatus.Successful);
             }
         }
