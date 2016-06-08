@@ -36,9 +36,14 @@ namespace SiliconStudio.Xenko.Graphics
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         private const PixelInternalFormat SrgbAlpha = (PixelInternalFormat)0x8C42;
         private const PixelInternalFormat Srgb8Alpha8 = (PixelInternalFormat)0x8C43;
+        private const PixelInternalFormat RedExt = (PixelInternalFormat)6403;
+        private const PixelInternalFormat RgExt = (PixelInternalFormat)33319;
+        private const PixelType HalfFloatOES = (PixelType)0x8D61;
 #else
         private const PixelInternalFormat SrgbAlpha = PixelInternalFormat.SrgbAlpha;
         private const PixelInternalFormat Srgb8Alpha8 = PixelInternalFormat.Srgb8Alpha8;
+        private const PixelInternalFormat RedExt = (PixelInternalFormat)ExtTextureRg.RedExt;
+        private const PixelInternalFormat RgExt = (PixelInternalFormat)ExtTextureRg.RgExt;
 #endif
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
@@ -181,7 +186,7 @@ namespace SiliconStudio.Xenko.Graphics
                     throw new NotImplementedException();
             }
         }
-        
+
         public static StencilFunction ToOpenGLStencilFunction(this CompareFunction function)
         {
             switch (function)
@@ -232,23 +237,55 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        public static void ConvertPixelFormat(GraphicsDevice graphicsDevice, ref PixelFormat inputFormat, out PixelInternalFormat internalFormat, out PixelFormatGl format, out PixelType type, out int pixelSize, out bool compressed)
+        public static void ConvertPixelFormat(GraphicsDevice graphicsDevice, ref PixelFormat inputFormat, out PixelInternalFormat internalFormat, out PixelFormatGl format, out PixelType type,
+            out int pixelSize, out bool compressed)
         {
             compressed = false;
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            // check formats is the device is initialized with OpenGL ES 2
-            if (graphicsDevice.IsOpenGLES2)
+            // check formats more carefully if the device is initialized with OpenGL ES 2
+            if (graphicsDevice.currentVersion < 300)
             {
                 switch (inputFormat)
                 {
-                    case PixelFormat.R32_UInt:
+                    case PixelFormat.R16_Float:
+                    case PixelFormat.R16G16_Float:
+                        if (!graphicsDevice.HasTextureRG || !graphicsDevice.HasTextureHalf)
+                            goto unsupported;
+                        break;
+                    case PixelFormat.R16G16B16A16_Float:
+                        if (!graphicsDevice.HasTextureHalf)
+                            goto unsupported;
+                        break;
+                    case PixelFormat.R16_UInt:
+                    case PixelFormat.R16_SInt:
+                    case PixelFormat.R16G16_UInt:
+                    case PixelFormat.R16G16_SInt:
+                    case PixelFormat.R16G16B16A16_UInt:
+                    case PixelFormat.R16G16B16A16_SInt:
+                        goto unsupported;
                     case PixelFormat.R32_Float:
                     case PixelFormat.R32G32_Float:
                     case PixelFormat.R32G32B32_Float:
-                    case PixelFormat.R16G16B16A16_Float:
+                        if (!graphicsDevice.HasTextureRG || !graphicsDevice.HasTextureFloat)
+                            goto unsupported;
+                        break;
                     case PixelFormat.R32G32B32A32_Float:
+                        if (!graphicsDevice.HasTextureFloat)
+                            goto unsupported;
+                        break;
+                    case PixelFormat.R32_UInt:
+                    case PixelFormat.R32_SInt:
+                    case PixelFormat.R32G32_UInt:
+                    case PixelFormat.R32G32_SInt:
+                    case PixelFormat.R32G32B32_UInt:
+                    case PixelFormat.R32G32B32_SInt:
+                    case PixelFormat.R32G32B32A32_UInt:
+                    case PixelFormat.R32G32B32A32_SInt:
+                        goto unsupported;
                     case PixelFormat.D32_Float:
+                        goto unsupported;
+                    unsupported:
                         throw new NotSupportedException(String.Format("Texture format {0} not supported", inputFormat));
 
                     // NOTE: We always allow PixelFormat.D24_UNorm_S8_UInt.
@@ -299,7 +336,7 @@ namespace SiliconStudio.Xenko.Graphics
                     break;
                 case PixelFormat.R8_UNorm:
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                    if (!graphicsDevice.HasTextureRG && graphicsDevice.IsOpenGLES2)
+                    if (!graphicsDevice.HasTextureRG && graphicsDevice.currentVersion < 300)
                     {
                         internalFormat = PixelInternalFormat.Luminance;
                         format = PixelFormatGl.Luminance;
@@ -307,13 +344,8 @@ namespace SiliconStudio.Xenko.Graphics
                     else
 #endif
                     {
-#if SILICONSTUDIO_PLATFORM_IOS
-                        internalFormat = PixelInternalFormat.Luminance;
-                        format = PixelFormatGl.Luminance;
-#else
                         internalFormat = PixelInternalFormat.R8;
                         format = PixelFormatGl.Red;
-#endif
                     }
                     type = PixelType.UnsignedByte;
                     pixelSize = 1;
@@ -344,21 +376,8 @@ namespace SiliconStudio.Xenko.Graphics
                     pixelSize = 4;
                     break;
                 case PixelFormat.R8G8B8A8_UNorm_SRgb:
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                    if (graphicsDevice.currentVersion < 300)
-                    {
-                        // HasSRgb was true because we have GL_EXT_sRGB
-                        // Note: Qualcomm Adreno 4xx fails to use GL_EXT_sRGB with FBO,
-                        // but they will report a currentVersion >= 300 (ES 3.0) anyway
-                        internalFormat = SrgbAlpha;
-                        format = (PixelFormatGl)SrgbAlpha;
-                    }
-                    else
-#endif
-                    {
-                        internalFormat = Srgb8Alpha8;
-                        format = PixelFormatGl.Rgba;
-                    }
+                    internalFormat = Srgb8Alpha8;
+                    format = PixelFormatGl.Rgba;
                     type = PixelType.UnsignedByte;
                     pixelSize = 4;
                     break;
@@ -520,14 +539,14 @@ namespace SiliconStudio.Xenko.Graphics
                     compressed = true;
                     pixelSize = 2;
                     type = PixelType.UnsignedByte;
-                    break;  
+                    break;
                 case PixelFormat.PVRTC_4bpp_RGB_SRgb:
                     internalFormat = (PixelInternalFormat)ImgTextureCompressionPvrtc.CompressedSrgbPvrtc4Bppv1Ext;
                     format = (PixelFormatGl)ImgTextureCompressionPvrtc.CompressedSrgbPvrtc4Bppv1Ext;
                     compressed = true;
                     pixelSize = 4;
                     type = PixelType.UnsignedByte;
-                    break;		
+                    break;
                 case PixelFormat.PVRTC_2bpp_RGB_SRgb:
                     internalFormat = (PixelInternalFormat)ImgTextureCompressionPvrtc.CompressedSrgbPvrtc2Bppv1Ext;
                     format = (PixelFormatGl)ImgTextureCompressionPvrtc.CompressedSrgbPvrtc2Bppv1Ext;
@@ -548,7 +567,7 @@ namespace SiliconStudio.Xenko.Graphics
                     compressed = true;
                     pixelSize = 2;
                     type = PixelType.UnsignedByte;
-                    break;  
+                    break;
 #elif SILICONSTUDIO_PLATFORM_ANDROID || !SILICONSTUDIO_PLATFORM_MONO_MOBILE && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 // Desktop OpenGLES
                 case PixelFormat.ETC1:
@@ -583,6 +602,68 @@ namespace SiliconStudio.Xenko.Graphics
                 default:
                     throw new InvalidOperationException("Unsupported texture format");
             }
+
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+            // override some formats for ES2.0
+            if (graphicsDevice.currentVersion < 300)
+            {
+                switch (inputFormat)
+                {
+                    case PixelFormat.R8G8B8A8_UNorm_SRgb:
+                        // HasSRgb was true because we have GL_EXT_sRGB
+                        // Note: Qualcomm Adreno 4xx fails to use GL_EXT_sRGB with FBO,
+                        // but they will report a currentVersion >= 300 (ES 3.0) anyway
+                        internalFormat = SrgbAlpha;
+                        format = (PixelFormatGl)SrgbAlpha;
+                        break;
+                    case PixelFormat.R8_UNorm:
+                    case PixelFormat.R8_SNorm:
+                    case PixelFormat.R8_UInt:
+                    case PixelFormat.R8_SInt:
+                    case PixelFormat.R16_Float:
+                    case PixelFormat.R16_UNorm:
+                    case PixelFormat.R16_SNorm:
+                    case PixelFormat.R16_UInt:
+                    case PixelFormat.R16_SInt:
+                    case PixelFormat.R32_Float:
+                    case PixelFormat.R32_UInt:
+                    case PixelFormat.R32_SInt:
+                        if (inputFormat == PixelFormat.R16_Float)
+                            type = HalfFloatOES;
+                        if (graphicsDevice.HasTextureRG)
+                            internalFormat = RedExt;
+                        break;
+                    case PixelFormat.R16G16_Float:
+                    case PixelFormat.R16G16_UNorm:
+                    case PixelFormat.R16G16_SNorm:
+                    case PixelFormat.R16G16_UInt:
+                    case PixelFormat.R16G16_SInt:
+                    case PixelFormat.R32G32_Float:
+                    case PixelFormat.R32G32_UInt:
+                    case PixelFormat.R32G32_SInt:
+                        if (inputFormat == PixelFormat.R16G16_Float)
+                            type = HalfFloatOES;
+                        if (graphicsDevice.HasTextureRG)
+                            internalFormat = RgExt;
+                        break;
+                    case PixelFormat.R32G32B32_Float:
+                    case PixelFormat.R32G32B32_UInt:
+                    case PixelFormat.R32G32B32_SInt:
+                        internalFormat = PixelInternalFormat.Rgb;
+                        break;
+                    case PixelFormat.R16G16B16A16_Float:
+                    case PixelFormat.R32G32B32A32_Float:
+                    case PixelFormat.R16G16B16A16_UInt:
+                    case PixelFormat.R32G32B32A32_UInt:
+                    case PixelFormat.R16G16B16A16_SInt:
+                    case PixelFormat.R32G32B32A32_SInt:
+                        if (inputFormat == PixelFormat.R16G16B16A16_Float)
+                            type = HalfFloatOES;
+                        internalFormat = PixelInternalFormat.Rgba;
+                        break;
+                }
+            }
+#endif
         }
     }
 }
