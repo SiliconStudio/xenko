@@ -3,7 +3,9 @@
   
   <PropertyGroup>
     <SiliconStudioXenkoNativePathLibs Condition="'$(SiliconStudioPlatform)' == 'Windows' or '$(SiliconStudioPlatform)' == 'Windows10' or '$(SiliconStudioPlatform)' == 'WindowsStore' or '$(SiliconStudioPlatform)' == 'WindowsPhone'">libNativePath.lib;libCelt.lib</SiliconStudioXenkoNativePathLibs>
-    
-    <SiliconStudioXenkoNativePathLibs Condition="'$(SiliconStudioPlatform)' == 'iOS'">libNativePath.a;libCelt.a</SiliconStudioXenkoNativePathLibs>
   </PropertyGroup>
+
+  <ItemGroup>
+    <SiliconStudioXenkoNativePathLibs2 Condition="'$(SiliconStudioPlatform)' == 'iOS'" Include="$(XenkoDependenciesDir)\NativePath\iOS\libNativePath.a;$(XenkoDependenciesDir)\NativePath\iOS\libCelt.a" />
+  </ItemGroup>
 </Project>
