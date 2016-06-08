@@ -105,6 +105,17 @@ namespace SiliconStudio.Quantum.Contents
         }
 
         /// <summary>
+        /// Updates this content from one of its member.
+        /// </summary>
+        /// <param name="newValue">The new value for this content.</param>
+        /// <param name="index">new index of the value to update.</param>
+        /// <remarks>
+        /// This method is intended to update a boxed content when one of its member changes.
+        /// It allows to properly update boxed structs.
+        /// </remarks>
+        protected internal abstract void UpdateFromMember(object newValue, Index index);
+
+        /// <summary>
         /// Raises the <see cref="Changing"/> event with the given parameters.
         /// </summary>
         /// <param name="index">The index where the change occurred, if applicable. <c>null</c> otherwise.</param>

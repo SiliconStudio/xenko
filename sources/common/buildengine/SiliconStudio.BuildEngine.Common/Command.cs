@@ -206,7 +206,7 @@ namespace SiliconStudio.BuildEngine
         }
 
         /// <summary>
-        /// Computes the command hash. If an error occurecd, the hash is <see cref="ObjectId.Empty"/>
+        /// Computes the command hash. If an error occurred, the hash is <see cref="ObjectId.Empty"/>
         /// </summary>
         /// <param name="prepareContext">The prepare context.</param>
         /// <returns>Hash of the command.</returns>

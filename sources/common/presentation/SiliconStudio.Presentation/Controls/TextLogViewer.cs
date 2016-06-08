@@ -374,7 +374,7 @@ namespace SiliconStudio.Presentation.Controls
             searchMatches.Clear();
         }
 
-        private void SelectFirstOccurence()
+        private void SelectFirstOccurrence()
         {
             if (searchMatches.Count > 0)
             {
@@ -382,7 +382,7 @@ namespace SiliconStudio.Presentation.Controls
             }
         }
 
-        private void SelectPreviousOccurence()
+        private void SelectPreviousOccurrence()
         {
             if (searchMatches.Count > 0)
             {
@@ -391,7 +391,7 @@ namespace SiliconStudio.Presentation.Controls
             }
         }
 
-        private void SelectNextOccurence()
+        private void SelectNextOccurrence()
         {
             if (searchMatches.Count > 0)
             {
@@ -501,7 +501,7 @@ namespace SiliconStudio.Presentation.Controls
         {
             var logViewer = (TextLogViewer)d;
             logViewer.ResetText();
-            logViewer.SelectFirstOccurence();
+            logViewer.SelectFirstOccurrence();
         }
 
         /// <summary>
@@ -538,12 +538,12 @@ namespace SiliconStudio.Presentation.Controls
 
         private void PreviousResultClicked(object sender, RoutedEventArgs e)
         {
-            SelectPreviousOccurence();
+            SelectPreviousOccurrence();
         }
 
         private void NextResultClicked(object sender, RoutedEventArgs e)
         {
-            SelectNextOccurence();
+            SelectNextOccurrence();
         }
     }
 }

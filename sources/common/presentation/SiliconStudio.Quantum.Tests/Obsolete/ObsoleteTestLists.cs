@@ -197,8 +197,8 @@ namespace SiliconStudio.Quantum.Tests.Obsolete
             structNode.GetChild("SecondValue").Content.Update(32);
             Helper.PrintModelContainerContent(container, model);
             Assert.That(obj.NestedStructList[0].Struct.SecondValue, Is.EqualTo(32));
-            var visitor = new ModelConsistencyCheckVisitor(container.NodeBuilder);
-            visitor.Check((GraphNode)model, obj, typeof(ClassWithLists), true);
+            //var visitor = new ModelConsistencyCheckVisitor(container.NodeBuilder);
+            //visitor.Check((GraphNode)model, obj, typeof(ClassWithLists), true);
             Helper.ConsistencyCheck(container, obj);
         }
 

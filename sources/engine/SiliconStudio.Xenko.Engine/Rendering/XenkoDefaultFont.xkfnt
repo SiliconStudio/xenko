@@ -6,7 +6,7 @@ Source: null
 FontName: Courier New
 Size: 8.0
 Style: Bold
-IsDynamic: true
+FontType: Dynamic
 DefaultCharacter: ' '
 CharacterSet: null
 CharacterRegions:

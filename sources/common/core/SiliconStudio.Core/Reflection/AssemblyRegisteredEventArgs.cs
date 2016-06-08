@@ -7,7 +7,7 @@ using System.Reflection;
 namespace SiliconStudio.Core.Reflection
 {
     /// <summary>
-    /// An event occuring when an assembly is registered with <see cref="AssemblyRegistry"/>.
+    /// An event occurring when an assembly is registered with <see cref="AssemblyRegistry"/>.
     /// </summary>
     public class AssemblyRegisteredEventArgs : EventArgs
     {

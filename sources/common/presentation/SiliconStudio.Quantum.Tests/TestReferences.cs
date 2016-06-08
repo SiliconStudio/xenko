@@ -42,7 +42,7 @@ namespace SiliconStudio.Quantum.Tests
             var instance = new TestObject { Name = "Test" };
             var container = new ObjectContainer { Instance = instance };
             var containerNode = nodeContainer.GetOrCreateNode(container);
-            Helper.TestObjectContentNode(containerNode, container, 1);
+            Helper.TestNonCollectionObjectContentNode(containerNode, container, 1);
 
             var memberNode = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, memberNode, container, instance, nameof(ObjectContainer.Instance), true);
@@ -63,7 +63,7 @@ namespace SiliconStudio.Quantum.Tests
             var nodeContainer = new NodeContainer();
             var container = new ObjectContainer { Instance = null };
             var containerNode = nodeContainer.GetOrCreateNode(container);
-            Helper.TestObjectContentNode(containerNode, container, 1);
+            Helper.TestNonCollectionObjectContentNode(containerNode, container, 1);
 
             var memberNode = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, memberNode, container, null, nameof(ObjectContainer.Instance), true);
@@ -116,7 +116,7 @@ namespace SiliconStudio.Quantum.Tests
             var instance2 = new TestObject { Name = "Test2" };
             var container = new MultipleObjectContainer { Instances = { instance1, instance2 } };
             var containerNode = nodeContainer.GetOrCreateNode(container);
-            Helper.TestObjectContentNode(containerNode, container, 1);
+            Helper.TestNonCollectionObjectContentNode(containerNode, container, 1);
 
             var memberNode = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, memberNode, container, container.Instances, nameof(MultipleObjectContainer.Instances), true);
@@ -143,7 +143,7 @@ namespace SiliconStudio.Quantum.Tests
             var nodeContainer = new NodeContainer();
             var container = new MultipleObjectContainer { Instances = { null, null } };
             var containerNode = nodeContainer.GetOrCreateNode(container);
-            Helper.TestObjectContentNode(containerNode, container, 1);
+            Helper.TestNonCollectionObjectContentNode(containerNode, container, 1);
 
             var memberNode = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, memberNode, container, container.Instances, nameof(MultipleObjectContainer.Instances), true);
@@ -206,7 +206,7 @@ namespace SiliconStudio.Quantum.Tests
             var instance = new TestObject { Name = "Test" };
             var container = new ObjectsContainer { Instance1 = instance, Instance2 = instance };
             var containerNode = nodeContainer.GetOrCreateNode(container);
-            Helper.TestObjectContentNode(containerNode, container, 2);
+            Helper.TestNonCollectionObjectContentNode(containerNode, container, 2);
 
             var member1Node = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, member1Node, container, instance, nameof(ObjectsContainer.Instance1), true);
@@ -234,7 +234,7 @@ namespace SiliconStudio.Quantum.Tests
             var instance = new TestObject { Name = "Test" };
             var container = new MultipleObjectContainer { Instances = { instance, instance } };
             var containerNode = nodeContainer.GetOrCreateNode(container);
-            Helper.TestObjectContentNode(containerNode, container, 1);
+            Helper.TestNonCollectionObjectContentNode(containerNode, container, 1);
 
             var memberNode = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, memberNode, container, container.Instances, nameof(MultipleObjectContainer.Instances), true);
