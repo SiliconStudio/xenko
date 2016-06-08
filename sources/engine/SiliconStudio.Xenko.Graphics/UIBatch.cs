@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -27,12 +28,25 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         private Matrix viewProjectionMatrix;
 
+        // Cached states
+        private BlendStateDescription? currentBlendState;
+        private SamplerState currentSamplerState;
+        private RasterizerStateDescription? currentRasterizerState;
+        private DepthStencilStateDescription? currentDepthStencilState;
+        private int currentStencilValue;
+
         private Vector4 vector4LeftTop = new Vector4(-0.5f, -0.5f, -0.5f, 1);
 
         private readonly Vector4[] shiftVectorX = new Vector4[4];
         private readonly Vector4[] shiftVectorY = new Vector4[4];
 
         private readonly Texture whiteTexture;
+
+        private readonly EffectInstance SignedDistanceFieldFontEffect;
+
+        private readonly EffectInstance sdfSpriteFontEffect;
+
+        public EffectInstance SDFSpriteFontEffect { get { return sdfSpriteFontEffect; }  }
 
         static UIBatch()
         {
@@ -134,6 +148,14 @@ namespace SiliconStudio.Xenko.Graphics
         {
             // Create a 1x1 pixel white texture
             whiteTexture = GraphicsDevice.GetSharedWhiteTexture();
+
+            //  Load custom font rendering effects here
+
+            // For signed distance field font rendering
+            SignedDistanceFieldFontEffect = new EffectInstance(new Effect(device, SignedDistanceFieldFontShader.Bytecode) { Name = "UIBatchSignedDistanceFieldFontEffect" });
+
+            // For signed distance field thumbnail rendering
+            sdfSpriteFontEffect = new EffectInstance(new Effect(device, SpriteSignedDistanceFieldFontShader.Bytecode) { Name = "UIBatchSDFSpriteFontEffect" });
         }
 
         /// <summary>
@@ -145,6 +167,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="depthStencilState">Depth and stencil options.</param>
         /// <param name="viewProjection">The view projection matrix used for this series of draw calls</param>
         /// <param name="stencilValue">The value of the stencil buffer to take as reference</param>
+        /// <param name="overrideEffect">The number of the override effect to use, if any</param>
         public void Begin(GraphicsContext graphicsContext, ref Matrix viewProjection, BlendStateDescription? blendState, DepthStencilStateDescription? depthStencilState, int stencilValue)
         {
             Begin(graphicsContext, ref viewProjection, blendState, null, null, depthStencilState, stencilValue);
@@ -165,7 +188,21 @@ namespace SiliconStudio.Xenko.Graphics
         {
             viewProjectionMatrix = viewProjection;
 
+            currentBlendState = blendState;
+            currentSamplerState = samplerState;
+            currentRasterizerState = rasterizerState;
+            currentDepthStencilState = depthStencilState;
+            currentStencilValue = stencilValue;
+
             Begin(graphicsContext, null, SpriteSortMode.BackToFront, blendState, samplerState, depthStencilState, rasterizerState, stencilValue);
+        }
+
+        public void BeginCustom(GraphicsContext graphicsContext, int overrideEffect)
+        {
+            EffectInstance effect = (overrideEffect == 0) ? null : SignedDistanceFieldFontEffect;
+
+            Begin(graphicsContext, effect, SpriteSortMode.BackToFront, 
+                currentBlendState, currentSamplerState, currentDepthStencilState, currentRasterizerState, currentStencilValue);
         }
 
         /// <summary>
@@ -441,7 +478,15 @@ namespace SiliconStudio.Xenko.Graphics
             Matrix.MultiplyTo(ref worldMatrix, ref viewProjectionMatrix, out drawCommand.Matrix);
 
             // do not snap static fonts when real/virtual resolution does not match.
-            if (!font.IsDynamic && (drawCommand.FontScale.X != 1 || drawCommand.FontScale.Y != 1)) 
+            if (font.FontType == SpriteFontType.SDF)
+            {
+                drawCommand.SnapText = false;
+
+                float scaling = drawCommand.FontSize/font.Size;
+                drawCommand.FontScale = 1f / new Vector2(scaling, scaling);
+            }
+            else
+            if ((font.FontType != SpriteFontType.Dynamic) && (drawCommand.FontScale.X != 1 || drawCommand.FontScale.Y != 1)) 
             {
                 drawCommand.SnapText = false;   // we don't want snapping of the resolution of the screen does not match virtual resolution. (character alignment problems)
                 drawCommand.FontScale = Vector2.One; // ensure that static font are not scaled internally

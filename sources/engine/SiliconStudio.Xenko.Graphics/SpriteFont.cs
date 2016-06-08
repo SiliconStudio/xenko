@@ -80,10 +80,10 @@ namespace SiliconStudio.Xenko.Graphics
         public float ExtraLineSpacing { get; set; }
         
         /// <summary>
-        /// Gets a boolean indicating if the current font is dynamic or not.
+        /// Gets the type indicating if the current font is static, dynamic or SDF.
         /// </summary>
         [DataMemberIgnore]
-        public bool IsDynamic { get; protected set; }
+        public SpriteFontType FontType { get; protected set; }
 
         [DataMember(0)]
         internal float BaseOffsetY;
@@ -251,6 +251,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal void InternalUIDraw(CommandList commandList, ref StringProxy text, ref InternalUIDrawCommand drawCommand)
         {
+            // TODO SignedDistanceFieldFont might allow non-uniform scaling
             var fontSize = new Vector2(drawCommand.FontSize * drawCommand.FontScale.Y); // we don't want to have letters with non uniform ratio
             var scaledSize = new Vector2(drawCommand.Size.X * drawCommand.FontScale.X, drawCommand.Size.Y * drawCommand.FontScale.Y);
             ForEachGlyph(commandList, ref text, ref fontSize, internalUIDrawGlyphAction, ref drawCommand, drawCommand.Alignment, true, scaledSize);

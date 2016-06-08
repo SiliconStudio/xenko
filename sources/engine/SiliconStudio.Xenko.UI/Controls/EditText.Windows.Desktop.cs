@@ -4,6 +4,7 @@
 using System;
 
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
 using TextAlignment = SiliconStudio.Xenko.Graphics.TextAlignment;
 
@@ -89,7 +90,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             if (TextAlignment != TextAlignment.Left)
             {
                 var textWidth = Font.MeasureString(TextToDisplay, ref fontSize).X;
-                if (Font.IsDynamic)
+                if (Font.FontType == SpriteFontType.Dynamic)
                     textWidth /= fontScale.X;
 
                 alignmentOffset = TextAlignment == TextAlignment.Center ? -textWidth / 2 : -textRegionSize / 2f + (textRegionSize - textWidth);
@@ -105,7 +106,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                 ++characterIndex;
                 previousCharacterOffset = currentCharacterOffset;
                 currentCharacterOffset = Font.MeasureString(TextToDisplay, ref fontSize, characterIndex).X;
-                if (Font.IsDynamic)
+                if (Font.FontType == SpriteFontType.Dynamic)
                     currentCharacterOffset /= fontScale.X;
             }
 
