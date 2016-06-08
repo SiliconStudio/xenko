@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Starter
         private int renderBuffer;
         private int frameBuffer;
 
-        public iOSXenkoView(RectangleF frame)
+        public iOSXenkoView(System.Drawing.RectangleF frame)
             : base(frame)
         {
         }
