@@ -7,3 +7,7 @@ XenkoCeltEncodeFloat
 XenkoCeltDecodeFloat
 XenkoCeltEncodeShort
 XenkoCeltDecodeShort
+SetInputRenderCallbackToChannelMixerDefault_
+SetInputRenderCallbackTo3DMixerDefault_
+SetInputRenderCallbackToNull_
+XenkoAudioUnitHelpersInit
