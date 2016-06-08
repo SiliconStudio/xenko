@@ -14,6 +14,7 @@ using OpenTK.Graphics.ES30;
 using OpenTK.Platform.iPhoneOS;
 using SiliconStudio.Xenko.Games;
 using UIKit;
+using RectangleF = OpenTK.RectangleF;
 
 namespace SiliconStudio.Xenko.Starter
 {
@@ -29,7 +30,7 @@ namespace SiliconStudio.Xenko.Starter
         private int renderBuffer;
         private int frameBuffer;
 
-        public iOSXenkoView(RectangleF frame)
+        public iOSXenkoView(System.Drawing.RectangleF frame)
             : base(frame)
         {
         }
