@@ -111,6 +111,8 @@ namespace SiliconStudio.Xenko.EffectCompilerServer
 
             // Send compiled shader
             await socketMessageLayer.Send(new RemoteEffectCompilerEffectAnswer { StreamId = remoteEffectCompilerEffectRequest.StreamId, EffectBytecode = precompiledEffectShaderPass.Bytecode });
+
+            Console.WriteLine($"Done compiling shader: {remoteEffectCompilerEffectRequest.MixinTree.Name}");
         }
     }
 }
