@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 #include "../../../deps/NativePath/NativePath.h"
+#define HAVE_STDINT_H
 #include "../../../deps/Celt/include/opus_custom.h"
 
 extern "C" {
