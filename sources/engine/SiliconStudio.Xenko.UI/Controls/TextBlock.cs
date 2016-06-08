@@ -237,7 +237,7 @@ namespace SiliconStudio.Xenko.UI.Controls
 
             if (Font.FontType == SpriteFontType.SDF)
             {
-                var scaleRatio = TextSize / Font.Size;
+                var scaleRatio = ActualTextSize / Font.Size;
                 realSize.X *= scaleRatio;
                 realSize.Y *= scaleRatio;
             }

@@ -305,7 +305,7 @@ namespace SiliconStudio.Xenko.UI
 
         private UIElementServices uiElementServices;
 
-        public UIElementServices UIElementServices
+        internal UIElementServices UIElementServices
         {
             get
             {
@@ -314,7 +314,6 @@ namespace SiliconStudio.Xenko.UI
 
                 return uiElementServices;
             }
-
             set
             {
                 if (Parent != null)
