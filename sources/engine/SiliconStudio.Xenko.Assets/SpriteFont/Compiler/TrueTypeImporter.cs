@@ -51,8 +51,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
         {
             var factory = new Factory();
 
-            // try to get the font face from the source file if not null
-            FontFace fontFace = !string.IsNullOrEmpty(options.Source) ? GetFontFaceFromSource(factory, options) : GetFontFaceFromSystemFonts(factory, options);
+            var fontFace = options.FontSource.GetFontFace();
             
             var fontMetrics = fontFace.Metrics;
 
@@ -90,66 +89,6 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
             factory.Dispose();
         }
         
-        private FontFace GetFontFaceFromSource(Factory factory, SpriteFontAsset options)
-        {
-            if (!File.Exists(options.Source))
-            {
-                // Font does not exist
-                throw new FontNotFoundException(options.Source);
-            }
-
-            using (var fontFile = new FontFile(factory, options.Source))
-            {
-                FontSimulations fontSimulations;
-                switch (options.Style)
-                {
-                    case Xenko.Graphics.Font.FontStyle.Regular:
-                        fontSimulations = FontSimulations.None;
-                        break;
-                    case Xenko.Graphics.Font.FontStyle.Bold:
-                        fontSimulations = FontSimulations.Bold;
-                        break;
-                    case Xenko.Graphics.Font.FontStyle.Italic:
-                        fontSimulations = FontSimulations.Oblique;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
-                RawBool isSupported;
-                FontFileType fontType;
-                FontFaceType faceType;
-                int numberFaces;
-
-                fontFile.Analyze(out isSupported, out fontType, out faceType, out numberFaces);
-
-                return new FontFace(factory, faceType, new[] { fontFile }, 0, fontSimulations);
-            }
-        }
-
-        private FontFace GetFontFaceFromSystemFonts(Factory factory, SpriteFontAsset options)
-        {
-            SharpDX.DirectWrite.Font font;
-            using (var fontCollection = factory.GetSystemFontCollection(false))
-            {
-                int index;
-                if (!fontCollection.FindFamilyName(options.FontName, out index))
-                {
-                    // Lets try to import System.Drawing for old system bitmap fonts (like MS Sans Serif)
-                    throw new FontNotFoundException(options.FontName);
-                }
-
-                using (var fontFamily = fontCollection.GetFontFamily(index))
-                {
-                    var weight = options.Style.IsBold()? FontWeight.Bold: FontWeight.Regular;
-                    var style = options.Style.IsItalic() ? SharpDX.DirectWrite.FontStyle.Italic : SharpDX.DirectWrite.FontStyle.Normal;
-                    font = fontFamily.GetFirstMatchingFont(weight, FontStretch.Normal, style);
-                }
-            }
-
-            return new FontFace(font);
-        }
-
         private Glyph ImportGlyph(Factory factory, FontFace fontFace, char character, FontMetrics fontMetrics, float fontSize, FontAntiAliasMode antiAliasMode)
         {
             var indices = fontFace.GetGlyphIndices(new int[] { character });

@@ -34,27 +34,10 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// </summary>
         public const string FileExtension = ".xkfnt;.pdxfnt";
 
-        /// <summary>
-        /// Gets or sets the source file containing the font data. This can be a TTF file or a bitmap file.
-        /// If null, <see cref="FontName"/> is used to determine the font source.
-        /// </summary>
-        /// <value>The source.</value>
-        /// <userdoc>
-        /// The path to the file containing the font data to use.
-        /// </userdoc>
+        [NotNull]
         [DataMember(10)]
-        [Display(null, "Font")]
-        public UFile Source { get; set; } = new UFile("");
-
-        /// <summary>
-        /// Gets or sets the name of the font family to use when the <see cref="Source"/> is not specified.
-        /// </summary>
-        /// <userdoc>
-        /// The name of the font family to use. Only the fonts installed on the system can be used here.
-        /// </userdoc>
-        [DataMember(20)]
-        [Display(null, "Font")]
-        public string FontName { get; set; }
+        [Display(null, "Font Source")]
+        public FontProviderBase FontSource { get; set; } = new SystemFontProvider();
 
         /// <summary>
         ///  Gets or sets the size in points of the font (ignored when converting a bitmap font).
@@ -66,16 +49,6 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         [DefaultValue(16.0f)]
         [Display(null, "Font")]
         public float Size { get; set; } = 16.0f;
-
-        /// <summary>
-        /// Gets or sets the style of the font. A combination of 'regular', 'bold', 'italic'. Default is 'regular'.
-        /// </summary>
-        /// <userdoc>
-        /// The style of the font (regular / bold / italic). Note that this property is ignored is the desired style is not available in the font's source file.
-        /// </userdoc>
-        [DataMember(40)]
-        [Display(null, "Font")]
-        public FontStyle Style { get; set; } = FontStyle.Regular;
 
         /// <summary>
         ///  Gets or sets the value determining if and how the characters are pre-generated off-line or at run-time.

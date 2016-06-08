@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             {
                 Glyphs = glyphs,
                 Size = asset.Size,
-                Style = asset.Style,
+                Style = asset.FontSource.Style,
                 OriginalFont = referenceToSourceFont,
                 FontDataFile = textureFileName,
                 BaseOffset = staticFont.BaseOffsetY,
@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 ExtraSpacing = staticFont.ExtraSpacing,
                 ExtraLineSpacing = staticFont.ExtraLineSpacing,
                 DefaultCharacter = asset.DefaultCharacter,
-                FontName = !string.IsNullOrEmpty(asset.Source) ? (asset.Source.GetFileName() ?? "") : asset.FontName,
+                FontName = asset.FontSource.GetFontName(),
                 IsPremultiplied = asset.IsPremultiplied,
                 IsSrgb = srgb
             };
@@ -95,7 +95,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             {
                 Glyphs = glyphs,
                 Size = asset.Size,
-                Style = asset.Style,
+                Style = asset.FontSource.Style,
                 OriginalFont = referenceToSourceFont,
                 FontDataFile = textureFileName,
                 BaseOffset = scalableFont.BaseOffsetY,
@@ -103,7 +103,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 ExtraSpacing = scalableFont.ExtraSpacing,
                 ExtraLineSpacing = scalableFont.ExtraLineSpacing,
                 DefaultCharacter = asset.DefaultCharacter,
-                FontName = !string.IsNullOrEmpty(asset.Source) ? (asset.Source.GetFileName() ?? "") : asset.FontName,
+                FontName = asset.FontSource.GetFontName(),
                 IsPremultiplied = asset.IsPremultiplied,
                 IsSrgb = false,
             };

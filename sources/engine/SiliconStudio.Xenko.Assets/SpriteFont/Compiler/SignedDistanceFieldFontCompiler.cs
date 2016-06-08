@@ -119,7 +119,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
             // Which importer knows how to read this source font?
             IFontImporter importer;
 
-            var sourceExtension = (Path.GetExtension(options.Source) ?? "").ToLowerInvariant();
+            var sourceExtension = (Path.GetExtension(options.FontSource.GetFontPath()) ?? "").ToLowerInvariant();
             var bitmapFileExtensions = new List<string> { ".bmp", ".png", ".gif" };
             var importFromBitmap = bitmapFileExtensions.Contains(sourceExtension);
             if (importFromBitmap)

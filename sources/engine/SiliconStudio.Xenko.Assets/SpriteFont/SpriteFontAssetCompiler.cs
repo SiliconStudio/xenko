@@ -32,12 +32,10 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
             if (asset.FontType == SpriteFontType.SDF)
             {
-                // TODO Build scalable (SDF) font texture
-
                 // copy the asset and transform the source and character set file path to absolute paths
                 var assetClone = (SpriteFontAsset)AssetCloner.Clone(asset);
                 var assetDirectory = assetAbsolutePath.GetParent();
-                assetClone.Source = !string.IsNullOrEmpty(asset.Source) ? UPath.Combine(assetDirectory, asset.Source) : null;
+                assetClone.FontSource = asset.FontSource;
                 assetClone.CharacterSet = !string.IsNullOrEmpty(asset.CharacterSet) ? UPath.Combine(assetDirectory, asset.CharacterSet) : null;
 
                 result.BuildSteps = new AssetBuildStep(AssetItem) { new SignedDistanceFieldFontCommand(urlInStorage, assetClone) };
@@ -47,28 +45,9 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             {
                 UFile fontPathOnDisk;
 
-                if (!string.IsNullOrEmpty(asset.Source))
-                {
-                    var assetDirectory = assetAbsolutePath.GetParent();
-                    fontPathOnDisk = UPath.Combine(assetDirectory, asset.Source);
-                    if (!File.Exists(fontPathOnDisk))
-                    {
-                        result.Error("The font source '{0}' does not exist on the PC.", asset.FontName);
-                        return;
-                    }
-                    // set the source filename as font name instead of the font family.
-                    asset.FontName = fontPathOnDisk.GetFileName();
-                }
-                else
-                {
-                    fontPathOnDisk = GetFontPath(asset, result);
-                    if (fontPathOnDisk == null)
-                    {
-                        result.Error("The font named '{0}' could not be located on the PC.", asset.FontName);
-                        return;
-                    }
-                }
-                var fontImportLocation = FontHelper.GetFontPath(asset.FontName, asset.Style);
+                fontPathOnDisk = asset.FontSource.GetFontPath();
+
+                var fontImportLocation = FontHelper.GetFontPath(asset.FontSource.GetFontName(), asset.FontSource.Style);
 
                 result.BuildSteps = new AssetBuildStep(AssetItem)
                 {
@@ -81,7 +60,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 // copy the asset and transform the source and character set file path to absolute paths
                 var assetClone = (SpriteFontAsset)AssetCloner.Clone(asset);
                 var assetDirectory = assetAbsolutePath.GetParent();
-                assetClone.Source = !string.IsNullOrEmpty(asset.Source) ? UPath.Combine(assetDirectory, asset.Source): null;
+                assetClone.FontSource = asset.FontSource;
                 assetClone.CharacterSet = !string.IsNullOrEmpty(asset.CharacterSet) ? UPath.Combine(assetDirectory, asset.CharacterSet): null;
 
                 result.BuildSteps = new AssetBuildStep(AssetItem) { new StaticFontCommand(urlInStorage, assetClone, colorSpace) };
@@ -194,45 +173,6 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             }
         }
 
-        private static string GetFontPath(SpriteFontAsset asset, AssetCompilerResult result)
-        {
-            using (var factory = new Factory())
-            {
-                Font font;
-
-                using (var fontCollection = factory.GetSystemFontCollection(false))
-                {
-                    int index;
-                    if (!fontCollection.FindFamilyName(asset.FontName, out index))
-                    {
-                        result.Error("Can't find font '{0}'.", asset.FontName);
-                        return null;
-                    }
-
-                    using (var fontFamily = fontCollection.GetFontFamily(index))
-                    {
-                        var weight = asset.Style.IsBold() ? FontWeight.Bold : FontWeight.Regular;
-                        var style = asset.Style.IsItalic() ? SharpDX.DirectWrite.FontStyle.Italic : SharpDX.DirectWrite.FontStyle.Normal;
-                        font = fontFamily.GetFirstMatchingFont(weight, FontStretch.Normal, style);
-                        if (font == null)
-                        {
-                            result.Error("Cannot find style '{0}' for font family {1}.", asset.Style, asset.FontName);
-                            return null;
-                        }
-                    }
-                }
-
-                var fontFace = new FontFace(font);
-
-                // get the font path on the hard drive
-                var file = fontFace.GetFiles().First();
-                var referenceKey = file.GetReferenceKey();
-                var originalLoader = (FontFileLoaderNative)file.Loader;
-                var loader = originalLoader.QueryInterface<LocalFontFileLoader>();
-                return loader.GetFilePath(referenceKey);
-            }
-        }
-
         internal class DynamicFontCommand : AssetCommand<SpriteFontAsset>
         {
             public DynamicFontCommand(string url, SpriteFontAsset description)
@@ -243,7 +183,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 var dynamicFont = FontDataFactory.NewDynamic(
-                    FontHelper.PointsToPixels(AssetParameters.Size), AssetParameters.FontName, AssetParameters.Style, 
+                    FontHelper.PointsToPixels(AssetParameters.Size), AssetParameters.FontSource.GetFontName(), AssetParameters.FontSource.Style, 
                     AssetParameters.AntiAlias, AssetParameters.UseKerning, AssetParameters.Spacing, AssetParameters.LineSpacing, AssetParameters.DefaultCharacter);
 
                 var assetManager = new ContentManager();
