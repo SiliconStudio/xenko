@@ -45,7 +45,7 @@ namespace SiliconStudio.Core
 
                 unsafe
                 {
-                    var bptr = (byte*)Pointer.ToPointer();
+                    var bptr = (byte*)Pointer;
                     bptr += index*sizeOfT;                   
                     Interop.Read<T>(bptr, ref res);
                 }
@@ -61,7 +61,7 @@ namespace SiliconStudio.Core
 
                 unsafe
                 {
-                    var bptr = (byte*)Pointer.ToPointer();
+                    var bptr = (byte*)Pointer;
                     bptr += index * sizeOfT;
                     Interop.Write<T>(bptr, ref value);
                 }
@@ -77,7 +77,7 @@ namespace SiliconStudio.Core
 
             unsafe
             {
-                Interop.Read(Pointer.ToPointer(), destination, offset, destination.Length);
+                Interop.Read((void*)Pointer, destination, offset, destination.Length);
             }        
         }
 
@@ -90,7 +90,7 @@ namespace SiliconStudio.Core
 
             unsafe
             {
-                var ptr = (byte*)Pointer.ToPointer();
+                var ptr = (byte*)Pointer;
                 ptr += pointerByteOffset;
                 Interop.Read(ptr, destination, arrayOffset, arrayLen);
             }
@@ -105,7 +105,7 @@ namespace SiliconStudio.Core
 
             unsafe
             {
-                Interop.Write(Pointer.ToPointer(), source, offset, source.Length);
+                Interop.Write((void*)Pointer, source, offset, source.Length);
             }
         }
 
@@ -118,7 +118,7 @@ namespace SiliconStudio.Core
 
             unsafe
             {
-                var ptr = (byte*)Pointer.ToPointer();
+                var ptr = (byte*)Pointer;
                 ptr += pointerByteOffset;
                 Interop.Write(ptr , source, arrayOffset, arrayLen);
             }
