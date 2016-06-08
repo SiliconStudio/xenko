@@ -81,24 +81,13 @@ namespace SiliconStudio.Presentation.Quantum
 
         protected internal virtual void Initialize()
         {
-            GraphNodePath targetNodePath;
-            var targetNode = GetTargetNode(SourceNode, Index, SourceNodePath, out targetNodePath);
-            if (targetNodePath == null || !targetNodePath.IsValid)
-                throw new InvalidOperationException("Unable to retrieve the path of the given model node.");
-
-            var commandPath = targetNodePath;
-            if ((!SourceNode.Content.ShouldProcessReference || targetNode == SourceNode || targetNode == null) && !Index.IsEmpty)
-            {
-                // When the references are not processed or when the value is null, there is no actual target node.
-                // However, the commands need the index to be able to properly set the modified value
-                commandPath = targetNodePath.PushIndex(Index);
-            }
+            var targetNode = GetTargetNode(SourceNode, Index);
 
             if (targetNode != SourceNode && targetNode != null)
             {
                 foreach (var command in targetNode.Commands)
                 {
-                    var commandWrapper = new ModelNodeCommandWrapper(ServiceProvider, command, commandPath);
+                    var commandWrapper = new ModelNodeCommandWrapper(ServiceProvider, command, SourceNodePath, Index);
                     AddCommand(commandWrapper);
                 }
             }
@@ -109,13 +98,17 @@ namespace SiliconStudio.Presentation.Quantum
                 // Add source commands that are not already provided by the target node
                 if (!targetCommandNames.Contains(command.Name))
                 {
-                    var commandWrapper = new ModelNodeCommandWrapper(ServiceProvider, command, commandPath);
+                    var commandWrapper = new ModelNodeCommandWrapper(ServiceProvider, command, SourceNodePath, Index);
                     AddCommand(commandWrapper);
                 }
             }
 
             if (!isPrimitive && targetNode != null)
             {
+                var targetNodePath = GetTargetNodePath(SourceNode, Index, SourceNodePath);
+                if (targetNodePath == null || !targetNodePath.IsValid)
+                    throw new InvalidOperationException("Unable to retrieve the path of the given model node.");
+
                 GenerateChildren(targetNode, targetNodePath);
             }
 
@@ -175,8 +168,7 @@ namespace SiliconStudio.Presentation.Quantum
         internal void CheckConsistency()
         {
 #if DEBUG
-            GraphNodePath unused;
-            var targetNode = GetTargetNode(SourceNode, Index, null, out unused);
+            var targetNode = GetTargetNode(SourceNode, Index);
             if (SourceNode != targetNode)
             {
                 var objectReference = SourceNode.Content.Reference as ObjectReference;
@@ -378,31 +370,55 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         /// <param name="sourceNode">The source node for which to retrieve the target node.</param>
         /// <param name="index">The index of the target node to retrieve, if the source node contains a sequence of references. <see cref="Index.Empty"/> otherwise.</param>
-        /// <param name="sourceNodePath">The path to the given <paramref name="sourceNode"/>.</param>
-        /// <param name="targetNodePath">The path to the returned target node.</param>
         /// <returns>The corresponding target node if available, or the source node itself if it does not contain any reference or if its content should not process references.</returns>
         /// <remarks>This method can return null if the target node is null.</remarks>
         /// <seealso cref="IContent.ShouldProcessReference"/>
-        protected static IGraphNode GetTargetNode(IGraphNode sourceNode, Index index, GraphNodePath sourceNodePath, out GraphNodePath targetNodePath)
+        protected static IGraphNode GetTargetNode(IGraphNode sourceNode, Index index)
         {
             if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
 
             var objectReference = sourceNode.Content.Reference as ObjectReference;
             if (objectReference != null && sourceNode.Content.ShouldProcessReference)
             {
-                targetNodePath = sourceNodePath?.PushTarget();
                 return objectReference.TargetNode;
             }
 
             var referenceEnumerable = sourceNode.Content.Reference as ReferenceEnumerable;
             if (referenceEnumerable != null && sourceNode.Content.ShouldProcessReference && !index.IsEmpty)
             {
-                targetNodePath = sourceNodePath?.PushIndex(index);
                 return referenceEnumerable[index].TargetNode;
             }
 
-            targetNodePath = sourceNodePath?.Clone();
             return sourceNode;
+        }
+
+        /// <summary>
+        /// Retrieves the path of the target node if the given source node content holds a reference or a sequence of references, or the given source node path otherwise.
+        /// </summary>
+        /// <param name="sourceNode">The source node for which to retrieve the target node.</param>
+        /// <param name="index">The index of the target node to retrieve, if the source node contains a sequence of references. <see cref="Index.Empty"/> otherwise.</param>
+        /// <param name="sourceNodePath">The path to the given <paramref name="sourceNode"/>.</param>
+        /// <returns>The path to the corresponding target node if available, or the path to source node itself if it does not contain any reference or if its content should not process references.</returns>
+        /// <remarks>This method can return null if the target node is null.</remarks>
+        /// <seealso cref="IContent.ShouldProcessReference"/>
+        protected static GraphNodePath GetTargetNodePath(IGraphNode sourceNode, Index index, GraphNodePath sourceNodePath)
+        {
+            if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
+            if (sourceNodePath == null) throw new ArgumentNullException(nameof(sourceNodePath));
+
+            var objectReference = sourceNode.Content.Reference as ObjectReference;
+            if (objectReference != null && sourceNode.Content.ShouldProcessReference)
+            {
+                return sourceNodePath.PushTarget();
+            }
+
+            var referenceEnumerable = sourceNode.Content.Reference as ReferenceEnumerable;
+            if (referenceEnumerable != null && sourceNode.Content.ShouldProcessReference && !index.IsEmpty)
+            {
+                return sourceNodePath.PushIndex(index);
+            }
+
+            return sourceNodePath.Clone();
         }
     }
 

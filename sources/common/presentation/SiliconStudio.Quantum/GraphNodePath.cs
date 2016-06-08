@@ -143,12 +143,47 @@ namespace SiliconStudio.Quantum
         /// <remarks>An empty path resolves to <see cref="RootNode"/>.</remarks>
         public bool IsEmpty { get; }
 
+        public IGraphNode GetNode()
+        {
+            if (!IsValid)
+                throw new InvalidOperationException("The node path is invalid.");
+
+            var node = RootNode;
+            foreach (var itemPath in path)
+            {
+                // If a node that is not the last one is null, we cannot process the path.
+                if (node == null)
+                    throw new InvalidOperationException("A node of the path is null and is not the last node.");
+
+                switch (itemPath.Type)
+                {
+                    case ElementType.Member:
+                        var name = (string)itemPath.Value;
+                        node = node.Children.Single(x => x.Name == name);
+                        break;
+                    case ElementType.Target:
+                        var objectRefererence = (ObjectReference)node.Content.Reference;
+                        node = objectRefererence.TargetNode;
+                        break;
+                    case ElementType.Index:
+                        var enumerableReference = (ReferenceEnumerable)node.Content.Reference;
+                        var targetReference = enumerableReference.Single(x => Equals(x.Index, itemPath.Value));
+                        node = targetReference.TargetNode;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }
+            return node;
+        }
+
         /// <summary>
         /// Gets the source node corresponding to this path.
         /// </summary>
         /// <param name="targetIndex">The index to the target node, if applicable.</param>
         /// <returns>The node corresponding to this path.</returns>
         /// <exception cref="InvalidOperationException">The path is invalid.</exception>
+        [Obsolete("This method will be removed soon.")]
         public IGraphNode GetSourceNode(out Index targetIndex)
         {
             if (!IsValid)
