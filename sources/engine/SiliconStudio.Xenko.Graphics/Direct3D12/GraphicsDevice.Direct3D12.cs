@@ -6,13 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using SharpDX.Direct3D12;
-using SharpDX.DXGI;
-
-using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Shaders;
-using SharpDX.Mathematics.Interop;
-using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -294,7 +287,47 @@ namespace SiliconStudio.Xenko.Graphics
 
         private void ReleaseDevice()
         {
+            // Wait for completion of everything queued
+            NativeCommandQueue.Signal(nativeFence, NextFenceValue);
+            NativeCommandQueue.Wait(nativeFence, NextFenceValue);
+
+            // Release command queue
+            NativeCommandQueue.Dispose();
+            NativeCommandQueue = null;
+
+            NativeCopyCommandAllocator.Dispose();
+            NativeCopyCommandList.Dispose();
+
+            nativeUploadBuffer.Dispose();
+
+            // Release temporary resources
+            ReleaseTemporaryResources();
+            nativeFence.Dispose();
+            nativeFence = null;
+
+            // Release pools
+            CommandAllocators.Dispose();
+            SrvHeaps.Dispose();
+            SamplerHeaps.Dispose();
+
+            // Release allocators
+            SamplerAllocator.Dispose();
+            ShaderResourceViewAllocator.Dispose();
+            DepthStencilViewAllocator.Dispose();
+            RenderTargetViewAllocator.Dispose();
+
+            if (IsDebugMode)
+            {
+                var debugDevice = NativeDevice.QueryInterfaceOrNull<SharpDX.Direct3D12.DebugDevice>();
+                if (debugDevice != null)
+                {
+                    debugDevice.ReportLiveDeviceObjects(SharpDX.Direct3D12.RldoFlags.Detail);
+                    debugDevice.Dispose();
+                }
+            }
+
             nativeDevice.Dispose();
+            nativeDevice = null;
         }
 
         internal void OnDestroyed()
@@ -332,7 +365,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
         
-        internal abstract class ResourcePool<T> where T : Pageable
+        internal abstract class ResourcePool<T> : IDisposable where T : Pageable
         {
             protected readonly GraphicsDevice GraphicsDevice;
             private readonly Queue<KeyValuePair<long, T>> liveObjects = new Queue<KeyValuePair<long, T>>();
@@ -340,6 +373,18 @@ namespace SiliconStudio.Xenko.Graphics
             protected ResourcePool(GraphicsDevice graphicsDevice)
             {
                 GraphicsDevice = graphicsDevice;
+            }
+
+            public void Dispose()
+            {
+                lock (liveObjects)
+                {
+                    foreach (var liveObject in liveObjects)
+                    {
+                        liveObject.Value.Dispose();
+                    }
+                    liveObjects.Clear();
+                }
             }
 
             public T GetObject()
@@ -423,7 +468,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Allocate descriptor handles. For now a simple bump alloc, but at some point we will have to make a real allocator with free
         /// </summary>
-        internal class DescriptorAllocator
+        internal class DescriptorAllocator : IDisposable
         {
             private const int DescriptorPerHeap = 256;
 
@@ -439,6 +484,12 @@ namespace SiliconStudio.Xenko.Graphics
                 this.device = device;
                 this.descriptorHeapType = descriptorHeapType;
                 this.descriptorSize = device.NativeDevice.GetDescriptorHandleIncrementSize(descriptorHeapType);
+            }
+
+            public void Dispose()
+            {
+                currentHeap?.Dispose();
+                currentHeap = null;
             }
 
             public CpuDescriptorHandle Allocate(int count)

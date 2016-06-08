@@ -337,6 +337,27 @@ namespace SiliconStudio.Xenko.UI
             }
         }
 
+        private UIElementServices uiElementServices;
+
+        public UIElementServices UIElementServices
+        {
+            get
+            {
+                if (Parent != null && !Parent.UIElementServices.Equals(ref uiElementServices))
+                    uiElementServices = Parent.UIElementServices;
+
+                return uiElementServices;
+            }
+
+            set
+            {
+                if (Parent != null)
+                    throw new InvalidOperationException("Can only assign UIElementService to the root element!");
+
+                uiElementServices = value;
+            }
+        }
+
         /// <summary>
         /// The visual children of this element. 
         /// </summary>
@@ -1288,6 +1309,8 @@ namespace SiliconStudio.Xenko.UI
         /// <param name="time">The current time of the game</param>
         protected virtual void Update(GameTime time)
         {
+            if (Parent != null && !Parent.UIElementServices.Equals(ref uiElementServices))
+                uiElementServices = Parent.UIElementServices;
         }
 
         /// <summary>

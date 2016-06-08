@@ -248,6 +248,17 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
+        protected internal override void OnDestroyed()
+        {
+            RootSignature?.Dispose();
+            RootSignature = null;
+
+            CompiledState?.Dispose();
+            CompiledState = null;
+
+            base.OnDestroyed();
+        }
+
         private unsafe SharpDX.Direct3D12.BlendStateDescription CreateBlendState(BlendStateDescription description)
         {
             var nativeDescription = new SharpDX.Direct3D12.BlendStateDescription();

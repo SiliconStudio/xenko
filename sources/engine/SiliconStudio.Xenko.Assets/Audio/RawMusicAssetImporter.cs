@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Assets.Audio
             var asset = new SoundMusicAsset { Source = rawAssetPath };
 
             // Creates the url to the texture
-            var textureUrl = new UFile(rawAssetPath.GetFileName(), null);
+            var textureUrl = new UFile(rawAssetPath.GetFileName());
 
             yield return new AssetItem(textureUrl, asset);
         }

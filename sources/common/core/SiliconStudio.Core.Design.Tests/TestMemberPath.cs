@@ -23,6 +23,7 @@ namespace SiliconStudio.Core.Design.Tests
         public override void Initialize()
         {
             base.Initialize();
+            ShadowObject.Enable = true;
         }
 
         [Test]

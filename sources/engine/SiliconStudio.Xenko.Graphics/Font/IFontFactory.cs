@@ -60,5 +60,42 @@ namespace SiliconStudio.Xenko.Graphics.Font
         /// <returns>The newly created dynamic font</returns>
         SpriteFont NewDynamic(float defaultSize, string fontName, FontStyle style, FontAntiAliasMode antiAliasMode = FontAntiAliasMode.Default,
                               bool useKerning = false, float extraSpacing = 0f, float extraLineSpacing = 0f, char defaultCharacter = ' ');
+
+        /// <summary>
+        /// Create a new instance of a scalable font.
+        /// </summary>
+        /// <param name="size">The size of the font in pixels.</param>
+        /// <param name="glyphs">The list of the font glyphs</param>
+        /// <param name="textures">The list of textures containing the font character data</param>
+        /// <param name="baseOffset">The number of pixels from the absolute top of the line to the base of the characters.</param>
+        /// <param name="defaultLineSpacing">The default line spacing of the font.</param>
+        /// <param name="kernings">The list of the kerning information of the font</param>
+        /// <param name="extraSpacing">The character extra spacing in pixels. Zero is default spacing, negative closer together, positive further apart.</param>
+        /// <param name="extraLineSpacing">This is the extra distance in pixels to add between each line of text. Zero is default spacing, negative closer together, positive further apart.</param>
+        /// <param name="defaultCharacter">The default character fall-back.</param>
+        /// <remarks>The font does not copy the provided textures, glyphs information. 
+        /// Provided data should not be modified after the creation of the font.
+        /// The textures should be disposed manually (if useless) after that the sprite font is not used anymore.</remarks>
+        /// <returns>The newly created static font</returns>
+        SpriteFont NewScalable(float size, IList<Glyph> glyphs, IList<Texture> textures, float baseOffset, float defaultLineSpacing,
+                             IList<Kerning> kernings = null, float extraSpacing = 0f, float extraLineSpacing = 0f, char defaultCharacter = ' ');
+
+        /// <summary>
+        /// Create a new instance of a scalable font.
+        /// </summary>
+        /// <param name="size">The size of the font in pixels.</param>
+        /// <param name="glyphs">The list of the font glyphs</param>
+        /// <param name="images">The list of images containing the font character data</param>
+        /// <param name="baseOffset">The number of pixels from the absolute top of the line to the base of the characters.</param>
+        /// <param name="defaultLineSpacing">The default line spacing of the font.</param>
+        /// <param name="kernings">The list of the kerning information of the font</param>
+        /// <param name="extraSpacing">The character extra spacing in pixels. Zero is default spacing, negative closer together, positive further apart.</param>
+        /// <param name="extraLineSpacing">This is the extra distance in pixels to add between each line of text. Zero is default spacing, negative closer together, positive further apart.</param>
+        /// <param name="defaultCharacter">The default character fall-back.</param>
+        /// <remarks>The font does not copy the provided glyphs information. Provided glyphs should not be modified after the creation of the font.</remarks>
+        /// <returns>The newly created static font</returns>
+        SpriteFont NewScalable(float size, IList<Glyph> glyphs, IList<Image> images, float baseOffset, float defaultLineSpacing,
+                             IList<Kerning> kernings = null, float extraSpacing = 0f, float extraLineSpacing = 0f, char defaultCharacter = ' ');
+
     }
 }

@@ -1,4 +1,5 @@
 ﻿using SiliconStudio.Assets;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets.SpriteFont
 {
@@ -9,7 +10,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             return new SpriteFontAsset
             {
                 FontName = "Arial",
-                IsDynamic = false,
+                FontType = SpriteFontType.Static,
                 CharacterRegions = { new CharacterRegion(' ', (char)127) }
             };
         }
@@ -27,7 +28,25 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             return new SpriteFontAsset
             {
                 FontName = "Arial",
-                IsDynamic = true
+                FontType = SpriteFontType.Dynamic,
+            };
+        }
+
+        public override SpriteFontAsset New()
+        {
+            return Create();
+        }
+    }
+
+    public class SignedDistanceFieldSpriteFontFactory: AssetFactory<SpriteFontAsset>
+    {
+        public static SpriteFontAsset Create()
+        {
+            return new SpriteFontAsset
+            {
+                FontName = "Arial",
+                FontType = SpriteFontType.SDF,
+                CharacterRegions = { new CharacterRegion(' ', (char)127) }
             };
         }
 

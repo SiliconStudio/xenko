@@ -43,7 +43,7 @@ namespace SiliconStudio.Quantum.Tests
             var nodeContainer = new NodeContainer();
             var container = new StructContainer { Struct = new SimpleStruct { Name = "Test", Value = 1 } };
             var containerNode = nodeContainer.GetOrCreateNode(container);
-            Helper.TestObjectContentNode(containerNode, container, 1);
+            Helper.TestNonCollectionObjectContentNode(containerNode, container, 1);
 
             var memberNode = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, memberNode, container, container.Struct, nameof(StructContainer.Struct), false);
@@ -77,7 +77,7 @@ namespace SiliconStudio.Quantum.Tests
             var nodeContainer = new NodeContainer();
             var container = new StructContainer { Struct = new SimpleStruct { Name = "Test", Value = 1 } };
             var containerNode = nodeContainer.GetOrCreateNode(container);
-            Helper.TestObjectContentNode(containerNode, container, 1);
+            Helper.TestNonCollectionObjectContentNode(containerNode, container, 1);
 
             var memberNode = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, memberNode, container, container.Struct, nameof(StructContainer.Struct), false);
@@ -96,7 +96,7 @@ namespace SiliconStudio.Quantum.Tests
             var nodeContainer = new NodeContainer();
             var container = new NestingStructContainer { Struct = new FirstNestingStruct { Struct1 = new SecondNestingStruct { Struct2 = new SimpleStruct { Name = "Test", Value = 1 } } } };
             var containerNode = nodeContainer.GetOrCreateNode(container);
-            Helper.TestObjectContentNode(containerNode, container, 1);
+            Helper.TestNonCollectionObjectContentNode(containerNode, container, 1);
 
             var memberNode = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, memberNode, container, container.Struct, nameof(StructContainer.Struct), false);
@@ -126,7 +126,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual("Test2", container.Struct.Struct1.Struct2.Name);
             Assert.AreEqual(2, container.Struct.Struct1.Struct2.Value);
 
-            Helper.TestObjectContentNode(containerNode, container, 1);
+            Helper.TestNonCollectionObjectContentNode(containerNode, container, 1);
             Helper.TestMemberContentNode(containerNode, memberNode, container, container.Struct, nameof(StructContainer.Struct), false);
             Helper.TestStructContentNode(memberNode, container.Struct, 1);
             var firstNestingMemberNode = memberNode.Children.First();
@@ -154,7 +154,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual("Test2", container.Struct.Struct1.Struct2.Name);
             Assert.AreEqual(2, container.Struct.Struct1.Struct2.Value);
 
-            Helper.TestObjectContentNode(containerNode, container, 1);
+            Helper.TestNonCollectionObjectContentNode(containerNode, container, 1);
             Helper.TestMemberContentNode(containerNode, memberNode, container, container.Struct, nameof(StructContainer.Struct), false);
             Helper.TestStructContentNode(memberNode, container.Struct, 1);
             var firstNestingMemberNode = memberNode.Children.First();
@@ -182,7 +182,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual("Test2", container.Struct.Struct1.Struct2.Name);
             Assert.AreEqual(2, container.Struct.Struct1.Struct2.Value);
 
-            Helper.TestObjectContentNode(containerNode, container, 1);
+            Helper.TestNonCollectionObjectContentNode(containerNode, container, 1);
             Helper.TestMemberContentNode(containerNode, memberNode, container, container.Struct, nameof(StructContainer.Struct), false);
             Helper.TestStructContentNode(memberNode, container.Struct, 1);
             var firstNestingMemberNode = memberNode.Children.First();

@@ -62,7 +62,7 @@ namespace SiliconStudio.Core.Diagnostics
         protected abstract void OnLog(ILogMessage logMessage);
 
         /// <summary>
-        /// Returns a boolean indicating whether the log should be flushed. By default, flushing is occuring if the message has a higher level than <see cref="LogMessageType.Info"/>
+        /// Returns a boolean indicating whether the log should be flushed. By default, flushing is occurring if the message has a higher level than <see cref="LogMessageType.Info"/>
         /// </summary>
         /// <param name="logMessage">The log message.</param>
         /// <returns><c>true</c> if the log should be flushed, <c>false</c> otherwise</returns>

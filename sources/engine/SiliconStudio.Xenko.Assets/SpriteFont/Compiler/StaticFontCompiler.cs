@@ -84,6 +84,7 @@ using System.Text;
 using SiliconStudio.Xenko.Graphics.Font;
 
 using System.Linq;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 {
@@ -101,7 +102,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
         /// <returns>A SpriteFontData object.</returns>
         public static Graphics.SpriteFont Compile(IFontFactory fontFactory, SpriteFontAsset fontAsset, bool srgb)
         {
-            if(fontAsset.IsDynamic)
+            if (fontAsset.FontType != SpriteFontType.Static)
                 throw new ArgumentException("Tried to compile a dynamic sprite font with compiler for static fonts");
 
             float lineSpacing;
