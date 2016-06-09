@@ -109,6 +109,8 @@ namespace SiliconStudio.Xenko.Graphics
         internal bool HasDepth24;
         internal bool HasPackedDepthStencilExtension;
         internal bool HasExtTextureFormatBGRA8888;
+        internal bool HasTextureFloat;
+        internal bool HasTextureHalf;
         internal bool HasRenderTargetFloat;
         internal bool HasRenderTargetHalf;
         internal bool HasTextureRG;

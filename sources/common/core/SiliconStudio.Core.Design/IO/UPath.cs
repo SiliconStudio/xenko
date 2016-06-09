@@ -207,7 +207,7 @@ namespace SiliconStudio.Core.IO
                 var subPath = FullPath.Substring(0, NameSpan.Start - 1);
                 return new UDirectory(subPath, DriveSpan, DirectorySpan);
             }
-            return (UDirectory)this;
+            return this is UDirectory ? (UDirectory)this : new UDirectory(null);
         }
 
         public bool Equals(UPath other)
