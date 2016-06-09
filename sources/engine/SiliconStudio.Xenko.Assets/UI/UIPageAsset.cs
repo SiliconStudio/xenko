@@ -56,7 +56,13 @@ namespace SiliconStudio.Xenko.Assets.UI
             public float Width { get; set; } = UIComponent.DefaultWidth;
 
             [DataMember]
-            public Color AreaBackgroundColor { get; set; } = Color.Beige;
+            public Color AreaBackgroundColor { get; set; } = Color.WhiteSmoke*0.5f;
+
+            [DataMember]
+            public Color AreaBorderColor { get; set; } = Color.WhiteSmoke;
+
+            [DataMember]
+            public float AreaBorderThickness { get; set; } = 2.0f;
         }
     }
 }
