@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Quantum.References;
@@ -24,7 +25,9 @@ namespace SiliconStudio.Quantum
     {
         private readonly HashSet<IGraphNode> visitedNodes = new HashSet<IGraphNode>();
 
-        public void Visit(IGraphNode node)
+        public event Action<IGraphNode, GraphNodePath> Visiting;
+
+        public virtual void Visit(IGraphNode node)
         {
             var path = new GraphNodePath(node);
             VisitNode(node, path);
@@ -32,13 +35,12 @@ namespace SiliconStudio.Quantum
 
         public virtual void VisitNode(IGraphNode node, GraphNodePath currentPath)
         {
-            if (visitedNodes.Contains(node))
-                return;
-
             visitedNodes.Add(node);
+            Visiting?.Invoke(node, currentPath);
             VisitChildren(node, currentPath);
             VisitSingleTarget(node, currentPath);
             VisitEnumerableTargets(node, currentPath);
+            visitedNodes.Remove(node);
         }
 
         public virtual void VisitChildren(IGraphNode node, GraphNodePath currentPath)
@@ -46,7 +48,10 @@ namespace SiliconStudio.Quantum
             foreach (var child in node.Children)
             {
                 var childPath = currentPath.PushMember(child.Name);
-                VisitNode(child, childPath);
+                if (ShouldVisitNode(child, childPath))
+                {
+                    VisitNode(child, childPath);
+                }
             }
         }
 
@@ -56,7 +61,10 @@ namespace SiliconStudio.Quantum
             if (objectReference?.TargetNode != null)
             {
                 var targetPath = currentPath.PushTarget();
-                VisitNode(objectReference.TargetNode, targetPath);
+                if (ShouldVisitNode(objectReference.TargetNode, targetPath))
+                {
+                    VisitNode(objectReference.TargetNode, targetPath);
+                }
             }
         }
 
@@ -68,9 +76,17 @@ namespace SiliconStudio.Quantum
                 foreach (var reference in enumerableReference.Where(x => x.TargetNode != null))
                 {
                     var targetPath = currentPath.PushIndex(reference.Index);
-                    VisitNode(reference.TargetNode, targetPath);
+                    if (ShouldVisitNode(reference.TargetNode, targetPath))
+                    {
+                        VisitNode(reference.TargetNode, targetPath);
+                    }
                 }
             }
+        }
+
+        protected virtual bool ShouldVisitNode(IGraphNode node, GraphNodePath currentPath)
+        {
+            return !visitedNodes.Contains(node);
         }
     }
 
