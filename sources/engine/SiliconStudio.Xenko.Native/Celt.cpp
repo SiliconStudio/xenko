@@ -3,7 +3,6 @@
 
 #include "../../../deps/NativePath/NativePath.h"
 #include "../../../deps/NativePath/NativeDynamicLinking.h"
-#include "../../../deps/NativePath/TINYSTL/unordered_map.h"
 
 #define HAVE_STDINT_H
 #include "../../../deps/Celt/include/opus_custom.h"
@@ -120,7 +119,6 @@ extern "C" {
 		struct AudioTimeStamp { double mSampleTime; uint64_t mHostTime; double mRateScalar; uint64_t mWordClockTime; SMPTETime mSMPTETime; uint32_t mFlags; uint32_t mReserved; };
 		typedef struct AudioTimeStamp AudioTimeStamp;
 
-		//Ios stuff
 		typedef OSStatus (*AudioUnitSetParameterPtr)(AudioUnit inUnit, AudioUnitParameterID inID, AudioUnitScope inScope, AudioUnitElement inElement, AudioUnitParameterValue inValue, int inBufferOffsetInFrames);
 		AudioUnitSetParameterPtr AudioUnitSetParameterFunc;
 
@@ -200,7 +198,7 @@ extern "C" {
 
 						// Fill the rest of the buffer with blank
 						int sizeToBlank = sizeof(short) * NumberOfChannels * remainingFramesToWrite;
-						memset(outPtr, 0, sizeToBlank);
+						memset(outPtr, 0x0 , sizeToBlank);
 
 						return 0;
 					}
@@ -235,7 +233,7 @@ extern "C" {
 			uint32_t                      inNumberFrames,
 			AudioBufferList             *ioData)
 		{
-			memset(ioData->mBuffers[0].mData, 0, ioData->mBuffers[0].mDataByteSize);
+			memset(ioData->mBuffers[0].mData, 0x0, ioData->mBuffers[0].mDataByteSize);
 
 			return 0;
 		}
@@ -262,49 +260,25 @@ extern "C" {
 
 		static AURenderCallbackStruct NullRenderCallbackStruct = { NullRenderCallback, NULL };
 
-		static tinystl::unordered_map<uint32_t, AURenderCallbackStruct*> BusIndexToChannelMixerCallbackStructures;
-		static tinystl::unordered_map<uint32_t, AURenderCallbackStruct*> BusIndexTo3DMixerCallbackStructures;
 
 		int SetInputRenderCallbackToChannelMixerDefault_(AudioUnit inUnit, uint32_t element, void* userData)
 		{
-			AURenderCallbackStruct* pCallbackData = new AURenderCallbackStruct;
-			pCallbackData->inputProc = DefaultRenderCallbackChannelMixer;
-			pCallbackData->inputProcRefCon = userData;
+			AURenderCallbackStruct pCallbackData = {};
+			pCallbackData.inputProc = DefaultRenderCallbackChannelMixer;
+			pCallbackData.inputProcRefCon = userData;
 
-			int status = AudioUnitSetPropertyFunc(inUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, element, pCallbackData, sizeof(AURenderCallbackStruct));
-
-			// update BusIndexToChannelMixerCallbackStructures map with last valid data
-			if (BusIndexToChannelMixerCallbackStructures.find(element) != BusIndexToChannelMixerCallbackStructures.end())
-			{
-				if (BusIndexToChannelMixerCallbackStructures[element] != NULL)
-				{
-					delete BusIndexToChannelMixerCallbackStructures[element];
-					BusIndexToChannelMixerCallbackStructures[element] = NULL;
-				}
-			}
-			BusIndexToChannelMixerCallbackStructures[element] = pCallbackData;
+			int status = AudioUnitSetPropertyFunc(inUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, element, &pCallbackData, sizeof(AURenderCallbackStruct));
 
 			return status;
 		}
 
 		int SetInputRenderCallbackTo3DMixerDefault_(AudioUnit inUnit, uint32_t element, void* userData)
 		{
-			AURenderCallbackStruct* pCallbackData = new AURenderCallbackStruct;
-			pCallbackData->inputProc = DefaultRenderCallback3DMixer;
-			pCallbackData->inputProcRefCon = userData;
+			AURenderCallbackStruct pCallbackData = {};
+			pCallbackData.inputProc = DefaultRenderCallback3DMixer;
+			pCallbackData.inputProcRefCon = userData;
 
-			int status = AudioUnitSetPropertyFunc(inUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, element, pCallbackData, sizeof(AURenderCallbackStruct));
-
-			// update BusIndexTo3DMixerCallbackStructures map with last valid data
-			if (BusIndexTo3DMixerCallbackStructures.find(element) != BusIndexTo3DMixerCallbackStructures.end())
-			{
-				if (BusIndexTo3DMixerCallbackStructures[element] != NULL)
-				{
-					delete BusIndexTo3DMixerCallbackStructures[element];
-					BusIndexTo3DMixerCallbackStructures[element] = NULL;
-				}
-			}
-			BusIndexTo3DMixerCallbackStructures[element] = pCallbackData;
+			int status = AudioUnitSetPropertyFunc(inUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, element, &pCallbackData, sizeof(AURenderCallbackStruct));
 
 			return status;
 		}
@@ -319,10 +293,10 @@ extern "C" {
 			auto exe = LoadDynamicLibrary(NULL);
 			if (!exe) return false;
 
-			AudioUnitSetParameterFunc = (AudioUnitSetParameterPtr)GetSymbolAddress(exe, "AudioUnitSetParameter");
+			AudioUnitSetParameterFunc = AudioUnitSetParameterPtr(GetSymbolAddress(exe, "AudioUnitSetParameter"));
 			if (!AudioUnitSetParameterFunc) return false;
 
-			AudioUnitSetPropertyFunc = (AudioUnitSetPropertyPtr)GetSymbolAddress(exe, "AudioUnitSetProperty");
+			AudioUnitSetPropertyFunc = AudioUnitSetPropertyPtr(GetSymbolAddress(exe, "AudioUnitSetProperty"));
 			if (!AudioUnitSetPropertyFunc) return false;
 
 			return true;
