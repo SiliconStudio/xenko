@@ -40,10 +40,7 @@ namespace SiliconStudio.Xenko.Graphics
         private const PixelInternalFormat RgExt = (PixelInternalFormat)33319;
         private const PixelType HalfFloatOES = (PixelType)0x8D61;
 #else
-        private const PixelInternalFormat SrgbAlpha = PixelInternalFormat.SrgbAlpha;
         private const PixelInternalFormat Srgb8Alpha8 = PixelInternalFormat.Srgb8Alpha8;
-        private const PixelInternalFormat RedExt = (PixelInternalFormat)ExtTextureRg.RedExt;
-        private const PixelInternalFormat RgExt = (PixelInternalFormat)ExtTextureRg.RgExt;
 #endif
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
