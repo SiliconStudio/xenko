@@ -5,6 +5,93 @@ using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
 {
+    public class GraphNodeLinker
+    {
+        private sealed class GraphNodeLinkerVisitor : GraphVisitorBase
+        {
+            private readonly GraphNodeLinker linker;
+            public readonly Dictionary<IGraphNode, IGraphNode> VisitedLinks = new Dictionary<IGraphNode, IGraphNode>();
+
+            public GraphNodeLinkerVisitor(GraphNodeLinker linker)
+            {
+                this.linker = linker;
+            }
+
+            public void Reset(IGraphNode sourceNode, IGraphNode targetNode)
+            {
+                VisitedLinks.Clear();
+                VisitedLinks.Add(sourceNode, targetNode);
+            }
+
+            public override void VisitNode(IGraphNode node, GraphNodePath currentPath)
+            {
+                var targetNode = linker.FindTarget(node);
+                linker.LinkNodes(node, targetNode);
+                base.VisitNode(node, currentPath);
+            }
+
+            public override void VisitChildren(IGraphNode node, GraphNodePath currentPath)
+            {
+                IGraphNode targetNodeParent;
+                if (VisitedLinks.TryGetValue(node, out targetNodeParent) && targetNodeParent != null)
+                {
+                    foreach (var child in node.Children)
+                    {
+                        VisitedLinks.Add(child, targetNodeParent.GetChild(child.Name));
+                    }
+                }
+                base.VisitChildren(node, currentPath);
+            }
+
+            protected override void VisitReference(IGraphNode referencer, ObjectReference reference, GraphNodePath targetPath)
+            {
+                if (reference.TargetNode != null)
+                {
+                    IGraphNode targetNode;
+                    if (VisitedLinks.TryGetValue(referencer, out targetNode) && targetNode != null)
+                    {
+                        var targetReference = linker.FindTargetReference(referencer, targetNode, reference);
+                        VisitedLinks.Add(reference.TargetNode, targetReference?.TargetNode);
+                    }
+                }
+                base.VisitReference(referencer, reference, targetPath);
+            }
+        }
+
+        private readonly GraphNodeLinkerVisitor visitor;
+
+        public GraphNodeLinker()
+        {
+            visitor = new GraphNodeLinkerVisitor(this);
+        }
+
+        public void LinkGraph(IGraphNode sourceNode, IGraphNode targetNode)
+        {
+            visitor.Reset(sourceNode, targetNode);
+            visitor.Visit(sourceNode);
+        }
+
+        protected virtual void LinkNodes(IGraphNode sourceNode, IGraphNode targetNode)
+        {
+            // Do nothing by default
+        }
+
+        protected virtual ObjectReference FindTargetReference(IGraphNode sourceNode, IGraphNode targetNode, ObjectReference sourceReference)
+        {
+            if (sourceReference.Index.IsEmpty)
+                return targetNode.Content.Reference as ObjectReference;
+
+            var targetReference = targetNode.Content.Reference as ReferenceEnumerable;
+            return targetReference?[sourceReference.Index];
+        }
+
+        protected virtual IGraphNode FindTarget(IGraphNode sourceNode)
+        {
+            IGraphNode targetNode;
+            return visitor.VisitedLinks.TryGetValue(sourceNode, out targetNode) ? targetNode : null;
+        }
+    }
+
     /// <summary>
     /// A static class providing tools to link graph nodes of two object together.
     /// </summary>
@@ -54,7 +141,7 @@ namespace SiliconStudio.Quantum
             while (nodes.Count > 0)
             {
                 var node = nodes.Dequeue();
-                if ( findTarget != null)
+                if (findTarget != null)
                 {
                     var target = findTarget(node.Source, node.Target);
                     if (target != node.Target)

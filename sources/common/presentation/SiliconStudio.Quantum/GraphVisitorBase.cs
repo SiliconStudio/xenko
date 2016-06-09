@@ -61,10 +61,7 @@ namespace SiliconStudio.Quantum
             if (objectReference?.TargetNode != null)
             {
                 var targetPath = currentPath.PushTarget();
-                if (ShouldVisitNode(objectReference.TargetNode, targetPath))
-                {
-                    VisitNode(objectReference.TargetNode, targetPath);
-                }
+                VisitReference(node, objectReference, targetPath);
             }
         }
 
@@ -76,11 +73,16 @@ namespace SiliconStudio.Quantum
                 foreach (var reference in enumerableReference.Where(x => x.TargetNode != null))
                 {
                     var targetPath = currentPath.PushIndex(reference.Index);
-                    if (ShouldVisitNode(reference.TargetNode, targetPath))
-                    {
-                        VisitNode(reference.TargetNode, targetPath);
-                    }
+                    VisitReference(node, reference, targetPath);
                 }
+            }
+        }
+
+        protected virtual void VisitReference(IGraphNode referencer, ObjectReference reference, GraphNodePath targetPath)
+        {
+            if (ShouldVisitNode(reference.TargetNode, targetPath))
+            {
+                VisitNode(reference.TargetNode, targetPath);
             }
         }
 
