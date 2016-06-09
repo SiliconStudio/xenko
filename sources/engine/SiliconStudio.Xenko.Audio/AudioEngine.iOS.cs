@@ -4,15 +4,11 @@
 
 using System;
 using AVFoundation;
-using AudioToolbox;
-using Foundation;
 
 namespace SiliconStudio.Xenko.Audio
 {
     public sealed class AudioEngineiOS: AudioEngine
     {
-        private AVAudioPlayer audioPlayer;
-        private bool currentMusicDataTypeIsUnsupported;
         private bool activated;
 
         internal override void InitializeAudioEngine(AudioDevice device)
@@ -69,7 +65,6 @@ namespace SiliconStudio.Xenko.Audio
         /// <inheritDoc/>
         internal override void ResumeAudioImpl()
         {
-            ActivateAudioSession();
         }
 
         internal override void DestroyAudioEngine()

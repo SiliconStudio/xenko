@@ -15,14 +15,14 @@ namespace SiliconStudio.Xenko.Audio
 {
     internal unsafe class AudioVoice : ComponentBase
     {
-        [DllImport(NativeLibrary.LibraryName, CallingConvention = NativeLibrary.CallConvention)]
-        private static extern int SetInputRenderCallbackToChannelMixerDefault(IntPtr inUnit, uint element, IntPtr userData);
-
-        [DllImport(NativeLibrary.LibraryName, CallingConvention = NativeLibrary.CallConvention)]
-        private static extern int SetInputRenderCallbackTo3DMixerDefault(IntPtr inUnit, uint element, IntPtr userData);
-
-        [DllImport(NativeLibrary.LibraryName, CallingConvention = NativeLibrary.CallConvention)]
-        private static extern int SetInputRenderCallbackToNull(IntPtr inUnit, uint element);
+//        [DllImport(NativeLibrary.LibraryName, CallingConvention = NativeLibrary.CallConvention)]
+//        private static extern int SetInputRenderCallbackToChannelMixerDefault(IntPtr inUnit, uint element, IntPtr userData);
+//
+//        [DllImport(NativeLibrary.LibraryName, CallingConvention = NativeLibrary.CallConvention)]
+//        private static extern int SetInputRenderCallbackTo3DMixerDefault(IntPtr inUnit, uint element, IntPtr userData);
+//
+//        [DllImport(NativeLibrary.LibraryName, CallingConvention = NativeLibrary.CallConvention)]
+//        private static extern int SetInputRenderCallbackToNull(IntPtr inUnit, uint element);
 
         /// <summary>
         /// The frequency of the output of the audio unit graph.
@@ -45,6 +45,8 @@ namespace SiliconStudio.Xenko.Audio
         private readonly int channels;
         private readonly int sampleRate;
 
+        private float pazimuth, pelevation, pdistance, pplayRate;
+
         private readonly AudioDataRendererInfo* pAudioDataRendererInfo;
 
         /// <summary>
@@ -56,6 +58,7 @@ namespace SiliconStudio.Xenko.Audio
         /// Boolean indicating if the sound is a 3D sound or not (input to 3DMixer or ChannelMixer)
         /// </summary>
         private bool is3D;
+
         private bool Is3D
         {
             get { return is3D; }
@@ -90,15 +93,17 @@ namespace SiliconStudio.Xenko.Audio
 
         private void EnableMixerCurrentInput(bool shouldBeEnabled)
         {
+            Debugger.Break();
+
             if(BusIndexMixer == uint.MaxValue)
                 return;
 
-            CheckUnitStatus(unitChannelMixer.SetParameter(AudioUnitParameterType.MultiChannelMixerEnable,
-                !Is3D && shouldBeEnabled ? 1f : 0f, AudioUnitScopeType.Input, BusIndexMixer), "Failed to enable/disable the ChannelMixerInput.");
+            CheckUnitStatus(unitChannelMixer.SetParameter(AudioUnitParameterType.MultiChannelMixerEnable, !Is3D && shouldBeEnabled ? 1f : 0f, AudioUnitScopeType.Input, BusIndexMixer), 
+                "Failed to enable/disable the ChannelMixerInput.");
 
             if(channels == 1 && soundInstance.Sound.Spatialized) // no 3D mixer for stereo sounds
-                CheckUnitStatus(unit3DMixer.SetParameter(AudioUnitParameterType.Mixer3DEnable,
-                    Is3D && shouldBeEnabled ? 1f : 0f, AudioUnitScopeType.Input, BusIndexMixer), "Failed to enable/disable the 3DMixerInput.");
+                CheckUnitStatus(unit3DMixer.SetParameter(AudioUnitParameterType.Mixer3DEnable, Is3D && shouldBeEnabled ? 1f : 0f, AudioUnitScopeType.Input, BusIndexMixer), 
+                    "Failed to enable/disable the 3DMixerInput.");
 
             pAudioDataRendererInfo->IsEnabled2D = shouldBeEnabled && !Is3D;
             pAudioDataRendererInfo->IsEnabled3D = shouldBeEnabled && Is3D;
@@ -114,10 +119,10 @@ namespace SiliconStudio.Xenko.Audio
         /// Create the audio stream format for 16bits PCM data.
         /// </summary>
         /// <param name="numberOfChannels"></param>
-        /// <param name="frameRate"></param>
+        /// <param name="sampleRate"></param>
         /// <param name="isInterleaved"></param>
         /// <returns></returns>
-        private static AudioStreamBasicDescription CreateLinear16BitsPcm(int numberOfChannels, double frameRate, bool isInterleaved = true)
+        private static AudioStreamBasicDescription CreateLinear16BitsPcm(int numberOfChannels, double sampleRate, bool isInterleaved = true)
         {
             AudioStreamBasicDescription retFormat;
             const int wordSize = 2;
@@ -125,7 +130,7 @@ namespace SiliconStudio.Xenko.Audio
             retFormat.FramesPerPacket = 1;
             retFormat.Format = AudioFormatType.LinearPCM;
             retFormat.FormatFlags = AudioFormatFlags.IsPacked | AudioFormatFlags.IsSignedInteger;
-            retFormat.SampleRate = frameRate; 
+            retFormat.SampleRate = sampleRate; 
             retFormat.BitsPerChannel = 8 * wordSize;
             retFormat.ChannelsPerFrame = numberOfChannels;
             retFormat.BytesPerFrame = isInterleaved ? numberOfChannels * wordSize : wordSize;
@@ -189,10 +194,10 @@ namespace SiliconStudio.Xenko.Audio
                     // set a null renderer callback to the channel and 3d mixer input bus
                     for (uint i = 0; i < MaxNumberOfTracks; i++)
                     {
-//                        CheckUnitStatus((AudioUnitStatus)Native.AudioUnitHelpers.SetInputRenderCallbackToNull_(unit3DMixer.Handle, i), "Failed to set the render callback");
-//                        CheckUnitStatus((AudioUnitStatus)Native.AudioUnitHelpers.SetInputRenderCallbackToNull_(unitChannelMixer.Handle, i), "Failed to set the render callback");
-                        CheckUnitStatus((AudioUnitStatus)SetInputRenderCallbackToNull(unit3DMixer.Handle, i), "Failed to set the render callback");
-                        CheckUnitStatus((AudioUnitStatus)SetInputRenderCallbackToNull(unitChannelMixer.Handle, i), "Failed to set the render callback");
+                        CheckUnitStatus((AudioUnitStatus)Native.AudioUnitHelpers.SetInputRenderCallbackToNull_(unit3DMixer.Handle, i), "Failed to set the render callback");
+                        CheckUnitStatus((AudioUnitStatus)Native.AudioUnitHelpers.SetInputRenderCallbackToNull_(unitChannelMixer.Handle, i), "Failed to set the render callback");
+//                        CheckUnitStatus((AudioUnitStatus)SetInputRenderCallbackToNull(unit3DMixer.Handle, i), "Failed to set the render callback");
+//                        CheckUnitStatus((AudioUnitStatus)SetInputRenderCallbackToNull(unitChannelMixer.Handle, i), "Failed to set the render callback");
                     }
                     
                     // Initialize the graph (validation of the topology)
@@ -214,12 +219,12 @@ namespace SiliconStudio.Xenko.Audio
                         availableMixerBusIndices.Enqueue(i);
                 }
                 ++nbOfInstances;
-
-                // Create a AudioDataRendererInfo for the sounds.
-                pAudioDataRendererInfo = (AudioDataRendererInfo*)Utilities.AllocateClearedMemory(sizeof(AudioDataRendererInfo));
-                pAudioDataRendererInfo->HandleChannelMixer = unitChannelMixer.Handle;
-                pAudioDataRendererInfo->Handle3DMixer = unit3DMixer.Handle;
             }
+
+            // Create a AudioDataRendererInfo for the sounds.
+            pAudioDataRendererInfo = (AudioDataRendererInfo*)Utilities.AllocateClearedMemory(sizeof(AudioDataRendererInfo));
+            pAudioDataRendererInfo->HandleChannelMixer = unitChannelMixer.Handle;
+            pAudioDataRendererInfo->Handle3DMixer = unit3DMixer.Handle;
         }
         
         /// <summary>
@@ -276,10 +281,10 @@ namespace SiliconStudio.Xenko.Audio
             if (BusIndexMixer != uint.MaxValue)
             {
                 // reset the mixer callbacks to null renderers
-//                CheckUnitStatus((AudioUnitStatus)Native.AudioUnitHelpers.SetInputRenderCallbackToNull_(unit3DMixer.Handle, BusIndexMixer), "Failed to set the render callback");
-//                CheckUnitStatus((AudioUnitStatus)Native.AudioUnitHelpers.SetInputRenderCallbackToNull_(unitChannelMixer.Handle, BusIndexMixer), "Failed to set the render callback");
-                CheckUnitStatus((AudioUnitStatus)SetInputRenderCallbackToNull(unit3DMixer.Handle, BusIndexMixer), "Failed to set the render callback");
-                CheckUnitStatus((AudioUnitStatus)SetInputRenderCallbackToNull(unitChannelMixer.Handle, BusIndexMixer), "Failed to set the render callback");
+                CheckUnitStatus((AudioUnitStatus)Native.AudioUnitHelpers.SetInputRenderCallbackToNull_(unit3DMixer.Handle, BusIndexMixer), "Failed to set the render callback");
+                CheckUnitStatus((AudioUnitStatus)Native.AudioUnitHelpers.SetInputRenderCallbackToNull_(unitChannelMixer.Handle, BusIndexMixer), "Failed to set the render callback");
+//                CheckUnitStatus((AudioUnitStatus)SetInputRenderCallbackToNull(unit3DMixer.Handle, BusIndexMixer), "Failed to set the render callback");
+//                CheckUnitStatus((AudioUnitStatus)SetInputRenderCallbackToNull(unitChannelMixer.Handle, BusIndexMixer), "Failed to set the render callback");
 
                 availableMixerBusIndices.Enqueue(BusIndexMixer);
             }
@@ -291,7 +296,9 @@ namespace SiliconStudio.Xenko.Audio
 
             // find a available bus indices for this instance.
             if (availableMixerBusIndices.Count > 0)
+            {
                 BusIndexMixer = availableMixerBusIndices.Dequeue();
+            }
             else
             {
                 // force the update of all sound effect instance to free bus indices
@@ -324,10 +331,11 @@ namespace SiliconStudio.Xenko.Audio
             unitChannelMixer.SetFormat(CreateLinear16BitsPcm(channels, sampleRate), AudioUnitScopeType.Input, BusIndexMixer);
 
             // set the channel input bus callback
-            //CheckUnitStatus((AudioUnitStatus)Native.AudioUnitHelpers.SetInputRenderCallbackToChannelMixerDefault_(unitChannelMixer.Handle, BusIndexMixer, (IntPtr)pAudioDataRendererInfo), "Failed to set the render callback");
-            CheckUnitStatus((AudioUnitStatus)SetInputRenderCallbackToChannelMixerDefault(unitChannelMixer.Handle, BusIndexMixer, (IntPtr)pAudioDataRendererInfo), "Failed to set the render callback");
-                    
-            ResetChannelMixerParameter();
+            CheckUnitStatus((AudioUnitStatus)Native.AudioUnitHelpers.SetInputRenderCallbackToChannelMixerDefault_(unitChannelMixer.Handle, BusIndexMixer, (IntPtr)pAudioDataRendererInfo), "Failed to set the render callback");
+            //CheckUnitStatus((AudioUnitStatus)SetInputRenderCallbackToChannelMixerDefault(unitChannelMixer.Handle, BusIndexMixer, (IntPtr)pAudioDataRendererInfo), "Failed to set the render callback");
+                
+            SetVolume(soundInstance.Volume);
+            if(!Is3D) SetPan(soundInstance.Pan);    
 
             // initialize the 3D mixer input bus, if the sound can be used as 3D sound.
             if (channels == 1 && soundInstance.Sound.Spatialized)
@@ -336,20 +344,14 @@ namespace SiliconStudio.Xenko.Audio
                 unit3DMixer.SetFormat(CreateLinear16BitsPcm(channels, sampleRate), AudioUnitScopeType.Input, BusIndexMixer);
 
                 // set the 3D mixer input bus callback
-                //CheckUnitStatus((AudioUnitStatus)Native.AudioUnitHelpers.SetInputRenderCallbackTo3DMixerDefault_(unit3DMixer.Handle, BusIndexMixer, (IntPtr)pAudioDataRendererInfo), "Failed to set the render callback");
-                CheckUnitStatus((AudioUnitStatus)SetInputRenderCallbackTo3DMixerDefault(unit3DMixer.Handle, BusIndexMixer, (IntPtr)pAudioDataRendererInfo), "Failed to set the render callback");
+                CheckUnitStatus((AudioUnitStatus)Native.AudioUnitHelpers.SetInputRenderCallbackTo3DMixerDefault_(unit3DMixer.Handle, BusIndexMixer, (IntPtr)pAudioDataRendererInfo), "Failed to set the render callback");
+                //CheckUnitStatus((AudioUnitStatus)SetInputRenderCallbackTo3DMixerDefault(unit3DMixer.Handle, BusIndexMixer, (IntPtr)pAudioDataRendererInfo), "Failed to set the render callback");
 
-                Reset3DMixerParameter();
+                Set3DParameters(pazimuth, pelevation, pdistance, pplayRate);
             }
 
             // Disable the input by default so that it started in Stopped mode.
-            EnableMixerCurrentInput(false);
-
-            // reset playback to the beginning of the track and set the looping status
-            pAudioDataRendererInfo->CurrentFrame = 0;
-            SetLoopingPoints(0, int.MaxValue, 0, pAudioDataRendererInfo->IsInfiniteLoop);
-            SetVolume(soundInstance.Volume);
-            SetPan(soundInstance.Pan);
+            EnableMixerCurrentInput(false);            
         }
 
         public void LoadBuffer()
@@ -361,6 +363,12 @@ namespace SiliconStudio.Xenko.Audio
                 pAudioDataRendererInfo->TotalNumberOfFrames = soundInstance.Sound.PreloadedData.Length / channels;
                 pAudioDataRendererInfo->NumberOfChannels = channels;
             }
+
+            // reset playback to the beginning of the track and set the looping status
+            pAudioDataRendererInfo->CurrentFrame = 0;
+            SetLoopingPoints(0, int.MaxValue, 0, pAudioDataRendererInfo->IsInfiniteLoop);
+            SetVolume(soundInstance.Volume);
+            if(!Is3D) SetPan(soundInstance.Pan);
         }
 
         public void SetVolume(float volume)
@@ -390,6 +398,11 @@ namespace SiliconStudio.Xenko.Audio
 
         private void Set3DParameters(float azimuth, float elevation, float distance, float playRate)
         {
+            pazimuth = azimuth;
+            pelevation = elevation;
+            pdistance = distance;
+            pplayRate = playRate;
+
             if (BusIndexMixer == uint.MaxValue)
                 return;
 
