@@ -108,7 +108,8 @@ namespace SiliconStudio.Quantum.Tests
         /// </summary>
         /// <param name="reference">The reference to test.</param>
         /// <param name="targetValue">The actual value pointed by the reference.</param>
-        public static void TestNonNullObjectReference(IReference reference, object targetValue)
+        /// <param name="hasIndex">Indicates whether the reference has an index.</param>
+        public static void TestNonNullObjectReference(IReference reference, object targetValue, bool hasIndex)
         {
             var objReference = reference as ObjectReference;
 
@@ -118,6 +119,8 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(targetValue, objReference.TargetNode.Content.Retrieve());
             // Check that the values match.
             Assert.AreEqual(targetValue, objReference.ObjectValue);
+            // Check that we have no index.
+            Assert.AreEqual(hasIndex, !reference.Index.IsEmpty);
             // Check that the target is an object content node.
             TestNonCollectionObjectContentNode(objReference.TargetNode, targetValue, objReference.TargetNode.Children.Count);
         }
@@ -184,7 +187,7 @@ namespace SiliconStudio.Quantum.Tests
                 Assert.AreEqual(objReference.Item1.ObjectValue, objReference.Item2);
                 if (objReference.Item2 != null)
                 {
-                    TestNonNullObjectReference(objReference.Item1, objReference.Item2);
+                    TestNonNullObjectReference(objReference.Item1, objReference.Item2, true);
                 }
                 else
                 {
