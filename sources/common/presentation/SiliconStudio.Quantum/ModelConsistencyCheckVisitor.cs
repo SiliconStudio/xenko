@@ -195,7 +195,7 @@ namespace SiliconStudio.Quantum
             // This is either an object reference or a enumerable reference of non-primitive type (excluding custom primitive type)
             if (valueType == null || (!type.IsStruct() && !IsPrimitiveType(valueType, false)))
             {
-                var refType = Reference.GetReferenceType(value, Reference.NotInCollection);
+                var refType = Reference.GetReferenceType(value, Index.Empty);
                 if (refType == typeof(ReferenceEnumerable))
                 {
                     if (value == null) throw new InvalidOperationException("The value is not expected to be null when its node should contains an ReferenceEnumerable");
