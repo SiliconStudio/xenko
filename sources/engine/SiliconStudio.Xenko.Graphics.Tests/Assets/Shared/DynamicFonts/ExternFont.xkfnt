@@ -1,18 +1,12 @@
 !SpriteFont
 Id: 05718a05-c688-4340-853a-e22ee854d9cf
-SerializedVersion: {Xenko: 1.5.0-alpha09}
+SerializedVersion: {Xenko: 1.7.0-beta03}
 Tags: []
-Source: ../../../../../data/tests/Risaltyp_024.ttf
-FontName: Arial
-Size: 16.0
-Style: Regular
-IsDynamic: true
+FontSource: !SystemFontProvider
+    ~Id: 26415673-b421-472f-9124-94722d94bd2e
+    FontName: Arial
+    Style: Regular
+FontType: !SpriteFontTypeDynamic
+    ~Id: 37516ccb-81f6-4cce-8204-fe158cacbfd2
 DefaultCharacter: ' '
-CharacterSet: null
-CharacterRegions:
-    -   Start: ' '
-        End: "\x7F"
 AntiAlias: Grayscale
-Spacing: 0.0
-LineSpacing: 0.0
-UseKerning: false

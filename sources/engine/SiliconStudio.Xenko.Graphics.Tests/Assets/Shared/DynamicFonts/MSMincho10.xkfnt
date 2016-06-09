@@ -1,18 +1,12 @@
 !SpriteFont
 Id: 2fba8d24-2510-463f-b5d0-af0ad5b1da80
-SerializedVersion: {Xenko: 1.5.0-alpha09}
+SerializedVersion: {Xenko: 1.7.0-beta03}
 Tags: []
-Source: 
-FontName: MS Mincho
-Size: 10.0
-Style: Regular
-IsDynamic: true
+FontSource: !SystemFontProvider
+    ~Id: cdf16a5b-66f9-4a2f-a4fd-b26b0b9268b3
+    FontName: MS Mincho
+    Style: Regular
+FontType: !SpriteFontTypeDynamic
+    ~Id: b3c8f8bc-15cb-405d-b3c0-9648bf2f3804
 DefaultCharacter: ' '
-CharacterSet: 
-CharacterRegions:
-    -   Start: ' '
-        End: "\x7F"
 AntiAlias: Aliased
-Spacing: 0.0
-LineSpacing: 0.0
-UseKerning: false

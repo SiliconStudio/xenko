@@ -1,8 +1,8 @@
 !PregeneratedSpriteFont
 Id: caebfee9-d821-4641-8a0e-56f20d857cdd
-SerializedVersion: {Xenko: 1.5.0-alpha09}
+SerializedVersion: {Xenko: 1.7.0-alpha01}
 Tags: []
-Source: b742b0b2-c2a9-4291-89a0-56fb0cb214c1:StaticFonts/Arial16ClearType
+OriginalFont: b742b0b2-c2a9-4291-89a0-56fb0cb214c1:StaticFonts/Arial16ClearType
 FontDataFile: ../../../../../data/tests/PrecompileFonts/Arial16ClearType (Precompiled).png
 BaseOffset: 20.0104179
 DefaultLineSpacing: 24.53125

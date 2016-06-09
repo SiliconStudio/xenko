@@ -1,18 +1,20 @@
 !SpriteFont
 Id: a8c5497e-7dea-46ec-a818-5728f34f5cc5
-SerializedVersion: {Xenko: 1.5.0-alpha09}
+SerializedVersion: {Xenko: 1.7.0-beta03}
 Tags: []
-Source: 
-FontName: Arial
-Size: 16.0
-Style: Bold
-IsDynamic: false
+FontSource: !SystemFontProvider
+    ~Id: 8c7bd48f-6a31-4422-a001-cabf05bf1ad2
+    FontName: Arial
+    Style: Bold
+FontType: !SpriteFontTypeStatic
+    ~Id: 84e695b5-51d7-4ad3-aede-bd27ed8b2456
+    CharacterSet: 
+    CharacterRegions:
+        -   ~Id: e0945d27-db16-4c93-aef8-1f0b9665489e
+            Start: ' '
+            End: "\x7F"
+        -   ~Id: 00c45694-259e-4647-906d-bd06604fb931
+            Start: ' '
+            End: "\x7F"
 DefaultCharacter: ' '
-CharacterSet: 
-CharacterRegions:
-    -   Start: ' '
-        End: "\x7F"
 AntiAlias: Grayscale
-Spacing: 0.0
-LineSpacing: 0.0
-UseKerning: false

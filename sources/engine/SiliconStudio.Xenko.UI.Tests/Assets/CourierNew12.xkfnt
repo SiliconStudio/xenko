@@ -1,18 +1,12 @@
 !SpriteFont
 Id: 81fc0346-d4f8-4717-98af-ef896c15379f
-SerializedVersion: {Xenko: 1.5.0-alpha09}
+SerializedVersion: {Xenko: 1.7.0-beta03}
 Tags: []
-Source: null
-FontName: Courier New
-Size: 12.0
-Style: Regular
-IsDynamic: true
+FontSource: !SystemFontProvider
+    ~Id: 99155058-4643-487b-8afd-7a4f7859b80a
+    FontName: Courier New
+    Style: Regular
+FontType: !SpriteFontTypeDynamic
+    ~Id: 50f98fbd-4080-430a-bd2f-d5aa86b7ef0d
 DefaultCharacter: ' '
-CharacterSet: null
-CharacterRegions:
-    -   Start: ' '
-        End: "\x7F"
 AntiAlias: Aliased
-Spacing: 0.0
-LineSpacing: 0.0
-UseKerning: false

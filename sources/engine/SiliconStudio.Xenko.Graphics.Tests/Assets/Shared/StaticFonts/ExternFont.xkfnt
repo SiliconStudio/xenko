@@ -1,18 +1,20 @@
 !SpriteFont
 Id: 2382194a-83fb-45fb-96e6-27fae1056e99
-SerializedVersion: {Xenko: 1.5.0-alpha09}
+SerializedVersion: {Xenko: 1.7.0-beta03}
 Tags: []
-Source: ../../../../../data/tests/Risaltyp_024.ttf
-FontName: Microsoft Sans Serif
-Size: 16.0
-Style: Regular
-IsDynamic: false
+FontSource: !SystemFontProvider
+    ~Id: cb9f6de8-65dc-4706-bc89-fc355d184162
+    FontName: Microsoft Sans Serif
+    Style: Regular
+FontType: !SpriteFontTypeStatic
+    ~Id: 83724522-5e04-40f8-8393-1cf625fbdf4d
+    CharacterSet: null
+    CharacterRegions:
+        -   ~Id: c9bb5db9-0781-493c-a427-50fa6ff7dc0f
+            Start: ' '
+            End: "\x7F"
+        -   ~Id: 6f02b54c-92d0-472c-b6d1-c0fd3f54d1ea
+            Start: ' '
+            End: "\x7F"
 DefaultCharacter: ' '
-CharacterSet: null
-CharacterRegions:
-    -   Start: ' '
-        End: "\x7F"
 AntiAlias: Grayscale
-Spacing: 0.0
-LineSpacing: 0.0
-UseKerning: false

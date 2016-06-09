@@ -1,18 +1,21 @@
 !SpriteFont
 Id: 83cbacc4-ae04-4a9b-94ef-4ecd49557287
-SerializedVersion: {Xenko: 1.5.0-alpha09}
+SerializedVersion: {Xenko: 1.7.0-beta03}
 Tags: []
-Source: 
-FontName: Calibri
-Size: 64.0
-Style: Regular
-IsDynamic: false
+FontSource: !SystemFontProvider
+    ~Id: afc8df61-4132-4f26-b50b-50eab33fec06
+    FontName: Calibri
+    Style: Regular
+FontType: !SpriteFontTypeStatic
+    ~Id: 33dddd57-df79-4135-bcb1-8c5e54ad801f
+    Size: 64.0
+    CharacterSet: 
+    CharacterRegions:
+        -   ~Id: 2ff72301-b8f7-4cb8-9f93-66541f81ede9
+            Start: ' '
+            End: "\x7F"
+        -   ~Id: 96233df8-7771-4d16-ae67-fa68556ed926
+            Start: ' '
+            End: "\x7F"
 DefaultCharacter: ' '
-CharacterSet: 
-CharacterRegions:
-    -   Start: ' '
-        End: "\x7F"
 AntiAlias: Grayscale
-Spacing: 0.0
-LineSpacing: 0.0
-UseKerning: false
