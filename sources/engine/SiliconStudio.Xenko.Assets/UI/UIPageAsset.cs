@@ -5,6 +5,8 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.UI;
 
 namespace SiliconStudio.Xenko.Assets.UI
@@ -34,5 +36,27 @@ namespace SiliconStudio.Xenko.Assets.UI
         [NotNull]
         [Display("Root Element")]
         public UIElement RootElement { get; set; }
+
+        [DataMember]
+        [NotNull]
+        [Display("Design")]
+        public UIDesign Design { get; set; } = new UIDesign();
+
+        [DataContract("UIDesign")]
+        [NonIdentifiable]
+        public sealed class UIDesign
+        {
+            [DataMember]
+            public float Depth { get; set; } = UIComponent.DefaultDepth;
+
+            [DataMember]
+            public float Height { get; set; } = UIComponent.DefaultHeight;
+
+            [DataMember]
+            public float Width { get; set; } = UIComponent.DefaultWidth;
+
+            [DataMember]
+            public Color AreaBackgroundColor { get; set; } = Color.Beige;
+        }
     }
 }

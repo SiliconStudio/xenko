@@ -19,9 +19,13 @@ namespace SiliconStudio.Xenko.Engine
     [ComponentOrder(9800)]
     public sealed class UIComponent : ActivableEntityComponent
     {
+        public static readonly float DefaultDepth = 1000;
+        public static readonly float DefaultHeight = 720;
+        public static readonly float DefaultWidth = 1280;
+
         public UIComponent()
         {
-            Resolution = new Vector3(1280, 720, 1000);
+            Resolution = new Vector3(DefaultWidth, DefaultHeight, DefaultDepth);
             Size = new Vector3(1, 1, 1);
         }
 
