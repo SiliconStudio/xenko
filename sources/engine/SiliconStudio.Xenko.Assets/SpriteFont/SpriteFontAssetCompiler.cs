@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #pragma warning disable 162 // Unreachable code detected (due to useCacheFonts)
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -30,18 +31,20 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         {
             var colorSpace = context.GetColorSpace();
 
-            if (asset.FontType == SpriteFontType.SDF)
+            if (asset.FontType is SpriteFontTypeSignedDistanceField)
             {
+                var fontTypeSDF = asset.FontType as SpriteFontTypeSignedDistanceField;
+
                 // copy the asset and transform the source and character set file path to absolute paths
                 var assetClone = (SpriteFontAsset)AssetCloner.Clone(asset);
                 var assetDirectory = assetAbsolutePath.GetParent();
                 assetClone.FontSource = asset.FontSource;
-                assetClone.CharacterSet = !string.IsNullOrEmpty(asset.CharacterSet) ? UPath.Combine(assetDirectory, asset.CharacterSet) : null;
+                fontTypeSDF.CharacterSet = !string.IsNullOrEmpty(fontTypeSDF.CharacterSet) ? UPath.Combine(assetDirectory, fontTypeSDF.CharacterSet) : null;
 
                 result.BuildSteps = new AssetBuildStep(AssetItem) { new SignedDistanceFieldFontCommand(urlInStorage, assetClone) };
             }
             else
-            if (asset.FontType == SpriteFontType.Dynamic)
+            if (asset.FontType is SpriteFontTypeDynamic)
             {
                 UFile fontPathOnDisk;
 
@@ -57,11 +60,15 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             }
             else
             {
+                var fontTypeStatic = asset.FontType as SpriteFontTypeStatic;
+                if (fontTypeStatic == null)
+                    throw new ArgumentException("Tried to compile a dynamic sprite font with compiler for signed distance field fonts");
+
                 // copy the asset and transform the source and character set file path to absolute paths
                 var assetClone = (SpriteFontAsset)AssetCloner.Clone(asset);
                 var assetDirectory = assetAbsolutePath.GetParent();
                 assetClone.FontSource = asset.FontSource;
-                assetClone.CharacterSet = !string.IsNullOrEmpty(asset.CharacterSet) ? UPath.Combine(assetDirectory, asset.CharacterSet): null;
+                fontTypeStatic.CharacterSet = !string.IsNullOrEmpty(fontTypeStatic.CharacterSet) ? UPath.Combine(assetDirectory, fontTypeStatic.CharacterSet): null;
 
                 result.BuildSteps = new AssetBuildStep(AssetItem) { new StaticFontCommand(urlInStorage, assetClone, colorSpace) };
             }
@@ -79,8 +86,12 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
             protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
             {
-                if(File.Exists(AssetParameters.CharacterSet))
-                    yield return new ObjectUrl(UrlType.File, AssetParameters.CharacterSet);
+                var fontTypeStatic = AssetParameters.FontType as SpriteFontTypeStatic;
+                if (fontTypeStatic == null)
+                    throw new ArgumentException("Tried to compile a dynamic sprite font with compiler for signed distance field fonts");
+
+                if (File.Exists(fontTypeStatic.CharacterSet))
+                    yield return new ObjectUrl(UrlType.File, fontTypeStatic.CharacterSet);
             }
 
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
@@ -131,8 +142,12 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
             protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
             {
-                if (File.Exists(AssetParameters.CharacterSet))
-                    yield return new ObjectUrl(UrlType.File, AssetParameters.CharacterSet);
+                var fontTypeSDF = AssetParameters.FontType as SpriteFontTypeSignedDistanceField;
+                if (fontTypeSDF == null)
+                    throw new ArgumentException("Tried to compile a dynamic sprite font with compiler for signed distance field fonts");
+
+                if (File.Exists(fontTypeSDF.CharacterSet))
+                    yield return new ObjectUrl(UrlType.File, fontTypeSDF.CharacterSet);
             }
 
             protected override void ComputeParameterHash(BinarySerializationWriter writer)

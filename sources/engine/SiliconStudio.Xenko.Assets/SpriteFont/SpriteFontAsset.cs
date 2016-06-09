@@ -59,8 +59,9 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// Signed Distance Field font is pre-compiled but can still be scaled at runtime
         /// </userdoc>
         [DataMember(50)]
+        [NotNull]
         [Display(null, "Font")]
-        public SpriteFontType FontType { get; set; } = SpriteFontType.Static;
+        public SpriteFontTypeBase FontType { get; set; } = new SpriteFontTypeStatic();
 
         /// <summary>
         /// Gets or sets the fallback character used when asked to render a character that is not
@@ -70,31 +71,9 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// The fallback character to use when a given character is not available in the font file data.
         /// </userdoc>
         [DataMember(60)]
-        [Display(null, "Characters")]
+        [Display(null, "Font")]
         public char DefaultCharacter { get; set; } = ' ';
 
-        /// <summary>
-        ///  Gets or sets the text file referencing which characters to include when generating the static fonts (eg. "ABCDEF...")
-        /// </summary>
-        /// <userdoc>
-        /// The path to a file containing the characters to import from the font source file. This property is ignored when 'IsDynamic' is checked.
-        /// </userdoc>
-        [DataMember(70)]
-        [Display(null, "Characters")]
-        public UFile CharacterSet { get; set; } = new UFile("");
-
-        /// <summary>
-        /// Gets or set the additional character ranges to include when generating the static fonts (eg. "/CharacterRegion:0x20-0x7F /CharacterRegion:0x123")
-        /// </summary>
-        /// <userdoc>
-        /// The list of series of character to import from the font source file. This property is ignored when 'IsDynamic' is checked.
-        /// Note that this property only represents an alternative way of indicating character to import, the result is the same as using the 'CharacterSet' property.
-        /// </userdoc>
-        [DataMember(80)]
-        [Category]
-        [Display(null, "Characters")]
-        [NotNullItems]
-        public List<CharacterRegion> CharacterRegions { get; set; } = new List<CharacterRegion>();
 
         /// <summary>
         /// Gets or sets format of the texture used to render the font.
@@ -184,8 +163,6 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         [DataMemberRange(-500, 500, 1, 10)]
         [Display(null, "Rendering")]
         public float LineGapBaseLineFactor { get; set; } = 1.0f;
-
-        internal string SafeCharacterSet => CharacterSet ?? "";
 
         class PremultiplyUpgrader : AssetUpgraderBase
         {

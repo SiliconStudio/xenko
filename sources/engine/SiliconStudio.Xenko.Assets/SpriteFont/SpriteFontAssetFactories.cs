@@ -10,8 +10,10 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             return new SpriteFontAsset
             {
                 FontSource = new SystemFontProvider("Arial"),
-                FontType = SpriteFontType.Static,
-                CharacterRegions = { new CharacterRegion(' ', (char)127) }
+                FontType = new SpriteFontTypeStatic()
+                {
+                    CharacterRegions = { new CharacterRegion(' ', (char)127) }                 
+                },
             };
         }
 
@@ -28,7 +30,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             return new SpriteFontAsset
             {
                 FontSource = new SystemFontProvider("Arial"),
-                FontType = SpriteFontType.Dynamic,
+                FontType = new SpriteFontTypeDynamic(),
             };
         }
 
@@ -45,8 +47,10 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             return new SpriteFontAsset
             {
                 FontSource = new SystemFontProvider("Arial"),
-                FontType = SpriteFontType.SDF,
-                CharacterRegions = { new CharacterRegion(' ', (char)127) }
+                FontType = new SpriteFontTypeSignedDistanceField()
+                {
+                    CharacterRegions = { new CharacterRegion(' ', (char)127) }
+                },
             };
         }
 

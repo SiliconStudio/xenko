@@ -245,6 +245,10 @@
     <Compile Include="SpriteFont\PrecompiledSpriteFontAssetCompiler.cs" />
     <Compile Include="SpriteFont\SpriteFontAssetExtensions.cs" />
     <Compile Include="SpriteFont\SpriteFontAssetFactories.cs" />
+    <Compile Include="SpriteFont\SpriteFontTypeBase.cs" />
+    <Compile Include="SpriteFont\SpriteFontTypeDynamic.cs" />
+    <Compile Include="SpriteFont\SpriteFontTypeSignedDistanceField.cs" />
+    <Compile Include="SpriteFont\SpriteFontTypeStatic.cs" />
     <Compile Include="SpriteFont\SystemFontProvider.cs" />
     <Compile Include="Sprite\SpriteSheetFactories.cs" />
     <Compile Include="Tasks\PackageArchive.cs" />

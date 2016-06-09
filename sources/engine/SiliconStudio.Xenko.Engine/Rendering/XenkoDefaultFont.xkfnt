@@ -7,12 +7,9 @@ FontSource: !SystemFontProvider
     FontName: Courier New
     Style: Bold
 Size: 8.0
-FontType: Dynamic
+FontType: !SpriteFontTypeDynamic
+    ~Id: 7ef50605-4518-4939-984a-62fc8c114c07
 DefaultCharacter: ' '
-CharacterSet: null
-CharacterRegions:
-    -   Start: ' '
-        End: "\x7F"
 AntiAlias: Grayscale
 Spacing: 0.0
 LineSpacing: 0.0
