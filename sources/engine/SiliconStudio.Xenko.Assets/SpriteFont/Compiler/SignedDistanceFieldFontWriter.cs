@@ -91,7 +91,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
         {
             var fontGlyphs = ConvertGlyphs(glyphs);
             var images = new[] { GetImage(options, bitmap) };
-            var sizeInPixels = FontHelper.PointsToPixels(options.Size);
+            var sizeInPixels = FontHelper.PointsToPixels(options.FontType.Size);
 
             return fontFactory.NewScalable(sizeInPixels, fontGlyphs, images, baseLine, lineSpacing, null, options.Spacing, options.LineSpacing, options.DefaultCharacter);
         }

@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             var precompiledAsset = new PrecompiledSpriteFontAsset
             {
                 Glyphs = glyphs,
-                Size = asset.Size,
+                Size = asset.FontType.Size,
                 Style = asset.FontSource.Style,
                 OriginalFont = referenceToSourceFont,
                 FontDataFile = textureFileName,
@@ -94,7 +94,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             var precompiledAsset = new PrecompiledSpriteFontAsset
             {
                 Glyphs = glyphs,
-                Size = asset.Size,
+                Size = asset.FontType.Size,
                 Style = asset.FontSource.Style,
                 OriginalFont = referenceToSourceFont,
                 FontDataFile = textureFileName,

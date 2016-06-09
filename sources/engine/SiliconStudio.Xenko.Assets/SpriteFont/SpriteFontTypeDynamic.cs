@@ -9,6 +9,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     [Display("Runtime Rasterized")]
     public class SpriteFontTypeDynamic : SpriteFontTypeBase
     {
-
+        [DataMemberIgnore]
+        public override float Size { get { return 16.0f; } set { } }
     }
 }

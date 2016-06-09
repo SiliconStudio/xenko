@@ -123,7 +123,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
             var fontMetrics = fontFace.Metrics;
 
             // Create a bunch of GDI+ objects.
-            var fontSize = FontHelper.PointsToPixels(options.Size);
+            var fontSize = FontHelper.PointsToPixels(options.FontType.Size);
 
             var glyphList = new List<Glyph>();
 

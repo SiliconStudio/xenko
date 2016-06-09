@@ -25,7 +25,6 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha09", "1.7.0-beta02", typeof(FontTypeUpgrader))]    
     [Display(140, "Sprite Font")]
     [CategoryOrder(10, "Font")]
-    [CategoryOrder(20, "Characters")]
     [CategoryOrder(30, "Rendering")]
     public class SpriteFontAsset : Asset
     {
@@ -38,17 +37,6 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         [DataMember(10)]
         [Display(null, "Font")]
         public FontProviderBase FontSource { get; set; } = new SystemFontProvider();
-
-        /// <summary>
-        ///  Gets or sets the size in points of the font (ignored when converting a bitmap font).
-        /// </summary>
-        /// <userdoc>
-        /// The size of the font (in points) for static fonts, the default size for dynamic fonts. This property is ignored when the font source is a bitmap.
-        /// </userdoc>
-        [DataMember(30)]
-        [DefaultValue(16.0f)]
-        [Display(null, "Font")]
-        public float Size { get; set; } = 16.0f;
 
         /// <summary>
         ///  Gets or sets the value determining if and how the characters are pre-generated off-line or at run-time.

@@ -13,6 +13,16 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     [Display("Offline Rasterized")]
     public class SpriteFontTypeStatic : SpriteFontTypeBase
     {
+        public SpriteFontTypeStatic()
+        {
+            CharacterRegions = new List<CharacterRegion>() { new CharacterRegion(' ', (char)127) };
+        }
+
+        /// <inheritdoc/>
+        [DataMember(30)]
+        [DefaultValue(16.0f)]
+        public override float Size { get; set; } = 16.0f;
+
         /// <summary>
         ///  Gets or sets the text file referencing which characters to include when generating the static fonts (eg. "ABCDEF...")
         /// </summary>

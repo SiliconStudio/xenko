@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
+using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
@@ -12,6 +13,16 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     [Display("Signed Distance Field")]
     public class SpriteFontTypeSignedDistanceField : SpriteFontTypeBase
     {
+        public SpriteFontTypeSignedDistanceField()
+        {
+            CharacterRegions = new List<CharacterRegion>() { new CharacterRegion(' ', (char)127) };
+        }
+
+        /// <inheritdoc/>
+        [DataMember(30)]
+        [DefaultValue(16.0f)]
+        public override float Size { get; set; } = 16.0f;
+
         /// <summary>
         ///  Gets or sets the text file referencing which characters to include when generating the static fonts (eg. "ABCDEF...")
         /// </summary>
