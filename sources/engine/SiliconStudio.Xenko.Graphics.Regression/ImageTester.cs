@@ -58,6 +58,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                 }
                 catch (Exception)
                 {
+                    // Ignore failures on disconnect
                 }
                 ImageComparisonServer = null;
             }

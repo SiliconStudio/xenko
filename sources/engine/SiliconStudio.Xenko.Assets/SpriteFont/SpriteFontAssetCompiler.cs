@@ -30,7 +30,20 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         {
             var colorSpace = context.GetColorSpace();
 
-            if (asset.IsDynamic)
+            if (asset.FontType == SpriteFontType.SDF)
+            {
+                // TODO Build scalable (SDF) font texture
+
+                // copy the asset and transform the source and character set file path to absolute paths
+                var assetClone = (SpriteFontAsset)AssetCloner.Clone(asset);
+                var assetDirectory = assetAbsolutePath.GetParent();
+                assetClone.Source = !string.IsNullOrEmpty(asset.Source) ? UPath.Combine(assetDirectory, asset.Source) : null;
+                assetClone.CharacterSet = !string.IsNullOrEmpty(asset.CharacterSet) ? UPath.Combine(assetDirectory, asset.CharacterSet) : null;
+
+                result.BuildSteps = new AssetBuildStep(AssetItem) { new SignedDistanceFieldFontCommand(urlInStorage, assetClone) };
+            }
+            else
+            if (asset.FontType == SpriteFontType.Dynamic)
             {
                 UFile fontPathOnDisk;
 
@@ -121,6 +134,60 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
                 // dispose textures allocated by the StaticFontCompiler
                 foreach (var texture in staticFont.Textures)
+                    texture.Dispose();
+
+                return Task.FromResult(ResultStatus.Successful);
+            }
+        }
+
+        /// <summary>
+        /// Scalable (SDF) font build step
+        /// </summary>
+        internal class SignedDistanceFieldFontCommand : AssetCommand<SpriteFontAsset>
+        {
+            public SignedDistanceFieldFontCommand(string url, SpriteFontAsset description)
+                : base(url, description)
+            {
+            }
+
+            protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
+            {
+                if (File.Exists(AssetParameters.CharacterSet))
+                    yield return new ObjectUrl(UrlType.File, AssetParameters.CharacterSet);
+            }
+
+            protected override void ComputeParameterHash(BinarySerializationWriter writer)
+            {
+                base.ComputeParameterHash(writer);
+
+                // TODO Add parameter hash codes here
+                // writer.Write(colorspace);
+            }
+
+            protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
+            {
+                // try to import the font from the original bitmap or ttf file
+                Graphics.SpriteFont scalableFont;
+                try
+                {
+                    scalableFont = SignedDistanceFieldFontCompiler.Compile(FontDataFactory, AssetParameters);
+                }
+                catch (FontNotFoundException ex)
+                {
+                    commandContext.Logger.Error("Font [{0}] was not found on this machine.", ex.FontName);
+                    return Task.FromResult(ResultStatus.Failed);
+                }
+
+                // check that the font data is valid
+                if (scalableFont == null || scalableFont.Textures.Count == 0)
+                    return Task.FromResult(ResultStatus.Failed);
+
+                // save the data into the database
+                var assetManager = new ContentManager();
+                assetManager.Save(Url, scalableFont);
+
+                // dispose textures allocated by the StaticFontCompiler
+                foreach (var texture in scalableFont.Textures)
                     texture.Dispose();
 
                 return Task.FromResult(ResultStatus.Successful);

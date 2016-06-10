@@ -595,9 +595,9 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                         if (stageMethodList == null || stageMethodList.Count == 0)
                             continue;
 
-                        var firstOccurence = stageMethodList.First();
-                        var occurrenceMixin = firstOccurence.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
-                        var listVTReference = occurrenceMixin.VirtualTable.GetBaseDeclaration(firstOccurence);
+                        var firstOccurrence = stageMethodList.First();
+                        var occurrenceMixin = firstOccurrence.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
+                        var listVTReference = occurrenceMixin.VirtualTable.GetBaseDeclaration(firstOccurrence);
 
                         if (vtReference.Slot != listVTReference.Slot || vtReference.Shader != listVTReference.Shader)
                             continue;
@@ -705,9 +705,9 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 if (stageMethodList == null || stageMethodList.Count == 0)
                     continue;
 
-                var firstOccurence = stageMethodList.First();
-                var occurrenceMixin = firstOccurence.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
-                var listVTReference = occurrenceMixin.VirtualTable.GetBaseDeclaration(firstOccurence);
+                var firstOccurrence = stageMethodList.First();
+                var occurrenceMixin = firstOccurrence.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
+                var listVTReference = occurrenceMixin.VirtualTable.GetBaseDeclaration(firstOccurrence);
 
                 if (vtReference.Slot != listVTReference.Slot || vtReference.Shader != listVTReference.Shader)
                     continue;
@@ -747,9 +747,9 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 if (stageMethodList == null || stageMethodList.Count == 0)
                     continue;
 
-                var firstOccurence = stageMethodList.First();
-                var occurrenceMixin = firstOccurence.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
-                var listVTReference = occurrenceMixin.VirtualTable.GetBaseDeclaration(firstOccurence);
+                var firstOccurrence = stageMethodList.First();
+                var occurrenceMixin = firstOccurrence.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
+                var listVTReference = occurrenceMixin.VirtualTable.GetBaseDeclaration(firstOccurrence);
 
                 if (vtReference.Slot != listVTReference.Slot || vtReference.Shader != listVTReference.Shader)
                     continue;

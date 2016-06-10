@@ -9,6 +9,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Font;
 
 namespace SiliconStudio.Xenko.Assets.SpriteFont
@@ -19,8 +20,9 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     [DataContract("SpriteFont")]
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(SpriteFontAssetCompiler))]
-    [AssetFormatVersion(XenkoConfig.PackageName, "1.5.0-alpha09")]
+    [AssetFormatVersion(XenkoConfig.PackageName, "1.7.0-beta02")]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.5.0-alpha09", typeof(PremultiplyUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha09", "1.7.0-beta02", typeof(FontTypeUpgrader))]    
     [Display(140, "Sprite Font")]
     [CategoryOrder(10, "Font")]
     [CategoryOrder(20, "Characters")]
@@ -76,15 +78,16 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         public FontStyle Style { get; set; } = FontStyle.Regular;
 
         /// <summary>
-        ///  Gets or sets the value determining if the characters are pre-generated off-line or at run-time.
+        ///  Gets or sets the value determining if and how the characters are pre-generated off-line or at run-time.
         /// </summary>
         /// <userdoc>
-        /// If checked, the font textures are generated at execution time. If not, at project build time.
-        /// Note that it is not possible to resize at execution time a font that is not dynamic.
+        /// Static font has fixed font size and is pre-compiled
+        /// Dynamic font which can change its font size at runtime and is also compiled at runtime
+        /// Signed Distance Field font is pre-compiled but can still be scaled at runtime
         /// </userdoc>
         [DataMember(50)]
         [Display(null, "Font")]
-        public bool IsDynamic { get; set; }
+        public SpriteFontType FontType { get; set; } = SpriteFontType.Static;
 
         /// <summary>
         /// Gets or sets the fallback character used when asked to render a character that is not
@@ -236,6 +239,24 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                     asset.IsNotPremultiply = DynamicYamlEmpty.Default;
                 }
             }
+        }
+
+        class FontTypeUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile,
+                OverrideUpgraderHint overrideHint)
+            {
+                if (asset.IsDynamic != null)
+                {
+                    var isDynamic = (bool)asset.IsDynamic;
+
+                    // There is also SDF type, but old assets don't have it yet
+                    asset.AddChild("FontType", isDynamic ? "Dynamic" : "Static");
+
+                    asset.RemoveChild("IsDynamic");
+                }
+            }
+
         }
     }
 }

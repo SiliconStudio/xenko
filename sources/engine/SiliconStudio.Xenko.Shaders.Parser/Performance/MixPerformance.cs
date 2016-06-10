@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Performance
         private static Stopwatch CreateReferencesStructures = new Stopwatch();
         private static Stopwatch RegenKeys = new Stopwatch();
         private static Stopwatch BuildMixinInheritance = new Stopwatch();
-        private static Stopwatch ComputeMixinOccurence = new Stopwatch();
+        private static Stopwatch ComputeMixinOccurrence = new Stopwatch();
         private static Stopwatch BuildStageInheritance = new Stopwatch();
         private static Stopwatch LinkVariables = new Stopwatch();
         private static Stopwatch ProcessExterns = new Stopwatch();
@@ -41,8 +41,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Performance
                 case MixStage.BuildMixinInheritance:
                     BuildMixinInheritance.Start();
                     break;
-                case MixStage.ComputeMixinOccurence:
-                    ComputeMixinOccurence.Start();
+                case MixStage.ComputeMixinOccurrence:
+                    ComputeMixinOccurrence.Start();
                     break;
                 case MixStage.BuildStageInheritance:
                     BuildStageInheritance.Start();
@@ -90,8 +90,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Performance
                 case MixStage.BuildMixinInheritance:
                     BuildMixinInheritance.Stop();
                     break;
-                case MixStage.ComputeMixinOccurence:
-                    ComputeMixinOccurence.Stop();
+                case MixStage.ComputeMixinOccurrence:
+                    ComputeMixinOccurrence.Stop();
                     break;
                 case MixStage.BuildStageInheritance:
                     BuildStageInheritance.Stop();
@@ -127,7 +127,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Performance
             CreateReferencesStructures.Reset();
             RegenKeys.Reset();
             BuildMixinInheritance.Reset();
-            ComputeMixinOccurence.Reset();
+            ComputeMixinOccurrence.Reset();
             BuildStageInheritance.Reset();
             LinkVariables.Reset();
             ProcessExterns.Reset();
@@ -147,7 +147,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Performance
             Console.WriteLine(@"CreateReferencesStructures took {0} ms", CreateReferencesStructures.ElapsedMilliseconds);
             Console.WriteLine(@"RegenKeys took {0} ms", RegenKeys.ElapsedMilliseconds);
             Console.WriteLine(@"BuildMixinInheritance took {0} ms", BuildMixinInheritance.ElapsedMilliseconds);
-            Console.WriteLine(@"ComputeMixinOccurence took {0} ms", ComputeMixinOccurence.ElapsedMilliseconds);
+            Console.WriteLine(@"ComputeMixinOccurrence took {0} ms", ComputeMixinOccurrence.ElapsedMilliseconds);
             Console.WriteLine(@"BuildStageInheritance took {0} ms", BuildStageInheritance.ElapsedMilliseconds);
             Console.WriteLine(@"LinkVariables took {0} ms", LinkVariables.ElapsedMilliseconds);
             Console.WriteLine(@"ProcessExterns took {0} ms", ProcessExterns.ElapsedMilliseconds);
@@ -168,7 +168,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Performance
         CreateReferencesStructures,
         RegenKeys,
         BuildMixinInheritance,
-        ComputeMixinOccurence,
+        ComputeMixinOccurrence,
         BuildStageInheritance,
         LinkVariables,
         ProcessExterns,

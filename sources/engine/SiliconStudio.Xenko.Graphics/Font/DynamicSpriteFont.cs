@@ -89,7 +89,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
 
         public DynamicSpriteFont()
         {
-            IsDynamic = true;
+            FontType = SpriteFontType.Dynamic;
         }
 
         public override bool IsCharPresent(char c)

@@ -148,8 +148,11 @@
     <Compile Include="BufferPool.cs" />
     <Compile Include="BufferPoolAllocationResult.cs" />
     <Compile Include="CommandList.cs" />
+    <Compile Include="Font\SignedDistanceFieldSpriteFont.cs" />
     <Compile Include="OpenGL\GraphicsResource.OpenGL.cs" />
+    <Compile Include="Font\SignedDistanceFieldSpriteFontContentSerializer.cs" />
     <Compile Include="OpenGL\MappedResource.OpenGL.cs" />
+    <Compile Include="Font\SignedDistanceFieldSpriteFontSerializer.cs" />
     <Compile Include="RenderingSettings.cs" />
     <Compile Include="Data\TextureContentSerializer.cs" />
     <Compile Include="DescriptorPool.cs" />
@@ -223,6 +226,14 @@
     <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.OpenGL.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.OpenGLES.Level_9_1.cs" />
+    <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.Extensions.cs" />
+    <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.Direct3D11.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.OpenGL.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.OpenGLES.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.Extensions.cs" />
+    <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.Direct3D11.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.OpenGL.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.OpenGLES.Level_9_3.cs" />
     <Compile Include="Shaders\BackgroundEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -234,6 +245,24 @@
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Shaders\SignedDistanceFieldFontShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SignedDistanceFieldFontShader.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Shaders\SignedDistanceFieldFont.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SignedDistanceFieldFont.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Shaders\SpriteSignedDistanceFieldFontShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SpriteSignedDistanceFieldFontShader.xksl</DependentUpon>
     </Compile>
     <Compile Include="Shaders\UIEffect.cs">
       <DependentUpon>UIEffect.xkfx</DependentUpon>
@@ -254,6 +283,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="SpriteFontType.cs" />
     <Compile Include="VertexHelper.cs" />
     <Compile Include="Font\FontAntiAliasMode.cs" />
     <Compile Include="Font\FontStyleExtensions.cs" />
@@ -568,6 +598,18 @@
     <None Include="Shaders\BackgroundEffect.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>BackgroundEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\SignedDistanceFieldFontShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SignedDistanceFieldFontShader.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\SignedDistanceFieldFont.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SignedDistanceFieldFont.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\SpriteSignedDistanceFieldFontShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SpriteSignedDistanceFieldFontShader.cs</LastGenOutput>
     </None>
     <None Include="Shaders\UIEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>

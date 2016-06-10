@@ -109,6 +109,8 @@ namespace SiliconStudio.Xenko.Graphics
         internal bool HasDepth24;
         internal bool HasPackedDepthStencilExtension;
         internal bool HasExtTextureFormatBGRA8888;
+        internal bool HasTextureFloat;
+        internal bool HasTextureHalf;
         internal bool HasRenderTargetFloat;
         internal bool HasRenderTargetHalf;
         internal bool HasTextureRG;
@@ -341,7 +343,14 @@ namespace SiliconStudio.Xenko.Graphics
 
         private int CreateCopyProgram(bool srgb, out int offsetLocation, out int scaleLocation)
         {
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+            const string shaderVersion = "#version 100\n";
+#else
+            const string shaderVersion = "#version 410\n";
+#endif
+
             const string copyVertexShaderSource =
+                shaderVersion +
                 "attribute vec2 aPosition;   \n" +
                 "varying vec2 vTexCoord;     \n" +
                 "uniform vec4 uScale;     \n" +
@@ -354,6 +363,7 @@ namespace SiliconStudio.Xenko.Graphics
                 "}                           \n";
 
             const string copyFragmentShaderSource =
+                shaderVersion +
                 "precision mediump float;                            \n" +
                 "varying vec2 vTexCoord;                             \n" +
                 "uniform sampler2D s_texture;                        \n" +
@@ -363,6 +373,7 @@ namespace SiliconStudio.Xenko.Graphics
                 "}                                                   \n";
 
             const string copyFragmentShaderSourceSRgb =
+                shaderVersion +
                 "precision mediump float;                            \n" +
                 "varying vec2 vTexCoord;                             \n" +
                 "uniform sampler2D s_texture;                        \n" +
