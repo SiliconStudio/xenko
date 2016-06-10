@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// </userdoc>
         [DataMember(40)]
         [Display("Style")]
-        public SiliconStudio.Xenko.Graphics.Font.FontStyle Style { get; set; } = Graphics.Font.FontStyle.Regular;
+        public override SiliconStudio.Xenko.Graphics.Font.FontStyle Style { get; set; } = Graphics.Font.FontStyle.Regular;
 
         /// <inheritdoc/>
         public override FontFace GetFontFace()
