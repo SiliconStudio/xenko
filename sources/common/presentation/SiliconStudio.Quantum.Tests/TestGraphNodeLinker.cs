@@ -1,5 +1,8 @@
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
+using SiliconStudio.Quantum.Contents;
+using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum.Tests
 {
@@ -76,6 +79,45 @@ namespace SiliconStudio.Quantum.Tests
             }
         }
 
+        public class CustomFindTargetLinker : TestLinker
+        {
+            private readonly IGraphNode root;
+
+            public CustomFindTargetLinker(NodeContainer container, IGraphNode root)
+            {
+                this.root = root;
+                CustomTarget = container.GetOrCreateNode(new SimpleClass());
+            }
+
+            public IGraphNode CustomTarget { get; }
+
+            protected override IGraphNode FindTarget(IGraphNode sourceNode)
+            {
+                if (sourceNode.Content is ObjectContent && sourceNode.Content.Type == typeof(SimpleClass) && sourceNode != root)
+                {
+                    return CustomTarget;
+                }
+                return base.FindTarget(sourceNode);
+            }
+        }
+
+        public class CustomFindTargetReferenceLinker : TestLinker
+        {
+            protected override ObjectReference FindTargetReference(IGraphNode sourceNode, IGraphNode targetNode, ObjectReference sourceReference)
+            {
+                if (sourceReference.Index.IsEmpty)
+                    return base.FindTargetReference(sourceNode, targetNode, sourceReference);
+
+                var matchValue = 0;
+                if (sourceReference.TargetNode != null)
+                    matchValue = (int)sourceReference.TargetNode.GetChild(nameof(SimpleClass.Member1)).Content.Value;
+
+                var targetReference = targetNode.Content.Reference as ReferenceEnumerable;
+                return targetReference?.FirstOrDefault(x => (int)x.TargetNode.GetChild(nameof(SimpleClass.Member1)).Content.Value == matchValue);
+
+            }
+        }
+
         [Test]
         public void TestSimpleObject()
         {
@@ -86,7 +128,7 @@ namespace SiliconStudio.Quantum.Tests
             var target = nodeContainer.GetOrCreateNode(instance2);
             var linker = new TestLinker();
             linker.LinkGraph(source, target);
-            var expectedLinks =  new Dictionary < IGraphNode, IGraphNode>
+            var expectedLinks = new Dictionary<IGraphNode, IGraphNode>
             {
                 { source, target },
                 { source.GetChild(nameof(SimpleClass.Member1)), target.GetChild(nameof(SimpleClass.Member1)) },
@@ -94,6 +136,31 @@ namespace SiliconStudio.Quantum.Tests
                 { source.GetChild(nameof(SimpleClass.Member2)).GetTarget(), target.GetChild(nameof(SimpleClass.Member2)).GetTarget() },
                 { source.GetChild(nameof(SimpleClass.Member2)).GetTarget().GetChild(nameof(SimpleClass.Member1)), target.GetChild(nameof(SimpleClass.Member2)).GetTarget().GetChild(nameof(SimpleClass.Member1)) },
                 { source.GetChild(nameof(SimpleClass.Member2)).GetTarget().GetChild(nameof(SimpleClass.Member2)), target.GetChild(nameof(SimpleClass.Member2)).GetTarget().GetChild(nameof(SimpleClass.Member2)) },
+            };
+            VerifyLinks(expectedLinks, linker);
+        }
+
+        [Test]
+        public void TestObjectWithListOfReferences()
+        {
+            var nodeContainer = new NodeContainer();
+            var instance1 = new ObjectListClass { Member1 = 3, Member2 = new List<SimpleClass> { new SimpleClass(), new SimpleClass() } };
+            var instance2 = new ObjectListClass { Member1 = 3, Member2 = new List<SimpleClass> { new SimpleClass(), new SimpleClass() } };
+            var source = nodeContainer.GetOrCreateNode(instance1);
+            var target = nodeContainer.GetOrCreateNode(instance2);
+            var linker = new TestLinker();
+            linker.LinkGraph(source, target);
+            var expectedLinks = new Dictionary<IGraphNode, IGraphNode>
+            {
+                { source, target },
+                { source.GetChild(nameof(SimpleClass.Member1)), target.GetChild(nameof(SimpleClass.Member1)) },
+                { source.GetChild(nameof(SimpleClass.Member2)), target.GetChild(nameof(SimpleClass.Member2)) },
+                { source.GetChild(nameof(SimpleClass.Member2)).GetTarget(new Index(0)), target.GetChild(nameof(SimpleClass.Member2)).GetTarget(new Index(0)) },
+                { source.GetChild(nameof(SimpleClass.Member2)).GetTarget(new Index(0)).GetChild(nameof(SimpleClass.Member1)), target.GetChild(nameof(SimpleClass.Member2)).GetTarget(new Index(0)).GetChild(nameof(SimpleClass.Member1)) },
+                { source.GetChild(nameof(SimpleClass.Member2)).GetTarget(new Index(0)).GetChild(nameof(SimpleClass.Member2)), target.GetChild(nameof(SimpleClass.Member2)).GetTarget(new Index(0)).GetChild(nameof(SimpleClass.Member2)) },
+                { source.GetChild(nameof(SimpleClass.Member2)).GetTarget(new Index(1)), target.GetChild(nameof(SimpleClass.Member2)).GetTarget(new Index(1)) },
+                { source.GetChild(nameof(SimpleClass.Member2)).GetTarget(new Index(1)).GetChild(nameof(SimpleClass.Member1)), target.GetChild(nameof(SimpleClass.Member2)).GetTarget(new Index(1)).GetChild(nameof(SimpleClass.Member1)) },
+                { source.GetChild(nameof(SimpleClass.Member2)).GetTarget(new Index(1)).GetChild(nameof(SimpleClass.Member2)), target.GetChild(nameof(SimpleClass.Member2)).GetTarget(new Index(1)).GetChild(nameof(SimpleClass.Member2)) },
             };
             VerifyLinks(expectedLinks, linker);
         }
@@ -168,6 +235,58 @@ namespace SiliconStudio.Quantum.Tests
             };
             VerifyLinks(expectedLinks, linker);
         }
+
+        [Test]
+        public void TestCustomFindTarget()
+        {
+            var nodeContainer = new NodeContainer();
+            var instance1 = new SimpleClass { Member1 = 3, Member2 = new SimpleClass() };
+            var instance2 = new SimpleClass { Member1 = 4, Member2 = new SimpleClass() };
+            var source = nodeContainer.GetOrCreateNode(instance1);
+            var target = nodeContainer.GetOrCreateNode(instance2);
+            var linker = new CustomFindTargetLinker(nodeContainer, source);
+            linker.LinkGraph(source, target);
+            var expectedLinks = new Dictionary<IGraphNode, IGraphNode>
+            {
+                { source, target },
+                { source.GetChild(nameof(SimpleClass.Member1)), target.GetChild(nameof(SimpleClass.Member1)) },
+                { source.GetChild(nameof(SimpleClass.Member2)), target.GetChild(nameof(SimpleClass.Member2)) },
+                { source.GetChild(nameof(SimpleClass.Member2)).GetTarget(), linker.CustomTarget },
+                { source.GetChild(nameof(SimpleClass.Member2)).GetTarget().GetChild(nameof(SimpleClass.Member1)), linker.CustomTarget.GetChild(nameof(SimpleClass.Member1)) },
+                { source.GetChild(nameof(SimpleClass.Member2)).GetTarget().GetChild(nameof(SimpleClass.Member2)), linker.CustomTarget.GetChild(nameof(SimpleClass.Member2)) },
+            };
+            VerifyLinks(expectedLinks, linker);
+        }
+
+        [Test]
+        public void TestCustomFindTargetReference()
+        {
+            var nodeContainer = new NodeContainer();
+            var instance1 = new ObjectListClass { Member1 = 3, Member2 = new List<SimpleClass> { new SimpleClass { Member1 = 1 }, new SimpleClass { Member1 = 2 }, new SimpleClass { Member1 = 3 } } };
+            var instance2 = new ObjectListClass { Member1 = 3, Member2 = new List<SimpleClass> { new SimpleClass { Member1 = 2 }, new SimpleClass { Member1 = 4 }, new SimpleClass { Member1 = 1 } } };
+            var source = nodeContainer.GetOrCreateNode(instance1);
+            var target = nodeContainer.GetOrCreateNode(instance2);
+            var linker = new CustomFindTargetReferenceLinker();
+            linker.LinkGraph(source, target);
+            // Expected links by index: 0 -> 2, 1 -> 0, 2 -> null
+            var expectedLinks = new Dictionary<IGraphNode, IGraphNode>
+            {
+                { source, target },
+                { source.GetChild(nameof(SimpleClass.Member1)), target.GetChild(nameof(SimpleClass.Member1)) },
+                { source.GetChild(nameof(SimpleClass.Member2)), target.GetChild(nameof(SimpleClass.Member2)) },
+                { source.GetChild(nameof(SimpleClass.Member2)).GetTarget(new Index(0)), target.GetChild(nameof(SimpleClass.Member2)).GetTarget(new Index(2)) },
+                { source.GetChild(nameof(SimpleClass.Member2)).GetTarget(new Index(0)).GetChild(nameof(SimpleClass.Member1)), target.GetChild(nameof(SimpleClass.Member2)).GetTarget(new Index(2)).GetChild(nameof(SimpleClass.Member1)) },
+                { source.GetChild(nameof(SimpleClass.Member2)).GetTarget(new Index(0)).GetChild(nameof(SimpleClass.Member2)), target.GetChild(nameof(SimpleClass.Member2)).GetTarget(new Index(2)).GetChild(nameof(SimpleClass.Member2)) },
+                { source.GetChild(nameof(SimpleClass.Member2)).GetTarget(new Index(1)), target.GetChild(nameof(SimpleClass.Member2)).GetTarget(new Index(0)) },
+                { source.GetChild(nameof(SimpleClass.Member2)).GetTarget(new Index(1)).GetChild(nameof(SimpleClass.Member1)), target.GetChild(nameof(SimpleClass.Member2)).GetTarget(new Index(0)).GetChild(nameof(SimpleClass.Member1)) },
+                { source.GetChild(nameof(SimpleClass.Member2)).GetTarget(new Index(1)).GetChild(nameof(SimpleClass.Member2)), target.GetChild(nameof(SimpleClass.Member2)).GetTarget(new Index(0)).GetChild(nameof(SimpleClass.Member2)) },
+                { source.GetChild(nameof(SimpleClass.Member2)).GetTarget(new Index(2)), null },
+                { source.GetChild(nameof(SimpleClass.Member2)).GetTarget(new Index(2)).GetChild(nameof(SimpleClass.Member1)), null },
+                { source.GetChild(nameof(SimpleClass.Member2)).GetTarget(new Index(2)).GetChild(nameof(SimpleClass.Member2)), null },
+            };
+            VerifyLinks(expectedLinks, linker);
+        }
+
 
         private static void VerifyLinks(Dictionary<IGraphNode, IGraphNode> expectedLinks, TestLinker linker)
         {

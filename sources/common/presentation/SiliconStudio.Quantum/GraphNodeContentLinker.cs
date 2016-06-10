@@ -26,6 +26,8 @@ namespace SiliconStudio.Quantum
             public override void VisitNode(IGraphNode node, GraphNodePath currentPath)
             {
                 var targetNode = linker.FindTarget(node);
+                // Override the target node, in case FindTarget returned a different one.
+                VisitedLinks[node] = targetNode;
                 linker.LinkNodes(node, targetNode);
                 base.VisitNode(node, currentPath);
             }
@@ -33,11 +35,11 @@ namespace SiliconStudio.Quantum
             public override void VisitChildren(IGraphNode node, GraphNodePath currentPath)
             {
                 IGraphNode targetNodeParent;
-                if (VisitedLinks.TryGetValue(node, out targetNodeParent) && targetNodeParent != null)
+                if (VisitedLinks.TryGetValue(node, out targetNodeParent))
                 {
                     foreach (var child in node.Children)
                     {
-                        VisitedLinks.Add(child, targetNodeParent.GetChild(child.Name));
+                        VisitedLinks.Add(child, targetNodeParent?.GetChild(child.Name));
                     }
                 }
                 base.VisitChildren(node, currentPath);
@@ -48,9 +50,12 @@ namespace SiliconStudio.Quantum
                 if (reference.TargetNode != null)
                 {
                     IGraphNode targetNode;
-                    if (VisitedLinks.TryGetValue(referencer, out targetNode) && targetNode != null)
+                    if (VisitedLinks.TryGetValue(referencer, out targetNode))
                     {
-                        var targetReference = linker.FindTargetReference(referencer, targetNode, reference);
+                        ObjectReference targetReference = null;
+                        if (targetNode != null)
+                            targetReference = linker.FindTargetReference(referencer, targetNode, reference);
+
                         VisitedLinks.Add(reference.TargetNode, targetReference?.TargetNode);
                     }
                 }
@@ -65,6 +70,8 @@ namespace SiliconStudio.Quantum
             visitor = new GraphNodeLinkerVisitor(this);
         }
 
+        public Action<IGraphNode, IGraphNode> LinkAction;
+
         public void LinkGraph(IGraphNode sourceNode, IGraphNode targetNode)
         {
             visitor.Reset(sourceNode, targetNode);
@@ -73,7 +80,7 @@ namespace SiliconStudio.Quantum
 
         protected virtual void LinkNodes(IGraphNode sourceNode, IGraphNode targetNode)
         {
-            // Do nothing by default
+            LinkAction?.Invoke(sourceNode, targetNode);
         }
 
         protected virtual ObjectReference FindTargetReference(IGraphNode sourceNode, IGraphNode targetNode, ObjectReference sourceReference)
