@@ -2,9 +2,9 @@
 // This file is distributed under MIT License. See LICENSE.md for details.
 namespace SiliconStudio.Core.Mathematics
 {
-/// <summary>
-/// List of predefined <see cref="Color" />.
-/// </summary>
+    /// <summary>
+    /// List of predefined <see cref="Color" />.
+    /// </summary>
     public partial struct Color
     {
         /// <summary>
