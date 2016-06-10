@@ -117,18 +117,8 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 
         static Graphics.Image GetImage(SpriteFontAsset options, Bitmap bitmap, bool srgb)
         {
-            switch (options.Format)
-            {
-                //case FontTextureFormat.Auto:
-                case FontTextureFormat.Rgba32:
-                    return GetImageRgba32(bitmap, srgb);
-             
-                //case FontTextureFormat.CompressedMono:
-                //    return GetCompressedMono(bitmap, options);
-                
-                default:
-                    throw new NotSupportedException();
-            }
+            // TODO Currently we only support Rgba32 as an option. Grayscale might be added later
+            return GetImageRgba32(bitmap, srgb);
         }
 
 

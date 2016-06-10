@@ -62,20 +62,9 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// The fallback character to use when a given character is not available in the font file data.
         /// </userdoc>
         [DataMember(60)]
+        [DefaultValue(' ')]
         [Display(null, "Font")]
         public char DefaultCharacter { get; set; } = ' ';
-
-
-        /// <summary>
-        /// Gets or sets format of the texture used to render the font.
-        /// </summary>
-        /// <userdoc>
-        /// The format of the texture used to render the Font. This property is currently ignored for dynamic fonts.
-        /// </userdoc>
-        [DataMember(100)]
-        [DefaultValue(FontTextureFormat.Rgba32)]
-        [Display(null, "Rendering")]
-        public FontTextureFormat Format { get; set; } = FontTextureFormat.Rgba32;
 
         /// <summary>
         /// Gets or sets the font anti-aliasing mode. By default, levels of grays are used.
@@ -84,6 +73,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// The type of anti-aliasing to use when rendering the font. 
         /// </userdoc>
         [DataMember(110)]
+        [DefaultValue(FontAntiAliasMode.Default)]
         [Display(null, "Rendering")]
         public FontAntiAliasMode AntiAlias { get; set; } = FontAntiAliasMode.Default;
 
