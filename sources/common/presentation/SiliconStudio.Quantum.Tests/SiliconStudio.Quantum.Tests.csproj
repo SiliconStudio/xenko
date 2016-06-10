@@ -32,6 +32,7 @@
     <Compile Include="Module.cs" />
     <Compile Include="Obsolete\ObsoleteTestDictionaries.cs" />
     <Compile Include="Obsolete\ObsoleteTestLists.cs" />
+    <Compile Include="TestGraphNodeChangeListener.cs" />
     <Compile Include="TestGraphNodeLinker.cs" />
     <Compile Include="TestGraphNodePath.cs" />
     <Compile Include="TestGraphVisitor.cs" />
