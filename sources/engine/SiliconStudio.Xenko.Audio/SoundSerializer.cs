@@ -6,12 +6,7 @@ using SiliconStudio.Xenko.Native;
 
 namespace SiliconStudio.Xenko.Audio
 {
-    public interface IAudioEngineProvider
-    {
-        AudioEngine AudioEngine { get; }
-    }
-
-    public class SoundBaseSerializer : DataSerializer<Sound>
+    public class SoundSerializer : DataSerializer<Sound>
     {
         public override void Serialize(ref Sound obj, ArchiveMode mode, SerializationStream stream)
         {
@@ -36,7 +31,9 @@ namespace SiliconStudio.Xenko.Audio
                         var reader = new BinarySerializationReader(soundStream);
                         var samplesPerPacket = CompressedSoundSource.SamplesPerFrame*obj.Channels;
 
-                        obj.PreloadedData = new UnmanagedArray<short>(samplesPerPacket*obj.NumberOfPackets);
+                        obj.PreloadedBuffer = OpenAl.AudioCreateBuffer();
+
+                        var memory = new UnmanagedArray<short>(samplesPerPacket*obj.NumberOfPackets);
 
                         var offset = 0;
                         var outputBuffer = new short[samplesPerPacket];
@@ -45,9 +42,12 @@ namespace SiliconStudio.Xenko.Audio
                             var len = reader.ReadInt16();
                             var compressedBuffer = reader.ReadBytes(len);
                             var samplesDecoded = decoder.Decode(compressedBuffer, len, outputBuffer);
-                            obj.PreloadedData.Write(outputBuffer, offset, 0, samplesDecoded*obj.Channels);
+                            memory.Write(outputBuffer, offset, 0, samplesDecoded*obj.Channels);
                             offset += samplesDecoded*obj.Channels*sizeof(short);
                         }
+
+                        OpenAl.AudioFillBuffer(obj.PreloadedBuffer, memory.Pointer, memory.Length * sizeof(short), obj.SampleRate, obj.Channels == 1);
+                        memory.Dispose();
                     }
                 }
 

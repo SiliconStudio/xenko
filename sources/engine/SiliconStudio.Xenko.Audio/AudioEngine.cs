@@ -15,14 +15,18 @@ namespace SiliconStudio.Xenko.Audio
     /// In current version, the audio engine necessarily creates its context on the default audio hardware of the device.
     /// The audio engine is required when creating or loading sounds.
     /// </summary>
-    /// <remarks>The AudioEngine is Disposable. Call the <see cref="ComponentBase.Dispose"/> function when you do not need to play sounds anymore to free memory allocated to the audio system. 
-    /// A call to Dispose automatically stops and disposes all the <see cref="SoundEffect"/>, <see cref="SoundEffectInstance"/> and <see cref="DynamicSoundEffectInstance"/> 
-    /// sounds created by this AudioEngine</remarks>
-    /// <seealso cref="SoundEffect.Load"/>
-    /// <seealso cref="SoundMusic.Load"/>
-    /// <seealso cref="DynamicSoundEffectInstance"/>
-    public abstract class AudioEngine : ComponentBase
+    /// <remarks/>The AudioEngine is Disposable. Call the <see cref="ComponentBase.Dispose"/> function when you do not need to play sounds anymore to free memory allocated to the audio system. 
+    /// A call to Dispose automatically stops and disposes all the <see cref="Sound"/>, <see cref="SoundInstance"/>
+    public class AudioEngine : ComponentBase
     {
+        static AudioEngine()
+        {
+            if (!Native.OpenAl.InitOpenAL())
+            {
+                throw new Exception("Failed to initialize the OpenAL native layer.");
+            }
+        }
+
         /// <summary>
         /// The logger of the audio engine.
         /// </summary>
@@ -33,8 +37,8 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         /// <param name="sampleRate">The desired sample rate of the audio graph. 0 let the engine choose the best value depending on the hardware.</param>
         /// <exception cref="AudioInitializationException">Initialization of the audio engine failed. May be due to memory problems or missing audio hardware.</exception>
-        protected AudioEngine(uint sampleRate = 0)
-            : this(null, sampleRate)
+        public AudioEngine(uint sampleRate = 0)
+            : this(new AudioDevice(), sampleRate)
         {
         }
 
@@ -45,27 +49,29 @@ namespace SiliconStudio.Xenko.Audio
         /// <param name="sampleRate">The desired sample rate of the audio graph. 0 let the engine choose the best value depending on the hardware.</param>
         /// <remarks>Available devices can be queried by calling static method <see cref="GetAvailableDevices"/></remarks>
         /// <exception cref="AudioInitializationException">Initialization of the audio engine failed. May be due to memory problems or missing audio hardware.</exception>
-        private AudioEngine(AudioDevice device, uint sampleRate = 0)
+        public AudioEngine(AudioDevice device, uint sampleRate = 0)
         {
-            if (device != null)
-                throw new NotImplementedException();
-
             State = AudioEngineState.Running;
 
             AudioSampleRate = sampleRate;
 
             InitializeAudioEngine(device);
-
-            ++NbOfAudioEngineInstances;
         }
 
-        #region Audio Engine Platform specific
+        private IntPtr audioDevice;
 
         /// <summary>
         /// Initialize audio engine for <paramref name="device"/>.
         /// </summary>
         /// <param name="device">Device to use for initialization</param>
-        internal abstract void InitializeAudioEngine(AudioDevice device);
+        internal void InitializeAudioEngine(AudioDevice device)
+        {
+            audioDevice = Native.OpenAl.AudioCreate(device.Name == "default" ? null : device.Name);
+            if (audioDevice == IntPtr.Zero)
+            {
+                throw new Exception("Failed to open audio device!");
+            }
+        }
 
         /// <summary>
         /// Platform specific implementation of <see cref="PauseAudio"/>.
@@ -82,12 +88,14 @@ namespace SiliconStudio.Xenko.Audio
         /// <summary>
         /// Platform specifc implementation of <see cref="Destroy"/>.
         /// </summary>
-        internal abstract void DestroyAudioEngine();
-
-        #endregion
-            
-        protected static int NbOfAudioEngineInstances;
-
+        internal void DestroyAudioEngine()
+        {
+            if (audioDevice != IntPtr.Zero)
+            {
+                Native.OpenAl.AudioDestroy(audioDevice);
+            }
+        }
+        
         /// <summary>
         /// The list of the sounds that have been paused by the call to <see cref="PauseAudio"/> and should be resumed by <see cref="ResumeAudio"/>.
         /// </summary>
@@ -161,39 +169,6 @@ namespace SiliconStudio.Xenko.Audio
         }
 
         /// <summary>
-        /// Return the <see cref="SoundEffect"/> evaluated as having least impact onto the final audio output among all the non stopped <see cref="SoundEffect"/>.
-        /// </summary>
-        /// <returns>An instance of <see cref="SoundEffect"/> currently playing or paused, or null if no candidate</returns>
-        public Sound GetLeastSignificativeSound()
-        {
-            // the current heuristic consist in finding the shortest element not looped
-            Sound bestCandidate = null;
-            var bestCandidateSize = int.MaxValue;
-            lock (notDisposedSounds)
-            {
-                foreach (var notDisposedSound in notDisposedSounds)
-                {
-                    var sizeSoundEffect = notDisposedSound.PreloadedData?.Length*sizeof(short) ?? 0;
-                    if(sizeSoundEffect >= bestCandidateSize)
-                        continue;
-
-                    foreach (var instance in notDisposedSound.Instances)
-                    {
-                        if (instance.PlayState != SoundPlayState.Stopped && !instance.IsLooped)
-                        {
-                            bestCandidate = notDisposedSound;
-                            bestCandidateSize = sizeSoundEffect;
-                            break;
-                        }
-                    }
-
-                }
-            }
-
-            return bestCandidate;
-        }
-
-        /// <summary>
         /// Force all the <see cref="SoundEffectInstance"/> to update them-self
         /// </summary>
         internal void ForceSoundInstanceUpdate()
@@ -249,8 +224,6 @@ namespace SiliconStudio.Xenko.Audio
             // Dispose all the sound not disposed yet.
             foreach (var soundBase in notDisposedSoundsArray)
                 soundBase.Dispose();
-
-            --NbOfAudioEngineInstances;
 
             DestroyAudioEngine();
         }

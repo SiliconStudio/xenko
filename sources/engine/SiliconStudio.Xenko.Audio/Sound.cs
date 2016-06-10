@@ -17,9 +17,24 @@ namespace SiliconStudio.Xenko.Audio
     [DebuggerDisplay("{Name}")]
     [ContentSerializer(typeof(DataContentSerializer<Sound>))]
     [DataSerializerGlobal(typeof(ReferenceSerializer<Sound>), Profile = "Content")]
-    [DataSerializer(typeof(SoundBaseSerializer))]
-    public partial class Sound : ComponentBase
+    [DataSerializer(typeof(SoundSerializer))]
+    public class Sound : ComponentBase
     {
+        /// <summary>
+        /// Create the audio engine to the sound base instance.
+        /// </summary>
+        /// <param name="engine">A valid AudioEngine</param>
+        /// <exception cref="ArgumentNullException">The engine argument is null</exception>
+        internal void AttachEngine(AudioEngine engine)
+        {
+            if (engine == null)
+                throw new ArgumentNullException(nameof(engine));
+
+            AudioEngine = engine;
+        }
+
+        internal AudioEngine AudioEngine { get; private set; }
+
         /// <summary>
         /// Current instances of the SoundEffect.
         /// We need to keep track of them to stop and dispose them when the soundEffect is disposed.
@@ -28,7 +43,7 @@ namespace SiliconStudio.Xenko.Audio
         internal readonly List<SoundInstance> Instances = new List<SoundInstance>();
 
         [DataMemberIgnore]
-        internal UnmanagedArray<short> PreloadedData;
+        internal uint PreloadedBuffer;
 
         /// <summary>
         /// The number of SoundEffect Created so far. Used only to give a unique name to the SoundEffect.

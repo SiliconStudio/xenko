@@ -40,6 +40,8 @@ namespace SiliconStudio.Xenko.Audio
 
         private float volume;
 
+        internal uint Voice { get; }
+
         //prevent creation of SoundEffectInstance to the user
         internal SoundInstance(Sound correspSound)
         {
@@ -47,11 +49,10 @@ namespace SiliconStudio.Xenko.Audio
 
             if (Sound.StreamFromDisk)
             {
-                SoundSource = new CompressedSoundSource(Sound.CompressedDataUrl, Sound.SampleRate, Sound.Channels, Sound.MaxPacketLength);
+                SoundSource = new CompressedSoundSource(this, Sound.CompressedDataUrl, Sound.SampleRate, Sound.Channels, Sound.MaxPacketLength);
             }
 
-            if (Sound.EngineState != AudioEngineState.Invalidated)
-                CreateVoice(Sound.SampleRate, Sound.Channels);
+            Voice = Native.OpenAl.AudioCreateVoice();
 
             ResetStateToDefault();
         }
@@ -73,8 +74,7 @@ namespace SiliconStudio.Xenko.Audio
                 CheckBufferNotLoaded("The looping status of the sound can not be modified after it started playing.");
                 isLooped = value;
 
-                if (Sound.EngineState != AudioEngineState.Invalidated)
-                    UpdateLooping();
+                //todo LOOPING
             }
         }
 
@@ -94,8 +94,7 @@ namespace SiliconStudio.Xenko.Audio
 
                 panChannelVolumes = pan < 0 ? new[] { 1f, 1f + pan } : new[] { 1f - pan, 1f };
 
-                if (Sound.EngineState != AudioEngineState.Invalidated)
-                    UpdatePan();
+                //TODO PANNING
             }
         }
 
@@ -113,8 +112,7 @@ namespace SiliconStudio.Xenko.Audio
                 Sound.CheckNotDisposed();
                 volume = MathUtil.Clamp(value, 0, 1);
 
-                if (Sound.EngineState != AudioEngineState.Invalidated)
-                    UpdateVolume();
+                //TODO VOLUME
             }
         }
 
@@ -131,8 +129,7 @@ namespace SiliconStudio.Xenko.Audio
                 Reset3D();
                 pitch = MathUtil.Clamp(value, -1, 1);
 
-                if (Sound.EngineState != AudioEngineState.Invalidated)
-                    UpdatePitch();
+                //TODO PITCH
             }
         }
 
@@ -155,8 +152,7 @@ namespace SiliconStudio.Xenko.Audio
             if (Pan != 0)
                 Pan = 0;
 
-            if (Sound.EngineState != AudioEngineState.Invalidated)
-                Apply3DImpl(listener, emitter);
+            //TODO APPLY 3D
         }
 
         public void ExitLoop()
@@ -169,7 +165,7 @@ namespace SiliconStudio.Xenko.Audio
             if (PlayState == SoundPlayState.Stopped || IsLooped == false)
                 return;
 
-            ExitLoopImpl();
+            //TODO EXIT FROM LOOP
         }
 
         public void Pause()
@@ -182,7 +178,7 @@ namespace SiliconStudio.Xenko.Audio
             if (PlayState != SoundPlayState.Playing)
                 return;
 
-            PauseImpl();
+            Native.OpenAl.AudioPause(Voice);
 
             PlayState = SoundPlayState.Paused;
         }
@@ -216,10 +212,12 @@ namespace SiliconStudio.Xenko.Audio
             if (Sound.EngineState == AudioEngineState.Invalidated)
                 return;
 
-            UpdatePitch();
-            UpdateStereoVolumes();
+//            UpdatePitch();
+//            UpdateStereoVolumes();
+//
+//            Reset3DImpl();
 
-            Reset3DImpl();
+            //TODO RESET 3D? center back
         }
 
         public void Stop()
@@ -232,7 +230,7 @@ namespace SiliconStudio.Xenko.Audio
             if (PlayState == SoundPlayState.Stopped)
                 return;
 
-            StopImpl();
+            Native.OpenAl.AudioStop(Voice);
 
             DataBufferLoaded = false;
 
@@ -243,7 +241,7 @@ namespace SiliconStudio.Xenko.Audio
         {
             Sound?.UnregisterInstance(this);
 
-            PlatformSpecificDisposeImpl();
+            //TODO DELETE AND REMOVE VOICE
 
             SoundSource.Dispose();
         }
@@ -288,35 +286,19 @@ namespace SiliconStudio.Xenko.Audio
             if (stopSiblingInstances)
                 StopConcurrentInstances();
 
-            PreparePlay();
-
             if (Sound.StreamFromDisk)
             {
-                await SoundSource.ReadyToPlay.Task;
-
-                for (var i = 0; i < SoundSource.NumberOfBuffers; i++)
-                {
-                    SoundSourceBuffer samples;
-                    if (SoundSource.ReadSamples(out samples))
-                    {
-                        LoadBuffer(samples, samples.EndOfStream, samples.Length);
-                        if (samples.EndOfStream && !IsLooped) break;
-                    }
-                    else
-                    {
-                        break;
-                    }
-                }
+                await SoundSource.ReadyToPlay.Task; 
             }
             else
             {
                 if (!DataBufferLoaded)
                 {
-                    LoadBuffer();
+                    Native.OpenAl.AudioSetVoiceBuffer(Voice, Sound.PreloadedBuffer);
                 }
             }
 
-            PlayImpl();
+            Native.OpenAl.AudioPlay(Voice);
 
             DataBufferLoaded = true;
 
@@ -374,5 +356,7 @@ namespace SiliconStudio.Xenko.Audio
             var apparentFrequency = 1 / timeBetweenTwoWaves;
             dopplerPitchFactor = (float)Math.Pow(apparentFrequency / soundFreq, emitter.DopplerScale);
         }
+
+        public SoundPlayState PlayState { get; internal set; } = SoundPlayState.Stopped;
     }
 }

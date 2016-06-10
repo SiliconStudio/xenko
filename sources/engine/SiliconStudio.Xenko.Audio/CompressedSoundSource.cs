@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
@@ -34,8 +35,7 @@ namespace SiliconStudio.Xenko.Audio
         private static readonly ConcurrentBag<CompressedSoundSource> NewSources = new ConcurrentBag<CompressedSoundSource>();
         private static readonly List<CompressedSoundSource> Sources = new List<CompressedSoundSource>();
         
-
-        public CompressedSoundSource(string soundStreamUrl, int sampleRate, int channels, int maxCompressedSize) : base(channels)
+        public CompressedSoundSource(SoundInstance instance, string soundStreamUrl, int sampleRate, int channels, int maxCompressedSize) : base(instance)
         {
             this.channels = channels;
             this.maxCompressedSize = maxCompressedSize;
@@ -53,6 +53,8 @@ namespace SiliconStudio.Xenko.Audio
 
         private static unsafe void Worker()
         {
+            var utilityBuffer = new UnmanagedArray<short>(SamplesPerBuffer * MaxChannels);
+
             var toRemove = new List<CompressedSoundSource>();
             while (true)
             {
@@ -75,14 +77,14 @@ namespace SiliconStudio.Xenko.Audio
                 {
                     if (!source.dispose)
                     {
-                        SoundSourceBuffer buffer;
-                        while (source.FreeBuffers.TryDequeue(out buffer))
+                        for (var y = 0; y < NumberOfBuffers; y++)
                         {
-                            buffer.EndOfStream = false;
-                            buffer.Length = SamplesPerBuffer*source.channels;
-                            const int passes = SamplesPerBuffer/SamplesPerFrame;
+                            var freeBuffer = source.readyToPlay ? OpenAl.AudioVoiceGetFreeBuffer(source.SoundInstance.Voice) : OpenAl.AudioCreateBuffer();
+                            if (freeBuffer == 0) break;
+
+                            const int passes = SamplesPerBuffer / SamplesPerFrame;
                             var offset = 0;
-                            var bufferPtr = (short*)buffer.Buffer.Pointer;
+                            var bufferPtr = (short*)utilityBuffer.Pointer;
                             for (var i = 0; i < passes; i++)
                             {
                                 var len = source.reader.ReadInt16();
@@ -94,16 +96,15 @@ namespace SiliconStudio.Xenko.Audio
                                     throw new Exception("Celt decoder returned a wrong decoding buffer size.");
                                 }
 
-                                offset += SamplesPerFrame*source.channels;
+                                offset += SamplesPerFrame * source.channels;
 
                                 if (source.compressedSoundStream.Position != source.compressedSoundStream.Length) continue;
-
-                                buffer.EndOfStream = true;
-                                buffer.Length = offset;
                                 source.compressedSoundStream.Position = 0; //reset if we reach the end
                                 break;
                             }
-                            source.DirtyBuffers.Enqueue(buffer);
+
+                            OpenAl.AudioFillBuffer(freeBuffer, utilityBuffer.Pointer, offset * sizeof(short), source.SoundInstance.Sound.SampleRate, source.SoundInstance.Sound.Spatialized);
+                            OpenAl.AudioVoiceQueueBuffer(source.SoundInstance.Voice, freeBuffer);
                         }
 
                         if (!source.readyToPlay)

@@ -32,6 +32,7 @@
     <Compile Include="AudioUnitHelpers.cs" />
     <Compile Include="Celt.cs" />
     <Compile Include="NativeInvoke.cs" />
+    <Compile Include="OpenAl.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -123,6 +123,7 @@ namespace SiliconStudio.Xenko.Audio
             // Nothing to do here for windows version.
             // All the work is done in LoadBuffer.
         }
+
         internal void UpdateVolume()
         {
             SourceVoice.SetVolume(Volume);
@@ -184,8 +185,6 @@ namespace SiliconStudio.Xenko.Audio
 
             SourceVoice.SetOutputMatrix(sourceChannelCount, Sound.MasterVoice.VoiceDetails.InputChannelCount, matrix);
         }
-
-        public SoundPlayState PlayState { get; internal set; } = SoundPlayState.Stopped;
 
         private void PreparePlay()
         {            

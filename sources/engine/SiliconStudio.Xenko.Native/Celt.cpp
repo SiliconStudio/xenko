@@ -40,7 +40,11 @@ extern "C" {
 		{
 			if (OpenALLibrary) return true;
 
-			OpenALLibrary = LoadDynamicLibrary("OpenAL32.dll");
+			OpenALLibrary = LoadDynamicLibrary("OpenAL32");
+			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("x64\\OpenAL32");
+			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("x86\\OpenAL32");
+			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("x64/OpenAL32");
+			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("x86/OpenAL32");
 			if (!OpenALLibrary) return false;
 
 			OpenDevice = (LPALCOPENDEVICE)GetSymbolAddress(OpenALLibrary, "alcOpenDevice");
@@ -73,18 +77,15 @@ extern "C" {
 			ALCcontext* context;
 		};
 
-		struct xnAudioVoice
-		{
-			ALuint voiceId;
-			ALuint voiceBuffer[4];
-			bool streaming;
-			tinystl::vector<ALuint> freeBuffers;
-		};
-
 		xnAudioDevice* xnAudioCreate(const char* deviceName)
 		{
 			auto o = new xnAudioDevice;
 			o->device = OpenDevice(NULL);
+			if(!o->device)
+			{
+				delete o;
+				return NULL;
+			}
 			o->context = CreateContext(o->device, NULL);
 			MakeContextCurrent(o->context);
 			return o;
@@ -98,81 +99,76 @@ extern "C" {
 			delete device;
 		}
 
-		xnAudioVoice* xnAudioCreateVoice(bool streaming)
+		uint32_t xnAudioCreateVoice()
 		{
-			auto v = new xnAudioVoice;
-			v->streaming = streaming;
-			GenSources(1, &v->voiceId);
-
-			//if we don't stream we need just one buffer, if we stream 4
-			if (!streaming)
-			{
-				GenBuffers(1, v->voiceBuffer);
-			}
-			else
-			{
-				GenBuffers(4, v->voiceBuffer);
-				for (int i = 0; i < 4; i++)
-				{
-					v->freeBuffers.push_back(i);
-				}
-			}
+			ALuint voice;
+			GenSources(1, &voice);
 
 			//this sets the voice as a normal stereo voice basically
-			Source3I(v->voiceId, AL_POSITION, 0, 0, -1);
-			SourceI(v->voiceId, AL_SOURCE_RELATIVE, AL_TRUE);
+			Source3I(voice, AL_POSITION, 0, 0, -1);
+			SourceI(voice, AL_SOURCE_RELATIVE, AL_TRUE);
 
-			return v;
+			return voice;
 		}
 
-		bool xnAudioCanSubmitBuffer(xnAudioVoice* voice)
+		void xnAudioDestroyVoice(uint32_t voice)
 		{
-			if(!voice->streaming) return true;
+			DeleteSources(1, &voice);
+		}
 
+		uint32_t xnAudioCreateBuffer()
+		{
+			ALuint buffer;
+			GenBuffers(1, &buffer);
+			return buffer;
+		}
+
+		void xnAudioDestroyBuffer(uint32_t buffer)
+		{
+			DeleteBuffers(1, &buffer);
+		}
+
+		void xnAudioFillBuffer(uint32_t buffer, short* pcm, int bufferSize, int sampleRate, bool mono)
+		{
+			BufferData(buffer, mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, pcm, bufferSize, sampleRate);
+		}
+
+		void xnAudioSetVoiceBuffer(uint32_t voice, uint32_t buffer)
+		{
+			SourceI(voice, AL_BUFFER, buffer);
+		}
+
+		void xnAudioVoiceQueueBuffer(uint32_t voice, uint32_t buffer)
+		{
+			SourceQueueBuffers(voice, 1, &buffer);
+		}
+
+		uint32_t xnAudioVoiceGetFreeBuffer(uint32_t voice)
+		{
 			ALint processed;
-			bool res;
-			GetSourceI(voice->voiceId, AL_BUFFERS_PROCESSED, &processed);
-			res = processed > 0 || voice->freeBuffers.size() > 0;
-			while (processed--)
+			GetSourceI(voice, AL_BUFFERS_PROCESSED, &processed);
+			if(processed > 0)
 			{
 				ALuint buffer;
-				SourceUnqueueBuffers(voice->voiceId, 1, &buffer);
-				voice->freeBuffers.push_back(buffer);
+				SourceUnqueueBuffers(voice, 1, &buffer);
+				return buffer;
 			}
-
-			return res;
+			return 0;
 		}
 
-		void xnAudioSubmitBuffer(xnAudioVoice* voice, short* buffer, int bufferSize, int sampleRate, bool mono)
-		{			
-			if(!voice->streaming)
-			{
-				//just buffer the first buffer and that's it!
-				BufferData(voice->voiceBuffer[0], mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, buffer, bufferSize, sampleRate);
-				SourceI(voice->voiceId, AL_BUFFER, voice->voiceBuffer[0]);
-			}
-			else
-			{
-				//find a free buffer and submit it
-				ALuint bufferIndex = voice->freeBuffers.pop_back();
-				BufferData(bufferIndex, mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, buffer, bufferSize, sampleRate);
-				SourceQueueBuffers(voice->voiceId, 1, &bufferIndex);
-			}
-		}
-
-		void xnAudioPlay(xnAudioVoice* voice)
+		void xnAudioPlay(uint32_t voice)
 		{
-			SourcePlay(voice->voiceId);
+			SourcePlay(voice);
 		}
 
-		void xnAudioPause(xnAudioVoice* voice)
+		void xnAudioPause(uint32_t voice)
 		{
-			SourcePause(voice->voiceId);
+			SourcePause(voice);
 		}
 
-		void xnAudioStop(xnAudioVoice* voice)
+		void xnAudioStop(uint32_t voice)
 		{
-			SourceStop(voice->voiceId);
+			SourceStop(voice);
 		}
 	}
 

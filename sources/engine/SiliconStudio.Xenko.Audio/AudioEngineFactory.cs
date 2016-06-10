@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Audio
 #elif SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
             return new AudioEngineRuntime();
 #else
-            return new AudioEngineDesktop();
+            return new AudioEngine();
 #endif
 #elif SILICONSTUDIO_PLATFORM_LINUX
 #if SILICONSTUDIO_XENKO_SOUND_SDL

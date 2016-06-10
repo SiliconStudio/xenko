@@ -15,3 +15,17 @@ xnSetInputRenderCallbackTo3DMixerDefault
 xnSetInputRenderCallbackToNull
 xnAudioUnitHelpersInit
 xnSetAudioBufferFrame
+xnInitOpenAL
+xnAudioCreate
+xnAudioDestroy
+xnAudioCreateVoice
+xnAudioDestroyVoice
+xnAudioCreateBuffer
+xnAudioDestroyBuffer
+xnAudioFillBuffer
+xnAudioSetVoiceBuffer
+xnAudioVoiceQueueBuffer
+xnAudioVoiceGetFreeBuffer
+xnAudioPlay
+xnAudioPause
+xnAudioStop

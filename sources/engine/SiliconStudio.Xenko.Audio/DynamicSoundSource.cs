@@ -2,7 +2,7 @@
 {
     public sealed class DynamicSoundSource : SoundSource
     {
-        public DynamicSoundSource(int channels) : base(channels)
+        public DynamicSoundSource(SoundInstance instance) : base(instance)
         {
         }
     }
