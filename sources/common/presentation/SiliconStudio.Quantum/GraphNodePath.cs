@@ -63,7 +63,6 @@ namespace SiliconStudio.Quantum
 
             public static NodePathElement CreateIndex(Index index)
             {
-                // We use a guid to allow equality test to fail between two different instances returned by CreateTarget
                 return new NodePathElement(index, ElementType.Index);
             }
 
