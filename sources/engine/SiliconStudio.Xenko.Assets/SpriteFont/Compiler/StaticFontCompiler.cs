@@ -127,9 +127,9 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
             //}
 
             // Convert to pre-multiplied alpha format.
-            if (fontAsset.IsPremultiplied)
+            if (fontAsset.FontType.IsPremultiplied)
             {
-                if (fontAsset.AntiAlias == FontAntiAliasMode.ClearType)
+                if (fontAsset.FontType.AntiAlias == FontAntiAliasMode.ClearType)
                 {
                     BitmapUtils.PremultiplyAlphaClearType(bitmap, srgb);
                 }
@@ -170,7 +170,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
             {
                 throw new Exception("Font does not contain any glyphs.");
             }
-            if (!importFromBitmap && options.AntiAlias != FontAntiAliasMode.ClearType)
+            if (!importFromBitmap && options.FontType.AntiAlias != FontAntiAliasMode.ClearType)
             {
                 foreach (var glyph in importer.Glyphs)
                     BitmapUtils.ConvertGreyToAlpha(glyph.Bitmap, glyph.Subrect);

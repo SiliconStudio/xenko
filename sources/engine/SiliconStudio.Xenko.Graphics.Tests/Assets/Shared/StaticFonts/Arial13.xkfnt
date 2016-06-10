@@ -9,6 +9,7 @@ FontSource: !SystemFontProvider
 FontType: !SpriteFontTypeStatic
     ~Id: 4f1681d9-550d-4530-be7b-9484133c07fc
     Size: 13.0
+    AntiAlias: Grayscale
     CharacterSet: 
     CharacterRegions:
         -   ~Id: 4c1d4e6a-5b44-4609-9577-dca39f146bfd
@@ -18,4 +19,3 @@ FontType: !SpriteFontTypeStatic
             Start: ' '
             End: "\x7F"
 DefaultCharacter: ' '
-AntiAlias: Grayscale

@@ -8,5 +8,5 @@ FontSource: !SystemFontProvider
     Style: Regular
 FontType: !SpriteFontTypeDynamic
     ~Id: 5fb27df7-1d4d-42c2-854e-6382290da0f7
+    AntiAlias: Aliased
 DefaultCharacter: ' '
-AntiAlias: Aliased

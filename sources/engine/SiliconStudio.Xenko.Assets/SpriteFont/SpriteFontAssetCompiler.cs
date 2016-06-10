@@ -199,7 +199,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             {
                 var dynamicFont = FontDataFactory.NewDynamic(
                     FontHelper.PointsToPixels(AssetParameters.FontType.Size), AssetParameters.FontSource.GetFontName(), AssetParameters.FontSource.Style, 
-                    AssetParameters.AntiAlias, useKerning:false, extraSpacing:AssetParameters.Spacing, extraLineSpacing:AssetParameters.LineSpacing, 
+                    AssetParameters.FontType.AntiAlias, useKerning:false, extraSpacing:AssetParameters.Spacing, extraLineSpacing:AssetParameters.LineSpacing, 
                     defaultCharacter:AssetParameters.DefaultCharacter);
 
                 var assetManager = new ContentManager();

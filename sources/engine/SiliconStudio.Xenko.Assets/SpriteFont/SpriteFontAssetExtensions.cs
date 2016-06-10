@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 ExtraLineSpacing = staticFont.ExtraLineSpacing,
                 DefaultCharacter = asset.DefaultCharacter,
                 FontName = asset.FontSource.GetFontName(),
-                IsPremultiplied = asset.IsPremultiplied,
+                IsPremultiplied = asset.FontType.IsPremultiplied,
                 IsSrgb = srgb
             };
 
@@ -104,7 +104,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 ExtraLineSpacing = scalableFont.ExtraLineSpacing,
                 DefaultCharacter = asset.DefaultCharacter,
                 FontName = asset.FontSource.GetFontName(),
-                IsPremultiplied = asset.IsPremultiplied,
+                IsPremultiplied = asset.FontType.IsPremultiplied,
                 IsSrgb = false,
             };
 

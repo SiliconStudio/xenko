@@ -9,6 +9,7 @@ FontSource: !SystemFontProvider
 FontType: !SpriteFontTypeStatic
     ~Id: 3ad7bb4c-5537-46b8-af35-4afbc7da2fda
     Size: 10.0
+    AntiAlias: ClearType
     CharacterSet: 
     CharacterRegions:
         -   ~Id: 44c05e80-543a-4122-ab41-be6e3c2953a8
@@ -18,4 +19,3 @@ FontType: !SpriteFontTypeStatic
             Start: ' '
             End: "\x7F"
 DefaultCharacter: ' '
-AntiAlias: ClearType

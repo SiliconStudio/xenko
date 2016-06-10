@@ -82,7 +82,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 
             // Rasterize each character in turn.
             foreach (var character in characters)
-                glyphList.Add(ImportGlyph(factory, fontFace, character, fontMetrics, fontSize, options.AntiAlias));
+                glyphList.Add(ImportGlyph(factory, fontFace, character, fontMetrics, fontSize, options.FontType.AntiAlias));
 
             Glyphs = glyphList;
 

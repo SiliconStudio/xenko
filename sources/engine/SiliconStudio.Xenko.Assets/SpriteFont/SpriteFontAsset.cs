@@ -67,29 +67,6 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         public char DefaultCharacter { get; set; } = ' ';
 
         /// <summary>
-        /// Gets or sets the font anti-aliasing mode. By default, levels of grays are used.
-        /// </summary>
-        /// <userdoc>
-        /// The type of anti-aliasing to use when rendering the font. 
-        /// </userdoc>
-        [DataMember(110)]
-        [DefaultValue(FontAntiAliasMode.Default)]
-        [Display(null, "Rendering")]
-        public FontAntiAliasMode AntiAlias { get; set; } = FontAntiAliasMode.Default;
-
-        /// <summary>
-        /// Gets or sets the value indicating if the font texture should be generated pre-multiplied by alpha component. 
-        /// </summary>
-        /// <userdoc>
-        /// If checked, the texture generated for this font is not pre-multiplied by the alpha component.
-        /// Check this property if you prefer to use interpolative alpha blending when rendering the font.
-        /// </userdoc>
-        [DataMember(120)]
-        [DefaultValue(true)]
-        [Display("Premultiply", "Rendering")]
-        public bool IsPremultiplied { get; set; } = true;
-
-        /// <summary>
         /// Gets or sets the extra character spacing in pixels (relative to the font size). Zero is default spacing, negative closer together, positive further apart
         /// </summary>
         ///  <userdoc>
@@ -232,6 +209,8 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                     {
                         newType.Node.Tag = "!SpriteFontTypeDynamic";
 
+                        if (asset.AntiAlias != null)
+                            newSource.AddChild("AntiAlias", asset.AntiAlias);
                     }
                     else 
                     if (fontType.Equals("SDF"))
@@ -259,11 +238,19 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
                         if (asset.CharacterRegions != null)
                             newType.AddChild("CharacterRegions", asset.CharacterRegions);
+
+                        if (asset.AntiAlias != null)
+                            newSource.AddChild("AntiAlias", asset.AntiAlias);
+
+                        if (asset.IsPremultiplied != null)
+                            newSource.AddChild("IsPremultiplied", asset.IsPremultiplied);
                     }
 
                     asset.AddChild("FontType", newType);
                 }
 
+                asset.RemoveChild("IsPremultiplied");
+                asset.RemoveChild("AntiAlias");
                 asset.RemoveChild("UseKerning");
                 asset.RemoveChild("Size");
                 asset.RemoveChild("CharacterSet");

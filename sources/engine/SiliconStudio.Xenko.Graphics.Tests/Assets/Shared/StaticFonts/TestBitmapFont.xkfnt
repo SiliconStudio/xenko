@@ -9,6 +9,7 @@ FontSource: !SystemFontProvider
 FontType: !SpriteFontTypeStatic
     ~Id: 06fe6b5f-00d5-4a4d-a130-a668583ba5cc
     Size: 8.25
+    AntiAlias: Grayscale
     CharacterSet: ../TestFontCharacterSet.txt
     CharacterRegions:
         -   ~Id: a9eb9c1d-d105-4a6c-a160-0a5926aa560f
@@ -18,4 +19,3 @@ FontType: !SpriteFontTypeStatic
             Start: 0
             End: 9
 DefaultCharacter: ' '
-AntiAlias: Grayscale

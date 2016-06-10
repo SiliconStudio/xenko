@@ -8,6 +8,7 @@ FontSource: !SystemFontProvider
     Style: Regular
 FontType: !SpriteFontTypeStatic
     ~Id: 83724522-5e04-40f8-8393-1cf625fbdf4d
+    AntiAlias: Grayscale
     CharacterSet: null
     CharacterRegions:
         -   ~Id: c9bb5db9-0781-493c-a427-50fa6ff7dc0f
@@ -17,4 +18,3 @@ FontType: !SpriteFontTypeStatic
             Start: ' '
             End: "\x7F"
 DefaultCharacter: ' '
-AntiAlias: Grayscale

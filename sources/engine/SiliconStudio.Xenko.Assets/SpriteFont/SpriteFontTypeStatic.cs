@@ -6,6 +6,7 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Xenko.Graphics.Font;
 
 namespace SiliconStudio.Xenko.Assets.SpriteFont
 {
@@ -42,5 +43,17 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         [DataMember(80)]
         [NotNullItems]
         public List<CharacterRegion> CharacterRegions { get; set; } = new List<CharacterRegion>();
+
+        /// <inheritdoc/>
+        [DataMember(110)]
+        [DefaultValue(FontAntiAliasMode.Default)]
+        [Display("Anti alias")]
+        public override FontAntiAliasMode AntiAlias { get; set; } = FontAntiAliasMode.Default;
+
+        /// <inheritdoc/>
+        [DataMember(120)]
+        [DefaultValue(true)]
+        [Display("Premultiply")]
+        public override bool IsPremultiplied { get; set; } = true;
     }
 }
