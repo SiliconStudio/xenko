@@ -3,11 +3,179 @@
 
 #include "../../../deps/NativePath/NativePath.h"
 #include "../../../deps/NativePath/NativeDynamicLinking.h"
+#include "../../../deps/NativePath/TINYSTL/vector.h"
 
 #define HAVE_STDINT_H
 #include "../../../deps/Celt/include/opus_custom.h"
+#include "../../../deps/OpenAL/AL/al.h"
+#include "../../../deps/OpenAL/AL/alc.h"
 
 extern "C" {
+	namespace OpenAL
+	{
+		LPALCOPENDEVICE OpenDevice;
+		LPALCCLOSEDEVICE CloseDevice;
+		LPALCCREATECONTEXT CreateContext;
+		LPALCDESTROYCONTEXT DestroyContext;
+		LPALCMAKECONTEXTCURRENT MakeContextCurrent;
+		
+		LPALSOURCEPLAY SourcePlay;
+		LPALSOURCEPAUSE SourcePause;
+		LPALSOURCESTOP SourceStop;
+		LPALSOURCEF SourceF;
+		LPALDELETESOURCES DeleteSources;
+		LPALDELETEBUFFERS DeleteBuffers;
+		LPALGENSOURCES GenSources;
+		LPALGENBUFFERS GenBuffers;
+		LPALSOURCE3I Source3I;
+		LPALSOURCEI SourceI;
+		LPALBUFFERDATA BufferData;
+		LPALSOURCEQUEUEBUFFERS SourceQueueBuffers;
+		LPALSOURCEUNQUEUEBUFFERS SourceUnqueueBuffers;
+		LPALGETSOURCEI GetSourceI;
+
+		void* OpenALLibrary = NULL;
+
+		bool xnInitOpenAL()
+		{
+			if (OpenALLibrary) return true;
+
+			OpenALLibrary = LoadDynamicLibrary("OpenAL32.dll");
+			if (!OpenALLibrary) return false;
+
+			OpenDevice = (LPALCOPENDEVICE)GetSymbolAddress(OpenALLibrary, "alcOpenDevice");
+			CloseDevice = (LPALCCLOSEDEVICE)GetSymbolAddress(OpenALLibrary, "alcCloseDevice");
+			CreateContext = (LPALCCREATECONTEXT)GetSymbolAddress(OpenALLibrary, "alcCreateContext");
+			DestroyContext = (LPALCDESTROYCONTEXT)GetSymbolAddress(OpenALLibrary, "alcDestroyContext");
+			MakeContextCurrent = (LPALCMAKECONTEXTCURRENT)GetSymbolAddress(OpenALLibrary, "alcMakeContextCurrent");
+
+			SourcePlay = (LPALSOURCEPLAY)GetSymbolAddress(OpenALLibrary, "alSourcePlay");
+			SourcePause = (LPALSOURCEPAUSE)GetSymbolAddress(OpenALLibrary, "alSourcePause");
+			SourceStop = (LPALSOURCESTOP)GetSymbolAddress(OpenALLibrary, "alSourceStop");
+			SourceF = (LPALSOURCEF)GetSymbolAddress(OpenALLibrary, "alSourcef");
+			DeleteSources = (LPALDELETESOURCES)GetSymbolAddress(OpenALLibrary, "alDeleteSources");
+			DeleteBuffers = (LPALDELETEBUFFERS)GetSymbolAddress(OpenALLibrary, "alDeleteBuffers");
+			GenSources = (LPALGENSOURCES)GetSymbolAddress(OpenALLibrary, "alGenSources");
+			GenBuffers = (LPALGENBUFFERS)GetSymbolAddress(OpenALLibrary, "alGenBuffers");
+			Source3I = (LPALSOURCE3I)GetSymbolAddress(OpenALLibrary, "alSource3i");
+			SourceI = (LPALSOURCEI)GetSymbolAddress(OpenALLibrary, "alSourcei"); 
+			BufferData = (LPALBUFFERDATA)GetSymbolAddress(OpenALLibrary, "alBufferData");
+			SourceQueueBuffers = (LPALSOURCEQUEUEBUFFERS)GetSymbolAddress(OpenALLibrary, "alSourceQueueBuffers"); 
+			SourceUnqueueBuffers = (LPALSOURCEUNQUEUEBUFFERS)GetSymbolAddress(OpenALLibrary, "alSourceUnqueueBuffers");
+			GetSourceI = (LPALGETSOURCEI)GetSymbolAddress(OpenALLibrary, "alGetSourcei");
+
+			return true;
+		}
+
+		struct xnAudioDevice
+		{
+			ALCdevice* device;
+			ALCcontext* context;
+		};
+
+		struct xnAudioVoice
+		{
+			ALuint voiceId;
+			ALuint voiceBuffer[4];
+			bool streaming;
+			tinystl::vector<ALuint> freeBuffers;
+		};
+
+		xnAudioDevice* xnAudioCreate(const char* deviceName)
+		{
+			auto o = new xnAudioDevice;
+			o->device = OpenDevice(NULL);
+			o->context = CreateContext(o->device, NULL);
+			MakeContextCurrent(o->context);
+			return o;
+		}
+
+		void xnAudioDestroy(xnAudioDevice* device)
+		{
+			MakeContextCurrent(NULL);
+			DestroyContext(device->context);
+			CloseDevice(device->device);
+			delete device;
+		}
+
+		xnAudioVoice* xnAudioCreateVoice(bool streaming)
+		{
+			auto v = new xnAudioVoice;
+			v->streaming = streaming;
+			GenSources(1, &v->voiceId);
+
+			//if we don't stream we need just one buffer, if we stream 4
+			if (!streaming)
+			{
+				GenBuffers(1, v->voiceBuffer);
+			}
+			else
+			{
+				GenBuffers(4, v->voiceBuffer);
+				for (int i = 0; i < 4; i++)
+				{
+					v->freeBuffers.push_back(i);
+				}
+			}
+
+			//this sets the voice as a normal stereo voice basically
+			Source3I(v->voiceId, AL_POSITION, 0, 0, -1);
+			SourceI(v->voiceId, AL_SOURCE_RELATIVE, AL_TRUE);
+
+			return v;
+		}
+
+		bool xnAudioCanSubmitBuffer(xnAudioVoice* voice)
+		{
+			if(!voice->streaming) return true;
+
+			ALint processed;
+			bool res;
+			GetSourceI(voice->voiceId, AL_BUFFERS_PROCESSED, &processed);
+			res = processed > 0 || voice->freeBuffers.size() > 0;
+			while (processed--)
+			{
+				ALuint buffer;
+				SourceUnqueueBuffers(voice->voiceId, 1, &buffer);
+				voice->freeBuffers.push_back(buffer);
+			}
+
+			return res;
+		}
+
+		void xnAudioSubmitBuffer(xnAudioVoice* voice, short* buffer, int bufferSize, int sampleRate, bool mono)
+		{			
+			if(!voice->streaming)
+			{
+				//just buffer the first buffer and that's it!
+				BufferData(voice->voiceBuffer[0], mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, buffer, bufferSize, sampleRate);
+				SourceI(voice->voiceId, AL_BUFFER, voice->voiceBuffer[0]);
+			}
+			else
+			{
+				//find a free buffer and submit it
+				ALuint bufferIndex = voice->freeBuffers.pop_back();
+				BufferData(bufferIndex, mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, buffer, bufferSize, sampleRate);
+				SourceQueueBuffers(voice->voiceId, 1, &bufferIndex);
+			}
+		}
+
+		void xnAudioPlay(xnAudioVoice* voice)
+		{
+			SourcePlay(voice->voiceId);
+		}
+
+		void xnAudioPause(xnAudioVoice* voice)
+		{
+			SourcePause(voice->voiceId);
+		}
+
+		void xnAudioStop(xnAudioVoice* voice)
+		{
+			SourceStop(voice->voiceId);
+		}
+	}
+
 	namespace iOS_Helpers
 	{
 		//all these types are just copy pasted from https://developer.apple.com/library/ios/documentation/AudioUnit/Reference/AudioUnitPropertiesReference/
@@ -130,16 +298,19 @@ extern "C" {
 
 		struct AudioDataRenderer
 		{
+			struct xnAudioBuffer
+			{
+				short* data;
+				int frames;
+				int currentFrame;
+				int channels;
+			};
+
+			//careful this is mirrored in the c# struct
 			int LoopStartPoint;
 			int LoopEndPoint;
 			int NumberOfLoops;
 			bool IsInfiniteLoop;
-
-			int CurrentFrame;
-			int TotalNumberOfFrames;
-
-			int NumberOfChannels;
-			char* AudioDataBuffer;
 
 			bool IsEnabled2D;
 			bool IsEnabled3D;
@@ -148,45 +319,78 @@ extern "C" {
 
 			AudioUnit HandleChannelMixer;
 			AudioUnit Handle3DMixer;
+			//end of c# struct
+
+			int bufferIndex = 0;
+
+			static OSStatus NullRenderCallback(void                        *inRefCon,
+				AudioUnitRenderActionFlags  *ioActionFlags,
+				const AudioTimeStamp        *inTimeStamp,
+				uint32_t                      inBusNumber,
+				uint32_t                      inNumberFrames,
+				AudioBufferList             *ioData)
+			{
+				memset(ioData->mBuffers[0].mData, 0x0, ioData->mBuffers[0].mDataByteSize);
+
+				return 0;
+			}
+
+			static OSStatus DefaultRenderCallbackChannelMixer(void                        *inRefCon,
+				AudioUnitRenderActionFlags  *ioActionFlags,
+				const AudioTimeStamp        *inTimeStamp,
+				uint32_t                      inBusNumber,
+				uint32_t                      inNumberFrames,
+				AudioBufferList             *ioData)
+			{
+				return ((AudioDataRenderer*)inRefCon)->RendererCallbackChannelMixer(inBusNumber, inNumberFrames, ioData);
+			}
+
+			static OSStatus DefaultRenderCallback3DMixer(void                        *inRefCon,
+				AudioUnitRenderActionFlags  *ioActionFlags,
+				const AudioTimeStamp        *inTimeStamp,
+				uint32_t                      inBusNumber,
+				uint32_t                      inNumberFrames,
+				AudioBufferList             *ioData)
+			{
+				return ((AudioDataRenderer*)inRefCon)->RendererCallback3DMixer(inBusNumber, inNumberFrames, ioData);
+			}
+
+			tinystl::vector<xnAudioBuffer> AudioDataBuffers;
 
 			bool ShouldBeLooped() const
 			{
 				return IsInfiniteLoop || NumberOfLoops > 0;
 			}
 
-			void CopyDataToBuffer(char* &outBuffer, int nbFrameToCopy, int nbOfChannels)
-			{
-				char* inPtr = AudioDataBuffer + sizeof(short) * nbOfChannels * CurrentFrame;
-				int sizeToCopy = sizeof(short) * nbFrameToCopy * nbOfChannels;
-
-				memcpy(outBuffer, inPtr, sizeToCopy);
-
-				CurrentFrame += nbFrameToCopy;
-				outBuffer += sizeToCopy;
-			}
-
 			int AudioDataMixerCallback(uint32_t busIndex, int totalNbOfFrameToWrite, AudioBufferList* data)
 			{
 				char* outPtr = (char*)data->mBuffers[0].mData;
+				xnAudioBuffer& currentBuffer = AudioDataBuffers[bufferIndex];
 
 				int remainingFramesToWrite = totalNbOfFrameToWrite;
 				while (remainingFramesToWrite > 0)
 				{
-					int nbOfFrameToWrite = fmin(remainingFramesToWrite, (ShouldBeLooped() ? LoopEndPoint : TotalNumberOfFrames) - CurrentFrame);
+					int nbOfFrameToWrite = fmin(remainingFramesToWrite, (ShouldBeLooped() ? LoopEndPoint : currentBuffer.frames) - currentBuffer.currentFrame);
 
-					CopyDataToBuffer(outPtr, nbOfFrameToWrite, NumberOfChannels);
+					short* inPtr = currentBuffer.data + currentBuffer.channels * currentBuffer.currentFrame;
+					int sizeToCopy = sizeof(short) * nbOfFrameToWrite * currentBuffer.channels;
+
+					memcpy(outPtr, inPtr, sizeToCopy);
+
+					currentBuffer.currentFrame += nbOfFrameToWrite;
+					outPtr += sizeToCopy;
 
 					remainingFramesToWrite -= nbOfFrameToWrite;
 
 					// Check if the track have to be re-looped
-					if (ShouldBeLooped() && CurrentFrame >= LoopEndPoint)
+					if (ShouldBeLooped() && currentBuffer.currentFrame >= LoopEndPoint)
 					{
 						--NumberOfLoops;
-						CurrentFrame = LoopStartPoint;
+						currentBuffer.currentFrame = LoopStartPoint;
 					}
 
 					// Check if we reached the end of the track.
-					if (CurrentFrame >= TotalNumberOfFrames)
+					if (currentBuffer.currentFrame >= currentBuffer.frames)
 					{
 						AudioUnitSetParameterFunc(HandleChannelMixer, kMultiChannelMixerParam_Enable, kAudioUnitScope_Input, busIndex, 0, 0);
 						AudioUnitSetParameterFunc(Handle3DMixer, k3DMixerParam_Enable, kAudioUnitScope_Input, busIndex, 0, 0);
@@ -197,7 +401,7 @@ extern "C" {
 						PlaybackEnded = true;
 
 						// Fill the rest of the buffer with blank
-						int sizeToBlank = sizeof(short) * NumberOfChannels * remainingFramesToWrite;
+						int sizeToBlank = sizeof(short) * currentBuffer.channels * remainingFramesToWrite;
 						memset(outPtr, 0x0 , sizeToBlank);
 
 						return 0;
@@ -224,47 +428,45 @@ extern "C" {
 
 				return AudioDataMixerCallback(busNumber, (int)numberFrames, data);
 			}
+
+			void AddBuffer(short* audioBuffer, int channels, int nframes)
+			{
+				xnAudioBuffer buffer = {};
+				buffer.data = audioBuffer;
+				buffer.frames = nframes;
+				buffer.channels = channels;
+				buffer.currentFrame = 0;
+				AudioDataBuffers.push_back(buffer);
+			}
 		};
 
-		static OSStatus NullRenderCallback(void                        *inRefCon,
-			AudioUnitRenderActionFlags  *ioActionFlags,
-			const AudioTimeStamp        *inTimeStamp,
-			uint32_t                      inBusNumber,
-			uint32_t                      inNumberFrames,
-			AudioBufferList             *ioData)
-		{
-			memset(ioData->mBuffers[0].mData, 0x0, ioData->mBuffers[0].mDataByteSize);
+		static AURenderCallbackStruct NullRenderCallbackStruct = { AudioDataRenderer::NullRenderCallback, NULL };
 
-			return 0;
+		AudioDataRenderer* xnCreateAudioDataRenderer()
+		{
+			return new AudioDataRenderer();
 		}
 
-		static OSStatus DefaultRenderCallbackChannelMixer(void                        *inRefCon,
-			AudioUnitRenderActionFlags  *ioActionFlags,
-			const AudioTimeStamp        *inTimeStamp,
-			uint32_t                      inBusNumber,
-			uint32_t                      inNumberFrames,
-			AudioBufferList             *ioData)
+		void xnDestroyAudioDataRenderer(AudioDataRenderer* ptr)
 		{
-			return ((AudioDataRenderer*)inRefCon)->RendererCallbackChannelMixer(inBusNumber, inNumberFrames, ioData);
+			delete ptr;
 		}
 
-		static OSStatus DefaultRenderCallback3DMixer(void                        *inRefCon,
-			AudioUnitRenderActionFlags  *ioActionFlags,
-			const AudioTimeStamp        *inTimeStamp,
-			uint32_t                      inBusNumber,
-			uint32_t                      inNumberFrames,
-			AudioBufferList             *ioData)
+		void xnAddAudioBuffer(AudioDataRenderer* renderer, short* buffer, int channels, int nframes)
 		{
-			return ((AudioDataRenderer*)inRefCon)->RendererCallback3DMixer(inBusNumber, inNumberFrames, ioData);
+			renderer->AddBuffer(buffer, channels, nframes);
 		}
 
-		static AURenderCallbackStruct NullRenderCallbackStruct = { NullRenderCallback, NULL };
+		void xnSetAudioBufferFrame(AudioDataRenderer* renderer, int bufferIndex, int frame)
+		{
+			if (bufferIndex >= renderer->AudioDataBuffers.size()) return;
+			renderer->AudioDataBuffers[bufferIndex].currentFrame = frame;
+		}
 
-
-		int SetInputRenderCallbackToChannelMixerDefault_(AudioUnit inUnit, uint32_t element, void* userData)
+		int xnSetInputRenderCallbackToChannelMixerDefault(AudioUnit inUnit, uint32_t element, void* userData)
 		{
 			AURenderCallbackStruct pCallbackData = {};
-			pCallbackData.inputProc = DefaultRenderCallbackChannelMixer;
+			pCallbackData.inputProc = AudioDataRenderer::DefaultRenderCallbackChannelMixer;
 			pCallbackData.inputProcRefCon = userData;
 
 			int status = AudioUnitSetPropertyFunc(inUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, element, &pCallbackData, sizeof(AURenderCallbackStruct));
@@ -272,10 +474,10 @@ extern "C" {
 			return status;
 		}
 
-		int SetInputRenderCallbackTo3DMixerDefault_(AudioUnit inUnit, uint32_t element, void* userData)
+		int xnSetInputRenderCallbackTo3DMixerDefault(AudioUnit inUnit, uint32_t element, void* userData)
 		{
 			AURenderCallbackStruct pCallbackData = {};
-			pCallbackData.inputProc = DefaultRenderCallback3DMixer;
+			pCallbackData.inputProc = AudioDataRenderer::DefaultRenderCallback3DMixer;
 			pCallbackData.inputProcRefCon = userData;
 
 			int status = AudioUnitSetPropertyFunc(inUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, element, &pCallbackData, sizeof(AURenderCallbackStruct));
@@ -283,12 +485,12 @@ extern "C" {
 			return status;
 		}
 
-		int SetInputRenderCallbackToNull_(AudioUnit inUnit, uint32_t element)
+		int xnSetInputRenderCallbackToNull(AudioUnit inUnit, uint32_t element)
 		{
 			return AudioUnitSetPropertyFunc(inUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, element, &NullRenderCallbackStruct, sizeof(AURenderCallbackStruct));
 		}
 
-		bool XenkoAudioUnitHelpersInit()
+		bool xnAudioUnitHelpersInit()
 		{
 			auto exe = LoadDynamicLibrary(NULL);
 			if (!exe) return false;
@@ -357,7 +559,7 @@ extern "C" {
 		bool decoder_only_;
 	};
 
-	void* XenkoCeltCreate(int sampleRate, int bufferSize, int channels, bool decoderOnly)
+	void* xnCeltCreate(int sampleRate, int bufferSize, int channels, bool decoderOnly)
 	{
 		auto celt = new XenkoCelt(sampleRate, bufferSize, channels, decoderOnly);
 		if(!celt->Init())
@@ -368,27 +570,27 @@ extern "C" {
 		return celt;
 	}
 
-	void XenkoCeltDestroy(XenkoCelt* celt)
+	void xnCeltDestroy(XenkoCelt* celt)
 	{
 		delete celt;
 	}
 
-	int XenkoCeltEncodeFloat(XenkoCelt* celt, float* inputSamples, int numberOfInputSamples, uint8_t* outputBuffer, int maxOutputSize)
+	int xnCeltEncodeFloat(XenkoCelt* celt, float* inputSamples, int numberOfInputSamples, uint8_t* outputBuffer, int maxOutputSize)
 	{
 		return opus_custom_encode_float(celt->GetEncoder(), inputSamples, numberOfInputSamples, outputBuffer, maxOutputSize);
 	}
 
-	int XenkoCeltDecodeFloat(XenkoCelt* celt, uint8_t* inputBuffer, int inputBufferSize, float* outputBuffer, int numberOfOutputSamples)
+	int xnCeltDecodeFloat(XenkoCelt* celt, uint8_t* inputBuffer, int inputBufferSize, float* outputBuffer, int numberOfOutputSamples)
 	{
 		return opus_custom_decode_float(celt->GetDecoder(), inputBuffer, inputBufferSize, outputBuffer, numberOfOutputSamples);
 	}
 
-	int XenkoCeltEncodeShort(XenkoCelt* celt, int16_t* inputSamples, int numberOfInputSamples, uint8_t* outputBuffer, int maxOutputSize)
+	int xnCeltEncodeShort(XenkoCelt* celt, int16_t* inputSamples, int numberOfInputSamples, uint8_t* outputBuffer, int maxOutputSize)
 	{
 		return opus_custom_encode(celt->GetEncoder(), inputSamples, numberOfInputSamples, outputBuffer, maxOutputSize);
 	}
 
-	int XenkoCeltDecodeShort(XenkoCelt* celt, uint8_t* inputBuffer, int inputBufferSize, int16_t* outputBuffer, int numberOfOutputSamples)
+	int xnCeltDecodeShort(XenkoCelt* celt, uint8_t* inputBuffer, int inputBufferSize, int16_t* outputBuffer, int numberOfOutputSamples)
 	{
 		return opus_custom_decode(celt->GetDecoder(), inputBuffer, inputBufferSize, outputBuffer, numberOfOutputSamples);
 	}

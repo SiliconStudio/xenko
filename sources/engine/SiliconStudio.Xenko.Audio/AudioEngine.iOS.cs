@@ -20,13 +20,6 @@ namespace SiliconStudio.Xenko.Audio
 
         private void ActivateAudioSession()
         {
-            if (!Native.AudioUnitHelpers.XenkoAudioUnitHelpersInit())
-            {
-                throw new Exception("Could not load AudioUnitHelpers");
-            }
-
-            Console.WriteLine(@"AudioUnitHelpers loaded");
-
             const double preferedAudioLatency = 0.005;
 
             // start the AudioSession

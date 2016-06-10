@@ -63,6 +63,7 @@ namespace SiliconStudio.Xenko.Audio
         {
             AudioVoice.SetLoopingPoints(0, int.MaxValue, 0, IsLooped);
         }
+
         internal void UpdateVolume()
         {
             AudioVoice.SetVolume(Volume);

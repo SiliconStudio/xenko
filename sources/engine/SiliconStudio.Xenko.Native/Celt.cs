@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Native
             SampleRate = sampleRate;
             BufferSize = bufferSize;
             Channels = channels;
-            celtPtr = XenkoCeltCreate(sampleRate, bufferSize, channels, decoderOnly);
+            celtPtr = xnCeltCreate(sampleRate, bufferSize, channels, decoderOnly);
             if (celtPtr == IntPtr.Zero)
             {
                 throw new Exception("Failed to create an instance of the celt encoder/decoder.");
@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Native
         {
             if (celtPtr != IntPtr.Zero)
             {
-                XenkoCeltDestroy(celtPtr);
+                xnCeltDestroy(celtPtr);
                 celtPtr = IntPtr.Zero;
             }
         }
@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Native
             fixed (short* samplesPtr = outputSamples)
             fixed (byte* bufferPtr = inputBuffer)
             {
-                return XenkoCeltDecodeShort(celtPtr, bufferPtr, inputBufferSize, samplesPtr, outputSamples.Length / Channels);
+                return xnCeltDecodeShort(celtPtr, bufferPtr, inputBufferSize, samplesPtr, outputSamples.Length / Channels);
             }
         }
 
@@ -83,7 +83,7 @@ namespace SiliconStudio.Xenko.Native
         {
             fixed (byte* bufferPtr = inputBuffer)
             {
-                return XenkoCeltDecodeShort(celtPtr, bufferPtr, inputBufferSize, outputSamples, BufferSize);
+                return xnCeltDecodeShort(celtPtr, bufferPtr, inputBufferSize, outputSamples, BufferSize);
             }
         }
 
@@ -98,7 +98,7 @@ namespace SiliconStudio.Xenko.Native
             fixed (short* samplesPtr = audioSamples)
             fixed (byte* bufferPtr = outputBuffer)
             {
-                return XenkoCeltEncodeShort(celtPtr, samplesPtr, audioSamples.Length / Channels, bufferPtr, outputBuffer.Length);
+                return xnCeltEncodeShort(celtPtr, samplesPtr, audioSamples.Length / Channels, bufferPtr, outputBuffer.Length);
             }
         }
 
@@ -114,7 +114,7 @@ namespace SiliconStudio.Xenko.Native
             fixed (float* samplesPtr = outputSamples)
             fixed (byte* bufferPtr = inputBuffer)
             {
-                return XenkoCeltDecodeFloat(celtPtr, bufferPtr, inputBufferSize, samplesPtr, outputSamples.Length / Channels);
+                return xnCeltDecodeFloat(celtPtr, bufferPtr, inputBufferSize, samplesPtr, outputSamples.Length / Channels);
             }
         }
 
@@ -129,7 +129,7 @@ namespace SiliconStudio.Xenko.Native
             fixed (float* samplesPtr = audioSamples)
             fixed (byte* bufferPtr = outputBuffer)
             {
-                return XenkoCeltEncodeFloat(celtPtr, samplesPtr, audioSamples.Length / Channels, bufferPtr, outputBuffer.Length);
+                return xnCeltEncodeFloat(celtPtr, samplesPtr, audioSamples.Length / Channels, bufferPtr, outputBuffer.Length);
             }
         }
 
@@ -137,36 +137,36 @@ namespace SiliconStudio.Xenko.Native
         [SuppressUnmanagedCodeSecurity]
 #endif
         [DllImport(NativeInvoke.Library, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern IntPtr XenkoCeltCreate(int sampleRate, int bufferSize, int channels, bool decoderOnly);
+        internal static extern IntPtr xnCeltCreate(int sampleRate, int bufferSize, int channels, bool decoderOnly);
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
 #endif
         [DllImport(NativeInvoke.Library, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void XenkoCeltDestroy(IntPtr celt);
+        internal static extern void xnCeltDestroy(IntPtr celt);
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
 #endif
         [DllImport(NativeInvoke.Library, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern unsafe int XenkoCeltEncodeFloat(IntPtr celt, float* inputSamples, int numberOfInputSamples, byte* outputBuffer, int maxOutputSize);
+        internal static extern unsafe int xnCeltEncodeFloat(IntPtr celt, float* inputSamples, int numberOfInputSamples, byte* outputBuffer, int maxOutputSize);
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
 #endif
         [DllImport(NativeInvoke.Library, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern unsafe int XenkoCeltDecodeFloat(IntPtr celt, byte* inputBuffer, int inputBufferSize, float* outputBuffer, int numberOfOutputSamples);
+        internal static extern unsafe int xnCeltDecodeFloat(IntPtr celt, byte* inputBuffer, int inputBufferSize, float* outputBuffer, int numberOfOutputSamples);
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
 #endif
         [DllImport(NativeInvoke.Library, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern unsafe int XenkoCeltEncodeShort(IntPtr celt, short* inputSamples, int numberOfInputSamples, byte* outputBuffer, int maxOutputSize);
+        internal static extern unsafe int xnCeltEncodeShort(IntPtr celt, short* inputSamples, int numberOfInputSamples, byte* outputBuffer, int maxOutputSize);
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
 #endif
         [DllImport(NativeInvoke.Library, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern unsafe int XenkoCeltDecodeShort(IntPtr celt, byte* inputBuffer, int inputBufferSize, short* outputBuffer, int numberOfOutputSamples);
+        internal static extern unsafe int xnCeltDecodeShort(IntPtr celt, byte* inputBuffer, int inputBufferSize, short* outputBuffer, int numberOfOutputSamples);
     }
 }
