@@ -29,7 +29,6 @@
 using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Core.Mathematics
 {
@@ -41,7 +40,7 @@ namespace SiliconStudio.Core.Mathematics
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct Color4 : IEquatable<Color4>, IFormattable
     {
-        private const string toStringFormat = "A:{0} R:{1} G:{2} B:{3}";
+        private const string ToStringFormat = "A:{0} R:{1} G:{2} B:{3}";
 
         /// <summary>
         /// The Black color (0, 0, 0, 1).
@@ -159,9 +158,9 @@ namespace SiliconStudio.Core.Mathematics
         public Color4(float[] values)
         {
             if (values == null)
-                throw new ArgumentNullException("values");
+                throw new ArgumentNullException(nameof(values));
             if (values.Length != 4)
-                throw new ArgumentOutOfRangeException("values", "There must be four and only four input values for Color4.");
+                throw new ArgumentOutOfRangeException(nameof(values), "There must be four and only four input values for Color4.");
 
             R = values[0];
             G = values[1];
@@ -237,7 +236,7 @@ namespace SiliconStudio.Core.Mathematics
                     case 3: return A;
                 }
 
-                throw new ArgumentOutOfRangeException("index", "Indices for Color4 run from 0 to 3, inclusive.");
+                throw new ArgumentOutOfRangeException(nameof(index), "Indices for Color4 run from 0 to 3, inclusive.");
             }
 
             set
@@ -248,7 +247,7 @@ namespace SiliconStudio.Core.Mathematics
                     case 1: G = value; break;
                     case 2: B = value; break;
                     case 3: A = value; break;
-                    default: throw new ArgumentOutOfRangeException("index", "Indices for Color4 run from 0 to 3, inclusive.");
+                    default: throw new ArgumentOutOfRangeException(nameof(index), "Indices for Color4 run from 0 to 3, inclusive.");
                 }
             }
         }
@@ -327,7 +326,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>A four-element array containing the components of the color.</returns>
         public float[] ToArray()
         {
-            return new float[] { R, G, B, A };
+            return new[] { R, G, B, A };
         }
 
         /// <summary>
@@ -893,10 +892,10 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="string"/> that represents this instance.
         /// </returns>
         public override string ToString()
         {
@@ -904,11 +903,11 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
         /// <param name="format">The format to apply to each channel (float).</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="string"/> that represents this instance.
         /// </returns>
         public string ToString(string format)
         {
@@ -916,32 +915,31 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="string"/> that represents this instance.
         /// </returns>
         public string ToString(IFormatProvider formatProvider)
         {
-            return string.Format(formatProvider, toStringFormat, A, R, G, B);
+            return string.Format(formatProvider, ToStringFormat, A, R, G, B);
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
         /// <param name="format">The format to apply to each channel (float).</param>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="string"/> that represents this instance.
         /// </returns>
         public string ToString(string format, IFormatProvider formatProvider)
         {
             if (format == null)
                 return ToString(formatProvider);
 
-            return string.Format(formatProvider,
-                                 toStringFormat,
+            return string.Format(formatProvider, ToStringFormat,
                                  A.ToString(format, formatProvider),
                                  R.ToString(format, formatProvider),
                                  G.ToString(format, formatProvider),
