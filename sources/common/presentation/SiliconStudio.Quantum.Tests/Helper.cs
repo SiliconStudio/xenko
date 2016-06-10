@@ -119,7 +119,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(targetValue, objReference.TargetNode.Content.Retrieve());
             // Check that the values match.
             Assert.AreEqual(targetValue, objReference.ObjectValue);
-            // Check that we have no index.
+            // Check that that we have an index if expected.
             Assert.AreEqual(hasIndex, !reference.Index.IsEmpty);
             // Check that the target is an object content node.
             TestNonCollectionObjectContentNode(objReference.TargetNode, targetValue, objReference.TargetNode.Children.Count);

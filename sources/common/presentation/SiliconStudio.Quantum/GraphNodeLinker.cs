@@ -10,7 +10,7 @@ namespace SiliconStudio.Quantum
     /// </summary>
     /// <remarks>
     /// One of the two hierarchies is considered to be the "source" for the linker. This hierarchy is visited by the <see cref="GraphNodeLinker"/>,
-    /// and for each not, it will try to find a corresponding node in the other "target" hierarchy.
+    /// and for each node, it will try to find a corresponding node in the other "target" hierarchy.
     /// By deriving this class, the way this correspondance between two nodes is established can be customized.
     /// </remarks>
     public class GraphNodeLinker

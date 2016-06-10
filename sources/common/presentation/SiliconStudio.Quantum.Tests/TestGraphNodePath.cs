@@ -106,6 +106,29 @@ namespace SiliconStudio.Quantum.Tests
         }
 
         [Test]
+        public void TestPushStructMember()
+        {
+            var obj = new Class { StructMember = { StringMember = "aa" } };
+            var nodeContainer = new NodeContainer();
+            var rootNode = nodeContainer.GetOrCreateNode(obj);
+            var path = new GraphNodePath(rootNode).PushMember(nameof(Class.StructMember)).PushMember(nameof(Struct.StringMember));
+            var structNode = rootNode.GetChild(nameof(Class.StructMember));
+            var memberNode = rootNode.GetChild(nameof(Class.StructMember)).GetChild(nameof(Struct.StringMember));
+            var nodes = new[] { rootNode, structNode, memberNode };
+            Assert.NotNull(memberNode);
+            Assert.True(path.IsValid);
+            Assert.False(path.IsEmpty);
+            Assert.AreEqual(rootNode, path.RootNode);
+            Assert.AreEqual(memberNode, path.GetNode());
+            var i = 0;
+            foreach (var node in path)
+            {
+                Assert.AreEqual(nodes[i++], node);
+            }
+            Assert.AreEqual(nodes.Length, i);
+        }
+
+        [Test]
         public void TestPushTarget()
         {
             var obj = new Class { ClassMember = new Class() };
