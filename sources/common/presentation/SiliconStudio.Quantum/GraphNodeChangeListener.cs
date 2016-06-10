@@ -51,10 +51,9 @@ namespace SiliconStudio.Quantum
         /// <inheritdoc/>
         public void Dispose()
         {
-            foreach (var node in rootNode.GetAllChildNodes())
-            {
-                UnregisterNode(node.Item1);
-            }
+            var visitor = new GraphVisitorBase();
+            visitor.Visiting += UnregisterNode;
+            visitor.Visit(rootNode);
         }
 
         public GraphNodePath GetPath(IContentNode node)
@@ -81,7 +80,7 @@ namespace SiliconStudio.Quantum
             node.Content.Changed += ContentChanged;
         }
 
-        protected virtual void UnregisterNode(IGraphNode node)
+        protected virtual void UnregisterNode(IGraphNode node, GraphNodePath path)
         {
             if (!registeredNodes.ContainsKey(node))
                 throw new InvalidOperationException("Node not registered");
@@ -95,10 +94,9 @@ namespace SiliconStudio.Quantum
 
         private void RegisterAllNodes()
         {
-            foreach (var node in rootNode.GetAllChildNodes(new GraphNodePath(rootNode)))
-            {
-                RegisterNode(node.Item1, node.Item2);
-            }
+            var visitor = new GraphVisitorBase();
+            visitor.Visiting += RegisterNode;
+            visitor.Visit(rootNode);
         }
 
         private void ContentPrepareChange(object sender, ContentChangeEventArgs e)
@@ -107,25 +105,23 @@ namespace SiliconStudio.Quantum
             var path = GetPath(e.Content.OwnerNode);
             if (node != null)
             {
+                var visitor = new GraphVisitorBase();
+                visitor.Visiting += UnregisterNode;
                 switch (e.ChangeType)
                 {
                     case ContentChangeType.ValueChange:
-                        foreach (var child in node.GetAllChildNodes())
-                        {
-                            UnregisterNode(child.Item1);
-                        }
+                        // The changed node itself is still valid, we don't want to unregister it
+                        visitor.SkipRootNode = true;
+                        visitor.Visit(node, path);
                         break;
                     case ContentChangeType.CollectionRemove:
                         if (node.Content.IsReference && e.OldValue != null)
                         {
                             var removedNode = node.Content.Reference.AsEnumerable[e.Index].TargetNode;
+                            var removedNodePath = path?.PushIndex(e.Index);
                             if (removedNode != null)
                             {
-                                foreach (var child in removedNode.GetAllChildNodes())
-                                {
-                                    UnregisterNode(child.Item1);
-                                }
-                                UnregisterNode(removedNode);
+                                visitor.Visit(removedNode, removedNodePath);
                             }
                         }
                         break;
@@ -141,13 +137,14 @@ namespace SiliconStudio.Quantum
             var path = GetPath(e.Content.OwnerNode);
             if (node != null)
             {
+                var visitor = new GraphVisitorBase();
+                visitor.Visiting += RegisterNode;
                 switch (e.ChangeType)
                 {
                     case ContentChangeType.ValueChange:
-                        foreach (var child in node.GetAllChildNodes(path))
-                        {
-                            RegisterNode(child.Item1, child.Item2);
-                        }
+                        // The changed node itself is still valid, we don't want to re-register it
+                        visitor.SkipRootNode = true;
+                        visitor.Visit(node, path);
                         break;
                     case ContentChangeType.CollectionAdd:
                         if (node.Content.IsReference && e.NewValue != null)
@@ -168,11 +165,7 @@ namespace SiliconStudio.Quantum
                             if (addedNode != null)
                             {
                                 var addedNodePath = path?.PushIndex(index);
-                                RegisterNode(addedNode, addedNodePath);
-                                foreach (var child in addedNode.GetAllChildNodes())
-                                {
-                                    RegisterNode(child.Item1, child.Item2);
-                                }
+                                visitor.Visit(addedNode, addedNodePath);
                             }
                         }
                         break;
