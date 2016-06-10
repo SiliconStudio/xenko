@@ -3,11 +3,9 @@ Id: 693f0d3d-b0ef-4cb8-bc84-0aa69efb3462
 SerializedVersion: {Xenko: 1.7.0-beta03}
 Tags: []
 FontSource: !SystemFontProvider
-    ~Id: d2a3439e-01ab-4e76-922e-39bd365dbfa1
+    ~Id: abc7e20e-5210-4649-ad49-5fcc9da25254
     FontName: Meiryo
     Style: Regular
 FontType: !RuntimeRasterizedSpriteFontType
-    ~Id: a97e107e-52f7-4548-9fdd-85b83d42c098
+    ~Id: 3b267a3a-ebca-4a08-85d0-9ec87feda2ae
     Size: 14.0
-    AntiAlias: Grayscale
-DefaultCharacter: ' '

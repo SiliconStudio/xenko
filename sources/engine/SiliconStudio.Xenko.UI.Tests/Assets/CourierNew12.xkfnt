@@ -3,11 +3,10 @@ Id: 81fc0346-d4f8-4717-98af-ef896c15379f
 SerializedVersion: {Xenko: 1.7.0-beta03}
 Tags: []
 FontSource: !SystemFontProvider
-    ~Id: 99155058-4643-487b-8afd-7a4f7859b80a
+    ~Id: db5961a7-da42-485b-9b81-ea7f616b8037
     FontName: Courier New
     Style: Regular
 FontType: !RuntimeRasterizedSpriteFontType
-    ~Id: 50f98fbd-4080-430a-bd2f-d5aa86b7ef0d
+    ~Id: e9a35d38-7eb1-4ac8-a6a9-903e7b271ede
     Size: 12.0
     AntiAlias: Aliased
-DefaultCharacter: ' '

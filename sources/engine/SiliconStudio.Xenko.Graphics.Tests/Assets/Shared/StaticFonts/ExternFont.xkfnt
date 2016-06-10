@@ -3,14 +3,12 @@ Id: 2382194a-83fb-45fb-96e6-27fae1056e99
 SerializedVersion: {Xenko: 1.7.0-beta03}
 Tags: []
 FontSource: !FileFontProvider
-    ~Id: cb9f6de8-65dc-4706-bc89-fc355d184162
+    ~Id: 4616f321-ad19-481e-99ef-38912e5668fe
     Source: ../../../../../data/tests/Risaltyp_024.ttf
 FontType: !OfflineRasterizedSpriteFontType
-    ~Id: 83724522-5e04-40f8-8393-1cf625fbdf4d
-    AntiAlias: Grayscale
+    ~Id: e906c0c0-6ba1-4105-a948-eef8a756b33b
     CharacterSet: null
     CharacterRegions:
-        -   ~Id: c9bb5db9-0781-493c-a427-50fa6ff7dc0f
+        -   ~Id: fb81d7e8-e8d7-4ddc-a01e-8f7ad260e74e
             Start: ' '
             End: "\x7F"
-DefaultCharacter: ' '

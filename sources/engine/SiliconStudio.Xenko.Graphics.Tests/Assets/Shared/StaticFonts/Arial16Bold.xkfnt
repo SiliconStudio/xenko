@@ -3,18 +3,13 @@ Id: a8c5497e-7dea-46ec-a818-5728f34f5cc5
 SerializedVersion: {Xenko: 1.7.0-beta03}
 Tags: []
 FontSource: !SystemFontProvider
-    ~Id: 8c7bd48f-6a31-4422-a001-cabf05bf1ad2
+    ~Id: 67f8b451-305e-4326-8ef0-dcbf4990982d
     FontName: Arial
     Style: Bold
 FontType: !OfflineRasterizedSpriteFontType
-    ~Id: 84e695b5-51d7-4ad3-aede-bd27ed8b2456
-    AntiAlias: Grayscale
+    ~Id: 0fdc9a16-e01d-4ada-98bd-b85a9e1aaebc
     CharacterSet: 
     CharacterRegions:
-        -   ~Id: e0945d27-db16-4c93-aef8-1f0b9665489e
+        -   ~Id: 0395db24-6edb-49f7-802e-9d2583fb2441
             Start: ' '
             End: "\x7F"
-        -   ~Id: 00c45694-259e-4647-906d-bd06604fb931
-            Start: ' '
-            End: "\x7F"
-DefaultCharacter: ' '

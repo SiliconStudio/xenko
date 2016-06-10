@@ -3,11 +3,10 @@ Id: 08cf0491-78f1-42ee-93e4-7ad8732c766e
 SerializedVersion: {Xenko: 1.7.0-beta03}
 Tags: []
 FontSource: !SystemFontProvider
-    ~Id: b0eaafb3-0bf3-4935-bc43-625215319702
+    ~Id: 020ca592-4154-4c57-a58a-992f0466daf9
     FontName: MS Mincho
     Style: Regular
 FontType: !RuntimeRasterizedSpriteFontType
-    ~Id: 5fb27df7-1d4d-42c2-854e-6382290da0f7
+    ~Id: 2aa11d80-bab6-4558-9eba-a958a2cf6d68
     Size: 10.0
     AntiAlias: Aliased
-DefaultCharacter: ' '

@@ -3,19 +3,14 @@ Id: 5112dbcb-a943-43fd-9228-2e8fecddf643
 SerializedVersion: {Xenko: 1.7.0-beta03}
 Tags: []
 FontSource: !SystemFontProvider
-    ~Id: a575479c-3d44-4f6d-ba99-b527e4764445
+    ~Id: 754c5b4b-9413-4601-943c-ff5623eeba11
     FontName: Microsoft Sans Serif
     Style: Regular
 FontType: !OfflineRasterizedSpriteFontType
-    ~Id: 20accf03-7aff-4da3-8f21-f0292e30d405
+    ~Id: 7e5a1b52-a052-4408-8731-33caab9e6b03
     Size: 15.75
-    AntiAlias: Grayscale
     CharacterSet: null
     CharacterRegions:
-        -   ~Id: 8519f8ff-4f7d-4be8-aa48-92e26062bcee
+        -   ~Id: 8ef45f36-11f8-48b6-97d9-2c734aa46c96
             Start: ' '
             End: "\x7F"
-        -   ~Id: 3234e4fc-e718-4a16-baa4-7d90bebe8793
-            Start: ' '
-            End: "\x7F"
-DefaultCharacter: ' '

@@ -3,11 +3,9 @@ Id: e3beb255-7a4c-46a6-8f8a-65703d344614
 SerializedVersion: {Xenko: 1.7.0-beta03}
 Tags: []
 FontSource: !SystemFontProvider
-    ~Id: 65839717-72c2-4f92-aa23-ae463f44fb50
+    ~Id: 9ce59cfb-33d8-4c75-be25-c5122329f4de
     FontName: Arial
     Style: Regular
 FontType: !RuntimeRasterizedSpriteFontType
-    ~Id: 967fdbb4-f934-45f2-a2e4-17e4cc8f0e52
+    ~Id: bde2fc5e-d926-4652-af9e-8de06307a0e5
     Size: 12.0
-    AntiAlias: Grayscale
-DefaultCharacter: ' '

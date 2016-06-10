@@ -3,19 +3,15 @@ Id: 90b99454-a7b4-4b88-8d42-638acc73e34b
 SerializedVersion: {Xenko: 1.7.0-beta03}
 Tags: []
 FontSource: !SystemFontProvider
-    ~Id: 4a8cd9fc-502b-4687-93fe-3ace5ed1bf80
+    ~Id: bd7c2d04-3e1e-4208-b984-ec725be7fbbe
     FontName: Courier New
     Style: Regular
 FontType: !OfflineRasterizedSpriteFontType
-    ~Id: 69d4b20a-b51d-48f6-bec7-dab0518f3190
+    ~Id: acd997cb-3149-4b36-b751-dd2373c86ca0
     Size: 10.0
-    AntiAlias: Aliased
     CharacterSet: 
     CharacterRegions:
-        -   ~Id: 4231fb6d-939c-48a7-acfb-ebb5ec3ef102
+        -   ~Id: 5e580dc4-e084-4d50-9f98-c0643c394343
             Start: ' '
             End: "\x7F"
-        -   ~Id: b68d9777-7069-40f7-84bf-b4cd0bac3aef
-            Start: ' '
-            End: "\x7F"
-DefaultCharacter: ' '
+    AntiAlias: Aliased

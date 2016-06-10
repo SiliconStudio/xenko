@@ -3,19 +3,14 @@ Id: 83cbacc4-ae04-4a9b-94ef-4ecd49557287
 SerializedVersion: {Xenko: 1.7.0-beta03}
 Tags: []
 FontSource: !SystemFontProvider
-    ~Id: afc8df61-4132-4f26-b50b-50eab33fec06
+    ~Id: 9f528bbd-b32a-4881-8fbe-6b53f18371bb
     FontName: Calibri
     Style: Regular
 FontType: !OfflineRasterizedSpriteFontType
-    ~Id: 33dddd57-df79-4135-bcb1-8c5e54ad801f
+    ~Id: a8f376c0-8e10-4431-8bf8-0fcee9c2d1d2
     Size: 64.0
-    AntiAlias: Grayscale
     CharacterSet: 
     CharacterRegions:
-        -   ~Id: 2ff72301-b8f7-4cb8-9f93-66541f81ede9
+        -   ~Id: 7cab1a45-2a01-43a3-9706-d7fe8d8fe14c
             Start: ' '
             End: "\x7F"
-        -   ~Id: 96233df8-7771-4d16-ae67-fa68556ed926
-            Start: ' '
-            End: "\x7F"
-DefaultCharacter: ' '
