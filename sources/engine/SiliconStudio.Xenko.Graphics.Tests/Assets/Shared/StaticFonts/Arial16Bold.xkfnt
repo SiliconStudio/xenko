@@ -6,7 +6,7 @@ FontSource: !SystemFontProvider
     ~Id: 8c7bd48f-6a31-4422-a001-cabf05bf1ad2
     FontName: Arial
     Style: Bold
-FontType: !SpriteFontTypeStatic
+FontType: !OfflineRasterizedSpriteFontType
     ~Id: 84e695b5-51d7-4ad3-aede-bd27ed8b2456
     AntiAlias: Grayscale
     CharacterSet: 

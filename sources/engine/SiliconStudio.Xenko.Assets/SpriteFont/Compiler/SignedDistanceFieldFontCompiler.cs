@@ -101,7 +101,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
         /// <returns>A SpriteFontData object.</returns>
         public static Graphics.SpriteFont Compile(IFontFactory fontFactory, SpriteFontAsset fontAsset)
         {
-            var fontTypeSDF = fontAsset.FontType as SpriteFontTypeSignedDistanceField;
+            var fontTypeSDF = fontAsset.FontType as SignedDistanceFieldSpriteFontType;
             if (fontTypeSDF == null)
                 throw new ArgumentException("Tried to compile a dynamic sprite font with compiler for signed distance field fonts");
 
@@ -178,7 +178,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
         {
             var characters = new List<char>();
 
-            var fontTypeSDF = asset.FontType as SpriteFontTypeSignedDistanceField;
+            var fontTypeSDF = asset.FontType as SignedDistanceFieldSpriteFontType;
             if (fontTypeSDF == null)
                 throw new ArgumentException("Tried to compile a dynamic sprite font with compiler for signed distance field fonts");
             

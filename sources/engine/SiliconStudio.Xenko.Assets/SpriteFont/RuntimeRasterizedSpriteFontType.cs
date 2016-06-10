@@ -7,9 +7,9 @@ using SiliconStudio.Xenko.Graphics.Font;
 
 namespace SiliconStudio.Xenko.Assets.SpriteFont
 {
-    [DataContract("SpriteFontTypeDynamic")]
+    [DataContract("RuntimeRasterizedSpriteFontType")]
     [Display("Runtime Rasterized")]
-    public class SpriteFontTypeDynamic : SpriteFontTypeBase
+    public class RuntimeRasterizedSpriteFontType : SpriteFontTypeBase
     {
         /// <inheritdoc/>
         [DataMember(110)]

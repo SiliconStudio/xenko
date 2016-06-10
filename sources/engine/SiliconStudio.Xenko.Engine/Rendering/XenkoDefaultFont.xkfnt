@@ -6,7 +6,7 @@ FontSource: !SystemFontProvider
     ~Id: cacdf86c-090f-4043-a198-f480569aab63
     FontName: Courier New
     Style: Bold
-FontType: !SpriteFontTypeDynamic
+FontType: !RuntimeRasterizedSpriteFontType
     ~Id: 00105340-3b9d-4dc7-8601-36302460cf1c
     AntiAlias: Grayscale
 DefaultCharacter: ' '

@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         [DataMember(50)]
         [NotNull]
         [Display(null, "Font")]
-        public SpriteFontTypeBase FontType { get; set; } = new SpriteFontTypeStatic();
+        public SpriteFontTypeBase FontType { get; set; } = new OfflineRasterizedSpriteFontType();
 
         /// <summary>
         /// Gets or sets the fallback character used when asked to render a character that is not
@@ -207,7 +207,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
                     if (fontType.Equals("Dynamic"))
                     {
-                        newType.Node.Tag = "!SpriteFontTypeDynamic";
+                        newType.Node.Tag = "!RuntimeRasterizedSpriteFontType";
 
                         if (asset.AntiAlias != null)
                             newSource.AddChild("AntiAlias", asset.AntiAlias);
@@ -215,7 +215,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                     else 
                     if (fontType.Equals("SDF"))
                     {
-                        newType.Node.Tag = "!SpriteFontTypeSignedDistanceField";
+                        newType.Node.Tag = "!SignedDistanceFieldSpriteFontType";
 
                         if (asset.Size != null)
                             newType.AddChild("Size", asset.Size);
@@ -228,7 +228,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                     }
                     else
                     {
-                        newType.Node.Tag = "!SpriteFontTypeStatic";
+                        newType.Node.Tag = "!OfflineRasterizedSpriteFontType";
 
                         if (asset.Size != null)
                             newType.AddChild("Size", asset.Size);

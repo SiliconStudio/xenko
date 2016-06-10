@@ -3,14 +3,14 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets.SpriteFont
 {
-    public class StaticSpriteFontFactory : AssetFactory<SpriteFontAsset>
+    public class OfflineRasterizedSpriteFontFactory : AssetFactory<SpriteFontAsset>
     {
         public static SpriteFontAsset Create()
         {
             return new SpriteFontAsset
             {
                 FontSource = new SystemFontProvider("Arial"),
-                FontType = new SpriteFontTypeStatic()
+                FontType = new OfflineRasterizedSpriteFontType()
                 {
                     CharacterRegions = { new CharacterRegion(' ', (char)127) }                 
                 },
@@ -23,14 +23,14 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         }
     }
 
-    public class DynamicSpriteFontFactory : AssetFactory<SpriteFontAsset>
+    public class RuntimeRasterizedSpriteFontFactory : AssetFactory<SpriteFontAsset>
     {
         public static SpriteFontAsset Create()
         {
             return new SpriteFontAsset
             {
                 FontSource = new SystemFontProvider("Arial"),
-                FontType = new SpriteFontTypeDynamic(),
+                FontType = new RuntimeRasterizedSpriteFontType(),
             };
         }
 
@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             return new SpriteFontAsset
             {
                 FontSource = new SystemFontProvider("Arial"),
-                FontType = new SpriteFontTypeSignedDistanceField()
+                FontType = new SignedDistanceFieldSpriteFontType()
                 {
                     CharacterRegions = { new CharacterRegion(' ', (char)127) }
                 },

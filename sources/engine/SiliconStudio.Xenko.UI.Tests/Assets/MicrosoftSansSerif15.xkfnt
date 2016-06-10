@@ -6,7 +6,7 @@ FontSource: !SystemFontProvider
     ~Id: a575479c-3d44-4f6d-ba99-b527e4764445
     FontName: Microsoft Sans Serif
     Style: Regular
-FontType: !SpriteFontTypeStatic
+FontType: !OfflineRasterizedSpriteFontType
     ~Id: 20accf03-7aff-4da3-8f21-f0292e30d405
     Size: 15.75
     AntiAlias: Grayscale

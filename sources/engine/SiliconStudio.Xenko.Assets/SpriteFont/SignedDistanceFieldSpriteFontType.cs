@@ -9,11 +9,11 @@ using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Xenko.Assets.SpriteFont
 {
-    [DataContract("SpriteFontTypeSignedDistanceField")]
+    [DataContract("SignedDistanceFieldSpriteFontType")]
     [Display("Signed Distance Field")]
-    public class SpriteFontTypeSignedDistanceField : SpriteFontTypeBase
+    public class SignedDistanceFieldSpriteFontType : SpriteFontTypeBase
     {
-        public SpriteFontTypeSignedDistanceField()
+        public SignedDistanceFieldSpriteFontType()
         {
             CharacterRegions = new List<CharacterRegion>() { new CharacterRegion(' ', (char)127) };
         }

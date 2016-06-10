@@ -91,10 +91,10 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
     /// <summary>
     /// Main class used to compile a Font file XML file.
     /// </summary>
-    public class StaticFontCompiler
+    public class OfflineRasterizedFontCompiler
     {
         /// <summary>
-        /// Compiles the specified font description into a <see cref="StaticSpriteFont" /> object.
+        /// Compiles the specified font description into a <see cref="OfflineRasterizedSpriteFont" /> object.
         /// </summary>
         /// <param name="fontFactory">The font factory used to create the fonts</param>
         /// <param name="fontAsset">The font description.</param>
@@ -102,7 +102,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
         /// <returns>A SpriteFontData object.</returns>
         public static Graphics.SpriteFont Compile(IFontFactory fontFactory, SpriteFontAsset fontAsset, bool srgb)
         {
-            var fontTypeStatic = fontAsset.FontType as SpriteFontTypeStatic;
+            var fontTypeStatic = fontAsset.FontType as OfflineRasterizedSpriteFontType;
             if (fontTypeStatic == null)
                 throw new ArgumentException("Tried to compile a dynamic sprite font with compiler for static fonts");
 
@@ -139,7 +139,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
                 }
             }
 
-            return StaticSpriteFontWriter.CreateSpriteFontData(fontFactory, fontAsset, glyphs, lineSpacing, baseLine, bitmap, srgb);
+            return OfflineRasterizedSpriteFontWriter.CreateSpriteFontData(fontFactory, fontAsset, glyphs, lineSpacing, baseLine, bitmap, srgb);
         }
 
         static Glyph[] ImportFont(SpriteFontAsset options, out float lineSpacing, out float baseLine)
@@ -205,7 +205,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
         {
             var characters = new List<char>();
 
-            var fontTypeStatic = asset.FontType as SpriteFontTypeStatic;
+            var fontTypeStatic = asset.FontType as OfflineRasterizedSpriteFontType;
             if (fontTypeStatic == null)
                 throw new ArgumentException("Tried to compile a dynamic sprite font with compiler for signed distance field fonts");
 

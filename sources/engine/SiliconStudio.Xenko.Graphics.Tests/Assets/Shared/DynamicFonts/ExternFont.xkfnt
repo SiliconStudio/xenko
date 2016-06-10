@@ -6,7 +6,7 @@ FontSource: !SystemFontProvider
     ~Id: 26415673-b421-472f-9124-94722d94bd2e
     FontName: Arial
     Style: Regular
-FontType: !SpriteFontTypeDynamic
+FontType: !RuntimeRasterizedSpriteFontType
     ~Id: 37516ccb-81f6-4cce-8204-fe158cacbfd2
     AntiAlias: Grayscale
 DefaultCharacter: ' '

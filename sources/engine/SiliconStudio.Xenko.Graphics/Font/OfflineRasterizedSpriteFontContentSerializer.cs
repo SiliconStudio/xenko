@@ -5,11 +5,11 @@ using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Graphics.Font
 {
-    internal class DynamicSpriteFontContentSerializer : DataContentSerializer<DynamicSpriteFont>
+    internal class OfflineRasterizedSpriteFontContentSerializer : DataContentSerializer<OfflineRasterizedSpriteFont>
     {
         public override object Construct(ContentSerializerContext context)
         {
-            return new DynamicSpriteFont();
+            return new OfflineRasterizedSpriteFont();
         }
     }
 }

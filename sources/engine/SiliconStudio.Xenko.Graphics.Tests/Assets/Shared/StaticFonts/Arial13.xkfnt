@@ -6,7 +6,7 @@ FontSource: !SystemFontProvider
     ~Id: d6dc912f-0775-4e10-b809-07b15d6157bc
     FontName: Arial
     Style: Regular
-FontType: !SpriteFontTypeStatic
+FontType: !OfflineRasterizedSpriteFontType
     ~Id: 4f1681d9-550d-4530-be7b-9484133c07fc
     Size: 13.0
     AntiAlias: Grayscale

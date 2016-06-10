@@ -6,7 +6,7 @@ FontSource: !SystemFontProvider
     ~Id: a8030cb3-5570-4df6-b50c-f086b496fcd5
     FontName: Calibri
     Style: Regular
-FontType: !SpriteFontTypeDynamic
+FontType: !RuntimeRasterizedSpriteFontType
     ~Id: 9f82003b-a61c-4106-bffe-5e51e4c39dfe
     AntiAlias: Grayscale
 DefaultCharacter: ' '

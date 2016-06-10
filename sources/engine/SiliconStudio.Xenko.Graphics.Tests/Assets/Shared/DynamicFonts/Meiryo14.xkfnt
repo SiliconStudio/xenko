@@ -6,7 +6,7 @@ FontSource: !SystemFontProvider
     ~Id: d2a3439e-01ab-4e76-922e-39bd365dbfa1
     FontName: Meiryo
     Style: Regular
-FontType: !SpriteFontTypeDynamic
+FontType: !RuntimeRasterizedSpriteFontType
     ~Id: a97e107e-52f7-4548-9fdd-85b83d42c098
     AntiAlias: Grayscale
 DefaultCharacter: ' '

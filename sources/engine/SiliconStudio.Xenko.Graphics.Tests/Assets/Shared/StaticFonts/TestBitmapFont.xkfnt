@@ -6,7 +6,7 @@ FontSource: !SystemFontProvider
     ~Id: 3978a382-eb3d-4bf7-9daa-f656c7c79191
     FontName: Courier New
     Style: Regular
-FontType: !SpriteFontTypeStatic
+FontType: !OfflineRasterizedSpriteFontType
     ~Id: 06fe6b5f-00d5-4a4d-a130-a668583ba5cc
     Size: 8.25
     AntiAlias: Grayscale

@@ -31,9 +31,9 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         {
             var colorSpace = context.GetColorSpace();
 
-            if (asset.FontType is SpriteFontTypeSignedDistanceField)
+            if (asset.FontType is SignedDistanceFieldSpriteFontType)
             {
-                var fontTypeSDF = asset.FontType as SpriteFontTypeSignedDistanceField;
+                var fontTypeSDF = asset.FontType as SignedDistanceFieldSpriteFontType;
 
                 // copy the asset and transform the source and character set file path to absolute paths
                 var assetClone = (SpriteFontAsset)AssetCloner.Clone(asset);
@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 result.BuildSteps = new AssetBuildStep(AssetItem) { new SignedDistanceFieldFontCommand(urlInStorage, assetClone) };
             }
             else
-            if (asset.FontType is SpriteFontTypeDynamic)
+            if (asset.FontType is RuntimeRasterizedSpriteFontType)
             {
                 UFile fontPathOnDisk;
 
@@ -55,12 +55,12 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 result.BuildSteps = new AssetBuildStep(AssetItem)
                 {
                     new ImportStreamCommand { SourcePath = fontPathOnDisk, Location = fontImportLocation },
-                    new DynamicFontCommand(urlInStorage, asset)
+                    new RuntimeRasterizedFontCommand(urlInStorage, asset)
                 };  
             }
             else
             {
-                var fontTypeStatic = asset.FontType as SpriteFontTypeStatic;
+                var fontTypeStatic = asset.FontType as OfflineRasterizedSpriteFontType;
                 if (fontTypeStatic == null)
                     throw new ArgumentException("Tried to compile a dynamic sprite font with compiler for signed distance field fonts");
 
@@ -70,15 +70,15 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 assetClone.FontSource = asset.FontSource;
                 fontTypeStatic.CharacterSet = !string.IsNullOrEmpty(fontTypeStatic.CharacterSet) ? UPath.Combine(assetDirectory, fontTypeStatic.CharacterSet): null;
 
-                result.BuildSteps = new AssetBuildStep(AssetItem) { new StaticFontCommand(urlInStorage, assetClone, colorSpace) };
+                result.BuildSteps = new AssetBuildStep(AssetItem) { new OfflineRasterizedFontCommand(urlInStorage, assetClone, colorSpace) };
             }
         }
 
-        internal class StaticFontCommand : AssetCommand<SpriteFontAsset>
+        internal class OfflineRasterizedFontCommand : AssetCommand<SpriteFontAsset>
         {
             private ColorSpace colorspace;
 
-            public StaticFontCommand(string url, SpriteFontAsset description, ColorSpace colorspace)
+            public OfflineRasterizedFontCommand(string url, SpriteFontAsset description, ColorSpace colorspace)
                 : base(url, description)
             {
                 this.colorspace = colorspace;
@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
             protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
             {
-                var fontTypeStatic = AssetParameters.FontType as SpriteFontTypeStatic;
+                var fontTypeStatic = AssetParameters.FontType as OfflineRasterizedSpriteFontType;
                 if (fontTypeStatic == null)
                     throw new ArgumentException("Tried to compile a dynamic sprite font with compiler for signed distance field fonts");
 
@@ -106,7 +106,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 Graphics.SpriteFont staticFont;
                 try
                 {
-                    staticFont = StaticFontCompiler.Compile(FontDataFactory, AssetParameters, colorspace == ColorSpace.Linear);
+                    staticFont = OfflineRasterizedFontCompiler.Compile(FontDataFactory, AssetParameters, colorspace == ColorSpace.Linear);
                 }
                 catch (FontNotFoundException ex) 
                 {
@@ -142,7 +142,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
             protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
             {
-                var fontTypeSDF = AssetParameters.FontType as SpriteFontTypeSignedDistanceField;
+                var fontTypeSDF = AssetParameters.FontType as SignedDistanceFieldSpriteFontType;
                 if (fontTypeSDF == null)
                     throw new ArgumentException("Tried to compile a dynamic sprite font with compiler for signed distance field fonts");
 
@@ -188,9 +188,9 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             }
         }
 
-        internal class DynamicFontCommand : AssetCommand<SpriteFontAsset>
+        internal class RuntimeRasterizedFontCommand : AssetCommand<SpriteFontAsset>
         {
-            public DynamicFontCommand(string url, SpriteFontAsset description)
+            public RuntimeRasterizedFontCommand(string url, SpriteFontAsset description)
                 : base(url, description)
             {
             }

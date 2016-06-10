@@ -10,11 +10,11 @@ using SiliconStudio.Xenko.Graphics.Font;
 
 namespace SiliconStudio.Xenko.Assets.SpriteFont
 {
-    [DataContract("SpriteFontTypeStatic")]
+    [DataContract("OfflineRasterizedSpriteFontType")]
     [Display("Offline Rasterized")]
-    public class SpriteFontTypeStatic : SpriteFontTypeBase
+    public class OfflineRasterizedSpriteFontType : SpriteFontTypeBase
     {
-        public SpriteFontTypeStatic()
+        public OfflineRasterizedSpriteFontType()
         {
             CharacterRegions = new List<CharacterRegion>() { new CharacterRegion(' ', (char)127) };
         }

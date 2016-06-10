@@ -6,7 +6,7 @@ FontSource: !SystemFontProvider
     ~Id: afc8df61-4132-4f26-b50b-50eab33fec06
     FontName: Calibri
     Style: Regular
-FontType: !SpriteFontTypeStatic
+FontType: !OfflineRasterizedSpriteFontType
     ~Id: 33dddd57-df79-4135-bcb1-8c5e54ad801f
     Size: 64.0
     AntiAlias: Grayscale

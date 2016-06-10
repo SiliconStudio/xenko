@@ -6,7 +6,7 @@ FontSource: !SystemFontProvider
     ~Id: cdf16a5b-66f9-4a2f-a4fd-b26b0b9268b3
     FontName: MS Mincho
     Style: Regular
-FontType: !SpriteFontTypeDynamic
+FontType: !RuntimeRasterizedSpriteFontType
     ~Id: b3c8f8bc-15cb-405d-b3c0-9648bf2f3804
     AntiAlias: Aliased
 DefaultCharacter: ' '

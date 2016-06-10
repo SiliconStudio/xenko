@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// <returns>The precompiled sprite font asset</returns>
         public static PrecompiledSpriteFontAsset GeneratePrecompiledSpriteFont(this SpriteFontAsset asset, AssetItem sourceAsset, string texturePath, bool srgb)
         {
-            var staticFont = (StaticSpriteFont)StaticFontCompiler.Compile(FontDataFactory, asset, srgb);
+            var staticFont = (OfflineRasterizedSpriteFont)OfflineRasterizedFontCompiler.Compile(FontDataFactory, asset, srgb);
 
             var referenceToSourceFont = new AssetReference<SpriteFontAsset>(sourceAsset.Id, sourceAsset.Location);
             var glyphs = new List<Glyph>(staticFont.CharacterToGlyph.Values);
