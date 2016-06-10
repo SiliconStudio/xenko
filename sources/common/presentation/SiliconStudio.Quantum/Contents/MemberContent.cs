@@ -46,34 +46,7 @@ namespace SiliconStudio.Quantum.Contents
         /// <inheritdoc/>
         public override void Update(object newValue, Index index)
         {
-            var oldValue = Retrieve(index);
-            NotifyContentChanging(index, ContentChangeType.ValueChange, oldValue, newValue);
-            if (!index.IsEmpty)
-            {
-                var collectionDescriptor = Descriptor as CollectionDescriptor;
-                var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
-                if (collectionDescriptor != null)
-                {
-                    collectionDescriptor.SetValue(Value, index.Int, newValue);
-                }
-                else if (dictionaryDescriptor != null)
-                {
-                    dictionaryDescriptor.SetValue(Value, index.Value, newValue);
-                }
-                else
-                    throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
-            }
-            else
-            {
-                if (Container.Value == null) throw new InvalidOperationException("Container's value is null");
-                var containerValue = Container.Value;
-                Member.Set(containerValue, newValue);
-
-                if (Container.Value.GetType().GetTypeInfo().IsValueType)
-                    Container.UpdateFromMember(containerValue, Index.Empty);
-            }
-            UpdateReferences();
-            NotifyContentChanged(index, ContentChangeType.ValueChange, oldValue, newValue);
+            Update(newValue, index, true);
         }
 
         /// <inheritdoc/>
@@ -157,8 +130,41 @@ namespace SiliconStudio.Quantum.Contents
 
         protected internal override void UpdateFromMember(object newValue, Index index)
         {
-            // TODO: shouldn't we prevent to send notification events in this scenario?
-            Update(newValue, index);
+            Update(newValue, index, false);
+        }
+
+        private void Update(object newValue, Index index, bool sendNotification)
+        {
+            var oldValue = Retrieve(index);
+            if (sendNotification)
+                NotifyContentChanging(index, ContentChangeType.ValueChange, oldValue, newValue);
+            if (!index.IsEmpty)
+            {
+                var collectionDescriptor = Descriptor as CollectionDescriptor;
+                var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
+                if (collectionDescriptor != null)
+                {
+                    collectionDescriptor.SetValue(Value, index.Int, newValue);
+                }
+                else if (dictionaryDescriptor != null)
+                {
+                    dictionaryDescriptor.SetValue(Value, index.Value, newValue);
+                }
+                else
+                    throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
+            }
+            else
+            {
+                if (Container.Value == null) throw new InvalidOperationException("Container's value is null");
+                var containerValue = Container.Value;
+                Member.Set(containerValue, newValue);
+
+                if (Container.Value.GetType().GetTypeInfo().IsValueType)
+                    Container.UpdateFromMember(containerValue, Index.Empty);
+            }
+            UpdateReferences();
+            if (sendNotification)
+                NotifyContentChanged(index, ContentChangeType.ValueChange, oldValue, newValue);
         }
 
         private void UpdateReferences()

@@ -17,7 +17,7 @@ namespace SiliconStudio.Quantum.References
         Type Type { get; }
 
         /// <summary>
-        /// Gets the index of this reference in its parent collection. If the reference is not in a collection, this will return <see cref="Reference.NotInCollection"/>.
+        /// Gets the index of this reference in its parent collection. If the reference is not in a collection, this will return <see cref="Index.Empty"/>.
         /// </summary>
         Index Index { get; }
 
