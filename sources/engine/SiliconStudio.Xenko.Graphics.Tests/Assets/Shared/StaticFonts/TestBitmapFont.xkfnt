@@ -11,9 +11,6 @@ FontType: !OfflineRasterizedSpriteFontType
     AntiAlias: Grayscale
     CharacterSet: ../TestFontCharacterSet.txt
     CharacterRegions:
-        -   ~Id: a9eb9c1d-d105-4a6c-a160-0a5926aa560f
-            Start: ' '
-            End: "\x7F"
         -   ~Id: e1b970c4-1874-4d7e-8163-879961c4fc35
             Start: 0
             End: 9

@@ -14,11 +14,6 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     [Display("Offline Rasterized")]
     public class OfflineRasterizedSpriteFontType : SpriteFontTypeBase
     {
-        public OfflineRasterizedSpriteFontType()
-        {
-            CharacterRegions = new List<CharacterRegion>() { new CharacterRegion(' ', (char)127) };
-        }
-
         /// <inheritdoc/>
         [DataMember(30)]
         [DefaultValue(16.0f)]

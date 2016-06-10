@@ -13,11 +13,6 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     [Display("Signed Distance Field")]
     public class SignedDistanceFieldSpriteFontType : SpriteFontTypeBase
     {
-        public SignedDistanceFieldSpriteFontType()
-        {
-            CharacterRegions = new List<CharacterRegion>() { new CharacterRegion(' ', (char)127) };
-        }
-
         /// <inheritdoc/>
         [DataMember(30)]
         [DefaultValue(16.0f)]
