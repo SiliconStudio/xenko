@@ -147,7 +147,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
                 fontFace.LoadGlyph(glyphIndex, LoadFlags.Default, LoadTarget.Normal);
 
                 // set glyph information
-                character.Glyph.XAdvance = fontFace.Glyph.Advance.X / 64f;
+                character.Glyph.XAdvance = fontFace.Glyph.Advance.X.ToSingle();
 
                 // render the bitmap
                 if (renderBitmap)
@@ -188,7 +188,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
             // calculate and set the size of the font
             // size is in 26.6 factional points (that is in 1/64th of points)
             // 72 => the sizes are in "points" (=1/72 inch), setting resolution to 72 dpi let us specify the size in pixels directly
-            fontFace.SetCharSize((int)Math.Ceiling(size.X * 64), (int)Math.Ceiling(size.Y * 64), 72, 72);
+            fontFace.SetCharSize(size.X, size.Y, 72, 72);
         }
 
         /// <summary>
