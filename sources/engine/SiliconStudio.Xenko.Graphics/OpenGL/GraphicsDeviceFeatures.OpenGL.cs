@@ -69,8 +69,10 @@ namespace SiliconStudio.Xenko.Graphics
             deviceRoot.HasPackedDepthStencilExtension = SupportedExtensions.Contains("GL_OES_packed_depth_stencil");
             deviceRoot.HasExtTextureFormatBGRA8888 = SupportedExtensions.Contains("GL_EXT_texture_format_BGRA8888")
                                        || SupportedExtensions.Contains("GL_APPLE_texture_format_BGRA8888");
-            deviceRoot.HasRenderTargetFloat = SupportedExtensions.Contains("GL_EXT_color_buffer_float");
-            deviceRoot.HasRenderTargetHalf = SupportedExtensions.Contains("GL_EXT_color_buffer_half_float");
+            deviceRoot.HasTextureFloat = isOpenGLES3 || SupportedExtensions.Contains("GL_OES_texture_float");
+            deviceRoot.HasTextureHalf = isOpenGLES3 || SupportedExtensions.Contains("GL_OES_texture_half_float");
+            deviceRoot.HasRenderTargetFloat = isOpenGLES3 || SupportedExtensions.Contains("GL_EXT_color_buffer_float");
+            deviceRoot.HasRenderTargetHalf = isOpenGLES3 || SupportedExtensions.Contains("GL_EXT_color_buffer_half_float");
             deviceRoot.HasVAO = isOpenGLES3 || SupportedExtensions.Contains("GL_OES_vertex_array_object");
             deviceRoot.HasTextureRG = isOpenGLES3 || SupportedExtensions.Contains("GL_EXT_texture_rg");
             deviceRoot.HasKhronosDebug = deviceRoot.currentVersion >= 320 || SupportedExtensions.Contains("GL_KHR_debug");
