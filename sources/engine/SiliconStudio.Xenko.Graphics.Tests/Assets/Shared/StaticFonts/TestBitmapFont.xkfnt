@@ -4,7 +4,7 @@ SerializedVersion: {Xenko: 1.7.0-beta03}
 Tags: []
 FontSource: !SystemFontProvider
     ~Id: 3978a382-eb3d-4bf7-9daa-f656c7c79191
-    FontName: Agency FB
+    FontName: Courier New
     Style: Regular
 FontType: !SpriteFontTypeStatic
     ~Id: 06fe6b5f-00d5-4a4d-a130-a668583ba5cc
