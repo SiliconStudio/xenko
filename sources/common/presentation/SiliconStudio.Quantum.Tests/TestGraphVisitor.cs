@@ -54,13 +54,13 @@ namespace SiliconStudio.Quantum.Tests
         {
             public readonly List<Tuple<IGraphNode, GraphNodePath>> Result = new List<Tuple<IGraphNode, GraphNodePath>>();
 
-            public override void Visit(IGraphNode node)
+            public override void Visit(IGraphNode node, GraphNodePath initialPath = null)
             {
                 Result.Clear();
-                base.Visit(node);
+                base.Visit(node, initialPath);
             }
 
-            public override void VisitNode(IGraphNode node, GraphNodePath currentPath)
+            protected override void VisitNode(IGraphNode node, GraphNodePath currentPath)
             {
                 Result.Add(Tuple.Create(node, currentPath));
                 base.VisitNode(node, currentPath);
@@ -92,6 +92,38 @@ namespace SiliconStudio.Quantum.Tests
                 new GraphNodePath(rootNode).PushMember(nameof(SimpleClass.Member2)).PushTarget(),
                 new GraphNodePath(rootNode).PushMember(nameof(SimpleClass.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member1)),
                 new GraphNodePath(rootNode).PushMember(nameof(SimpleClass.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member2)),
+            };
+            VerifyNodesAndPath(expectedNodes, expectedPaths, visitor);
+        }
+
+        [Test]
+        public void TestSimpleObjectInitialPath()
+        {
+            var nodeContainer = new NodeContainer();
+            var instance = new SimpleClass { Member1 = 3, Member2 = new SimpleClass() };
+            var rootNode = nodeContainer.GetOrCreateNode(instance);
+            var container = new SimpleClass { Member2 = instance };
+            var containerNode = nodeContainer.GetOrCreateNode(container);
+            var initialPath = new GraphNodePath(containerNode).PushMember(nameof(SimpleClass.Member2)).PushTarget();
+            var visitor = new TestVisitor();
+            visitor.Visit(rootNode, initialPath);
+            var expectedNodes = new[]
+            {
+                rootNode,
+                rootNode.GetChild(nameof(SimpleClass.Member1)),
+                rootNode.GetChild(nameof(SimpleClass.Member2)),
+                rootNode.GetChild(nameof(SimpleClass.Member2)).GetTarget(),
+                rootNode.GetChild(nameof(SimpleClass.Member2)).GetTarget().GetChild(nameof(SimpleClass.Member1)),
+                rootNode.GetChild(nameof(SimpleClass.Member2)).GetTarget().GetChild(nameof(SimpleClass.Member2)),
+            };
+            var expectedPaths = new[]
+            {
+                new GraphNodePath(containerNode).PushMember(nameof(SimpleClass.Member2)).PushTarget(),
+                new GraphNodePath(containerNode).PushMember(nameof(SimpleClass.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member1)),
+                new GraphNodePath(containerNode).PushMember(nameof(SimpleClass.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member2)),
+                new GraphNodePath(containerNode).PushMember(nameof(SimpleClass.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member2)).PushTarget(),
+                new GraphNodePath(containerNode).PushMember(nameof(SimpleClass.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member1)),
+                new GraphNodePath(containerNode).PushMember(nameof(SimpleClass.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member2)).PushTarget().PushMember(nameof(SimpleClass.Member2)),
             };
             VerifyNodesAndPath(expectedNodes, expectedPaths, visitor);
         }

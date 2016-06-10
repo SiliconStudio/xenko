@@ -31,7 +31,7 @@ namespace SiliconStudio.Quantum
                 VisitedLinks.Add(sourceNode, targetNode);
             }
 
-            public override void VisitNode(IGraphNode node, GraphNodePath currentPath)
+            protected override void VisitNode(IGraphNode node, GraphNodePath currentPath)
             {
                 var targetNode = linker.FindTarget(node);
                 // Override the target node, in case FindTarget returned a different one.
