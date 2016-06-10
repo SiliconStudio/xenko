@@ -9,4 +9,5 @@ FontSource: !SystemFontProvider
 FontType: !RuntimeRasterizedSpriteFontType
     ~Id: 9f82003b-a61c-4106-bffe-5e51e4c39dfe
     AntiAlias: Grayscale
+    Size: 64.0
 DefaultCharacter: ' '

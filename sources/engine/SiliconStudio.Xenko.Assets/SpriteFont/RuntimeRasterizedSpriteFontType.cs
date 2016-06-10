@@ -12,6 +12,12 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     public class RuntimeRasterizedSpriteFontType : SpriteFontTypeBase
     {
         /// <inheritdoc/>
+        [DataMember(30)]
+        [DefaultValue(16.0f)]
+        [Display("Default Size")]
+        public override float Size { get; set; } = 16.0f;
+
+        /// <inheritdoc/>
         [DataMember(110)]
         [DefaultValue(FontAntiAliasMode.Default)]
         [Display("Anti alias")]

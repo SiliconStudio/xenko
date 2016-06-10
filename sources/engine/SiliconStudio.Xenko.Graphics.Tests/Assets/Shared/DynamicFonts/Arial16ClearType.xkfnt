@@ -8,5 +8,6 @@ FontSource: !SystemFontProvider
     Style: Regular
 FontType: !RuntimeRasterizedSpriteFontType
     ~Id: 011edb89-4ca4-422b-a6b2-5143ef20ab14
+    Size: 16.0
     AntiAlias: ClearType
 DefaultCharacter: ' '

@@ -9,6 +9,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Graphics;
@@ -173,7 +174,16 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 var assetName = (asset.FontName != null) ? (string)asset.FontName : null;
                 var assetSource = (asset.Source != null) ? (string)asset.Source : null;
 
-                if (assetName != null && !assetName.Equals("null"))
+                // First check if the asset has a valid source
+                if (assetSource != null && !assetSource.IsNullOrEmpty() && !assetSource.Equals("null"))
+                {
+                    newSource.Node.Tag = "!FileFontProvider";
+                    newSource.AddChild("Source", assetSource);
+                }
+
+                // Only if the asset doesn't have a valid source can it be a system font
+                else
+                if (assetName != null && !assetName.IsNullOrEmpty() && !assetName.Equals("null"))
                 {
                     newSource.Node.Tag = "!SystemFontProvider";
                     newSource.AddChild("FontName", assetName);
@@ -183,12 +193,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                         newSource.AddChild("Style", asset.Style);
                     }
                 }
-                else
-                if (assetSource != null && !assetSource.Equals("null"))
-                {
-                    newSource.Node.Tag = "!FileFontProvider";
-                    newSource.AddChild("Source", assetSource);
-                }
+
 
 
                 asset.RemoveChild("FontName");
@@ -209,8 +214,11 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                     {
                         newType.Node.Tag = "!RuntimeRasterizedSpriteFontType";
 
+                        if (asset.Size != null)
+                            newType.AddChild("Size", asset.Size);
+
                         if (asset.AntiAlias != null)
-                            newSource.AddChild("AntiAlias", asset.AntiAlias);
+                            newType.AddChild("AntiAlias", asset.AntiAlias);
                     }
                     else 
                     if (fontType.Equals("SDF"))
@@ -240,10 +248,10 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                             newType.AddChild("CharacterRegions", asset.CharacterRegions);
 
                         if (asset.AntiAlias != null)
-                            newSource.AddChild("AntiAlias", asset.AntiAlias);
+                            newType.AddChild("AntiAlias", asset.AntiAlias);
 
                         if (asset.IsPremultiplied != null)
-                            newSource.AddChild("IsPremultiplied", asset.IsPremultiplied);
+                            newType.AddChild("IsPremultiplied", asset.IsPremultiplied);
                     }
 
                     asset.AddChild("FontType", newType);

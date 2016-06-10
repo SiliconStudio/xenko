@@ -8,5 +8,6 @@ FontSource: !SystemFontProvider
     Style: Bold
 FontType: !RuntimeRasterizedSpriteFontType
     ~Id: 0749380a-174a-4f13-8b94-c073768ec156
+    Size: 16.0
     AntiAlias: Grayscale
 DefaultCharacter: ' '

@@ -2,11 +2,11 @@
 Id: 05718a05-c688-4340-853a-e22ee854d9cf
 SerializedVersion: {Xenko: 1.7.0-beta03}
 Tags: []
-FontSource: !SystemFontProvider
+FontSource: !FileFontProvider
     ~Id: 26415673-b421-472f-9124-94722d94bd2e
-    FontName: Arial
-    Style: Regular
+    Source: ../../../../../data/tests/Risaltyp_024.ttf
 FontType: !RuntimeRasterizedSpriteFontType
     ~Id: 37516ccb-81f6-4cce-8204-fe158cacbfd2
+    Size: 16.0
     AntiAlias: Grayscale
 DefaultCharacter: ' '

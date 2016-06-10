@@ -2,10 +2,9 @@
 Id: 21069bb0-91b2-4570-be00-a70a1df67cb1
 SerializedVersion: {Xenko: 1.7.0-beta03}
 Tags: []
-FontSource: !SystemFontProvider
+FontSource: !FileFontProvider
     ~Id: 3978a382-eb3d-4bf7-9daa-f656c7c79191
-    FontName: Courier New
-    Style: Regular
+    Source: ../../../../../data/tests/TestFont.png
 FontType: !OfflineRasterizedSpriteFontType
     ~Id: 06fe6b5f-00d5-4a4d-a130-a668583ba5cc
     Size: 8.25

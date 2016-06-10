@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// The size of the font (in points) for static fonts, the default size for dynamic fonts. This property is ignored when the font source is a bitmap.
         /// </userdoc>
         [DataMemberIgnore]
-        public virtual float Size { get { return 16.0f; } set { } }
+        public virtual float Size { get; set; }
 
         /// <summary>
         /// Gets or sets the font anti-aliasing mode. By default, levels of grays are used.
