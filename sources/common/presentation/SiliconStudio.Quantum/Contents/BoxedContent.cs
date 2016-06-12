@@ -7,7 +7,7 @@ namespace SiliconStudio.Quantum.Contents
 {
     public class BoxedContent : ObjectContent
     {
-        private IContent boxedStructureOwner;
+        private ContentBase boxedStructureOwner;
         private Index boxedStructureOwnerIndex;
 
         public BoxedContent(object value, ITypeDescriptor descriptor, bool isPrimitive)
@@ -17,9 +17,6 @@ namespace SiliconStudio.Quantum.Contents
 
         protected internal override void UpdateFromMember(object newValue, Index index)
         {
-            // TODO: shouldn't we prevent to send notification events in this scenario?
-            var oldValue = Retrieve(index);
-            NotifyContentChanging(index, ContentChangeType.ValueChange, oldValue, Value);
             if (!index.IsEmpty)
             {
                 var collectionDescriptor = Descriptor as CollectionDescriptor;
@@ -38,14 +35,13 @@ namespace SiliconStudio.Quantum.Contents
             else
             {
                 SetValue(newValue);
-                boxedStructureOwner?.Update(newValue, boxedStructureOwnerIndex);
+                boxedStructureOwner?.UpdateFromMember(newValue, boxedStructureOwnerIndex);
             }
-            NotifyContentChanged(index, ContentChangeType.ValueChange, oldValue, Value);
         }
 
         internal void SetOwnerContent(IContent ownerContent, Index index)
         {
-            boxedStructureOwner = ownerContent;
+            boxedStructureOwner = (ContentBase)ownerContent;
             boxedStructureOwnerIndex = index;
         }
     }
