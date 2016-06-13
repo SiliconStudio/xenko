@@ -3,7 +3,6 @@
 
 #include "../../../deps/NativePath/NativePath.h"
 #include "../../../deps/NativePath/NativeDynamicLinking.h"
-#include "../../../deps/NativePath/TINYSTL/vector.h"
 
 #define HAVE_STDINT_H
 #include "../../../deps/Celt/include/opus_custom.h"
@@ -33,6 +32,8 @@ extern "C" {
 		LPALSOURCEQUEUEBUFFERS SourceQueueBuffers;
 		LPALSOURCEUNQUEUEBUFFERS SourceUnqueueBuffers;
 		LPALGETSOURCEI GetSourceI;
+		LPALSOURCEFV SourceFV;
+		LPALLISTENERFV ListenerFV;
 
 		void* OpenALLibrary = NULL;
 
@@ -45,9 +46,12 @@ extern "C" {
 			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("x86\\OpenAL32");
 			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("x64/OpenAL32");
 			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("x86/OpenAL32");
+			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary(NULL);
 			if (!OpenALLibrary) return false;
 
 			OpenDevice = (LPALCOPENDEVICE)GetSymbolAddress(OpenALLibrary, "alcOpenDevice");
+			if (!OpenDevice) return false;
+
 			CloseDevice = (LPALCCLOSEDEVICE)GetSymbolAddress(OpenALLibrary, "alcCloseDevice");
 			CreateContext = (LPALCCREATECONTEXT)GetSymbolAddress(OpenALLibrary, "alcCreateContext");
 			DestroyContext = (LPALCDESTROYCONTEXT)GetSymbolAddress(OpenALLibrary, "alcDestroyContext");
@@ -67,6 +71,8 @@ extern "C" {
 			SourceQueueBuffers = (LPALSOURCEQUEUEBUFFERS)GetSymbolAddress(OpenALLibrary, "alSourceQueueBuffers"); 
 			SourceUnqueueBuffers = (LPALSOURCEUNQUEUEBUFFERS)GetSymbolAddress(OpenALLibrary, "alSourceUnqueueBuffers");
 			GetSourceI = (LPALGETSOURCEI)GetSymbolAddress(OpenALLibrary, "alGetSourcei");
+			SourceFV = (LPALSOURCEFV)GetSymbolAddress(OpenALLibrary, "alSourcefv");
+			ListenerFV = (LPALLISTENERFV)GetSymbolAddress(OpenALLibrary, "alListenerfv");
 
 			return true;
 		}
@@ -80,7 +86,7 @@ extern "C" {
 		xnAudioDevice* xnAudioCreate(const char* deviceName)
 		{
 			auto o = new xnAudioDevice;
-			o->device = OpenDevice(NULL);
+			o->device = OpenDevice(deviceName);
 			if(!o->device)
 			{
 				delete o;
@@ -99,405 +105,125 @@ extern "C" {
 			delete device;
 		}
 
-		uint32_t xnAudioCreateVoice()
+		uint32_t xnAudioSourceCreate()
 		{
-			ALuint voice;
-			GenSources(1, &voice);
-
-			//this sets the voice as a normal stereo voice basically
-			Source3I(voice, AL_POSITION, 0, 0, -1);
-			SourceI(voice, AL_SOURCE_RELATIVE, AL_TRUE);
-
-			return voice;
+			ALuint source;
+			GenSources(1, &source);
+			SourceF(source, AL_REFERENCE_DISTANCE, 1.0f);
+			return source;
 		}
 
-		void xnAudioDestroyVoice(uint32_t voice)
+		void xnAudioSourceDestroy(uint32_t source)
 		{
-			DeleteSources(1, &voice);
+			DeleteSources(1, &source);
 		}
 
-		uint32_t xnAudioCreateBuffer()
+		void xnAudioSourceSetPan(uint32_t source, float pan)
+		{
+			//make sure we are able to pan
+			SourceI(source, AL_SOURCE_RELATIVE, AL_TRUE);
+
+			auto clampedPan = pan > 1.0f ? 1.0f : pan < -1.0f ? -1.0f : pan;
+			ALfloat alpan[3];
+			alpan[0] = clampedPan; // from -1 (left) to +1 (right) 
+			alpan[1] = sqrt(1.0f - clampedPan*clampedPan);
+			alpan[2] = 0.0f;
+			SourceFV(source, AL_POSITION, alpan);
+		}
+
+		void xnAudioSourceSetLooping(uint32_t source, bool looping)
+		{
+			SourceI(source, AL_LOOPING, looping ? AL_TRUE : AL_FALSE);
+		}
+
+		void xnAudioSourceSetGain(uint32_t source, float gain)
+		{
+			SourceF(source, AL_GAIN, gain);
+		}
+
+		void xnAudioSourceSetPitch(uint32_t source, float pitch)
+		{
+			SourceF(source, AL_PITCH, pitch);
+		}
+
+		uint32_t xnAudioBufferCreate()
 		{
 			ALuint buffer;
 			GenBuffers(1, &buffer);
 			return buffer;
 		}
 
-		void xnAudioDestroyBuffer(uint32_t buffer)
+		void xnAudioBufferDestroy(uint32_t buffer)
 		{
 			DeleteBuffers(1, &buffer);
 		}
 
-		void xnAudioFillBuffer(uint32_t buffer, short* pcm, int bufferSize, int sampleRate, bool mono)
+		void xnAudioBufferFill(uint32_t buffer, short* pcm, int bufferSize, int sampleRate, bool mono)
 		{
 			BufferData(buffer, mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, pcm, bufferSize, sampleRate);
 		}
 
-		void xnAudioSetVoiceBuffer(uint32_t voice, uint32_t buffer)
+		void xnAudioSourceSetBuffer(uint32_t source, uint32_t buffer)
 		{
-			SourceI(voice, AL_BUFFER, buffer);
+			SourceI(source, AL_BUFFER, buffer);
 		}
 
-		void xnAudioVoiceQueueBuffer(uint32_t voice, uint32_t buffer)
+		void xnAudioSourceQueueBuffer(uint32_t source, uint32_t buffer, short* pcm, int bufferSize, int sampleRate, bool mono)
 		{
-			SourceQueueBuffers(voice, 1, &buffer);
+			BufferData(buffer, mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, pcm, bufferSize, sampleRate);
+			SourceQueueBuffers(source, 1, &buffer);
 		}
 
-		uint32_t xnAudioVoiceGetFreeBuffer(uint32_t voice)
+		uint32_t xnAudioSourceGetFreeBuffer(uint32_t source)
 		{
-			ALint processed;
-			GetSourceI(voice, AL_BUFFERS_PROCESSED, &processed);
+			ALint processed = 0;
+			GetSourceI(source, AL_BUFFERS_PROCESSED, &processed);
 			if(processed > 0)
 			{
 				ALuint buffer;
-				SourceUnqueueBuffers(voice, 1, &buffer);
+				SourceUnqueueBuffers(source, 1, &buffer);
 				return buffer;
 			}
 			return 0;
 		}
 
-		void xnAudioPlay(uint32_t voice)
+		void xnAudioSourcePlay(uint32_t source)
 		{
-			SourcePlay(voice);
+			SourcePlay(source);
 		}
 
-		void xnAudioPause(uint32_t voice)
+		void xnAudioSourcePause(uint32_t source)
 		{
-			SourcePause(voice);
+			SourcePause(source);
 		}
 
-		void xnAudioStop(uint32_t voice)
+		void xnAudioSourceStop(uint32_t source)
 		{
-			SourceStop(voice);
-		}
-	}
-
-	namespace iOS_Helpers
-	{
-		//all these types are just copy pasted from https://developer.apple.com/library/ios/documentation/AudioUnit/Reference/AudioUnitPropertiesReference/
-
-		typedef int OSStatus;
-		typedef void* AudioUnit;
-		typedef int AudioUnitParameterID;
-		typedef int AudioUnitScope;
-		typedef int AudioUnitElement;
-		typedef float AudioUnitParameterValue;
-		typedef int AudioUnitPropertyID;
-
-		enum {
-			kAudioUnitRenderAction_PreRender = (1 << 2),
-			kAudioUnitRenderAction_PostRender = (1 << 3),
-			kAudioUnitRenderAction_OutputIsSilence = (1 << 4),
-			kAudioOfflineUnitRenderAction_Preflight = (1 << 5),
-			kAudioOfflineUnitRenderAction_Render = (1 << 6),
-			kAudioOfflineUnitRenderAction_Complete = (1 << 7),
-			kAudioUnitRenderAction_PostRenderError = (1 << 8),
-			kAudioUnitRenderAction_DoNotCheckRenderArgs = (1 << 9)
-		};
-		typedef uint32_t AudioUnitRenderActionFlags;
-
-		enum {
-			kMultiChannelMixerParam_Volume = 0,
-			kMultiChannelMixerParam_Enable = 1,
-			kMultiChannelMixerParam_Pan = 2,
-			kMultiChannelMixerParam_PreAveragePower = 1000,
-			kMultiChannelMixerParam_PrePeakHoldLevel = 2000,
-			kMultiChannelMixerParam_PostAveragePower = 3000,
-			kMultiChannelMixerParam_PostPeakHoldLevel = 4000
-		};
-
-		enum {
-			k3DMixerParam_Azimuth = 0,
-			k3DMixerParam_Elevation = 1,
-			k3DMixerParam_Distance = 2,
-			k3DMixerParam_Gain = 3,
-			k3DMixerParam_PlaybackRate = 4,
-			k3DMixerParam_Enable = 5,
-			k3DMixerParam_MinGain = 6,
-			k3DMixerParam_MaxGain = 7,
-			k3DMixerParam_ReverbBlend = 8,
-			k3DMixerParam_GlobalReverbGain = 9,
-			k3DMixerParam_OcclusionAttenuation = 10,
-			k3DMixerParam_ObstructionAttenuation = 11
-		};
-
-		enum {
-			kAudioUnitScope_Global = 0,
-			kAudioUnitScope_Input = 1,
-			kAudioUnitScope_Output = 2,
-			kAudioUnitScope_Group = 3,
-			kAudioUnitScope_Part = 4,
-			kAudioUnitScope_Note = 5
-		};
-
-		enum {
-			kAudioUnitProperty_ClassInfo = 0,
-			kAudioUnitProperty_MakeConnection = 1,
-			kAudioUnitProperty_SampleRate = 2,
-			kAudioUnitProperty_ParameterList = 3,
-			kAudioUnitProperty_ParameterInfo = 4,
-			kAudioUnitProperty_StreamFormat = 8,
-			kAudioUnitProperty_ElementCount = 11,
-			kAudioUnitProperty_Latency = 12,
-			kAudioUnitProperty_SupportedNumChannels = 13,
-			kAudioUnitProperty_MaximumFramesPerSlice = 14,
-			kAudioUnitProperty_AudioChannelLayout = 19,
-			kAudioUnitProperty_TailTime = 20,
-			kAudioUnitProperty_BypassEffect = 21,
-			kAudioUnitProperty_LastRenderError = 22,
-			kAudioUnitProperty_SetRenderCallback = 23,
-			kAudioUnitProperty_FactoryPresets = 24,
-			kAudioUnitProperty_RenderQuality = 26,
-			kAudioUnitProperty_InPlaceProcessing = 29,
-			kAudioUnitProperty_ElementName = 30,
-			kAudioUnitProperty_SupportedChannelLayoutTags = 32,
-			kAudioUnitProperty_PresentPreset = 36,
-			kAudioUnitProperty_ShouldAllocateBuffer = 51,
-			kAudioUnitProperty_ParameterHistoryInfo = 53,
-
-			kAudioUnitProperty_CPULoad = 6,
-			kAudioUnitProperty_ParameterValueStrings = 16,
-			kAudioUnitProperty_ContextName = 25,
-			kAudioUnitProperty_HostCallbacks = 27,
-			kAudioUnitProperty_ParameterStringFromValue = 33,
-			kAudioUnitProperty_ParameterIDName = 34,
-			kAudioUnitProperty_ParameterClumpName = 35,
-			kAudioUnitProperty_OfflineRender = 37,
-			kAudioUnitProperty_ParameterValueFromString = 38,
-			kAudioUnitProperty_PresentationLatency = 40,
-			kAudioUnitProperty_DependentParameters = 45,
-			kAudioUnitProperty_InputSamplesInOutput = 49,
-			kAudioUnitProperty_ClassInfoFromDocument = 50,
-			kAudioUnitProperty_FrequencyResponse = 52
-		};
-
-		struct AudioBuffer { uint32_t mNumberChannels; uint32_t mDataByteSize; void *mData; };
-		typedef struct AudioBuffer AudioBuffer;
-
-		struct AudioBufferList { uint32_t mNumberBuffers; AudioBuffer mBuffers[1]; }; 
-		typedef struct AudioBufferList AudioBufferList;
-
-		struct SMPTETime { int16_t mSubframes; int16_t mSubframeDivisor; uint32_t mCounter; uint32_t mType; uint32_t mFlags; int16_t mHours; int16_t mMinutes; int16_t mSeconds; int16_t mFrames; };
-		typedef struct SMPTETime SMPTETime;
-
-		struct AudioTimeStamp { double mSampleTime; uint64_t mHostTime; double mRateScalar; uint64_t mWordClockTime; SMPTETime mSMPTETime; uint32_t mFlags; uint32_t mReserved; };
-		typedef struct AudioTimeStamp AudioTimeStamp;
-
-		typedef OSStatus (*AudioUnitSetParameterPtr)(AudioUnit inUnit, AudioUnitParameterID inID, AudioUnitScope inScope, AudioUnitElement inElement, AudioUnitParameterValue inValue, int inBufferOffsetInFrames);
-		AudioUnitSetParameterPtr AudioUnitSetParameterFunc;
-
-		typedef OSStatus (*AudioUnitSetPropertyPtr)(AudioUnit inUnit, AudioUnitPropertyID inID, AudioUnitScope inScope, AudioUnitElement inElement, const void *inData, uint32_t inDataSize);
-		AudioUnitSetPropertyPtr AudioUnitSetPropertyFunc;
-
-		typedef OSStatus (*AURenderCallback)(void *inRefCon, AudioUnitRenderActionFlags *ioActionFlags, const AudioTimeStamp *inTimeStamp, uint32_t inBusNumber, uint32_t inNumberFrames, AudioBufferList *ioData);
-		typedef struct AURenderCallbackStruct { AURenderCallback inputProc; void *inputProcRefCon; } AURenderCallbackStruct;
-
-		struct AudioDataRenderer
-		{
-			struct xnAudioBuffer
-			{
-				short* data;
-				int frames;
-				int currentFrame;
-				int channels;
-			};
-
-			//careful this is mirrored in the c# struct
-			int LoopStartPoint;
-			int LoopEndPoint;
-			int NumberOfLoops;
-			bool IsInfiniteLoop;
-
-			bool IsEnabled2D;
-			bool IsEnabled3D;
-
-			bool PlaybackEnded;
-
-			AudioUnit HandleChannelMixer;
-			AudioUnit Handle3DMixer;
-			//end of c# struct
-
-			int bufferIndex = 0;
-
-			static OSStatus NullRenderCallback(void                        *inRefCon,
-				AudioUnitRenderActionFlags  *ioActionFlags,
-				const AudioTimeStamp        *inTimeStamp,
-				uint32_t                      inBusNumber,
-				uint32_t                      inNumberFrames,
-				AudioBufferList             *ioData)
-			{
-				memset(ioData->mBuffers[0].mData, 0x0, ioData->mBuffers[0].mDataByteSize);
-
-				return 0;
-			}
-
-			static OSStatus DefaultRenderCallbackChannelMixer(void                        *inRefCon,
-				AudioUnitRenderActionFlags  *ioActionFlags,
-				const AudioTimeStamp        *inTimeStamp,
-				uint32_t                      inBusNumber,
-				uint32_t                      inNumberFrames,
-				AudioBufferList             *ioData)
-			{
-				return ((AudioDataRenderer*)inRefCon)->RendererCallbackChannelMixer(inBusNumber, inNumberFrames, ioData);
-			}
-
-			static OSStatus DefaultRenderCallback3DMixer(void                        *inRefCon,
-				AudioUnitRenderActionFlags  *ioActionFlags,
-				const AudioTimeStamp        *inTimeStamp,
-				uint32_t                      inBusNumber,
-				uint32_t                      inNumberFrames,
-				AudioBufferList             *ioData)
-			{
-				return ((AudioDataRenderer*)inRefCon)->RendererCallback3DMixer(inBusNumber, inNumberFrames, ioData);
-			}
-
-			tinystl::vector<xnAudioBuffer> AudioDataBuffers;
-
-			bool ShouldBeLooped() const
-			{
-				return IsInfiniteLoop || NumberOfLoops > 0;
-			}
-
-			int AudioDataMixerCallback(uint32_t busIndex, int totalNbOfFrameToWrite, AudioBufferList* data)
-			{
-				char* outPtr = (char*)data->mBuffers[0].mData;
-				xnAudioBuffer& currentBuffer = AudioDataBuffers[bufferIndex];
-
-				int remainingFramesToWrite = totalNbOfFrameToWrite;
-				while (remainingFramesToWrite > 0)
-				{
-					int nbOfFrameToWrite = fmin(remainingFramesToWrite, (ShouldBeLooped() ? LoopEndPoint : currentBuffer.frames) - currentBuffer.currentFrame);
-
-					short* inPtr = currentBuffer.data + currentBuffer.channels * currentBuffer.currentFrame;
-					int sizeToCopy = sizeof(short) * nbOfFrameToWrite * currentBuffer.channels;
-
-					memcpy(outPtr, inPtr, sizeToCopy);
-
-					currentBuffer.currentFrame += nbOfFrameToWrite;
-					outPtr += sizeToCopy;
-
-					remainingFramesToWrite -= nbOfFrameToWrite;
-
-					// Check if the track have to be re-looped
-					if (ShouldBeLooped() && currentBuffer.currentFrame >= LoopEndPoint)
-					{
-						--NumberOfLoops;
-						currentBuffer.currentFrame = LoopStartPoint;
-					}
-
-					// Check if we reached the end of the track.
-					if (currentBuffer.currentFrame >= currentBuffer.frames)
-					{
-						AudioUnitSetParameterFunc(HandleChannelMixer, kMultiChannelMixerParam_Enable, kAudioUnitScope_Input, busIndex, 0, 0);
-						AudioUnitSetParameterFunc(Handle3DMixer, k3DMixerParam_Enable, kAudioUnitScope_Input, busIndex, 0, 0);
-
-						IsEnabled2D = false;
-						IsEnabled3D = false;
-
-						PlaybackEnded = true;
-
-						// Fill the rest of the buffer with blank
-						int sizeToBlank = sizeof(short) * currentBuffer.channels * remainingFramesToWrite;
-						memset(outPtr, 0x0 , sizeToBlank);
-
-						return 0;
-					}
-				}
-
-				return 0;
-			}
-
-			OSStatus RendererCallbackChannelMixer(uint32_t busNumber, uint32_t numberFrames, AudioBufferList* data)
-			{
-				if (!IsEnabled2D)
-					return 0;
-
-				OSStatus ret = AudioDataMixerCallback(busNumber, (int)numberFrames, data);
-
-				return ret;
-			}
-
-			OSStatus RendererCallback3DMixer(uint32_t busNumber, uint32_t numberFrames, AudioBufferList* data)
-			{
-				if (!IsEnabled3D)
-					return 0;
-
-				return AudioDataMixerCallback(busNumber, (int)numberFrames, data);
-			}
-
-			void AddBuffer(short* audioBuffer, int channels, int nframes)
-			{
-				xnAudioBuffer buffer = {};
-				buffer.data = audioBuffer;
-				buffer.frames = nframes;
-				buffer.channels = channels;
-				buffer.currentFrame = 0;
-				AudioDataBuffers.push_back(buffer);
-			}
-		};
-
-		static AURenderCallbackStruct NullRenderCallbackStruct = { AudioDataRenderer::NullRenderCallback, NULL };
-
-		AudioDataRenderer* xnCreateAudioDataRenderer()
-		{
-			return new AudioDataRenderer();
+			SourceStop(source);
 		}
 
-		void xnDestroyAudioDataRenderer(AudioDataRenderer* ptr)
+		void xnAudioListenerPush3D(float* pos, float* rot, float* vel)
 		{
-			delete ptr;
+			if (pos) ListenerFV(AL_POSITION, pos);
+			if (rot) ListenerFV(AL_ORIENTATION, rot);
+			if (vel) ListenerFV(AL_VELOCITY, vel);
 		}
 
-		void xnAddAudioBuffer(AudioDataRenderer* renderer, short* buffer, int channels, int nframes)
+		void xnAudioSourcePush3D(uint32_t source, float* pos, float* rot, float* vel)
 		{
-			renderer->AddBuffer(buffer, channels, nframes);
+			//make sure we are able to 3D
+			SourceI(source, AL_SOURCE_RELATIVE, AL_FALSE);
+
+			if (pos) SourceFV(source, AL_POSITION, pos);
+			if (rot) SourceFV(source, AL_ORIENTATION, rot);
+			if (vel) SourceFV(source, AL_VELOCITY, vel);
 		}
 
-		void xnSetAudioBufferFrame(AudioDataRenderer* renderer, int bufferIndex, int frame)
+		bool xnAudioSourceIsPlaying(uint32_t source)
 		{
-			if (bufferIndex >= renderer->AudioDataBuffers.size()) return;
-			renderer->AudioDataBuffers[bufferIndex].currentFrame = frame;
-		}
-
-		int xnSetInputRenderCallbackToChannelMixerDefault(AudioUnit inUnit, uint32_t element, void* userData)
-		{
-			AURenderCallbackStruct pCallbackData = {};
-			pCallbackData.inputProc = AudioDataRenderer::DefaultRenderCallbackChannelMixer;
-			pCallbackData.inputProcRefCon = userData;
-
-			int status = AudioUnitSetPropertyFunc(inUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, element, &pCallbackData, sizeof(AURenderCallbackStruct));
-
-			return status;
-		}
-
-		int xnSetInputRenderCallbackTo3DMixerDefault(AudioUnit inUnit, uint32_t element, void* userData)
-		{
-			AURenderCallbackStruct pCallbackData = {};
-			pCallbackData.inputProc = AudioDataRenderer::DefaultRenderCallback3DMixer;
-			pCallbackData.inputProcRefCon = userData;
-
-			int status = AudioUnitSetPropertyFunc(inUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, element, &pCallbackData, sizeof(AURenderCallbackStruct));
-
-			return status;
-		}
-
-		int xnSetInputRenderCallbackToNull(AudioUnit inUnit, uint32_t element)
-		{
-			return AudioUnitSetPropertyFunc(inUnit, kAudioUnitProperty_SetRenderCallback, kAudioUnitScope_Input, element, &NullRenderCallbackStruct, sizeof(AURenderCallbackStruct));
-		}
-
-		bool xnAudioUnitHelpersInit()
-		{
-			auto exe = LoadDynamicLibrary(NULL);
-			if (!exe) return false;
-
-			AudioUnitSetParameterFunc = AudioUnitSetParameterPtr(GetSymbolAddress(exe, "AudioUnitSetParameter"));
-			if (!AudioUnitSetParameterFunc) return false;
-
-			AudioUnitSetPropertyFunc = AudioUnitSetPropertyPtr(GetSymbolAddress(exe, "AudioUnitSetProperty"));
-			if (!AudioUnitSetPropertyFunc) return false;
-
-			return true;
+			ALint value;
+			GetSourceI(source, AL_SOURCE_STATE, &value);
+			return value == AL_PLAYING;
 		}
 	}
 
