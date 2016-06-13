@@ -1,8 +1,10 @@
 // Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Physics
@@ -344,11 +346,20 @@ namespace SiliconStudio.Xenko.Physics
 
         protected override void OnDetach()
         {
+            //Remove constraints safely
+            var toremove = new FastList<Constraint>();
             foreach (var c in LinkedConstraints)
             {
-                Simulation.RemoveConstraint(c);
-                c.Dispose();
+                toremove.Add(c);                
             }
+
+            foreach (var disposable in toremove)
+            {
+                disposable.Dispose();
+            }
+
+            LinkedConstraints.Clear();
+            //~Remove constraints
 
             Simulation.RemoveRigidBody(this);
 
