@@ -70,11 +70,11 @@ TemplateFolders:
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Physics/DebugShapesRender.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Prefabs/PrefabInstance.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Utility/GameProfiler.xktpl
-        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/DynamicSpriteFont.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/RuntimeRasterizedSpriteFont.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/SignedDistanceFieldSpriteFont.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/SpriteSheetSprites.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/SpriteSheetUI.xktpl
-        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/StaticSpriteFont.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/OfflineRasterizedSpriteFont.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Textures/DefaultTexture.xktpl
     - Path: sources/engine/SiliconStudio.Xenko.SpriteStudio.Offline/Templates/Assets
       Group: Assets

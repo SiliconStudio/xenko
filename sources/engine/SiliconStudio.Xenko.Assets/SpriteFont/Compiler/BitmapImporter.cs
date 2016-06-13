@@ -106,11 +106,12 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 
             try
             {
-                bitmap = new Bitmap(options.Source);
+                // TODO Check if source can be used as is from here
+                bitmap = new Bitmap(options.FontSource.GetFontPath());
             }
             catch
             {
-                throw new FontNotFoundException(options.Source);
+                throw new FontNotFoundException(options.FontSource.GetFontPath());
             }
 
             // Convert to our desired pixel format.
@@ -145,7 +146,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
             }
         }
 
-
+        // Seems to be the same as this one: http://www.tonicodes.net/blog/creating-custom-fonts-with-outline-for-wp7-and-xna/
         // Searches a 2D bitmap for characters that are surrounded by a marker pink color.
         static IEnumerable<Rectangle> FindGlyphs(Bitmap bitmap)
         {

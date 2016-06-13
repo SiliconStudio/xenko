@@ -91,10 +91,10 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
     /// <summary>
     /// Main class used to compile a Font file XML file.
     /// </summary>
-    public class StaticFontCompiler
+    public class OfflineRasterizedFontCompiler
     {
         /// <summary>
-        /// Compiles the specified font description into a <see cref="StaticSpriteFont" /> object.
+        /// Compiles the specified font description into a <see cref="OfflineRasterizedSpriteFont" /> object.
         /// </summary>
         /// <param name="fontFactory">The font factory used to create the fonts</param>
         /// <param name="fontAsset">The font description.</param>
@@ -102,7 +102,8 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
         /// <returns>A SpriteFontData object.</returns>
         public static Graphics.SpriteFont Compile(IFontFactory fontFactory, SpriteFontAsset fontAsset, bool srgb)
         {
-            if (fontAsset.FontType != SpriteFontType.Static)
+            var fontTypeStatic = fontAsset.FontType as OfflineRasterizedSpriteFontType;
+            if (fontTypeStatic == null)
                 throw new ArgumentException("Tried to compile a dynamic sprite font with compiler for static fonts");
 
             float lineSpacing;
@@ -126,9 +127,9 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
             //}
 
             // Convert to pre-multiplied alpha format.
-            if (fontAsset.IsPremultiplied)
+            if (fontAsset.FontType.IsPremultiplied)
             {
-                if (fontAsset.AntiAlias == FontAntiAliasMode.ClearType)
+                if (fontAsset.FontType.AntiAlias == FontAntiAliasMode.ClearType)
                 {
                     BitmapUtils.PremultiplyAlphaClearType(bitmap, srgb);
                 }
@@ -138,7 +139,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
                 }
             }
 
-            return StaticSpriteFontWriter.CreateSpriteFontData(fontFactory, fontAsset, glyphs, lineSpacing, baseLine, bitmap, srgb);
+            return OfflineRasterizedSpriteFontWriter.CreateSpriteFontData(fontFactory, fontAsset, glyphs, lineSpacing, baseLine, bitmap, srgb);
         }
 
         static Glyph[] ImportFont(SpriteFontAsset options, out float lineSpacing, out float baseLine)
@@ -146,7 +147,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
             // Which importer knows how to read this source font?
             IFontImporter importer;
 
-            var sourceExtension = (Path.GetExtension(options.Source) ?? "").ToLowerInvariant();
+            var sourceExtension = (Path.GetExtension(options.FontSource.GetFontPath()) ?? "").ToLowerInvariant();
             var bitmapFileExtensions = new List<string> { ".bmp", ".png", ".gif" };
             var importFromBitmap = bitmapFileExtensions.Contains(sourceExtension);
 
@@ -169,7 +170,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
             {
                 throw new Exception("Font does not contain any glyphs.");
             }
-            if (!importFromBitmap && options.AntiAlias != FontAntiAliasMode.ClearType)
+            if (!importFromBitmap && options.FontType.AntiAlias != FontAntiAliasMode.ClearType)
             {
                 foreach (var glyph in importer.Glyphs)
                     BitmapUtils.ConvertGreyToAlpha(glyph.Bitmap, glyph.Subrect);
@@ -204,17 +205,21 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
         {
             var characters = new List<char>();
 
+            var fontTypeStatic = asset.FontType as OfflineRasterizedSpriteFontType;
+            if (fontTypeStatic == null)
+                throw new ArgumentException("Tried to compile a dynamic sprite font with compiler for signed distance field fonts");
+
             // extract the list from the provided file if it exits
-            if (File.Exists(asset.CharacterSet))
+            if (File.Exists(fontTypeStatic.CharacterSet))
             {
                 string text;
-                using (var streamReader = new StreamReader(asset.CharacterSet, Encoding.UTF8))
+                using (var streamReader = new StreamReader(fontTypeStatic.CharacterSet, Encoding.UTF8))
                     text = streamReader.ReadToEnd();
                 characters.AddRange(text);
             }
 
             // add character coming from character ranges
-            characters.AddRange(CharacterRegion.Flatten(asset.CharacterRegions));
+            characters.AddRange(CharacterRegion.Flatten(fontTypeStatic.CharacterRegions));
 
             // remove duplicated characters
             characters = characters.Distinct().ToList();
