@@ -249,11 +249,11 @@ namespace SiliconStudio.Presentation.Quantum
             return false;
         }
 
-        private void GenerateChildren(IGraphNode modelNode, GraphNodePath graphNodePath)
+        private void GenerateChildren(IGraphNode targetNode, GraphNodePath targetNodePath)
         {
-            if (modelNode.Content.IsReference && modelNode.Content.ShouldProcessReference)
+            if (targetNode.Content.IsReference && targetNode.Content.ShouldProcessReference)
             {
-                var referenceEnumerable = modelNode.Content.Reference as ReferenceEnumerable;
+                var referenceEnumerable = targetNode.Content.Reference as ReferenceEnumerable;
                 if (referenceEnumerable != null)
                 {
                     // If the reference should not be processed, we still need to create an observable node for each entry of the enumerable.
@@ -270,10 +270,10 @@ namespace SiliconStudio.Presentation.Quantum
                             // In this case, we must set the actual type to have type converter working, since they usually can't convert
                             // a boxed float to double for example. Otherwise, we don't want to have a node type that is value-dependent.
                             var type = reference.TargetNode != null && reference.TargetNode.Content.IsPrimitive ? reference.TargetNode.Content.Type : reference.Type;
-                            bool shouldConstruct = Owner.PropertiesProvider.ShouldConstructNode(modelNode, reference.Index);
+                            bool shouldConstruct = Owner.PropertiesProvider.ShouldConstructNode(targetNode, reference.Index);
                             if (shouldConstruct)
                             {
-                                var observableNode = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, false, modelNode, graphNodePath, type, reference.Index);
+                                var observableNode = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, false, targetNode, targetNodePath, type, reference.Index);
                                 AddChild(observableNode);
                                 observableNode.Initialize();
                             }
@@ -283,33 +283,33 @@ namespace SiliconStudio.Presentation.Quantum
             }
             else
             {
-                var dictionary = modelNode.Content.Descriptor as DictionaryDescriptor;
-                var list = modelNode.Content.Descriptor as CollectionDescriptor;
-                if (dictionary != null && modelNode.Content.Value != null)
+                var dictionary = targetNode.Content.Descriptor as DictionaryDescriptor;
+                var list = targetNode.Content.Descriptor as CollectionDescriptor;
+                if (dictionary != null && targetNode.Content.Value != null)
                 {
                     // Dictionary of primitive objects
-                    foreach (var key in dictionary.GetKeys(modelNode.Content.Value))
+                    foreach (var key in dictionary.GetKeys(targetNode.Content.Value))
                     {
                         var index = new Index(key);
-                        bool shouldConstruct = Owner.PropertiesProvider.ShouldConstructNode(modelNode, index);
+                        bool shouldConstruct = Owner.PropertiesProvider.ShouldConstructNode(targetNode, index);
                         if (shouldConstruct)
                         {
-                            var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, modelNode, graphNodePath, dictionary.ValueType, index);
+                            var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, targetNode, targetNodePath, dictionary.ValueType, index);
                             AddChild(observableChild);
                             observableChild.Initialize();
                         }
                     }
                 }
-                else if (list != null && modelNode.Content.Value != null)
+                else if (list != null && targetNode.Content.Value != null)
                 {
                     // List of primitive objects
-                    for (int i = 0; i < list.GetCollectionCount(modelNode.Content.Value); ++i)
+                    for (int i = 0; i < list.GetCollectionCount(targetNode.Content.Value); ++i)
                     {
                         var index = new Index(i);
-                        bool shouldConstruct = Owner.PropertiesProvider.ShouldConstructNode(modelNode, index);
+                        bool shouldConstruct = Owner.PropertiesProvider.ShouldConstructNode(targetNode, index);
                         if (shouldConstruct)
                         {
-                            var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, modelNode, graphNodePath, list.ElementType, index);
+                            var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, targetNode, targetNodePath, list.ElementType, index);
                             AddChild(observableChild);
                             observableChild.Initialize();
                         }
@@ -318,7 +318,7 @@ namespace SiliconStudio.Presentation.Quantum
                 else
                 {
                     // Single non-reference primitive object
-                    foreach (var child in modelNode.Children)
+                    foreach (var child in targetNode.Children)
                     {
                         var memberContent = (MemberContent)child.Content;
                         var descriptor = (MemberDescriptorBase)memberContent.Member;
@@ -328,7 +328,7 @@ namespace SiliconStudio.Presentation.Quantum
                             bool shouldConstruct = Owner.PropertiesProvider.ShouldConstructNode(child, Index.Empty);
                             if (shouldConstruct)
                             {
-                                var childPath = graphNodePath.PushMember(child.Name);
+                                var childPath = targetNodePath.PushMember(child.Name);
                                 var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, child.Name, child.Content.IsPrimitive, child, childPath, child.Content.Type, Index.Empty);
                                 AddChild(observableChild);
                                 observableChild.Initialize();
