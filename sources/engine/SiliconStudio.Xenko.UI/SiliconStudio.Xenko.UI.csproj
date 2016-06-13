@@ -129,6 +129,7 @@
     <Compile Include="TouchEventArgs.cs" />
     <Compile Include="UIElement.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UIElement.Events.cs" />
     <Compile Include="UIElementExtensions.cs" />
     <Compile Include="UIElementCollection.cs" />
     <Compile Include="UIElementServices.cs" />

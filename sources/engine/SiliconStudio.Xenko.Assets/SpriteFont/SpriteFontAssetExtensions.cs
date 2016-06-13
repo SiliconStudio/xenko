@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// <returns>The precompiled sprite font asset</returns>
         public static PrecompiledSpriteFontAsset GeneratePrecompiledSpriteFont(this SpriteFontAsset asset, AssetItem sourceAsset, string texturePath, bool srgb)
         {
-            var staticFont = (StaticSpriteFont)StaticFontCompiler.Compile(FontDataFactory, asset, srgb);
+            var staticFont = (OfflineRasterizedSpriteFont)OfflineRasterizedFontCompiler.Compile(FontDataFactory, asset, srgb);
 
             var referenceToSourceFont = new AssetReference<SpriteFontAsset>(sourceAsset.Id, sourceAsset.Location);
             var glyphs = new List<Glyph>(staticFont.CharacterToGlyph.Values);
@@ -46,8 +46,8 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             var precompiledAsset = new PrecompiledSpriteFontAsset
             {
                 Glyphs = glyphs,
-                Size = asset.Size,
-                Style = asset.Style,
+                Size = asset.FontType.Size,
+                Style = asset.FontSource.Style,
                 OriginalFont = referenceToSourceFont,
                 FontDataFile = textureFileName,
                 BaseOffset = staticFont.BaseOffsetY,
@@ -55,8 +55,8 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 ExtraSpacing = staticFont.ExtraSpacing,
                 ExtraLineSpacing = staticFont.ExtraLineSpacing,
                 DefaultCharacter = asset.DefaultCharacter,
-                FontName = !string.IsNullOrEmpty(asset.Source) ? (asset.Source.GetFileName() ?? "") : asset.FontName,
-                IsPremultiplied = asset.IsPremultiplied,
+                FontName = asset.FontSource.GetFontName(),
+                IsPremultiplied = asset.FontType.IsPremultiplied,
                 IsSrgb = srgb
             };
 
@@ -94,8 +94,8 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             var precompiledAsset = new PrecompiledSpriteFontAsset
             {
                 Glyphs = glyphs,
-                Size = asset.Size,
-                Style = asset.Style,
+                Size = asset.FontType.Size,
+                Style = asset.FontSource.Style,
                 OriginalFont = referenceToSourceFont,
                 FontDataFile = textureFileName,
                 BaseOffset = scalableFont.BaseOffsetY,
@@ -103,8 +103,8 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 ExtraSpacing = scalableFont.ExtraSpacing,
                 ExtraLineSpacing = scalableFont.ExtraLineSpacing,
                 DefaultCharacter = asset.DefaultCharacter,
-                FontName = !string.IsNullOrEmpty(asset.Source) ? (asset.Source.GetFileName() ?? "") : asset.FontName,
-                IsPremultiplied = asset.IsPremultiplied,
+                FontName = asset.FontSource.GetFontName(),
+                IsPremultiplied = asset.FontType.IsPremultiplied,
                 IsSrgb = false,
             };
 

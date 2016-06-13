@@ -1,18 +1,15 @@
 !SpriteFont
 Id: 21069bb0-91b2-4570-be00-a70a1df67cb1
-SerializedVersion: {Xenko: 1.5.0-alpha09}
+SerializedVersion: {Xenko: 1.7.0-beta03}
 Tags: []
-Source: ../../../../../data/tests/TestFont.png
-FontName: Agency FB
-Size: 8.25
-Style: Regular
-IsDynamic: false
-DefaultCharacter: ' '
-CharacterSet: ../TestFontCharacterSet.txt
-CharacterRegions:
-    -   Start: 0
-        End: 9
-AntiAlias: Grayscale
-Spacing: 0.0
-LineSpacing: 0.0
-UseKerning: false
+FontSource: !FileFontProvider
+    ~Id: 87446646-13fb-4dfa-ab54-a33af41377c2
+    Source: ../../../../../data/tests/TestFont.png
+FontType: !OfflineRasterizedSpriteFontType
+    ~Id: 58b01b89-de81-43ac-a9e6-20e8a9f852ff
+    Size: 8.25
+    CharacterSet: ../TestFontCharacterSet.txt
+    CharacterRegions:
+        -   ~Id: 96c2349a-45f4-4e4a-8e5a-63e51d7d9167
+            Start: 0
+            End: 9
