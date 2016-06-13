@@ -4,7 +4,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Commands;
@@ -172,15 +171,6 @@ namespace SiliconStudio.Quantum
             }
         }
 
-        private bool ShouldDiscardMember(MemberDescriptorBase memberDescriptor)
-        {
-            if (memberDescriptor == null || !DiscardUnbrowsable)
-                return false;
-
-            var displayAttribute = TypeDescriptorFactory.AttributeRegistry.GetAttribute<DisplayAttribute>(memberDescriptor.MemberInfo);
-            return displayAttribute != null && !displayAttribute.Browsable;
-        }
-
         /// <summary>
         /// Raises the <see cref="NodeConstructing"/> event.
         /// </summary>
@@ -218,9 +208,6 @@ namespace SiliconStudio.Quantum
         public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
         {
             bool shouldProcessReference;
-            if (ShouldDiscardMember(member as MemberDescriptorBase))
-                return;
-
             NotifyNodeConstructing(containerDescriptor, member, out shouldProcessReference);
 
             // If this member should contains a reference, create it now.

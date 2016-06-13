@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.ComponentModel;
 using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
@@ -319,13 +320,19 @@ namespace SiliconStudio.Presentation.Quantum
                     // Single non-reference primitive object
                     foreach (var child in modelNode.Children)
                     {
-                        bool shouldConstruct = Owner.PropertiesProvider.ShouldConstructNode(child, Index.Empty);
-                        if (shouldConstruct)
+                        var memberContent = (MemberContent)child.Content;
+                        var descriptor = (MemberDescriptorBase)memberContent.Member;
+                        var displayAttribute = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(descriptor.MemberInfo);
+                        if (displayAttribute == null || displayAttribute.Browsable)
                         {
-                            var childPath = graphNodePath.PushMember(child.Name);
-                            var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, child.Name, child.Content.IsPrimitive, child, childPath, child.Content.Type, Index.Empty);
-                            AddChild(observableChild);
-                            observableChild.Initialize();
+                            bool shouldConstruct = Owner.PropertiesProvider.ShouldConstructNode(child, Index.Empty);
+                            if (shouldConstruct)
+                            {
+                                var childPath = graphNodePath.PushMember(child.Name);
+                                var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, child.Name, child.Content.IsPrimitive, child, childPath, child.Content.Type, Index.Empty);
+                                AddChild(observableChild);
+                                observableChild.Initialize();
+                            }
                         }
                     }
                 }

@@ -109,7 +109,7 @@ namespace SiliconStudio.Quantum
         /// Refresh all references contained in the given node, creating new nodes for newly referenced objects.
         /// </summary>
         /// <param name="node">The node to update</param>
-        public void UpdateReferences(IGraphNode node)
+        internal void UpdateReferences(IGraphNode node)
         {
             lock (lockObject)
             {
