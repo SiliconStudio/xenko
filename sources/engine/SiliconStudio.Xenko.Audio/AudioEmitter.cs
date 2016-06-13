@@ -19,14 +19,20 @@ namespace SiliconStudio.Xenko.Audio
         /// <summary>
         /// The position of the emitter in the 3D world.
         /// </summary>
-        public Vector3 Position { get; set; }
+        public Vector3 Position;
 
         /// <summary>
         /// The velocity of the emitter in the 3D world. 
         /// </summary>
         /// <remarks>This is only used to calculate the doppler effect on the sound effect</remarks>
-        public Vector3 Velocity { get; set; }
-        
+        public Vector3 Velocity;
+
+        /// <summary>
+        /// The orientation of the emitter in the 3D world. 
+        /// </summary>
+        /// <remarks>This is only used to calculate the doppler effect on the sound effect</remarks>
+        public Quaternion Orientation;
+
         /// <summary>
         /// The scalar applied to the level of Doppler effect calculated between this and the listener
         /// </summary>
