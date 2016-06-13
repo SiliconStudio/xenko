@@ -1,80 +1,83 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Native;
 
 namespace SiliconStudio.Xenko.Audio
 {
     /// <summary>
     /// Base class for sound that creates voices 
     /// </summary>
-    public partial class SoundInstance: ComponentBase, IPositionableSound
+    public class SoundInstance: ComponentBase, IPositionableSound
     {
-        internal bool DataBufferLoaded;
-
-        [DataMemberIgnore]
-        internal SoundSource SoundSource;
+        private readonly DynamicSoundSource soundSource;
+        private readonly Sound sound;
+        private readonly AudioEngine engine;
 
         /// <summary>
         /// Multiplicative factor to apply to the pitch that comes from the Doppler effect.
         /// </summary>
         private float dopplerPitchFactor;
 
-        private bool isLooped;
-
         /// <summary>
         /// Channel Volume multiplicative factors that come from the 3D localization.
         /// </summary>
         private float[] localizationChannelVolumes;
-
-        private float pan;
 
         /// <summary>
         /// Channel Volume multiplicative factors that come from the user panning.
         /// </summary>
         private float[] panChannelVolumes = { 1f, 1f };
 
+        private bool isLooped;
+        private float pan;
         private float pitch;
-
         private float volume;
+        private readonly bool spatialized;
 
-        internal uint Voice { get; }
+        internal uint Source { get; }
 
-        //prevent creation of SoundEffectInstance to the user
-        internal SoundInstance(Sound correspSound)
+        public SoundInstance(AudioEngine engine, DynamicSoundSource dynamicSoundSource, bool spatialized = false)
         {
-            Sound = correspSound;
-
-            if (Sound.StreamFromDisk)
-            {
-                SoundSource = new CompressedSoundSource(this, Sound.CompressedDataUrl, Sound.SampleRate, Sound.Channels, Sound.MaxPacketLength);
-            }
-
-            Voice = Native.OpenAl.AudioCreateVoice();
-
+            this.engine = engine;
+            this.spatialized = spatialized;
+            soundSource = dynamicSoundSource;
+            Source = OpenAl.SourceCreate();
             ResetStateToDefault();
+        }
+
+        internal SoundInstance(Sound staticSound)
+        {
+            engine = staticSound.AudioEngine;
+            sound = staticSound;
+            spatialized = staticSound.Spatialized;
+            Source = OpenAl.SourceCreate();
+            ResetStateToDefault();
+            if (staticSound.StreamFromDisk)
+            {
+                soundSource = new CompressedSoundSource(this, staticSound.CompressedDataUrl, staticSound.SampleRate, staticSound.Channels, staticSound.MaxPacketLength);
+            }
+            else
+            {
+                OpenAl.SourceSetBuffer(Source, staticSound.PreloadedBuffer);
+            }          
         }
 
         public bool IsLooped
         {
             get
             {
-                Sound.CheckNotDisposed();
                 return isLooped;
             }
             set
             {
-                Sound.CheckNotDisposed();
-
-                if (isLooped == value)
-                    return;
-
-                CheckBufferNotLoaded("The looping status of the sound can not be modified after it started playing.");
                 isLooped = value;
-
-                //todo LOOPING
+                if (soundSource == null) OpenAl.SourceSetLooping(Source, isLooped);
+                else soundSource.SetLooped(isLooped);
             }
         }
 
@@ -82,62 +85,50 @@ namespace SiliconStudio.Xenko.Audio
         {
             get
             {
-                Sound.CheckNotDisposed();
                 return pan;
             }
             set
             {
-                Sound.CheckNotDisposed();
-
-                Reset3D();
-                pan = MathUtil.Clamp(value, -1, 1);
-
-                panChannelVolumes = pan < 0 ? new[] { 1f, 1f + pan } : new[] { 1f - pan, 1f };
-
-                //TODO PANNING
+                pan = value;
+                OpenAl.SourceSetPan(Source, value);                
             }
         }
-
-        public Sound Sound { get; }
 
         public float Volume
         {
             get
             {
-                Sound.CheckNotDisposed();
                 return volume;
             }
             set
             {
-                Sound.CheckNotDisposed();
-                volume = MathUtil.Clamp(value, 0, 1);
-
-                //TODO VOLUME
+                volume = value;
+                OpenAl.SourceSetGain(Source, volume);
             }
         }
 
-        internal float Pitch
+        public float Pitch
         {
             get
             {
-                Sound.CheckNotDisposed();
                 return pitch;
             }
             set
             {
-                Sound.CheckNotDisposed();
-                Reset3D();
-                pitch = MathUtil.Clamp(value, -1, 1);
-
-                //TODO PITCH
+                pitch = value;
+                OpenAl.SourceSetPitch(Source, pitch);
             }
         }
 
-        public void Apply3D(AudioListener listener, AudioEmitter emitter)
+        public async Task<bool> ReadyToPlay()
         {
-            if (!Sound.Spatialized) return;
+            if (soundSource == null) return await Task.FromResult(true);
+            return await soundSource.ReadyToPlay.Task;
+        }
 
-            Sound.CheckNotDisposed();
+        public unsafe void Apply3D(AudioListener listener, AudioEmitter emitter)
+        {
+            if (!spatialized) return;
 
             if (listener == null)
                 throw new ArgumentNullException(nameof(listener));
@@ -145,42 +136,21 @@ namespace SiliconStudio.Xenko.Audio
             if (emitter == null)
                 throw new ArgumentNullException(nameof(emitter));
 
-            if (Sound.Channels > 1)
-                throw new InvalidOperationException("Apply3D cannot be used on multi-channels sounds.");
-
-            // reset Pan its default values.
-            if (Pan != 0)
-                Pan = 0;
-
-            //TODO APPLY 3D
-        }
-
-        public void ExitLoop()
-        {
-            Sound.CheckNotDisposed();
-
-            if (Sound.EngineState == AudioEngineState.Invalidated)
-                return;
-
-            if (PlayState == SoundPlayState.Stopped || IsLooped == false)
-                return;
-
-            //TODO EXIT FROM LOOP
+            OpenAl.ListenerPush3D((float*)Interop.Fixed(ref listener.Position), (float*)Interop.Fixed(ref listener.Orientation), (float*)Interop.Fixed(ref listener.Velocity));
+            OpenAl.SourcePush3D(Source, (float*)Interop.Fixed(ref emitter.Position), (float*)Interop.Fixed(ref emitter.Orientation), (float*)Interop.Fixed(ref emitter.Velocity));
         }
 
         public void Pause()
         {
-            Sound.CheckNotDisposed();
-
-            if (Sound.EngineState == AudioEngineState.Invalidated)
+            if (engine.State == AudioEngineState.Invalidated)
                 return;
 
             if (PlayState != SoundPlayState.Playing)
                 return;
 
-            Native.OpenAl.AudioPause(Voice);
+            OpenAl.SourcePause(Source);
 
-            PlayState = SoundPlayState.Paused;
+            playState = SoundPlayState.Paused;
         }
 
         /// <summary>
@@ -188,67 +158,35 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         public void Play()
         {
-            //todo Our current interface requires a void Play() method.. should we change this to be async as well?
-            // ReSharper disable once UnusedVariable
-            var task = Play(true);
+            Play(true);
         }
 
         /// <summary>
         /// Play or resume the sound effect instance, specifying explicitly how to deal with sibling instances.
         /// </summary>
         /// <param name="stopSiblingInstances">Indicate if sibling instances (instances coming from the same <see cref="Sound"/>) currently playing should be stopped or not.</param>
-        public async Task Play(bool stopSiblingInstances)
+        public void Play(bool stopSiblingInstances)
         {
-            await PlayExtended(stopSiblingInstances);
-        }
-
-        public void Reset3D()
-        {
-            if (!Sound.Spatialized) return;
-
-            dopplerPitchFactor = 1f;
-            localizationChannelVolumes = new[] { 0.5f, 0.5f };
-
-            if (Sound.EngineState == AudioEngineState.Invalidated)
-                return;
-
-//            UpdatePitch();
-//            UpdateStereoVolumes();
-//
-//            Reset3DImpl();
-
-            //TODO RESET 3D? center back
+            PlayExtended(stopSiblingInstances);
         }
 
         public void Stop()
         {
-            Sound.CheckNotDisposed();
-
-            if (Sound.EngineState == AudioEngineState.Invalidated)
+            if (engine.State == AudioEngineState.Invalidated)
                 return;
 
-            if (PlayState == SoundPlayState.Stopped)
+            if (playState == SoundPlayState.Stopped)
                 return;
 
-            Native.OpenAl.AudioStop(Voice);
+            OpenAl.SourceStop(Source);
 
-            DataBufferLoaded = false;
+            soundSource?.Restart();
 
-            PlayState = SoundPlayState.Stopped;
-        }
-
-        internal void DestroyImpl()
-        {
-            Sound?.UnregisterInstance(this);
-
-            //TODO DELETE AND REMOVE VOICE
-
-            SoundSource.Dispose();
+            playState = SoundPlayState.Stopped;
         }
 
         internal void ResetStateToDefault()
         {
-            Reset3D();
             Pan = 0;
             Volume = 1;
             IsLooped = false;
@@ -263,21 +201,16 @@ namespace SiliconStudio.Xenko.Audio
                 return;
 
             Stop();
-            DestroyImpl();
+
+            soundSource?.Dispose();
+            sound?.UnregisterInstance(this);
+
+            OpenAl.SourceDestroy(Source);
         }
 
-        /// <summary>
-        /// Play or resume the current sound instance with extended parameters.
-        /// </summary>
-        /// <param name="stopSiblingInstances">Indicate if the sibling instances should be stopped or not</param>
-        protected async Task PlayExtended(bool stopSiblingInstances)
+        protected void PlayExtended(bool stopSiblingInstances)
         {
-            Sound.CheckNotDisposed();
-
-            if (Sound.EngineState == AudioEngineState.Invalidated)
-                return;
-
-            if (Sound.AudioEngine.State == AudioEngineState.Paused) // drop the call to play if the audio engine is paused.
+            if (engine.State == AudioEngineState.Invalidated || engine.State == AudioEngineState.Paused)
                 return;
 
             if (PlayState == SoundPlayState.Playing)
@@ -286,34 +219,14 @@ namespace SiliconStudio.Xenko.Audio
             if (stopSiblingInstances)
                 StopConcurrentInstances();
 
-            if (Sound.StreamFromDisk)
-            {
-                await SoundSource.ReadyToPlay.Task; 
-            }
-            else
-            {
-                if (!DataBufferLoaded)
-                {
-                    Native.OpenAl.AudioSetVoiceBuffer(Voice, Sound.PreloadedBuffer);
-                }
-            }
+            OpenAl.SourcePlay(Source);
 
-            Native.OpenAl.AudioPlay(Voice);
-
-            DataBufferLoaded = true;
-
-            PlayState = SoundPlayState.Playing;
+            playState = SoundPlayState.Playing;
         }
 
         protected void StopConcurrentInstances()
         {
-            Sound?.StopConcurrentInstances(this);
-        }
-
-        private void CheckBufferNotLoaded(string msg)
-        {
-            if (DataBufferLoaded)
-                throw new InvalidOperationException(msg);
+            sound?.StopConcurrentInstances(this);
         }
 
         private void ComputeDopplerFactor(AudioListener listener, AudioEmitter emitter)
@@ -357,6 +270,19 @@ namespace SiliconStudio.Xenko.Audio
             dopplerPitchFactor = (float)Math.Pow(apparentFrequency / soundFreq, emitter.DopplerScale);
         }
 
-        public SoundPlayState PlayState { get; internal set; } = SoundPlayState.Stopped;
+        private SoundPlayState playState = SoundPlayState.Stopped;
+
+        public SoundPlayState PlayState
+        {
+            get
+            {
+                if (playState == SoundPlayState.Playing && !OpenAl.SourceIsPlaying(Source))
+                {
+                    Stop();
+                }
+
+                return playState;
+            }
+        }
     }
 }

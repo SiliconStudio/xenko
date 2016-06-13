@@ -50,11 +50,5 @@ namespace SiliconStudio.Xenko.Audio
         /// <exception cref="ArgumentNullException">Provided listener or emitter is null</exception>
         /// <exception cref="InvalidOperationException">The sound has more than one channels. 3D positioning can be applied only to mono-sounds.</exception>
         void Apply3D(AudioListener listener, AudioEmitter emitter);
-
-        /// <summary>
-        /// Cancel the effect of possible previous calls to <see cref="Apply3D"/>.
-        /// </summary>
-        /// <remarks>Do not revert <see cref="Pan"/> to its value before <see cref="Apply3D"/>.</remarks>
-        void Reset3D();
     }
 }

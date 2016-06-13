@@ -65,7 +65,6 @@
     <Compile Include="CompressedSoundSource.cs" />
     <Compile Include="ConversionExtensions.Android.cs" />
     <Compile Include="ConversionExtensions.Windows.cs" />
-    <Compile Include="DynamicSoundSource.cs" />
     <Compile Include="IPositionableSound.cs" />
     <Compile Include="IPlayableSound.cs" />
     <Compile Include="IRecorder.cs" />
@@ -83,7 +82,7 @@
     <Compile Include="SoundInstance.cs" />
     <Compile Include="SoundPlayState.cs" />
     <Compile Include="SoundSerializer.cs" />
-    <Compile Include="SoundSource.cs" />
+    <Compile Include="DynamicSoundSource.cs" />
     <Compile Include="ThreadSafeQueue.cs" />
     <Compile Include="XAudioErrorCodes.cs" />
   </ItemGroup>

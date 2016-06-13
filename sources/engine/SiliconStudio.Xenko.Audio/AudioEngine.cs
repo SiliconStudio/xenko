@@ -66,7 +66,7 @@ namespace SiliconStudio.Xenko.Audio
         /// <param name="device">Device to use for initialization</param>
         internal void InitializeAudioEngine(AudioDevice device)
         {
-            audioDevice = Native.OpenAl.AudioCreate(device.Name == "default" ? null : device.Name);
+            audioDevice = Native.OpenAl.Create(device.Name == "default" ? null : device.Name);
             if (audioDevice == IntPtr.Zero)
             {
                 throw new Exception("Failed to open audio device!");
@@ -92,7 +92,7 @@ namespace SiliconStudio.Xenko.Audio
         {
             if (audioDevice != IntPtr.Zero)
             {
-                Native.OpenAl.AudioDestroy(audioDevice);
+                Native.OpenAl.Destroy(audioDevice);
             }
         }
         
@@ -165,25 +165,6 @@ namespace SiliconStudio.Xenko.Audio
             {
                 if (!playableSound.IsDisposed && playableSound.PlayState == SoundPlayState.Paused) // sounds can have been stopped by user while the audio engine was paused.
                     playableSound.Play();
-            }
-        }
-
-        /// <summary>
-        /// Force all the <see cref="SoundEffectInstance"/> to update them-self
-        /// </summary>
-        internal void ForceSoundInstanceUpdate()
-        {
-            lock (notDisposedSounds)
-            {
-                foreach (var notDisposedSound in notDisposedSounds)
-                {
-                    var soundEffect = notDisposedSound;
-                    if (soundEffect == null)
-                        continue;
-
-                    foreach (var instance in soundEffect.Instances)
-                        instance.PlayState = instance.PlayState;
-                }
             }
         }
 

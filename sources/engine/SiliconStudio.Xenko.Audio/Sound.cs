@@ -8,6 +8,7 @@ using System.Threading;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Xenko.Native;
 
 namespace SiliconStudio.Xenko.Audio
 {
@@ -33,6 +34,7 @@ namespace SiliconStudio.Xenko.Audio
             AudioEngine = engine;
         }
 
+        [DataMemberIgnore]
         internal AudioEngine AudioEngine { get; private set; }
 
         /// <summary>
@@ -147,6 +149,14 @@ namespace SiliconStudio.Xenko.Audio
         private void RegisterInstance(SoundInstance instance)
         {
             Instances.Add(instance);
+        }
+
+        protected override void Destroy()
+        {
+            if (!StreamFromDisk)
+            {
+                OpenAl.BufferDestroy(PreloadedBuffer);
+            }
         }
     }
 }

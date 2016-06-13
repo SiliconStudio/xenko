@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Audio
 {
     public partial class SoundInstance
     {
-        internal AudioVoice AudioVoice;
+        internal AudioSource AudioSource;
 
         private SoundPlayState theoricPlayState;
 
@@ -17,9 +17,9 @@ namespace SiliconStudio.Xenko.Audio
         {
             get
             {
-                if (theoricPlayState != SoundPlayState.Stopped && AudioVoice.DidVoicePlaybackEnd())
+                if (theoricPlayState != SoundPlayState.Stopped && AudioSource.DidSourcePlaybackEnd())
                 {
-                    AudioVoice.Stop();
+                    AudioSource.Stop();
                     DataBufferLoaded = false;
                     theoricPlayState = SoundPlayState.Stopped;
                 }
@@ -31,12 +31,12 @@ namespace SiliconStudio.Xenko.Audio
 
         internal void ExitLoopImpl()
         {
-            AudioVoice.SetLoopingPoints(0, int.MaxValue, 0, false);
+            AudioSource.SetLoopingPoints(0, int.MaxValue, 0, false);
         }
 
         internal void LoadBuffer()
         {
-            AudioVoice.LoadBuffer();
+            AudioSource.LoadBuffer();
         }
 
         internal void LoadBuffer(SoundSourceBuffer samples, bool eos, int length)
@@ -46,27 +46,27 @@ namespace SiliconStudio.Xenko.Audio
 
         internal void PauseImpl()
         {
-            AudioVoice.Pause();
+            AudioSource.Pause();
         }
 
         internal void PlayImpl()
         {
-            AudioVoice.Play();
+            AudioSource.Play();
         }
 
         internal void StopImpl()
         {
-            AudioVoice.Stop();
+            AudioSource.Stop();
         }
 
         internal void UpdateLooping()
         {
-            AudioVoice.SetLoopingPoints(0, int.MaxValue, 0, IsLooped);
+            AudioSource.SetLoopingPoints(0, int.MaxValue, 0, IsLooped);
         }
 
         internal void UpdateVolume()
         {
-            AudioVoice.SetVolume(Volume);
+            AudioSource.SetVolume(Volume);
         }
 
         private void Apply3DImpl(AudioListener listener, AudioEmitter emitter)
@@ -84,32 +84,32 @@ namespace SiliconStudio.Xenko.Audio
 
             ComputeDopplerFactor(listener, emitter);
 
-            AudioVoice.Apply3D(azimut, elevation, distance / emitter.DistanceScale, MathUtil.Clamp((float)Math.Pow(2, Pitch) * dopplerPitchFactor, 0.5f, 2f));
+            AudioSource.Apply3D(azimut, elevation, distance / emitter.DistanceScale, MathUtil.Clamp((float)Math.Pow(2, Pitch) * dopplerPitchFactor, 0.5f, 2f));
         }
 
-        private void CreateVoice(int sampleRate, int channels)
+        private void CreateSource(int sampleRate, int channels)
         {
-            AudioVoice = new AudioVoice(Sound.AudioEngine, this, sampleRate, channels);
+            AudioSource = new AudioSource(Sound.AudioEngine, this, sampleRate, channels);
         }
 
         private void PlatformSpecificDisposeImpl()
         {
-            AudioVoice.Dispose();
+            AudioSource.Dispose();
         }
 
         private void PreparePlay()
         {
-            AudioVoice.PreparePlay();
+            AudioSource.PreparePlay();
         }
 
         private void Reset3DImpl()
         {
-            AudioVoice.Reset3D();
+            AudioSource.Reset3D();
         }
 
         private void UpdatePan()
         {
-            AudioVoice.SetPan(Pan);
+            AudioSource.SetPan(Pan);
         }
 
         private void UpdatePitch()

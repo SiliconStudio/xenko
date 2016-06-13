@@ -21,11 +21,7 @@ namespace SiliconStudio.Xenko.Audio
         /// <summary>
         /// Does the sound is automatically looping from beginning when it reaches the end.
         /// </summary>
-        /// <remarks>If you want to make a sound play continuously until stopped, be sure to set IsLooped to true <bold>before</bold> you call <see cref="Play"/>.
-        /// To quit a loop when playing, use <see cref="ExitLoop"/></remarks>
         /// <exception cref="ObjectDisposedException">The sound has already been disposed</exception>
-        /// <exception cref="InvalidOperationException">IsLooped cannot be modified after the sound has started to play</exception>
-        /// <seealso cref="ExitLoop"/>
         bool IsLooped { get; set; }
 
         /// <summary>
@@ -48,18 +44,6 @@ namespace SiliconStudio.Xenko.Audio
         /// <exception cref="ObjectDisposedException">The sound has already been disposed</exception>
         /// <remarks>A call to Stop when the sound is already stopped has no effects</remarks>
         void Stop();
-
-        /// <summary>
-        /// Stop looping. That is, do not start over at the end of the current loop, continue to play until the end of the buffer data and then stop.
-        /// </summary>
-        /// <remarks>
-        /// <para>A call to ExitLoop when the sound is Stopped or when the sound is not looping has no effects. 
-        /// That is why a call to ExitLoop directly following a call to <see cref="Play"/> may be ignored (short play latency). 
-        /// For a correct behaviour wait that the sound actually started playing to call ExitLoop.</para>
-        /// <para>ExitLoop does not modify the value of IsLooped.</para>
-        /// </remarks>
-        /// <exception cref="ObjectDisposedException">The sound has already been disposed</exception>
-        void ExitLoop();
 
         /// <summary>
         /// The global volume at which the sound is played.
