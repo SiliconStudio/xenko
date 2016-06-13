@@ -184,18 +184,6 @@ namespace SiliconStudio.Xenko.Audio
             ShouldBePlayed = false;
         }
 
-        internal bool ShouldExitLoop;
-        public void ExitLoop()
-        {
-            if (ShouldBePlayed)
-                ShouldExitLoop = true;
-
-            foreach (var instance in associatedSoundInstances)
-            {
-                instance.ExitLoop();
-            }
-        }
-
         private float volume;
         public float Volume 
         {

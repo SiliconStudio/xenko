@@ -7,6 +7,7 @@ using System.Collections.Specialized;
 using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
 
@@ -125,19 +126,22 @@ namespace SiliconStudio.Xenko.Audio
             {
                 var emitter = associatedData.AudioEmitter;
                 var worldMatrix = associatedData.TransformComponent.WorldMatrix;
-                var newPosition = worldMatrix.TranslationVector;
+                Vector3 pos, scale;
+                Quaternion rot;
+                worldMatrix.Decompose(out scale, out rot, out pos);
 
                 if (!associatedData.AudioEmitterComponent.ShouldBeProcessed)
                 {   // to be sure to have a valid velocity at any time we are forced to affect position even if Component need not to be processed.
-                    emitter.Position = newPosition;
+                    emitter.Position = pos;
                     continue;
                 }
 
                 // First update the emitter data if required.
                 emitter.DistanceScale = associatedData.AudioEmitterComponent.DistanceScale;
                 emitter.DopplerScale = associatedData.AudioEmitterComponent.DopplerScale;
-                emitter.Velocity = newPosition - emitter.Position;
-                emitter.Position = newPosition;
+                emitter.Velocity = pos - emitter.Position;
+                emitter.Position = pos;             
+                emitter.Orientation = rot;
 
                 // Then apply 3D localization
                 var performedAtLeastOneApply = false;
@@ -165,15 +169,12 @@ namespace SiliconStudio.Xenko.Audio
                         // Finally start playing the sounds if needed
                         if (controller.ShouldBePlayed)
                         {
-                            instance.Volume = controller.Volume; // ensure that instance volume is valid
-                            if(instance.PlayState == SoundPlayState.Stopped)
-                                instance.IsLooped = controller.IsLooped && !controller.ShouldExitLoop;    // update instances' IsLooped value, if was set by the user when when not listeners where activated.
-                            // ReSharper disable once UnusedVariable
-                            var task = instance.Play(false);
+                            if(instance.Volume != controller.Volume) instance.Volume = controller.Volume; // ensure that instance volume is valid
+                            if(instance.IsLooped != controller.IsLooped) instance.IsLooped = controller.IsLooped;
+                            instance.Play(false);
                         }
                     }
                     controller.ShouldBePlayed = false;
-                    controller.ShouldExitLoop = false;
                 }
 
                 associatedData.AudioEmitterComponent.ShouldBeProcessed = performedAtLeastOneApply;
