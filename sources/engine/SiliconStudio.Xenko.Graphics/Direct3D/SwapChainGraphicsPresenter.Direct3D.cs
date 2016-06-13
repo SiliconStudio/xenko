@@ -160,7 +160,8 @@ namespace SiliconStudio.Xenko.Graphics
             }
             catch (SharpDXException sharpDxException)
             {
-                throw new GraphicsException("Unexpected error on Present", sharpDxException, GraphicsDevice.GraphicsDeviceStatus);
+                var deviceStatus = GraphicsDevice.GraphicsDeviceStatus;
+                throw new GraphicsException($"Unexpected error on Present (device status: {deviceStatus})", sharpDxException, deviceStatus);
             }
         }
 
