@@ -191,11 +191,11 @@
     <Compile Include="ResourceGroupAllocator.cs" />
     <Compile Include="ResourceGroupBufferUploader.cs" />
     <Compile Include="EffectDescriptorSetReflection.cs" />
-    <Compile Include="Font\DynamicSpriteFontContentSerializer.cs" />
+    <Compile Include="Font\RuntimeRasterizedSpriteFontContentSerializer.cs" />
     <Compile Include="Font\FontDataFactory.cs" />
-    <Compile Include="Font\StaticSpriteFontContentSerializer.cs" />
-    <Compile Include="Font\StaticSpriteFontSerializer.cs" />
-    <Compile Include="Font\DynamicSpriteFontSerializer.cs" />
+    <Compile Include="Font\OfflineRasterizedSpriteFontContentSerializer.cs" />
+    <Compile Include="Font\OfflineRasterizedSpriteFontSerializer.cs" />
+    <Compile Include="Font\RuntimeRasterizedSpriteFontSerializer.cs" />
     <Compile Include="GraphicsDeviceServiceLocal.cs" />
     <Compile Include="ParameterCollectionLayoutExtensions.cs" />
     <Compile Include="PipelineState.cs" />
@@ -306,13 +306,13 @@
     <Compile Include="Font\FontHelper.cs" />
     <Compile Include="Font\FontManager.cs" />
     <Compile Include="Font\CharacterBitmap.cs" />
-    <Compile Include="Font\DynamicSpriteFont.cs" />
+    <Compile Include="Font\RuntimeRasterizedSpriteFont.cs" />
     <Compile Include="Font\FontCacheManager.cs" />
     <Compile Include="Font\CharacterSpecification.cs" />
     <Compile Include="Font\FontStyle.cs" />
     <Compile Include="Font\FontSystem.cs" />
     <Compile Include="Font\IFontFactory.cs" />
-    <Compile Include="Font\StaticSpriteFont.cs" />
+    <Compile Include="Font\OfflineRasterizedSpriteFont.cs" />
     <Compile Include="FrameworkResources.Designer.cs">
       <DependentUpon>FrameworkResources.resx</DependentUpon>
       <AutoGen>True</AutoGen>

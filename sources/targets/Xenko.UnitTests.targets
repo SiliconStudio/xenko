@@ -15,6 +15,7 @@
          However, that means that Tests dependencies must be compiled properly on Windows (should be the case usually).
     -->
     <SiliconStudioXenkoCompileAssetOptions>--compile-property:SolutionDir=$([System.IO.Path]::GetFullPath('$(SiliconStudioXenkoDir)'))\build\;SolutionName=Xenko;BuildProjectReferences=false</SiliconStudioXenkoCompileAssetOptions>
+
   </PropertyGroup>
   
   <!-- On Windows, let's sign the assemblies with fake strong signing (OpenSource Signing, OSS),

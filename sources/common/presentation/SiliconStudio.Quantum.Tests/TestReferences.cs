@@ -46,7 +46,7 @@ namespace SiliconStudio.Quantum.Tests
 
             var memberNode = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, memberNode, container, instance, nameof(ObjectContainer.Instance), true);
-            Helper.TestNonNullObjectReference(memberNode.Content.Reference, instance);
+            Helper.TestNonNullObjectReference(memberNode.Content.Reference, instance, false);
             var instanceNode = nodeContainer.GetNode(instance);
             Helper.TestNonNullObjectReference(memberNode.Content.Reference, instanceNode, instance);
 
@@ -87,7 +87,7 @@ namespace SiliconStudio.Quantum.Tests
             var newInstance = new TestObject { Name = "Test2" };
             memberNode.Content.Update(newInstance);
             Helper.TestMemberContentNode(containerNode, memberNode, container, newInstance, nameof(ObjectContainer.Instance), true);
-            Helper.TestNonNullObjectReference(memberNode.Content.Reference, newInstance);
+            Helper.TestNonNullObjectReference(memberNode.Content.Reference, newInstance, false);
 
             var newInstanceNode = nodeContainer.GetNode(newInstance);
             Helper.TestNonNullObjectReference(memberNode.Content.Reference, newInstanceNode, newInstance);
@@ -210,11 +210,11 @@ namespace SiliconStudio.Quantum.Tests
 
             var member1Node = containerNode.Children.First();
             Helper.TestMemberContentNode(containerNode, member1Node, container, instance, nameof(ObjectsContainer.Instance1), true);
-            Helper.TestNonNullObjectReference(member1Node.Content.Reference, instance);
+            Helper.TestNonNullObjectReference(member1Node.Content.Reference, instance, false);
 
             var member2Node = containerNode.Children.Last();
             Helper.TestMemberContentNode(containerNode, member2Node, container, instance, nameof(ObjectsContainer.Instance2), true);
-            Helper.TestNonNullObjectReference(member2Node.Content.Reference, instance);
+            Helper.TestNonNullObjectReference(member2Node.Content.Reference, instance, false);
 
             var reference1 = member1Node.Content.Reference.AsObject;
             var reference2 = member2Node.Content.Reference.AsObject;

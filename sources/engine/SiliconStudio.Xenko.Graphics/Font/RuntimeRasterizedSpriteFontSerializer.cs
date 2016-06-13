@@ -9,13 +9,13 @@ using SiliconStudio.Core.Serialization;
 namespace SiliconStudio.Xenko.Graphics.Font
 {
     /// <summary>
-    /// Serializer for <see cref="DynamicSpriteFont"/>.
+    /// Serializer for <see cref="RuntimeRasterizedSpriteFont"/>.
     /// </summary>
-    internal class DynamicSpriteFontSerializer : DataSerializer<DynamicSpriteFont>, IDataSerializerInitializer
+    internal class RuntimeRasterizedSpriteFontSerializer : DataSerializer<RuntimeRasterizedSpriteFont>, IDataSerializerInitializer
     {
         private DataSerializer<SpriteFont> parentSerializer;
 
-        public override void PreSerialize(ref DynamicSpriteFont texture, ArchiveMode mode, SerializationStream stream)
+        public override void PreSerialize(ref RuntimeRasterizedSpriteFont texture, ArchiveMode mode, SerializationStream stream)
         {
             // Do not create object during pre-serialize (OK because not recursive)
         }
@@ -31,11 +31,11 @@ namespace SiliconStudio.Xenko.Graphics.Font
             }
         }
 
-        public override void Serialize(ref DynamicSpriteFont font, ArchiveMode mode, SerializationStream stream)
+        public override void Serialize(ref RuntimeRasterizedSpriteFont font, ArchiveMode mode, SerializationStream stream)
         {
             SpriteFont spriteFont = font;
             parentSerializer.Serialize(ref spriteFont, mode, stream);
-            font = (DynamicSpriteFont)spriteFont;
+            font = (RuntimeRasterizedSpriteFont)spriteFont;
 
             if (mode == ArchiveMode.Deserialize)
             {

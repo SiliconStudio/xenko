@@ -3,7 +3,6 @@
 
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization.Contents;
@@ -47,7 +46,7 @@ namespace SiliconStudio.Quantum.Commands
 
         protected override void ExecuteSync(IContent content, Index index, object parameter)
         {
-            var value = content.Retrieve();
+            var value = content.Retrieve(index);
             var collectionDescriptor = (CollectionDescriptor)TypeDescriptorFactory.Default.Find(value.GetType());
 
             object itemToAdd = null;
@@ -67,7 +66,17 @@ namespace SiliconStudio.Quantum.Commands
             {
                 itemToAdd = parameter ?? ObjectFactory.NewInstance(collectionDescriptor.ElementType);
             }
-            content.Add(itemToAdd);
+            if (index.IsEmpty)
+            {
+                content.Add(itemToAdd);
+            }
+            else
+            {
+                // Handle collections in collections
+                // TODO: this is not working on the observable node side
+                var collectionNode = content.Reference.AsEnumerable[index].TargetNode;
+                collectionNode.Content.Add(itemToAdd);
+            }
         }
     }
 }

@@ -31,68 +31,6 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
         private string msdfgenExe;
         private string tempDir;
 
-        private static Dictionary<string, string> foundFonts;
-
-        /// <summary>
-        /// Builds a dictionary of system fonts so they can be mapped to their hdd location later.
-        /// </summary>
-        private static void BuildFontsDictionary()
-        {
-            if (foundFonts != null)
-                return;
-
-            foundFonts = new Dictionary<string, string>();
-
-            string fontsfolder = System.Environment.GetFolderPath(System.Environment.SpecialFolder.Fonts);
-
-            if (!Directory.Exists(fontsfolder)) throw new Exception("directory doesnt exist");
-
-            foreach (FileInfo fi in new DirectoryInfo(fontsfolder).GetFiles("*.ttf"))
-            {
-                PrivateFontCollection fileFonts = new PrivateFontCollection();
-                fileFonts.AddFontFile(fi.FullName);
-                {
-                    var fontKey = fileFonts.Families[0].Name;
-
-                    // Regular
-                    if (fileFonts.Families[0].IsStyleAvailable(System.Drawing.FontStyle.Regular))
-                    {
-                        if (!foundFonts.ContainsKey(fontKey))
-                        {
-                            foundFonts.Add(fontKey, fi.FullName);
-                        }
-                    }
-
-                    // Bold
-                    if (fileFonts.Families[0].IsStyleAvailable(System.Drawing.FontStyle.Bold))
-                    {
-                        if (!foundFonts.ContainsKey(fontKey + " Bold"))
-                        {
-                            foundFonts.Add(fontKey + " Bold", fi.FullName);
-                        }
-                    }
-
-                    // Italic
-                    if (fileFonts.Families[0].IsStyleAvailable(System.Drawing.FontStyle.Italic))
-                    {
-                        if (!foundFonts.ContainsKey(fontKey + " Italic"))
-                        {
-                            foundFonts.Add(fontKey + " Italic", fi.FullName);
-                        }
-                    }
-
-                    // Bold Italic
-                    if (fileFonts.Families[0].IsStyleAvailable(System.Drawing.FontStyle.Bold | System.Drawing.FontStyle.Italic))
-                    {
-                        if (!foundFonts.ContainsKey(fontKey + " Bold Italic"))
-                        {
-                            foundFonts.Add(fontKey + " Bold Italic", fi.FullName);
-                        }
-                    }
-                }
-            }
-        }
-
         /// <summary>
         /// Generates and load a SDF font glyph using the msdfgen.exe
         /// </summary>
@@ -168,110 +106,10 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
                 }
         }
         
-        private FontFace GetFontFaceFromSource(Factory factory, SpriteFontAsset options)
-        {
-            if (!File.Exists(options.Source))
-            {
-                // Font does not exist
-                throw new FontNotFoundException(options.Source);
-            }
-
-            using (var fontFile = new FontFile(factory, options.Source))
-            {
-                FontSimulations fontSimulations;
-                switch (options.Style)
-                {
-                    case Xenko.Graphics.Font.FontStyle.Regular:
-                        fontSimulations = FontSimulations.None;
-                        break;
-                    case Xenko.Graphics.Font.FontStyle.Bold:
-                        fontSimulations = FontSimulations.Bold;
-                        break;
-                    case Xenko.Graphics.Font.FontStyle.Italic:
-                        fontSimulations = FontSimulations.Oblique;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
-                RawBool isSupported;
-                FontFileType fontType;
-                FontFaceType faceType;
-                int numberFaces;
-
-                fontFile.Analyze(out isSupported, out fontType, out faceType, out numberFaces);
-
-                return new FontFace(factory, faceType, new[] { fontFile }, 0, fontSimulations);
-            }
-        }
-
-        private FontFace GetFontFaceFromSystemFonts(Factory factory, SpriteFontAsset options)
-        {
-            SharpDX.DirectWrite.Font font;
-            using (var fontCollection = factory.GetSystemFontCollection(false))
-            {
-                int index;
-                if (!fontCollection.FindFamilyName(options.FontName, out index))
-                {
-                    // Lets try to import System.Drawing for old system bitmap fonts (like MS Sans Serif)
-                    throw new FontNotFoundException(options.FontName);
-                }
-
-                using (var fontFamily = fontCollection.GetFontFamily(index))
-                {
-                    var weight = options.Style.IsBold() ? FontWeight.Bold : FontWeight.Regular;
-                    var style = options.Style.IsItalic() ? SharpDX.DirectWrite.FontStyle.Italic : SharpDX.DirectWrite.FontStyle.Normal;
-                    font = fontFamily.GetFirstMatchingFont(weight, FontStretch.Normal, style);
-                }
-            }
-
-            return new FontFace(font);
-        }
-
-        /// <summary>
-        /// Gets the hdd path for the specified font so it can be passed to msdfgen.exe
-        /// </summary>
-        /// <param name="options">Font asset options</param>
-        /// <returns>Absolute path to the font file</returns>
-        private string GetFontSource(SpriteFontAsset options)
-        {
-            if (!string.IsNullOrEmpty(options.Source))
-                return options.Source;
-
-            // Note! If fonts are added at runtime the dictionary will not get updated after it has been initialized
-            BuildFontsDictionary();
-
-            // TODO Check if msdfgen supports Bold/Italic font generation
-
-            string outSource;
-            if (options.Style.IsBold() && options.Style.IsItalic())
-            {
-                if (foundFonts.TryGetValue(options.FontName + " Bold Italic", out outSource))
-                    return outSource;
-            }
-
-            if (options.Style.IsBold())
-            {
-                if (foundFonts.TryGetValue(options.FontName + " Bold", out outSource))
-                    return outSource;
-            }
-
-            if (options.Style.IsItalic())
-            {
-                if (foundFonts.TryGetValue(options.FontName + " Italic", out outSource))
-                    return outSource;
-            }
-
-            if (foundFonts.TryGetValue(options.FontName, out outSource))
-                return outSource;
-            
-            return null;
-        }
-
         /// <inheritdoc/>
         public void Import(SpriteFontAsset options, List<char> characters)
         {
-            fontSource = GetFontSource(options);
+            fontSource = options.FontSource.GetFontPath();
             if (string.IsNullOrEmpty(fontSource))
               return;
 
@@ -279,13 +117,13 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
             tempDir = $"{Environment.GetEnvironmentVariable("TEMP")}\\";
 
             var factory = new Factory();
-            
-            FontFace fontFace = !string.IsNullOrEmpty(options.Source) ? GetFontFaceFromSource(factory, options) : GetFontFaceFromSystemFonts(factory, options);
+
+            FontFace fontFace = options.FontSource.GetFontFace();
 
             var fontMetrics = fontFace.Metrics;
 
             // Create a bunch of GDI+ objects.
-            var fontSize = FontHelper.PointsToPixels(options.Size);
+            var fontSize = FontHelper.PointsToPixels(options.FontType.Size);
 
             var glyphList = new List<Glyph>();
 
