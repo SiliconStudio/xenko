@@ -32,24 +32,66 @@ namespace SiliconStudio.Quantum.Tests
         }
 
         [Test]
+        public void TestEquals()
+        {
+            var obj = new Class { StructMember = { StringMember = "aa" }, ClassMember = new Class(), ListMember = { new Class(), new Class(), new Class() } };
+            var nodeContainer = new NodeContainer();
+            var path1 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj)).PushMember(nameof(Class.IntMember));
+            var path2 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj)).PushMember(nameof(Class.IntMember));
+            Assert.AreEqual(path1, path2);
+            Assert.AreEqual(path1.GetHashCode(), path2.GetHashCode());
+            path1 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj)).PushMember(nameof(Class.ClassMember));
+            Assert.AreNotEqual(path1, path2);
+            Assert.AreNotEqual(path1.GetHashCode(), path2.GetHashCode());
+            path2 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj)).PushMember(nameof(Class.ClassMember));
+            Assert.AreEqual(path1, path2);
+            Assert.AreEqual(path1.GetHashCode(), path2.GetHashCode());
+            path1 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj)).PushMember(nameof(Class.ClassMember)).PushTarget();
+            Assert.AreNotEqual(path1, path2);
+            Assert.AreNotEqual(path1.GetHashCode(), path2.GetHashCode());
+            path2 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj)).PushMember(nameof(Class.ClassMember)).PushTarget();
+            Assert.AreEqual(path1, path2);
+            Assert.AreEqual(path1.GetHashCode(), path2.GetHashCode());
+            path1 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj)).PushMember(nameof(Class.ClassMember)).PushTarget().PushMember(nameof(Class.IntMember));
+            Assert.AreNotEqual(path1, path2);
+            Assert.AreNotEqual(path1.GetHashCode(), path2.GetHashCode());
+            path2 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj)).PushMember(nameof(Class.ClassMember)).PushTarget().PushMember(nameof(Class.IntMember));
+            Assert.AreEqual(path1, path2);
+            Assert.AreEqual(path1.GetHashCode(), path2.GetHashCode());
+            path1 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj)).PushMember(nameof(Class.ListMember)).PushIndex(new Index(0));
+            Assert.AreNotEqual(path1, path2);
+            Assert.AreNotEqual(path1.GetHashCode(), path2.GetHashCode());
+            path2 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj)).PushMember(nameof(Class.ListMember)).PushIndex(new Index(0));
+            Assert.AreEqual(path1, path2);
+            Assert.AreEqual(path1.GetHashCode(), path2.GetHashCode());
+            path2 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj)).PushMember(nameof(Class.ListMember)).PushIndex(new Index(1));
+            Assert.AreNotEqual(path1, path2);
+            Assert.AreNotEqual(path1.GetHashCode(), path2.GetHashCode());
+        }
+
+        [Test]
         public void TestClone()
         {
             var obj = new Class { ClassMember = new Class(), ListMember = { new Class(), new Class(), new Class() } };
             var nodeContainer = new NodeContainer();
             var path1 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj));
             var clone = path1.Clone();
+            Assert.AreEqual(path1, clone);
+            Assert.AreEqual(path1.GetHashCode(), clone.GetHashCode());
             Assert.AreEqual(path1.RootNode, clone.RootNode);
             Assert.AreEqual(path1.IsValid, clone.IsValid);
             Assert.AreEqual(path1.IsEmpty, clone.IsEmpty);
             Assert.AreEqual(path1.GetNode(), clone.GetNode());
             var path2 = path1.PushMember(nameof(Class.ClassMember)).PushTarget().PushMember(nameof(Class.IntMember));
             clone = path2.Clone();
+            Assert.AreEqual(path2, clone);
             Assert.AreEqual(path2.RootNode, clone.RootNode);
             Assert.AreEqual(path2.IsValid, clone.IsValid);
             Assert.AreEqual(path2.IsEmpty, clone.IsEmpty);
             Assert.AreEqual(path2.GetNode(), clone.GetNode());
             var path3 = path1.PushMember(nameof(Class.ListMember)).PushIndex(new Index(1)).PushMember(nameof(Class.IntMember));
             clone = path3.Clone();
+            Assert.AreEqual(path3, clone);
             Assert.AreEqual(path3.RootNode, clone.RootNode);
             Assert.AreEqual(path3.IsValid, clone.IsValid);
             Assert.AreEqual(path3.IsEmpty, clone.IsEmpty);
@@ -65,18 +107,24 @@ namespace SiliconStudio.Quantum.Tests
             var newRoot = nodeContainer.GetOrCreateNode(obj2);
             var path1 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj1));
             var clone = path1.Clone(newRoot);
+            Assert.AreNotEqual(path1, clone);
+            Assert.AreNotEqual(path1.GetHashCode(), clone.GetHashCode());
             Assert.AreNotEqual(newRoot, path1.RootNode);
             Assert.AreEqual(newRoot, clone.RootNode);
             Assert.AreEqual(path1.IsValid, clone.IsValid);
             Assert.AreEqual(path1.IsEmpty, clone.IsEmpty);
             var path2 = path1.PushMember(nameof(Class.ClassMember)).PushTarget().PushMember(nameof(Class.IntMember));
             clone = path2.Clone(newRoot);
+            Assert.AreNotEqual(path2, clone);
+            Assert.AreNotEqual(path2.GetHashCode(), clone.GetHashCode());
             Assert.AreNotEqual(newRoot, path2.RootNode);
             Assert.AreEqual(newRoot, clone.RootNode);
             Assert.AreEqual(path2.IsValid, clone.IsValid);
             Assert.AreEqual(path2.IsEmpty, clone.IsEmpty);
             var path3 = path1.PushMember(nameof(Class.ListMember)).PushIndex(new Index(1)).PushMember(nameof(Class.IntMember));
             clone = path3.Clone(newRoot);
+            Assert.AreNotEqual(path3, clone);
+            Assert.AreNotEqual(path3.GetHashCode(), clone.GetHashCode());
             Assert.AreNotEqual(newRoot, path3.RootNode);
             Assert.AreEqual(newRoot, clone.RootNode);
             Assert.AreEqual(path3.IsValid, clone.IsValid);

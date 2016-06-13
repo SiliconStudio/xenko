@@ -15,7 +15,7 @@ namespace SiliconStudio.Quantum
     /// A class describing the path of a node, relative to a root node. The path can cross references, array, etc.
     /// </summary>
     /// <remarks>This class is immutable.</remarks>
-    public class GraphNodePath : IEnumerable<IGraphNode>
+    public class GraphNodePath : IEnumerable<IGraphNode>, IEquatable<GraphNodePath>
     {
         /// <summary>
         /// An enum that describes the type of an item of a model node path.
@@ -64,6 +64,19 @@ namespace SiliconStudio.Quantum
             public static NodePathElement CreateIndex(Index index)
             {
                 return new NodePathElement(index, ElementType.Index);
+            }
+
+            public bool EqualsInPath(NodePathElement other)
+            {
+                return Type == ElementType.Target && other.Type == ElementType.Target || Equals(other);
+            }
+
+            public int GetHashCodeInPath()
+            {
+                unchecked
+                {
+                    return ((int)Type * 397) ^ (Type != ElementType.Target ? Value?.GetHashCode() ?? 0 : 0);
+                }
             }
 
             public bool Equals(NodePathElement other)
@@ -220,6 +233,58 @@ namespace SiliconStudio.Quantum
 
         /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        public bool Equals(GraphNodePath other)
+        {
+            if (ReferenceEquals(null, other))
+                return false;
+            if (ReferenceEquals(this, other))
+                return true;
+            if (!Equals(RootNode, other.RootNode) || IsEmpty != other.IsEmpty || path.Count != other.path.Count)
+                return false;
+
+            for (var i = 0; i < path.Count; ++i)
+            {
+                if (!path[i].EqualsInPath(other.path[i]))
+                    return false;
+            }
+            return true;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
+            if (obj.GetType() != GetType())
+                return false;
+            return Equals((GraphNodePath)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = RootNode?.GetHashCode() ?? 0;
+                hashCode = (hashCode*397) ^ IsEmpty.GetHashCode();
+                foreach (var item in path)
+                {
+                    hashCode = (hashCode * 397) ^ item.GetHashCodeInPath();
+                }
+                return hashCode;
+            }
+        }
+
+        public static bool operator ==(GraphNodePath left, GraphNodePath right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(GraphNodePath left, GraphNodePath right)
+        {
+            return !Equals(left, right);
+        }
 
         /// <inheritdoc/>
         public override string ToString()
