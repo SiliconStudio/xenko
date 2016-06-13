@@ -287,6 +287,26 @@ namespace SiliconStudio.Quantum.Tests
             VerifyLinks(expectedLinks, linker);
         }
 
+        [Test]
+        public void TestReentrancy()
+        {
+            var nodeContainer = new NodeContainer();
+            var instance1 = new SimpleClass { Member1 = 3 };
+            var instance2 = new SimpleClass { Member1 = 4 };
+            instance1.Member2 = instance1;
+            instance2.Member2 = instance2;
+            var source = nodeContainer.GetOrCreateNode(instance1);
+            var target = nodeContainer.GetOrCreateNode(instance2);
+            var linker = new TestLinker();
+            linker.LinkGraph(source, target);
+            var expectedLinks = new Dictionary<IGraphNode, IGraphNode>
+            {
+                { source, target },
+                { source.GetChild(nameof(SimpleClass.Member1)), target.GetChild(nameof(SimpleClass.Member1)) },
+                { source.GetChild(nameof(SimpleClass.Member2)), target.GetChild(nameof(SimpleClass.Member2)) },
+            };
+            VerifyLinks(expectedLinks, linker);
+        }
 
         private static void VerifyLinks(Dictionary<IGraphNode, IGraphNode> expectedLinks, TestLinker linker)
         {
