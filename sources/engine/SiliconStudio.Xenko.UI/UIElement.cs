@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.UI
         protected const string MiscCategory = "Misc";
 
         internal Vector3 RenderSizeInternal;
-        internal Matrix WorldMatrixInternal = Matrix.Identity;
+        internal Matrix WorldMatrixInternal;
         protected internal Thickness MarginInternal = Thickness.UniformCuboid(0f);
 
         private string name;
