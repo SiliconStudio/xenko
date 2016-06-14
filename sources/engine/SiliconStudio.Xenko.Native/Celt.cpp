@@ -10,6 +10,28 @@
 #include "../../../deps/OpenAL/AL/alc.h"
 
 extern "C" {
+	class SpinLock
+	{
+	public:
+		SpinLock()
+		{
+			mLocked = false;
+		}
+
+		void Lock()
+		{			
+			while(!__sync_bool_compare_and_swap(&mLocked, false, true)) {}
+		}
+
+		void Unlock()
+		{
+			mLocked = false;
+		}
+
+	private:
+		volatile bool mLocked;
+	};
+
 	namespace OpenAL
 	{
 		LPALCOPENDEVICE OpenDevice;
@@ -17,6 +39,7 @@ extern "C" {
 		LPALCCREATECONTEXT CreateContext;
 		LPALCDESTROYCONTEXT DestroyContext;
 		LPALCMAKECONTEXTCURRENT MakeContextCurrent;
+		LPALCGETCURRENTCONTEXT GetCurrentContext;
 		
 		LPALSOURCEPLAY SourcePlay;
 		LPALSOURCEPAUSE SourcePause;
@@ -37,6 +60,29 @@ extern "C" {
 
 		void* OpenALLibrary = NULL;
 
+		class ContextState
+		{
+		public:
+			ContextState(ALCcontext* context)
+			{
+				sOpenAlLock.Lock();
+				mOldContext = GetCurrentContext();
+				MakeContextCurrent(context);
+			}
+
+			~ContextState()
+			{
+				MakeContextCurrent(mOldContext);
+				sOpenAlLock.Unlock();
+			}
+
+		private:
+			ALCcontext* mOldContext;
+			static SpinLock sOpenAlLock;
+		};
+
+		SpinLock ContextState::sOpenAlLock;
+
 		bool xnInitOpenAL()
 		{
 			if (OpenALLibrary) return true;
@@ -56,6 +102,7 @@ extern "C" {
 			CreateContext = (LPALCCREATECONTEXT)GetSymbolAddress(OpenALLibrary, "alcCreateContext");
 			DestroyContext = (LPALCDESTROYCONTEXT)GetSymbolAddress(OpenALLibrary, "alcDestroyContext");
 			MakeContextCurrent = (LPALCMAKECONTEXTCURRENT)GetSymbolAddress(OpenALLibrary, "alcMakeContextCurrent");
+			GetCurrentContext = (LPALCGETCURRENTCONTEXT)GetSymbolAddress(OpenALLibrary, "alcGetCurrentContext");
 
 			SourcePlay = (LPALSOURCEPLAY)GetSymbolAddress(OpenALLibrary, "alSourcePlay");
 			SourcePause = (LPALSOURCEPAUSE)GetSymbolAddress(OpenALLibrary, "alSourcePause");
@@ -80,7 +127,6 @@ extern "C" {
 		struct xnAudioDevice
 		{
 			ALCdevice* device;
-			ALCcontext* context;
 		};
 
 		xnAudioDevice* xnAudioCreate(const char* deviceName)
@@ -92,34 +138,56 @@ extern "C" {
 				delete o;
 				return NULL;
 			}
-			o->context = CreateContext(o->device, NULL);
-			MakeContextCurrent(o->context);
 			return o;
 		}
 
 		void xnAudioDestroy(xnAudioDevice* device)
 		{
 			MakeContextCurrent(NULL);
-			DestroyContext(device->context);
 			CloseDevice(device->device);
 			delete device;
 		}
 
-		uint32_t xnAudioSourceCreate()
+		struct xnAudioListener
 		{
+			ALCcontext* context;
+		};
+
+		xnAudioListener* xnAudioListenerCreate(xnAudioDevice* device)
+		{
+			auto res = new xnAudioListener;
+			res->context = CreateContext(device->device, NULL);
+			MakeContextCurrent(res->context);
+			return res;
+		}
+
+		void xnAudioListenerDestroy(xnAudioListener* listener)
+		{
+			DestroyContext(listener->context);
+		}
+
+		uint32_t xnAudioSourceCreate(xnAudioListener* listener)
+		{
+			ContextState lock(listener->context);
+
 			ALuint source;
 			GenSources(1, &source);
 			SourceF(source, AL_REFERENCE_DISTANCE, 1.0f);
+						
 			return source;
 		}
 
-		void xnAudioSourceDestroy(uint32_t source)
+		void xnAudioSourceDestroy(xnAudioListener* listener, uint32_t source)
 		{
+			ContextState lock(listener->context);
+
 			DeleteSources(1, &source);
 		}
 
-		void xnAudioSourceSetPan(uint32_t source, float pan)
+		void xnAudioSourceSetPan(xnAudioListener* listener, uint32_t source, float pan)
 		{
+			ContextState lock(listener->context);
+
 			//make sure we are able to pan
 			SourceI(source, AL_SOURCE_RELATIVE, AL_TRUE);
 
@@ -131,19 +199,106 @@ extern "C" {
 			SourceFV(source, AL_POSITION, alpan);
 		}
 
-		void xnAudioSourceSetLooping(uint32_t source, bool looping)
+		void xnAudioSourceSetLooping(xnAudioListener* listener, uint32_t source, bool looping)
 		{
+			ContextState lock(listener->context);
+
 			SourceI(source, AL_LOOPING, looping ? AL_TRUE : AL_FALSE);
 		}
 
-		void xnAudioSourceSetGain(uint32_t source, float gain)
+		void xnAudioSourceSetGain(xnAudioListener* listener, uint32_t source, float gain)
 		{
+			ContextState lock(listener->context);
+
 			SourceF(source, AL_GAIN, gain);
 		}
 
-		void xnAudioSourceSetPitch(uint32_t source, float pitch)
+		void xnAudioSourceSetPitch(xnAudioListener* listener, uint32_t source, float pitch)
 		{
+			ContextState lock(listener->context);
+
 			SourceF(source, AL_PITCH, pitch);
+		}
+
+		void xnAudioSourceSetBuffer(xnAudioListener* listener, uint32_t source, uint32_t buffer)
+		{
+			ContextState lock(listener->context);
+
+			SourceI(source, AL_BUFFER, buffer);
+		}
+
+		void xnAudioSourceQueueBuffer(xnAudioListener* listener, uint32_t source, uint32_t buffer, short* pcm, int bufferSize, int sampleRate, bool mono)
+		{
+			ContextState lock(listener->context);
+
+			BufferData(buffer, mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, pcm, bufferSize, sampleRate);
+			SourceQueueBuffers(source, 1, &buffer);
+		}
+
+		uint32_t xnAudioSourceGetFreeBuffer(xnAudioListener* listener, uint32_t source)
+		{
+			ContextState lock(listener->context);
+
+			ALint processed = 0;
+			GetSourceI(source, AL_BUFFERS_PROCESSED, &processed);
+			if(processed > 0)
+			{
+				ALuint buffer;
+				SourceUnqueueBuffers(source, 1, &buffer);
+				return buffer;
+			}
+			return 0;
+		}
+
+		void xnAudioSourcePlay(xnAudioListener* listener, uint32_t source)
+		{
+			ContextState lock(listener->context);
+
+			SourcePlay(source);
+		}
+
+		void xnAudioSourcePause(xnAudioListener* listener, uint32_t source)
+		{
+			ContextState lock(listener->context);
+
+			SourcePause(source);
+		}
+
+		void xnAudioSourceStop(xnAudioListener* listener, uint32_t source)
+		{
+			ContextState lock(listener->context);
+
+			SourceStop(source);
+		}
+
+		void xnAudioListenerPush3D(xnAudioListener* listener, float* pos, float* rot, float* vel)
+		{
+			ContextState lock(listener->context);
+
+			if (pos) ListenerFV(AL_POSITION, pos);
+			if (rot) ListenerFV(AL_ORIENTATION, rot);
+			if (vel) ListenerFV(AL_VELOCITY, vel);
+		}
+
+		void xnAudioSourcePush3D(xnAudioListener* listener, uint32_t source, float* pos, float* rot, float* vel)
+		{
+			ContextState lock(listener->context);
+
+			//make sure we are able to 3D
+			SourceI(source, AL_SOURCE_RELATIVE, AL_FALSE);
+
+			if (pos) SourceFV(source, AL_POSITION, pos);
+			if (rot) SourceFV(source, AL_ORIENTATION, rot);
+			if (vel) SourceFV(source, AL_VELOCITY, vel);
+		}
+
+		bool xnAudioSourceIsPlaying(xnAudioListener* listener, uint32_t source)
+		{
+			ContextState lock(listener->context);
+
+			ALint value;
+			GetSourceI(source, AL_SOURCE_STATE, &value);
+			return value == AL_PLAYING;
 		}
 
 		uint32_t xnAudioBufferCreate()
@@ -161,69 +316,6 @@ extern "C" {
 		void xnAudioBufferFill(uint32_t buffer, short* pcm, int bufferSize, int sampleRate, bool mono)
 		{
 			BufferData(buffer, mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, pcm, bufferSize, sampleRate);
-		}
-
-		void xnAudioSourceSetBuffer(uint32_t source, uint32_t buffer)
-		{
-			SourceI(source, AL_BUFFER, buffer);
-		}
-
-		void xnAudioSourceQueueBuffer(uint32_t source, uint32_t buffer, short* pcm, int bufferSize, int sampleRate, bool mono)
-		{
-			BufferData(buffer, mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, pcm, bufferSize, sampleRate);
-			SourceQueueBuffers(source, 1, &buffer);
-		}
-
-		uint32_t xnAudioSourceGetFreeBuffer(uint32_t source)
-		{
-			ALint processed = 0;
-			GetSourceI(source, AL_BUFFERS_PROCESSED, &processed);
-			if(processed > 0)
-			{
-				ALuint buffer;
-				SourceUnqueueBuffers(source, 1, &buffer);
-				return buffer;
-			}
-			return 0;
-		}
-
-		void xnAudioSourcePlay(uint32_t source)
-		{
-			SourcePlay(source);
-		}
-
-		void xnAudioSourcePause(uint32_t source)
-		{
-			SourcePause(source);
-		}
-
-		void xnAudioSourceStop(uint32_t source)
-		{
-			SourceStop(source);
-		}
-
-		void xnAudioListenerPush3D(float* pos, float* rot, float* vel)
-		{
-			if (pos) ListenerFV(AL_POSITION, pos);
-			if (rot) ListenerFV(AL_ORIENTATION, rot);
-			if (vel) ListenerFV(AL_VELOCITY, vel);
-		}
-
-		void xnAudioSourcePush3D(uint32_t source, float* pos, float* rot, float* vel)
-		{
-			//make sure we are able to 3D
-			SourceI(source, AL_SOURCE_RELATIVE, AL_FALSE);
-
-			if (pos) SourceFV(source, AL_POSITION, pos);
-			if (rot) SourceFV(source, AL_ORIENTATION, rot);
-			if (vel) SourceFV(source, AL_VELOCITY, vel);
-		}
-
-		bool xnAudioSourceIsPlaying(uint32_t source)
-		{
-			ALint value;
-			GetSourceI(source, AL_SOURCE_STATE, &value);
-			return value == AL_PLAYING;
 		}
 	}
 

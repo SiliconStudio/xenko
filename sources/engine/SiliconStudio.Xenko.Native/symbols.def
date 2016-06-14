@@ -10,6 +10,8 @@ xnCeltDecodeShort
 xnInitOpenAL
 xnAudioCreate
 xnAudioDestroy
+xnAudioListenerCreate
+xnAudioListenerDestroy
 xnAudioSourceCreate
 xnAudioSourceDestroy
 xnAudioSourceSetPan
