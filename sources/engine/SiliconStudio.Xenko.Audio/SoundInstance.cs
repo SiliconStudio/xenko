@@ -134,13 +134,10 @@ namespace SiliconStudio.Xenko.Audio
         {
             if (!spatialized) return;
 
-            if (Listener == null)
-                throw new ArgumentNullException(nameof(Listener));
-
             if (emitter == null)
                 throw new ArgumentNullException(nameof(emitter));
 
-            OpenAl.SourcePush3D(Listener.Listener, Source, (float*)Interop.Fixed(ref emitter.Position), (float*)Interop.Fixed(ref emitter.Orientation), (float*)Interop.Fixed(ref emitter.Velocity));
+           emitter.Apply3D(Listener, Source);
         }
 
         public void Pause()
@@ -222,7 +219,18 @@ namespace SiliconStudio.Xenko.Audio
             if (stopSiblingInstances)
                 StopConcurrentInstances();
 
-            OpenAl.SourcePlay(Listener.Listener, Source);
+            if (soundSource != null)
+            {
+                Task.Run(async () =>
+                {
+                    await soundSource.ReadyToPlay.Task;
+                    OpenAl.SourcePlay(Listener.Listener, Source);
+                });
+            }
+            else
+            {
+                OpenAl.SourcePlay(Listener.Listener, Source);
+            }
 
             playState = SoundPlayState.Playing;
         }
