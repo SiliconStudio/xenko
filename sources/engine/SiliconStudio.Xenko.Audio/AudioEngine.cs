@@ -7,6 +7,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Xenko.Native;
 
 namespace SiliconStudio.Xenko.Audio
 {
@@ -19,9 +20,11 @@ namespace SiliconStudio.Xenko.Audio
     /// A call to Dispose automatically stops and disposes all the <see cref="Sound"/>, <see cref="SoundInstance"/>
     public class AudioEngine : ComponentBase
     {
+        public AudioListener DefaultListener; 
+
         static AudioEngine()
         {
-            if (!Native.OpenAl.InitOpenAL())
+            if (!OpenAl.InitOpenAL())
             {
                 throw new Exception("Failed to initialize the OpenAL native layer.");
             }
@@ -58,7 +61,7 @@ namespace SiliconStudio.Xenko.Audio
             InitializeAudioEngine(device);
         }
 
-        private IntPtr audioDevice;
+        internal OpenAl.Device AudioDevice;
 
         /// <summary>
         /// Initialize audio engine for <paramref name="device"/>.
@@ -66,11 +69,13 @@ namespace SiliconStudio.Xenko.Audio
         /// <param name="device">Device to use for initialization</param>
         internal void InitializeAudioEngine(AudioDevice device)
         {
-            audioDevice = Native.OpenAl.Create(device.Name == "default" ? null : device.Name);
-            if (audioDevice == IntPtr.Zero)
+            AudioDevice = OpenAl.Create(device.Name == "default" ? null : device.Name);
+            if (AudioDevice.Ptr == IntPtr.Zero)
             {
                 throw new Exception("Failed to open audio device!");
             }
+
+            DefaultListener = new AudioListener(this) { Listener = OpenAl.ListenerCreate(AudioDevice) };
         }
 
         /// <summary>
@@ -90,9 +95,10 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         internal void DestroyAudioEngine()
         {
-            if (audioDevice != IntPtr.Zero)
+            if (AudioDevice.Ptr != IntPtr.Zero)
             {
-                Native.OpenAl.Destroy(audioDevice);
+                OpenAl.ListenerDestroy(DefaultListener.Listener);
+                OpenAl.Destroy(AudioDevice);
             }
         }
         

@@ -81,11 +81,11 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         /// <returns>A new sound instance</returns>
         /// <exception cref="ObjectDisposedException">The sound has already been disposed</exception>
-        public SoundInstance CreateInstance()
+        public SoundInstance CreateInstance(AudioListener listener)
         {
             CheckNotDisposed();
 
-            var newInstance = new SoundInstance(this) { Name = Name + " - Instance " + intancesCreationCount };
+            var newInstance = new SoundInstance(this, listener) { Name = Name + " - Instance " + intancesCreationCount };
 
             RegisterInstance(newInstance);
 

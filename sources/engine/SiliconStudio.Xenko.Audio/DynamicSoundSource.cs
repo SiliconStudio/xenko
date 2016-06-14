@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Audio
             get
             {
                 if (freeBuffers.Count > 0) return true;
-                var freeBuffer = OpenAl.SourceGetFreeBuffer(SoundInstance.Source);
+                var freeBuffer = OpenAl.SourceGetFreeBuffer(SoundInstance.Listener.Listener, SoundInstance.Source);
                 if (freeBuffer <= 0) return false;
                 freeBuffers.Enqueue(freeBuffer);
                 return true;
@@ -67,7 +67,7 @@ namespace SiliconStudio.Xenko.Audio
         protected void FillBuffer(IntPtr pcm, int bufferSize, int sampleRate, bool mono)
         {
             var buffer = freeBuffers.Dequeue();
-            OpenAl.SourceQueueBuffer(SoundInstance.Source, buffer, pcm, bufferSize, sampleRate, mono);
+            OpenAl.SourceQueueBuffer(SoundInstance.Listener.Listener, SoundInstance.Source, buffer, pcm, bufferSize, sampleRate, mono);
             if (readyToPlay) return;
 
             prebufferedCount++;
@@ -88,7 +88,7 @@ namespace SiliconStudio.Xenko.Audio
         {
             var buffer = freeBuffers.Dequeue();
             fixed(short* pcmBuffer = pcm)
-            OpenAl.SourceQueueBuffer(SoundInstance.Source, buffer, new IntPtr(pcmBuffer), bufferSize, sampleRate, mono);
+            OpenAl.SourceQueueBuffer(SoundInstance.Listener.Listener, SoundInstance.Source, buffer, new IntPtr(pcmBuffer), bufferSize, sampleRate, mono);
             if (readyToPlay) return;
 
             prebufferedCount++;

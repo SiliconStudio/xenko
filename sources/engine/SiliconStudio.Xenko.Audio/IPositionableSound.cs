@@ -49,6 +49,6 @@ namespace SiliconStudio.Xenko.Audio
         /// <exception cref="ObjectDisposedException">The sound has already been disposed</exception>
         /// <exception cref="ArgumentNullException">Provided listener or emitter is null</exception>
         /// <exception cref="InvalidOperationException">The sound has more than one channels. 3D positioning can be applied only to mono-sounds.</exception>
-        void Apply3D(AudioListener listener, AudioEmitter emitter);
+        void Apply3D(AudioEmitter emitter);
     }
 }
