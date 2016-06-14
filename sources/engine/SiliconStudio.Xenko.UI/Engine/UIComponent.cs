@@ -108,6 +108,6 @@ namespace SiliconStudio.Xenko.Engine
         /// A fixed size UI component with height of 1 will be this much of the vertical resolution on screen
         /// </summary>
         [DataMemberIgnore]
-        public const float FixedSizeVerticalUnit = 0.1f;
+        public const float FixedSizeVerticalUnit = 1;   // 100% of the vertical resolution
     }
 }
