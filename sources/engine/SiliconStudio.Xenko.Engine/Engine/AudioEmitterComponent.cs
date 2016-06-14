@@ -42,13 +42,13 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Create an instance of <see cref="AudioEmitterComponent"/> with a list default <see cref="Sound"/> associated.
         /// </summary>
-        /// <param name="SoundToAttach">The Sound to attach to the emitter by default.</param>
-        public AudioEmitterComponent(IEnumerable<Sound> SoundToAttach)
+        /// <param name="soundToAttach">The Sound to attach to the emitter by default.</param>
+        public AudioEmitterComponent(IEnumerable<Sound> soundToAttach)
         {
             DistanceScale = 1;
             DopplerScale = 1;
 
-            AttachSounds(SoundToAttach);
+            AttachSounds(soundToAttach);
         }
 
         /// <summary>
@@ -101,52 +101,52 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Return a <see cref="AudioEmitterSoundController"/> that can be used to control the provided <see cref="Sound"/>.
         /// </summary>
-        /// <param name="Sound">The Sound that the user want to control.</param>
-        /// <returns>The controller that can control the <paramref name="Sound"/></returns>
-        /// <exception cref="ArgumentNullException">The provided <paramref name="Sound"/> is null.</exception>
-        /// <exception cref="ArgumentException">The provided <paramref name="Sound"/> is not attached to this component.</exception>
+        /// <param name="sound">The Sound that the user want to control.</param>
+        /// <returns>The controller that can control the <paramref name="sound"/></returns>
+        /// <exception cref="ArgumentNullException">The provided <paramref name="sound"/> is null.</exception>
+        /// <exception cref="ArgumentException">The provided <paramref name="sound"/> is not attached to this component.</exception>
         /// <remarks>The return AudioEmitterSoundController is valid as long as 
         /// (1) the associated Sound is attached to the emitter, 
         /// (2) the associated Sound is not disposed and,
         /// (3) the emitter component's entity is present into Entity system.</remarks>
-        public AudioEmitterSoundController GetSoundController(Sound Sound)
+        public AudioEmitterSoundController GetSoundController(Sound sound)
         {
-            if (Sound == null)
+            if (sound == null)
             {
-                throw new ArgumentNullException(nameof(Sound));
+                throw new ArgumentNullException(nameof(sound));
             }
-            if (!SoundToController.ContainsKey(Sound))
+            if (!SoundToController.ContainsKey(sound))
             {
                 throw new ArgumentException("The provided Sound has not been attached to the EmitterComponent.");
             }
 
-            return SoundToController[Sound];
+            return SoundToController[sound];
         }
 
         /// <summary>
         /// Attach a <see cref="Sound"/> to this emitter component.
         /// Once attached a <see cref="AudioEmitterSoundController"/> can be queried using <see cref="GetSoundController"/> to control the attached Sound.
         /// </summary>
-        /// <param name="Sound">The Sound to attach</param>
-        /// <exception cref="ArgumentNullException">The provided <paramref name="Sound"/> is null.</exception>
-        /// <exception cref="InvalidOperationException">The provided <paramref name="Sound"/> can not be localized (contains more than one channel).</exception>
+        /// <param name="sound">The Sound to attach</param>
+        /// <exception cref="ArgumentNullException">The provided <paramref name="sound"/> is null.</exception>
+        /// <exception cref="InvalidOperationException">The provided <paramref name="sound"/> can not be localized (contains more than one channel).</exception>
         /// <remarks>Attaching a Sound already attached has no effects.</remarks>
-        public void AttachSound(Sound Sound)
+        public void AttachSound(Sound sound)
         {
-            if (Sound == null)
+            if (sound == null)
             {
-                throw new ArgumentNullException(nameof(Sound));
+                throw new ArgumentNullException(nameof(sound));
             }
-            if (Sound.Channels > 1)
+            if (sound.Channels > 1)
             {
                 throw new InvalidOperationException("The provided Sound has more than one channel. It can not be localized in the 3D scene.");
             }
 
-            if(SoundToController.ContainsKey(Sound))
+            if(SoundToController.ContainsKey(sound))
                 return;
 
-            var newController = new AudioEmitterSoundController(this, Sound);
-            SoundToController[Sound] = newController;
+            var newController = new AudioEmitterSoundController(this, sound);
+            SoundToController[sound] = newController;
             ControllerCollectionChanged?.Invoke(this, new ControllerCollectionChangedEventArgs(Entity, newController, this, NotifyCollectionChangedAction.Add ));
         }
 
@@ -154,20 +154,20 @@ namespace SiliconStudio.Xenko.Engine
         /// Attach a list of <see cref="Sound"/> to this emitter component.
         /// Once attached a <see cref="AudioEmitterSoundController"/> can be queried using <see cref="GetSoundController"/> to control the attached Sound.
         /// </summary>
-        /// <param name="Sounds">The Sounds to attach</param>
-        /// <exception cref="ArgumentNullException">The provided <paramref name="Sounds"/> list is null.</exception>
+        /// <param name="sounds">The Sounds to attach</param>
+        /// <exception cref="ArgumentNullException">The provided <paramref name="sounds"/> list is null.</exception>
         /// <exception cref="InvalidOperationException">One or more of the provided Sound can not be localized (contains more than one channel).</exception>
         /// <remarks>Attaching a Sound already attached has no effects.</remarks>
-        public void AttachSounds(IEnumerable<Sound> Sounds)
+        public void AttachSounds(IEnumerable<Sound> sounds)
         {
-            if (Sounds == null)
+            if (sounds == null)
             {
-                throw new ArgumentNullException(nameof(Sounds));
+                throw new ArgumentNullException(nameof(sounds));
             }
 
-            foreach (var Sound in Sounds)
+            foreach (var sound in sounds)
             {
-                AttachSound(Sound);
+                AttachSound(sound);
             }
         }
 
@@ -175,22 +175,22 @@ namespace SiliconStudio.Xenko.Engine
         /// Detach a <see cref="Sound"/> from this emitter component.
         /// Once detach the controller previously associated to the Sound is invalid.
         /// </summary>
-        /// <param name="Sound">The Sound to detach.</param>
-        /// <exception cref="ArgumentNullException">The provided <paramref name="Sound"/> is null.</exception>
-        /// <exception cref="ArgumentException">The provided <paramref name="Sound"/> is not currently attached to the emitter component.</exception>
-        public void DetachSound(Sound Sound)
+        /// <param name="sound">The Sound to detach.</param>
+        /// <exception cref="ArgumentNullException">The provided <paramref name="sound"/> is null.</exception>
+        /// <exception cref="ArgumentException">The provided <paramref name="sound"/> is not currently attached to the emitter component.</exception>
+        public void DetachSound(Sound sound)
         {
-            if (Sound == null)
+            if (sound == null)
             {
-                throw new ArgumentNullException(nameof(Sound));
+                throw new ArgumentNullException(nameof(sound));
             }
-            if (!SoundToController.ContainsKey(Sound))
+            if (!SoundToController.ContainsKey(sound))
             {
                 throw new ArgumentException("The provided Sound is not currently attached to this emitter component.");
             }
 
-            var oldController = SoundToController[Sound];
-            SoundToController.Remove(Sound);
+            var oldController = SoundToController[sound];
+            SoundToController.Remove(sound);
             ControllerCollectionChanged?.Invoke(this, new ControllerCollectionChangedEventArgs(Entity, oldController, this, NotifyCollectionChangedAction.Remove));
         }
 
@@ -198,19 +198,19 @@ namespace SiliconStudio.Xenko.Engine
         /// Detach a list of <see cref="Sound"/> from this emitter component.
         /// Once detach the controller previously associated to the Sound is invalid.
         /// </summary>
-        /// <param name="Sounds">The Sounds to detach.</param>
-        /// <exception cref="ArgumentNullException">The provided <paramref name="Sounds"/> is null.</exception>
+        /// <param name="sounds">The Sounds to detach.</param>
+        /// <exception cref="ArgumentNullException">The provided <paramref name="sounds"/> is null.</exception>
         /// <exception cref="ArgumentException">One or more of the provided Sound is not currently attached to the emitter component.</exception>
-        public void DetachSounds(IEnumerable<Sound> Sounds)
+        public void DetachSounds(IEnumerable<Sound> sounds)
         {
-            if (Sounds == null)
+            if (sounds == null)
             {
-                throw new ArgumentNullException(nameof(Sounds));
+                throw new ArgumentNullException(nameof(sounds));
             }
 
-            foreach (var Sound in Sounds)
+            foreach (var sound in sounds)
             {
-                DetachSound(Sound);
+                DetachSound(sound);
             }
         }
 
@@ -239,6 +239,7 @@ namespace SiliconStudio.Xenko.Engine
                 distanceScale = value;
             }
         }
+
         private float distanceScale;
 
         /// <summary>
@@ -266,6 +267,7 @@ namespace SiliconStudio.Xenko.Engine
                 dopplerScale = value;
             }
         }
+
         private float dopplerScale;
 
         /// <summary>

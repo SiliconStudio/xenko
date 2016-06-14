@@ -89,18 +89,16 @@ namespace SiliconStudio.Xenko.Audio
             {
                 if(!listenerData.Enabled)  // skip all updates if the listener is not used.
                     continue;
-                
-                var worldMatrix = listenerData.Entity.Transform.WorldMatrix;
-                Vector3 pos, scale;
-                Quaternion rot;
-                worldMatrix.Decompose(out scale, out rot, out pos);                
+
                 var listener = listenerData.Listener;
+                var worldMatrix = listenerData.Entity.Transform.WorldMatrix;
+                var newPosition = worldMatrix.TranslationVector;
+                listener.Velocity = newPosition - listener.Position; // estimate velocity from last and new position
+                listener.Position = newPosition;
+                listener.Forward = Vector3.Normalize((Vector3)worldMatrix.Row3);
+                listener.Up = Vector3.Normalize((Vector3)worldMatrix.Row2);
 
-                listener.Velocity = pos - listener.Position; // estimate velocity from last and new position
-                listener.Position = pos;
-                listener.Orientation = rot;
-
-                listener.Update(listener.Position, listener.Orientation, listener.Velocity);
+                listener.Update();
             }
         }
     }

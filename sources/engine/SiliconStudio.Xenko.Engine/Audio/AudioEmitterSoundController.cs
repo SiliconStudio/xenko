@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 
@@ -43,7 +44,8 @@ namespace SiliconStudio.Xenko.Audio
         /// <summary>
         /// The instances of <see cref="sound"/> currently created by this controller (one for each listener).
         /// </summary>
-        private readonly HashSet<SoundInstance> associatedSoundInstances = new HashSet<SoundInstance>();
+        [DataMemberIgnore]
+        internal readonly Dictionary<SoundInstance, AudioListenerComponent> InstanceToListener = new Dictionary<SoundInstance, AudioListenerComponent>();
 
         /// <summary>
         /// Created a new <see cref="AudioEmitterSoundController"/> instance.
@@ -70,19 +72,20 @@ namespace SiliconStudio.Xenko.Audio
         {
             var newInstance = sound.CreateInstance(listener.Listener);
 
-            associatedSoundInstances.Add(newInstance);
+            InstanceToListener.Add(newInstance, listener);
+
+            listener.AttachedInstances.Add(newInstance);
 
             return newInstance;
         }
 
-        /// <summary>
-        /// Dispose and sound instance and removes it from the controller sound instance list.
-        /// </summary>
-        /// <param name="soundInstance">Sound instance to destroy</param>
-        internal void DestroySoundInstance(SoundInstance soundInstance)
+        internal void DestroySoundInstances(AudioListenerComponent listener)
         {
-            soundInstance.Dispose();
-            associatedSoundInstances.Remove(soundInstance);
+            foreach (var instance in listener.AttachedInstances)
+            {
+                instance.Dispose();
+                InstanceToListener.Remove(instance);
+            }
         }
 
         /// <summary>
@@ -90,20 +93,21 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         internal void DestroyAllSoundInstances()
         {
-            foreach (var instance in associatedSoundInstances)
+            foreach (var instance in InstanceToListener)
             {
-                instance.Dispose();
+                instance.Key.Dispose();
             }
-            associatedSoundInstances.Clear();
+            InstanceToListener.Clear();
         }
 
         private SoundPlayState playState;
+
         public SoundPlayState PlayState 
         { 
             get 
             {
                 // force the play status to 'stopped' if there is no listeners.
-                if (!associatedSoundInstances.Any())
+                if (!InstanceToListener.Any())
                     return SoundPlayState.Stopped;
 
                 // return the controller playStatus if not started playing.
@@ -116,7 +120,7 @@ namespace SiliconStudio.Xenko.Audio
                 // setting the state of the sound to Stopped when reaching the end of the track.
                 // For coherency, we consider a controller as stopped only when all its instances are stopped.
                 // (if not the case, a play call to a stopped controller would restart only some of the underlying instances)
-                if(associatedSoundInstances.Any(x=>x.PlayState == SoundPlayState.Playing))
+                if(InstanceToListener.Any(x=>x.Key.PlayState == SoundPlayState.Playing))
                     return SoundPlayState.Playing;
 
                 return playState = SoundPlayState.Stopped;
@@ -124,6 +128,7 @@ namespace SiliconStudio.Xenko.Audio
         }
 
         private bool isLooped;
+
         public bool IsLooped
         {
             get
@@ -132,9 +137,9 @@ namespace SiliconStudio.Xenko.Audio
             }
             set
             {
-                foreach (var instance in associatedSoundInstances)
+                foreach (var instance in InstanceToListener)
                 {
-                    instance.IsLooped = value;
+                    instance.Key.IsLooped = value;
                 }
                 isLooped = value;
             }
@@ -156,6 +161,7 @@ namespace SiliconStudio.Xenko.Audio
             // and apply localization to the sound before starting to play.
 
             parent.ShouldBeProcessed = true; // tells the EmitterProcessor to update to AudioEmiter values.
+
             ShouldBePlayed = true;  // tells the EmitterProcessor to start playing the underlying instances.
         }
 
@@ -166,10 +172,11 @@ namespace SiliconStudio.Xenko.Audio
 
             playState = SoundPlayState.Paused;
 
-            foreach (var instance in associatedSoundInstances)
+            foreach (var instance in InstanceToListener)
             {
-                instance.Pause();
+                instance.Key.Pause();
             }
+
             ShouldBePlayed = false;
         }
 
@@ -177,14 +184,16 @@ namespace SiliconStudio.Xenko.Audio
         {
             playState = SoundPlayState.Stopped;
 
-            foreach (var instance in associatedSoundInstances)
+            foreach (var instance in InstanceToListener)
             {
-                instance.Stop();
+                instance.Key.Stop();
             }
+
             ShouldBePlayed = false;
         }
 
         private float volume;
+
         public float Volume 
         {
             get
@@ -195,9 +204,9 @@ namespace SiliconStudio.Xenko.Audio
             {
                 volume = MathUtil.Clamp(value, 0, 1);
 
-                foreach (var instance in associatedSoundInstances)
+                foreach (var instance in InstanceToListener)
                 {
-                    instance.Volume = volume;
+                    instance.Key.Volume = volume;
                 }
             }
         }
