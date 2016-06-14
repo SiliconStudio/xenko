@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.UI
         protected const string MiscCategory = "Misc";
 
         internal Vector3 RenderSizeInternal;
-        internal Matrix WorldMatrixInternal;
+        internal Matrix WorldMatrixInternal = Matrix.Identity;
         protected internal Thickness MarginInternal = Thickness.UniformCuboid(0f);
 
         private string name;
@@ -1283,7 +1283,7 @@ namespace SiliconStudio.Xenko.UI
                 // include rendering offsets into the local matrix.
                 localMatrixCopy.TranslationVector += RenderOffsets + RenderSize / 2;
 
-                // calculate the world matrix of UIelement
+                // calculate the world matrix of UIElement
                 Matrix worldMatrix;
                 Matrix.Multiply(ref localMatrixCopy, ref parentWorldMatrix, out worldMatrix);
                 WorldMatrix = worldMatrix;

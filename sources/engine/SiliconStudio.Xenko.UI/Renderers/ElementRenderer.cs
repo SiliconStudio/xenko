@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
         /// If the user wants to perform some intermediate rendering, it is his responsibility to bind them back correctly before the final rendering.</remarks>
         public virtual void RenderColor(UIElement element, UIRenderingContext context)
         {
-            var backgroundColor = element.Opacity * element.BackgroundColor;
+            var backgroundColor = element.RenderOpacity * element.BackgroundColor;
 
             // optimization: don't draw the background if transparent
             if (backgroundColor == new Color())
