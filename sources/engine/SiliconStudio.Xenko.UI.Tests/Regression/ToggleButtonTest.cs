@@ -52,7 +52,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             base.RegisterTests();
             FrameGameSystem.DrawOrder = -1;
-            FrameGameSystem.Draw(() => { }).TakeScreenshot(); // warming up (make sure the UI has been properly initialized)
+            // Since click are evaluated before measuring/arranging/drawing, we need to render the UI at least once (see UIRenderFeature.Draw)
+            FrameGameSystem.Draw(() => { }).TakeScreenshot();
             FrameGameSystem.Draw(Click).TakeScreenshot();
             FrameGameSystem.Draw(Click).TakeScreenshot();
             FrameGameSystem.Draw(Click).TakeScreenshot();
