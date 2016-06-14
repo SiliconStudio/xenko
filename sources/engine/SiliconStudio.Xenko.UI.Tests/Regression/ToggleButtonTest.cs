@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public ToggleButtonTest()
         {
-            CurrentVersion = 4;
+            CurrentVersion = 5;
         }
 
         protected override async Task LoadContent()
@@ -52,36 +52,17 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             base.RegisterTests();
             FrameGameSystem.DrawOrder = -1;
-            FrameGameSystem.Draw(Draw0).TakeScreenshot();
-            FrameGameSystem.Draw(Draw1).TakeScreenshot();
-            FrameGameSystem.Draw(Draw2).TakeScreenshot();
+            FrameGameSystem.Draw(() => { }).TakeScreenshot(); // warming up (make sure the UI has been properly initialized)
+            FrameGameSystem.Draw(Click).TakeScreenshot();
+            FrameGameSystem.Draw(Click).TakeScreenshot();
+            FrameGameSystem.Draw(Click).TakeScreenshot();
         }
 
-        public void Draw0()
+        private void Click()
         {
             Input.PointerEvents.Clear();
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.5f)));
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.5f)));
-
-            UI.Update(new GameTime());
-        }
-
-        public void Draw1()
-        {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.5f)));
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.5f)));
-
-            UI.Update(new GameTime());
-        }
-
-        public void Draw2()
-        {
-            Input.PointerEvents.Clear();
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.5f)));
-            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.5f)));
-
-            UI.Update(new GameTime());
         }
 
         [Test]
