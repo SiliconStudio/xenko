@@ -104,7 +104,7 @@ namespace SiliconStudio.Presentation.Quantum
                 }
                 else
                 {
-                    if (index.GetType().IsNumeric())
+                    if (index.IsInt)
                         Name = "Item " + index.ToString().Replace(".", "-");
                     else
                         Name = index.ToString().Replace(".", "-");

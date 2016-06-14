@@ -101,8 +101,9 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
         /// <returns>A SpriteFontData object.</returns>
         public static Graphics.SpriteFont Compile(IFontFactory fontFactory, SpriteFontAsset fontAsset)
         {
-            if (fontAsset.FontType != SpriteFontType.SDF)
-                throw new ArgumentException("Tried to compile an incompatible sprite font with compiler for scalable fonts");
+            var fontTypeSDF = fontAsset.FontType as SignedDistanceFieldSpriteFontType;
+            if (fontTypeSDF == null)
+                throw new ArgumentException("Tried to compile a dynamic sprite font with compiler for signed distance field fonts");
 
             float lineSpacing;
             float baseLine;
@@ -119,7 +120,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
             // Which importer knows how to read this source font?
             IFontImporter importer;
 
-            var sourceExtension = (Path.GetExtension(options.Source) ?? "").ToLowerInvariant();
+            var sourceExtension = (Path.GetExtension(options.FontSource.GetFontPath()) ?? "").ToLowerInvariant();
             var bitmapFileExtensions = new List<string> { ".bmp", ".png", ".gif" };
             var importFromBitmap = bitmapFileExtensions.Contains(sourceExtension);
             if (importFromBitmap)
@@ -177,17 +178,21 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
         {
             var characters = new List<char>();
 
+            var fontTypeSDF = asset.FontType as SignedDistanceFieldSpriteFontType;
+            if (fontTypeSDF == null)
+                throw new ArgumentException("Tried to compile a dynamic sprite font with compiler for signed distance field fonts");
+            
             // extract the list from the provided file if it exits
-            if (File.Exists(asset.CharacterSet))
+            if (File.Exists(fontTypeSDF.CharacterSet))
             {
                 string text;
-                using (var streamReader = new StreamReader(asset.CharacterSet, Encoding.UTF8))
+                using (var streamReader = new StreamReader(fontTypeSDF.CharacterSet, Encoding.UTF8))
                     text = streamReader.ReadToEnd();
                 characters.AddRange(text);
             }
 
             // add character coming from character ranges
-            characters.AddRange(CharacterRegion.Flatten(asset.CharacterRegions));
+            characters.AddRange(CharacterRegion.Flatten(fontTypeSDF.CharacterRegions));
 
             // remove duplicated characters
             characters = characters.Distinct().ToList();

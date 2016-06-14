@@ -431,9 +431,12 @@ namespace SiliconStudio.Presentation.Quantum
 
         private void CombinedNodeValueChanged(object sender, EventArgs e)
         {
-            refreshQueued = true;
             // Defer the refresh of one frame and ensure we execute it only once.
-            Dispatcher.BeginInvoke(TriggerRefresh);
+            if (!refreshQueued)
+            {
+                Dispatcher.InvokeAsync(TriggerRefresh);
+                refreshQueued = true;
+            }
         }
 
         private void TriggerRefresh()
@@ -443,12 +446,17 @@ namespace SiliconStudio.Presentation.Quantum
             if (!refreshQueued)
                 return;
 
-            if (!IsPrimitive)
+            try
             {
-                Refresh();
+                if (!IsPrimitive)
+                {
+                    Refresh();
+                }
             }
-
-            refreshQueued = false;
+            finally
+            {
+                refreshQueued = false;
+            }
         }
 
         /// <summary>

@@ -14,10 +14,10 @@ namespace SiliconStudio.Xenko.Graphics.Font
     /// <summary>
     /// A dynamic font. That is a font that generate its character bitmaps at execution.
     /// </summary>
-    [DataSerializerGlobal(typeof(ReferenceSerializer<DynamicSpriteFont>), Profile = "Content")]
-    [ContentSerializer(typeof(DynamicSpriteFontContentSerializer))]
-    [DataSerializer(typeof(DynamicSpriteFontSerializer))]
-    internal class DynamicSpriteFont : SpriteFont
+    [DataSerializerGlobal(typeof(ReferenceSerializer<RuntimeRasterizedSpriteFont>), Profile = "Content")]
+    [ContentSerializer(typeof(RuntimeRasterizedSpriteFontContentSerializer))]
+    [DataSerializer(typeof(RuntimeRasterizedSpriteFontSerializer))]
+    internal class RuntimeRasterizedSpriteFont : SpriteFont
     {
         /// <summary>
         /// Input the family name of the (TrueType) font.
@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
             }
         }
 
-        public DynamicSpriteFont()
+        public RuntimeRasterizedSpriteFont()
         {
             FontType = SpriteFontType.Dynamic;
         }

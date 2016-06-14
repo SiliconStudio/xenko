@@ -257,7 +257,7 @@ namespace SiliconStudio.Quantum
 
             // We create reference only for structs (in case of collection of structs) and classes (in a collection or not) 
             if (valueType == null || !IsPrimitiveType(valueType))
-                return Reference.CreateReference(value, type, Reference.NotInCollection);
+                return Reference.CreateReference(value, type, Index.Empty);
 
             return null;
         }

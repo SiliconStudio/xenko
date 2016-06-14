@@ -85,13 +85,13 @@ using SiliconStudio.Xenko.Graphics.Font;
 namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 {
     // Writes the output sprite font binary file.
-    internal static class StaticSpriteFontWriter
+    internal static class OfflineRasterizedSpriteFontWriter
     {
         public static Graphics.SpriteFont CreateSpriteFontData(IFontFactory fontFactory, SpriteFontAsset options, Glyph[] glyphs, float lineSpacing, float baseLine, Bitmap bitmap, bool srgb)
         {
             var fontGlyphs = ConvertGlyphs(glyphs);
             var images = new[] { GetImage(options, bitmap, srgb) };
-            var sizeInPixels = FontHelper.PointsToPixels(options.Size);
+            var sizeInPixels = FontHelper.PointsToPixels(options.FontType.Size);
 
             return fontFactory.NewStatic(sizeInPixels, fontGlyphs, images, baseLine, lineSpacing, null, options.Spacing, options.LineSpacing, options.DefaultCharacter);
         }
@@ -117,18 +117,8 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 
         static Graphics.Image GetImage(SpriteFontAsset options, Bitmap bitmap, bool srgb)
         {
-            switch (options.Format)
-            {
-                //case FontTextureFormat.Auto:
-                case FontTextureFormat.Rgba32:
-                    return GetImageRgba32(bitmap, srgb);
-             
-                //case FontTextureFormat.CompressedMono:
-                //    return GetCompressedMono(bitmap, options);
-                
-                default:
-                    throw new NotSupportedException();
-            }
+            // TODO Currently we only support Rgba32 as an option. Grayscale might be added later
+            return GetImageRgba32(bitmap, srgb);
         }
 
 
@@ -226,7 +216,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 
                     int value = bitmapData[blockX + x, blockY + y].A;
 
-                    if (!options.IsPremultiplied)
+                    if (!options.FontType.IsPremultiplied)
                     {
                         // If we are not pre-multiplied, RGB is always white and we have 4 bit alpha.
                         alpha = value >> 4;
