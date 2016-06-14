@@ -271,25 +271,77 @@ extern "C" {
 			SourceStop(source);
 		}
 
-		void xnAudioListenerPush3D(xnAudioListener* listener, float* pos, float* rot, float* vel)
+		void xnAudioListenerPush3D(xnAudioListener* listener, float* pos, float* forward, float* up, float* vel)
 		{
 			ContextState lock(listener->context);
 
-			if (pos) ListenerFV(AL_POSITION, pos);
-			if (rot) ListenerFV(AL_ORIENTATION, rot);
-			if (vel) ListenerFV(AL_VELOCITY, vel);
+			if (forward && up)
+			{
+				float ori[6];
+				ori[0] = forward[0];
+				ori[1] = forward[1];
+				ori[2] = -forward[2];
+				ori[3] = up[0];
+				ori[4] = up[1];
+				ori[5] = -up[2];
+				ListenerFV(AL_ORIENTATION, ori);
+			}
+
+			if (pos)
+			{
+				float pos2[3];
+				pos2[0] = pos[0];
+				pos2[1] = pos[1];
+				pos2[2] = -pos[2];
+				ListenerFV(AL_POSITION, pos2);
+			}
+
+			if (vel)
+			{
+				float vel2[3];
+				vel2[0] = vel[0];
+				vel2[1] = vel[1];
+				vel2[2] = -vel[2];
+				ListenerFV(AL_VELOCITY, vel2);
+			}
 		}
 
-		void xnAudioSourcePush3D(xnAudioListener* listener, uint32_t source, float* pos, float* rot, float* vel)
+		void xnAudioSourcePush3D(xnAudioListener* listener, uint32_t source, float* pos, float* forward, float* up, float* vel)
 		{
 			ContextState lock(listener->context);
 
 			//make sure we are able to 3D
 			SourceI(source, AL_SOURCE_RELATIVE, AL_FALSE);
 
-			if (pos) SourceFV(source, AL_POSITION, pos);
-			if (rot) SourceFV(source, AL_ORIENTATION, rot);
-			if (vel) SourceFV(source, AL_VELOCITY, vel);
+			if (forward && up)
+			{
+				float ori[6];
+				ori[0] = forward[0];
+				ori[1] = forward[1];
+				ori[2] = -forward[2];
+				ori[3] = up[0];
+				ori[4] = up[1];
+				ori[5] = -up[2];
+				SourceFV(source, AL_ORIENTATION, ori);
+			}
+
+			if (pos)
+			{
+				float pos2[3];
+				pos2[0] = pos[0];
+				pos2[1] = pos[1];
+				pos2[2] = -pos[2];
+				SourceFV(source, AL_POSITION, pos2);
+			}
+
+			if (vel)
+			{
+				float vel2[3];
+				vel2[0] = vel[0];
+				vel2[1] = vel[1];
+				vel2[2] = -vel[2];
+				SourceFV(source, AL_VELOCITY, vel2);
+			}
 		}
 
 		bool xnAudioSourceIsPlaying(xnAudioListener* listener, uint32_t source)

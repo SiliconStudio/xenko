@@ -150,13 +150,13 @@ namespace SiliconStudio.Xenko.Native
         [SuppressUnmanagedCodeSecurity]
 #endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioListenerPush3D", CallingConvention = CallingConvention.Cdecl)]
-        public static extern unsafe void ListenerPush3D(Listener listener, float* pos, float* rot, float* vel);
+        public static extern unsafe void ListenerPush3D(Listener listener, float* pos, float* forward, float* up, float* vel);
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
 #endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourcePush3D", CallingConvention = CallingConvention.Cdecl)]
-        public static extern unsafe void SourcePush3D(Listener listener, uint source, float* pos, float* rot, float* vel);
+        public static extern unsafe void SourcePush3D(Listener listener, uint source, float* pos, float* forward, float* up, float* vel);
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
