@@ -112,7 +112,7 @@ namespace SiliconStudio.Xenko.Audio
             foreach (var listener in audioSystem.Listeners.Keys)
             {
                 foreach (var soundController in data.AudioEmitterComponent.SoundToController.Values)
-                    data.ListenerControllerToSoundInstance[Tuple.Create(listener, soundController)] = soundController.CreateSoundInstance();
+                    data.ListenerControllerToSoundInstance[Tuple.Create(listener, soundController)] = soundController.CreateSoundInstance(listener);
             }
 
             data.AudioEmitterComponent.ControllerCollectionChanged += OnSoundControllerListChanged;
@@ -162,7 +162,7 @@ namespace SiliconStudio.Xenko.Audio
                         // Apply3D localization
                         if (instance.PlayState == SoundPlayState.Playing || controller.ShouldBePlayed)
                         {
-                            instance.Apply3D(listener, emitter);
+                            instance.Apply3D(emitter);
                             performedAtLeastOneApply = true;
                         }
 
@@ -211,7 +211,7 @@ namespace SiliconStudio.Xenko.Audio
 
                     if (args.Action == NotifyCollectionChangedAction.Add)   // A new listener have been added
                     {
-                        listenerControllerToSoundInstance[currentTupple] = soundController.CreateSoundInstance();
+                        listenerControllerToSoundInstance[currentTupple] = soundController.CreateSoundInstance(currentTupple.Item1);
                     }
                     else if (args.Action == NotifyCollectionChangedAction.Remove) // A listener have been removed
                     {
@@ -238,7 +238,7 @@ namespace SiliconStudio.Xenko.Audio
 
                 if (args.Action == NotifyCollectionChangedAction.Add)
                 {
-                    associatedData.ListenerControllerToSoundInstance[currentTuple] = args.Controller.CreateSoundInstance();
+                    associatedData.ListenerControllerToSoundInstance[currentTuple] = args.Controller.CreateSoundInstance(currentTuple.Item1);
                 }
                 else if(args.Action == NotifyCollectionChangedAction.Remove )
                 {

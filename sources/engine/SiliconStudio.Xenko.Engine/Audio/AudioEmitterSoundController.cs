@@ -21,19 +21,19 @@ namespace SiliconStudio.Xenko.Audio
     /// <para>
     /// An instance <see cref="AudioEmitterSoundController"/> is not valid anymore if any of those situations arrives: 
     /// <list type="bullet">
-    ///  <item><description>The underlying <see cref="Sound"/> is disposed.</description></item>
+    ///  <item><description>The underlying <see cref="sound"/> is disposed.</description></item>
     ///  <item><description>The <see cref="AudioEmitterComponent"/> is detached from its entity.</description></item>
     ///  <item><description>The entity to which it is attached is removed from the Entity System.</description></item>
     /// </list>
     /// </para>
     /// </remarks>
-    [DebuggerDisplay("Controller for {Sound.Name}")]
+    [DebuggerDisplay("Controller for {sound.Name}")]
     public class AudioEmitterSoundController: IPlayableSound
     {
         /// <summary>
-        /// The underlying <see cref="Sound"/>
+        /// The underlying <see cref="sound"/>
         /// </summary>
-        private readonly Sound Sound;
+        private readonly Sound sound;
 
         /// <summary>
         /// The parent <see cref="AudioEmitterComponent"/> to which to controller is associated.
@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Audio
         private readonly AudioEmitterComponent parent;
 
         /// <summary>
-        /// The instances of <see cref="Sound"/> currently created by this controller (one for each listener).
+        /// The instances of <see cref="sound"/> currently created by this controller (one for each listener).
         /// </summary>
         private readonly HashSet<SoundInstance> associatedSoundInstances = new HashSet<SoundInstance>();
 
@@ -49,14 +49,14 @@ namespace SiliconStudio.Xenko.Audio
         /// Created a new <see cref="AudioEmitterSoundController"/> instance.
         /// </summary>
         /// <param name="parent">The parent AudioEmitterComponent to which the controller is associated.</param>
-        /// <param name="Sound">The underlying Sound to be controlled</param>
-        /// <remarks>A <see cref="Sound"/> can be associated to several controllers.</remarks>
-        internal AudioEmitterSoundController(AudioEmitterComponent parent, Sound Sound)
+        /// <param name="sound">The underlying Sound to be controlled</param>
+        /// <remarks>A <see cref="sound"/> can be associated to several controllers.</remarks>
+        internal AudioEmitterSoundController(AudioEmitterComponent parent, Sound sound)
         {
-            if(Sound == null)
-                throw new ArgumentNullException("Sound");
+            if(sound == null)
+                throw new ArgumentNullException(nameof(sound));
 
-            this.Sound = Sound;
+            this.sound = sound;
             this.parent = parent;
 
             Volume = 1;
@@ -66,9 +66,9 @@ namespace SiliconStudio.Xenko.Audio
         /// Create an new instance of underlying sound, and register it in the controller's sound instance list.
         /// </summary>
         /// <returns>The new sound effect instance created</returns>
-        internal SoundInstance CreateSoundInstance()
+        internal SoundInstance CreateSoundInstance(AudioListenerComponent listener)
         {
-            var newInstance = Sound.CreateInstance();
+            var newInstance = sound.CreateInstance(listener.Listener);
 
             associatedSoundInstances.Add(newInstance);
 

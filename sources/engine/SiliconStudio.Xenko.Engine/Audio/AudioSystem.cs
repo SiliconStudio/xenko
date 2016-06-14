@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Engine;
@@ -30,7 +31,7 @@ namespace SiliconStudio.Xenko.Audio
         }
 
         /// <summary>
-        /// The underlying <see cref="AudioEngine" />. This instance can be used to possibly create <see cref="DynamicSoundInstance" />.
+        /// The underlying <see cref="AudioEngine" />.
         /// </summary>
         /// <value>The audio engine.</value>
         public AudioEngine AudioEngine { get; private set; }

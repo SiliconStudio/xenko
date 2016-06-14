@@ -20,7 +20,9 @@ namespace SiliconStudio.Xenko.Engine
     [DataContract("AudioListenerComponent")]
     [DefaultEntityComponentProcessor(typeof(AudioListenerProcessor), ExecutionMode = ExecutionMode.Runtime)]
     [ComponentOrder(6000)]
-    public sealed class AudioListenerComponent : EntityComponent
+    public sealed class AudioListenerComponent : ActivableEntityComponent
     {
+        [DataMemberIgnore]
+        internal AudioListener Listener;
     }
 }
