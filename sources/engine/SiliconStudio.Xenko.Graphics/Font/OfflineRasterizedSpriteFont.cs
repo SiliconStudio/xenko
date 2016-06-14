@@ -9,20 +9,20 @@ using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Graphics.Font
 {
-    [DataSerializerGlobal(typeof(ReferenceSerializer<StaticSpriteFont>), Profile = "Content")]
-    [ContentSerializer(typeof(StaticSpriteFontContentSerializer))]
-    [DataSerializer(typeof(StaticSpriteFontSerializer))]
-    internal class StaticSpriteFont : SpriteFont
+    [DataSerializerGlobal(typeof(ReferenceSerializer<OfflineRasterizedSpriteFont>), Profile = "Content")]
+    [ContentSerializer(typeof(OfflineRasterizedSpriteFontContentSerializer))]
+    [DataSerializer(typeof(OfflineRasterizedSpriteFontSerializer))]
+    internal class OfflineRasterizedSpriteFont : SpriteFont
     {
         internal Dictionary<char, Glyph> CharacterToGlyph;
 
         internal List<Texture> StaticTextures;
 
-        internal StaticSpriteFont()
+        internal OfflineRasterizedSpriteFont()
         {
         }
 
-        internal StaticSpriteFont(float size, IList<Glyph> glyphs, IEnumerable<Texture> textures, float baseOffset, float defaultLineSpacing, IList<Kerning> kernings, float extraSpacing, float extraLineSpacing, char defaultCharacter)
+        internal OfflineRasterizedSpriteFont(float size, IList<Glyph> glyphs, IEnumerable<Texture> textures, float baseOffset, float defaultLineSpacing, IList<Kerning> kernings, float extraSpacing, float extraLineSpacing, char defaultCharacter)
         {
             Size = size;
             StaticTextures = new List<Texture>();

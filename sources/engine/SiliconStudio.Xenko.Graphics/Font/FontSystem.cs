@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
 
         public SpriteFont NewStatic(float size, IList<Glyph> glyphs, IList<Image> images, float baseOffset, float defaultLineSpacing, IList<Kerning> kernings = null, float extraSpacing = 0, float extraLineSpacing = 0, char defaultCharacter = ' ')
         {
-            var font = new StaticSpriteFont(size, glyphs, null, baseOffset, defaultLineSpacing, kernings, extraSpacing, extraLineSpacing, defaultCharacter) { FontSystem = this };
+            var font = new OfflineRasterizedSpriteFont(size, glyphs, null, baseOffset, defaultLineSpacing, kernings, extraSpacing, extraLineSpacing, defaultCharacter) { FontSystem = this };
 
             // affects the textures from the images.
             foreach (var image in images)
@@ -81,7 +81,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
 
         public SpriteFont NewStatic(float size, IList<Glyph> glyphs, IList<Texture> textures, float baseOffset, float defaultLineSpacing, IList<Kerning> kernings = null, float extraSpacing = 0, float extraLineSpacing = 0, char defaultCharacter = ' ')
         {
-            return new StaticSpriteFont(size, glyphs, textures, baseOffset, defaultLineSpacing, kernings, extraSpacing, extraLineSpacing, defaultCharacter) { FontSystem = this };
+            return new OfflineRasterizedSpriteFont(size, glyphs, textures, baseOffset, defaultLineSpacing, kernings, extraSpacing, extraLineSpacing, defaultCharacter) { FontSystem = this };
         }
 
         public SpriteFont NewScalable(float size, IList<Glyph> glyphs, IList<Texture> textures, float baseOffset, float defaultLineSpacing, IList<Kerning> kernings = null, float extraSpacing = 0, float extraLineSpacing = 0, char defaultCharacter = ' ')
@@ -91,7 +91,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
 
         public SpriteFont NewDynamic(float defaultSize, string fontName, FontStyle style, FontAntiAliasMode antiAliasMode = FontAntiAliasMode.Default, bool useKerning = false, float extraSpacing = 0, float extraLineSpacing = 0, char defaultCharacter = ' ')
         {
-            var font = new DynamicSpriteFont
+            var font = new RuntimeRasterizedSpriteFont
             {
                 Size = defaultSize,
                 FontName = fontName,

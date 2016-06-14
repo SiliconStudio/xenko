@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.UI
     /// Provides a base class for all the User Interface elements in Xenko applications.
     /// </summary>
     [DebuggerDisplay("UIElement: {Name}")]
-    public abstract class UIElement : IUIElementUpdate
+    public abstract partial class UIElement : IUIElementUpdate
     {
         #region Dependency Properties
 
@@ -60,65 +60,6 @@ namespace SiliconStudio.Xenko.UI
 
         #endregion
 
-        #region Routed Events
-
-        private static readonly RoutedEvent<TouchEventArgs> previewTouchDownEvent = EventManager.RegisterRoutedEvent<TouchEventArgs>(
-            "PreviewTouchDown",
-            RoutingStrategy.Tunnel,
-            typeof(UIElement));
-
-        private static readonly RoutedEvent<TouchEventArgs> previewTouchMoveEvent = EventManager.RegisterRoutedEvent<TouchEventArgs>(
-            "PreviewTouchMove",
-            RoutingStrategy.Tunnel,
-            typeof(UIElement));
-
-        private static readonly RoutedEvent<TouchEventArgs> previewTouchUpEvent = EventManager.RegisterRoutedEvent<TouchEventArgs>(
-            "PreviewTouchUp",
-            RoutingStrategy.Tunnel,
-            typeof(UIElement));
-
-        private static readonly RoutedEvent<TouchEventArgs> touchDownEvent = EventManager.RegisterRoutedEvent<TouchEventArgs>(
-            "TouchDown",
-            RoutingStrategy.Bubble,
-            typeof(UIElement));
-
-        private static readonly RoutedEvent<TouchEventArgs> touchEnterEvent = EventManager.RegisterRoutedEvent<TouchEventArgs>(
-            "TouchEnter",
-            RoutingStrategy.Direct,
-            typeof(UIElement));
-
-        private static readonly RoutedEvent<TouchEventArgs> touchLeaveEvent = EventManager.RegisterRoutedEvent<TouchEventArgs>(
-            "TouchLeave",
-            RoutingStrategy.Direct,
-            typeof(UIElement));
-
-        private static readonly RoutedEvent<TouchEventArgs> touchMoveEvent = EventManager.RegisterRoutedEvent<TouchEventArgs>(
-            "TouchMove",
-            RoutingStrategy.Bubble,
-            typeof(UIElement));
-
-        private static readonly RoutedEvent<TouchEventArgs> touchUpEvent = EventManager.RegisterRoutedEvent<TouchEventArgs>(
-            "TouchUp",
-            RoutingStrategy.Bubble,
-            typeof(UIElement));
-
-        private static readonly RoutedEvent<KeyEventArgs> keyPressedEvent = EventManager.RegisterRoutedEvent<KeyEventArgs>(
-            "KeyPressed",
-            RoutingStrategy.Bubble,
-            typeof(UIElement));
-
-        private static readonly RoutedEvent<KeyEventArgs> keyDownEvent = EventManager.RegisterRoutedEvent<KeyEventArgs>(
-            "KeyDown",
-            RoutingStrategy.Bubble,
-            typeof(UIElement));
-
-        private static readonly RoutedEvent<KeyEventArgs> keyReleasedEvent = EventManager.RegisterRoutedEvent<KeyEventArgs>(
-            "KeyReleased",
-            RoutingStrategy.Bubble,
-            typeof(UIElement));
-
-        #endregion
-
         private static uint uiElementCount;
         private Visibility visibility = Visibility.Visible;
         private float opacity = 1.0f;
@@ -153,24 +94,6 @@ namespace SiliconStudio.Xenko.UI
         private Vector3 previousProvidedMeasureSize = new Vector3(-1,-1,-1);
         private Vector3 previousProvidedArrangeSize = new Vector3(-1,-1,-1);
         private bool previousIsParentCollapsed;
-
-        private static Queue<List<RoutedEventHandlerInfo>> routedEventHandlerInfoListPool = new Queue<List<RoutedEventHandlerInfo>>();
-
-        static UIElement()
-        {
-            // register the class handlers
-            EventManager.RegisterClassHandler(typeof(UIElement), previewTouchDownEvent, PreviewTouchDownClassHandler);
-            EventManager.RegisterClassHandler(typeof(UIElement), previewTouchMoveEvent, PreviewTouchMoveClassHandler);
-            EventManager.RegisterClassHandler(typeof(UIElement), previewTouchUpEvent, PreviewTouchUpClassHandler);
-            EventManager.RegisterClassHandler(typeof(UIElement), touchDownEvent, TouchDownClassHandler);
-            EventManager.RegisterClassHandler(typeof(UIElement), touchEnterEvent, TouchEnterClassHandler);
-            EventManager.RegisterClassHandler(typeof(UIElement), touchLeaveEvent, TouchLeaveClassHandler);
-            EventManager.RegisterClassHandler(typeof(UIElement), touchMoveEvent, TouchMoveClassHandler);
-            EventManager.RegisterClassHandler(typeof(UIElement), touchUpEvent, TouchUpClassHandler);
-            EventManager.RegisterClassHandler(typeof(UIElement), keyPressedEvent, KeyPressedClassHandler);
-            EventManager.RegisterClassHandler(typeof(UIElement), keyDownEvent, KeyDownClassHandler);
-            EventManager.RegisterClassHandler(typeof(UIElement), keyReleasedEvent, KeyReleasedClassHandler);
-        }
 
         /// <summary>
         /// Create an instance of a UIElement
@@ -219,11 +142,6 @@ namespace SiliconStudio.Xenko.UI
         /// Gets a value indicating whether the current size returned by layout measure is valid.
         /// </summary>
         public bool IsMeasureValid { get; private set; }
-
-        /// <summary>
-        /// Gets a value indicating whether the <see cref="UIElement"/> is currently touched by the user.
-        /// </summary>
-        public bool IsTouched { get; internal set; }
 
         /// <summary>
         /// The world matrix of the UIElement.
@@ -362,7 +280,7 @@ namespace SiliconStudio.Xenko.UI
         /// The visual children of this element. 
         /// </summary>
         /// <remarks>If the class is inherited it is the responsibility of the descendant class to correctly update this collection</remarks>
-        internal protected UIElementCollection VisualChildrenCollection { get; private set; }
+        internal protected UIElementCollection VisualChildrenCollection { get; }
         
         /// <summary>
         /// Invalidates the arrange state (layout) for the element. 
@@ -378,11 +296,11 @@ namespace SiliconStudio.Xenko.UI
         {
             foreach (var child in VisualChildrenCollection)
             {
-                if (child.IsArrangeValid)
-                {
-                    child.IsArrangeValid = false;
-                    child.PropagateArrangeInvalidationToChildren();
-                }
+                if (!child.IsArrangeValid)
+                    continue;
+
+                child.IsArrangeValid = false;
+                child.PropagateArrangeInvalidationToChildren();
             }
         }
 
@@ -394,8 +312,7 @@ namespace SiliconStudio.Xenko.UI
             IsArrangeValid = false;
             ForceNextArrange = true;
 
-            if(VisualParent != null)
-                VisualParent.ForceArrange();
+            VisualParent?.ForceArrange();
         }
 
         /// <summary>
@@ -432,8 +349,7 @@ namespace SiliconStudio.Xenko.UI
             IsMeasureValid = false;
             IsArrangeValid = false;
 
-            if (VisualParent != null)
-                VisualParent.ForceMeasure();
+            VisualParent?.ForceMeasure();
         }
 
         private static void NameInvalidationCallback(object propertyOwner, PropertyKey<string> propertyKey, string propertyOldValue)
@@ -478,26 +394,17 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets the value indicating whether this element and all its upper hierarchy are enabled or not.
         /// </summary>
-        public bool IsHierarchyEnabled
-        {
-            get { return isHierarchyEnabled; }
-        }
+        public bool IsHierarchyEnabled => isHierarchyEnabled;
 
         /// <summary>
         /// Gets a value indicating whether this element is visible in the user interface (UI).
         /// </summary>
-        public bool IsVisible 
-        {
-            get { return Visibility == Visibility.Visible; }
-        }
+        public bool IsVisible => Visibility == Visibility.Visible;
 
         /// <summary>
         /// Gets a value indicating whether this element takes some place in the user interface.
         /// </summary>
-        public bool IsCollapsed 
-        {
-            get { return Visibility == Visibility.Collapsed; }
-        }
+        public bool IsCollapsed => Visibility == Visibility.Collapsed;
 
         /// <summary>
         /// Gets or sets the opacity factor applied to the entire UIElement when it is rendered in the user interface (UI). This is a dependency property.
@@ -522,28 +429,6 @@ namespace SiliconStudio.Xenko.UI
 
                 visibility = value;
                 InvalidateMeasure();
-            }
-        }
-
-        /// <summary>
-        /// Gets the current state of the mouse over the UI element.
-        /// </summary>
-        /// <remarks>Only elements that can be clicked by user can have the <cref>MouseOverState.MouseOverElement</cref> value. 
-        /// That is element that have <see cref="CanBeHitByUser"/> set to <value>true</value></remarks>
-        public MouseOverState MouseOverState
-        {
-            get { return mouseOverState; }
-            internal set
-            {
-                var oldValue = mouseOverState;
-                if(oldValue == value)
-                    return;
-
-                mouseOverState = value;
-
-                var handler = MouseOverStateChanged;
-                if (handler != null)
-                    handler(this, new PropertyChangedArgs<MouseOverState> { NewValue = value, OldValue = oldValue });
             }
         }
 
@@ -580,7 +465,7 @@ namespace SiliconStudio.Xenko.UI
         private static void DefaultSizeValidator(ref float size)
         {
             if (size < 0 || float.IsInfinity(size) || float.IsNaN(size))
-                throw new ArgumentOutOfRangeException("size");
+                throw new ArgumentOutOfRangeException(nameof(size));
         }
 
         /// <summary>
@@ -593,7 +478,7 @@ namespace SiliconStudio.Xenko.UI
             set
             {
                 if (value < 0 || float.IsInfinity(value))
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
 
                 height = value;
                 InvalidateMeasure();
@@ -610,7 +495,7 @@ namespace SiliconStudio.Xenko.UI
             set
             {
                 if (value < 0 || float.IsInfinity(value))
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
 
                 width = value;
                 InvalidateMeasure();
@@ -627,7 +512,7 @@ namespace SiliconStudio.Xenko.UI
             set
             {
                 if (value < 0 || float.IsInfinity(value))
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
 
                 depth = value;
                 InvalidateMeasure();
@@ -676,7 +561,7 @@ namespace SiliconStudio.Xenko.UI
             set
             {
                 if (value < 0 || float.IsNaN(value) || float.IsInfinity(value))
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 minimumWidth = value;
                 InvalidateMeasure();
             }
@@ -692,7 +577,7 @@ namespace SiliconStudio.Xenko.UI
             set
             {
                 if (value < 0 || float.IsNaN(value) || float.IsInfinity(value))
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 minimumHeight = value;
                 InvalidateMeasure();
             }
@@ -708,7 +593,7 @@ namespace SiliconStudio.Xenko.UI
             set
             {
                 if (value < 0 || float.IsNaN(value) || float.IsInfinity(value))
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 minimumDepth = value;
                 InvalidateMeasure();
             }
@@ -731,7 +616,7 @@ namespace SiliconStudio.Xenko.UI
             set
             {
                 if (value < 0 || float.IsNaN(value))
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 maximumWidth = value;
                 InvalidateMeasure();
             }
@@ -747,7 +632,7 @@ namespace SiliconStudio.Xenko.UI
             set
             {
                 if (value < 0 || float.IsNaN(value))
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 maximumHeight = value;
                 InvalidateMeasure();
             }
@@ -763,7 +648,7 @@ namespace SiliconStudio.Xenko.UI
             set
             {
                 if (value < 0 || float.IsNaN(value))
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 maximumDepth = value;
                 InvalidateMeasure();
             }
@@ -839,18 +724,12 @@ namespace SiliconStudio.Xenko.UI
         /// Get a enumerable to the visual children of the <see cref="UIElement"/>.
         /// </summary>
         /// <remarks>Inherited classes are in charge of overriding this method to return their children.</remarks>
-        public IEnumerable<UIElement> VisualChildren
-        {
-            get { return VisualChildrenCollection; }
-        }
+        public IEnumerable<UIElement> VisualChildren => VisualChildrenCollection;
 
         /// <summary>
         /// The list of the children of the element that can be hit by the user.
         /// </summary>
-        protected internal virtual FastCollection<UIElement> HitableChildren
-        {
-            get { return VisualChildrenCollection; }
-        }
+        protected internal virtual FastCollection<UIElement> HitableChildren => VisualChildrenCollection;
 
         /// <summary>
         /// Gets or sets the margins of this element. This is a dependency property.
@@ -901,25 +780,17 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets the rendered width of this element.
         /// </summary>
-        public float ActualWidth
-        {
-            get { return RenderSize.X; }
-        }
+        public float ActualWidth => RenderSize.X;
 
         /// <summary>
         /// Gets the rendered height of this element.
         /// </summary>
-        public float ActualHeight
-        {
-            get { return RenderSize.Y; }
-        }
+        public float ActualHeight => RenderSize.Y;
+
         /// <summary>
         /// Gets the rendered depth of this element.
         /// </summary>
-        public float ActualDepth
-        {
-            get { return RenderSize.Z; }
-        }
+        public float ActualDepth => RenderSize.Z;
 
         /// <summary>
         /// The background color of the element.
@@ -1204,12 +1075,11 @@ namespace SiliconStudio.Xenko.UI
         /// <param name="parent">The parent of the child.</param>
         protected static void SetVisualParent(UIElement child, UIElement parent)
         {
-            if (child == null) throw new ArgumentNullException("child");
+            if (child == null) throw new ArgumentNullException(nameof(child));
             if (parent != null && child.VisualParent != null && parent != child.VisualParent)
                 throw new InvalidOperationException("The UI element 'Name=" + child.Name + "' has already as visual parent the element 'Name=" + child.VisualParent.Name + "'.");
 
-            if (child.VisualParent != null)
-                child.VisualParent.VisualChildrenCollection.Remove(child);
+            child.VisualParent?.VisualChildrenCollection.Remove(child);
 
             child.VisualParent = parent;
 
@@ -1413,488 +1283,6 @@ namespace SiliconStudio.Xenko.UI
             }
 
             return offsets;
-        }
-
-        internal void PropagateRoutedEvent(RoutedEventArgs e)
-        {
-            var routedEvent = e.RoutedEvent;
-
-            // propagate first if tunneling
-            if (routedEvent.RoutingStrategy == RoutingStrategy.Tunnel && VisualParent != null)
-                VisualParent.PropagateRoutedEvent(e);
-
-            // Trigger the class handler
-            var classHandler = EventManager.GetClassHandler(GetType(), routedEvent);
-            if (classHandler != null && (classHandler.HandledEventToo || !e.Handled))
-                classHandler.Invoke(this, e);
-
-            // Trigger instance handlers
-            if (eventsToHandlers.ContainsKey(routedEvent))
-            {
-                // get a list of handler from the pool where we can copy the handler to trigger
-                if (routedEventHandlerInfoListPool.Count == 0)
-                    routedEventHandlerInfoListPool.Enqueue(new List<RoutedEventHandlerInfo>());
-                var pooledList = routedEventHandlerInfoListPool.Dequeue();
-
-                // copy the RoutedEventHandlerEventInfo list into a list of the pool in order to be able to modify the handler list in the handler itself
-                pooledList.AddRange(eventsToHandlers[routedEvent]);
-
-                // iterate on the pooled list to invoke handlers
-                foreach (var handlerInfo in pooledList)
-                {
-                    if (handlerInfo.HandledEventToo || !e.Handled)
-                        handlerInfo.Invoke(this, e);
-                }
-
-                // add the pooled list back to the pool.
-                pooledList.Clear(); // avoid to keep dead references
-                routedEventHandlerInfoListPool.Enqueue(pooledList);
-            }
-
-            // propagate afterwards if bubbling
-            if (routedEvent.RoutingStrategy == RoutingStrategy.Bubble && VisualParent != null)
-                VisualParent.PropagateRoutedEvent(e);
-        }
-
-        /// <summary>
-        /// Raises a specific routed event. The <see cref="RoutedEvent"/> to be raised is identified within the <see cref="RoutedEventArgs"/> instance 
-        /// that is provided (as the <see cref="RoutedEvent"/> property of that event data).
-        /// </summary>
-        /// <param name="e">A <see cref="RoutedEventArgs"/> that contains the event data and also identifies the event to raise.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="e"/> is null.</exception>
-        /// <exception cref="InvalidOperationException">The type of the routed event argument <paramref name="e"/> does not match the event handler second argument type.</exception>
-        public void RaiseEvent(RoutedEventArgs e)
-        {
-            if (e == null) 
-                throw new ArgumentNullException("e");
-
-            if (e.RoutedEvent == null)
-                return;
-
-            if(!e.RoutedEvent.HandlerSecondArgumentType.GetTypeInfo().IsAssignableFrom(e.GetType().GetTypeInfo()))
-                throw new InvalidOperationException("The type of second parameter of the handler (" + e.RoutedEvent.HandlerSecondArgumentType 
-                                                        + ") is not assignable from the parameter 'e' type (" + e.GetType() + ").");
-
-            var sourceWasNull = e.Source == null;
-            if (sourceWasNull)  // set the source to default if needed
-                e.Source = this;
-
-            e.StartEventRouting();
-
-            PropagateRoutedEvent(e);
-
-            e.EndEventRouting();
-
-            if (sourceWasNull) // reset the source if it was not explicitly set (event might be reused again for other sources)
-                e.Source = null;
-        }
-
-        /// <summary>
-        /// Adds a routed event handler for a specified routed event, adding the handler to the handler collection on the current element. 
-        /// Specify handledEventsToo as true to have the provided handler be invoked for routed event that had already been marked as handled by another element along the event route.
-        /// </summary>
-        /// <param name="routedEvent">An identifier for the routed event to be handled.</param>
-        /// <param name="handler">A reference to the handler implementation.</param>
-        /// <param name="handledEventsToo">true to register the handler such that it is invoked even when the routed event is marked handled in its event data; 
-        /// false to register the handler with the default condition that it will not be invoked if the routed event is already marked handled.</param>
-        /// <exception cref="ArgumentNullException">Provided handler or routed event is null.</exception>
-        public void AddHandler<T>(RoutedEvent<T> routedEvent, EventHandler<T> handler, bool handledEventsToo = false) where T : RoutedEventArgs
-        {
-            if (routedEvent == null) throw new ArgumentNullException("routedEvent");
-            if (handler == null) throw new ArgumentNullException("handler");
-
-            if(!eventsToHandlers.ContainsKey(routedEvent))
-                eventsToHandlers[routedEvent] = new List<RoutedEventHandlerInfo>();
-
-            eventsToHandlers[routedEvent].Add(new RoutedEventHandlerInfo<T>(handler, handledEventsToo));
-        }
-
-        /// <summary>
-        /// Removes the specified routed event handler from this element.
-        /// </summary>
-        /// <param name="routedEvent">The identifier of the routed event for which the handler is attached.</param>
-        /// <param name="handler">The specific handler implementation to remove from the event handler collection on this element.</param>
-        /// <exception cref="ArgumentNullException">Provided handler or routed event is null.</exception>
-        public void RemoveHandler<T>(RoutedEvent<T> routedEvent, EventHandler<T> handler) where T : RoutedEventArgs
-        {
-            if (routedEvent == null) throw new ArgumentNullException("routedEvent");
-            if (handler == null) throw new ArgumentNullException("handler");
-
-            if(!eventsToHandlers.ContainsKey(routedEvent))
-                return;
-
-            eventsToHandlers[routedEvent].Remove(new RoutedEventHandlerInfo<T>(handler));
-        }
-
-        private readonly Dictionary<RoutedEvent, List<RoutedEventHandlerInfo>> eventsToHandlers = new Dictionary<RoutedEvent, List<RoutedEventHandlerInfo>>();
-
-        #region Events
-
-        /// <summary>
-        /// Occurs when the value of the <see cref="MouseOverState"/> property changed.
-        /// </summary>
-        /// <remarks>This event is not a routed event</remarks>
-        public event PropertyChangedHandler<MouseOverState> MouseOverStateChanged;
-
-        /// <summary>
-        /// Occurs when the user starts touching the <see cref="UIElement"/>. That is when he moves its finger down from the element.
-        /// </summary>
-        /// <remarks>A click event is tunneling</remarks>
-        public event EventHandler<TouchEventArgs> PreviewTouchDown
-        {
-            add { AddHandler(previewTouchDownEvent, value); }
-            remove { RemoveHandler(previewTouchDownEvent, value); }
-        }
-
-        /// <summary>
-        /// Occurs when the user moves its finger on the <see cref="UIElement"/>. 
-        /// That is when his finger was already on the element and moved from its previous position.
-        /// </summary>
-        /// <remarks>A click event is tunneling</remarks>
-        public event EventHandler<TouchEventArgs> PreviewTouchMove
-        {
-            add { AddHandler(previewTouchMoveEvent, value); }
-            remove { RemoveHandler(previewTouchMoveEvent, value); }
-        }
-
-        /// <summary>
-        /// Occurs when the user stops touching the <see cref="UIElement"/>. That is when he moves its finger up from the element.
-        /// </summary>
-        /// <remarks>A click event is tunneling</remarks>
-        public event EventHandler<TouchEventArgs> PreviewTouchUp
-        {
-            add { AddHandler(previewTouchUpEvent, value); }
-            remove { RemoveHandler(previewTouchUpEvent, value); }
-        }
-
-        /// <summary>
-        /// Occurs when the user starts touching the <see cref="UIElement"/>. That is when he moves its finger down from the element.
-        /// </summary>
-        /// <remarks>A click event is bubbling</remarks>
-        public event EventHandler<TouchEventArgs> TouchDown
-        {
-            add { AddHandler(touchDownEvent, value); }
-            remove { RemoveHandler(touchDownEvent, value); }
-        }
-
-        /// <summary>
-        /// Occurs when the user enters its finger into <see cref="UIElement"/>. 
-        /// That is when his finger was on the screen outside of the element and moved inside the element.
-        /// </summary>
-        /// <remarks>A click event is bubbling</remarks>
-        public event EventHandler<TouchEventArgs> TouchEnter
-        {
-            add { AddHandler(touchEnterEvent, value); }
-            remove { RemoveHandler(touchEnterEvent, value); }
-        }
-
-        /// <summary>
-        /// Occurs when the user leaves its finger from the <see cref="UIElement"/>. 
-        /// That is when his finger was inside of the element and moved on the screen outside of the element.
-        /// </summary>
-        /// <remarks>A click event is bubbling</remarks>
-        public event EventHandler<TouchEventArgs> TouchLeave
-        {
-            add { AddHandler(touchLeaveEvent, value); }
-            remove { RemoveHandler(touchLeaveEvent, value); }
-        }
-
-        /// <summary>
-        /// Occurs when the user move its finger inside the <see cref="UIElement"/>.
-        /// That is when his finger was already on the element and moved from its previous position.
-        /// </summary>
-        /// <remarks>A click event is bubbling</remarks>
-        public event EventHandler<TouchEventArgs> TouchMove
-        {
-            add { AddHandler(touchMoveEvent, value); }
-            remove { RemoveHandler(touchMoveEvent, value); }
-        }
-
-        /// <summary>
-        /// Occurs when the user stops touching the <see cref="UIElement"/>. That is when he moves its finger up from the element.
-        /// </summary>
-        /// <remarks>A click event is bubbling</remarks>
-        public event EventHandler<TouchEventArgs> TouchUp
-        {
-            add { AddHandler(touchUpEvent, value); }
-            remove { RemoveHandler(touchUpEvent, value); }
-        }
-
-        /// <summary>
-        /// Occurs when the element has the focus and the user press a key on the keyboard.
-        /// </summary>
-        /// <remarks>A key pressed event is bubbling</remarks>
-        internal event EventHandler<KeyEventArgs> KeyPressed
-        {
-            add { AddHandler(keyPressedEvent, value); }
-            remove { RemoveHandler(keyPressedEvent, value); }
-        }
-
-        /// <summary>
-        /// Occurs when the element has the focus and the user maintains a key pressed on the keyboard.
-        /// </summary>
-        /// <remarks>A key down event is bubbling</remarks>
-        internal event EventHandler<KeyEventArgs> KeyDown
-        {
-            add { AddHandler(keyDownEvent, value); }
-            remove { RemoveHandler(keyDownEvent, value); }
-        }
-
-        /// <summary>
-        /// Occurs when the element has the focus and the user release a key on the keyboard.
-        /// </summary>
-        /// <remarks>A key released event is bubbling</remarks>
-        internal event EventHandler<KeyEventArgs> KeyReleased
-        {
-            add { AddHandler(keyReleasedEvent, value); }
-            remove { RemoveHandler(keyReleasedEvent, value); }
-        }
-
-        #endregion
-
-        #region Internal Event Raiser
-
-        internal void RaiseTouchDownEvent(TouchEventArgs touchArgs)
-        {
-            touchArgs.RoutedEvent = previewTouchDownEvent;
-            RaiseEvent(touchArgs);
-
-            touchArgs.RoutedEvent = touchDownEvent;
-            RaiseEvent(touchArgs);
-        }
-
-        internal void RaiseTouchEnterEvent(TouchEventArgs touchArgs)
-        {
-            touchArgs.RoutedEvent = touchEnterEvent;
-            RaiseEvent(touchArgs);
-        }
-
-        internal void RaiseTouchLeaveEvent(TouchEventArgs touchArgs)
-        {
-            touchArgs.RoutedEvent = touchLeaveEvent;
-            RaiseEvent(touchArgs);
-        }
-
-        internal void RaiseTouchMoveEvent(TouchEventArgs touchArgs)
-        {
-            touchArgs.RoutedEvent = previewTouchMoveEvent;
-            RaiseEvent(touchArgs);
-
-            touchArgs.RoutedEvent = touchMoveEvent;
-            RaiseEvent(touchArgs);
-        }
-
-        internal void RaiseTouchUpEvent(TouchEventArgs touchArgs)
-        {
-            touchArgs.RoutedEvent = previewTouchUpEvent;
-            RaiseEvent(touchArgs);
-
-            touchArgs.RoutedEvent = touchUpEvent;
-            RaiseEvent(touchArgs);
-        }
-
-        internal void RaiseKeyPressedEvent(KeyEventArgs keyEventArgs)
-        {
-            keyEventArgs.RoutedEvent = keyPressedEvent;
-            RaiseEvent(keyEventArgs);
-        }
-
-        internal void RaiseKeyDownEvent(KeyEventArgs keyEventArgs)
-        {
-            keyEventArgs.RoutedEvent = keyDownEvent;
-            RaiseEvent(keyEventArgs);
-        }
-
-        internal void RaiseKeyReleasedEvent(KeyEventArgs keyEventArgs)
-        {
-            keyEventArgs.RoutedEvent = keyReleasedEvent;
-            RaiseEvent(keyEventArgs);
-        }
-
-        #endregion
-
-        #region Class Event Handlers
-
-        private static void PreviewTouchDownClassHandler(object sender, TouchEventArgs args)
-        {
-            var uiElementSender = (UIElement)sender;
-            if(uiElementSender.IsHierarchyEnabled)
-                uiElementSender.OnPreviewTouchDown(args);
-        }
-
-        /// <summary>
-        /// The class handler of the event <see cref="PreviewTouchDown"/>.
-        /// This method can be overridden in inherited classes to perform actions common to all instances of a class.
-        /// </summary>
-        /// <param name="args">The arguments of the event</param>
-        protected virtual void OnPreviewTouchDown(TouchEventArgs args)
-        {
-            IsTouched = true;
-        }
-
-        private static void PreviewTouchMoveClassHandler(object sender, TouchEventArgs args)
-        {
-            var uiElementSender = (UIElement)sender;
-            if (uiElementSender.IsHierarchyEnabled)
-                uiElementSender.OnPreviewTouchMove(args);
-        }
-
-        /// <summary>
-        /// The class handler of the event <see cref="PreviewTouchMove"/>.
-        /// This method can be overridden in inherited classes to perform actions common to all instances of a class.
-        /// </summary>
-        /// <param name="args">The arguments of the event</param>
-        protected virtual void OnPreviewTouchMove(TouchEventArgs args)
-        {
-        }
-
-        private static void PreviewTouchUpClassHandler(object sender, TouchEventArgs args)
-        {
-            var uiElementSender = (UIElement)sender;
-            if (uiElementSender.IsHierarchyEnabled)
-                uiElementSender.OnPreviewTouchUp(args);
-        }
-
-        /// <summary>
-        /// The class handler of the event <see cref="PreviewTouchUp"/>.
-        /// This method can be overridden in inherited classes to perform actions common to all instances of a class.
-        /// </summary>
-        /// <param name="args">The arguments of the event</param>
-        protected virtual void OnPreviewTouchUp(TouchEventArgs args)
-        {
-            IsTouched = false;
-        }
-
-        private static void TouchDownClassHandler(object sender, TouchEventArgs args)
-        {
-            var uiElementSender = (UIElement)sender;
-            if (uiElementSender.IsHierarchyEnabled)
-                uiElementSender.OnTouchDown(args);
-        }
-
-        /// <summary>
-        /// The class handler of the event <see cref="TouchDown"/>.
-        /// This method can be overridden in inherited classes to perform actions common to all instances of a class.
-        /// </summary>
-        /// <param name="args">The arguments of the event</param>
-        protected virtual void OnTouchDown(TouchEventArgs args)
-        {
-        }
-
-        private static void TouchEnterClassHandler(object sender, TouchEventArgs args)
-        {
-            var uiElementSender = (UIElement)sender;
-            if (uiElementSender.IsHierarchyEnabled)
-                uiElementSender.OnTouchEnter(args);
-        }
-
-        /// <summary>
-        /// The class handler of the event <see cref="TouchEnter"/>.
-        /// This method can be overridden in inherited classes to perform actions common to all instances of a class.
-        /// </summary>
-        /// <param name="args">The arguments of the event</param>
-        protected virtual void OnTouchEnter(TouchEventArgs args)
-        {
-            IsTouched = true;
-        }
-
-        private static void TouchLeaveClassHandler(object sender, TouchEventArgs args)
-        {
-            var uiElementSender = (UIElement)sender;
-            if (uiElementSender.IsHierarchyEnabled)
-                uiElementSender.OnTouchLeave(args);
-        }
-
-        /// <summary>
-        /// The class handler of the event <see cref="TouchLeave"/>.
-        /// This method can be overridden in inherited classes to perform actions common to all instances of a class.
-        /// </summary>
-        /// <param name="args">The arguments of the event</param>
-        protected virtual void OnTouchLeave(TouchEventArgs args)
-        {
-            IsTouched = false;
-        }
-
-        private static void TouchMoveClassHandler(object sender, TouchEventArgs args)
-        {
-            var uiElementSender = (UIElement)sender;
-            if (uiElementSender.IsHierarchyEnabled)
-                uiElementSender.OnTouchMove(args);
-        }
-
-        /// <summary>
-        /// The class handler of the event <see cref="TouchMove"/>.
-        /// This method can be overridden in inherited classes to perform actions common to all instances of a class.
-        /// </summary>
-        /// <param name="args">The arguments of the event</param>
-        protected virtual void OnTouchMove(TouchEventArgs args)
-        {
-        }
-
-        private static void TouchUpClassHandler(object sender, TouchEventArgs args)
-        {
-            var uiElementSender = (UIElement)sender;
-            if (uiElementSender.IsHierarchyEnabled)
-                uiElementSender.OnTouchUp(args);
-        }
-
-        /// <summary>
-        /// The class handler of the event <see cref="TouchUp"/>.
-        /// This method can be overridden in inherited classes to perform actions common to all instances of a class.
-        /// </summary>
-        /// <param name="args">The arguments of the event</param>
-        protected virtual void OnTouchUp(TouchEventArgs args)
-        {
-        }
-
-        private static void KeyPressedClassHandler(object sender, KeyEventArgs args)
-        {
-            var uiElementSender = (UIElement)sender;
-            if (uiElementSender.IsHierarchyEnabled)
-                uiElementSender.OnKeyPressed(args);
-        }
-
-        /// <summary>
-        /// The class handler of the event <see cref="KeyPressed"/>.
-        /// This method can be overridden in inherited classes to perform actions common to all instances of a class.
-        /// </summary>
-        /// <param name="args">The arguments of the event</param>
-        internal virtual void OnKeyPressed(KeyEventArgs args)
-        {
-        }
-
-        private static void KeyDownClassHandler(object sender, KeyEventArgs args)
-        {
-            var uiElementSender = (UIElement)sender;
-            if (uiElementSender.IsHierarchyEnabled)
-                uiElementSender.OnKeyDown(args);
-        }
-
-        /// <summary>
-        /// The class handler of the event <see cref="KeyDown"/>.
-        /// This method can be overridden in inherited classes to perform actions common to all instances of a class.
-        /// </summary>
-        /// <param name="args">The arguments of the event</param>
-        internal virtual void OnKeyDown(KeyEventArgs args)
-        {
-        }
-
-        private static void KeyReleasedClassHandler(object sender, KeyEventArgs args)
-        {
-            var uiElementSender = (UIElement)sender;
-            if (uiElementSender.IsHierarchyEnabled)
-                uiElementSender.OnKeyReleased(args);
-        }
-
-        /// <summary>
-        /// The class handler of the event <see cref="KeyReleased"/>.
-        /// This method can be overridden in inherited classes to perform actions common to all instances of a class.
-        /// </summary>
-        /// <param name="args">The arguments of the event</param>
-        internal virtual void OnKeyReleased(KeyEventArgs args)
-        {
-        }
-
-        #endregion
+        }        
     }
 }
