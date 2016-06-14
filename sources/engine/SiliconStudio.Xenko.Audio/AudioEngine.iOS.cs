@@ -2,20 +2,17 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_PLATFORM_IOS
 
-using System;
+using AudioUnit;
 using AVFoundation;
 
 namespace SiliconStudio.Xenko.Audio
 {
-    public sealed class AudioEngineiOS: AudioEngine
+    public class AudioEngineIos : AudioEngine
     {
-        private bool activated;
-
-        internal override void InitializeAudioEngine(AudioDevice device)
+        public override void InitializeAudioEngine()
         {
-            if (activated) return;
             ActivateAudioSession();
-            activated = true;
+            base.InitializeAudioEngine();
         }
 
         private void ActivateAudioSession()
@@ -53,15 +50,11 @@ namespace SiliconStudio.Xenko.Audio
                 Logger.Warning("Failed to activate the audio session. [Error info: {0}]", error.UserInfo);
                 State = AudioEngineState.Invalidated;
             }
-        }
 
-        /// <inheritDoc/>
-        internal override void ResumeAudioImpl()
-        {
-        }
-
-        internal override void DestroyAudioEngine()
-        {
+            //todo remove when we update libcore with no more audiounit stuff
+            int err;
+            var foo = AUGraph.Create(out err);
+            foo.Dispose();
         }
     }
 }

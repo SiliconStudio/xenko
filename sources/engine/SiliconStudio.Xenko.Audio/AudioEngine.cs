@@ -20,7 +20,9 @@ namespace SiliconStudio.Xenko.Audio
     /// A call to Dispose automatically stops and disposes all the <see cref="Sound"/>, <see cref="SoundInstance"/>
     public class AudioEngine : ComponentBase
     {
-        public AudioListener DefaultListener; 
+        public AudioListener DefaultListener;
+
+        private AudioDevice audioDevice;
 
         static AudioEngine()
         {
@@ -58,7 +60,7 @@ namespace SiliconStudio.Xenko.Audio
 
             AudioSampleRate = sampleRate;
 
-            InitializeAudioEngine(device);
+            audioDevice = device;
         }
 
         internal OpenAl.Device AudioDevice;
@@ -67,9 +69,9 @@ namespace SiliconStudio.Xenko.Audio
         /// Initialize audio engine for <paramref name="device"/>.
         /// </summary>
         /// <param name="device">Device to use for initialization</param>
-        internal void InitializeAudioEngine(AudioDevice device)
+        public virtual void InitializeAudioEngine()
         {
-            AudioDevice = OpenAl.Create(device.Name == "default" ? null : device.Name);
+            AudioDevice = OpenAl.Create(audioDevice.Name == "default" ? null : audioDevice.Name);
             if (AudioDevice.Ptr == IntPtr.Zero)
             {
                 throw new Exception("Failed to open audio device!");

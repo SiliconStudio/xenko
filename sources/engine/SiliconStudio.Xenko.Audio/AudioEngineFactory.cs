@@ -13,15 +13,19 @@ namespace SiliconStudio.Xenko.Audio
         {
 #if SILICONSTUDIO_PLATFORM_ANDROID
             return new AudioEngineAndroid();
-#elif SILICONSTUDIO_PLATFORM_IOS
-            return new AudioEngineiOS();
+#elif SILICONSTUDIO_PLATFORM_IOS        
+            var engine = new AudioEngineIos();
+            engine.InitializeAudioEngine();
+            return engine;
 #elif SILICONSTUDIO_PLATFORM_WINDOWS
 #if SILICONSTUDIO_XENKO_SOUND_SDL
             return new AudioEngineSDL();
 #elif SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
             return new AudioEngineRuntime();
 #else
-            return new AudioEngine();
+            var engine = new AudioEngine();
+            engine.InitializeAudioEngine();
+            return engine;
 #endif
 #elif SILICONSTUDIO_PLATFORM_LINUX
 #if SILICONSTUDIO_XENKO_SOUND_SDL

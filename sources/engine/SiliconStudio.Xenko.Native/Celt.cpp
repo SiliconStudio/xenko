@@ -87,11 +87,12 @@ extern "C" {
 		{
 			if (OpenALLibrary) return true;
 
-			OpenALLibrary = LoadDynamicLibrary("OpenAL32");
-			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("x64\\OpenAL32");
-			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("x86\\OpenAL32");
-			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("x64/OpenAL32");
-			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("x86/OpenAL32");
+			OpenALLibrary = LoadDynamicLibrary("OpenAL");
+			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("x64\\OpenAL");
+			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("x86\\OpenAL");
+			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("x64/OpenAL");
+			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("x86/OpenAL");
+			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("/System/Library/Frameworks/OpenAL.framework/OpenAL"); //iOS Apple OpenAL
 			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary(NULL);
 			if (!OpenALLibrary) return false;
 
