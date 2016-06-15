@@ -7,7 +7,7 @@ xnCeltEncodeFloat
 xnCeltDecodeFloat
 xnCeltEncodeShort
 xnCeltDecodeShort
-xnInitOpenAL
+xnAudioInit
 xnAudioCreate
 xnAudioDestroy
 xnAudioListenerCreate

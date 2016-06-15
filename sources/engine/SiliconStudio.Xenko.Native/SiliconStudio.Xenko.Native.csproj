@@ -31,7 +31,7 @@
     </Compile>
     <Compile Include="Celt.cs" />
     <Compile Include="NativeInvoke.cs" />
-    <Compile Include="OpenAl.cs" />
+    <Compile Include="AudioLayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -42,13 +42,19 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Xenko.Native.Libs.targets" />
+    <None Include="Xenko.Native.Libs.targets">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="XenkoNative.h" />
     <None Include="SpriteBatchNative.c" />
     <None Include="symbols.def" />
-    <None Include="Xenko.Native.targets" />
+    <None Include="Xenko.Native.targets">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="OpenAL.cpp" />
+    <Content Include="XAudio2.cpp" />
     <Content Include="Celt.cpp" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />

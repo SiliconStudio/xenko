@@ -5,7 +5,7 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Native
 {
-    public class OpenAl
+    public class AudioLayer
     {
         public struct Device
         {
@@ -17,7 +17,17 @@ namespace SiliconStudio.Xenko.Native
             public IntPtr Ptr;
         }
 
-        static OpenAl()
+        public struct Source
+        {
+            public IntPtr Ptr;
+        }
+
+        public struct Buffer
+        {
+            public IntPtr Ptr;
+        }
+
+        static AudioLayer()
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS
             NativeLibrary.PreloadLibrary(NativeInvoke.Library + ".dll");
@@ -29,8 +39,8 @@ namespace SiliconStudio.Xenko.Native
 #if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
 #endif
-        [DllImport(NativeInvoke.Library, EntryPoint = "xnInitOpenAL", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
-        public static extern bool InitOpenAL();
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioInit", CallingConvention = CallingConvention.Cdecl, CharSet = CharSet.Ansi)]
+        public static extern bool Init();
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
@@ -72,91 +82,91 @@ namespace SiliconStudio.Xenko.Native
         [SuppressUnmanagedCodeSecurity]
 #endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceCreate", CallingConvention = CallingConvention.Cdecl)]
-        public static extern uint SourceCreate(Listener listener);
+        public static extern Source SourceCreate(Listener listener);
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
 #endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceDestroy", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SourceDestroy(Listener listener, uint source);
+        public static extern void SourceDestroy(Source source);
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
 #endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceSetPan", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SourceSetPan(Listener listener, uint source, float pan);
+        public static extern void SourceSetPan(Source source, float pan);
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
 #endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioBufferCreate", CallingConvention = CallingConvention.Cdecl)]
-        public static extern uint BufferCreate();
+        public static extern Buffer BufferCreate();
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
 #endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioBufferDestroy", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void BufferDestroy(uint source);
+        public static extern void BufferDestroy(Buffer buffer);
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
 #endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioBufferFill", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void BufferFill(uint buffer, IntPtr pcm, int bufferSize, int sampleRate, bool mono);
+        public static extern void BufferFill(Buffer buffer, IntPtr pcm, int bufferSize, int sampleRate, bool mono);
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
 #endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceSetBuffer", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SourceSetBuffer(Listener listener, uint source, uint buffer);
+        public static extern void SourceSetBuffer(Source source, Buffer buffer);
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
 #endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceQueueBuffer", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SourceQueueBuffer(Listener listener, uint source, uint buffer, IntPtr pcm, int bufferSize, int sampleRate, bool mono);
+        public static extern void SourceQueueBuffer(Source source, Buffer buffer, IntPtr pcm, int bufferSize, int sampleRate, bool mono);
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
 #endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceGetFreeBuffer", CallingConvention = CallingConvention.Cdecl)]
-        public static extern uint SourceGetFreeBuffer(Listener listener, uint source);
+        public static extern Buffer SourceGetFreeBuffer(Source source);
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
 #endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourcePlay", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SourcePlay(Listener listener, uint source);
+        public static extern void SourcePlay(Source source);
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
 #endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourcePause", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SourcePause(Listener listener, uint source);
+        public static extern void SourcePause(Source source);
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
 #endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceStop", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SourceStop(Listener listener, uint source);
+        public static extern void SourceStop(Source source);
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
 #endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceSetLooping", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SourceSetLooping(Listener listener, uint source, bool looped);
+        public static extern void SourceSetLooping(Source source, bool looped);
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
 #endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceSetGain", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SourceSetGain(Listener listener, uint source, float gain);
+        public static extern void SourceSetGain(Source source, float gain);
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
 #endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceSetPitch", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SourceSetPitch(Listener listener, uint source, float pitch);
+        public static extern void SourceSetPitch(Source source, float pitch);
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
@@ -168,12 +178,12 @@ namespace SiliconStudio.Xenko.Native
         [SuppressUnmanagedCodeSecurity]
 #endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourcePush3D", CallingConvention = CallingConvention.Cdecl)]
-        public static extern unsafe void SourcePush3D(Listener listener, uint source, float* pos, float* forward, float* up, float* vel);
+        public static extern unsafe void SourcePush3D(Source source, float* pos, float* forward, float* up, float* vel);
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
 #endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceIsPlaying", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool SourceIsPlaying(Listener listener, uint source);
+        public static extern bool SourceIsPlaying(Source source);
     }
 }
