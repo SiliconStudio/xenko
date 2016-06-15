@@ -13,11 +13,12 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial class DescriptorSetLayout
     {
+        internal const int DescriptorTypeCount = 11;
+
+#if !SILICONSTUDIO_XENKO_GRAPHICS_NO_DESCRIPTOR_COPIES
         internal readonly DescriptorSetLayoutBuilder Builder;
 
         internal SharpVulkan.DescriptorSetLayout NativeLayout;
-
-        internal const int DescriptorTypeCount = 11;
 
         internal uint[] TypeCounts;
 
@@ -31,6 +32,23 @@ namespace SiliconStudio.Xenko.Graphics
         {
             NativeLayout = CreateNativeDescriptorSetLayout(GraphicsDevice, Builder.Entries, out TypeCounts);
         }
+
+        /// <inheritdoc/>
+        protected internal override bool OnRecreate()
+        {
+            Recreate();
+            return true;
+        }
+
+        /// <inheritdoc/>
+        protected internal override unsafe void OnDestroyed()
+        {
+            GraphicsDevice.NativeDevice.DestroyDescriptorSetLayout(NativeLayout);
+            NativeLayout = SharpVulkan.DescriptorSetLayout.Null;
+
+            base.OnDestroyed();
+        }
+#endif
 
         internal static unsafe SharpVulkan.DescriptorSetLayout CreateNativeDescriptorSetLayout(GraphicsDevice device, IList<DescriptorSetLayoutBuilder.Entry> entries, out uint[] typeCounts)
         {
@@ -86,22 +104,6 @@ namespace SiliconStudio.Xenko.Graphics
                 };
                 return device.NativeDevice.CreateDescriptorSetLayout(ref createInfo);
             }
-        }
-
-        /// <inheritdoc/>
-        protected internal override bool OnRecreate()
-        {
-            Recreate();
-            return true;
-        }
-
-        /// <inheritdoc/>
-        protected internal override unsafe void OnDestroyed()
-        {
-            GraphicsDevice.NativeDevice.DestroyDescriptorSetLayout(NativeLayout);
-            NativeLayout = SharpVulkan.DescriptorSetLayout.Null;
-
-            base.OnDestroyed();
         }
     }
 }

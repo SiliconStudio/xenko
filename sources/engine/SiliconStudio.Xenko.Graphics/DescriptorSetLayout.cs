@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Graphics
             return new DescriptorSetLayout(device, builder);
         }
 
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11 || SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11 || SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL || (SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN && SILICONSTUDIO_XENKO_GRAPHICS_NO_DESCRIPTOR_COPIES)
         internal readonly int ElementCount;
         internal readonly DescriptorSetLayoutBuilder.Entry[] Entries;
 

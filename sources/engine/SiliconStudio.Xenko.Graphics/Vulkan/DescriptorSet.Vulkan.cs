@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN && !SILICONSTUDIO_XENKO_GRAPHICS_NO_DESCRIPTOR_COPIES
 using System;
 using System.Collections.Generic;
 using SharpVulkan;
@@ -10,6 +10,13 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial struct DescriptorSet
     {
+        internal struct Descriptor
+        {
+
+        };
+
+        internal static Dictionary<>
+
         internal readonly SharpVulkan.DescriptorSet NativeDescriptorSet;
         internal readonly GraphicsDevice GraphicsDevice;
         

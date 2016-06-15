@@ -273,7 +273,8 @@ namespace SiliconStudio.Xenko.Graphics
             SharpVulkan.DescriptorSet localDescriptorSet;
             GraphicsDevice.NativeDevice.AllocateDescriptorSets(ref allocateInfo, &localDescriptorSet);
             this.descriptorSet = localDescriptorSet;
-            
+
+#if !SILICONSTUDIO_XENKO_GRAPHICS_NO_DESCRIPTOR_COPIES
             copies.Clear(true);
 
             foreach (var mapping in activePipeline.DescriptorBindingMapping)
@@ -292,7 +293,69 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             GraphicsDevice.NativeDevice.UpdateDescriptorSets(0, null, (uint)copies.Count, copies.Count > 0 ? (CopyDescriptorSet*)Interop.Fixed(copies.Items) : null);
+#else
+            var bindingCount = activePipeline.DescriptorBindingMapping.Count;
+            var writes = stackalloc WriteDescriptorSet[bindingCount];
+            var imageInfos = stackalloc DescriptorImageInfo[bindingCount];
+            var bufferInfos = stackalloc DescriptorBufferInfo[bindingCount];
 
+            for (int index = 0; index < bindingCount; index++)
+            {
+                var mapping = activePipeline.DescriptorBindingMapping[index];
+                var sourceSet = boundDescriptorSets[mapping.SourceSet];
+                var heapObject = sourceSet.HeapObjects[sourceSet.DescriptorStartOffset + mapping.SourceBinding];
+
+                var write = writes + index;
+                var imageInfo = imageInfos + index;
+                var bufferInfo = bufferInfos + index;
+
+                *write = new WriteDescriptorSet
+                {
+                    StructureType = StructureType.WriteDescriptorSet,
+                    DestinationSet = localDescriptorSet,
+                    DestinationBinding = (uint)mapping.DestinationBinding,
+                    DestinationArrayElement = 0,
+                    DescriptorCount = 1,
+                };
+
+                var texture = heapObject.Value as Texture;
+                if (texture != null)
+                {
+                    *imageInfo = new DescriptorImageInfo { ImageView = texture.NativeImageView, ImageLayout = ImageLayout.ShaderReadOnlyOptimal };
+
+                    write->DescriptorType = DescriptorType.SampledImage;
+                    write->ImageInfo = new IntPtr(imageInfo);
+                }
+                else
+                {
+                    var samplerState = heapObject.Value as SamplerState;
+                    if (samplerState != null)
+                    {
+                        *imageInfo = new DescriptorImageInfo { Sampler = samplerState.NativeSampler };
+
+                        write->DescriptorType = DescriptorType.Sampler;
+                        write->ImageInfo = new IntPtr(imageInfo);
+                    }
+                    else
+                    {
+                        var buffer = heapObject.Value as Buffer;
+                        if (buffer != null)
+                        {
+                            *bufferInfo = new DescriptorBufferInfo { Buffer = buffer.NativeBuffer, Offset = (ulong)heapObject.Offset, Range = (ulong)heapObject.Size };
+
+                            write->DescriptorType = DescriptorType.UniformBuffer;
+                            write->BufferInfo = new IntPtr(bufferInfo);
+                        }
+                        else
+                        {
+                            throw new InvalidOperationException();
+                        }
+                    }
+                }
+            }
+
+            GraphicsDevice.NativeDevice.UpdateDescriptorSets((uint)bindingCount, writes, 0, null);
+#endif
             NativeCommandBuffer.BindDescriptorSets(PipelineBindPoint.Graphics, activePipeline.NativeLayout, 0, 1, &localDescriptorSet, 0, null);
         }
 
@@ -390,7 +453,11 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
+#if !SILICONSTUDIO_XENKO_GRAPHICS_NO_DESCRIPTOR_COPIES
         private readonly FastList<SharpVulkan.DescriptorSet> boundDescriptorSets = new FastList<SharpVulkan.DescriptorSet>();
+#else
+        private readonly FastList<DescriptorSet> boundDescriptorSets = new FastList<DescriptorSet>();
+#endif
 
         public void SetDescriptorSets(int index, DescriptorSet[] descriptorSets)
         {
@@ -400,7 +467,11 @@ namespace SiliconStudio.Xenko.Graphics
             boundDescriptorSets.Clear(true);
             for (int i = 0; i < descriptorSets.Length; i++)
             {
+#if !SILICONSTUDIO_XENKO_GRAPHICS_NO_DESCRIPTOR_COPIES
                 boundDescriptorSets.Add(descriptorSets[i].NativeDescriptorSet);
+#else
+                boundDescriptorSets.Add(descriptorSets[i]);
+#endif
             }
         }
 
@@ -1229,4 +1300,4 @@ namespace SiliconStudio.Xenko.Graphics
     }
 }
  
-#endif 
+#endif
