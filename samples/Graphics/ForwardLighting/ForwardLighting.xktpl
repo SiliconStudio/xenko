@@ -1,0 +1,11 @@
+!TemplateSample
+Id: 9a8fb9d9-e614-4316-87ae-d8446ebad50e
+Name: Forward Lighting Sample
+Scope: Session
+Description: Creates a sample project which describes how the forward lighting works in Xenko
+FullDescription: This samples shows you how to create a forward rendering pipeline and how to set lights in Xenko.
+Group: Samples/Graphics
+Icon: .xktpl/Icon.png
+DefaultOutputName: ForwardLighting
+Screenshots:
+    - .xktpl/screenshot_small.png

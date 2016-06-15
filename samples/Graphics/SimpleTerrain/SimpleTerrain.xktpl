@@ -1,0 +1,14 @@
+!TemplateSample
+Id: 8F6E8807-3CF4-4775-9C74-616C185162D5
+Name: Simple Terrain Sample
+Scope: Session
+Description: Creates a sample project which describes how to initialize and utilize dynamic vertex and index buffers to store a generated terrain model.
+FullDescription: |
+   This sample shows how to create and utilize dynamic vertex and index buffers, in a terrain example.
+   It uses a simple algorithm to create a normalized height map called "Fault formation" which is then used to create a terrain.
+   Each time a terrain is re/created, data in both vertex and index buffers change accordingly.
+Group: Samples/Graphics
+DefaultOutputName: SimpleTerrain
+Icon: .xktpl/Icon.png
+Screenshots:
+    - .xktpl/screenshot0_small.jpg

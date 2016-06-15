@@ -1,0 +1,53 @@
+!MaterialAsset
+Id: 852eb1d0-def9-4296-a57d-810589cf4ec9
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Attributes:
+    Diffuse: !MaterialDiffuseMapFeature
+        DiffuseMap: !ComputeTextureColor
+            Texture: deff2047-40e1-47ca-ad04-173025bd92eb/e9eab42f-0fe7-45c0-9b13-32483242a9ea:texture
+            FallbackValue:
+                Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+            Scale: {X: 1.0, Y: 1.0}
+            Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
+    DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+    Overrides:
+        UVScale: {X: 1.0, Y: 1.0}
+Layers: []
+~Base:
+    Location: --import--
+    Asset: !MaterialAsset
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.4.0-beta}
+        Tags: []
+        Attributes:
+            Diffuse: !MaterialDiffuseMapFeature
+                DiffuseMap: !ComputeTextureColor
+                    Texture: 3b5841b4-d07a-4f2c-bf0a-5b7b45879741/e9eab42f-0fe7-45c0-9b13-32483242a9ea:texture
+                    FallbackValue:
+                        Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+                    Scale: {X: 1.0, Y: 1.0}
+                    Offset: {X: 0.0, Y: 0.0}
+                    Swizzle: null
+            DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+            Specular: !MaterialSpecularMapFeature
+                SpecularMap: !ComputeColor
+                    Value: {R: 0.2, G: 0.2, B: 0.2, A: 1.0}
+                Intensity: !ComputeFloat
+                    Value: 1.0
+            SpecularModel: !MaterialSpecularMicrofacetModelFeature
+                Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
+                    ~Id: e040953c-6a23-4a31-89ae-0b2921b34972
+                Visibility: !MaterialSpecularMicrofacetVisibilityImplicit
+                    ~Id: 82fde805-46e2-4734-bad5-19915c39945f
+                NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionBlinnPhong
+                    ~Id: e511889d-6129-482e-949d-eabe97a73c1f
+            Emissive: !MaterialEmissiveMapFeature
+                EmissiveMap: !ComputeColor
+                    Value: {R: 0.8, G: 0.8, B: 0.8, A: 1.0}
+                Intensity: !ComputeFloat
+                    Value: 1.0
+            Overrides:
+                UVScale: {X: 1.0, Y: 1.0}
+        Layers: []

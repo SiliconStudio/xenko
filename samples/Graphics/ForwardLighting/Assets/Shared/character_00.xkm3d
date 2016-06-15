@@ -1,0 +1,39 @@
+!Model
+Id: 94cb0ec2-52f7-4dcc-94cd-cd983f1409bb
+SerializedVersion: {Xenko: 1.5.0-alpha02}
+Tags: []
+Source: ../../Resources/character/scene/character_00.FBX
+SourceHash: 3f0d9203392fe14f680c7bd0ffa916bf
+Materials:
+    -   ~Id: a040a510-4a70-4039-a426-0b620daad2c1
+        Name: mc00
+        MaterialInstance:
+            ~Id: b71dd095-27b9-4208-8bc8-5f68322c0ceb
+            Material: b6eb49ce-d457-4f80-97a0-bbf0e30a75d3:mc00
+    -   ~Id: b01bcdb4-d7ef-4825-a996-d03d96c890de
+        Name: mc01
+        MaterialInstance:
+            ~Id: 1038a8dd-213b-4781-9749-394be15ef0a2
+            Material: a02dc101-d058-4066-b905-66313fbfcb6c:mc01
+Skeleton: null
+~Base:
+    ~Id: b68d6995-cddf-45ad-8160-ab532a472933
+    Location: --import--
+    Asset: !Model
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.5.0-alpha02}
+        Tags: []
+        Source: 
+        ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
+        Materials:
+            -   ~Id: 16f5d39c-85ef-49a6-817c-d769e21267a3
+                Name: mc00
+                MaterialInstance:
+                    ~Id: 7bbdc1ee-e179-4796-acb4-adacbfb77028
+                    Material: b6eb49ce-d457-4f80-97a0-bbf0e30a75d3:mc00
+            -   ~Id: b47e0ade-1042-4c12-8b35-bb001c6072c5
+                Name: mc01
+                MaterialInstance:
+                    ~Id: 2a25f397-956b-461b-b6d1-58e1d9fd3bce
+                    Material: a02dc101-d058-4066-b905-66313fbfcb6c:mc01
+        Skeleton: null

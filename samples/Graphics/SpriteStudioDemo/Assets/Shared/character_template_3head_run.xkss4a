@@ -1,0 +1,17 @@
+!SpriteStudioAnimationAsset
+Id: 0450fe8b-c834-4ab2-856b-19704944755c
+Tags: []
+Source: ../../Resources/character_template_3head.ssae
+SourceHash: 59c2c164cb9719b29d02cf9a8254b204
+RepeatMode: LoopInfinite
+AnimationName: run
+~Base:
+    ~Id: c5393990-9c99-4e8a-bcce-7e1c23a71925
+    Location: --import--
+    Asset: !SpriteStudioAnimationAsset
+        Id: 00000000-0000-0000-0000-000000000000
+        Tags: []
+        Source: 
+        ImporterId: f0b76549-ed9c-4e74-8522-f44ec8e90806
+        RepeatMode: LoopInfinite
+        AnimationName: run

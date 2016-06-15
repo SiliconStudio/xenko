@@ -1,0 +1,18 @@
+!Texture
+Id: 9cdb2d8a-325e-45d1-ab38-ea1812d7fde3
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/model/BG/sourceimages/BG_wall00.jpg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+PremultiplyAlpha: false
+~Base:
+    ~Id: 55a29d70-e14b-4767-ad65-3690b2bbd751
+    Location: --import--
+    Asset: !Texture
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.4.0-beta}
+        Tags: []
+        Source: 
+        ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
+        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+        PremultiplyAlpha: false

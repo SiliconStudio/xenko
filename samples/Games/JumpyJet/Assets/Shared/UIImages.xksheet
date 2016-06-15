@@ -1,0 +1,32 @@
+!SpriteSheet
+Id: 85da6663-b688-4a62-91f9-d8868f3a2d4f
+SerializedVersion: {Xenko: 1.5.0-alpha01}
+Tags: []
+Type: Sprite2D
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Format: Color32Bits
+Alpha: Explicit
+Packing:
+    ~Id: 14982023-6ff3-4b31-9cdd-9b916ee856ac
+Sprites:
+    -   ~Id: d767428e-417c-4c20-b31c-f3215f69148e
+        Source: ../../Resources/tex1.png
+        Name: button
+        TextureRegion: {X: 0, Y: 1904, Width: 183, Height: 90}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 125.0, Y: 0.0, Z: 50.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
+    -   ~Id: 03f44e33-f4d2-4c8a-b87b-cd70c6d15e84
+        Source: ../../Resources/tex1.png
+        Name: xk_logo
+        TextureRegion: {X: 23, Y: 1510, Width: 501, Height: 123}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
+    -   ~Id: dff9c462-0add-4dbe-9bc4-01e0dd492362
+        Source: ../../Resources/tex1.png
+        Name: score_bg
+        TextureRegion: {X: 0, Y: 1712, Width: 204, Height: 189}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}

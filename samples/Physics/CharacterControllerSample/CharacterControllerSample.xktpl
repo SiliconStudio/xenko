@@ -1,0 +1,12 @@
+!TemplateSample
+Id: 12d3b210-297a-11e4-8c21-0800200c9a66
+Name: Character Controller Sample
+Scope: Session
+Description: Creates a sample project which shows how to use physics system's character controller feature.
+FullDescription: Creates a sample project which shows how to use physics system's character controller feature.
+Group: Samples/Physics
+Icon: ../.xktpl/NewPhysics.png
+DefaultOutputName: CharacterController
+PatternName: CharacterControllerSample
+Screenshots:
+    - .xktpl/screenshot_small.jpg

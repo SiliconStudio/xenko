@@ -1,0 +1,11 @@
+!TemplateSample
+Id: 0941141c-6a2a-41a0-a817-bd95dc18f921
+Name: Volume Trigger Sample
+Scope: Session
+Description: Creates a sample project which shows how to create a trigger volume.
+FullDescription: Creates a sample project which shows how to create a trigger volume and await collisions
+Group: Samples/Physics
+Icon: ../.xktpl/NewPhysics.png
+DefaultOutputName: VolumeTrigger
+Screenshots:
+    - .xktpl/screenshot_small.jpg

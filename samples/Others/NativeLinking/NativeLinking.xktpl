@@ -1,0 +1,13 @@
+!TemplateSample
+Id: 9d082fab-bcde-45de-ae80-f84b89a26220
+Name: Native Linking Sample
+Scope: Session
+Description: Creates a sample project which shows how to use external native libraries
+FullDescription: | 
+   This sample shows how to use external native libraries with multiple platforms support.
+   If the Sphere disappears from the screen, the native library code actually moved it.
+Group: Samples/Others
+Icon: ../.xktpl/NewOthers.png
+DefaultOutputName: NativeLinking
+Screenshots:
+    - .xktpl/screenshot_small.jpg

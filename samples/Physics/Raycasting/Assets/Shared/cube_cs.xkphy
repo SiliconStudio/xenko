@@ -1,0 +1,11 @@
+!ColliderShapeAsset
+Id: 353d6001-19b0-4883-b810-fe25b88c19ab
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+ColliderShapes:
+    - !BoxColliderShapeDesc
+        ~Id: 9bd4b5cd-7c09-404e-bc5f-f887edd2427b
+        Is2D: false
+        Size: {X: 2.0, Y: 2.0, Z: 2.0}
+        LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
+        LocalRotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}

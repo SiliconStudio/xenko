@@ -1,0 +1,57 @@
+!MaterialAsset
+Id: 850cba1a-24b3-408a-9071-fa9fb5ad23ee
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Attributes:
+    MicroSurface: !MaterialGlossinessMapFeature
+        GlossinessMap: !ComputeFloat
+            Value: 0.85
+    Diffuse: !MaterialDiffuseMapFeature
+        DiffuseMap: !ComputeColor
+            Value: {R: 0.9607843, G: 0.0156862754, B: 0.0156862754, A: 1.0}
+    DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+    Specular: !MaterialMetalnessMapFeature
+        MetalnessMap: !ComputeFloat
+            Value: 1.0
+    SpecularModel: !MaterialSpecularMicrofacetModelFeature
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
+            ~Id: b57ddbb3-b97a-4d0e-b01b-88268490eda0
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
+            ~Id: fbace818-834a-408a-8257-bfff654a49c0
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
+            ~Id: 6308aae7-936a-47c4-9f03-b1730617bb5b
+    Overrides:
+        UVScale: {X: 1.0, Y: 1.0}
+Layers:
+    -   ~Id: 4268fa87-3656-4d2a-a3cc-75c848b5ea28
+        Material: 8351678a-9b09-4623-a9ee-6c3c99a9dba0/7077ac99-7723-4886-bbba-98cc56ef43bb:Material
+        BlendMap: !ComputeFloat
+            Value: 0.0
+        Overrides:
+            UVScale: {X: 1.0, Y: 1.0}
+~Base:
+    Location: --import--
+    Asset: !MaterialAsset
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.4.0-beta}
+        Tags: []
+        Attributes:
+            Diffuse: !MaterialDiffuseMapFeature
+                DiffuseMap: !ComputeColor
+                    Value: {R: 0.9450981, G: 0.733333349, B: 0.156862751, A: 1.0}
+            DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+            Specular: !MaterialSpecularMapFeature
+                SpecularMap: !ComputeColor
+                    Value: {R: 0.9, G: 0.9, B: 0.9, A: 1.0}
+                Intensity: !ComputeFloat
+                    Value: 1.0
+            SpecularModel: !MaterialSpecularMicrofacetModelFeature
+                Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
+                    ~Id: 459f6fa2-295a-48a1-af11-2816832c9717
+                Visibility: !MaterialSpecularMicrofacetVisibilityImplicit
+                    ~Id: 68362054-5d4f-4e2f-9085-91d29714393b
+                NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionBlinnPhong
+                    ~Id: 98a18497-ae90-4494-a790-c6b539cf80b6
+            Overrides:
+                UVScale: {X: 1.0, Y: 1.0}
+        Layers: []

@@ -1,0 +1,11 @@
+!TemplateSample
+Id: E2100BF7-BF1A-4435-B388-11A39A28B29B
+Name: Custom Particles Materials
+Scope: Session
+Description: This sample is intended for programmers and shows how to create custom materials and shaders for the particle engine.
+FullDescription: This sample contains 3 custom shaders. Two of them do not require changing the materials and can easily be plugged in any particle material. The last one is bundled with a custom particle material class and it's more extensive.
+Group: Samples/Particles
+Icon: ../.xktpl/Icon.png
+DefaultOutputName: CustomParticleMaterial
+Screenshots:
+    - .xktpl/screenshot_small.jpg

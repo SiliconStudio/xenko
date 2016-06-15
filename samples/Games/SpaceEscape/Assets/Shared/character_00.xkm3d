@@ -1,0 +1,49 @@
+!Model
+Id: 920f4445-c00d-474f-b8c0-33b385d58b8f
+SerializedVersion: {Xenko: 1.5.0-alpha02}
+Tags: []
+Source: ../../Resources/model/character/scene/character_00.FBX
+SourceHash: 1a0b83c9b02b333469043d7a7a964b16
+Materials:
+    -   ~Id: 9e331a0b-8bd2-44c0-af90-b5da7012e9e2
+        Name: mc00
+        MaterialInstance:
+            ~Id: c63a20b6-0146-4f12-bb5a-6f74b1d629cc
+            Material: 7b624632-deab-482f-8b4f-d4b057e7180c:mc00
+    -   ~Id: ae7026d2-8c02-468c-9166-ff0e07ef8443
+        Name: ef00
+        MaterialInstance:
+            ~Id: 4a212cb5-6ae1-41fd-9fc9-a38950823a20
+            Material: 9f4caaef-8604-4b70-ade3-e79035967dbe:ef00_1
+    -   ~Id: 3a4d7e9a-9faf-4396-8da6-000d9eeb45db
+        Name: mc01
+        MaterialInstance:
+            ~Id: 0b062374-8915-4e53-b856-32089ba7b5f4
+            Material: 9c690025-c22a-4fc6-8d52-ea92cf9b82ff:mc01
+Skeleton: bfe057df-2fd1-402a-97bc-bd16edee241a:character_00 Skeleton
+~Base:
+    ~Id: 7011ea52-fc55-4c75-b5e5-457bc868e5ef
+    Location: --import--
+    Asset: !Model
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.5.0-alpha02}
+        Tags: []
+        Source: 
+        ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
+        Materials:
+            -   ~Id: 2f22cbdf-58e8-43ee-b37f-816234a86bf0
+                Name: mc00
+                MaterialInstance:
+                    ~Id: 47dbbf9a-dd1d-44c9-b3e6-508367eeb638
+                    Material: 7b624632-deab-482f-8b4f-d4b057e7180c:mc00
+            -   ~Id: 1b243c40-3e42-4780-9577-da9ccc04589f
+                Name: ef00
+                MaterialInstance:
+                    ~Id: 26d42015-07e8-4e6f-9d14-65893b23ef97
+                    Material: 9f4caaef-8604-4b70-ade3-e79035967dbe:ef00_1
+            -   ~Id: 79148799-e429-4e6e-b74b-2c8ffcaf069e
+                Name: mc01
+                MaterialInstance:
+                    ~Id: 97ac2dd9-47db-4fc4-ab67-e49821fe7c68
+                    Material: 9c690025-c22a-4fc6-8d52-ea92cf9b82ff:mc01
+        Skeleton: null

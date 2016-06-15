@@ -1,0 +1,17 @@
+!SpriteStudioAnimationAsset
+Id: 230575a8-df6b-4de2-ae9f-93bfcb02d538
+Tags: []
+Source: ../../Resources/character_template_3head.ssae
+SourceHash: 59c2c164cb9719b29d02cf9a8254b204
+RepeatMode: LoopInfinite
+AnimationName: attack3
+~Base:
+    ~Id: 91438df2-c3ef-4f1f-a2e6-59f8bf24ffdb
+    Location: --import--
+    Asset: !SpriteStudioAnimationAsset
+        Id: 00000000-0000-0000-0000-000000000000
+        Tags: []
+        Source: 
+        ImporterId: f0b76549-ed9c-4e74-8522-f44ec8e90806
+        RepeatMode: LoopInfinite
+        AnimationName: attack3

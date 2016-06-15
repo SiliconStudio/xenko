@@ -1,0 +1,11 @@
+!TemplateSample
+Id: 4769951F-61F1-4C54-B679-9804D6E24D36
+Name: Animated Particles Sample
+Scope: Session
+Description: This sample shows how you can animate the particle fields.
+FullDescription: This sample shows how you can animate the particle fields. The sample contains several simple particle systems, each of which animates one particle field. Because all of them are separate it's quite easy to spot the different workings.
+Group: Samples/Particles
+Icon: ../.xktpl/Icon.png
+DefaultOutputName: AnimatedParticles
+Screenshots:
+    - .xktpl/screenshot_small.jpg

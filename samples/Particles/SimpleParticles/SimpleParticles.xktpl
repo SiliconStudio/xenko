@@ -1,0 +1,11 @@
+!TemplateSample
+Id: 35C3FB4D-2A6E-40EB-825E-D4E5670FEE78
+Name: Simple Particles Sample
+Scope: Session
+Description: This sample is intended for artists and shows several basic particle effects.
+FullDescription: This sample demonstrates how to create simple flipbook animated billboards, how to work with materials and shaders. It also contains two simple effects which use collider updater and force updater.
+Group: Samples/Particles
+Icon: ../.xktpl/Icon.png
+DefaultOutputName: SimpleParticles
+Screenshots:
+    - .xktpl/screenshot_small.jpg

@@ -1,0 +1,18 @@
+!Texture
+Id: 267eed8a-792b-4a8d-b496-d1c8261c50bb
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/model/character/Sourceimages/ef00.png
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Alpha: Interpolated
+~Base:
+    ~Id: 9853e3ee-711f-4c27-b16b-5b29809e0083
+    Location: --import--
+    Asset: !Texture
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.4.0-beta}
+        Tags: []
+        Source: 
+        ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
+        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+        PremultiplyAlpha: false

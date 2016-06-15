@@ -1,0 +1,17 @@
+!Texture
+Id: 175006e8-6351-4365-9778-73d54aa5ea9f
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/XenkoBackground.jpg
+ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Format: Color32Bits
+~Base:
+    ~Id: 7621d9d6-3cc2-440b-b11e-084fe54f265b
+    Location: --import--
+    Asset: !Texture
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.4.0-beta}
+        Tags: []
+        Source: 
+        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

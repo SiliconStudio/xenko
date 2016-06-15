@@ -1,0 +1,13 @@
+!TemplateSample
+Id: EF84C4A7-CD1E-4211-A6AC-794CBA23850C
+Name: Simple Sprite Sample
+Scope: Session
+Description: Creates a sample project which shows how to use SpriteBatch in a game
+FullDescription: |
+   This sample display a simple rotating ball bounding on the screen edges.
+   It shows you to draw and animate sprite manually using the SpriteBatch class.
+Group: Samples/Graphics
+Icon: .xktpl/Icon.png
+DefaultOutputName: SimpleSprite
+Screenshots:
+    - .xktpl/screenshot_small.jpg

@@ -1,0 +1,43 @@
+!Package
+Id: 23f2fc76-c8e1-42f8-9857-c6f4f3f34f68
+SerializedVersion: {Assets: 0.0.2}
+Tags: []
+Meta:
+    Name: SimpleDynamicTexture
+    Version: 1.0.0.0
+    Authors: []
+    Owners: []
+    Dependencies:
+        -   Name: Xenko
+            Version: 1.6.0-beta
+            RootAssets: []
+LocalDependencies: []
+Profiles:
+    -   Name: Shared
+        Platform: Shared
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: Assets/Shared
+            -   Path: SimpleDynamicTexture.Game/Effects
+        OutputGroupDirectories: {}
+        Properties: {}
+        ProjectReferences:
+            -   Id: 668e1483-e53b-44be-8cc8-944b4ea2ba0a
+                Location: SimpleDynamicTexture.Game/SimpleDynamicTexture.Game.csproj
+                Type: Library
+    -   Name: Windows
+        Platform: Windows
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: Assets/Windows
+        OutputGroupDirectories: {}
+        Properties:
+            Xenko.GraphicsPlatform: Direct3D11
+        ProjectReferences:
+            -   Id: 48933185-ffb0-46e0-ac7c-e06bf4bff159
+                Location: SimpleDynamicTexture.Windows/SimpleDynamicTexture.Windows.csproj
+                Type: Executable
+ExplicitFolders: []
+Bundles: []
+TemplateFolders: []
+RootAssets: []

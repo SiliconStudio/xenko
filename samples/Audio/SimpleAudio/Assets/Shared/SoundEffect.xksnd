@@ -1,0 +1,12 @@
+!SoundEffect
+Id: 5c8a7de1-f572-41c6-a564-f300f42d7245
+Tags: []
+Source: ../../Resources/wave.wav
+~Base:
+    ~Id: ac02de79-0fe7-4f9c-ad4a-8f46a1d28a9c
+    Location: --import--
+    Asset: !SoundEffect
+        Id: 00000000-0000-0000-0000-000000000000
+        Tags: []
+        Source: 
+        ImporterId: 634842fa-d1db-45c2-b13d-bc11486dae4d

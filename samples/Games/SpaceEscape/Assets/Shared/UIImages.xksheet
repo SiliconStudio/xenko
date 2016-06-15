@@ -1,0 +1,32 @@
+!SpriteSheet
+Id: 2bb544ec-3316-404c-a73f-ec9302f7aa1c
+SerializedVersion: {Xenko: 1.5.0-alpha01}
+Tags: []
+Type: Sprite2D
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Format: Color32Bits
+Alpha: Explicit
+Packing:
+    ~Id: 97f074c7-47be-4a5e-b192-f7727321dcf0
+Sprites:
+    -   ~Id: 28063330-e966-44e5-a3ff-8d58456b2431
+        Source: ../../Resources/ui_texture/space_escape_ui.png
+        Name: button
+        TextureRegion: {X: 598, Y: 344, Width: 217, Height: 87}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 125.0, Y: 0.0, Z: 50.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
+    -   ~Id: 7f4977f2-6ee5-4e13-a56e-790d27ff32ba
+        Source: ../../Resources/ui_texture/space_escape_ui.png
+        Name: xk_logo
+        TextureRegion: {X: 17, Y: 37, Width: 531, Height: 228}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
+    -   ~Id: 9b679d2e-557e-4eee-8e91-270e02bee7cf
+        Source: ../../Resources/ui_texture/space_escape_ui.png
+        Name: distance_bg
+        TextureRegion: {X: 0, Y: 287, Width: 541, Height: 183}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}

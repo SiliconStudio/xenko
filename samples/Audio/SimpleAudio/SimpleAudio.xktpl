@@ -1,0 +1,14 @@
+!TemplateSample
+Id: 8743FFE8-6254-4E36-8B44-B6534DD8CB78
+Name: Simple Audio Sample
+Scope: Session
+Description: Creates a sample project which shows how to make simple calls to the low level audio API
+FullDescription: |
+  This samples shows you how to load a SoundMusic and SoundEffect, and play them at the same time. 
+  The sound music is played in loop in background. 
+  The sound effect is played at each tap on the screen.
+Group: Samples/Audio
+Icon: ../.xktpl/NewAudio.png
+DefaultOutputName: SimpleAudio
+Screenshots:
+    - .xktpl/screenshot_small.jpg

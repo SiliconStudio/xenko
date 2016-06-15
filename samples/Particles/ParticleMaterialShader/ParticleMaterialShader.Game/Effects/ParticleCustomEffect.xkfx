@@ -1,0 +1,32 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering
+{
+    partial shader ParticleCustomEffect
+    {
+        // Use the ParticleBaseKeys for constant attributes, defined in the game engine
+        using params ParticleBaseKeys;
+
+        // Use the ParticleCustomShaderKeys for constant attributes, defined in this project
+        using params ParticleCustomShaderKeys;
+
+        // Inherit from the ParticleBaseEffect.xkfx, defined in the game engine
+        mixin ParticleBaseEffect;
+
+        // Use the ParticleCustomShader.xksl, defined in this project
+        mixin ParticleCustomShader;
+
+        // If the user-defined shader for the baseColor is not null use it
+        if (ParticleCustomShaderKeys.BaseColor != null)
+        {
+            mixin compose baseColor = ParticleCustomShaderKeys.BaseColor;
+        }
+
+        // If the user-defined shader for the baseIntensity (alpha) is not null use it
+        if (ParticleCustomShaderKeys.BaseIntensity != null)
+        {
+            mixin compose baseIntensity = ParticleCustomShaderKeys.BaseIntensity;
+        }
+   };
+}

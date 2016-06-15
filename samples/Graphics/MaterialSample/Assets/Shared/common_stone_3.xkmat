@@ -1,0 +1,60 @@
+!MaterialAsset
+Id: 4ca73c8f-71aa-45c4-8487-ebbf965a7e02
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Attributes:
+    Surface: !MaterialNormalMapFeature
+        NormalMap: !ComputeTextureColor
+            Texture: e9051e64-27e9-44cd-bb3d-ca6c3d4c9b67/7aa74ad2-c626-4ccb-a69c-b2728fbcc3a8:stone3_nml
+            FallbackValue:
+                Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+            Scale: {X: 1.5, Y: 1.5}
+            Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
+    MicroSurface: !MaterialGlossinessMapFeature
+        GlossinessMap: !ComputeTextureScalar
+            Texture: 2fb640d7-2bb7-48df-97c4-cb1bc76f59b5/7042109d-3304-4420-8a08-8cfa103e8ab4:stone3_gls
+            FallbackValue:
+                Value: 1.0
+            Scale: {X: 1.5, Y: 1.5}
+            Offset: {X: 0.0, Y: 0.0}
+    Diffuse: !MaterialDiffuseMapFeature
+        DiffuseMap: !ComputeTextureColor
+            Texture: 08bf5f8d-e76f-45b6-a753-3d0a98467946/03cd4659-bc95-4dd2-a8c7-d7fe14d5e827:stone3_dif
+            FallbackValue:
+                Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+            Scale: {X: 1.5, Y: 1.5}
+            Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
+    DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+    Specular: !MaterialMetalnessMapFeature
+        MetalnessMap: !ComputeFloat
+            Value: 0.0
+    SpecularModel: !MaterialSpecularMicrofacetModelFeature
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
+            ~Id: 9d8063b1-6768-448c-944d-ce38050ad6de
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
+            ~Id: b29d4ca2-aadb-48e6-877d-8ec5e20678d3
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
+            ~Id: d84fc3b7-06b6-41fd-bee3-c9f66976df3a
+    Occlusion: !MaterialOcclusionMapFeature
+        AmbientOcclusionMap: !ComputeTextureScalar
+            FallbackValue:
+                Value: 1.0
+            Scale: {X: 1.0, Y: 1.0}
+            Offset: {X: 0.0, Y: 0.0}
+        DirectLightingFactor: !ComputeFloat
+            Value: 0.0
+        CavityMap: !ComputeTextureScalar
+            Texture: 85ee229e-20e1-4064-bf65-c5b94e445c60/d3faed7f-a563-48d4-8018-64d5599cc8b3:stone3_cav
+            FallbackValue:
+                Value: 1.0
+            Scale: {X: 1.5, Y: 1.5}
+            Offset: {X: 0.0, Y: 0.0}
+        DiffuseCavity: !ComputeFloat
+            Value: 1.0
+        SpecularCavity: !ComputeFloat
+            Value: 1.0
+    Overrides:
+        UVScale: {X: 1.0, Y: 1.0}
+Layers: []
