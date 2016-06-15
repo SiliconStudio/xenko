@@ -1,0 +1,12 @@
+!TemplateSample
+Id: 1B10D93B-F190-4F79-BDF7-D3A32A15583B
+Name: Sprite Entity Sample
+Scope: Session
+Description: Creates a sample project which describes how to use Sprite system to create a simple 2D game
+FullDescription: This sample shows how to setup assets for a sprite and its animations, and to use Input system to retrieve inputs from a user for controlling an agent.
+Group: Samples/Graphics
+Icon: .xktpl/Icon.png
+DefaultOutputName: SpriteEntity
+Screenshots:
+    - .xktpl/screenshot1_small.jpg
+    - .xktpl/screenshot2_small.jpg

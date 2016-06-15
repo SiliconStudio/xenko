@@ -1,0 +1,16 @@
+!Texture
+Id: b5e092de-265a-4178-9a06-c9ea1432561a
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/explosion8x8.dds
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+~Base:
+    ~Id: 263f49ff-657f-47ad-8fda-2be5f9d0c0fb
+    Location: --import--
+    Asset: !Texture
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.4.0-beta}
+        Tags: []
+        Source: 
+        ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
+        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

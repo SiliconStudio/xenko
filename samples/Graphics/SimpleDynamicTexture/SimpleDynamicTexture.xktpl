@@ -1,0 +1,13 @@
+!TemplateSample
+Id: 235BEE35-EE27-4578-8CB1-B8FBA86E9C9A
+Name: Simple Dynamic Texture Sample
+Scope: Session
+Description: A simple sample shows how to create and upload data to a texture from CPU.
+FullDescription: |
+   This sample shows how to create and write data to a texture on CPU side, and then use it for rendering.
+   A 16*16 texture is created and stretched to cover a screen. You could tap on the screen to lit/dim a pixel of the texture.
+Group: Samples/Graphics
+DefaultOutputName: SimpleDynamicTexture
+Icon: .xktpl/Icon.png
+Screenshots:
+    - .xktpl/screenshot0_small.jpg

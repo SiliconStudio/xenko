@@ -1,0 +1,18 @@
+!SpriteFont
+Id: 76871742-df92-4a25-804d-e0f4f9301c19
+SerializedVersion: {Xenko: 1.5.0-alpha09}
+Tags: []
+Source: ../../Resources/Fonts/SourceHanSans-Light.otf
+FontName: MS Mincho
+Size: 14.0
+Style: Regular
+IsDynamic: true
+DefaultCharacter: ' '
+CharacterSet: null
+CharacterRegions:
+    -   Start: ' '
+        End: "\x7F"
+AntiAlias: Grayscale
+Spacing: 0.0
+LineSpacing: 0.0
+UseKerning: false

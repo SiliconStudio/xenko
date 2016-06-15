@@ -1,0 +1,18 @@
+!Texture
+Id: e32445c3-dded-432a-b5d0-46f18778b6a5
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/character/Sourceimages/mc_01.png
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Alpha: Interpolated
+~Base:
+    ~Id: 260e598a-d894-42dd-afab-05ef395e6710
+    Location: --import--
+    Asset: !Texture
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.4.0-beta}
+        Tags: []
+        Source: 
+        ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
+        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+        PremultiplyAlpha: false

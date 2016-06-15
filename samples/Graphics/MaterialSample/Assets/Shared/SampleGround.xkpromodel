@@ -1,0 +1,13 @@
+!ProceduralModelAsset
+Id: 20192b41-7766-4193-9f6b-c3b7d418d138
+SerializedVersion: {Xenko: 1.5.0-alpha01}
+Tags: []
+Type: !CylinderProceduralModel
+    Height: 0.02
+    Radius: 11.0
+    Tessellation: 64
+    Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+    UvScale: {X: 1.0, Y: 1.0}
+    MaterialInstance:
+        ~Id: f8f81233-e800-49e7-bb67-845eafa5b0db
+        Material: 97d07c93-f035-4161-a029-817912c1860d/8cfd86fb-8c2d-4c8f-b86e-7a5a58552f0f:z_ground

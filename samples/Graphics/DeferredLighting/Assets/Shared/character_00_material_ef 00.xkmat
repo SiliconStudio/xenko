@@ -1,0 +1,70 @@
+!MaterialAsset
+Id: ed1ce450-6c7e-48de-b0f6-d45e7fa2aeb5
+BuildOrder: 250
+Tags: []
+Material:
+    Nodes:
+        diffuse: !MaterialReferenceNode
+            Name: ef00
+        ef00: !MaterialTextureNode
+            TextureReference: 80304b63-9f23-491e-8632-ed3a6358eb2b:character_00_ef00
+            Scale: {X: 1, Y: 1}
+            Offset: {X: 0, Y: 0}
+        ef00_1: !MaterialTextureNode
+            TextureReference: 80304b63-9f23-491e-8632-ed3a6358eb2b:character_00_ef00
+            Scale: {X: 1, Y: 1}
+            Offset: {X: 0, Y: 0}
+        xk_diffuseWithAlpha: !MaterialBinaryNode
+            Operand: SubstituteAlpha
+            LeftChild: !MaterialReferenceNode
+                Name: ef00
+            RightChild: !MaterialReferenceNode
+                Name: ef00_1
+        transparent: !MaterialReferenceNode
+            Name: ef00_1
+    ColorNodes:
+        MaterialParameters.AlbedoDiffuse: xk_diffuseWithAlpha
+        MaterialParameters.TransparencyMap: transparent
+    Parameters:
+        Capacity: 4
+        ~Items:
+            Material.SpecularColorValue: !Color4 {R: 0.9, G: 0.9, B: 0.9, A: 1}
+            Material.SpecularIntensity: 0
+            Material.SpecularPower: 0.02
+            MaterialParameters.UseTransparent: true
+~Base:
+    Location: --import--
+    Asset: !MaterialAsset
+        Id: 00000000-0000-0000-0000-000000000000
+        BuildOrder: 250
+        Tags: []
+        Material:
+            Nodes:
+                diffuse: !MaterialReferenceNode
+                    Name: ef00
+                ef00: !MaterialTextureNode
+                    TextureReference: 80304b63-9f23-491e-8632-ed3a6358eb2b:character_00_ef00
+                    Scale: {X: 1, Y: 1}
+                    Offset: {X: 0, Y: 0}
+                ef00_1: !MaterialTextureNode
+                    TextureReference: 80304b63-9f23-491e-8632-ed3a6358eb2b:character_00_ef00
+                    Scale: {X: 1, Y: 1}
+                    Offset: {X: 0, Y: 0}
+                xk_diffuseWithAlpha: !MaterialBinaryNode
+                    Operand: SubstituteAlpha
+                    LeftChild: !MaterialReferenceNode
+                        Name: ef00
+                    RightChild: !MaterialReferenceNode
+                        Name: ef00_1
+                transparent: !MaterialReferenceNode
+                    Name: ef00_1
+            ColorNodes:
+                MaterialParameters.AlbedoDiffuse: xk_diffuseWithAlpha
+                MaterialParameters.TransparencyMap: transparent
+            Parameters:
+                Capacity: 4
+                ~Items:
+                    Material.SpecularColorValue: !Color4 {R: 0.9, G: 0.9, B: 0.9, A: 1}
+                    Material.SpecularIntensity: 0
+                    Material.SpecularPower: 0.02
+                    MaterialParameters.UseTransparent: true

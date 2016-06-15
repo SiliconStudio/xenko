@@ -1,0 +1,47 @@
+!MaterialAsset
+Id: 272ee411-55f4-4c4f-8894-21dbcc1ffcf3
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Attributes:
+    Diffuse: !MaterialDiffuseMapFeature
+        DiffuseMap: !ComputeTextureColor
+            Texture: b6e4fd02-6674-47f8-b976-b3d1c0b9a9fd:obj_01
+            FallbackValue:
+                Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+            Scale: {X: 1.0, Y: 1.0}
+            Offset: {X: 0.0, Y: 0.0}
+    DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+    Overrides:
+        UVScale: {X: 1.0, Y: 1.0}
+Layers: []
+~Base:
+    ~Id: eff5eed0-991a-4663-bbce-5d287f8d6dbd
+    Location: --import--
+    Asset: !MaterialAsset
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.4.0-beta}
+        Tags: []
+        Attributes:
+            Diffuse: !MaterialDiffuseMapFeature
+                DiffuseMap: !ComputeTextureColor
+                    Texture: b6e4fd02-6674-47f8-b976-b3d1c0b9a9fd:obj_01
+                    FallbackValue:
+                        Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+                    Scale: {X: 1.0, Y: 1.0}
+                    Offset: {X: 0.0, Y: 0.0}
+            DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+            Specular: !MaterialSpecularMapFeature
+                SpecularMap: !ComputeColor
+                    Value: {R: 0.9, G: 0.9, B: 0.9, A: 1.0}
+                Intensity: !ComputeFloat
+                    Value: 1.0
+            SpecularModel: !MaterialSpecularMicrofacetModelFeature
+                Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
+                    ~Id: 5c2cf463-3f4e-4406-aa10-993cd1c2fbc9
+                Visibility: !MaterialSpecularMicrofacetVisibilityImplicit
+                    ~Id: ccfa1e3e-269d-4584-9599-d35deed9aedf
+                NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionBlinnPhong
+                    ~Id: 8cf016be-e62a-4cd2-9531-4ed78d44d96e
+            Overrides:
+                UVScale: {X: 1.0, Y: 1.0}
+        Layers: []

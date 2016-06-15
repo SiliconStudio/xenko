@@ -1,0 +1,17 @@
+!SpriteStudioAnimationAsset
+Id: 23bad94a-8864-48ca-88e7-cc3c7121f156
+Tags: []
+Source: ../../Resources/character_template_2head.ssae
+SourceHash: 7bbed142c2c2aca394cccf062b9891b2
+RepeatMode: LoopInfinite
+AnimationName: wait
+~Base:
+    ~Id: 40a289c5-fb24-436f-904d-2b8409b41325
+    Location: --import--
+    Asset: !SpriteStudioAnimationAsset
+        Id: 00000000-0000-0000-0000-000000000000
+        Tags: []
+        Source: 
+        ImporterId: f0b76549-ed9c-4e74-8522-f44ec8e90806
+        RepeatMode: LoopInfinite
+        AnimationName: wait

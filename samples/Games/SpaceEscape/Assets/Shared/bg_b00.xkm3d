@@ -1,0 +1,49 @@
+!Model
+Id: 82360e61-196c-4c07-9fae-af7ee4f265a1
+SerializedVersion: {Xenko: 1.5.0-alpha02}
+Tags: []
+Source: ../../Resources/model/BG/scene/bg_b00.FBX
+SourceHash: aa0861ee6855d86bd5397e72cdae8d89
+Materials:
+    -   ~Id: 7a1b78d2-c65f-4351-a10b-2e1ebffde87d
+        Name: BG_wall01
+        MaterialInstance:
+            ~Id: baaad415-3010-4ea2-93f2-85abdbb38cb2
+            Material: 05f36d0e-8f45-4a56-a9de-b3f1b088482e:BG_wall01_1
+    -   ~Id: 9435a8d8-4742-41aa-b9b5-434440b4c9e7
+        Name: BG_Lane_02
+        MaterialInstance:
+            ~Id: ca32c0af-f096-4453-b735-f651ec0b9e56
+            Material: 31b92ab0-3d24-4bc0-b1a6-550bb6ee42c9:BG_Lane_02
+    -   ~Id: 6fd6de86-1b10-4fd0-b586-6c8e6a6b3f3a
+        Name: bg_wall02
+        MaterialInstance:
+            ~Id: 2cbaadee-ed7f-4051-b0ef-5aee983359e9
+            Material: ef070a60-83e2-4bd7-a95f-6599de22a8fa:BG_wall02_1
+Skeleton: null
+~Base:
+    ~Id: 2e49252e-c7c1-4a1e-9467-091b5794a113
+    Location: --import--
+    Asset: !Model
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.5.0-alpha02}
+        Tags: []
+        Source: 
+        ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
+        Materials:
+            -   ~Id: 707d2777-9e39-4fb4-8a0d-31f4d54ede42
+                Name: BG_wall01
+                MaterialInstance:
+                    ~Id: d2153f4c-22de-426e-ba12-c9e387e38a45
+                    Material: 113dfd7f-031c-4ddd-b170-98e5d1ce9313:BG_wall01_3
+            -   ~Id: 7db72707-30c6-49f1-bb1f-aef118febf63
+                Name: BG_Lane_02
+                MaterialInstance:
+                    ~Id: 6af8c8b2-abf0-4581-b2a2-eb1f818c55e4
+                    Material: 31b92ab0-3d24-4bc0-b1a6-550bb6ee42c9:BG_Lane_02
+            -   ~Id: 7360546d-6c95-4f0c-99ea-b5123ae26a86
+                Name: bg_wall02
+                MaterialInstance:
+                    ~Id: 32d385e6-0e53-4dab-ba65-1fc2d6fd4519
+                    Material: ad7ac384-731e-4cbe-8950-b0a758b8b7cf:bg_wall02
+        Skeleton: null

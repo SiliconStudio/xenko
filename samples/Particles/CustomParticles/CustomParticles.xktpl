@@ -1,0 +1,11 @@
+!TemplateSample
+Id: B22F9028-EDAD-48EC-99CF-D5572D9C90F3
+Name: Custom Particles Sample
+Scope: Session
+Description: This sample is intended for programmers and shows how to create custom extensions for the particle engine.
+FullDescription: This sample contains 4 custom extensions - 1 new spawner, 1 new initializer, 1 new shape builder and 1 updater. It shows how to create custom extensions for the particle engine which can be later used directly in the game studio editor.
+Group: Samples/Particles
+Icon: ../.xktpl/Icon.png
+DefaultOutputName: CustomParticles
+Screenshots:
+    - .xktpl/screenshot_small.jpg

@@ -1,0 +1,67 @@
+!MaterialAsset
+Id: a02dc101-d058-4066-b905-66313fbfcb6c
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Attributes:
+    MicroSurface: !MaterialGlossinessMapFeature
+        GlossinessMap: !ComputeFloat
+            Value: 0.2
+    Diffuse: !MaterialDiffuseMapFeature
+        DiffuseMap: !ComputeTextureColor
+            Texture: e32445c3-dded-432a-b5d0-46f18778b6a5:mc_01
+            FallbackValue:
+                Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+            Scale: {X: 1.0, Y: 1.0}
+            Offset: {X: 0.0, Y: 0.0}
+    DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+    Specular: !MaterialSpecularMapFeature
+        SpecularMap: !ComputeColor
+            Value: {R: 0.9, G: 0.9, B: 0.9, A: 1.0}
+        Intensity: !ComputeFloat
+            Value: 0.02
+    SpecularModel: !MaterialSpecularMicrofacetModelFeature
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
+            ~Id: 845b8ee9-6643-4f62-9ff1-cd2afda264dc
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
+            ~Id: 128626c4-fb0e-43fb-8ca4-b9fe09d7d127
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
+            ~Id: 35f1f539-2298-4e63-bc4a-2f4912eb3946
+    Transparency: !MaterialTransparencyAdditiveFeature
+        Alpha: !ComputeFloat
+            Value: 1.0
+        Tint: !ComputeColor
+            Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+    Overrides:
+        UVScale: {X: 1.0, Y: 1.0}
+Layers: []
+~Base:
+    ~Id: 6244be3d-2c16-4276-9adb-61a58f06ea63
+    Location: --import--
+    Asset: !MaterialAsset
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.4.0-beta}
+        Tags: []
+        Attributes:
+            Diffuse: !MaterialDiffuseMapFeature
+                DiffuseMap: !ComputeTextureColor
+                    Texture: e32445c3-dded-432a-b5d0-46f18778b6a5:mc_01
+                    FallbackValue:
+                        Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+                    Scale: {X: 1.0, Y: 1.0}
+                    Offset: {X: 0.0, Y: 0.0}
+            DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+            Specular: !MaterialSpecularMapFeature
+                SpecularMap: !ComputeColor
+                    Value: {R: 0.9, G: 0.9, B: 0.9, A: 1.0}
+                Intensity: !ComputeFloat
+                    Value: 1.0
+            SpecularModel: !MaterialSpecularMicrofacetModelFeature
+                Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
+                    ~Id: 03e24fce-3060-49cb-bf3e-1d5066eb790c
+                Visibility: !MaterialSpecularMicrofacetVisibilityImplicit
+                    ~Id: ca6fbcdb-aa8d-4b0d-b9e4-b4d6ba3ea162
+                NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionBlinnPhong
+                    ~Id: dfb79ccc-e633-4c4f-b088-544ed02585e8
+            Overrides:
+                UVScale: {X: 1.0, Y: 1.0}
+        Layers: []

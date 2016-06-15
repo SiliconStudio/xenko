@@ -1,0 +1,45 @@
+!Package
+Id: c279588e-7ce5-49e7-85c5-e867be2993bc
+SerializedVersion: {Assets: 0.0.2}
+Tags: []
+Meta:
+    Name: DeferredLighting
+    Version: 1.0.0.0
+    Authors: []
+    Owners: []
+    Dependencies:
+        -   Name: Xenko
+            Version: 1.0.0-alpha01
+            RootAssets: []
+LocalDependencies: []
+Profiles:
+    -   Name: Shared
+        Platform: Shared
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: Assets/Shared
+            -   Path: DeferredLighting.Game/Effects
+        OutputGroupDirectories: {}
+        Properties:
+            Xenko.DisplayOrientation: LandscapeRight
+        ProjectReferences:
+            -   Id: c4bb965e-6578-4361-b54d-00700010ba72
+                Location: DeferredLighting.Game/DeferredLighting.Game.csproj
+                Type: Library
+    -   Name: Windows
+        Platform: Windows
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: Assets/Windows
+        OutputGroupDirectories: {}
+        Properties:
+            GameSettingsAsset.DefaultGraphicsProfile: Level_11_0
+            Xenko.GraphicsPlatform: Direct3D11
+        ProjectReferences:
+            -   Id: 150a8439-1abd-468c-a487-61c74b2df3c5
+                Location: DeferredLighting.Windows/DeferredLighting.Windows.csproj
+                Type: Executable
+ExplicitFolders: []
+Bundles: []
+TemplateFolders: []
+RootAssets: []

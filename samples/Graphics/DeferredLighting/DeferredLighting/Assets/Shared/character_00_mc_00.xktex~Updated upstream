@@ -1,0 +1,14 @@
+!Texture
+Id: 153d1428-0636-45fa-884a-6fb53a6edd70
+Tags: []
+Source: ../../../../ForwardLighting/ForwardLighting/Resources/Aircraft/Sourceimages/mc_00.jpg
+ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+PremultiplyAlpha: false
+~Base:
+    Location: --import--
+    Asset: !Texture
+        Id: 00000000-0000-0000-0000-000000000000
+        Tags: []
+        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+        PremultiplyAlpha: false

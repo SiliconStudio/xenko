@@ -1,0 +1,18 @@
+!Texture
+Id: b54a97d3-eaf6-454c-8bf7-05b2d77696a8
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/SpriteBackground.jpg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Format: Color32Bits
+GenerateMipmaps: false
+~Base:
+    ~Id: edb27ec8-5230-405d-b92f-25f897c221e4
+    Location: --import--
+    Asset: !Texture
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.4.0-beta}
+        Tags: []
+        Source: 
+        ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
+        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

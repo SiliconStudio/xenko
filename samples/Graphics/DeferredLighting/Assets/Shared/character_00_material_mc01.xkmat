@@ -1,0 +1,70 @@
+!MaterialAsset
+Id: 4a4b2075-0a24-499f-a26d-3cf5a8492931
+BuildOrder: 250
+Tags: []
+Material:
+    Nodes:
+        diffuse: !MaterialReferenceNode
+            Name: mc_01
+        mc_01: !MaterialTextureNode
+            TextureReference: d50e1313-fce1-4b70-9c78-6e8bbdb8ebac:character_00_mc_01
+            Scale: {X: 1, Y: 1}
+            Offset: {X: 0, Y: 0}
+        mc_01_1: !MaterialTextureNode
+            TextureReference: d50e1313-fce1-4b70-9c78-6e8bbdb8ebac:character_00_mc_01
+            Scale: {X: 1, Y: 1}
+            Offset: {X: 0, Y: 0}
+        xk_diffuseWithAlpha: !MaterialBinaryNode
+            Operand: SubstituteAlpha
+            LeftChild: !MaterialReferenceNode
+                Name: mc_01
+            RightChild: !MaterialReferenceNode
+                Name: mc_01_1
+        transparent: !MaterialReferenceNode
+            Name: mc_01_1
+    ColorNodes:
+        MaterialParameters.AlbedoDiffuse: xk_diffuseWithAlpha
+        MaterialParameters.TransparencyMap: transparent
+    Parameters:
+        Capacity: 4
+        ~Items:
+            Material.SpecularColorValue: !Color4 {R: 0.9, G: 0.9, B: 0.9, A: 1}
+            Material.SpecularIntensity: 0
+            Material.SpecularPower: 0.02
+            MaterialParameters.UseTransparent: true
+~Base:
+    Location: --import--
+    Asset: !MaterialAsset
+        Id: 00000000-0000-0000-0000-000000000000
+        BuildOrder: 250
+        Tags: []
+        Material:
+            Nodes:
+                diffuse: !MaterialReferenceNode
+                    Name: mc_01
+                mc_01: !MaterialTextureNode
+                    TextureReference: d50e1313-fce1-4b70-9c78-6e8bbdb8ebac:character_00_mc_01
+                    Scale: {X: 1, Y: 1}
+                    Offset: {X: 0, Y: 0}
+                mc_01_1: !MaterialTextureNode
+                    TextureReference: d50e1313-fce1-4b70-9c78-6e8bbdb8ebac:character_00_mc_01
+                    Scale: {X: 1, Y: 1}
+                    Offset: {X: 0, Y: 0}
+                xk_diffuseWithAlpha: !MaterialBinaryNode
+                    Operand: SubstituteAlpha
+                    LeftChild: !MaterialReferenceNode
+                        Name: mc_01
+                    RightChild: !MaterialReferenceNode
+                        Name: mc_01_1
+                transparent: !MaterialReferenceNode
+                    Name: mc_01_1
+            ColorNodes:
+                MaterialParameters.AlbedoDiffuse: xk_diffuseWithAlpha
+                MaterialParameters.TransparencyMap: transparent
+            Parameters:
+                Capacity: 4
+                ~Items:
+                    Material.SpecularColorValue: !Color4 {R: 0.9, G: 0.9, B: 0.9, A: 1}
+                    Material.SpecularIntensity: 0
+                    Material.SpecularPower: 0.02
+                    MaterialParameters.UseTransparent: true

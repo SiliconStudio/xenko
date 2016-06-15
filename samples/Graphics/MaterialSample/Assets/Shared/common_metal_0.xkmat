@@ -1,0 +1,46 @@
+!MaterialAsset
+Id: ff6c9ae4-9c05-4380-b11b-77df9f28ed5c
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Attributes:
+    Surface: !MaterialNormalMapFeature
+        NormalMap: !ComputeTextureColor
+            Texture: 1bc0c20a-67b5-4ad2-b202-4063b05ef4e9/ff205266-dd96-46dc-ad96-6c12c6ce4f68:metal0_nml
+            FallbackValue:
+                Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+            Scale: {X: 1.0, Y: 1.0}
+            Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
+    MicroSurface: !MaterialGlossinessMapFeature
+        GlossinessMap: !ComputeTextureScalar
+            Texture: 64706f2a-eee0-4d84-b7ac-555f0d1957ff/7fafce7c-3987-4810-b466-c48281e08b08:metal0_gls
+            FallbackValue:
+                Value: 1.0
+            Scale: {X: 1.0, Y: 1.0}
+            Offset: {X: 0.0, Y: 0.0}
+    Diffuse: !MaterialDiffuseMapFeature
+        DiffuseMap: !ComputeTextureColor
+            Texture: 06985332-22fd-42b9-b5e7-326fea260bf9/87ce57f9-a93b-4f07-9373-4502d8f8940b:metal0_dif
+            FallbackValue:
+                Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+            Scale: {X: 1.0, Y: 1.0}
+            Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
+    DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+    Specular: !MaterialMetalnessMapFeature
+        MetalnessMap: !ComputeTextureScalar
+            Texture: 8680b136-1033-4f2a-8b8c-28079eae79d2/c6941abf-a727-4297-ad54-baaa00514496:metal0_mtl
+            FallbackValue:
+                Value: 1.0
+            Scale: {X: 1.0, Y: 1.0}
+            Offset: {X: 0.0, Y: 0.0}
+    SpecularModel: !MaterialSpecularMicrofacetModelFeature
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
+            ~Id: c281403b-8506-435b-bfe9-5de059c965a7
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
+            ~Id: be018d2d-c59e-4c33-a209-1ac7921bdb49
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
+            ~Id: deca023a-5cd8-4f4f-b48f-c926f8522824
+    Overrides:
+        UVScale: {X: 1.0, Y: 1.0}
+Layers: []

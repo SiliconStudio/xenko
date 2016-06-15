@@ -1,0 +1,94 @@
+!SpriteSheet
+Id: 4a17b086-10b4-4c11-b9ec-8baad5730240
+SerializedVersion: {Xenko: 1.5.0-alpha01}
+Tags: []
+Type: Sprite2D
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Format: Color32Bits
+Packing:
+    ~Id: 47ae8a01-48af-4bef-b72a-30607ae98fcd
+Sprites:
+    -   ~Id: 51631e9e-3bff-478a-af2e-4a8e99046ef0
+        Source: ../../Resources/SpriteEntity.png
+        Name: active0
+        TextureRegion: {X: 924, Y: 182, Width: 80, Height: 80}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
+    -   ~Id: 94898f7b-e6ec-4539-b3fe-79a9c95bf3ad
+        Source: ../../Resources/SpriteEntity.png
+        Name: active1
+        TextureRegion: {X: 875, Y: 98, Width: 80, Height: 80}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
+    -   ~Id: cc7620e0-2ed7-4068-acdc-20e3fc694693
+        Source: ../../Resources/SpriteEntity.png
+        Name: idle0
+        TextureRegion: {X: 721, Y: 4, Width: 99, Height: 128}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
+    -   ~Id: f172a626-ef23-4828-943e-370c06677c01
+        Source: ../../Resources/SpriteEntity.png
+        Name: idle1
+        TextureRegion: {X: 618, Y: 136, Width: 99, Height: 128}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
+    -   ~Id: 778694b2-7b91-4e42-956a-c8885ab78f8a
+        Source: ../../Resources/SpriteEntity.png
+        Name: idle2
+        TextureRegion: {X: 618, Y: 4, Width: 99, Height: 128}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
+    -   ~Id: 42d1187f-f491-4192-a3c7-7cc4c4753147
+        Source: ../../Resources/SpriteEntity.png
+        Name: idle3
+        TextureRegion: {X: 515, Y: 136, Width: 99, Height: 128}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
+    -   ~Id: 6c7aa436-2fce-4556-bc1e-548975a5b089
+        Source: ../../Resources/SpriteEntity.png
+        Name: idle4
+        TextureRegion: {X: 515, Y: 4, Width: 99, Height: 128}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
+    -   ~Id: ccbad5e6-b039-40cb-bdb4-338b7bbc22e6
+        Source: ../../Resources/SpriteEntity.png
+        Name: run0
+        TextureRegion: {X: 412, Y: 136, Width: 99, Height: 128}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
+    -   ~Id: 57970567-171d-4b51-980b-de5ebc6216a7
+        Source: ../../Resources/SpriteEntity.png
+        Name: run1
+        TextureRegion: {X: 412, Y: 4, Width: 99, Height: 128}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
+    -   ~Id: c088330e-1a89-4751-b4e6-be17709b9a50
+        Source: ../../Resources/SpriteEntity.png
+        Name: run2
+        TextureRegion: {X: 309, Y: 136, Width: 99, Height: 128}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
+    -   ~Id: c567f060-67e4-4545-971c-e94100d9c698
+        Source: ../../Resources/SpriteEntity.png
+        Name: run3
+        TextureRegion: {X: 309, Y: 4, Width: 99, Height: 128}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
+    -   ~Id: 31ab736c-3f78-4854-8b9a-599176b5e9ca
+        Source: ../../Resources/SpriteEntity.png
+        Name: run4
+        TextureRegion: {X: 206, Y: 136, Width: 99, Height: 128}
+        Center: {X: 0.0, Y: 0.0}
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}

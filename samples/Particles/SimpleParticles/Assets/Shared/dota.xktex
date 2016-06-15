@@ -1,0 +1,16 @@
+!Texture
+Id: d12d9019-7819-40d7-97c7-ce595ef40bc3
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/dota.png
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+~Base:
+    ~Id: 38007280-0ab0-4b6e-ab4d-f895cf95cda3
+    Location: --import--
+    Asset: !Texture
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.4.0-beta}
+        Tags: []
+        Source: 
+        ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
+        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

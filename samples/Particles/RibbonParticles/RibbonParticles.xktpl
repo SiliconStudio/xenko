@@ -1,0 +1,11 @@
+!TemplateSample
+Id: 2617C921-32B5-41F2-9704-D966ECE2B16D
+Name: Ribbon Particles Sample
+Scope: Session
+Description: This sample is intended for artists and shows how to create and attach trail and ribbon particles to an animated model.
+FullDescription: This sample demonstrates how to create simple trail and ribbon particles. It uses several animated models to also show how you can attach and trigger particle effects to a character.
+Group: Samples/Particles
+Icon: ../.xktpl/Icon.png
+DefaultOutputName: RibbonParticles
+Screenshots:
+    - .xktpl/screenshot_small.jpg

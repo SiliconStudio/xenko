@@ -1,0 +1,11 @@
+!TemplateSample
+Id: 59d8fecb-8015-4fb1-8a1b-3a8a407b801e
+Name: Raycasting Sample
+Scope: Session
+Description: Creates a sample project which shows how to raycast using the physics system.
+FullDescription: Creates a sample project which shows how to raycast using the physics system.
+Group: Samples/Physics
+Icon: ../.xktpl/NewPhysics.png
+DefaultOutputName: Raycasting
+Screenshots:
+    - .xktpl/screenshot_small.jpg

@@ -1,0 +1,11 @@
+!TemplateSample
+Id: d20d150b-d3cb-454e-8c11-620b4c9d393f
+Name: Constraints Sample
+Scope: Session
+Description: Creates a sample project which shows how to use physics system's constraints.
+FullDescription: Creates a sample project which shows how to use physics system's constraints.
+Group: Samples/Physics
+Icon: ../.xktpl/NewPhysics.png
+DefaultOutputName: Constraints
+Screenshots:
+    - .xktpl/screenshot_small.png

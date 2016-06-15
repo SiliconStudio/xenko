@@ -1,0 +1,16 @@
+!Texture
+Id: ed4bd58a-5aae-4644-9a04-e5571510284c
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/XenkoLogoGray.png
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+~Base:
+    ~Id: 92f7d3e8-d2c8-48f0-89bd-c0774dab9b2f
+    Location: --import--
+    Asset: !Texture
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.4.0-beta}
+        Tags: []
+        Source: 
+        ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
+        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

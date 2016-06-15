@@ -1,0 +1,12 @@
+!ProceduralModelAsset
+Id: b5c33e7e-0e72-4011-95cd-cbd0c8601774
+SerializedVersion: {Xenko: 1.5.0-alpha01}
+Tags: []
+Type: !TorusProceduralModel
+    Radius: 0.5
+    Thickness: 0.02
+    Scale: {X: 2.0, Y: 2.0, Z: 2.0}
+    UvScale: {X: 1.0, Y: 1.0}
+    MaterialInstance:
+        ~Id: 16c6b544-7880-4b53-a8cb-54e25fd51efb
+        Material: 49d8d55e-cc29-43c2-ae93-52d803187e01/71cb980d-47e7-42c0-a8a8-47146f483521:Prefabs/BlueMaterial

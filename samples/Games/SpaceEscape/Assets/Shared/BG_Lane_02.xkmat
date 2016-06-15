@@ -1,0 +1,47 @@
+!MaterialAsset
+Id: 31b92ab0-3d24-4bc0-b1a6-550bb6ee42c9
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Attributes:
+    Diffuse: !MaterialDiffuseMapFeature
+        DiffuseMap: !ComputeTextureColor
+            Texture: 4295cd02-fb08-42a6-bde1-26b590fc20ba:BG_Lane_01
+            FallbackValue:
+                Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+            Scale: {X: 1.0, Y: 1.0}
+            Offset: {X: 0.0, Y: 0.0}
+    DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+    Overrides:
+        UVScale: {X: 1.0, Y: 1.0}
+Layers: []
+~Base:
+    ~Id: bb35ce83-6170-40ea-a71d-0381ca2974eb
+    Location: --import--
+    Asset: !MaterialAsset
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.4.0-beta}
+        Tags: []
+        Attributes:
+            Diffuse: !MaterialDiffuseMapFeature
+                DiffuseMap: !ComputeTextureColor
+                    Texture: b258b7c8-d249-4d18-acf1-b364e9e31511:BG_Lane_01_1
+                    FallbackValue:
+                        Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+                    Scale: {X: 1.0, Y: 1.0}
+                    Offset: {X: 0.0, Y: 0.0}
+            DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+            Specular: !MaterialSpecularMapFeature
+                SpecularMap: !ComputeColor
+                    Value: {R: 0.9, G: 0.9, B: 0.9, A: 1.0}
+                Intensity: !ComputeFloat
+                    Value: 1.0
+            SpecularModel: !MaterialSpecularMicrofacetModelFeature
+                Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
+                    ~Id: cca0d657-a23c-4108-863c-9dea93a4c4d3
+                Visibility: !MaterialSpecularMicrofacetVisibilityImplicit
+                    ~Id: 4b189060-625d-4c8b-8eec-bedd4fb8f926
+                NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionBlinnPhong
+                    ~Id: 0befd536-e9d4-4ec9-8863-12d7425ce569
+            Overrides:
+                UVScale: {X: 1.0, Y: 1.0}
+        Layers: []

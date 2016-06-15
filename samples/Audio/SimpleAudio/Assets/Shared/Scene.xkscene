@@ -1,0 +1,171 @@
+!SceneAsset
+Id: 5f4a3789-b182-4b32-9088-acbf9e13edb5
+SerializedVersion: {Xenko: 1.6.0-beta03}
+Tags: []
+Hierarchy:
+    ~Id: 6bab66c7-1a75-4d3e-8865-8c3fdef200ef
+    RootEntities:
+        - 970d3c33-9819-4206-a101-d81f9259477f
+        - 417ebdb3-c892-47ab-b8b0-079d12e1ead1
+        - c76eafe8-9bb0-4801-b112-6825735d4fff
+        - dbc86d56-ad97-4d5d-8631-7fc664f3dfa3
+        - dececd10-b6ea-46fa-8129-c8683f4a6974
+        - 969256bc-2fe4-4874-9af8-a87db2d1bd85
+        - ea66315a-6e99-498e-b3b7-b20eff3d7a04
+    Entities:
+        -   Entity:
+                Id: 417ebdb3-c892-47ab-b8b0-079d12e1ead1
+                Name: DJ Sprite
+                Components:
+                    - !TransformComponent
+                        ~Id: 2bed5671-c08d-47b7-9d89-7a77ac454d0e
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !SpriteComponent
+                        ~Id: de4e2db1-927b-4b66-b655-23217c514c49
+                        SpriteProvider: !SpriteFromTexture
+                            ~Id: 37682c62-c2d6-42f1-bafa-70c73f9ffaeb
+                            Texture: b4fc3ae7-f9e3-4694-8bd0-b27fa1f21522/2c702280-1481-4bd0-b87c-36640ed371ed:dj
+                            Center: {X: 0.0, Y: 0.0}
+                        Color: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+            Design: {}
+        -   Entity:
+                Id: 969256bc-2fe4-4874-9af8-a87db2d1bd85
+                Name: Background
+                Components:
+                    - !TransformComponent
+                        ~Id: 46b7fb11-1093-47c5-843f-55a5a0ce3d40
+                        Position: {X: 0.0, Y: 0.0, Z: -4.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !BackgroundComponent
+                        ~Id: dd3affb0-44b8-4494-a827-ab9efe948aed
+                        Texture: 7b7d2947-3c71-4484-9198-eb42031c40a2/e805d745-0992-4f74-87e0-6b87248791de:XenkoBackground
+            Design: {}
+        -   Entity:
+                Id: 970d3c33-9819-4206-a101-d81f9259477f
+                Name: MainCamera
+                Components:
+                    - !TransformComponent
+                        ~Id: e7c290ae-0451-4b72-8560-bbfe351950b9
+                        Position: {X: 0.0, Y: 0.0, Z: 7.72791433}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !CameraComponent
+                        ~Id: bdf6144e-9398-4baa-9a86-07bd2e81c981
+                        Projection: Orthographic
+                        FarClipPlane: 10.0
+            Design: {}
+        -   Entity:
+                Id: c76eafe8-9bb0-4801-b112-6825735d4fff
+                Name: RightWaveSprite
+                Components:
+                    - !TransformComponent
+                        ~Id: c69792cc-bc73-4056-8378-4e5742b42d69
+                        Position: {X: 2.5, Y: 0.0, Z: 0.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: -1.0, Z: 1.0}
+                        Children: []
+                    - !SpriteComponent
+                        ~Id: 3c118852-9444-499b-a091-192ec907b4ae
+                        SpriteProvider: !SpriteFromTexture
+                            ~Id: bdf7f6d6-9c18-4c47-b0fa-320fd59a9a31
+                            Texture: 8cbe0d5b-7a69-406e-9047-7159b5e9498f/b13f7add-d3fd-4965-a268-dd27b54fd012:wave
+                            Center: {X: 0.0, Y: 0.0}
+                        Color: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+            Design: {}
+        -   Entity:
+                Id: dbc86d56-ad97-4d5d-8631-7fc664f3dfa3
+                Name: LeftWaveSprite
+                Components:
+                    - !TransformComponent
+                        ~Id: 004817ea-5a05-4707-b1ae-87fd2d3955db
+                        Position: {X: -2.5, Y: 0.0, Z: 0.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !SpriteComponent
+                        ~Id: b0e90cfa-3189-42b8-96c8-f81a71dc0689
+                        SpriteProvider: !SpriteFromTexture
+                            ~Id: 166b02c6-71c3-4971-97cc-45b477400fdf
+                            Texture: 10a8978c-68ad-4994-bb21-7a5975bfc2da/b13f7add-d3fd-4965-a268-dd27b54fd012:wave
+                            Center: {X: 0.0, Y: 0.0}
+                        Color: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+            Design: {}
+        -   Entity:
+                Id: dececd10-b6ea-46fa-8129-c8683f4a6974
+                Name: SoundScript
+                Components:
+                    - !TransformComponent
+                        ~Id: c94f42d8-44f4-4123-80ea-20a80f5473cb
+                        Position: {X: 0.0, Y: 0.0, Z: 4.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !SimpleAudio.SoundScript,SimpleAudio.Game
+                        ~Id: 48a6638f-a42f-4d59-b3cf-9c5d37cbb31e
+                        LeftWave:
+                            Id: dbc86d56-ad97-4d5d-8631-7fc664f3dfa3
+                        RightWave:
+                            Id: c76eafe8-9bb0-4801-b112-6825735d4fff
+                        SoundEffect: 35e9fa7a-f489-4c2d-aeec-7424e6631c7b/5c8a7de1-f572-41c6-a564-f300f42d7245:SoundEffect
+                        SoundMusic: 098db006-a5b7-4a1c-924a-5e9748d09be5/8005b476-6375-4984-ae01-4ed70428924e:AmbientMusic
+            Design: {}
+        -   Entity:
+                Id: ea66315a-6e99-498e-b3b7-b20eff3d7a04
+                Name: UIText
+                Components:
+                    - !TransformComponent
+                        ~Id: de0672a2-6d1b-4a9e-a0fe-f236140f092a
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !SimpleAudio.UITextScript,SimpleAudio.Game
+                        ~Id: 5cbe8100-1454-44a8-84bd-7860b2290374
+                        Font: 14d85f52-7aec-492f-81ec-a7420e3d9702/61f4751d-2878-4118-b212-ac554de05399:Font
+                        UIText: Tap on the screen!
+                    - !UIComponent
+                        ~Id: d8888db9-f55d-4b73-9b6b-3ec597f8f469
+                        VirtualResolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
+            Design: {}
+SceneSettings:
+    ~Id: df51691c-bfdf-40f2-859c-c41a1396724a
+    GraphicsCompositor: !SceneGraphicsCompositorLayers
+        ~Id: 5fb60a5b-739e-48ac-a79e-e3614447eff9
+        Cameras:
+            -   ~Id: 0136befd-5aec-4254-a2de-c152f3d3f10e
+                Name: null
+                Camera:
+                    Entity: {Id: 970d3c33-9819-4206-a101-d81f9259477f}
+                    Id: bdf6144e-9398-4baa-9a86-07bd2e81c981
+        Layers: []
+        Master:
+            ~Id: e6b18abc-d20b-465f-a030-7a91143b6311
+            Name: SceneGraphicsLayer
+            Output: !MasterRenderFrameProvider {}
+            Renderers:
+                - !ClearRenderFrameRenderer
+                    ~Id: fda71f21-e2e5-481c-bb47-9c3450246993
+                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
+                    Output: !CurrentRenderFrameProvider {}
+                - !SceneCameraRenderer
+                    ~Id: c8dfbb7f-63f6-4b86-8a7a-8475e56c5bd3
+                    Mode: !CameraRendererModeForward
+                        ~Id: 2888521e-34d2-42f9-af4a-e7795d141cd6
+                    Camera:
+                        ~Id: 95bf3075-1ea2-43b0-8c47-ab4e43ff47ea
+                        Index: 0
+                    Output: !CurrentRenderFrameProvider {}
+                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
+    EditorSettings:
+        ~Id: 1558e183-eeee-4a1b-ba1a-8d3f33abf299
+        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
+        SceneUnit: 1.0
+        Mode: !SceneEditorGraphicsModeLDRSettings
+            ~Id: 0bb67ed4-918a-4b23-8de6-61a945085e12
+            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}

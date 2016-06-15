@@ -1,0 +1,53 @@
+!MaterialAsset
+Id: a6c09800-6c38-46ef-8738-e35d1f5618b9
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Attributes:
+    Diffuse: !MaterialDiffuseMapFeature
+        DiffuseMap: !ComputeTextureColor
+            Texture: 9f24bb2e-004c-4fbe-8753-75f48c6957b6/89c643cc-d56e-4116-8f84-e72114d4b4e3:mc_01
+            FallbackValue:
+                Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+            Scale: {X: 1.0, Y: 1.0}
+            Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
+    DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+    Transparency: !MaterialTransparencyAdditiveFeature
+        Alpha: !ComputeFloat
+            Value: 1.0
+        Tint: !ComputeColor
+            Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+    Overrides:
+        UVScale: {X: 1.0, Y: 1.0}
+Layers: []
+~Base:
+    Location: --import--
+    Asset: !MaterialAsset
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.4.0-beta}
+        Tags: []
+        Attributes:
+            Diffuse: !MaterialDiffuseMapFeature
+                DiffuseMap: !ComputeTextureColor
+                    Texture: f3c84bb6-3d35-4302-bb9a-301103ee2755/89c643cc-d56e-4116-8f84-e72114d4b4e3:mc_01
+                    FallbackValue:
+                        Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+                    Scale: {X: 1.0, Y: 1.0}
+                    Offset: {X: 0.0, Y: 0.0}
+                    Swizzle: null
+            DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+            Specular: !MaterialSpecularMapFeature
+                SpecularMap: !ComputeColor
+                    Value: {R: 0.9, G: 0.9, B: 0.9, A: 1.0}
+                Intensity: !ComputeFloat
+                    Value: 1.0
+            SpecularModel: !MaterialSpecularMicrofacetModelFeature
+                Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
+                    ~Id: 089d9d3a-bd39-4cf3-a39e-fc8f0bf09b3a
+                Visibility: !MaterialSpecularMicrofacetVisibilityImplicit
+                    ~Id: da8a722d-d7cd-4a33-9368-68b35fdc745c
+                NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionBlinnPhong
+                    ~Id: dde025d0-55c8-4206-9410-2c2680ba59c7
+            Overrides:
+                UVScale: {X: 1.0, Y: 1.0}
+        Layers: []

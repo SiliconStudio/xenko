@@ -1,0 +1,11 @@
+!TemplateSample
+Id: 61B43905-2CD2-45ED-9A65-65DB2A133711
+Name: Simple Model Sample
+Scope: Session
+Description: Creates a sample project which shows how to include a static model into a scene
+FullDescription: This sample shows you how to load a static entity into the scene, create a simple rendering pipeline and set the camera.
+Group: Samples/Graphics
+Icon: .xktpl/Icon.png
+DefaultOutputName: SimpleModel
+Screenshots:
+    - .xktpl/screenshot_small.jpg

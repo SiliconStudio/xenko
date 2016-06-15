@@ -1,0 +1,43 @@
+!SpriteSheet
+Id: ca9993b7-1213-4037-8a77-333f3fa2e163
+SerializedVersion: {Xenko: 1.5.0-alpha01}
+Tags: []
+Type: Sprite2D
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Format: Color32Bits
+Packing:
+    ~Id: ac2e4be3-a2c9-4713-8f61-85c8bdf546e3
+    Enabled: false
+Sprites:
+    -   ~Id: 7401e27d-6676-47f0-9f29-ae9da9e55294
+        Source: ../../Resources/tex3.jpg
+        Name: parallax_background
+        TextureRegion: {X: 0, Y: 0, Width: 1735, Height: 1136}
+        Center: {X: 320.0, Y: 568.0}
+        CenterFromMiddle: false
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
+    -   ~Id: 8df5c60a-4d63-47b6-92b2-9a4cceff5b02
+        Source: ../../Resources/tex2.png
+        Name: parallax_gear
+        TextureRegion: {X: 0, Y: 0, Width: 1920, Height: 1136}
+        Center: {X: 320.0, Y: 568.0}
+        CenterFromMiddle: false
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
+    -   ~Id: f467da25-b888-4ded-9022-25ab620291aa
+        Source: ../../Resources/tex1.png
+        Name: parallax_gear_frame
+        TextureRegion: {X: 0, Y: 0, Width: 1920, Height: 1136}
+        Center: {X: 320.0, Y: 568.0}
+        CenterFromMiddle: false
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}
+    -   ~Id: cb5f28d4-c612-4fae-8dd9-3469bb97eddd
+        Source: ../../Resources/tex1.png
+        Name: floor
+        TextureRegion: {X: 0, Y: 1140, Width: 1920, Height: 279}
+        Center: {X: 320.0, Y: 139.5}
+        CenterFromMiddle: false
+        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
+        BorderColor: {R: 0, G: 0, B: 0, A: 0}

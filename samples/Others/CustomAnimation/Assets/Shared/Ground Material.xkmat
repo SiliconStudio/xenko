@@ -1,0 +1,25 @@
+!MaterialAsset
+Id: 3e676b2c-cc70-4bd8-849e-a8e30b9b2274
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Attributes:
+    MicroSurface: !MaterialGlossinessMapFeature
+        GlossinessMap: !ComputeFloat
+            Value: 0.0
+    Diffuse: !MaterialDiffuseMapFeature
+        DiffuseMap: !ComputeColor
+            Value: {R: 0.5294118, G: 0.5294118, B: 0.5294118, A: 1.0}
+    DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+    Specular: !MaterialMetalnessMapFeature
+        MetalnessMap: !ComputeFloat
+            Value: 0.07
+    SpecularModel: !MaterialSpecularMicrofacetModelFeature
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
+            ~Id: a1ecc044-6a06-448b-ace2-7b17fc6e2324
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
+            ~Id: 9cb3cae1-0a4f-4221-8538-32d7f6ffac4e
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
+            ~Id: 01aa2f8d-e5c7-4612-a74d-f372295791bc
+    Overrides:
+        UVScale: {X: 1.0, Y: 1.0}
+Layers: []

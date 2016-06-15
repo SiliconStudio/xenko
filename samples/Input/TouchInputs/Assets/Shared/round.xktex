@@ -1,0 +1,18 @@
+!Texture
+Id: f21cc317-81d3-41f1-b524-d12766abf594
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/round.png
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Alpha: Interpolated
+GenerateMipmaps: false
+~Base:
+    ~Id: 12582fde-5390-48fe-9d89-874507c2c0a4
+    Location: --import--
+    Asset: !Texture
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.4.0-beta}
+        Tags: []
+        Source: 
+        ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
+        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

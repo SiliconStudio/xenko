@@ -1,0 +1,16 @@
+!Texture
+Id: 52f5bfcd-35d5-4ae4-9240-635ee503a32d
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/red.jpg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+~Base:
+    ~Id: 76be0224-a1ef-438b-80a0-b04df75b2a34
+    Location: --import--
+    Asset: !Texture
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.4.0-beta}
+        Tags: []
+        Source: 
+        ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
+        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

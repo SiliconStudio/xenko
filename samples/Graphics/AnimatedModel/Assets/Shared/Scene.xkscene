@@ -1,0 +1,152 @@
+!SceneAsset
+Id: 1d1214c6-8844-4fae-8142-1f986349f8d3
+SerializedVersion: {Xenko: 1.6.0-beta03}
+Tags: []
+Hierarchy:
+    ~Id: 8ea4b31c-374c-48ef-a71f-0f91be1a5e2b
+    RootEntities:
+        - b5279763-d0ee-4fc2-bf4c-710ff412bd93
+        - 3aedbca9-d0a2-4833-a577-22f967ba13ee
+        - 069945be-764a-4de9-88f4-458740f821ff
+        - d13ce4bf-5e8e-4bdf-8415-42cfc8405415
+        - 565d619e-b205-4285-ba8e-65e1d349fbb2
+    Entities:
+        -   Entity:
+                Id: 069945be-764a-4de9-88f4-458740f821ff
+                Name: knight
+                Components:
+                    - !TransformComponent
+                        ~Id: dcef2e92-cb16-461d-8333-0db814c574fc
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !AnimationComponent
+                        ~Id: 0b066f56-06f9-4fe5-9319-be71331e8664
+                        Animations:
+                            Idle: 006c97bb-20f6-4db1-914d-55311664e33d/0ec9050c-302e-4289-911f-94265cb7b60b:he00_normal_idle Animation
+                            Run: 2646d29d-867d-4078-a8ed-4056e554ae6d/6dc385f9-d6ff-4933-8fb8-1f481477aeb2:he03_run Animation
+                        PlayingAnimations: []
+                    - !AnimatedModel.RotateEntity,AnimatedModel.Game
+                        ~Id: 083db1bb-5241-4c2b-9d52-900851b0ea99
+                    - !ModelComponent
+                        ~Id: 52f13394-f393-49e7-98b1-356161a493f4
+                        Model: 9ae25bf4-c09a-4963-afcb-57e416c706e8/7f052b2a-84c2-4f8a-932c-c073b2de47de:knight
+                        Materials:
+                            - null
+                            - null
+                            - null
+            Design: {}
+        -   Entity:
+                Id: 3aedbca9-d0a2-4833-a577-22f967ba13ee
+                Name: Ambient light
+                Components:
+                    - !TransformComponent
+                        ~Id: 1016e0de-228e-457a-b4b8-35659f15822d
+                        Position: {X: 0.0, Y: 3.0, Z: 0.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !LightComponent
+                        ~Id: b784dbb9-c66b-430f-9a90-e38db970c853
+                        Type: !LightDirectional
+                            ~Id: d4a34259-72fe-4495-ab5f-6b15e124f9fa
+                            Color: !ColorRgbProvider
+                                ~Id: 60ff1470-8180-4aae-a9a7-ec63111d66f8
+                                Value: {R: 1.0, G: 1.0, B: 1.0}
+                            Shadow:
+                                ~Id: 7e2cf3bf-4ed0-4ee4-93a8-b6d018e0832a
+                                Size: Large
+                                DepthRange:
+                                    ~Id: 27bf6448-00d4-4385-bebd-c105c699b0c3
+                                PartitionMode: !LightDirectionalShadowMap.PartitionLogarithmic
+                                    ~Id: 349da3f3-ef49-4208-9811-5007e4ff3b3b
+                                BiasParameters:
+                                    ~Id: 080577c6-6d6f-47fb-b7a0-5c662f2354a9
+            Design: {}
+        -   Entity:
+                Id: 565d619e-b205-4285-ba8e-65e1d349fbb2
+                Name: UI
+                Components:
+                    - !TransformComponent
+                        ~Id: 265dc113-ade3-473c-8fe0-ebf23dd06797
+                        Position: {X: 0.0, Y: 0.0, Z: 1.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !AnimatedModel.UIScript,AnimatedModel.Game
+                        ~Id: acf594de-a7ed-4d13-9359-b9809a1ee083
+                        Font: 4dcbcef6-a46a-407d-8711-dec0b15cf0aa/dc5e460a-ac52-45b9-a69f-cc5a5a5f9cf7:Font
+                        Knight:
+                            Id: 069945be-764a-4de9-88f4-458740f821ff
+                    - !UIComponent
+                        ~Id: d9db8bbf-c855-4183-a232-dc46cc190f54
+                        VirtualResolution: {X: 1136.0, Y: 640.0, Z: 1000.0}
+                        VirtualResolutionMode: FixedWidthFixedHeight
+            Design: {}
+        -   Entity:
+                Id: b5279763-d0ee-4fc2-bf4c-710ff412bd93
+                Name: Camera
+                Components:
+                    - !TransformComponent
+                        ~Id: 435feba7-9081-44bb-9c7a-7989c2ec0faf
+                        Position: {X: 0.0, Y: 1.2, Z: 3.25}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !CameraComponent
+                        ~Id: 794a9a18-82e3-4894-aeaa-84772e97d29e
+                        Projection: Perspective
+                        FarClipPlane: 10.0
+                        AspectRatio: 0.5634
+            Design: {}
+        -   Entity:
+                Id: d13ce4bf-5e8e-4bdf-8415-42cfc8405415
+                Name: Background
+                Components:
+                    - !TransformComponent
+                        ~Id: f95c6f57-f1e9-455b-8f97-cbd51f84a28f
+                        Position: {X: 0.0, Y: 0.0, Z: -1.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !BackgroundComponent
+                        ~Id: 4a58a89d-ac9b-4066-afb8-0f4656231d6a
+                        Texture: daae9484-2784-444e-a7e8-12b6a3f36a07/51b041a7-2f3e-4327-aa2f-9ac598ddedb1:XenkoBackground
+            Design: {}
+SceneSettings:
+    ~Id: ea4beb3a-6866-43b6-bcfc-8b8251d919b5
+    GraphicsCompositor: !SceneGraphicsCompositorLayers
+        ~Id: bcbb1b4b-7295-4d2f-b1e5-805014849e36
+        Cameras:
+            -   ~Id: 2dba9ddf-a75f-4695-b491-465de66097a7
+                Name: null
+                Camera:
+                    Entity: {Id: b5279763-d0ee-4fc2-bf4c-710ff412bd93}
+                    Id: 794a9a18-82e3-4894-aeaa-84772e97d29e
+        Layers: []
+        Master:
+            ~Id: e246798a-4250-4c03-a5d4-159588546141
+            Name: SceneGraphicsLayer
+            Output: !MasterRenderFrameProvider {}
+            Renderers:
+                - !ClearRenderFrameRenderer
+                    ~Id: 06318bd9-d406-4da8-b157-a9fd3118db61
+                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
+                    Output: !CurrentRenderFrameProvider {}
+                - !SceneCameraRenderer
+                    ~Id: d545f66d-4a67-46fb-b8b3-c9c39aef7cb3
+                    Mode: !CameraRendererModeForward
+                        ~Id: 9ff10095-871e-4c97-baa3-94454c8369f0
+                    Camera:
+                        ~Id: de067b83-e38a-4000-8073-b5fb5ee8eaa9
+                        Index: 0
+                    Output: !CurrentRenderFrameProvider {}
+                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
+    EditorSettings:
+        ~Id: 91322daa-ca80-43a5-af2a-a92eb5b79a20
+        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
+        SceneUnit: 1.0
+        Mode: !SceneEditorGraphicsModeLDRSettings
+            ~Id: ad14456c-cd86-46cf-8d16-67756961d6be
+            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}

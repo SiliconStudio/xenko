@@ -1,0 +1,19 @@
+﻿class TransformationTextureUV : ShaderBase, Texturing
+{
+    override void VSMain()
+    {
+        TransformUV_VS();
+
+        base.VSMain();
+    }
+
+    cbuffer PerDraw
+    {
+        stage float4 TextureRegion = float4(0,0,1,1);
+    }
+
+    stage void TransformUV_VS()
+    {
+        streams.TexCoord = TextureRegion.xy + TextureRegion.zw * streams.TexCoord;
+    }
+};
