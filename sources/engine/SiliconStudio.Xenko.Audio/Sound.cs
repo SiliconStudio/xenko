@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Audio
         internal readonly List<SoundInstance> Instances = new List<SoundInstance>();
 
         [DataMemberIgnore]
-        internal uint PreloadedBuffer;
+        internal AudioLayer.Buffer PreloadedBuffer;
 
         /// <summary>
         /// The number of SoundEffect Created so far. Used only to give a unique name to the SoundEffect.
@@ -155,7 +155,7 @@ namespace SiliconStudio.Xenko.Audio
         {
             if (!StreamFromDisk)
             {
-                OpenAl.BufferDestroy(PreloadedBuffer);
+                Native.AudioLayer.BufferDestroy(PreloadedBuffer);
             }
         }
     }

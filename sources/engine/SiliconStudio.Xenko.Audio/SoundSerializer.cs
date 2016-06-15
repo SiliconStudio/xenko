@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Audio
                         var reader = new BinarySerializationReader(soundStream);
                         var samplesPerPacket = CompressedSoundSource.SamplesPerFrame*obj.Channels;
 
-                        obj.PreloadedBuffer = OpenAl.BufferCreate();
+                        obj.PreloadedBuffer = AudioLayer.BufferCreate();
 
                         var memory = new UnmanagedArray<short>(samplesPerPacket*obj.NumberOfPackets);
 
@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Audio
                             offset += samplesDecoded*obj.Channels*sizeof(short);
                         }
 
-                        OpenAl.BufferFill(obj.PreloadedBuffer, memory.Pointer, memory.Length * sizeof(short), obj.SampleRate, obj.Channels == 1);
+                        AudioLayer.BufferFill(obj.PreloadedBuffer, memory.Pointer, memory.Length * sizeof(short), obj.SampleRate, obj.Channels == 1);
                         memory.Dispose();
                     }
                 }

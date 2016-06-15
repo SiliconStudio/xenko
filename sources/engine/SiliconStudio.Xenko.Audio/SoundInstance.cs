@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -39,27 +39,27 @@ namespace SiliconStudio.Xenko.Audio
         private float volume;
         private readonly bool spatialized;
 
-        internal uint Source { get; }
+        internal AudioLayer.Source Source { get; }
 
         internal AudioListener Listener;
 
         public SoundInstance(AudioEngine engine, AudioListener listener, DynamicSoundSource dynamicSoundSource, bool spatialized = false)
         {
-            this.Listener = listener;
+            Listener = listener;
             this.engine = engine;
             this.spatialized = spatialized;
             soundSource = dynamicSoundSource;
-            Source = OpenAl.SourceCreate(listener.Listener);
+            Source = AudioLayer.SourceCreate(listener.Listener);
             ResetStateToDefault();
         }
 
         internal SoundInstance(Sound staticSound, AudioListener listener)
         {
-            this.Listener = listener;
+            Listener = listener;
             engine = staticSound.AudioEngine;
             sound = staticSound;
             spatialized = staticSound.Spatialized;
-            Source = OpenAl.SourceCreate(listener.Listener);
+            Source = AudioLayer.SourceCreate(listener.Listener);
             ResetStateToDefault();
             if (staticSound.StreamFromDisk)
             {
@@ -67,7 +67,7 @@ namespace SiliconStudio.Xenko.Audio
             }
             else
             {
-                OpenAl.SourceSetBuffer(listener.Listener, Source, staticSound.PreloadedBuffer);
+                AudioLayer.SourceSetBuffer(Source, staticSound.PreloadedBuffer);
             }          
         }
 
@@ -80,7 +80,7 @@ namespace SiliconStudio.Xenko.Audio
             set
             {
                 isLooped = value;
-                if (soundSource == null) OpenAl.SourceSetLooping(Listener.Listener, Source, isLooped);
+                if (soundSource == null) AudioLayer.SourceSetLooping(Source, isLooped);
                 else soundSource.SetLooped(isLooped);
             }
         }
@@ -94,7 +94,7 @@ namespace SiliconStudio.Xenko.Audio
             set
             {
                 pan = value;
-                OpenAl.SourceSetPan(Listener.Listener, Source, value);                
+                AudioLayer.SourceSetPan(Source, value);                
             }
         }
 
@@ -107,7 +107,7 @@ namespace SiliconStudio.Xenko.Audio
             set
             {
                 volume = value;
-                OpenAl.SourceSetGain(Listener.Listener, Source, volume);
+                AudioLayer.SourceSetGain(Source, volume);
             }
         }
 
@@ -120,7 +120,7 @@ namespace SiliconStudio.Xenko.Audio
             set
             {
                 pitch = value;
-                OpenAl.SourceSetPitch(Listener.Listener, Source, pitch);
+                AudioLayer.SourceSetPitch(Source, pitch);
             }
         }
 
@@ -130,14 +130,14 @@ namespace SiliconStudio.Xenko.Audio
             return await soundSource.ReadyToPlay.Task;
         }
 
-        public unsafe void Apply3D(AudioEmitter emitter)
+        public void Apply3D(AudioEmitter emitter)
         {
             if (!spatialized) return;
 
             if (emitter == null)
                 throw new ArgumentNullException(nameof(emitter));
 
-           emitter.Apply3D(Listener, Source);
+           emitter.Apply3D(Source);
         }
 
         public void Pause()
@@ -148,7 +148,7 @@ namespace SiliconStudio.Xenko.Audio
             if (PlayState != SoundPlayState.Playing)
                 return;
 
-            OpenAl.SourcePause(Listener.Listener, Source);
+            AudioLayer.SourcePause(Source);
 
             playState = SoundPlayState.Paused;
         }
@@ -178,7 +178,7 @@ namespace SiliconStudio.Xenko.Audio
             if (playState == SoundPlayState.Stopped)
                 return;
 
-            OpenAl.SourceStop(Listener.Listener, Source);
+            AudioLayer.SourceStop(Source);
 
             soundSource?.Restart();
 
@@ -205,7 +205,7 @@ namespace SiliconStudio.Xenko.Audio
             soundSource?.Dispose();
             sound?.UnregisterInstance(this);
 
-            OpenAl.SourceDestroy(Listener.Listener, Source);
+            AudioLayer.SourceDestroy(Source);
         }
 
         protected void PlayExtended(bool stopSiblingInstances)
@@ -224,12 +224,12 @@ namespace SiliconStudio.Xenko.Audio
                 Task.Run(async () =>
                 {
                     await soundSource.ReadyToPlay.Task;
-                    OpenAl.SourcePlay(Listener.Listener, Source);
+                    AudioLayer.SourcePlay(Source);
                 });
             }
             else
             {
-                OpenAl.SourcePlay(Listener.Listener, Source);
+                AudioLayer.SourcePlay(Source);
             }
 
             playState = SoundPlayState.Playing;
@@ -287,7 +287,7 @@ namespace SiliconStudio.Xenko.Audio
         {
             get
             {
-                if (playState == SoundPlayState.Playing && !OpenAl.SourceIsPlaying(Listener.Listener, Source))
+                if (playState == SoundPlayState.Playing && !AudioLayer.SourceIsPlaying(Source))
                 {
                     Stop();
                 }

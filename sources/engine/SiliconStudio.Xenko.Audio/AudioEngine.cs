@@ -2,12 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Linq;
 using System.Collections.Generic;
-
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Xenko.Native;
 
 namespace SiliconStudio.Xenko.Audio
 {
@@ -26,7 +23,7 @@ namespace SiliconStudio.Xenko.Audio
 
         static AudioEngine()
         {
-            if (!OpenAl.InitOpenAL())
+            if (!Native.AudioLayer.Init())
             {
                 throw new Exception("Failed to initialize the OpenAL native layer.");
             }
@@ -52,7 +49,6 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         /// <param name="device">Device on which to create the audio engine.</param>
         /// <param name="sampleRate">The desired sample rate of the audio graph. 0 let the engine choose the best value depending on the hardware.</param>
-        /// <remarks>Available devices can be queried by calling static method <see cref="GetAvailableDevices"/></remarks>
         /// <exception cref="AudioInitializationException">Initialization of the audio engine failed. May be due to memory problems or missing audio hardware.</exception>
         public AudioEngine(AudioDevice device, uint sampleRate = 0)
         {
@@ -63,15 +59,14 @@ namespace SiliconStudio.Xenko.Audio
             audioDevice = device;
         }
 
-        internal OpenAl.Device AudioDevice;
+        internal Native.AudioLayer.Device AudioDevice;
 
         /// <summary>
-        /// Initialize audio engine for <paramref name="device"/>.
+        /// Initialize audio engine
         /// </summary>
-        /// <param name="device">Device to use for initialization</param>
         public virtual void InitializeAudioEngine()
         {
-            AudioDevice = OpenAl.Create(audioDevice.Name == "default" ? null : audioDevice.Name);
+            AudioDevice = Native.AudioLayer.Create(audioDevice.Name == "default" ? null : audioDevice.Name);
             if (AudioDevice.Ptr == IntPtr.Zero)
             {
                 throw new Exception("Failed to open audio device!");
@@ -87,8 +82,8 @@ namespace SiliconStudio.Xenko.Audio
         {
             if (AudioDevice.Ptr != IntPtr.Zero)
             {
-                OpenAl.ListenerDestroy(DefaultListener.Listener);
-                OpenAl.Destroy(AudioDevice);
+                Native.AudioLayer.ListenerDestroy(DefaultListener.Listener);
+                Native.AudioLayer.Destroy(AudioDevice);
             }
         }
         

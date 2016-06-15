@@ -92,9 +92,9 @@ namespace SiliconStudio.Xenko.Audio
             Up = new Vector3(0, 1, 0);
         }
 
-        internal unsafe void Apply3D(AudioListener listener, uint source)
+        internal unsafe void Apply3D(AudioLayer.Source source)
         {
-            OpenAl.SourcePush3D(listener.Listener, source, (float*)Interop.Fixed(ref Position), (float*)Interop.Fixed(ref forward), (float*)Interop.Fixed(ref up), (float*)Interop.Fixed(ref Velocity));
+            Native.AudioLayer.SourcePush3D(source, (float*)Interop.Fixed(ref Position), (float*)Interop.Fixed(ref forward), (float*)Interop.Fixed(ref up), (float*)Interop.Fixed(ref Velocity));
         }
 
         /// <summary>
