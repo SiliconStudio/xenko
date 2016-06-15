@@ -91,5 +91,23 @@ namespace SiliconStudio.Xenko.Engine
         [Display("Snap Text")]
         [DefaultValue(true)]
         public bool SnapText { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value indicating whether the UI should be always a fixed size on the screen.
+        /// </summary>
+        /// <userdoc>
+        /// Gets or sets the value indicating whether the UI should be always a fixed size on the screen.
+        /// A fixed size component with a height of 1 unit will be 0.1 of the screen size.
+        /// </userdoc>
+        [DataMember(70)]
+        [Display("Fixed Size")]
+        [DefaultValue(false)]
+        public bool IsFixedSize { get; set; } = false;
+
+        /// <summary>
+        /// A fixed size UI component with height of 1 will be this much of the vertical resolution on screen
+        /// </summary>
+        [DataMemberIgnore]
+        public const float FixedSizeVerticalUnit = 1;   // 100% of the vertical resolution
     }
 }

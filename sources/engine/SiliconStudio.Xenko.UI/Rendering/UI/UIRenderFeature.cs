@@ -660,6 +660,22 @@ namespace SiliconStudio.Xenko.Rendering.UI
                     worldMatrix.Row3 = viewInverse.Row3;
                 }
 
+                // Fixed size
+                if (!uiComponent.IsFullScreen && uiComponent.IsFixedSize)
+                {
+                    var forwardVector = camera.ViewMatrix.Forward;
+                    forwardVector.Normalize();
+                    var distVec = (worldMatrix.TranslationVector - camera.Entity.Transform.Position);
+                    float distScalar;
+                    Vector3.Dot(ref forwardVector, ref distVec, out distScalar);
+
+                    var worldScale = FrustumHeight * distScalar * UIComponent.FixedSizeVerticalUnit; // FrustumHeight already is 2*Tan(FOV/2)
+
+                    worldMatrix.Row1 *= worldScale;
+                    worldMatrix.Row2 *= worldScale;
+                    worldMatrix.Row3 *= worldScale;
+                }
+
                 // Rotation of Pi along 0x to go from UI space to world space
                 worldMatrix.Row2 = -worldMatrix.Row2;
                 worldMatrix.Row3 = -worldMatrix.Row3;
