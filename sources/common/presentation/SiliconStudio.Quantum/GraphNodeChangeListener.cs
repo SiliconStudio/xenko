@@ -107,6 +107,7 @@ namespace SiliconStudio.Quantum
             visitor.Visit(rootNode);
         }
 
+        [Obsolete("Use GetPaths to support multiple paths for the same node.")]
         public GraphNodePath GetPath(IContentNode node)
         {
             var paths = GetPaths(node);
