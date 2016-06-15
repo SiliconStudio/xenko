@@ -40,6 +40,9 @@ extern "C" {
 		LPALCDESTROYCONTEXT DestroyContext;
 		LPALCMAKECONTEXTCURRENT MakeContextCurrent;
 		LPALCGETCURRENTCONTEXT GetCurrentContext;
+		LPALCPROCESSCONTEXT ProcessContext;
+		LPALCGETERROR GetErrorALC;
+		LPALCSUSPENDCONTEXT SuspendContext;
 		
 		LPALSOURCEPLAY SourcePlay;
 		LPALSOURCEPAUSE SourcePause;
@@ -57,6 +60,7 @@ extern "C" {
 		LPALGETSOURCEI GetSourceI;
 		LPALSOURCEFV SourceFV;
 		LPALLISTENERFV ListenerFV;
+		LPALGETERROR GetErrorAL;
 
 		void* OpenALLibrary = NULL;
 
@@ -66,17 +70,31 @@ extern "C" {
 			ContextState(ALCcontext* context)
 			{
 				sOpenAlLock.Lock();
+
 				mOldContext = GetCurrentContext();
-				MakeContextCurrent(context);
+				if (context != mOldContext)
+				{
+					MakeContextCurrent(context);
+					swap = true;
+				}
+				else
+				{
+					swap = false;
+				}
 			}
 
 			~ContextState()
 			{
-				MakeContextCurrent(mOldContext);
+				if (swap)
+				{
+					MakeContextCurrent(mOldContext);
+				}
+				
 				sOpenAlLock.Unlock();
 			}
 
 		private:
+			bool swap;
 			ALCcontext* mOldContext;
 			static SpinLock sOpenAlLock;
 		};
@@ -93,37 +111,67 @@ extern "C" {
 			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("x64/OpenAL");
 			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("x86/OpenAL");
 			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("/System/Library/Frameworks/OpenAL.framework/OpenAL"); //iOS Apple OpenAL
-			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary(NULL);
 			if (!OpenALLibrary) return false;
 
 			OpenDevice = (LPALCOPENDEVICE)GetSymbolAddress(OpenALLibrary, "alcOpenDevice");
 			if (!OpenDevice) return false;
-
 			CloseDevice = (LPALCCLOSEDEVICE)GetSymbolAddress(OpenALLibrary, "alcCloseDevice");
+			if (!CloseDevice) return false;
 			CreateContext = (LPALCCREATECONTEXT)GetSymbolAddress(OpenALLibrary, "alcCreateContext");
+			if (!CreateContext) return false;
 			DestroyContext = (LPALCDESTROYCONTEXT)GetSymbolAddress(OpenALLibrary, "alcDestroyContext");
+			if (!DestroyContext) return false;
 			MakeContextCurrent = (LPALCMAKECONTEXTCURRENT)GetSymbolAddress(OpenALLibrary, "alcMakeContextCurrent");
+			if (!MakeContextCurrent) return false;
 			GetCurrentContext = (LPALCGETCURRENTCONTEXT)GetSymbolAddress(OpenALLibrary, "alcGetCurrentContext");
+			if (!GetCurrentContext) return false;
+			ProcessContext = (LPALCPROCESSCONTEXT)GetSymbolAddress(OpenALLibrary, "alcProcessContext");
+			if (!ProcessContext) return false;
+			GetErrorALC = (LPALCGETERROR)GetSymbolAddress(OpenALLibrary, "alcGetError");
+			if (!GetErrorALC) return false;
+			SuspendContext = (LPALCSUSPENDCONTEXT)GetSymbolAddress(OpenALLibrary, "alcSuspendContext");
+			if (!SuspendContext) return false;
 
 			SourcePlay = (LPALSOURCEPLAY)GetSymbolAddress(OpenALLibrary, "alSourcePlay");
+			if (!SourcePlay) return false;
 			SourcePause = (LPALSOURCEPAUSE)GetSymbolAddress(OpenALLibrary, "alSourcePause");
+			if (!SourcePause) return false;
 			SourceStop = (LPALSOURCESTOP)GetSymbolAddress(OpenALLibrary, "alSourceStop");
+			if (!SourceStop) return false;
 			SourceF = (LPALSOURCEF)GetSymbolAddress(OpenALLibrary, "alSourcef");
+			if (!SourceF) return false;
 			DeleteSources = (LPALDELETESOURCES)GetSymbolAddress(OpenALLibrary, "alDeleteSources");
+			if (!DeleteSources) return false;
 			DeleteBuffers = (LPALDELETEBUFFERS)GetSymbolAddress(OpenALLibrary, "alDeleteBuffers");
+			if (!DeleteBuffers) return false;
 			GenSources = (LPALGENSOURCES)GetSymbolAddress(OpenALLibrary, "alGenSources");
+			if (!GenSources) return false;
 			GenBuffers = (LPALGENBUFFERS)GetSymbolAddress(OpenALLibrary, "alGenBuffers");
+			if (!GenBuffers) return false;
 			Source3I = (LPALSOURCE3I)GetSymbolAddress(OpenALLibrary, "alSource3i");
+			if (!Source3I) return false;
 			SourceI = (LPALSOURCEI)GetSymbolAddress(OpenALLibrary, "alSourcei"); 
+			if (!SourceI) return false;
 			BufferData = (LPALBUFFERDATA)GetSymbolAddress(OpenALLibrary, "alBufferData");
+			if (!BufferData) return false;
 			SourceQueueBuffers = (LPALSOURCEQUEUEBUFFERS)GetSymbolAddress(OpenALLibrary, "alSourceQueueBuffers"); 
+			if (!SourceQueueBuffers) return false;
 			SourceUnqueueBuffers = (LPALSOURCEUNQUEUEBUFFERS)GetSymbolAddress(OpenALLibrary, "alSourceUnqueueBuffers");
+			if (!SourceUnqueueBuffers) return false;
 			GetSourceI = (LPALGETSOURCEI)GetSymbolAddress(OpenALLibrary, "alGetSourcei");
+			if (!GetSourceI) return false;
 			SourceFV = (LPALSOURCEFV)GetSymbolAddress(OpenALLibrary, "alSourcefv");
+			if (!SourceFV) return false;
 			ListenerFV = (LPALLISTENERFV)GetSymbolAddress(OpenALLibrary, "alListenerfv");
+			if (!ListenerFV) return false;
+			GetErrorAL = (LPALGETERROR)GetSymbolAddress(OpenALLibrary, "alGetError");
+			if (!GetErrorAL) return false;
 
 			return true;
 		}
+
+		#define AL_ERROR //if (auto err = GetErrorAL() != AL_NO_ERROR) debugtrap()
+		#define ALC_ERROR(__device__) //if (auto err = GetErrorALC(__device__) != ALC_NO_ERROR) debugtrap()
 
 		struct xnAudioDevice
 		{
@@ -132,20 +180,21 @@ extern "C" {
 
 		xnAudioDevice* xnAudioCreate(const char* deviceName)
 		{
-			auto o = new xnAudioDevice;
-			o->device = OpenDevice(deviceName);
-			if(!o->device)
+			auto res = new xnAudioDevice;
+			res->device = OpenDevice(deviceName);
+			ALC_ERROR(res->device);
+			if (!res->device)
 			{
-				delete o;
+				delete res;
 				return NULL;
 			}
-			return o;
+			return res;
 		}
 
 		void xnAudioDestroy(xnAudioDevice* device)
 		{
-			MakeContextCurrent(NULL);
 			CloseDevice(device->device);
+			ALC_ERROR(device->device);
 			delete device;
 		}
 
@@ -158,7 +207,11 @@ extern "C" {
 		{
 			auto res = new xnAudioListener;
 			res->context = CreateContext(device->device, NULL);
-			MakeContextCurrent(res->context);
+			ALC_ERROR(device->device);
+			if (!MakeContextCurrent(res->context))
+				debugtrap();
+			ProcessContext(res->context);
+			ALC_ERROR(device->device);
 			return res;
 		}
 
@@ -167,13 +220,28 @@ extern "C" {
 			DestroyContext(listener->context);
 		}
 
+		bool xnAudioListenerEnable(xnAudioListener* listener)
+		{
+			bool res = MakeContextCurrent(listener->context);
+			ProcessContext(listener->context);
+			return res;
+		}
+
+		void xnAudioListenerDisable(xnAudioListener* listener)
+		{
+			SuspendContext(listener->context);
+			MakeContextCurrent(NULL);
+		}
+
 		uint32_t xnAudioSourceCreate(xnAudioListener* listener)
 		{
 			ContextState lock(listener->context);
 
 			ALuint source;
 			GenSources(1, &source);
+			AL_ERROR;
 			SourceF(source, AL_REFERENCE_DISTANCE, 1.0f);
+			AL_ERROR;
 						
 			return source;
 		}
@@ -183,6 +251,7 @@ extern "C" {
 			ContextState lock(listener->context);
 
 			DeleteSources(1, &source);
+			AL_ERROR;
 		}
 
 		void xnAudioSourceSetPan(xnAudioListener* listener, uint32_t source, float pan)

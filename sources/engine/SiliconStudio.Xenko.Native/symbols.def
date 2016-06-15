@@ -12,6 +12,8 @@ xnAudioCreate
 xnAudioDestroy
 xnAudioListenerCreate
 xnAudioListenerDestroy
+xnAudioListenerEnable
+xnAudioListenerDisable
 xnAudioSourceCreate
 xnAudioSourceDestroy
 xnAudioSourceSetPan

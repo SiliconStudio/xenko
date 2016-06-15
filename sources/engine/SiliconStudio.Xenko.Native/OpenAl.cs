@@ -59,6 +59,18 @@ namespace SiliconStudio.Xenko.Native
 #if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
 #endif
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioListenerEnable", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool ListenerEnable(Listener listener);
+
+#if !SILICONSTUDIO_RUNTIME_CORECLR
+        [SuppressUnmanagedCodeSecurity]
+#endif
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioListenerDisable", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void ListenerDisable(Listener listener);
+
+#if !SILICONSTUDIO_RUNTIME_CORECLR
+        [SuppressUnmanagedCodeSecurity]
+#endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceCreate", CallingConvention = CallingConvention.Cdecl)]
         public static extern uint SourceCreate(Listener listener);
 
