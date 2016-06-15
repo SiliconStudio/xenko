@@ -440,7 +440,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             var result = Vector2.Zero;
             ForEachGlyph(null, ref text, ref size, measureStringGlyphAction, ref result, TextAlignment.Left, false); // text size is independent from the text alignment
-            return result;
+            return result * ((FontType == SpriteFontType.SDF) ? FontHelper.PointsToPixels(1) : 1);
         }
 
         /// <summary>
