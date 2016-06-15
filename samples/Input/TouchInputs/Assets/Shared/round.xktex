@@ -1,0 +1,8 @@
+!Texture
+Id: f21cc317-81d3-41f1-b524-d12766abf594
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/round.png
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Alpha: Interpolated
+GenerateMipmaps: false

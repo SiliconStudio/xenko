@@ -1,0 +1,13 @@
+!TemplateSample
+Id: C5A1AF24-8382-4F34-99A9-9EAE287F455E
+Name: Material Sample
+Scope: Session
+Description: Creates an scene with a set of different materials
+FullDescription: This samples shows how to use different types of materials and how to blend them together.
+Group: Samples/Graphics
+Icon: .xktpl/icon.png
+DefaultOutputName: Material
+PatternName: MaterialSample
+Screenshots:
+    - .xktpl/screenshot1_small.jpeg
+    - .xktpl/screenshot2_small.jpeg

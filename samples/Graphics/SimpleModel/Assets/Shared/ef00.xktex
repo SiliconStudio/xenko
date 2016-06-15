@@ -1,0 +1,9 @@
+!Texture
+Id: 37402bec-8090-4b63-9b5c-3484699e3310
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/character/Sourceimages/ef00.png
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Format: Color32Bits
+Alpha: Interpolated
+GenerateMipmaps: false

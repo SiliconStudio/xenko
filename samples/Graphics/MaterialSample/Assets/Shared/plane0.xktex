@@ -1,0 +1,7 @@
+!Texture
+Id: 858bfb56-fcf6-4c15-9c5f-ee4d89cad8db
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/plane0.jpeg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+PremultiplyAlpha: false

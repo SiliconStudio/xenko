@@ -1,0 +1,8 @@
+!Texture
+Id: 7aa74ad2-c626-4ccb-a69c-b2728fbcc3a8
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/stone3_nml.jpeg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Hint: NormalMap
+PremultiplyAlpha: false

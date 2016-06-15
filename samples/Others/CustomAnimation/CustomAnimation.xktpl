@@ -1,0 +1,12 @@
+!TemplateSample
+Id: cc058eda-c415-4f4a-b06c-2614ca040d15
+Name: Animated Properties Sample
+Scope: Session
+Description: Demonstrates how to animate various entity properties.
+FullDescription: Demonstrates how to create animations for properties of entities, like transformation, cameras, light, etc., from code.
+Group: Samples/Graphics
+Icon: .xktpl/Icon.png
+DefaultOutputName: AnimatedProperties
+PatternName: CustomAnimation
+Screenshots:
+    - .xktpl/screenshot_small.jpg

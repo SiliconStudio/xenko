@@ -1,0 +1,9 @@
+!Texture
+Id: cbf696d1-ec12-4cb6-9518-b4a9b51dfaf6
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/LogoXenko.png
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Alpha: Explicit
+GenerateMipmaps: false
+PremultiplyAlpha: false

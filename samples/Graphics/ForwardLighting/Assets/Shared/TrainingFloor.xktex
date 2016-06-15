@@ -1,0 +1,6 @@
+!Texture
+Id: f4e322d8-7507-463e-b17b-fc10de8e6728
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/TrainingFloor.dds
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

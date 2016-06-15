@@ -1,0 +1,11 @@
+!TemplateSample
+Id: 16476A4C-C131-4F48-865A-288EC7D5445F
+Name: Custom Effect Sample
+Scope: Session
+Description: Creates a sample project which shows how to use a custom effect
+FullDescription: This sample shows you how to create a basic UV scrolling effect and how to load and use it manually.
+Group: Samples/Graphics
+Icon: .xktpl/Icon.png
+DefaultOutputName: CustomEffect
+Screenshots:
+    - .xktpl/screenshot_small.png

@@ -1,0 +1,16 @@
+!Skeleton
+Id: 9308887f-54ac-4b52-b52b-78f2075df74a
+Tags: []
+Source: ../../Resources/model/BG/scene/obj01.FBX
+ScaleImport: 0.0
+Nodes:
+    - {~Id: 8d77f531-caa4-4b91-994e-288aa3e4a87a, Name: RootNode, Depth: 0}
+    - {~Id: 33665e6e-93ea-42c8-aec3-bc2bd64ca144, Name: root, Depth: 1}
+    - {~Id: 715368d9-8a4e-40a9-b3f5-50648a4e4c95, Name: part, Depth: 2}
+    - {~Id: 3bc0067e-99d9-4f84-ae9e-5dde22b62381, Name: obj01_A, Depth: 3}
+    - {~Id: 45d1be8f-2113-49b9-a6cc-17ebf4cc7a1e, Name: obj01_01, Depth: 4}
+    - {~Id: ec1a4fee-c315-4c37-aa33-a6be1d393f47, Name: obj01_B, Depth: 3}
+    - {~Id: 0befd441-d3b9-4031-b6bd-69a93b725897, Name: obj01_02, Depth: 4}
+    - {~Id: 176bbbf4-ed4a-4100-b667-9dcf44830023, Name: obj01_00, Depth: 3}
+~SourceHashes:
+    ../../Resources/model/BG/scene/obj01.FBX: 9207feb70ceb80973a90773b634d213e

@@ -1,0 +1,10 @@
+!ProceduralModelAsset
+Id: 1104c568-b3b0-4545-b682-31def5e6d4f2
+SerializedVersion: {Xenko: 1.5.0-alpha01}
+Tags: []
+Type: !CylinderProceduralModel
+    Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+    UvScale: {X: 1.0, Y: 1.0}
+    MaterialInstance:
+        ~Id: 8160c2ae-3f40-4cad-891f-98e81511e9b8
+        Material: d74155ec-4424-41bc-a556-8ac7a49a8b57/46859e92-96ad-4466-a0ed-a16f85780b32:Material

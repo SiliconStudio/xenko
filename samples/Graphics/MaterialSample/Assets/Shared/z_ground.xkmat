@@ -1,0 +1,38 @@
+!MaterialAsset
+Id: 8cfd86fb-8c2d-4c8f-b86e-7a5a58552f0f
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Attributes:
+    MicroSurface: !MaterialGlossinessMapFeature
+        GlossinessMap: !ComputeTextureScalar
+            Texture: 697d6f67-b393-4d30-8a21-5bc87c5f5950/608adbcb-4270-4d31-b68d-cd53143b0435:plane0_gls
+            FallbackValue:
+                Value: 1.0
+            Scale: {X: 5.0, Y: 5.0}
+            Offset: {X: 0.0, Y: 0.0}
+    Diffuse: !MaterialDiffuseMapFeature
+        DiffuseMap: !ComputeTextureColor
+            Texture: fb8ad5f8-2324-4f42-b593-6626e3215949/858bfb56-fcf6-4c15-9c5f-ee4d89cad8db:plane0
+            FallbackValue:
+                Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+            Scale: {X: 5.0, Y: 5.0}
+            Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
+    DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+    Specular: !MaterialMetalnessMapFeature
+        MetalnessMap: !ComputeTextureScalar
+            Texture: ff6e348b-ba42-4873-bf01-e88ad82ed0cf/71eebbdf-2481-433e-99e4-437ffaf19340:plane0_mtl
+            FallbackValue:
+                Value: 1.0
+            Scale: {X: 5.0, Y: 5.0}
+            Offset: {X: 0.0, Y: 0.0}
+    SpecularModel: !MaterialSpecularMicrofacetModelFeature
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
+            ~Id: 6a3c09ef-3cfd-4535-8d62-e4727d3777ad
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
+            ~Id: 2d315466-fad3-4280-b39e-7da5a5483fb8
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
+            ~Id: 71b5faf8-226b-41e5-b434-c2e351317fc2
+    Overrides:
+        UVScale: {X: 1.0, Y: 1.0}
+Layers: []

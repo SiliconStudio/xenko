@@ -1,0 +1,8 @@
+!Texture
+Id: ceda18e2-1df7-4694-bac1-fdecc81bc570
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/sphere.png
+ColorKeyEnabled: true
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Alpha: Explicit

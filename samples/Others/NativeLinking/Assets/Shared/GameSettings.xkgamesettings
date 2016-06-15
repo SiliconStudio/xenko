@@ -1,0 +1,38 @@
+!GameSettingsAsset
+Id: f9e201c3-811f-4bbb-994d-9fe349efeea3
+SerializedVersion: {Xenko: 1.6.1-alpha01}
+Tags: []
+DefaultScene: dadff85e-acfa-44d3-a09a-bc5f7c9e87b8/2ae86742-ad72-46d3-a6b6-4358ea99b7a6:MainScene
+Defaults:
+    - !SiliconStudio.Xenko.Graphics.RenderingSettings,SiliconStudio.Xenko.Graphics
+        ~Id: e8c01e14-51ca-4f80-8991-259a4e042a5b
+        DefaultBackBufferWidth: 1280
+        DefaultBackBufferHeight: 720
+        AdaptBackBufferToScreen: false
+        DefaultGraphicsProfile: Level_9_3
+        ColorSpace: Linear
+        DisplayOrientation: LandscapeRight
+        PreferredGraphicsPlatform: Default
+    - !SiliconStudio.Xenko.Assets.EditorSettings,SiliconStudio.Xenko.Assets
+        ~Id: 6fcf3e2a-58a3-4824-8e3c-73366ad7e344
+        RenderingMode: HDR
+    - !SiliconStudio.Xenko.Assets.Textures.TextureSettings,SiliconStudio.Xenko.Assets
+        ~Id: d531f1e7-11a8-4aef-bf41-2cb459c46058
+        TextureQuality: Fast
+    - !SiliconStudio.Xenko.Physics.PhysicsSettings,SiliconStudio.Xenko.Physics
+        ~Id: 76b72c0b-6d3d-4725-bf0a-a6013703c7d2
+        Flags: None
+        MaxSubSteps: 1
+        FixedTimeStep: 0.0166666675
+Overrides: []
+PlatformFilters:
+    - PowerVR SGX 54[0-9]
+    - Adreno \(TM\) 2[0-9][0-9]
+    - Adreno (TM) 320
+    - Adreno (TM) 330
+    - Adreno \(TM\) 4[0-9][0-9]
+    - NVIDIA Tegra
+    - Intel(R) HD Graphics
+    - ^Mali\-4
+    - ^Mali\-T6
+    - ^Mali\-T7

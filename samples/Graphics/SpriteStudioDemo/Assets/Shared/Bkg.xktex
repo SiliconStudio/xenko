@@ -1,0 +1,7 @@
+!Texture
+Id: 4b0f48d8-839e-4c71-8ca5-fc72e88cb68a
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/Bkg.png
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Format: Color32Bits

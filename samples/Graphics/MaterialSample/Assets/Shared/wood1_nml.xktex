@@ -1,0 +1,8 @@
+!Texture
+Id: 81c245fe-a1be-465b-9715-4020e477df9a
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/wood1_nml.jpeg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Hint: NormalMap
+PremultiplyAlpha: false

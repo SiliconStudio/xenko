@@ -1,0 +1,29 @@
+!Model
+Id: 3047da8a-bf85-4cdd-99ef-89c2b19c3c04
+SerializedVersion: {Xenko: 1.5.0-alpha02}
+Tags: []
+Source: ../../Resources/model/BG/scene/bg_a00.FBX
+Materials:
+    -   ~Id: 95aa38da-8e49-417a-90ae-c48af0bdd18a
+        Name: BG_Lane_01a
+        MaterialInstance:
+            ~Id: 9c957e98-59b5-49f0-962f-fca8bb4332df
+            Material: 33bac212-a01b-4347-bdc3-00c36393064f/adf6c878-7214-4466-a4c2-3b04df6be5b2:BG_Lane_01a
+    -   ~Id: ecd83306-1a08-4659-8ad7-b9ac3e349749
+        Name: BG_wall00
+        MaterialInstance:
+            ~Id: fe2ba6e0-b56d-4813-beaa-73db97515b95
+            Material: 0ac1c0e6-d8ea-4d42-a2fb-e3b29679ed42/841c03b8-0a79-4e39-9499-a91a166fb3c8:BG_wall00_1
+    -   ~Id: 16e6e7b6-151c-4e8b-b5f1-9ad9fb7f7587
+        Name: BG_wall01
+        MaterialInstance:
+            ~Id: 8ab44f69-83ca-4020-8038-a3688197a361
+            Material: 0aa23e8e-18be-41f5-8ebf-0d32c185d16e/05f36d0e-8f45-4a56-a9de-b3f1b088482e:BG_wall01_1
+    -   ~Id: 50ea847f-0287-467f-b186-2b9898853fd8
+        Name: BG_wall02
+        MaterialInstance:
+            ~Id: 252b3b0c-5671-432e-8013-cb95d06850b7
+            Material: fb2c237b-be90-47d2-85fe-21cf29ac242b/ef070a60-83e2-4bd7-a95f-6599de22a8fa:BG_wall02_1
+Skeleton: null
+~SourceHashes:
+    ../../Resources/model/BG/scene/bg_a00.FBX: e9ca47b18ea489faca150137234be748

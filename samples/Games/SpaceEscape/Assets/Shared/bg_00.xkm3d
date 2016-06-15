@@ -1,0 +1,14 @@
+!Model
+Id: f16bfc07-e816-475d-a400-304b8042d6c7
+SerializedVersion: {Xenko: 1.5.0-alpha02}
+Tags: []
+Source: ../../Resources/model/BG/scene/bg_00.FBX
+Materials:
+    -   ~Id: 2aa8b748-9aea-416a-8b15-73380bb03b3b
+        Name: BG00
+        MaterialInstance:
+            ~Id: a1d8215c-ed97-43f8-8086-e5801ba71175
+            Material: 8793c375-6a78-455a-929b-9d060f39c079/e7bf2bb6-90d8-4c1e-a8bc-78c1c46c5359:BG00
+Skeleton: null
+~SourceHashes:
+    ../../Resources/model/BG/scene/bg_00.FBX: d9cb8d7d0fc8f1ea2a519e602bbe2770

@@ -1,0 +1,43 @@
+!Package
+Id: e0f7780a-6563-47ad-a81c-adfdccd9f26c
+SerializedVersion: {Assets: 0.0.2}
+Tags: []
+Meta:
+    Name: JumpyJet
+    Version: 1.0.0.0
+    Authors: []
+    Owners: []
+    Dependencies:
+        -   Name: Xenko
+            Version: 1.7.0-alpha02
+            RootAssets: []
+LocalDependencies: []
+Profiles:
+    -   Name: Shared
+        Platform: Shared
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: Assets/Shared
+            -   Path: JumpyJet.Game/Effects
+        OutputGroupDirectories: {}
+        Properties: {}
+        ProjectReferences:
+            -   Id: cdb18123-f59f-4852-9777-ed9d217eb043
+                Location: JumpyJet.Game/JumpyJet.Game.csproj
+                Type: Library
+    -   Name: Windows
+        Platform: Windows
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: Assets/Windows
+        OutputGroupDirectories: {}
+        Properties:
+            Xenko.GraphicsPlatform: Direct3D11
+        ProjectReferences:
+            -   Id: dfecf85b-19e9-4266-a031-696edc5d5ebb
+                Location: JumpyJet.Windows/JumpyJet.Windows.csproj
+                Type: Executable
+ExplicitFolders: []
+Bundles: []
+TemplateFolders: []
+RootAssets: []

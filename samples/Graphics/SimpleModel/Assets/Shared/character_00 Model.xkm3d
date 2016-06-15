@@ -1,0 +1,25 @@
+!Model
+Id: 19ec836d-2ea3-43fe-8f79-0f55cfc437be
+SerializedVersion: {Xenko: 1.5.0-alpha02}
+BuildOrder: 500
+Tags: []
+Source: ../../Resources/character/scene/character_00.FBX
+Materials:
+    -   ~Id: e1ed7286-a418-428e-b113-c7f1012d89d5
+        Name: mc00
+        MaterialInstance:
+            ~Id: 82ef8d62-6f54-4c92-9c67-d425cc97d5dd
+            Material: 2777f5b5-14ec-492e-ac55-f15e721873ec/d24e15b3-d1aa-4241-97f3-db67ee4d0f7c:mc00
+    -   ~Id: 8b224f85-bab7-417a-945a-24072eb84296
+        Name: ef00
+        MaterialInstance:
+            ~Id: 06faf4f5-342b-4e38-bcea-f96e2f497d5c
+            Material: 299f1719-5c29-46ff-9748-fffdf5765300/5be6fbb0-2264-46cd-9774-f397f616d07a:ef00_1
+    -   ~Id: 45e349ff-d50f-4136-908b-1f52cedf98e3
+        Name: mc01
+        MaterialInstance:
+            ~Id: 574661e6-07da-4393-a5f1-5da5c97d241b
+            Material: 15c35713-6cd7-4daf-85fc-9971722a7a4b/a6c09800-6c38-46ef-8738-e35d1f5618b9:mc01
+Skeleton: null
+~SourceHashes:
+    ../../Resources/character/scene/character_00.FBX: 1a0b83c9b02b333469043d7a7a964b16

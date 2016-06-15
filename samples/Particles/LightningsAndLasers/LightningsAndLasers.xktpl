@@ -1,0 +1,11 @@
+!TemplateSample
+Id: D85A7A1F-A2C9-4CFC-84F2-D31DE956F5E7
+Name: Lightnings and Lasers Sample
+Scope: Session
+Description: This sample is intended for artists and shows how to create lightning arcs and lasers using the ribbon renderer or custom materials.
+FullDescription: This sample is intended for artists and shows how to create lightning arcs and lasers using the ribbon renderer or custom materials. It shows several different approaches to each problem.
+Group: Samples/Particles
+Icon: ../.xktpl/Icon.png
+DefaultOutputName: LightningsAndLasers
+Screenshots:
+    - .xktpl/screenshot_small.jpg

@@ -1,0 +1,43 @@
+!Package
+Id: 207c8460-0747-4fc7-b3c3-5e4f94ef0ee8
+SerializedVersion: {Assets: 0.0.2}
+Tags: []
+Meta:
+    Name: CharacterControllerSample
+    Version: 1.0.0.0
+    Authors: []
+    Owners: []
+    Dependencies:
+        -   Name: Xenko
+            Version: 1.7.0-alpha02
+            RootAssets: []
+LocalDependencies: []
+Profiles:
+    -   Name: Shared
+        Platform: Shared
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: Assets/Shared
+            -   Path: CharacterControllerSample.Game/Effects
+        OutputGroupDirectories: {}
+        Properties: {}
+        ProjectReferences:
+            -   Id: 6da9dc17-e343-44a3-bb3b-023a48c5a64f
+                Location: CharacterControllerSample.Game/CharacterControllerSample.Game.csproj
+                Type: Library
+    -   Name: Windows
+        Platform: Windows
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: Assets/Windows
+        OutputGroupDirectories: {}
+        Properties:
+            Xenko.GraphicsPlatform: Direct3D11
+        ProjectReferences:
+            -   Id: 305476ee-ec8e-4791-a9b3-e629dcf59433
+                Location: CharacterControllerSample.Windows/CharacterControllerSample.Windows.csproj
+                Type: Executable
+ExplicitFolders: []
+Bundles: []
+TemplateFolders: []
+RootAssets: []

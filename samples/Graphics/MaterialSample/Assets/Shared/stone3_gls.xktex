@@ -1,0 +1,7 @@
+!Texture
+Id: 7042109d-3304-4420-8a08-8cfa103e8ab4
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/stone3_gls.jpeg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+PremultiplyAlpha: false

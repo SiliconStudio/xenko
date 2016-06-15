@@ -1,0 +1,74 @@
+---
+!EffectCompileRequest
+EffectName: XenkoForwardShadingEffect
+UsedParameters:
+    Material.PixelStageSurfaceShaders: !ShaderMixinSource
+        Compositions:
+            layers: !ShaderArraySource
+                Values:
+                    - !ShaderMixinSource
+                        Compositions:
+                            diffuseMap: !ShaderClassSource
+                                ClassName: VertexTextureTerrain
+                        Mixins:
+                            -   ClassName: MaterialSurfaceDiffuse
+                    - !ShaderMixinSource
+                        Compositions:
+                            surfaces: !ShaderArraySource
+                                Values:
+                                    - !ShaderClassSource
+                                        ClassName: MaterialSurfaceShadingDiffuseLambert
+                                        GenericArguments: [false]
+                        Mixins:
+                            -   ClassName: MaterialSurfaceLightingAndShading
+        Mixins:
+            -   ClassName: MaterialSurfaceArray
+    Material.PixelStageStreamInitializer: !ShaderMixinSource
+        Mixins:
+            -   ClassName: MaterialStream
+            -   ClassName: MaterialPixelShadingStream
+    Lighting.DirectLightGroups:
+        - !ShaderMixinSource
+            Mixins:
+                -   ClassName: LightDirectionalGroup
+                    GenericArguments: [2]
+                -   ClassName: DirectLightGroupFixed
+                    GenericArguments: [2]
+    Lighting.EnvironmentLights:
+        - !ShaderMixinSource
+            Mixins:
+                -   ClassName: LightSimpleAmbient
+---
+!EffectCompileRequest
+EffectName: XenkoForwardShadingEffect
+UsedParameters:
+    Material.PixelStageSurfaceShaders: !ShaderMixinSource
+        Compositions:
+            layers: !ShaderArraySource
+                Values:
+                    - !ShaderMixinSource
+                        Compositions:
+                            diffuseMap: !ShaderClassSource
+                                ClassName: VertexTextureTerrain
+                        Mixins:
+                            -   ClassName: MaterialSurfaceDiffuse
+                    - !ShaderMixinSource
+                        Compositions:
+                            surfaces: !ShaderArraySource
+                                Values:
+                                    - !ShaderClassSource
+                                        ClassName: MaterialSurfaceShadingDiffuseLambert
+                                        GenericArguments: [false]
+                        Mixins:
+                            -   ClassName: MaterialSurfaceLightingAndShading
+        Mixins:
+            -   ClassName: MaterialSurfaceArray
+    Material.PixelStageStreamInitializer: !ShaderMixinSource
+        Mixins:
+            -   ClassName: MaterialStream
+            -   ClassName: MaterialPixelShadingStream
+    Lighting.DirectLightGroups: []
+    Lighting.EnvironmentLights:
+        - !ShaderMixinSource
+            Mixins:
+                -   ClassName: LightSimpleAmbient

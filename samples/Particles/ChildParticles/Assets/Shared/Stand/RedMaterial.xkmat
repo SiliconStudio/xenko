@@ -1,0 +1,17 @@
+!MaterialAsset
+Id: 5cfaf323-38f4-4311-8cbf-8d8507f0a19c
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Attributes:
+    Diffuse: !MaterialDiffuseMapFeature
+        DiffuseMap: !ComputeTextureColor
+            Texture: 8c51b6f2-b69f-4fdd-953f-1200f5192f87/126e652b-0d65-43e9-b7d5-f9069a1e0d1c:Stand/red
+            FallbackValue:
+                Value: {R: 0.98, G: 0.9, B: 0.7, A: 1.0}
+            Scale: {X: 1.0, Y: 1.0}
+            Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
+    DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+    Overrides:
+        UVScale: {X: 1.0, Y: 1.0}
+Layers: []

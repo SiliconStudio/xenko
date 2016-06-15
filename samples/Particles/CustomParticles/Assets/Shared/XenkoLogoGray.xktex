@@ -1,0 +1,6 @@
+!Texture
+Id: 31d063d3-7159-4004-920c-04f038b43a7b
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/XenkoLogoGray.png
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

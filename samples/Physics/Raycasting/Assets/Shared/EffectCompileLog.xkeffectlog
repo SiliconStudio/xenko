@@ -1,0 +1,60 @@
+!EffectCompileRequest
+EffectName: XenkoForwardShadingEffect
+UsedParameters:
+    Material.PixelStageSurfaceShaders: !ShaderMixinSource
+        Compositions:
+            layers: !ShaderArraySource
+                Values:
+                    - !ShaderMixinSource
+                        Compositions:
+                            diffuseMap: !ShaderClassSource
+                                ClassName: ComputeColorTextureScaledOffsetDynamicSampler
+                                GenericArguments: [Material.DiffuseMap, TEXCOORD0, Material.Sampler.i0, rgba, Material.TextureScale, Material.TextureOffset]
+                        Mixins:
+                            -   ClassName: MaterialSurfaceDiffuse
+                    - !ShaderMixinSource
+                        Compositions:
+                            computeColorSource: !ShaderClassSource
+                                ClassName: ComputeColorConstantColorLink
+                                GenericArguments: [Material.SpecularValue]
+                        Mixins:
+                            -   ClassName: MaterialSurfaceSetStreamFromComputeColor
+                                GenericArguments: [matSpecular, rgb]
+                    - !ShaderMixinSource
+                        Compositions:
+                            computeColorSource: !ShaderClassSource
+                                ClassName: ComputeColorConstantFloatLink
+                                GenericArguments: [Material.SpecularIntensityValue]
+                        Mixins:
+                            -   ClassName: MaterialSurfaceSetStreamFromComputeColor
+                                GenericArguments: [matSpecularIntensity, r]
+                    - !ShaderMixinSource
+                        Compositions:
+                            surfaces: !ShaderArraySource
+                                Values:
+                                    - !ShaderClassSource
+                                        ClassName: MaterialSurfaceShadingDiffuseLambert
+                                        GenericArguments: [false]
+                                    - !ShaderMixinSource
+                                        Compositions:
+                                            fresnelFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetFresnelSchlick
+                                            geometricShadowingFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
+                                            normalDistributionFunction: !ShaderClassSource
+                                                ClassName: MaterialSpecularMicrofacetNormalDistributionGGX
+                                        Mixins:
+                                            -   ClassName: MaterialSurfaceShadingSpecularMicrofacet
+                        Mixins:
+                            -   ClassName: MaterialSurfaceLightingAndShading
+        Mixins:
+            -   ClassName: MaterialSurfaceArray
+    Material.PixelStageStreamInitializer: !ShaderMixinSource
+        Mixins:
+            -   ClassName: MaterialStream
+            -   ClassName: MaterialPixelShadingStream
+    Lighting.DirectLightGroups: []
+    Lighting.EnvironmentLights:
+        - !ShaderMixinSource
+            Mixins:
+                -   ClassName: LightSimpleAmbient

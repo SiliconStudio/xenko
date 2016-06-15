@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{83947D07-A863-45B5-924E-A0E5C23AF277}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>NativeLinking.LibraryWrapper</RootNamespace>
+    <AssemblyName>NativeLinking.LibraryWrapper</AssemblyName>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <TargetFrameworkProfile>Profile151</TargetFrameworkProfile>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)..\NativeLinking.xkpkg</SiliconStudioCurrentPackagePath>
+    <SiliconStudioPackageProps>$([System.IO.Path]::ChangeExtension('$(SiliconStudioCurrentPackagePath)', '.props'))</SiliconStudioPackageProps>
+    <SiliconStudioProjectType>Library</SiliconStudioProjectType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP</DefineConstants>
+    <SiliconStudioPlatform>Windows</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>Windows</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\Windows\Debug\</OutputPath>
+    <IntermediateOutputPath>obj\Windows\Debug\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP</DefineConstants>
+    <SiliconStudioPlatform>Windows</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>Windows</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\Windows\Release\</OutputPath>
+    <IntermediateOutputPath>obj\Windows\Release\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Testing|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP</DefineConstants>
+    <SiliconStudioPlatform>Windows</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>Windows</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\Windows\Testing\</OutputPath>
+    <IntermediateOutputPath>obj\Windows\Testing\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP</DefineConstants>
+    <SiliconStudioPlatform>Windows</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>Windows</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\Windows\AppStore\</OutputPath>
+    <IntermediateOutputPath>obj\Windows\AppStore\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|WindowsStore' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_STORE</DefineConstants>
+    <SiliconStudioPlatform>WindowsStore</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>WindowsStore</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\WindowsStore\Debug\</OutputPath>
+    <IntermediateOutputPath>obj\WindowsStore\Debug\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>;2008</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|WindowsStore' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_STORE</DefineConstants>
+    <SiliconStudioPlatform>WindowsStore</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>WindowsStore</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\WindowsStore\Release\</OutputPath>
+    <IntermediateOutputPath>obj\WindowsStore\Release\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>;2008</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Testing|WindowsStore' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_STORE</DefineConstants>
+    <SiliconStudioPlatform>WindowsStore</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>WindowsStore</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\WindowsStore\Testing\</OutputPath>
+    <IntermediateOutputPath>obj\WindowsStore\Testing\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>;2008</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|WindowsStore' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_STORE</DefineConstants>
+    <SiliconStudioPlatform>WindowsStore</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>WindowsStore</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\WindowsStore\AppStore\</OutputPath>
+    <IntermediateOutputPath>obj\WindowsStore\AppStore\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>;2008</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Windows10' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_10</DefineConstants>
+    <SiliconStudioPlatform>Windows10</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>Windows10</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\Windows10\Debug\</OutputPath>
+    <IntermediateOutputPath>obj\Windows10\Debug\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>;2008</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Windows10' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_10</DefineConstants>
+    <SiliconStudioPlatform>Windows10</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>Windows10</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\Windows10\Release\</OutputPath>
+    <IntermediateOutputPath>obj\Windows10\Release\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>;2008</NoWarn>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Testing|Windows10' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_10</DefineConstants>
+    <SiliconStudioPlatform>Windows10</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>Windows10</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\Windows10\Testing\</OutputPath>
+    <IntermediateOutputPath>obj\Windows10\Testing\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>;2008</NoWarn>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|Windows10' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_10</DefineConstants>
+    <SiliconStudioPlatform>Windows10</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>Windows10</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\Windows10\AppStore\</OutputPath>
+    <IntermediateOutputPath>obj\Windows10\AppStore\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>;2008</NoWarn>
+    <UseDotNetNativeToolchain>true</UseDotNetNativeToolchain>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|WindowsPhone' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_PHONE</DefineConstants>
+    <SiliconStudioPlatform>WindowsPhone</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>WindowsPhone</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\WindowsPhone\Debug\</OutputPath>
+    <IntermediateOutputPath>obj\WindowsPhone\Debug\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>;2008</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|WindowsPhone' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_PHONE</DefineConstants>
+    <SiliconStudioPlatform>WindowsPhone</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>WindowsPhone</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\WindowsPhone\Release\</OutputPath>
+    <IntermediateOutputPath>obj\WindowsPhone\Release\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>;2008</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Testing|WindowsPhone' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_PHONE</DefineConstants>
+    <SiliconStudioPlatform>WindowsPhone</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>WindowsPhone</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\WindowsPhone\Testing\</OutputPath>
+    <IntermediateOutputPath>obj\WindowsPhone\Testing\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>;2008</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|WindowsPhone' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_PHONE</DefineConstants>
+    <SiliconStudioPlatform>WindowsPhone</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>WindowsPhone</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\WindowsPhone\AppStore\</OutputPath>
+    <IntermediateOutputPath>obj\WindowsPhone\AppStore\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>;2008</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Android' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_ANDROID</DefineConstants>
+    <SiliconStudioPlatform>Android</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>Android</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\Android\Debug\</OutputPath>
+    <IntermediateOutputPath>obj\Android\Debug\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidUseSharedRuntime>True</AndroidUseSharedRuntime>
+    <AndroidLinkMode>None</AndroidLinkMode>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Android' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_ANDROID</DefineConstants>
+    <SiliconStudioPlatform>Android</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>Android</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\Android\Release\</OutputPath>
+    <IntermediateOutputPath>obj\Android\Release\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
+    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Testing|Android' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_ANDROID</DefineConstants>
+    <SiliconStudioPlatform>Android</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>Android</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\Android\Testing\</OutputPath>
+    <IntermediateOutputPath>obj\Android\Testing\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
+    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|Android' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_ANDROID</DefineConstants>
+    <SiliconStudioPlatform>Android</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>Android</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\Android\AppStore\</OutputPath>
+    <IntermediateOutputPath>obj\Android\AppStore\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
+    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
+    <SiliconStudioPlatform>iOS</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>iOS</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\iOS\Debug\</OutputPath>
+    <IntermediateOutputPath>obj\iOS\Debug\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <MtouchUseSGen>True</MtouchUseSGen>
+    <MtouchArch>ARMv7, ARMv7s, ARM64</MtouchArch>
+    <MtouchDebug>True</MtouchDebug>
+    <CodesignKey>iPhone Developer</CodesignKey>
+    <MtouchUseSGen>True</MtouchUseSGen>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
+    <SiliconStudioPlatform>iOS</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>iOS</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\iOS\Release\</OutputPath>
+    <IntermediateOutputPath>obj\iOS\Release\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <MtouchUseSGen>True</MtouchUseSGen>
+    <MtouchArch>ARMv7, ARMv7s, ARM64</MtouchArch>
+    <CodesignKey>iPhone Developer</CodesignKey>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Testing|iPhone' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
+    <SiliconStudioPlatform>iOS</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>iOS</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\iOS\Testing\</OutputPath>
+    <IntermediateOutputPath>obj\iOS\Testing\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <MtouchUseSGen>True</MtouchUseSGen>
+    <MtouchArch>ARMv7, ARMv7s, ARM64</MtouchArch>
+    <MtouchDebug>True</MtouchDebug>
+    <CodesignKey>iPhone Distribution</CodesignKey>
+    <BuildIpa>True</BuildIpa>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|iPhone' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
+    <SiliconStudioPlatform>iOS</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>iOS</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\iOS\AppStore\</OutputPath>
+    <IntermediateOutputPath>obj\iOS\AppStore\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <MtouchUseSGen>True</MtouchUseSGen>
+    <MtouchArch>ARMv7, ARMv7s, ARM64</MtouchArch>
+    <CodesignKey>iPhone Distribution</CodesignKey>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
+    <SiliconStudioPlatform>iOS</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>iOS</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\iOS\Debug\</OutputPath>
+    <IntermediateOutputPath>obj\iOS\Debug\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <MtouchDebug>True</MtouchDebug>
+    <MtouchLink>None</MtouchLink>
+    <MtouchArch>i386, x86_64</MtouchArch>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS</DefineConstants>
+    <SiliconStudioPlatform>iOS</SiliconStudioPlatform>
+    <SiliconStudioBuildProfile>iOS</SiliconStudioBuildProfile>
+    <OutputPath>..\Bin\iOS\Release\</OutputPath>
+    <IntermediateOutputPath>obj\iOS\Release\</IntermediateOutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <MtouchLink>None</MtouchLink>
+    <MtouchArch>i386, x86_64</MtouchArch>
+  </PropertyGroup>
+  <ItemGroup>
+    <!-- A reference to the entire .NET Framework is automatically included -->
+    <Content Include="Readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="MyAnimationEngine.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
+  <Import Project="$(SiliconStudioPackageProps)" Condition="Exists('$(SiliconStudioPackageProps)')" />
+  <Import Project="$(SiliconStudioXenkoDir)\Targets\SiliconStudio.Common.targets" Condition="Exists('$(SiliconStudioXenkoDir)\Targets\SiliconStudio.Common.targets')" />
+  <Target Name="EnsureSiliconStudioXenkoInstalled" BeforeTargets="PrepareForBuild">
+    <Error Condition="'$(SiliconStudioXenkoDir)' == ''" Text="Xenko SDK was not found. Check Xenko is installed and the global env variable [SiliconStudioXenkoDir] is setup correctly" />
+    <Error Condition="!Exists('$(SiliconStudioXenkoDir)\Targets\SiliconStudio.Common.targets')" Text="Invalid Xenko SDK installation. Target file [$(SiliconStudioXenkoDir)\Targets\SiliconStudio.Common.targets] was not found." />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+    Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,80 @@
+!Skeleton
+Id: 802a04d1-b193-449d-adeb-63bace2e5408
+Tags: []
+Source: ../../Resources/knight/knight.fbx
+ScaleImport: 0.0
+Nodes:
+    - {~Id: 00fa0b85-b1c0-4dcc-8726-e4f8b90daa21, Name: RootNode, Depth: 0}
+    - {~Id: 49984fa7-ac10-403f-9d68-5b3bc4e6c3e7, Name: root, Depth: 1}
+    - {~Id: 34c97b29-a5a1-4273-8f85-b0f6bde8c733, Name: jointroot_000, Depth: 2}
+    - {~Id: beea78aa-95a5-4bd8-8222-c98c59274ca6, Name: CenterRoot, Depth: 3}
+    - {~Id: 02aef696-6c14-4329-98c2-4185963dddd4, Name: LeftHip, Depth: 4}
+    - {~Id: ef8639a1-503a-4bef-9f61-90adce87072b, Name: LeftKnee, Depth: 5}
+    - {~Id: bd52240e-75f9-4ef1-abce-d2fcfe76479e, Name: LeftFoot, Depth: 6}
+    - {~Id: 659f3006-d191-41a9-870e-fe8722c4bb21, Name: LeftMiddleToe, Depth: 7}
+    - {~Id: c73b9bf8-6d5b-41fc-b8b2-75d6116cea6c, Name: RightHip, Depth: 4}
+    - {~Id: f1af4e84-035b-454c-b3a9-e9d702be4b86, Name: RightKnee, Depth: 5}
+    - {~Id: f4af0d57-49e9-4f46-9deb-00f768e36df7, Name: RightFoot, Depth: 6}
+    - {~Id: e8e9b409-89ef-4ae5-aaac-41dbac5989c1, Name: RightMiddleToe, Depth: 7}
+    - {~Id: 5c99a04b-1f8e-4ead-a6b2-90fa97916828, Name: CenterSpineA, Depth: 4}
+    - {~Id: d51e8278-0cc3-48e3-8a88-0d648525431d, Name: CenterSpineB, Depth: 5}
+    - {~Id: f77c807f-01be-44c6-bfad-d7018efd360c, Name: CenterNeck, Depth: 6}
+    - {~Id: afc146c2-a4a0-4897-91ff-5c1b02d6c462, Name: CenterHead, Depth: 7}
+    - {~Id: 07fdf470-f018-43f3-a9fb-e1c4c1e25616, Name: RightCollar, Depth: 6}
+    - {~Id: ec6c0db2-b056-47c3-98b4-352c21cb994e, Name: RightShoulder, Depth: 7}
+    - {~Id: f090479c-acc2-4c0e-afb2-8d0de0b9e8c7, Name: RightElbow, Depth: 8}
+    - {~Id: 757fc50b-d96e-437d-94c3-891461ce4123, Name: RightHand, Depth: 9}
+    - {~Id: c9fa421b-ab0a-4c56-b86f-ea265db7695c, Name: RightThumbA, Depth: 10}
+    - {~Id: 0c2d518d-3ea2-42d2-9314-1107a18d90be, Name: RightThumbB, Depth: 11}
+    - {~Id: 3f737105-4315-4478-9340-82ce8be96cd8, Name: RightThumbC, Depth: 12}
+    - {~Id: 59f1ba11-22f5-48de-a357-1d82bbb495ee, Name: RightIndexFingerA, Depth: 10}
+    - {~Id: 3f242d5d-5eab-44a6-9e02-3b30e27af3f8, Name: RightIndexFingerB, Depth: 11}
+    - {~Id: 7dd23aa7-3e9a-4f4f-ad70-e65aad0dcced, Name: RightIndexFingerC, Depth: 12}
+    - {~Id: 778f01dc-9aa0-4b00-9b34-6ebfd7b7bc12, Name: RightMiddleFingerA, Depth: 10}
+    - {~Id: f020c45c-4e50-4032-ab86-8034dc7d711b, Name: RightMiddleFingerB, Depth: 11}
+    - {~Id: 3074176a-3548-4ccf-b0d8-88e9572ab84f, Name: RightMiddleFingerC, Depth: 12}
+    - {~Id: 690291ac-e07b-4013-a512-caec6a106185, Name: RightRingFingerA, Depth: 10}
+    - {~Id: 412d5e96-c0e9-44cb-b449-0bd866afe41d, Name: RightRingFingerB, Depth: 11}
+    - {~Id: da8fc314-151b-4cdd-9202-a296d8e37a36, Name: RightRingFingerC, Depth: 12}
+    - {~Id: 47a67f8b-f03a-4257-927f-b9bda5b37f4e, Name: RightPinkyFingerA, Depth: 10}
+    - {~Id: 61f4bf6a-f8ba-442c-accd-c54b412cfcf6, Name: RightPinkyFingerB, Depth: 11}
+    - {~Id: 0cc2cc34-ca36-4735-9a66-83c0e3875533, Name: RightPinkyFingerC, Depth: 12}
+    - {~Id: 965441f6-87ed-4bc0-a338-15444a52030a, Name: LeftCollar, Depth: 6}
+    - {~Id: 00835351-0a5f-4127-8025-69b031e3ab4d, Name: LeftShoulder, Depth: 7}
+    - {~Id: e8eab522-f58a-4491-be10-62d7a65a9ab0, Name: LeftElbow, Depth: 8}
+    - {~Id: 1b3319d9-31c9-4222-927a-8f710e897720, Name: LeftHand, Depth: 9}
+    - {~Id: f1874f3d-9428-4f33-a5cf-106496f3e48a, Name: LeftThumbA, Depth: 10}
+    - {~Id: 1a9d96e7-823c-49ca-82d9-87ad38e9fae7, Name: LeftThumbB, Depth: 11}
+    - {~Id: eeebbdf4-44d2-4736-9d26-8865cdea3818, Name: LeftThumbC, Depth: 12}
+    - {~Id: d46c68b6-9c38-4be3-b7db-13727d8b0e31, Name: LeftIndexFingerA, Depth: 10}
+    - {~Id: e35ecf7f-5465-4017-8fcc-bca3266a6216, Name: LeftIndexFingerB, Depth: 11}
+    - {~Id: 40a339cc-aa9e-4398-a07c-8902e9df3611, Name: LeftIndexFingerC, Depth: 12}
+    - {~Id: 62bb250f-2ea4-45bc-8cc5-095943a860fa, Name: LeftMiddleFingerA, Depth: 10}
+    - {~Id: 3dddeb60-9036-4ec3-9d12-651bfd5271b2, Name: LeftMiddleFingerB, Depth: 11}
+    - {~Id: a2eb7fd8-7479-4fe7-bd59-58089a979081, Name: LeftMiddleFingerC, Depth: 12}
+    - {~Id: f3ab9ef1-4284-4bc3-bfbe-7d4f74eba019, Name: LeftRingFingerA, Depth: 10}
+    - {~Id: 360f903d-51e3-4fee-ac94-2210a21ed6a3, Name: LeftRingFingerB, Depth: 11}
+    - {~Id: f1a1447d-74a8-4821-b16c-ee5c76b9a98a, Name: LeftRingFingerC, Depth: 12}
+    - {~Id: 4729275a-43cc-4fd3-ad49-c0982271fd18, Name: LeftPinkyFingerA, Depth: 10}
+    - {~Id: ba8be682-055f-4601-9217-98c311c9e754, Name: LeftPinkyFingerB, Depth: 11}
+    - {~Id: b5ed9457-004e-475c-ba62-602b907418e0, Name: LeftPinkyFingerC, Depth: 12}
+    - {~Id: 3cef1fb9-7e43-4b9b-af73-fcce0cb391a1, Name: FrontCloth_01, Depth: 4}
+    - {~Id: b59830ef-c55a-44a9-bf76-d49cdd30391f, Name: FrontCloth_02, Depth: 5}
+    - {~Id: 0e23e05f-fc77-4d3d-87d1-6d755908cab9, Name: RearCloth_01, Depth: 4}
+    - {~Id: c22b1fad-b566-4535-b16c-cca470ee458d, Name: RearCloth_02, Depth: 5}
+    - {~Id: c4250259-eb4a-4a4a-a766-91882cb0684c, Name: weapon, Depth: 2}
+    - {~Id: c4a40b4f-74e2-4ab0-ac17-128dd0c6b5ad, Name: rot_y, Depth: 2}
+    - {~Id: 583e7a5b-4263-45c8-ada0-aaba0fdf6c16, Name: parts, Depth: 1}
+    - {~Id: d63b9f42-ff2b-4538-910e-20acbc5df547, Name: ch00_Knight_Body, Depth: 2}
+    - {~Id: ce168d05-e066-4008-9993-b424ddf4ab50, Name: ch00_Knight_LEG, Depth: 2}
+    - {~Id: 80b7da44-8d38-4aa5-8cb8-8739dfd9832e, Name: ch00_Knight_Belt, Depth: 2}
+    - {~Id: 197cb0c3-13b7-4e77-9070-e3030213ee4f, Name: ch00_Knight_HelMet, Depth: 2}
+    - {~Id: ee9e90a0-2f2c-43b7-9a2e-94791c23d3da, Name: ch00_Knight_SWORD, Depth: 2}
+    - {~Id: 235888c3-9467-4fa5-9722-c638e3fb1289, Name: ch00_Knight_UpperArm_L, Depth: 2}
+    - {~Id: a4d0d1ad-d7f4-46ec-b6dd-71fb40f15e20, Name: ch00_Knight_UpperArm_R, Depth: 2}
+    - {~Id: 1797b975-6a20-48d0-b46d-647a91a8e42a, Name: light_group, Depth: 1}
+    - {~Id: 9a2c1ea3-3d6b-4b91-997e-d3f3b485c52e, Name: ch00_Knight_directionalLight1, Depth: 2}
+    - {~Id: 6f8054a4-72b3-4837-9e8b-eb1e7d0bcbd9, Name: ch00_Knight_directionalLight2, Depth: 2}
+    - {~Id: b0cf5d1e-d672-4f09-a59e-6535f2095350, Name: ch00_Knight_ambientLight1, Depth: 2}
+~SourceHashes:
+    ../../Resources/knight/knight.fbx: af4ac6da9a62b02bd84f4a8147dd38a7

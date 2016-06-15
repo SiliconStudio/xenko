@@ -1,0 +1,12 @@
+!Texture
+Id: 6b2905f3-787d-4a9f-9363-26b4f2348516
+Tags: []
+Source: ../../Resources/red.jpg
+ImporterId: 6219bcd1-2a7b-461b-9103-6b66b8ff69dc
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+~Base:
+    Location: --import--
+    Asset: !Texture
+        Id: 00000000-0000-0000-0000-000000000000
+        Tags: []
+        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

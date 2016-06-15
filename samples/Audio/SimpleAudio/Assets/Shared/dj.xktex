@@ -1,0 +1,8 @@
+!Texture
+Id: 2c702280-1481-4bd0-b87c-36640ed371ed
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/dj.png
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Alpha: Interpolated
+GenerateMipmaps: false

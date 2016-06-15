@@ -1,0 +1,6 @@
+!Texture
+Id: 52f5bfcd-35d5-4ae4-9240-635ee503a32d
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/red.jpg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

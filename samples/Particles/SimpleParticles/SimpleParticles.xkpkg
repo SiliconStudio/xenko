@@ -1,0 +1,43 @@
+!Package
+Id: 2b920979-d010-44fa-a415-e52d97e51df3
+SerializedVersion: {Assets: 0.0.2}
+Tags: []
+Meta:
+    Name: SimpleParticles
+    Version: 1.0.0.0
+    Authors: []
+    Owners: []
+    RootNamespace: SimpleParticles
+    Dependencies:
+        -   Name: Xenko
+            Version: 1.7.0-alpha02
+            RootAssets: []
+LocalDependencies: []
+Profiles:
+    -   Name: Shared
+        Platform: Shared
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: Assets/Shared
+            -   Path: SimpleParticles.Game/Effects
+        OutputGroupDirectories: {}
+        Properties: {}
+        ProjectReferences:
+            -   Id: c821e6b2-04b2-4983-8348-7ac37b23c5e1
+                Location: SimpleParticles.Game/SimpleParticles.Game.csproj
+                Type: Library
+    -   Name: Windows
+        Platform: Windows
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: Assets/Windows
+        OutputGroupDirectories: {}
+        Properties: {}
+        ProjectReferences:
+            -   Id: bddd6c01-7873-4066-bc52-3e5847fe9f39
+                Location: SimpleParticles.Windows/SimpleParticles.Windows.csproj
+                Type: Executable
+ExplicitFolders: []
+Bundles: []
+TemplateFolders: []
+RootAssets: []

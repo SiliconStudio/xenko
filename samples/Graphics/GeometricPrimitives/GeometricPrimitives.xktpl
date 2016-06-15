@@ -1,0 +1,11 @@
+!TemplateSample
+Id: DD687347-3C53-4F6D-8436-ABA6D5822B99
+Name: Procedural Models Sample
+Scope: Session
+Description: Creates a sample project which show how to create and use procedural models
+FullDescription: This samples shows you how to create and use procedural models (Plane, Sphere, Cube, GeoSphere, Cylinder, Torus, Teapot, Capsule).
+Group: Samples/Graphics
+Icon: .xktpl/Icon.png
+DefaultOutputName: ProceduralModels
+Screenshots:
+    - .xktpl/screenshot_small.png

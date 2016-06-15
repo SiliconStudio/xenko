@@ -1,0 +1,6 @@
+!Texture
+Id: 608adbcb-4270-4d31-b68d-cd53143b0435
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/plane0_gls.jpeg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

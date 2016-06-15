@@ -1,0 +1,24 @@
+!Model
+Id: 920f4445-c00d-474f-b8c0-33b385d58b8f
+SerializedVersion: {Xenko: 1.5.0-alpha02}
+Tags: []
+Source: ../../Resources/model/character/scene/character_00.FBX
+Materials:
+    -   ~Id: 9e331a0b-8bd2-44c0-af90-b5da7012e9e2
+        Name: mc00
+        MaterialInstance:
+            ~Id: c63a20b6-0146-4f12-bb5a-6f74b1d629cc
+            Material: 80c383ab-d396-4797-b8a7-61efa3cd4525/7b624632-deab-482f-8b4f-d4b057e7180c:mc00
+    -   ~Id: ae7026d2-8c02-468c-9166-ff0e07ef8443
+        Name: ef00
+        MaterialInstance:
+            ~Id: 4a212cb5-6ae1-41fd-9fc9-a38950823a20
+            Material: 7deeeef6-ff25-4b34-b971-d115dab90c66/9f4caaef-8604-4b70-ade3-e79035967dbe:ef00_1
+    -   ~Id: 3a4d7e9a-9faf-4396-8da6-000d9eeb45db
+        Name: mc01
+        MaterialInstance:
+            ~Id: 0b062374-8915-4e53-b856-32089ba7b5f4
+            Material: e17dd38c-ea8b-43c1-8e14-fb373da76893/9c690025-c22a-4fc6-8d52-ea92cf9b82ff:mc01
+Skeleton: 5f122433-4055-4abc-88b3-4f1f76e1b851/bfe057df-2fd1-402a-97bc-bd16edee241a:character_00 Skeleton
+~SourceHashes:
+    ../../Resources/model/character/scene/character_00.FBX: 1a0b83c9b02b333469043d7a7a964b16

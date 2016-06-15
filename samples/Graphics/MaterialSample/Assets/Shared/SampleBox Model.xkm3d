@@ -1,0 +1,14 @@
+!Model
+Id: a7e0bdca-e552-44ce-a072-880ed908bfee
+SerializedVersion: {Xenko: 1.5.0-alpha02}
+Tags: []
+Source: ../../Resources/SampleBox.FBX
+Materials:
+    -   ~Id: 5f57f6dc-372b-4ae4-8b06-5375a2187c83
+        Name: m_a_0
+        MaterialInstance:
+            ~Id: c6ab42e4-6573-4082-8c91-8875a1e5ab2c
+            Material: bddf3264-f8e4-4d71-8f54-855648066547/25786aa8-e384-4d84-a4d6-b31907995cf4:m_c_0
+Skeleton: null
+~SourceHashes:
+    ../../Resources/SampleBox.FBX: b5f389bd04fd3ea2cf5333d4c74d12d3

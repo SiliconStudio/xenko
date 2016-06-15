@@ -1,0 +1,23 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+// Only works properly for ProceduralCylinder!
+// You will have to customize it to handle other shapes if they are required.
+class ComputeColorTextureScroll<float UvSpeed, float colorIntensity> : ComputeColor, Texturing
+{
+    // -------------------------------------
+    // streams
+    // -------------------------------------
+    stage stream float4 Position : POSITION;
+
+    // Only works properly for ProceduralCylinder!
+    // You will have to customize it to handle other shapes if they are required.
+    override float4 Compute()
+    {
+        streams.TexCoord.y += Global.Time * UvSpeed;
+
+        float alpha = 1 - 10 * (abs(streams.Position.y) - 0.4f);
+
+        return float4(alpha * colorIntensity, alpha * colorIntensity, alpha * colorIntensity, alpha);
+    }
+};

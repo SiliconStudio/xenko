@@ -1,0 +1,9 @@
+!Animation
+Id: 0ec9050c-302e-4289-911f-94265cb7b60b
+SerializedVersion: {Xenko: 1.5.0-alpha02}
+Tags: []
+Source: ../../Resources/knight/he00_normal_idle.fbx
+RepeatMode: LoopInfinite
+Skeleton: 5aa6358f-e7c4-4c89-af2e-feea6fc199f4/218816f5-b393-4b12-adaf-e0e12817d892:knight Skeleton
+RootMotion: false
+PreviewModel: e323daec-29ad-4954-ad0d-18ed74d6a3e4/7f052b2a-84c2-4f8a-932c-c073b2de47de:knight

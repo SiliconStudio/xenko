@@ -1,0 +1,7 @@
+!Texture
+Id: 175006e8-6351-4365-9778-73d54aa5ea9f
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/XenkoBackground.jpg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Format: Color32Bits

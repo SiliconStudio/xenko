@@ -1,0 +1,13 @@
+!TemplateSample
+Id: 9616CD5A-5668-40B4-918B-91DF1D2A0D9E
+Name: Render scene to texture Sample
+Scope: Session
+Description: This sample demonstrates how to render a scene to a texture, and use that texture.
+FullDescription: |
+   This sample demonstrates how to render a scene to a texture, and use that texture.
+   It renders a scene twice with different camera setup: 1. Render from behind a knight 2. Render from front of a knight and render the texture from the first step on the top right corner of the screen.
+Group: Samples/Graphics
+DefaultOutputName: RenderSceneToTexture
+Icon: .xktpl/Icon.png
+Screenshots:
+    - .xktpl/screenshot0_small.jpg

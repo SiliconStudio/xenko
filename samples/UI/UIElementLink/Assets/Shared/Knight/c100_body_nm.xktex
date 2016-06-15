@@ -1,0 +1,16 @@
+!Texture
+Id: 1974967c-aebc-4377-ac67-4c2b3feb9a1a
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../../Resources/Knight/c100_body_nm.jpg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+PremultiplyAlpha: false
+~Base:
+    Location: --import--
+    Asset: !Texture
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.4.0-beta}
+        Tags: []
+        ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
+        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+        PremultiplyAlpha: false

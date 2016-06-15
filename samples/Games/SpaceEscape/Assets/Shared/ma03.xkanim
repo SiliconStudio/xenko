@@ -1,0 +1,9 @@
+!Animation
+Id: 6784fa36-34e7-4990-baf6-7a854e5caaa9
+SerializedVersion: {Xenko: 1.5.0-alpha02}
+Tags: []
+Source: ../../Resources/model/character/scene/ma03.FBX
+RepeatMode: PlayOnce
+Skeleton: 3aafc95a-8e01-4c8a-b9de-3d509fa7ca86/bfe057df-2fd1-402a-97bc-bd16edee241a:character_00 Skeleton
+RootMotion: false
+PreviewModel: b0e0acb7-e436-4a7f-acfc-6247f0e5d78e/920f4445-c00d-474f-b8c0-33b385d58b8f:character_00

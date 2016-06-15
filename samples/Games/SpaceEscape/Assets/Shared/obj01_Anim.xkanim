@@ -1,0 +1,9 @@
+!Animation
+Id: 8949a37d-83d4-4f0d-911d-bb15b79fe7b2
+SerializedVersion: {Xenko: 1.5.0-alpha02}
+Tags: []
+Source: ../../Resources/model/BG/scene/obj01.FBX
+RepeatMode: LoopInfinite
+Skeleton: df2c5622-fdad-4f17-bed8-b7ef414a8940/9308887f-54ac-4b52-b52b-78f2075df74a:obj01 Skeleton
+RootMotion: false
+PreviewModel: 43a0d934-359a-419e-be63-b68a45b26bac/f81db4ee-5929-42c9-9008-2cd624296caa:obj01

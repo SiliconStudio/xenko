@@ -1,0 +1,7 @@
+!Texture
+Id: 980841a7-1963-4826-ba02-f2d7aff00bd8
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/character/Sourceimages/mc_00.jpg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+PremultiplyAlpha: false

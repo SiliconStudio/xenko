@@ -1,0 +1,7 @@
+!Texture
+Id: c1a81224-7ee7-4d19-9ddc-1b90afe086ab
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/stone1_gls.jpeg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+PremultiplyAlpha: false

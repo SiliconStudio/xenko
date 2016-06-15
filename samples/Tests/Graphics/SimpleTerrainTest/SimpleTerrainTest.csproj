@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{D28F3476-0923-4194-95AB-790FC54BF3DC}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SimpleTerrainTest</RootNamespace>
+    <AssemblyName>SimpleTerrainTest</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="SiliconStudio.Core">
+      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows-Direct3D11\SiliconStudio.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="SiliconStudio.Core.IO">
+      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows-Direct3D11\SiliconStudio.Core.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="SiliconStudio.Core.Mathematics, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows-Direct3D11\SiliconStudio.Core.Mathematics.dll</HintPath>
+    </Reference>
+    <Reference Include="SiliconStudio.Core.Serialization">
+      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows-Direct3D11\SiliconStudio.Core.Serialization.dll</HintPath>
+    </Reference>
+    <Reference Include="SiliconStudio.Xenko">
+      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows-Direct3D11\SiliconStudio.Xenko.dll</HintPath>
+    </Reference>
+    <Reference Include="SiliconStudio.Xenko.ConnectionRouter">
+      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows-Direct3D11\SiliconStudio.Xenko.ConnectionRouter.exe</HintPath>
+    </Reference>
+    <Reference Include="SiliconStudio.Xenko.Engine">
+      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows-Direct3D11\SiliconStudio.Xenko.Engine.dll</HintPath>
+    </Reference>
+    <Reference Include="SiliconStudio.Xenko.Input">
+      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows-Direct3D11\SiliconStudio.Xenko.Input.dll</HintPath>
+    </Reference>
+    <Reference Include="SiliconStudio.Xenko.Games.Testing">
+      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows-Direct3D11\SiliconStudio.Xenko.Games.Testing.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="nunit.core.interfaces">
+      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows-Direct3D11\nunit.core.interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework">
+      <HintPath>$(SiliconStudioXenkoDir)\Bin\Windows-Direct3D11\nunit.framework.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="SimpleTerrainTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="$(SiliconStudioXenkoDir)\sources\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureSiliconStudioXenkoInstalled" BeforeTargets="PrepareForBuild">
+    <Error Condition="'$(SiliconStudioXenkoDir)' == ''" Text="Xenko SDK was not found. Check Xenko is installed and the global env variable [SiliconStudioXenkoDir] is setup correctly" />
+    <Error Condition="!Exists('$(SiliconStudioXenkoDir)\Targets\SiliconStudio.Common.targets')" Text="Invalid Xenko SDK installation. Target file [$(SiliconStudioXenkoDir)\Targets\SiliconStudio.Common.targets] was not found." />
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

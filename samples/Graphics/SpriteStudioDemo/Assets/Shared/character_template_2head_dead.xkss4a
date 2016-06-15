@@ -1,0 +1,8 @@
+!SpriteStudioAnimationAsset
+Id: 071d843d-2efa-4b49-83ef-f6ee79e8dbb5
+Tags: []
+Source: ../../Resources/character_template_2head.ssae
+RepeatMode: PlayOnce
+AnimationName: dead
+~SourceHashes:
+    ../../Resources/character_template_2head.ssae: 7bbed142c2c2aca394cccf062b9891b2

@@ -1,0 +1,43 @@
+!Package
+Id: b6816b45-5640-4b45-9164-d32f888a05da
+SerializedVersion: {Assets: 0.0.2}
+Tags: []
+Meta:
+    Name: ForwardLighting
+    Version: 1.0.0.0
+    Authors: []
+    Owners: []
+    Dependencies:
+        -   Name: Xenko
+            Version: 1.7.0-alpha02
+            RootAssets: []
+LocalDependencies: []
+Profiles:
+    -   Name: Shared
+        Platform: Shared
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: Assets/Shared
+            -   Path: ForwardLighting.Game/Effects
+        OutputGroupDirectories: {}
+        Properties: {}
+        ProjectReferences:
+            -   Id: 69d33c9f-4bbf-4869-b800-07e7b2e48aae
+                Location: ForwardLighting.Game/ForwardLighting.Game.csproj
+                Type: Library
+    -   Name: Windows
+        Platform: Windows
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: Assets/Windows
+        OutputGroupDirectories: {}
+        Properties:
+            Xenko.GraphicsPlatform: Direct3D11
+        ProjectReferences:
+            -   Id: 81fcf42a-ef51-42e0-b855-eeea086cc178
+                Location: ForwardLighting.Windows/ForwardLighting.Windows.csproj
+                Type: Executable
+ExplicitFolders: []
+Bundles: []
+TemplateFolders: []
+RootAssets: []

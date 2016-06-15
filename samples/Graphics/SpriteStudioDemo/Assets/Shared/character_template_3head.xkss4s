@@ -1,0 +1,24 @@
+!SpriteStudioSheetAsset
+Id: ed4d6771-9481-4867-b85a-9d04280baba5
+Tags: []
+Source: ../../Resources/character_template_3head.ssae
+NodeNames:
+    - root
+    - hip
+    - body
+    - head
+    - hair
+    - upperarm_r
+    - arm_r
+    - object1
+    - object2
+    - upperarm_l
+    - arm_l
+    - object3
+    - tight_l
+    - leg_l
+    - tight_r
+    - leg_r
+    - shadow
+~SourceHashes:
+    ../../Resources/character_template_3head.ssae: 59c2c164cb9719b29d02cf9a8254b204

@@ -1,0 +1,10 @@
+!ProceduralModelAsset
+Id: 6383f6dd-32af-4660-921e-4258f9b06b4b
+SerializedVersion: {Xenko: 1.5.0-alpha01}
+Tags: []
+Type: !GeoSphereProceduralModel
+    Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+    UvScale: {X: 1.0, Y: 1.0}
+    MaterialInstance:
+        ~Id: 393ff6c3-a8c9-45c0-b100-6e9d8dc05d3e
+        Material: e32eaff0-10c6-4b30-b65a-b4eab1c9c62d/46859e92-96ad-4466-a0ed-a16f85780b32:Material

@@ -1,0 +1,7 @@
+!SkyboxAsset
+Id: d6ac5a30-abd7-4043-b09b-098c178504b1
+BuildOrder: 500
+Tags: []
+Model: !SkyboxCubeMapModel
+    ~Id: 9a1487bf-2daf-4153-8080-b2c18b194dd1
+    CubeMap: d0a86d56-1f70-49cb-8bdc-832616abfca9/55fb2fb6-7870-493e-a157-5d295c26d5b4:cm_Pisa

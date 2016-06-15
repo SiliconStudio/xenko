@@ -1,0 +1,7 @@
+!Texture
+Id: 2730aa97-e27f-4fd2-8b5a-1f12e5b5ae1c
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/wood1_cav.jpeg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+PremultiplyAlpha: false

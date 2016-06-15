@@ -1,0 +1,7 @@
+!Texture
+Id: 713eef4b-f312-4992-93e1-02eb55acbb3e
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/knight/c100_weapon_cm.jpg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+PremultiplyAlpha: false

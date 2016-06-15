@@ -1,0 +1,8 @@
+!Texture
+Id: a841e0b1-5881-4022-9fb4-3d7fa76ee9b7
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/glass_nm.jpeg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Hint: NormalMap
+PremultiplyAlpha: false

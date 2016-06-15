@@ -1,0 +1,13 @@
+!ProceduralModelAsset
+Id: 00f608bd-b4e5-4e50-94af-6d593671e035
+SerializedVersion: {Xenko: 1.5.0-alpha01}
+Tags: []
+Type: !CylinderProceduralModel
+    Height: 0.1
+    Radius: 3.6
+    Tessellation: 64
+    Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+    UvScale: {X: 6.0, Y: 6.0}
+    MaterialInstance:
+        ~Id: 09e8da44-7163-4252-b2ce-4ecebfa5a039
+        Material: 6a8c45b3-d14f-4760-a82e-94d4ad1d328a/03ad0abd-afc4-4b32-89ae-d6f2623014e2:TrainingFloorMaterial

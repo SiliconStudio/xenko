@@ -1,0 +1,11 @@
+!TemplateSample
+Id: FEEF1726-75AF-4EEA-BEE1-EE945A75B1BE
+Name: Child Particles Sample
+Scope: Session
+Description: This sample is intended for artists and shows several particle effects where some particles (children) inherit attributes from other particles (parents).
+FullDescription: This sample demonstrates how to create child particles - particles which inherit one or more attributes from a followed (parent) particle.
+Group: Samples/Particles
+Icon: ../.xktpl/Icon.png
+DefaultOutputName: ChildParticles
+Screenshots:
+    - .xktpl/screenshot_small.jpg

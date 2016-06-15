@@ -1,0 +1,24 @@
+!Model
+Id: c8901469-88c0-43e1-bffe-f1fe2dc02aea
+SerializedVersion: {Xenko: 1.5.0-alpha02}
+Tags: []
+Source: ../../Resources/model/BG/scene/bg_b02.FBX
+Materials:
+    -   ~Id: 4d80a38f-22f4-4376-92af-b730f973befb
+        Name: BG_wall01
+        MaterialInstance:
+            ~Id: 0960356b-6442-47e8-ae57-993e39d4b675
+            Material: 33a44ead-fca1-4a37-a839-afb0675dcb66/05f36d0e-8f45-4a56-a9de-b3f1b088482e:BG_wall01_1
+    -   ~Id: eca456b2-114a-4632-a058-6b94f3398a96
+        Name: BG_Lane_02
+        MaterialInstance:
+            ~Id: d881836a-e106-418d-bfb8-a533557971cc
+            Material: 531a888f-32fb-4344-a12d-320d0ac2e4d6/31b92ab0-3d24-4bc0-b1a6-550bb6ee42c9:BG_Lane_02
+    -   ~Id: 8be6ab05-1333-4827-9cc6-63599fc8267e
+        Name: bg_wall02
+        MaterialInstance:
+            ~Id: 8cf17a19-98b5-401f-9a9e-ddc9c5bd0830
+            Material: 3968dd63-b688-4b9a-ba12-59e5f2194f10/ef070a60-83e2-4bd7-a95f-6599de22a8fa:BG_wall02_1
+Skeleton: null
+~SourceHashes:
+    ../../Resources/model/BG/scene/bg_b02.FBX: 016b55359c43f8a7f0c4045acae84a13

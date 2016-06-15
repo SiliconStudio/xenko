@@ -1,0 +1,42 @@
+!MaterialAsset
+Id: b6eb49ce-d457-4f80-97a0-bbf0e30a75d3
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Attributes:
+    MicroSurface: !MaterialGlossinessMapFeature
+        GlossinessMap: !ComputeFloat
+            Value: 0.7
+    Diffuse: !MaterialDiffuseMapFeature
+        DiffuseMap: !ComputeTextureColor
+            Texture: 259ffb50-e98b-46af-aea7-0faed67b82d9/aa658fe5-a6a4-4377-ab2d-56c1facf76f4:mc_00
+            FallbackValue:
+                Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+            Scale: {X: 1.0, Y: 1.0}
+            Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
+    DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+    Specular: !MaterialSpecularMapFeature
+        SpecularMap: !ComputeFloat4
+            Value: {X: 1.0, Y: 1.0, Z: 1.0, W: 1.0}
+        Intensity: !ComputeFloat
+            Value: 0.3
+    SpecularModel: !MaterialSpecularMicrofacetModelFeature
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
+            ~Id: 1c186619-06c9-4d9f-ad0e-1475dc23f3fe
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
+            ~Id: 9c87406d-04ff-4d7e-9ff8-a125514d69be
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
+            ~Id: 592a88c2-906b-4ade-b41e-d663395c335d
+    Emissive: !MaterialEmissiveMapFeature
+        EmissiveMap: !ComputeTextureColor
+            Texture: 37374af9-736a-4dbe-a07b-1f4728f56188/f1325456-f87c-49da-a9ed-497f472f6012:mc_00_em
+            FallbackValue:
+                Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+            Scale: {X: 1.0, Y: 1.0}
+            Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
+        Intensity: !ComputeFloat
+            Value: 1.0
+    Overrides:
+        UVScale: {X: 1.0, Y: 1.0}
+Layers: []

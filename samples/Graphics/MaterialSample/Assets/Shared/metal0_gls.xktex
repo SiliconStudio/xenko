@@ -1,0 +1,7 @@
+!Texture
+Id: 7fafce7c-3987-4810-b466-c48281e08b08
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/metal0_gls.jpeg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+PremultiplyAlpha: false

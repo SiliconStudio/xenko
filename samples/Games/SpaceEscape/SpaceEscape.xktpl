@@ -1,0 +1,14 @@
+!TemplateSample
+Id: F9C4B79D-E313-47BC-9287-75A0395B8AC4
+Name: SpaceEscape Sample
+Scope: Session
+Description: A simple 3D runner game with a vessel avoiding holes and obstacles
+FullDescription: |
+   This is a simple 3D runner game where you have to guide the hero vessel through pipes and holes to reach the exit.
+   This sample shows you how to load models into a scene, animate them, create a simple game UI, create a basic 3D rendering pipeline and create custom effects such as UV scrolling, fog, world bending.
+Group: Samples/Games
+Icon: .xktpl/icon.png
+DefaultOutputName: SpaceEscape
+Screenshots:
+    - .xktpl/screenshot0_small.png
+    - .xktpl/screenshot1_small.png

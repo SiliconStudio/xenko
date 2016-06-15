@@ -1,0 +1,7 @@
+!Texture
+Id: 261bc7c8-382f-4558-a1f6-0cc523129194
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/wood0_dif.jpeg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+PremultiplyAlpha: false

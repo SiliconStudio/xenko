@@ -1,0 +1,6 @@
+!Texture
+Id: 091fda79-9023-4ef4-a55c-8bb3f7718e27
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/water.jpg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

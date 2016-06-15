@@ -1,0 +1,8 @@
+!Texture
+Id: ff205266-dd96-46dc-ad96-6c12c6ce4f68
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/metal0_nml.jpeg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Hint: NormalMap
+PremultiplyAlpha: false

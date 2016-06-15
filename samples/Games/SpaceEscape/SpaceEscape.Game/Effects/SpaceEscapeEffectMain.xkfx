@@ -1,0 +1,26 @@
+﻿
+namespace SpaceEscape.Effects
+{
+    params GameParameters
+    {
+        bool EnableFog = true;
+        bool EnableBend = true;
+        bool EnableOnflyTextureUVChange = false;
+    }
+
+    shader SpaceEscapeEffectMain
+    {
+        using params GameParameters;
+        
+        mixin XenkoForwardShadingEffect;
+
+        if(GameParameters.EnableOnflyTextureUVChange)
+            mixin TransformationTextureUV;
+
+        if(GameParameters.EnableBend)
+            mixin TransformationBendWorld;
+
+        if(GameParameters.EnableFog)
+            mixin FogEffect;
+    };
+}

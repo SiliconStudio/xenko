@@ -1,0 +1,15 @@
+!MaterialAsset
+Id: 982ebcc3-acca-4232-acb5-cc7fa793af0d
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Attributes:
+    Diffuse: !MaterialDiffuseMapFeature
+        DiffuseMap: !ComputeShaderClassColor
+            MixinReference: VertexTextureTerrain
+            Generics: {}
+            CompositionNodes: {}
+    DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+    Overrides:
+        UVScale: {X: 1.0, Y: 1.0}
+    CullMode: None
+Layers: []

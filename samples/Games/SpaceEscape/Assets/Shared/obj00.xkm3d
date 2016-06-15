@@ -1,0 +1,14 @@
+!Model
+Id: e19ec8c3-699e-4a5f-ad09-9f5e750b9b0d
+SerializedVersion: {Xenko: 1.5.0-alpha02}
+Tags: []
+Source: ../../Resources/model/BG/scene/obj00.FBX
+Materials:
+    -   ~Id: fd046eea-e385-470a-b2f9-9b761bb0b823
+        Name: obj00
+        MaterialInstance:
+            ~Id: 11956d21-61ab-4cb9-a1c0-75c018f2febf
+            Material: 18e18500-94c7-4207-92ae-f768973e088a/5f60b016-d447-417d-8c92-7b6bbe5cbb31:obj00 Material
+Skeleton: d45e215b-a205-4ce4-baaa-cc476f6ba4fa/9f53d2c9-5a21-4440-aa65-f849e0385304:obj00 Skeleton
+~SourceHashes:
+    ../../Resources/model/BG/scene/obj00.FBX: b67d92d3f1774d22af885fd1623c97c0

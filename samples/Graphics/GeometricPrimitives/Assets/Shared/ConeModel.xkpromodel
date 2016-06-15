@@ -1,0 +1,11 @@
+!ProceduralModelAsset
+Id: 6d09340c-0029-4aea-80f0-6333b96389fa
+SerializedVersion: {Xenko: 1.5.0-alpha01}
+Tags: []
+Type: !ConeProceduralModel
+    Height: 1.5
+    Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+    UvScale: {X: 1.0, Y: 1.0}
+    MaterialInstance:
+        ~Id: b277dff1-bab4-4e31-8fcf-71368e613820
+        Material: 18628e46-87b8-49fd-ad5b-1f5810f49b49/46859e92-96ad-4466-a0ed-a16f85780b32:Material

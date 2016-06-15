@@ -1,0 +1,17 @@
+!MaterialAsset
+Id: 69f8fdd1-e3dd-4e20-bab0-1651b6aa9cfc
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Attributes:
+    Diffuse: !MaterialDiffuseMapFeature
+        DiffuseMap: !ComputeTextureColor
+            Texture: 734ada79-1713-4050-9fbf-6e5e0f5442f7/7c462654-417d-414a-9f93-191909eed589:Stand/TrainingFloor
+            FallbackValue:
+                Value: {R: 0.98, G: 0.9, B: 0.7, A: 1.0}
+            Scale: {X: 1.0, Y: 1.0}
+            Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
+    DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+    Overrides:
+        UVScale: {X: 1.0, Y: 1.0}
+Layers: []

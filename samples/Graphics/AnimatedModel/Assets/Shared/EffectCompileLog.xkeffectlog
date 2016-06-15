@@ -1,0 +1,50 @@
+!EffectCompileRequest
+EffectName: XenkoForwardShadingEffect
+UsedParameters:
+    Material.HasSkinningPosition: true
+    Material.HasSkinningNormal: true
+    Material.HasSkinningTangent: false
+    Material.SkinningMaxBones: 56
+    Material.PixelStageSurfaceShaders: !ShaderMixinSource
+        Compositions:
+            layers: !ShaderArraySource
+                Values:
+                    - !ShaderMixinSource
+                        Compositions:
+                            diffuseMap: !ShaderClassSource
+                                ClassName: ComputeColorTextureScaledOffsetDynamicSampler
+                                GenericArguments: [Material.DiffuseMap, TEXCOORD0, Material.Sampler.i0, rgba, Material.TextureScale, Material.TextureOffset]
+                        Mixins:
+                            -   ClassName: MaterialSurfaceDiffuse
+                    - !ShaderMixinSource
+                        Compositions:
+                            normalMap: !ShaderClassSource
+                                ClassName: ComputeColorTextureScaledOffsetDynamicSampler
+                                GenericArguments: [Material.NormalMap, TEXCOORD0, Material.Sampler.i0, rgba, Material.TextureScale.i1, Material.TextureOffset.i1]
+                        Mixins:
+                            -   ClassName: MaterialSurfaceNormalMap
+                                GenericArguments: [false, true]
+                    - !ShaderMixinSource
+                        Compositions:
+                            surfaces: !ShaderArraySource
+                                Values:
+                                    - !ShaderClassSource
+                                        ClassName: MaterialSurfaceShadingDiffuseLambert
+                                        GenericArguments: [false]
+                        Mixins:
+                            -   ClassName: MaterialSurfaceLightingAndShading
+        Mixins:
+            -   ClassName: MaterialSurfaceArray
+    Material.PixelStageStreamInitializer: !ShaderMixinSource
+        Mixins:
+            -   ClassName: MaterialStream
+            -   ClassName: MaterialPixelShadingStream
+    Material.HasNormalMap: true
+    Lighting.DirectLightGroups:
+        - !ShaderMixinSource
+            Mixins:
+                -   ClassName: LightDirectionalGroup
+                    GenericArguments: [1]
+                -   ClassName: DirectLightGroupFixed
+                    GenericArguments: [1]
+    Lighting.EnvironmentLights: []

@@ -1,0 +1,63 @@
+!MaterialAsset
+Id: 66ec41ec-128d-41e8-9984-dccb204bc77d
+BuildOrder: 250
+Tags: []
+Material:
+    Nodes:
+        mc_00: !MaterialTextureNode
+            TextureReference: 01d7fbf9-8a45-4713-90d0-2f6998a13551:character_00_mc_00
+            Scale: {X: 1, Y: 1}
+            Offset: {X: 0, Y: 0}
+        xk_diffuseOpaque: !MaterialBinaryNode
+            Operand: Opaque
+            LeftChild: !MaterialReferenceNode
+                Name: mc_00
+            RightChild: null
+        specular: !MaterialColorNode
+            Value: {R: 0.8980392, G: 0.8980392, B: 0.8980392, A: 1}
+            AutoAssignKey: false
+            Key: Material.SpecularColorValue
+            IsReducible: false
+        specularIntensity: !MaterialFloatNode
+            Value: 0.6
+            AutoAssignKey: false
+            Key: Material.SpecularIntensity
+            IsReducible: false
+        specularPower: !MaterialFloatNode
+            Value: 0.5
+            AutoAssignKey: false
+            Key: Material.SpecularPower
+            IsReducible: false
+    ColorNodes:
+        MaterialParameters.AlbedoDiffuse: xk_diffuseOpaque
+        MaterialParameters.AlbedoSpecular: specular
+        MaterialParameters.SpecularIntensityMap: specularIntensity
+        MaterialParameters.SpecularPowerMap: specularPower
+    Parameters:
+        Capacity: 4
+        ~Items: {}
+~Base:
+    Location: --import--
+    Asset: !MaterialAsset
+        Id: 00000000-0000-0000-0000-000000000000
+        BuildOrder: 250
+        Tags: []
+        Material:
+            Nodes:
+                mc_00: !MaterialTextureNode
+                    TextureReference: 01d7fbf9-8a45-4713-90d0-2f6998a13551:character_00_mc_00
+                    Scale: {X: 1, Y: 1}
+                    Offset: {X: 0, Y: 0}
+                xk_diffuseOpaque: !MaterialBinaryNode
+                    Operand: Opaque
+                    LeftChild: !MaterialReferenceNode
+                        Name: mc_00
+                    RightChild: null
+            ColorNodes:
+                MaterialParameters.AlbedoDiffuse: xk_diffuseOpaque
+            Parameters:
+                Capacity: 4
+                ~Items:
+                    Material.SpecularColorValue: !Color4 {R: 0.9, G: 0.9, B: 0.9, A: 1}
+                    Material.SpecularIntensity: 0
+                    Material.SpecularPower: 0.02

@@ -1,0 +1,13 @@
+!TemplateSample
+Id: 662A15A4-92C1-4C43-BE06-0303C9E2FF50
+Name: Touch Inputs Sample
+Scope: Session
+Description: Creates a sample project which shows how to use Touch and Gesture events
+FullDescription: |
+   This sample shows you how to analyse raw touch pointer events, activate advanced gesture recognition, and determine mouse and keyboard state. 
+   It displays all the touch event received on the screen.
+Group: Samples/Input
+Icon: ../.xktpl/NewInput.png
+DefaultOutputName: TouchInputs
+Screenshots:
+    - .xktpl/screenshot_small.jpg

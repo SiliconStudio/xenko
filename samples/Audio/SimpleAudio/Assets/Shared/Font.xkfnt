@@ -1,0 +1,17 @@
+!SpriteFont
+Id: 61f4751d-2878-4118-b212-ac554de05399
+SerializedVersion: {Xenko: 1.5.0-alpha09}
+Tags: []
+Source: null
+FontName: Segoe UI
+Size: 30.0
+Style: Regular
+IsDynamic: true
+DefaultCharacter: ' '
+CharacterSet: null
+CharacterRegions:
+    -   ~Id: 32ff09b0-bb8a-4b6d-a942-cead243b9b1c
+        Start: ' '
+        End: "\x7F"
+AntiAlias: Grayscale
+UseKerning: false

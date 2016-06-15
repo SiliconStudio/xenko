@@ -1,0 +1,6 @@
+!Texture
+Id: bf4dc32f-c97a-4bbe-97e7-0df231bc2a62
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/moutain.jpg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

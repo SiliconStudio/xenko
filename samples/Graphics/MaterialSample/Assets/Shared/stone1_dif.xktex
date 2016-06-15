@@ -1,0 +1,7 @@
+!Texture
+Id: ea37b85c-b0c8-43e9-abce-bdfd1a530839
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/stone1_dif.jpeg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+PremultiplyAlpha: false

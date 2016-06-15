@@ -1,0 +1,7 @@
+!Texture
+Id: da6d5bfc-143a-48c6-822a-ba2c25a193ac
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/wood0_gls.jpeg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+PremultiplyAlpha: false

@@ -1,0 +1,7 @@
+!Texture
+Id: 87ce57f9-a93b-4f07-9373-4502d8f8940b
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/metal0_dif.jpeg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+PremultiplyAlpha: false

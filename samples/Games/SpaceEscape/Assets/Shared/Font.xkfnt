@@ -1,0 +1,16 @@
+!SpriteFont
+Id: aa317d9b-bbd3-4240-9ad6-11efad9c4d4d
+SerializedVersion: {Xenko: 1.5.0-alpha09}
+Tags: []
+Source: null
+FontName: Arial
+Style: Regular
+IsDynamic: true
+DefaultCharacter: ' '
+CharacterSet: null
+CharacterRegions:
+    -   ~Id: e8dbc602-ce90-4bc2-8144-95365586db71
+        Start: ' '
+        End: "\x7F"
+AntiAlias: Grayscale
+UseKerning: false

@@ -1,0 +1,7 @@
+!Texture
+Id: ed43165a-c85c-4360-bfcf-d98f099875d6
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/model/BG/sourceimages/BG_wall01.jpg
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+PremultiplyAlpha: false

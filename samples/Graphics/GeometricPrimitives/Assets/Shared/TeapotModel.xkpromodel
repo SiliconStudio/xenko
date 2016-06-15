@@ -1,0 +1,10 @@
+!ProceduralModelAsset
+Id: 7cae3c9b-cce2-4036-9b9b-ba3fe5bfa8b0
+SerializedVersion: {Xenko: 1.5.0-alpha01}
+Tags: []
+Type: !TeapotProceduralModel
+    Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+    UvScale: {X: 1.0, Y: 1.0}
+    MaterialInstance:
+        ~Id: 20363796-f0dd-48be-9587-0b5af24f2e78
+        Material: 7a6aabb1-f42b-4193-8c3b-fdb4cf221742/46859e92-96ad-4466-a0ed-a16f85780b32:Material

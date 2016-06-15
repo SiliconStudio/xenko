@@ -1,0 +1,38 @@
+!MaterialAsset
+Id: 71056bbf-4c45-47c4-a1b5-3237ab71ab21
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Attributes:
+    Surface: !MaterialNormalMapFeature
+        NormalMap: !ComputeTextureColor
+            Texture: c12c6f99-6353-4faa-aa60-e7acfa11075b/a841e0b1-5881-4022-9fb4-3d7fa76ee9b7:glass_nm
+            FallbackValue:
+                Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+            Scale: {X: 3.5, Y: 4.0}
+            Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
+    MicroSurface: !MaterialGlossinessMapFeature
+        GlossinessMap: !ComputeFloat
+            Value: 0.0
+    Diffuse: !MaterialDiffuseMapFeature
+        DiffuseMap: !ComputeColor
+            Value: {R: 0.0, G: 0.000868053758, B: 0.00625, A: 1.0}
+    DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+    Specular: !MaterialMetalnessMapFeature
+        MetalnessMap: !ComputeFloat
+            Value: 0.0
+    SpecularModel: !MaterialSpecularMicrofacetModelFeature
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
+            ~Id: 8f65e0d0-1d63-4bcc-be0f-0f012977831c
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
+            ~Id: a7987fbd-3b1a-44a9-b680-c21b17c8b6c2
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
+            ~Id: 2ac04b51-1b62-4972-b5fb-036fc5d23804
+    Emissive: !MaterialEmissiveMapFeature
+        EmissiveMap: !ComputeFloat4
+            Value: {X: 0.1, Y: 0.1, Z: 30.0, W: 0.0}
+        Intensity: !ComputeFloat
+            Value: 3.0
+    Overrides:
+        UVScale: {X: 1.0, Y: 1.0}
+Layers: []

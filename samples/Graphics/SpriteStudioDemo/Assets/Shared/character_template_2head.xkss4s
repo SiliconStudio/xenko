@@ -1,0 +1,19 @@
+!SpriteStudioSheetAsset
+Id: 7595b1d1-3f94-4cc5-bbfc-ec51687b96d6
+Tags: []
+Source: ../../Resources/character_template_2head.ssae
+NodeNames:
+    - root
+    - body
+    - head
+    - hair
+    - leg_l
+    - leg_r
+    - arm_l
+    - object3
+    - arm_r
+    - object1
+    - object2
+    - shadow
+~SourceHashes:
+    ../../Resources/character_template_2head.ssae: 7bbed142c2c2aca394cccf062b9891b2

@@ -1,0 +1,8 @@
+!Texture
+Id: e9eab42f-0fe7-45c0-9b13-32483242a9ea
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/texture.png
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Format: Color32Bits
+PremultiplyAlpha: false
