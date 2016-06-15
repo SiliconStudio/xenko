@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
 using System;
+using System.Collections.Generic;
 using SharpVulkan;
 using SiliconStudio.Xenko.Shaders;
 
@@ -119,7 +120,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="size">The constant buffer view size.</param>
         public unsafe void SetConstantBuffer(int slot, Buffer buffer, int offset, int size)
         {
-            var bufferInfo = new DescriptorBufferInfo { Buffer = buffer.NativeBuffer, Offset = (ulong)offset, Range = ~0UL /*size*/ }; // WholeSize, because size < bufferSize seems not to work?
+            var bufferInfo = new DescriptorBufferInfo { Buffer = buffer.NativeBuffer, Offset = (ulong)offset, Range = (ulong)size };
 
             var write = new WriteDescriptorSet
             {
