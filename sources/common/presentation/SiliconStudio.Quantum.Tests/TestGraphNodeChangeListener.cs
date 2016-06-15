@@ -316,6 +316,34 @@ namespace SiliconStudio.Quantum.Tests
             }
         }
 
+        [Test]
+        public void TestDiscardedReferenceMember()
+        {
+            var nodeContainer = new NodeContainer();
+            var obj = new[] { new SimpleClass(), new SimpleClass() };
+            var instance = new ComplexClass { Member2 = obj[0] };
+            var rootNode = nodeContainer.GetOrCreateNode(instance);
+            var obj0Node = nodeContainer.GetOrCreateNode(obj[0]);
+            var obj1Node = nodeContainer.GetOrCreateNode(obj[1]);
+            var listener = new GraphNodeChangeListener(rootNode);
+            int changingCount = 0;
+            int changedCount = 0;
+            listener.Changing += (sender, e) => ++changingCount;
+            listener.Changed += (sender, e) => ++changedCount;
+            obj0Node.GetChild(nameof(SimpleClass.Member1)).Content.Update(1);
+            Assert.AreEqual(1, changingCount);
+            Assert.AreEqual(1, changedCount);
+            rootNode.GetChild(nameof(ComplexClass.Member2)).Content.Update(obj[1]);
+            Assert.AreEqual(2, changingCount);
+            Assert.AreEqual(2, changedCount);
+            obj0Node.GetChild(nameof(SimpleClass.Member1)).Content.Update(2);
+            Assert.AreEqual(2, changingCount);
+            Assert.AreEqual(2, changedCount);
+            obj1Node.GetChild(nameof(SimpleClass.Member1)).Content.Update(3);
+            Assert.AreEqual(3, changingCount);
+            Assert.AreEqual(3, changedCount);
+        }
+
         private static void TestContentChange(GraphNodeChangeListener listener, IGraphNode contentOwner, ContentChangeType type, Index index, object oldValue, object newValue, GraphNodePath path, Action change)
         {
             var i = 0;
