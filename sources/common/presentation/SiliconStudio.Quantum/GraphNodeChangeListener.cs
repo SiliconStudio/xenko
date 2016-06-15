@@ -8,6 +8,54 @@ using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum
 {
+    internal class GraphNodeRegistry
+    {
+        private readonly Dictionary<IGraphNode, List<GraphNodePath>> nodeToPaths = new Dictionary<IGraphNode, List<GraphNodePath>>();
+        private readonly Dictionary<GraphNodePath, IGraphNode> pathToNode = new Dictionary<GraphNodePath, IGraphNode>();
+
+        public void RegisterNode(IGraphNode node, GraphNodePath path)
+        {
+            pathToNode.Add(path, node);
+            List<GraphNodePath> paths;
+            if (!nodeToPaths.TryGetValue(node, out paths))
+            {
+                paths = new List<GraphNodePath>();
+                nodeToPaths.Add(node, paths);
+            }
+            else
+            {
+
+            }
+            paths.Add(path);
+        }
+
+        public void UnregisterNode(IGraphNode node, GraphNodePath path)
+        {
+            pathToNode.Remove(path);
+            List<GraphNodePath> paths;
+            if (nodeToPaths.TryGetValue(node, out paths))
+            {
+                paths.Remove(path);
+                if (paths.Count == 0)
+                    nodeToPaths.Remove(node);
+            }
+        }
+
+        public IReadOnlyList<GraphNodePath> GetNodePaths(IGraphNode node)
+        {
+            List<GraphNodePath> paths;
+            nodeToPaths.TryGetValue(node, out paths);
+            return paths;
+        }
+
+        public IGraphNode GetNode(GraphNodePath path)
+        {
+            IGraphNode node;
+            pathToNode.TryGetValue(path, out node);
+            return node;
+        }
+    }
+
     /// <summary>
     /// An object that tracks the changes in the content of <see cref="IGraphNode"/> referenced by a given root node.
     /// A <see cref="GraphNodeChangeListener"/> will raise events on changes on any node that is either a child, or the
@@ -16,15 +64,18 @@ namespace SiliconStudio.Quantum
     public class GraphNodeChangeListener : IDisposable
     {
         private readonly IGraphNode rootNode;
-        private readonly Dictionary<IGraphNode, GraphNodePath> registeredNodes = new Dictionary<IGraphNode, GraphNodePath>();
+        private readonly GraphNodeRegistry registeredNodes = new GraphNodeRegistry();
+        private readonly Func<IGraphNode, GraphNodePath, bool> shouldRegisterNode;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphNodeChangeListener"/> class.
         /// </summary>
         /// <param name="rootNode">The root node for which to track referenced node changes.</param>
-        public GraphNodeChangeListener(IGraphNode rootNode)
+        /// <param name="shouldRegisterNode">A method that can indicate whether a node of the hierarchy should be registered to the listener.</param>
+        public GraphNodeChangeListener(IGraphNode rootNode, Func<IGraphNode, GraphNodePath, bool> shouldRegisterNode)
         {
             this.rootNode = rootNode;
+            this.shouldRegisterNode = shouldRegisterNode;
             RegisterAllNodes();
         }
 
@@ -58,22 +109,19 @@ namespace SiliconStudio.Quantum
 
         public GraphNodePath GetPath(IContentNode node)
         {
-            GraphNodePath path;
-            var graphNode = node as IGraphNode;
-            if (graphNode == null)
-                return null;
+            var paths = GetPaths(node);
+            return paths.First();
+        }
 
-            registeredNodes.TryGetValue(graphNode, out path);
-            return path;
+        public IReadOnlyList<GraphNodePath> GetPaths(IContentNode node)
+        {
+            var graphNode = node as IGraphNode;
+            return graphNode != null ? registeredNodes.GetNodePaths(graphNode) : null;
         }
 
         protected virtual void RegisterNode(IGraphNode node, GraphNodePath path)
         {
-            if (registeredNodes.ContainsKey(node))
-                throw new InvalidOperationException("Node already registered");
-
-            registeredNodes.Add(node, path);
-
+            registeredNodes.RegisterNode(node, path);
             node.Content.PrepareChange += ContentPrepareChange;
             node.Content.FinalizeChange += ContentFinalizeChange;
             node.Content.Changing += ContentChanging;
@@ -82,10 +130,7 @@ namespace SiliconStudio.Quantum
 
         protected virtual void UnregisterNode(IGraphNode node, GraphNodePath path)
         {
-            if (!registeredNodes.ContainsKey(node))
-                throw new InvalidOperationException("Node not registered");
-
-            registeredNodes.Remove(node);
+            registeredNodes.UnregisterNode(node, path);
             node.Content.PrepareChange -= ContentPrepareChange;
             node.Content.FinalizeChange -= ContentFinalizeChange;
             node.Content.Changing -= ContentChanging;
@@ -96,6 +141,7 @@ namespace SiliconStudio.Quantum
         {
             var visitor = new GraphVisitorBase();
             visitor.Visiting += RegisterNode;
+            visitor.ShouldVisit = shouldRegisterNode;
             visitor.Visit(rootNode);
         }
 
@@ -107,6 +153,7 @@ namespace SiliconStudio.Quantum
             {
                 var visitor = new GraphVisitorBase();
                 visitor.Visiting += UnregisterNode;
+                visitor.ShouldVisit = shouldRegisterNode;
                 switch (e.ChangeType)
                 {
                     case ContentChangeType.ValueChange:
@@ -139,6 +186,7 @@ namespace SiliconStudio.Quantum
             {
                 var visitor = new GraphVisitorBase();
                 visitor.Visiting += RegisterNode;
+                visitor.ShouldVisit = shouldRegisterNode;
                 switch (e.ChangeType)
                 {
                     case ContentChangeType.ValueChange:

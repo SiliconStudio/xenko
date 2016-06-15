@@ -19,6 +19,11 @@ namespace SiliconStudio.Quantum
         public bool SkipRootNode { get; set; }
 
         /// <summary>
+        /// Gets or sets a method that will be invoked to check whether a node should be visited or not.
+        /// </summary>
+        public Func<IGraphNode, GraphNodePath, bool> ShouldVisit { get; set; }
+        
+        /// <summary>
         /// Raised when a node is visited.
         /// </summary>
         public event Action<IGraphNode, GraphNodePath> Visiting;
@@ -31,9 +36,12 @@ namespace SiliconStudio.Quantum
         public virtual void Visit(IGraphNode node, GraphNodePath initialPath = null)
         {
             var path = initialPath ?? new GraphNodePath(node);
-            rootNode = node;
-            VisitNode(node, path);
-            rootNode = null;
+            if (ShouldVisitNode(node, path))
+            {
+                rootNode = node;
+                VisitNode(node, path);
+                rootNode = null;
+            }
         }
 
         /// <summary>
@@ -127,7 +135,7 @@ namespace SiliconStudio.Quantum
         /// <returns>True if the node should be visited, False otherwise.</returns>
         protected virtual bool ShouldVisitNode(IGraphNode node, GraphNodePath currentPath)
         {
-            return !visitedNodes.Contains(node);
+            return !visitedNodes.Contains(node) && (ShouldVisit?.Invoke(node, currentPath) ?? true);
         }
     }
 }
