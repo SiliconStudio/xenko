@@ -154,6 +154,10 @@ namespace SiliconStudio.Xenko.Graphics.Font
 
             private readonly Vector2 size;
 
+            // Use 10% increments when generating new font sizes to avoid too many memory allocations
+            // This limits the worst case scenario from >3GB to <50MB
+            private const float AcceptableSizeDifference = 0.1f;
+
             public CharacterKey(char character, Vector2 size)
             {
                 this.character = character;
@@ -162,7 +166,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
 
             public bool Equals(CharacterKey other)
             {
-                return character == other.character && size == other.size;
+                return (character == other.character) && (Math.Abs(1f - size.X/other.size.X) <= AcceptableSizeDifference);
             }
 
             public override bool Equals(object obj)
