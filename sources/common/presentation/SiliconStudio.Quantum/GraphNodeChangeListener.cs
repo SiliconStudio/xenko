@@ -72,7 +72,7 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="rootNode">The root node for which to track referenced node changes.</param>
         /// <param name="shouldRegisterNode">A method that can indicate whether a node of the hierarchy should be registered to the listener.</param>
-        public GraphNodeChangeListener(IGraphNode rootNode, Func<IGraphNode, GraphNodePath, bool> shouldRegisterNode)
+        public GraphNodeChangeListener(IGraphNode rootNode, Func<IGraphNode, GraphNodePath, bool> shouldRegisterNode = null)
         {
             this.rootNode = rootNode;
             this.shouldRegisterNode = shouldRegisterNode;

@@ -374,19 +374,18 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="index">The index of the target node to retrieve, if the source node contains a sequence of references. <see cref="Index.Empty"/> otherwise.</param>
         /// <returns>The corresponding target node if available, or the source node itself if it does not contain any reference or if its content should not process references.</returns>
         /// <remarks>This method can return null if the target node is null.</remarks>
-        /// <seealso cref="IContent.ShouldProcessReference"/>
         protected static IGraphNode GetTargetNode(IGraphNode sourceNode, Index index)
         {
             if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
 
             var objectReference = sourceNode.Content.Reference as ObjectReference;
-            if (objectReference != null && sourceNode.Content.ShouldProcessReference)
+            if (objectReference != null)
             {
                 return objectReference.TargetNode;
             }
 
             var referenceEnumerable = sourceNode.Content.Reference as ReferenceEnumerable;
-            if (referenceEnumerable != null && sourceNode.Content.ShouldProcessReference && !index.IsEmpty)
+            if (referenceEnumerable != null && !index.IsEmpty)
             {
                 return referenceEnumerable[index].TargetNode;
             }
@@ -402,20 +401,19 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="sourceNodePath">The path to the given <paramref name="sourceNode"/>.</param>
         /// <returns>The path to the corresponding target node if available, or the path to source node itself if it does not contain any reference or if its content should not process references.</returns>
         /// <remarks>This method can return null if the target node is null.</remarks>
-        /// <seealso cref="IContent.ShouldProcessReference"/>
         protected static GraphNodePath GetTargetNodePath(IGraphNode sourceNode, Index index, GraphNodePath sourceNodePath)
         {
             if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
             if (sourceNodePath == null) throw new ArgumentNullException(nameof(sourceNodePath));
 
             var objectReference = sourceNode.Content.Reference as ObjectReference;
-            if (objectReference != null && sourceNode.Content.ShouldProcessReference)
+            if (objectReference != null)
             {
                 return sourceNodePath.PushTarget();
             }
 
             var referenceEnumerable = sourceNode.Content.Reference as ReferenceEnumerable;
-            if (referenceEnumerable != null && sourceNode.Content.ShouldProcessReference && !index.IsEmpty)
+            if (referenceEnumerable != null && !index.IsEmpty)
             {
                 return sourceNodePath.PushIndex(index);
             }

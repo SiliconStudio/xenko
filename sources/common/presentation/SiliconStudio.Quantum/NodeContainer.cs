@@ -244,7 +244,7 @@ namespace SiliconStudio.Quantum
                     UpdateOrCreateReferenceTarget(itemReference, node, itemReference.Index);
                 }
             }
-            else if (singleReference != null && content.ShouldProcessReference)
+            else if (singleReference != null)
             {
                 if (singleReference.TargetNode != null && singleReference.TargetNode.Content.Value != reference.ObjectValue)
                 {
@@ -259,10 +259,6 @@ namespace SiliconStudio.Quantum
                     {
                         var boxedContent = target.Content as BoxedContent;
                         boxedContent?.SetOwnerContent(content, index);
-                    }
-                    else
-                    {
-                        content.ShouldProcessReference = false;
                     }
                 }
             }

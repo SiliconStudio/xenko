@@ -44,9 +44,6 @@ namespace SiliconStudio.Quantum
 
         public bool DiscardUnbrowsable { get; set; } = true;
 
-        /// <inheritdoc/>
-        public event EventHandler<NodeConstructingArgs> NodeConstructing;
-
         /// <summary>
         /// Reset the visitor in order to use it to generate another model.
         /// </summary>
@@ -108,13 +105,10 @@ namespace SiliconStudio.Quantum
             bool isRootNode = contextStack.Count == 0;
             if (isRootNode)
             {
-                bool shouldProcessReference;
-                NotifyNodeConstructing(descriptor, out shouldProcessReference);
-
                 // If we are in the case of a collection of collections, we might have a root node that is actually an enumerable reference
                 // This would be the case for each collection within the base collection.
-                IContent content = descriptor.Type.IsStruct() ? ContentFactory.CreateBoxedContent(this, obj, descriptor, IsPrimitiveType(descriptor.Type))
-                                                : ContentFactory.CreateObjectContent(this, obj, descriptor, IsPrimitiveType(descriptor.Type), shouldProcessReference);
+                var content = descriptor.Type.IsStruct() ? ContentFactory.CreateBoxedContent(this, obj, descriptor, IsPrimitiveType(descriptor.Type))
+                                : ContentFactory.CreateObjectContent(this, obj, descriptor, IsPrimitiveType(descriptor.Type));
                 currentDescriptor = content.Descriptor;
                 rootNode = (GraphNode)currentNodeFactory(currentDescriptor.Type.Name, content, rootGuid);
                 if (content.IsReference && currentDescriptor.Type.IsStruct())
@@ -171,48 +165,12 @@ namespace SiliconStudio.Quantum
             }
         }
 
-        /// <summary>
-        /// Raises the <see cref="NodeConstructing"/> event.
-        /// </summary>
-        /// <param name="descriptor">The descriptor of the root object being constructed.</param>
-        /// <param name="shouldProcessReference">Indicates whether the reference that will be created in the node should be processed or not.</param>
-        /// <returns><c>true</c> if the node should be constructed, <c>false</c> if it should be discarded.</returns>
-        private void NotifyNodeConstructing(ObjectDescriptor descriptor, out bool shouldProcessReference)
-        {
-            NotifyNodeConstructing(descriptor, null, out shouldProcessReference);
-        }
-
-        /// <summary>
-        /// Raises the <see cref="NodeConstructing"/> event.
-        /// </summary>
-        /// <param name="containerDescriptor">The descriptor of the container of the member being constructed, or of the object itself it is a root object.</param>
-        /// <param name="member">The member descriptor of the member being constructed.</param>
-        /// <param name="shouldProcessReference">Indicates whether the reference that will be created in the node should be processed or not.</param>
-        /// <returns><c>true</c> if the node should be constructed, <c>false</c> if it should be discarded.</returns>
-        private void NotifyNodeConstructing(ObjectDescriptor containerDescriptor, IMemberDescriptor member, out bool shouldProcessReference)
-        {
-            var handler = NodeConstructing;
-            if (handler != null)
-            {
-                var args = new NodeConstructingArgs(containerDescriptor, (MemberDescriptorBase)member);
-                handler(this, args);
-                shouldProcessReference = args.ShouldProcessReference;
-            }
-            else
-            {
-                shouldProcessReference = true;
-            }
-        }
-
         /// <inheritdoc/>
         public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
         {
-            bool shouldProcessReference;
-            NotifyNodeConstructing(containerDescriptor, member, out shouldProcessReference);
-
             // If this member should contains a reference, create it now.
             GraphNode containerNode = GetContextNode();
-            IContent content = ContentFactory.CreateMemberContent(this, (ContentBase)containerNode.Content, member, IsPrimitiveType(member.Type), value, shouldProcessReference);
+            IContent content = ContentFactory.CreateMemberContent(this, (ContentBase)containerNode.Content, member, IsPrimitiveType(member.Type), value);
             var node = (GraphNode)currentNodeFactory(member.Name, content, Guid.NewGuid());
             containerNode.AddChild(node);
 
