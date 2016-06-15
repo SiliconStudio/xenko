@@ -2,8 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_PLATFORM_IOS
 
-using AudioUnit;
 using AVFoundation;
+using SiliconStudio.Xenko.Native;
 
 namespace SiliconStudio.Xenko.Audio
 {
@@ -21,6 +21,18 @@ namespace SiliconStudio.Xenko.Audio
 
             // start the AudioSession
             var audioSession = AVAudioSession.SharedInstance();
+
+            AVAudioSession.Notifications.ObserveInterruption((sender, args) =>
+            {
+                if (args.InterruptionType == AVAudioSessionInterruptionType.Began)
+                {
+                    OpenAl.ListenerDisable(DefaultListener.Listener);
+                }
+                else
+                {
+                    OpenAl.ListenerEnable(DefaultListener.Listener);
+                }
+            });
 
             // set the audio category so that: playback/recording is possible, playback is mixed with background music, music is stopped when screen is locked
             var error = audioSession.SetCategory(AVAudioSessionCategory.SoloAmbient);
@@ -50,11 +62,6 @@ namespace SiliconStudio.Xenko.Audio
                 Logger.Warning("Failed to activate the audio session. [Error info: {0}]", error.UserInfo);
                 State = AudioEngineState.Invalidated;
             }
-
-            //todo remove when we update libcore with no more audiounit stuff
-            int err;
-            var foo = AUGraph.Create(out err);
-            foo.Dispose();
         }
     }
 }

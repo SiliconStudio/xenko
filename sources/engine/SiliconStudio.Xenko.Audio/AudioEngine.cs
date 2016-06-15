@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Audio
     {
         public AudioListener DefaultListener;
 
-        private AudioDevice audioDevice;
+        private readonly AudioDevice audioDevice;
 
         static AudioEngine()
         {
@@ -77,20 +77,8 @@ namespace SiliconStudio.Xenko.Audio
                 throw new Exception("Failed to open audio device!");
             }
 
-            DefaultListener = new AudioListener(this) { Listener = OpenAl.ListenerCreate(AudioDevice) };
+            DefaultListener = new AudioListener(this);
         }
-
-        /// <summary>
-        /// Platform specific implementation of <see cref="PauseAudio"/>.
-        /// </summary>
-        /// <remarks>Needs to be overriden if required by platform.</remarks>
-        internal virtual void PauseAudioImpl() {}
-
-        /// <summary>
-        /// Platform specific implementation of <see cref="ResumeAudio"/>.
-        /// </summary>
-        /// <remarks>Needs to be overriden if required by platform.</remarks>
-        internal virtual void ResumeAudioImpl() { }
 
         /// <summary>
         /// Platform specifc implementation of <see cref="Destroy"/>.
@@ -138,8 +126,6 @@ namespace SiliconStudio.Xenko.Audio
 
             State = AudioEngineState.Paused;
 
-            PauseAudioImpl();
-
             pausedSounds.Clear();
             lock (notDisposedSounds)
             {
@@ -166,8 +152,6 @@ namespace SiliconStudio.Xenko.Audio
                 return;
 
             State = AudioEngineState.Running;
-
-            ResumeAudioImpl();
 
             foreach (var playableSound in pausedSounds)
             {

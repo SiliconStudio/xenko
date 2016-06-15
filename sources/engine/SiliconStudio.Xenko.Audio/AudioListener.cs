@@ -19,7 +19,20 @@ namespace SiliconStudio.Xenko.Audio
     {
         public AudioListener(AudioEngine engine)
         {
+#if SILICONSTUDIO_PLATFORM_IOS
+            if (engine.DefaultListener == null)
+            {
+                Listener = OpenAl.ListenerCreate(engine.AudioDevice);
+                OpenAl.ListenerEnable(Listener);
+            }
+            else
+            {
+                Listener = engine.DefaultListener.Listener;
+            }
+#else
             Listener = OpenAl.ListenerCreate(engine.AudioDevice);
+            OpenAl.ListenerEnable(Listener);
+#endif    
         }
 
         /// <summary>
@@ -102,7 +115,10 @@ namespace SiliconStudio.Xenko.Audio
 
         public void Dispose()
         {
+#if !SILICONSTUDIO_PLATFORM_IOS
+            OpenAl.ListenerDisable(Listener);
             OpenAl.ListenerDestroy(Listener);
+#endif
         }
 
         public unsafe void Update()
