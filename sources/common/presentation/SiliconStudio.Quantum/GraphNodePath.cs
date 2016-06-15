@@ -225,6 +225,11 @@ namespace SiliconStudio.Quantum
         /// <remarks>An empty path resolves to <see cref="RootNode"/>.</remarks>
         public bool IsEmpty { get; }
 
+        /// <summary>
+        /// Gets the number of items in this path.
+        /// </summary>
+        public int Count => path.Count;
+
         /// <inheritdoc/>
         public IEnumerator<IGraphNode> GetEnumerator()
         {
@@ -300,17 +305,33 @@ namespace SiliconStudio.Quantum
         public IGraphNode GetNode() => this.Last();
 
         /// <summary>
+        /// Retrieve the parent path.
+        /// </summary>
+        /// <returns>A new <see cref="GraphNodePath"/> instance representing the parent path.</returns>
+        [Pure]
+        public GraphNodePath GetParent()
+        {
+            if (IsEmpty)
+                return null;
+
+            var result = new GraphNodePath(RootNode, path.Count == 1, path.Count - 1);
+            for (var i = 0; i < path.Count - 1; ++i)
+                result.path.Add(path[i]);
+            return result;
+        }
+
+        /// <summary>
         /// Clones this instance of <see cref="GraphNodePath"/> and remap the new instance to a new root node.
         /// </summary>
         /// <param name="newRoot">The root node for the cloned path.</param>
-        /// <returns></returns>
+        /// <returns>A copy of this path with the given node as root node.</returns>
         [Pure]
         public GraphNodePath Clone(IGraphNode newRoot) => Clone(newRoot, IsEmpty);
 
         /// <summary>
         /// Clones this instance of <see cref="GraphNodePath"/>.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A copy of this path with the same root node.</returns>
         [Pure]
         public GraphNodePath Clone() => Clone(RootNode, IsEmpty);
 

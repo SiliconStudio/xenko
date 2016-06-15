@@ -268,6 +268,38 @@ namespace SiliconStudio.Quantum.Tests
             AssertAreEqual(nodes.Length, i);
         }
 
+        [Test]
+        public void TestGetParent()
+        {
+            var obj = new Class { StructMember = { StringMember = "aa" }, ClassMember = new Class(), ListMember = { new Class(), new Class(), new Class() } };
+            var nodeContainer = new NodeContainer();
+            var rootNode = nodeContainer.GetOrCreateNode(obj);
+
+            var path = new GraphNodePath(rootNode).PushMember(nameof(Class.IntMember));
+            var parentPath = new GraphNodePath(rootNode);
+            AssertAreEqual(parentPath, path.GetParent());
+
+            path = new GraphNodePath(rootNode).PushMember(nameof(Class.StructMember)).PushMember(nameof(Struct.StringMember));
+            parentPath = new GraphNodePath(rootNode).PushMember(nameof(Class.StructMember));
+            AssertAreEqual(parentPath, path.GetParent());
+
+            path = new GraphNodePath(rootNode).PushMember(nameof(Class.ClassMember)).PushTarget();
+            parentPath = new GraphNodePath(rootNode).PushMember(nameof(Class.ClassMember));
+            AssertAreEqual(parentPath, path.GetParent());
+
+            path = new GraphNodePath(rootNode).PushMember(nameof(Class.ClassMember)).PushTarget().PushMember(nameof(Class.IntMember));
+            parentPath = new GraphNodePath(rootNode).PushMember(nameof(Class.ClassMember)).PushTarget();
+            AssertAreEqual(parentPath, path.GetParent());
+
+            path = new GraphNodePath(rootNode).PushMember(nameof(Class.ListMember)).PushIndex(new Index(1));
+            parentPath = new GraphNodePath(rootNode).PushMember(nameof(Class.ListMember));
+            AssertAreEqual(parentPath, path.GetParent());
+
+            path = new GraphNodePath(rootNode).PushMember(nameof(Class.ListMember)).PushIndex(new Index(1)).PushMember(nameof(Class.IntMember));
+            parentPath = new GraphNodePath(rootNode).PushMember(nameof(Class.ListMember)).PushIndex(new Index(1));
+            AssertAreEqual(parentPath, path.GetParent());
+        }
+
         // NUnit does not use the Equals method for objects that implement IEnumerable, but that's what we want to use for GraphNodePath
         // ReSharper disable UnusedParameter.Local
         private static void AssertAreEqual(object expected, object actual)
