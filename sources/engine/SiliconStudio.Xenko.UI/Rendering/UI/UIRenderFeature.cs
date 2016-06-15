@@ -641,40 +641,45 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
                 // rotate the UI element perpendicular to the camera view vector, if billboard is activated
                 var uiComponent = entity.Get<UIComponent>();
-                if (!uiComponent.IsFullScreen && uiComponent.IsBillboard)
+
+                if (!uiComponent.IsFullScreen && (uiComponent.IsBillboard || uiComponent.IsFixedSize))
                 {
                     Matrix viewInverse;
                     Matrix.Invert(ref camera.ViewMatrix, out viewInverse);
+                    var forwardVector = viewInverse.Forward;
 
-                    // remove scale of the camera
-                    viewInverse.Row1 /= viewInverse.Row1.XYZ().Length();
-                    viewInverse.Row2 /= viewInverse.Row2.XYZ().Length();
+                    if (uiComponent.IsBillboard)
+                    {
+                        // remove scale of the camera
+                        viewInverse.Row1 /= viewInverse.Row1.XYZ().Length();
+                        viewInverse.Row2 /= viewInverse.Row2.XYZ().Length();
 
-                    // set the scale of the object
-                    viewInverse.Row1 *= worldMatrix.Row1.XYZ().Length();
-                    viewInverse.Row2 *= worldMatrix.Row2.XYZ().Length();
+                        // set the scale of the object
+                        viewInverse.Row1 *= worldMatrix.Row1.XYZ().Length();
+                        viewInverse.Row2 *= worldMatrix.Row2.XYZ().Length();
 
-                    // set the adjusted world matrix
-                    worldMatrix.Row1 = viewInverse.Row1;
-                    worldMatrix.Row2 = viewInverse.Row2;
-                    worldMatrix.Row3 = viewInverse.Row3;
+                        // set the adjusted world matrix
+                        worldMatrix.Row1 = viewInverse.Row1;
+                        worldMatrix.Row2 = viewInverse.Row2;
+                        worldMatrix.Row3 = viewInverse.Row3;
+                    }
+
+                    if (uiComponent.IsFixedSize)
+                    {
+                        forwardVector.Normalize();
+                        var distVec = (worldMatrix.TranslationVector - camera.Entity.Transform.Position);
+                        float distScalar;
+                        Vector3.Dot(ref forwardVector, ref distVec, out distScalar);
+                        distScalar = Math.Abs(distScalar);
+
+                        var worldScale = FrustumHeight * distScalar * UIComponent.FixedSizeVerticalUnit; // FrustumHeight already is 2*Tan(FOV/2)
+
+                        worldMatrix.Row1 *= worldScale;
+                        worldMatrix.Row2 *= worldScale;
+                        worldMatrix.Row3 *= worldScale;
+                    }
                 }
 
-                // Fixed size
-                if (!uiComponent.IsFullScreen && uiComponent.IsFixedSize)
-                {
-                    var forwardVector = camera.ViewMatrix.Forward;
-                    forwardVector.Normalize();
-                    var distVec = (worldMatrix.TranslationVector - camera.Entity.Transform.Position);
-                    float distScalar;
-                    Vector3.Dot(ref forwardVector, ref distVec, out distScalar);
-
-                    var worldScale = FrustumHeight * distScalar * UIComponent.FixedSizeVerticalUnit; // FrustumHeight already is 2*Tan(FOV/2)
-
-                    worldMatrix.Row1 *= worldScale;
-                    worldMatrix.Row2 *= worldScale;
-                    worldMatrix.Row3 *= worldScale;
-                }
 
                 // Rotation of Pi along 0x to go from UI space to world space
                 worldMatrix.Row2 = -worldMatrix.Row2;
