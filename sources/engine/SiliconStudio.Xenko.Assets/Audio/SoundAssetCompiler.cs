@@ -135,6 +135,7 @@ namespace SiliconStudio.Xenko.Assets.Audio
 
                         try
                         {
+                            //todo use position vs length!! lazy me
                             buffer[count] = reader.ReadSingle();
                         }
                         catch (EndOfStreamException)
