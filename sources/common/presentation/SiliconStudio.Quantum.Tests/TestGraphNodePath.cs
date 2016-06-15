@@ -28,7 +28,7 @@ namespace SiliconStudio.Quantum.Tests
             var path = new GraphNodePath(rootNode);
             Assert.True(path.IsValid);
             Assert.True(path.IsEmpty);
-            Assert.AreEqual(rootNode, path.RootNode);
+            AssertAreEqual(rootNode, path.RootNode);
         }
 
         [Test]
@@ -38,35 +38,35 @@ namespace SiliconStudio.Quantum.Tests
             var nodeContainer = new NodeContainer();
             var path1 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj)).PushMember(nameof(Class.IntMember));
             var path2 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj)).PushMember(nameof(Class.IntMember));
-            Assert.AreEqual(path1, path2);
-            Assert.AreEqual(path1.GetHashCode(), path2.GetHashCode());
+            AssertAreEqual(path1, path2);
+            AssertAreEqual(path1.GetHashCode(), path2.GetHashCode());
             path1 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj)).PushMember(nameof(Class.ClassMember));
-            Assert.AreNotEqual(path1, path2);
-            Assert.AreNotEqual(path1.GetHashCode(), path2.GetHashCode());
+            AssertAreNotEqual(path1, path2);
+            AssertAreNotEqual(path1.GetHashCode(), path2.GetHashCode());
             path2 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj)).PushMember(nameof(Class.ClassMember));
-            Assert.AreEqual(path1, path2);
-            Assert.AreEqual(path1.GetHashCode(), path2.GetHashCode());
+            AssertAreEqual(path1, path2);
+            AssertAreEqual(path1.GetHashCode(), path2.GetHashCode());
             path1 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj)).PushMember(nameof(Class.ClassMember)).PushTarget();
-            Assert.AreNotEqual(path1, path2);
-            Assert.AreNotEqual(path1.GetHashCode(), path2.GetHashCode());
+            AssertAreNotEqual(path1, path2);
+            AssertAreNotEqual(path1.GetHashCode(), path2.GetHashCode());
             path2 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj)).PushMember(nameof(Class.ClassMember)).PushTarget();
-            Assert.AreEqual(path1, path2);
-            Assert.AreEqual(path1.GetHashCode(), path2.GetHashCode());
+            AssertAreEqual(path1, path2);
+            AssertAreEqual(path1.GetHashCode(), path2.GetHashCode());
             path1 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj)).PushMember(nameof(Class.ClassMember)).PushTarget().PushMember(nameof(Class.IntMember));
-            Assert.AreNotEqual(path1, path2);
-            Assert.AreNotEqual(path1.GetHashCode(), path2.GetHashCode());
+            AssertAreNotEqual(path1, path2);
+            AssertAreNotEqual(path1.GetHashCode(), path2.GetHashCode());
             path2 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj)).PushMember(nameof(Class.ClassMember)).PushTarget().PushMember(nameof(Class.IntMember));
-            Assert.AreEqual(path1, path2);
-            Assert.AreEqual(path1.GetHashCode(), path2.GetHashCode());
+            AssertAreEqual(path1, path2);
+            AssertAreEqual(path1.GetHashCode(), path2.GetHashCode());
             path1 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj)).PushMember(nameof(Class.ListMember)).PushIndex(new Index(0));
-            Assert.AreNotEqual(path1, path2);
-            Assert.AreNotEqual(path1.GetHashCode(), path2.GetHashCode());
+            AssertAreNotEqual(path1, path2);
+            AssertAreNotEqual(path1.GetHashCode(), path2.GetHashCode());
             path2 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj)).PushMember(nameof(Class.ListMember)).PushIndex(new Index(0));
-            Assert.AreEqual(path1, path2);
-            Assert.AreEqual(path1.GetHashCode(), path2.GetHashCode());
+            AssertAreEqual(path1, path2);
+            AssertAreEqual(path1.GetHashCode(), path2.GetHashCode());
             path2 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj)).PushMember(nameof(Class.ListMember)).PushIndex(new Index(1));
-            Assert.AreNotEqual(path1, path2);
-            Assert.AreNotEqual(path1.GetHashCode(), path2.GetHashCode());
+            AssertAreNotEqual(path1, path2);
+            AssertAreNotEqual(path1.GetHashCode(), path2.GetHashCode());
         }
 
         [Test]
@@ -76,26 +76,26 @@ namespace SiliconStudio.Quantum.Tests
             var nodeContainer = new NodeContainer();
             var path1 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj));
             var clone = path1.Clone();
-            Assert.AreEqual(path1, clone);
-            Assert.AreEqual(path1.GetHashCode(), clone.GetHashCode());
-            Assert.AreEqual(path1.RootNode, clone.RootNode);
-            Assert.AreEqual(path1.IsValid, clone.IsValid);
-            Assert.AreEqual(path1.IsEmpty, clone.IsEmpty);
-            Assert.AreEqual(path1.GetNode(), clone.GetNode());
+            AssertAreEqual(path1, clone);
+            AssertAreEqual(path1.GetHashCode(), clone.GetHashCode());
+            AssertAreEqual(path1.RootNode, clone.RootNode);
+            AssertAreEqual(path1.IsValid, clone.IsValid);
+            AssertAreEqual(path1.IsEmpty, clone.IsEmpty);
+            AssertAreEqual(path1.GetNode(), clone.GetNode());
             var path2 = path1.PushMember(nameof(Class.ClassMember)).PushTarget().PushMember(nameof(Class.IntMember));
             clone = path2.Clone();
-            Assert.AreEqual(path2, clone);
-            Assert.AreEqual(path2.RootNode, clone.RootNode);
-            Assert.AreEqual(path2.IsValid, clone.IsValid);
-            Assert.AreEqual(path2.IsEmpty, clone.IsEmpty);
-            Assert.AreEqual(path2.GetNode(), clone.GetNode());
+            AssertAreEqual(path2, clone);
+            AssertAreEqual(path2.RootNode, clone.RootNode);
+            AssertAreEqual(path2.IsValid, clone.IsValid);
+            AssertAreEqual(path2.IsEmpty, clone.IsEmpty);
+            AssertAreEqual(path2.GetNode(), clone.GetNode());
             var path3 = path1.PushMember(nameof(Class.ListMember)).PushIndex(new Index(1)).PushMember(nameof(Class.IntMember));
             clone = path3.Clone();
-            Assert.AreEqual(path3, clone);
-            Assert.AreEqual(path3.RootNode, clone.RootNode);
-            Assert.AreEqual(path3.IsValid, clone.IsValid);
-            Assert.AreEqual(path3.IsEmpty, clone.IsEmpty);
-            Assert.AreEqual(path3.GetNode(), clone.GetNode());
+            AssertAreEqual(path3, clone);
+            AssertAreEqual(path3.RootNode, clone.RootNode);
+            AssertAreEqual(path3.IsValid, clone.IsValid);
+            AssertAreEqual(path3.IsEmpty, clone.IsEmpty);
+            AssertAreEqual(path3.GetNode(), clone.GetNode());
         }
 
         [Test]
@@ -107,28 +107,28 @@ namespace SiliconStudio.Quantum.Tests
             var newRoot = nodeContainer.GetOrCreateNode(obj2);
             var path1 = new GraphNodePath(nodeContainer.GetOrCreateNode(obj1));
             var clone = path1.Clone(newRoot);
-            Assert.AreNotEqual(path1, clone);
-            Assert.AreNotEqual(path1.GetHashCode(), clone.GetHashCode());
-            Assert.AreNotEqual(newRoot, path1.RootNode);
-            Assert.AreEqual(newRoot, clone.RootNode);
-            Assert.AreEqual(path1.IsValid, clone.IsValid);
-            Assert.AreEqual(path1.IsEmpty, clone.IsEmpty);
+            AssertAreNotEqual(path1, clone);
+            AssertAreNotEqual(path1.GetHashCode(), clone.GetHashCode());
+            AssertAreNotEqual(newRoot, path1.RootNode);
+            AssertAreEqual(newRoot, clone.RootNode);
+            AssertAreEqual(path1.IsValid, clone.IsValid);
+            AssertAreEqual(path1.IsEmpty, clone.IsEmpty);
             var path2 = path1.PushMember(nameof(Class.ClassMember)).PushTarget().PushMember(nameof(Class.IntMember));
             clone = path2.Clone(newRoot);
-            Assert.AreNotEqual(path2, clone);
-            Assert.AreNotEqual(path2.GetHashCode(), clone.GetHashCode());
-            Assert.AreNotEqual(newRoot, path2.RootNode);
-            Assert.AreEqual(newRoot, clone.RootNode);
-            Assert.AreEqual(path2.IsValid, clone.IsValid);
-            Assert.AreEqual(path2.IsEmpty, clone.IsEmpty);
+            AssertAreNotEqual(path2, clone);
+            AssertAreNotEqual(path2.GetHashCode(), clone.GetHashCode());
+            AssertAreNotEqual(newRoot, path2.RootNode);
+            AssertAreEqual(newRoot, clone.RootNode);
+            AssertAreEqual(path2.IsValid, clone.IsValid);
+            AssertAreEqual(path2.IsEmpty, clone.IsEmpty);
             var path3 = path1.PushMember(nameof(Class.ListMember)).PushIndex(new Index(1)).PushMember(nameof(Class.IntMember));
             clone = path3.Clone(newRoot);
-            Assert.AreNotEqual(path3, clone);
-            Assert.AreNotEqual(path3.GetHashCode(), clone.GetHashCode());
-            Assert.AreNotEqual(newRoot, path3.RootNode);
-            Assert.AreEqual(newRoot, clone.RootNode);
-            Assert.AreEqual(path3.IsValid, clone.IsValid);
-            Assert.AreEqual(path3.IsEmpty, clone.IsEmpty);
+            AssertAreNotEqual(path3, clone);
+            AssertAreNotEqual(path3.GetHashCode(), clone.GetHashCode());
+            AssertAreNotEqual(newRoot, path3.RootNode);
+            AssertAreEqual(newRoot, clone.RootNode);
+            AssertAreEqual(path3.IsValid, clone.IsValid);
+            AssertAreEqual(path3.IsEmpty, clone.IsEmpty);
         }
 
         [Test]
@@ -143,14 +143,14 @@ namespace SiliconStudio.Quantum.Tests
             Assert.NotNull(intNode);
             Assert.True(path.IsValid);
             Assert.False(path.IsEmpty);
-            Assert.AreEqual(rootNode, path.RootNode);
-            Assert.AreEqual(intNode, path.GetNode());
+            AssertAreEqual(rootNode, path.RootNode);
+            AssertAreEqual(intNode, path.GetNode());
             var i = 0;
             foreach (var node in path)
             {
-                Assert.AreEqual(nodes[i++], node);
+                AssertAreEqual(nodes[i++], node);
             }
-            Assert.AreEqual(nodes.Length, i);
+            AssertAreEqual(nodes.Length, i);
         }
 
         [Test]
@@ -166,14 +166,14 @@ namespace SiliconStudio.Quantum.Tests
             Assert.NotNull(memberNode);
             Assert.True(path.IsValid);
             Assert.False(path.IsEmpty);
-            Assert.AreEqual(rootNode, path.RootNode);
-            Assert.AreEqual(memberNode, path.GetNode());
+            AssertAreEqual(rootNode, path.RootNode);
+            AssertAreEqual(memberNode, path.GetNode());
             var i = 0;
             foreach (var node in path)
             {
-                Assert.AreEqual(nodes[i++], node);
+                AssertAreEqual(nodes[i++], node);
             }
-            Assert.AreEqual(nodes.Length, i);
+            AssertAreEqual(nodes.Length, i);
         }
 
         [Test]
@@ -188,14 +188,14 @@ namespace SiliconStudio.Quantum.Tests
             Assert.NotNull(targetNode);
             Assert.True(path.IsValid);
             Assert.False(path.IsEmpty);
-            Assert.AreEqual(rootNode, path.RootNode);
-            Assert.AreEqual(targetNode, path.GetNode());
+            AssertAreEqual(rootNode, path.RootNode);
+            AssertAreEqual(targetNode, path.GetNode());
             var i = 0;
             foreach (var node in path)
             {
-                Assert.AreEqual(nodes[i++], node);
+                AssertAreEqual(nodes[i++], node);
             }
-            Assert.AreEqual(nodes.Length, i);
+            AssertAreEqual(nodes.Length, i);
         }
 
         [Test]
@@ -212,14 +212,14 @@ namespace SiliconStudio.Quantum.Tests
             Assert.NotNull(intNode);
             Assert.True(path.IsValid);
             Assert.False(path.IsEmpty);
-            Assert.AreEqual(rootNode, path.RootNode);
-            Assert.AreEqual(intNode, path.GetNode());
+            AssertAreEqual(rootNode, path.RootNode);
+            AssertAreEqual(intNode, path.GetNode());
             var i = 0;
             foreach (var node in path)
             {
-                Assert.AreEqual(nodes[i++], node);
+                AssertAreEqual(nodes[i++], node);
             }
-            Assert.AreEqual(nodes.Length, i);
+            AssertAreEqual(nodes.Length, i);
         }
 
         [Test]
@@ -234,14 +234,14 @@ namespace SiliconStudio.Quantum.Tests
             Assert.NotNull(targetNode);
             Assert.True(path.IsValid);
             Assert.False(path.IsEmpty);
-            Assert.AreEqual(rootNode, path.RootNode);
-            Assert.AreEqual(targetNode, path.GetNode());
+            AssertAreEqual(rootNode, path.RootNode);
+            AssertAreEqual(targetNode, path.GetNode());
             var i = 0;
             foreach (var node in path)
             {
-                Assert.AreEqual(nodes[i++], node);
+                AssertAreEqual(nodes[i++], node);
             }
-            Assert.AreEqual(nodes.Length, i);
+            AssertAreEqual(nodes.Length, i);
         }
 
         [Test]
@@ -258,14 +258,27 @@ namespace SiliconStudio.Quantum.Tests
             Assert.NotNull(intNode);
             Assert.True(path.IsValid);
             Assert.False(path.IsEmpty);
-            Assert.AreEqual(rootNode, path.RootNode);
-            Assert.AreEqual(intNode, path.GetNode());
+            AssertAreEqual(rootNode, path.RootNode);
+            AssertAreEqual(intNode, path.GetNode());
             var i = 0;
             foreach (var node in path)
             {
-                Assert.AreEqual(nodes[i++], node);
+                AssertAreEqual(nodes[i++], node);
             }
-            Assert.AreEqual(nodes.Length, i);
+            AssertAreEqual(nodes.Length, i);
         }
+
+        // NUnit does not use the Equals method for objects that implement IEnumerable, but that's what we want to use for GraphNodePath
+        // ReSharper disable UnusedParameter.Local
+        private static void AssertAreEqual(object expected, object actual)
+        {
+            Assert.True(expected.Equals(actual));
+        }
+
+        private static void AssertAreNotEqual(object expected, object actual)
+        {
+            Assert.False(expected.Equals(actual));
+        }
+        // ReSharper restore UnusedParameter.Local
     }
 }
