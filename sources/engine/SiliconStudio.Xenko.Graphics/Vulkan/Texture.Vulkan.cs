@@ -94,19 +94,7 @@ namespace SiliconStudio.Xenko.Graphics
             // For depth-stencil formats, automatically fall back to a supported one
             if (IsDepthStencil && HasStencil)
             {
-                var fallbackFormats = new[] { NativeFormat, SharpVulkan.Format.D32SFloatS8UInt, SharpVulkan.Format.D24UNormS8UInt, SharpVulkan.Format.D16UNormS8UInt };
-
-                foreach (var fallbackFormat in fallbackFormats)
-                {
-                    FormatProperties formatProperties;
-                    GraphicsDevice.Adapter.PhysicalDevice.GetFormatProperties(fallbackFormat, out formatProperties);
-
-                    if ((formatProperties.OptimalTilingFeatures & FormatFeatureFlags.DepthStencilAttachment) != 0)
-                    {
-                        NativeFormat = fallbackFormat;
-                        break;
-                    }
-                }
+                NativeFormat = GetFallbackDepthStencilFormat(GraphicsDevice, NativeFormat);
             }
 
             if (Usage == GraphicsResourceUsage.Staging)
@@ -653,6 +641,27 @@ namespace SiliconStudio.Xenko.Graphics
             return Math.Min(CalculateMipCountFromSize(width, minimumSizeLastMip), CalculateMipCountFromSize(height, minimumSizeLastMip));
         }
 
+        internal static Format GetFallbackDepthStencilFormat(GraphicsDevice device, Format format)
+        {
+            if (format == SharpVulkan.Format.D16UNormS8UInt || format == SharpVulkan.Format.D24UNormS8UInt || format == SharpVulkan.Format.D32SFloatS8UInt)
+            {
+                var fallbackFormats = new[] { format, SharpVulkan.Format.D32SFloatS8UInt, SharpVulkan.Format.D24UNormS8UInt, SharpVulkan.Format.D16UNormS8UInt };
+
+                foreach (var fallbackFormat in fallbackFormats)
+                {
+                    FormatProperties formatProperties;
+                    device.Adapter.PhysicalDevice.GetFormatProperties(fallbackFormat, out formatProperties);
+
+                    if ((formatProperties.OptimalTilingFeatures & FormatFeatureFlags.DepthStencilAttachment) != 0)
+                    {
+                        format = fallbackFormat;
+                        break;
+                    }
+                }
+            }
+
+            return format;
+        }
 
         internal static bool IsStencilFormat(PixelFormat format)
         {

@@ -252,7 +252,7 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 attachments[attachmentCount - 1] = new AttachmentDescription
                 {
-                    Format = VulkanConvertExtensions.ConvertPixelFormat(pipelineStateDescription.Output.DepthStencilFormat),
+                    Format = Texture.GetFallbackDepthStencilFormat(GraphicsDevice, VulkanConvertExtensions.ConvertPixelFormat(pipelineStateDescription.Output.DepthStencilFormat)),
                     Samples = SampleCountFlags.Sample1,
                     LoadOperation = AttachmentLoadOperation.Load, // TODO VULKAN: Only if depth read enabled?
                     StoreOperation = AttachmentStoreOperation.Store, // TODO VULKAN: Only if depth write enabled?
