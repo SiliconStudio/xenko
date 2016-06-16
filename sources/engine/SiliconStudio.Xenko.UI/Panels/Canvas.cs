@@ -172,11 +172,11 @@ namespace SiliconStudio.Xenko.UI.Panels
                 // arrange the child
                 child.Arrange(childProvidedSize, IsCollapsed);
 
-                // compute the child offsets wrt to parent (left,top,front) corner
+                // compute the child offsets wrt parent (left,top,front) corner
                 var pinOrigin = child.DependencyProperties.Get(PinOriginPropertyKey);
                 var childOrigin = ComputeAbsolutePinPosition(child, ref finalSizeWithoutMargins) - Vector3.Modulate(pinOrigin, child.RenderSize);
 
-                // compute the child offsets wrt to parent origin (0,0,0). 
+                // compute the child offsets wrt parent origin (0,0,0). 
                 var childOriginParentCenter = childOrigin - finalSizeWithoutMargins / 2;
 
                 // set the panel arrange matrix for the child

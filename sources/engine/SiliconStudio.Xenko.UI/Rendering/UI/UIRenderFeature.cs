@@ -257,7 +257,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 batch.Begin(context.GraphicsContext, ref viewParameters.ViewProjectionMatrix, BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
 
                 // Render the UI elements in the final render target
-                ReccursiveDrawWithClipping(context, rootElement);
+                RecursiveDrawWithClipping(context, rootElement);
 
                 // end the image draw session
                 batch.End();
@@ -276,7 +276,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
             }
         }
 
-        private void ReccursiveDrawWithClipping(RenderDrawContext context, UIElement element)
+        private void RecursiveDrawWithClipping(RenderDrawContext context, UIElement element)
         {
             // if the element is not visible, we also remove all its children
             if (!element.IsVisible)
@@ -306,7 +306,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
             // render the children
             foreach (var child in element.VisualChildrenCollection)
-                ReccursiveDrawWithClipping(context, child);
+                RecursiveDrawWithClipping(context, child);
 
             // clear the element clipping region from the stencil buffer
             if (element.ClipToBounds)

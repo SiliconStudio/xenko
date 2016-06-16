@@ -63,6 +63,15 @@ namespace SiliconStudio.Xenko.Assets.UI
 
             [DataMember]
             public float AreaBorderThickness { get; set; } = 2.0f;
+
+            [DataMember]
+            public Color AdornerBackgroundColor { get; set; } = Color.LimeGreen*0.2f;
+
+            [DataMember]
+            public Color AdornerBorderColor { get; set; } = Color.LimeGreen;
+
+            [DataMember]
+            public float AdornerBorderThickness { get; set; } = 2.0f;
         }
     }
 }
