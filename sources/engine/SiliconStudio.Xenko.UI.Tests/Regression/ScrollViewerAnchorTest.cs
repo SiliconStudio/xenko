@@ -96,18 +96,21 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             scrollViewer = new TestScrollViewer { Name = "sv", Content = randomStackPanel, ScrollMode = ScrollingMode.HorizontalVertical, SnapToAnchors = true };
 
             // set the scroll viewer as the root
-            UIComponent.RootElement = scrollViewer;
+            UIComponent.Page = new Engine.UIPage { RootElement = scrollViewer };
         }
 
         private Button CreateButton(int col, int row, float minimumHeight = 0, float minimumWidth = 0, bool randomMinHeight = false, bool randowMinWidth = false)
         {
+            var textBlock = new TextBlock { Text = "Col " + col + " - Row " + row, Font = Content.Load<SpriteFont>("MicrosoftSansSerif15"), TextAlignment = TextAlignment.Center};
+            ApplyTextBlockDefaultStyle(textBlock);
             var button =  new Button
             {
                 Name = "Button at col " + col + " - row " + row,
                 MinimumHeight = minimumHeight,
                 MinimumWidth = minimumWidth,
-                Content = new TextBlock { Text = "Col " + col + " - Row " + row, Font = Content.Load<SpriteFont>("MicrosoftSansSerif15"), TextAlignment = TextAlignment.Center}
+                Content = textBlock
             };
+            ApplyButtonDefaultStyle(button);
 
             if (randomMinHeight)
                 button.MinimumHeight = minimumHeight + 3 * (float)random.NextDouble() * minimumHeight;

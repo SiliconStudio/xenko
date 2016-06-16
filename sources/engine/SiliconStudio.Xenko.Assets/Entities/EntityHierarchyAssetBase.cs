@@ -7,6 +7,7 @@ using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Xenko.Engine;
 
@@ -233,49 +234,19 @@ namespace SiliconStudio.Xenko.Assets.Entities
             return Hierarchy.Entities.ContainsKey(id);
         }
 
-        public IEnumerable<Entity> EnumerateChildren(Entity entity, bool isRecursive)
+        public static IEnumerable<Entity> EnumerateChildren(Entity entity, bool isRecursive)
         {
             var transformationComponent = entity.Transform;
-            if (transformationComponent == null)
-                yield break;
-
-            foreach (var child in transformationComponent.Children)
-            {
-                yield return child.Entity;
-
-                if (isRecursive)
-                {
-                    foreach (var childChild in EnumerateChildren(child.Entity, true))
-                    {
-                        yield return childChild;
-                    }
-                }
-            }
+            return transformationComponent == null
+                ? Enumerable.Empty<Entity>()
+                : (isRecursive ? transformationComponent.Children.DepthFirst(t => t.Children) : transformationComponent.Children).Select(t => t.Entity);
         }
 
         public IEnumerable<EntityDesign> EnumerateChildren(EntityDesign entityDesign, bool isRecursive)
         {
-            var transformationComponent = entityDesign.Entity.Transform;
-            if (transformationComponent == null)
-                yield break;
-
-            foreach (var child in transformationComponent.Children)
-            {
-                var childEntityDesign = Hierarchy.Entities[child.Entity.Id];
-                yield return childEntityDesign;
-
-                if (isRecursive)
-                {
-                    foreach (var childChild in EnumerateChildren(childEntityDesign, true))
-                    {
-                        var childChildEntityDesign = Hierarchy.Entities[childChild.Entity.Id];
-                        yield return childChildEntityDesign;
-                    }
-                }
-            }
+            return EnumerateChildren(entityDesign.Entity, isRecursive).Select(e => Hierarchy.Entities[e.Id]);
         }
-
-
+        
         /// <summary>
         /// Gets a mapping between a base and the list of instance actually used
         /// </summary>

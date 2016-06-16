@@ -153,7 +153,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
             foreach (var uiElementState in uiElementStates)
             {
                 var uiComponent = uiElementState.UIComponent;
-                var rootElement = uiComponent.RootElement;
+                var rootElement = uiComponent.Page?.RootElement;
                 if (rootElement == null)
                     continue;
 
@@ -189,7 +189,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 {
                     foreach (var uiState in uiElementStates)
                     {
-                        if (uiState.UIComponent.RootElement == null)
+                        if (uiState.UIComponent.Page == null)
                             continue;
 
                         UpdateMouseOver(uiState);
@@ -257,7 +257,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 batch.Begin(context.GraphicsContext, ref viewParameters.ViewProjectionMatrix, BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
 
                 // Render the UI elements in the final render target
-                ReccursiveDrawWithClipping(context, rootElement);
+                RecursiveDrawWithClipping(context, rootElement);
 
                 // end the image draw session
                 batch.End();
@@ -276,7 +276,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
             }
         }
 
-        private void ReccursiveDrawWithClipping(RenderDrawContext context, UIElement element)
+        private void RecursiveDrawWithClipping(RenderDrawContext context, UIElement element)
         {
             // if the element is not visible, we also remove all its children
             if (!element.IsVisible)
@@ -306,7 +306,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
             // render the children
             foreach (var child in element.VisualChildrenCollection)
-                ReccursiveDrawWithClipping(context, child);
+                RecursiveDrawWithClipping(context, child);
 
             // clear the element clipping region from the stencil buffer
             if (element.ClipToBounds)
@@ -369,7 +369,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
         private void UpdateTouchEvents(RenderUIElement state, GameTime gameTime)
         {
-            var rootElement = state.UIComponent.RootElement;
+            var rootElement = state.UIComponent.Page.RootElement;
             var intersectionPoint = Vector3.Zero;
             var lastTouchPosition = new Vector2(float.NegativeInfinity);
 
@@ -466,7 +466,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
             var intersectionPoint = Vector3.Zero;
             var mousePosition = input.MousePosition;
-            var rootElement = state.UIComponent.RootElement;
+            var rootElement = state.UIComponent.Page.RootElement;
             var lastOveredElement = state.LastOveredElement;
             var overredElement = lastOveredElement;
 

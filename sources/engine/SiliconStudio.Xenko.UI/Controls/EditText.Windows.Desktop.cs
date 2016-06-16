@@ -207,7 +207,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                 SelectedText = new string(character, 1);
         }
 
-        private bool TryConvertKeyToCharacter(Keys key, bool isMajuscule, ref Char character)
+        private bool TryConvertKeyToCharacter(Keys key, bool isMajuscule, ref char character)
         {
             switch (key)
             {
@@ -479,7 +479,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                     character = '/';
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("key");
+                    throw new ArgumentOutOfRangeException(nameof(key));
             }
 
             return true;

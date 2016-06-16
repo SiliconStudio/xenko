@@ -1,43 +1,179 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System.ComponentModel;
 using System.Diagnostics;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.UI.Controls
 {
     /// <summary>
     /// Represents a Windows button control, which reacts to the Click event.
     /// </summary>
+    [DataContract(nameof(Button))]
     [DebuggerDisplay("Button - Name={Name}")]
     public class Button : ButtonBase
     {
-        /// <summary>
-        /// The key to the NotPressedImage dependency property.
-        /// </summary>
-        public static readonly PropertyKey<ISpriteProvider> NotPressedImagePropertyKey = new PropertyKey<ISpriteProvider>("NotPressedImageKey", typeof(Button), DefaultValueMetadata.Static<ISpriteProvider>(null), ObjectInvalidationMetadata.New<ISpriteProvider>(OnAspectImageInvalidated));
-
-        /// <summary>
-        /// The key to the PressedImage dependency property.
-        /// </summary>
-        public static readonly PropertyKey<ISpriteProvider> PressedImagePropertyKey = new PropertyKey<ISpriteProvider>("PressedImageKey", typeof(Button), DefaultValueMetadata.Static<ISpriteProvider>(null), ObjectInvalidationMetadata.New<ISpriteProvider>(OnAspectImageInvalidated));
-
-        /// <summary>
-        /// The key to the MouseOverImage dependency property.
-        /// </summary>
-        public static readonly PropertyKey<ISpriteProvider> MouseOverImagePropertyKey = new PropertyKey<ISpriteProvider>("MouseOverImageKey", typeof(Button), DefaultValueMetadata.Static<ISpriteProvider>(null), ObjectInvalidationMetadata.New<ISpriteProvider>(OnAspectImageInvalidated));
+        private StretchType imageStretchType = StretchType.Uniform;
+        private StretchDirection imageStretchDirection = StretchDirection.Both;
+        private ISpriteProvider pressedImage;
+        private ISpriteProvider notPressedImage;
+        private ISpriteProvider mouseOverImage;
+        private bool sizeToContent = true;
 
         public Button()
         {
             DrawLayerNumber += 1; // (button design image)
             Padding = new Thickness(10, 5, 10, 7);
+
+            MouseOverStateChanged += (sender, args) => InvalidateButtonImage();
         }
 
-        private static void OnAspectImageInvalidated(object propertyOwner, PropertyKey<ISpriteProvider> propertyKey, ISpriteProvider propertyOldValue)
+        /// <inheritdoc/>
+        public override bool IsPressed
         {
-            var button = (Button)propertyOwner;
-            button.OnAspectImageInvalidated();
+            get { return base.IsPressed; }
+            protected set
+            {
+                if (value == IsPressed)
+                    return;
+
+                base.IsPressed = value;
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value that describes how the button image should be stretched to fill the destination rectangle.
+        /// </summary>
+        /// <remarks>This property has no effect is <see cref="SizeToContent"/> is <c>true</c>.</remarks>
+        [DataMember]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(StretchType.Uniform)]
+        public StretchType ImageStretchType
+        {
+            get { return imageStretchType; }
+            set
+            {
+                imageStretchType = value;
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value that indicates how the button image is scaled.
+        /// </summary>
+        /// <remarks>This property has no effect is <see cref="SizeToContent"/> is <c>true</c>.</remarks>
+        [DataMember]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(StretchDirection.Both)]
+        public StretchDirection ImageStretchDirection
+        {
+            get { return imageStretchDirection; }
+            set
+            {
+                imageStretchDirection = value;
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the image that the button displays when pressed.
+        /// </summary>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(null)]
+        public ISpriteProvider PressedImage
+        {
+            get { return pressedImage; }
+            set
+            {
+                if (pressedImage == value)
+                    return;
+
+                pressedImage = value;
+                OnAspectImageInvalidated();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the image that the button displays when not pressed.
+        /// </summary>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(null)]
+        public ISpriteProvider NotPressedImage
+        {
+            get { return notPressedImage; }
+            set
+            {
+                if (notPressedImage == value)
+                    return;
+
+                notPressedImage = value;
+                OnAspectImageInvalidated();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the image that the button displays when the mouse is over it.
+        /// </summary>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(null)]
+        public ISpriteProvider MouseOverImage
+        {
+            get { return mouseOverImage; }
+            set
+            {
+                if (mouseOverImage == value)
+                    return;
+
+                mouseOverImage = value;
+                OnAspectImageInvalidated();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets whether the size depends on the Content. The default is <c>true</c>.
+        /// </summary>
+        /// <userdoc>True if this button's size depends of its content, false otherwise.</userdoc>
+        [DataMember]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(true)]
+        public bool SizeToContent
+        {
+            get { return sizeToContent; }
+            set
+            {
+                if (sizeToContent == value)
+                    return;
+
+                sizeToContent = value;
+                InvalidateMeasure();
+            }
+        }
+
+        internal Sprite ButtonImage => (IsPressed ? PressedImage : MouseOverState == MouseOverState.MouseOverElement ? MouseOverImage : NotPressedImage)?.GetSprite();
+
+        /// <inheritdoc/>
+        protected override Vector3 ArrangeOverride(Vector3 finalSizeWithoutMargins)
+        {
+            return sizeToContent
+                ? base.ArrangeOverride(finalSizeWithoutMargins)
+                : ImageSizeHelper.CalculateImageSizeFromAvailable(ButtonImage, finalSizeWithoutMargins, ImageStretchType, ImageStretchDirection, false);
+        }
+
+        /// <inheritdoc/>
+        protected override Vector3 MeasureOverride(Vector3 availableSizeWithoutMargins)
+        {
+            return sizeToContent
+                ? base.MeasureOverride(availableSizeWithoutMargins)
+                : ImageSizeHelper.CalculateImageSizeFromAvailable(ButtonImage, availableSizeWithoutMargins, ImageStretchType, ImageStretchDirection, true);
         }
 
         /// <summary>
@@ -46,33 +182,13 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         protected virtual void OnAspectImageInvalidated()
         {
+            InvalidateButtonImage();
         }
         
-        /// <summary>
-        /// Gets or sets the image that the button displays when pressed
-        /// </summary>
-        public ISpriteProvider PressedImage
+        private void InvalidateButtonImage()
         {
-            get { return DependencyProperties.Get(PressedImagePropertyKey); }
-            set { DependencyProperties.Set(PressedImagePropertyKey, value); }
-        }
-
-        /// <summary>
-        /// Gets or sets the image that the button displays when not pressed
-        /// </summary>
-        public ISpriteProvider NotPressedImage
-        {
-            get { return DependencyProperties.Get(NotPressedImagePropertyKey); }
-            set { DependencyProperties.Set(NotPressedImagePropertyKey, value); }
-        }
-
-        /// <summary>
-        /// Gets or sets the image that the button displays when the mouse is over it
-        /// </summary>
-        public ISpriteProvider MouseOverImage
-        {
-            get { return DependencyProperties.Get(MouseOverImagePropertyKey); }
-            set { DependencyProperties.Set(MouseOverImagePropertyKey, value); }
+            if (!sizeToContent)
+                InvalidateMeasure();
         }
     }
 }

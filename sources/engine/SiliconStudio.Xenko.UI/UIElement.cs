@@ -3,68 +3,49 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Reflection;
-
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
-using SiliconStudio.Xenko.UI.Events;
 
 namespace SiliconStudio.Xenko.UI
 {
     /// <summary>
     /// Provides a base class for all the User Interface elements in Xenko applications.
     /// </summary>
+    [DataContract(Inherited = true)]
+    [CategoryOrder(10, AppearanceCategory, Expand = ExpandRule.Auto)]
+    [CategoryOrder(20, BehaviorCategory, Expand = ExpandRule.Auto)]
+    [CategoryOrder(30, LayoutCategory, Expand = ExpandRule.Auto)]
+    [CategoryOrder(100, MiscCategory, Expand = ExpandRule.Auto)]
     [DebuggerDisplay("UIElement: {Name}")]
-    public abstract partial class UIElement : IUIElementUpdate
+    public abstract partial class UIElement : IUIElementUpdate, IIdentifiable
     {
-        #region Dependency Properties
+        // Categories of UI element classes
+        protected const string InputCategory = "Input";
+        protected const string PanelCategory = "Panel";
+        // Categories of UI element properties
+        protected const string AppearanceCategory = "Appearance";
+        protected const string BehaviorCategory = "Behavior";
+        protected const string LayoutCategory = "Layout";
+        protected const string MiscCategory = "Misc";
 
-        /// <summary>
-        /// The key to the height dependency property.
-        /// </summary>
-        public readonly static PropertyKey<float> DefaultWidthPropertyKey = new PropertyKey<float>("DefaultWidthKey", typeof(UIElement), DefaultValueMetadata.Static(0f), ValidateValueMetadata.New<float>(DefaultSizeValidator), ObjectInvalidationMetadata.New<float>(DefaultSizeInvalidation));
-        /// <summary>
-        /// The key to the height dependency property.
-        /// </summary>
-        public readonly static PropertyKey<float> DefaultHeightPropertyKey = new PropertyKey<float>("DefaultHeightKey", typeof(UIElement), DefaultValueMetadata.Static(0f), ValidateValueMetadata.New<float>(DefaultSizeValidator), ObjectInvalidationMetadata.New<float>(DefaultSizeInvalidation));
-        /// <summary>
-        /// The key to the height dependency property.
-        /// </summary>
-        public readonly static PropertyKey<float> DefaultDepthPropertyKey = new PropertyKey<float>("DefaultDepthKey", typeof(UIElement), DefaultValueMetadata.Static(0f), ValidateValueMetadata.New<float>(DefaultSizeValidator), ObjectInvalidationMetadata.New<float>(DefaultSizeInvalidation));
-        /// <summary>
-        /// The key to the name dependency property.
-        /// </summary>
-        public readonly static PropertyKey<string> NamePropertyKey = new PropertyKey<string>("NameKey", typeof(UIElement), DefaultValueMetadata.Static<string>(null), ObjectInvalidationMetadata.New<string>(NameInvalidationCallback));
-        /// <summary>
-        /// The key to the parent dependency property.
-        /// </summary>
-        private readonly static PropertyKey<UIElement> parentPropertyKey = new PropertyKey<UIElement>("ParentKey", typeof(UIElement), DefaultValueMetadata.Static<UIElement>(null));
-        /// <summary>
-        /// The key to the VisualParent dependency property.
-        /// </summary>
-        private readonly static PropertyKey<UIElement> visualParentPropertyKey = new PropertyKey<UIElement>("ParentKey", typeof(UIElement), DefaultValueMetadata.Static<UIElement>(null));
-        /// <summary>
-        /// The key to the Background color dependency property.
-        /// </summary>
-        private readonly static PropertyKey<Color> backgroundColorPropertyKey = new PropertyKey<Color>("backgroundColorKey", typeof(Color), DefaultValueMetadata.Static(new Color(0,0,0,0)));
+        internal Vector3 RenderSizeInternal;
+        internal Matrix WorldMatrixInternal;
+        protected internal Thickness MarginInternal = Thickness.UniformCuboid(0f);
 
-        private static void DefaultSizeInvalidation(object propertyOwner, PropertyKey<float> propertyKey, float propertyOldValue)
-        {
-            var element = (UIElement)propertyOwner;
-            element.InvalidateMeasure();
-        }
-
-        #endregion
-
-        private static uint uiElementCount;
+        private string name;
         private Visibility visibility = Visibility.Visible;
         private float opacity = 1.0f;
         private bool isEnabled = true;
         private bool isHierarchyEnabled = true;
+        private float defaultWidth;
+        private float defaultHeight;
+        private float defaultDepth;
         private float width = float.NaN;
         private float height = float.NaN;
         private float depth = float.NaN;
@@ -83,11 +64,6 @@ namespace SiliconStudio.Xenko.UI
         private Style style;
         private ResourceDictionary resourceDictionary;
 
-        internal bool HierarchyDisablePicking;
-        internal Vector3 RenderSizeInternal;
-        internal Matrix WorldMatrixInternal;
-        internal protected Thickness MarginInternal = Thickness.UniformCuboid(0f);
-
         protected bool ArrangeChanged;
         protected bool LocalMatrixChanged;
 
@@ -96,14 +72,13 @@ namespace SiliconStudio.Xenko.UI
         private bool previousIsParentCollapsed;
 
         /// <summary>
-        /// Create an instance of a UIElement
+        /// Creates a new instance of <see cref="UIElement"/>.
         /// </summary>
         protected UIElement()
         {
-            ID = ++uiElementCount;
+            Id = Guid.NewGuid();
             DependencyProperties = new PropertyContainer(this);
             VisualChildrenCollection = new UIElementCollection();
-            DrawLayerNumber = 1; // one layer for BackgroundColor/Clipping
         }
         
         /// <summary>
@@ -114,39 +89,48 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// A unique ID defining the UI element.
         /// </summary>
-        public uint ID { get; private set; }
+        /// <userdoc>A unique ID defining the UI element.</userdoc>
+        [DataMember]
+        [Display(Browsable = false)]
+        public Guid Id { get; set; }
 
         /// <summary>
         /// List of the dependency properties attached to the object.
         /// </summary>
+        [DataMember]
         public PropertyContainer DependencyProperties;
 
         /// <summary>
         /// Gets the size that this element computed during the measure pass of the layout process.
         /// </summary>
         /// <remarks>This value does not contain possible <see cref="Margin"/></remarks>
+        [DataMemberIgnore]
         public Vector3 DesiredSize { get; private set; }
 
         /// <summary>
         /// Gets the size that this element computed during the measure pass of the layout process.
         /// </summary>
         /// <remarks>This value contains possible <see cref="Margin"/></remarks>
+        [DataMemberIgnore]
         public Vector3 DesiredSizeWithMargins { get; private set; }
 
         /// <summary>
         /// Gets a value indicating whether the computed size and position of child elements in this element's layout are valid.
         /// </summary>
+        [DataMemberIgnore]
         public bool IsArrangeValid { get; private set; }
 
         /// <summary>
         /// Gets a value indicating whether the current size returned by layout measure is valid.
         /// </summary>
+        [DataMemberIgnore]
         public bool IsMeasureValid { get; private set; }
 
         /// <summary>
         /// The world matrix of the UIElement.
         /// The origin of the element is the center of the object's bounding box defined by <see cref="RenderSize"/>.
         /// </summary>
+        [DataMemberIgnore]
         public Matrix WorldMatrix
         {
             get { return WorldMatrixInternal; }
@@ -168,7 +152,11 @@ namespace SiliconStudio.Xenko.UI
         /// This value has to be modified by the user when he redefines the default element renderer,
         /// so that <see cref="DepthBias"/> values of the relatives keeps enough spaces to draw the different layers.
         /// </summary>
-        public int DrawLayerNumber { get; set; }
+        /// <userdoc>The number of layers used to draw this element.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(1)]
+        public int DrawLayerNumber { get; set; } = 1; // one layer for BackgroundColor/Clipping
 
         internal bool ForceNextMeasure = true;
         internal bool ForceNextArrange = true;
@@ -257,7 +245,7 @@ namespace SiliconStudio.Xenko.UI
 
         private UIElementServices uiElementServices;
 
-        public UIElementServices UIElementServices
+        internal UIElementServices UIElementServices
         {
             get
             {
@@ -266,7 +254,6 @@ namespace SiliconStudio.Xenko.UI
 
                 return uiElementServices;
             }
-
             set
             {
                 if (Parent != null)
@@ -280,8 +267,9 @@ namespace SiliconStudio.Xenko.UI
         /// The visual children of this element. 
         /// </summary>
         /// <remarks>If the class is inherited it is the responsibility of the descendant class to correctly update this collection</remarks>
-        internal protected UIElementCollection VisualChildrenCollection { get; }
-        
+        [DataMemberIgnore]
+        protected internal UIElementCollection VisualChildrenCollection { get; }
+
         /// <summary>
         /// Invalidates the arrange state (layout) for the element. 
         /// </summary>
@@ -352,12 +340,6 @@ namespace SiliconStudio.Xenko.UI
             VisualParent?.ForceMeasure();
         }
 
-        private static void NameInvalidationCallback(object propertyOwner, PropertyKey<string> propertyKey, string propertyOldValue)
-        {
-            var element = (UIElement)propertyOwner;
-            element.OnNameChanged();
-        }
-
         /// <summary>
         /// This method is call when the name of the UIElement changes.
         /// This method can be overridden in inherited classes to perform class specific actions on <see cref="Name"/> changes.
@@ -370,16 +352,19 @@ namespace SiliconStudio.Xenko.UI
         /// Indicate if the UIElement can be hit by the user. 
         /// If this property is true, the UI system performs hit test on the UIElement.
         /// </summary>
+        /// <userdoc>True if the UI system should perform hit test on this element, False otherwise.</userdoc>
+        [DataMember]
+        [Display(category: BehaviorCategory)]
+        [DefaultValue(false)]
         public bool CanBeHitByUser { get; set; }
-
-        /// <summary>
-        /// This property can be set to <value>true</value> to disable all touch events on the element's children.
-        /// </summary>
-        public bool PreventChildrenFromBeingHit { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this element is enabled in the user interface (UI).
         /// </summary>
+        /// <userdoc>True if this element is enabled, False otherwise.</userdoc>
+        [DataMember]
+        [Display(category: BehaviorCategory)]
+        [DefaultValue(true)]
         public virtual bool IsEnabled
         {
             get { return isEnabled; }
@@ -407,18 +392,27 @@ namespace SiliconStudio.Xenko.UI
         public bool IsCollapsed => Visibility == Visibility.Collapsed;
 
         /// <summary>
-        /// Gets or sets the opacity factor applied to the entire UIElement when it is rendered in the user interface (UI). This is a dependency property.
+        /// Gets or sets the opacity factor applied to the entire UIElement when it is rendered in the user interface (UI).
         /// </summary>
         /// <remarks>Value is clamped between [0,1].</remarks>
+        /// <userdoc>Opacity factor applied to this element when rendered in the user interface (UI).</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, 1.0f, 0.01f, 0.1f, 2)]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(1.0f)]
         public float Opacity
         {
             get { return opacity; }
-            set { opacity = Math.Max(0, Math.Min(1, value)); }
+            set { opacity = MathUtil.Clamp(value, 0.0f, 1.0f); }
         }
 
         /// <summary>
-        /// Gets or sets the user interface (UI) visibility of this element. This is a dependency property.
+        /// Gets or sets the user interface (UI) visibility of this element.
         /// </summary>
+        /// <userdoc>Visibility of this element.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(Visibility.Visible)]
         public Visibility Visibility
         {
             get { return visibility; }
@@ -433,45 +427,80 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Gets or sets the default height of this element. This is a dependency property.
+        /// Gets or sets the default height of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be a finite positive real number.</exception>
+        /// <userdoc>Default height of this element.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(0.0f)]
         public float DefaultHeight
         {
-            get { return DependencyProperties.Get(DefaultHeightPropertyKey); }
-            set { DependencyProperties.Set(DefaultHeightPropertyKey, value); }
+            get { return defaultHeight; }
+            set
+            {
+                if (value < 0 || float.IsInfinity(value) || float.IsNaN(value))
+                    throw new ArgumentOutOfRangeException(nameof(value));
+
+                defaultHeight = value;
+                InvalidateMeasure();
+            }
         }
 
         /// <summary>
-        /// Gets or sets the default width of this element. This is a dependency property.
+        /// Gets or sets the default width of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be a finite positive real number.</exception>
+        /// <userdoc>Default width of this element.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(0.0f)]
         public float DefaultWidth
         {
-            get { return DependencyProperties.Get(DefaultWidthPropertyKey); }
-            set { DependencyProperties.Set(DefaultWidthPropertyKey, value); }
+            get { return defaultWidth; }
+            set
+            {
+                if (value < 0 || float.IsInfinity(value) || float.IsNaN(value))
+                    throw new ArgumentOutOfRangeException(nameof(value));
+
+                defaultWidth = value;
+                InvalidateMeasure();
+            }
         }
 
         /// <summary>
-        /// Gets or sets the default width of this element. This is a dependency property.
+        /// Gets or sets the default width of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be a finite positive real number.</exception>
+        /// <userdoc>Default depth of this element.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(0.0f)]
         public float DefaultDepth
         {
-            get { return DependencyProperties.Get(DefaultDepthPropertyKey); }
-            set { DependencyProperties.Set(DefaultDepthPropertyKey, value); }
-        }
-        
-        private static void DefaultSizeValidator(ref float size)
-        {
-            if (size < 0 || float.IsInfinity(size) || float.IsNaN(size))
-                throw new ArgumentOutOfRangeException(nameof(size));
+            get { return defaultDepth; }
+            set
+            {
+                if (value < 0 || float.IsInfinity(value) || float.IsNaN(value))
+                    throw new ArgumentOutOfRangeException(nameof(value));
+
+                defaultDepth = value;
+                InvalidateMeasure();
+            }
         }
 
         /// <summary>
-        /// Gets or sets the user suggested height of this element. This is a dependency property.
+        /// Gets or sets the user suggested height of this element.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite  or undefined.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite or undefined.</exception>
+        /// <userdoc>Height of this element. If NaN, the default height will be used instead.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(float.NaN)]
         public float Height
         {
             get { return height; }
@@ -486,9 +515,14 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Gets or sets the user suggested width of this element. This is a dependency property.
+        /// Gets or sets the user suggested width of this element.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite  or undefined.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite or undefined.</exception>
+        /// <userdoc>Width of this element. If NaN, the default width will be used instead.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(float.NaN)]
         public float Width
         {
             get { return width; }
@@ -503,9 +537,14 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Gets or sets the user suggested width of this element. This is a dependency property.
+        /// Gets or sets the user suggested depth of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite or undefined.</exception>
+        /// <userdoc>Depth of this element. If NaN, the default depth will be used instead.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(float.NaN)]
         public float Depth
         {
             get { return depth; }
@@ -522,6 +561,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets or sets the size of the element. Same as setting separately <see cref="Width"/>, <see cref="Height"/>, and <see cref="Depth"/>
         /// </summary>
+        [DataMemberIgnore]
         public Vector3 Size
         {
             get { return new Vector3(Width, Height, Depth); }
@@ -530,7 +570,6 @@ namespace SiliconStudio.Xenko.UI
                 Width = value.X;
                 Height = value.Y;
                 Depth = value.Z;
-                InvalidateMeasure();
             }
         }
 
@@ -547,30 +586,17 @@ namespace SiliconStudio.Xenko.UI
                 Height = value;
             else
                 Depth = value;
-
-            InvalidateMeasure();
         }
 
         /// <summary>
-        /// Gets or sets the minimum width of this element. This is a dependency property.
+        /// Gets or sets the minimum height of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
-        public float MinimumWidth
-        {
-            get { return minimumWidth; }
-            set
-            {
-                if (value < 0 || float.IsNaN(value) || float.IsInfinity(value))
-                    throw new ArgumentOutOfRangeException(nameof(value));
-                minimumWidth = value;
-                InvalidateMeasure();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the minimum height of this element. This is a dependency property.
-        /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
+        /// <userdoc>Minimum height of this element.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(0.0f)]
         public float MinimumHeight
         {
             get { return minimumHeight; }
@@ -578,15 +604,43 @@ namespace SiliconStudio.Xenko.UI
             {
                 if (value < 0 || float.IsNaN(value) || float.IsInfinity(value))
                     throw new ArgumentOutOfRangeException(nameof(value));
+
                 minimumHeight = value;
                 InvalidateMeasure();
             }
         }
 
         /// <summary>
-        /// Gets or sets the minimum height of this element. This is a dependency property.
+        /// Gets or sets the minimum width of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
+        /// <userdoc>Minimum width of this element.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(0.0f)]
+        public float MinimumWidth
+        {
+            get { return minimumWidth; }
+            set
+            {
+                if (value < 0 || float.IsNaN(value) || float.IsInfinity(value))
+                    throw new ArgumentOutOfRangeException(nameof(value));
+
+                minimumWidth = value;
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the minimum height of this element.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
+        /// <userdoc>Minimum depth of this element.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(0.0f)]
         public float MinimumDepth
         {
             get { return minimumDepth; }
@@ -594,6 +648,7 @@ namespace SiliconStudio.Xenko.UI
             {
                 if (value < 0 || float.IsNaN(value) || float.IsInfinity(value))
                     throw new ArgumentOutOfRangeException(nameof(value));
+
                 minimumDepth = value;
                 InvalidateMeasure();
             }
@@ -601,31 +656,23 @@ namespace SiliconStudio.Xenko.UI
 
         /// <summary>
         /// Gets or sets a value indicating whether to clip the content of this element (or content coming from the child elements of this element) 
-        /// to fit into the size of the containing element. This is a dependency property.
+        /// to fit into the size of the containing element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
-        public bool ClipToBounds { get; set; }
+        [DataMember]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(false)]
+        public bool ClipToBounds { get; set; } = false;
 
         /// <summary>
-        /// Gets or sets the maximum width of this element. This is a dependency property.
+        /// Gets or sets the maximum height of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive.</exception>
-        public float MaximumWidth
-        {
-            get { return maximumWidth; }
-            set
-            {
-                if (value < 0 || float.IsNaN(value))
-                    throw new ArgumentOutOfRangeException(nameof(value));
-                maximumWidth = value;
-                InvalidateMeasure();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the maximum height of this element. This is a dependency property.
-        /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value has to be positive.</exception>
+        /// <userdoc>Maximum height of this element.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.PositiveInfinity)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(float.PositiveInfinity)]
         public float MaximumHeight
         {
             get { return maximumHeight; }
@@ -633,15 +680,43 @@ namespace SiliconStudio.Xenko.UI
             {
                 if (value < 0 || float.IsNaN(value))
                     throw new ArgumentOutOfRangeException(nameof(value));
+
                 maximumHeight = value;
                 InvalidateMeasure();
             }
         }
 
         /// <summary>
-        /// Gets or sets the maximum height of this element. This is a dependency property.
+        /// Gets or sets the maximum width of this element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive.</exception>
+        /// <userdoc>Maximum width of this element.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.PositiveInfinity)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(float.PositiveInfinity)]
+        public float MaximumWidth
+        {
+            get { return maximumWidth; }
+            set
+            {
+                if (value < 0 || float.IsNaN(value))
+                    throw new ArgumentOutOfRangeException(nameof(value));
+
+                maximumWidth = value;
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum height of this element.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">The value has to be positive.</exception>
+        /// <userdoc>Maximum depth of this element.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.PositiveInfinity)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(float.PositiveInfinity)]
         public float MaximumDepth
         {
             get { return maximumDepth; }
@@ -649,14 +724,19 @@ namespace SiliconStudio.Xenko.UI
             {
                 if (value < 0 || float.IsNaN(value))
                     throw new ArgumentOutOfRangeException(nameof(value));
+
                 maximumDepth = value;
                 InvalidateMeasure();
             }
         }
 
         /// <summary>
-        /// Gets or sets the vertical alignment of this element. This is a dependency property.
+        /// Gets or sets the horizontal alignment of this element.
         /// </summary>
+        /// <userdoc>Horizontal alignment of this element.</userdoc>
+        [DataMember]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(HorizontalAlignment.Stretch)]
         public HorizontalAlignment HorizontalAlignment
         {
             get { return horizontalAlignment; }
@@ -668,8 +748,12 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Gets or sets the vertical alignment of this element. This is a dependency property.
+        /// Gets or sets the vertical alignment of this element.
         /// </summary>
+        /// <userdoc>Vertical alignment of this element.</userdoc>
+        [DataMember]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(VerticalAlignment.Stretch)]
         public VerticalAlignment VerticalAlignment
         {
             get { return verticalAlignment; }
@@ -681,8 +765,12 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Gets or sets the depth alignment of this element. This is a dependency property.
+        /// Gets or sets the depth alignment of this element.
         /// </summary>
+        /// <userdoc>Depth alignment of this element.</userdoc>
+        [DataMember]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(DepthAlignment.Center)]
         public DepthAlignment DepthAlignment
         {
             get { return depthAlignment; }
@@ -694,37 +782,43 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Gets or sets the name of this element. This is a dependency property.
+        /// Gets or sets the name of this element.
         /// </summary>
+        /// <userdoc>Name of this element.</userdoc>
+        [DataMember]
+        [Display(category: MiscCategory)]
+        [DefaultValue(null)]
         public string Name
         {
-            get { return DependencyProperties.Get(NamePropertyKey); }
-            set { DependencyProperties.Set(NamePropertyKey, value); }
+            get { return name; }
+            set
+            {
+                if (name == value)
+                    return;
+
+                name = value;
+                OnNameChanged();
+            }
         }
 
         /// <summary>
-        /// Gets the logical parent of this element. This is a dependency property.
+        /// Gets the logical parent of this element.
         /// </summary>
-        public UIElement Parent
-        {
-            get { return DependencyProperties.Get(parentPropertyKey); }
-            protected set { DependencyProperties.Set(parentPropertyKey, value); }
-        }
+        [DataMemberIgnore]
+        public UIElement Parent { get; protected set; }
 
         /// <summary>
-        /// Gets the visual parent of this element. This is a dependency property.
+        /// Gets the visual parent of this element.
         /// </summary>
-        public UIElement VisualParent
-        {
-            get { return DependencyProperties.Get(visualParentPropertyKey); }
-            protected set { DependencyProperties.Set(visualParentPropertyKey, value); }
-        }
+        [DataMemberIgnore]
+        public UIElement VisualParent { get; protected set; }
 
         /// <summary>
         /// Get a enumerable to the visual children of the <see cref="UIElement"/>.
         /// </summary>
         /// <remarks>Inherited classes are in charge of overriding this method to return their children.</remarks>
-        public IEnumerable<UIElement> VisualChildren => VisualChildrenCollection;
+        [DataMemberIgnore]
+        public IReadOnlyList<UIElement> VisualChildren => VisualChildrenCollection;
 
         /// <summary>
         /// The list of the children of the element that can be hit by the user.
@@ -732,8 +826,11 @@ namespace SiliconStudio.Xenko.UI
         protected internal virtual FastCollection<UIElement> HitableChildren => VisualChildrenCollection;
 
         /// <summary>
-        /// Gets or sets the margins of this element. This is a dependency property.
+        /// Gets or sets the margins of this element.
         /// </summary>
+        /// <userdoc>Layout margin of this element.</userdoc>
+        [DataMember]
+        [Display(category: LayoutCategory)]
         public Thickness Margin
         {
             get { return MarginInternal; }
@@ -745,9 +842,12 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Gets or sets the LocalMatrix of this element. This is a dependency property.
+        /// Gets or sets the LocalMatrix of this element.
         /// </summary>
         /// <remarks>The local transform is not taken is account during the layering. The transformation is purely for rendering effects.</remarks>
+        /// <userdoc>Local matrix of this element.</userdoc>
+        [DataMember]
+        [Display(Browsable = false)]
         public Matrix LocalMatrix
         {
             get { return localMatrix; }
@@ -761,11 +861,13 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// The opacity used to render element. 
         /// </summary>
+        [DataMemberIgnore]
         public float RenderOpacity { get; private set; }
 
         /// <summary>
         /// Gets (or sets, but see Remarks) the final render size of this element.
         /// </summary>
+        [DataMemberIgnore]
         public Vector3 RenderSize
         {
             get { return RenderSizeInternal; }
@@ -775,8 +877,9 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// The rendering offsets caused by the UIElement margins and alignments.
         /// </summary>
+        [DataMemberIgnore]
         public Vector3 RenderOffsets { get; private set; }
-        
+
         /// <summary>
         /// Gets the rendered width of this element.
         /// </summary>
@@ -795,11 +898,10 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// The background color of the element.
         /// </summary>
-        public Color BackgroundColor
-        {
-            get { return DependencyProperties.Get(backgroundColorPropertyKey); }
-            set { DependencyProperties.Set(backgroundColorPropertyKey, value); }
-        }
+        /// <userdoc>Color used for the background surface of this element.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        public Color BackgroundColor { get; set; }
 
         private unsafe bool Vector3BinaryEqual(ref Vector3 left, ref Vector3 right)
         {
@@ -1046,16 +1148,6 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Provides an accessor that simplifies access to the NameScope registration method.
-        /// </summary>
-        /// <param name="name">Name to use for the specified name-object mapping.</param>
-        /// <param name="scopedElement">Object for the mapping.</param>
-        protected void RegisterName(string name, UIElement scopedElement)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
         /// Set the parent to a child.
         /// </summary>
         /// <param name="child">The child to which set the parent.</param>
@@ -1097,7 +1189,7 @@ namespace SiliconStudio.Xenko.UI
         /// <param name="ray">The ray in world space coordinate</param>
         /// <param name="intersectionPoint">The intersection point in world space coordinate</param>
         /// <returns><value>true</value> if the two elements intersects, <value>false</value> otherwise</returns>
-        internal protected virtual bool Intersects(ref Ray ray, out Vector3 intersectionPoint)
+        protected internal virtual bool Intersects(ref Ray ray, out Vector3 intersectionPoint)
         {
             // does ray intersect element Oxy face?
             var intersects = CollisionHelper.RayIntersectsRectangle(ref ray, ref WorldMatrixInternal, ref RenderSizeInternal, 2, out intersectionPoint);
@@ -1122,8 +1214,6 @@ namespace SiliconStudio.Xenko.UI
 
             return intersects;
         }
-        
-        #region Implementation of the IUIElementUpdate interface
 
         void IUIElementUpdate.Update(GameTime time)
         {
@@ -1143,18 +1233,15 @@ namespace SiliconStudio.Xenko.UI
             var parent = VisualParent;
             var parentRenderOpacity = 1f;
             var parentIsHierarchyEnabled = true;
-            var parentHierarchyDisablePicking = false;
 
             if (parent != null)
             {
                 parentRenderOpacity = parent.RenderOpacity;
                 parentIsHierarchyEnabled = parent.IsHierarchyEnabled;
-                parentHierarchyDisablePicking = parent.HierarchyDisablePicking;
             }
 
             RenderOpacity = parentRenderOpacity * Opacity;
             isHierarchyEnabled = parentIsHierarchyEnabled && isEnabled;
-            HierarchyDisablePicking = parentHierarchyDisablePicking || PreventChildrenFromBeingHit;
             DepthBias = elementBias;
 
             var currentElementDepthBias = DepthBias + DrawLayerNumber;
@@ -1168,8 +1255,6 @@ namespace SiliconStudio.Xenko.UI
 
             MaxChildrenDepthBias = currentElementDepthBias;
         }
-
-        #endregion
 
         /// <summary>
         /// Method called by <see cref="IUIElementUpdate.Update"/>.
@@ -1198,7 +1283,7 @@ namespace SiliconStudio.Xenko.UI
                 // include rendering offsets into the local matrix.
                 localMatrixCopy.TranslationVector += RenderOffsets + RenderSize / 2;
 
-                // calculate the world matrix of UIelement
+                // calculate the world matrix of UIElement
                 Matrix worldMatrix;
                 Matrix.Multiply(ref localMatrixCopy, ref parentWorldMatrix, out worldMatrix);
                 WorldMatrix = worldMatrix;

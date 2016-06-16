@@ -11,6 +11,7 @@ namespace SiliconStudio.Xenko.UI.Panels
     /// <summary> 
     /// Defines an area within which you can position and size child elements with respect to in the Canvas area size.
     /// </summary>
+    [DataContract(nameof(Canvas))]
     [DebuggerDisplay("Canvas - Name={Name}")]
     public class Canvas : Panel
     {
@@ -18,22 +19,26 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// The key to the RelativeSize dependency property. RelativeSize indicate the ratio of the size of the <see cref="UIElement"/> with respect to the parent size.
         /// </summary>
         /// <remarks>Relative size must be strictly positive</remarks>
-        public readonly static PropertyKey<Vector3> RelativeSizePropertyKey = new PropertyKey<Vector3>("RelativeSizeKey", typeof(Canvas), DefaultValueMetadata.Static(new Vector3(float.NaN)), ValidateValueMetadata.New<Vector3>(ValidateRelativeSize), ObjectInvalidationMetadata.New<Vector3>(InvalidateCanvasMeasure));
+        [Display(category: LayoutCategory)]
+        public static readonly PropertyKey<Vector3> RelativeSizePropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(RelativeSizePropertyKey), typeof(Canvas), new Vector3(float.NaN), ValidateRelativeSize, InvalidateCanvasMeasure);
 
         /// <summary>
         /// The key to the RelativePosition dependency property. RelativePosition indicate where the <see cref="UIElement"/> is pinned in the canvas.
         /// </summary>
-        public readonly static PropertyKey<Vector3> RelativePositionPropertyKey = new PropertyKey<Vector3>("RelativePositionKey", typeof(Canvas), DefaultValueMetadata.Static(new Vector3(0)), ObjectInvalidationMetadata.New<Vector3>(OnRelativePositionChanged));
+        [Display(category: LayoutCategory)]
+        public static readonly PropertyKey<Vector3> RelativePositionPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(RelativePositionPropertyKey), typeof(Canvas), Vector3.Zero, OnRelativePositionChanged);
 
         /// <summary>
         /// The key to the AbsolutePosition dependency property. AbsolutePosition indicate where the <see cref="UIElement"/> is pinned in the canvas.
         /// </summary>
-        public readonly static PropertyKey<Vector3> AbsolutePositionPropertyKey = new PropertyKey<Vector3>("AbsolutePositionKey", typeof(Canvas), DefaultValueMetadata.Static(new Vector3(0)), ObjectInvalidationMetadata.New<Vector3>(OnAbsolutePositionChanged));
+        [Display(category: LayoutCategory)]
+        public static readonly PropertyKey<Vector3> AbsolutePositionPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(AbsolutePositionPropertyKey), typeof(Canvas), Vector3.Zero, OnAbsolutePositionChanged);
 
         /// <summary>
         /// The key to the useAbsolutionPosition dependency property. This indicates whether to use the AbsolutePosition or the RelativePosition to place to element.
         /// </summary>
-        private readonly static PropertyKey<bool> useAbsolutionPositionPropertyKey = new PropertyKey<bool>("useAbsolutionPositionKey", typeof(Canvas), DefaultValueMetadata.Static(false));
+        [Display(category: LayoutCategory)]
+        private static readonly PropertyKey<bool> UseAbsolutionPositionPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(UseAbsolutionPositionPropertyKey), typeof(Canvas), false);
 
         /// <summary>
         /// The key to the PinOrigin dependency property. The PinOrigin indicate which point of the <see cref="UIElement"/> should be pinned to the canvas. 
@@ -42,12 +47,13 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// Those values are normalized between 0 and 1. (0,0,0) represent the Left/Top/Back corner and (1,1,1) represent the Right/Bottom/Front corner. 
         /// <see cref="UIElement"/>'s margins are included in the normalization. 
         /// Values beyond [0,1] are clamped.</remarks>
-        public readonly static PropertyKey<Vector3> PinOriginPropertyKey = new PropertyKey<Vector3>("PinOriginKey", typeof(Canvas), DefaultValueMetadata.Static(Vector3.Zero), ValidateValueMetadata.New<Vector3>(PinOriginValueValidator), ObjectInvalidationMetadata.New<Vector3>(InvalidateCanvasMeasure));
+        [Display(category: LayoutCategory)]
+        public static readonly PropertyKey<Vector3> PinOriginPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(PinOriginPropertyKey), typeof(Canvas), Vector3.Zero, PinOriginValueValidator, InvalidateCanvasMeasure);
         
         private static void OnRelativePositionChanged(object propertyOwner, PropertyKey<Vector3> propertyKey, Vector3 propertyOldValue)
         {
             var element = (UIElement)propertyOwner;
-            element.DependencyProperties.Set(useAbsolutionPositionPropertyKey, false);
+            element.DependencyProperties.Set(UseAbsolutionPositionPropertyKey, false);
 
             InvalidateCanvasMeasure(propertyOwner, propertyKey, propertyOldValue);
         }
@@ -55,7 +61,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         private static void OnAbsolutePositionChanged(object propertyOwner, PropertyKey<Vector3> propertyKey, Vector3 propertyOldValue)
         {
             var element = (UIElement)propertyOwner;
-            element.DependencyProperties.Set(useAbsolutionPositionPropertyKey, true);
+            element.DependencyProperties.Set(UseAbsolutionPositionPropertyKey, true);
 
             InvalidateCanvasMeasure(propertyOwner, propertyKey, propertyOldValue);
         }
@@ -65,8 +71,7 @@ namespace SiliconStudio.Xenko.UI.Panels
             var element = (UIElement)propertyOwner;
             var parentCanvas = element.Parent as Canvas;
 
-            if (parentCanvas != null)
-                parentCanvas.InvalidateMeasure();
+            parentCanvas?.InvalidateMeasure();
         }
 
         private static void PinOriginValueValidator(ref Vector3 value)
@@ -116,7 +121,7 @@ namespace SiliconStudio.Xenko.UI.Panels
                 var childExtremityCorner = Vector3.Zero;
                 var pinOrigin = child.DependencyProperties.Get(PinOriginPropertyKey);
                 var childRelativeSize = child.DependencyProperties.Get(RelativeSizePropertyKey);
-                var childUseAbsolutionPosition = child.DependencyProperties.Get(useAbsolutionPositionPropertyKey);
+                var childUseAbsolutionPosition = child.DependencyProperties.Get(UseAbsolutionPositionPropertyKey);
                 var childAbsolutePosition = child.DependencyProperties.Get(AbsolutePositionPropertyKey);
                 var childRelativePosition = child.DependencyProperties.Get(RelativePositionPropertyKey);
                 for (var i = 0; i < 3; i++)
@@ -167,11 +172,11 @@ namespace SiliconStudio.Xenko.UI.Panels
                 // arrange the child
                 child.Arrange(childProvidedSize, IsCollapsed);
 
-                // compute the child offsets wrt to parent (left,top,front) corner
+                // compute the child offsets wrt parent (left,top,front) corner
                 var pinOrigin = child.DependencyProperties.Get(PinOriginPropertyKey);
                 var childOrigin = ComputeAbsolutePinPosition(child, ref finalSizeWithoutMargins) - Vector3.Modulate(pinOrigin, child.RenderSize);
 
-                // compute the child offsets wrt to parent origin (0,0,0). 
+                // compute the child offsets wrt parent origin (0,0,0). 
                 var childOriginParentCenter = childOrigin - finalSizeWithoutMargins / 2;
 
                 // set the panel arrange matrix for the child
@@ -192,7 +197,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         {
             var relativePosition = child.DependencyProperties.Get(RelativePositionPropertyKey);
             var absolutePosition = child.DependencyProperties.Get(AbsolutePositionPropertyKey);
-            var useAbsolutionPosition = child.DependencyProperties.Get(useAbsolutionPositionPropertyKey);
+            var useAbsolutionPosition = child.DependencyProperties.Get(UseAbsolutionPositionPropertyKey);
 
             for (var dim = 0; dim < 3; ++dim)
             {

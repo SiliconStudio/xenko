@@ -4,5 +4,5 @@ using System;
 
 namespace SiliconStudio.Xenko.UI
 {
-    public delegate void PropertyChangedHandler<T>(Object sender, PropertyChangedArgs<T> e);
+    public delegate void PropertyChangedHandler<T>(object sender, PropertyChangedArgs<T> e);
 }

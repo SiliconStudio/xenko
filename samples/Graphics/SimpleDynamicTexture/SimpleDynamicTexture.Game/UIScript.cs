@@ -30,7 +30,7 @@ namespace SimpleDynamicTexture
             textBlock.SetCanvasPinOrigin(new Vector3(0.5f, 0.5f, 0f));
             textBlock.SetCanvasRelativePosition(new Vector3(0.5f, 0.85f, 0f));
 
-            Entity.Get<UIComponent>().RootElement = new Canvas { Children = { textBlock } };
+            Entity.Get<UIComponent>().Page = new UIPage { RootElement = new Canvas { Children = { textBlock } } };
         }
 
         // Progressively hide the UI after the user first click.

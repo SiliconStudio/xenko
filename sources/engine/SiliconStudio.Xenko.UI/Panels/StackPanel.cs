@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
@@ -12,14 +13,10 @@ namespace SiliconStudio.Xenko.UI.Panels
     /// <summary>
     /// Arranges child elements into a single line that can be oriented horizontally or vertically.
     /// </summary>
+    [DataContract(nameof(StackPanel))]
     [DebuggerDisplay("StackPanel - Name={Name}")]
     public class StackPanel : Panel, IScrollInfo
     {
-        /// <summary>
-        /// The key to the Orientation dependency property.
-        /// </summary>
-        public readonly static PropertyKey<Orientation> OrientationPropertyKey = new PropertyKey<Orientation>("OrientationKey", typeof(StackPanel), DefaultValueMetadata.Static(Orientation.Vertical), ObjectInvalidationMetadata.New<Orientation>(InvalidationCallback));
-
         /// <summary>
         /// Indicate the first index of Vector3 to use to maximize depending on the stack panel orientation.
         /// </summary>
@@ -43,6 +40,7 @@ namespace SiliconStudio.Xenko.UI.Panels
             };
 
         private Vector3 offset;
+        private Orientation orientation = Orientation.Vertical;
 
         /// <summary>
         /// The current scroll position of the top/left corner.
@@ -54,7 +52,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// </summary>
         /// <remarks>The stack panel scroll position is expressed element index units.
         /// For example: 0 represents the first element, 1 represents the second element, 1.33 represents a third of the second element, etc...</remarks>
-        public float ScrollPosition { get { return scrollPosition; } }
+        public float ScrollPosition => scrollPosition;
 
         private bool itemVirtualizationEnabled;
 
@@ -79,12 +77,14 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// Gets or sets the value indicating if the <see cref="StackPanel"/> children must be virtualized or not.
         /// When children virtualization is activated, hided children's measurement, arrangement and draw are avoided.
         /// </summary>
+        [DataMember]
+        [DefaultValue(false)]
         public bool ItemVirtualizationEnabled
         {
             get { return itemVirtualizationEnabled; }
             set
             {
-                if(itemVirtualizationEnabled == value)
+                if (itemVirtualizationEnabled == value)
                     return;
 
                 itemVirtualizationEnabled = value;
@@ -121,7 +121,6 @@ namespace SiliconStudio.Xenko.UI.Panels
 
         private struct ScrollRequest
         {
-            
             public float ScrollValue;
             public ScrollRequestType Type;
         }
@@ -147,24 +146,28 @@ namespace SiliconStudio.Xenko.UI.Panels
                 --indexElement;
                 accumulatedSize += GetSafeChildSize(indexElement, scrollAxis);
             }
-            
+
             // calculate the size taken by all elements if proportional
             return accumulatedSize / (Children.Count - indexElement) * Children.Count;
-        }
-
-        private static void InvalidationCallback(object propertyOwner, PropertyKey<Orientation> propertyKey, Orientation propertyOldValue)
-        {
-            var element = (UIElement)propertyOwner;
-            element.InvalidateMeasure();
         }
 
         /// <summary>
         /// Gets or sets a value that indicates the orientation by which child elements are stacked.
         /// </summary>
+        [DataMember]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(Orientation.Vertical)]
         public Orientation Orientation
         {
-            get { return DependencyProperties.Get(OrientationPropertyKey); }
-            set { DependencyProperties.Set(OrientationPropertyKey, value); }
+            get { return orientation; }
+            set
+            {
+                if (orientation == value)
+                    return;
+
+                orientation = value;
+                InvalidateMeasure();
+            }
         }
 
         protected override void OnLogicalChildRemoved(UIElement oldElement, int index)
@@ -188,13 +191,13 @@ namespace SiliconStudio.Xenko.UI.Panels
             Viewport = availableSizeWithoutMargins;
 
             // update the visible children if item virtualization is enabled.
-            if(ItemVirtualizationEnabled)
+            if (ItemVirtualizationEnabled)
                 AdjustOffsetsAndVisualChildren(scrollPosition);
 
             var accumulatorIndex = (int)Orientation;
             var maximizeIndex1 = OrientationToMaximizeIndex1[(int)Orientation];
             var maximizeIndex2 = OrientationToMaximizeIndex2[(int)Orientation];
-            
+
             // compute the size available to the children depending on the stack orientation
             var childAvailableSizeWithMargins = availableSizeWithoutMargins;
             childAvailableSizeWithMargins[accumulatorIndex] = float.PositiveInfinity;
@@ -239,7 +242,7 @@ namespace SiliconStudio.Xenko.UI.Panels
 
                 // determine the index of the last element that we can scroll to
                 indexElementMaxScrolling = elementBounds.Count - 2;
-                while (indexElementMaxScrolling > 0 && elementBounds[indexElementMaxScrolling] > elementBounds[elementBounds.Count-1] - Viewport[stackAxis])
+                while (indexElementMaxScrolling > 0 && elementBounds[indexElementMaxScrolling] > elementBounds[elementBounds.Count - 1] - Viewport[stackAxis])
                     --indexElementMaxScrolling;
             }
 
@@ -276,10 +279,9 @@ namespace SiliconStudio.Xenko.UI.Panels
                 AdjustOffsetsAndVisualChildren(scrollPosition);
             }
             scrollingRequets.Clear();
-            
+
             // invalidate anchor info
-            if (ScrollOwner != null)
-                ScrollOwner.InvalidateAnchorInfo();
+            ScrollOwner?.InvalidateAnchorInfo();
 
             return finalSizeWithoutMargins;
         }
@@ -331,9 +333,9 @@ namespace SiliconStudio.Xenko.UI.Panels
             return direction == Orientation;
         }
 
-        public Vector3 Extent { get { return extent; } }
+        public Vector3 Extent => extent;
 
-        public Vector3 Offset { get { return offset; } }
+        public Vector3 Offset => offset;
 
         public Vector3 Viewport { get; private set; }
 
@@ -379,7 +381,7 @@ namespace SiliconStudio.Xenko.UI.Panels
 
         private void ScrolllToElement(Orientation orientation, float elementIndex)
         {
-            if(Orientation != orientation)
+            if (Orientation != orientation)
                 return;
 
             ScrolllToElement(elementIndex);
@@ -431,7 +433,7 @@ namespace SiliconStudio.Xenko.UI.Panels
             {
                 // delay the scrolling request to next draw when arrange info (mainly Viewport) will be valid again.
                 InvalidateArrange(); // force next arrange so that requests can be processed.
-                scrollingRequets.Add(new ScrollRequest { ScrollValue = offsetToApply, Type = ScrollRequestType.RelativePosition});
+                scrollingRequets.Add(new ScrollRequest { ScrollValue = offsetToApply, Type = ScrollRequestType.RelativePosition });
             }
         }
 
@@ -459,7 +461,7 @@ namespace SiliconStudio.Xenko.UI.Panels
                         --indexElement;
                         accumulatedSize += GetSafeChildSize(indexElement, scrollAxis);
                     }
-                    var maxScrollPosition = Math.Max(0, indexElement + (accumulatedSize-Viewport[scrollAxis]) / GetSafeChildSize(indexElement, scrollAxis));
+                    var maxScrollPosition = Math.Max(0, indexElement + (accumulatedSize - Viewport[scrollAxis]) / GetSafeChildSize(indexElement, scrollAxis));
                     positionRatio[scrollAxis] = scrollPosition / maxScrollPosition;
                 }
                 else
@@ -509,12 +511,12 @@ namespace SiliconStudio.Xenko.UI.Panels
 
         private void ScrolllToNeigbourElement(Orientation direction, float side)
         {
-            if(direction != Orientation)
+            if (direction != Orientation)
                 return;
-            
+
             if (IsArrangeValid)
             {
-                AdjustOffsetsAndVisualChildren((float)(side > 0? Math.Floor(scrollPosition + 1) : Math.Ceiling(scrollPosition - 1)));
+                AdjustOffsetsAndVisualChildren((float)(side > 0 ? Math.Floor(scrollPosition + 1) : Math.Ceiling(scrollPosition - 1)));
             }
             else
             {
@@ -631,7 +633,7 @@ namespace SiliconStudio.Xenko.UI.Panels
                     for (var i = firstElementIndex; i < Children.Count; i++)
                     {
                         visibleChildren.Add(Children[i]);
-                        if (elementBounds[i+1] - elementBounds[firstElementIndex+1] > viewportSize)
+                        if (elementBounds[i + 1] - elementBounds[firstElementIndex + 1] > viewportSize)
                             break;
                     }
                 }
@@ -641,10 +643,9 @@ namespace SiliconStudio.Xenko.UI.Panels
             var scrollPositionIndex = (int)Math.Floor(scrollPosition);
             var scrollPositionRemainder = scrollPosition - scrollPositionIndex;
             offset[axis] -= scrollPositionRemainder * GetSafeChildSize(scrollPositionIndex, axis);
-            
+
             // force the scroll owner to update the scroll info
-            if(ScrollOwner != null)
-                ScrollOwner.InvalidateScrollInfo();
+            ScrollOwner?.InvalidateScrollInfo();
         }
 
         private void UpdateAndArrangeVisibleChildren()
@@ -685,11 +686,12 @@ namespace SiliconStudio.Xenko.UI.Panels
             if (visibleChildren.Count > 0)
             {
                 var shouldRearrangeChildren = cachedVisibleChildren.Count == 0 || cachedVisibleChildren.Count != visibleChildren.Count;
-                
+
                 // determine if the two list are equals
                 if (!shouldRearrangeChildren)
                 {
-                    for (int i = 0; i < visibleChildren.Count; i++)
+                    // ReSharper disable once LoopCanBeConvertedToQuery
+                    for (var i = 0; i < visibleChildren.Count; i++)
                     {
                         if (cachedVisibleChildren[i] != visibleChildren[i])
                         {
@@ -698,7 +700,7 @@ namespace SiliconStudio.Xenko.UI.Panels
                         }
                     }
                 }
-                if(shouldRearrangeChildren)
+                if (shouldRearrangeChildren)
                     ArrangeChildren();
             }
         }
@@ -773,7 +775,7 @@ namespace SiliconStudio.Xenko.UI.Panels
                     foreach (var i in ScrollingModeToInfiniteAxis[(int)ScrollOwner.ScrollMode])
                         childProvidedSize[i] = float.PositiveInfinity;
                 }
-                
+
                 child.Measure(childProvidedSize);
             }
 
@@ -788,9 +790,6 @@ namespace SiliconStudio.Xenko.UI.Panels
             return child.RenderSize[dimension] + child.Margin[dimension] + child.Margin[dimension + 3];
         }
 
-        protected internal override FastCollection<UIElement> HitableChildren
-        {
-            get { return visibleChildren; }
-        }
+        protected internal override FastCollection<UIElement> HitableChildren => visibleChildren;
     }
 }

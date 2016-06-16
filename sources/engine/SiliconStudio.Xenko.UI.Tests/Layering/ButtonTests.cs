@@ -30,9 +30,15 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
         [Test]
         public void TestBasicInvalidations()
         {
+            SizeToContent = true;
             // - test the properties that are not supposed to invalidate the object layout state
             UIElementLayeringTests.TestNoInvalidation(this, () => PressedImage = (SpriteFromTexture)new Sprite());
             UIElementLayeringTests.TestNoInvalidation(this, () => NotPressedImage = (SpriteFromTexture)new Sprite());
+
+            SizeToContent = false;
+            // - test the properties that are supposed to invalidate the object layout state
+            UIElementLayeringTests.TestMeasureInvalidation(this, () => PressedImage = (SpriteFromTexture)new Sprite());
+            UIElementLayeringTests.TestMeasureInvalidation(this, () => NotPressedImage = (SpriteFromTexture)new Sprite());
         }
     }
 }

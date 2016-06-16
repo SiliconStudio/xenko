@@ -175,7 +175,7 @@ namespace GameMenu
 
             // Set the root element to the overall overlay
             var uiComponent = Entity.Get<UIComponent>();
-            uiComponent.RootElement = overlay;
+            uiComponent.Page = new UIPage { RootElement = overlay };
 
             Script.AddTask(FillLifeBar);
         }

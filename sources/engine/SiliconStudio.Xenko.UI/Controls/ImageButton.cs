@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Diagnostics;
+using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.UI.Controls
 {
@@ -9,6 +10,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// A <see cref="Button"/> whose <see cref="ContentControl.Content"/> are the <see cref="Button.PressedImage"/> and <see cref="Button.NotPressedImage"/>.
     /// </summary>
     [DebuggerDisplay("ImageButton - Name={Name}")]
+    [Obsolete("Use Button with SizeToContent set to false.")]
     public class ImageButton : Button
     {
         private readonly ImageElement contentImageElement = new ImageElement();

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 
 using SiliconStudio.Core;
@@ -11,6 +12,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// Represents a control with a single piece of content of any type.
     /// </summary>
+    [DataContract(nameof(ContentControl))]
     [DebuggerDisplay("ContentControl - Name={Name}")]
     public abstract class ContentControl : Control
     {
@@ -18,63 +20,35 @@ namespace SiliconStudio.Xenko.UI.Controls
 
         private UIElement visualContent;
 
-        private ContentPresenter contentPresenter;
-
         /// <summary>
         /// The key to the ContentArrangeMatrix dependency property.
         /// </summary>
-        protected readonly static PropertyKey<Matrix> ContentArrangeMatrixPropertyKey = new PropertyKey<Matrix>("ContentArrangeMatrixKey", typeof(ContentControl), DefaultValueMetadata.Static(Matrix.Identity));
+        protected static readonly PropertyKey<Matrix> ContentArrangeMatrixPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(ContentArrangeMatrixPropertyKey), typeof(ContentControl), Matrix.Identity);
 
         private Matrix contentWorldMatrix;
 
-        protected override void OnNameChanged()
-        {
-            base.OnNameChanged();
-
-            if(ContentPresenter != null)
-                ContentPresenter.Name = "of '" + Name + "'";
-        }
-
-        /// <summary>
-        /// Gets or sets the presenter of the <see cref="ContentControl"/>'s presenter.
-        /// </summary>
-        protected ContentPresenter ContentPresenter
-        {
-            get { return contentPresenter; }
-            set
-            {
-                if (value == contentPresenter)
-                    return;
-
-                VisualContent = value;
-                contentPresenter = value;
-            }
-        }
-        
         /// <summary>
         /// Gets or sets the content of a ContentControl.
         /// </summary>
         /// <exception cref="InvalidOperationException">The value passed has already a parent.</exception>
+        [DataMember]
+        [DefaultValue(null)]
         public virtual UIElement Content
         {
             get { return content; }
             set
             {
-                if(content == value)
+                if (content == value)
                     return;
 
-                if (Content != null)
-                    SetParent(Content, null);
+                if (content != null)
+                    SetParent(content, null);
 
                 content = value;
+                VisualContent = content;
 
-                if (contentPresenter == null)
-                    VisualContent = content;
-                else
-                    ContentPresenter.Content = value;
-
-                if (Content != null)
-                    SetParent(Content, this);
+                if (content != null)
+                    SetParent(content, this);
 
                 InvalidateMeasure();
             }
@@ -83,6 +57,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets the visual content of the ContentControl.
         /// </summary>
+        [DataMemberIgnore]
         public UIElement VisualContent
         {
             get { return visualContent; }
@@ -131,7 +106,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                 VisualContent.Arrange(childSizeWithoutPadding, IsCollapsed);
 
                 // compute the rendering offsets of the child element wrt the parent origin (0,0,0)
-                var childOffsets = new Vector3(Padding.Left, Padding.Top, Padding.Front) - finalSizeWithoutMargins/2;
+                var childOffsets = new Vector3(Padding.Left, Padding.Top, Padding.Front) - finalSizeWithoutMargins / 2;
 
                 // set the arrange matrix of the child.
                 VisualContent.DependencyProperties.Set(ContentArrangeMatrixPropertyKey, Matrix.Translation(childOffsets));

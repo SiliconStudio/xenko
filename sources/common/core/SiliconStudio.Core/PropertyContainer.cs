@@ -3,10 +3,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
 
@@ -32,17 +30,14 @@ namespace SiliconStudio.Core
     [DataSerializerGlobal(null, typeof(Dictionary<PropertyKey, object>))]
     public partial struct PropertyContainer : IDictionary<PropertyKey, object>
     {
-        private static readonly Dictionary<Type, List<PropertyKey>> accessorProperties = new Dictionary<Type, List<PropertyKey>>();
+        private static readonly Dictionary<Type, List<PropertyKey>> AccessorProperties = new Dictionary<Type, List<PropertyKey>>();
         private Dictionary<PropertyKey, object> properties;
-        private object owner;
-        private static ReadOnlyCollection<PropertyKey> emptyKeys = new ReadOnlyCollection<PropertyKey>(new List<PropertyKey>());
-        private static ReadOnlyCollection<object> emptyValues = new ReadOnlyCollection<object>(new List<object>());
 
         /// <summary>
         /// Property changed delegate.
         /// </summary>
-        /// <param name="container">The property container.</param>
-        /// <param name="key">The property key.</param>
+        /// <param name="propertyContainer">The property container.</param>
+        /// <param name="propertyKey">The property key.</param>
         /// <param name="newValue">The property new value.</param>
         /// <param name="oldValue">The property old value.</param>
         public delegate void PropertyUpdatedDelegate(ref PropertyContainer propertyContainer, PropertyKey propertyKey, object newValue, object oldValue);
@@ -56,21 +51,11 @@ namespace SiliconStudio.Core
         {
             properties = null;
             PropertyUpdated = null;
-            this.owner = owner;
+            Owner = owner;
         }
 
         [DataMemberIgnore]
-        public object Owner
-        {
-            get
-            {
-                return owner;
-            }
-            private set
-            {
-                owner = value;
-            }
-        }
+        public object Owner { get; }
 
         /// <summary>
         /// Gets the key-properties value pairs in this instance.
@@ -81,7 +66,7 @@ namespace SiliconStudio.Core
             {
                 foreach (var property in properties)
                 {
-                    yield return new KeyValuePair<PropertyKey, object>(property.Key, property.Value);
+                    yield return new KeyValuePair<PropertyKey, object>(property.Key, property.Key.IsValueType ? ((ValueHolder)property.Value).ObjectValue : property.Value);
                 }
             }
 
@@ -91,7 +76,7 @@ namespace SiliconStudio.Core
                 while (currentType != null)
                 {
                     List<PropertyKey> typeAccessorProperties;
-                    if (accessorProperties.TryGetValue(currentType, out typeAccessorProperties))
+                    if (AccessorProperties.TryGetValue(currentType, out typeAccessorProperties))
                     {
                         foreach (var accessorProperty in typeAccessorProperties)
                         {
@@ -106,7 +91,7 @@ namespace SiliconStudio.Core
 
         public void Clear()
         {
-            if (properties != null) properties.Clear();
+            properties?.Clear();
         }
 
         /// <summary>
@@ -118,7 +103,7 @@ namespace SiliconStudio.Core
             get
             {
                 // TODO: improve this.
-                int count = 0;
+                var count = 0;
                 using (var enumerator = GetEnumerator())
                 {
                     while (enumerator.MoveNext())
@@ -128,13 +113,7 @@ namespace SiliconStudio.Core
             }
         }
 
-        public bool IsReadOnly
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public bool IsReadOnly => false;
 
         /// <summary>
         /// Adds the specified key-value pair.
@@ -164,7 +143,7 @@ namespace SiliconStudio.Core
                 while (currentType != null)
                 {
                     List<PropertyKey> typeAccessorProperties;
-                    if (accessorProperties.TryGetValue(currentType, out typeAccessorProperties))
+                    if (AccessorProperties.TryGetValue(currentType, out typeAccessorProperties))
                     {
                         foreach (var accessorProperty in typeAccessorProperties)
                         {
@@ -189,11 +168,11 @@ namespace SiliconStudio.Core
 
         public bool Remove(PropertyKey propertyKey)
         {
-            bool removed = false;
+            var removed = false;
 
+            var previousValue = Get(propertyKey);
             if (PropertyUpdated != null || propertyKey.PropertyUpdateCallback != null)
             {
-                object previousValue = Get(propertyKey);
 
                 if (properties != null)
                     removed = properties.Remove(propertyKey);
@@ -201,10 +180,8 @@ namespace SiliconStudio.Core
 
                 if (!ArePropertyValuesEqual(propertyKey, tagValue, previousValue))
                 {
-                    if (propertyKey.PropertyUpdateCallback != null)
-                        propertyKey.PropertyUpdateCallback(ref this, propertyKey, tagValue, previousValue);
-                    if (PropertyUpdated != null)
-                        PropertyUpdated(ref this, propertyKey, tagValue, previousValue);
+                    propertyKey.PropertyUpdateCallback?.Invoke(ref this, propertyKey, tagValue, previousValue);
+                    PropertyUpdated?.Invoke(ref this, propertyKey, tagValue, previousValue);
                 }
             }
             else
@@ -212,6 +189,8 @@ namespace SiliconStudio.Core
                 if (properties != null)
                     removed = properties.Remove(propertyKey);
             }
+
+            propertyKey.ObjectInvalidationMetadata?.Invalidate(Owner, propertyKey, previousValue);
 
             return removed;
         }
@@ -287,7 +266,7 @@ namespace SiliconStudio.Core
             if (propertyKey.DefaultValueMetadata != null)
             {
                 // Get default value.
-                object defaultValue = propertyKey.DefaultValueMetadata.GetDefaultValue(ref this);
+                var defaultValue = propertyKey.DefaultValueMetadata.GetDefaultValue(ref this);
 
                 // Check if value should be kept.
                 if (propertyKey.DefaultValueMetadata.KeepValue && !forceNotToKeep)
@@ -311,13 +290,13 @@ namespace SiliconStudio.Core
         /// <exception cref="System.ArgumentException">Unable to retrieve value for [{0}].ToFormat(propertyKey)</exception>
         public T GetSafe<T>(PropertyKey<T> propertyKey)
         {
-            if (propertyKey == null) throw new ArgumentNullException("propertyKey");
+            if (propertyKey == null) throw new ArgumentNullException(nameof(propertyKey));
             if (propertyKey.IsValueType)
             {
                 return Get(propertyKey);
             }
 
-            var result = Get((PropertyKey)propertyKey, false);
+            var result = Get(propertyKey, false);
             if (result == null)
             {
                 throw new ArgumentException("Unable to retrieve value for [{0}]".ToFormat(propertyKey));
@@ -333,7 +312,7 @@ namespace SiliconStudio.Core
         /// <returns>Typed value of the tag property</returns>
         public T Get<T>(PropertyKey<T> propertyKey)
         {
-            if (propertyKey == null) throw new ArgumentNullException("propertyKey");
+            if (propertyKey == null) throw new ArgumentNullException(nameof(propertyKey));
             if (propertyKey.IsValueType)
             {
                 // Fast path for value type
@@ -353,7 +332,7 @@ namespace SiliconStudio.Core
                 if (propertyKey.DefaultValueMetadata != null)
                 {
                     // Get default value.
-                    T defaultValue = ((DefaultValueMetadata<T>)propertyKey.DefaultValueMetadata).GetDefaultValueT(ref this);
+                    var defaultValue = ((DefaultValueMetadata<T>)propertyKey.DefaultValueMetadata).GetDefaultValueT(ref this);
 
                     // Check if value should be kept.
                     if (propertyKey.DefaultValueMetadata.KeepValue)
@@ -368,14 +347,13 @@ namespace SiliconStudio.Core
                 return default(T);
             }
 
-            var result = Get((PropertyKey)propertyKey, false);
+            var result = Get(propertyKey, false);
             return result != null ? (T)result : default(T);
         }
 
         /// <summary>
         /// Tries to get a tag value.
         /// </summary>
-        /// <typeparam name="T">Type of the tag value</typeparam>
         /// <param name="propertyKey">The tag property.</param>
         /// <param name="value">The value or default vaue if not found</param>
         /// <returns>Returns <c>true</c> if the was found; <c>false</c> otherwise</returns>
@@ -404,7 +382,7 @@ namespace SiliconStudio.Core
         {
             if (ContainsKey(propertyKey))
             {
-                value = Get<T>(propertyKey);
+                value = Get(propertyKey);
                 return true;
             }
             value = default(T);
@@ -478,16 +456,14 @@ namespace SiliconStudio.Core
 
                 if (PropertyUpdated != null || propertyKey.PropertyUpdateCallback != null)
                 {
-                    object previousValue = GetNonRecursive(propertyKey);
+                    var previousValue = GetNonRecursive(propertyKey);
 
                     properties[propertyKey] = valueHolder;
 
                     if (!ArePropertyValuesEqual(propertyKey, tagValue, previousValue))
                     {
-                        if (PropertyUpdated != null)
-                            PropertyUpdated(ref this, propertyKey, tagValue, previousValue);
-                        if (propertyKey.PropertyUpdateCallback != null)
-                            propertyKey.PropertyUpdateCallback(ref this, propertyKey, tagValue, previousValue);
+                        PropertyUpdated?.Invoke(ref this, propertyKey, tagValue, previousValue);
+                        propertyKey.PropertyUpdateCallback?.Invoke(ref this, propertyKey, tagValue, previousValue);
                     }
                 }
                 else
@@ -503,7 +479,7 @@ namespace SiliconStudio.Core
                 return;
             }
 
-            SetObject((PropertyKey)propertyKey, tagValue, false);
+            SetObject(propertyKey, tagValue, false);
         }
 
         /// <summary>
@@ -516,15 +492,12 @@ namespace SiliconStudio.Core
             SetObject(propertyKey, tagValue, false);
         }
 
-        private void SetObject(PropertyKey propertyKey, object tagValue, bool tryToAdd = false)
+        private void SetObject(PropertyKey propertyKey, object tagValue, bool tryToAdd)
         {
             var oldValue = Get(propertyKey, true);
 
             // Allow to validate the metadata before storing it.
-            if (propertyKey.ValidateValueMetadata != null)
-            {
-                propertyKey.ValidateValueMetadata.Validate(ref tagValue);
-            }
+            propertyKey.ValidateValueMetadata?.Validate(ref tagValue);
 
             // First, check if there is an accessor
             if (propertyKey.AccessorMetadata != null)
@@ -540,7 +513,7 @@ namespace SiliconStudio.Core
 
             if (PropertyUpdated != null || propertyKey.PropertyUpdateCallback != null)
             {
-                object previousValue = GetNonRecursive(propertyKey);
+                var previousValue = GetNonRecursive(propertyKey);
 
                 if (tryToAdd)
                     properties.Add(propertyKey, valueToSet);
@@ -549,10 +522,8 @@ namespace SiliconStudio.Core
 
                 if (!ArePropertyValuesEqual(propertyKey, tagValue, previousValue))
                 {
-                    if (PropertyUpdated != null)
-                        PropertyUpdated(ref this, propertyKey, tagValue, previousValue);
-                    if (propertyKey.PropertyUpdateCallback != null)
-                        propertyKey.PropertyUpdateCallback(ref this, propertyKey, tagValue, previousValue);
+                    PropertyUpdated?.Invoke(ref this, propertyKey, tagValue, previousValue);
+                    propertyKey.PropertyUpdateCallback?.Invoke(ref this, propertyKey, tagValue, previousValue);
                 }
             }
             else
@@ -563,31 +534,27 @@ namespace SiliconStudio.Core
                     properties[propertyKey] = valueToSet;
             }
 
-            if (propertyKey.ObjectInvalidationMetadata != null)
-            {
-                propertyKey.ObjectInvalidationMetadata.Invalidate(Owner, propertyKey, oldValue);
-            }
+            propertyKey.ObjectInvalidationMetadata?.Invalidate(Owner, propertyKey, oldValue);
         }
 
         public static void AddAccessorProperty(Type type, PropertyKey propertyKey)
         {
             if (!type.GetTypeInfo().IsClass)
-                throw new ArgumentException("Class type is expected.", "type");
+                throw new ArgumentException("Class type is expected.", nameof(type));
 
             if (propertyKey.AccessorMetadata == null)
-                throw new ArgumentException("Given PropertyKey doesn't have accessor metadata.", "propertyKey");
+                throw new ArgumentException("Given PropertyKey doesn't have accessor metadata.", nameof(propertyKey));
 
             List<PropertyKey> typeAccessorProperties;
-            if (!accessorProperties.TryGetValue(type, out typeAccessorProperties))
-                accessorProperties.Add(type, typeAccessorProperties = new List<PropertyKey>());
+            if (!AccessorProperties.TryGetValue(type, out typeAccessorProperties))
+                AccessorProperties.Add(type, typeAccessorProperties = new List<PropertyKey>());
 
             typeAccessorProperties.Add(propertyKey);
         }
 
         internal void RaisePropertyContainerUpdated(PropertyKey propertyKey, object newValue, object oldValue)
         {
-            if (PropertyUpdated != null)
-                PropertyUpdated(ref this, propertyKey, newValue, oldValue);
+            PropertyUpdated?.Invoke(ref this, propertyKey, newValue, oldValue);
         }
 
         private object GetNonRecursive(PropertyKey propertyKey)
@@ -597,18 +564,11 @@ namespace SiliconStudio.Core
             // Get bound value, if any.
             if (properties != null && properties.TryGetValue(propertyKey, out value))
             {
-                if (propertyKey.IsValueType)
-                    return ((ValueHolder)value).ObjectValue;
-                return value;
+                return propertyKey.IsValueType ? ((ValueHolder)value).ObjectValue : value;
             }
 
-            if (propertyKey.DefaultValueMetadata != null)
-            {
-                // Get default value.
-                return propertyKey.DefaultValueMetadata.GetDefaultValue(ref this);
-            }
-
-            return null;
+            // Get default value.
+            return propertyKey.DefaultValueMetadata?.GetDefaultValue(ref this);
         }
 
         private static bool ArePropertyValuesEqual(PropertyKey propertyKey, object propertyValue1, object propertyValue2)
@@ -645,14 +605,14 @@ namespace SiliconStudio.Core
 
         bool ICollection<KeyValuePair<PropertyKey, object>>.Remove(KeyValuePair<PropertyKey, object> item)
         {
-            return ((IDictionary<PropertyKey, object>)properties).Remove(item);
+            return Remove(item.Key);
         }
-
+        
         internal abstract class ValueHolder
         {
             public abstract object ObjectValue { get; }
         }
-
+        
         internal class ValueHolder<T> : ValueHolder
         {
             public T Value;
@@ -662,10 +622,7 @@ namespace SiliconStudio.Core
                 Value = value;
             }
 
-            public override object ObjectValue
-            {
-                get { return Value; }
-            }
+            public override object ObjectValue => Value;
         }
     }
 }

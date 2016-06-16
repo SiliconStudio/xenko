@@ -129,7 +129,7 @@ namespace SiliconStudio.Xenko.Input.Tests
             buttonBack.Click += (o, _) => ChangeScene(-1);
             buttonNext.Click += (o, _) => ChangeScene(+1);
 
-            ui.RootElement = new UniformGrid { Columns = 3, Children = { buttonBack, currentText, buttonNext } };
+            ui.Page = new UIPage { RootElement = new UniformGrid { Columns = 3, Children = { buttonBack, currentText, buttonNext } } };
         }
 
         private void ChangeScene(int i)
