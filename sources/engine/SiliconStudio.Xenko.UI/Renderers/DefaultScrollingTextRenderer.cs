@@ -40,13 +40,13 @@ namespace SiliconStudio.Xenko.UI.Renderers
             {
                 Color = scrollingText.RenderOpacity * scrollingText.TextColor,
                 DepthBias = context.DepthBias + 1,
-                FontScale = element.LayoutingContext.RealVirtualResolutionRatio,
-                FontSize = scrollingText.TextSize,
+                RealVirtualResolutionRatio = element.LayoutingContext.RealVirtualResolutionRatio,
+                RequestedFontSize = scrollingText.TextSize,
                 Batch = Batch,
                 SnapText = context.ShouldSnapText && !scrollingText.DoNotSnapText,
                 Matrix = textWorldMatrix,
                 Alignment = TextAlignment.Left,
-                Size = new Vector2(scrollingText.ActualWidth, scrollingText.ActualHeight)
+                TextBoxSize = new Vector2(scrollingText.ActualWidth, scrollingText.ActualHeight)
             };
 
             // flush the current content of the UI image batch

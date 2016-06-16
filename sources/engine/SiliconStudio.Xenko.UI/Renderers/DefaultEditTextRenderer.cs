@@ -84,13 +84,13 @@ namespace SiliconStudio.Xenko.UI.Renderers
             {
                 Color = editText.RenderOpacity * editText.TextColor,
                 DepthBias = context.DepthBias + 2,
-                FontScale = fontScale,
-                FontSize = editText.TextSize,
+                RealVirtualResolutionRatio = fontScale,
+                RequestedFontSize = editText.TextSize,
                 Batch = Batch,
                 SnapText = context.ShouldSnapText && !editText.DoNotSnapText,
                 Matrix = editText.WorldMatrixInternal,
                 Alignment = editText.TextAlignment,
-                Size = textRegionSize
+                TextBoxSize = textRegionSize
             };
 
             if (editText.Font.FontType == SpriteFontType.SDF)
