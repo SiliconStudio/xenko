@@ -121,7 +121,7 @@ namespace SiliconStudio.Xenko.Audio
                             break;
                         }
                         
-                        source.FillBuffer(utilityBuffer.Pointer, offset * sizeof(short), source.sampleRate, source.channels == 1);
+                        source.FillBuffer(utilityBuffer.Pointer, offset * sizeof(short), source.ended);
                     }
                     else
                     {

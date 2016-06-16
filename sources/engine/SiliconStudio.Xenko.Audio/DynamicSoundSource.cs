@@ -62,12 +62,11 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         /// <param name="pcm"></param>
         /// <param name="bufferSize"></param>
-        /// <param name="sampleRate"></param>
-        /// <param name="mono"></param>
-        protected void FillBuffer(IntPtr pcm, int bufferSize, int sampleRate, bool mono)
+        /// <param name="endOfStream"></param>
+        protected void FillBuffer(IntPtr pcm, int bufferSize, bool endOfStream)
         {
             var buffer = freeBuffers.Dequeue();
-            AudioLayer.SourceQueueBuffer(SoundInstance.Source, buffer, pcm, bufferSize, sampleRate, mono);
+            AudioLayer.SourceQueueBuffer(SoundInstance.Source, buffer, pcm, bufferSize, endOfStream);
             if (readyToPlay) return;
 
             prebufferedCount++;
@@ -82,13 +81,12 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         /// <param name="pcm"></param>
         /// <param name="bufferSize"></param>
-        /// <param name="sampleRate"></param>
-        /// <param name="mono"></param>
-        protected unsafe void FillBuffer(short[] pcm, int bufferSize, int sampleRate, bool mono)
+        /// <param name="endOfStream"></param>
+        protected unsafe void FillBuffer(short[] pcm, int bufferSize, bool endOfStream)
         {
             var buffer = freeBuffers.Dequeue();
             fixed(short* pcmBuffer = pcm)
-            AudioLayer.SourceQueueBuffer(SoundInstance.Source, buffer, new IntPtr(pcmBuffer), bufferSize, sampleRate, mono);
+            AudioLayer.SourceQueueBuffer(SoundInstance.Source, buffer, new IntPtr(pcmBuffer), bufferSize, endOfStream);
             if (readyToPlay) return;
 
             prebufferedCount++;

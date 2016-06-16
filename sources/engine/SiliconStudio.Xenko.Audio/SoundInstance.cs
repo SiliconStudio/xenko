@@ -43,13 +43,17 @@ namespace SiliconStudio.Xenko.Audio
 
         internal AudioListener Listener;
 
-        public SoundInstance(AudioEngine engine, AudioListener listener, DynamicSoundSource dynamicSoundSource, bool spatialized = false)
+        public SoundInstance(AudioEngine engine, AudioListener listener, DynamicSoundSource dynamicSoundSource, int sampleRate, bool mono, bool spatialized = false)
         {
             Listener = listener;
             this.engine = engine;
             this.spatialized = spatialized;
             soundSource = dynamicSoundSource;
-            Source = AudioLayer.SourceCreate(listener.Listener);
+            Source = AudioLayer.SourceCreate(listener.Listener, sampleRate, mono);
+            if (Source.Ptr == IntPtr.Zero)
+            {
+                throw new Exception("Failed to create an AudioLayer Source");
+            }
             ResetStateToDefault();
         }
 
@@ -59,7 +63,11 @@ namespace SiliconStudio.Xenko.Audio
             engine = staticSound.AudioEngine;
             sound = staticSound;
             spatialized = staticSound.Spatialized;
-            Source = AudioLayer.SourceCreate(listener.Listener);
+            Source = AudioLayer.SourceCreate(listener.Listener, staticSound.SampleRate, staticSound.Channels == 1);
+            if (Source.Ptr == IntPtr.Zero)
+            {
+                throw new Exception("Failed to create an AudioLayer Source");
+            }
             ResetStateToDefault();
             if (staticSound.StreamFromDisk)
             {
