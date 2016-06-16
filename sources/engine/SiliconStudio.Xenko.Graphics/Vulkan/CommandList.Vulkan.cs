@@ -312,45 +312,35 @@ namespace SiliconStudio.Xenko.Graphics
                 *write = new WriteDescriptorSet
                 {
                     StructureType = StructureType.WriteDescriptorSet,
+                    DescriptorType = mapping.DescriptorType,
                     DestinationSet = localDescriptorSet,
                     DestinationBinding = (uint)mapping.DestinationBinding,
                     DestinationArrayElement = 0,
                     DescriptorCount = 1,
                 };
 
-                var texture = heapObject.Value as Texture;
-                if (texture != null)
+                switch (mapping.DescriptorType)
                 {
-                    *imageInfo = new DescriptorImageInfo { ImageView = texture.NativeImageView, ImageLayout = ImageLayout.ShaderReadOnlyOptimal };
-
-                    write->DescriptorType = DescriptorType.SampledImage;
-                    write->ImageInfo = new IntPtr(imageInfo);
-                }
-                else
-                {
-                    var samplerState = heapObject.Value as SamplerState;
-                    if (samplerState != null)
-                    {
-                        *imageInfo = new DescriptorImageInfo { Sampler = samplerState.NativeSampler };
-
-                        write->DescriptorType = DescriptorType.Sampler;
+                    case DescriptorType.SampledImage:
+                        var texture = heapObject.Value as Texture;
+                        *imageInfo = new DescriptorImageInfo { ImageView = texture?.NativeImageView ?? ImageView.Null, ImageLayout = ImageLayout.ShaderReadOnlyOptimal };
                         write->ImageInfo = new IntPtr(imageInfo);
-                    }
-                    else
-                    {
-                        var buffer = heapObject.Value as Buffer;
-                        if (buffer != null)
-                        {
-                            *bufferInfo = new DescriptorBufferInfo { Buffer = buffer.NativeBuffer, Offset = (ulong)heapObject.Offset, Range = (ulong)heapObject.Size };
+                        break;
 
-                            write->DescriptorType = DescriptorType.UniformBuffer;
-                            write->BufferInfo = new IntPtr(bufferInfo);
-                        }
-                        else
-                        {
-                            throw new InvalidOperationException();
-                        }
-                    }
+                    case DescriptorType.Sampler:
+                        var samplerState = heapObject.Value as SamplerState;
+                        *imageInfo = new DescriptorImageInfo { Sampler = samplerState?.NativeSampler ?? Sampler.Null };
+                        write->ImageInfo = new IntPtr(imageInfo);
+                        break;
+
+                    case DescriptorType.UniformBuffer:
+                        var buffer = heapObject.Value as Buffer;
+                        *bufferInfo = new DescriptorBufferInfo { Buffer = buffer?.NativeBuffer ?? SharpVulkan.Buffer.Null, Offset = (ulong)heapObject.Offset, Range = (ulong)heapObject.Size };
+                        write->BufferInfo = new IntPtr(bufferInfo);
+                        break;
+
+                    default:
+                        throw new InvalidOperationException();
                 }
             }
 

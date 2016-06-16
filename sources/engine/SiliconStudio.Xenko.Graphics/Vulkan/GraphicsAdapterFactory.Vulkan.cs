@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             IntPtr[] enabledLayerNames = new IntPtr[0];
 
-            //if (false)
+            if (false)
             {
                 var layers = Vulkan.InstanceLayerProperties;
                 var availableLayerNames = new HashSet<string>();

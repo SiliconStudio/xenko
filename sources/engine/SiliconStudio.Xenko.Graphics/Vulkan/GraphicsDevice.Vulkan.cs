@@ -234,7 +234,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             IntPtr[] enabledLayerNames = new IntPtr[0];
 
-            //if (false)
+            if (false)
             {
                 var layers = Adapter.PhysicalDevice.DeviceLayerProperties;
                 var availableLayerNames = new HashSet<string>();

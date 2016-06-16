@@ -308,6 +308,7 @@ namespace SiliconStudio.Xenko.Graphics
             public int SourceSet;
             public int SourceBinding;
             public int DestinationBinding;
+            public DescriptorType DescriptorType;
         }
 
         internal List<DescriptorSetInfo> DescriptorBindingMapping;
@@ -350,11 +351,19 @@ namespace SiliconStudio.Xenko.Graphics
                     if (destinationBindings.TryGetValue(sourceEntry.Key.Name, out destinationBinding))
                     {
                         destinationEntries[destinationBinding] = sourceEntry;
+
+                        // No need to umpdate immutable samplers
+                        if (sourceEntry.Class == EffectParameterClass.Sampler && sourceEntry.ImmutableSampler != null)
+                        {
+                            continue;
+                        }
+
                         DescriptorBindingMapping.Add(new DescriptorSetInfo
                         {
                             SourceSet = layoutIndex,
                             SourceBinding = sourceBinding,
-                            DestinationBinding = destinationBinding
+                            DestinationBinding = destinationBinding,
+                            DescriptorType = VulkanConvertExtensions.ConvertDescriptorType(sourceEntry.Class, sourceEntry.Type)
                         });
                     }
                 }
