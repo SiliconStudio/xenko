@@ -1,0 +1,752 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.InteropServices;
+using SharpVulkan;
+
+using SiliconStudio.Core;
+using Semaphore = SharpVulkan.Semaphore;
+
+namespace SiliconStudio.Xenko.Graphics
+{
+    public partial class GraphicsDevice
+    {
+        private const GraphicsPlatform GraphicPlatform = GraphicsPlatform.Vulkan;
+        internal GraphicsProfile RequestedProfile;
+
+        private bool simulateReset = false;
+        private string rendererName;
+
+        private Device nativeDevice;
+        internal Queue NativeCommandQueue;
+
+        internal CommandPool NativeCopyCommandPool;
+        internal CommandBuffer NativeCopyCommandBuffer;
+        private SemaphoreCollector semaphoreCollector;
+
+        private SharpVulkan.Buffer nativeUploadBuffer;
+        private DeviceMemory nativeUploadBufferMemory;
+        private IntPtr nativeUploadBufferStart;
+        private int nativeUploadBufferSize;
+        private int nativeUploadBufferOffset;
+
+        private Queue<KeyValuePair<long, Fence>> nativeFences = new Queue<KeyValuePair<long, Fence>>();
+        private long lastCompletedFence;
+        internal long NextFenceValue = 1;
+        internal Queue<BufferInfo> TemporaryResources = new Queue<BufferInfo>();
+
+        internal HeapPool descriptorPools;
+        internal const uint MaxDescriptorSetCount = 256;
+        internal readonly uint[] MaxDescriptorTypeCounts = new uint[DescriptorSetLayout.DescriptorTypeCount]
+        {
+            256, // Sampler
+            0, // CombinedImageSampler
+            512, // SampledImage
+            0, // StorageImage
+            64, // UniformTexelBuffer
+            0, // StorageTexelBuffer
+            512, // UniformBuffer
+            0, // StorageBuffer
+            0, // UniformBufferDynamic
+            0, // StorageBufferDynamic
+            0 // InputAttachment
+        };
+
+        internal struct BufferInfo
+        {
+            public long FenceValue;
+
+            public SharpVulkan.Buffer Buffer;
+
+            public DeviceMemory Memory;
+
+            public BufferInfo(long fenceValue, SharpVulkan.Buffer buffer, DeviceMemory memory)
+            {
+                FenceValue = fenceValue;
+                Buffer = buffer;
+                Memory = memory;
+            }
+        }
+
+        /// <summary>
+        ///     Gets the status of this device.
+        /// </summary>
+        /// <value>The graphics device status.</value>
+        public GraphicsDeviceStatus GraphicsDeviceStatus
+        {
+            get
+            {
+                if (simulateReset)
+                {
+                    simulateReset = false;
+                    return GraphicsDeviceStatus.Reset;
+                }
+
+                //var result = NativeDevice.DeviceRemovedReason;
+                //if (result == SharpDX.DXGI.ResultCode.DeviceRemoved)
+                //{
+                //    return GraphicsDeviceStatus.Removed;
+                //}
+
+                //if (result == SharpDX.DXGI.ResultCode.DeviceReset)
+                //{
+                //    return GraphicsDeviceStatus.Reset;
+                //}
+
+                //if (result == SharpDX.DXGI.ResultCode.DeviceHung)
+                //{
+                //    return GraphicsDeviceStatus.Hung;
+                //}
+
+                //if (result == SharpDX.DXGI.ResultCode.DriverInternalError)
+                //{
+                //    return GraphicsDeviceStatus.InternalError;
+                //}
+
+                //if (result == SharpDX.DXGI.ResultCode.InvalidCall)
+                //{
+                //    return GraphicsDeviceStatus.InvalidCall;
+                //}
+
+                //if (result.Code < 0)
+                //{
+                //    return GraphicsDeviceStatus.Reset;
+                //}
+
+                return GraphicsDeviceStatus.Normal;
+            }
+        }
+
+        /// <summary>
+        ///     Gets the native device.
+        /// </summary>
+        /// <value>The native device.</value>
+        internal Device NativeDevice
+        {
+            get { return nativeDevice; }
+        }
+
+        /// <summary>
+        ///     Marks context as active on the current thread.
+        /// </summary>
+        public void Begin()
+        {
+            FrameTriangleCount = 0;
+            FrameDrawCalls = 0;
+        }
+
+        /// <summary>
+        /// Enables profiling.
+        /// </summary>
+        /// <param name="enabledFlag">if set to <c>true</c> [enabled flag].</param>
+        public void EnableProfile(bool enabledFlag)
+        {
+        }
+
+        /// <summary>
+        ///     Unmarks context as active on the current thread.
+        /// </summary>
+        public void End()
+        {
+        }
+
+        /// <summary>
+        /// Executes a deferred command list.
+        /// </summary>
+        /// <param name="commandList">The deferred command list.</param>
+        public void ExecuteCommandList(CommandList commandList)
+        {
+            //if (commandList == null) throw new ArgumentNullException("commandList");
+            //
+            //NativeDeviceContext.ExecuteCommandList(((CommandList)commandList).NativeCommandList, false);
+            //commandList.Dispose();
+        }
+
+        private void InitializePostFeatures()
+        {
+        }
+
+        private string GetRendererName()
+        {
+            return rendererName;
+        }
+
+        public void SimulateReset()
+        {
+            simulateReset = true;
+        }
+
+        /// <summary>
+        ///     Initializes the specified device.
+        /// </summary>
+        /// <param name="graphicsProfiles">The graphics profiles.</param>
+        /// <param name="deviceCreationFlags">The device creation flags.</param>
+        /// <param name="windowHandle">The window handle.</param>
+        private unsafe void InitializePlatformDevice(GraphicsProfile[] graphicsProfiles, DeviceCreationFlags deviceCreationFlags, object windowHandle)
+        {
+            if (nativeDevice != Device.Null)
+            {
+                // Destroy previous device
+                ReleaseDevice();
+            }
+
+            rendererName = Adapter.Description;
+
+            // Profiling is supported through pix markers
+            IsProfilingSupported = true;
+
+            RequestedProfile = graphicsProfiles.Last();
+
+            if ((deviceCreationFlags & DeviceCreationFlags.Debug) != 0)
+            {
+                // TODO VULKAN debug layer
+            }
+
+            var queueProperties = Adapter.PhysicalDevice.QueueFamilyProperties;
+
+            // TODO VULKAN
+            // Create Vulkan device based on profile
+            uint queuePriorities = 0;
+            var queueCreateInfo = new DeviceQueueCreateInfo
+            {
+                StructureType = StructureType.DeviceQueueCreateInfo,
+                QueueFamilyIndex = 0,
+                QueueCount = 1,
+                QueuePriorities = new IntPtr(&queuePriorities)
+            };
+
+            var desiredLayerNames = new []
+            {
+                //"VK_LAYER_LUNARG_standard_validation",
+                "VK_LAYER_GOOGLE_threading",
+                "VK_LAYER_LUNARG_parameter_validation",
+                "VK_LAYER_LUNARG_device_limits",
+                "VK_LAYER_LUNARG_object_tracker",
+                "VK_LAYER_LUNARG_image",
+                "VK_LAYER_LUNARG_core_validation",
+                "VK_LAYER_LUNARG_swapchain",
+                "VK_LAYER_GOOGLE_unique_objects",
+                //"VK_LAYER_LUNARG_api_dump",
+            };
+
+            IntPtr[] enabledLayerNames = new IntPtr[0];
+
+            if (false)
+            {
+                var layers = Adapter.PhysicalDevice.DeviceLayerProperties;
+                var availableLayerNames = new HashSet<string>();
+
+                for (int index = 0; index < layers.Length; index++)
+                {
+                    var properties = layers[index];
+                    var namePointer = new IntPtr(Interop.Fixed(ref properties.LayerName));
+                    var name = Marshal.PtrToStringAnsi(namePointer);
+
+                    availableLayerNames.Add(name);
+                }
+
+                enabledLayerNames = desiredLayerNames
+                    .Where(x => availableLayerNames.Contains(x))
+                    .Select(Marshal.StringToHGlobalAnsi).ToArray();
+            }
+
+            var enabledFeature = new PhysicalDeviceFeatures
+            {
+                FillModeNonSolid = true,
+                ShaderClipDistance = true,
+                ShaderCullDistance = true,
+                SamplerAnisotropy = true,
+                DepthClamp = true,
+            };
+
+            var enabledExtensionNames = new[]
+            {
+                Marshal.StringToHGlobalAnsi("VK_KHR_swapchain"),
+            };
+
+            try
+            {
+                fixed (void* enabledExtensionNamesPointer = &enabledExtensionNames[0])
+                {
+                    var deviceCreateInfo = new DeviceCreateInfo
+                    {
+                        StructureType = StructureType.DeviceCreateInfo,
+                        QueueCreateInfoCount = 1,
+                        QueueCreateInfos = new IntPtr(&queueCreateInfo),
+                        EnabledLayerCount = enabledLayerNames != null ? (uint)enabledLayerNames.Length : 0,
+                        EnabledLayerNames = enabledLayerNames?.Length > 0 ? new IntPtr(Interop.Fixed(enabledLayerNames)) : IntPtr.Zero,
+                        EnabledExtensionCount = (uint)enabledExtensionNames.Length,
+                        EnabledExtensionNames = new IntPtr(enabledExtensionNamesPointer),
+                        EnabledFeatures = new IntPtr(&enabledFeature)
+                    };
+
+                    nativeDevice = Adapter.PhysicalDevice.CreateDevice(ref deviceCreateInfo);
+                }
+            }
+            finally
+            {
+                foreach (var enabledExtensionName in enabledExtensionNames)
+                {
+                    Marshal.FreeHGlobal(enabledExtensionName);
+                }
+
+                foreach (var enabledLayerName in enabledLayerNames)
+                {
+                    Marshal.FreeHGlobal(enabledLayerName);
+                }
+            }
+
+            NativeCommandQueue = nativeDevice.GetQueue(0, 0);
+
+            //// Prepare copy command list (start it closed, so that every new use start with a Reset)
+            var commandPoolCreateInfo = new CommandPoolCreateInfo
+            {
+                StructureType = StructureType.CommandPoolCreateInfo,
+                QueueFamilyIndex = 0, //device.NativeCommandQueue.FamilyIndex
+                Flags = CommandPoolCreateFlags.ResetCommandBuffer
+            };
+            NativeCopyCommandPool = NativeDevice.CreateCommandPool(ref commandPoolCreateInfo);
+
+            var commandBufferAllocationInfo = new CommandBufferAllocateInfo
+            {
+                StructureType = StructureType.CommandBufferAllocateInfo,
+                Level = CommandBufferLevel.Primary,
+                CommandPool = NativeCopyCommandPool,
+                CommandBufferCount = 1
+            };
+            CommandBuffer nativeCommandBuffer;
+            NativeDevice.AllocateCommandBuffers(ref commandBufferAllocationInfo, &nativeCommandBuffer);
+            NativeCopyCommandBuffer = nativeCommandBuffer;
+
+            descriptorPools = new HeapPool(this);
+
+            semaphoreCollector = new SemaphoreCollector(this);
+        }
+
+        internal unsafe IntPtr AllocateUploadBuffer(int size, out SharpVulkan.Buffer resource, out int offset)
+        {
+            // TODO D3D12 thread safety, should we simply use locks?
+            if (nativeUploadBuffer == SharpVulkan.Buffer.Null || nativeUploadBufferOffset + size > nativeUploadBufferSize)
+            {
+                if (nativeUploadBuffer != SharpVulkan.Buffer.Null)
+                {
+                    NativeDevice.UnmapMemory(nativeUploadBufferMemory);
+                    TemporaryResources.Enqueue(new BufferInfo(NextFenceValue, nativeUploadBuffer, nativeUploadBufferMemory));
+                }
+
+                // Allocate new buffer
+                // TODO D3D12 recycle old ones (using fences to know when GPU is done with them)
+                // TODO D3D12 ResourceStates.CopySource not working?
+                nativeUploadBufferSize = Math.Max(4 * 1024 * 1024, size);
+
+                var bufferCreateInfo = new BufferCreateInfo
+                {
+                    StructureType = StructureType.BufferCreateInfo,
+                    Size = (ulong)nativeUploadBufferSize,
+                    Flags = BufferCreateFlags.None,
+                    Usage = BufferUsageFlags.TransferSource,
+                };
+                nativeUploadBuffer = NativeDevice.CreateBuffer(ref bufferCreateInfo);
+                AllocateMemory(MemoryPropertyFlags.HostVisible | MemoryPropertyFlags.HostCoherent);
+
+                nativeUploadBufferStart = NativeDevice.MapMemory(nativeUploadBufferMemory, 0, (ulong)nativeUploadBufferSize, MemoryMapFlags.None);
+                nativeUploadBufferOffset = 0;
+            }
+
+            // Bump allocate
+            resource = nativeUploadBuffer;
+            offset = nativeUploadBufferOffset;
+            nativeUploadBufferOffset += size;
+            return nativeUploadBufferStart + offset;
+        }
+
+        protected unsafe void AllocateMemory(MemoryPropertyFlags memoryProperties)
+        {
+            MemoryRequirements memoryRequirements;
+            NativeDevice.GetBufferMemoryRequirements(nativeUploadBuffer, out memoryRequirements);
+
+            if (memoryRequirements.Size == 0)
+                return;
+
+            var allocateInfo = new MemoryAllocateInfo
+            {
+                StructureType = StructureType.MemoryAllocateInfo,
+                AllocationSize = memoryRequirements.Size,
+            };
+
+            PhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
+            Adapter.PhysicalDevice.GetMemoryProperties(out physicalDeviceMemoryProperties);
+            var typeBits = memoryRequirements.MemoryTypeBits;
+            for (uint i = 0; i < physicalDeviceMemoryProperties.MemoryTypeCount; i++)
+            {
+                if ((typeBits & 1) == 1)
+                {
+                    // Type is available, does it match user properties?
+                    var memoryType = *((MemoryType*)&physicalDeviceMemoryProperties.MemoryTypes + i);
+                    if ((memoryType.PropertyFlags & memoryProperties) == memoryProperties)
+                    {
+                        allocateInfo.MemoryTypeIndex = i;
+                        break;
+                    }
+                }
+                typeBits >>= 1;
+            }
+
+            nativeUploadBufferMemory = NativeDevice.AllocateMemory(ref allocateInfo);
+
+            NativeDevice.BindBufferMemory(nativeUploadBuffer, nativeUploadBufferMemory, 0);
+        }
+
+        internal unsafe void ReleaseTemporaryResources()
+        {
+            // Release previous frame resources
+            while (TemporaryResources.Count > 0 && IsFenceCompleteInternal(TemporaryResources.Peek().FenceValue))
+            {
+                var temporaryResource = TemporaryResources.Dequeue();
+                NativeDevice.FreeMemory(temporaryResource.Memory);
+                NativeDevice.DestroyBuffer(temporaryResource.Buffer);
+            }
+        }
+
+        private void AdjustDefaultPipelineStateDescription(ref PipelineStateDescription pipelineStateDescription)
+        {
+        }
+
+        protected void DestroyPlatformDevice()
+        {
+            ReleaseDevice();
+        }
+
+        private unsafe void ReleaseDevice()
+        {
+            // Wait for all queues to be idle
+            nativeDevice.WaitIdle();
+
+            // Destroy all remaining fences
+            GetCompletedValue();
+
+            // Mark upload buffer for destruction
+            if (nativeUploadBuffer != SharpVulkan.Buffer.Null)
+            {
+                NativeDevice.UnmapMemory(nativeUploadBufferMemory);
+                TemporaryResources.Enqueue(new BufferInfo(lastCompletedFence, nativeUploadBuffer, nativeUploadBufferMemory));
+
+                nativeUploadBuffer = SharpVulkan.Buffer.Null;
+                nativeUploadBufferMemory = DeviceMemory.Null;
+            }
+
+            // Release fenced resources
+            ReleaseTemporaryResources();
+            semaphoreCollector.Dispose();
+            descriptorPools.Dispose();
+
+            nativeDevice.DestroyCommandPool(NativeCopyCommandPool);
+            nativeDevice.Destroy();
+        }
+
+        internal void OnDestroyed()
+        {
+        }
+
+        internal unsafe long ExecuteCommandListInternal(CommandBuffer nativeCommandBuffer)
+        {
+            //if (nativeUploadBuffer != SharpVulkan.Buffer.Null)
+            //{
+            //    NativeDevice.UnmapMemory(nativeUploadBufferMemory);
+            //    TemporaryResources.Enqueue(new BufferInfo(NextFenceValue, nativeUploadBuffer, nativeUploadBufferMemory));
+
+            //    nativeUploadBuffer = SharpVulkan.Buffer.Null;
+            //    nativeUploadBufferMemory = DeviceMemory.Null;
+            //}
+
+            // Create new fence
+            var fenceCreateInfo = new FenceCreateInfo { StructureType = StructureType.FenceCreateInfo };
+            var fence = nativeDevice.CreateFence(ref fenceCreateInfo);
+            nativeFences.Enqueue(new KeyValuePair<long, Fence>(NextFenceValue, fence));
+
+            // Submit commands
+            var nativeCommandBufferCopy = nativeCommandBuffer;
+            var pipelineStageFlags = PipelineStageFlags.AllCommands;
+
+            var presentSemaphoreCopy = presentSemaphore;
+            var submitInfo = new SubmitInfo
+            {
+                StructureType = StructureType.SubmitInfo,
+                CommandBufferCount = 1,
+                CommandBuffers = new IntPtr(&nativeCommandBufferCopy),
+                WaitSemaphoreCount = presentSemaphore != Semaphore.Null ? 1U : 0U,
+                WaitSemaphores = new IntPtr(&presentSemaphoreCopy),
+                WaitDstStageMask = new IntPtr(&pipelineStageFlags),
+            };
+            NativeCommandQueue.Submit(1, &submitInfo, fence);
+
+            presentSemaphore = Semaphore.Null;
+            semaphoreCollector.Release();
+
+            return NextFenceValue++;
+        }
+
+        internal bool IsFenceCompleteInternal(long fenceValue)
+        {
+            // Try to avoid checking the fence if possible
+            if (fenceValue > lastCompletedFence)
+            {
+                GetCompletedValue();
+            }
+
+            return fenceValue <= lastCompletedFence;
+        }
+
+        internal unsafe long GetCompletedValue()
+        {
+            // TODO VULKAN: SpinLock this
+            while (nativeFences.Count > 0 && NativeDevice.GetFenceStatus(nativeFences.Peek().Value) == Result.Success)
+            {
+                var fence = nativeFences.Dequeue();
+                NativeDevice.DestroyFence(fence.Value);
+                lastCompletedFence = Math.Max(lastCompletedFence, fence.Key);
+            }
+
+            return lastCompletedFence;
+        }
+
+        internal unsafe void WaitForFenceInternal(long fenceValue)
+        {
+            if (IsFenceCompleteInternal(fenceValue))
+                return;
+
+            // TODO D3D12 in case of concurrency, this lock could end up blocking too long a second thread with lower fenceValue then first one
+            lock (nativeFences)
+            {
+                while (nativeFences.Count > 0 && nativeFences.Peek().Key <= fenceValue)
+                {
+                    var fence = nativeFences.Dequeue();
+                    var fenceCopy = fence.Value;
+
+                    NativeDevice.WaitForFences(1, &fenceCopy, true, ulong.MaxValue);
+                    NativeDevice.DestroyFence(fence.Value);
+                    lastCompletedFence = fenceValue;
+                }
+            }
+        }
+
+        private Semaphore presentSemaphore;
+
+        public unsafe Semaphore GetNextPresentSemaphore()
+        {
+            var createInfo = new SemaphoreCreateInfo { StructureType = StructureType.SemaphoreCreateInfo };
+            presentSemaphore = NativeDevice.CreateSemaphore(ref createInfo);
+            semaphoreCollector.Add(NextFenceValue, presentSemaphore);
+            return presentSemaphore;
+        }
+    }
+
+    internal abstract class ResourcePool<T> : ComponentBase
+    {
+        protected readonly GraphicsDevice GraphicsDevice;
+        private readonly Queue<KeyValuePair<long, T>> liveObjects = new Queue<KeyValuePair<long, T>>();
+
+        protected ResourcePool(GraphicsDevice graphicsDevice)
+        {
+            GraphicsDevice = graphicsDevice;
+        }
+
+        public T GetObject()
+        {
+            lock (liveObjects)
+            {
+                // Check if first allocator is ready for reuse
+                if (liveObjects.Count > 0)
+                {
+                    var firstAllocator = liveObjects.Peek();
+                    if (firstAllocator.Key <= GraphicsDevice.GetCompletedValue())
+                    {
+                        liveObjects.Dequeue();
+                        ResetObject(firstAllocator.Value);
+                        return firstAllocator.Value;
+                    }
+                }
+
+                return CreateObject();
+            }
+        }
+
+        public void RecycleObject(long fenceValue, T obj)
+        {
+            lock (liveObjects)
+            {
+                liveObjects.Enqueue(new KeyValuePair<long, T>(fenceValue, obj));
+            }
+        }
+
+        protected abstract T CreateObject();
+
+        protected abstract void ResetObject(T obj);
+
+        protected virtual void DestroyObject(T obj)
+        {
+        }
+
+        protected override void Destroy()
+        {
+            lock (liveObjects)
+            { 
+                foreach (var item in liveObjects)
+                {
+                    DestroyObject(item.Value);
+                }
+            }
+
+            base.Destroy();
+        }
+    }
+
+    internal class CommandBufferPool : ResourcePool<CommandBuffer>
+    {
+        private readonly CommandPool commandPool;
+
+        public unsafe CommandBufferPool(GraphicsDevice graphicsDevice) : base(graphicsDevice)
+        {
+            var commandPoolCreateInfo = new CommandPoolCreateInfo
+            {
+                StructureType = StructureType.CommandPoolCreateInfo,
+                QueueFamilyIndex = 0, //device.NativeCommandQueue.FamilyIndex
+                Flags = CommandPoolCreateFlags.ResetCommandBuffer
+            };
+
+            commandPool = graphicsDevice.NativeDevice.CreateCommandPool(ref commandPoolCreateInfo);
+        }
+
+        protected override unsafe CommandBuffer CreateObject()
+        {
+            // No allocator ready to be used, let's create a new one
+            var commandBufferAllocationInfo = new CommandBufferAllocateInfo
+            {
+                StructureType = StructureType.CommandBufferAllocateInfo,
+                Level = CommandBufferLevel.Primary,
+                CommandPool = commandPool,
+                CommandBufferCount = 1,
+            };
+
+            CommandBuffer commandBuffer;
+            GraphicsDevice.NativeDevice.AllocateCommandBuffers(ref commandBufferAllocationInfo, &commandBuffer);
+            return commandBuffer;
+        }
+
+        protected override void ResetObject(CommandBuffer obj)
+        {
+            obj.Reset(CommandBufferResetFlags.None);
+        }
+
+        protected override unsafe void Destroy()
+        {
+            base.Destroy();
+
+            GraphicsDevice.NativeDevice.DestroyCommandPool(commandPool);
+        }
+    }
+
+    internal class HeapPool : ResourcePool<SharpVulkan.DescriptorPool>
+    {
+        public HeapPool(GraphicsDevice graphicsDevice) : base(graphicsDevice)
+        {
+        }
+
+        protected override unsafe SharpVulkan.DescriptorPool CreateObject()
+        {
+            // No allocator ready to be used, let's create a new one
+            var poolSizes = GraphicsDevice.MaxDescriptorTypeCounts
+                .Select((count, index) => new DescriptorPoolSize { Type = (DescriptorType)index, DescriptorCount = count })
+                .Where(size => size.DescriptorCount > 0)
+                .ToArray();
+
+            var descriptorPoolCreateInfo = new DescriptorPoolCreateInfo
+            {
+                StructureType = StructureType.DescriptorPoolCreateInfo,
+                PoolSizeCount = (uint)poolSizes.Length,
+                PoolSizes = new IntPtr(Interop.Fixed(poolSizes)),
+                MaxSets = GraphicsDevice.MaxDescriptorSetCount,
+            };
+            return GraphicsDevice.NativeDevice.CreateDescriptorPool(ref descriptorPoolCreateInfo);
+        }
+
+        protected override void ResetObject(SharpVulkan.DescriptorPool obj)
+        {
+            GraphicsDevice.NativeDevice.ResetDescriptorPool(obj, DescriptorPoolResetFlags.None);
+        }
+
+        protected override unsafe void DestroyObject(SharpVulkan.DescriptorPool obj)
+        {
+            GraphicsDevice.NativeDevice.DestroyDescriptorPool(obj);
+        }
+    }
+
+    internal class FramebufferCollector : TemporaryResourceCollector<Framebuffer>
+    {
+        public FramebufferCollector(GraphicsDevice graphicsDevice) : base(graphicsDevice)
+        {
+        }
+
+        protected override unsafe void ReleaseObject(Framebuffer item)
+        {
+            GraphicsDevice.NativeDevice.DestroyFramebuffer(item);
+        }
+    }
+
+    internal class SemaphoreCollector : TemporaryResourceCollector<Semaphore>
+    {
+        public SemaphoreCollector(GraphicsDevice graphicsDevice) : base(graphicsDevice)
+        {
+        }
+
+        protected override unsafe void ReleaseObject(Semaphore item)
+        {
+            GraphicsDevice.NativeDevice.DestroySemaphore(item);
+        }
+    }
+
+
+    internal abstract class TemporaryResourceCollector<T> : IDisposable
+    {
+        protected readonly GraphicsDevice GraphicsDevice;
+        private readonly Queue<KeyValuePair<long, T>> items = new Queue<KeyValuePair<long, T>>();
+
+        protected TemporaryResourceCollector(GraphicsDevice graphicsDevice)
+        {
+            GraphicsDevice = graphicsDevice;
+        }
+
+        public void Add(long fenceValue, T item)
+        {
+            lock (items)
+            {
+                items.Enqueue(new KeyValuePair<long, T>(fenceValue, item));
+            }
+        }
+
+        public void Release()
+        {
+            lock (items)
+            {
+                while (items.Count > 0 && GraphicsDevice.IsFenceCompleteInternal(items.Peek().Key))
+                {
+                    ReleaseObject(items.Dequeue().Value);
+                }
+            }
+        }
+
+        protected abstract void ReleaseObject(T item);
+
+        public void Dispose()
+        {
+            while (items.Count > 0)
+            {
+                ReleaseObject(items.Dequeue().Value);
+            }
+        }
+    }
+}
+#endif

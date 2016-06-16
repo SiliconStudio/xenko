@@ -56,6 +56,8 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             result.DeviceName = "OpenGLES";
     #elif SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
             result.DeviceName = "OpenGL";
+    #elif SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
+            result.DeviceName = "Vulkan";
     #endif
 #elif SILICONSTUDIO_PLATFORM_ANDROID
             result.Platform = "Android";
@@ -142,6 +144,8 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             return TestPlatform.WindowsOgles;
 #elif SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
             return TestPlatform.WindowsOgl;
+#elif SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
+            return TestPlatform.WindowsVulkan;
 #endif
 
         }
@@ -279,6 +283,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         WindowsDx,
         WindowsOgl,
         WindowsOgles,
+        WindowsVulkan,
         WindowsStore,
         WindowsPhone,
         Android,

@@ -64,9 +64,9 @@ namespace SiliconStudio.Xenko.Engine.NextGen
             //var skyboxEntity = new Entity { new SkyboxComponent { Skybox = skybox } };
             //Scene.Entities.Add(skyboxEntity);
 
-            //var backgroundTexture = Asset.Load<Texture>("XenkoBackground");
-            //var backgroundEntity = new Entity { new BackgroundComponent { Texture = backgroundTexture } };
-            //Scene.Entities.Add(backgroundEntity);
+            var backgroundTexture = Asset.Load<Texture>("XenkoBackground");
+            var backgroundEntity = new Entity { new BackgroundComponent { Texture = backgroundTexture } };
+            Scene.Entities.Add(backgroundEntity);
 
             for (int i = 0; i < cubeWidth; ++i)
             {
@@ -141,35 +141,35 @@ namespace SiliconStudio.Xenko.Engine.NextGen
             //directionalLight2.Transform.Rotation = Quaternion.RotationY(MathUtil.PiOverTwo);
             //Scene.Entities.Add(directionalLight2);
 
-            var rand = new Random();
-            for (int i = 0; i < 512; ++i)
-            {
-                var pointLight1 = new Entity
-                {
-                    new LightComponent()
-                    {
-                        Type = i % 2 == 0 ? (ILight)new LightPoint
-                        {
-                            Color = new ColorRgbProvider(new Color((float)rand.NextDouble(), (float)rand.NextDouble(), (float)rand.NextDouble(), 1.0f)),
-                            Radius = 2.0f,
-                            Shadow = { Enabled = false },
-                        }
-                        : new LightSpot
-                        {
-                            Color = new ColorRgbProvider(new Color((float)rand.NextDouble(), (float)rand.NextDouble(), (float)rand.NextDouble(), 1.0f)),
-                            Range = 4.0f,
-                            Shadow = { Enabled = false },
-                        },
-                        Intensity = 10.0f
-                    }
-                };
-                pointLight1.Transform.Position = new Vector3(
-                    (float)rand.NextDouble() * 20.0f - 10.0f,
-                    (float)rand.NextDouble() * 20.0f - 10.0f,
-                    (float)rand.NextDouble() * 20.0f - 10.0f
-                    );
-                Scene.Entities.Add(pointLight1);
-            }
+            //var rand = new Random();
+            //for (int i = 0; i < 512; ++i)
+            //{
+            //    var pointLight1 = new Entity
+            //    {
+            //        new LightComponent()
+            //        {
+            //            Type = i % 2 == 0 ? (ILight)new LightPoint
+            //            {
+            //                Color = new ColorRgbProvider(new Color((float)rand.NextDouble(), (float)rand.NextDouble(), (float)rand.NextDouble(), 1.0f)),
+            //                Radius = 2.0f,
+            //                Shadow = { Enabled = false },
+            //            }
+            //            : new LightSpot
+            //            {
+            //                Color = new ColorRgbProvider(new Color((float)rand.NextDouble(), (float)rand.NextDouble(), (float)rand.NextDouble(), 1.0f)),
+            //                Range = 4.0f,
+            //                Shadow = { Enabled = false },
+            //            },
+            //            Intensity = 10.0f
+            //        }
+            //    };
+            //    pointLight1.Transform.Position = new Vector3(
+            //        (float)rand.NextDouble() * 20.0f - 10.0f,
+            //        (float)rand.NextDouble() * 20.0f - 10.0f,
+            //        (float)rand.NextDouble() * 20.0f - 10.0f
+            //        );
+            //    Scene.Entities.Add(pointLight1);
+            //}
 
 
             SceneSystem.SceneInstance = new SceneInstance(Services, Scene);

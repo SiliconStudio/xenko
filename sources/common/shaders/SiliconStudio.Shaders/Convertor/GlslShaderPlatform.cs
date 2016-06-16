@@ -11,5 +11,10 @@ namespace SiliconStudio.Shaders.Convertor
         /// GLSL OpenGL ES Shader.
         /// </summary>
         OpenGLES,
+
+        /// <summary>
+        /// GLSL Vulkan Shader.
+        /// </summary>
+        Vulkan,
     }
 }

@@ -262,7 +262,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
                                 case GraphicsPlatform.Direct3D11:
                                 case GraphicsPlatform.Direct3D12:
                                 case GraphicsPlatform.OpenGL:
-
+                                case GraphicsPlatform.Vulkan:
 
                                     // https://msdn.microsoft.com/en-us/library/windows/desktop/hh308955%28v=vs.85%29.aspx
                                     // http://www.reedbeta.com/blog/2012/02/12/understanding-bcn-texture-compression-formats/

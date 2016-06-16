@@ -47,6 +47,10 @@
     <XenkoGraphicsApiDefines>SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL;SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES</XenkoGraphicsApiDefines>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(XenkoGraphicsApi)' == 'Vulkan' ">
+    <XenkoGraphicsApiDefines>SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN</XenkoGraphicsApiDefines>
+  </PropertyGroup>
+  
   <!-- 
     Settings SiliconStudioPlatform specific
   -->
