@@ -82,7 +82,7 @@ namespace SiliconStudio.Xenko.Native
         [SuppressUnmanagedCodeSecurity]
 #endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceCreate", CallingConvention = CallingConvention.Cdecl)]
-        public static extern Source SourceCreate(Listener listener);
+        public static extern Source SourceCreate(Listener listener, int sampleRate, bool mono);
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
@@ -124,7 +124,7 @@ namespace SiliconStudio.Xenko.Native
         [SuppressUnmanagedCodeSecurity]
 #endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceQueueBuffer", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SourceQueueBuffer(Source source, Buffer buffer, IntPtr pcm, int bufferSize, int sampleRate, bool mono);
+        public static extern void SourceQueueBuffer(Source source, Buffer buffer, IntPtr pcm, int bufferSize, bool endOfStream);
 
 #if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]

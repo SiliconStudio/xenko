@@ -4,7 +4,7 @@
 #if defined(WINDOWS_DESKTOP) || defined(WINDOWS_UWP) || defined(WINDOWS_STORE) || defined(WINDOWS_PHONE) || !defined(__clang__)
 
 #include "../../../deps/NativePath/NativePath.h"
-#include "../../../deps/NativePath/TINYSTL/unordered_map.h"
+#include "../../../deps/NativePath/TINYSTL/vector.h"
 
 extern "C" {
 	class SpinLock
@@ -28,6 +28,8 @@ extern "C" {
 	private:
 		volatile bool mLocked;
 	};
+
+#pragma pack(push, 1)
 
 	namespace XAudio2
 	{
@@ -70,7 +72,6 @@ extern "C" {
 #define STDMETHOD(method) virtual HRESULT __stdcall method
 #define STDMETHOD_(type,method) virtual type __stdcall method
 #define IUnknown void
-#define BOOL bool
 #define XAUDIO2_COMMIT_NOW              0             // Used as an OperationSet argument
 #define XAUDIO2_COMMIT_ALL              0             // Used in IXAudio2::CommitChanges
 #define XAUDIO2_INVALID_OPSET           (UINT32)(-1)  // Not allowed for OperationSet arguments
@@ -82,9 +83,161 @@ extern "C" {
 #define UINT64 unsigned __int64 
 #define _In_opt_z_
 #define FAILED(hr) (((HRESULT)(hr)) < 0)
+#define _Inout_
 
-		extern long __stdcall XAudio2Create(void** ppXAudio2, UINT32 flags, UINT32 processor);
-		extern long __stdcall CoInitializeEx(void* ppXAudio2, DWORD dwCoInit);
+#define X3DAUDIO_PI  3.141592654f
+#define X3DAUDIO_2PI 6.283185307f
+
+#if !defined(_SPEAKER_POSITIONS_)
+#define _SPEAKER_POSITIONS_
+#define SPEAKER_FRONT_LEFT            0x00000001
+#define SPEAKER_FRONT_RIGHT           0x00000002
+#define SPEAKER_FRONT_CENTER          0x00000004
+#define SPEAKER_LOW_FREQUENCY         0x00000008
+#define SPEAKER_BACK_LEFT             0x00000010
+#define SPEAKER_BACK_RIGHT            0x00000020
+#define SPEAKER_FRONT_LEFT_OF_CENTER  0x00000040
+#define SPEAKER_FRONT_RIGHT_OF_CENTER 0x00000080
+#define SPEAKER_BACK_CENTER           0x00000100
+#define SPEAKER_SIDE_LEFT             0x00000200
+#define SPEAKER_SIDE_RIGHT            0x00000400
+#define SPEAKER_TOP_CENTER            0x00000800
+#define SPEAKER_TOP_FRONT_LEFT        0x00001000
+#define SPEAKER_TOP_FRONT_CENTER      0x00002000
+#define SPEAKER_TOP_FRONT_RIGHT       0x00004000
+#define SPEAKER_TOP_BACK_LEFT         0x00008000
+#define SPEAKER_TOP_BACK_CENTER       0x00010000
+#define SPEAKER_TOP_BACK_RIGHT        0x00020000
+#define SPEAKER_RESERVED              0x7FFC0000 // bit mask locations reserved for future use
+#define SPEAKER_ALL                   0x80000000 // used to specify that any possible permutation of speaker configurations
+#endif
+
+		// standard speaker geometry configurations, used with X3DAudioInitialize
+#if !defined(SPEAKER_MONO)
+#define SPEAKER_MONO             SPEAKER_FRONT_CENTER
+#define SPEAKER_STEREO           (SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT)
+#define SPEAKER_2POINT1          (SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT | SPEAKER_LOW_FREQUENCY)
+#define SPEAKER_SURROUND         (SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT | SPEAKER_FRONT_CENTER | SPEAKER_BACK_CENTER)
+#define SPEAKER_QUAD             (SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT | SPEAKER_BACK_LEFT | SPEAKER_BACK_RIGHT)
+#define SPEAKER_4POINT1          (SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT | SPEAKER_LOW_FREQUENCY | SPEAKER_BACK_LEFT | SPEAKER_BACK_RIGHT)
+#define SPEAKER_5POINT1          (SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT | SPEAKER_FRONT_CENTER | SPEAKER_LOW_FREQUENCY | SPEAKER_BACK_LEFT | SPEAKER_BACK_RIGHT)
+#define SPEAKER_7POINT1          (SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT | SPEAKER_FRONT_CENTER | SPEAKER_LOW_FREQUENCY | SPEAKER_BACK_LEFT | SPEAKER_BACK_RIGHT | SPEAKER_FRONT_LEFT_OF_CENTER | SPEAKER_FRONT_RIGHT_OF_CENTER)
+#define SPEAKER_5POINT1_SURROUND (SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT | SPEAKER_FRONT_CENTER | SPEAKER_LOW_FREQUENCY | SPEAKER_SIDE_LEFT  | SPEAKER_SIDE_RIGHT)
+#define SPEAKER_7POINT1_SURROUND (SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT | SPEAKER_FRONT_CENTER | SPEAKER_LOW_FREQUENCY | SPEAKER_BACK_LEFT | SPEAKER_BACK_RIGHT | SPEAKER_SIDE_LEFT  | SPEAKER_SIDE_RIGHT)
+#endif
+
+		struct XMFLOAT3
+		{
+			float x;
+			float y;
+			float z;
+
+			XMFLOAT3(): x(0), y(0), z(0)
+			{}
+
+			XMFLOAT3(float _x, float _y, float _z) : x(_x), y(_y), z(_z) {}
+			explicit XMFLOAT3(_In_reads_(3) const float *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]) {}
+
+			XMFLOAT3& operator= (const XMFLOAT3& Float3) { x = Float3.x; y = Float3.y; z = Float3.z; return *this; }
+		};
+
+		typedef float FLOAT32; // 32-bit IEEE float
+		typedef XMFLOAT3 X3DAUDIO_VECTOR; // float 3D vector
+
+		typedef struct X3DAUDIO_CONE
+		{
+			FLOAT32 InnerAngle; // inner cone angle in radians, must be within [0.0f, X3DAUDIO_2PI]
+			FLOAT32 OuterAngle; // outer cone angle in radians, must be within [InnerAngle, X3DAUDIO_2PI]
+
+			FLOAT32 InnerVolume; // volume level scaler on/within inner cone, used only for matrix calculations, must be within [0.0f, 2.0f] when used
+			FLOAT32 OuterVolume; // volume level scaler on/beyond outer cone, used only for matrix calculations, must be within [0.0f, 2.0f] when used
+			FLOAT32 InnerLPF;    // LPF (both direct and reverb paths) coefficient subtrahend on/within inner cone, used only for LPF (both direct and reverb paths) calculations, must be within [0.0f, 1.0f] when used
+			FLOAT32 OuterLPF;    // LPF (both direct and reverb paths) coefficient subtrahend on/beyond outer cone, used only for LPF (both direct and reverb paths) calculations, must be within [0.0f, 1.0f] when used
+			FLOAT32 InnerReverb; // reverb send level scaler on/within inner cone, used only for reverb calculations, must be within [0.0f, 2.0f] when used
+			FLOAT32 OuterReverb; // reverb send level scaler on/beyond outer cone, used only for reverb calculations, must be within [0.0f, 2.0f] when used
+		} X3DAUDIO_CONE, *LPX3DAUDIO_CONE;
+		static const X3DAUDIO_CONE X3DAudioDefault_DirectionalCone = { X3DAUDIO_PI / 2, X3DAUDIO_PI, 1.0f, 0.708f, 0.0f, 0.25f, 0.708f, 1.0f };
+
+		typedef struct X3DAUDIO_LISTENER
+		{
+			X3DAUDIO_VECTOR OrientFront; // orientation of front direction, used only for matrix and delay calculations or listeners with cones for matrix, LPF (both direct and reverb paths), and reverb calculations, must be normalized when used
+			X3DAUDIO_VECTOR OrientTop;   // orientation of top direction, used only for matrix and delay calculations, must be orthonormal with OrientFront when used
+
+			X3DAUDIO_VECTOR Position; // position in user-defined world units, does not affect Velocity
+			X3DAUDIO_VECTOR Velocity; // velocity vector in user-defined world units/second, used only for doppler calculations, does not affect Position
+
+			X3DAUDIO_CONE* pCone; // sound cone, used only for matrix, LPF (both direct and reverb paths), and reverb calculations, NULL specifies omnidirectionality
+		} X3DAUDIO_LISTENER, *LPX3DAUDIO_LISTENER;
+
+		typedef struct X3DAUDIO_DISTANCE_CURVE_POINT
+		{
+			FLOAT32 Distance;   // normalized distance, must be within [0.0f, 1.0f]
+			FLOAT32 DSPSetting; // DSP setting
+		} X3DAUDIO_DISTANCE_CURVE_POINT, *LPX3DAUDIO_DISTANCE_CURVE_POINT;
+
+		typedef struct X3DAUDIO_DISTANCE_CURVE
+		{
+			X3DAUDIO_DISTANCE_CURVE_POINT* pPoints;    // distance curve point array, must have at least PointCount elements with no duplicates and be sorted in ascending order with respect to Distance
+			UINT32                         PointCount; // number of distance curve points, must be >= 2 as all distance curves must have at least two endpoints, defining DSP settings at 0.0f and 1.0f normalized distance
+		} X3DAUDIO_DISTANCE_CURVE, *LPX3DAUDIO_DISTANCE_CURVE;
+		static const X3DAUDIO_DISTANCE_CURVE_POINT X3DAudioDefault_LinearCurvePoints[2] = { 0.0f, 1.0f, 1.0f, 0.0f };
+		static const X3DAUDIO_DISTANCE_CURVE       X3DAudioDefault_LinearCurve = { (X3DAUDIO_DISTANCE_CURVE_POINT*)&X3DAudioDefault_LinearCurvePoints[0], 2 };
+
+		typedef struct X3DAUDIO_EMITTER
+		{
+			X3DAUDIO_CONE* pCone; // sound cone, used only with single-channel emitters for matrix, LPF (both direct and reverb paths), and reverb calculations, NULL specifies omnidirectionality
+			X3DAUDIO_VECTOR OrientFront; // orientation of front direction, used only for emitter angle calculations or with multi-channel emitters for matrix calculations or single-channel emitters with cones for matrix, LPF (both direct and reverb paths), and reverb calculations, must be normalized when used
+			X3DAUDIO_VECTOR OrientTop;   // orientation of top direction, used only with multi-channel emitters for matrix calculations, must be orthonormal with OrientFront when used
+
+			X3DAUDIO_VECTOR Position; // position in user-defined world units, does not affect Velocity
+			X3DAUDIO_VECTOR Velocity; // velocity vector in user-defined world units/second, used only for doppler calculations, does not affect Position
+
+			FLOAT32 InnerRadius;      // inner radius, must be within [0.0f, FLT_MAX]
+			FLOAT32 InnerRadiusAngle; // inner radius angle, must be within [0.0f, X3DAUDIO_PI/4.0)
+
+			UINT32 ChannelCount;       // number of sound channels, must be > 0
+			FLOAT32 ChannelRadius;     // channel radius, used only with multi-channel emitters for matrix calculations, must be >= 0.0f when used
+			FLOAT32* pChannelAzimuths; // channel azimuth array, used only with multi-channel emitters for matrix calculations, contains positions of each channel expressed in radians along the channel radius with respect to the front orientation vector in the plane orthogonal to the top orientation vector, or X3DAUDIO_2PI to specify an LFE channel, must have at least ChannelCount elements, all within [0.0f, X3DAUDIO_2PI] when used
+
+			X3DAUDIO_DISTANCE_CURVE* pVolumeCurve;    // volume level distance curve, used only for matrix calculations, NULL specifies a default curve that conforms to the inverse square law, calculated in user-defined world units with distances <= CurveDistanceScaler clamped to no attenuation
+			X3DAUDIO_DISTANCE_CURVE* pLFECurve;       // LFE level distance curve, used only for matrix calculations, NULL specifies a default curve that conforms to the inverse square law, calculated in user-defined world units with distances <= CurveDistanceScaler clamped to no attenuation
+			X3DAUDIO_DISTANCE_CURVE* pLPFDirectCurve; // LPF direct-path coefficient distance curve, used only for LPF direct-path calculations, NULL specifies the default curve: [0.0f,1.0f], [1.0f,0.75f]
+			X3DAUDIO_DISTANCE_CURVE* pLPFReverbCurve; // LPF reverb-path coefficient distance curve, used only for LPF reverb-path calculations, NULL specifies the default curve: [0.0f,0.75f], [1.0f,0.75f]
+			X3DAUDIO_DISTANCE_CURVE* pReverbCurve;    // reverb send level distance curve, used only for reverb calculations, NULL specifies the default curve: [0.0f,1.0f], [1.0f,0.0f]
+
+			FLOAT32 CurveDistanceScaler; // curve distance scaler, used to scale normalized distance curves to user-defined world units and/or exaggerate their effect, used only for matrix, LPF (both direct and reverb paths), and reverb calculations, must be within [FLT_MIN, FLT_MAX] when used
+			FLOAT32 DopplerScaler;       // doppler shift scaler, used to exaggerate doppler shift effect, used only for doppler calculations, must be within [0.0f, FLT_MAX] when used
+		} X3DAUDIO_EMITTER, *LPX3DAUDIO_EMITTER;
+
+		typedef struct X3DAUDIO_DSP_SETTINGS
+		{
+			FLOAT32* pMatrixCoefficients; // [inout] matrix coefficient table, receives an array representing the volume level used to send from source channel S to destination channel D, stored as pMatrixCoefficients[SrcChannelCount * D + S], must have at least SrcChannelCount*DstChannelCount elements
+			FLOAT32* pDelayTimes;         // [inout] delay time array, receives delays for each destination channel in milliseconds, must have at least DstChannelCount elements (stereo final mix only)
+			UINT32 SrcChannelCount;       // [in] number of source channels, must equal number of channels in respective emitter
+			UINT32 DstChannelCount;       // [in] number of destination channels, must equal number of channels of the final mix
+
+			FLOAT32 LPFDirectCoefficient; // [out] LPF direct-path coefficient
+			FLOAT32 LPFReverbCoefficient; // [out] LPF reverb-path coefficient
+			FLOAT32 ReverbLevel; // [out] reverb send level
+			FLOAT32 DopplerFactor; // [out] doppler shift factor, scales resampler ratio for doppler shift effect, where the effective frequency = DopplerFactor * original frequency
+			FLOAT32 EmitterToListenerAngle; // [out] emitter-to-listener interior angle, expressed in radians with respect to the emitter's front orientation
+
+			FLOAT32 EmitterToListenerDistance; // [out] distance in user-defined world units from the emitter base to listener position, always calculated
+			FLOAT32 EmitterVelocityComponent; // [out] component of emitter velocity vector projected onto emitter->listener vector in user-defined world units/second, calculated only for doppler
+			FLOAT32 ListenerVelocityComponent; // [out] component of listener velocity vector projected onto emitter->listener vector in user-defined world units/second, calculated only for doppler
+		} X3DAUDIO_DSP_SETTINGS, *LPX3DAUDIO_DSP_SETTINGS;
+
+#define X3DAUDIO_HANDLE_BYTESIZE 20
+		typedef BYTE X3DAUDIO_HANDLE[X3DAUDIO_HANDLE_BYTESIZE];
+
+#define SPEED_OF_SOUND 343.5f
+
+		extern HRESULT __stdcall XAudio2Create(void** ppXAudio2, UINT32 flags, UINT32 processor);
+		extern HRESULT __stdcall CoInitializeEx(void* ppXAudio2, DWORD dwCoInit);
+
+		extern HRESULT _cdecl X3DAudioInitialize(UINT32 SpeakerChannelMask, float SpeedOfSound, _Out_writes_bytes_(X3DAUDIO_HANDLE_BYTESIZE) X3DAUDIO_HANDLE Instance);
+		extern void _cdecl X3DAudioCalculate(_In_reads_bytes_(X3DAUDIO_HANDLE_BYTESIZE) const X3DAUDIO_HANDLE Instance, _In_ const X3DAUDIO_LISTENER* pListener, _In_ const X3DAUDIO_EMITTER* pEmitter, UINT32 Flags, _Inout_ X3DAUDIO_DSP_SETTINGS* pDSPSettings);
+
 
 		struct IXAudio2Voice;
 
@@ -164,8 +317,8 @@ extern "C" {
 			// ARGUMENTS:
 			//  pVoiceDetails - Returns the voice's details.
 			*/
-			STDMETHOD_(void, GetVoiceDetails) (THIS_ _Out_ XAUDIO2_VOICE_DETAILS* pVoiceDetails) PURE; 
-			
+			STDMETHOD_(void, GetVoiceDetails) (THIS_ _Out_ XAUDIO2_VOICE_DETAILS* pVoiceDetails) PURE;
+
 			/* NAME: IXAudio2Voice::SetOutputVoices
 			// DESCRIPTION: Replaces the set of submix/mastering voices that receive
 			//              this voice's output.
@@ -173,16 +326,16 @@ extern "C" {
 			// ARGUMENTS:
 			//  pSendList - Optional list of voices this voice should send audio to.
 			*/
-			STDMETHOD(SetOutputVoices) (THIS_ _In_opt_ const XAUDIO2_VOICE_SENDS* pSendList) PURE; 
-			
+			STDMETHOD(SetOutputVoices) (THIS_ _In_opt_ const XAUDIO2_VOICE_SENDS* pSendList) PURE;
+
 			/* NAME: IXAudio2Voice::SetEffectChain
 			// DESCRIPTION: Replaces this voice's current effect chain with a new one.
 			//
 			// ARGUMENTS:
 			//  pEffectChain - Structure describing the new effect chain to be used.
 			*/
-			STDMETHOD(SetEffectChain) (THIS_ _In_opt_ const XAUDIO2_EFFECT_CHAIN* pEffectChain) PURE; 
-			
+			STDMETHOD(SetEffectChain) (THIS_ _In_opt_ const XAUDIO2_EFFECT_CHAIN* pEffectChain) PURE;
+
 			/* NAME: IXAudio2Voice::EnableEffect
 			// DESCRIPTION: Enables an effect in this voice's effect chain.
 			//
@@ -190,9 +343,9 @@ extern "C" {
 			//  EffectIndex - Index of an effect within this voice's effect chain.
 			//  OperationSet - Used to identify this call as part of a deferred batch.
 			*/
-			STDMETHOD(EnableEffect) (THIS_ UINT32 EffectIndex, 
-				UINT32 OperationSet X2DEFAULT(XAUDIO2_COMMIT_NOW)) PURE; 
-			
+			STDMETHOD(EnableEffect) (THIS_ UINT32 EffectIndex,
+				UINT32 OperationSet X2DEFAULT(XAUDIO2_COMMIT_NOW)) PURE;
+
 			/* NAME: IXAudio2Voice::DisableEffect
 			// DESCRIPTION: Disables an effect in this voice's effect chain.
 			//
@@ -200,9 +353,9 @@ extern "C" {
 			//  EffectIndex - Index of an effect within this voice's effect chain.
 			//  OperationSet - Used to identify this call as part of a deferred batch.
 			*/
-			STDMETHOD(DisableEffect) (THIS_ UINT32 EffectIndex, 
-				UINT32 OperationSet X2DEFAULT(XAUDIO2_COMMIT_NOW)) PURE; 
-			
+			STDMETHOD(DisableEffect) (THIS_ UINT32 EffectIndex,
+				UINT32 OperationSet X2DEFAULT(XAUDIO2_COMMIT_NOW)) PURE;
+
 			/* NAME: IXAudio2Voice::GetEffectState
 			// DESCRIPTION: Returns the running state of an effect.
 			//
@@ -210,8 +363,8 @@ extern "C" {
 			//  EffectIndex - Index of an effect within this voice's effect chain.
 			//  pEnabled - Returns the enabled/disabled state of the given effect.
 			*/
-			STDMETHOD_(void, GetEffectState) (THIS_ UINT32 EffectIndex, _Out_ BOOL* pEnabled) PURE; 
-			
+			STDMETHOD_(void, GetEffectState) (THIS_ UINT32 EffectIndex, _Out_ BOOL* pEnabled) PURE;
+
 			/* NAME: IXAudio2Voice::SetEffectParameters
 			// DESCRIPTION: Sets effect-specific parameters.
 			//
@@ -226,11 +379,11 @@ extern "C" {
 			//  ParametersByteSize - Size of the pParameters array  in bytes.
 			//  OperationSet - Used to identify this call as part of a deferred batch.
 			*/
-			STDMETHOD(SetEffectParameters) (THIS_ UINT32 EffectIndex, 
-				_In_reads_bytes_(ParametersByteSize) const void* pParameters, 
-				UINT32 ParametersByteSize, 
-				UINT32 OperationSet X2DEFAULT(XAUDIO2_COMMIT_NOW)) PURE; 
-			
+			STDMETHOD(SetEffectParameters) (THIS_ UINT32 EffectIndex,
+				_In_reads_bytes_(ParametersByteSize) const void* pParameters,
+				UINT32 ParametersByteSize,
+				UINT32 OperationSet X2DEFAULT(XAUDIO2_COMMIT_NOW)) PURE;
+
 			/* NAME: IXAudio2Voice::GetEffectParameters
 			// DESCRIPTION: Obtains the current effect-specific parameters.
 			//
@@ -239,10 +392,10 @@ extern "C" {
 			//  pParameters - Returns the current values of the effect-specific parameters.
 			//  ParametersByteSize - Size of the pParameters array in bytes.
 			*/
-			STDMETHOD(GetEffectParameters) (THIS_ UINT32 EffectIndex, 
-				_Out_writes_bytes_(ParametersByteSize) void* pParameters, 
-				UINT32 ParametersByteSize) PURE; 
-			
+			STDMETHOD(GetEffectParameters) (THIS_ UINT32 EffectIndex,
+				_Out_writes_bytes_(ParametersByteSize) void* pParameters,
+				UINT32 ParametersByteSize) PURE;
+
 			/* NAME: IXAudio2Voice::SetFilterParameters
 			// DESCRIPTION: Sets this voice's filter parameters.
 			//
@@ -250,17 +403,17 @@ extern "C" {
 			//  pParameters - Pointer to the filter's parameter structure.
 			//  OperationSet - Used to identify this call as part of a deferred batch.
 			*/
-			STDMETHOD(SetFilterParameters) (THIS_ _In_ const XAUDIO2_FILTER_PARAMETERS* pParameters, 
-				UINT32 OperationSet X2DEFAULT(XAUDIO2_COMMIT_NOW)) PURE; 
-			
+			STDMETHOD(SetFilterParameters) (THIS_ _In_ const XAUDIO2_FILTER_PARAMETERS* pParameters,
+				UINT32 OperationSet X2DEFAULT(XAUDIO2_COMMIT_NOW)) PURE;
+
 			/* NAME: IXAudio2Voice::GetFilterParameters
 			// DESCRIPTION: Returns this voice's current filter parameters.
 			//
 			// ARGUMENTS:
 			//  pParameters - Returns the filter parameters.
 			*/
-			STDMETHOD_(void, GetFilterParameters) (THIS_ _Out_ XAUDIO2_FILTER_PARAMETERS* pParameters) PURE; 
-			
+			STDMETHOD_(void, GetFilterParameters) (THIS_ _Out_ XAUDIO2_FILTER_PARAMETERS* pParameters) PURE;
+
 			/* NAME: IXAudio2Voice::SetOutputFilterParameters
 			// DESCRIPTION: Sets the filter parameters on one of this voice's sends.
 			//
@@ -269,10 +422,10 @@ extern "C" {
 			//  pParameters - Pointer to the filter's parameter structure.
 			//  OperationSet - Used to identify this call as part of a deferred batch.
 			*/
-			STDMETHOD(SetOutputFilterParameters) (THIS_ _In_opt_ IXAudio2Voice* pDestinationVoice, 
-				_In_ const XAUDIO2_FILTER_PARAMETERS* pParameters, 
-				UINT32 OperationSet X2DEFAULT(XAUDIO2_COMMIT_NOW)) PURE; 
-			
+			STDMETHOD(SetOutputFilterParameters) (THIS_ _In_opt_ IXAudio2Voice* pDestinationVoice,
+				_In_ const XAUDIO2_FILTER_PARAMETERS* pParameters,
+				UINT32 OperationSet X2DEFAULT(XAUDIO2_COMMIT_NOW)) PURE;
+
 			/* NAME: IXAudio2Voice::GetOutputFilterParameters
 			// DESCRIPTION: Returns the filter parameters from one of this voice's sends.
 			//
@@ -280,9 +433,9 @@ extern "C" {
 			//  pDestinationVoice - Destination voice of the send whose filter parameters will be read.
 			//  pParameters - Returns the filter parameters.
 			*/
-			STDMETHOD_(void, GetOutputFilterParameters) (THIS_ _In_opt_ IXAudio2Voice* pDestinationVoice, 
-				_Out_ XAUDIO2_FILTER_PARAMETERS* pParameters) PURE; 
-			
+			STDMETHOD_(void, GetOutputFilterParameters) (THIS_ _In_opt_ IXAudio2Voice* pDestinationVoice,
+				_Out_ XAUDIO2_FILTER_PARAMETERS* pParameters) PURE;
+
 			/* NAME: IXAudio2Voice::SetVolume
 			// DESCRIPTION: Sets this voice's overall volume level.
 			//
@@ -290,17 +443,17 @@ extern "C" {
 			//  Volume - New overall volume level to be used, as an amplitude factor.
 			//  OperationSet - Used to identify this call as part of a deferred batch.
 			*/
-			STDMETHOD(SetVolume) (THIS_ float Volume, 
-				UINT32 OperationSet X2DEFAULT(XAUDIO2_COMMIT_NOW)) PURE; 
-			
+			STDMETHOD(SetVolume) (THIS_ float Volume,
+				UINT32 OperationSet X2DEFAULT(XAUDIO2_COMMIT_NOW)) PURE;
+
 			/* NAME: IXAudio2Voice::GetVolume
 			// DESCRIPTION: Obtains this voice's current overall volume level.
 			//
 			// ARGUMENTS:
 			//  pVolume: Returns the voice's current overall volume level.
 			*/
-			STDMETHOD_(void, GetVolume) (THIS_ _Out_ float* pVolume) PURE; 
-			
+			STDMETHOD_(void, GetVolume) (THIS_ _Out_ float* pVolume) PURE;
+
 			/* NAME: IXAudio2Voice::SetChannelVolumes
 			// DESCRIPTION: Sets this voice's per-channel volume levels.
 			//
@@ -309,18 +462,18 @@ extern "C" {
 			//  pVolumes - Array of per-channel volume levels to be used.
 			//  OperationSet - Used to identify this call as part of a deferred batch.
 			*/
-			STDMETHOD(SetChannelVolumes) (THIS_ UINT32 Channels, _In_reads_(Channels) const float* pVolumes, 
+			STDMETHOD(SetChannelVolumes) (THIS_ UINT32 Channels, _In_reads_(Channels) const float* pVolumes,
 				UINT32 OperationSet X2DEFAULT(XAUDIO2_COMMIT_NOW)) PURE; \
-			
-			/* NAME: IXAudio2Voice::GetChannelVolumes
-			// DESCRIPTION: Returns this voice's current per-channel volume levels.
-			//
-			// ARGUMENTS:
-			//  Channels - Used to confirm the voice's channel count.
-			//  pVolumes - Returns an array of the current per-channel volume levels.
-			*/
-			STDMETHOD_(void, GetChannelVolumes) (THIS_ UINT32 Channels, _Out_writes_(Channels) float* pVolumes) PURE; 
-			
+
+				/* NAME: IXAudio2Voice::GetChannelVolumes
+				// DESCRIPTION: Returns this voice's current per-channel volume levels.
+				//
+				// ARGUMENTS:
+				//  Channels - Used to confirm the voice's channel count.
+				//  pVolumes - Returns an array of the current per-channel volume levels.
+				*/
+				STDMETHOD_(void, GetChannelVolumes) (THIS_ UINT32 Channels, _Out_writes_(Channels) float* pVolumes) PURE;
+
 			/* NAME: IXAudio2Voice::SetOutputMatrix
 			// DESCRIPTION: Sets the volume levels used to mix from each channel of this
 			//              voice's output audio to each channel of a given destination
@@ -336,11 +489,11 @@ extern "C" {
 			//   channel D should be in pLevelMatrix[S + SourceChannels * D].
 			//  OperationSet - Used to identify this call as part of a deferred batch.
 			*/
-			STDMETHOD(SetOutputMatrix) (THIS_ _In_opt_ IXAudio2Voice* pDestinationVoice, 
-				UINT32 SourceChannels, UINT32 DestinationChannels, 
-				_In_reads_(SourceChannels * DestinationChannels) const float* pLevelMatrix, 
-				UINT32 OperationSet X2DEFAULT(XAUDIO2_COMMIT_NOW)) PURE; 
-			
+			STDMETHOD(SetOutputMatrix) (THIS_ _In_opt_ IXAudio2Voice* pDestinationVoice,
+				UINT32 SourceChannels, UINT32 DestinationChannels,
+				_In_reads_(SourceChannels * DestinationChannels) const float* pLevelMatrix,
+				UINT32 OperationSet X2DEFAULT(XAUDIO2_COMMIT_NOW)) PURE;
+
 			/* NAME: IXAudio2Voice::GetOutputMatrix
 			// DESCRIPTION: Obtains the volume levels used to send each channel of this
 			//              voice's output audio to each channel of a given destination
@@ -518,6 +671,20 @@ extern "C" {
 #define XAUDIO2_MAX_FILTER_FREQUENCY    1.0f          // Maximum XAUDIO2_FILTER_PARAMETERS.Frequency
 #define XAUDIO2_MAX_LOOP_COUNT          254           // Maximum non-infinite XAUDIO2_BUFFER.LoopCount
 #define XAUDIO2_MAX_INSTANCES           8             // Maximum simultaneous XAudio2 objects on Xbox 360
+
+#define XAUDIO2_DEBUG_ENGINE                  0x0001    // Used in XAudio2Create
+#define XAUDIO2_VOICE_NOPITCH                 0x0002    // Used in IXAudio2::CreateSourceVoice
+#define XAUDIO2_VOICE_NOSRC                   0x0004    // Used in IXAudio2::CreateSourceVoice
+#define XAUDIO2_VOICE_USEFILTER               0x0008    // Used in IXAudio2::CreateSource/SubmixVoice
+#define XAUDIO2_PLAY_TAILS                    0x0020    // Used in IXAudio2SourceVoice::Stop
+#define XAUDIO2_END_OF_STREAM                 0x0040    // Used in XAUDIO2_BUFFER.Flags
+#define XAUDIO2_SEND_USEFILTER                0x0080    // Used in XAUDIO2_SEND_DESCRIPTOR.Flags
+#define XAUDIO2_VOICE_NOSAMPLESPLAYED         0x0100    // Used in IXAudio2SourceVoice::GetState
+#define XAUDIO2_STOP_ENGINE_WHEN_IDLE         0x2000    // Used in XAudio2Create to force the engine to Stop when no source voices are Started, and Start when a voice is Started
+#define XAUDIO2_1024_QUANTUM                  0x8000    // Used in XAudio2Create to specify nondefault processing quantum of 21.33 ms (1024 samples at 48KHz)
+#define XAUDIO2_NO_VIRTUAL_AUDIO_CLIENT          0x10000   // Used in CreateMasteringVoice to create a virtual audio client
+
+#define WAVE_FORMAT_PCM 1
 
 		struct IXAudio2MasteringVoice : IXAudio2Voice
 		{
@@ -753,50 +920,138 @@ extern "C" {
 				_Reserved_ void* pReserved X2DEFAULT(NULL)) PURE;
 		};
 
-		IXAudio2* x_audio2_;
+#define AUDIO_CHANNELS 2
 
-		bool xnAudioInit()
+		npBool xnAudioInit()
 		{
 			CoInitializeEx(NULL, 0x0);
-
-			auto result = XAudio2Create((void**)&x_audio2_, 0, 0x00000001);
-			if (FAILED(result)) return false;
 
 			return true;
 		}
 
 		struct xnAudioDevice
-		{			
+		{
+			IXAudio2* x_audio2_;
+			X3DAUDIO_HANDLE x3_audio_;
 			IXAudio2MasteringVoice* mastering_voice_;
 		};
+
+		struct xnAudioSource;
+		void xnAudioSourceStop(xnAudioSource* source);
 
 		struct xnAudioBuffer
 		{
 			XAUDIO2_BUFFER buffer_;
+			xnAudioSource* source_;
 		};
+
+		void xnAudioSourceSetBuffer(xnAudioSource* source, xnAudioBuffer* buffer);
 
 		struct xnAudioListener
 		{
-			//ALCcontext* context;
-			//tinystl::unordered_map<ALuint, xnAudioBuffer*> buffers;
+			xnAudioDevice* device_;
 		};
 
-		struct xnAudioSource
+		struct xnAudioSource : IXAudio2VoiceCallback
 		{
+			IXAudio2MasteringVoice* mastering_voice_;
 			IXAudio2SourceVoice* source_voice_;
-			xnAudioListener* listener;
+			xnAudioListener* listener_;
+			volatile bool playing_;
+			volatile bool looped_;
+			int sampleRate_;
+			bool mono_;
+			bool streamed_;
+
+			SpinLock bufferLock;
+			tinystl::vector<xnAudioBuffer*> freeBuffers;
+
+			void __stdcall OnVoiceProcessingPassStart(UINT32 BytesRequired) override
+			{
+
+			}
+
+			void __stdcall OnVoiceProcessingPassEnd() override
+			{
+
+			}
+
+			void __stdcall OnStreamEnd() override
+			{
+				if(streamed_ && playing_)
+				{
+					xnAudioSourceStop(this);
+				}
+			}
+
+			void __stdcall OnBufferStart(void* context) override
+			{
+			}
+
+			void __stdcall OnBufferEnd(void* context) override
+			{
+				auto buffer = static_cast<xnAudioBuffer*>(context);
+
+				if (streamed_)
+				{
+					bufferLock.Lock();
+					buffer->source_->freeBuffers.push_back(buffer);
+					bufferLock.Unlock();
+				}
+			}
+
+			void __stdcall OnLoopEnd(void* context) override
+			{
+				if (!looped_ && !streamed_ && playing_)
+				{
+					xnAudioSourceStop(this);
+				}
+			}
+
+			void __stdcall OnVoiceError(void* context, HRESULT error) override
+			{
+
+			}
 		};
 
 		xnAudioDevice* xnAudioCreate(const char* deviceName)
 		{
-			auto res = new xnAudioDevice;
-			auto result = x_audio2_->CreateMasteringVoice(&res->mastering_voice_);
-			if (FAILED(result)) return NULL;
+			xnAudioDevice* res = new xnAudioDevice;
+
+			//XAudio2
+			HRESULT result = XAudio2Create(reinterpret_cast<void**>(&res->x_audio2_), 0, 0x00000001);
+			if (FAILED(result))
+			{
+				delete res;
+				return NULL;
+			}
+			result = res->x_audio2_->CreateMasteringVoice(&res->mastering_voice_, AUDIO_CHANNELS);
+			if (FAILED(result))
+			{
+				delete res;
+				return NULL;
+			}
+			result = res->x_audio2_->StartEngine();
+			if (FAILED(result))
+			{
+				delete res;
+				return NULL;
+			}
+
+			//X3DAudio
+			result = X3DAudioInitialize(SPEAKER_STEREO, SPEED_OF_SOUND, res->x3_audio_);
+			if (FAILED(result))
+			{
+				delete res;
+				return NULL;
+			}
+
 			return res;
 		}
 
 		void xnAudioDestroy(xnAudioDevice* device)
 		{
+			device->x_audio2_->StopEngine();
 			device->mastering_voice_->DestroyVoice();
 			delete device;
 		}
@@ -804,122 +1059,212 @@ extern "C" {
 		xnAudioListener* xnAudioListenerCreate(xnAudioDevice* device)
 		{
 			auto res = new xnAudioListener;
-			
+			res->device_ = device;
 			return res;
 		}
 
 		void xnAudioListenerDestroy(xnAudioListener* listener)
 		{
-			
+			delete listener;
 		}
 
-		bool xnAudioListenerEnable(xnAudioListener* listener)
+		npBool xnAudioListenerEnable(xnAudioListener* listener)
 		{
 			return true;
 		}
 
 		void xnAudioListenerDisable(xnAudioListener* listener)
 		{
-			
+
 		}
 
-		xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener)
+		xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener, int sampleRate, npBool mono)
 		{
-			auto res = new xnAudioSource;
-			res->listener = listener;
-			
-			x_audio2_->CreateSourceVoice(&res->source_voice_, NULL);
+			xnAudioSource* res = new xnAudioSource;
+			res->listener_ = listener;
+			res->playing_ = false;
+			res->sampleRate_ = sampleRate;
+			res->mono_ = mono;
+			res->streamed_ = false;
+			res->looped_ = false;
+			res->mastering_voice_ = listener->device_->mastering_voice_;
+
+			WAVEFORMATEX pcmWaveFormat = {};
+			pcmWaveFormat.wFormatTag = WAVE_FORMAT_PCM;
+			pcmWaveFormat.nChannels = mono ? 1 : 2;
+			pcmWaveFormat.nSamplesPerSec = sampleRate;
+			pcmWaveFormat.nAvgBytesPerSec = sampleRate * pcmWaveFormat.nChannels * sizeof(short);
+			pcmWaveFormat.wBitsPerSample = 16;
+			pcmWaveFormat.nBlockAlign = pcmWaveFormat.nChannels*pcmWaveFormat.wBitsPerSample / 8;
+
+			HRESULT result = listener->device_->x_audio2_->CreateSourceVoice(&res->source_voice_, &pcmWaveFormat, 0, XAUDIO2_MAX_FREQ_RATIO, res);
+			if (FAILED(result))
+			{
+				delete res;
+				return NULL;
+			}
 
 			return res;
 		}
 
 		void xnAudioSourceDestroy(xnAudioSource* source)
 		{
+			source->source_voice_->Stop();
 			source->source_voice_->DestroyVoice();
 			delete source;
 		}
 
 		void xnAudioSourceSetPan(xnAudioSource* source, float pan)
 		{
-			
+			float panning[4];
+			if(pan < 0)
+			{
+				panning[0] = 1.0f;
+				panning[1] = 0.0f;
+				panning[2] = 0.0f;
+				panning[3] = 1.0f + pan;
+			}
+			else
+			{
+				panning[0] = 1.0f - pan;
+				panning[1] = 0.0f;
+				panning[2] = 0.0f;
+				panning[3] = 1.0f;
+			}
+			source->source_voice_->SetOutputMatrix(source->mastering_voice_, source->mono_ ? 1 : 2, AUDIO_CHANNELS, panning);
 		}
 
-		void xnAudioSourceSetLooping(xnAudioSource* source, bool looping)
+		void xnAudioSourceSetLooping(xnAudioSource* source, npBool looping)
 		{
-			
+			source->looped_ = looping;
 		}
 
 		void xnAudioSourceSetGain(xnAudioSource* source, float gain)
 		{
-			
+			source->source_voice_->SetVolume(gain);
 		}
 
 		void xnAudioSourceSetPitch(xnAudioSource* source, float pitch)
 		{
-			
+			source->source_voice_->SetFrequencyRatio(pitch);
 		}
 
 		void xnAudioSourceSetBuffer(xnAudioSource* source, xnAudioBuffer* buffer)
 		{
-			
+			source->streamed_ = false;
+			source->freeBuffers.push_back(buffer);
+			buffer->source_ = source;
 		}
 
-		void xnAudioSourceQueueBuffer(xnAudioSource* source, xnAudioBuffer* buffer, short* pcm, int bufferSize, int sampleRate, bool mono)
+		void xnAudioSourceQueueBuffer(xnAudioSource* source, xnAudioBuffer* buffer, short* pcm, int bufferSize, npBool endOfStream)
 		{
+			source->streamed_ = true;
+			buffer->source_ = source;
 			
+			//we also have to avoid looping single buffers
+			buffer->buffer_.LoopCount = 0;
+
+			if(buffer->buffer_.AudioBytes == 0) //first time we find this buffer
+			{
+				buffer->buffer_.AudioBytes = bufferSize;
+				buffer->buffer_.pAudioData = new BYTE[bufferSize];
+			}
+
+			buffer->buffer_.Flags = endOfStream ? XAUDIO2_END_OF_STREAM : 0;
+
+			buffer->buffer_.AudioBytes = bufferSize;
+			memcpy(const_cast<char*>(buffer->buffer_.pAudioData), pcm, bufferSize);
+			source->source_voice_->SubmitSourceBuffer(&buffer->buffer_);
 		}
 
 		xnAudioBuffer* xnAudioSourceGetFreeBuffer(xnAudioSource* source)
 		{
-			
+			source->bufferLock.Lock();
+			if(source->freeBuffers.size() > 0)
+			{
+				xnAudioBuffer* buffer = source->freeBuffers.back();
+				source->freeBuffers.pop_back();
+				source->bufferLock.Unlock();
+				return buffer;
+			}
+			source->bufferLock.Unlock();
 			return NULL;
 		}
 
 		void xnAudioSourcePlay(xnAudioSource* source)
 		{
-			
+			if(!source->streamed_)
+			{
+				xnAudioBuffer* singleBuffer = source->freeBuffers[0];
+				source->source_voice_->SubmitSourceBuffer(&singleBuffer->buffer_, NULL);
+			}
+
+			source->source_voice_->Start();
+			source->playing_ = true;
 		}
 
 		void xnAudioSourcePause(xnAudioSource* source)
 		{
-			
+			source->source_voice_->Stop();
+			source->playing_ = false;
 		}
 
 		void xnAudioSourceStop(xnAudioSource* source)
 		{
-			
+			source->source_voice_->Stop();
+			source->source_voice_->FlushSourceBuffers();
+			source->playing_ = false;
 		}
 
 		void xnAudioListenerPush3D(xnAudioListener* listener, float* pos, float* forward, float* up, float* vel)
 		{
-			
+
 		}
 
 		void xnAudioSourcePush3D(xnAudioSource* source, float* pos, float* forward, float* up, float* vel)
 		{
-			
+
 		}
 
-		bool xnAudioSourceIsPlaying(xnAudioSource* source)
+		npBool xnAudioSourceIsPlaying(xnAudioSource* source)
 		{
-			
+			return source->playing_;;
 		}
 
 		xnAudioBuffer* xnAudioBufferCreate()
 		{
-			
+			auto buffer = new xnAudioBuffer;
+			buffer->buffer_ = {};
+			buffer->buffer_.pContext = buffer;
+			buffer->buffer_.PlayBegin = 0;
+			buffer->buffer_.PlayLength = 0;
+			buffer->buffer_.LoopBegin = 0;
+			buffer->buffer_.LoopLength = 0;
+			buffer->buffer_.LoopCount = XAUDIO2_LOOP_INFINITE;
+			return buffer;
 		}
 
 		void xnAudioBufferDestroy(xnAudioBuffer* buffer)
 		{
-			
+			if (buffer->buffer_.pAudioData)
+			{
+				delete[] buffer->buffer_.pAudioData;
+			}
+			delete buffer;
 		}
 
-		void xnAudioBufferFill(xnAudioBuffer* buffer, short* pcm, int bufferSize, int sampleRate, bool mono)
+		void xnAudioBufferFill(xnAudioBuffer* buffer, short* pcm, int bufferSize, int sampleRate, npBool mono)
 		{
-			
+			(void)sampleRate;
+			(void)mono;
+			buffer->buffer_.AudioBytes = bufferSize;
+			buffer->buffer_.pAudioData = new BYTE[bufferSize];
+			memcpy(const_cast<char*>(buffer->buffer_.pAudioData), pcm, bufferSize);
 		}
-	}	
+	}
+
+#pragma pack(pop)
+
 }
 
 #endif

@@ -103,7 +103,7 @@ extern "C" {
 
 		SpinLock ContextState::sOpenAlLock;
 
-		bool xnAudioInit()
+		npBool xnAudioInit()
 		{
 			if (OpenALLibrary) return true;
 
@@ -194,6 +194,8 @@ extern "C" {
 		struct xnAudioSource
 		{
 			ALuint source;
+			int sampleRate;
+			bool mono;
 			xnAudioListener* listener;
 		};
 
@@ -235,7 +237,7 @@ extern "C" {
 			delete listener;
 		}
 
-		bool xnAudioListenerEnable(xnAudioListener* listener)
+		npBool xnAudioListenerEnable(xnAudioListener* listener)
 		{
 			bool res = MakeContextCurrent(listener->context);
 			ProcessContext(listener->context);
@@ -248,10 +250,12 @@ extern "C" {
 			MakeContextCurrent(NULL);
 		}
 
-		xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener)
+		xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener, int sampleRate, npBool mono)
 		{
 			auto res = new xnAudioSource;
 			res->listener = listener;
+			res->sampleRate = sampleRate;
+			res->mono = mono;
 
 			ContextState lock(listener->context);
 
@@ -288,7 +292,7 @@ extern "C" {
 			SourceFV(source->source, AL_POSITION, alpan);
 		}
 
-		void xnAudioSourceSetLooping(xnAudioSource* source, bool looping)
+		void xnAudioSourceSetLooping(xnAudioSource* source, npBool looping)
 		{
 			ContextState lock(source->listener->context);
 
@@ -316,30 +320,35 @@ extern "C" {
 			SourceI(source->source, AL_BUFFER, buffer->buffer);
 		}
 
-		void xnAudioSourceQueueBuffer(xnAudioSource* source, xnAudioBuffer* buffer, short* pcm, int bufferSize, int sampleRate, bool mono)
+		void xnAudioSourceQueueBuffer(xnAudioSource* source, xnAudioBuffer* buffer, short* pcm, int bufferSize)
 		{
 			ContextState lock(source->listener->context);
 
-			BufferData(buffer->buffer, mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, pcm, bufferSize, sampleRate);
+			BufferData(buffer->buffer, source->mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, pcm, bufferSize, source->sampleRate);
 			SourceQueueBuffers(source->source, 1, &buffer->buffer);
 			source->listener->buffers[buffer->buffer] = buffer;
 		}
 
 		xnAudioBuffer* xnAudioSourceGetFreeBuffer(xnAudioSource* source)
 		{
-			ContextState lock(source->listener->context);
-
-			ALint processed = 0;
-			GetSourceI(source->source, AL_BUFFERS_PROCESSED, &processed);
-			if(processed > 0)
-			{
-				ALuint buffer;
-				SourceUnqueueBuffers(source->source, 1, &buffer);
-				auto found = source->listener->buffers.find(buffer);
-				if (found == source->listener->buffers.end()) return NULL;
-				return found->second;
+			ALuint buffer;
+			//Context Lock
+			{				
+				ContextState lock(source->listener->context);
+				ALint processed = 0;
+				GetSourceI(source->source, AL_BUFFERS_PROCESSED, &processed);
+				if (processed > 0)
+				{				
+					SourceUnqueueBuffers(source->source, 1, &buffer);					
+				}
+				else
+				{
+					return NULL;
+				}
 			}
-			return NULL;
+			auto found = source->listener->buffers.find(buffer);
+			if (found == source->listener->buffers.end()) return NULL;
+			return found->second;
 		}
 
 		void xnAudioSourcePlay(xnAudioSource* source)
@@ -436,7 +445,7 @@ extern "C" {
 			}
 		}
 
-		bool xnAudioSourceIsPlaying(xnAudioSource* source)
+		npBool xnAudioSourceIsPlaying(xnAudioSource* source)
 		{
 			ContextState lock(source->listener->context);
 
@@ -458,7 +467,7 @@ extern "C" {
 			delete buffer;
 		}
 
-		void xnAudioBufferFill(xnAudioBuffer* buffer, short* pcm, int bufferSize, int sampleRate, bool mono)
+		void xnAudioBufferFill(xnAudioBuffer* buffer, short* pcm, int bufferSize, int sampleRate, npBool mono)
 		{
 			BufferData(buffer->buffer, mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, pcm, bufferSize, sampleRate);
 		}
