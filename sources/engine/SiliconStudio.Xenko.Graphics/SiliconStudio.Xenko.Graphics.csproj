@@ -247,10 +247,12 @@
     <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.Direct3D11.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.OpenGL.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.OpenGLES.Level_9_3.cs" />
+	<Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.Vulkan.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.Extensions.cs" />
     <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.Direct3D11.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.OpenGL.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.OpenGLES.Level_9_3.cs" />
+	<Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.Vulkan.Level_9_3.cs" />
     <Compile Include="Shaders\BackgroundEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
