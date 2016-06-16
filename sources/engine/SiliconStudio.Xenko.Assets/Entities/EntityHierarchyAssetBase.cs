@@ -55,8 +55,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
             EntityDesign entityEntry;
             if (Hierarchy.Entities.TryGetValue(id, out entityEntry))
             {
-                entityEntry.Design.BaseId = baseId;
-                entityEntry.Design.BasePartInstanceId = basePartInstanceId;
+                entityEntry.BaseId = baseId;
+                entityEntry.BasePartInstanceId = basePartInstanceId;
             }
         }
 
@@ -68,9 +68,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             foreach (var entity in newAsset.Hierarchy.Entities)
             {
                 // Store the baseid of the new version
-                entity.Design.BaseId = entity.Entity.Id;
+                entity.BaseId = entity.Entity.Id;
                 // Make sure that we don't replicate the base part InstanceId
-                entity.Design.BasePartInstanceId = null;
+                entity.BasePartInstanceId = null;
                 // Apply the new Guid
                 entity.Entity.Id = newIdMaps[entity.Entity.Id];
             }
@@ -225,7 +225,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         {
             foreach (var entityDesign in Hierarchy.Entities)
             {
-                yield return new AssetPart(entityDesign.Entity.Id, entityDesign.Design.BaseId, entityDesign.Design.BasePartInstanceId);
+                yield return new AssetPart(entityDesign.Entity.Id, entityDesign.BaseId, entityDesign.BasePartInstanceId);
             }
         }
 
@@ -279,13 +279,13 @@ namespace SiliconStudio.Xenko.Assets.Entities
             var mapBasePartInstanceIdToBasePart = new Dictionary<Guid, EntityHierarchyAssetBase>();
             foreach (var entityIt in Hierarchy.Entities)
             {
-                if (entityIt.Design.BaseId.HasValue && entityIt.Design.BasePartInstanceId.HasValue)
+                if (entityIt.BaseId.HasValue && entityIt.BasePartInstanceId.HasValue)
                 {
-                    var basePartInstanceId = entityIt.Design.BasePartInstanceId.Value;
+                    var basePartInstanceId = entityIt.BasePartInstanceId.Value;
                     EntityHierarchyAssetBase existingAssetBase;
                     if (!mapBasePartInstanceIdToBasePart.TryGetValue(basePartInstanceId, out existingAssetBase))
                     {
-                        var baseId = entityIt.Design.BaseId.Value;
+                        var baseId = entityIt.BaseId.Value;
                         foreach (var basePart in baseParts)
                         {
                             var assetBase = (EntityHierarchyAssetBase)basePart.Asset;

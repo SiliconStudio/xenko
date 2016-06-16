@@ -147,8 +147,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
                     var newId = Guid.NewGuid();
                     newEntityDesign.Entity.Id = newId;
-                    newEntityDesign.Design.BaseId = entityId;
-                    newEntityDesign.Design.BasePartInstanceId = basePartInstanceId;
+                    newEntityDesign.BaseId = entityId;
+                    newEntityDesign.BasePartInstanceId = basePartInstanceId;
 
                     // Because we are going to modify the NewBase we need to clone it
                     // We tag this entry as special, as we will have to process its children differently later in the merge hierarchy
@@ -206,15 +206,15 @@ namespace SiliconStudio.Xenko.Assets.Entities
             {
                 // Skip entities that don't have a base, as we don't have to do anything in the merge
                 var entityDesign = newEntityEntry.Value.EntityDesign;
-                if (!entityDesign.Design.BaseId.HasValue)
+                if (!entityDesign.BaseId.HasValue)
                 {
                     continue;
                 }
 
                 // Else we will associate entries
                 var newEntity = entityDesign.Entity;
-                var baseId = entityDesign.Design.BaseId.Value;
-                var baseKey = new GroupPartKey(entityDesign.Design.BasePartInstanceId, baseId);
+                var baseId = entityDesign.BaseId.Value;
+                var baseKey = new GroupPartKey(entityDesign.BasePartInstanceId, baseId);
 
                 BaseEntityEntry baseRemap;
                 BaseEntityEntry newBaseRemap;
@@ -329,9 +329,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
                     // Merge folder
                     // If folder was not changed compare to the base, always take the version coming from the new base, otherwise leave the modified version
-                    if (baseRemap.EntityDesign.Design.Folder == entityDesign.Design.Folder)
+                    if (baseRemap.EntityDesign.Folder == entityDesign.Folder)
                     {
-                        entityDesign.Design.Folder = newBaseRemap.EntityDesign.Design.Folder;
+                        entityDesign.Folder = newBaseRemap.EntityDesign.Folder;
                     }
 
                     // Restore Ids
@@ -405,10 +405,10 @@ namespace SiliconStudio.Xenko.Assets.Entities
             var finalMapBaseIdToNewId = new Dictionary<GroupPartKey, Guid>();
             foreach (var entityEntry in newAsset.Hierarchy.Entities)
             {
-                if (entityEntry.Design.BaseId.HasValue)
+                if (entityEntry.BaseId.HasValue)
                 {
-                    var baseId = entityEntry.Design.BaseId.Value;
-                    var groupKey = new GroupPartKey(entityEntry.Design.BasePartInstanceId, baseId);
+                    var baseId = entityEntry.BaseId.Value;
+                    var groupKey = new GroupPartKey(entityEntry.BasePartInstanceId, baseId);
                     finalMapBaseIdToNewId[groupKey] = entityEntry.Entity.Id;
                 }
             }
@@ -481,7 +481,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 // If entity id is not in the current list, it is more likely that it was a link to a base entity
                 if (!newAsset.Hierarchy.Entities.ContainsKey(id))
                 {
-                    var groupKey = new GroupPartKey(newEntityDesign.Design.BasePartInstanceId, id);
+                    var groupKey = new GroupPartKey(newEntityDesign.BasePartInstanceId, id);
 
                     // We are trying to remap the base id to the new id from known entities from newAsset
                     Guid newId;
@@ -533,7 +533,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     // Build a list of Entities Ids for the BaseEntity.Transform.Children remapped to the new entities (using the BasePartInstanceId of the entity being processed)
                     var baseChildrenId = new List<Guid>();
 
-                    var basePartInstanceId = remap.EntityDesign.Design.BasePartInstanceId;
+                    var basePartInstanceId = remap.EntityDesign.BasePartInstanceId;
 
                     if (remap.Base.Children != null)
                     {
@@ -608,7 +608,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     var children = new List<TransformComponent>(remap.Children);
                     remap.Children.Clear();
 
-                    var basePartInstanceId = remap.EntityDesign.Design.BasePartInstanceId;
+                    var basePartInstanceId = remap.EntityDesign.BasePartInstanceId;
 
                     foreach (var transformComponent in children)
                     {
@@ -689,7 +689,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             {
                 if (instancePartIdArg.HasValue)
                 {
-                    entityDesign.Design.BasePartInstanceId = instancePartIdArg;
+                    entityDesign.BasePartInstanceId = instancePartIdArg;
                 }
 
                 var key = new GroupPartKey(instancePartIdArg, entityDesign.Entity.Id);

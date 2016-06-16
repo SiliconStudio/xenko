@@ -14,19 +14,27 @@ using SiliconStudio.Xenko.Engine;
 namespace SiliconStudio.Xenko.Assets.Entities
 {
     /// <summary>
-    /// Contains design data used by an <see cref="Entity"/>
+    /// Associate an <see cref="Entity"/> with design-time data.
     /// </summary>
-    [DataContract("EntityDesignData")]
+    [DataContract("EntityDesign")]
     [NonIdentifiable]
-    public class EntityDesignData
+    public class EntityDesign
     {
-        public EntityDesignData()
+        /// <summary>
+        /// Initializes a new instance of <see cref="EntityDesign"/>.
+        /// </summary>
+        public EntityDesign()
+            : this(null)
         {
         }
 
-        public EntityDesignData(string folder)
+        /// <summary>
+        /// Initializes a new instance of <see cref="EntityDesign"/>.
+        /// </summary>
+        /// <param name="entity">The entity</param>
+        public EntityDesign(Entity entity)
         {
-            Folder = folder;
+            Entity = entity;
         }
 
         /// <summary>
@@ -49,53 +57,12 @@ namespace SiliconStudio.Xenko.Assets.Entities
         [DataMember(30)]
         [DefaultValue(null)]
         public Guid? BasePartInstanceId { get; set; }
-    }
-
-    /// <summary>
-    /// Associate an <see cref="Entity"/> with <see cref="EntityDesignData"/>.
-    /// </summary>
-    [DataContract("EntityDesign")]
-    [NonIdentifiable]
-    public class EntityDesign
-    {
-        /// <summary>
-        /// Initializes a new instance of <see cref="EntityDesign"/>.
-        /// </summary>
-        public EntityDesign()
-            : this(null)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of <see cref="EntityDesign"/>.
-        /// </summary>
-        public EntityDesign(Entity entity)
-            : this(entity, new EntityDesignData())
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of <see cref="EntityDesign"/>.
-        /// </summary>
-        /// <param name="entity">The entity</param>
-        /// <param name="designData">The design data.</param>
-        public EntityDesign(Entity entity, EntityDesignData designData)
-        {
-            Entity = entity;
-            Design = designData;
-        }
 
         /// <summary>
         /// Gets or sets the entity
         /// </summary>
-        [DataMember(10)]
+        [DataMember(40)]
         public Entity Entity { get; set; }
-
-        /// <summary>
-        /// Gets or sets the design data.
-        /// </summary>
-        [DataMember(20)]
-        public EntityDesignData Design { get; }
 
         /// <inheritdoc/>
         public override string ToString()
@@ -150,14 +117,14 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
                 writer.Write($"{entityEntry.Entity.Id} => {entityEntry.Entity}");
 
-                if (entityEntry.Design.BaseId != null)
+                if (entityEntry.BaseId != null)
                 {
-                    writer.Write($" Base: {entityEntry.Design.BaseId}");
+                    writer.Write($" Base: {entityEntry.BaseId}");
                 }
 
-                if (entityEntry.Design.BasePartInstanceId != null)
+                if (entityEntry.BasePartInstanceId != null)
                 {
-                    writer.Write($" BasePartInstanceId: {entityEntry.Design.BasePartInstanceId}");
+                    writer.Write($" BasePartInstanceId: {entityEntry.BasePartInstanceId}");
                 }
                 writer.WriteLine();
 
@@ -189,7 +156,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
             public void Add(Entity entity)
             {
-                Add(new EntityDesign(entity, new EntityDesignData()));
+                Add(new EntityDesign(entity));
             }
 
             protected override Guid GetKeyForItem(EntityDesign item)
