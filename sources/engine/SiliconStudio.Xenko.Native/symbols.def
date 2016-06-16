@@ -1,3 +1,14 @@
 LIBRARY libxenkonative.dll
 EXPORTS
 UpdateBufferValuesFromElementInfo
+XenkoOvrStartup
+XenkoOvrShutdown
+XenkoOvrGetError
+XenkoOvrCreateSessionDx
+XenkoOvrDestroySession
+XenkoOvrCreateTexturesDx
+XenkoOvrGetTextureAtIndexDx
+XenkoOvrGetCurrentTargetIndex
+XenkoOvrCommitFrame
+XenkoOvrPrepareRender
+XenkoOvrGetMirrorTextureDx
