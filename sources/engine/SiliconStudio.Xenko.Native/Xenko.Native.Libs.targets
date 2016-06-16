@@ -1,0 +1,12 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildThisFileDirectory)..\..\targets\Xenko.PreSettings.targets" />
+  
+  <PropertyGroup>
+    <!-- If you add new libraries under and you compiled already, make sure you restart visual studio entirely, somehow for the sub-project is cached -->
+    <SiliconStudioXenkoNativePathLibs Condition="'$(SiliconStudioPlatform)' == 'Windows' or '$(SiliconStudioPlatform)' == 'Windows10' or '$(SiliconStudioPlatform)' == 'WindowsStore' or '$(SiliconStudioPlatform)' == 'WindowsPhone'">libNativePath.lib;libCelt.lib;Xaudio2.lib</SiliconStudioXenkoNativePathLibs>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <SiliconStudioXenkoNativePathLibs2 Condition="'$(SiliconStudioPlatform)' == 'iOS'" Include="$(XenkoDependenciesDir)\NativePath\iOS\libNativePath.a;$(XenkoDependenciesDir)\NativePath\iOS\libCelt.a" />
+  </ItemGroup>
+</Project>

@@ -1,7 +1,7 @@
 
 SRC_DIR=.
 OBJ_DIR=obj
-SRCS_NAMES=lz4_32.cpp lz4_64.cpp lz4hc_32.cpp lz4hc_64.cpp matrix.cpp audioCallbacks.iOS.cpp
+SRCS_NAMES=lz4_32.cpp lz4_64.cpp lz4hc_32.cpp lz4hc_64.cpp matrix.cpp
 OBJS_NAMES=$(SRCS_NAMES:.cpp=.o)
 SRCS=$(patsubst %,$(SRC_DIR)/%,$(SRCS_NAMES))
 OBJS=$(patsubst %,$(OBJ_DIR)/%,$(OBJS_NAMES))

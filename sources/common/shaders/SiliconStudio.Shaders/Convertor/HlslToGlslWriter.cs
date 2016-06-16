@@ -69,17 +69,41 @@ namespace SiliconStudio.Shaders.Convertor
             WriteLine();
             WriteLine();
 
-            if (shaderPlatform == GlslShaderPlatform.OpenGLES && pipelineStage == PipelineStage.Pixel)
+            if (shaderPlatform == GlslShaderPlatform.OpenGLES)
             {
-                // ES requires default precision in PS
-                WriteLine("precision highp float;");
-                WriteLine();
-            }
+                if (shaderVersion >= 300)
+                {
+                    WriteLine("precision highp float;");
+                    WriteLine("precision highp int;");
+                    WriteLine("precision lowp sampler3D;");
+                    WriteLine("precision lowp samplerCubeShadow;");
+                    WriteLine("precision lowp sampler2DShadow;");
+                    WriteLine("precision lowp sampler2DArray;");
+                    WriteLine("precision lowp sampler2DArrayShadow;");
+                    WriteLine("precision lowp isampler2D;");
+                    WriteLine("precision lowp isampler3D;");
+                    WriteLine("precision lowp isamplerCube;");
+                    WriteLine("precision lowp isampler2DArray;");
+                    WriteLine("precision lowp usampler2D;");
+                    WriteLine("precision lowp usampler3D;");
+                    WriteLine("precision lowp usamplerCube;");
+                    WriteLine("precision lowp usampler2DArray;");
+                }
 
-            if (shaderPlatform == GlslShaderPlatform.OpenGLES && shaderVersion < 320 && SupportsTextureBuffer)
-            {
-                // In ES 3.1 and previous, we use texelFetchBuffer in case it needs to be remapped into something else by user
-                WriteLine("#define texelFetchBuffer(sampler, P) texelFetch(sampler, P)");
+                if (shaderVersion >= 320 || SupportsTextureBuffer)
+                {
+                    WriteLine("precision lowp samplerBuffer;");
+                    WriteLine("precision lowp isamplerBuffer;");
+                    WriteLine("precision lowp usamplerBuffer;");
+                }
+
+                WriteLine();
+
+                if (shaderVersion < 320 && SupportsTextureBuffer)
+                {
+                    // In ES 3.1 and previous, we use texelFetchBuffer in case it needs to be remapped into something else by user
+                    WriteLine("#define texelFetchBuffer(sampler, P) texelFetch(sampler, P)");
+                }
             }
 
             if (ExtraHeaders != null)

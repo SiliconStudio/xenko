@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Engine;
@@ -13,7 +14,7 @@ namespace SiliconStudio.Xenko.Audio
     /// The Audio System.
     /// It creates an underlying instance of <see cref="AudioEngine"/>.
     /// </summary>
-    public class AudioSystem : GameSystemBase
+    public class AudioSystem : GameSystemBase, IAudioEngineProvider
     {
         /// <summary>
         /// Create an new instance of AudioSystem
@@ -26,10 +27,11 @@ namespace SiliconStudio.Xenko.Audio
             AudioEngine = AudioEngineFactory.NewAudioEngine();
 
             registry.AddService(typeof(AudioSystem), this);
+            registry.AddService(typeof(IAudioEngineProvider), this);
         }
 
         /// <summary>
-        /// The underlying <see cref="AudioEngine" />. This instance can be used to possibly create <see cref="DynamicSoundEffectInstance" />.
+        /// The underlying <see cref="AudioEngine" />.
         /// </summary>
         /// <value>The audio engine.</value>
         public AudioEngine AudioEngine { get; private set; }

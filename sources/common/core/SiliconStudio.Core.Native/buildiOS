@@ -4,8 +4,7 @@
 MAKEFILE=Makefile
 INSTALL_DIR_IOS=bin/iOS
 ASSEMBLY_NAME=libcore
-SDK_VERSION=8.3
-IPHONE_DEPLOY_TARGET=5.0
+IPHONE_DEPLOY_TARGET=7.0
 IPHONE_PLATFORM_DIR="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer"
 SIMULATOR_PLATFORM_DIR="/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer"
 
@@ -37,7 +36,6 @@ function BuildAndInstall
    fi
 
    export CFLAGS="$CFLAGS -isysroot $SDK_DIR"
-   export AR="$IPHONE_PLATFORM_DIR/usr/bin/ar"
    export LDFLAGS="$LDFLAGS -isysroot $SDK_DIR/"
 
 OUTPUT_LIB_NAME=

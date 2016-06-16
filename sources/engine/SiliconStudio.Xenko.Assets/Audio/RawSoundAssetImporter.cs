@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Assets.Audio
     public class RawSoundAssetImporter : AssetImporterBase
     {
         // Supported file extensions for this importer
-        public const string FileExtensions = ".wav";
+        public const string FileExtensions = ".wav,.mp3,.ogg,.aac,.aiff,.flac,.m4a,.wma";
 
         private static readonly Guid Uid = new Guid("634842fa-d1db-45c2-b13d-bc11486dae4d");
         public override Guid Id => Uid;
@@ -20,11 +20,11 @@ namespace SiliconStudio.Xenko.Assets.Audio
 
         public override string SupportedFileExtensions => FileExtensions;
 
-        public override IEnumerable<Type> RootAssetTypes { get { yield return typeof(SoundEffectAsset); } }
+        public override IEnumerable<Type> RootAssetTypes { get { yield return typeof(SoundAsset); } }
 
         public override IEnumerable<AssetItem> Import(UFile rawAssetPath, AssetImporterParameters importParameters)
         {
-            var asset = new SoundEffectAsset { Source = rawAssetPath };
+            var asset = new SoundAsset { Source = rawAssetPath };
 
             // Creates the url to the texture
             var textureUrl = new UFile(rawAssetPath.GetFileName());

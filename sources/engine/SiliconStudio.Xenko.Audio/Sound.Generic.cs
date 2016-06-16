@@ -7,7 +7,7 @@ using System;
 
 namespace SiliconStudio.Xenko.Audio
 {
-    public partial class SoundBase
+    public partial class Sound
     {
         /// <summary>
         /// Create the audio engine to the sound base instance.
@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Audio
         internal void AttachEngine(AudioEngine engine)
         {
             if (engine == null)
-                throw new ArgumentNullException("engine");
+                throw new ArgumentNullException(nameof(engine));
 
             AudioEngine = engine;
         }

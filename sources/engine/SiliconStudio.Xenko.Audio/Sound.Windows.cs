@@ -8,7 +8,7 @@ using SharpDX.XAudio2;
 
 namespace SiliconStudio.Xenko.Audio
 {
-    public partial class SoundBase
+    public partial class Sound
     {
         internal MasteringVoice MasterVoice => AudioEngine.MasteringVoice;
 

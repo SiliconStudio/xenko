@@ -3763,13 +3763,13 @@ namespace SiliconStudio.Shaders.Convertor
                     }
                     else
                     {
-                        variable.Qualifiers |= Ast.ParameterQualifier.Out;
-
                         if (isFragData && needCustomFragData)
                         {
                             // Write location on outputs in case of MRT
                             variable.Qualifiers |= new LayoutQualifier { Layouts = { new LayoutKeyValue("location", semanticIndex) } };
                         }
+
+                        variable.Qualifiers |= Ast.ParameterQualifier.Out;
                     }
                 }
 

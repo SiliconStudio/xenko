@@ -9,14 +9,9 @@ namespace SiliconStudio.Xenko.Audio
 {
     internal static class ConversionExtensions
     {
-        public static unsafe RawVector3 ToSharpDX(this Vector3 vec)
+        public static unsafe RawVector3 ToSharpDx(this Vector3 vec)
         {
             return *((RawVector3*)&vec);
-        }
-
-        public static SharpDX.Multimedia.WaveFormat ToSharpDX(this Wave.WaveFormat format)
-        {
-            return new SharpDX.Multimedia.WaveFormat(format.SampleRate, format.BitsPerSample, format.Channels);
         }
     }
 }
