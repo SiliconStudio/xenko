@@ -250,8 +250,10 @@ extern "C" {
 			MakeContextCurrent(NULL);
 		}
 
-		xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener, int sampleRate, npBool mono)
+		xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener, int sampleRate, npBool mono, npBool spatialized)
 		{
+			(void)spatialized;
+
 			auto res = new xnAudioSource;
 			res->listener = listener;
 			res->sampleRate = sampleRate;
@@ -263,7 +265,18 @@ extern "C" {
 			AL_ERROR;
 			SourceF(res->source, AL_REFERENCE_DISTANCE, 1.0f);
 			AL_ERROR;
-						
+
+			if(spatialized)
+			{
+				//make sure we are able to 3D
+				SourceI(res->source, AL_SOURCE_RELATIVE, AL_FALSE);
+			}
+			else
+			{
+				//make sure we are able to pan
+				SourceI(res->source, AL_SOURCE_RELATIVE, AL_TRUE);
+			}
+			
 			return res;
 		}
 
@@ -279,16 +292,14 @@ extern "C" {
 
 		void xnAudioSourceSetPan(xnAudioSource* source, float pan)
 		{
-			ContextState lock(source->listener->context);
-
-			//make sure we are able to pan
-			SourceI(source->source, AL_SOURCE_RELATIVE, AL_TRUE);
-
 			auto clampedPan = pan > 1.0f ? 1.0f : pan < -1.0f ? -1.0f : pan;
 			ALfloat alpan[3];
 			alpan[0] = clampedPan; // from -1 (left) to +1 (right) 
 			alpan[1] = sqrt(1.0f - clampedPan*clampedPan);
 			alpan[2] = 0.0f;
+
+			ContextState lock(source->listener->context);
+
 			SourceFV(source->source, AL_POSITION, alpan);
 		}
 
@@ -320,8 +331,10 @@ extern "C" {
 			SourceI(source->source, AL_BUFFER, buffer->buffer);
 		}
 
-		void xnAudioSourceQueueBuffer(xnAudioSource* source, xnAudioBuffer* buffer, short* pcm, int bufferSize)
+		void xnAudioSourceQueueBuffer(xnAudioSource* source, xnAudioBuffer* buffer, short* pcm, int bufferSize, bool endOfStream)
 		{
+			(void)endOfStream;
+
 			ContextState lock(source->listener->context);
 
 			BufferData(buffer->buffer, source->mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, pcm, bufferSize, source->sampleRate);
@@ -410,9 +423,6 @@ extern "C" {
 		void xnAudioSourcePush3D(xnAudioSource* source, float* pos, float* forward, float* up, float* vel)
 		{
 			ContextState lock(source->listener->context);
-
-			//make sure we are able to 3D
-			SourceI(source->source, AL_SOURCE_RELATIVE, AL_FALSE);
 
 			if (forward && up)
 			{
