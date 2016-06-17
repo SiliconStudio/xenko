@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         public override LightShaderGroupDynamic CreateLightShaderGroup(RenderDrawContext context, ILightShadowMapShaderGroupData shadowGroup)
         {
-            return new SpotLightShaderGroup(shadowGroup);
+            return new SpotLightShaderGroup(context.RenderContext, shadowGroup);
         }
 
         class SpotLightShaderGroup : LightShaderGroupDynamic
@@ -43,8 +43,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             private ValueParameterKey<SpotLightData> lightsKey;
             private FastListStruct<SpotLightData> lightsData = new FastListStruct<SpotLightData>(8);
 
-            public SpotLightShaderGroup(ILightShadowMapShaderGroupData shadowGroupData)
-                : base(shadowGroupData)
+            public SpotLightShaderGroup(RenderContext renderContext, ILightShadowMapShaderGroupData shadowGroupData)
+                : base(renderContext, shadowGroupData)
             {
             }
 
@@ -68,13 +68,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 ShadowGroup?.ApplyShader(mixin);
 
                 ShaderSource = mixin;
-            }
-
-            /// <inheritdoc/>
-            protected override int ComputeLightCount(int lightCount)
-            {
-                // TODO: Some way to override this
-                return 8;
             }
 
             /// <inheritdoc/>

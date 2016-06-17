@@ -33,9 +33,15 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         public LightClusteredPointGroupRenderer()
         {
-            pointGroup = new PointLightShaderGroupData(this);
-            spotGroup = new PointSpotShaderGroupData(pointGroup);
             SpotRenderer = new LightClusteredSpotGroupRenderer(this);
+        }
+
+        public override void Initialize(RenderContext context)
+        {
+            base.Initialize(context);
+
+            pointGroup = new PointLightShaderGroupData(context, this);
+            spotGroup = new PointSpotShaderGroupData(context, pointGroup);
         }
 
         public override void Unload()
@@ -111,8 +117,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             private Plane[] zPlanes;
 
-            public PointLightShaderGroupData(LightClusteredPointGroupRenderer pointGroupRenderer)
-                : base(null)
+            public PointLightShaderGroupData(RenderContext renderContext, LightClusteredPointGroupRenderer pointGroupRenderer)
+                : base(renderContext, null)
             {
                 this.pointGroupRenderer = pointGroupRenderer;
                 ShaderSource = new ShaderClassSource("LightClusteredPointGroup", ClusterSize);
@@ -608,8 +614,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         class PointSpotShaderGroupData : LightShaderGroupDynamic
         {
-            public PointSpotShaderGroupData(PointLightShaderGroupData pointLightGroup)
-                : base(null)
+            public PointSpotShaderGroupData(RenderContext renderContext, PointLightShaderGroupData pointLightGroup)
+                : base(renderContext, null)
             {
                 ShaderSource = new ShaderClassSource("LightClusteredSpotGroup", pointLightGroup.ClusterSize);
             }
