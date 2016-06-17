@@ -28,14 +28,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.XAudio2">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(XenkoSharpDXAudioSdkBinDir)\SharpDX.XAudio2.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.MediaFoundation">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.MediaFoundation.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <Choose>
     <When Condition="$(SiliconStudioUI.Contains('SDL')) OR '$(SiliconStudioAudio)' == 'SDL'">
