@@ -72,17 +72,22 @@ namespace SiliconStudio.Xenko.Assets.Entities
         }
     }
 
-
+    public interface IAssetCompositeHierarchyData
+    {
+        IEnumerable<IAssetPartDesign<IIdentifiable>> Parts { get; }
+    }
 
     [DataContract("EntityHierarchyData")]
     //[ContentSerializer(typeof(DataContentWithEntityReferenceSerializer))]
-    public class EntityHierarchyData
+    public class EntityHierarchyData : IAssetCompositeHierarchyData
     {
         [DataMember(10)]
         public List<Guid> RootEntities { get; } = new List<Guid>();
 
         [DataMember(20)]
         public AssetPartCollection<EntityDesign> Entities { get; } = new AssetPartCollection<EntityDesign>();
+
+        IEnumerable<IAssetPartDesign<IIdentifiable>> IAssetCompositeHierarchyData.Parts => Entities;
     }
 
     public static class EntityHierarchyDataExtensions
