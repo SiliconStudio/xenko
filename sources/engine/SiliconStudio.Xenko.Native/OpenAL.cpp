@@ -107,12 +107,25 @@ extern "C" {
 		{
 			if (OpenALLibrary) return true;
 
+			//Generic
 			OpenALLibrary = LoadDynamicLibrary("OpenAL");
-			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("x64\\OpenAL");
-			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("x86\\OpenAL");
-			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("x64/OpenAL");
-			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("x86/OpenAL");
+			OpenALLibrary = LoadDynamicLibrary("openal");
+			
+			//PC - Windows
+			if(sizeof(intptr_t) == 4)
+			{
+				if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("x86\\OpenAL");
+				if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("x86/OpenAL");
+			}
+			else
+			{
+				if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("x64\\OpenAL");
+				if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("x64/OpenAL");
+			}
+			
+			//iOS
 			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("/System/Library/Frameworks/OpenAL.framework/OpenAL"); //iOS Apple OpenAL
+			
 			if (!OpenALLibrary) return false;
 
 			OpenDevice = (LPALCOPENDEVICE)GetSymbolAddress(OpenALLibrary, "alcOpenDevice");
