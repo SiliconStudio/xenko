@@ -97,7 +97,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
             return FontManager.DoesFontContains(FontName, Style, c);
         }
 
-        protected override Glyph GetGlyph(CommandList commandList, char character, ref Vector2 fontSize, bool uploadGpuResources)
+        protected override Glyph GetGlyph(CommandList commandList, char character, ref Vector2 fontSize, bool uploadGpuResources, out Vector2 fixScaling)
         {
             // Add a safe guard to prevent the system to generate characters too big for the dynamic font cache texture
             fontSize.X = Math.Min(fontSize.X, 1024);
@@ -116,6 +116,8 @@ namespace SiliconStudio.Xenko.Graphics.Font
 
             // update the character usage info
             FontCacheManager.NotifyCharacterUtilization(characterData);
+
+            fixScaling = fontSize / characterData.Size;
 
             return characterData.Glyph;
         }
@@ -145,6 +147,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
                 characterData = new CharacterSpecification(character, FontName, size, Style, AntiAlias);
                 sizedCharacterToCharacterData[lookUpKey] = characterData;
             }
+
             return characterData;
         }
 

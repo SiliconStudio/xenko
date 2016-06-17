@@ -225,8 +225,9 @@ namespace SiliconStudio.Xenko.Graphics
             
         }
 
-        internal void InternalDrawGlyph(ref InternalDrawCommand parameters, ref Vector2 fontSize, ref Glyph glyph, float x, float y, float nextx)
+        internal void InternalDrawGlyph(ref InternalDrawCommand parameters, ref Vector2 fontSize, ref Glyph glyph, float x, float y, float nextx, ref Vector2 auxiliaryScaling)
         {
+            // TODO Do we need auxiliaryScaling
             if (char.IsWhiteSpace((char)glyph.Character) || glyph.Subrect.Width == 0 || glyph.Subrect.Height == 0)
                 return;
 
@@ -258,18 +259,19 @@ namespace SiliconStudio.Xenko.Graphics
             ForEachGlyph(commandList, ref text, ref requestedFontSize, internalUIDrawGlyphAction, ref drawCommand, drawCommand.Alignment, true, textBoxSize);
         }
 
-        internal void InternalUIDrawGlyph(ref InternalUIDrawCommand parameters, ref Vector2 requestedFontSize, ref Glyph glyph, float x, float y, float nextx)
+        internal void InternalUIDrawGlyph(ref InternalUIDrawCommand parameters, ref Vector2 requestedFontSize, ref Glyph glyph, float x, float y, float nextx, ref Vector2 auxiliaryScaling)
         {
             if (char.IsWhiteSpace((char)glyph.Character))
                 return;
 
             // Skip items with null size
-            var elementSize = new Vector2(glyph.Subrect.Width / parameters.RealVirtualResolutionRatio.X, glyph.Subrect.Height / parameters.RealVirtualResolutionRatio.Y);
+            var elementSize = new Vector2(auxiliaryScaling.X * glyph.Subrect.Width / parameters.RealVirtualResolutionRatio.X,
+                auxiliaryScaling.Y * glyph.Subrect.Height / parameters.RealVirtualResolutionRatio.Y);
             if (elementSize.Length() < MathUtil.ZeroTolerance) 
                 return;
 
             var xShift = x;
-            var yShift = y + GetBaseOffsetY(requestedFontSize.Y) + glyph.Offset.Y;
+            var yShift = y + (GetBaseOffsetY(requestedFontSize.Y) + glyph.Offset.Y * auxiliaryScaling.Y);
             if (parameters.SnapText)
             {
                 xShift = (float)Math.Round(xShift);
@@ -460,14 +462,17 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="character">The character we want the glyph of</param>
         /// <param name="fontSize">The font size in pixel</param>
         /// <param name="uploadGpuResources">Indicate if the GPU resource should be uploaded or not.</param>
+        /// <param name="auxiliaryScaling">If the requested font size isn't available, the closest one is chosen and an auxiliary scaling is returned</param>
         /// <returns>The glyph corresponding to the request or null if not existing</returns>
-        protected virtual Glyph GetGlyph(CommandList commandList, char character, ref Vector2 fontSize, bool uploadGpuResources)
+        protected virtual Glyph GetGlyph(CommandList commandList, char character, ref Vector2 fontSize, bool uploadGpuResources, out Vector2 auxiliaryScaling)
         {
+            auxiliaryScaling = new Vector2(1, 1);
             return null;
         }
         
-        private void MeasureStringGlyph(ref Vector2 result, ref Vector2 fontSize, ref Glyph glyph, float x, float y, float nextx)
+        private void MeasureStringGlyph(ref Vector2 result, ref Vector2 fontSize, ref Glyph glyph, float x, float y, float nextx, ref Vector2 auxiliaryScaling)
         {
+            // TODO Do we need auxiliaryScaling
             var h = y + GetTotalLineSpacing(fontSize.Y);
             if (nextx > result.X)
             {
@@ -479,7 +484,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        private delegate void GlyphAction<T>(ref T parameters, ref Vector2 fontSize, ref Glyph glyph, float x, float y, float nextx);
+        private delegate void GlyphAction<T>(ref T parameters, ref Vector2 fontSize, ref Glyph glyph, float x, float y, float nextx, ref Vector2 auxiliaryScaling);
 
         private int FindCariageReturn(ref StringProxy text, int startIndex)
         {
@@ -556,9 +561,10 @@ namespace SiliconStudio.Xenko.Graphics
 
                     default:
                         // Output this character.
-                        var glyph = GetGlyph(commandList, character, ref fontSize, updateGpuResources);
+                        Vector2 auxiliaryScaling;
+                        var glyph = GetGlyph(commandList, character, ref fontSize, updateGpuResources, out auxiliaryScaling);
                         if (glyph == null && !IgnoreUnkownCharacters && DefaultCharacter.HasValue)
-                            glyph = GetGlyph(commandList, DefaultCharacter.Value, ref fontSize, updateGpuResources);
+                            glyph = GetGlyph(commandList, DefaultCharacter.Value, ref fontSize, updateGpuResources, out auxiliaryScaling);
                         if(glyph == null)
                             continue;
 
@@ -570,8 +576,8 @@ namespace SiliconStudio.Xenko.Graphics
                         if (KerningMap != null && KerningMap.TryGetValue(key, out kerningOffset))
                             dx += kerningOffset;
 
-                        float nextX = x + glyph.XAdvance + GetExtraSpacing(fontSize.X);
-                        action(ref parameters, ref fontSize, ref glyph, x + dx, y, nextX);
+                        float nextX = x + (glyph.XAdvance + GetExtraSpacing(fontSize.X)) * auxiliaryScaling.X;
+                        action(ref parameters, ref fontSize, ref glyph, x + dx * auxiliaryScaling.X, y, nextX, ref auxiliaryScaling);
                         x = nextX;
                         break;
                 }

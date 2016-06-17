@@ -453,13 +453,13 @@ namespace SiliconStudio.Xenko.Graphics
                 drawCommand.SnapText = false;
 
                 float scaling = FontHelper.PointsToPixels(drawCommand.RequestedFontSize) / font.Size;
-                drawCommand.RealVirtualResolutionRatio *= 1f / new Vector2(scaling, scaling);
+                drawCommand.RealVirtualResolutionRatio = 1f / new Vector2(scaling, scaling);
             }
-            else
-            if (font.FontType == SpriteFontType.Dynamic)
-            {
-                // TODO Dynamic font now uses discrete size so some minor scaling might be required for smooth resizing
-            }
+            //else
+            //if (font.FontType == SpriteFontType.Dynamic)
+            //{
+            //    // Do nothing - Dynamic (RuntimeRasterized) font rescales itself just before drawing the glyph, so skip changes here
+            //}
             else
             if ((font.FontType == SpriteFontType.Static) && (drawCommand.RealVirtualResolutionRatio.X != 1 || drawCommand.RealVirtualResolutionRatio.Y != 1)) 
             {

@@ -89,9 +89,10 @@ namespace SiliconStudio.Xenko.Graphics.Font
             return CharacterToGlyph.ContainsKey(c);
         }
 
-        protected override Glyph GetGlyph(CommandList commandList, char character, ref Vector2 fontSize, bool dumb)
+        protected override Glyph GetGlyph(CommandList commandList, char character, ref Vector2 fontSize, bool dumb, out Vector2 fixScaling)
         {
             Glyph glyph = null;
+            fixScaling = new Vector2(1, 1);
 
             if (!CharacterToGlyph.ContainsKey(character))
                 Logger.Warning("Character '{0}' is not available in the static font character map", character);
