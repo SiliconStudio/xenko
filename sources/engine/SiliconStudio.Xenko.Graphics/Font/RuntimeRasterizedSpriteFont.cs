@@ -99,12 +99,18 @@ namespace SiliconStudio.Xenko.Graphics.Font
 
         protected override Glyph GetGlyph(CommandList commandList, char character, ref Vector2 fontSize, bool uploadGpuResources, out Vector2 fixScaling)
         {
+            // Convert the font size to pixels, otherwise the Runtime font appears smaller than the Offline
+            Vector2 correctSize = fontSize;
+            // TODO The change below requires the samples and tests to be also updated
+            //correctSize.X = FontHelper.PointsToPixels(correctSize.X);
+            //correctSize.Y = FontHelper.PointsToPixels(correctSize.Y);
+
             // Add a safe guard to prevent the system to generate characters too big for the dynamic font cache texture
-            fontSize.X = Math.Min(fontSize.X, 1024);
-            fontSize.Y = Math.Min(fontSize.Y, 1024);
+            correctSize.X = Math.Min(correctSize.X, 1024);
+            correctSize.Y = Math.Min(correctSize.Y, 1024);
 
             // get the character data associated to the provided character and size
-            var characterData = GetOrCreateCharacterData(fontSize, character);
+            var characterData = GetOrCreateCharacterData(correctSize, character);
             
             // generate the bitmap if it does not exist
             if(characterData.Bitmap == null)
@@ -117,7 +123,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
             // update the character usage info
             FontCacheManager.NotifyCharacterUtilization(characterData);
 
-            fixScaling = fontSize / characterData.Size;
+            fixScaling = correctSize / characterData.Size;
 
             return characterData.Glyph;
         }
