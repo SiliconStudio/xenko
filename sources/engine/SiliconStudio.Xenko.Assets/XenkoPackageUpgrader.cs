@@ -25,7 +25,7 @@ using SiliconStudio.Xenko.Assets.Effect;
 
 namespace SiliconStudio.Xenko.Assets
 {
-    [PackageUpgrader(XenkoConfig.PackageName, "1.0.0-beta01", "1.7.0-alpha02")]
+    [PackageUpgrader(XenkoConfig.PackageName, "1.0.0-beta01", "1.7.0-alpha03")]
     public class XenkoPackageUpgrader : PackageUpgrader
     {
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
@@ -282,6 +282,18 @@ namespace SiliconStudio.Xenko.Assets
                             if (assetBase.Location == "--import--")
                                 assetYaml.DynamicRootNode["~Base"] = DynamicYamlEmpty.Default;
                         }
+                    }
+                }
+            }
+
+            if (dependency.Version.MinVersion < new PackageVersion("1.7.0-alpha03"))
+            {
+                // Delete EffectLogAsset (now, most of it is auto generated automatically by drawing one frame of the game)
+                foreach (var assetFile in assetFiles)
+                {
+                    if (assetFile.FilePath.GetFileName() == EffectLogAsset.DefaultFile)
+                    {
+                        assetFile.Deleted = true;
                     }
                 }
             }
