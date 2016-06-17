@@ -17,17 +17,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
     /// Base class for entity assets (<see cref="SceneAsset"/> and <see cref="PrefabAsset"/>)
     /// </summary>
     [DataContract]
-    public abstract partial class EntityHierarchyAssetBase : AssetComposite
+    public abstract partial class EntityHierarchyAssetBase : AssetCompositeHierarchy<EntityDesign, Entity>
     {
-        /// <summary>
-        /// Gets or sets the data.
-        /// </summary>
-        /// <value>
-        /// The data.
-        /// </value>
-        [DataMember(20)]
-        public EntityHierarchyData Hierarchy { get; set; } = new EntityHierarchyData();
-
         /// <summary>
         /// Dumps this asset to a writer for debug purposes.
         /// </summary>
@@ -48,7 +39,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         public override void SetPart(Guid id, Guid baseId, Guid basePartInstanceId)
         {
             EntityDesign entityEntry;
-            if (Hierarchy.Entities.TryGetValue(id, out entityEntry))
+            if (Hierarchy.Parts.TryGetValue(id, out entityEntry))
             {
                 entityEntry.BaseId = baseId;
                 entityEntry.BasePartInstanceId = basePartInstanceId;
@@ -59,8 +50,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
         {
             var newAsset = (EntityHierarchyAssetBase)base.CreateChildAsset(location);
 
-            var newIdMaps = Hierarchy.Entities.ToDictionary(x => x.Entity.Id, x => Guid.NewGuid());
-            foreach (var entity in newAsset.Hierarchy.Entities)
+            var newIdMaps = Hierarchy.Parts.ToDictionary(x => x.Entity.Id, x => Guid.NewGuid());
+            foreach (var entity in newAsset.Hierarchy.Parts)
             {
                 // Store the baseid of the new version
                 entity.BaseId = entity.Entity.Id;
@@ -80,8 +71,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </summary>
         /// <param name="sourceRootEntity">The entity that is the root of the sub-hierarchy to clone</param>
         /// <param name="cleanReference">If true, any reference to an entity external to the cloned hierarchy will be set to null.</param>
-        /// <returns>A <see cref="EntityHierarchyData"/> corresponding to the cloned entities.</returns>
-        public EntityHierarchyData CloneSubHierarchy(Guid sourceRootEntity, bool cleanReference)
+        /// <returns>A <see cref="AssetCompositeHierarchyData{EntityDesign, Entity}"/> corresponding to the cloned entities.</returns>
+        public AssetCompositeHierarchyData<EntityDesign, Entity> CloneSubHierarchy(Guid sourceRootEntity, bool cleanReference)
         {
             Dictionary<Guid, Guid> entityMapping;
             return CloneSubHierarchy(sourceRootEntity, cleanReference, out entityMapping);
@@ -93,22 +84,22 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// <param name="sourceRootEntity">The entity that is the root of the sub-hierarchy to clone</param>
         /// <param name="cleanReference">If true, any reference to an entity external to the cloned hierarchy will be set to null.</param>
         /// <param name="entityMapping">A dictionary containing the mapping of ids from the source entites to the new entities.</param>
-        /// <returns>A <see cref="EntityHierarchyData"/> corresponding to the cloned entities.</returns>
-        public EntityHierarchyData CloneSubHierarchy(Guid sourceRootEntity, bool cleanReference, out Dictionary<Guid, Guid> entityMapping)
+        /// <returns>A <see cref="AssetCompositeHierarchyData{EntityDesign, Entity}"/> corresponding to the cloned entities.</returns>
+        public AssetCompositeHierarchyData<EntityDesign, Entity> CloneSubHierarchy(Guid sourceRootEntity, bool cleanReference, out Dictionary<Guid, Guid> entityMapping)
         {
-            if (!Hierarchy.Entities.ContainsKey(sourceRootEntity))
+            if (!Hierarchy.Parts.ContainsKey(sourceRootEntity))
                 throw new ArgumentException(@"The source root entity must be an entity of this asset.", nameof(sourceRootEntity));
 
             // Note: Instead of copying the whole asset (with its potentially big hierarchy),
             // we first copy the asset only (without the hierarchy), then the sub-hierarchy to extract.
-            var subTreeRoot = Hierarchy.Entities[sourceRootEntity];
-            var subTreeHierarchy = new EntityHierarchyData { Entities = { subTreeRoot }, RootEntities = { sourceRootEntity } };
+            var subTreeRoot = Hierarchy.Parts[sourceRootEntity];
+            var subTreeHierarchy = new AssetCompositeHierarchyData<EntityDesign, Entity> { Parts = { subTreeRoot }, RootPartIds = { sourceRootEntity } };
             foreach (var subTreeEntity in EnumerateChildren(subTreeRoot, true))
-                subTreeHierarchy.Entities.Add(Hierarchy.Entities[subTreeEntity.Entity.Id]);
+                subTreeHierarchy.Parts.Add(Hierarchy.Parts[subTreeEntity.Entity.Id]);
 
             // clone the entities of the sub-tree
-            var clonedHierarchy = (EntityHierarchyData)AssetCloner.Clone(subTreeHierarchy);
-            clonedHierarchy.Entities[sourceRootEntity].Entity.Transform.Parent = null;
+            var clonedHierarchy = (AssetCompositeHierarchyData<EntityDesign, Entity>)AssetCloner.Clone(subTreeHierarchy);
+            clonedHierarchy.Parts[sourceRootEntity].Entity.Transform.Parent = null;
 
             if (cleanReference)
             {
@@ -125,7 +116,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
             // Generate entity mapping
             entityMapping = new Dictionary<Guid, Guid>();
-            foreach (var entityDesign in clonedHierarchy.Entities)
+            foreach (var entityDesign in clonedHierarchy.Parts)
             {
                 // Generate new Id
                 var newEntityId = Guid.NewGuid();
@@ -150,30 +141,30 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// <param name="sourceRootEntities">The entities that are the roots of the sub-hierarchies to clone</param>
         /// <param name="cleanReference">If true, any reference to an entity external to the cloned hierarchy will be set to null.</param>
         /// <param name="entityMapping">A dictionary containing the mapping of ids from the source entites to the new entities.</param>
-        /// <returns>A <see cref="EntityHierarchyData"/> corresponding to the cloned entities.</returns>
+        /// <returns>A <see cref="AssetCompositeHierarchyData{EntityDesign, Entity}"/> corresponding to the cloned entities.</returns>
         /// <remarks>The entities passed to this methods must be independent in the hierarchy.</remarks>
-        public EntityHierarchyData CloneSubHierarchies(IEnumerable<Guid> sourceRootEntities, bool cleanReference, out Dictionary<Guid, Guid> entityMapping)
+        public AssetCompositeHierarchyData<EntityDesign, Entity> CloneSubHierarchies(IEnumerable<Guid> sourceRootEntities, bool cleanReference, out Dictionary<Guid, Guid> entityMapping)
         {
             // Note: Instead of copying the whole asset (with its potentially big hierarchy),
             // we first copy the asset only (without the hierarchy), then the sub-hierarchy to extract.
-            var subTreeHierarchy = new EntityHierarchyData();
+            var subTreeHierarchy = new AssetCompositeHierarchyData<EntityDesign, Entity>();
             foreach (var sourceRootEntity in sourceRootEntities)
             {
-                if (!Hierarchy.Entities.ContainsKey(sourceRootEntity))
+                if (!Hierarchy.Parts.ContainsKey(sourceRootEntity))
                     throw new ArgumentException(@"The source root entities must be entities of this asset.", nameof(sourceRootEntities));
 
-                var subTreeRoot = Hierarchy.Entities[sourceRootEntity].Entity;
-                subTreeHierarchy.Entities.Add(new EntityDesign(subTreeRoot));
-                subTreeHierarchy.RootEntities.Add(sourceRootEntity);
+                var subTreeRoot = Hierarchy.Parts[sourceRootEntity].Entity;
+                subTreeHierarchy.Parts.Add(new EntityDesign(subTreeRoot));
+                subTreeHierarchy.RootPartIds.Add(sourceRootEntity);
                 foreach (var subTreeEntity in EnumerateChildren(subTreeRoot, true))
-                    subTreeHierarchy.Entities.Add(Hierarchy.Entities[subTreeEntity.Id]);
+                    subTreeHierarchy.Parts.Add(Hierarchy.Parts[subTreeEntity.Id]);
             }
 
             // clone the entities of the sub-tree
-            var clonedHierarchy = (EntityHierarchyData)AssetCloner.Clone(subTreeHierarchy);
-            foreach (var rootEntity in clonedHierarchy.RootEntities)
+            var clonedHierarchy = (AssetCompositeHierarchyData<EntityDesign, Entity>)AssetCloner.Clone(subTreeHierarchy);
+            foreach (var rootEntity in clonedHierarchy.RootPartIds)
             {
-                clonedHierarchy.Entities[rootEntity].Entity.Transform.Parent = null;
+                clonedHierarchy.Parts[rootEntity].Entity.Transform.Parent = null;
             }
 
             if (cleanReference)
@@ -191,7 +182,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
             // Generate entity mapping
             entityMapping = new Dictionary<Guid, Guid>();
-            foreach (var entityDesign in clonedHierarchy.Entities)
+            foreach (var entityDesign in clonedHierarchy.Parts)
             {
                 // Generate new Id
                 var newEntityId = Guid.NewGuid();
@@ -218,7 +209,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         public override IEnumerable<AssetPart> CollectParts()
         {
-            foreach (var entityDesign in Hierarchy.Entities)
+            foreach (var entityDesign in Hierarchy.Parts)
             {
                 yield return new AssetPart(entityDesign.Entity.Id, entityDesign.BaseId, entityDesign.BasePartInstanceId);
             }
@@ -226,7 +217,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         public override bool ContainsPart(Guid id)
         {
-            return Hierarchy.Entities.ContainsKey(id);
+            return Hierarchy.Parts.ContainsKey(id);
         }
 
         public static IEnumerable<Entity> EnumerateChildren(Entity entity, bool isRecursive)
@@ -239,7 +230,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         public IEnumerable<EntityDesign> EnumerateChildren(EntityDesign entityDesign, bool isRecursive)
         {
-            return EnumerateChildren(entityDesign.Entity, isRecursive).Select(e => Hierarchy.Entities[e.Id]);
+            return EnumerateChildren(entityDesign.Entity, isRecursive).Select(e => Hierarchy.Parts[e.Id]);
         }
         
         /// <summary>
@@ -272,7 +263,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             //       - Find which AssetBase (actually EntityHierarchyAssetBase), is containing the <basePartInstanceId>
             //       - We can then associate 
             var mapBasePartInstanceIdToBasePart = new Dictionary<Guid, EntityHierarchyAssetBase>();
-            foreach (var entityIt in Hierarchy.Entities)
+            foreach (var entityIt in Hierarchy.Parts)
             {
                 if (entityIt.BaseId.HasValue && entityIt.BasePartInstanceId.HasValue)
                 {

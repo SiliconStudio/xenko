@@ -7,8 +7,8 @@ using SiliconStudio.Core.Serialization.Serializers;
 
 namespace SiliconStudio.Assets
 {
-    [DataSerializer(typeof(AssetPartCollectionSerializer<>), Mode = DataSerializerGenericMode.GenericArguments)]
-    public class AssetPartCollection<TAssetPartDesign> : KeyedSortedList<Guid, TAssetPartDesign> where TAssetPartDesign : IAssetPartDesign<IIdentifiable>
+    [DataSerializer(typeof(AssetPartCollectionSerializer<,>), Mode = DataSerializerGenericMode.GenericArguments)]
+    public class AssetPartCollection<TAssetPartDesign, TAssetPart> : KeyedSortedList<Guid, TAssetPartDesign> where TAssetPartDesign : IAssetPartDesign<TAssetPart> where TAssetPart : IIdentifiable
     {
         protected override Guid GetKeyForItem(TAssetPartDesign item)
         {
@@ -24,7 +24,9 @@ namespace SiliconStudio.Assets
         }
     }
 
-    public class AssetPartCollectionSerializer<TAssetPartDesign> : KeyedSortedListSerializer<AssetPartCollection<TAssetPartDesign>, Guid, TAssetPartDesign> where TAssetPartDesign : IAssetPartDesign<IIdentifiable>
+    public class AssetPartCollectionSerializer<TAssetPartDesign, TAssetPart> : KeyedSortedListSerializer<AssetPartCollection<TAssetPartDesign, TAssetPart>, Guid, TAssetPartDesign>
+        where TAssetPartDesign : IAssetPartDesign<TAssetPart>
+        where TAssetPart : IIdentifiable
     {
     }
 }
