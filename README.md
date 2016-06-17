@@ -16,6 +16,7 @@ This is the source code for Xenko Game Engine (http://xenko.com/).
 ## Documentation
 
 * [Build Instructions](doc/GettingStarted.md)
+* [Git LFS](doc/GitLFS.md): read about our recent switch to LFS (if you need to upgrade a non-LFS Xenko repository or an existing non-LFS Xenko branch)
 * [API Reference](http://doc.xenko.com/latest/api/SiliconStudio.Assets.html)
 * [Documentation](http://doc.xenko.com/latest)
 
