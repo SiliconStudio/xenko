@@ -5,10 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using SiliconStudio.Assets;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Collections;
-using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Serializers;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Entities
@@ -18,7 +16,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     /// </summary>
     [DataContract("EntityDesign")]
     [NonIdentifiable]
-    public class EntityDesign
+    public class EntityDesign : IAssetPartDesign<Entity>
     {
         /// <summary>
         /// Initializes a new instance of <see cref="EntityDesign"/>.
@@ -65,55 +63,58 @@ namespace SiliconStudio.Xenko.Assets.Entities
         public Entity Entity { get; set; }
 
         /// <inheritdoc/>
+        Entity IAssetPartDesign<Entity>.Part => Entity;
+
+        /// <inheritdoc/>
         public override string ToString()
         {
-            return $"EntityDesign {Entity.Name}";
+            return $"EntityDesign [{Entity.Name}]";
         }
     }
+
+
 
     [DataContract("EntityHierarchyData")]
     //[ContentSerializer(typeof(DataContentWithEntityReferenceSerializer))]
     public class EntityHierarchyData
     {
         [DataMember(10)]
-        public List<Guid> RootEntities { get; private set; }
+        public List<Guid> RootEntities { get; } = new List<Guid>();
 
         [DataMember(20)]
-        public EntityCollection Entities { get; private set; }
+        public AssetPartCollection<EntityDesign> Entities { get; } = new AssetPartCollection<EntityDesign>();
+    }
 
-        public EntityHierarchyData()
-        {
-            RootEntities = new List<Guid>();
-            Entities = new EntityCollection(this);
-        }
-
+    public static class EntityHierarchyDataExtensions
+    {
         /// <summary>
         /// Helper method to dump this hierarchy to a text output
         /// </summary>
+        /// <param name="hierarchy"></param>
         /// <param name="writer"></param>
         /// <returns><c>true</c> if the dump was sucessful, <c>false</c> otherwise</returns>
-        public bool DumpTo(TextWriter writer)
+        public static bool DumpTo(this EntityHierarchyData hierarchy, TextWriter writer)
         {
-            bool result  = true;
+            bool result = true;
             writer.WriteLine("***************");
-            writer.WriteLine($"RootEntities [{RootEntities.Count}]");
+            writer.WriteLine($"RootEntities [{hierarchy.RootEntities.Count}]");
             writer.WriteLine("===============");
-            for (int i = 0; i < RootEntities.Count; i++)
+            for (int i = 0; i < hierarchy.RootEntities.Count; i++)
             {
-                var id = RootEntities[i];
-                if (!Entities.ContainsKey(id))
+                var id = hierarchy.RootEntities[i];
+                if (!hierarchy.Entities.ContainsKey(id))
                 {
                     result = false;
                 }
-                writer.WriteLine(Entities.ContainsKey(id) ? $"{id} => {Entities[id].Entity}" : $"{id} => ERROR - Entity not found in [Entities]");
+                writer.WriteLine(hierarchy.Entities.ContainsKey(id) ? $"{id} => {hierarchy.Entities[id].Entity}" : $"{id} => ERROR - Entity not found in [Entities]");
             }
 
             writer.WriteLine("***************");
-            writer.WriteLine($"Entities [{Entities.Count}]");
+            writer.WriteLine($"Entities [{hierarchy.Entities.Count}]");
             writer.WriteLine("===============");
-            for (int i = 0; i < Entities.Count; i++)
+            for (int i = 0; i < hierarchy.Entities.Count; i++)
             {
-                var entityEntry = Entities[i];
+                var entityEntry = hierarchy.Entities[i];
 
                 writer.Write($"{entityEntry.Entity.Id} => {entityEntry.Entity}");
 
@@ -132,7 +133,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 {
 
                     writer.Write($"  - {child.Entity.Id} => {child.Entity.Name}");
-                    if (!Entities.ContainsKey(child.Entity.Id))
+                    if (!hierarchy.Entities.ContainsKey(child.Entity.Id))
                     {
                         writer.Write(" <= ERROR, Entity not found in [Entities]");
                         result = false;
@@ -142,43 +143,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 }
             }
             return result;
-        }
-
-        [DataSerializer(typeof(KeyedSortedListSerializer<EntityCollection, Guid, EntityDesign>))]
-        public sealed class EntityCollection : KeyedSortedList<Guid, EntityDesign>
-        {
-            private readonly EntityHierarchyData container;
-
-            public EntityCollection(EntityHierarchyData container)
-            {
-                this.container = container;
-            }
-
-            public void Add(Entity entity)
-            {
-                Add(new EntityDesign(entity));
-            }
-
-            protected override Guid GetKeyForItem(EntityDesign item)
-            {
-                return item.Entity.Id;
-            }
-        
-            public void AddRange(IEnumerable<EntityDesign> entityDesigns)
-            {
-                foreach (var entityDesign in entityDesigns)
-                {
-                    Add(entityDesign);
-                }
-            }
-
-            public void AddRange(IEnumerable<Entity> entities)
-            {
-                foreach (var entity in entities)
-                {
-                    Add(entity);
-                }
-            }
         }
     }
 

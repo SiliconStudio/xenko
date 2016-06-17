@@ -59,8 +59,8 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var basePartAsset = new PrefabAsset();
             var entityPart1 = new Entity() { Name = "EPart1" };
             var entityPart2 = new Entity() { Name = "EPart2" };
-            basePartAsset.Hierarchy.Entities.Add(entityPart1);
-            basePartAsset.Hierarchy.Entities.Add(entityPart2);
+            basePartAsset.Hierarchy.Entities.Add(new EntityDesign(entityPart1));
+            basePartAsset.Hierarchy.Entities.Add(new EntityDesign(entityPart2));
             basePartAsset.Hierarchy.RootEntities.Add(entityPart1.Id);
             basePartAsset.Hierarchy.RootEntities.Add(entityPart2.Id);
 
@@ -124,10 +124,10 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 // Test a component link between entity4 and entity 3
                 entity4.Add(new TestEntityComponent() { EntityComponentLink = entity3.Transform });
 
-                originAsset.Hierarchy.Entities.Add(entity1);
-                originAsset.Hierarchy.Entities.Add(entity2);
-                originAsset.Hierarchy.Entities.Add(entity3);
-                originAsset.Hierarchy.Entities.Add(entity4);
+                originAsset.Hierarchy.Entities.Add(new EntityDesign(entity1));
+                originAsset.Hierarchy.Entities.Add(new EntityDesign(entity2));
+                originAsset.Hierarchy.Entities.Add(new EntityDesign(entity3));
+                originAsset.Hierarchy.Entities.Add(new EntityDesign(entity4));
 
                 originAsset.Hierarchy.RootEntities.Add(entity1.Id);
                 originAsset.Hierarchy.RootEntities.Add(entity3.Id);

@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             {
                 modelComponent
             };
-            prefab.Hierarchy.Entities.Add(entity);
+            prefab.Hierarchy.Entities.Add(new EntityDesign(entity));
             prefab.Hierarchy.RootEntities.Add(entity.Id);
 
             var material1 = new MaterialNull();

@@ -667,8 +667,8 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var a1 = new PrefabAsset();
             var ea = new Entity("ea");
             var eb = new Entity("eb");
-            a1.Hierarchy.Entities.Add(ea);
-            a1.Hierarchy.Entities.Add(eb);
+            a1.Hierarchy.Entities.Add(new EntityDesign(ea));
+            a1.Hierarchy.Entities.Add(new EntityDesign(eb));
             a1.Hierarchy.RootEntities.Add(ea.Id);
             a1.Hierarchy.RootEntities.Add(eb.Id);
 
@@ -682,7 +682,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             // Modify a1 to add entity ec
             var ec = new Entity("ec");
-            a1.Hierarchy.Entities.Add(ec);
+            a1.Hierarchy.Entities.Add(new EntityDesign(ec));
             a1.Hierarchy.RootEntities.Add(ec.Id);
 
             var a3 = (PrefabAsset)a2.CreateChildAsset("a2");
@@ -744,8 +744,8 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var a1 = new PrefabAsset();
             var ea = new Entity("ea");
             var eb = new Entity("eb");
-            a1.Hierarchy.Entities.Add(ea);
-            a1.Hierarchy.Entities.Add(eb);
+            a1.Hierarchy.Entities.Add(new EntityDesign(ea));
+            a1.Hierarchy.Entities.Add(new EntityDesign(eb));
             a1.Hierarchy.RootEntities.Add(ea.Id);
             a1.Hierarchy.RootEntities.Add(eb.Id);
 
@@ -762,7 +762,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             // Modify a1 to add entity ec
             var ec = new Entity("ec");
-            a1.Hierarchy.Entities.Add(ec);
+            a1.Hierarchy.Entities.Add(new EntityDesign(ec));
             a1.Hierarchy.RootEntities.Add(ec.Id);
 
             var a3 = (PrefabAsset)a2.CreateChildAsset("a2");
@@ -827,10 +827,10 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var ea = new Entity("ea");
             var eb = new Entity("eb");
             var ec = new Entity("ec");
-            a1.Hierarchy.Entities.Add(er);
-            a1.Hierarchy.Entities.Add(ea);
-            a1.Hierarchy.Entities.Add(eb);
-            a1.Hierarchy.Entities.Add(ec);
+            a1.Hierarchy.Entities.Add(new EntityDesign(er));
+            a1.Hierarchy.Entities.Add(new EntityDesign(ea));
+            a1.Hierarchy.Entities.Add(new EntityDesign(eb));
+            a1.Hierarchy.Entities.Add(new EntityDesign(ec));
             a1.Hierarchy.RootEntities.Add(er.Id);
             er.AddChild(ea);
             er.AddChild(eb);
@@ -896,7 +896,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 entity.Entity.SetOverride(member, OverrideType.New);
             }
 
-            a4.Hierarchy.Entities.Add(eRoot);
+            a4.Hierarchy.Entities.Add(new EntityDesign(eRoot));
             a4.Hierarchy.Entities.AddRange(a2PartInstance3.Entities);
             a4.Hierarchy.Entities.AddRange(a3PartInstance2.Entities);
             a4.Hierarchy.RootEntities.Add(eRoot.Id);
@@ -943,8 +943,8 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var ey = new Entity("ey");
             ey.Components.Add(new TestEntityComponent() { EntityLink = eb });
             ex.AddChild(ey);
-            a1.Hierarchy.Entities.Add(ex);
-            a1.Hierarchy.Entities.Add(ey);
+            a1.Hierarchy.Entities.Add(new EntityDesign(ex));
+            a1.Hierarchy.Entities.Add(new EntityDesign(ey));
             a1.Hierarchy.RootEntities.Add(ex.Id);
             Assert.AreEqual(6, a1.Hierarchy.Entities.Count);
             Assert.AreEqual(2, a1.Hierarchy.RootEntities.Count);

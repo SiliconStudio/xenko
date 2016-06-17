@@ -16,14 +16,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
     /// <summary>
     /// Base class for entity assets (<see cref="SceneAsset"/> and <see cref="PrefabAsset"/>)
     /// </summary>
-    [DataContract()]
+    [DataContract]
     public abstract partial class EntityHierarchyAssetBase : AssetComposite
     {
-        protected EntityHierarchyAssetBase()
-        {
-            Hierarchy = new EntityHierarchyData();
-        }
-
         /// <summary>
         /// Gets or sets the data.
         /// </summary>
@@ -31,7 +26,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// The data.
         /// </value>
         [DataMember(20)]
-        public EntityHierarchyData Hierarchy { get; set; }
+        public EntityHierarchyData Hierarchy { get; set; } = new EntityHierarchyData();
 
         /// <summary>
         /// Dumps this asset to a writer for debug purposes.
@@ -168,7 +163,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     throw new ArgumentException(@"The source root entities must be entities of this asset.", nameof(sourceRootEntities));
 
                 var subTreeRoot = Hierarchy.Entities[sourceRootEntity].Entity;
-                subTreeHierarchy.Entities.Add(subTreeRoot);
+                subTreeHierarchy.Entities.Add(new EntityDesign(subTreeRoot));
                 subTreeHierarchy.RootEntities.Add(sourceRootEntity);
                 foreach (var subTreeEntity in EnumerateChildren(subTreeRoot, true))
                     subTreeHierarchy.Entities.Add(Hierarchy.Entities[subTreeEntity.Id]);
