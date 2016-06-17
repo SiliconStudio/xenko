@@ -74,6 +74,7 @@
     <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <Import Project="$(SolutionDir)\..\sources\engine\SiliconStudio.Xenko.Native\Xenko.Native.Libs.targets" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
@@ -141,7 +142,7 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>..\..\..\..\..\..\deps\NativePath\Windows10\x86\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libNativePath.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SiliconStudioXenkoNativePathLibs);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/DEF:..\..\..\symbols.def %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
@@ -157,7 +158,7 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>..\..\..\..\..\..\deps\NativePath\Windows10\x86\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libNativePath.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SiliconStudioXenkoNativePathLibs);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/DEF:..\..\..\symbols.def %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
@@ -174,7 +175,7 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>..\..\..\..\..\..\deps\NativePath\Windows10\ARM\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libNativePath.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SiliconStudioXenkoNativePathLibs);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/DEF:..\..\..\symbols.def %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
@@ -190,7 +191,7 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>..\..\..\..\..\..\deps\NativePath\Windows10\ARM\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libNativePath.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SiliconStudioXenkoNativePathLibs);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/DEF:..\..\..\symbols.def %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
@@ -207,7 +208,7 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>..\..\..\..\..\..\deps\NativePath\Windows10\x64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libNativePath.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SiliconStudioXenkoNativePathLibs);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/DEF:..\..\..\symbols.def %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
@@ -223,7 +224,7 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>..\..\..\..\..\..\deps\NativePath\Windows10\x64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libNativePath.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SiliconStudioXenkoNativePathLibs);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/DEF:..\..\..\symbols.def %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
