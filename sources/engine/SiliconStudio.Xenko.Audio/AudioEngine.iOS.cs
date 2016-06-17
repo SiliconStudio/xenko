@@ -26,11 +26,11 @@ namespace SiliconStudio.Xenko.Audio
             {
                 if (args.InterruptionType == AVAudioSessionInterruptionType.Began)
                 {
-                    OpenAl.ListenerDisable(DefaultListener.Listener);
+                    AudioLayer.ListenerDisable(DefaultListener.Listener);
                 }
                 else
                 {
-                    OpenAl.ListenerEnable(DefaultListener.Listener);
+                    AudioLayer.ListenerEnable(DefaultListener.Listener);
                 }
             });
 

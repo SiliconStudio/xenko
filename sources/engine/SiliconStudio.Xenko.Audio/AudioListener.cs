@@ -22,8 +22,8 @@ namespace SiliconStudio.Xenko.Audio
 #if SILICONSTUDIO_PLATFORM_IOS
             if (engine.DefaultListener == null)
             {
-                Listener = OpenAl.ListenerCreate(engine.AudioDevice);
-                OpenAl.ListenerEnable(Listener);
+                Listener = AudioLayer.ListenerCreate(engine.AudioDevice);
+                AudioLayer.ListenerEnable(Listener);
             }
             else
             {
