@@ -29,8 +29,6 @@ extern "C" {
 		volatile bool mLocked;
 	};
 
-#pragma pack(push, 1)
-
 	namespace XAudio2
 	{
 		typedef struct _GUID {
@@ -126,13 +124,21 @@ extern "C" {
 #define SPEAKER_7POINT1_SURROUND (SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT | SPEAKER_FRONT_CENTER | SPEAKER_LOW_FREQUENCY | SPEAKER_BACK_LEFT | SPEAKER_BACK_RIGHT | SPEAKER_SIDE_LEFT  | SPEAKER_SIDE_RIGHT)
 #endif
 
+#define X3DAUDIO_CALCULATE_MATRIX          0x00000001 // enable matrix coefficient table calculation
+#define X3DAUDIO_CALCULATE_DELAY           0x00000002 // enable delay time array calculation (stereo final mix only)
+#define X3DAUDIO_CALCULATE_LPF_DIRECT      0x00000004 // enable LPF direct-path coefficient calculation
+#define X3DAUDIO_CALCULATE_LPF_REVERB      0x00000008 // enable LPF reverb-path coefficient calculation
+#define X3DAUDIO_CALCULATE_REVERB          0x00000010 // enable reverb send level calculation
+#define X3DAUDIO_CALCULATE_DOPPLER         0x00000020 // enable doppler shift factor calculation
+#define X3DAUDIO_CALCULATE_EMITTER_ANGLE   0x00000040 // enable emitter-to-listener interior angle calculation
+
 		struct XMFLOAT3
 		{
 			float x;
 			float y;
 			float z;
 
-			XMFLOAT3(): x(0), y(0), z(0)
+			XMFLOAT3() : x(0), y(0), z(0)
 			{}
 
 			XMFLOAT3(float _x, float _y, float _z) : x(_x), y(_y), z(_z) {}
@@ -143,6 +149,8 @@ extern "C" {
 
 		typedef float FLOAT32; // 32-bit IEEE float
 		typedef XMFLOAT3 X3DAUDIO_VECTOR; // float 3D vector
+
+#pragma pack(push, 1)
 
 		typedef struct X3DAUDIO_CONE
 		{
@@ -950,12 +958,15 @@ extern "C" {
 		struct xnAudioListener
 		{
 			xnAudioDevice* device_;
+			X3DAUDIO_LISTENER listener_;
 		};
 
 		struct xnAudioSource : IXAudio2VoiceCallback
 		{
 			IXAudio2MasteringVoice* mastering_voice_;
 			IXAudio2SourceVoice* source_voice_;
+			X3DAUDIO_EMITTER* emitter_;
+			X3DAUDIO_DSP_SETTINGS* dsp_settings_;
 			xnAudioListener* listener_;
 			volatile bool playing_;
 			volatile bool looped_;
@@ -1060,6 +1071,7 @@ extern "C" {
 		{
 			auto res = new xnAudioListener;
 			res->device_ = device;
+			memset(&res->listener_, 0x0, sizeof(X3DAUDIO_LISTENER));
 			return res;
 		}
 
@@ -1070,15 +1082,18 @@ extern "C" {
 
 		npBool xnAudioListenerEnable(xnAudioListener* listener)
 		{
+			//unused in Xaudio2
+			(void)listener;
 			return true;
 		}
 
 		void xnAudioListenerDisable(xnAudioListener* listener)
 		{
-
+			//unused in Xaudio2
+			(void)listener;
 		}
 
-		xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener, int sampleRate, npBool mono)
+		xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener, int sampleRate, npBool mono, npBool spatialized)
 		{
 			xnAudioSource* res = new xnAudioSource;
 			res->listener_ = listener;
@@ -1088,6 +1103,26 @@ extern "C" {
 			res->streamed_ = false;
 			res->looped_ = false;
 			res->mastering_voice_ = listener->device_->mastering_voice_;
+			if(spatialized)
+			{
+				res->emitter_ = new X3DAUDIO_EMITTER;
+				memset(res->emitter_, 0x0, sizeof(X3DAUDIO_EMITTER));
+				res->emitter_->ChannelCount = 1;
+				res->emitter_->CurveDistanceScaler = 1;
+				res->emitter_->DopplerScaler = 1;
+
+				res->dsp_settings_ = new X3DAUDIO_DSP_SETTINGS;
+				memset(res->dsp_settings_, 0x0, sizeof(X3DAUDIO_DSP_SETTINGS));
+				res->dsp_settings_->SrcChannelCount = 1;
+				res->dsp_settings_->DstChannelCount = AUDIO_CHANNELS;
+				res->dsp_settings_->pMatrixCoefficients = new float[AUDIO_CHANNELS];
+				res->dsp_settings_->pDelayTimes = new float[AUDIO_CHANNELS];
+			}
+			else
+			{
+				res->emitter_ = NULL;
+				res->dsp_settings_ = NULL;
+			}
 
 			WAVEFORMATEX pcmWaveFormat = {};
 			pcmWaveFormat.wFormatTag = WAVE_FORMAT_PCM;
@@ -1111,27 +1146,52 @@ extern "C" {
 		{
 			source->source_voice_->Stop();
 			source->source_voice_->DestroyVoice();
+			if (source->emitter_) delete source->emitter_;
+			if (source->dsp_settings_)
+			{
+				delete source->dsp_settings_;
+				delete[] source->dsp_settings_->pMatrixCoefficients;
+				delete[] source->dsp_settings_->pDelayTimes;
+			}
 			delete source;
 		}
 
 		void xnAudioSourceSetPan(xnAudioSource* source, float pan)
 		{
-			float panning[4];
-			if(pan < 0)
+			if (source->mono_)
 			{
-				panning[0] = 1.0f;
-				panning[1] = 0.0f;
-				panning[2] = 0.0f;
-				panning[3] = 1.0f + pan;
+				float panning[2];
+				if (pan < 0)
+				{
+					panning[0] = 1.0f;
+					panning[1] = 1.0f + pan;
+				}
+				else
+				{
+					panning[0] = 1.0f - pan;
+					panning[1] = 1.0f;
+				}
+				source->source_voice_->SetOutputMatrix(source->mastering_voice_, 1, AUDIO_CHANNELS, panning);
 			}
 			else
 			{
-				panning[0] = 1.0f - pan;
-				panning[1] = 0.0f;
-				panning[2] = 0.0f;
-				panning[3] = 1.0f;
+				float panning[4];
+				if (pan < 0)
+				{
+					panning[0] = 1.0f;
+					panning[1] = 0.0f;
+					panning[2] = 0.0f;
+					panning[3] = 1.0f + pan;
+				}
+				else
+				{
+					panning[0] = 1.0f - pan;
+					panning[1] = 0.0f;
+					panning[2] = 0.0f;
+					panning[3] = 1.0f;
+				}
+				source->source_voice_->SetOutputMatrix(source->mastering_voice_, 2, AUDIO_CHANNELS, panning);
 			}
-			source->source_voice_->SetOutputMatrix(source->mastering_voice_, source->mono_ ? 1 : 2, AUDIO_CHANNELS, panning);
 		}
 
 		void xnAudioSourceSetLooping(xnAudioSource* source, npBool looping)
@@ -1218,12 +1278,28 @@ extern "C" {
 
 		void xnAudioListenerPush3D(xnAudioListener* listener, float* pos, float* forward, float* up, float* vel)
 		{
-
+			memcpy(&listener->listener_.Position, pos, sizeof(float) * 3);
+			memcpy(&listener->listener_.Velocity, vel, sizeof(float) * 3);
+			memcpy(&listener->listener_.OrientFront, forward, sizeof(float) * 3);
+			memcpy(&listener->listener_.OrientTop, up, sizeof(float) * 3);
 		}
 
 		void xnAudioSourcePush3D(xnAudioSource* source, float* pos, float* forward, float* up, float* vel)
 		{
+			if (!source->emitter_) return;
+			
+			memcpy(&source->emitter_->Position, pos, sizeof(float) * 3);
+			memcpy(&source->emitter_->Velocity, vel, sizeof(float) * 3);
+			memcpy(&source->emitter_->OrientFront, forward, sizeof(float) * 3);
+			memcpy(&source->emitter_->OrientTop, up, sizeof(float) * 3);
 
+			X3DAudioCalculate(source->listener_->device_->x3_audio_, &source->listener_->listener_, source->emitter_, 
+				X3DAUDIO_CALCULATE_MATRIX | X3DAUDIO_CALCULATE_DOPPLER | X3DAUDIO_CALCULATE_LPF_DIRECT | X3DAUDIO_CALCULATE_REVERB, source->dsp_settings_);
+
+			source->source_voice_->SetOutputMatrix(source->mastering_voice_, 1, AUDIO_CHANNELS, source->dsp_settings_->pMatrixCoefficients);
+			source->source_voice_->SetFrequencyRatio(source->dsp_settings_->DopplerFactor);
+			XAUDIO2_FILTER_PARAMETERS filter_parameters = { LowPassFilter, 2.0f * sin(X3DAUDIO_PI / 6.0f * source->dsp_settings_->LPFDirectCoefficient), 1.0f };
+			source->source_voice_->SetFilterParameters(&filter_parameters);
 		}
 
 		npBool xnAudioSourceIsPlaying(xnAudioSource* source)
