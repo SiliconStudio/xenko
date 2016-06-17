@@ -28,11 +28,9 @@ namespace SiliconStudio.Xenko.Audio
             return engine;
 #endif
 #elif SILICONSTUDIO_PLATFORM_LINUX
-#if SILICONSTUDIO_XENKO_SOUND_SDL
-            return new AudioEngineSDL();
-#else
-            return null;
-#endif
+            var engine = new AudioEngine();
+            engine.InitializeAudioEngine();
+            return engine;
 #else
             return null;
 #endif
