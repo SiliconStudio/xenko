@@ -25,4 +25,16 @@
       </ItemGroup>
 	  </When>
   </Choose>
+
+  <UsingTask TaskName="PackageDeployTask" AssemblyFile="$(SiliconStudioPackageXenko)\bin\Windows-Direct3D11\SiliconStudio.Xenko.Assets.dll"/>
+
+  <Target Name="DeployOnLinux" AfterTargets="CoreCompile" Condition="'$(SiliconStudioProjectType)' == 'Executable'">
+    <PackageDeployTask
+        Directory="$(TargetDir)"
+        Machine="$(SiliconStudioLinuxTarget)"
+        Username="$(SiliconStudioLinuxUsername)"
+        Password="$(SiliconStudioLinuxPassword)"
+        Location="local/Projects/$(MSBuildProjectName)" />
+  </Target>
+
 </Project>
