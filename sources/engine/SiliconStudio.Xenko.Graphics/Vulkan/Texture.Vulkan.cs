@@ -375,7 +375,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                 if (NativeBuffer != SharpVulkan.Buffer.Null)
                 {
-                    GraphicsDevice.NativeDevice.DestroyImage(NativeImage);
+                    GraphicsDevice.NativeDevice.DestroyBuffer(NativeBuffer);
                     NativeBuffer = SharpVulkan.Buffer.Null;
                 }
 
