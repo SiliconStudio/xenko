@@ -56,9 +56,9 @@ namespace SiliconStudio.Xenko.Games
         private double requiredRatio;
         private ApplicationView applicationView;
         private bool canResize;
-        #endregion
+#endregion
 
-        #region Public Properties
+#region Public Properties
 
         public GameWindowWindowsRuntimeSwapChainPanel()
         {
@@ -177,7 +177,7 @@ namespace SiliconStudio.Xenko.Games
             }
         }
 
-        #endregion
+#endregion
 
 #region Public Methods and Operators
 
@@ -189,7 +189,7 @@ namespace SiliconStudio.Xenko.Games
         {
         }
 
-        #endregion
+#endregion
 
 #region Methods
 
@@ -300,15 +300,18 @@ namespace SiliconStudio.Xenko.Games
 
         internal override void Run()
         {
-            // Initialize GameBase
-            InitCallback();
-
             // Perform the rendering loop
             CompositionTarget.Rendering += CompositionTarget_Rendering;
         }
 
         void CompositionTarget_Rendering(object sender, object e)
         {
+            // Call InitCallback only first time
+            if (InitCallback != null)
+            {
+                InitCallback();
+                InitCallback = null;
+            }
             RunCallback();
         }
 
@@ -327,7 +330,7 @@ namespace SiliconStudio.Xenko.Games
             CompositionTarget.Rendering -= CompositionTarget_Rendering;
             base.Destroy();
         }
-        #endregion
+#endregion
     }
 }
 
