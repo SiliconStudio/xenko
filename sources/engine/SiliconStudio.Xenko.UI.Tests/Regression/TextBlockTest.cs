@@ -63,7 +63,7 @@ This is the last line.",
             if (Input.IsKeyPressed(Keys.Right))
                 textBlock.TextSize = 4 * textBlock.TextSize / 3;
             if (Input.IsKeyPressed(Keys.Delete))
-                textBlock.TextSize = textBlock.Font.Size;
+                textBlock.TextSize = textBlock.Font.SizeInPixels;
 
             if (Input.IsKeyReleased(Keys.NumPad1))
                 textBlock.VerticalAlignment = VerticalAlignment.Top;
@@ -176,21 +176,21 @@ This is the last line.",
         }
         public void Draw11()
         {
-            textBlock.TextSize = textBlock.Font.Size * 2;
+            textBlock.TextSize = textBlock.Font.SizeInPixels * 2;
             textBlock.TextAlignment = TextAlignment.Left;
             textBlock.VerticalAlignment = VerticalAlignment.Center;
             textBlock.HorizontalAlignment = HorizontalAlignment.Center;
         }
         public void Draw12()
         {
-            textBlock.TextSize = textBlock.Font.Size / 2;
+            textBlock.TextSize = textBlock.Font.SizeInPixels / 2;
             textBlock.TextAlignment = TextAlignment.Left;
             textBlock.VerticalAlignment = VerticalAlignment.Center;
             textBlock.HorizontalAlignment = HorizontalAlignment.Center;
         }
         public void Draw13()
         {
-            textBlock.TextSize = textBlock.Font.Size;
+            textBlock.TextSize = textBlock.Font.SizeInPixels;
             textBlock.TextAlignment = TextAlignment.Left;
             textBlock.VerticalAlignment = VerticalAlignment.Center;
             textBlock.HorizontalAlignment = HorizontalAlignment.Center;
@@ -198,7 +198,7 @@ This is the last line.",
         }
         public void Draw14()
         {
-            textBlock.TextSize = textBlock.Font.Size;
+            textBlock.TextSize = textBlock.Font.SizeInPixels;
             textBlock.TextAlignment = TextAlignment.Left;
             textBlock.VerticalAlignment = VerticalAlignment.Center;
             textBlock.HorizontalAlignment = HorizontalAlignment.Center;

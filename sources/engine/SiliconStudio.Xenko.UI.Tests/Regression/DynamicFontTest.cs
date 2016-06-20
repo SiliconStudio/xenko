@@ -97,42 +97,42 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         public void DrawTest0()
         {
             decorator.LocalMatrix = Matrix.Scaling(1);
-            textBlock.TextSize = textBlock.Font.Size;
+            textBlock.TextSize = textBlock.Font.SizeInPixels;
             UIComponent.Resolution = new Vector3(GraphicsDevice.Presenter.BackBuffer.Width, GraphicsDevice.Presenter.BackBuffer.Height, 500);
         }
 
         public void DrawTest1()
         {
             decorator.LocalMatrix = Matrix.Scaling(1);
-            textBlock.TextSize = 2*textBlock.Font.Size;
+            textBlock.TextSize = 2*textBlock.Font.SizeInPixels;
             UIComponent.Resolution = new Vector3(GraphicsDevice.Presenter.BackBuffer.Width, GraphicsDevice.Presenter.BackBuffer.Height, 500);
         }
 
         public void DrawTest2()
         {
             decorator.LocalMatrix = Matrix.Scaling(1);
-            textBlock.TextSize = textBlock.Font.Size;
+            textBlock.TextSize = textBlock.Font.SizeInPixels;
             UIComponent.Resolution = new Vector3(GraphicsDevice.Presenter.BackBuffer.Width / 2f, GraphicsDevice.Presenter.BackBuffer.Height / 2f, 500);
         }
 
         public void DrawTest3()
         {
             decorator.LocalMatrix = Matrix.Scaling(2);
-            textBlock.TextSize = textBlock.Font.Size;
+            textBlock.TextSize = textBlock.Font.SizeInPixels;
             UIComponent.Resolution = new Vector3(GraphicsDevice.Presenter.BackBuffer.Width, GraphicsDevice.Presenter.BackBuffer.Height, 500);
         }
 
         public void DrawTest4()
         {
             decorator.LocalMatrix = Matrix.Scaling(1);
-            textBlock.TextSize = textBlock.Font.Size;
+            textBlock.TextSize = textBlock.Font.SizeInPixels;
             UIComponent.Resolution = new Vector3(GraphicsDevice.Presenter.BackBuffer.Width / 2f, GraphicsDevice.Presenter.BackBuffer.Height, 500);
         }
 
         public void DrawTest5()
         {
             decorator.LocalMatrix = Matrix.Scaling(1);
-            textBlock.TextSize = textBlock.Font.Size;
+            textBlock.TextSize = textBlock.Font.SizeInPixels;
             UIComponent.Resolution = new Vector3(GraphicsDevice.Presenter.BackBuffer.Width, GraphicsDevice.Presenter.BackBuffer.Height / 2f, 500);
         }
 

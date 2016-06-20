@@ -121,12 +121,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             spriteBatch.Draw(colorTexture, new RectangleF(x, y, dim.X, dim.Y), Color.Green);
 
-            spriteFont.PreGenerateGlyphs(text, spriteFont.Size * resolutionRatio);
+            spriteFont.PreGenerateGlyphs(text, spriteFont.SizeInPixels * resolutionRatio);
             spriteBatch.DrawString(spriteFont, text, new Vector2(x, y), Color.White);
 
             y += 1.4f * dim.Y;
 
-            var fontSize = 1.5f * spriteFont.Size;
+            var fontSize = 1.5f * spriteFont.SizeInPixels;
             text = fontName + " font drawn with SpriteBatch(text, size).";
             dim = spriteBatch.MeasureString(spriteFont, text, fontSize, targetSize);
 

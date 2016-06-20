@@ -56,7 +56,7 @@ namespace UIParticles
                 Content = new TextBlock
                 {
                     Font = WesternFont,
-                    TextSize = 60,
+                    TextSize = 45,
                     Text = "Xenko UI Particles",
                     TextColor = Color.White,
                 },
@@ -82,7 +82,7 @@ namespace UIParticles
                     Font = WesternFont,
                     TextColor = Color.White,
                     Text = "Click here to start the game over",
-                    TextSize = 24
+                    TextSize = 18
                 },
 
                 HorizontalAlignment = HorizontalAlignment.Right,
@@ -117,7 +117,7 @@ namespace UIParticles
                     Font = WesternFont,
                     TextColor = Color.White,
                     Text = "Congratulations",
-                    TextSize = 24
+                    TextSize = 18
                 },
 
                 HorizontalAlignment = HorizontalAlignment.Right,

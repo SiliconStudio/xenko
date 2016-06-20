@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
         /// <returns>The size in number of pixels</returns>
         public static float PointsToPixels(float points)
         {
-            return points * 96 / 72;
+            return points * (96.0f / 72.0f);
         }
 
         /// <summary>
@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
         /// <returns>The size in number of points</returns>
         public static float PixelsToPoints(float pixels)
         {
-            return pixels*(72/96);
+            return pixels * (72.0f / 96.0f);
         }
 
         /// <summary>
