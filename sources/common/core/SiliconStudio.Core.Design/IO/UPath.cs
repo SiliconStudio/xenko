@@ -194,7 +194,7 @@ namespace SiliconStudio.Core.IO
         /// the directories and the filename (including its extension).
         /// </summary>
         /// <returns>An IEnumerable of all the components of this instance.</returns>
-        public virtual IEnumerable<string> GetComponents()
+        public IReadOnlyCollection<string> GetComponents()
         {
             var list = new List<string>(FullPath.Count(pathItem => pathItem == DirectorySeparatorChar) + 1);
             if (DriveSpan.IsValid)
