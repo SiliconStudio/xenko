@@ -10,13 +10,6 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial struct DescriptorSet
     {
-        internal struct Descriptor
-        {
-
-        };
-
-        internal static Dictionary<>
-
         internal readonly SharpVulkan.DescriptorSet NativeDescriptorSet;
         internal readonly GraphicsDevice GraphicsDevice;
         
