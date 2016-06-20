@@ -109,7 +109,7 @@ namespace SiliconStudio.Quantum
         /// Refresh all references contained in the given node, creating new nodes for newly referenced objects.
         /// </summary>
         /// <param name="node">The node to update</param>
-        public void UpdateReferences(IGraphNode node)
+        internal void UpdateReferences(IGraphNode node)
         {
             lock (lockObject)
             {
@@ -244,7 +244,7 @@ namespace SiliconStudio.Quantum
                     UpdateOrCreateReferenceTarget(itemReference, node, itemReference.Index);
                 }
             }
-            else if (singleReference != null && content.ShouldProcessReference)
+            else if (singleReference != null)
             {
                 if (singleReference.TargetNode != null && singleReference.TargetNode.Content.Value != reference.ObjectValue)
                 {
@@ -259,10 +259,6 @@ namespace SiliconStudio.Quantum
                     {
                         var boxedContent = target.Content as BoxedContent;
                         boxedContent?.SetOwnerContent(content, index);
-                    }
-                    else
-                    {
-                        content.ShouldProcessReference = false;
                     }
                 }
             }

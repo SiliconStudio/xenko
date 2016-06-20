@@ -57,6 +57,10 @@ namespace SiliconStudio.Quantum
             {
                 if (reference.TargetNode != null)
                 {
+                    // Prevent re-entrancy in the same object
+                    if (VisitedLinks.ContainsKey(reference.TargetNode))
+                        return;
+
                     IGraphNode targetNode;
                     if (VisitedLinks.TryGetValue(referencer, out targetNode))
                     {

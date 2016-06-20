@@ -19,7 +19,6 @@ namespace SiliconStudio.Quantum.Contents
             Reference = reference;
             Descriptor = descriptor;
             IsPrimitive = isPrimitive;
-            ShouldProcessReference = true;
         }
 
         /// <inheritdoc/>
@@ -45,9 +44,6 @@ namespace SiliconStudio.Quantum.Contents
 
         /// <inheritdoc/>
         public IEnumerable<Index> Indices => GetIndices();
-
-        /// <inheritdoc/>
-        public bool ShouldProcessReference { get; internal set; }
 
         /// <inheritdoc/>
         public event EventHandler<ContentChangeEventArgs> PrepareChange;

@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Assets;
 using SiliconStudio.Assets.Visitors;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
@@ -40,13 +41,13 @@ namespace SiliconStudio.Xenko.Assets.Entities
         }
 
         [Obsolete("This method does not work anymore.")]
-        public static void UpdateEntityReferences(EntityHierarchyData entityHierarchy)
+        public static void UpdateEntityReferences(AssetCompositeHierarchyData<EntityDesign, Entity> entityHierarchy)
         {
             // TODO: Either remove this function or make it do something!
         }
 
 
-        private static void FixupEntityReferences(object rootToVisit, EntityHierarchyData entityHierarchy)
+        private static void FixupEntityReferences(object rootToVisit, AssetCompositeHierarchyData<EntityDesign, Entity> entityHierarchy)
         {
             var entityAnalysisResult = Visit(rootToVisit);
 
@@ -68,7 +69,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     }
 
                     EntityDesign realEntity;
-                    if (entityHierarchy.Entities.TryGetValue(containingEntity.Id, out realEntity))
+                    if (entityHierarchy.Parts.TryGetValue(containingEntity.Id, out realEntity))
                     {
                         var componentId = IdentifiableHelper.GetId(entityLink.EntityComponent);
                         obj = realEntity.Entity.Components.FirstOrDefault(c => IdentifiableHelper.GetId(c) == componentId);
@@ -81,7 +82,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 else
                 {
                     EntityDesign realEntity;
-                    if (entityHierarchy.Entities.TryGetValue(entityLink.Entity.Id, out realEntity))
+                    if (entityHierarchy.Parts.TryGetValue(entityLink.Entity.Id, out realEntity))
                     {
                         obj = realEntity.Entity;
 
@@ -113,7 +114,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             FixupEntityReferences(entityAssetBase, entityAssetBase.Hierarchy);
         }
 
-        public static void FixupEntityReferences(EntityHierarchyData hierarchyData)
+        public static void FixupEntityReferences(AssetCompositeHierarchyData<EntityDesign, Entity> hierarchyData)
         {
             FixupEntityReferences(hierarchyData, hierarchyData);
         }
@@ -123,25 +124,25 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </summary>
         /// <param name="entityHierarchy">The entity hierarchy.</param>
         /// <param name="idRemapping">The identifier remapping.</param>
-        public static void RemapEntitiesId(EntityHierarchyData entityHierarchy, Dictionary<Guid, Guid> idRemapping)
+        public static void RemapEntitiesId(AssetCompositeHierarchyData<EntityDesign, Entity> entityHierarchy, Dictionary<Guid, Guid> idRemapping)
         {
             Guid newId;
 
             // Remap entities in asset2 with new Id
-            for (int i = 0; i < entityHierarchy.RootEntities.Count; ++i)
+            for (int i = 0; i < entityHierarchy.RootPartIds.Count; ++i)
             {
-                if (idRemapping.TryGetValue(entityHierarchy.RootEntities[i], out newId))
-                    entityHierarchy.RootEntities[i] = newId;
+                if (idRemapping.TryGetValue(entityHierarchy.RootPartIds[i], out newId))
+                    entityHierarchy.RootPartIds[i] = newId;
             }
 
-            foreach (var entity in entityHierarchy.Entities)
+            foreach (var entity in entityHierarchy.Parts)
             {
                 if (idRemapping.TryGetValue(entity.Entity.Id, out newId))
                     entity.Entity.Id = newId;
             }
 
             // Sort again the EntityCollection (since ID changed)
-            entityHierarchy.Entities.Sort();
+            entityHierarchy.Parts.Sort();
         }
 
         private class EntityReferenceAnalysis : AssetVisitorBase

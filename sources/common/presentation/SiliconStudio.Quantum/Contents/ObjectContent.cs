@@ -18,6 +18,8 @@ namespace SiliconStudio.Quantum.Contents
         public ObjectContent(object value, ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
             : base(descriptor, isPrimitive, reference)
         {
+            if (reference is ObjectReference)
+                throw new ArgumentException($"An {nameof(ObjectContent)} cannot contain an {nameof(ObjectReference)}");
             this.value = value;
         }
 

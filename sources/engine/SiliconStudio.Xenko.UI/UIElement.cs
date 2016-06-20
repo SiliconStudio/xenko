@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.UI
     [CategoryOrder(30, LayoutCategory, Expand = ExpandRule.Auto)]
     [CategoryOrder(100, MiscCategory, Expand = ExpandRule.Auto)]
     [DebuggerDisplay("UIElement: {Name}")]
-    public abstract partial class UIElement : IUIElementUpdate, IIdentifiable
+    public abstract partial class UIElement : IUIElementUpdate, IUIElementChildren, IIdentifiable
     {
         // Categories of UI element classes
         protected const string InputCategory = "Input";
@@ -903,6 +903,16 @@ namespace SiliconStudio.Xenko.UI
         [Display(category: AppearanceCategory)]
         public Color BackgroundColor { get; set; }
 
+        /// <inheritdoc/>
+        IEnumerable<IUIElementChildren> IUIElementChildren.Children => EnumerateChildren();
+
+        /// <summary>
+        /// Enumerates the children of this element. 
+        /// </summary>
+        /// <returns>A sequence containing all the children of this element.</returns>
+        /// <remarks>This method is used by the implementation of the <see cref="IUIElementChildren"/> interface.</remarks>
+        protected abstract IEnumerable<IUIElementChildren> EnumerateChildren();
+
         private unsafe bool Vector3BinaryEqual(ref Vector3 left, ref Vector3 right)
         {
             fixed (Vector3* pVector3Left = &left)
@@ -1368,6 +1378,6 @@ namespace SiliconStudio.Xenko.UI
             }
 
             return offsets;
-        }        
+        }
     }
 }
