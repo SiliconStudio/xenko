@@ -5,7 +5,7 @@
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{4D13D69B-C8E8-4675-8198-1BE2785FFB6D}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <OutputType>Exe</OutputType>
     <RootNamespace>SiliconStudio.Core.Design.Tests</RootNamespace>
     <AssemblyName>SiliconStudio.Core.Design.Tests</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -14,6 +14,9 @@
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <XenkoBuildTags>WindowsTools</XenkoBuildTags>
     <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>SiliconStudio.Core.Design.Tests.TestUPath</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
