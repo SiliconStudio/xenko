@@ -23,7 +23,6 @@ namespace SiliconStudio.Xenko.Audio
             : base(registry)
         {
             Enabled = true;
-            AudioEngine = AudioEngineFactory.NewAudioEngine();
 
             registry.AddService(typeof(AudioSystem), this);
         }
@@ -46,6 +45,8 @@ namespace SiliconStudio.Xenko.Audio
         public override void Initialize()
         {
             base.Initialize();
+
+            AudioEngine = AudioEngineFactory.NewAudioEngine();
 
             Game.Activated += OnActivated;
             Game.Deactivated += OnDeactivated;

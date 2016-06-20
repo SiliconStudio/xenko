@@ -40,6 +40,8 @@ namespace SiliconStudio.Core.Mathematics
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct Color3 : IEquatable<Color3>, IFormattable
     {
+        private const string ToStringFormat = "Red:{0} Green:{1} Blue:{2}";
+
         /// <summary>
         /// The red component of the color.
         /// </summary>
@@ -59,7 +61,7 @@ namespace SiliconStudio.Core.Mathematics
         public float B;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SiliconStudio.Core.Mathematics.Color3"/> struct.
+        /// Initializes a new instance of the <see cref="Color3"/> struct.
         /// </summary>
         /// <param name="value">The value that will be assigned to all components.</param>
         public Color3(float value)
@@ -68,7 +70,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SiliconStudio.Core.Mathematics.Color3"/> struct.
+        /// Initializes a new instance of the <see cref="Color3"/> struct.
         /// </summary>
         /// <param name="red">The red component of the color.</param>
         /// <param name="green">The green component of the color.</param>
@@ -81,7 +83,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SiliconStudio.Core.Mathematics.Color3"/> struct.
+        /// Initializes a new instance of the <see cref="Color3"/> struct.
         /// </summary>
         /// <param name="value">The red, green, and blue components of the color.</param>
         public Color3(Vector3 value)
@@ -92,7 +94,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SiliconStudio.Core.Mathematics.Color3"/> struct.
+        /// Initializes a new instance of the <see cref="Color3"/> struct.
         /// </summary>
         /// <param name="rgb">A packed integer containing all three color components.
         /// The alpha component is ignored.</param>
@@ -104,7 +106,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SiliconStudio.Core.Mathematics.Color3"/> struct.
+        /// Initializes a new instance of the <see cref="Color3"/> struct.
         /// </summary>
         /// <param name="rgb">A packed unsigned integer containing all three color components.
         /// The alpha component is ignored.</param>
@@ -116,7 +118,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SiliconStudio.Core.Mathematics.Color3"/> struct.
+        /// Initializes a new instance of the <see cref="Color3"/> struct.
         /// </summary>
         /// <param name="values">The values to assign to the red, green, and blue components of the color. This must be an array with three elements.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
@@ -124,9 +126,9 @@ namespace SiliconStudio.Core.Mathematics
         public Color3(float[] values)
         {
             if (values == null)
-                throw new ArgumentNullException("values");
+                throw new ArgumentNullException(nameof(values));
             if (values.Length != 3)
-                throw new ArgumentOutOfRangeException("values", "There must be three and only three input values for Color3.");
+                throw new ArgumentOutOfRangeException(nameof(values), "There must be three and only three input values for Color3.");
 
             R = values[0];
             G = values[1];
@@ -151,7 +153,7 @@ namespace SiliconStudio.Core.Mathematics
                     case 2: return B;
                 }
 
-                throw new ArgumentOutOfRangeException("index", "Indices for Color3 run from 0 to 2, inclusive.");
+                throw new ArgumentOutOfRangeException(nameof(index), "Indices for Color3 run from 0 to 2, inclusive.");
             }
 
             set
@@ -161,7 +163,7 @@ namespace SiliconStudio.Core.Mathematics
                     case 0: R = value; break;
                     case 1: G = value; break;
                     case 2: B = value; break;
-                    default: throw new ArgumentOutOfRangeException("index", "Indices for Color3 run from 0 to 2, inclusive.");
+                    default: throw new ArgumentOutOfRangeException(nameof(index), "Indices for Color3 run from 0 to 2, inclusive.");
                 }
             }
         }
@@ -212,7 +214,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>A three-element array containing the components of the color.</returns>
         public float[] ToArray()
         {
-            return new float[] { R, G, B };
+            return new[] { R, G, B };
         }
 
         /// <summary>
@@ -671,7 +673,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="SiliconStudio.Core.Mathematics.Color3"/> to <see cref="Color4"/>.
+        /// Performs an explicit conversion from <see cref="Color3"/> to <see cref="Color4"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -681,7 +683,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="SiliconStudio.Core.Mathematics.Color3"/> to <see cref="SiliconStudio.Core.Mathematics.Vector3"/>.
+        /// Performs an explicit conversion from <see cref="Color3"/> to <see cref="SiliconStudio.Core.Mathematics.Vector3"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -691,7 +693,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="SiliconStudio.Core.Mathematics.Vector3"/> to <see cref="SiliconStudio.Core.Mathematics.Color3"/>.
+        /// Performs an explicit conversion from <see cref="SiliconStudio.Core.Mathematics.Vector3"/> to <see cref="Color3"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -701,7 +703,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="System.Int32"/> to <see cref="SiliconStudio.Core.Mathematics.Color3"/>.
+        /// Performs an explicit conversion from <see cref="System.Int32"/> to <see cref="Color3"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -711,59 +713,57 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="string"/> that represents this instance.
         /// </returns>
         public override string ToString()
         {
-            return string.Format(CultureInfo.CurrentCulture, "Red:{0} Green:{1} Blue:{2}", R, G, B);
+            return ToString(CultureInfo.CurrentCulture);
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
         /// <param name="format">The format.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="string"/> that represents this instance.
         /// </returns>
         public string ToString(string format)
         {
-            if (format == null)
-                return ToString();
-
-            return string.Format(CultureInfo.CurrentCulture, "Red:{0} Green:{1} Blue:{2}", R.ToString(format, CultureInfo.CurrentCulture),
-                G.ToString(format, CultureInfo.CurrentCulture), B.ToString(format, CultureInfo.CurrentCulture));
+            return ToString(format, CultureInfo.CurrentCulture);
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="string"/> that represents this instance.
         /// </returns>
         public string ToString(IFormatProvider formatProvider)
         {
-            return string.Format(formatProvider, "Red:{0} Green:{1} Blue:{2}", R, G, B);
+            return string.Format(formatProvider, ToStringFormat, R, G, B);
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="string"/> that represents this instance.
         /// </returns>
         public string ToString(string format, IFormatProvider formatProvider)
         {
             if (format == null)
                 return ToString(formatProvider);
 
-            return string.Format(formatProvider, "Red:{0} Green:{1} Blue:{2}",R.ToString(format, formatProvider),
-                G.ToString(format, formatProvider), B.ToString(format, formatProvider));
+            return string.Format(formatProvider, ToStringFormat,
+                                 R.ToString(format, formatProvider),
+                                 G.ToString(format, formatProvider),
+                                 B.ToString(format, formatProvider));
         }
 
         /// <summary>
@@ -778,11 +778,11 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="SiliconStudio.Core.Mathematics.Color3"/> is equal to this instance.
+        /// Determines whether the specified <see cref="Color3"/> is equal to this instance.
         /// </summary>
-        /// <param name="other">The <see cref="SiliconStudio.Core.Mathematics.Color3"/> to compare with this instance.</param>
+        /// <param name="other">The <see cref="Color3"/> to compare with this instance.</param>
         /// <returns>
-        /// <c>true</c> if the specified <see cref="SiliconStudio.Core.Mathematics.Color3"/> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <see cref="Color3"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         public bool Equals(Color3 other)
         {

@@ -14,7 +14,7 @@ namespace SiliconStudio.Core.Mathematics
     [StructLayout(LayoutKind.Sequential, Size = 4)]
     public partial struct Color : IEquatable<Color>, IFormattable
     {
-        private const string toStringFormat = "A:{0} R:{1} G:{2} B:{3}";
+        private const string ToStringFormat = "A:{0} R:{1} G:{2} B:{3}";
 
         /// <summary>
         /// The red component of the color.
@@ -186,9 +186,9 @@ namespace SiliconStudio.Core.Mathematics
         public Color(float[] values)
         {
             if (values == null)
-                throw new ArgumentNullException("values");
+                throw new ArgumentNullException(nameof(values));
             if (values.Length != 4)
-                throw new ArgumentOutOfRangeException("values", "There must be four and only four input values for Color.");
+                throw new ArgumentOutOfRangeException(nameof(values), "There must be four and only four input values for Color.");
 
             R = ToByte(values[0]);
             G = ToByte(values[1]);
@@ -205,9 +205,9 @@ namespace SiliconStudio.Core.Mathematics
         public Color(byte[] values)
         {
             if (values == null)
-                throw new ArgumentNullException("values");
+                throw new ArgumentNullException(nameof(values));
             if (values.Length != 4)
-                throw new ArgumentOutOfRangeException("values", "There must be four and only four input values for Color.");
+                throw new ArgumentOutOfRangeException(nameof(values), "There must be four and only four input values for Color.");
 
             R = values[0];
             G = values[1];
@@ -234,7 +234,7 @@ namespace SiliconStudio.Core.Mathematics
                     case 3: return A;
                 }
 
-                throw new ArgumentOutOfRangeException("index", "Indices for Color run from 0 to 3, inclusive.");
+                throw new ArgumentOutOfRangeException(nameof(index), "Indices for Color run from 0 to 3, inclusive.");
             }
 
             set
@@ -245,7 +245,7 @@ namespace SiliconStudio.Core.Mathematics
                     case 1: G = value; break;
                     case 2: B = value; break;
                     case 3: A = value; break;
-                    default: throw new ArgumentOutOfRangeException("index", "Indices for Color run from 0 to 3, inclusive.");
+                    default: throw new ArgumentOutOfRangeException(nameof(index), "Indices for Color run from 0 to 3, inclusive.");
                 }
             }
         }
@@ -261,7 +261,7 @@ namespace SiliconStudio.Core.Mathematics
             value |= R << 16;
             value |= A << 24;
 
-            return (int)value;
+            return value;
         }
 
         /// <summary>
@@ -275,7 +275,7 @@ namespace SiliconStudio.Core.Mathematics
             value |= B << 16;
             value |= A << 24;
 
-            return (int)value;
+            return value;
         }
 
         /// <summary>
@@ -289,7 +289,7 @@ namespace SiliconStudio.Core.Mathematics
             value |= G << 16;
             value |= R << 24;
 
-            return (int)value;
+            return value;
         }
 
         /// <summary>
@@ -334,9 +334,9 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>The Hue-Saturation-Brightness (HSB) saturation for this <see cref="Color"/></returns>
         public float GetBrightness()
         {
-            float r = (float)R / 255.0f;
-            float g = (float)G / 255.0f;
-            float b = (float)B / 255.0f;
+            float r = R / 255.0f;
+            float g = G / 255.0f;
+            float b = B / 255.0f;
 
             float max, min;
 
@@ -360,9 +360,9 @@ namespace SiliconStudio.Core.Mathematics
             if (R == G && G == B)
                 return 0; // 0 makes as good an UNDEFINED value as any
 
-            float r = (float)R / 255.0f;
-            float g = (float)G / 255.0f;
-            float b = (float)B / 255.0f;
+            float r = R / 255.0f;
+            float g = G / 255.0f;
+            float b = B / 255.0f;
 
             float max, min;
             float delta;
@@ -405,9 +405,9 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>The Hue-Saturation-Brightness (HSB) saturation for this <see cref="Color"/></returns>
         public float GetSaturation()
         {
-            float r = (float)R / 255.0f;
-            float g = (float)G / 255.0f;
-            float b = (float)B / 255.0f;
+            float r = R / 255.0f;
+            float g = G / 255.0f;
+            float b = B / 255.0f;
 
             float max, min;
             float l, s = 0;
@@ -1053,10 +1053,10 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="string"/> that represents this instance.
         /// </returns>
         public override string ToString()
         {
@@ -1064,11 +1064,11 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
         /// <param name="format">The format to apply to each channel element (byte).</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="string"/> that represents this instance.
         /// </returns>
         public string ToString(string format)
         {
@@ -1076,32 +1076,31 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="string"/> that represents this instance.
         /// </returns>
         public string ToString(IFormatProvider formatProvider)
         {
-            return string.Format(formatProvider, toStringFormat, A, R, G, B);
+            return string.Format(formatProvider, ToStringFormat, A, R, G, B);
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
         /// <param name="format">The format to apply to each channel element (byte).</param>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="string"/> that represents this instance.
         /// </returns>
         public string ToString(string format, IFormatProvider formatProvider)
         {
             if (format == null)
                 return ToString(formatProvider);
 
-            return string.Format(formatProvider,
-                                 toStringFormat,
+            return string.Format(formatProvider, ToStringFormat,
                                  A.ToString(format, formatProvider),
                                  R.ToString(format, formatProvider),
                                  G.ToString(format, formatProvider),
