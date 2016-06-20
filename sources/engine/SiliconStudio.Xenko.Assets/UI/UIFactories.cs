@@ -1,74 +1,53 @@
 ﻿using SiliconStudio.Assets;
+using SiliconStudio.Xenko.Assets.Entities;
+using SiliconStudio.Xenko.UI;
 using SiliconStudio.Xenko.UI.Panels;
 
 namespace SiliconStudio.Xenko.Assets.UI
 {
-    internal class UICanvasFactory : AssetFactory<UIPageAsset>
+    internal abstract class UIPageFactory : AssetFactory<UIPageAsset>
     {
-        public static UIPageAsset Create()
+        protected static UIPageAsset Create(UIElement rootElement)
         {
             return new UIPageAsset
             {
-                RootElement = new Canvas(),
+                Hierarchy = { RootPartIds = { rootElement.Id }, Parts = { new UIElementDesign(rootElement) } }
             };
         }
+    }
+    internal class UICanvasFactory : UIPageFactory
+    {
+        public static UIPageAsset Create() => Create(new Canvas());
 
-        public override UIPageAsset New()
-        {
-            return Create();
-        }
+        public override UIPageAsset New() => Create();
     }
 
-    internal class UIGridFactory : AssetFactory<UIPageAsset>
+    internal class UIGridFactory : UIPageFactory
     {
         public static UIPageAsset Create()
         {
             var grid = new Grid();
-            grid.ColumnDefinitions.Add(new Xenko.UI.StripDefinition());
-            grid.LayerDefinitions.Add(new Xenko.UI.StripDefinition());
-            grid.RowDefinitions.Add(new Xenko.UI.StripDefinition());
+            grid.ColumnDefinitions.Add(new StripDefinition());
+            grid.LayerDefinitions.Add(new StripDefinition());
+            grid.RowDefinitions.Add(new StripDefinition());
 
-            return new UIPageAsset
-            {
-                RootElement = grid,
-            };
+            return Create(grid);
         }
 
-        public override UIPageAsset New()
-        {
-            return Create();
-        }
+        public override UIPageAsset New() => Create();
     }
 
-    internal class UIStackPanelFactory : AssetFactory<UIPageAsset>
+    internal class UIStackPanelFactory : UIPageFactory
     {
-        public static UIPageAsset Create()
-        {
-            return new UIPageAsset
-            {
-                RootElement = new StackPanel(),
-            };
-        }
+        public static UIPageAsset Create() => Create(new StackPanel());
 
-        public override UIPageAsset New()
-        {
-            return Create();
-        }
+        public override UIPageAsset New() => Create();
     }
 
-    internal class UIUniformGridFactory : AssetFactory<UIPageAsset>
+    internal class UIUniformGridFactory : UIPageFactory
     {
-        public static UIPageAsset Create()
-        {
-            return new UIPageAsset
-            {
-                RootElement = new UniformGrid(),
-            };
-        }
+        public static UIPageAsset Create() => Create(new UniformGrid());
 
-        public override UIPageAsset New()
-        {
-            return Create();
-        }
+        public override UIPageAsset New() => Create();
     }
 }
