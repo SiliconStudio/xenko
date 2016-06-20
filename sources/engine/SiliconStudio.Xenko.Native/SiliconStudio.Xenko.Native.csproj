@@ -53,9 +53,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="OpenAL.cpp" />
-    <Content Include="XAudio2.cpp" />
-    <Content Include="Celt.cpp" />
+    <None Include="OpenAL.cpp" />
+    <None Include="XAudio2.cpp" />
+    <None Include="Celt.cpp" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

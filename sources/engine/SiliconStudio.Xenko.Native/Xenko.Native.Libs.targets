@@ -3,7 +3,7 @@
   
   <PropertyGroup>
     <!-- If you add new libraries under and you compiled already, make sure you restart visual studio entirely, somehow for the sub-project is cached -->
-    <SiliconStudioXenkoNativePathLibs Condition="'$(SiliconStudioPlatform)' == 'Windows' or '$(SiliconStudioPlatform)' == 'Windows10' or '$(SiliconStudioPlatform)' == 'WindowsStore' or '$(SiliconStudioPlatform)' == 'WindowsPhone'">libNativePath.lib;libCelt.lib;Xaudio2.lib;msvcrt.lib</SiliconStudioXenkoNativePathLibs>
+    <SiliconStudioXenkoNativePathLibs Condition="'$(SiliconStudioPlatform)' == 'Windows' or '$(SiliconStudioPlatform)' == 'Windows10' or '$(SiliconStudioPlatform)' == 'WindowsStore' or '$(SiliconStudioPlatform)' == 'WindowsPhone'">libNativePath.lib;libCompilerRt.lib;libCelt.lib;Xaudio2.lib;</SiliconStudioXenkoNativePathLibs>
   </PropertyGroup>
 
   <ItemGroup>

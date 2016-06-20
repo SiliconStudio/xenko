@@ -38,6 +38,7 @@
     <ApplicationTypeRevision>8.1</ApplicationTypeRevision>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <Import Project="$(SolutionDir)\..\sources\engine\SiliconStudio.Xenko.Native\Xenko.Native.Libs.targets" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -139,7 +140,7 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>..\..\..\..\..\..\deps\NativePath\WindowsStore\x86\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libNativePath.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SiliconStudioXenkoNativePathLibs);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/DEF:..\..\..\symbols.def %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
@@ -155,7 +156,7 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>..\..\..\..\..\..\deps\NativePath\WindowsStore\x86\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libNativePath.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SiliconStudioXenkoNativePathLibs);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/DEF:..\..\..\symbols.def %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
@@ -172,8 +173,8 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>..\..\..\..\..\..\deps\NativePath\WindowsStore\ARM\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libNativePath.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/DEF:..\..\..\symbols.def %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>$(SiliconStudioXenkoNativePathLibs);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/INCREMENTAL:NO /DEF:..\..\..\symbols.def %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm'">
@@ -188,8 +189,8 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>..\..\..\..\..\..\deps\NativePath\WindowsStore\ARM\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libNativePath.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/DEF:..\..\..\symbols.def %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalDependencies>$(SiliconStudioXenkoNativePathLibs);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/INCREMENTAL:NO /DEF:..\..\..\symbols.def %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -205,7 +206,7 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>..\..\..\..\..\..\deps\NativePath\WindowsStore\x64\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libNativePath.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SiliconStudioXenkoNativePathLibs);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/DEF:..\..\..\symbols.def %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
@@ -221,7 +222,7 @@
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>..\..\..\..\..\..\deps\NativePath\WindowsStore\x64\</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libNativePath.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(SiliconStudioXenkoNativePathLibs);%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions>/DEF:..\..\..\symbols.def %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>

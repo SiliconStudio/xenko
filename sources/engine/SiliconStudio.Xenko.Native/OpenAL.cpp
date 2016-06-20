@@ -5,7 +5,9 @@
 
 #include "../../../deps/NativePath/NativePath.h"
 #include "../../../deps/NativePath/NativeDynamicLinking.h"
+#include "../../../deps/NativePath/NativeThreading.h"
 #include "../../../deps/NativePath/TINYSTL/unordered_map.h"
+
 
 #define HAVE_STDINT_H
 #include "../../../deps/OpenAL/AL/al.h"
@@ -493,6 +495,11 @@ extern "C" {
 		void xnAudioBufferFill(xnAudioBuffer* buffer, short* pcm, int bufferSize, int sampleRate, npBool mono)
 		{
 			BufferData(buffer->buffer, mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, pcm, bufferSize, sampleRate);
+		}
+
+		void xnSleep(int milliseconds)
+		{
+			npThreadSleep(milliseconds);
 		}
 	}
 }

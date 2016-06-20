@@ -5,25 +5,17 @@
 
 #include "../../../deps/NativePath/NativePath.h"
 #include "../../../deps/NativePath/TINYSTL/vector.h"
+#include "../../../deps/NativePath/NativeThreading.h"
 
 extern "C" {
 	class SpinLock
 	{
 	public:
-		SpinLock()
-		{
-			mLocked = false;
-		}
+		SpinLock();
 
-		void Lock()
-		{			
-			while(!__sync_bool_compare_and_swap(&mLocked, false, true)) {}
-		}
+		void Lock();
 
-		void Unlock()
-		{
-			mLocked = false;
-		}
+		void Unlock();
 
 	private:
 		volatile bool mLocked;
@@ -138,13 +130,13 @@ extern "C" {
 			float y;
 			float z;
 
-			XMFLOAT3() : x(0), y(0), z(0)
-			{}
+			XMFLOAT3();
 
-			XMFLOAT3(float _x, float _y, float _z) : x(_x), y(_y), z(_z) {}
-			explicit XMFLOAT3(_In_reads_(3) const float *pArray) : x(pArray[0]), y(pArray[1]), z(pArray[2]) {}
+			XMFLOAT3(float _x, float _y, float _z);
 
-			XMFLOAT3& operator= (const XMFLOAT3& Float3) { x = Float3.x; y = Float3.y; z = Float3.z; return *this; }
+			explicit XMFLOAT3(_In_reads_(3) const float* pArray);
+
+			XMFLOAT3& operator=(const XMFLOAT3& Float3);
 		};
 
 		typedef float FLOAT32; // 32-bit IEEE float
@@ -928,6 +920,8 @@ extern "C" {
 				_Reserved_ void* pReserved X2DEFAULT(NULL)) PURE;
 		};
 
+#pragma pack(pop)
+
 #define AUDIO_CHANNELS 2
 
 		npBool xnAudioInit()
@@ -953,8 +947,6 @@ extern "C" {
 			xnAudioSource* source_;
 		};
 
-		void xnAudioSourceSetBuffer(xnAudioSource* source, xnAudioBuffer* buffer);
-
 		struct xnAudioListener
 		{
 			xnAudioDevice* device_;
@@ -977,52 +969,23 @@ extern "C" {
 			SpinLock bufferLock;
 			tinystl::vector<xnAudioBuffer*> freeBuffers;
 
-			void __stdcall OnVoiceProcessingPassStart(UINT32 BytesRequired) override
-			{
-
+			xnAudioSource() : freeBuffers(10)
+			{				
 			}
 
-			void __stdcall OnVoiceProcessingPassEnd() override
-			{
+			void __stdcall OnVoiceProcessingPassStart(UINT32 BytesRequired) override;
 
-			}
+			void __stdcall OnVoiceProcessingPassEnd() override;
 
-			void __stdcall OnStreamEnd() override
-			{
-				if(streamed_ && playing_)
-				{
-					xnAudioSourceStop(this);
-				}
-			}
+			void __stdcall OnStreamEnd() override;
 
-			void __stdcall OnBufferStart(void* context) override
-			{
-			}
+			void __stdcall OnBufferStart(void* context) override;
 
-			void __stdcall OnBufferEnd(void* context) override
-			{
-				auto buffer = static_cast<xnAudioBuffer*>(context);
+			void __stdcall OnBufferEnd(void* context) override;
 
-				if (streamed_)
-				{
-					bufferLock.Lock();
-					buffer->source_->freeBuffers.push_back(buffer);
-					bufferLock.Unlock();
-				}
-			}
+			void __stdcall OnLoopEnd(void* context) override;
 
-			void __stdcall OnLoopEnd(void* context) override
-			{
-				if (!looped_ && !streamed_ && playing_)
-				{
-					xnAudioSourceStop(this);
-				}
-			}
-
-			void __stdcall OnVoiceError(void* context, HRESULT error) override
-			{
-
-			}
+			void __stdcall OnVoiceError(void* context, HRESULT error) override;
 		};
 
 		xnAudioDevice* xnAudioCreate(const char* deviceName)
@@ -1156,6 +1119,13 @@ extern "C" {
 			delete source;
 		}
 
+		void xnAudioSourceSetBuffer(xnAudioSource* source, xnAudioBuffer* buffer)
+		{
+			source->streamed_ = false;
+			source->freeBuffers.push_back(buffer);
+			buffer->source_ = source;
+		}
+
 		void xnAudioSourceSetPan(xnAudioSource* source, float pan)
 		{
 			if (source->mono_)
@@ -1209,11 +1179,44 @@ extern "C" {
 			source->source_voice_->SetFrequencyRatio(pitch);
 		}
 
-		void xnAudioSourceSetBuffer(xnAudioSource* source, xnAudioBuffer* buffer)
+		void xnAudioSource::OnVoiceProcessingPassStart(unsigned BytesRequired)
 		{
-			source->streamed_ = false;
-			source->freeBuffers.push_back(buffer);
-			buffer->source_ = source;
+		}
+
+		void xnAudioSource::OnVoiceProcessingPassEnd()
+		{
+		}
+
+		void xnAudioSource::OnStreamEnd()
+		{
+			if (streamed_ && playing_)
+			{
+				xnAudioSourceStop(this);
+			}
+		}
+
+		void xnAudioSource::OnBufferStart(void* context)
+		{
+		}
+
+		void xnAudioSource::OnBufferEnd(void* context)
+		{
+			auto buffer = static_cast<xnAudioBuffer*>(context);
+
+			if (streamed_)
+			{
+				bufferLock.Lock();
+				buffer->source_->freeBuffers.push_back(buffer);
+				bufferLock.Unlock();
+			}
+		}
+
+		void xnAudioSource::OnLoopEnd(void* context)
+		{
+			if (!looped_ && !streamed_ && playing_)
+			{
+				xnAudioSourceStop(this);
+			}
 		}
 
 		void xnAudioSourceQueueBuffer(xnAudioSource* source, xnAudioBuffer* buffer, short* pcm, int bufferSize, npBool endOfStream)
@@ -1224,12 +1227,7 @@ extern "C" {
 			//we also have to avoid looping single buffers
 			buffer->buffer_.LoopCount = 0;
 
-			if(buffer->buffer_.AudioBytes == 0) //first time we find this buffer
-			{
-				buffer->buffer_.AudioBytes = bufferSize;
-				buffer->buffer_.pAudioData = new BYTE[bufferSize];
-			}
-
+			//flag end of stream if needed
 			buffer->buffer_.Flags = endOfStream ? XAUDIO2_END_OF_STREAM : 0;
 
 			buffer->buffer_.AudioBytes = bufferSize;
@@ -1267,6 +1265,26 @@ extern "C" {
 		{
 			source->source_voice_->Stop();
 			source->playing_ = false;
+		}
+
+		XMFLOAT3::XMFLOAT3(): x(0), y(0), z(0)
+		{
+		}
+
+		XMFLOAT3::XMFLOAT3(float _x, float _y, float _z): x(_x), y(_y), z(_z)
+		{
+		}
+
+		XMFLOAT3::XMFLOAT3(const float* pArray): x(pArray[0]), y(pArray[1]), z(pArray[2])
+		{
+		}
+
+		XMFLOAT3& XMFLOAT3::operator=(const XMFLOAT3& Float3)
+		{
+			x = Float3.x;
+			y = Float3.y;
+			z = Float3.z;
+			return *this;
 		}
 
 		void xnAudioSourceStop(xnAudioSource* source)
@@ -1307,7 +1325,7 @@ extern "C" {
 			return source->playing_;;
 		}
 
-		xnAudioBuffer* xnAudioBufferCreate()
+		xnAudioBuffer* xnAudioBufferCreate(int maxBufferSize)
 		{
 			auto buffer = new xnAudioBuffer;
 			buffer->buffer_ = {};
@@ -1317,15 +1335,13 @@ extern "C" {
 			buffer->buffer_.LoopBegin = 0;
 			buffer->buffer_.LoopLength = 0;
 			buffer->buffer_.LoopCount = XAUDIO2_LOOP_INFINITE;
+			buffer->buffer_.pAudioData = new BYTE[maxBufferSize];
 			return buffer;
 		}
 
 		void xnAudioBufferDestroy(xnAudioBuffer* buffer)
 		{
-			if (buffer->buffer_.pAudioData)
-			{
-				delete[] buffer->buffer_.pAudioData;
-			}
+			delete[] buffer->buffer_.pAudioData;
 			delete buffer;
 		}
 
@@ -1334,13 +1350,36 @@ extern "C" {
 			(void)sampleRate;
 			(void)mono;
 			buffer->buffer_.AudioBytes = bufferSize;
-			buffer->buffer_.pAudioData = new BYTE[bufferSize];
 			memcpy(const_cast<char*>(buffer->buffer_.pAudioData), pcm, bufferSize);
+		}
+
+		void xnSleep(int milliseconds)
+		{
+			npThreadSleep(milliseconds);
+		}
+
+		void xnAudioSource::OnVoiceError(void* context, long error)
+		{
 		}
 	}
 
-#pragma pack(pop)
+}
 
+SpinLock::SpinLock()
+{
+	mLocked = false;
+}
+
+void SpinLock::Lock()
+{
+	while (!__sync_bool_compare_and_swap(&mLocked, false, true))
+	{
+	}
+}
+
+void SpinLock::Unlock()
+{
+	mLocked = false;
 }
 
 #endif

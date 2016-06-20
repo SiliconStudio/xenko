@@ -30,5 +30,11 @@ namespace SiliconStudio.Xenko.Native
 #endif
         [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void UpdateBufferValuesFromElementInfo(IntPtr drawInfo, IntPtr vertexPtr, IntPtr indexPtr, int vertexOffset);
+
+#if !SILICONSTUDIO_RUNTIME_CORECLR
+        [SuppressUnmanagedCodeSecurity]
+#endif
+        [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void xnSleep(int ms);
     }
 }
