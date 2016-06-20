@@ -101,9 +101,8 @@ namespace SiliconStudio.Xenko.Graphics.Font
         {
             // Convert the font size to pixels, otherwise the Runtime font appears smaller than the Offline
             Vector2 correctSize = fontSize;
-            // TODO The change below requires the samples and tests to be also updated
-            //correctSize.X = FontHelper.PointsToPixels(correctSize.X);
-            //correctSize.Y = FontHelper.PointsToPixels(correctSize.Y);
+            correctSize.X = FontHelper.PointsToPixels(correctSize.X);
+            correctSize.Y = FontHelper.PointsToPixels(correctSize.Y);
 
             // Add a safe guard to prevent the system to generate characters too big for the dynamic font cache texture
             correctSize.X = Math.Min(correctSize.X, 1024);
