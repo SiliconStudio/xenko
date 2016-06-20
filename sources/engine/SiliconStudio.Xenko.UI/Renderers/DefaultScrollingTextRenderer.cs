@@ -60,6 +60,13 @@ namespace SiliconStudio.Xenko.UI.Renderers
 
             // draw the element it-self with stencil test value of "Context.Value + 1"
             Batch.Begin(context.GraphicsContext, ref context.ViewProjectionMatrix, BlendStates.AlphaBlend, KeepStencilValueState, context.StencilTestReferenceValue + 1);
+            if (scrollingText.Font.FontType == SpriteFontType.SDF)
+            {
+                Batch.End();
+
+                Batch.BeginCustom(context.GraphicsContext, 1);
+            }
+
             Batch.DrawString(scrollingText.Font, scrollingText.TextToDisplay, ref drawCommand);
             Batch.End();
 
