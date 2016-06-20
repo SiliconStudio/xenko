@@ -26,12 +26,12 @@ namespace SiliconStudio.Xenko.Audio
 
         protected SoundInstance SoundInstance;
 
-        protected DynamicSoundSource(SoundInstance soundInstance, int numberOfBuffers)
+        protected DynamicSoundSource(SoundInstance soundInstance, int numberOfBuffers, int maxBufferSizeBytes)
         {
             SoundInstance = soundInstance;
             for (var i = 0; i < numberOfBuffers; i++)
             {
-                var buffer = AudioLayer.BufferCreate();
+                var buffer = AudioLayer.BufferCreate(maxBufferSizeBytes);
                 deviceBuffers.Add(buffer);
                 freeBuffers.Enqueue(deviceBuffers[i]);
             }
@@ -62,6 +62,7 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         /// <param name="pcm"></param>
         /// <param name="bufferSize"></param>
+        /// <param name="maxBufferSize"></param>
         /// <param name="endOfStream"></param>
         protected void FillBuffer(IntPtr pcm, int bufferSize, bool endOfStream)
         {
@@ -81,6 +82,7 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         /// <param name="pcm"></param>
         /// <param name="bufferSize"></param>
+        /// <param name="maxBufferSize"></param>
         /// <param name="endOfStream"></param>
         protected unsafe void FillBuffer(short[] pcm, int bufferSize, bool endOfStream)
         {

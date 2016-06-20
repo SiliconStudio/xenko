@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Audio
                         var reader = new BinarySerializationReader(soundStream);
                         var samplesPerPacket = CompressedSoundSource.SamplesPerFrame*obj.Channels;
 
-                        obj.PreloadedBuffer = AudioLayer.BufferCreate();
+                        obj.PreloadedBuffer = AudioLayer.BufferCreate(samplesPerPacket * obj.NumberOfPackets * sizeof(short));
 
                         var memory = new UnmanagedArray<short>(samplesPerPacket*obj.NumberOfPackets);
 

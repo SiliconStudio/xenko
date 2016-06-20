@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
@@ -36,11 +37,11 @@ namespace SiliconStudio.Xenko.Audio
 
         private bool dispose;       
 
-        private static Thread readFromDiskWorker;
+        private static Task readFromDiskWorker;
         private static readonly ConcurrentBag<CompressedSoundSource> NewSources = new ConcurrentBag<CompressedSoundSource>();
         private static readonly List<CompressedSoundSource> Sources = new List<CompressedSoundSource>();
         
-        public CompressedSoundSource(SoundInstance instance, string soundStreamUrl, int sampleRate, int channels, int maxCompressedSize) : base(instance, NumberOfBuffers)
+        public CompressedSoundSource(SoundInstance instance, string soundStreamUrl, int sampleRate, int channels, int maxCompressedSize) : base(instance, NumberOfBuffers, SamplesPerBuffer * MaxChannels * sizeof(short))
         {
             looped = instance.IsLooped;
             this.channels = channels;
@@ -50,8 +51,7 @@ namespace SiliconStudio.Xenko.Audio
 
             if (readFromDiskWorker == null)
             {
-                readFromDiskWorker = new Thread(Worker) { IsBackground = true };
-                readFromDiskWorker.Start();
+                readFromDiskWorker = Task.Factory.StartNew(Worker, TaskCreationOptions.LongRunning);
             }
 
             NewSources.Add(this);
@@ -135,7 +135,7 @@ namespace SiliconStudio.Xenko.Audio
                     Sources.Remove(source);
                 }
 
-                Thread.Sleep(20);
+                AudioLayer.xnSleep(20);
             }
         }
 
