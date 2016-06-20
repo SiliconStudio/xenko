@@ -20,9 +20,43 @@ namespace SiliconStudio.Assets
         public AssetPartCollection<TAssetPartDesign, TAssetPart> Parts { get; } = new AssetPartCollection<TAssetPartDesign, TAssetPart>();
     }
 
-    public abstract class AssetCompositeHierarchy<TAssetPartDesign, TAssetPart> : AssetComposite where TAssetPartDesign : IAssetPartDesign<TAssetPart> where TAssetPart : IIdentifiable
+    public abstract class AssetCompositeHierarchy<TAssetPartDesign, TAssetPart> : AssetComposite
+        where TAssetPartDesign : IAssetPartDesign<TAssetPart>
+        where TAssetPart : IIdentifiable
     {
         public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> Hierarchy { get; set; }
+
+        public abstract TAssetPart GetParent(TAssetPart part);
+
+        public abstract IEnumerable<TAssetPart> EnumerateChildParts(TAssetPart part, bool isRecursive);
+
+        public IEnumerable<TAssetPartDesign> EnumerateChildParts(TAssetPartDesign partDesign, bool isRecursive)
+        {
+            return EnumerateChildParts(partDesign.Part, isRecursive).Select(e => Hierarchy.Parts[e.Id]);
+        }
+
+        public override IEnumerable<AssetPart> CollectParts()
+        {
+            foreach (var part in Hierarchy.Parts)
+            {
+                yield return new AssetPart(part.Part.Id, part.BaseId, part.BasePartInstanceId);
+            }
+        }
+
+        public override void SetPart(Guid id, Guid baseId, Guid basePartInstanceId)
+        {
+            TAssetPartDesign partEntry;
+            if (Hierarchy.Parts.TryGetValue(id, out partEntry))
+            {
+                partEntry.BaseId = baseId;
+                partEntry.BasePartInstanceId = basePartInstanceId;
+            }
+        }
+
+        public override bool ContainsPart(Guid id)
+        {
+            return Hierarchy.Parts.ContainsKey(id);
+        }
     }
 
     /// <summary>

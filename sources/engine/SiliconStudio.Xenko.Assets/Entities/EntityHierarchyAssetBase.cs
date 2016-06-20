@@ -36,16 +36,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
             return Hierarchy?.DumpTo(writer) ?? false;
         }
 
-        public override void SetPart(Guid id, Guid baseId, Guid basePartInstanceId)
-        {
-            EntityDesign entityEntry;
-            if (Hierarchy.Parts.TryGetValue(id, out entityEntry))
-            {
-                entityEntry.BaseId = baseId;
-                entityEntry.BasePartInstanceId = basePartInstanceId;
-            }
-        }
-
         public override Asset CreateChildAsset(string location)
         {
             var newAsset = (EntityHierarchyAssetBase)base.CreateChildAsset(location);
@@ -94,7 +84,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             // we first copy the asset only (without the hierarchy), then the sub-hierarchy to extract.
             var subTreeRoot = Hierarchy.Parts[sourceRootEntity];
             var subTreeHierarchy = new AssetCompositeHierarchyData<EntityDesign, Entity> { Parts = { subTreeRoot }, RootPartIds = { sourceRootEntity } };
-            foreach (var subTreeEntity in EnumerateChildren(subTreeRoot, true))
+            foreach (var subTreeEntity in EnumerateChildParts(subTreeRoot, true))
                 subTreeHierarchy.Parts.Add(Hierarchy.Parts[subTreeEntity.Entity.Id]);
 
             // clone the entities of the sub-tree
@@ -156,7 +146,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 var subTreeRoot = Hierarchy.Parts[sourceRootEntity].Entity;
                 subTreeHierarchy.Parts.Add(new EntityDesign(subTreeRoot));
                 subTreeHierarchy.RootPartIds.Add(sourceRootEntity);
-                foreach (var subTreeEntity in EnumerateChildren(subTreeRoot, true))
+                foreach (var subTreeEntity in EnumerateChildParts(subTreeRoot, true))
                     subTreeHierarchy.Parts.Add(Hierarchy.Parts[subTreeEntity.Id]);
             }
 
@@ -207,32 +197,20 @@ namespace SiliconStudio.Xenko.Assets.Entities
             return entityMerge.Merge();
         }
 
-        public override IEnumerable<AssetPart> CollectParts()
+        public override Entity GetParent(Entity entity)
         {
-            foreach (var entityDesign in Hierarchy.Parts)
-            {
-                yield return new AssetPart(entityDesign.Entity.Id, entityDesign.BaseId, entityDesign.BasePartInstanceId);
-            }
+            return entity.Transform.Parent?.Entity;
         }
 
-        public override bool ContainsPart(Guid id)
+        public override IEnumerable<Entity> EnumerateChildParts(Entity entity, bool isRecursive)
         {
-            return Hierarchy.Parts.ContainsKey(id);
+            if (entity.Transform == null)
+                return Enumerable.Empty<Entity>();
+
+            var enumerator = isRecursive ? entity.Transform.Children.DepthFirst(t => t.Children) : entity.Transform.Children;
+            return enumerator.Select(t => t.Entity);
         }
 
-        public static IEnumerable<Entity> EnumerateChildren(Entity entity, bool isRecursive)
-        {
-            var transformationComponent = entity.Transform;
-            return transformationComponent == null
-                ? Enumerable.Empty<Entity>()
-                : (isRecursive ? transformationComponent.Children.DepthFirst(t => t.Children) : transformationComponent.Children).Select(t => t.Entity);
-        }
-
-        public IEnumerable<EntityDesign> EnumerateChildren(EntityDesign entityDesign, bool isRecursive)
-        {
-            return EnumerateChildren(entityDesign.Entity, isRecursive).Select(e => Hierarchy.Parts[e.Id]);
-        }
-        
         /// <summary>
         /// Gets a mapping between a base and the list of instance actually used
         /// </summary>
