@@ -12,12 +12,6 @@ namespace SiliconStudio.Core.Design.Tests
     [TestFixture]
     public class TestUPath
     {
-        public static void Main()
-        {
-            var test = new TestUPath();
-            test.TestUPathGetComponents();
-        }
-
         [Test]
         public void TestUFileConstructor()
         {
