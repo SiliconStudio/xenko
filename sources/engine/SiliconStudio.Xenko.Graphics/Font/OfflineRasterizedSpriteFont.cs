@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
 
         internal OfflineRasterizedSpriteFont(float size, IList<Glyph> glyphs, IEnumerable<Texture> textures, float baseOffset, float defaultLineSpacing, IList<Kerning> kernings, float extraSpacing, float extraLineSpacing, char defaultCharacter)
         {
-            Size = size;
+            SizeInPixels = size;
             StaticTextures = new List<Texture>();
             CharacterToGlyph = new Dictionary<char, Glyph>(glyphs.Count);
             KerningMap = new Dictionary<int, float>();

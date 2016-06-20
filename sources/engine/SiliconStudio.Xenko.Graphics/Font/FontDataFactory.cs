@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
         {
             return new RuntimeRasterizedSpriteFont
             {
-                Size = defaultSize,
+                SizeInPixels = defaultSize,
                 DefaultCharacter = defaultCharacter,
                 FontName = fontName,
                 ExtraLineSpacing = extraLineSpacing,

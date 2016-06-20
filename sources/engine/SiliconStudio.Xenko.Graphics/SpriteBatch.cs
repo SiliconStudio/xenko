@@ -312,7 +312,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             if (spriteFont == null) throw new ArgumentNullException("spriteFont");
 
-            return MeasureString(spriteFont, text, spriteFont.Size, targetSize);
+            return MeasureString(spriteFont, text, spriteFont.SizeInPixels, targetSize);
         }
 
         /// <summary>
@@ -483,7 +483,7 @@ namespace SiliconStudio.Xenko.Graphics
                 throw new ArgumentNullException("text");
             }
             if (fontSize < 0)
-                fontSize = spriteFont.Size;
+                fontSize = spriteFont.SizeInPixels;
 
             // calculate the resolution ratio between the screen real size and the virtual resolution
             var commandList = GraphicsContext.CommandList;

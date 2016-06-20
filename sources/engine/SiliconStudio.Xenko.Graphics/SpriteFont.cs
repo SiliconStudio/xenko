@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Gets the font size (resp. the default font size) for static fonts (resp. for dynamic fonts) in pixels.
         /// </summary>
-        public float Size { get; internal set; }
+        public float SizeInPixels { get; internal set; }
 
         /// <summary>
         /// Gets or sets the default character for the font.
@@ -155,7 +155,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <returns>The value of the character spacing</returns>
         public virtual float GetExtraSpacing(float fontSize)
         {
-            return fontSize / Size * ExtraSpacing;
+            return fontSize / SizeInPixels * ExtraSpacing;
         }
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <returns>The value of the character spacing</returns>
         public virtual float GetExtraLineSpacing(float fontSize)
         {
-            return fontSize / Size * ExtraLineSpacing;
+            return fontSize / SizeInPixels * ExtraLineSpacing;
         }
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <returns>The value of the default line spacing</returns>
         public virtual float GetFontDefaultLineSpacing(float fontSize)
         {
-            return fontSize / Size * DefaultLineSpacing;
+            return fontSize / SizeInPixels * DefaultLineSpacing;
         }
 
         /// <summary>
@@ -185,7 +185,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <returns>The value of the base offset</returns>
         protected virtual float GetBaseOffsetY(float fontSize)
         {
-            return  fontSize / Size * BaseOffsetY;
+            return  fontSize / SizeInPixels * BaseOffsetY;
         }
 
         /// <summary>
@@ -303,7 +303,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// <returns>Vector2.</returns>
         public Vector2 MeasureString(string text)
         {
-            return MeasureString(text, new Vector2(Size, Size), text.Length);
+            var fontSize = new Vector2(SizeInPixels, SizeInPixels);
+            return MeasureString(text, fontSize, text.Length);
         }
 
         /// <summary>
@@ -313,7 +314,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// <returns>Vector2.</returns>
         public Vector2 MeasureString(StringBuilder text)
         {
-            return MeasureString(text, new Vector2(Size, Size), text.Length);
+            var fontSize = new Vector2(SizeInPixels, SizeInPixels);
+            return MeasureString(text, fontSize, text.Length);
         }
 
         /// <summary>
@@ -442,7 +444,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             var result = Vector2.Zero;
             ForEachGlyph(null, ref text, ref size, measureStringGlyphAction, ref result, TextAlignment.Left, false); // text size is independent from the text alignment
-            return result * ((FontType == SpriteFontType.SDF) ? FontHelper.PointsToPixels(1) : 1);
+            return result;
         }
 
         /// <summary>

@@ -102,7 +102,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                     return textSize.Value;
 
                 if (Font != null)
-                    return Font.Size;
+                    return FontHelper.PixelsToPoints(Font.SizeInPixels);
 
                 return 0;
             }
@@ -213,7 +213,7 @@ namespace SiliconStudio.Xenko.UI.Controls
 
             if (Font.FontType == SpriteFontType.SDF)
             {
-                var scaleRatio = TextSize / Font.Size;
+                var scaleRatio = FontHelper.PointsToPixels(TextSize) / Font.SizeInPixels;
                 realSize.X *= scaleRatio;
                 realSize.Y *= scaleRatio;
             }

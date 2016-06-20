@@ -6,6 +6,7 @@ using System.Diagnostics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics.Font;
 
 namespace SiliconStudio.Xenko.UI.Controls
 {
@@ -196,7 +197,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                 textToDisplay = "";
 
             // remove characters at the beginning of TextToDisplay as long as possible
-            var fontSize = new Vector2(TextSize, TextSize);
+            var fontSize = new Vector2(FontHelper.PointsToPixels(TextSize), FontHelper.PointsToPixels(TextSize));
             while (textToDisplay.Length > 1 && Font.MeasureString(textToDisplay, ref fontSize, 1).X < nextOffsetShift)
             {
                 nextOffsetShift -= Font.MeasureString(textToDisplay, ref fontSize, 1).X;

@@ -80,8 +80,8 @@ namespace SiliconStudio.Xenko.Graphics.Font
                 FontManager.GetFontInfo(FontName, Style, out relativeLineSpacing, out relativeBaseOffsetY, out relativeMaxWidth, out relativeMaxHeight);
 
                 // set required base properties
-                DefaultLineSpacing = relativeLineSpacing * Size;
-                BaseOffsetY = relativeBaseOffsetY * Size;
+                DefaultLineSpacing = relativeLineSpacing * SizeInPixels;
+                BaseOffsetY = relativeBaseOffsetY * SizeInPixels;
                 Textures = FontCacheManager.Textures;
                 Swizzle = SwizzleMode.RRRR;
             }

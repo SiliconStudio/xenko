@@ -16,6 +16,16 @@ namespace SiliconStudio.Xenko.Graphics.Font
         }
 
         /// <summary>
+        /// Converts a font size from pixels to points. Can't just let GDI+ do this for us, because we want identical results on every machine regardless of system DPI settings.
+        /// </summary>
+        /// <param name="pixels">The size in number of pixels</param>
+        /// <returns>The size in number of points</returns>
+        public static float PixelsToPoints(float pixels)
+        {
+            return pixels*(72/96);
+        }
+
+        /// <summary>
         /// Build the path of a font in the database given the name of the font family and the font style.
         /// </summary>
         /// <param name="fontName">Family name of the font</param>

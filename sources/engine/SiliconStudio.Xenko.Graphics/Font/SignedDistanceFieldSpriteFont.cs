@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
         {
             FontType = SpriteFontType.SDF;
 
-            Size = size;
+            SizeInPixels = size;
             StaticTextures = new List<Texture>();
             CharacterToGlyph = new Dictionary<char, Glyph>(glyphs.Count);
             KerningMap = new Dictionary<int, float>();
