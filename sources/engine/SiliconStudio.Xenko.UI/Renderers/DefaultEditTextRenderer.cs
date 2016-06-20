@@ -3,6 +3,7 @@
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Font;
 using SiliconStudio.Xenko.UI.Controls;
 using IServiceRegistry = SiliconStudio.Core.IServiceRegistry;
 using Vector3 = SiliconStudio.Core.Mathematics.Vector3;
@@ -85,7 +86,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
                 Color = editText.RenderOpacity * editText.TextColor,
                 DepthBias = context.DepthBias + 2,
                 RealVirtualResolutionRatio = fontScale,
-                RequestedFontSize = editText.TextSize,
+                RequestedFontSize = FontHelper.PointsToPixels(editText.TextSize),
                 Batch = Batch,
                 SnapText = context.ShouldSnapText && !editText.DoNotSnapText,
                 Matrix = editText.WorldMatrixInternal,

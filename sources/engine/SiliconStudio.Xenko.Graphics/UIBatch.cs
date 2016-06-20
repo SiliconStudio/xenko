@@ -452,7 +452,7 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 drawCommand.SnapText = false;
 
-                float scaling = FontHelper.PointsToPixels(drawCommand.RequestedFontSize) / font.Size;
+                float scaling = drawCommand.RequestedFontSize / font.Size;
                 drawCommand.RealVirtualResolutionRatio = 1f / new Vector2(scaling, scaling);
             }
             //else

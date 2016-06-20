@@ -3,6 +3,7 @@
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Font;
 using SiliconStudio.Xenko.UI.Controls;
 
 namespace SiliconStudio.Xenko.UI.Renderers
@@ -31,7 +32,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
                 Color = textBlock.RenderOpacity * textBlock.TextColor,
                 DepthBias = context.DepthBias,
                 RealVirtualResolutionRatio = element.LayoutingContext.RealVirtualResolutionRatio,
-                RequestedFontSize = textBlock.TextSize,
+                RequestedFontSize = FontHelper.PointsToPixels(textBlock.TextSize),
                 Batch = Batch,
                 SnapText = context.ShouldSnapText && !textBlock.DoNotSnapText,
                 Matrix = textBlock.WorldMatrixInternal,

@@ -82,7 +82,7 @@
     <DefineConstants>SILICONSTUDIO_RUNTIME_CORECLR;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Xenko.Graphics.Tests.TestImageLoad</StartupObject>
+    <StartupObject>SiliconStudio.Xenko.Graphics.Tests.TestDynamicSpriteFont</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <None Include="README.md" />

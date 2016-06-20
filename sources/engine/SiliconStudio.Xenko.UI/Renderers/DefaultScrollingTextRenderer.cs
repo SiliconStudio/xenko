@@ -3,6 +3,7 @@
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Font;
 using SiliconStudio.Xenko.UI.Controls;
 
 namespace SiliconStudio.Xenko.UI.Renderers
@@ -41,7 +42,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
                 Color = scrollingText.RenderOpacity * scrollingText.TextColor,
                 DepthBias = context.DepthBias + 1,
                 RealVirtualResolutionRatio = element.LayoutingContext.RealVirtualResolutionRatio,
-                RequestedFontSize = scrollingText.TextSize,
+                RequestedFontSize = FontHelper.PointsToPixels(scrollingText.TextSize),
                 Batch = Batch,
                 SnapText = context.ShouldSnapText && !scrollingText.DoNotSnapText,
                 Matrix = textWorldMatrix,

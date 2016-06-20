@@ -197,7 +197,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                 return Vector2.Zero;
 
             var sizeRatio = LayoutingContext.RealVirtualResolutionRatio;
-            var measureFontSize = new Vector2(sizeRatio.Y * TextSize); // we don't want letters non-uniform ratio
+            var measureFontSize = new Vector2(sizeRatio.Y * FontHelper.PointsToPixels(TextSize)); // we don't want letters non-uniform ratio
             var realSize = Font.MeasureString(ref textToMeasure, ref measureFontSize);
 
             // force pre-generation if synchronous generation is required
