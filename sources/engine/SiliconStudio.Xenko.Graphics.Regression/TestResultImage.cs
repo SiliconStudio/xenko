@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             var lz4Stream = new LZ4Stream(writer.BaseStream, CompressionMode.Compress, false, pixels.Length);
             lz4Stream.Write(pixels, 0, pixels.Length);
             lz4Stream.Flush();
-            writer.BaseStream.Flush();
+            writer.Flush();
         }
     }
 }
