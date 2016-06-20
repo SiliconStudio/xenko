@@ -323,13 +323,13 @@ namespace SiliconStudio.Xenko.Graphics
                 {
                     case DescriptorType.SampledImage:
                         var texture = heapObject.Value as Texture;
-                        *imageInfo = new DescriptorImageInfo { ImageView = texture?.NativeImageView ?? ImageView.Null, ImageLayout = ImageLayout.ShaderReadOnlyOptimal };
+                        *imageInfo = new DescriptorImageInfo { ImageView = texture?.NativeImageView ?? GraphicsDevice.GetSharedWhiteTexture().NativeImageView, ImageLayout = ImageLayout.ShaderReadOnlyOptimal };
                         write->ImageInfo = new IntPtr(imageInfo);
                         break;
 
                     case DescriptorType.Sampler:
                         var samplerState = heapObject.Value as SamplerState;
-                        *imageInfo = new DescriptorImageInfo { Sampler = samplerState?.NativeSampler ?? Sampler.Null };
+                        *imageInfo = new DescriptorImageInfo { Sampler = samplerState?.NativeSampler ?? GraphicsDevice.SamplerStates.LinearWrap.NativeSampler };
                         write->ImageInfo = new IntPtr(imageInfo);
                         break;
 
@@ -625,6 +625,8 @@ namespace SiliconStudio.Xenko.Graphics
             CleanupRenderPass();
 
             var clearRange = new ImageSubresourceRange(ImageAspectFlags.None, (uint)depthStencilBuffer.ArraySlice, (uint)depthStencilBuffer.ArraySize, (uint)depthStencilBuffer.MipLevel, (uint)depthStencilBuffer.MipLevels);
+            var barrierRange = clearRange;
+            barrierRange.AspectMask = depthStencilBuffer.NativeImageAspect;
 
             if ((options & DepthStencilClearOptions.DepthBuffer) != 0)
                 clearRange.AspectMask |= ImageAspectFlags.Depth & depthStencilBuffer.NativeImageAspect;
@@ -632,12 +634,12 @@ namespace SiliconStudio.Xenko.Graphics
             if ((options & DepthStencilClearOptions.Stencil) != 0)
                 clearRange.AspectMask |= ImageAspectFlags.Stencil & depthStencilBuffer.NativeImageAspect;
             
-            var memoryBarrier = new ImageMemoryBarrier(depthStencilBuffer.NativeImage, depthStencilBuffer.NativeLayout, ImageLayout.TransferDestinationOptimal, depthStencilBuffer.NativeAccessMask, AccessFlags.TransferWrite, clearRange);
+            var memoryBarrier = new ImageMemoryBarrier(depthStencilBuffer.NativeImage, depthStencilBuffer.NativeLayout, ImageLayout.TransferDestinationOptimal, depthStencilBuffer.NativeAccessMask, AccessFlags.TransferWrite, barrierRange);
             NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 0, null, 1, &memoryBarrier);
 
             NativeCommandBuffer.ClearDepthStencilImage(depthStencilBuffer.NativeImage, ImageLayout.TransferDestinationOptimal, new ClearDepthStencilValue(depth, stencil), 1, &clearRange);
 
-            memoryBarrier = new ImageMemoryBarrier(depthStencilBuffer.NativeImage, ImageLayout.TransferDestinationOptimal, depthStencilBuffer.NativeLayout, AccessFlags.TransferWrite, depthStencilBuffer.NativeAccessMask, clearRange);
+            memoryBarrier = new ImageMemoryBarrier(depthStencilBuffer.NativeImage, ImageLayout.TransferDestinationOptimal, depthStencilBuffer.NativeLayout, AccessFlags.TransferWrite, depthStencilBuffer.NativeAccessMask, barrierRange);
             NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 0, null, 1, &memoryBarrier);
 
             depthStencilBuffer.IsInitialized = true;
