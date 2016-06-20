@@ -13,6 +13,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         public TestDynamicSpriteFont()
             : base("DynamicFonts/", "dyn")
         {
+            CurrentVersion = 5;
         }
 
         public static void Main()
