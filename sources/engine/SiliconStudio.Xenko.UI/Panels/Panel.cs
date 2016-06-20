@@ -77,6 +77,12 @@ namespace SiliconStudio.Xenko.UI.Panels
         [MemberCollection(CanReorderItems = true)]
         public UIElementCollection Children { get; }
 
+        /// <inheritdoc/>
+        protected override IEnumerable<IUIElementChildren> EnumerateChildren()
+        {
+            return Children;
+        }
+
         /// <summary>
         /// Invalidation callback that sort panel children back after a modification of a child ZIndex.
         /// </summary>

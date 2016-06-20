@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using System.Diagnostics;
@@ -49,6 +50,12 @@ namespace SiliconStudio.Xenko.UI.Controls
                 content = value;
                 InvalidateMeasure();
             }
+        }
+
+        /// <inheritdoc/>
+        protected override IEnumerable<IUIElementChildren> EnumerateChildren()
+        {
+            yield return Content;
         }
 
         protected override Vector3 MeasureOverride(Vector3 availableSizeWithoutMargins)

@@ -62,6 +62,7 @@
     <Compile Include="ImageSizeHelper.cs" />
     <Compile Include="IScrollAnchorInfo.cs" />
     <Compile Include="IScrollInfo.cs" />
+    <Compile Include="IUIElementChildren.cs" />
     <Compile Include="KeyEventArgs.cs" />
     <Compile Include="LayoutingContext.cs" />
     <Compile Include="Module.cs" />
