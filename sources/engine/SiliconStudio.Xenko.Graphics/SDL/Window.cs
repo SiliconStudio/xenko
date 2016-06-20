@@ -543,36 +543,50 @@ namespace SiliconStudio.Xenko.Graphics.SDL
 #endif
 
         #region Disposal
+        /// <inheritDoc/>
+        ~Window()
+        {
+            Dispose(false);
+        }
 
         /// <summary>
         /// Have we already disposed of the current object?
         /// </summary>
-        public bool IsDisposed => SdlHandle == IntPtr.Zero;
+        public bool IsDisposed
+        {
+            get { return SdlHandle == IntPtr.Zero; }
+        }
 
         /// <summary>
         /// Actions to be called when we dispose of current.
         /// </summary>
         public event EventHandler Disposed;
 
-        // This code added to correctly implement the disposable pattern.
-        public void Dispose()
+        /// <summary>
+        /// Dispose of current Window.
+        /// </summary>
+        /// <param name="disposing">If <c>false</c> we are being called from the Finalizer.</param>
+        protected virtual void Dispose(bool disposing)
         {
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
-            // Dispose OpenGL context
-            DummyGLContext?.Dispose();
-            DummyGLContext = null;
-            if (glContext != IntPtr.Zero)
-            {
-                SDL.SDL_GL_DeleteContext(glContext);
-                glContext = IntPtr.Zero;
-            }
-#endif
-
             if (SdlHandle != IntPtr.Zero)
             {
-                // Dispose managed state (managed objects).
-                Disposed?.Invoke(this, EventArgs.Empty);
-                Application.UnregisterWindow(this);
+                if (disposing)
+                {
+                    // Dispose managed state (managed objects).
+                    Disposed?.Invoke(this, EventArgs.Empty);
+                    Application.UnregisterWindow(this);
+                }
+
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+                // Dispose OpenGL context
+                DummyGLContext?.Dispose();
+                DummyGLContext = null;
+                if (glContext != IntPtr.Zero)
+                {
+                    SDL.SDL_GL_DeleteContext(glContext);
+                    glContext = IntPtr.Zero;
+                }
+#endif
 
                 // Free unmanaged resources (unmanaged objects) and override a finalizer below.
                 SDL.SDL_DestroyWindow(SdlHandle);
@@ -580,7 +594,16 @@ namespace SiliconStudio.Xenko.Graphics.SDL
                 Handle = IntPtr.Zero;
             }
         }
-        #endregion
+  
+        // This code added to correctly implement the disposable pattern.
+        public void Dispose()
+        {
+                // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
+            Dispose(true);
+                // Performance improvement to avoid being called a second time by the GC.
+            GC.SuppressFinalize(this);
+        }
+#endregion
     }
 }
 #endif
