@@ -204,7 +204,49 @@ namespace SiliconStudio.Core.Design.Tests
         [Test]
         public void TestUPathGetParent()
         {
-            // TODO
+            // First directories
+            var dir = new UDirectory("c:/");
+            Assert.AreEqual("c:/", dir.GetParent().FullPath);
+
+            dir = new UDirectory("c:/a");
+            Assert.AreEqual("c:/", dir.GetParent().FullPath);
+
+            dir = new UDirectory("c:/a/b");
+            Assert.AreEqual("c:/a", dir.GetParent().FullPath);
+
+            dir = new UDirectory("/");
+            Assert.AreEqual("/", dir.GetParent().FullPath);
+
+            dir = new UDirectory("/a");
+            Assert.AreEqual("/", dir.GetParent().FullPath);
+
+            dir = new UDirectory("/a/b");
+            Assert.AreEqual("/a", dir.GetParent().FullPath);
+
+            dir = new UDirectory("a");
+            Assert.AreEqual("", dir.GetParent().FullPath);
+
+            dir = new UDirectory("a/b");
+            Assert.AreEqual("a", dir.GetParent().FullPath);
+
+            // Now with files.
+            var file = new UFile("c:/a.txt");
+            Assert.AreEqual("c:/", file.GetParent().FullPath);
+
+            file = new UFile("c:/a/b.txt");
+            Assert.AreEqual("c:/a", file.GetParent().FullPath);
+
+            file = new UFile("/a.txt");
+            Assert.AreEqual("/", file.GetParent().FullPath);
+
+            file = new UFile("/a/b.txt");
+            Assert.AreEqual("/a", file.GetParent().FullPath);
+
+            file = new UFile("a.txt");
+            Assert.AreEqual("", file.GetParent().FullPath);
+
+            file = new UFile("a/b.txt");
+            Assert.AreEqual("a", file.GetParent().FullPath);
         }
 
         [Test]
