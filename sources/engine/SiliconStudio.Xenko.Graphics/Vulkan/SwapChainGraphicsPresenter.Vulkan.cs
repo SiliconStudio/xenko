@@ -352,7 +352,7 @@ namespace SiliconStudio.Xenko.Graphics
                 ImageExtent = new Extent2D((uint)Description.BackBufferWidth, (uint)Description.BackBufferHeight),
                 ImageFormat = backBufferFormat,
                 ImageColorSpace = Description.ColorSpace == ColorSpace.Gamma ? SharpVulkan.ColorSpace.SRgbNonlinear : 0,
-                ImageUsage = ImageUsageFlags.ColorAttachment,
+                ImageUsage = ImageUsageFlags.ColorAttachment | (surfaceCapabilities.SupportedUsageFlags & ImageUsageFlags.TransferSource), // TODO VULKAN: Use off-screen buffer to emulate
                 PresentMode = swapChainPresentMode,
                 CompositeAlpha = CompositeAlphaFlags.Opaque,
                 MinImageCount = desiredImageCount,
