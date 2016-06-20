@@ -441,7 +441,7 @@ namespace SiliconStudio.Xenko.Graphics
                 Format = NativeFormat, //VulkanConvertExtensions.ConvertPixelFormat(ViewFormat),
                 Image = NativeImage,
                 Components = ComponentMapping.Identity,
-                SubresourceRange = new ImageSubresourceRange(NativeImageAspect, (uint)arrayOrDepthSlice, (uint)layerCount, (uint)mipIndex, (uint)mipCount)
+                SubresourceRange = new ImageSubresourceRange(IsDepthStencil ? ImageAspectFlags.Depth : ImageAspectFlags.Color, (uint)arrayOrDepthSlice, (uint)layerCount, (uint)mipIndex, (uint)mipCount)
             };
 
             if (IsMultiSample)
