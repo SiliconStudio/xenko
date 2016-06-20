@@ -174,37 +174,18 @@ namespace SiliconStudio.Core.IO
         /// <returns>The parent directory or <see cref="UDirectory.Empty"/> if no directory found.</returns>
         public UDirectory GetParent()
         {
-            if (IsFile)
+            if (DirectorySpan.IsValid)
             {
-                if (DirectorySpan.IsValid)
+                // Find last index of '/' in this instance. When it has a File we know where the '/', so no need
+                // to look it up.
+                var index = IsFile ? DirectorySpan.End : FullPath.IndexOfReverse(DirectorySeparatorChar);
+                if (index >= 0)
                 {
-                    // Remove trailing '/'.
-                    var span = DirectorySpan;
-                    span.Length--;
-                    return new UDirectory(FullPath.Substring(0, span.Next), DriveSpan, span);
-                }
-                if (DriveSpan.IsValid)
-                {
-                    return new UDirectory(FullPath.Substring(DriveSpan), DriveSpan, new StringSpan());
-                }
-            } 
-            else if (DirectorySpan.IsValid)
-            {
-                if (DirectorySpan.Length > 1)
-                {
-                    var index = FullPath.IndexOfReverse(DirectorySeparatorChar);
-                    if (index >= 0)
-                    {
-                        index = index == 0 ? index + 1 : index;
-                        return new UDirectory(FullPath.Substring(0, index), DriveSpan, new StringSpan(DirectorySpan.Start, index - DirectorySpan.Start));
-                    }
-                }
-                if (DriveSpan.IsValid)
-                {
-                    return new UDirectory(FullPath.Substring(DriveSpan), DriveSpan, new StringSpan());
+                    // We cannot remove the trailing '/' of a parent which is 'C:/' or '/'.
+                    index = (index == (DriveSpan.IsValid ? DriveSpan.Next : 0) ? index + 1 : index);
+                    return new UDirectory(FullPath.Substring(0, index), DriveSpan, new StringSpan(DirectorySpan.Start, index - DirectorySpan.Start));
                 }
             }
-
             return UDirectory.Empty;
         }
 
@@ -213,9 +194,9 @@ namespace SiliconStudio.Core.IO
         /// the directories and the filename (including its extension).
         /// </summary>
         /// <returns>An IEnumerable of all the components of this instance.</returns>
-        public virtual IEnumerable<string> GetComponents ()
+        public virtual IEnumerable<string> GetComponents()
         {
-            var list = new List<string>(5);
+            var list = new List<string>(FullPath.Count(pathItem => pathItem == DirectorySeparatorChar) + 1);
             if (DriveSpan.IsValid)
             {
                 list.Add(FullPath.Substring(DriveSpan));
@@ -230,13 +211,10 @@ namespace SiliconStudio.Core.IO
             }
 
             var file = this as UFile;
-            if (file != null)
+            var fileName = file?.GetFileNameWithExtension();
+            if (fileName != null)
             {
-                var fileName = file.GetFileNameWithExtension();
-                if (fileName != null)
-                {
-                    list.Add(file.GetFileNameWithExtension());
-                }
+                list.Add(fileName);
             }
 
             return list;
@@ -699,7 +677,7 @@ namespace SiliconStudio.Core.IO
         }
 
         /// <summary>
-        /// Is current path a parent component path, i.e. containing either '..' or '../'
+        /// Does `builder.Substring(path)` represent either '..' or '../'?
         /// </summary>
         /// <param name="builder">String holding path.</param>
         /// <param name="path">Span of component to compare against.</param>
@@ -714,7 +692,7 @@ namespace SiliconStudio.Core.IO
         }
 
         /// <summary>
-        /// Is current path a parent component path, i.e. containing either '.' or './'
+        /// Does `builder.Substring(path)` represent either '.' or './'?
         /// </summary>
         /// <param name="builder">String holding path.</param>
         /// <param name="path">Span of component to compare against.</param>

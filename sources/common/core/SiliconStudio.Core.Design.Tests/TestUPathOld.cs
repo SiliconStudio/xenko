@@ -454,38 +454,6 @@ namespace SiliconStudio.Core.Design.Tests
         }
 
         [Test]
-        public void TestGetParent()
-        {
-            var dirPath1 = new UDirectory(@"E:\a\b");
-
-            var dirPathParent1 = dirPath1.GetParent();
-            Assert.AreEqual(@"E:/a", dirPathParent1.FullPath);
-
-            dirPathParent1 = dirPathParent1.GetParent();
-            Assert.AreEqual(@"E:", dirPathParent1.FullPath);
-
-            dirPathParent1 = dirPathParent1.GetParent();
-            Assert.AreEqual(UDirectory.Empty, dirPathParent1);
-
-            dirPath1 = new UDirectory(@"/a/b");
-
-            dirPathParent1 = dirPath1.GetParent();
-            Assert.AreEqual(@"/a", dirPathParent1.FullPath);
-
-            dirPathParent1 = dirPathParent1.GetParent();
-            Assert.AreEqual(@"/", dirPathParent1.FullPath);
-
-            dirPathParent1 = dirPathParent1.GetParent();
-            Assert.AreEqual(UDirectory.Empty, dirPathParent1);
-
-            // Test on file
-            var filePath1 = new UFile(@"/a/b.txt");
-
-            dirPathParent1 = filePath1.GetParent();
-            Assert.AreEqual(@"/a", dirPathParent1.FullPath);
-        }
-
-        [Test]
         public void TestMakeRelative()
         {
             UPath assetPath2 = null;
