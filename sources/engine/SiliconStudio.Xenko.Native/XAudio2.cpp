@@ -4,7 +4,6 @@
 #if defined(WINDOWS_DESKTOP) || defined(WINDOWS_UWP) || defined(WINDOWS_STORE) || defined(WINDOWS_PHONE) || !defined(__clang__)
 
 #include "../../../deps/NativePath/NativePath.h"
-#include "../../../deps/NativePath/TINYSTL/vector.h"
 #include "../../../deps/NativePath/NativeThreading.h"
 
 extern "C" {
@@ -953,41 +952,6 @@ extern "C" {
 			X3DAUDIO_LISTENER listener_;
 		};
 
-		struct xnAudioSource : IXAudio2VoiceCallback
-		{
-			IXAudio2MasteringVoice* mastering_voice_;
-			IXAudio2SourceVoice* source_voice_;
-			X3DAUDIO_EMITTER* emitter_;
-			X3DAUDIO_DSP_SETTINGS* dsp_settings_;
-			xnAudioListener* listener_;
-			volatile bool playing_;
-			volatile bool looped_;
-			int sampleRate_;
-			bool mono_;
-			bool streamed_;
-
-			SpinLock bufferLock;
-			tinystl::vector<xnAudioBuffer*> freeBuffers;
-
-			xnAudioSource() : freeBuffers(10)
-			{				
-			}
-
-			void __stdcall OnVoiceProcessingPassStart(UINT32 BytesRequired) override;
-
-			void __stdcall OnVoiceProcessingPassEnd() override;
-
-			void __stdcall OnStreamEnd() override;
-
-			void __stdcall OnBufferStart(void* context) override;
-
-			void __stdcall OnBufferEnd(void* context) override;
-
-			void __stdcall OnLoopEnd(void* context) override;
-
-			void __stdcall OnVoiceError(void* context, HRESULT error) override;
-		};
-
 		xnAudioDevice* xnAudioCreate(const char* deviceName)
 		{
 			xnAudioDevice* res = new xnAudioDevice;
@@ -1056,7 +1020,39 @@ extern "C" {
 			(void)listener;
 		}
 
-		xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener, int sampleRate, npBool mono, npBool spatialized)
+		struct xnAudioSource : IXAudio2VoiceCallback
+		{
+			IXAudio2MasteringVoice* mastering_voice_;
+			IXAudio2SourceVoice* source_voice_;
+			X3DAUDIO_EMITTER* emitter_;
+			X3DAUDIO_DSP_SETTINGS* dsp_settings_;
+			xnAudioListener* listener_;
+			volatile bool playing_;
+			volatile bool looped_;
+			int sampleRate_;
+			bool mono_;
+			bool streamed_;
+
+			SpinLock bufferLock;
+			xnAudioBuffer** freeBuffers;
+			int freeBuffersMax;
+
+			void __stdcall OnVoiceProcessingPassStart(UINT32 BytesRequired) override;
+
+			void __stdcall OnVoiceProcessingPassEnd() override;
+
+			void __stdcall OnStreamEnd() override;
+
+			void __stdcall OnBufferStart(void* context) override;
+
+			void __stdcall OnBufferEnd(void* context) override;
+
+			void __stdcall OnLoopEnd(void* context) override;
+
+			void __stdcall OnVoiceError(void* context, HRESULT error) override;
+		};
+
+		xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener, int sampleRate, int maxNBuffers, npBool mono, npBool spatialized)
 		{
 			xnAudioSource* res = new xnAudioSource;
 			res->listener_ = listener;
@@ -1085,6 +1081,13 @@ extern "C" {
 			{
 				res->emitter_ = NULL;
 				res->dsp_settings_ = NULL;
+			}
+
+			res->freeBuffers = new xnAudioBuffer*[maxNBuffers];
+			res->freeBuffersMax = maxNBuffers;
+			for (int i = 0; i < maxNBuffers; i++)
+			{
+				res->freeBuffers[i] = NULL;
 			}
 
 			WAVEFORMATEX pcmWaveFormat = {};
@@ -1122,8 +1125,61 @@ extern "C" {
 		void xnAudioSourceSetBuffer(xnAudioSource* source, xnAudioBuffer* buffer)
 		{
 			source->streamed_ = false;
-			source->freeBuffers.push_back(buffer);
+			source->freeBuffers[0] = buffer;
 			buffer->source_ = source;
+		}
+
+		void xnAudioSource::OnBufferEnd(void* context)
+		{
+			auto buffer = static_cast<xnAudioBuffer*>(context);
+
+			if (streamed_)
+			{
+				bufferLock.Lock();
+
+				for (int i = 0; i < buffer->source_->freeBuffersMax; i++)
+				{
+					if(buffer->source_->freeBuffers[i] == NULL)
+					{
+						buffer->source_->freeBuffers[i] = buffer;
+						break;
+					}
+				}
+				
+				bufferLock.Unlock();
+			}
+		}
+
+		xnAudioBuffer* xnAudioSourceGetFreeBuffer(xnAudioSource* source)
+		{
+			source->bufferLock.Lock();
+
+			xnAudioBuffer* buffer = NULL;
+			for (int i = 0; i < source->freeBuffersMax; i++)
+			{
+				if (source->freeBuffers[i] != NULL)
+				{
+					buffer = source->freeBuffers[i];
+					source->freeBuffers[i] = NULL;
+					break;
+				}
+			}
+			
+			source->bufferLock.Unlock();
+			
+			return buffer;
+		}
+
+		void xnAudioSourcePlay(xnAudioSource* source)
+		{
+			if (!source->streamed_)
+			{
+				xnAudioBuffer* singleBuffer = source->freeBuffers[0];
+				source->source_voice_->SubmitSourceBuffer(&singleBuffer->buffer_, NULL);
+			}
+
+			source->source_voice_->Start();
+			source->playing_ = true;
 		}
 
 		void xnAudioSourceSetPan(xnAudioSource* source, float pan)
@@ -1199,18 +1255,6 @@ extern "C" {
 		{
 		}
 
-		void xnAudioSource::OnBufferEnd(void* context)
-		{
-			auto buffer = static_cast<xnAudioBuffer*>(context);
-
-			if (streamed_)
-			{
-				bufferLock.Lock();
-				buffer->source_->freeBuffers.push_back(buffer);
-				bufferLock.Unlock();
-			}
-		}
-
 		void xnAudioSource::OnLoopEnd(void* context)
 		{
 			if (!looped_ && !streamed_ && playing_)
@@ -1235,31 +1279,7 @@ extern "C" {
 			source->source_voice_->SubmitSourceBuffer(&buffer->buffer_);
 		}
 
-		xnAudioBuffer* xnAudioSourceGetFreeBuffer(xnAudioSource* source)
-		{
-			source->bufferLock.Lock();
-			if(source->freeBuffers.size() > 0)
-			{
-				xnAudioBuffer* buffer = source->freeBuffers.back();
-				source->freeBuffers.pop_back();
-				source->bufferLock.Unlock();
-				return buffer;
-			}
-			source->bufferLock.Unlock();
-			return NULL;
-		}
-
-		void xnAudioSourcePlay(xnAudioSource* source)
-		{
-			if(!source->streamed_)
-			{
-				xnAudioBuffer* singleBuffer = source->freeBuffers[0];
-				source->source_voice_->SubmitSourceBuffer(&singleBuffer->buffer_, NULL);
-			}
-
-			source->source_voice_->Start();
-			source->playing_ = true;
-		}
+		
 
 		void xnAudioSourcePause(xnAudioSource* source)
 		{
