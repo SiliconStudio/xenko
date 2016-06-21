@@ -57,6 +57,8 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
+        public abstract int MaxNumberOfBuffers { get; }
+
         /// <summary>
         /// 
         /// </summary>

@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Audio
             this.engine = engine;
             this.spatialized = spatialized;
             soundSource = dynamicSoundSource;
-            Source = AudioLayer.SourceCreate(listener.Listener, sampleRate, mono, spatialized);
+            Source = AudioLayer.SourceCreate(listener.Listener, sampleRate, dynamicSoundSource.MaxNumberOfBuffers, mono, spatialized);
             if (Source.Ptr == IntPtr.Zero)
             {
                 throw new Exception("Failed to create an AudioLayer Source");
@@ -63,12 +63,13 @@ namespace SiliconStudio.Xenko.Audio
             engine = staticSound.AudioEngine;
             sound = staticSound;
             spatialized = staticSound.Spatialized;
-            Source = AudioLayer.SourceCreate(listener.Listener, staticSound.SampleRate, staticSound.Channels == 1, spatialized);
+
+            Source = AudioLayer.SourceCreate(listener.Listener, staticSound.SampleRate, staticSound.StreamFromDisk ? CompressedSoundSource.NumberOfBuffers : 1, staticSound.Channels == 1, spatialized);
             if (Source.Ptr == IntPtr.Zero)
             {
                 throw new Exception("Failed to create an AudioLayer Source");
             }
-            ResetStateToDefault();
+
             if (staticSound.StreamFromDisk)
             {
                 soundSource = new CompressedSoundSource(this, staticSound.CompressedDataUrl, staticSound.SampleRate, staticSound.Channels, staticSound.MaxPacketLength);
@@ -76,7 +77,9 @@ namespace SiliconStudio.Xenko.Audio
             else
             {
                 AudioLayer.SourceSetBuffer(Source, staticSound.PreloadedBuffer);
-            }          
+            }
+
+            ResetStateToDefault();
         }
 
         public bool IsLooped

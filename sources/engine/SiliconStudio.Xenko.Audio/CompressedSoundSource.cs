@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Audio
     {
         private const int SamplesPerBuffer = 32768;
         private const int MaxChannels = 2;
-        private const int NumberOfBuffers = 4;
+        internal const int NumberOfBuffers = 4;
         internal const int SamplesPerFrame = 512;
 
         private Stream compressedSoundStream;
@@ -143,6 +143,8 @@ namespace SiliconStudio.Xenko.Audio
         {
             dispose = true;
         }
+
+        public override int MaxNumberOfBuffers => MaxNumberOfBuffers;
 
         public override void Restart()
         {
