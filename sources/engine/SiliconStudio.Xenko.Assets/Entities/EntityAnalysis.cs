@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Analysis;
+using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Assets.Visitors;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
@@ -98,15 +100,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
-        /// <summary>
-        /// Fixups the entity references, by clearing invalid <see cref="EntityReference.Id"/>, and updating <see cref="EntityReference.Value"/> (same for components).
-        /// </summary>
-        /// <param name="entityAssetBase">The entity asset.</param>
-        public static void FixupEntityReferences(EntityHierarchyAssetBase entityAssetBase)
-        {
-            FixupEntityReferences(entityAssetBase, entityAssetBase.Hierarchy);
-        }
-
+        [Obsolete("This method will be removed soon. Use AssetCompositeAnalysis instead.")]
         public static void FixupEntityReferences(AssetCompositeHierarchyData<EntityDesign, Entity> hierarchyData)
         {
             FixupEntityReferences(hierarchyData, hierarchyData);
@@ -217,14 +211,12 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         public struct EntityLink
         {
-            public readonly ComponentBase Referencer;
             public readonly Entity Entity;
             public readonly EntityComponent EntityComponent;
             public readonly MemberPath Path;
 
             public EntityLink(ComponentBase referencer, Entity entity, MemberPath path)
             {
-                Referencer = referencer;
                 Entity = entity;
                 EntityComponent = null;
                 Path = path;
@@ -232,7 +224,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
             public EntityLink(ComponentBase referencer, EntityComponent entityComponent, MemberPath path)
             {
-                Referencer = referencer;
                 Entity = null;
                 EntityComponent = entityComponent;
                 Path = path;

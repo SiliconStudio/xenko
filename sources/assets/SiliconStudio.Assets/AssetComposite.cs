@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Assets
@@ -22,7 +23,7 @@ namespace SiliconStudio.Assets
 
     public abstract class AssetCompositeHierarchy<TAssetPartDesign, TAssetPart> : AssetComposite
         where TAssetPartDesign : IAssetPartDesign<TAssetPart>
-        where TAssetPart : IIdentifiable
+        where TAssetPart : class, IIdentifiable
     {
         public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> Hierarchy { get; set; } = new AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>();
 
@@ -56,6 +57,23 @@ namespace SiliconStudio.Assets
         public override bool ContainsPart(Guid id)
         {
             return Hierarchy.Parts.ContainsKey(id);
+        }
+
+        public override void FixupPartReferences()
+        {
+            AssetCompositeAnalysis.FixupAssetPartReferences(this, ResolveReference);
+        }
+
+        protected virtual object ResolveReference(object partReference)
+        {
+            var reference = partReference as TAssetPart;
+            if (reference != null)
+            {
+                TAssetPartDesign realPart;
+                Hierarchy.Parts.TryGetValue(reference.Id, out realPart);
+                return realPart?.Part;
+            }
+            return null;
         }
     }
 

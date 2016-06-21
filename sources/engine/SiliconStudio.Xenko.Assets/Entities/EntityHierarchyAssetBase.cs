@@ -10,6 +10,7 @@ using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Entities
@@ -287,9 +288,27 @@ namespace SiliconStudio.Xenko.Assets.Entities
             return mapBaseToInstanceIds;
         }
 
-        public override void FixupPartReferences()
+        protected override object ResolveReference(object partReference)
         {
-            EntityAnalysis.FixupEntityReferences(this);
+            var entityComponentReference = partReference as EntityComponent;
+            if (entityComponentReference != null)
+            {
+                var containingEntity = entityComponentReference.Entity;
+                if (containingEntity == null)
+                {
+                    throw new InvalidOperationException("Found a reference to a component which doesn't have any entity");
+                }
+
+                var realEntity = (Entity)base.ResolveReference(containingEntity);
+                if (realEntity == null)
+                    return null;
+
+                var componentId = IdentifiableHelper.GetId(entityComponentReference);
+                var realComponent = realEntity.Components.FirstOrDefault(c => IdentifiableHelper.GetId(c) == componentId);
+                return realComponent;
+            }
+
+            return base.ResolveReference(partReference);
         }
     }
 }

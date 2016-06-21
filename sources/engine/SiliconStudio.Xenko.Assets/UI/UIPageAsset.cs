@@ -80,10 +80,5 @@ namespace SiliconStudio.Xenko.Assets.UI
             var enumerator = isRecursive ? elementChildren.Children.DepthFirst(t => t.Children) : elementChildren.Children;
             return enumerator.Cast<UIElement>();
         }
-
-        public override void FixupPartReferences()
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }

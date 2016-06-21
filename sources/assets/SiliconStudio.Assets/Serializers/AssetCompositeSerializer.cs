@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using SharpYaml.Serialization;
@@ -17,23 +16,10 @@ namespace SiliconStudio.Assets.Serializers
     /// </summary>
     public class AssetCompositeSerializer : ObjectSerializer
     {
-        private class AssetCompositeContext
-        {
-            public AssetCompositeContext(AssetPartReferenceAttribute[] references)
-            {
-                References = references;
-                EnteredTypes = new Stack<AssetPartReferenceAttribute>();
-            }
-
-            public AssetPartReferenceAttribute[] References { get; }
-            public Stack<AssetPartReferenceAttribute> EnteredTypes { get; }
-            public bool SerializeAsReference { get; set; }
-        }
-
         /// <summary>
         /// Context containing information about asset parts being serialized.
         /// </summary>
-        private readonly ThreadLocal<AssetCompositeContext> localContext = new ThreadLocal<AssetCompositeContext>();
+        private readonly ThreadLocal<AssetCompositeVisitorContext> localContext = new ThreadLocal<AssetCompositeVisitorContext>();
 
         /// <inheritdoc/>
         public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
@@ -57,7 +43,12 @@ namespace SiliconStudio.Assets.Serializers
         public override void WriteYaml(ref ObjectContext objectContext)
         {
             var type = objectContext.Descriptor.Type;
-            var removeLastEnteredType = EnterNode(type);
+            // Entering the asset root node, create the local context.
+            if (typeof(AssetComposite).IsAssignableFrom(type))
+            {
+                localContext.Value = new AssetCompositeVisitorContext(type);
+            }
+            var removeLastEnteredType = localContext.Value?.EnterNode(type) ?? false;
 
             try
             {
@@ -65,7 +56,13 @@ namespace SiliconStudio.Assets.Serializers
             }
             finally
             {
-                LeaveNode(type, removeLastEnteredType);
+                localContext.Value?.LeaveNode(type, removeLastEnteredType);
+
+                // Exiting the asset root node, clear the local context.
+                if (typeof(AssetComposite).IsAssignableFrom(type))
+                {
+                    localContext.Value = null;
+                }
             }
         }
 
@@ -73,7 +70,13 @@ namespace SiliconStudio.Assets.Serializers
         public override object ReadYaml(ref ObjectContext objectContext)
         {
             var type = objectContext.Descriptor.Type;
-            var removeLastEnteredType = EnterNode(type);
+            if (typeof(AssetComposite).IsAssignableFrom(type))
+            {
+                // Entering the asset root node, create the local context.
+                localContext.Value = new AssetCompositeVisitorContext(type);
+            }
+
+            var removeLastEnteredType = localContext.Value?.EnterNode(type) ?? false;
 
             try
             {
@@ -90,7 +93,13 @@ namespace SiliconStudio.Assets.Serializers
             }
             finally
             {
-                LeaveNode(type, removeLastEnteredType);
+                localContext.Value?.LeaveNode(type, removeLastEnteredType);
+
+                if (typeof(AssetComposite).IsAssignableFrom(type))
+                {
+                    // Exiting the asset root node, clear the local context.
+                    localContext.Value = null;
+                }
             }
         }
 
@@ -148,53 +157,6 @@ namespace SiliconStudio.Assets.Serializers
             }
 
             base.TransformObjectAfterRead(ref objectContext);
-        }
-
-        private bool EnterNode(Type type)
-        {
-            // Entering the asset root node, create the local context.
-            if (typeof(AssetComposite).IsAssignableFrom(type))
-            {
-                var attributes = type.GetCustomAttributes(typeof(AssetPartReferenceAttribute), true).Cast<AssetPartReferenceAttribute>().ToArray();
-                localContext.Value = new AssetCompositeContext(attributes);
-            }
-
-            // Is this a referenceable type?
-            var typeAttribute = localContext.Value.References.FirstOrDefault(x => x.ReferenceableType.IsAssignableFrom(type));
-            if (typeAttribute != null)
-            {
-                // What is the last referenceable type we entered? (serialized as-is instead of referenced)
-                var lastEntered = localContext.Value?.EnteredTypes.Count > 0 ? localContext.Value?.EnteredTypes.Peek() : null;
-
-                // It is a container for the type we're evaluating?
-                if (lastEntered != null && !lastEntered.ContainsType.Any(x => x.IsAssignableFrom(type)))
-                {
-                    // Otherwise, serialize a reference to this object instead.
-                    localContext.Value.SerializeAsReference = true;
-                }
-
-                localContext.Value.EnteredTypes.Push(typeAttribute);
-                return true;
-            }
-            return false;
-        }
-
-        private void LeaveNode(Type type, bool removeLastEnteredType)
-        {
-            // Reset this flag for sanity
-            localContext.Value.SerializeAsReference = false;
-
-            // Did we enter a referenceable type and actually serialized it?
-            if (removeLastEnteredType)
-            {
-                localContext.Value?.EnteredTypes.Pop();
-            }
-
-            // Exiting the asset root node, clear the local context.
-            if (typeof(AssetComposite).IsAssignableFrom(type))
-            {
-                localContext.Value = null;
-            }
         }
     }
 }
