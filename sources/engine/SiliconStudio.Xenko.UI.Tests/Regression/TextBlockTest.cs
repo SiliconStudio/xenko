@@ -7,7 +7,6 @@ using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Graphics.Font;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.UI.Controls;
 
@@ -60,11 +59,11 @@ This is the last line.",
                 UIComponent.Resolution = new Vector3(GraphicsDevice.Presenter.BackBuffer.Width, GraphicsDevice.Presenter.BackBuffer.Height, 500);
 
             if (Input.IsKeyPressed(Keys.Left))
-                textBlock.TextSize = 3 * textBlock.TextSize * 0.75f / 4;
+                textBlock.TextSize = 3 * textBlock.TextSize / 4;
             if (Input.IsKeyPressed(Keys.Right))
-                textBlock.TextSize = 4 * textBlock.TextSize * 0.75f / 3;
+                textBlock.TextSize = 4 * textBlock.TextSize / 3;
             if (Input.IsKeyPressed(Keys.Delete))
-                textBlock.TextSize = FontHelper.PixelsToPoints(textBlock.Font.SizeInPixels);
+                textBlock.TextSize = textBlock.Font.Size;
 
             if (Input.IsKeyReleased(Keys.NumPad1))
                 textBlock.VerticalAlignment = VerticalAlignment.Top;
@@ -177,21 +176,21 @@ This is the last line.",
         }
         public void Draw11()
         {
-            textBlock.TextSize = FontHelper.PixelsToPoints(textBlock.Font.SizeInPixels * 2);
+            textBlock.TextSize = textBlock.Font.Size * 2;
             textBlock.TextAlignment = TextAlignment.Left;
             textBlock.VerticalAlignment = VerticalAlignment.Center;
             textBlock.HorizontalAlignment = HorizontalAlignment.Center;
         }
         public void Draw12()
         {
-            textBlock.TextSize = FontHelper.PixelsToPoints(textBlock.Font.SizeInPixels / 2);
+            textBlock.TextSize = textBlock.Font.Size / 2;
             textBlock.TextAlignment = TextAlignment.Left;
             textBlock.VerticalAlignment = VerticalAlignment.Center;
             textBlock.HorizontalAlignment = HorizontalAlignment.Center;
         }
         public void Draw13()
         {
-            textBlock.TextSize = FontHelper.PixelsToPoints(textBlock.Font.SizeInPixels);
+            textBlock.TextSize = textBlock.Font.Size;
             textBlock.TextAlignment = TextAlignment.Left;
             textBlock.VerticalAlignment = VerticalAlignment.Center;
             textBlock.HorizontalAlignment = HorizontalAlignment.Center;
@@ -199,7 +198,7 @@ This is the last line.",
         }
         public void Draw14()
         {
-            textBlock.TextSize = FontHelper.PixelsToPoints(textBlock.Font.SizeInPixels);
+            textBlock.TextSize = textBlock.Font.Size;
             textBlock.TextAlignment = TextAlignment.Left;
             textBlock.VerticalAlignment = VerticalAlignment.Center;
             textBlock.HorizontalAlignment = HorizontalAlignment.Center;

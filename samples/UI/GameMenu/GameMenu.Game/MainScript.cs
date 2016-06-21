@@ -204,7 +204,7 @@ namespace GameMenu
             var pleaseSelectText = new TextBlock
             {
                 Font = WesternFont,
-                TextSize = 27,
+                TextSize = 48,
                 TextColor = Color.White,
                 Text = "Please select your ship",
                 TextAlignment = TextAlignment.Center,
@@ -362,7 +362,7 @@ namespace GameMenu
         {
             var textBlock = new TextBlock
             {
-                TextSize = 14.25f,
+                TextSize = 19,
                 Font = WesternFont,
                 Text = statusName,
                 TextColor = Color.Black,
@@ -388,7 +388,7 @@ namespace GameMenu
             var welcomeText = new TextBlock
             {
                 Font = WesternFont,
-                TextSize = 31.5f,
+                TextSize = 42,
                 TextColor = Color.White,
                 Text = "Welcome to xenko UI sample.\n" + "Please name your character",
                 TextAlignment = TextAlignment.Center,
@@ -401,7 +401,7 @@ namespace GameMenu
             var nameEditText = new EditText()
             {
                 Font = WesternFont,
-                TextSize = 24,
+                TextSize = 32,
                 TextColor = Color.White,
                 Text = DefaultName,
                 MaxLength = 15,
@@ -527,7 +527,7 @@ namespace GameMenu
                 Text = CreateLifeCountText(),
                 TextColor = Color.Gold,
                 Font = WesternFont,
-                TextSize = 24,
+                TextSize = 32,
                 HorizontalAlignment = HorizontalAlignment.Left
             };
             lifeCounter.SetCanvasAbsolutePosition(new Vector3(128, float.NaN, float.NaN));
@@ -546,7 +546,7 @@ namespace GameMenu
             {
                 Text = CreateBonusCountText(),
                 TextColor = Color.White,
-                TextSize = 20.25f,
+                TextSize = 27,
                 Font = WesternFont,
                 VerticalAlignment = VerticalAlignment.Center,
                 Margin = new Thickness(10, 0, 0, 0)
@@ -564,7 +564,7 @@ namespace GameMenu
             {
                 Text = CreateMoneyCountText(),
                 TextColor = Color.White,
-                TextSize = 20.25f,
+                TextSize = 27,
                 Font = WesternFont,
                 VerticalAlignment = VerticalAlignment.Center,
                 Margin = new Thickness(10, 0, 0, 0)
@@ -628,7 +628,7 @@ namespace GameMenu
             nameTextBlock = new TextBlock
             {
                 Font = WesternFont,
-                TextSize = 39,
+                TextSize = 52,
                 TextColor = Color.LightGreen,
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center,
@@ -661,7 +661,7 @@ namespace GameMenu
                 Content = new TextBlock
                 {
                     Font = JapaneseFont,
-                    TextSize = 21,
+                    TextSize = 28,
                     TextColor = Color.White,
                     Text = "Pictogram-based alphabets are easily supported.\n日本語も簡単に入れることが出来ます。",
                     HorizontalAlignment = HorizontalAlignment.Center,
@@ -824,7 +824,7 @@ namespace GameMenu
                     Font = WesternFont,
                     TextColor = Color.Black,
                     Text = text,
-                    TextSize = 40.5f,
+                    TextSize = 54,
                     HorizontalAlignment = HorizontalAlignment.Center,
                     VerticalAlignment = VerticalAlignment.Center
                 },

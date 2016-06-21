@@ -451,7 +451,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (font.FontType == SpriteFontType.SDF)
             {
                 drawCommand.SnapText = false;
-                float scaling = drawCommand.RequestedFontSize / font.SizeInPixels;
+                float scaling = drawCommand.RequestedFontSize / font.Size;
                 drawCommand.RealVirtualResolutionRatio = 1f / new Vector2(scaling, scaling);
             }
             //else

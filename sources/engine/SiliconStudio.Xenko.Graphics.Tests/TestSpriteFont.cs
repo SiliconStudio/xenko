@@ -96,11 +96,11 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             spriteBatch.Draw(colorTexture, new Rectangle(x, y, (int)dim.X, (int)dim.Y), Color.Green);
 
 
-            arial16.PreGenerateGlyphs(text, arial16.SizeInPixels * Vector2.One);
+            arial16.PreGenerateGlyphs(text, arial16.Size * Vector2.One);
             spriteBatch.DrawString(arial16, text, new Vector2(x, y), Color.White);
 
             text = "Measured: " + dim;
-            courrierNew10.PreGenerateGlyphs(text, courrierNew10.SizeInPixels * Vector2.One);
+            courrierNew10.PreGenerateGlyphs(text, courrierNew10.Size * Vector2.One);
             spriteBatch.DrawString(courrierNew10, text, new Vector2(x, y + dim.Y + 5), Color.GreenYellow);
 
             text = @"
@@ -110,48 +110,48 @@ Text using Courier New 10 fixed font
 ABCDEFGHIJ - ABCDEFGHIJ - A1C3E5G7I9
 -_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_";
 
-            courrierNew10.PreGenerateGlyphs(text, courrierNew10.SizeInPixels * Vector2.One);
+            courrierNew10.PreGenerateGlyphs(text, courrierNew10.Size * Vector2.One);
             spriteBatch.DrawString(courrierNew10, text, new Vector2(x, y + dim.Y + 8), Color.White);
 
             text = "Arial 13, font with with antialias.";
-            arial13.PreGenerateGlyphs(text, arial13.SizeInPixels * Vector2.One);
+            arial13.PreGenerateGlyphs(text, arial13.Size * Vector2.One);
             spriteBatch.DrawString(arial13, text, new Vector2(x, y + 150), Color.White);
 
             text = "Microsoft Sans Serif 10, font with cleartype antialias.";
-            msSansSerif10.PreGenerateGlyphs(text, msSansSerif10.SizeInPixels * Vector2.One);
+            msSansSerif10.PreGenerateGlyphs(text, msSansSerif10.Size * Vector2.One);
             spriteBatch.DrawString(msSansSerif10, text, new Vector2(x, y + 175), Color.White);
 
             text = "Font is in bold - Arial 16";
-            arial16Bold.PreGenerateGlyphs(text, arial16Bold.SizeInPixels * Vector2.One);
+            arial16Bold.PreGenerateGlyphs(text, arial16Bold.Size * Vector2.One);
             spriteBatch.DrawString(arial16Bold, text, new Vector2(x, y + 190), Color.White);
 
             text = "Bigger font\nCalibri 64";
             y = 240;
             dim = calibri64.MeasureString(text);
             spriteBatch.Draw(colorTexture, new Rectangle(x, y, (int)dim.X, (int)dim.Y), Color.Red);
-            calibri64.PreGenerateGlyphs(text, calibri64.SizeInPixels * Vector2.One);
+            calibri64.PreGenerateGlyphs(text, calibri64.Size * Vector2.One);
             spriteBatch.DrawString(calibri64, text, new Vector2(x, y), Color.White);
 
             text = "Rendering test\nRotated On Center";
             dim = arial16.MeasureString(text);
-            arial16.PreGenerateGlyphs(text, arial16.SizeInPixels * Vector2.One);
+            arial16.PreGenerateGlyphs(text, arial16.Size * Vector2.One);
             spriteBatch.DrawString(arial16, text, new Vector2(600, 120), Color.White, -rotationAngle, new Vector2(dim.X / 2.0f, dim.Y / 2.0f), Vector2.One, SpriteEffects.None, 0.0f, TextAlignment.Left);
             
             text = "Arial16 - ClearType\nAbc /\\Z Ghi SWy {}:;=&%@";
-            arial16ClearType.PreGenerateGlyphs(text, arial16ClearType.SizeInPixels * Vector2.One);
+            arial16ClearType.PreGenerateGlyphs(text, arial16ClearType.Size * Vector2.One);
             spriteBatch.DrawString(arial16ClearType, text, new Vector2(470, 250), Color.White);
 
             text = "Abc /\\Z Ghi SWy {}:;=&%@\nArial16 - Standard";
-            arial16.PreGenerateGlyphs(text, arial16.SizeInPixels * Vector2.One);
+            arial16.PreGenerateGlyphs(text, arial16.Size * Vector2.One);
             spriteBatch.DrawString(arial16, text, new Vector2(470, 300), Color.White);
 
             text = "Arial16 simulate shadow";
-            arial16.PreGenerateGlyphs(text, arial16.SizeInPixels * Vector2.One);
+            arial16.PreGenerateGlyphs(text, arial16.Size * Vector2.One);
             spriteBatch.DrawString(arial16, text, new Vector2(471, 391), Color.Red);
             spriteBatch.DrawString(arial16, text, new Vector2(470, 390), Color.White);
 
             text = "Arial16 scaled x1.5";
-            arial16.PreGenerateGlyphs(text, arial16.SizeInPixels * Vector2.One);
+            arial16.PreGenerateGlyphs(text, arial16.Size * Vector2.One);
             spriteBatch.DrawString(arial16, text, new Vector2(470, 420), Color.White, 0.0f, Vector2.Zero, 1.5f * Vector2.One, SpriteEffects.None, 0.0f, TextAlignment.Left);
 
             spriteBatch.End();

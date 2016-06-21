@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Gets the font size (resp. the default font size) for static fonts (resp. for dynamic fonts) in pixels.
         /// </summary>
-        public float SizeInPixels { get; internal set; }
+        public float Size { get; internal set; }
 
         /// <summary>
         /// Gets or sets the default character for the font.
@@ -155,7 +155,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <returns>The value of the character spacing</returns>
         public virtual float GetExtraSpacing(float fontSize)
         {
-            return fontSize / SizeInPixels * ExtraSpacing;
+            return fontSize / Size * ExtraSpacing;
         }
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <returns>The value of the character spacing</returns>
         public virtual float GetExtraLineSpacing(float fontSize)
         {
-            return fontSize / SizeInPixels * ExtraLineSpacing;
+            return fontSize / Size * ExtraLineSpacing;
         }
 
         /// <summary>
@@ -175,7 +175,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <returns>The value of the default line spacing</returns>
         public virtual float GetFontDefaultLineSpacing(float fontSize)
         {
-            return fontSize / SizeInPixels * DefaultLineSpacing;
+            return fontSize / Size * DefaultLineSpacing;
         }
 
         /// <summary>
@@ -185,7 +185,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <returns>The value of the base offset</returns>
         protected virtual float GetBaseOffsetY(float fontSize)
         {
-            return  fontSize / SizeInPixels * BaseOffsetY;
+            return  fontSize / Size * BaseOffsetY;
         }
 
         /// <summary>
@@ -303,7 +303,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <returns>Vector2.</returns>
         public Vector2 MeasureString(string text)
         {
-            var fontSize = new Vector2(SizeInPixels, SizeInPixels);
+            var fontSize = new Vector2(Size, Size);
             return MeasureString(text, fontSize, text.Length);
         }
 
@@ -314,7 +314,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <returns>Vector2.</returns>
         public Vector2 MeasureString(StringBuilder text)
         {
-            var fontSize = new Vector2(SizeInPixels, SizeInPixels);
+            var fontSize = new Vector2(Size, Size);
             return MeasureString(text, fontSize, text.Length);
         }
 

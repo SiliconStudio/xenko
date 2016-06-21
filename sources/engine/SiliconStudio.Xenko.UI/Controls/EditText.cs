@@ -494,7 +494,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the font size of the text in points
+        /// Gets or sets the size of the text in virtual pixels unit
         /// </summary>
         public float TextSize
         {
@@ -504,7 +504,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                     return textSize.Value;
 
                 if (Font != null)
-                    return FontHelper.PixelsToPoints(Font.SizeInPixels);
+                    return Font.Size;
 
                 return 0;
             }
@@ -748,7 +748,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                 return Vector2.Zero;
 
             var sizeRatio = LayoutingContext.RealVirtualResolutionRatio;
-            var measureFontSize = new Vector2(FontHelper.PointsToPixels(TextSize) * sizeRatio.Y); // we don't want letters non-uniform ratio
+            var measureFontSize = new Vector2(TextSize * sizeRatio.Y); // we don't want letters non-uniform ratio
             var realSize = Font.MeasureString(textToMeasure, measureFontSize);
 
             // force pre-generation if synchronous generation is required
@@ -764,7 +764,7 @@ namespace SiliconStudio.Xenko.UI.Controls
 
             if (Font.FontType == SpriteFontType.SDF)
             {
-                var scaleRatio = FontHelper.PointsToPixels(TextSize) / Font.SizeInPixels;
+                var scaleRatio = TextSize / Font.Size;
                 realSize.X *= scaleRatio;
                 realSize.Y *= scaleRatio;
             }

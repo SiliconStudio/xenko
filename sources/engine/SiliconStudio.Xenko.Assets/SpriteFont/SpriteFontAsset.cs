@@ -23,10 +23,11 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     [DataContract("SpriteFont")]
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(SpriteFontAssetCompiler))]
-    [AssetFormatVersion(XenkoConfig.PackageName, "1.7.0-beta03")]
+    [AssetFormatVersion(XenkoConfig.PackageName, "1.7.0-beta04")]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.5.0-alpha09", typeof(PremultiplyUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha09", "1.7.0-beta02", typeof(FontTypeUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.7.0-beta02", "1.7.0-beta03", typeof(FontClassUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.7.0-beta03", "1.7.0-beta04", typeof(FontSizeUpgrader))]
     [Display(140, "Sprite Font")]
     [CategoryOrder(10, "Font")]
     [CategoryOrder(30, "Rendering")]
@@ -263,6 +264,30 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 asset.RemoveChild("Size");
                 asset.RemoveChild("CharacterSet");
                 asset.RemoveChild("CharacterRegions");
+            }
+        }
+
+
+
+        /// <summary>
+        /// Upgrades the font size from points to pixels
+        /// </summary>
+        class FontSizeUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile,
+                OverrideUpgraderHint overrideHint)
+            {
+                if (asset.FontType == null)
+                    return;
+
+                if (asset.FontType.Size == null)
+                    return;
+
+                var newSize = ((float)asset.FontType.Size) * 1.3333333f;
+
+                asset.FontType.RemoveChild("Size");
+
+                asset.FontType.AddChild("Size", newSize);
             }
         }
     }

@@ -80,16 +80,16 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             var x = 20;
             var y = 10;
             var title = "Ms Mincho 10 aliased:";
-            msMincho10.PreGenerateGlyphs(title, msMincho10.SizeInPixels * Vector2.One);
-            msMincho10.PreGenerateGlyphs(Text, msMincho10.SizeInPixels * Vector2.One);
+            msMincho10.PreGenerateGlyphs(title, msMincho10.Size * Vector2.One);
+            msMincho10.PreGenerateGlyphs(Text, msMincho10.Size * Vector2.One);
             spriteBatch.DrawString(msMincho10, title, new Vector2(x, y), Color.LawnGreen);
             spriteBatch.DrawString(msMincho10, Text, new Vector2(x, y + 10), Color.White);
 
             x = 320;
             y = 0;
             title = "Meiryo 14 anti-aliased:";
-            arialMS.PreGenerateGlyphs(title, arialMS.SizeInPixels * Vector2.One);
-            arialMS.PreGenerateGlyphs(Text, arialMS.SizeInPixels * Vector2.One);
+            arialMS.PreGenerateGlyphs(title, arialMS.Size * Vector2.One);
+            arialMS.PreGenerateGlyphs(Text, arialMS.Size * Vector2.One);
             spriteBatch.DrawString(arialMS, title, new Vector2(x, y), Color.Red);
             spriteBatch.DrawString(arialMS, Text, new Vector2(x, y + 5), Color.White);
 

@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
                 Color = editText.RenderOpacity * editText.TextColor,
                 DepthBias = context.DepthBias + 2,
                 RealVirtualResolutionRatio = fontScale,
-                RequestedFontSize = FontHelper.PointsToPixels(editText.TextSize),
+                RequestedFontSize = editText.TextSize,
                 Batch = Batch,
                 SnapText = context.ShouldSnapText && !editText.DoNotSnapText,
                 Matrix = editText.WorldMatrixInternal,

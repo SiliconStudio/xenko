@@ -93,7 +93,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
         {
             var font = new RuntimeRasterizedSpriteFont
             {
-                SizeInPixels = defaultSize,
+                Size = defaultSize,
                 FontName = fontName,
                 Style = style,
                 AntiAlias = antiAliasMode,

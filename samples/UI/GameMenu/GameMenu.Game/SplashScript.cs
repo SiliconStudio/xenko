@@ -25,7 +25,7 @@ namespace GameMenu
                 Content = new TextBlock
                 {
                     Font = WesternFont,
-                    TextSize = 45,
+                    TextSize = 60,
                     Text = "Xenko Samples",
                     TextColor = Color.White,
                 },
@@ -42,7 +42,7 @@ namespace GameMenu
                 Content = new TextBlock
                 {
                     Font = WesternFont,
-                    TextSize = 45,
+                    TextSize = 60,
                     Text = "UI",
                     TextColor = Color.White,
                 },
@@ -70,7 +70,7 @@ namespace GameMenu
                 Content = new TextBlock
                 {
                     Font = WesternFont,
-                    TextSize = 31.5f,
+                    TextSize = 42,
                     Text = "Touch Screen to Start",
                     TextColor = Color.White
                 },

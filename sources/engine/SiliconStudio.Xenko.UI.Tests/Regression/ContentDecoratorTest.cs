@@ -7,7 +7,6 @@ using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Graphics.Font;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI.Controls;
@@ -54,11 +53,11 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             base.Update(gameTime);
 
             if (Input.IsKeyPressed(Keys.Left))
-                textBlock.TextSize = 3 * textBlock.TextSize * 0.75f / 4;
+                textBlock.TextSize = 3 * textBlock.TextSize / 4;
             if (Input.IsKeyPressed(Keys.Right))
-                textBlock.TextSize = 4 * textBlock.TextSize * 0.75f / 3;
+                textBlock.TextSize = 4 * textBlock.TextSize / 3;
             if (Input.IsKeyPressed(Keys.Delete))
-                textBlock.TextSize = FontHelper.PixelsToPoints(textBlock.Font.SizeInPixels);
+                textBlock.TextSize = textBlock.Font.Size;
         }
 
         protected override void RegisterTests()
@@ -72,17 +71,17 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public void DrawTest0()
         {
-            textBlock.TextSize = 9;
+            textBlock.TextSize = 12;
         }
 
         public void DrawTest1()
         {
-            textBlock.TextSize = 13.5f;
+            textBlock.TextSize = 18;
         }
 
         public void DrawTest2()
         {
-            textBlock.TextSize = 18;
+            textBlock.TextSize = 24;
         }
 
         [Test]

@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public ScrollingTextTest()
         {
-            CurrentVersion = 5; // Runtime Rasterized font size changes
+            CurrentVersion = 4;
         }
 
         protected override async Task LoadContent()
