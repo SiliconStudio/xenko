@@ -24,7 +24,7 @@ namespace SiliconStudio.Assets
         where TAssetPartDesign : IAssetPartDesign<TAssetPart>
         where TAssetPart : IIdentifiable
     {
-        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> Hierarchy { get; set; }
+        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> Hierarchy { get; set; } = new AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>();
 
         public abstract TAssetPart GetParent(TAssetPart part);
 
