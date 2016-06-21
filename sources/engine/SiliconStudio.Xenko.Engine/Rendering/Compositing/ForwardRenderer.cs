@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
     /// <summary>
     /// Renders your game. It should use current <see cref="RenderContext.RenderView"/> and <see cref="CameraComponentRendererExtensions.GetCurrentCamera"/>.
     /// </summary>
-    public class ForwardRenderer : SceneRendererBase, ISharedRenderer
+    public partial class ForwardRenderer : SceneRendererBase, ISharedRenderer
     {
         private IShadowMapRenderer shadowMapRenderer;
         private Texture depthStencilROCached;
@@ -87,6 +87,11 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         private VRDeviceSystem vrSystem;
 
         public ClearRenderer Clear { get; set; } = new ClearRenderer();
+        
+        /// <summary>
+        /// Enable Light Probe.
+        /// </summary>
+        public bool LightProbes { get; set; } = true;
 
         /// <summary>
         /// The main render stage for opaque geometry.
@@ -102,6 +107,11 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         /// The shadow map render stages for shadow casters. No shadow rendering will happen if null.
         /// </summary>
         public List<RenderStage> ShadowMapRenderStages { get; } = new List<RenderStage>();
+
+        /// <summary>
+        /// The G-Buffer render stage to render depth buffer and possibly some other extra info to buffers (i.e. normals)
+        /// </summary>
+        public RenderStage GBufferRenderStage { get; set; }
 
         /// <summary>
         /// The post effects renderer.
@@ -200,6 +210,12 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 context.RenderView.RenderStages.Add(TransparentRenderStage);
                 TransparentRenderStage.Output = context.RenderOutput;
             }
+
+            if (GBufferRenderStage != null && LightProbes)
+            {
+                context.RenderView.RenderStages.Add(GBufferRenderStage);
+                GBufferRenderStage.Output = new RenderOutputDescription(PixelFormat.None, context.RenderOutput.DepthStencilFormat);
+            }
         }
 
         protected override void CollectCore(RenderContext context)
@@ -275,6 +291,16 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
             PostEffects?.Collect(context);
         }
 
+        protected virtual void ResolveDepthMSAA(RenderDrawContext drawContext)
+        {
+            ViewDepthStencilNoMSAA = PushScopedResource(
+                drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(ViewOutputTarget.Size.Width, ViewOutputTarget.Size.Height,
+                1, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.ShaderResource | TextureFlags.DepthStencil)));
+
+            drawContext.CommandList.CopyMultiSample(ViewDepthStencil, 0, ViewDepthStencilNoMSAA, 0, PixelFormat.R24_UNorm_X8_Typeless);
+
+        }
+
         protected virtual void ResolveMSAA(RenderDrawContext drawContext)
         {
             var colorIn = ViewTargetsComposition as IColorTarget;
@@ -310,12 +336,6 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                 drawContext.CommandList.CopyMultiSample(velocityIn.Velocity, 0, velocityOut.Velocity, 0);
             }
 
-            ViewDepthStencilNoMSAA = PushScopedResource(
-                    drawContext.GraphicsContext.Allocator.GetTemporaryTexture2D(TextureDescription.New2D(ViewOutputTarget.Size.Width, ViewOutputTarget.Size.Height,
-                        1, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.ShaderResource | TextureFlags.DepthStencil)));
-
-            drawContext.CommandList.CopyMultiSample(ViewDepthStencil, 0, ViewDepthStencilNoMSAA, 0, PixelFormat.R24_UNorm_X8_Typeless);
-
             var viewsIn = ViewTargetsComposition as IMultipleRenderViews;
             var viewsOut = ViewTargetsCompositionNoMSAA as IMultipleRenderViews;
             if (viewsIn != null && viewsOut != null)
@@ -328,6 +348,41 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
         protected virtual void DrawView(RenderContext context, RenderDrawContext drawContext)
         {
             var renderSystem = context.RenderSystem;
+
+            // Z Prepass
+            var lightProbes = LightProbes && GBufferRenderStage != null;
+            if (lightProbes)
+            {
+                // Note: Baking lightprobe before GBuffer prepass because we are updating some cbuffer parameters needed by Opaque pass that GBuffer pass might upload early
+                PrepareLightprobeConstantBuffer(context);
+
+                // TODO: Temporarily using ShadowMap shader
+                drawContext.CommandList.BeginProfile(Color.Green, "GBuffer");
+
+                using (drawContext.PushRenderTargetsAndRestore())
+                {
+                    drawContext.CommandList.Clear(drawContext.CommandList.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+                    drawContext.CommandList.SetRenderTarget(drawContext.CommandList.DepthStencilBuffer, null);
+
+                    // Draw [main view | z-prepass stage]
+                    renderSystem.Draw(drawContext, context.RenderView, GBufferRenderStage);
+                }
+
+                drawContext.CommandList.EndProfile();
+
+                using (drawContext.PushRenderTargetsAndRestore())
+                {
+                    // If MSAA, resolve depth here (and no need to do it later)
+                    if (actualMSAALevel != MSAALevel.None)
+                    {
+                        ResolveDepthMSAA(drawContext);
+                        drawContext.CommandList.SetRenderTarget(ViewDepthStencilNoMSAA, null);
+                    }
+
+                    // Bake lightprobes against Z-buffer
+                    BakeLightProbes(context, drawContext);
+                }
+            }
 
             using (drawContext.PushRenderTargetsAndRestore())
             {
@@ -366,6 +421,9 @@ namespace SiliconStudio.Xenko.Rendering.Compositing
                     if (actualMSAALevel != MSAALevel.None)
                     {
                         ResolveMSAA(drawContext);
+                        // If lightprobes (which need Z-Prepass) are enabled, depth is already resolved
+                        if (!lightProbes)
+                            ResolveDepthMSAA(drawContext);
                         peInputTargets = ViewTargetsCompositionNoMSAA;
                         peInputDepth = ViewDepthStencilNoMSAA;
                     }

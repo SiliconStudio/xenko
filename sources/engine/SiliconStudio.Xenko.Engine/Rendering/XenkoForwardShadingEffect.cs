@@ -98,6 +98,11 @@ namespace SiliconStudio.Xenko.Rendering
                     {
                         context.Mixin(mixin, (extensionPixelStageSurfaceFilter));
                     }
+                    if (context.ChildEffectName == "GBuffer")
+                    {
+                        context.Mixin(mixin, "GBuffer");
+                        return;
+                    }
                 }
                 context.Mixin(mixin, "XenkoLighting");
                 if (context.ChildEffectName == "ShadowMapCaster")

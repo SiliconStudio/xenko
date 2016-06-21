@@ -111,7 +111,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         {
             var conflict = false;
 
-            foreach (var variable in virtualTable.Variables.Where(variable => Variables.Any(x => x.Variable.Name.Text == variable.Variable.Name.Text)))
+            // Note: we allow conflicts for static variables
+            foreach (var variable in virtualTable.Variables.Where(variable => !variable.Variable.Qualifiers.Contains(SiliconStudio.Shaders.Ast.Hlsl.StorageQualifier.Static) && Variables.Any(x => x.Variable.Name.Text == variable.Variable.Name.Text)))
             {
                 log.Error(XenkoMessageCode.ErrorVariableNameConflict, variable.Variable.Span, variable.Variable, "");
                 conflict = true;

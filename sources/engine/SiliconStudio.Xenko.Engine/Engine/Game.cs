@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Engine
     /// <summary>
     /// Main Game class system.
     /// </summary>
-    public class Game : GameBase
+    public class Game : GameBase, ISceneRendererContext
     {
         /// <summary>
         /// Static event that will be fired when a game is initialized
