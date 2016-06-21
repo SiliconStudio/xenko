@@ -142,6 +142,9 @@ typedef int npBool;
 #define tolower(__x__) __x__ //TODO
 #define toupper(__x__) __x__ //TODO
 
+//android only probably
+extern void __stack_chk_fail_local();
+
 //Vectors
 
 /*
