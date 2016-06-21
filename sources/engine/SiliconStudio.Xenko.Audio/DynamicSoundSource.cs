@@ -62,7 +62,6 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         /// <param name="pcm"></param>
         /// <param name="bufferSize"></param>
-        /// <param name="maxBufferSize"></param>
         /// <param name="endOfStream"></param>
         protected void FillBuffer(IntPtr pcm, int bufferSize, bool endOfStream)
         {
@@ -82,7 +81,6 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         /// <param name="pcm"></param>
         /// <param name="bufferSize"></param>
-        /// <param name="maxBufferSize"></param>
         /// <param name="endOfStream"></param>
         protected unsafe void FillBuffer(short[] pcm, int bufferSize, bool endOfStream)
         {
