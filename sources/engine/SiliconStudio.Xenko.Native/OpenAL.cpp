@@ -127,6 +127,9 @@ extern "C" {
 			
 			//iOS
 			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("/System/Library/Frameworks/OpenAL.framework/OpenAL"); //iOS Apple OpenAL
+
+			//Linux
+			if (!OpenALLibrary) OpenALLibrary = LoadDynamicLibrary("libopenal.so.1");
 			
 			if (!OpenALLibrary) return false;
 
