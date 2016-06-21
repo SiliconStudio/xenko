@@ -135,11 +135,5 @@ namespace SiliconStudio.Xenko.Native
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceIsPlaying", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool SourceIsPlaying(Source source);
-
-#if !SILICONSTUDIO_RUNTIME_CORECLR
-        [SuppressUnmanagedCodeSecurity]
-#endif
-        [DllImport(NativeInvoke.Library, CallingConvention = CallingConvention.Cdecl)]
-        public static extern void xnSleep(int ms);
     }
 }

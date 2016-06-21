@@ -135,7 +135,7 @@ namespace SiliconStudio.Xenko.Audio
                     Sources.Remove(source);
                 }
 
-                AudioLayer.xnSleep(20);
+                NativeInvoke.Sleep(20);
             }
         }
 
