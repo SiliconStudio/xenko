@@ -22,6 +22,30 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
+        protected override unsafe void OnNameChanged()
+        {
+            base.OnNameChanged();
+            //if (GraphicsDevice != null && GraphicsDevice.IsProfilingSupported)
+            //{
+            //    if (string.IsNullOrEmpty(Name))
+            //        return;
+
+            //    var bytes = System.Text.Encoding.ASCII.GetBytes(Name);
+
+            //    fixed (byte* bytesPointer = &bytes[0])
+            //    {
+            //        var nameInfo = new DebugMarkerObjectNameInfo
+            //        {
+            //            StructureType = StructureType.DebugMarkerObjectNameInfo,
+            //            Object = ,
+            //            ObjectName = new IntPtr(bytesPointer),
+            //            ObjectType = 
+            //        };
+            //        GraphicsDevice.NativeDevice.DebugMarkerSetObjectName(ref nameInfo);
+            //    }
+            //}
+        }
+
         protected unsafe void AllocateMemory(MemoryPropertyFlags memoryProperties, MemoryRequirements memoryRequirements)
         {
             if (NativeMemory != DeviceMemory.Null)

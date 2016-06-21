@@ -111,6 +111,16 @@ namespace SiliconStudio.Xenko.Graphics
                     Callback = Marshal.GetFunctionPointerForDelegate(debugReport)
                 };
                 createDebugReportCallback(NativeInstance, ref createInfo, null, out callback);
+
+                var beginDebugMarkerName = System.Text.Encoding.ASCII.GetBytes("vkCmdDebugMarkerBeginEXT");
+                var ptr = NativeInstance.GetProcAddress((byte*)Interop.Fixed(beginDebugMarkerName));
+                if (ptr != IntPtr.Zero)
+                    BeginDebugMarker = (BeginDebugMarkerDelegate)Marshal.GetDelegateForFunctionPointer(ptr, typeof(BeginDebugMarkerDelegate));
+
+                var endDebugMarkerName = System.Text.Encoding.ASCII.GetBytes("vkCmdDebugMarkerEndEXT");
+                ptr = NativeInstance.GetProcAddress((byte*)Interop.Fixed(endDebugMarkerName));
+                if (ptr != IntPtr.Zero)
+                    EndDebugMarker = (EndDebugMarkerDelegate)Marshal.GetDelegateForFunctionPointer(ptr, typeof(EndDebugMarkerDelegate));
             }
             finally
             {
@@ -150,6 +160,16 @@ namespace SiliconStudio.Xenko.Graphics
             Debug.WriteLine($"{flags}: {message} ([{messageCode}] {layerPrefix})");
             return true;
         }
+
+        internal static BeginDebugMarkerDelegate BeginDebugMarker { get; set; }
+
+        internal static EndDebugMarkerDelegate EndDebugMarker { get; set; }
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        internal unsafe delegate void BeginDebugMarkerDelegate(CommandBuffer commandBuffer, DebugMarkerMarkerInfo* markerInfo);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        internal unsafe delegate void EndDebugMarkerDelegate(CommandBuffer commandBuffer);
 
         /// <summary>
         /// Gets the <see cref="Factory1"/> used by all GraphicsAdapter.

@@ -3,6 +3,7 @@
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using SharpVulkan;
@@ -195,9 +196,6 @@ namespace SiliconStudio.Xenko.Graphics
 
             rendererName = Adapter.Description;
 
-            // Profiling is supported through pix markers
-            IsProfilingSupported = true;
-
             RequestedProfile = graphicsProfiles.Last();
 
             if ((deviceCreationFlags & DeviceCreationFlags.Debug) != 0)
@@ -234,7 +232,9 @@ namespace SiliconStudio.Xenko.Graphics
 
             IntPtr[] enabledLayerNames = new IntPtr[0];
 
-            if (false)
+            bool enableDebugging = false;
+
+            if (enableDebugging)
             {
                 var layers = Adapter.PhysicalDevice.DeviceLayerProperties;
                 var availableLayerNames = new HashSet<string>();
@@ -262,29 +262,44 @@ namespace SiliconStudio.Xenko.Graphics
                 DepthClamp = true,
             };
 
-            var enabledExtensionNames = new[]
+            var extensionProperties = Adapter.PhysicalDevice.GetDeviceExtensionProperties();
+            var availableExtensionNames = new List<string>();
+            var desiredExtensionNames = new List<string>();
+
+            for (int index = 0; index < extensionProperties.Length; index++)
             {
-                Marshal.StringToHGlobalAnsi("VK_KHR_swapchain"),
-            };
+                var namePointer = new IntPtr(Interop.Fixed(ref extensionProperties[index].ExtensionName));
+                var name = Marshal.PtrToStringAnsi(namePointer);
+                availableExtensionNames.Add(name);
+            }
+
+            desiredExtensionNames.Add("VK_KHR_swapchain");
+            if (!availableExtensionNames.Contains("VK_KHR_swapchain"))
+                throw new InvalidOperationException();
+
+            if (availableExtensionNames.Contains("VK_EXT_debug_marker") && IsDebugMode)
+            {
+                desiredExtensionNames.Add("VK_EXT_debug_marker");
+                IsProfilingSupported = true;
+            }
+
+            var enabledExtensionNames = desiredExtensionNames.Select(Marshal.StringToHGlobalAnsi).ToArray();
 
             try
             {
-                fixed (void* enabledExtensionNamesPointer = &enabledExtensionNames[0])
+                var deviceCreateInfo = new DeviceCreateInfo
                 {
-                    var deviceCreateInfo = new DeviceCreateInfo
-                    {
-                        StructureType = StructureType.DeviceCreateInfo,
-                        QueueCreateInfoCount = 1,
-                        QueueCreateInfos = new IntPtr(&queueCreateInfo),
-                        EnabledLayerCount = enabledLayerNames != null ? (uint)enabledLayerNames.Length : 0,
-                        EnabledLayerNames = enabledLayerNames?.Length > 0 ? new IntPtr(Interop.Fixed(enabledLayerNames)) : IntPtr.Zero,
-                        EnabledExtensionCount = (uint)enabledExtensionNames.Length,
-                        EnabledExtensionNames = new IntPtr(enabledExtensionNamesPointer),
-                        EnabledFeatures = new IntPtr(&enabledFeature)
-                    };
+                    StructureType = StructureType.DeviceCreateInfo,
+                    QueueCreateInfoCount = 1,
+                    QueueCreateInfos = new IntPtr(&queueCreateInfo),
+                    EnabledLayerCount = enabledLayerNames != null ? (uint)enabledLayerNames.Length : 0,
+                    EnabledLayerNames = enabledLayerNames?.Length > 0 ? new IntPtr(Interop.Fixed(enabledLayerNames)) : IntPtr.Zero,
+                    EnabledExtensionCount = (uint)enabledExtensionNames.Length,
+                    EnabledExtensionNames = enabledExtensionNames.Length > 0 ? new IntPtr(Interop.Fixed(enabledExtensionNames)) : IntPtr.Zero,
+                    EnabledFeatures = new IntPtr(&enabledFeature)
+                };
 
-                    nativeDevice = Adapter.PhysicalDevice.CreateDevice(ref deviceCreateInfo);
-                }
+                nativeDevice = Adapter.PhysicalDevice.CreateDevice(ref deviceCreateInfo);
             }
             finally
             {

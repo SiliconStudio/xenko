@@ -602,6 +602,22 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="name">The name.</param>
         public unsafe void BeginProfile(Color4 profileColor, string name)
         {
+            if (GraphicsDevice.IsProfilingSupported)
+            {
+                var bytes = System.Text.Encoding.ASCII.GetBytes(name);
+
+                fixed (byte* bytesPointer = &bytes[0])
+                {
+                    var debugMarkerInfo = new DebugMarkerMarkerInfo
+                    {
+                        StructureType = StructureType.DebugMarkerMarkerInfo,
+                        MarkerName = new IntPtr(bytesPointer),
+                        Color = *(DebugMarkerMarkerInfo.ColorArray*)&profileColor
+                    };
+                    GraphicsAdapterFactory.BeginDebugMarker(NativeCommandBuffer, &debugMarkerInfo);
+                    //NativeCommandBuffer.DebugMarkerBegin(ref debugMarkerInfo);
+                }
+            }
         }
 
         /// <summary>
@@ -609,6 +625,11 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         public void EndProfile()
         {
+            if (GraphicsDevice.IsProfilingSupported)
+            {
+                GraphicsAdapterFactory.EndDebugMarker(NativeCommandBuffer);
+                //NativeCommandBuffer.DebugMarkerEnd();
+            }
         }
 
         /// <summary>
