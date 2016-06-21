@@ -494,7 +494,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the size of the text in virtual pixels unit
+        /// Gets or sets the font size of the text in points
         /// </summary>
         public float TextSize
         {

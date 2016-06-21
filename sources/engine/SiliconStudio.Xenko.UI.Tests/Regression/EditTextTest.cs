@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 MinimumWidth = 100,
                 Text = "Sample Text1",
                 MaxLength = 35,
-                TextSize = 20,
+                TextSize = 15,
                 SynchronousCharacterGeneration = true
             };
             edit1.DependencyProperties.Set(Canvas.PinOriginPropertyKey, 0.5f * Vector3.One);
@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 MinimumWidth = 100,
                 Text = "secret",
                 MaxLength = 15,
-                TextSize = 24,
+                TextSize = 18,
                 InputType = EditText.InputTypeFlags.Password,
                 SynchronousCharacterGeneration = true
             };
@@ -84,7 +84,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 Font = Content.Load<SpriteFont>("MicrosoftSansSerif15"),
                 MinimumWidth = 200,
                 Text = "aligned text",
-                TextSize = 24,
+                TextSize = 18,
                 SynchronousCharacterGeneration = true
             };
             edit4.DependencyProperties.Set(Canvas.PinOriginPropertyKey, 0.5f * Vector3.One);

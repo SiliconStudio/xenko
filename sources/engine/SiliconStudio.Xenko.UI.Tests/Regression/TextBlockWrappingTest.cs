@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             textBlock = new TextBlock
             {
                 WrapText = true,
-                TextSize = 15,
+                TextSize = 15 * 0.75f,
                 TextColor = Color.Black,
                 Font = Content.Load<SpriteFont>("MSMincho10"),
                 Text = @"This is a very long sentence that will hopefully be wrapped up. 
