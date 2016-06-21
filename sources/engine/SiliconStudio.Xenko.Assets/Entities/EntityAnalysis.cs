@@ -40,13 +40,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
             return entityReferenceVistor.Result;
         }
 
-        [Obsolete("This method does not work anymore.")]
-        public static void UpdateEntityReferences(AssetCompositeHierarchyData<EntityDesign, Entity> entityHierarchy)
-        {
-            // TODO: Either remove this function or make it do something!
-        }
-
-
         private static void FixupEntityReferences(object rootToVisit, AssetCompositeHierarchyData<EntityDesign, Entity> entityHierarchy)
         {
             var entityAnalysisResult = Visit(rootToVisit);

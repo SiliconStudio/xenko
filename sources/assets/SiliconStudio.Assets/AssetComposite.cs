@@ -89,5 +89,7 @@ namespace SiliconStudio.Assets
         public abstract void SetPart(Guid id, Guid baseId, Guid basePartInstanceId);
 
         public abstract bool ContainsPart(Guid id);
+
+        public abstract void FixupPartReferences();
     }
 }

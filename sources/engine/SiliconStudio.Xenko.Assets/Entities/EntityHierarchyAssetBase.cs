@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Diff;
+using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
@@ -17,6 +18,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
     /// Base class for entity assets (<see cref="SceneAsset"/> and <see cref="PrefabAsset"/>)
     /// </summary>
     [DataContract]
+    [AssetPartReference(typeof(Entity), typeof(EntityComponent))]
+    [AssetPartReference(typeof(EntityComponent), ReferenceType = typeof(EntityComponentReference))]
     public abstract partial class EntityHierarchyAssetBase : AssetCompositeHierarchy<EntityDesign, Entity>
     {
         /// <summary>
@@ -282,6 +285,11 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 ids.Add(it.Key);
             }
             return mapBaseToInstanceIds;
+        }
+
+        public override void FixupPartReferences()
+        {
+            EntityAnalysis.FixupEntityReferences(this);
         }
     }
 }

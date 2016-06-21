@@ -61,6 +61,10 @@
     <Compile Include="Analysis\AssetReferenceLink.cs" />
     <Compile Include="AssetPartCollection.cs" />
     <Compile Include="IAssetPartDesign.cs" />
+    <Compile Include="Serializers\AssetPartReferenceAttribute.cs" />
+    <Compile Include="Serializers\AssetCompositeSerializer.cs" />
+    <Compile Include="Serializers\IAssetPartReference.cs" />
+    <Compile Include="Serializers\IdentifiableAssetPartReference.cs" />
     <Compile Include="Tracking\AssetSourceTracker.cs" />
     <Compile Include="Analysis\CommonAnalysis.cs" />
     <Compile Include="Analysis\IContentLink.cs" />
