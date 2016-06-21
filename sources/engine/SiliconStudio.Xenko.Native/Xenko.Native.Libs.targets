@@ -8,6 +8,6 @@
 
   <ItemGroup>
     <SiliconStudioXenkoNativePathLibs2 Condition="'$(SiliconStudioPlatform)' == 'iOS'" Include="$(XenkoDependenciesDir)\NativePath\iOS\libNativePath.a;$(XenkoDependenciesDir)\NativePath\iOS\libCelt.a" />
-    <SiliconStudioXenkoNativePathLibs2 Condition="'$(SiliconStudioPlatform)' == 'Linux' or '$(SiliconStudioPlatform)' == 'Android'" Include="libNativePath.a;libCelt.a" />
+    <SiliconStudioXenkoNativePathLibs2 Condition="'$(SiliconStudioPlatform)' == 'Linux' or '$(SiliconStudioPlatform)' == 'Android'" Include="libCelt.a;libNativePath.a" />
   </ItemGroup>
 </Project>
