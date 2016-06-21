@@ -12,7 +12,9 @@ namespace SiliconStudio.Xenko.Audio
         public static AudioEngine NewAudioEngine()
         {
 #if SILICONSTUDIO_PLATFORM_ANDROID
-            return new AudioEngineAndroid();
+            var engine = new AudioEngine();
+            engine.InitializeAudioEngine();
+            return engine;
 #elif SILICONSTUDIO_PLATFORM_IOS        
             var engine = new AudioEngineIos();
             engine.InitializeAudioEngine();

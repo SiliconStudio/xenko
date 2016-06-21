@@ -12,3 +12,4 @@ using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("SiliconStudio.Xenko.Graphics")]
 [assembly: InternalsVisibleTo("SiliconStudio.Xenko.Audio")]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Engine")]

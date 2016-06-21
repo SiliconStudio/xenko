@@ -57,6 +57,9 @@
     <None Include="XAudio2.cpp" />
     <None Include="Celt.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="OpenSLES.cpp" />
+  </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
