@@ -31,13 +31,15 @@ namespace SiliconStudio.Xenko.Games
     /// </summary>
     public partial class GameContextWindowsRuntime : GameContextWindows<SwapChainPanel>
     {
+        // Used internally by systems such as UI to capture input in a TextBox
+        internal TextBox EditTextBox = new TextBox();
+
         /// <inheritDoc/>
         public GameContextWindowsRuntime(SwapChainPanel control, int requestedWidth = 0, int requestedHeight = 0)
             : base (control ?? new SwapChainPanel(), requestedWidth, requestedHeight)
         {
             ContextType = AppContextType.WindowsRuntime;
         }
-
     }
 }
 #endif

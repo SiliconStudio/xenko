@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Shaders
         /// <param name="mixin">The mixin.</param>
         /// <param name="mixinParameters">The mixin parameters.</param>
         /// <returns>EffectObjectIds.</returns>
-        public static ObjectId Compute(ShaderMixinSource mixin, CompilerParameters compilerParameters)
+        public static ObjectId Compute(ShaderMixinSource mixin, EffectCompilerParameters effectCompilerParameters)
         {
             lock (generatorLock)
             {
@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Shaders
                 {
                     generator = new ShaderMixinObjectId();
                 }
-                return generator.ComputeInternal(mixin, compilerParameters);
+                return generator.ComputeInternal(mixin, effectCompilerParameters);
             }
         }
 
@@ -75,17 +75,17 @@ namespace SiliconStudio.Xenko.Shaders
             }
         }
 
-        private unsafe ObjectId ComputeInternal(ShaderMixinSource mixin, CompilerParameters compilerParameters)
+        private unsafe ObjectId ComputeInternal(ShaderMixinSource mixin, EffectCompilerParameters effectCompilerParameters)
         {
             // Write to memory stream
             memStream.Position = 0;
             writer.Write(EffectBytecode.MagicHeader); // Write the effect bytecode magic header
             writer.Write(mixin);
 
-            writer.Write(compilerParameters.EffectParameters.Platform);
-            writer.Write(compilerParameters.EffectParameters.Profile);
-            writer.Write(compilerParameters.EffectParameters.Debug);
-            writer.Write(compilerParameters.EffectParameters.OptimizationLevel);
+            writer.Write(effectCompilerParameters.Platform);
+            writer.Write(effectCompilerParameters.Profile);
+            writer.Write(effectCompilerParameters.Debug);
+            writer.Write(effectCompilerParameters.OptimizationLevel);
 
             // Compute hash
             objectIdBuilder.Reset();

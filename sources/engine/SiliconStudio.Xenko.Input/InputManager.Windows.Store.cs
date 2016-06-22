@@ -504,6 +504,12 @@ namespace SiliconStudio.Xenko.Input
 
         private bool HandleKey(VirtualKey virtualKey, CorePhysicalKeyStatus keyStatus, InputEventType type)
         {
+            // If our EditText TextBox is active, let's ignore all key events
+            if (Game.Context is GameContextWindowsRuntime && ((GameContextWindowsRuntime)Game.Context).EditTextBox.Parent != null)
+            {
+                return false;
+            }
+
             // Remap certain keys
             switch (virtualKey)
             {

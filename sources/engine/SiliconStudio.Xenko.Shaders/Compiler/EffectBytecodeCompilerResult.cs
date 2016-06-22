@@ -21,16 +21,23 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
         /// </summary>
         public readonly LoggerResult CompilationLog;
 
-        public EffectBytecodeCompilerResult(EffectBytecode bytecode) : this()
+        /// <summary>
+        /// Gets or sets a value that specifies how the shader was loaded.
+        /// </summary>
+        public readonly EffectBytecodeCacheLoadSource LoadSource;
+
+        public EffectBytecodeCompilerResult(EffectBytecode bytecode, EffectBytecodeCacheLoadSource loadSource) : this()
         {
             Bytecode = bytecode;
             CompilationLog = emptyLoggerResult;
+            LoadSource = loadSource;
         }
 
         public EffectBytecodeCompilerResult(EffectBytecode bytecode, LoggerResult compilationLog)
         {
             Bytecode = bytecode;
             CompilationLog = compilationLog;
+            LoadSource = EffectBytecodeCacheLoadSource.JustCompiled;
         }
     }
 }
