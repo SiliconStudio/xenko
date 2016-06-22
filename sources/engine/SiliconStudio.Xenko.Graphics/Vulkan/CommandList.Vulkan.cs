@@ -399,7 +399,6 @@ namespace SiliconStudio.Xenko.Graphics
                 var oldAccessMask = texture.NativeAccessMask;
 
                 var sourceStages = resource.NativePipelineStageMask;
-                var destinationStages = PipelineStageFlags.TopOfPipe;
 
                 switch (newState)
                 {
@@ -423,11 +422,16 @@ namespace SiliconStudio.Xenko.Graphics
                         texture.NativeAccessMask = AccessFlags.ShaderRead;
                         texture.NativePipelineStageMask = PipelineStageFlags.FragmentShader;
                         break;
+                    case GraphicsResourceState.GenericRead:
+                        texture.NativeLayout = ImageLayout.General;
+                        texture.NativeAccessMask = AccessFlags.ShaderRead | AccessFlags.TransferRead | AccessFlags.IndirectCommandRead | AccessFlags.ColorAttachmentRead | AccessFlags.DepthStencilAttachmentRead | AccessFlags.InputAttachmentRead | AccessFlags.VertexAttributeRead | AccessFlags.IndexRead | AccessFlags.UniformRead;
+                        texture.NativePipelineStageMask = PipelineStageFlags.AllCommands;
+                        break;
                     default:
                         texture.NativeLayout = ImageLayout.General;
                         texture.NativeAccessMask = (AccessFlags)0x1FFFF; // TODO VULKAN: Don't hard-code this
                         texture.NativePipelineStageMask = PipelineStageFlags.AllCommands;
-                        throw new NotImplementedException();
+                        break;
                 }
 
                 if (oldLayout == texture.NativeLayout && oldAccessMask == texture.NativeAccessMask)

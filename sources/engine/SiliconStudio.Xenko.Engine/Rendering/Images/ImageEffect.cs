@@ -144,7 +144,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             for (int i = 0; i <= maxInputTextureIndex; ++i)
             {
                 if (inputTextures[i] != null)
-                    context.CommandList.ResourceBarrierTransition(inputTextures[i], GraphicsResourceState.GenericRead);
+                    context.CommandList.ResourceBarrierTransition(inputTextures[i], GraphicsResourceState.PixelShaderResource);
             }
 
             if (outputRenderTargetView != null)
