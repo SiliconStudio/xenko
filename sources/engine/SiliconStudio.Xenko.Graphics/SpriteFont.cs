@@ -227,7 +227,6 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal void InternalDrawGlyph(ref InternalDrawCommand parameters, ref Vector2 fontSize, ref Glyph glyph, float x, float y, float nextx, ref Vector2 auxiliaryScaling)
         {
-            // TODO Do we need auxiliaryScaling
             if (char.IsWhiteSpace((char)glyph.Character) || glyph.Subrect.Width == 0 || glyph.Subrect.Height == 0)
                 return;
 
@@ -252,9 +251,9 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal void InternalUIDraw(CommandList commandList, ref StringProxy text, ref InternalUIDrawCommand drawCommand)
         {
-            // TODO SignedDistanceFieldFont might allow non-uniform scaling
-            var requestedFontSize = new Vector2(drawCommand.RequestedFontSize * drawCommand.RealVirtualResolutionRatio.Y); // we don't want to have letters with non uniform ratio
-            //var scaledSize = new Vector2(drawCommand.Size.X * drawCommand.RealVirtualResolutionRatio.X, drawCommand.Size.Y * drawCommand.RealVirtualResolutionRatio.Y);
+            // We don't want to have letters with non uniform ratio
+            var requestedFontSize = new Vector2(drawCommand.RequestedFontSize * drawCommand.RealVirtualResolutionRatio.Y);
+
             var textBoxSize = drawCommand.TextBoxSize * drawCommand.RealVirtualResolutionRatio;
             ForEachGlyph(commandList, ref text, ref requestedFontSize, internalUIDrawGlyphAction, ref drawCommand, drawCommand.Alignment, true, textBoxSize);
         }

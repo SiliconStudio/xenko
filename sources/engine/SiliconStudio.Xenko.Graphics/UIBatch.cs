@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Graphics.Font;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Graphics
@@ -454,13 +453,7 @@ namespace SiliconStudio.Xenko.Graphics
                 float scaling = drawCommand.RequestedFontSize / font.Size;
                 drawCommand.RealVirtualResolutionRatio = 1f / new Vector2(scaling, scaling);
             }
-            //else
-            //if (font.FontType == SpriteFontType.Dynamic)
-            //{
-            //    // Do nothing - Dynamic (RuntimeRasterized) font rescales itself just before drawing the glyph, so skip changes here
-            //}
-            else
-            if ((font.FontType == SpriteFontType.Static) && (drawCommand.RealVirtualResolutionRatio.X != 1 || drawCommand.RealVirtualResolutionRatio.Y != 1)) 
+            else if ((font.FontType == SpriteFontType.Static) && (drawCommand.RealVirtualResolutionRatio.X != 1 || drawCommand.RealVirtualResolutionRatio.Y != 1)) 
             {
                 drawCommand.SnapText = false;   // we don't want snapping of the resolution of the screen does not match virtual resolution. (character alignment problems)
                 drawCommand.RealVirtualResolutionRatio = Vector2.One; // ensure that static font are not scaled internally
