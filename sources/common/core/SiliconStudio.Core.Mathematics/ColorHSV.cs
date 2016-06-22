@@ -3,17 +3,18 @@
 using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
-using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Core.Mathematics
 {
     /// <summary>
     /// Represents a color in the form of Hue, Saturation, Value, Alpha.
     /// </summary>
-    [DataContract]
+    [DataContract("ColorHSV")]
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct ColorHSV : IEquatable<ColorHSV>, IFormattable
     {
+        private const string ToStringFormat = "Hue:{0} Saturation:{1} Value:{2} Alpha:{3}";
+
         /// <summary>
         /// The Hue of the color.
         /// </summary>
@@ -139,62 +140,59 @@ namespace SiliconStudio.Core.Mathematics
             }
         }
 
-        private const string ColorHSVFormat = "Hue:{0} Saturation:{1} Value:{2} Alpha:{3}";
-
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="string"/> that represents this instance.
         /// </returns>
         public override string ToString()
         {
-            return string.Format(CultureInfo.CurrentCulture, ColorHSVFormat, H, S, V, A);
+            return ToString(CultureInfo.CurrentCulture);
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
         /// <param name="format">The format.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="string"/> that represents this instance.
         /// </returns>
         public string ToString(string format)
         {
-            if (format == null)
-                return ToString();
-
-            return string.Format(CultureInfo.CurrentCulture, ColorHSVFormat, H.ToString(format, CultureInfo.CurrentCulture),
-                S.ToString(format, CultureInfo.CurrentCulture), V.ToString(format, CultureInfo.CurrentCulture), A.ToString(format, CultureInfo.CurrentCulture));
+            return ToString(format, CultureInfo.CurrentCulture);
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="string"/> that represents this instance.
         /// </returns>
         public string ToString(IFormatProvider formatProvider)
         {
-            return string.Format(formatProvider, ColorHSVFormat, H, S, V, A);
+            return string.Format(formatProvider, ToStringFormat, H, S, V, A);
         }
 
         /// <summary>
-        /// Returns a <see cref="System.String"/> that represents this instance.
+        /// Returns a <see cref="string"/> that represents this instance.
         /// </summary>
         /// <param name="format">The format.</param>
         /// <param name="formatProvider">The format provider.</param>
         /// <returns>
-        /// A <see cref="System.String"/> that represents this instance.
+        /// A <see cref="string"/> that represents this instance.
         /// </returns>
         public string ToString(string format, IFormatProvider formatProvider)
         {
             if (format == null)
                 return ToString(formatProvider);
 
-            return string.Format(formatProvider, ColorHSVFormat, H.ToString(format, formatProvider),
-                S.ToString(format, formatProvider), V.ToString(format, formatProvider), A.ToString(format, formatProvider));
+            return string.Format(formatProvider, ToStringFormat,
+                                 H.ToString(format, formatProvider),
+                                 S.ToString(format, formatProvider),
+                                 V.ToString(format, formatProvider),
+                                 A.ToString(format, formatProvider));
         }
     }
 }

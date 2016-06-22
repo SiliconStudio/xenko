@@ -153,16 +153,18 @@ namespace SiliconStudio.Xenko.Physics
             if (physicsSystem == null)
             {
                 physicsSystem = new Bullet2PhysicsSystem(Services);
-                var game = Services.GetServiceAs<IGame>();
-                game?.GameSystems.Add(physicsSystem);
+                var gameSystems = Services.GetServiceAs<IGameSystemCollection>();
+                gameSystems.Add(physicsSystem);
             }
+
+            ((IReferencable)physicsSystem).AddReference();
 
             debugShapeRendering = Services.GetServiceAs<PhysicsShapesRenderingService>();
             if (debugShapeRendering == null)
             {
                 debugShapeRendering = new PhysicsShapesRenderingService(Services);
-                var game = Services.GetServiceAs<IGame>();
-                game?.GameSystems.Add(debugShapeRendering);
+                var gameSystems = Services.GetServiceAs<IGameSystemCollection>();
+                gameSystems.Add(debugShapeRendering);
             }
 
             Simulation = physicsSystem.Create(this);
@@ -173,6 +175,7 @@ namespace SiliconStudio.Xenko.Physics
         protected override void OnSystemRemove()
         {
             physicsSystem.Release(this);
+            ((IReferencable)physicsSystem).Release();
         }
 
         internal void UpdateCharacters()

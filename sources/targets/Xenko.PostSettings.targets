@@ -211,7 +211,7 @@
   <!-- Copy the libfreetype.a libraries to the project root directory for future native link.
        Note: this target is redefined in References.targets for user projects -->
   <Target Name="CopyXenkoNativeLibraries" Condition=" '$(SiliconStudioPlatform)' == 'iOS' and '$(OutputType)' == 'Exe'">
-    <Copy SourceFiles="$(XenkoDependenciesDir)freetype-2.5.3\$(SiliconStudioPlatform)\libfreetype.a" DestinationFolder="$(ProjectDir)"/>
+    <Copy SourceFiles="$(XenkoDependenciesDir)freetype\$(SiliconStudioPlatform)\libfreetype.a" DestinationFolder="$(ProjectDir)"/>
   </Target>
 
 </Project>

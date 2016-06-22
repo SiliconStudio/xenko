@@ -13,6 +13,7 @@ namespace SiliconStudio.Xenko.Engine.Design
         Editor = 2,
         Thumbnail = 4,
         Preview = 8,
-        All = Runtime | Editor | Thumbnail | Preview,
+        EffectCompile = 16,
+        All = Runtime | Editor | Thumbnail | Preview | EffectCompile,
     }
 }

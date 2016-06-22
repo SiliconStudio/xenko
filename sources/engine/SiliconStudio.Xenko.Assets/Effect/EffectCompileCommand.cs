@@ -141,7 +141,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
                     // Create compiler
                     var effectCompiler = new Shaders.Compiler.EffectCompiler();
                     effectCompiler.SourceDirectories.Add(EffectCompilerBase.DefaultSourceShaderFolder);
-                    compiler = new EffectCompilerCache(effectCompiler);
+                    compiler = new EffectCompilerCache(effectCompiler) { CurrentCache = EffectBytecodeCacheLoadSource.StartupCache };
                     context.Properties.Set(CompilerKey, compiler);
 
                     var shaderLocations = context.Properties.Get(EffectShaderAssetCompiler.ShaderLocationsKey);

@@ -3500,7 +3500,8 @@ namespace SiliconStudio.Shaders.Convertor
                     }
                 }
 
-                if (CurrentFunction.Semantic() != null)
+                // Note: if we return a struct but the method also has a semantic, it is ignored as the struct members should contain the semantic
+                if (structType == null && CurrentFunction.Semantic() != null)
                 {
                     var semantic = CurrentFunction.Semantic();
                     statementList.Add(
