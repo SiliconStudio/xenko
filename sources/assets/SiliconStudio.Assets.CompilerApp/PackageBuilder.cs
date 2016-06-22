@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.ServiceModel;
 
@@ -15,6 +16,7 @@ using SiliconStudio.Core.Serialization.Assets;
 
 using System.Threading;
 using SiliconStudio.Xenko.Assets;
+using SiliconStudio.Xenko.Assets.Effect;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Assets.CompilerApp
@@ -28,7 +30,7 @@ namespace SiliconStudio.Assets.CompilerApp
         public PackageBuilder(PackageBuilderOptions packageBuilderOptions)
         {
             if (packageBuilderOptions == null) throw new ArgumentNullException("packageBuilderOptions");
-            
+
             builderOptions = packageBuilderOptions;
         }
 
@@ -146,6 +148,11 @@ namespace SiliconStudio.Assets.CompilerApp
                 if (assetBuildResult.HasErrors)
                     return BuildResultCode.BuildError;
 
+                // Add specific steps to generate shaders
+                // TODO: This doesn't really belong here, where should we move it?
+                assetBuildResult.BuildSteps.Add(new WaitBuildStep());
+                assetBuildResult.BuildSteps.Add(new CompileDefaultSceneEffectCommand(context, package));
+
                 // Create the builder
                 var indexName = "index." + builderOptions.BuildProfile;
                 builder = new Builder(builderOptions.Logger, buildDirectory, builderOptions.BuildProfile, indexName) { ThreadCount = builderOptions.ThreadCount };
@@ -190,7 +197,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 localLogger.CopyTo(builderOptions.Logger);
                 return BuildResultCode.BuildError;
             }
-        
+
             var settings = simplePackage.GetGameSettingsAsset();
             var renderingSettings = settings.Get<RenderingSettings>();
 

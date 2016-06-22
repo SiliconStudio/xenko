@@ -26,6 +26,7 @@ namespace SiliconStudio.Xenko.Rendering
         private uint[] viewRenderStageMask;
 
         internal bool NeedActiveRenderStageReevaluation;
+        internal bool DisableCulling;
 
         public readonly StaticObjectPropertyKey<uint> RenderStageMaskKey;
         public const int RenderStageMaskSizePerEntry = 32; // 32 bits per uint
@@ -102,7 +103,7 @@ namespace SiliconStudio.Xenko.Rendering
             // Create the bounding frustum locally on the stack, so that frustum.Contains is performed with boundingBox that is also on the stack
             // TODO GRAPHICS REFACTOR frustum culling is currently hardcoded (cf previous TODO, we should make this more modular and move it out of here)
             var frustum = new BoundingFrustum(ref view.ViewProjection);
-            var cullingMode = view.CullingMode;
+            var cullingMode = DisableCulling ? CameraCullingMode.None : view.CullingMode;
 
             // TODO GRAPHICS REFACTOR we currently forward SceneCameraRenderer.CullingMask
             // Note sure this is really a good mechanism long term (it forces to recreate multiple time the same view, instead of using RenderStage + selectors or a similar mechanism)

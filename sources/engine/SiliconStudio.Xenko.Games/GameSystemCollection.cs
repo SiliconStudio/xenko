@@ -24,13 +24,14 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Xenko.Games
 {
     /// <summary>A collection of game components.</summary>
-    public class GameSystemCollection : TrackingCollection<IGameSystemBase>
+    public class GameSystemCollection : TrackingCollection<IGameSystemBase>, IGameSystemCollection, IDisposable
     {
         private readonly List<IGameSystemBase> pendingGameSystems;
         private readonly List<KeyValuePair<IDrawable, ProfilingKey>> drawableGameSystems;
@@ -41,7 +42,7 @@ namespace SiliconStudio.Xenko.Games
         private readonly List<KeyValuePair<IUpdateable, ProfilingKey>> currentlyUpdatingGameSystems;
         private bool isFirstUpdateDone = false;
 
-        public GameSystemCollection()
+        public GameSystemCollection(IServiceRegistry registry)
         {
             drawableGameSystems = new List<KeyValuePair<IDrawable, ProfilingKey>>();
             currentlyContentGameSystems = new List<IContentable>();
@@ -50,6 +51,8 @@ namespace SiliconStudio.Xenko.Games
             updateableGameSystems = new List<KeyValuePair<IUpdateable, ProfilingKey>>();
             currentlyUpdatingGameSystems = new List<KeyValuePair<IUpdateable, ProfilingKey>>();
             contentableGameSystems = new List<IContentable>();
+
+            registry.AddService(typeof(IGameSystemCollection), this);
 
             // Register events on GameSystems.
             CollectionChanged += GameSystems_CollectionChanged;
@@ -227,6 +230,16 @@ namespace SiliconStudio.Xenko.Games
             }
         }
 
+        public void Dispose()
+        {
+            var array = new IGameSystemBase[Count];
+            CopyTo(array, 0);
+            for (int i = array.Length - 1; i >= 0; i--)
+            {
+                var disposable = array[i] as IDisposable;
+                disposable?.Dispose();
+            }
+        }
 
         void GameSystems_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
         {
