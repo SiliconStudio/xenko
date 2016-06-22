@@ -82,7 +82,7 @@ namespace SiliconStudio.Quantum
         /// </summary>
         public GraphNodeLinker()
         {
-            visitor = new GraphNodeLinkerVisitor(this);
+            visitor = new GraphNodeLinkerVisitor(this) { ShouldVisit = ShouldVisitSourceNode };
         }
 
         /// <summary>
@@ -99,6 +99,17 @@ namespace SiliconStudio.Quantum
         {
             visitor.Reset(sourceNode, targetNode);
             visitor.Visit(sourceNode);
+        }
+
+        /// <summary>
+        /// Indicates whether the linker should visit the given source node.
+        /// </summary>
+        /// <param name="graphNode">The source node to evaluate.</param>
+        /// <param name="graphNodePath">The current path to the source node. This path will be relative to the node passed to <see cref="LinkGraph"/>.</param>
+        /// <returns>True if the node should be visited, false otherwise.</returns>
+        protected virtual bool ShouldVisitSourceNode(IGraphNode graphNode, GraphNodePath graphNodePath)
+        {
+            return true;
         }
 
         /// <summary>
