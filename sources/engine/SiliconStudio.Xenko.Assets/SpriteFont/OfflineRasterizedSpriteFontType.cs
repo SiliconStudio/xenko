@@ -16,8 +16,8 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     {
         /// <inheritdoc/>
         [DataMember(30)]
-        [DefaultValue(16.0f)]
-        public override float Size { get; set; } = 16.0f;
+        [DefaultValue(21.33333f)]
+        public override float Size { get; set; } = 21.33333f;
 
         /// <summary>
         ///  Gets or sets the text file referencing which characters to include when generating the static fonts (eg. "ABCDEF...")
