@@ -268,9 +268,10 @@ extern "C" {
 			MakeContextCurrent(NULL);
 		}
 
-		xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener, int sampleRate, npBool mono, npBool spatialized)
+		xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener, int sampleRate, int maxNBuffers, npBool mono, npBool spatialized, npBool streamed)
 		{
 			(void)spatialized;
+			(void)streamed;
 
 			auto res = new xnAudioSource;
 			res->listener = listener;
@@ -482,7 +483,7 @@ extern "C" {
 			return value == AL_PLAYING;
 		}
 
-		xnAudioBuffer* xnAudioBufferCreate()
+		xnAudioBuffer* xnAudioBufferCreate(int maxBufferSize)
 		{
 			auto res = new xnAudioBuffer;
 			GenBuffers(1, &res->buffer);

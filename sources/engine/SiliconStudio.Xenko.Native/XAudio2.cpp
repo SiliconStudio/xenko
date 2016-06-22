@@ -1052,9 +1052,11 @@ extern "C" {
 			void __stdcall OnVoiceError(void* context, HRESULT error) override;
 		};
 
-		xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener, int sampleRate, int maxNBuffers, npBool mono, npBool spatialized)
+		xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener, int sampleRate, int maxNBuffers, npBool mono, npBool spatialized, npBool streamed)
 		{
-			xnAudioSource* res = new xnAudioSource;
+			(void)streamed;
+
+			auto res = new xnAudioSource;
 			res->listener_ = listener;
 			res->playing_ = false;
 			res->sampleRate_ = sampleRate;
@@ -1085,7 +1087,7 @@ extern "C" {
 
 			res->freeBuffers = new xnAudioBuffer*[maxNBuffers];
 			res->freeBuffersMax = maxNBuffers;
-			for (int i = 0; i < maxNBuffers; i++)
+			for (auto i = 0; i < maxNBuffers; i++)
 			{
 				res->freeBuffers[i] = NULL;
 			}

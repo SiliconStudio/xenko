@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Audio
             this.engine = engine;
             this.spatialized = spatialized;
             soundSource = dynamicSoundSource;
-            Source = AudioLayer.SourceCreate(listener.Listener, sampleRate, dynamicSoundSource.MaxNumberOfBuffers, mono, spatialized);
+            Source = AudioLayer.SourceCreate(listener.Listener, sampleRate, dynamicSoundSource.MaxNumberOfBuffers, mono, spatialized, true);
             if (Source.Ptr == IntPtr.Zero)
             {
                 throw new Exception("Failed to create an AudioLayer Source");
@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Audio
             sound = staticSound;
             spatialized = staticSound.Spatialized;
 
-            Source = AudioLayer.SourceCreate(listener.Listener, staticSound.SampleRate, staticSound.StreamFromDisk ? CompressedSoundSource.NumberOfBuffers : 1, staticSound.Channels == 1, spatialized);
+            Source = AudioLayer.SourceCreate(listener.Listener, staticSound.SampleRate, staticSound.StreamFromDisk ? CompressedSoundSource.NumberOfBuffers : 1, staticSound.Channels == 1, spatialized, staticSound.StreamFromDisk);
             if (Source.Ptr == IntPtr.Zero)
             {
                 throw new Exception("Failed to create an AudioLayer Source");
