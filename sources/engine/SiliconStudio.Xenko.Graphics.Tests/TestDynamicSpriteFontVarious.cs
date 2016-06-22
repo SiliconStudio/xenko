@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public TestDynamicSpriteFontVarious()
         {
-            CurrentVersion = 1;
+            CurrentVersion = 2; // Sizes changed from points to pixels
         }
 
         protected override void RegisterTests()
@@ -85,22 +85,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             var x = 20;
             var y = 10;
-
-            var size = 8;
+            
+            var size = 11;
             msMincho10.PreGenerateGlyphs(BuildTextSize(size), size * Vector2.One);
             var dim = msMincho10.MeasureString(BuildTextSize(size), size);
             spriteBatch.DrawString(msMincho10, BuildTextSize(size), size, new Vector2(x, y), Color.White);
-            size = 10;
-            y += (int)Math.Ceiling(dim.Y);
-            msMincho10.PreGenerateGlyphs(BuildTextSize(size), size * Vector2.One);
-            dim = msMincho10.MeasureString(BuildTextSize(size), size);
-            spriteBatch.DrawString(msMincho10, BuildTextSize(size), size, new Vector2(x, y), Color.White);
-            size = 12;
-            y += (int)Math.Ceiling(dim.Y);
-            msMincho10.PreGenerateGlyphs(BuildTextSize(size), size * Vector2.One);
-            dim = msMincho10.MeasureString(BuildTextSize(size), size);
-            spriteBatch.DrawString(msMincho10, BuildTextSize(size), size, new Vector2(x, y), Color.White);
-            size = 14;
+            size = 13;
             y += (int)Math.Ceiling(dim.Y);
             msMincho10.PreGenerateGlyphs(BuildTextSize(size), size * Vector2.One);
             dim = msMincho10.MeasureString(BuildTextSize(size), size);
@@ -110,12 +100,22 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             msMincho10.PreGenerateGlyphs(BuildTextSize(size), size * Vector2.One);
             dim = msMincho10.MeasureString(BuildTextSize(size), size);
             spriteBatch.DrawString(msMincho10, BuildTextSize(size), size, new Vector2(x, y), Color.White);
-            size = 20;
+            size = 19;
             y += (int)Math.Ceiling(dim.Y);
             msMincho10.PreGenerateGlyphs(BuildTextSize(size), size * Vector2.One);
             dim = msMincho10.MeasureString(BuildTextSize(size), size);
             spriteBatch.DrawString(msMincho10, BuildTextSize(size), size, new Vector2(x, y), Color.White);
-            size = 25;
+            size = 21;
+            y += (int)Math.Ceiling(dim.Y);
+            msMincho10.PreGenerateGlyphs(BuildTextSize(size), size * Vector2.One);
+            dim = msMincho10.MeasureString(BuildTextSize(size), size);
+            spriteBatch.DrawString(msMincho10, BuildTextSize(size), size, new Vector2(x, y), Color.White);
+            size = 27;
+            y += (int)Math.Ceiling(dim.Y);
+            msMincho10.PreGenerateGlyphs(BuildTextSize(size), size * Vector2.One);
+            dim = msMincho10.MeasureString(BuildTextSize(size), size);
+            spriteBatch.DrawString(msMincho10, BuildTextSize(size), size, new Vector2(x, y), Color.White);
+            size = 33;
             y += (int)Math.Ceiling(dim.Y);
             msMincho10.PreGenerateGlyphs(BuildTextSize(size), size * Vector2.One);
             dim = msMincho10.MeasureString(BuildTextSize(size), size);
@@ -147,15 +147,15 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             // print varying text
             y += (int)Math.Ceiling(dim.Y) + 10;
-            msMincho10.PreGenerateGlyphs(varyingString.ToString(), 16 * Vector2.One);
-            spriteBatch.DrawString(msMincho10, varyingString, 16, new Vector2(x, y), Color.White);
+            msMincho10.PreGenerateGlyphs(varyingString.ToString(), 21 * Vector2.One);
+            spriteBatch.DrawString(msMincho10, varyingString, 21, new Vector2(x, y), Color.White);
 
             spriteBatch.End();
         }
 
         private string BuildTextSize(int size)
         {
-            return "MS Mincho size " + size +" pts. 漢字のサイズは" + size + "点。";
+            return "MS Mincho size " + size +" pixels. 漢字のサイズは" + size + "ピクセル。";
         }
 
         public static void Main()
