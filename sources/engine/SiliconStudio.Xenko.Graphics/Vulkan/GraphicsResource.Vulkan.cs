@@ -13,6 +13,7 @@ namespace SiliconStudio.Xenko.Graphics
     {
         internal DeviceMemory NativeMemory;
         internal long StagingFenceValue;
+        internal PipelineStageFlags NativePipelineStageMask;
 
         protected bool IsDebugMode
         {

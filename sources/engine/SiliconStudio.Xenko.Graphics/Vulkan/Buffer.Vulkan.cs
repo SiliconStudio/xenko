@@ -108,24 +108,28 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 createInfo.Usage |= BufferUsageFlags.VertexBuffer;
                 NativeAccessMask |= AccessFlags.VertexAttributeRead;
+                NativePipelineStageMask |= PipelineStageFlags.VertexInput;
             }
 
             if ((ViewFlags & BufferFlags.IndexBuffer) != 0)
             {
                 createInfo.Usage |= BufferUsageFlags.IndexBuffer;
                 NativeAccessMask |= AccessFlags.IndexRead;
+                NativePipelineStageMask |= PipelineStageFlags.VertexInput;
             }
 
             if ((ViewFlags & BufferFlags.ConstantBuffer) != 0)
             {
                 createInfo.Usage |= BufferUsageFlags.UniformBuffer;
                 NativeAccessMask |= AccessFlags.UniformRead;
+                NativePipelineStageMask |= PipelineStageFlags.VertexShader | PipelineStageFlags.FragmentShader;
             }
 
             if ((ViewFlags & BufferFlags.ShaderResource) != 0)
             {
                 createInfo.Usage |= BufferUsageFlags.UniformTexelBuffer;
                 NativeAccessMask |= AccessFlags.ShaderRead;
+                NativePipelineStageMask |= PipelineStageFlags.VertexShader | PipelineStageFlags.FragmentShader;
 
                 if ((ViewFlags & BufferFlags.UnorderedAccess) != 0)
                 {

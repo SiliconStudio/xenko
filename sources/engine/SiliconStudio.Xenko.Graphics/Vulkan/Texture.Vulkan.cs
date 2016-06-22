@@ -142,6 +142,12 @@ namespace SiliconStudio.Xenko.Graphics
                 if (NativeLayout == ImageLayout.ShaderReadOnlyOptimal)
                     NativeAccessMask = AccessFlags.ShaderRead | AccessFlags.InputAttachmentRead;
 
+                NativePipelineStageMask =
+                    IsRenderTarget ? PipelineStageFlags.ColorAttachmentOutput :
+                    IsDepthStencil ? PipelineStageFlags.ColorAttachmentOutput | PipelineStageFlags.EarlyFragmentTests | PipelineStageFlags.LateFragmentTests :
+                    IsShaderResource ? PipelineStageFlags.VertexInput | PipelineStageFlags.FragmentShader :
+                    PipelineStageFlags.None;
+
                 if (ParentTexture != null)
                 {
                     // Create only a view
