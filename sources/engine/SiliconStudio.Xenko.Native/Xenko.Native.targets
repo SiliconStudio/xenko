@@ -9,7 +9,7 @@
   <PropertyGroup>
     <SiliconStudioXenkoNativeObjFiles>$(SiliconStudioXenkoNativeObjFiles) %(CFiles.Filename).o</SiliconStudioXenkoNativeObjFiles>   
     <SiliconStudioXenkoSdkBinDir>$(XenkoDependenciesDir)..\Bin\$(SiliconStudioBuildDirectory)</SiliconStudioXenkoSdkBinDir>
-    <SiliconStudioXenkoNativeAndroidGCC>-nostdlib -lstdc++ -lc -lm</SiliconStudioXenkoNativeAndroidGCC>
+    <SiliconStudioXenkoNativeAndroidGCC>-nostdlib -ldl -lstdc++ -lc -lm</SiliconStudioXenkoNativeAndroidGCC>
     <SiliconStudioXenkoNativeClang>-v -Wno-ignored-attributes -Wno-delete-non-virtual-dtor -Wno-macro-redefined -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -I&quot;$(XenkoDependenciesDir)\NativePath\standard&quot;</SiliconStudioXenkoNativeClang>
     <SiliconStudioXenkoNativeClangCPP>-std=c++11 -fno-rtti -fno-exceptions</SiliconStudioXenkoNativeClangCPP>
   </PropertyGroup>
