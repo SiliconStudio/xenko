@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 using SiliconStudio.Core.LZ4;
 using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Xenko.Games.Testing
+namespace SiliconStudio.Xenko.Graphics.Regression
 {
-    class TestResultImage
+    public class TestResultImage
     {
         public string TestName;
         public string CurrentVersion;
@@ -32,10 +32,10 @@ namespace SiliconStudio.Xenko.Games.Testing
 
             // Read image data
             var imageData = new byte[textureSize];
-            var copiedSize = 0;
-            using (var lz4Stream = new LZ4Stream(new BlockingBufferStream(reader.BaseStream), CompressionMode.Decompress, false, textureSize))
+            using (var lz4Stream = new LZ4Stream(reader.BaseStream, CompressionMode.Decompress, false, textureSize))
             {
-                lz4Stream.Read(imageData, copiedSize, textureSize - copiedSize);
+                if (lz4Stream.Read(imageData, 0, textureSize) != textureSize)
+                    throw new EndOfStreamException("Unexpected end of stream");
             }
 
             var pinnedImageData = GCHandle.Alloc(imageData, GCHandleType.Pinned);
