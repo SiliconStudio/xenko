@@ -90,6 +90,10 @@ extern "C" {
 		struct xnAudioListener
 		{
 			xnAudioDevice* audioDevice;
+			float4 pos;
+			float4 forward;
+			float4 up;
+			float4 velocity;
 		};
 
 		struct xnAudioSource
@@ -99,6 +103,9 @@ extern "C" {
 			bool streamed;
 			bool looped;
 			volatile bool endOfStream;
+			bool canRateChange;
+			SLpermille minRate;
+			SLpermille maxRate;
 
 			xnAudioListener* listener;
 
@@ -113,7 +120,7 @@ extern "C" {
 			SpinLock buffersLock;
 		};
 
-#define DEBUG_BREAK debugtrap();
+#define DEBUG_BREAK debugtrap()
 
 		xnAudioDevice* xnAudioCreate(const char* deviceName)
 		{
@@ -125,7 +132,7 @@ extern "C" {
 			result = slCreateEngineFunc(&res->device, 1, options, 0, NULL, NULL);
 			if(SL_RESULT_SUCCESS != result)
 			{
-				DEBUG_BREAK
+				DEBUG_BREAK;
 				delete res;
 				return NULL;
 			}
@@ -133,7 +140,7 @@ extern "C" {
 			result = (*res->device)->Realize(res->device, SL_BOOLEAN_FALSE);
 			if (SL_RESULT_SUCCESS != result)
 			{
-				DEBUG_BREAK
+				DEBUG_BREAK;
 				delete res;
 				return NULL;
 			}
@@ -141,7 +148,7 @@ extern "C" {
 			result = (*res->device)->GetInterface(res->device, *SL_IID_ENGINE_PTR, &res->engine);
 			if (SL_RESULT_SUCCESS != result)
 			{
-				DEBUG_BREAK
+				DEBUG_BREAK;
 				delete res;
 				return NULL;
 			}
@@ -149,7 +156,7 @@ extern "C" {
 			result = (*res->engine)->CreateOutputMix(res->engine, &res->outputMix, 0, NULL, NULL);
 			if (SL_RESULT_SUCCESS != result)
 			{
-				DEBUG_BREAK
+				DEBUG_BREAK;
 				delete res;
 				return NULL;
 			}
@@ -157,7 +164,7 @@ extern "C" {
 			result = (*res->outputMix)->Realize(res->outputMix, SL_BOOLEAN_FALSE);
 			if (SL_RESULT_SUCCESS != result)
 			{
-				DEBUG_BREAK
+				DEBUG_BREAK;
 				delete res;
 				return NULL;
 			}
@@ -167,6 +174,7 @@ extern "C" {
 
 		void xnAudioDestroy(xnAudioDevice* device)
 		{
+			(*device->outputMix)->Destroy(device->outputMix);
 			(*device->device)->Destroy(device->device);
 			delete device;
 		}
@@ -174,6 +182,7 @@ extern "C" {
 		xnAudioListener* xnAudioListenerCreate(xnAudioDevice* device)
 		{
 			auto res = new xnAudioListener;
+			memset(res, 0x0, sizeof(xnAudioListener));
 			res->audioDevice = device;
 			return res;
 		}
@@ -185,11 +194,13 @@ extern "C" {
 
 		npBool xnAudioListenerEnable(xnAudioListener* listener)
 		{
+			(void)listener;
 			return true;
 		}
 
 		void xnAudioListenerDisable(xnAudioListener* listener)
 		{
+			(void)listener;
 		}
 
 		void PlayerCallback(SLAndroidSimpleBufferQueueItf bq, void *context) {
@@ -260,54 +271,87 @@ extern "C" {
 			SLDataSource audioSrc = { &bufferQueue, &format };
 			SLDataLocator_OutputMix outMix = { SL_DATALOCATOR_OUTPUTMIX, listener->audioDevice->outputMix };
 			SLDataSink sink = { &outMix, NULL };
-			const SLInterfaceID ids[3] = { *SL_IID_BUFFERQUEUE_PTR,*SL_IID_PLAYBACKRATE_PTR, *SL_IID_VOLUME_PTR };
+			const SLInterfaceID ids[3] = { *SL_IID_BUFFERQUEUE_PTR, *SL_IID_VOLUME_PTR, *SL_IID_PLAYBACKRATE_PTR };
 			const SLboolean req[3] = { SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE, SL_BOOLEAN_TRUE };
 			auto result = (*listener->audioDevice->engine)->CreateAudioPlayer(listener->audioDevice->engine, &res->object, &audioSrc, &sink, 3, ids, req);
 			if (result != SL_RESULT_SUCCESS)
 			{
-				DEBUG_BREAK
+				DEBUG_BREAK;
+				delete res;
+				return NULL;
 			}
 
+			res->canRateChange = true;
 			result = (*res->object)->Realize(res->object, SL_BOOLEAN_FALSE);
 			if (result != SL_RESULT_SUCCESS)
 			{
-				DEBUG_BREAK
+				res->canRateChange = false;
+				result = (*listener->audioDevice->engine)->CreateAudioPlayer(listener->audioDevice->engine, &res->object, &audioSrc, &sink, 2, ids, req);
+				if (result != SL_RESULT_SUCCESS)
+				{
+					DEBUG_BREAK;
+					delete res;
+					return NULL;
+				}
+				result = (*res->object)->Realize(res->object, SL_BOOLEAN_FALSE);
+				if (result != SL_RESULT_SUCCESS)
+				{
+					DEBUG_BREAK;
+					delete res;
+					return NULL;
+				}
 			}
 
 			result = (*res->object)->GetInterface(res->object, *SL_IID_PLAY_PTR, &res->player);
 			if (result != SL_RESULT_SUCCESS)
 			{
-				DEBUG_BREAK
+				DEBUG_BREAK;
+				delete res;
+				return NULL;
 			}
 
 			result = (*res->object)->GetInterface(res->object, *SL_IID_BUFFERQUEUE_PTR, &res->queue);
 			if (result != SL_RESULT_SUCCESS)
 			{
-				DEBUG_BREAK
+				DEBUG_BREAK;
+				delete res;
+				return NULL;
 			}
 
 			result = (*res->object)->GetInterface(res->object, *SL_IID_VOLUME_PTR, &res->volume);
 			if (result != SL_RESULT_SUCCESS)
 			{
-				DEBUG_BREAK
+				DEBUG_BREAK;
+				delete res;
+				return NULL;
 			}
 
-			result = (*res->object)->GetInterface(res->object, *SL_IID_PLAYBACKRATE_PTR, &res->playRate);
-			if (result != SL_RESULT_SUCCESS)
+			if (res->canRateChange)
 			{
-				DEBUG_BREAK
+				//For some reason this was not working in Android N...
+				result = (*res->object)->GetInterface(res->object, *SL_IID_PLAYBACKRATE_PTR, &res->playRate);
+				if (result != SL_RESULT_SUCCESS)
+				{
+					DEBUG_BREAK;
+					delete res;
+					return NULL;
+				}
 			}
 
 			result = (*res->volume)->EnableStereoPosition(res->volume, SL_BOOLEAN_TRUE);
 			if (result != SL_RESULT_SUCCESS)
 			{
-				DEBUG_BREAK
+				DEBUG_BREAK;
+				delete res;
+				return NULL;
 			}
 
 			result = (*res->queue)->RegisterCallback(res->queue, PlayerCallback, res);
 			if (result != SL_RESULT_SUCCESS)
 			{
-				DEBUG_BREAK
+				DEBUG_BREAK;
+				delete res;
+				return NULL;
 			}
 
 			return res;
@@ -315,6 +359,7 @@ extern "C" {
 
 		void xnAudioSourceDestroy(xnAudioSource* source)
 		{
+			(*source->object)->Destroy(source->object);
 			delete source;
 		}
 
@@ -336,7 +381,10 @@ extern "C" {
 
 		void xnAudioSourceSetPitch(xnAudioSource* source, float pitch)
 		{
-			//(*source->playRate)->SetRate(source->playRate, SLpermille(pitch * 1000.0f));
+			if (!source->canRateChange) return;
+
+			pitch = pitch > 4.0f ? 4.0f : pitch < -4.0f ? -4.0f : pitch;
+			(*source->playRate)->SetRate(source->playRate, SLpermille(pitch * 1000.0f));
 		}
 
 		void xnAudioSourceSetBuffer(xnAudioSource* source, xnAudioBuffer* buffer)
@@ -403,10 +451,134 @@ extern "C" {
 
 		void xnAudioListenerPush3D(xnAudioListener* listener, float* pos, float* forward, float* up, float* vel)
 		{
+			memcpy(&listener->pos, pos, sizeof(float) * 3);
+			memcpy(&listener->forward, forward, sizeof(float) * 3);
+			memcpy(&listener->up, up, sizeof(float) * 3);
+			memcpy(&listener->velocity, vel, sizeof(float) * 3);
+		}
+
+		float ComputeDopplerFactor(xnAudioListener* listener, float4 pos, float4 forward, float4 up, float4 vel)
+		{
+#ifdef __clang__ //resharper does not know about opencl vectors
+
+			// To evaluate the Doppler effect we calculate the distance to the listener from one wave to the next one and divide it by the sound speed
+			// we use 343m/s for the sound speed which correspond to the sound speed in the air.
+			// we use 600Hz for the sound frequency which correspond to the middle of the human hearable sounds frequencies.
+
+			const float SoundSpeed = 343.0f;
+			const float SoundFreq = 600.0f;
+			const float SoundPeriod = 1 / SoundFreq;
+			const float ZeroTolerance = 1e-6f;
+			float MaxValue = 3.402823E+38f;
+
+			// avoid useless calculations.
+			if(vel.x == 0 && vel.y == 0 && vel.z == 0 && listener->velocity.x == 0 && listener->velocity.y == 0 && listener->velocity.z == 0)
+			{
+				return 1.0f;
+			}
+
+			float4 vecListEmit = pos - listener->pos;
+			auto distListEmit = sqrtf(vecListEmit[0] * vecListEmit[0] + vecListEmit[1] * vecListEmit[1] + vecListEmit[2] * vecListEmit[2]);
+
+			float4 vecListEmitNorm;
+			if(distListEmit > ZeroTolerance)
+			{
+				float inv = 1.0f / distListEmit;
+				vecListEmitNorm *= inv;
+			}
+			else
+			{
+				memcpy(&vecListEmitNorm, &vecListEmit, sizeof(float) * 3);
+			}
+
+			float4 vecListEmitSpeed = vel - listener->velocity;
+			auto speedDot = (vecListEmitSpeed[0] * vecListEmitNorm[0]) + (vecListEmitSpeed[1] * vecListEmitNorm[1]) + (vecListEmitSpeed[2] * vecListEmitNorm[2]);
+			if (speedDot < -SoundSpeed) // emitter and listener are getting closer more quickly than the speed of the sound.
+			{
+				return MaxValue; //positive infinity
+			}
+
+			auto timeSinceLastWaveArrived = 0.0f; // time elapsed since the previous wave arrived to the listener.
+			auto lastWaveDistToListener = 0.0f; // the distance that the last wave still have to travel to arrive to the listener.
+			const auto DistLastWave = SoundPeriod * SoundSpeed; // distance traveled by the previous wave.
+			if (DistLastWave > distListEmit)
+				timeSinceLastWaveArrived = (DistLastWave - distListEmit) / SoundSpeed;
+			else
+				lastWaveDistToListener = distListEmit - DistLastWave;
+
+			auto nextVecListEmit = vecListEmit + SoundPeriod * vecListEmitSpeed;
+			auto nextWaveDistToListener = sqrtf(nextVecListEmit[0] * nextVecListEmit[0] + nextVecListEmit[1] * nextVecListEmit[1] + nextVecListEmit[2] * nextVecListEmit[2]);
+			auto timeBetweenTwoWaves = timeSinceLastWaveArrived + (nextWaveDistToListener - lastWaveDistToListener) / SoundSpeed;
+			auto apparentFrequency = 1 / timeBetweenTwoWaves;
+			return apparentFrequency / SoundFreq;
+#else
+
+			return 0;
+#endif
 		}
 
 		void xnAudioSourcePush3D(xnAudioSource* source, float* pos, float* forward, float* up, float* vel)
 		{
+			float4 vpos;
+			memcpy(&vpos, pos, sizeof(float) * 3);
+			float4 vforward;
+			memcpy(&vforward, forward, sizeof(float) * 3);
+			float4 vup;
+			memcpy(&vup, up, sizeof(float) * 3);
+			float4 vvel;
+			memcpy(&vvel, vel, sizeof(float) * 3);
+
+			auto doppler = ComputeDopplerFactor(source->listener, vpos, vforward, vup, vvel);
+			
+			xnAudioSourceSetPitch(source, doppler);
+
+			/*
+
+			// Since android has no function available to perform sound 3D localization by default, here we try to mimic the behaviour of XAudio2
+
+			// After an analysis of the XAudio2 left/right stereo balance with respect to 3D world position, 
+			// it could be found the volume repartition is symmetric to the Up/Down and Front/Back planes.
+			// Moreover the left/right repartition seems to follow a third degree polynomial function:
+			// Volume_left(a) = 2(c-1)*a^3 - 3(c-1)*a^2 + c*a , where c is a constant close to c = 1.45f and a is the angle normalized bwt [0,1]
+			// Volume_right(a) = 1-Volume_left(a)
+
+			// As for signal attenuation wrt distance the model follows a simple inverse square law function as explained in XAudio2 documentation 
+			// ( http://msdn.microsoft.com/en-us/library/windows/desktop/microsoft.directx_sdk.x3daudio.x3daudio_emitter(v=vs.85).aspx )
+			// Volume(d) = 1                    , if d <= ScaleDistance where d is the distance to the listener
+			// Volume(d) = ScaleDistance / d    , if d >= ScaleDistance where d is the distance to the listener
+
+			// 1. Attenuation due to distance.
+			var vecListEmit = emitter.Position - listener.Position;
+			var distListEmit = vecListEmit.Length();
+			var attenuationFactor = distListEmit <= emitter.DistanceScale ? 1f : emitter.DistanceScale / distListEmit;
+
+			// 2. Left/Right balance.
+			var repartRight = 0.5f;
+			var worldToList = Matrix.Identity;
+			var rightVec = Vector3.Cross(listener.Forward, listener.Up);
+			worldToList.Column1 = new Vector4(rightVec, 0);
+			worldToList.Column2 = new Vector4(listener.Forward, 0);
+			worldToList.Column3 = new Vector4(listener.Up, 0);
+			var vecListEmitListBase = Vector3.TransformNormal(vecListEmit, worldToList);
+			var vecListEmitListBase2 = (Vector2)vecListEmitListBase;
+			if (vecListEmitListBase2.Length() > 0)
+			{
+				const float c = 1.45f;
+				var absAlpha = Math.Abs(Math.Atan2(vecListEmitListBase2.Y, vecListEmitListBase2.X));
+				var normAlpha = (float)(absAlpha / (Math.PI / 2));
+				if (absAlpha > Math.PI / 2) normAlpha = 2 - normAlpha;
+				repartRight = 0.5f * (2 * (c - 1) * normAlpha * normAlpha * normAlpha - 3 * (c - 1) * normAlpha * normAlpha * normAlpha + c * normAlpha);
+				if (absAlpha > Math.PI / 2) repartRight = 1 - repartRight;
+			}
+
+			// Set the volumes.
+			localizationChannelVolumes = new[] { attenuationFactor * (1f - repartRight), attenuationFactor * repartRight };
+			UpdateStereoVolumes();
+
+			// 3. Calculation of the Doppler effect
+			ComputeDopplerFactor(listener, emitter);
+			UpdatePitch();
+			*/
 		}
 
 		npBool xnAudioSourceIsPlaying(xnAudioSource* source)
