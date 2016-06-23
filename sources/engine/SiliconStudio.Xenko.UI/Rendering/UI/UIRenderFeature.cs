@@ -148,8 +148,13 @@ namespace SiliconStudio.Xenko.Rendering.UI
                         viewParameters.Update(uiComponent.Entity, cameraComponent);
                 }
 
-                PickingUpdate(uiElementState, context.CommandList.Viewport, drawTime);
-
+                // Analyze the input and trigger the UI element touch and key events
+                // Note: this is done before measuring/arranging/drawing the element in order to avoid one frame latency on clicks.
+                //       But by doing so the world matrices taken for hit test are the ones calculated during last frame.
+                using (Profiler.Begin(UIProfilerKeys.TouchEventsUpdate))
+                {
+                    PickingUpdate(uiElementState, context.CommandList.Viewport, drawTime);
+                }
 
                 // update the rendering context values specific to this element
                 renderingContext.Resolution = virtualResolution;
