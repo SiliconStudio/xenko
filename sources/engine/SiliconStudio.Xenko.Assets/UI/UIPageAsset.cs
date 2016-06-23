@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
+using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
@@ -23,6 +24,7 @@ namespace SiliconStudio.Xenko.Assets.UI
     [AssetCompiler(typeof(UIPageAssetCompiler))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [Display("UI")]
+    [AssetPartReference(typeof(UIElement))]
     public sealed class UIPageAsset : AssetCompositeHierarchy<UIElementDesign, UIElement>
     {
         private const string CurrentVersion = "0.0.0";
