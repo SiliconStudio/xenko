@@ -6,6 +6,7 @@ namespace SiliconStudio.Quantum.Tests
     [TestFixture]
     public class TestDynamicNode
     {
+        // TODO: test enumeration with the three cases (reference, primitive collection, primitive dictionary)
         public class SimpleClass
         {
             public int Member1;

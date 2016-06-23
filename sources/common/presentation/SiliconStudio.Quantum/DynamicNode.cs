@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
@@ -11,7 +12,7 @@ using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
 {
-    public abstract class DynamicNode : DynamicObject
+    public abstract class DynamicNode : DynamicObject, IEnumerable
     {
         protected readonly IGraphNode Node;
 
@@ -43,6 +44,12 @@ namespace SiliconStudio.Quantum
             if (node == null) throw new ArgumentNullException(nameof(node));
             return node.Node;
         }
+
+        /// <summary>
+        /// Returns the <see cref="IGraphNode"/> associated to the given dynamic node.
+        /// </summary>
+        /// <returns>A <see cref="IGraphNode"/> associated to the given node.</returns>
+        public IGraphNode GetNode() => Node;
 
         /// <summary>
         /// Adds an item to the content of this node, assuming it's a collection.
@@ -81,6 +88,20 @@ namespace SiliconStudio.Quantum
                 throw new InvalidOperationException($"Cannot invoke {nameof(Remove)} on this property.");
             targetNode.Content.Remove(item, index);
         }
+
+        /// <summary>
+        /// Retrieves the actual value of this node.
+        /// </summary>
+        /// <returns>The actual value of this node.</returns>
+        public object Retrieve() => RetrieveValue();
+
+        /// <summary>
+        /// Retrieves the actual value of this node.
+        /// </summary>
+        /// <typeparam name="T">The type of expected value</typeparam>
+        /// <returns>The actual value of this node.</returns>
+        /// <exception cref="InvalidCastException">The actual type of the node value does not match the given <typeparamref name="T"/> type.</exception>
+        public T Retrieve<T>() => (T)Retrieve();
 
         /// <inheritdoc/>
         public override bool TryGetMember(GetMemberBinder binder, out object result)
@@ -130,6 +151,18 @@ namespace SiliconStudio.Quantum
             return GetTargetNode()?.Children.Select(x => x.Name) ?? Enumerable.Empty<string>();
         }
 
+        /// <inheritdoc/>
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            var node = GetTargetNode();
+            var indices = GetAllIndices(Node);
+            if (indices == null)
+                throw new InvalidOperationException("This node is not enumerable.");
+
+            dynamic thisNode = this;
+            return indices.Cast<object>().Select(x => thisNode[x]).GetEnumerator();
+        }
+
         protected IGraphNode GetTargetMemberNode(string memberName)
         {
             var targetNode = GetTargetNode();
@@ -140,6 +173,24 @@ namespace SiliconStudio.Quantum
         protected abstract object RetrieveValue();
 
         protected abstract IGraphNode GetTargetNode();
+
+        protected static IEnumerable GetAllIndices(IGraphNode node)
+        {
+            if (node.Content.IsReference)
+            {
+                var reference = node.Content.Reference as ReferenceEnumerable;
+                return reference?.Indices.Select(x => x.Value);
+            }
+            var value = node.Content.Retrieve();
+            var collectionDescriptor = node.Content.Descriptor as CollectionDescriptor;
+            if (collectionDescriptor != null)
+            {
+                var count = collectionDescriptor.GetCollectionCount(value);
+                return Enumerable.Range(0, count);
+            }
+            var dictionaryDescriptor = node.Content.Descriptor as DictionaryDescriptor;
+            return dictionaryDescriptor?.GetKeys(value).Cast<object>();
+        }
 
         protected static bool IsIndexExisting(IGraphNode node, Index index)
         {
