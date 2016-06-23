@@ -128,7 +128,7 @@ namespace SiliconStudio.Xenko.Graphics
                 hashCode = (hashCode*397) ^ SlopeScaleDepthBias.GetHashCode();
                 hashCode = (hashCode*397) ^ DepthClipEnable.GetHashCode();
                 hashCode = (hashCode*397) ^ ScissorTestEnable.GetHashCode();
-                hashCode = (hashCode*397) ^ MultiSampleLevel.GetHashCode();
+                hashCode = (hashCode*397) ^ (int)MultiSampleLevel;
                 hashCode = (hashCode*397) ^ MultiSampleAntiAliasLine.GetHashCode();
                 return hashCode;
             }
