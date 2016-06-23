@@ -23,6 +23,8 @@ namespace SiliconStudio.Quantum
         /// <param name="value">The value of the index.</param>
         public Index(object value) : this()
         {
+            // Sanity check, to avoid boxing index into index
+            if (value is Index) throw new ArgumentException($"A {nameof(Index)} instance cannot be passed as the value of another {nameof(Index)} instance.");
             Value = value;
         }
 
