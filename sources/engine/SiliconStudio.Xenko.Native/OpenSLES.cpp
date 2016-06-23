@@ -6,6 +6,7 @@
 #include "../../../deps/NativePath/NativePath.h"
 #include "../../../deps/NativePath/NativeDynamicLinking.h"
 #include "../../../deps/NativePath/NativeThreading.h"
+#include "../../../deps/NativePath/NativeMath.h"
 #include "../../../deps/NativePath/TINYSTL/vector.h"
 #include "../../../deps/OpenSLES/OpenSLES.h"
 #include "../../../deps/OpenSLES/OpenSLES_Android.h"
@@ -106,6 +107,8 @@ extern "C" {
 			bool canRateChange;
 			SLpermille minRate;
 			SLpermille maxRate;
+			volatile float gain = 1.0f;
+			float localizationGain = 1.0f;
 
 			xnAudioListener* listener;
 
@@ -375,7 +378,10 @@ extern "C" {
 
 		void xnAudioSourceSetGain(xnAudioSource* source, float gain)
 		{
-			auto dbVolume = SLmillibel(log10f(gain) * 20 * 100);
+			source->gain = gain;
+			gain *= source->localizationGain;
+			auto dbVolume = SLmillibel(20 * log10(gain) * 100);
+			if (dbVolume < SL_MILLIBEL_MIN) dbVolume = SL_MILLIBEL_MIN;
 			(*source->volume)->SetVolumeLevel(source->volume, dbVolume);
 		}
 
@@ -457,84 +463,70 @@ extern "C" {
 			memcpy(&listener->velocity, vel, sizeof(float) * 3);
 		}
 
-		float ComputeDopplerFactor(xnAudioListener* listener, float4 pos, float4 forward, float4 up, float4 vel)
+		const float SoundSpeed = 343.0f;
+		const float SoundFreq = 600.0f;
+		const float SoundPeriod = 1 / SoundFreq;
+		const float ZeroTolerance = 1e-6f;
+		const float MaxValue = 3.402823E+38f;
+#define E_PI 3.1415926535897932384626433832795028841971693993751058209749445923078164062
+
+		void xnAudioSourcePush3D(xnAudioSource* source, float* ppos, float* pforward, float* pup, float* pvel)
 		{
+			float4 pos;
+			memcpy(&pos, ppos, sizeof(float) * 3);
+			float4 forward;
+			memcpy(&forward, pforward, sizeof(float) * 3);
+			float4 up;
+			memcpy(&up, pup, sizeof(float) * 3);
+			float4 vel;
+			memcpy(&vel, pvel, sizeof(float) * 3);
+
 #ifdef __clang__ //resharper does not know about opencl vectors
 
 			// To evaluate the Doppler effect we calculate the distance to the listener from one wave to the next one and divide it by the sound speed
 			// we use 343m/s for the sound speed which correspond to the sound speed in the air.
 			// we use 600Hz for the sound frequency which correspond to the middle of the human hearable sounds frequencies.
 
-			const float SoundSpeed = 343.0f;
-			const float SoundFreq = 600.0f;
-			const float SoundPeriod = 1 / SoundFreq;
-			const float ZeroTolerance = 1e-6f;
-			float MaxValue = 3.402823E+38f;
+			auto dopplerShift = 1.0f;
+
+			auto vecListEmit = pos - source->listener->pos;
+			auto distListEmit = npLengthF4(vecListEmit);
 
 			// avoid useless calculations.
-			if(vel.x == 0 && vel.y == 0 && vel.z == 0 && listener->velocity.x == 0 && listener->velocity.y == 0 && listener->velocity.z == 0)
+			if (!(vel.x == 0 && vel.y == 0 && vel.z == 0 && source->listener->velocity.x == 0 && source->listener->velocity.y == 0 && source->listener->velocity.z == 0))
 			{
-				return 1.0f;
+				auto vecListEmitNorm = vecListEmit;
+				if (distListEmit > ZeroTolerance)
+				{
+					auto inv = 1.0f / distListEmit;
+					vecListEmitNorm *= inv;
+				}
+
+				auto vecListEmitSpeed = vel - source->listener->velocity;
+				auto speedDot = vecListEmitSpeed[0] * vecListEmitNorm[0] + vecListEmitSpeed[1] * vecListEmitNorm[1] + vecListEmitSpeed[2] * vecListEmitNorm[2];
+				if (speedDot < -SoundSpeed) // emitter and listener are getting closer more quickly than the speed of the sound.
+				{
+					dopplerShift = MaxValue; //positive infinity
+				}
+				else
+				{
+					auto timeSinceLastWaveArrived = 0.0f; // time elapsed since the previous wave arrived to the listener.
+					auto lastWaveDistToListener = 0.0f; // the distance that the last wave still have to travel to arrive to the listener.
+					const auto DistLastWave = SoundPeriod * SoundSpeed; // distance traveled by the previous wave.
+					if (DistLastWave > distListEmit)
+						timeSinceLastWaveArrived = (DistLastWave - distListEmit) / SoundSpeed;
+					else
+						lastWaveDistToListener = distListEmit - DistLastWave;
+
+					auto nextVecListEmit = vecListEmit + SoundPeriod * vecListEmitSpeed;
+					auto nextWaveDistToListener = sqrtf(nextVecListEmit[0] * nextVecListEmit[0] + nextVecListEmit[1] * nextVecListEmit[1] + nextVecListEmit[2] * nextVecListEmit[2]);
+					auto timeBetweenTwoWaves = timeSinceLastWaveArrived + (nextWaveDistToListener - lastWaveDistToListener) / SoundSpeed;
+					auto apparentFrequency = 1 / timeBetweenTwoWaves;
+					dopplerShift = apparentFrequency / SoundFreq;
+				}
 			}
 
-			float4 vecListEmit = pos - listener->pos;
-			auto distListEmit = sqrtf(vecListEmit[0] * vecListEmit[0] + vecListEmit[1] * vecListEmit[1] + vecListEmit[2] * vecListEmit[2]);
-
-			float4 vecListEmitNorm;
-			if(distListEmit > ZeroTolerance)
-			{
-				float inv = 1.0f / distListEmit;
-				vecListEmitNorm *= inv;
-			}
-			else
-			{
-				memcpy(&vecListEmitNorm, &vecListEmit, sizeof(float) * 3);
-			}
-
-			float4 vecListEmitSpeed = vel - listener->velocity;
-			auto speedDot = (vecListEmitSpeed[0] * vecListEmitNorm[0]) + (vecListEmitSpeed[1] * vecListEmitNorm[1]) + (vecListEmitSpeed[2] * vecListEmitNorm[2]);
-			if (speedDot < -SoundSpeed) // emitter and listener are getting closer more quickly than the speed of the sound.
-			{
-				return MaxValue; //positive infinity
-			}
-
-			auto timeSinceLastWaveArrived = 0.0f; // time elapsed since the previous wave arrived to the listener.
-			auto lastWaveDistToListener = 0.0f; // the distance that the last wave still have to travel to arrive to the listener.
-			const auto DistLastWave = SoundPeriod * SoundSpeed; // distance traveled by the previous wave.
-			if (DistLastWave > distListEmit)
-				timeSinceLastWaveArrived = (DistLastWave - distListEmit) / SoundSpeed;
-			else
-				lastWaveDistToListener = distListEmit - DistLastWave;
-
-			auto nextVecListEmit = vecListEmit + SoundPeriod * vecListEmitSpeed;
-			auto nextWaveDistToListener = sqrtf(nextVecListEmit[0] * nextVecListEmit[0] + nextVecListEmit[1] * nextVecListEmit[1] + nextVecListEmit[2] * nextVecListEmit[2]);
-			auto timeBetweenTwoWaves = timeSinceLastWaveArrived + (nextWaveDistToListener - lastWaveDistToListener) / SoundSpeed;
-			auto apparentFrequency = 1 / timeBetweenTwoWaves;
-			return apparentFrequency / SoundFreq;
-#else
-
-			return 0;
-#endif
-		}
-
-		void xnAudioSourcePush3D(xnAudioSource* source, float* pos, float* forward, float* up, float* vel)
-		{
-			float4 vpos;
-			memcpy(&vpos, pos, sizeof(float) * 3);
-			float4 vforward;
-			memcpy(&vforward, forward, sizeof(float) * 3);
-			float4 vup;
-			memcpy(&vup, up, sizeof(float) * 3);
-			float4 vvel;
-			memcpy(&vvel, vel, sizeof(float) * 3);
-
-			auto doppler = ComputeDopplerFactor(source->listener, vpos, vforward, vup, vvel);
-			
-			xnAudioSourceSetPitch(source, doppler);
-
-			/*
-
-			// Since android has no function available to perform sound 3D localization by default, here we try to mimic the behaviour of XAudio2
+			xnAudioSourceSetPitch(source, dopplerShift);
 
 			// After an analysis of the XAudio2 left/right stereo balance with respect to 3D world position, 
 			// it could be found the volume repartition is symmetric to the Up/Down and Front/Back planes.
@@ -547,38 +539,40 @@ extern "C" {
 			// Volume(d) = 1                    , if d <= ScaleDistance where d is the distance to the listener
 			// Volume(d) = ScaleDistance / d    , if d >= ScaleDistance where d is the distance to the listener
 
-			// 1. Attenuation due to distance.
-			var vecListEmit = emitter.Position - listener.Position;
-			var distListEmit = vecListEmit.Length();
-			var attenuationFactor = distListEmit <= emitter.DistanceScale ? 1f : emitter.DistanceScale / distListEmit;
+			auto attenuationFactor = distListEmit <= 1.0f ? 1.0f : 1.0f / distListEmit;
 
 			// 2. Left/Right balance.
-			var repartRight = 0.5f;
-			var worldToList = Matrix.Identity;
-			var rightVec = Vector3.Cross(listener.Forward, listener.Up);
-			worldToList.Column1 = new Vector4(rightVec, 0);
-			worldToList.Column2 = new Vector4(listener.Forward, 0);
-			worldToList.Column3 = new Vector4(listener.Up, 0);
-			var vecListEmitListBase = Vector3.TransformNormal(vecListEmit, worldToList);
-			var vecListEmitListBase2 = (Vector2)vecListEmitListBase;
-			if (vecListEmitListBase2.Length() > 0)
+			auto repartRight = 0.5f;
+			float4 rightVec = npCrossProductF4(source->listener->forward, source->listener->up);
+
+			float4 worldToList[4];
+			npMatrixIdentityF4(worldToList);
+			worldToList[0].x = rightVec.x;
+			worldToList[0].y = source->listener->forward.x;
+			worldToList[0].z = source->listener->up.x;
+			worldToList[1].x = rightVec.y;
+			worldToList[1].y = source->listener->forward.y;
+			worldToList[1].z = source->listener->up.y;
+			worldToList[2].x = rightVec.z;
+			worldToList[2].y = source->listener->forward.z;
+			worldToList[2].z = source->listener->up.z;
+
+			auto vecListEmitListBase = npTransformNormalF4(vecListEmit, worldToList);
+			auto vecListEmitListBaseLen = npLengthF4(vecListEmitListBase);
+			if(vecListEmitListBaseLen > 0.0f)
 			{
-				const float c = 1.45f;
-				var absAlpha = Math.Abs(Math.Atan2(vecListEmitListBase2.Y, vecListEmitListBase2.X));
-				var normAlpha = (float)(absAlpha / (Math.PI / 2));
-				if (absAlpha > Math.PI / 2) normAlpha = 2 - normAlpha;
+				const auto c = 1.45f;
+				auto absAlpha = fabsf(atan2f(vecListEmitListBase.y, vecListEmitListBase.x));
+				auto normAlpha = absAlpha / (E_PI / 2.0f);
+				if (absAlpha > E_PI / 2.0f) normAlpha = 2.0f - normAlpha;
 				repartRight = 0.5f * (2 * (c - 1) * normAlpha * normAlpha * normAlpha - 3 * (c - 1) * normAlpha * normAlpha * normAlpha + c * normAlpha);
-				if (absAlpha > Math.PI / 2) repartRight = 1 - repartRight;
+				if (absAlpha > E_PI / 2.0f) repartRight = 1 - repartRight;
 			}
 
-			// Set the volumes.
-			localizationChannelVolumes = new[] { attenuationFactor * (1f - repartRight), attenuationFactor * repartRight };
-			UpdateStereoVolumes();
-
-			// 3. Calculation of the Doppler effect
-			ComputeDopplerFactor(listener, emitter);
-			UpdatePitch();
-			*/
+			xnAudioSourceSetPan(source, repartRight - 0.5);
+			source->localizationGain = attenuationFactor;
+			xnAudioSourceSetGain(source, source->gain);
+#endif
 		}
 
 		npBool xnAudioSourceIsPlaying(xnAudioSource* source)
