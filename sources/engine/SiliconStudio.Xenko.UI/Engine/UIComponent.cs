@@ -109,5 +109,9 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         [DataMemberIgnore]
         public const float FixedSizeVerticalUnit = 1;   // 100% of the vertical resolution
+
+
+        [DataMemberIgnore]
+        public Matrix WorldViewProjectionCached;
     }
 }

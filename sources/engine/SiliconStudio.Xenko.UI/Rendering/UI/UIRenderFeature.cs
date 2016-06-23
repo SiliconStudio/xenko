@@ -20,6 +20,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
         private IGame game;
         private UISystem uiSystem;
         private InputManager input;
+        private IGraphicsDeviceService graphicsDeviceService;
 
         private RendererManager rendererManager;
 
@@ -53,6 +54,8 @@ namespace SiliconStudio.Xenko.Rendering.UI
             game = (IGame)RenderSystem.Services.GetService(typeof(IGame));
             input = (InputManager)RenderSystem.Services.GetService(typeof(InputManager));
             uiSystem = (UISystem)RenderSystem.Services.GetService(typeof(UISystem));
+            graphicsDeviceService = RenderSystem.Services.GetSafeServiceAs<IGraphicsDeviceService>();
+
             if (uiSystem == null)
             {
                 var gameSytems = RenderSystem.Services.GetServiceAs<IGameSystemCollection>();
@@ -75,38 +78,6 @@ namespace SiliconStudio.Xenko.Rendering.UI
             if (uiProcessor == null)
                 return;
 
-            //foreach (var uiRoot in uiProcessor.UIRoots)
-            //{
-            //    // Perform culling on group and accept
-            //    if (!renderView.SceneCameraRenderer.CullingMask.Contains(uiRoot.UIComponent.Entity.Group))
-            //        continue;
-
-            //    // skips empty UI elements
-            //    if (uiRoot.UIComponent.RootElement == null)
-            //        continue;
-
-            //    // Project the position
-            //    // TODO: This code is duplicated from SpriteComponent -> unify it at higher level?
-            //    var worldPosition = new Vector4(uiRoot.TransformComponent.WorldMatrix.TranslationVector, 1.0f);
-
-            //    float projectedZ;
-            //    if (uiRoot.UIComponent.IsFullScreen)
-            //    {
-            //        projectedZ = -uiRoot.TransformComponent.WorldMatrix.M43;
-            //    }
-            //    else
-            //    {
-            //        Vector4 projectedPosition;
-            //        var cameraComponent = renderView.Camera;
-            //        if (cameraComponent == null)
-            //            continue;
-
-            //        Vector4.Transform(ref worldPosition, ref cameraComponent.ViewProjectionMatrix, out projectedPosition);
-            //        projectedZ = projectedPosition.Z / projectedPosition.W;
-            //    }
-
-            //    transparentList.Add(new RenderItem(this, uiRoot, projectedZ));
-            //}
 
             // build the list of the UI elements to render
             uiElementStates.Clear();
@@ -193,8 +164,8 @@ namespace SiliconStudio.Xenko.Rendering.UI
                         if (uiState.UIComponent.RootElement == null)
                             continue;
 
-                        UpdateMouseOver(uiState);
-                        UpdateTouchEvents(uiState, drawTime);
+                        UpdateMouseOver(context.CommandList.Viewport, uiState);
+                        UpdateTouchEvents(context.CommandList.Viewport, uiState, drawTime);
                     }
                 }
 
@@ -368,7 +339,67 @@ namespace SiliconStudio.Xenko.Rendering.UI
             compactedPointerEvents.Clear();
         }
 
-        private void UpdateTouchEvents(RenderUIElement state, GameTime gameTime)
+        private Ray GetWorldRay(ref Viewport viewport, Vector2 screenPos, ref Matrix worldViewProj)
+        {
+            var graphicsDevice = graphicsDeviceService?.GraphicsDevice;
+            if (graphicsDevice == null)
+                return new Ray(new Vector3(float.NegativeInfinity), new Vector3(0, 1, 0));
+
+            screenPos.X *= graphicsDevice.Presenter.BackBuffer.Width;
+            screenPos.Y *= graphicsDevice.Presenter.BackBuffer.Height;
+
+            var unprojectedNear =
+                viewport.Unproject(
+                    new Vector3(screenPos, 0.0f),
+                    ref worldViewProj);
+
+            var unprojectedFar =
+                viewport.Unproject(
+                    new Vector3(screenPos, 1.0f),
+                    ref worldViewProj);
+
+            // TODO Intersect Ray with UI plane
+
+            // TODO Return point of intersection
+
+            var rayDirection = Vector3.Normalize(unprojectedFar - unprojectedNear);
+            var clickRay = new Ray(unprojectedNear, rayDirection);
+
+            return clickRay;
+        }
+
+        private bool GetTouchPosition(UIComponent uiComponent, ref Viewport viewport, Vector2 screenPosition, out Ray uiRay)
+        {
+            uiRay = new Ray(new Vector3(float.NegativeInfinity), new Vector3(0, 1, 0));
+
+            if (uiComponent.IsFullScreen)
+            {
+                // here we use a trick to take into the calculation the viewport => we multiply the screen position by the viewport ratio (easier than modifying the view matrix)
+                var positionForHitTest = (Vector2.Demodulate(screenPosition, viewportTargetRatio) - viewportOffset) - new Vector2(0.5f);
+
+                // calculate the ray corresponding to the click
+                var rayDirectionView = Vector3.Normalize(new Vector3(positionForHitTest.X * viewParameters.FrustumHeight * viewParameters.AspectRatio, -positionForHitTest.Y * viewParameters.FrustumHeight, -1));
+                uiRay = new Ray(viewParameters.ViewMatrixInverse.TranslationVector, Vector3.TransformNormal(rayDirectionView, viewParameters.ViewMatrixInverse));
+            }
+            else
+            {
+                var touchRay = GetWorldRay(ref viewport, screenPosition, ref uiComponent.WorldViewProjectionCached);
+
+                // TODO This method can be further improved
+                var dist = -touchRay.Position.Z / touchRay.Direction.Z;
+                var posX = touchRay.Position.X + touchRay.Direction.X * dist;
+                var posY = touchRay.Position.Y + touchRay.Direction.Y * dist;
+
+                if (Math.Abs(posX) > uiComponent.Resolution.X || Math.Abs(posY) > uiComponent.Resolution.X)
+                    return false;
+
+                uiRay = new Ray(new Vector3(posX, posY, -5000), new Vector3(0, 0, 1));
+            }
+
+            return true;
+        }
+
+        private void UpdateTouchEvents(Viewport viewport, RenderUIElement state, GameTime gameTime)
         {
             var rootElement = state.UIComponent.RootElement;
             var intersectionPoint = Vector3.Zero;
@@ -389,7 +420,13 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
                 // re-calculate the element under cursor if click position changed.
                 if (lastTouchPosition != currentTouchPosition)
-                    currentTouchedElement = GetElementAtScreenPosition(rootElement, pointerEvent.Position, ref intersectionPoint);
+                {
+                    Ray uiRay;
+                    if (!GetTouchPosition(state.UIComponent, ref viewport, currentTouchPosition, out uiRay))
+                        continue;
+
+                    currentTouchedElement = GetElementAtScreenPosition(rootElement, uiRay, ref intersectionPoint);
+                }
 
                 if (pointerEvent.State == PointerState.Down || pointerEvent.State == PointerState.Up)
                     state.LastIntersectionPoint = intersectionPoint;
@@ -460,7 +497,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
             }
         }
 
-        private void UpdateMouseOver(RenderUIElement state)
+        private void UpdateMouseOver(Viewport viewport, RenderUIElement state)
         {
             if (input == null || !input.HasMouse)
                 return;
@@ -473,7 +510,13 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
             // determine currently overred element.
             if (mousePosition != lastMousePosition)
-                overredElement = GetElementAtScreenPosition(rootElement, mousePosition, ref intersectionPoint);
+            {
+                Ray uiRay;
+                if (!GetTouchPosition(state.UIComponent, ref viewport, mousePosition, out uiRay))
+                    return;
+
+                overredElement = GetElementAtScreenPosition(rootElement, uiRay, ref intersectionPoint);
+            }
 
             // find the common parent between current and last overred elements
             var commonElement = FindCommonParent(overredElement, lastOveredElement);
@@ -556,16 +599,8 @@ namespace SiliconStudio.Xenko.Rendering.UI
             }
         }
 
-        private UIElement GetElementAtScreenPosition(UIElement rootElement, Vector2 position, ref Vector3 intersectionPoint)
+        private UIElement GetElementAtScreenPosition(UIElement rootElement, Ray clickRay, ref Vector3 intersectionPoint)
         {
-            // here we use a trick to take into the calculation the viewport => we multiply the screen position by the viewport ratio (easier than modifying the view matrix)
-            var positionForHitTest = (Vector2.Demodulate(position, viewportTargetRatio) - viewportOffset) - new Vector2(0.5f);
-
-            // calculate the ray corresponding to the click
-            var rayDirectionView = Vector3.Normalize(new Vector3(positionForHitTest.X * viewParameters.FrustumHeight * viewParameters.AspectRatio, -positionForHitTest.Y * viewParameters.FrustumHeight, -1));
-            var clickRay = new Ray(viewParameters.ViewMatrixInverse.TranslationVector, Vector3.TransformNormal(rayDirectionView, viewParameters.ViewMatrixInverse));
-
-            // perform the hit test
             UIElement clickedElement = null;
             var smallestDepth = float.PositiveInfinity;
             PerformRecursiveHitTest(rootElement, ref clickRay, ref clickedElement, ref intersectionPoint, ref smallestDepth);
@@ -696,6 +731,9 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 Matrix.Multiply(ref worldMatrix, ref camera.ViewMatrix, out ViewMatrix);
                 Matrix.Invert(ref ViewMatrix, out ViewMatrixInverse);
                 Matrix.Multiply(ref ViewMatrix, ref ProjectionMatrix, out ViewProjectionMatrix);
+
+                // Save the World-View-Projection matrix with which this component is being currently drawn
+                Matrix.Multiply(ref entity.Get<TransformComponent>().WorldMatrix, ref ViewProjectionMatrix, out uiComponent.WorldViewProjectionCached);
             }
 
             public void Update(Entity entity, Vector3 virtualResolution)
