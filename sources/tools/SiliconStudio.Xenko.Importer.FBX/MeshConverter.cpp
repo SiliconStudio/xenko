@@ -118,8 +118,8 @@ internal:
 public:
 	MeshConverter(Logger^ Logger)
 	{
-		if(logger == nullptr)
-			logger = Core::Diagnostics::GlobalLogger::GetLogger("Importer FBX");
+		if(Logger == nullptr)
+			Logger = Core::Diagnostics::GlobalLogger::GetLogger("Importer FBX");
 
 		logger = Logger;
 		lSdkManager = NULL;
@@ -1485,7 +1485,7 @@ private:
 		try
 		{
 			Initialize(inputFile, nullptr, ImportConfiguration::ImportAnimationsOnly());
-			auto animConverter = gcnew AnimationConverter(sceneMapping);
+			auto animConverter = gcnew AnimationConverter(logger, sceneMapping);
 			return animConverter->HasAnimationData();
 		}
 		finally
@@ -1873,7 +1873,7 @@ public:
 		{
 			Initialize(inputFileName, nullptr, ImportConfiguration::ImportEntityConfig());
 			
-			auto animationConverter = gcnew AnimationConverter(sceneMapping);
+			auto animationConverter = gcnew AnimationConverter(logger, sceneMapping);
 			
 			auto entityInfo = gcnew EntityInfo();
 			if (extractTextureDependencies)
@@ -1948,13 +1948,13 @@ public:
 		return nullptr;
 	}
 
-	Dictionary<System::String^, AnimationClip^>^ ConvertAnimation(String^ inputFilename, String^ vfsOutputFilename)
+	AnimationInfo^ ConvertAnimation(String^ inputFilename, String^ vfsOutputFilename)
 	{
 		try
 		{
 			Initialize(inputFilename, vfsOutputFilename, ImportConfiguration::ImportAnimationsOnly());
 
-			auto animationConverter = gcnew AnimationConverter(sceneMapping);
+			auto animationConverter = gcnew AnimationConverter(logger, sceneMapping);
 			return animationConverter->ProcessAnimation();
 		}
 		finally
