@@ -339,6 +339,13 @@ namespace SiliconStudio.Xenko.Rendering.UI
             compactedPointerEvents.Clear();
         }
 
+        /// <summary>
+        /// Creates a ray in object space based on a screen position and a previously rendered object's WorldViewProjection matrix
+        /// </summary>
+        /// <param name="viewport">The viewport in which the object was rendered</param>
+        /// <param name="screenPos">The click position on screen in normalized (0..1, 0..1) range</param>
+        /// <param name="worldViewProj">The WorldViewProjection matrix with which the object was last rendered in the view</param>
+        /// <returns></returns>
         private Ray GetWorldRay(ref Viewport viewport, Vector2 screenPos, ref Matrix worldViewProj)
         {
             var graphicsDevice = graphicsDeviceService?.GraphicsDevice;
@@ -348,19 +355,9 @@ namespace SiliconStudio.Xenko.Rendering.UI
             screenPos.X *= graphicsDevice.Presenter.BackBuffer.Width;
             screenPos.Y *= graphicsDevice.Presenter.BackBuffer.Height;
 
-            var unprojectedNear =
-                viewport.Unproject(
-                    new Vector3(screenPos, 0.0f),
-                    ref worldViewProj);
+            var unprojectedNear = viewport.Unproject(new Vector3(screenPos, 0.0f), ref worldViewProj);
 
-            var unprojectedFar =
-                viewport.Unproject(
-                    new Vector3(screenPos, 1.0f),
-                    ref worldViewProj);
-
-            // TODO Intersect Ray with UI plane
-
-            // TODO Return point of intersection
+            var unprojectedFar = viewport.Unproject(new Vector3(screenPos, 1.0f), ref worldViewProj);
 
             var rayDirection = Vector3.Normalize(unprojectedFar - unprojectedNear);
             var clickRay = new Ray(unprojectedNear, rayDirection);
@@ -368,6 +365,14 @@ namespace SiliconStudio.Xenko.Rendering.UI
             return clickRay;
         }
 
+        /// <summary>
+        /// Returns if a screen position is within the borders of a tested ui component
+        /// </summary>
+        /// <param name="uiComponent">The <see cref="UIComponent"/> to be tested</param>
+        /// <param name="viewport">The <see cref="Viewport"/> in which the component is being rendered</param>
+        /// <param name="screenPosition">The position of the lick on the screen in normalized (0..1, 0..1) range</param>
+        /// <param name="uiRay"><see cref="Ray"/> from the click in object space of the ui component in (-Resolution.X/2 .. Resolution.X/2, -Resolution.Y/2 .. Resolution.Y/2) range</param>
+        /// <returns></returns>
         private bool GetTouchPosition(UIComponent uiComponent, ref Viewport viewport, Vector2 screenPosition, out Ray uiRay)
         {
             uiRay = new Ray(new Vector3(float.NegativeInfinity), new Vector3(0, 1, 0));
@@ -385,15 +390,13 @@ namespace SiliconStudio.Xenko.Rendering.UI
             {
                 var touchRay = GetWorldRay(ref viewport, screenPosition, ref uiComponent.WorldViewProjectionCached);
 
-                // TODO This method can be further improved
+                // If the click point is outside the canvas ignore any testing
                 var dist = -touchRay.Position.Z / touchRay.Direction.Z;
-                var posX = touchRay.Position.X + touchRay.Direction.X * dist;
-                var posY = touchRay.Position.Y + touchRay.Direction.Y * dist;
-
-                if (Math.Abs(posX) > uiComponent.Resolution.X || Math.Abs(posY) > uiComponent.Resolution.X)
+                if (Math.Abs(touchRay.Position.X + touchRay.Direction.X * dist) > uiComponent.Resolution.X * 0.5f ||
+                    Math.Abs(touchRay.Position.Y + touchRay.Direction.Y * dist) > uiComponent.Resolution.Y * 0.5f)
                     return false;
 
-                uiRay = new Ray(new Vector3(posX, posY, -5000), new Vector3(0, 0, 1));
+                uiRay = touchRay;
             }
 
             return true;
@@ -599,6 +602,13 @@ namespace SiliconStudio.Xenko.Rendering.UI
             }
         }
 
+        /// <summary>
+        /// Gets the element with which the clickRay intersects, or null if none is found
+        /// </summary>
+        /// <param name="rootElement">The root <see cref="UIElement"/> from which it should test</param>
+        /// <param name="clickRay"><see cref="Ray"/> from the click in object space of the ui component in (-Resolution.X/2 .. Resolution.X/2, -Resolution.Y/2 .. Resolution.Y/2) range</param>
+        /// <param name="intersectionPoint">Intersection point between the ray and the element</param>
+        /// <returns>The <see cref="UIElement"/> with which the ray intersects</returns>
         private UIElement GetElementAtScreenPosition(UIElement rootElement, Ray clickRay, ref Vector3 intersectionPoint)
         {
             UIElement clickedElement = null;
