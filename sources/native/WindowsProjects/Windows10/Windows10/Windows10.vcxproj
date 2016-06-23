@@ -74,7 +74,6 @@
     <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <Import Project="$(SolutionDir)\..\sources\engine\SiliconStudio.Xenko.Native\Xenko.Native.Libs.targets" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
@@ -102,32 +101,32 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
-    <OutDir>$(SolutionDir)..\Bin\Windows10-Direct3D11\x86\</OutDir>
+    <OutDir>$(XenkoNativeOutputDir)\x86\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
-    <OutDir>$(SolutionDir)..\Bin\Windows10-Direct3D11\x86\</OutDir>
+    <OutDir>$(XenkoNativeOutputDir)\x86\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
-    <OutDir>$(SolutionDir)..\Bin\Windows10-Direct3D11\ARM\</OutDir>
+    <OutDir>$(XenkoNativeOutputDir)\ARM\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
-    <OutDir>$(SolutionDir)..\Bin\Windows10-Direct3D11\ARM\</OutDir>
+    <OutDir>$(XenkoNativeOutputDir)\ARM\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
-    <OutDir>$(SolutionDir)..\Bin\Windows10-Direct3D11\x64\</OutDir>
+    <OutDir>$(XenkoNativeOutputDir)\x64\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <GenerateManifest>false</GenerateManifest>
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
-    <OutDir>$(SolutionDir)..\Bin\Windows10-Direct3D11\x64\</OutDir>
+    <OutDir>$(XenkoNativeOutputDir)\x64\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -141,9 +140,9 @@
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <AdditionalLibraryDirectories>..\..\..\..\..\..\deps\NativePath\Windows10\x86\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(SiliconStudioXenkoNativePathLibs);%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/DEF:..\..\..\symbols.def %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>$(XenkoDependenciesDir)\NativePath\Windows10\x86\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/DEF:$(XenkoNativeProjectFolder)\symbols.def $(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -157,9 +156,9 @@
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <AdditionalLibraryDirectories>..\..\..\..\..\..\deps\NativePath\Windows10\x86\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(SiliconStudioXenkoNativePathLibs);%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/DEF:..\..\..\symbols.def %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>$(XenkoDependenciesDir)\NativePath\Windows10\x86\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/DEF:$(XenkoNativeProjectFolder)\symbols.def $(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm'">
@@ -174,9 +173,9 @@
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <AdditionalLibraryDirectories>..\..\..\..\..\..\deps\NativePath\Windows10\ARM\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(SiliconStudioXenkoNativePathLibs);%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/INCREMENTAL:NO /DEF:..\..\..\symbols.def %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>$(XenkoDependenciesDir)\NativePath\Windows10\ARM\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/INCREMENTAL:NO /DEF:$(XenkoNativeProjectFolder)\symbols.def $(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm'">
@@ -190,9 +189,9 @@
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <AdditionalLibraryDirectories>..\..\..\..\..\..\deps\NativePath\Windows10\ARM\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(SiliconStudioXenkoNativePathLibs);%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/INCREMENTAL:NO /DEF:..\..\..\symbols.def %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>$(XenkoDependenciesDir)\NativePath\Windows10\ARM\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/INCREMENTAL:NO /DEF:$(XenkoNativeProjectFolder)\symbols.def $(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -207,9 +206,9 @@
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <AdditionalLibraryDirectories>..\..\..\..\..\..\deps\NativePath\Windows10\x64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(SiliconStudioXenkoNativePathLibs);%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/DEF:..\..\..\symbols.def %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>$(XenkoDependenciesDir)\NativePath\Windows10\x64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/DEF:$(XenkoNativeProjectFolder)\symbols.def $(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -223,16 +222,16 @@
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <AdditionalLibraryDirectories>..\..\..\..\..\..\deps\NativePath\Windows10\x64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(SiliconStudioXenkoNativePathLibs);%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/DEF:..\..\..\symbols.def %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>$(XenkoDependenciesDir)\NativePath\Windows10\x64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/DEF:$(XenkoNativeProjectFolder)\symbols.def $(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Object Include="$(MSBuildThisFileDirectory)\..\..\..\obj\*.obj" />
+    <Object Include="$(XenkoNativeProjectFolder)\obj\*.obj" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

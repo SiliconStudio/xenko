@@ -22,7 +22,7 @@
     <ProjectGuid>{75C5F896-0E36-4348-9E80-5E9EFE494D94}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>libxenkonative</RootNamespace>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>$(DefaultWindowsSDKVersion)</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -52,7 +52,6 @@
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
-  <Import Project="$(SolutionDir)\..\sources\engine\SiliconStudio.Xenko.Native\Xenko.Native.Libs.targets" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="Shared">
@@ -71,10 +70,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <OutDir>$(SolutionDir)..\Bin\$(SiliconStudioPlatform)-$(XenkoGraphicsApi)</OutDir>
-    <OutDir Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(OutDir)-$(SiliconStudioBuildDirExtension)</OutDir>
-    <OutDir Condition="'$(Platform)' == 'Win32'">$(OutDir)\x86\</OutDir>
-    <OutDir Condition="'$(Platform)' == 'x64'">$(OutDir)\x64\</OutDir>
+    <OutDir Condition="'$(Platform)' == 'Win32'">$(XenkoNativeOutputDir)\x86\</OutDir>
+    <OutDir Condition="'$(Platform)' == 'x64'">$(XenkoNativeOutputDir)\x64\</OutDir>
     <TargetName>libxenkonative</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
@@ -98,9 +95,9 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\..\..\..\..\deps\NativePath\Windows\x86\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(SiliconStudioXenkoNativePathLibs);%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/DEF:..\..\..\symbols.def %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>$(XenkoDependenciesDir)\NativePath\Windows\x86\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/DEF:$(XenkoNativeProjectFolder)\symbols.def $(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -118,9 +115,9 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>..\..\..\..\..\..\deps\NativePath\Windows\x64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(SiliconStudioXenkoNativePathLibs);%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/DEF:..\..\..\symbols.def %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>$(XenkoDependenciesDir)\NativePath\Windows\x64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/DEF:$(XenkoNativeProjectFolder)\symbols.def $(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -141,9 +138,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\..\..\..\..\..\deps\NativePath\Windows\x86\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(SiliconStudioXenkoNativePathLibs);%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/DEF:..\..\..\symbols.def %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>$(XenkoDependenciesDir)\NativePath\Windows\x86\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/DEF:$(XenkoNativeProjectFolder)\symbols.def $(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -164,9 +161,9 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>..\..\..\..\..\..\deps\NativePath\Windows\x64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(SiliconStudioXenkoNativePathLibs);%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/DEF:..\..\..\symbols.def %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>$(XenkoDependenciesDir)\NativePath\Windows\x64\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/DEF:$(XenkoNativeProjectFolder)\symbols.def $(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
     </Link>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -189,7 +186,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Object Include="$(MSBuildThisFileDirectory)\..\..\..\obj\*.obj" />
+    <Object Include="$(XenkoNativeProjectFolder)\obj\*.obj" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

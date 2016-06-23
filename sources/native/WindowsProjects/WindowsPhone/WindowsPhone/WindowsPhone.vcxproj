@@ -30,7 +30,6 @@
     <ApplicationTypeRevision>8.1</ApplicationTypeRevision>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <Import Project="$(SolutionDir)\..\sources\engine\SiliconStudio.Xenko.Native\Xenko.Native.Libs.targets" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
@@ -70,22 +69,22 @@
   <PropertyGroup />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
-    <OutDir>$(SolutionDir)..\Bin\WindowsPhone-Direct3D11\x86\</OutDir>
+    <OutDir>$(XenkoNativeOutputDir)\x86\</OutDir>
     <TargetName>libxenkonative</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
-    <OutDir>$(SolutionDir)..\Bin\WindowsPhone-Direct3D11\x86\</OutDir>
+    <OutDir>$(XenkoNativeOutputDir)\x86\</OutDir>
     <TargetName>libxenkonative</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
-    <OutDir>$(SolutionDir)..\Bin\WindowsPhone-Direct3D11\ARM\</OutDir>
+    <OutDir>$(XenkoNativeOutputDir)\ARM\</OutDir>
     <TargetName>libxenkonative</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
-    <OutDir>$(SolutionDir)..\Bin\WindowsPhone-Direct3D11\ARM\</OutDir>
+    <OutDir>$(XenkoNativeOutputDir)\ARM\</OutDir>
     <TargetName>libxenkonative</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -101,9 +100,9 @@
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <AdditionalLibraryDirectories>..\..\..\..\..\..\deps\NativePath\WindowsPhone\x86\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(SiliconStudioXenkoNativePathLibs);%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/DEF:..\..\..\symbols.def %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>$(XenkoDependenciesDir)\NativePath\WindowsPhone\x86\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/DEF:$(XenkoNativeProjectFolder)\symbols.def $(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -118,9 +117,9 @@
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <AdditionalLibraryDirectories>..\..\..\..\..\..\deps\NativePath\WindowsPhone\x86\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(SiliconStudioXenkoNativePathLibs);%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/DEF:..\..\..\symbols.def %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>$(XenkoDependenciesDir)\NativePath\WindowsPhone\x86\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/DEF:$(XenkoNativeProjectFolder)\symbols.def $(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -136,9 +135,9 @@
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <AdditionalLibraryDirectories>..\..\..\..\..\..\deps\NativePath\WindowsPhone\ARM\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(SiliconStudioXenkoNativePathLibs);%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/INCREMENTAL:NO /DEF:..\..\..\symbols.def %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>$(XenkoDependenciesDir)\NativePath\WindowsPhone\ARM\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/INCREMENTAL:NO /DEF:$(XenkoNativeProjectFolder)\symbols.def $(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
@@ -153,16 +152,16 @@
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <AdditionalLibraryDirectories>..\..\..\..\..\..\deps\NativePath\WindowsPhone\ARM\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>$(SiliconStudioXenkoNativePathLibs);%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/INCREMENTAL:NO /DEF:..\..\..\symbols.def %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalLibraryDirectories>$(XenkoDependenciesDir)\NativePath\WindowsPhone\ARM\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalOptions>/INCREMENTAL:NO /DEF:$(XenkoNativeProjectFolder)\symbols.def $(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Object Include="$(MSBuildThisFileDirectory)\..\..\..\obj\*.obj" />
+    <Object Include="$(XenkoNativeProjectFolder)\obj\*.obj" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

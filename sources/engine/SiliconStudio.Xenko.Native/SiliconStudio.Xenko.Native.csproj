@@ -3,7 +3,7 @@
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
   </PropertyGroup>
-  <Import Project="Xenko.Native.targets" />
+  <Import Project="..\..\native\Xenko.Native.targets" />
   <PropertyGroup>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
@@ -48,9 +48,6 @@
     <None Include="XenkoNative.h" />
     <None Include="SpriteBatchNative.c" />
     <None Include="symbols.def" />
-    <None Include="Xenko.Native.targets">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenAL.cpp" />

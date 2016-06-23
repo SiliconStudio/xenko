@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 14.0.23107.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "90-Tools", "90-Tools", "{1AE1AC60-5D2F-4CA7-AE20-888F44551185}"
 EndProject
@@ -33,6 +33,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets.Private", "00-Ta
 		Xenko.Direct3D.CoreCLR.PreSettings.Local.targets = Xenko.Direct3D.CoreCLR.PreSettings.Local.targets
 		..\sources\targets\Xenko.GlobalSettings.targets = ..\sources\targets\Xenko.GlobalSettings.targets
 		Xenko.iOS.PreSettings.Local.targets = Xenko.iOS.PreSettings.Local.targets
+		..\sources\native\Xenko.Native.targets = ..\sources\native\Xenko.Native.targets
 		Xenko.OpenGL.CoreCLR.PreSettings.Local.targets = Xenko.OpenGL.CoreCLR.PreSettings.Local.targets
 		Xenko.OpenGL.PreSettings.Local.targets = Xenko.OpenGL.PreSettings.Local.targets
 		Xenko.OpenGLES.PreSettings.Local.targets = Xenko.OpenGLES.PreSettings.Local.targets
@@ -381,8 +382,8 @@ Global
 		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{9ac6d791-811e-4d6a-b08e-93f0093ef268}*SharedItemsImports = 13
 		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{5863574d-7a55-49bc-8e65-babb74d8e66e}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
-		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
+		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
 		..\sources\engine\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems*{b33e576f-2279-4bfc-a438-d9b84343b56b}*SharedItemsImports = 13
 		..\sources\engine\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems*{7af4b563-aad3-42ff-b91e-84b9d34d904a}*SharedItemsImports = 4
 		..\sources\engine\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems*{fb06c76a-6bb7-40be-9afa-fec13b045fb5}*SharedItemsImports = 4
