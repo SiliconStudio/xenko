@@ -63,8 +63,8 @@ namespace SiliconStudio.Xenko.UI.Renderers
             if (UI == null)
             {
                 UI = new UISystem(services);
-                var game = services.GetServiceAs<IGame>();
-                game?.GameSystems.Add(UI);
+                var gameSystems = services.GetServiceAs<IGameSystemCollection>();
+                gameSystems?.Add(UI);
             }
         }
 

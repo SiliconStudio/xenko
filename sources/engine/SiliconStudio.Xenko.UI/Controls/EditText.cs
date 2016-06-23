@@ -806,7 +806,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         {
             base.OnTouchDown(args);
 
-           IsSelectionActive = !IsReadOnly;
+            IsSelectionActive = !IsReadOnly;
 
             OnTouchDownImpl(args);
         }
