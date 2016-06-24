@@ -60,6 +60,8 @@
     <Compile Include="Analysis\AssetInheritanceSearchOptions.cs" />
     <Compile Include="Analysis\AssetReferenceAnalysis.cs" />
     <Compile Include="Analysis\AssetReferenceLink.cs" />
+    <Compile Include="AssetCompositeHierarchy.cs" />
+    <Compile Include="AssetCompositeHierarchyData.cs" />
     <Compile Include="AssetPartCollection.cs" />
     <Compile Include="IAssetPartDesign.cs" />
     <Compile Include="Serializers\AssetCompositeVisitorContext.cs" />
