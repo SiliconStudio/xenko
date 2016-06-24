@@ -21,7 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{75C5F896-0E36-4348-9E80-5E9EFE494D94}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>libxenkonative</RootNamespace>
+    <RootNamespace>$(XenkoNativeOutputName)</RootNamespace>
     <WindowsTargetPlatformVersion>$(DefaultWindowsSDKVersion)</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -72,7 +72,7 @@
   <PropertyGroup>
     <OutDir Condition="'$(Platform)' == 'Win32'">$(XenkoNativeOutputDir)\x86\</OutDir>
     <OutDir Condition="'$(Platform)' == 'x64'">$(XenkoNativeOutputDir)\x64\</OutDir>
-    <TargetName>libxenkonative</TargetName>
+    <TargetName>$(XenkoNativeOutputName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
     <LinkIncremental>true</LinkIncremental>

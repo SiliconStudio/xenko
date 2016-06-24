@@ -29,8 +29,8 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{8f5685d5-4aff-4d77-a86b-8fec5c5456a2}</ProjectGuid>
     <Keyword>DynamicLibrary</Keyword>
-    <ProjectName>libxenkonative</ProjectName>
-    <RootNamespace>libxenkonative</RootNamespace>
+    <ProjectName>$(XenkoNativeOutputName)</ProjectName>
+    <RootNamespace>$(XenkoNativeOutputName)</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>14.0</MinimumVisualStudioVersion>
     <AppContainerApplication>true</AppContainerApplication>

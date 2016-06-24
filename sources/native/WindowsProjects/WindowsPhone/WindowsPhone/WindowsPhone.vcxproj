@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{a36e95a9-9b7b-4468-a556-8862d1419992}</ProjectGuid>
     <Keyword>DynamicLibrary</Keyword>
-    <ProjectName>libxenkonative</ProjectName>
-    <RootNamespace>libxenkonative</RootNamespace>
+    <ProjectName>$(XenkoNativeOutputName)</ProjectName>
+    <RootNamespace>$(XenkoNativeOutputName)</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>12.0</MinimumVisualStudioVersion>
     <AppContainerApplication>true</AppContainerApplication>
@@ -70,22 +70,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
     <OutDir>$(XenkoNativeOutputDir)\x86\</OutDir>
-    <TargetName>libxenkonative</TargetName>
+    <TargetName>$(XenkoNativeOutputName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
     <OutDir>$(XenkoNativeOutputDir)\x86\</OutDir>
-    <TargetName>libxenkonative</TargetName>
+    <TargetName>$(XenkoNativeOutputName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
     <OutDir>$(XenkoNativeOutputDir)\ARM\</OutDir>
-    <TargetName>libxenkonative</TargetName>
+    <TargetName>$(XenkoNativeOutputName)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
     <OutDir>$(XenkoNativeOutputDir)\ARM\</OutDir>
-    <TargetName>libxenkonative</TargetName>
+    <TargetName>$(XenkoNativeOutputName)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
