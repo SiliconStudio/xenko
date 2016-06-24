@@ -216,22 +216,6 @@ namespace SiliconStudio.Xenko.Graphics
                 QueuePriorities = new IntPtr(&queuePriorities)
             };
 
-            var desiredLayerNames = new []
-            {
-                //"VK_LAYER_LUNARG_standard_validation",
-                "VK_LAYER_GOOGLE_threading",
-                "VK_LAYER_LUNARG_parameter_validation",
-                "VK_LAYER_LUNARG_device_limits",
-                "VK_LAYER_LUNARG_object_tracker",
-                "VK_LAYER_LUNARG_image",
-                "VK_LAYER_LUNARG_core_validation",
-                "VK_LAYER_LUNARG_swapchain",
-                "VK_LAYER_GOOGLE_unique_objects",
-                //"VK_LAYER_LUNARG_api_dump",
-            };
-
-            IntPtr[] enabledLayerNames = new IntPtr[0];
-
             bool enableDebugging = false;
 
             var enabledFeature = new PhysicalDeviceFeatures
@@ -285,11 +269,6 @@ namespace SiliconStudio.Xenko.Graphics
                 foreach (var enabledExtensionName in enabledExtensionNames)
                 {
                     Marshal.FreeHGlobal(enabledExtensionName);
-                }
-
-                foreach (var enabledLayerName in enabledLayerNames)
-                {
-                    Marshal.FreeHGlobal(enabledLayerName);
                 }
             }
 
