@@ -486,6 +486,9 @@ namespace SiliconStudio.Shaders.Convertor
             // Add std140 layout
             ApplyStd140Layout();
 
+            // Sort qualifiers in the order GLSL expects them
+            ReorderVariableQualifiers();
+
             if (shaderPlatform == GlslShaderPlatform.OpenGLES && shaderVersion < 300)
                 FixupVaryingES2();
         }
@@ -4411,6 +4414,14 @@ namespace SiliconStudio.Shaders.Convertor
             }
 
             return expression;
+        }
+
+        private void ReorderVariableQualifiers()
+        {
+            foreach (var variable in shader.Declarations.OfType<Variable>())
+            {
+                variable.Qualifiers.Values.Sort();
+            }
         }
 
         private void ApplyStd140Layout()

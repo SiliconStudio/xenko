@@ -8,7 +8,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A Storage qualifier.
     /// </summary>
-    public class Qualifier : CompositeEnum
+    public class Qualifier : CompositeEnum, IComparable<Qualifier>
     {
         #region Constants and Fields
 
@@ -16,6 +16,11 @@ namespace SiliconStudio.Shaders.Ast
         /// None Enum.
         /// </summary>
         public static readonly Qualifier None = new Qualifier(string.Empty);
+
+        /// <summary>
+        /// Order used for sorting.
+        /// </summary>
+        protected virtual int DefaultOrder => 0;
 
         #endregion
 
@@ -113,5 +118,13 @@ namespace SiliconStudio.Shaders.Ast
         }
         
         #endregion
+
+        public int CompareTo(Qualifier other)
+        {
+            if (ReferenceEquals(other, null))
+                return 1;
+
+            return DefaultOrder.CompareTo(other.DefaultOrder);
+        }
     }
 }
