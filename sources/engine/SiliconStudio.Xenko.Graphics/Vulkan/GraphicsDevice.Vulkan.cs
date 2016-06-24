@@ -234,25 +234,6 @@ namespace SiliconStudio.Xenko.Graphics
 
             bool enableDebugging = false;
 
-            if (enableDebugging)
-            {
-                var layers = Adapter.PhysicalDevice.DeviceLayerProperties;
-                var availableLayerNames = new HashSet<string>();
-
-                for (int index = 0; index < layers.Length; index++)
-                {
-                    var properties = layers[index];
-                    var namePointer = new IntPtr(Interop.Fixed(ref properties.LayerName));
-                    var name = Marshal.PtrToStringAnsi(namePointer);
-
-                    availableLayerNames.Add(name);
-                }
-
-                enabledLayerNames = desiredLayerNames
-                    .Where(x => availableLayerNames.Contains(x))
-                    .Select(Marshal.StringToHGlobalAnsi).ToArray();
-            }
-
             var enabledFeature = new PhysicalDeviceFeatures
             {
                 FillModeNonSolid = true,
@@ -292,8 +273,6 @@ namespace SiliconStudio.Xenko.Graphics
                     StructureType = StructureType.DeviceCreateInfo,
                     QueueCreateInfoCount = 1,
                     QueueCreateInfos = new IntPtr(&queueCreateInfo),
-                    EnabledLayerCount = enabledLayerNames != null ? (uint)enabledLayerNames.Length : 0,
-                    EnabledLayerNames = enabledLayerNames?.Length > 0 ? new IntPtr(Interop.Fixed(enabledLayerNames)) : IntPtr.Zero,
                     EnabledExtensionCount = (uint)enabledExtensionNames.Length,
                     EnabledExtensionNames = enabledExtensionNames.Length > 0 ? new IntPtr(Interop.Fixed(enabledExtensionNames)) : IntPtr.Zero,
                     EnabledFeatures = new IntPtr(&enabledFeature)
