@@ -3,13 +3,13 @@
 
 #if defined(ANDROID) || !defined(__clang__)
 
-#include "../../../deps/NativePath/NativePath.h"
-#include "../../../deps/NativePath/NativeDynamicLinking.h"
-#include "../../../deps/NativePath/NativeThreading.h"
-#include "../../../deps/NativePath/NativeMath.h"
-#include "../../../deps/NativePath/TINYSTL/vector.h"
-#include "../../../deps/OpenSLES/OpenSLES.h"
-#include "../../../deps/OpenSLES/OpenSLES_Android.h"
+#include "../../../../deps/NativePath/NativePath.h"
+#include "../../../../deps/NativePath/NativeDynamicLinking.h"
+#include "../../../../deps/NativePath/NativeThreading.h"
+#include "../../../../deps/NativePath/NativeMath.h"
+#include "../../../../deps/NativePath/TINYSTL/vector.h"
+#include "../../../../deps/OpenSLES/OpenSLES.h"
+#include "../../../../deps/OpenSLES/OpenSLES_Android.h"
 
 extern "C" {
 	class SpinLock

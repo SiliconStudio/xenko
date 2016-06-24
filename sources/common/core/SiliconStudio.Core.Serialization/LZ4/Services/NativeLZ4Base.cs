@@ -4,36 +4,23 @@ using System.Runtime.InteropServices;
 
 namespace SiliconStudio.Core.LZ4.Services
 {
-    internal abstract class NativeLZ4Base
+    internal abstract class NativeLz4Base
     {
-        static NativeLZ4Base()
+        static NativeLz4Base()
         {
             NativeLibrary.PreloadLibrary(NativeLibrary.LibraryName);
         }
 
         [DllImport(NativeLibrary.LibraryName, CallingConvention = NativeLibrary.CallConvention)]
-        protected unsafe static extern int I32_LZ4_uncompress(byte* source, byte* dest, int maxOutputSize);
+        protected static extern unsafe int LZ4_uncompress(byte* source, byte* dest, int maxOutputSize);
 
         [DllImport(NativeLibrary.LibraryName, CallingConvention = NativeLibrary.CallConvention)]
-        protected unsafe static extern int I32_LZ4_uncompress_unknownOutputSize(byte* source, byte* dest, int inputSize, int maxOutputSize);
+        protected static extern unsafe int LZ4_uncompress_unknownOutputSize(byte* source, byte* dest, int inputSize, int maxOutputSize);
 
         [DllImport(NativeLibrary.LibraryName, CallingConvention = NativeLibrary.CallConvention)]
-        protected unsafe static extern int I32_LZ4_compress_limitedOutput(byte* source, byte* dest, int inputSize, int maxOutputSize);
+        protected static extern unsafe int LZ4_compress_limitedOutput(byte* source, byte* dest, int inputSize, int maxOutputSize);
 
         [DllImport(NativeLibrary.LibraryName, CallingConvention = NativeLibrary.CallConvention)]
-        protected unsafe static extern int I32_LZ4_compressHC_limitedOutput(byte* source, byte* dest, int inputSize, int maxOutputSize);
-
-        [DllImport(NativeLibrary.LibraryName, CallingConvention = NativeLibrary.CallConvention)]
-        protected unsafe static extern int I64_LZ4_uncompress(byte* source, byte* dest, int maxOutputSize);
-
-        [DllImport(NativeLibrary.LibraryName, CallingConvention = NativeLibrary.CallConvention)]
-        protected unsafe static extern int I64_LZ4_uncompress_unknownOutputSize(byte* source, byte* dest, int inputSize, int maxOutputSize);
-
-        [DllImport(NativeLibrary.LibraryName, CallingConvention = NativeLibrary.CallConvention)]
-        protected unsafe static extern int I64_LZ4_compress_limitedOutput(byte* source, byte* dest, int inputSize, int maxOutputSize);
-
-        [DllImport(NativeLibrary.LibraryName, CallingConvention = NativeLibrary.CallConvention)]
-        protected unsafe static extern int I64_LZ4_compressHC_limitedOutput(byte* source, byte* dest, int inputSize, int maxOutputSize);
-
+        protected static extern unsafe int LZ4_compressHC_limitedOutput(byte* source, byte* dest, int inputSize, int maxOutputSize);
     }
 }

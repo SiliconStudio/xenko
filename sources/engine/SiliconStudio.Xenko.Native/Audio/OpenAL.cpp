@@ -3,15 +3,15 @@
 
 #if defined(LINUX) || defined(IOS) || !defined(__clang__)
 
-#include "../../../deps/NativePath/NativePath.h"
-#include "../../../deps/NativePath/NativeDynamicLinking.h"
-#include "../../../deps/NativePath/NativeThreading.h"
-#include "../../../deps/NativePath/TINYSTL/unordered_map.h"
+#include "../../../../deps/NativePath/NativePath.h"
+#include "../../../../deps/NativePath/NativeDynamicLinking.h"
+#include "../../../../deps/NativePath/NativeThreading.h"
+#include "../../../../deps/NativePath/TINYSTL/unordered_map.h"
 
 
 #define HAVE_STDINT_H
-#include "../../../deps/OpenAL/AL/al.h"
-#include "../../../deps/OpenAL/AL/alc.h"
+#include "../../../../deps/OpenAL/AL/al.h"
+#include "../../../../deps/OpenAL/AL/alc.h"
 
 extern "C" {
 	class SpinLock

@@ -4,12 +4,9 @@ using System;
 
 namespace SiliconStudio.Core.LZ4.Services
 {
-    internal class Native32LZ4Service : NativeLZ4Base, ILZ4Service
+    internal class NativeLz4Service : NativeLz4Base, ILZ4Service
     {
-        public string CodecName
-        {
-            get { return string.Format("NativeMode {0}", IntPtr.Size == 4 ? "32" : "64"); }
-        }
+        public string CodecName => $"NativeMode {(IntPtr.Size == 4 ? "32" : "64")}";
 
         public unsafe int Decode(byte[] input, int inputOffset, int inputLength, byte[] output, int outputOffset, int outputLength, bool knownOutputLength)
         {
@@ -18,12 +15,12 @@ namespace SiliconStudio.Core.LZ4.Services
             {
                 if (knownOutputLength)
                 {
-                    I32_LZ4_uncompress(pInput + inputOffset, pOutput + outputOffset, outputLength);
+                    LZ4_uncompress(pInput + inputOffset, pOutput + outputOffset, outputLength);
 
                     return outputLength;
                 }
 
-                return I32_LZ4_uncompress_unknownOutputSize(pInput + inputOffset, pOutput + outputOffset, inputLength, outputLength);
+                return LZ4_uncompress_unknownOutputSize(pInput + inputOffset, pOutput + outputOffset, inputLength, outputLength);
             }
         }
 
@@ -32,7 +29,7 @@ namespace SiliconStudio.Core.LZ4.Services
             fixed (byte* pInput = input)
             fixed (byte* pOutput = output)
             {
-                return I32_LZ4_compress_limitedOutput(pInput + inputOffset, pOutput + outputOffset, inputLength, outputLength);
+                return LZ4_compress_limitedOutput(pInput + inputOffset, pOutput + outputOffset, inputLength, outputLength);
             }
         }
 
@@ -41,7 +38,7 @@ namespace SiliconStudio.Core.LZ4.Services
             fixed (byte* pInput = input)
             fixed (byte* pOutput = output)
             {
-                return I32_LZ4_compressHC_limitedOutput(pInput + inputOffset, pOutput + outputOffset, inputLength, outputLength);
+                return LZ4_compressHC_limitedOutput(pInput + inputOffset, pOutput + outputOffset, inputLength, outputLength);
             }
         }
     }

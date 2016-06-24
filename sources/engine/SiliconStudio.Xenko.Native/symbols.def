@@ -1,4 +1,4 @@
-LIBRARY libxenkonative.dll
+LIBRARY libxenko.dll
 EXPORTS
 UpdateBufferValuesFromElementInfo
 xnCeltCreate

@@ -2,16 +2,16 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
-    <XenkoNativeOutputName>libxenko</XenkoNativeOutputName>
+    <XenkoNativeOutputName>libcore</XenkoNativeOutputName>
   </PropertyGroup>
-  <Import Project="..\..\native\Xenko.Native.targets" />
+  <Import Project="..\..\..\native\Xenko.Native.targets" />
   <PropertyGroup>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{1DBBC150-F085-43EF-B41D-27C72D133770}</ProjectGuid>
+    <ProjectGuid>{FCF36D39-BFFE-4719-B245-05640EE34C5F}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>SiliconStudio.Xenko.Native</RootNamespace>
-    <AssemblyName>SiliconStudio.Xenko.Native</AssemblyName>
+    <RootNamespace>SiliconStudio.Core.Native</RootNamespace>
+    <AssemblyName>SiliconStudio.Core.Native</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--serialization --parameter-key</SiliconStudioAssemblyProcessorOptions>
@@ -30,34 +30,27 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Audio\Celt.cs" />
     <Compile Include="NativeInvoke.cs" />
-    <Compile Include="Audio\AudioLayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+    <ProjectReference Include="..\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
       <Name>SiliconStudio.Core</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Xenko.Native.Libs.targets">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="XenkoNative.h" />
-    <None Include="Sprite\SpriteBatchNative.c" />
     <None Include="symbols.def" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Audio\OpenAL.cpp" />
-    <None Include="Audio\XAudio2.cpp" />
-    <None Include="Audio\Celt.cpp" />
+    <Content Include="DirectInput\XInputChecker.cpp" />
+    <Content Include="LZ4\lz4.c" />
+    <Content Include="LZ4\lz4.h" />
+    <Content Include="LZ4\lz4hc.c" />
+    <Content Include="LZ4\lz4hc.h" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Audio\OpenSLES.cpp" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -33,8 +33,6 @@
 */
 #pragma once
 
-#include "../coreconfig.h"
-
 #ifdef LZ4_FUNC
 	#define LZ4_compressHC LZ4_FUNC(LZ4_compressHC)
 	#define LZ4_compressHC_limitedOutput LZ4_FUNC(LZ4_compressHC_limitedOutput)
@@ -46,7 +44,7 @@ extern "C" {
 #endif
 
 
-CORE_EXPORT( int ) LZ4_compressHC (const char* source, char* dest, int inputSize);
+int LZ4_compressHC (const char* source, char* dest, int inputSize);
 
 /*
 LZ4_compressHC :
@@ -56,7 +54,7 @@ LZ4_compressHC :
 		Worst case size evaluation is provided by function LZ4_compressBound() (see "lz4.h")
 */
 
-CORE_EXPORT( int ) LZ4_compressHC_limitedOutput (const char* source, char* dest, int inputSize, int maxOutputSize);
+int LZ4_compressHC_limitedOutput (const char* source, char* dest, int inputSize, int maxOutputSize);
 
 /*
 LZ4_compress_limitedOutput() :

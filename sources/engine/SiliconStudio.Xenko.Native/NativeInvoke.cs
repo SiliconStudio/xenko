@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Native
 #if SILICONSTUDIO_PLATFORM_IOS
         internal const string Library = "__Internal";
 #else
-        internal const string Library = "libxenkonative";
+        internal const string Library = "libxenko";
 #endif
 
         static NativeInvoke()
@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Native
 #if SILICONSTUDIO_PLATFORM_WINDOWS
             NativeLibrary.PreloadLibrary(Library + ".dll");
 #else
-            NativeLibrary.PreloadLibrary(Library + ".so");
+            NativeLibrary.PreloadLibrary(Library);
 #endif
         }
 

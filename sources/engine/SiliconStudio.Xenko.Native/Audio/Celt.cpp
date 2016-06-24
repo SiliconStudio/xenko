@@ -1,10 +1,10 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-#include "../../../deps/NativePath/NativePath.h"
+#include "../../../../deps/NativePath/NativePath.h"
 
 #define HAVE_STDINT_H
-#include "../../../deps/Celt/include/opus_custom.h"
+#include "../../../../deps/Celt/include/opus_custom.h"
 
 extern "C" {
 	class XenkoCelt
