@@ -97,6 +97,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var tapNumber = 2 * tapCount - 1;
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.Count, tapCount);
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.TotalTap, tapNumber);
+            directionalBlurEffect.EffectInstance.UpdateEffect(context.GraphicsDevice);
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Radius, Radius);
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.TapWeights, tapWeights);
 
@@ -144,6 +145,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var tapNumber = 2 * tapCount - 1;
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.Count, tapCount);
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.TotalTap, tapNumber);
+            directionalBlurEffect.EffectInstance.UpdateEffect(context.GraphicsDevice);
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Radius, Radius);
             directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.TapWeights, tapWeights);
 
@@ -163,6 +165,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             optimizedEffect.SetOutput(outputTexture);
             optimizedEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.Count, tapCount);
             optimizedEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.TotalTap, tapNumber);
+            optimizedEffect.EffectInstance.UpdateEffect(context.GraphicsDevice);
             optimizedEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Radius.ComposeWith("directionalBlurA"), Radius);
             optimizedEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Direction.ComposeWith("directionalBlurA"), new Vector2((float)Math.Cos(diagonalBlurAngleA), (float)Math.Sin(diagonalBlurAngleA)));
             optimizedEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.TapWeights.ComposeWith("directionalBlurA"), tapWeights);
