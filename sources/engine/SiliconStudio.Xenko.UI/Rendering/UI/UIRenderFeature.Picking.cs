@@ -132,16 +132,24 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
             if (uiComponent.IsFullScreen)
             {
+                // TODO This math is exactly the same as before, maybe needs to be changed later
+
                 // here we use a trick to take into the calculation the viewport => we multiply the screen position by the viewport ratio (easier than modifying the view matrix)
                 var positionForHitTest = (Vector2.Demodulate(screenPosition, viewportTargetRatio) - viewportOffset) - new Vector2(0.5f);
 
                 // calculate the ray corresponding to the click
                 var rayDirectionView = Vector3.Normalize(new Vector3(positionForHitTest.X * viewParameters.FrustumHeight * viewParameters.AspectRatio, -positionForHitTest.Y * viewParameters.FrustumHeight, -1));
-                uiRay = new Ray(viewParameters.ViewMatrixInverse.TranslationVector, Vector3.TransformNormal(rayDirectionView, viewParameters.ViewMatrixInverse));
+
+                // Flip the Y and Z axis because the UI component is reversed
+                rayDirectionView.Y *= -1;
+                rayDirectionView.Z *= -1;
+
+                uiRay = new Ray(new Vector3(0, 0, -uiComponent.Resolution.Z), rayDirectionView);
             }
             else
             {
-                var touchRay = GetWorldRay(ref viewport, screenPosition, ref uiComponent.WorldViewProjectionCached);
+                // TODO XK-3367 This only works for a single view
+                var touchRay = GetWorldRay(ref viewport, screenPosition, ref viewParameters.WorldViewProjectionMatrix);
 
                 // If the click point is outside the canvas ignore any testing
                 var dist = -touchRay.Position.Z / touchRay.Direction.Z;
@@ -389,7 +397,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 // Calculate the depth of the element with the depth bias so that hit test corresponds to visuals.
                 Vector4 projectedIntersection;
                 var intersection4 = new Vector4(intersection, 1);
-                Vector4.Transform(ref intersection4, ref viewParameters.ViewProjectionMatrix, out projectedIntersection);
+                Vector4.Transform(ref intersection4, ref viewParameters.WorldViewProjectionMatrix, out projectedIntersection);
                 var depthWithBias = projectedIntersection.Z / projectedIntersection.W - element.DepthBias * BatchBase<int>.DepthBiasShiftOneUnit;
 
                 // update the closest element hit
