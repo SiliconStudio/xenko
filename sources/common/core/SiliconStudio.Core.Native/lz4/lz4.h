@@ -81,8 +81,8 @@ LZ4_uncompress() :
 // Advanced Functions
 //****************************
 
-inline int LZ4_compressBound(int isize) { return ((isize) + ((isize)/255) + 16); }
-#define LZ4_COMPRESSBOUND(isize)                        ((isize) + ((isize)/255) + 16)
+//inline int LZ4_compressBound(int isize) { return ((isize) + ((isize)/255) + 16); }
+#define LZ4_COMPRESSBOUND(isize) ((isize) + ((isize)/255) + 16)
 
 /*
 LZ4_compressBound() :

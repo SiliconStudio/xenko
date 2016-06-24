@@ -787,7 +787,7 @@ int LZ4_compress(const char* source,
     char* dest,
     int isize)
 {
-    return LZ4_compress_limitedOutput(source, dest, isize, LZ4_compressBound(isize));
+    return LZ4_compress_limitedOutput(source, dest, isize, LZ4_COMPRESSBOUND(isize));
 }
 
 //****************************

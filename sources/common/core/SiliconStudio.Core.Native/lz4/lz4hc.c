@@ -751,6 +751,6 @@ int LZ4_compressHC(const char* source,
 				 char* dest,
 				 int inputSize)
 {
-	return LZ4_compressHC_limitedOutput(source, dest, inputSize, LZ4_compressBound(inputSize)+1);
+	return LZ4_compressHC_limitedOutput(source, dest, inputSize, LZ4_COMPRESSBOUND(inputSize)+1);
 }
 
