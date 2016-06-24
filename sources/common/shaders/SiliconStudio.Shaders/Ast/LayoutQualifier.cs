@@ -9,10 +9,6 @@ namespace SiliconStudio.Shaders.Ast
     /// </summary>
     public class LayoutQualifier : Qualifier
     {
-        // LayoutQualifier are before other qualifiers.
-        /// <inheritdoc/>
-        protected override int DefaultOrder => -10;
-
         #region Constructors and Destructors
 
         /// <summary>
