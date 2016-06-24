@@ -46,9 +46,12 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             else
             if (asset.FontType is RuntimeRasterizedSpriteFontType)
             {
-                UFile fontPathOnDisk;
-
-                fontPathOnDisk = asset.FontSource.GetFontPath();
+                UFile fontPathOnDisk = asset.FontSource.GetFontPath();
+                if (fontPathOnDisk == null)
+                {
+                    result.BuildSteps = new AssetBuildStep(AssetItem) { new FailedFontCommand() };
+                    return;
+                }
 
                 var fontImportLocation = FontHelper.GetFontPath(asset.FontSource.GetFontName(), asset.FontSource.Style);
 
@@ -62,7 +65,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             {
                 var fontTypeStatic = asset.FontType as OfflineRasterizedSpriteFontType;
                 if (fontTypeStatic == null)
-                    throw new ArgumentException("Tried to compile a dynamic sprite font with compiler for signed distance field fonts");
+                    throw new ArgumentException("Tried to compile a non-offline rasterized sprite font with the compiler for offline resterized fonts!");
 
                 // copy the asset and transform the source and character set file path to absolute paths
                 var assetClone = (SpriteFontAsset)AssetCloner.Clone(asset);
@@ -206,6 +209,19 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 assetManager.Save(Url, dynamicFont);
 
                 return Task.FromResult(ResultStatus.Successful);
+            }
+        }
+
+        /// <summary>
+        /// Proxy command which always fails, called when font is compiled with the wrong assets
+        /// </summary>
+        internal class FailedFontCommand : AssetCommand<SpriteFontAsset>
+        {
+            public FailedFontCommand() : base(null, null) { }
+
+            protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
+            {
+                return Task.FromResult(ResultStatus.Failed);
             }
         }
     }

@@ -99,6 +99,7 @@
     <Compile Include="IGame.cs" />
     <Compile Include="IGamePlatform.cs" />
     <Compile Include="IGameSystemBase.cs" />
+    <Compile Include="IGameSystemCollection.cs" />
     <Compile Include="IGraphicsDeviceFactory.cs" />
     <Compile Include="IGraphicsDeviceManager.cs" />
     <Compile Include="iOS\iOSWindow.cs" />

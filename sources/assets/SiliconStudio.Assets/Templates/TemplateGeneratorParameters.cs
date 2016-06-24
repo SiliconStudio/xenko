@@ -142,6 +142,11 @@ namespace SiliconStudio.Assets.Templates
         public TemplateDescription Description { get; set; }
 
         /// <summary>
+        /// Specifies if the template generator should run in unattended mode (no UI).
+        /// </summary>
+        public bool Unattended { get; set; }
+
+        /// <summary>
         /// Gets or sets the logger.
         /// </summary>
         /// <value>The logger.</value>
