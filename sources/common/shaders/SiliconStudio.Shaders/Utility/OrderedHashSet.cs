@@ -311,5 +311,20 @@ namespace SiliconStudio.Shaders.Utility
         }
 
         #endregion
+
+        public void Sort()
+        {
+            Sort(0, Count, null);
+        }
+
+        public void Sort(IComparer<T> comparer)
+        {
+            Sort(0, Count, comparer);
+        }
+
+        public void Sort(int index, int count, IComparer<T> comparer)
+        {
+            listSet.Sort(index, count, comparer);
+        }
     }
 }
