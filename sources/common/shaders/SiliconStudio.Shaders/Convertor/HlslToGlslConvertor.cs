@@ -3203,7 +3203,19 @@ namespace SiliconStudio.Shaders.Convertor
                             InputAttributeNames[location] = semantic.Name.Text;
                     }
 
-                    location++;
+                    var matrixType = typebase as MatrixType;
+                    if (matrixType != null)
+                    {
+                        location += 4; // TODO: Pack
+                    }
+                    else if (typebase is ScalarType || typebase is VectorType)
+                    {
+                        location++;
+                    }
+                    else
+                    {
+                        throw new NotImplementedException();
+                    }
                 }
             }
 
