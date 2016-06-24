@@ -242,6 +242,14 @@ namespace SiliconStudio.Xenko.Graphics
                     format = Format.R8G8B8A8UNorm;
                     pixelSize = 4;
                     break;
+                case PixelFormat.R8G8B8A8_UInt:
+                    format = Format.R8G8B8A8UInt;
+                    pixelSize = 4;
+                    break;
+                case PixelFormat.R8G8B8A8_SInt:
+                    format = Format.R8G8B8A8SInt;
+                    pixelSize = 4;
+                    break;
                 case PixelFormat.B8G8R8A8_UNorm:
                     format = Format.B8G8R8A8UNorm;
                     pixelSize = 4;
@@ -257,6 +265,18 @@ namespace SiliconStudio.Xenko.Graphics
 
                 case PixelFormat.R16_Float:
                     format = Format.R16SFloat;
+                    pixelSize = 2;
+                    break;
+                case PixelFormat.R16_UNorm:
+                    format = Format.R16UNorm;
+                    pixelSize = 2;
+                    break;
+                case PixelFormat.R16_UInt:
+                    format = Format.R16UInt;
+                    pixelSize = 2;
+                    break;
+                case PixelFormat.R16_SInt:
+                    format = Format.R16SInt;
                     pixelSize = 2;
                     break;
 
