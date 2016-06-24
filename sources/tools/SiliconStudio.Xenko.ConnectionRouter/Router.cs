@@ -108,6 +108,8 @@ namespace SiliconStudio.Xenko.ConnectionRouter
             // TODO: Proper Url parsing (query string)
             var url = await clientSocket.ReadStream.ReadStringAsync();
 
+            Log.Info("Client {0}:{1} sent message ClientRequestServer with URL {2}", clientSocket.RemoteAddress, clientSocket.RemotePort, url);
+
             string[] urlSegments;
             string urlParameters;
             RouterHelper.ParseUrl(url, out urlSegments, out urlParameters);
@@ -129,9 +131,25 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                         break;
                     }
                     case "task":
+                    {
                         // From the URL, start service (if not started yet) and ask it to provide a server
                         serverSocket = await SpawnServerFromService(url, true);
+                    }
                         break;
+                    case "redirect":
+                    {
+                        // Redirect to a IP/port
+                        serverSocket = new SimpleSocket();
+                        var host = urlSegments[1];
+                        var port = int.Parse(urlSegments[2]);
+
+                        // Note: for security reasons, we currently use a whitelist
+                        if (host == "XenkoBuild.siliconstudio.co.jp" && port == 1832)
+                            await serverSocket.StartClient(host, port, false);
+                        else
+                            throw new InvalidOperationException("Trying to redirect to a non-whitelisted host/port");
+                            break;
+                    }
                     default:
                         throw new InvalidOperationException("This type of URL is not supported");
                 }

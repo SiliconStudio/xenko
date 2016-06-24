@@ -385,7 +385,7 @@ namespace SiliconStudio.Xenko.Rendering
             if (staticCompilerParameters == null)
                 staticCompilerParameters = new CompilerParameters();
 
-            // Step2: Compile effects and update reflection infos (offset, etc...)
+            // Step2: Compile effects
             foreach (var renderObject in RenderObjects)
             {
                 var staticObjectNode = renderObject.StaticObjectNode;
@@ -396,7 +396,13 @@ namespace SiliconStudio.Xenko.Rendering
                     var renderEffect = renderEffects[staticEffectObjectNode];
 
                     // Skip if not used
-                    if (renderEffect == null || !renderEffect.IsUsedDuringThisFrame(RenderSystem))
+                    if (renderEffect == null)
+                        continue;
+
+                    // Skip reflection update unless a state change requires it
+                    renderEffect.IsReflectionUpdateRequired = false;
+
+                    if (!renderEffect.IsUsedDuringThisFrame(RenderSystem))
                         continue;
 
                     // Skip if nothing changed
@@ -452,9 +458,12 @@ namespace SiliconStudio.Xenko.Rendering
                             renderEffect.State = RenderEffectState.Compiling;
                         }
                     }
+
+                    renderEffect.IsReflectionUpdateRequired = true;
                 }
             }
 
+            // Step3: Uupdate reflection infos (offset, etc...)
             foreach (var renderObject in RenderObjects)
             {
                 var staticObjectNode = renderObject.StaticObjectNode;
@@ -465,7 +474,7 @@ namespace SiliconStudio.Xenko.Rendering
                     var renderEffect = renderEffects[staticEffectObjectNode];
 
                     // Skip if not used
-                    if (renderEffect == null || !renderEffect.IsUsedDuringThisFrame(RenderSystem))
+                    if (renderEffect == null || !renderEffect.IsReflectionUpdateRequired)
                         continue;
 
                     var effect = renderEffect.Effect;

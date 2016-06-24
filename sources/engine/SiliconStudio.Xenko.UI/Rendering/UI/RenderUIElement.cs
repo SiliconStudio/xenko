@@ -17,10 +17,19 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
         public readonly TransformComponent TransformComponent;
 
+        /// <summary>
+        /// Last registered position of teh mouse
+        /// </summary>
         public Vector2 LastMousePosition;
 
-        public UIElement LastOveredElement;
+        /// <summary>
+        /// Last element over which the mouse cursor was registered
+        /// </summary>
+        public UIElement LastMouseOverElement;
 
+        /// <summary>
+        /// Last element which received a touch/click event
+        /// </summary>
         public UIElement LastTouchedElement;
 
         public Vector3 LastIntersectionPoint;

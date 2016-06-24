@@ -121,7 +121,7 @@ namespace SiliconStudio.Xenko.Assets.Model
         
         protected abstract Rendering.Model LoadModel(ICommandContext commandContext, ContentManager contentManager);
 
-        protected abstract Dictionary<string, AnimationClip> LoadAnimation(ICommandContext commandContext, ContentManager contentManager);
+        protected abstract Dictionary<string, AnimationClip> LoadAnimation(ICommandContext commandContext, ContentManager contentManager, out TimeSpan duration);
 
         protected abstract Skeleton LoadSkeleton(ICommandContext commandContext, ContentManager contentManager);
 

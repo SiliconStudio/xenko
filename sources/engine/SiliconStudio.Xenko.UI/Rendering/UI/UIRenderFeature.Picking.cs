@@ -14,8 +14,6 @@ namespace SiliconStudio.Xenko.Rendering.UI
 {
     public partial class UIRenderFeature 
     {
-//        private Vector2 lastMousePosition;
-
         // object to avoid allocation at each element leave event
         private readonly HashSet<UIElement> newlySelectedElementParents = new HashSet<UIElement>();
 
@@ -248,8 +246,8 @@ namespace SiliconStudio.Xenko.Rendering.UI
             var intersectionPoint = Vector3.Zero;
             var mousePosition = input.MousePosition;
             var rootElement = state.UIComponent.Page.RootElement;
-            var lastOveredElement = state.LastOveredElement;
-            var overredElement = lastOveredElement;
+            var lastMouseOverElement = state.LastMouseOverElement;
+            var mouseOverElement = lastMouseOverElement;
 
             // determine currently overred element.
             if (mousePosition != state.LastMousePosition)
@@ -258,14 +256,14 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 if (!GetTouchPosition(state.UIComponent, ref viewport, mousePosition, out uiRay))
                     return;
 
-                overredElement = GetElementAtScreenPosition(rootElement, uiRay, ref intersectionPoint);
+                mouseOverElement = GetElementAtScreenPosition(rootElement, uiRay, ref intersectionPoint);
             }
 
             // find the common parent between current and last overred elements
-            var commonElement = FindCommonParent(overredElement, lastOveredElement);
+            var commonElement = FindCommonParent(mouseOverElement, lastMouseOverElement);
 
             // disable mouse over state to previously overred hierarchy
-            var parent = lastOveredElement;
+            var parent = lastMouseOverElement;
             while (parent != commonElement && parent != null)
             {
                 parent.MouseOverState = MouseOverState.MouseOverNone;
@@ -273,13 +271,13 @@ namespace SiliconStudio.Xenko.Rendering.UI
             }
 
             // enable mouse over state to currently overred hierarchy
-            if (overredElement != null)
+            if (mouseOverElement != null)
             {
                 // the element itself
-                overredElement.MouseOverState = MouseOverState.MouseOverElement;
+                mouseOverElement.MouseOverState = MouseOverState.MouseOverElement;
 
                 // its hierarchy
-                parent = overredElement.VisualParent;
+                parent = mouseOverElement.VisualParent;
                 while (parent != null)
                 {
                     if (parent.IsHierarchyEnabled)
@@ -290,7 +288,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
             }
 
             // update cached values
-            state.LastOveredElement = overredElement;
+            state.LastMouseOverElement = mouseOverElement;
             state.LastMousePosition = mousePosition;
         }
 

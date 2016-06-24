@@ -113,8 +113,6 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 }
             }
 
-            // TODO Include using (Profiler.Begin(UIProfilerKeys.TouchEventsUpdate)) somewhere...
-
             // render the UI elements of all the entities
             foreach (var uiElementState in uiElementStates)
             {
