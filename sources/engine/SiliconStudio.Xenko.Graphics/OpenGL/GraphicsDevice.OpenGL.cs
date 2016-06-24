@@ -106,6 +106,7 @@ namespace SiliconStudio.Xenko.Graphics
         internal bool HasKhronosDebug;
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+        internal bool HasKhronosDebugKHR;
         internal bool HasDepth24;
         internal bool HasPackedDepthStencilExtension;
         internal bool HasExtTextureFormatBGRA8888;
@@ -842,13 +843,13 @@ namespace SiliconStudio.Xenko.Graphics
             if (IsDebugMode && HasKhronosDebug)
             {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                bool useKhronoDebugKHR = false;
+                HasKhronosDebugKHR = false;
                 try
                 {
                     // If properly implemented, we should use that one before ES 3.2 otherwise the other one without KHR prefix
                     // Unfortunately, many ES implementations don't respect this so we just try both
                     GL.Khr.DebugMessageCallback(debugCallbackInstanceKHR ?? (debugCallbackInstanceKHR = DebugCallback), IntPtr.Zero);
-                    useKhronoDebugKHR = true;
+                    HasKhronosDebugKHR = true;
                 }
                 catch (EntryPointNotFoundException)
 #endif
@@ -861,7 +862,7 @@ namespace SiliconStudio.Xenko.Graphics
                 // Also do it on async creation context
                 deviceCreationContext.MakeCurrent(deviceCreationWindowInfo);
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                if (useKhronoDebugKHR)
+                if (HasKhronosDebugKHR)
                 {
                     // If properly implemented, we should use that one before ES 3.2 otherwise the other one without KHR prefix
                     // Unfortunately, many ES implementations don't respect this so we just try both
