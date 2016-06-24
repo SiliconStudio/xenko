@@ -17,6 +17,8 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
         public readonly TransformComponent TransformComponent;
 
+        public Vector2 LastMousePosition;
+
         public UIElement LastOveredElement;
 
         public UIElement LastTouchedElement;

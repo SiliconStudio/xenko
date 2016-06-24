@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
 {
     public partial class UIRenderFeature 
     {
-        private Vector2 lastMousePosition;
+//        private Vector2 lastMousePosition;
 
         // object to avoid allocation at each element leave event
         private readonly HashSet<UIElement> newlySelectedElementParents = new HashSet<UIElement>();
@@ -127,28 +127,18 @@ namespace SiliconStudio.Xenko.Rendering.UI
         {
             uiRay = new Ray(new Vector3(float.NegativeInfinity), new Vector3(0, 1, 0));
 
-            if (uiComponent.IsFullScreen)
-            {
-                // here we use a trick to take into the calculation the viewport => we multiply the screen position by the viewport ratio (easier than modifying the view matrix)
-                var positionForHitTest = (Vector2.Demodulate(screenPosition, viewportTargetRatio) - viewportOffset) - new Vector2(0.5f);
+            // TODO XK-3367 This only works for a single view
 
-                // calculate the ray corresponding to the click
-                var rayDirectionView = Vector3.Normalize(new Vector3(positionForHitTest.X * viewParameters.FrustumHeight * viewParameters.AspectRatio, -positionForHitTest.Y * viewParameters.FrustumHeight, -1));
-                uiRay = new Ray(viewParameters.ViewMatrixInverse.TranslationVector, Vector3.TransformNormal(rayDirectionView, viewParameters.ViewMatrixInverse));
-            }
-            else
-            {
-                var touchRay = GetWorldRay(ref viewport, screenPosition, ref uiComponent.WorldViewProjectionCached);
+            // Get a touch ray in object (UI component) space
+            var touchRay = GetWorldRay(ref viewport, screenPosition, ref viewParameters.WorldViewProjectionMatrix);
 
-                // If the click point is outside the canvas ignore any testing
-                var dist = -touchRay.Position.Z / touchRay.Direction.Z;
-                if (Math.Abs(touchRay.Position.X + touchRay.Direction.X * dist) > uiComponent.Resolution.X * 0.5f ||
-                    Math.Abs(touchRay.Position.Y + touchRay.Direction.Y * dist) > uiComponent.Resolution.Y * 0.5f)
-                    return false;
+            // If the click point is outside the canvas ignore any further testing
+            var dist = -touchRay.Position.Z / touchRay.Direction.Z;
+            if (Math.Abs(touchRay.Position.X + touchRay.Direction.X * dist) > uiComponent.Resolution.X * 0.5f ||
+                Math.Abs(touchRay.Position.Y + touchRay.Direction.Y * dist) > uiComponent.Resolution.Y * 0.5f)
+                return false;
 
-                uiRay = touchRay;
-            }
-
+            uiRay = touchRay;
             return true;
         }
 
@@ -262,7 +252,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
             var overredElement = lastOveredElement;
 
             // determine currently overred element.
-            if (mousePosition != lastMousePosition)
+            if (mousePosition != state.LastMousePosition)
             {
                 Ray uiRay;
                 if (!GetTouchPosition(state.UIComponent, ref viewport, mousePosition, out uiRay))
@@ -301,7 +291,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
             // update cached values
             state.LastOveredElement = overredElement;
-            lastMousePosition = mousePosition;
+            state.LastMousePosition = mousePosition;
         }
 
         private UIElement FindCommonParent(UIElement element1, UIElement element2)
@@ -386,7 +376,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 // Calculate the depth of the element with the depth bias so that hit test corresponds to visuals.
                 Vector4 projectedIntersection;
                 var intersection4 = new Vector4(intersection, 1);
-                Vector4.Transform(ref intersection4, ref viewParameters.ViewProjectionMatrix, out projectedIntersection);
+                Vector4.Transform(ref intersection4, ref viewParameters.WorldViewProjectionMatrix, out projectedIntersection);
                 var depthWithBias = projectedIntersection.Z / projectedIntersection.W - element.DepthBias * BatchBase<int>.DepthBiasShiftOneUnit;
 
                 // update the closest element hit

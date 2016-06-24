@@ -148,9 +148,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                         viewParameters.Update(uiComponent.Entity, cameraComponent);
                 }
 
-                // Analyze the input and trigger the UI element touch and key events
-                // Note: this is done before measuring/arranging/drawing the element in order to avoid one frame latency on clicks.
-                //       But by doing so the world matrices taken for hit test are the ones calculated during last frame.
+                // Check if the current UI component is being picked based on the current ViewParameters (used to draw this element)
                 using (Profiler.Begin(UIProfilerKeys.TouchEventsUpdate))
                 {
                     PickingUpdate(uiElementState, context.CommandList.Viewport, drawTime);
@@ -158,22 +156,22 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
                 // update the rendering context values specific to this element
                 renderingContext.Resolution = virtualResolution;
-                renderingContext.ViewMatrix = viewParameters.ViewMatrix;
+                renderingContext.ViewMatrix = viewParameters.WorldViewMatrix;
                 renderingContext.ProjectionMatrix = viewParameters.ProjectionMatrix;
-                renderingContext.ViewProjectionMatrix = viewParameters.ViewProjectionMatrix;
+                renderingContext.ViewProjectionMatrix = viewParameters.WorldViewProjectionMatrix;
                 renderingContext.DepthStencilBuffer = uiComponent.IsFullScreen ? scopedDepthBuffer : currentRenderFrame.DepthStencil;
                 renderingContext.ShouldSnapText = uiComponent.SnapText;
 
                 // calculate an estimate of the UI real size by projecting the element virtual resolution on the screen
-                var virtualOrigin = viewParameters.ViewProjectionMatrix.Row4;
+                var virtualOrigin = viewParameters.WorldViewProjectionMatrix.Row4;
                 var virtualWidth = new Vector4(virtualResolution.X / 2, 0, 0, 1);
                 var virtualHeight = new Vector4(0, virtualResolution.Y / 2, 0, 1);
                 var transformedVirtualWidth = Vector4.Zero;
                 var transformedVirtualHeight = Vector4.Zero;
                 for (var i = 0; i < 4; i++)
                 {
-                    transformedVirtualWidth[i] = virtualWidth[0] * viewParameters.ViewProjectionMatrix[0 + i] + viewParameters.ViewProjectionMatrix[12 + i];
-                    transformedVirtualHeight[i] = virtualHeight[1] * viewParameters.ViewProjectionMatrix[4 + i] + viewParameters.ViewProjectionMatrix[12 + i];
+                    transformedVirtualWidth[i] = virtualWidth[0] * viewParameters.WorldViewProjectionMatrix[0 + i] + viewParameters.WorldViewProjectionMatrix[12 + i];
+                    transformedVirtualHeight[i] = virtualHeight[1] * viewParameters.WorldViewProjectionMatrix[4 + i] + viewParameters.WorldViewProjectionMatrix[12 + i];
                 }
 
                 var viewportSize = context.CommandList.Viewport.Size;
@@ -201,7 +199,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 rootElement.Arrange(virtualResolution, false);
 
                 // update the UI element hierarchical properties
-                var rootMatrix = Matrix.Translation(-virtualResolution / 2); // UI world is rotated of 180degrees along Ox
+                var rootMatrix = Matrix.Translation(-virtualResolution / 2); // UI world is translated by a half resolution compared to its quad, which is centered around the origin
                 updatableRootElement.UpdateWorldMatrix(ref rootMatrix, rootMatrix != uiElementState.LastRootMatrix);
                 updatableRootElement.UpdateElementState(0);
                 uiElementState.LastRootMatrix = rootMatrix;
@@ -215,7 +213,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
                 // start the image draw session
                 renderingContext.StencilTestReferenceValue = 0;
-                batch.Begin(context.GraphicsContext, ref viewParameters.ViewProjectionMatrix, BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(context.GraphicsContext, ref viewParameters.WorldViewProjectionMatrix, BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
 
                 // Render the UI elements in the final render target
                 RecursiveDrawWithClipping(context, rootElement);
@@ -252,13 +250,13 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 batch.End();
 
                 // render the clipping region
-                batch.Begin(context.GraphicsContext, ref viewParameters.ViewProjectionMatrix, BlendStates.ColorDisabled, uiSystem.IncreaseStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(context.GraphicsContext, ref viewParameters.WorldViewProjectionMatrix, BlendStates.ColorDisabled, uiSystem.IncreaseStencilValueState, renderingContext.StencilTestReferenceValue);
                 renderer.RenderClipping(element, renderingContext);
                 batch.End();
 
                 // update context and restart the batch
                 renderingContext.StencilTestReferenceValue += 1;
-                batch.Begin(context.GraphicsContext, ref viewParameters.ViewProjectionMatrix, BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(context.GraphicsContext, ref viewParameters.WorldViewProjectionMatrix, BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
             }
 
             // render the design of the element
@@ -277,13 +275,13 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 renderingContext.DepthBias = element.MaxChildrenDepthBias;
 
                 // render the clipping region
-                batch.Begin(context.GraphicsContext, ref viewParameters.ViewProjectionMatrix, BlendStates.ColorDisabled, uiSystem.DecreaseStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(context.GraphicsContext, ref viewParameters.WorldViewProjectionMatrix, BlendStates.ColorDisabled, uiSystem.DecreaseStencilValueState, renderingContext.StencilTestReferenceValue);
                 renderer.RenderClipping(element, renderingContext);
                 batch.End();
 
                 // update context and restart the batch
                 renderingContext.StencilTestReferenceValue -= 1;
-                batch.Begin(context.GraphicsContext, ref viewParameters.ViewProjectionMatrix, BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(context.GraphicsContext, ref viewParameters.WorldViewProjectionMatrix, BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
             }
         }
 
@@ -306,10 +304,9 @@ namespace SiliconStudio.Xenko.Rendering.UI
         {
             public float AspectRatio;
             public float FrustumHeight;
-            public Matrix ViewMatrix;
-            public Matrix ViewMatrixInverse;
+            public Matrix WorldViewMatrix;
             public Matrix ProjectionMatrix;
-            public Matrix ViewProjectionMatrix;
+            public Matrix WorldViewProjectionMatrix;
 
             public void Update(Entity entity, CameraComponent camera)
             {
@@ -322,7 +319,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 // rotate the UI element perpendicular to the camera view vector, if billboard is activated
                 var uiComponent = entity.Get<UIComponent>();
 
-                if (!uiComponent.IsFullScreen && (uiComponent.IsBillboard || uiComponent.IsFixedSize))
+                if (!uiComponent.IsFullScreen)
                 {
                     Matrix viewInverse;
                     Matrix.Invert(ref camera.ViewMatrix, out viewInverse);
@@ -358,27 +355,18 @@ namespace SiliconStudio.Xenko.Rendering.UI
                         worldMatrix.Row2 *= worldScale;
                         worldMatrix.Row3 *= worldScale;
                     }
-                }
 
+                    // If the UI component is not drawn fullscreen it should be drawn as a quad with world sizes corresponding to its actual size
+                    worldMatrix = Matrix.Scaling(uiComponent.Size / uiComponent.Resolution) * worldMatrix;
+                }
 
                 // Rotation of Pi along 0x to go from UI space to world space
                 worldMatrix.Row2 = -worldMatrix.Row2;
                 worldMatrix.Row3 = -worldMatrix.Row3;
 
-                // If the UI component is not drawn fullscreen it should be drawn as a quad with world sizes corresponding to its actual size
-                if (!uiComponent.IsFullScreen)
-                {
-                    worldMatrix = Matrix.Scaling(uiComponent.Size / uiComponent.Resolution) * worldMatrix;
-                }
-
                 ProjectionMatrix = camera.ProjectionMatrix;
-                Matrix.Multiply(ref worldMatrix, ref camera.ViewMatrix, out ViewMatrix);
-                Matrix.Invert(ref ViewMatrix, out ViewMatrixInverse);
-                Matrix.Multiply(ref ViewMatrix, ref ProjectionMatrix, out ViewProjectionMatrix);
-
-                // TODO XK-3367 This only works for a single view
-                // Save the World-View-Projection matrix with which this component is being currently drawn
-                Matrix.Multiply(ref entity.Get<TransformComponent>().WorldMatrix, ref ViewProjectionMatrix, out uiComponent.WorldViewProjectionCached);
+                Matrix.Multiply(ref worldMatrix, ref camera.ViewMatrix, out WorldViewMatrix);
+                Matrix.Multiply(ref WorldViewMatrix, ref ProjectionMatrix, out WorldViewProjectionMatrix);
             }
 
             public void Update(Entity entity, Vector3 virtualResolution)
