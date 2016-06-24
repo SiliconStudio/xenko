@@ -272,9 +272,33 @@ namespace SiliconStudio.Xenko.Graphics
                     format = Format.R16G16UNorm;
                     pixelSize = 4;
                     break;
+                case PixelFormat.R16G16_SInt:
+                    format = Format.R16G16SNorm;
+                    pixelSize = 4;
+                    break;
+                case PixelFormat.R16G16_UInt:
+                    format = Format.R16G16UNorm;
+                    pixelSize = 4;
+                    break;
 
                 case PixelFormat.R16G16B16A16_Float:
                     format = Format.R16G16B16A16SFloat;
+                    pixelSize = 8;
+                    break;
+                case PixelFormat.R16G16B16A16_UNorm:
+                    format = Format.R16G16B16A16UNorm;
+                    pixelSize = 8;
+                    break;
+                case PixelFormat.R16G16B16A16_SNorm:
+                    format = Format.R16G16B16A16SNorm;
+                    pixelSize = 8;
+                    break;
+                case PixelFormat.R16G16B16A16_UInt:
+                    format = Format.R16G16B16A16UInt;
+                    pixelSize = 8;
+                    break;
+                case PixelFormat.R16G16B16A16_SInt:
+                    format = Format.R16G16B16A16SInt;
                     pixelSize = 8;
                     break;
 
@@ -304,9 +328,25 @@ namespace SiliconStudio.Xenko.Graphics
                     format = Format.R32G32B32SFloat;
                     pixelSize = 12;
                     break;
+                case PixelFormat.R32G32B32_SInt:
+                    format = Format.R32G32B32SInt;
+                    pixelSize = 12;
+                    break;
+                case PixelFormat.R32G32B32_UInt:
+                    format = Format.R32G32B32UInt;
+                    pixelSize = 12;
+                    break;
 
                 case PixelFormat.R32G32B32A32_Float:
                     format = Format.R32G32B32A32SFloat;
+                    pixelSize = 16;
+                    break;
+                case PixelFormat.R32G32B32A32_SInt:
+                    format = Format.R32G32B32A32SInt;
+                    pixelSize = 16;
+                    break;
+                case PixelFormat.R32G32B32A32_UInt:
+                    format = Format.R32G32B32A32UInt;
                     pixelSize = 16;
                     break;
 
@@ -390,6 +430,46 @@ namespace SiliconStudio.Xenko.Graphics
                     break;
                 case PixelFormat.BC3_UNorm_SRgb:
                     format = Format.Bc3SRgbBlock;
+                    compressed = true;
+                    pixelSize = 2; // 8bpp
+                    break;
+                case PixelFormat.BC4_SNorm:
+                    format = Format.Bc4SNormBlock;
+                    compressed = true;
+                    pixelSize = 1; // 4bpp
+                    break;
+                case PixelFormat.BC4_UNorm:
+                    format = Format.Bc4UNormBlock;
+                    compressed = true;
+                    pixelSize = 1; // 4bpp
+                    break;
+                case PixelFormat.BC5_SNorm:
+                    format = Format.Bc5SNormBlock;
+                    compressed = true;
+                    pixelSize = 2; // 8bpp
+                    break;
+                case PixelFormat.BC5_UNorm:
+                    format = Format.Bc5UNormBlock;
+                    compressed = true;
+                    pixelSize = 2; // 8bpp
+                    break;
+                case PixelFormat.BC6H_Sf16:
+                    format = Format.Bc6HSFloatBlock;
+                    compressed = true;
+                    pixelSize = 2; // 8bpp
+                    break;
+                case PixelFormat.BC6H_Uf16:
+                    format = Format.Bc6HUFloatBlock;
+                    compressed = true;
+                    pixelSize = 2; // 8bpp
+                    break;
+                case PixelFormat.BC7_UNorm:
+                    format = Format.Bc7UNormBlock;
+                    compressed = true;
+                    pixelSize = 2; // 8bpp
+                    break;
+                case PixelFormat.BC7_UNorm_SRgb:
+                    format = Format.Bc7SRgbBlock;
                     compressed = true;
                     pixelSize = 2; // 8bpp
                     break;
