@@ -108,9 +108,35 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// </summary>
         /// <param name="textureSize">the size of the texture</param>
         /// <returns>true if PVRTC is supported</returns>
-        public static bool SupportPVRTC(Int2 textureSize)
+        public static bool SupportPVRTC(Size2 textureSize)
         {
-            return textureSize.X == textureSize.Y && MathUtil.IsPow2(textureSize.X);
+            return textureSize.Width == textureSize.Height && MathUtil.IsPow2(textureSize.Width);
+        }
+
+        /// <summary>
+        /// Utility function to check that the texture size is supported on the graphics platform for the provided graphics profile.
+        /// </summary>
+        /// <param name="parameters">The import parameters</param>
+        /// <param name="outputFormat">The output format</param>
+        /// <param name="textureSize">The texture size requested.</param>
+        /// <param name="logger">The logger.</param>
+        /// <returns>true if the texture size is supported</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">graphicsProfile</exception>
+        public static Size2 FindBestTextureSize(ImportParameters parameters, PixelFormat outputFormat, Size2 textureSize, ILogger logger = null)
+        {
+            bool isBlockCompressed =
+                (outputFormat >= PixelFormat.BC1_Typeless && outputFormat <= PixelFormat.BC5_SNorm) ||
+                (outputFormat >= PixelFormat.BC6H_Typeless && outputFormat <= PixelFormat.BC7_UNorm_SRgb);
+
+            // compressed DDS files has to have a size multiple of 4.
+            if ((parameters.DesiredFormat == TextureFormat.Compressed) && isBlockCompressed &&
+                ((textureSize.Width % 4) != 0 || (textureSize.Height % 4) != 0))
+            {
+                textureSize.Width = unchecked((int)(((uint)(textureSize.Width + 3)) & ~(uint)3));
+                textureSize.Height = unchecked((int)(((uint)(textureSize.Height + 3)) & ~(uint)3));
+            }
+
+            return FindMaximumTextureSize(parameters, textureSize, logger);
         }
 
         /// <summary>
@@ -121,18 +147,8 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// <param name="logger">The logger.</param>
         /// <returns>true if the texture size is supported</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">graphicsProfile</exception>
-        public static Size2 FindBestTextureSize(ImportParameters parameters, Size2 textureSizeRequested, ILogger logger = null)
+        public static Size2 FindMaximumTextureSize(ImportParameters parameters, Size2 textureSize, ILogger logger = null)
         {
-            var textureSize = textureSizeRequested;
-
-            // compressed DDS files has to have a size multiple of 4.
-            if (parameters.GraphicsPlatform == GraphicsPlatform.Direct3D11 && parameters.DesiredFormat == TextureFormat.Compressed
-                && ((textureSizeRequested.Width % 4) != 0 || (textureSizeRequested.Height % 4) != 0))
-            {
-                textureSize.Width = unchecked((int)(((uint)(textureSizeRequested.Width + 3)) & ~(uint)3));
-                textureSize.Height = unchecked((int)(((uint)(textureSizeRequested.Height + 3)) & ~(uint)3));
-            }
-
             var maxTextureSize = 0;
 
             // determine if the desired size if valid depending on the graphics profile
@@ -180,7 +196,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// <param name="imageSize">The texture output size</param>
         /// <param name="inputImageFormat">The pixel format of the input image</param>
         /// <returns>The pixel format to use as output</returns>
-        public static PixelFormat DetermineOutputFormat(ImportParameters parameters, Int2 imageSize, PixelFormat inputImageFormat)
+        public static PixelFormat DetermineOutputFormat(ImportParameters parameters, Size2 imageSize, PixelFormat inputImageFormat)
         {
             var hint = parameters.TextureHint;
             var alphaMode = parameters.DesiredAlpha;
@@ -419,8 +435,18 @@ namespace SiliconStudio.Xenko.Assets.Textures
                 targetSize = new Size2((int)(fromSize.Width * targetSize.Width / 100.0f), (int)(fromSize.Height * targetSize.Height / 100.0f));
             }
 
+            // determine the alpha format of the texture when set to Auto
+            // Note: this has to be done before the ColorKey transformation in order to be able to take advantage of image file AlphaDepth information
+            if (parameters.DesiredAlpha == AlphaFormat.Auto)
+            {
+                var colorKey = parameters.ColorKeyEnabled ? (Color?)parameters.ColorKeyColor : null;
+                var alphaLevel = textureTool.GetAlphaLevels(texImage, new Rectangle(0, 0, texImage.Width, texImage.Height), colorKey, logger);
+                parameters.DesiredAlpha = alphaLevel.ToAlphaFormat();
+            }
+
             // Find the target size
-            targetSize = FindBestTextureSize(parameters, targetSize, logger);
+            var outputFormat = DetermineOutputFormat(parameters, targetSize, texImage.Format);
+            targetSize = FindBestTextureSize(parameters, outputFormat, targetSize, logger);
 
             // Resize the image only if needed
             if (targetSize != fromSize)
@@ -430,18 +456,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
             if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
                 return ResultStatus.Cancelled;
-
-            // texture size is now determined, we can cache it
-            var textureSize = new Int2(texImage.Width, texImage.Height);
-
-            // determine the alpha format of the texture when set to Auto
-            // Note: this has to be done before the ColorKey transformation in order to be able to take advantage of image file AlphaDepth information
-            if(parameters.DesiredAlpha == AlphaFormat.Auto)
-            {
-                var colorKey = parameters.ColorKeyEnabled? (Color?)parameters.ColorKeyColor : null;
-                var alphaLevel = textureTool.GetAlphaLevels(texImage, new Rectangle(0, 0, textureSize.X, textureSize.Y), colorKey, logger);
-                parameters.DesiredAlpha = alphaLevel.ToAlphaFormat();
-            }
 
             // Apply the color key
             if (parameters.ColorKeyEnabled)
@@ -461,7 +475,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
             // Generate mipmaps
             if (parameters.GenerateMipmaps)
             {
-                var boxFilteringIsSupported = !texImage.Format.IsSRgb() || (MathUtil.IsPow2(textureSize.X) && MathUtil.IsPow2(textureSize.Y));
+                var boxFilteringIsSupported = !texImage.Format.IsSRgb() || (MathUtil.IsPow2(targetSize.Width) && MathUtil.IsPow2(targetSize.Height));
                 textureTool.GenerateMipMaps(texImage, boxFilteringIsSupported? Filter.MipMapGeneration.Box: Filter.MipMapGeneration.Linear);
             }
                 
@@ -471,7 +485,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
 
             // Convert/Compress to output format
             // TODO: Change alphaFormat depending on actual image content (auto-detection)?
-            var outputFormat = DetermineOutputFormat(parameters, textureSize, texImage.Format);
+            outputFormat = DetermineOutputFormat(parameters, targetSize, texImage.Format);
             textureTool.Compress(texImage, outputFormat, (TextureConverter.Requests.TextureQuality)parameters.TextureQuality);
 
             if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
