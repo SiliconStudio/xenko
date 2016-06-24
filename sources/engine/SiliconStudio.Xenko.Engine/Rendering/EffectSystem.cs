@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Called each time a non-cached effect is requested.
         /// </summary>
-        internal Action<EffectCompileRequest> EffectUsed;
+        internal Action<EffectCompileRequest, CompilerResults> EffectUsed;
 
         private readonly HashSet<string> recentlyModifiedShaders = new HashSet<string>();
 
@@ -261,15 +261,11 @@ namespace SiliconStudio.Xenko.Rendering
 
             if (compilerResult == null)
             {
-                var effectRequested = EffectUsed;
-                if (effectRequested != null)
-                {
-                    effectRequested(new EffectCompileRequest(effectName, new CompilerParameters(compilerParameters)));
-                }
-
                 var source = isXkfx ? new ShaderMixinGeneratorSource(effectName) : (ShaderSource)new ShaderClassSource(effectName);
                 compilerResult = compiler.Compile(source, compilerParameters);
-                
+
+                EffectUsed?.Invoke(new EffectCompileRequest(effectName, new CompilerParameters(compilerParameters)), compilerResult);
+
                 if (!compilerResult.HasErrors && isXkfx)
                 {
                     lock (earlyCompilerCache)

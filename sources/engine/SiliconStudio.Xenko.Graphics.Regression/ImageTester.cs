@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Sockets.Plugin;
@@ -114,7 +115,14 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                 binaryWriter.Write((int)ImageServerMessageType.SendImage);
 
                 GameTestBase.TestGameLogger.Info(@"Sending image information...");
+
+                var sw = new Stopwatch();
+                sw.Start();
+
                 testResultImage.Write(binaryWriter);
+
+                sw.Stop();
+                GameTestBase.TestGameLogger.Info("Total calculation time: {0}", sw.Elapsed);
 
                 return binaryReader.ReadBoolean();
             }

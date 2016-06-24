@@ -30,6 +30,7 @@
     </Compile>
     <Compile Include="Compiler\CompilerResults.cs" />
     <Compile Include="Compiler\CompilerParameters.cs" />
+    <Compile Include="Compiler\EffectBytecodeCacheLoadSource.cs" />
     <Compile Include="Compiler\EffectBytecodeCompilerResult.cs" />
     <Compile Include="Compiler\EffectCompilerParameters.cs" />
     <Compile Include="Compiler\NullEffectCompiler.cs" />

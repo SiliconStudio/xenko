@@ -455,7 +455,7 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
             defaultDeclarations.Add(GenericMethod("GroupMemoryBarrier", TypeBase.Void));
         }
 
-        private static List<IDeclaration> ParseBuiltin(string builtins, string fileName)
+        public static List<IDeclaration> ParseBuiltin(string builtins, string fileName)
         {
             var builtinDeclarations = new List<IDeclaration>();
 
