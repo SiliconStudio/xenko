@@ -142,7 +142,7 @@ namespace SiliconStudio.Xenko.Graphics
             var isStaging = bufferDescription.Usage == GraphicsResourceUsage.Staging;
             NativeBuffer = GraphicsDevice.NativeDevice.CreateBuffer(ref createInfo);
 
-            var memoryProperties = isStaging || dataPointer != IntPtr.Zero ? MemoryPropertyFlags.HostVisible | MemoryPropertyFlags.HostCoherent : MemoryPropertyFlags.DeviceLocal;
+            var memoryProperties = isStaging ? MemoryPropertyFlags.HostVisible | MemoryPropertyFlags.HostCoherent : MemoryPropertyFlags.DeviceLocal;
 
             MemoryRequirements memoryRequirements;
             GraphicsDevice.NativeDevice.GetBufferMemoryRequirements(NativeBuffer, out memoryRequirements);
