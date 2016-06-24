@@ -45,12 +45,10 @@ namespace SiliconStudio.Assets
 
         public override IEnumerable<AssetPart> CollectParts()
         {
-            foreach (var part in Hierarchy.Parts)
-            {
-                yield return new AssetPart(part.Part.Id, part.BaseId, part.BasePartInstanceId);
-            }
+            return Hierarchy.Parts.Select(x => new AssetPart(x.Part.Id, x.BaseId, x.BasePartInstanceId));
         }
 
+        [Obsolete("This method will be removed soon")]
         public override void SetPart(Guid id, Guid baseId, Guid basePartInstanceId)
         {
             TAssetPartDesign partEntry;
