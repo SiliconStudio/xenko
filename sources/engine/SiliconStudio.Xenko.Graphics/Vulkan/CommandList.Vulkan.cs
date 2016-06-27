@@ -296,8 +296,7 @@ namespace SiliconStudio.Xenko.Graphics
 #else
             var bindingCount = activePipeline.DescriptorBindingMapping.Count;
             var writes = stackalloc WriteDescriptorSet[bindingCount];
-            var imageInfos = stackalloc DescriptorImageInfo[bindingCount];
-            var bufferInfos = stackalloc DescriptorBufferInfo[bindingCount];
+            var descriptorDatas = stackalloc DescriptorData[bindingCount];
 
             for (int index = 0; index < bindingCount; index++)
             {
@@ -306,8 +305,7 @@ namespace SiliconStudio.Xenko.Graphics
                 var heapObject = sourceSet.HeapObjects[sourceSet.DescriptorStartOffset + mapping.SourceBinding];
 
                 var write = writes + index;
-                var imageInfo = imageInfos + index;
-                var bufferInfo = bufferInfos + index;
+                var descriptorData = descriptorDatas + index;
 
                 *write = new WriteDescriptorSet
                 {
@@ -323,20 +321,26 @@ namespace SiliconStudio.Xenko.Graphics
                 {
                     case DescriptorType.SampledImage:
                         var texture = heapObject.Value as Texture;
-                        *imageInfo = new DescriptorImageInfo { ImageView = texture?.NativeImageView ?? GraphicsDevice.GetSharedWhiteTexture().NativeImageView, ImageLayout = ImageLayout.ShaderReadOnlyOptimal };
-                        write->ImageInfo = new IntPtr(imageInfo);
+                        descriptorData->ImageInfo = new DescriptorImageInfo { ImageView = texture?.NativeImageView ?? ImageView.Null, ImageLayout = ImageLayout.ShaderReadOnlyOptimal };
+                        write->ImageInfo = new IntPtr(descriptorData);
                         break;
 
                     case DescriptorType.Sampler:
                         var samplerState = heapObject.Value as SamplerState;
-                        *imageInfo = new DescriptorImageInfo { Sampler = samplerState?.NativeSampler ?? GraphicsDevice.SamplerStates.LinearWrap.NativeSampler };
-                        write->ImageInfo = new IntPtr(imageInfo);
+                        descriptorData->ImageInfo = new DescriptorImageInfo { Sampler = samplerState?.NativeSampler ?? GraphicsDevice.SamplerStates.LinearWrap.NativeSampler };
+                        write->ImageInfo = new IntPtr(descriptorData);
                         break;
 
                     case DescriptorType.UniformBuffer:
                         var buffer = heapObject.Value as Buffer;
-                        *bufferInfo = new DescriptorBufferInfo { Buffer = buffer?.NativeBuffer ?? SharpVulkan.Buffer.Null, Offset = (ulong)heapObject.Offset, Range = (ulong)heapObject.Size };
-                        write->BufferInfo = new IntPtr(bufferInfo);
+                        descriptorData->BufferInfo = new DescriptorBufferInfo { Buffer = buffer?.NativeBuffer ?? SharpVulkan.Buffer.Null, Offset = (ulong)heapObject.Offset, Range = (ulong)heapObject.Size };
+                        write->BufferInfo = new IntPtr(descriptorData);
+                        break;
+
+                    case DescriptorType.UniformTexelBuffer:
+                        buffer = heapObject.Value as Buffer;
+                        descriptorData->BufferView = buffer?.NativeBufferView ?? BufferView.Null;
+                        write->TexelBufferView = new IntPtr(descriptorData);
                         break;
 
                     default:
@@ -992,7 +996,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                     memoryBarriers[0] = uploadBufferMemoryBarrier;
                     memoryBarriers[1] = new BufferMemoryBarrier(buffer.NativeBuffer, buffer.NativeAccessMask, AccessFlags.TransferWrite);
-                    NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, texture.NativePipelineStageMask, DependencyFlags.None, 0, null, 2, memoryBarriers, 0, null);
+                    NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, buffer.NativePipelineStageMask, DependencyFlags.None, 0, null, 2, memoryBarriers, 0, null);
 
                     var bufferCopy = new BufferCopy
                     {
@@ -1003,7 +1007,7 @@ namespace SiliconStudio.Xenko.Graphics
                     NativeCommandBuffer.CopyBuffer(uploadResource, buffer.NativeBuffer, 1, &bufferCopy);
 
                     var memoryBarrier = new BufferMemoryBarrier(buffer.NativeBuffer, AccessFlags.TransferWrite, buffer.NativeAccessMask);
-                    NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, texture.NativePipelineStageMask, DependencyFlags.None, 0, null, 1, &memoryBarrier, 0, null);
+                    NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, buffer.NativePipelineStageMask, DependencyFlags.None, 0, null, 1, &memoryBarrier, 0, null);
                 }
                 else
                 {
@@ -1316,6 +1320,19 @@ namespace SiliconStudio.Xenko.Graphics
 
                 return true;
             }
+        }
+
+        [StructLayout(LayoutKind.Explicit)]
+        private struct DescriptorData
+        {
+            [FieldOffset(0)]
+            public DescriptorBufferInfo BufferInfo;
+
+            [FieldOffset(0)]
+            public DescriptorImageInfo ImageInfo;
+
+            [FieldOffset(0)]
+            public BufferView BufferView;
         }
     }
 }
