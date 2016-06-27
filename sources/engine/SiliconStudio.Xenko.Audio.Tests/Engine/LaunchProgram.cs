@@ -38,12 +38,14 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
                 test.TestAddRemoveEntityWithEmitter();
                 test.TestAddRemoveSoundEffect();
             }
-            {
-                var test = new TestAudioEmitterComponent();
-                test.TestInitialization();
-                test.TestAttachDetachSounds();
-                test.TestGetController();
-            }
+
+//            {
+//                var test = new TestAudioEmitterComponent();
+//                test.TestInitialization();
+//                test.TestAttachDetachSounds();
+//                test.TestGetController();
+//            }
+
             {
                 var test = new TestAudioListenerProcessor();
                 test.TestAddAudioSysThenEntitySys();

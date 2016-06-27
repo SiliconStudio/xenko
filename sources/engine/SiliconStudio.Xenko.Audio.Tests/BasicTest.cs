@@ -19,24 +19,24 @@ namespace SiliconStudio.Xenko.Audio.Tests
 
 
         private int count;
-        private SoundEffect effectA;
-        private SoundMusic musicA;
-        private SoundEffect effect48kHz;
-        private SoundEffect effect11kHz;
-        private SoundEffect effect22kHz;
-        private SoundEffect effect11kHzStereo;
-        private SoundEffect effect22kHzStereo;
+        private Sound effectA;
+        private Sound musicA;
+        private Sound effect48kHz;
+        private Sound effect11kHz;
+        private Sound effect22kHz;
+        private Sound effect11kHzStereo;
+        private Sound effect22kHzStereo;
 
         protected override Task LoadContent()
         {
-            effect48kHz = Content.Load<SoundEffect>("Effect48000Hz");
-            effect11kHz = Content.Load<SoundEffect>("Effect11025Hz");
-            effect22kHz = Content.Load<SoundEffect>("Effect22050Hz");
-            effect11kHzStereo = Content.Load<SoundEffect>("Effect11025HzStereo");
-            effect22kHzStereo = Content.Load<SoundEffect>("Effect22050HzStereo");
+            effect48kHz = Content.Load<Sound>("Effect48000Hz");
+            effect11kHz = Content.Load<Sound>("Effect11025Hz");
+            effect22kHz = Content.Load<Sound>("Effect22050Hz");
+            effect11kHzStereo = Content.Load<Sound>("Effect11025HzStereo");
+            effect22kHzStereo = Content.Load<Sound>("Effect22050HzStereo");
 
-            effectA = Content.Load<SoundEffect>("EffectToneA");
-            musicA = Content.Load<SoundMusic>("MusicToneA");
+            effectA = Content.Load<Sound>("EffectToneA");
+            musicA = Content.Load<Sound>("MusicToneA");
 
             return Task.FromResult(true);
         }
@@ -50,15 +50,15 @@ namespace SiliconStudio.Xenko.Audio.Tests
                 if (Input.PointerEvents.Any(x => x.State == PointerState.Up))
                 {
                     if (count % 5 == 0)
-                        effect48kHz.Play();
+                        effect48kHz.CreateInstance(Audio.AudioEngine.DefaultListener).Play();
                     else if (count % 5 == 1)
-                        effect11kHz.Play();
+                        effect11kHz.CreateInstance(Audio.AudioEngine.DefaultListener).Play();
                     else if (count % 5 == 2)
-                        effect22kHz.Play();
+                        effect22kHz.CreateInstance(Audio.AudioEngine.DefaultListener).Play();
                     else if (count % 5 == 3)
-                        effect11kHzStereo.Play();
+                        effect11kHzStereo.CreateInstance(Audio.AudioEngine.DefaultListener).Play();
                     else if (count % 5 == 4)
-                        effect22kHzStereo.Play();
+                        effect22kHzStereo.CreateInstance(Audio.AudioEngine.DefaultListener).Play();
 
                     count++;
                 }
