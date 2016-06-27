@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.Graphics
             };
 
             PhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
-            GraphicsDevice.Adapter.PhysicalDevice.GetMemoryProperties(out physicalDeviceMemoryProperties);
+            GraphicsDevice.NativePhysicalDevice.GetMemoryProperties(out physicalDeviceMemoryProperties);
             var typeBits = memoryRequirements.MemoryTypeBits;
             for (uint i = 0; i < physicalDeviceMemoryProperties.MemoryTypeCount; i++)
             {

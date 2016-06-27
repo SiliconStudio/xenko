@@ -3,7 +3,6 @@
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using SharpVulkan;
@@ -55,6 +54,10 @@ namespace SiliconStudio.Xenko.Graphics
             0, // StorageBufferDynamic
             0 // InputAttachment
         };
+
+        internal PhysicalDevice NativePhysicalDevice => Adapter.GetPhysicalDevice(IsDebugMode);
+
+        internal Instance NativeInstance => GraphicsAdapterFactory.GetInstance(IsDebugMode).NativeInstance;
 
         internal struct BufferInfo
         {
@@ -203,7 +206,7 @@ namespace SiliconStudio.Xenko.Graphics
                 // TODO VULKAN debug layer
             }
 
-            var queueProperties = Adapter.PhysicalDevice.QueueFamilyProperties;
+            var queueProperties = NativePhysicalDevice.QueueFamilyProperties;
 
             // TODO VULKAN
             // Create Vulkan device based on profile
@@ -227,7 +230,7 @@ namespace SiliconStudio.Xenko.Graphics
                 DepthClamp = true,
             };
 
-            var extensionProperties = Adapter.PhysicalDevice.GetDeviceExtensionProperties();
+            var extensionProperties = NativePhysicalDevice.GetDeviceExtensionProperties();
             var availableExtensionNames = new List<string>();
             var desiredExtensionNames = new List<string>();
 
@@ -262,7 +265,7 @@ namespace SiliconStudio.Xenko.Graphics
                     EnabledFeatures = new IntPtr(&enabledFeature)
                 };
 
-                nativeDevice = Adapter.PhysicalDevice.CreateDevice(ref deviceCreateInfo);
+                nativeDevice = NativePhysicalDevice.CreateDevice(ref deviceCreateInfo);
             }
             finally
             {
@@ -351,7 +354,7 @@ namespace SiliconStudio.Xenko.Graphics
             };
 
             PhysicalDeviceMemoryProperties physicalDeviceMemoryProperties;
-            Adapter.PhysicalDevice.GetMemoryProperties(out physicalDeviceMemoryProperties);
+            NativePhysicalDevice.GetMemoryProperties(out physicalDeviceMemoryProperties);
             var typeBits = memoryRequirements.MemoryTypeBits;
             for (uint i = 0; i < physicalDeviceMemoryProperties.MemoryTypeCount; i++)
             {

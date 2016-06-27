@@ -41,21 +41,23 @@ namespace SiliconStudio.Xenko.Graphics
     /// <unmanaged-short>IDXGIAdapter1</unmanaged-short>	
     public partial class GraphicsAdapter
     {
-        private readonly PhysicalDevice physicalDevice;
+        private PhysicalDevice defaultPhysicalDevice;
+        private PhysicalDevice debugPhysicalDevice;
+
         private readonly int adapterOrdinal;
         private readonly PhysicalDeviceProperties properties;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphicsAdapter" /> class.
         /// </summary>
-        /// <param name="defaultFactory">The default factory.</param>
+        /// <param name="physicalDevice">The default factory.</param>
         /// <param name="adapterOrdinal">The adapter ordinal.</param>
-        internal GraphicsAdapter(PhysicalDevice physicalDevice, int adapterOrdinal)
+        internal GraphicsAdapter(PhysicalDevice defaultPhysicalDevice, int adapterOrdinal)
         {
             this.adapterOrdinal = adapterOrdinal;
-            this.physicalDevice = physicalDevice;
-           
-            physicalDevice.GetProperties(out properties);
+            this.defaultPhysicalDevice = defaultPhysicalDevice;
+
+            defaultPhysicalDevice.GetProperties(out properties);
 
             // TODO VULKAN
             //var displayProperties = physicalDevice.DisplayProperties;
@@ -104,11 +106,20 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        internal PhysicalDevice PhysicalDevice
+        internal PhysicalDevice GetPhysicalDevice(bool enableValidation)
         {
-            get
+            if (enableValidation)
             {
-                return physicalDevice;
+                if (debugPhysicalDevice == PhysicalDevice.Null)
+                {
+                    debugPhysicalDevice = GraphicsAdapterFactory.GetInstance(true).NativeInstance.PhysicalDevices[adapterOrdinal];
+                }
+
+                return debugPhysicalDevice;
+            }
+            else
+            {
+                return defaultPhysicalDevice;
             }
         }
 

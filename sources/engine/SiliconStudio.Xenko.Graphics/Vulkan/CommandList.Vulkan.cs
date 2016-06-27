@@ -623,8 +623,7 @@ namespace SiliconStudio.Xenko.Graphics
                         MarkerName = new IntPtr(bytesPointer),
                         Color = *(DebugMarkerMarkerInfo.ColorArray*)&profileColor
                     };
-                    GraphicsAdapterFactory.BeginDebugMarker(NativeCommandBuffer, &debugMarkerInfo);
-                    //NativeCommandBuffer.DebugMarkerBegin(ref debugMarkerInfo);
+                    GraphicsAdapterFactory.GetInstance(GraphicsDevice.IsDebugMode).BeginDebugMarker(NativeCommandBuffer, &debugMarkerInfo);
                 }
             }
         }
@@ -636,8 +635,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             if (GraphicsDevice.IsProfilingSupported)
             {
-                GraphicsAdapterFactory.EndDebugMarker(NativeCommandBuffer);
-                //NativeCommandBuffer.DebugMarkerEnd();
+                GraphicsAdapterFactory.GetInstance(GraphicsDevice.IsDebugMode).EndDebugMarker(NativeCommandBuffer);
             }
         }
 

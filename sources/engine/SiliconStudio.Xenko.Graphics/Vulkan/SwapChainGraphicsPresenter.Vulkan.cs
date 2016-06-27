@@ -209,7 +209,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             DestroySwapchain();
 
-            GraphicsAdapterFactory.NativeInstance.DestroySurface(surface);
+            GraphicsDevice.NativeInstance.DestroySurface(surface);
             surface = Surface.Null;
 
             base.OnDestroyed();
@@ -274,7 +274,7 @@ namespace SiliconStudio.Xenko.Graphics
                 var nativeFromat = VulkanConvertExtensions.ConvertPixelFormat(format);
 
                 FormatProperties formatProperties;
-                GraphicsDevice.Adapter.PhysicalDevice.GetFormatProperties(nativeFromat, out formatProperties);
+                GraphicsDevice.NativePhysicalDevice.GetFormatProperties(nativeFromat, out formatProperties);
 
                 if ((formatProperties.OptimalTilingFeatures & FormatFeatureFlags.ColorAttachment) != 0)
                 {
@@ -285,14 +285,14 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Queue
             // TODO VULKAN: Queue family is needed when creating the Device, so here we can just do a sanity check?
-            var queueNodeIndex = GraphicsDevice.Adapter.PhysicalDevice.QueueFamilyProperties.
-                Where((properties, index) => (properties.QueueFlags & QueueFlags.Graphics) != 0 && GraphicsDevice.Adapter.PhysicalDevice.GetSurfaceSupport((uint)index, surface)).
+            var queueNodeIndex = GraphicsDevice.NativePhysicalDevice.QueueFamilyProperties.
+                Where((properties, index) => (properties.QueueFlags & QueueFlags.Graphics) != 0 && GraphicsDevice.NativePhysicalDevice.GetSurfaceSupport((uint)index, surface)).
                 Select((properties, index) => index).First();
 
             // Surface format
             var backBufferFormat = VulkanConvertExtensions.ConvertPixelFormat(Description.BackBufferFormat);
 
-            var surfaceFormats = GraphicsDevice.Adapter.PhysicalDevice.GetSurfaceFormats(surface);
+            var surfaceFormats = GraphicsDevice.NativePhysicalDevice.GetSurfaceFormats(surface);
             if ((surfaceFormats.Length != 1 || surfaceFormats[0].Format != Format.Undefined) &&
                 !surfaceFormats.Any(x => x.Format == backBufferFormat))
             {
@@ -301,7 +301,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Create swapchain
             SurfaceCapabilities surfaceCapabilities;
-            GraphicsDevice.Adapter.PhysicalDevice.GetSurfaceCapabilities(surface, out surfaceCapabilities);
+            GraphicsDevice.NativePhysicalDevice.GetSurfaceCapabilities(surface, out surfaceCapabilities);
 
             // Buffer count
             uint desiredImageCount = Math.Max(surfaceCapabilities.MinImageCount, 2);
@@ -322,7 +322,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             // Find present mode
-            var presentModes = GraphicsDevice.Adapter.PhysicalDevice.GetSurfacePresentModes(surface);
+            var presentModes = GraphicsDevice.NativePhysicalDevice.GetSurfacePresentModes(surface);
             var swapChainPresentMode = PresentMode.Fifo; // Always supported
             foreach (var presentMode in presentModes)
             {
@@ -398,7 +398,7 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
                 WindowHandle = control.Handle,
             };
-            surface = GraphicsAdapterFactory.Instance.CreateWin32Surface(surfaceCreateInfo);
+            surface = GraphicsDevice.NativeInstance.CreateWin32Surface(surfaceCreateInfo);
 #elif SILICONSTUDIO_PLATFORM_ANDROID
             throw new NotImplementedException();
 #elif SILICONSTUDIO_PLATFORM_LINUX

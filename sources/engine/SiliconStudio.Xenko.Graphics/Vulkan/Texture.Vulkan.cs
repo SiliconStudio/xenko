@@ -656,7 +656,7 @@ namespace SiliconStudio.Xenko.Graphics
                 foreach (var fallbackFormat in fallbackFormats)
                 {
                     FormatProperties formatProperties;
-                    device.Adapter.PhysicalDevice.GetFormatProperties(fallbackFormat, out formatProperties);
+                    device.NativePhysicalDevice.GetFormatProperties(fallbackFormat, out formatProperties);
 
                     if ((formatProperties.OptimalTilingFeatures & FormatFeatureFlags.DepthStencilAttachment) != 0)
                     {
