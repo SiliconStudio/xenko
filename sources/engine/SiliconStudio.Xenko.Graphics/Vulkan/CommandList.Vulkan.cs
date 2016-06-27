@@ -950,17 +950,28 @@ namespace SiliconStudio.Xenko.Graphics
             // Barriers need to be global to command buffer
             CleanupRenderPass();
 
+            int lengthInBytes = 0;
+
+            var texture = resource as Texture;
+            if (texture != null)
+            {
+                lengthInBytes = databox.SlicePitch * (region.Back - region.Front);
+            }
+            else
+            {
+                lengthInBytes = region.Right - region.Left;
+            }
+
             // BufferImageCopy.BufferOffset needs to be a multiple of 4
             SharpVulkan.Buffer uploadResource;
             int uploadOffset;
-            var uploadMemory = GraphicsDevice.AllocateUploadBuffer(databox.SlicePitch + 4, out uploadResource, out uploadOffset);
+            var uploadMemory = GraphicsDevice.AllocateUploadBuffer(lengthInBytes + 4, out uploadResource, out uploadOffset);
             var alignment = ((uploadOffset + 3) & ~3) - uploadOffset;
 
-            Utilities.CopyMemory(uploadMemory + alignment, databox.DataPointer, databox.SlicePitch);
+            Utilities.CopyMemory(uploadMemory + alignment, databox.DataPointer, lengthInBytes);
 
-            var uploadBufferMemoryBarrier = new BufferMemoryBarrier(uploadResource, AccessFlags.HostWrite, AccessFlags.TransferRead);
+            var uploadBufferMemoryBarrier = new BufferMemoryBarrier(uploadResource, AccessFlags.HostWrite, AccessFlags.TransferRead, (ulong)(uploadOffset + alignment), (ulong)lengthInBytes);
             
-            var texture = resource as Texture;
             if (texture != null)
             {               
                 var mipSlice = subResourceIndex % texture.MipLevels;
@@ -971,7 +982,6 @@ namespace SiliconStudio.Xenko.Graphics
                 NativeCommandBuffer.PipelineBarrier(texture.NativePipelineStageMask, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, 1, &uploadBufferMemoryBarrier, 1, &memoryBarrier);
 
                 // TODO VULKAN: Handle depth-stencil (NOTE: only supported on graphics queue)
-                // TODO VULKAN: Check on non-zero slices
                 // TODO VULKAN: Handle non-packed pitches
                 var bufferCopy = new BufferImageCopy
                 {
@@ -994,19 +1004,20 @@ namespace SiliconStudio.Xenko.Graphics
                 {
                     var memoryBarriers = stackalloc BufferMemoryBarrier[2];
 
-                    memoryBarriers[0] = uploadBufferMemoryBarrier;
-                    memoryBarriers[1] = new BufferMemoryBarrier(buffer.NativeBuffer, buffer.NativeAccessMask, AccessFlags.TransferWrite);
-                    NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, buffer.NativePipelineStageMask, DependencyFlags.None, 0, null, 2, memoryBarriers, 0, null);
-
                     var bufferCopy = new BufferCopy
                     {
-                        SourceOffset = (uint)region.Right,
-                        DestinationOffset = (uint)region.Right,
-                        Size = (uint)(region.Right - region.Left),
+                        SourceOffset = (ulong)(uploadOffset + alignment),
+                        DestinationOffset = (ulong)region.Left,
+                        Size = (ulong)lengthInBytes,
                     };
+
+                    memoryBarriers[0] = uploadBufferMemoryBarrier;
+                    memoryBarriers[1] = new BufferMemoryBarrier(buffer.NativeBuffer, buffer.NativeAccessMask, AccessFlags.TransferWrite, bufferCopy.DestinationOffset, bufferCopy.Size);
+                    NativeCommandBuffer.PipelineBarrier(buffer.NativePipelineStageMask, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, 2, memoryBarriers, 0, null);
+
                     NativeCommandBuffer.CopyBuffer(uploadResource, buffer.NativeBuffer, 1, &bufferCopy);
 
-                    var memoryBarrier = new BufferMemoryBarrier(buffer.NativeBuffer, AccessFlags.TransferWrite, buffer.NativeAccessMask);
+                    var memoryBarrier = new BufferMemoryBarrier(buffer.NativeBuffer, AccessFlags.TransferWrite, buffer.NativeAccessMask, bufferCopy.DestinationOffset, bufferCopy.Size);
                     NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, buffer.NativePipelineStageMask, DependencyFlags.None, 0, null, 1, &memoryBarrier, 0, null);
                 }
                 else

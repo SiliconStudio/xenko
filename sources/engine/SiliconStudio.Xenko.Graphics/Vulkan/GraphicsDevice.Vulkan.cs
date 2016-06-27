@@ -418,6 +418,9 @@ namespace SiliconStudio.Xenko.Graphics
                 nativeUploadBufferMemory = DeviceMemory.Null;
             }
 
+            EmptyTexelBuffer.Dispose();
+            EmptyTexelBuffer = null;
+
             // Release fenced resources
             ReleaseTemporaryResources();
             semaphoreCollector.Dispose();
@@ -449,7 +452,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Submit commands
             var nativeCommandBufferCopy = nativeCommandBuffer;
-            var pipelineStageFlags = PipelineStageFlags.AllCommands;
+            var pipelineStageFlags = PipelineStageFlags.BottomOfPipe;
 
             var presentSemaphoreCopy = presentSemaphore;
             var submitInfo = new SubmitInfo

@@ -116,7 +116,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             base.InitializeCore();
 
             // TODO: Make this pluggable
-#if !SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
             if (Context.GraphicsDevice.Features.RequestedProfile >= GraphicsProfile.Level_10_0)
             {
                 // Note: this renderer supports both Point and Spot lights
@@ -126,7 +125,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 RegisterLightGroupRenderer(typeof(LightSpot), new LightSpotGroupRenderer { NonShadowRenderer = clusteredLightRenderer.SpotRenderer });
             }
             else
-#endif
             {
                 RegisterLightGroupRenderer(typeof(LightPoint), new LightPointGroupRenderer());
                 RegisterLightGroupRenderer(typeof(LightSpot), new LightSpotGroupRenderer());
