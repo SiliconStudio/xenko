@@ -6,7 +6,6 @@ using SiliconStudio.Xenko.Assets.Materials;
 using SiliconStudio.Xenko.Assets.RenderFrames;
 using SiliconStudio.Xenko.Assets.Skyboxes;
 using SiliconStudio.Xenko.Assets.Textures;
-using SiliconStudio.Xenko.Assets.UI;
 
 namespace SiliconStudio.Xenko.Assets
 {
@@ -47,10 +46,6 @@ namespace SiliconStudio.Xenko.Assets
     }
 
     public class DefaultTextureFactory : DefaultAssetFactory<TextureAsset>
-    {
-    }
-
-    public class DefaultUILibraryFactory : DefaultAssetFactory<UILibraryAsset>
     {
     }
 }
