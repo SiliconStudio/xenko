@@ -1,7 +1,8 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildThisFileDirectory)..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
-    <XenkoNativePathLibs Condition="'$(SiliconStudioPlatform)' == 'Windows' or '$(SiliconStudioPlatform)' == 'Windows10' or '$(SiliconStudioPlatform)' == 'WindowsStore' or '$(SiliconStudioPlatform)' == 'WindowsPhone'">libCompilerRt.lib libCelt.lib Xaudio2.lib</XenkoNativePathLibs>
+    <XenkoNativePathLibs Condition="'$(SiliconStudioPlatform)' == 'Windows'">libCompilerRt.lib libCelt.lib</XenkoNativePathLibs>
+    <XenkoNativePathLibs Condition="'$(SiliconStudioPlatform)' == 'Windows10' or '$(SiliconStudioPlatform)' == 'WindowsStore' or '$(SiliconStudioPlatform)' == 'WindowsPhone'">libCompilerRt.lib libCelt.lib Xaudio2.lib</XenkoNativePathLibs>
   </PropertyGroup>
 
   <ItemGroup>

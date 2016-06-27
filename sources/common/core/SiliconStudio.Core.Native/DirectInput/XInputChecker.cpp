@@ -692,7 +692,7 @@ extern "C"
 
 	typedef IID *LPIID;
 
-	HRESULT __stdcall IIDFromString(_In_ LPCOLESTR lpsz, _Out_ LPIID lpiid);
+	extern HRESULT __stdcall IIDFromString(_In_ LPCOLESTR lpsz, _Out_ LPIID lpiid);
 
 	extern long __cdecl wcstol(wchar_t const* _String, wchar_t** _EndPtr, int _Radix);
 
