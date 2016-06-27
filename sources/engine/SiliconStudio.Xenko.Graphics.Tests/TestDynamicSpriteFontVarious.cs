@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public TestDynamicSpriteFontVarious()
         {
-            CurrentVersion = 2; // Sizes changed from points to pixels
+            CurrentVersion = 3; // Slight size changes but visually correct 
         }
 
         protected override void RegisterTests()
