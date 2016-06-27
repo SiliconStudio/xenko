@@ -339,7 +339,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                     case DescriptorType.UniformTexelBuffer:
                         buffer = heapObject.Value as Buffer;
-                        descriptorData->BufferView = buffer?.NativeBufferView ?? BufferView.Null;
+                        descriptorData->BufferView = buffer?.NativeBufferView ?? GraphicsDevice.EmptyTexelBuffer.NativeBufferView;
                         write->TexelBufferView = new IntPtr(descriptorData);
                         break;
 

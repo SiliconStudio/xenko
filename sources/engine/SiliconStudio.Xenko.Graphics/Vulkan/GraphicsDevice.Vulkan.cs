@@ -55,6 +55,8 @@ namespace SiliconStudio.Xenko.Graphics
             0 // InputAttachment
         };
 
+        internal Buffer EmptyTexelBuffer;
+
         internal PhysicalDevice NativePhysicalDevice => Adapter.GetPhysicalDevice(IsDebugMode);
 
         internal Instance NativeInstance => GraphicsAdapterFactory.GetInstance(IsDebugMode).NativeInstance;
@@ -300,6 +302,8 @@ namespace SiliconStudio.Xenko.Graphics
             descriptorPools = new HeapPool(this);
 
             semaphoreCollector = new SemaphoreCollector(this);
+
+            EmptyTexelBuffer = Buffer.Typed.New(this, 1, PixelFormat.R32G32B32A32_Float);
         }
 
         internal unsafe IntPtr AllocateUploadBuffer(int size, out SharpVulkan.Buffer resource, out int offset)
