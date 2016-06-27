@@ -109,12 +109,30 @@ namespace NUnitLite.Tests
             var xenkoVersion = Intent.GetStringExtra(TestRunner.XenkoVersion);
             if (xenkoVersion == null)
             {
+                // Connect to image server in the background
+                Task.Run(() => ConnectToImageServer());
+
                 // No explicit intent, switch to UI activity
                 StartActivity(typeof(XenkoTestSuiteActivity));
                 return;
             }
 
             Task.Run(() => RunTests());
+        }
+
+        private static void ConnectToImageServer()
+        {
+            // Use connection router to connect back to image tester
+            // Connect during startup, so that first test timing is not affected by initial connection
+            try
+            {
+                var imageServerSocket = RouterClient.RequestServer($"/redirect/{ImageTester.XenkoImageServerHost}/{ImageTester.XenkoImageServerPort}").Result;
+                ImageTester.Connect(imageServerSocket);
+            }
+            catch (Exception e)
+            {
+                Logger.Error("Error connecting to image tester server: {0}", e);
+            }
         }
 
         private void RunTests()
@@ -155,16 +173,8 @@ namespace NUnitLite.Tests
             // Update build number (if available)
             ImageTester.ImageTestResultConnection.BuildNumber = buildNumber;
             ImageTester.ImageTestResultConnection.BranchName = branchName ?? "";
-            
-            // Connect beforehand to image tester, so that first test timing is not affected by initial connection
-            try
-            {
-                ImageTester.Connect();
-            }
-            catch (Exception e)
-            {
-                Logger.Error("Error connecting to image tester server: {0}", e);
-            }
+
+            ConnectToImageServer();
 
             // Start unit test
             var cachePath = CacheDir.AbsolutePath;

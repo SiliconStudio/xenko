@@ -14,6 +14,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Xenko.Graphics.Regression;
 
 namespace SiliconStudio.Xenko.SamplesTestServer
 {
