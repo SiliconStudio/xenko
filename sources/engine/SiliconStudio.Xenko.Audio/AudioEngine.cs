@@ -181,8 +181,6 @@ namespace SiliconStudio.Xenko.Audio
             if (IsDisposed)
                 return;
 
-            State = AudioEngineState.Disposed;
-
             Sound[] notDisposedSoundsArray;
             lock (notDisposedSounds)
             {
@@ -194,6 +192,8 @@ namespace SiliconStudio.Xenko.Audio
                 soundBase.Dispose();
 
             DestroyAudioEngine();
+
+            State = AudioEngineState.Disposed;
         }
     }
 }

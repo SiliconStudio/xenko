@@ -144,7 +144,7 @@ namespace SiliconStudio.Xenko.Audio
             dispose = true;
         }
 
-        public override int MaxNumberOfBuffers => MaxNumberOfBuffers;
+        public override int MaxNumberOfBuffers => NumberOfBuffers;
 
         public override void Restart()
         {
