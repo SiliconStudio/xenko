@@ -21,18 +21,7 @@ namespace SiliconStudio.Core.Serialization.Assets
     {
         private static readonly Logger Log = GlobalLogger.GetLogger("ContentManager");
 
-        public static DatabaseFileProvider FileProvider
-        {
-            get
-            {
-                // Don't try to call GetFileProvider if it is null
-                if (GetFileProvider == null)
-                {
-                    return null;
-                }
-                return GetFileProvider();
-            }
-        }
+        public static DatabaseFileProvider FileProvider => GetFileProvider?.Invoke();
 
         public static Func<DatabaseFileProvider> GetFileProvider { get; set; }
 
