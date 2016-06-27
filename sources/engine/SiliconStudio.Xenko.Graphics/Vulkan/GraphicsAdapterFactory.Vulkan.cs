@@ -8,13 +8,23 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using SharpVulkan;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Xenko.Graphics
 {
     public static partial class GraphicsAdapterFactory
     {
         internal static Instance NativeInstance;
+        private static bool hasXlibSurfaceSupport;
+        private static DebugReportCallback debugReportCallback;
+
+        internal static bool HasXlibSurfaceSupport
+        {
+            get
+            {
+                InitializeInternal();
+                return hasXlibSurfaceSupport;
+            }
+        }
 
         /// <summary>
         /// Initializes all adapters with the specified factory.
@@ -67,19 +77,49 @@ namespace SiliconStudio.Xenko.Graphics
                     .Select(Marshal.StringToHGlobalAnsi).ToArray();
             }
 
-            var enabledExtensionNames = new[]
-            {
-                Marshal.StringToHGlobalAnsi("VK_EXT_debug_report"),
+            var extensionProperties = Vulkan.GetInstanceExtensionProperties();
+            var availableExtensionNames = new List<string>();
+            var desiredExtensionNames = new List<string>();
 
-                Marshal.StringToHGlobalAnsi("VK_KHR_surface"),
+            for (int index = 0; index < extensionProperties.Length; index++)
+            {
+                var namePointer = new IntPtr(Interop.Fixed(ref extensionProperties[index].ExtensionName));
+                var name = Marshal.PtrToStringAnsi(namePointer);
+                availableExtensionNames.Add(name);
+            }
+
+            desiredExtensionNames.Add("VK_KHR_surface");
+            if (!availableExtensionNames.Contains("VK_KHR_surface"))
+                throw new InvalidOperationException("Required extension VK_KHR_surface is not available");
+
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-                Marshal.StringToHGlobalAnsi("VK_KHR_win32_surface"),
+            desiredExtensionNames.Add("VK_KHR_win32_surface");
+            if (!availableExtensionNames.Contains("VK_KHR_win32_surface"))
+                throw new InvalidOperationException("Required extension VK_KHR_win32_surface is not available");
 #elif SILICONSTUDIO_PLATFORM_ANDROID
-                Marshal.StringToHGlobalAnsi("VK_KHR_android_surface"),
+            desiredExtensionNames.Add("VK_KHR_android_surface");
+            if (!availableExtensionNames.Contains("VK_KHR_android_surface"))
+                throw new InvalidOperationException("Required extension VK_KHR_android_surface is not available");
 #elif SILICONSTUDIO_PLATFORM_LINUX
-                Marshal.StringToHGlobalAnsi("VK_KHR_xcb_surface"),
+            if (availableExtensionNames.Contains("VK_KHR_xlib_surface"))
+            {
+                desiredExtensionNames.Add("VK_KHR_xlib_surface");
+                hasXlibSurfaceSupport = true;
+            }
+            else if (availableExtensionNames.Contains("VK_KHR_xcb_surface"))
+            {
+                desiredExtensionNames.Add("VK_KHR_xcb_surface");
+            }
+            else
+            {
+                throw new InvalidOperationException("None of the supported surface extensions VK_KHR_xcb_surface or VK_KHR_xlib_surface is available");
+            }
 #endif
-            };
+
+            if (availableExtensionNames.Contains("VK_EXT_debug_report"))
+                desiredExtensionNames.Add("VK_EXT_debug_report");
+
+            var enabledExtensionNames = desiredExtensionNames.Select(Marshal.StringToHGlobalAnsi).ToArray();
 
             var createDebugReportCallbackName = Marshal.StringToHGlobalAnsi("vkCreateDebugReportCallbackEXT");
 
@@ -101,8 +141,7 @@ namespace SiliconStudio.Xenko.Graphics
                 }
 
                 var createDebugReportCallback = (CreateDebugReportCallbackDelegate)Marshal.GetDelegateForFunctionPointer(NativeInstance.GetProcAddress((byte*)createDebugReportCallbackName), typeof(CreateDebugReportCallbackDelegate));
-
-                DebugReportCallback callback;
+                
                 debugReport = DebugReport;
                 var createInfo = new DebugReportCallbackCreateInfo
                 {
@@ -110,7 +149,7 @@ namespace SiliconStudio.Xenko.Graphics
                     Flags = (uint)(DebugReportFlags.Error | DebugReportFlags.Warning/* | DebugReportFlags.PerformanceWarning | DebugReportFlags.Information | DebugReportFlags.Debug*/),
                     Callback = Marshal.GetFunctionPointerForDelegate(debugReport)
                 };
-                createDebugReportCallback(NativeInstance, ref createInfo, null, out callback);
+                createDebugReportCallback(NativeInstance, ref createInfo, null, out debugReportCallback);
 
                 var beginDebugMarkerName = System.Text.Encoding.ASCII.GetBytes("vkCmdDebugMarkerBeginEXT");
                 var ptr = NativeInstance.GetProcAddress((byte*)Interop.Fixed(beginDebugMarkerName));
@@ -138,8 +177,6 @@ namespace SiliconStudio.Xenko.Graphics
                 Marshal.FreeHGlobal(createDebugReportCallbackName);
             }
 
-            staticCollector.Add(new AnonymousDisposable(() => NativeInstance.Destroy()));
-
             var nativePhysicalDevices = NativeInstance.PhysicalDevices;
             var adapterList = new List<GraphicsAdapter>();
             for (int i = 0; i < nativePhysicalDevices.Length; i++)
@@ -151,6 +188,18 @@ namespace SiliconStudio.Xenko.Graphics
 
             defaultAdapter = adapterList.Count > 0 ? adapterList[0] : null;
             adapters = adapterList.ToArray();
+
+            staticCollector.Add(new AnonymousDisposable(Cleanup));
+        }
+
+        private static unsafe void Cleanup()
+        {
+            if (debugReportCallback != DebugReportCallback.Null)
+            {
+                NativeInstance.DestroyDebugReportCallback(debugReportCallback);
+            }
+
+            NativeInstance.Destroy();
         }
 
         private static DebugReportCallbackDelegate debugReport;
@@ -184,11 +233,6 @@ namespace SiliconStudio.Xenko.Graphics
                     return NativeInstance;
                 }
             }
-        }
-
-        struct DebugReportCallback
-        {
-            internal ulong InternalHandle;
         }
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall, CharSet = CharSet.Ansi)]

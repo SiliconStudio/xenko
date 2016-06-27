@@ -304,7 +304,7 @@ namespace SiliconStudio.Xenko.Graphics
             GraphicsDevice.Adapter.PhysicalDevice.GetSurfaceCapabilities(surface, out surfaceCapabilities);
 
             // Buffer count
-            uint desiredImageCount = surfaceCapabilities.MinImageCount + 1;
+            uint desiredImageCount = Math.Max(surfaceCapabilities.MinImageCount, 2);
             if (surfaceCapabilities.MaxImageCount > 0 && desiredImageCount > surfaceCapabilities.MaxImageCount)
             {
                 desiredImageCount = surfaceCapabilities.MaxImageCount;
@@ -408,13 +408,27 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 throw new NotSupportedException("Non SDL Window used in SDL setup.");
             }
-            var createInfo = new XcbSurfaceCreateInfo()
+
+            if (GraphicsAdapterFactory.HasXlibSurfaceSupport)
             {
-                StructureType = StructureType.XcbSurfaceCreateInfo,
-                Window = checked((uint) control.Handle),    // On Linux, a Window identifier is 32-bit
-                Connection = control.XcbConnection,
-            };
-            surface = GraphicsAdapterFactory.Instance.CreateXcbSurface(ref createInfo);
+                var createInfo = new XlibSurfaceCreateInfo
+                {
+                    StructureType = StructureType.XlibSurfaceCreateInfo,
+                    Window = checked((uint)control.Handle), // On Linux, a Window identifier is 32-bit
+                    Dpy = control.Display,
+                };
+                surface = GraphicsAdapterFactory.Instance.CreateXlibSurface(ref createInfo);
+            }
+            else
+            {
+                var createInfo = new XcbSurfaceCreateInfo()
+                {
+                    StructureType = StructureType.XcbSurfaceCreateInfo,
+                    Window = checked((uint)control.Handle), // On Linux, a Window identifier is 32-bit
+                    Connection = control.XcbConnection,
+                };
+                surface = GraphicsAdapterFactory.Instance.CreateXcbSurface(ref createInfo);
+            }
 #else
             throw new NotSupportedException("Only SDL is supported for the time being on Linux");
 #endif
