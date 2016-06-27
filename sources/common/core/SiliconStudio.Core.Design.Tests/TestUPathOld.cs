@@ -41,7 +41,7 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.IsFalse(driveSpan.IsValid);
             Assert.IsTrue(dirSpan.IsValid);
             Assert.IsTrue(nameSpan.IsValid);
-            Assert.AreEqual(new StringSpan(0, 1), dirSpan);
+            Assert.AreEqual(new StringSpan(0, 2), dirSpan);
             Assert.AreEqual(new StringSpan(2, 1), nameSpan);
 
             // Test leading '..'
@@ -52,7 +52,7 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.IsFalse(driveSpan.IsValid);
             Assert.IsTrue(dirSpan.IsValid);
             Assert.IsTrue(nameSpan.IsValid);
-            Assert.AreEqual(new StringSpan(0, 6), dirSpan);
+            Assert.AreEqual(new StringSpan(0, 7), dirSpan);
             Assert.AreEqual(new StringSpan(7, 1), nameSpan);
 
             // Test leading '..'
@@ -63,7 +63,7 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.IsFalse(driveSpan.IsValid);
             Assert.IsTrue(dirSpan.IsValid);
             Assert.IsTrue(nameSpan.IsValid);
-            Assert.AreEqual(new StringSpan(0, 2), dirSpan);
+            Assert.AreEqual(new StringSpan(0, 3), dirSpan);
             Assert.AreEqual(new StringSpan(3, 1), nameSpan);
 
             // Test leading '..'
@@ -74,7 +74,7 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.IsFalse(driveSpan.IsValid);
             Assert.IsTrue(dirSpan.IsValid);
             Assert.IsTrue(nameSpan.IsValid);
-            Assert.AreEqual(new StringSpan(0, 5), dirSpan);
+            Assert.AreEqual(new StringSpan(0, 6), dirSpan);
             Assert.AreEqual(new StringSpan(6, 1), nameSpan);
 
             // Test between '..'
@@ -85,7 +85,7 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.IsFalse(driveSpan.IsValid);
             Assert.IsTrue(dirSpan.IsValid);
             Assert.IsTrue(nameSpan.IsValid);
-            Assert.AreEqual(new StringSpan(0, 1), dirSpan);
+            Assert.AreEqual(new StringSpan(0, 2), dirSpan);
             Assert.AreEqual(new StringSpan(2, 1), nameSpan);
 
             // Test between '..'
@@ -96,7 +96,7 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.IsFalse(driveSpan.IsValid);
             Assert.IsTrue(dirSpan.IsValid);
             Assert.IsTrue(nameSpan.IsValid);
-            Assert.AreEqual(new StringSpan(0, 1), dirSpan);
+            Assert.AreEqual(new StringSpan(0, 2), dirSpan);
             Assert.AreEqual(new StringSpan(2, 1), nameSpan);
 
             // Test double '..'
@@ -107,7 +107,7 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.IsFalse(driveSpan.IsValid);
             Assert.IsTrue(dirSpan.IsValid);
             Assert.IsTrue(nameSpan.IsValid);
-            Assert.AreEqual(new StringSpan(0, 2), dirSpan);
+            Assert.AreEqual(new StringSpan(0, 3), dirSpan);
             Assert.AreEqual(new StringSpan(3, 1), nameSpan);
 
             // Test double '..' and trailing '..'
@@ -138,7 +138,7 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.IsFalse(driveSpan.IsValid);
             Assert.IsTrue(dirSpan.IsValid);
             Assert.IsTrue(nameSpan.IsValid);
-            Assert.AreEqual(new StringSpan(0, 1), dirSpan);
+            Assert.AreEqual(new StringSpan(0, 2), dirSpan);
             Assert.AreEqual(new StringSpan(2, 1), nameSpan);
 
             // Test trailing '..' and trailing '/'
@@ -149,7 +149,7 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.IsFalse(driveSpan.IsValid);
             Assert.IsTrue(dirSpan.IsValid);
             Assert.IsTrue(nameSpan.IsValid);
-            Assert.AreEqual(new StringSpan(0, 1), dirSpan);
+            Assert.AreEqual(new StringSpan(0, 2), dirSpan);
             Assert.AreEqual(new StringSpan(2, 1), nameSpan);
 
             // Test root '.'
@@ -178,7 +178,7 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.IsFalse(driveSpan.IsValid);
             Assert.IsTrue(dirSpan.IsValid);
             Assert.IsTrue(nameSpan.IsValid);
-            Assert.AreEqual(new StringSpan(0, 1), dirSpan);
+            Assert.AreEqual(new StringSpan(0, 2), dirSpan);
             Assert.AreEqual(new StringSpan(2, 1), nameSpan);
 
             // Test leading '.'
@@ -189,7 +189,7 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.IsFalse(driveSpan.IsValid);
             Assert.IsTrue(dirSpan.IsValid);
             Assert.IsTrue(nameSpan.IsValid);
-            Assert.AreEqual(new StringSpan(0, 1), dirSpan);
+            Assert.AreEqual(new StringSpan(0, 2), dirSpan);
             Assert.AreEqual(new StringSpan(2, 1), nameSpan);
 
             // Test trailing '.'
@@ -200,7 +200,7 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.IsFalse(driveSpan.IsValid);
             Assert.IsTrue(dirSpan.IsValid);
             Assert.IsTrue(nameSpan.IsValid);
-            Assert.AreEqual(new StringSpan(0, 1), dirSpan);
+            Assert.AreEqual(new StringSpan(0, 2), dirSpan);
             Assert.AreEqual(new StringSpan(2, 1), nameSpan);
 
             // Test trailing '.'
@@ -211,7 +211,7 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.IsFalse(driveSpan.IsValid);
             Assert.IsTrue(dirSpan.IsValid);
             Assert.IsTrue(nameSpan.IsValid);
-            Assert.AreEqual(new StringSpan(0, 1), dirSpan);
+            Assert.AreEqual(new StringSpan(0, 2), dirSpan);
             Assert.AreEqual(new StringSpan(2, 1), nameSpan);
             
             // Test duplicate '/'
@@ -222,7 +222,7 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.IsFalse(driveSpan.IsValid);
             Assert.IsTrue(dirSpan.IsValid);
             Assert.IsTrue(nameSpan.IsValid);
-            Assert.AreEqual(new StringSpan(0, 3), dirSpan);
+            Assert.AreEqual(new StringSpan(0, 4), dirSpan);
             Assert.AreEqual(new StringSpan(4, 1), nameSpan);
 
             // Test backslash '\'
@@ -233,7 +233,7 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.IsFalse(driveSpan.IsValid);
             Assert.IsTrue(dirSpan.IsValid);
             Assert.IsTrue(nameSpan.IsValid);
-            Assert.AreEqual(new StringSpan(0, 4), dirSpan);
+            Assert.AreEqual(new StringSpan(0, 5), dirSpan);
             Assert.AreEqual(new StringSpan(5, 1), nameSpan);
 
             // Test leading multiple '/'
@@ -244,7 +244,7 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.IsFalse(driveSpan.IsValid);
             Assert.IsTrue(dirSpan.IsValid);
             Assert.IsTrue(nameSpan.IsValid);
-            Assert.AreEqual(new StringSpan(0, 4), dirSpan);
+            Assert.AreEqual(new StringSpan(0, 5), dirSpan);
             Assert.AreEqual(new StringSpan(5, 1), nameSpan);
 
             // Test Trailing multiple '/'
@@ -255,7 +255,7 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.IsFalse(driveSpan.IsValid);
             Assert.IsTrue(dirSpan.IsValid);
             Assert.IsTrue(nameSpan.IsValid);
-            Assert.AreEqual(new StringSpan(0, 3), dirSpan);
+            Assert.AreEqual(new StringSpan(0, 4), dirSpan);
             Assert.AreEqual(new StringSpan(4, 1), nameSpan);
 
             // Test multiple '/'
@@ -276,7 +276,7 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.IsFalse(driveSpan.IsValid);
             Assert.IsTrue(dirSpan.IsValid);
             Assert.IsTrue(nameSpan.IsValid);
-            Assert.AreEqual(new StringSpan(0, 2), dirSpan);
+            Assert.AreEqual(new StringSpan(0, 3), dirSpan);
             Assert.AreEqual(new StringSpan(3, 1), nameSpan);
 
             // Test drive standard
@@ -288,7 +288,7 @@ namespace SiliconStudio.Core.Design.Tests
             Assert.IsTrue(dirSpan.IsValid);
             Assert.IsTrue(nameSpan.IsValid);
             Assert.AreEqual(new StringSpan(0, 2), driveSpan);
-            Assert.AreEqual(new StringSpan(2, 4), dirSpan);
+            Assert.AreEqual(new StringSpan(2, 5), dirSpan);
             Assert.AreEqual(new StringSpan(7, 1), nameSpan);
 
             // Test drive backslash invalid
@@ -302,21 +302,21 @@ namespace SiliconStudio.Core.Design.Tests
             UPath.Normalize("C:/..", out driveSpan, out dirSpan, out nameSpan, out error);
             Assert.IsNull(error);
             Assert.IsTrue(driveSpan.IsValid);
-            Assert.IsFalse(dirSpan.IsValid);
+            Assert.IsTrue(dirSpan.IsValid);
             Assert.IsFalse(nameSpan.IsValid);
 
             // Test drive backslash invalid
             UPath.Normalize("C:/../", out driveSpan, out dirSpan, out nameSpan, out error);
             Assert.IsNull(error);
             Assert.IsTrue(driveSpan.IsValid);
-            Assert.IsFalse(dirSpan.IsValid);
+            Assert.IsTrue(dirSpan.IsValid);
             Assert.IsFalse(nameSpan.IsValid);
 
             // Test drive backslash invalid
             UPath.Normalize("C:/../..", out driveSpan, out dirSpan, out nameSpan, out error);
             Assert.IsNull(error);
             Assert.IsTrue(driveSpan.IsValid);
-            Assert.IsFalse(dirSpan.IsValid);
+            Assert.IsTrue(dirSpan.IsValid);
             Assert.IsFalse(nameSpan.IsValid);
 
             // Test drive start ':' is invalid
@@ -451,38 +451,6 @@ namespace SiliconStudio.Core.Design.Tests
             var assetPath1 = new UFile("/a\\b/c\\d.txt");
             var assetPath2 = new UFile("/a/b/c/d.txt");
             Assert.AreEqual(assetPath1.ToString(), assetPath2.ToString());
-        }
-
-        [Test]
-        public void TestGetParent()
-        {
-            var dirPath1 = new UDirectory(@"E:\a\b");
-
-            var dirPathParent1 = dirPath1.GetParent();
-            Assert.AreEqual(@"E:/a", dirPathParent1.FullPath);
-
-            dirPathParent1 = dirPathParent1.GetParent();
-            Assert.AreEqual(@"E:", dirPathParent1.FullPath);
-
-            dirPathParent1 = dirPathParent1.GetParent();
-            Assert.AreEqual(UDirectory.Empty, dirPathParent1);
-
-            dirPath1 = new UDirectory(@"/a/b");
-
-            dirPathParent1 = dirPath1.GetParent();
-            Assert.AreEqual(@"/a", dirPathParent1.FullPath);
-
-            dirPathParent1 = dirPathParent1.GetParent();
-            Assert.AreEqual(@"/", dirPathParent1.FullPath);
-
-            dirPathParent1 = dirPathParent1.GetParent();
-            Assert.AreEqual(UDirectory.Empty, dirPathParent1);
-
-            // Test on file
-            var filePath1 = new UFile(@"/a/b.txt");
-
-            dirPathParent1 = filePath1.GetParent();
-            Assert.AreEqual(@"/a", dirPathParent1.FullPath);
         }
 
         [Test]
