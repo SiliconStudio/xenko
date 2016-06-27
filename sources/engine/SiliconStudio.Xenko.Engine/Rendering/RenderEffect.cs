@@ -21,6 +21,8 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public RenderEffectState State;
 
+        public bool IsReflectionUpdateRequired;
+
         public Effect Effect;
         public RenderEffectReflection Reflection;
 
