@@ -28,8 +28,8 @@
 
   <UsingTask TaskName="PackageDeployTask" AssemblyFile="$(SiliconStudioPackageXenko)\bin\Windows-Direct3D11\SiliconStudio.Xenko.Assets.dll"/>
 
-  <Target Name="DeployOnLinux" AfterTargets="SiliconStudioCompileAsset" Condition="('$(SiliconStudioIsExecutable)' == 'true') AND ('$(SiliconStudioUnitTest)' != 'true') ">
-    <Copy SourceFiles="$(SiliconStudioPackageXenkoPlatformBin)\runtimeconfig.json" DestinationFiles="$(TargetDir)\$(AssemblyName).runtimeconfig.json"/>
+  <Target Name="DeployOnLinux" AfterTargets="SiliconStudioCompileAsset" Condition="('$(SiliconStudioIsExecutable)' == 'true') AND ('$(SiliconStudioUnitTest)' != 'true') AND ('$(SiliconStudioDeploy)' == 'true')">
+    <Copy Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'" SourceFiles="$(SiliconStudioPackageXenkoPlatformBin)\runtimeconfig.json" DestinationFiles="$(TargetDir)\$(AssemblyName).runtimeconfig.json"/>
     <PackageDeployTask
         Directory="$(TargetDir)"
         Machine="$(SiliconStudioLinuxTarget)"
