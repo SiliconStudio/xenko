@@ -107,9 +107,6 @@ namespace SiliconStudio {
 							animEnd = lTimeLineTimeSpan.GetStop();
 						}
 
-						// Set duration
-						animationData->Duration = FBXTimeToTimeSpan(animEnd - animStart);
-
 						animStartTime = FBXTimeToTimeSpan(animStart);
 
 						// Optimized code
@@ -119,6 +116,14 @@ namespace SiliconStudio {
 						scene->GetRootNode()->ConvertPivotAnimationRecursive(animStack, FbxNode::eDestinationPivot, 30.0f);
 						ProcessAnimationByCurve(animationData->AnimationClips, animLayer, scene->GetRootNode());
 						scene->GetRootNode()->ResetPivotSet(FbxNode::eSourcePivot);
+
+						// Set duration
+						// Note: we can't use animEnd - animStart since some FBX has wrong data there
+						for each (auto animationClip in animationData->AnimationClips)
+						{
+							if (animationData->Duration < animationClip.Value->Duration)
+								animationData->Duration = animationClip.Value->Duration;
+						}
 
 						// Reference code (Uncomment Optimized code to use this part)
 						//scene->SetCurrentAnimationStack(animStack);
