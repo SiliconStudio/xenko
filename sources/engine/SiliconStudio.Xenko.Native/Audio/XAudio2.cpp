@@ -1104,6 +1104,9 @@ extern "C" {
 		{
 			CoInitializeEx(NULL, 0x0);
 
+			//On Windows, not desktop platforms we are using XAudio2.lib
+			//On Windows Desktop it's more complicated specially because Windows 7, we try from 2.9 to 2.7 (COM loaded)
+
 #ifdef WINDOWS_DESKTOP
 			xnXAudioLib = LoadDynamicLibrary("XAudio2_9"); //win10+
 			
@@ -1205,7 +1208,7 @@ extern "C" {
 			else
 #endif
 			{
-				//XAudio2
+				//XAudio2, no flags, processor 1
 				result = XAudio2CreateFunc(reinterpret_cast<void**>(&res->x_audio2_), 0, 0x00000001);
 				if (FAILED(result))
 				{
@@ -1213,6 +1216,7 @@ extern "C" {
 					return NULL;
 				}
 
+				//this means opening the real audio device, which will be virtual actually so in the case of default device change Xaudio will deal with it for us.
 				result = res->x_audio2_->CreateMasteringVoice(&res->mastering_voice_, AUDIO_CHANNELS);
 				if (FAILED(result))
 				{
@@ -1220,6 +1224,7 @@ extern "C" {
 					return NULL;
 				}
 
+				//start audio rendering
 				result = res->x_audio2_->StartEngine();
 				if (FAILED(result))
 				{
@@ -1248,8 +1253,10 @@ extern "C" {
 			else
 			{
 				device->x_audio2_->StopEngine();
-			}			
+			}
+
 			device->mastering_voice_->DestroyVoice();
+			
 			delete device;
 		}
 
@@ -1325,6 +1332,7 @@ extern "C" {
 			res->mastering_voice_ = listener->device_->mastering_voice_;
 			if(spatialized)
 			{
+				//if spatialized we also need those structures to calculate 3D audio
 				res->emitter_ = new X3DAUDIO_EMITTER;
 				memset(res->emitter_, 0x0, sizeof(X3DAUDIO_EMITTER));
 				res->emitter_->ChannelCount = 1;
@@ -1344,6 +1352,7 @@ extern "C" {
 				res->dsp_settings_ = NULL;
 			}
 
+			//we could have used a tinystl vector but it did not link properly on ARM windows... so we just use an array
 			res->freeBuffers = new xnAudioBuffer*[maxNBuffers];
 			res->freeBuffersMax = maxNBuffers;
 			for (auto i = 0; i < maxNBuffers; i++)
@@ -1351,6 +1360,7 @@ extern "C" {
 				res->freeBuffers[i] = NULL;
 			}
 
+			//Normal PCM formal 16 bit shorts
 			WAVEFORMATEX pcmWaveFormat = {};
 			pcmWaveFormat.wFormatTag = WAVE_FORMAT_PCM;
 			pcmWaveFormat.nChannels = mono ? 1 : 2;
@@ -1397,6 +1407,7 @@ extern "C" {
 
 		void xnAudioSourceSetBuffer(xnAudioSource* source, xnAudioBuffer* buffer)
 		{
+			//this function is called only when the audio source is acutally fully cached in memory, so we deal only with the first buffer
 			source->streamed_ = false;
 			source->freeBuffers[0] = buffer;
 			buffer->source_ = source;
@@ -1404,6 +1415,7 @@ extern "C" {
 
 		void xnAudioSource::OnBufferEnd(void* context)
 		{
+			//callback, called when Xaudio ended playing one buffer
 			auto buffer = static_cast<xnAudioBuffer*>(context);
 
 			if (streamed_)
@@ -1425,6 +1437,7 @@ extern "C" {
 
 		xnAudioBuffer* xnAudioSourceGetFreeBuffer(xnAudioSource* source)
 		{
+			//this is used only when we are streaming audio, to fetch the next free buffer to fill
 			source->bufferLock.Lock();
 
 			xnAudioBuffer* buffer = NULL;
@@ -1505,6 +1518,7 @@ extern "C" {
 
 		void xnAudioSourceSetPitch(xnAudioSource* source, float pitch)
 		{
+			//todo apply also doppler factor?
 			source->source_voice_->SetFrequencyRatio(pitch);
 		}
 
@@ -1520,6 +1534,7 @@ extern "C" {
 		{
 			if (streamed_ && playing_)
 			{
+				//buffer was flagged as end of stream
 				xnAudioSourceStop(this);
 			}
 		}
@@ -1532,12 +1547,14 @@ extern "C" {
 		{
 			if (!looped_ && !streamed_ && playing_)
 			{
+				//we stop a non streamed sound if it does not need loops, if not we just loop
 				xnAudioSourceStop(this);
 			}
 		}
 
 		void xnAudioSourceQueueBuffer(xnAudioSource* source, xnAudioBuffer* buffer, short* pcm, int bufferSize, npBool endOfStream)
 		{
+			//used only when streaming, to fill a buffer, often..
 			source->streamed_ = true;
 			buffer->source_ = source;
 			
@@ -1604,6 +1621,7 @@ extern "C" {
 			memcpy(&source->emitter_->OrientFront, forward, sizeof(float) * 3);
 			memcpy(&source->emitter_->OrientTop, up, sizeof(float) * 3);
 
+			//everything is calculated by Xaudio for us
 			X3DAudioCalculateFunc(source->listener_->device_->x3_audio_, &source->listener_->listener_, source->emitter_, 
 				X3DAUDIO_CALCULATE_MATRIX | X3DAUDIO_CALCULATE_DOPPLER | X3DAUDIO_CALCULATE_LPF_DIRECT | X3DAUDIO_CALCULATE_REVERB, source->dsp_settings_);
 
