@@ -1,8 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
-
-using System;
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX
 
 namespace SiliconStudio.Xenko.UI.Controls
 {
@@ -14,62 +12,47 @@ namespace SiliconStudio.Xenko.UI.Controls
 
         private void InitializeImpl()
         {
-            throw new NotImplementedException();
         }
 
         private int GetLineCountImpl()
         {
-            throw new NotImplementedException();
+            if (Font == null)
+                return 1;
+
+            return text.Split('\n').Length;
         }
 
         private void OnMaxLinesChangedImpl()
         {
-            throw new NotImplementedException();
         }
 
         private void OnMinLinesChangedImpl()
         {
-            throw new NotImplementedException();
         }
-        
+
         private void ActivateEditTextImpl()
         {
-            throw new NotImplementedException();
         }
 
         private void DeactivateEditTextImpl()
         {
-            throw new NotImplementedException();
-        }
-
-        private void OnTouchMoveImpl(TouchEventArgs args)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void OnTouchDownImpl(TouchEventArgs args)
-        {
-            throw new NotImplementedException();
+            FocusedElement = null;
         }
 
         private void UpdateTextToEditImpl()
         {
-            throw new NotImplementedException();
         }
 
         private void UpdateInputTypeImpl()
         {
-            throw new NotImplementedException();
         }
 
         private void UpdateSelectionFromEditImpl()
         {
-            throw new NotImplementedException();
         }
 
         private void UpdateSelectionToEditImpl()
         {
-            throw new NotImplementedException();
         }
     }
 }

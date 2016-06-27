@@ -24,13 +24,24 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             this.packageId = packageId;
         }
 
-        public void NotifyEffectUsed(EffectCompileRequest effectCompileRequest)
+        public void NotifyEffectUsed(EffectCompileRequest effectCompileRequest, CompilerResults result)
         {
+            if (result.HasErrors)
+                return;
+
             Task.Run(async () =>
             {
                 // Silently fails if connection already failed previously
                 var socketMessageLayerTask = GetOrCreateConnection();
                 if (socketMessageLayerTask.IsFaulted)
+                    return;
+
+                var bytecode = await result.Bytecode.AwaitResult();
+                if (bytecode.CompilationLog.HasErrors)
+                    return;
+
+                // Ignore everything that has been compiled by the startup cache
+                if (bytecode.LoadSource == EffectBytecodeCacheLoadSource.StartupCache)
                     return;
 
                 // Send any effect request remotely (should fail if not connected)
@@ -76,7 +87,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             });
 
             // TODO: Get LoggerResult as well
-            return new EffectBytecodeCompilerResult(shaderCompilerAnswer.EffectBytecode);
+            return new EffectBytecodeCompilerResult(shaderCompilerAnswer.EffectBytecode, EffectBytecodeCacheLoadSource.JustCompiled);
         }
 
         private async Task<SocketMessageLayer> GetOrCreateConnection()

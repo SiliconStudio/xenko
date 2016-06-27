@@ -55,8 +55,9 @@ namespace SiliconStudio.Xenko.Rendering.UI
             uiSystem = (UISystem)RenderSystem.Services.GetService(typeof(UISystem));
             if (uiSystem == null)
             {
+                var gameSytems = RenderSystem.Services.GetServiceAs<IGameSystemCollection>();
                 uiSystem = new UISystem(RenderSystem.Services);
-                game?.GameSystems.Add(uiSystem);
+                gameSytems.Add(uiSystem);
             }
 
             rendererManager = new RendererManager(new DefaultRenderersFactory(RenderSystem.Services));
