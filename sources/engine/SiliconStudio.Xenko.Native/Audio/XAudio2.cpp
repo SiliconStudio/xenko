@@ -1,7 +1,6 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-#include "../../../../../../Program Files (x86)/Microsoft Visual Studio 14.0/VC/include/sal.h"
 #if defined(WINDOWS_DESKTOP) || defined(WINDOWS_UWP) || defined(WINDOWS_STORE) || defined(WINDOWS_PHONE) || !defined(__clang__)
 
 #include "../../../../deps/NativePath/NativePath.h"
@@ -942,7 +941,7 @@ extern "C" {
 			// ARGUMENTS:
 			//  pCount - Returns the device count.
 			//
-			STDMETHOD(GetDeviceCount) (THIS_ __out UINT32* pCount) PURE;
+			STDMETHOD(GetDeviceCount) (THIS_ UINT32* pCount) PURE;
 
 			// NAME: IXAudio2::GetDeviceDetails
 			// DESCRIPTION: Returns information about the device with the given index.
@@ -951,7 +950,7 @@ extern "C" {
 			//  Index - Index of the device to be queried.
 			//  pDeviceDetails - Returns the device details.
 			//
-			STDMETHOD(GetDeviceDetails) (THIS_ UINT32 Index, __out void* pDeviceDetails) PURE;
+			STDMETHOD(GetDeviceDetails) (THIS_ UINT32 Index, void* pDeviceDetails) PURE;
 
 			// NAME: IXAudio2::Initialize
 			// DESCRIPTION: Sets global XAudio2 parameters and prepares it for use.
