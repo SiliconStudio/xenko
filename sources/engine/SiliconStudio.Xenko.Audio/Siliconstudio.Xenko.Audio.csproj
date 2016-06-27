@@ -43,7 +43,6 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="AudioChannels.cs" />
     <Compile Include="AudioDevice.cs" />
     <Compile Include="AudioEmitter.cs" />
     <Compile Include="AudioEngine.cs" />
@@ -51,7 +50,6 @@
     <Compile Include="AudioEngineState.cs" />
     <Compile Include="AudioExceptions.cs" />
     <Compile Include="AudioListener.cs" />
-    <Compile Include="AudioDataEncoding.cs" />
     <Compile Include="AudioEngineFactory.cs" />
     <Compile Include="CompressedSoundPacket.cs" />
     <Compile Include="CompressedSoundSource.cs" />
@@ -69,8 +67,6 @@
     <Compile Include="SoundPlayState.cs" />
     <Compile Include="SoundSerializer.cs" />
     <Compile Include="DynamicSoundSource.cs" />
-    <Compile Include="ThreadSafeQueue.cs" />
-    <Compile Include="XAudioErrorCodes.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj">
