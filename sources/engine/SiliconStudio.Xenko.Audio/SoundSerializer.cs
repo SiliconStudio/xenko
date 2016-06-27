@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Audio
                 obj.NumberOfPackets = stream.ReadInt16();
                 obj.MaxPacketLength = stream.ReadInt16();
                 
-                if (!obj.StreamFromDisk) //immediatelly preload all the data and decode
+                if (!obj.StreamFromDisk && audioEngine != null && audioEngine.State != AudioEngineState.Invalidated && audioEngine.State != AudioEngineState.Disposed) //immediatelly preload all the data and decode
                 {
                     using (var soundStream = ContentManager.FileProvider.OpenStream(obj.CompressedDataUrl, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read, StreamFlags.Seekable))
                     using (var decoder = new Celt(obj.SampleRate, CompressedSoundSource.SamplesPerFrame, obj.Channels, true))

@@ -153,9 +153,12 @@ namespace SiliconStudio.Xenko.Audio
 
         protected override void Destroy()
         {
+            if (AudioEngine.State == AudioEngineState.Invalidated)
+                return;
+
             if (!StreamFromDisk)
             {
-                Native.AudioLayer.BufferDestroy(PreloadedBuffer);
+                AudioLayer.BufferDestroy(PreloadedBuffer);
             }
         }
     }

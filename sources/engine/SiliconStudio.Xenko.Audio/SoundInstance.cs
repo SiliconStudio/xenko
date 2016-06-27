@@ -18,21 +18,6 @@ namespace SiliconStudio.Xenko.Audio
         private readonly Sound sound;
         private readonly AudioEngine engine;
 
-        /// <summary>
-        /// Multiplicative factor to apply to the pitch that comes from the Doppler effect.
-        /// </summary>
-        private float dopplerPitchFactor;
-
-        /// <summary>
-        /// Channel Volume multiplicative factors that come from the 3D localization.
-        /// </summary>
-        private float[] localizationChannelVolumes;
-
-        /// <summary>
-        /// Channel Volume multiplicative factors that come from the user panning.
-        /// </summary>
-        private float[] panChannelVolumes = { 1f, 1f };
-
         private bool isLooped;
         private float pan;
         private float pitch;
@@ -49,11 +34,16 @@ namespace SiliconStudio.Xenko.Audio
             this.engine = engine;
             this.spatialized = spatialized;
             soundSource = dynamicSoundSource;
+
+            if (engine.State == AudioEngineState.Invalidated)
+                return;
+
             Source = AudioLayer.SourceCreate(listener.Listener, sampleRate, dynamicSoundSource.MaxNumberOfBuffers, mono, spatialized, true);
             if (Source.Ptr == IntPtr.Zero)
             {
                 throw new Exception("Failed to create an AudioLayer Source");
             }
+
             ResetStateToDefault();
         }
 
@@ -63,6 +53,9 @@ namespace SiliconStudio.Xenko.Audio
             engine = staticSound.AudioEngine;
             sound = staticSound;
             spatialized = staticSound.Spatialized;
+
+            if (engine.State == AudioEngineState.Invalidated)
+                return;
 
             Source = AudioLayer.SourceCreate(listener.Listener, staticSound.SampleRate, staticSound.StreamFromDisk ? CompressedSoundSource.NumberOfBuffers : 1, staticSound.Channels == 1, spatialized, staticSound.StreamFromDisk);
             if (Source.Ptr == IntPtr.Zero)
@@ -91,6 +84,10 @@ namespace SiliconStudio.Xenko.Audio
             set
             {
                 isLooped = value;
+
+                if (engine.State == AudioEngineState.Invalidated)
+                    return;
+
                 if (soundSource == null) AudioLayer.SourceSetLooping(Source, isLooped);
                 else soundSource.SetLooped(isLooped);
             }
@@ -105,6 +102,10 @@ namespace SiliconStudio.Xenko.Audio
             set
             {
                 pan = value;
+
+                if (engine.State == AudioEngineState.Invalidated)
+                    return;
+
                 AudioLayer.SourceSetPan(Source, value);                
             }
         }
@@ -118,6 +119,10 @@ namespace SiliconStudio.Xenko.Audio
             set
             {
                 volume = value;
+
+                if (engine.State == AudioEngineState.Invalidated)
+                    return;
+
                 AudioLayer.SourceSetGain(Source, volume);
             }
         }
@@ -131,6 +136,10 @@ namespace SiliconStudio.Xenko.Audio
             set
             {
                 pitch = value;
+
+                if (engine.State == AudioEngineState.Invalidated)
+                    return;
+
                 AudioLayer.SourceSetPitch(Source, pitch);
             }
         }
@@ -143,6 +152,9 @@ namespace SiliconStudio.Xenko.Audio
 
         public void Apply3D(AudioEmitter emitter)
         {
+            if (engine.State == AudioEngineState.Invalidated)
+                return;
+
             if (!spatialized) return;
 
             if (emitter == null)
@@ -216,6 +228,9 @@ namespace SiliconStudio.Xenko.Audio
             soundSource?.Dispose();
             sound?.UnregisterInstance(this);
 
+            if (engine.State == AudioEngineState.Invalidated)
+                return;
+
             AudioLayer.SourceDestroy(Source);
         }
 
@@ -251,53 +266,15 @@ namespace SiliconStudio.Xenko.Audio
             sound?.StopConcurrentInstances(this);
         }
 
-        private void ComputeDopplerFactor(AudioListener listener, AudioEmitter emitter)
-        {
-            // To evaluate the Doppler effect we calculate the distance to the listener from one wave to the next one and divide it by the sound speed
-            // we use 343m/s for the sound speed which correspond to the sound speed in the air.
-            // we use 600Hz for the sound frequency which correspond to the middle of the human hearable sounds frequencies.
-
-            const float soundSpeed = 343f;
-            const float soundFreq = 600f;
-            const float soundPeriod = 1 / soundFreq;
-
-            // avoid useless calculations.
-            if (emitter.DopplerScale <= float.Epsilon || (emitter.Velocity == Vector3.Zero && listener.Velocity == Vector3.Zero))
-            {
-                dopplerPitchFactor = 1f;
-                return;
-            }
-
-            var vecListEmit = emitter.Position - listener.Position;
-            var distListEmit = vecListEmit.Length();
-
-            var vecListEmitSpeed = emitter.Velocity - listener.Velocity;
-            if (Vector3.Dot(vecListEmitSpeed, Vector3.Normalize(vecListEmit)) < -soundSpeed) // emitter and listener are getting closer more quickly than the speed of the sound.
-            {
-                dopplerPitchFactor = float.PositiveInfinity; // will be clamped later
-                return;
-            }
-
-            var timeSinceLastWaveArrived = 0f; // time elapsed since the previous wave arrived to the listener.
-            var lastWaveDistToListener = 0f; // the distance that the last wave still have to travel to arrive to the listener.
-            const float distLastWave = soundPeriod * soundSpeed; // distance traveled by the previous wave.
-            if (distLastWave > distListEmit)
-                timeSinceLastWaveArrived = (distLastWave - distListEmit) / soundSpeed;
-            else
-                lastWaveDistToListener = distListEmit - distLastWave;
-            var nextVecListEmit = vecListEmit + soundPeriod * vecListEmitSpeed;
-            var nextWaveDistToListener = nextVecListEmit.Length();
-            var timeBetweenTwoWaves = timeSinceLastWaveArrived + (nextWaveDistToListener - lastWaveDistToListener) / soundSpeed;
-            var apparentFrequency = 1 / timeBetweenTwoWaves;
-            dopplerPitchFactor = (float)Math.Pow(apparentFrequency / soundFreq, emitter.DopplerScale);
-        }
-
         private SoundPlayState playState = SoundPlayState.Stopped;
 
         public SoundPlayState PlayState
         {
             get
             {
+                if (engine.State == AudioEngineState.Invalidated)
+                    return SoundPlayState.Stopped;
+
                 if (playState == SoundPlayState.Playing && !AudioLayer.SourceIsPlaying(Source))
                 {
                     Stop();

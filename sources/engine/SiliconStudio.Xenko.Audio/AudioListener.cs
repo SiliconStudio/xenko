@@ -19,6 +19,8 @@ namespace SiliconStudio.Xenko.Audio
     {
         public AudioListener(AudioEngine engine)
         {
+            if (engine.State == AudioEngineState.Invalidated) return;
+
 #if SILICONSTUDIO_PLATFORM_IOS
             if (engine.DefaultListener == null)
             {
@@ -30,8 +32,8 @@ namespace SiliconStudio.Xenko.Audio
                 Listener = engine.DefaultListener.Listener;
             }
 #else
-            Listener = Native.AudioLayer.ListenerCreate(engine.AudioDevice);
-            Native.AudioLayer.ListenerEnable(Listener);
+            Listener = AudioLayer.ListenerCreate(engine.AudioDevice);
+            AudioLayer.ListenerEnable(Listener);
 #endif    
         }
 
@@ -111,19 +113,22 @@ namespace SiliconStudio.Xenko.Audio
         /// <summary>
         /// Internal OpenAL object that represents a device context actually, this is to allow multiple listeners
         /// </summary>
-        internal Native.AudioLayer.Listener Listener;
+        internal AudioLayer.Listener Listener;
 
         public void Dispose()
         {
+            if (Listener.Ptr == IntPtr.Zero) return;
+
 #if !SILICONSTUDIO_PLATFORM_IOS
-            Native.AudioLayer.ListenerDisable(Listener);
-            Native.AudioLayer.ListenerDestroy(Listener);
+            AudioLayer.ListenerDisable(Listener);
+            AudioLayer.ListenerDestroy(Listener);
 #endif
         }
 
         public unsafe void Update()
         {
-            Native.AudioLayer.ListenerPush3D(Listener, (float*)Interop.Fixed(ref Position), (float*)Interop.Fixed(ref forward), (float*)Interop.Fixed(ref up), (float*)Interop.Fixed(ref Velocity));
+            if (Listener.Ptr == IntPtr.Zero) return;
+            AudioLayer.ListenerPush3D(Listener, (float*)Interop.Fixed(ref Position), (float*)Interop.Fixed(ref forward), (float*)Interop.Fixed(ref up), (float*)Interop.Fixed(ref Velocity));
         }
     }
 }

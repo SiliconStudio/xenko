@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.Audio
             AudioDevice = Native.AudioLayer.Create(audioDevice.Name == "default" ? null : audioDevice.Name);
             if (AudioDevice.Ptr == IntPtr.Zero)
             {
-                throw new Exception("Failed to open audio device!");
+                State = AudioEngineState.Invalidated;
             }
 
             DefaultListener = new AudioListener(this);

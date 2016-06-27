@@ -94,7 +94,7 @@ namespace SiliconStudio.Xenko.Audio
 
         internal unsafe void Apply3D(AudioLayer.Source source)
         {
-            Native.AudioLayer.SourcePush3D(source, (float*)Interop.Fixed(ref Position), (float*)Interop.Fixed(ref forward), (float*)Interop.Fixed(ref up), (float*)Interop.Fixed(ref Velocity));
+            AudioLayer.SourcePush3D(source, (float*)Interop.Fixed(ref Position), (float*)Interop.Fixed(ref forward), (float*)Interop.Fixed(ref up), (float*)Interop.Fixed(ref Velocity));
         }
 
         /// <summary>
