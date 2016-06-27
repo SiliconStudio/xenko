@@ -49,21 +49,25 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <inheritdoc/>
-        protected internal override unsafe void OnDestroyed()
+        protected internal override void OnDestroyed()
         {
             GraphicsDevice.BuffersMemory -= SizeInBytes / (float)0x100000;
 
             if (NativeBufferView != BufferView.Null)
             {
-                GraphicsDevice.NativeDevice.DestroyBufferView(NativeBufferView);
+                GraphicsDevice.Collect(NativeBufferView);
+                NativeBufferView = BufferView.Null;
+            }
+
+            if (NativeBuffer != SharpVulkan.Buffer.Null)
+            {
+                GraphicsDevice.Collect(NativeBuffer);
                 NativeBuffer = SharpVulkan.Buffer.Null;
             }
 
-            GraphicsDevice.NativeDevice.DestroyBuffer(NativeBuffer);
-
             if (NativeMemory != DeviceMemory.Null)
             {
-                GraphicsDevice.NativeDevice.FreeMemory(NativeMemory);
+                GraphicsDevice.Collect(NativeMemory);
                 NativeMemory = DeviceMemory.Null;
             }
 

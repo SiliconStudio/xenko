@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal CommandPool NativeCopyCommandPool;
         internal CommandBuffer NativeCopyCommandBuffer;
-        private SemaphoreCollector semaphoreCollector;
+        private NativeResourceCollector NativeResourceCollector;
 
         private SharpVulkan.Buffer nativeUploadBuffer;
         private DeviceMemory nativeUploadBufferMemory;
@@ -36,7 +36,6 @@ namespace SiliconStudio.Xenko.Graphics
         private Queue<KeyValuePair<long, Fence>> nativeFences = new Queue<KeyValuePair<long, Fence>>();
         private long lastCompletedFence;
         internal long NextFenceValue = 1;
-        internal Queue<BufferInfo> TemporaryResources = new Queue<BufferInfo>();
 
         internal HeapPool descriptorPools;
         internal const uint MaxDescriptorSetCount = 256;
@@ -301,7 +300,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             descriptorPools = new HeapPool(this);
 
-            semaphoreCollector = new SemaphoreCollector(this);
+            NativeResourceCollector = new NativeResourceCollector(this);
 
             EmptyTexelBuffer = Buffer.Typed.New(this, 1, PixelFormat.R32G32B32A32_Float);
         }
@@ -314,7 +313,8 @@ namespace SiliconStudio.Xenko.Graphics
                 if (nativeUploadBuffer != SharpVulkan.Buffer.Null)
                 {
                     NativeDevice.UnmapMemory(nativeUploadBufferMemory);
-                    TemporaryResources.Enqueue(new BufferInfo(NextFenceValue, nativeUploadBuffer, nativeUploadBufferMemory));
+                    Collect(nativeUploadBuffer);
+                    Collect(nativeUploadBufferMemory);
                 }
 
                 // Allocate new buffer
@@ -380,17 +380,6 @@ namespace SiliconStudio.Xenko.Graphics
             NativeDevice.BindBufferMemory(nativeUploadBuffer, nativeUploadBufferMemory, 0);
         }
 
-        internal unsafe void ReleaseTemporaryResources()
-        {
-            // Release previous frame resources
-            while (TemporaryResources.Count > 0 && IsFenceCompleteInternal(TemporaryResources.Peek().FenceValue))
-            {
-                var temporaryResource = TemporaryResources.Dequeue();
-                NativeDevice.FreeMemory(temporaryResource.Memory);
-                NativeDevice.DestroyBuffer(temporaryResource.Buffer);
-            }
-        }
-
         private void AdjustDefaultPipelineStateDescription(ref PipelineStateDescription pipelineStateDescription)
         {
         }
@@ -402,6 +391,9 @@ namespace SiliconStudio.Xenko.Graphics
 
         private unsafe void ReleaseDevice()
         {
+            EmptyTexelBuffer.Dispose();
+            EmptyTexelBuffer = null;
+
             // Wait for all queues to be idle
             nativeDevice.WaitIdle();
 
@@ -412,18 +404,15 @@ namespace SiliconStudio.Xenko.Graphics
             if (nativeUploadBuffer != SharpVulkan.Buffer.Null)
             {
                 NativeDevice.UnmapMemory(nativeUploadBufferMemory);
-                TemporaryResources.Enqueue(new BufferInfo(lastCompletedFence, nativeUploadBuffer, nativeUploadBufferMemory));
+                NativeResourceCollector.Add(lastCompletedFence, nativeUploadBuffer);
+                NativeResourceCollector.Add(lastCompletedFence, nativeUploadBufferMemory);
 
                 nativeUploadBuffer = SharpVulkan.Buffer.Null;
                 nativeUploadBufferMemory = DeviceMemory.Null;
             }
 
-            EmptyTexelBuffer.Dispose();
-            EmptyTexelBuffer = null;
-
             // Release fenced resources
-            ReleaseTemporaryResources();
-            semaphoreCollector.Dispose();
+            NativeResourceCollector.Dispose();
             descriptorPools.Dispose();
 
             nativeDevice.DestroyCommandPool(NativeCopyCommandPool);
@@ -467,7 +456,7 @@ namespace SiliconStudio.Xenko.Graphics
             NativeCommandQueue.Submit(1, &submitInfo, fence);
 
             presentSemaphore = Semaphore.Null;
-            semaphoreCollector.Release();
+            NativeResourceCollector.Release();
 
             return NextFenceValue++;
         }
@@ -522,8 +511,13 @@ namespace SiliconStudio.Xenko.Graphics
         {
             var createInfo = new SemaphoreCreateInfo { StructureType = StructureType.SemaphoreCreateInfo };
             presentSemaphore = NativeDevice.CreateSemaphore(ref createInfo);
-            semaphoreCollector.Add(NextFenceValue, presentSemaphore);
+            Collect(presentSemaphore);
             return presentSemaphore;
+        }
+
+        internal void Collect(NativeResource nativeResource)
+        {
+            NativeResourceCollector.Add(NextFenceValue, nativeResource);
         }
     }
 
@@ -667,31 +661,112 @@ namespace SiliconStudio.Xenko.Graphics
         }
     }
 
-    internal class FramebufferCollector : TemporaryResourceCollector<Framebuffer>
+    internal struct NativeResource
     {
-        public FramebufferCollector(GraphicsDevice graphicsDevice) : base(graphicsDevice)
+        public DebugReportObjectType type;
+
+        public ulong handle;
+
+        public NativeResource(DebugReportObjectType type, ulong handle)
         {
+            this.type = type;
+            this.handle = handle;
         }
 
-        protected override unsafe void ReleaseObject(Framebuffer item)
+        public static unsafe implicit operator NativeResource(SharpVulkan.Buffer handle)
         {
-            GraphicsDevice.NativeDevice.DestroyFramebuffer(item);
+            return new NativeResource(DebugReportObjectType.Buffer, *(ulong*)&handle);
+        }
+
+        public static unsafe implicit operator NativeResource(BufferView handle)
+        {
+            return new NativeResource(DebugReportObjectType.BufferView, *(ulong*)&handle);
+        }
+
+        public static unsafe implicit operator NativeResource(SharpVulkan.Image handle)
+        {
+            return new NativeResource(DebugReportObjectType.Image, *(ulong*)&handle);
+        }
+
+        public static unsafe implicit operator NativeResource(ImageView handle)
+        {
+            return new NativeResource(DebugReportObjectType.ImageView, *(ulong*)&handle);
+        }
+
+        public static unsafe implicit operator NativeResource(DeviceMemory handle)
+        {
+            return new NativeResource(DebugReportObjectType.DeviceMemory, *(ulong*)&handle);
+        }
+
+        public static unsafe implicit operator NativeResource(Sampler handle)
+        {
+            return new NativeResource(DebugReportObjectType.Sampler, *(ulong*)&handle);
+        }
+
+        public static unsafe implicit operator NativeResource(Framebuffer handle)
+        {
+            return new NativeResource(DebugReportObjectType.Framebuffer, *(ulong*)&handle);
+        }
+
+        public static unsafe implicit operator NativeResource(Semaphore handle)
+        {
+            return new NativeResource(DebugReportObjectType.Semaphore, *(ulong*)&handle);
+        }
+
+        public static unsafe implicit operator NativeResource(Fence handle)
+        {
+            return new NativeResource(DebugReportObjectType.Fence, *(ulong*)&handle);
+        }
+
+        public unsafe void Destroy(GraphicsDevice device)
+        {
+            var handleCopy = handle;
+
+            switch (type)
+            {
+                case DebugReportObjectType.Buffer:
+                    device.NativeDevice.DestroyBuffer(*(SharpVulkan.Buffer*)&handleCopy);
+                    break;
+                case DebugReportObjectType.BufferView:
+                    device.NativeDevice.DestroyBufferView(*(BufferView*)&handleCopy);
+                    break;
+                case DebugReportObjectType.Image:
+                    device.NativeDevice.DestroyImage(*(SharpVulkan.Image*)&handleCopy);
+                    break;
+                case DebugReportObjectType.ImageView:
+                    device.NativeDevice.DestroyImageView(*(ImageView*)&handleCopy);
+                    break;
+                case DebugReportObjectType.DeviceMemory:
+                    device.NativeDevice.FreeMemory(*(DeviceMemory*)&handleCopy);
+                    break;
+                case DebugReportObjectType.Sampler:
+                    device.NativeDevice.DestroySampler(*(Sampler*)&handleCopy);
+                    break;
+                case DebugReportObjectType.Framebuffer:
+                    device.NativeDevice.DestroyFramebuffer(*(Framebuffer*)&handleCopy);
+                    break;
+                case DebugReportObjectType.Semaphore:
+                    device.NativeDevice.DestroySemaphore(*(Semaphore*)&handleCopy);
+                    break;
+                case DebugReportObjectType.Fence:
+                    device.NativeDevice.DestroyFence(*(Fence*)&handleCopy);
+                    break;
+            }
         }
     }
 
-    internal class SemaphoreCollector : TemporaryResourceCollector<Semaphore>
+    internal class NativeResourceCollector : TemporaryResourceCollector<NativeResource>
     {
-        public SemaphoreCollector(GraphicsDevice graphicsDevice) : base(graphicsDevice)
+        public NativeResourceCollector(GraphicsDevice graphicsDevice) : base(graphicsDevice)
         {
         }
 
-        protected override unsafe void ReleaseObject(Semaphore item)
+        protected override void ReleaseObject(NativeResource item)
         {
-            GraphicsDevice.NativeDevice.DestroySemaphore(item);
+            item.Destroy(GraphicsDevice);
         }
     }
-
-
+    
     internal abstract class TemporaryResourceCollector<T> : IDisposable
     {
         protected readonly GraphicsDevice GraphicsDevice;

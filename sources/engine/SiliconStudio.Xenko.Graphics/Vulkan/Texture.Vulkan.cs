@@ -357,7 +357,7 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <inheritdoc/>
-        protected internal override unsafe void OnDestroyed()
+        protected internal override void OnDestroyed()
         {
             if (ParentTexture != null || isNotOwningResources)
             {
@@ -369,37 +369,37 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 if (NativeMemory != DeviceMemory.Null)
                 {
-                    GraphicsDevice.NativeDevice.FreeMemory(NativeMemory);
+                    GraphicsDevice.Collect(NativeMemory);
                     NativeMemory = DeviceMemory.Null;
                 }
 
                 if (NativeImage != SharpVulkan.Image.Null)
                 {
-                    GraphicsDevice.NativeDevice.DestroyImage(NativeImage);
+                    GraphicsDevice.Collect(NativeImage);
                     NativeImage = SharpVulkan.Image.Null;
                 }
 
                 if (NativeBuffer != SharpVulkan.Buffer.Null)
                 {
-                    GraphicsDevice.NativeDevice.DestroyBuffer(NativeBuffer);
+                    GraphicsDevice.Collect(NativeBuffer);
                     NativeBuffer = SharpVulkan.Buffer.Null;
                 }
 
                 if (NativeImageView != ImageView.Null)
                 {
-                    GraphicsDevice.NativeDevice.DestroyImageView(NativeImageView);
+                    GraphicsDevice.Collect(NativeImageView);
                     NativeImageView = ImageView.Null;
                 }
 
                 if (NativeColorAttachmentView != ImageView.Null)
                 {
-                    GraphicsDevice.NativeDevice.DestroyImageView(NativeColorAttachmentView);
+                    GraphicsDevice.Collect(NativeColorAttachmentView);
                     NativeColorAttachmentView = ImageView.Null;
                 }
 
                 if (NativeDepthStencilView != ImageView.Null)
                 {
-                    GraphicsDevice.NativeDevice.DestroyImageView(NativeDepthStencilView);
+                    GraphicsDevice.Collect(NativeDepthStencilView);
                     NativeDepthStencilView = ImageView.Null;
                 }
             }

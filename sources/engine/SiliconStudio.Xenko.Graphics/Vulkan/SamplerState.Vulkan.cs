@@ -37,9 +37,9 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <inheritdoc/>
-        protected internal override unsafe void OnDestroyed()
+        protected internal override void OnDestroyed()
         {
-            GraphicsDevice.NativeDevice.DestroySampler(NativeSampler);
+            GraphicsDevice.Collect(NativeSampler);
             NativeSampler = Sampler.Null;
 
             base.OnDestroyed();

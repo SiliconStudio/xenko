@@ -28,7 +28,6 @@ namespace SiliconStudio.Xenko.Graphics
         private int framebufferAttachmentCount;
         private bool framebufferDirty = true;
         private Framebuffer activeFramebuffer;
-        private FramebufferCollector framebufferCollector;
 
         private SharpVulkan.DescriptorPool descriptorPool;
         private SharpVulkan.DescriptorSet descriptorSet;
@@ -44,8 +43,6 @@ namespace SiliconStudio.Xenko.Graphics
         {
             commandBufferPool = new CommandBufferPool(GraphicsDevice);
 
-            framebufferCollector = new FramebufferCollector(GraphicsDevice);
-
             descriptorPool = GraphicsDevice.descriptorPools.GetObject();
             allocatedTypeCounts = new uint[DescriptorSetLayout.DescriptorTypeCount];
             allocatedSetCount = 0;
@@ -58,9 +55,6 @@ namespace SiliconStudio.Xenko.Graphics
             CleanupRenderPass();
             boundDescriptorSets.Clear();
 
-            GraphicsDevice.ReleaseTemporaryResources();
-
-            framebufferCollector.Release();
             framebuffers.Clear();
             framebufferDirty = true;
 
@@ -1174,7 +1168,6 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             commandBufferPool.Dispose();
-            framebufferCollector.Dispose();
 
             base.OnDestroyed();
         }
@@ -1221,7 +1214,7 @@ namespace SiliconStudio.Xenko.Graphics
                                 Layers = 1, // TODO VULKAN: Use correct view depth/array size
                             };
                             activeFramebuffer = GraphicsDevice.NativeDevice.CreateFramebuffer(ref framebufferCreateInfo);
-                            framebufferCollector.Add(GraphicsDevice.NextFenceValue, activeFramebuffer);
+                            GraphicsDevice.Collect(activeFramebuffer);
                             framebuffers.Add(framebufferKey, activeFramebuffer);
                         }
                     }
