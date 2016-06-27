@@ -118,16 +118,10 @@
     </When>
   </Choose>
   <ItemGroup>
-    <None Include="..\..\..\deps\freetype-2.5.3\$(SiliconStudioPlatform)\$(Configuration)\**\*.*">
+    <None Include="..\..\..\deps\freetype\$(SiliconStudioPlatform)\$(Configuration)\**\*.*">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-  </ItemGroup>
-  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'WindowsStore' Or '$(SiliconStudioPlatform)' == 'WindowsPhone' Or '$(SiliconStudioPlatform)' == 'Windows10'">
-    <Reference Include="SharpFont">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(XenkoDependenciesDir)SharpFont\Windows\Release\SharpFont.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS'">
     <Reference Include="SharpFont">
@@ -135,10 +129,10 @@
       <HintPath>$(XenkoDependenciesDir)SharpFont\iOS\Release\SharpFont.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup Condition="('$(SiliconStudioPlatform)' == 'Android') OR ('$(SiliconStudioPlatform)' == 'Linux')">
+  <ItemGroup Condition="'$(SiliconStudioPlatform)' != 'iOS'">
     <Reference Include="SharpFont">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(XenkoDependenciesDir)SharpFont\Android\Release\SharpFont.dll</HintPath>
+      <HintPath>$(XenkoDependenciesDir)SharpFont\Portable\Release\SharpFont.dll</HintPath>
     </Reference>
   </ItemGroup>
   <!-- Files for Direct3D  -->

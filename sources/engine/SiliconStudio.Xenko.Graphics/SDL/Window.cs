@@ -11,6 +11,10 @@ namespace SiliconStudio.Xenko.Graphics.SDL
 
     public class Window: IDisposable
     {
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+        private IntPtr glContext;
+#endif
+
 #region Initialization
         /// <summary>
         /// Type initializer for `Window' which automatically initializes the SDL infrastructure.
@@ -66,18 +70,18 @@ namespace SiliconStudio.Xenko.Graphics.SDL
                 Application.ProcessEvents();
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
-                var context = SDL.SDL_GL_CreateContext(SdlHandle);
-                if (context == IntPtr.Zero)
+                glContext = SDL.SDL_GL_CreateContext(SdlHandle);
+                if (glContext == IntPtr.Zero)
                 {
                     throw new Exception("Cannot create OpenGL context: " + SDL.SDL_GetError());
                 }
 
                 // The external context must be made current to initialize OpenGL
-                SDL.SDL_GL_MakeCurrent(SdlHandle, context);
+                SDL.SDL_GL_MakeCurrent(SdlHandle, glContext);
 
                 // Create a dummy OpenTK context, that will be used to call some OpenGL features
                 // we need to later create the various context in GraphicsDevice.OpenGL.
-                DummyGLContext = new OpenTK.Graphics.GraphicsContext(new OpenTK.ContextHandle(context), SDL.SDL_GL_GetProcAddress, () => new OpenTK.ContextHandle(SDL.SDL_GL_GetCurrentContext()));
+                DummyGLContext = new OpenTK.Graphics.GraphicsContext(new OpenTK.ContextHandle(glContext), SDL.SDL_GL_GetProcAddress, () => new OpenTK.ContextHandle(SDL.SDL_GL_GetCurrentContext()));
 #endif
             }
         }
@@ -568,12 +572,23 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             {
                 if (disposing)
                 {
-                        // Dispose managed state (managed objects).
+                    // Dispose managed state (managed objects).
                     Disposed?.Invoke(this, EventArgs.Empty);
                     Application.UnregisterWindow(this);
                 }
 
-                    // Free unmanaged resources (unmanaged objects) and override a finalizer below.
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+                // Dispose OpenGL context
+                DummyGLContext?.Dispose();
+                DummyGLContext = null;
+                if (glContext != IntPtr.Zero)
+                {
+                    SDL.SDL_GL_DeleteContext(glContext);
+                    glContext = IntPtr.Zero;
+                }
+#endif
+
+                // Free unmanaged resources (unmanaged objects) and override a finalizer below.
                 SDL.SDL_DestroyWindow(SdlHandle);
                 SdlHandle = IntPtr.Zero;
                 Handle = IntPtr.Zero;

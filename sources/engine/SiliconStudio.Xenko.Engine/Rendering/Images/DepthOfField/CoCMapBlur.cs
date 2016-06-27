@@ -82,6 +82,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var outputTexture = GetSafeOutput(0);
 
             cocBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.Count, tapCount);
+            cocBlurEffect.EffectInstance.UpdateEffect(context.GraphicsDevice);
             cocBlurEffect.Parameters.Set(CoCMapBlurShaderKeys.Radius, radius);
             cocBlurEffect.Parameters.Set(CoCMapBlurShaderKeys.OffsetsWeights, tapWeights);
             var tapNumber = 2 * tapCount - 1;

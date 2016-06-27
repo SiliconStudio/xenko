@@ -26,7 +26,9 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="BlockingBufferStream.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Graphics.Regression\TestResultImage.cs">
+      <Link>TestResultImage.cs</Link>
+    </Compile>
     <Compile Include="Requests\KeySimulationRequest.cs" />
     <Compile Include="Requests\LogRequest.cs" />
     <Compile Include="Module.cs" />
@@ -42,7 +44,6 @@
     <Compile Include="Requests\TestEndedRequest.cs" />
     <Compile Include="GameTestingClient.cs" />
     <Compile Include="Requests\TestRegistrationRequest.cs" />
-    <Compile Include="TestResultImage.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">

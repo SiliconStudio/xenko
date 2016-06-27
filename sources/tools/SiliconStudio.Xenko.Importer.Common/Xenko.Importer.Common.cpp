@@ -8,6 +8,7 @@ using namespace System::IO;
 using namespace SiliconStudio::Core::Diagnostics;
 using namespace SiliconStudio::Core::Mathematics;
 using namespace SiliconStudio::Core::Serialization;
+using namespace SiliconStudio::Xenko::Animations;
 using namespace SiliconStudio::Xenko::Rendering;
 using namespace SiliconStudio::Xenko::Rendering::Materials;
 using namespace SiliconStudio::Xenko::Rendering::Materials::ComputeColors;
@@ -17,7 +18,19 @@ using namespace SiliconStudio::Xenko::Graphics;
 using namespace SiliconStudio::Xenko::Shaders;
 
 namespace SiliconStudio { namespace Xenko { namespace Importer { namespace Common {
-	
+
+public ref class AnimationInfo
+{
+public:
+	AnimationInfo()
+	{
+		AnimationClips = gcnew Dictionary<System::String^, AnimationClip^>();
+	}
+
+	TimeSpan Duration;
+	Dictionary<System::String^, AnimationClip^>^ AnimationClips;
+};
+
 public ref class MeshParameters
 {
 public:

@@ -445,6 +445,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             if (lightType == null) throw new ArgumentNullException("lightType");
             if (renderer == null) throw new ArgumentNullException("renderer");
             lightRenderers.Add(new KeyValuePair<Type, LightGroupRendererBase>(lightType, renderer));
+            renderer.Initialize(Context);
         }
 
         private void CollectActiveLightRenderers(RenderContext context)
@@ -460,16 +461,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     viewData.ActiveLightGroups.TryGetValue(lightTypeAndRenderer.Key, out lightGroup);
 
                     var renderer = lightTypeAndRenderer.Value;
-                    bool rendererToInitialize = false;
                     if (lightGroup != null && lightGroup.Count > 0)
                     {
                         viewData.ActiveRenderers.Add(new ActiveLightGroupRenderer(renderer, lightGroup));
-                        rendererToInitialize = true;
-                    }
-
-                    if (rendererToInitialize)
-                    {
-                        renderer.Initialize(context);
                     }
                 }
             }

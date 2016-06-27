@@ -2,8 +2,10 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using SiliconStudio.Xenko.Engine.Network;
 using Sockets.Plugin;
 
 namespace SiliconStudio.Xenko.Graphics.Regression
@@ -17,6 +19,12 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
         private static TcpSocketClient ImageComparisonServer;
 
+        public static bool Connect(SimpleSocket simpleSocket)
+        {
+            ImageComparisonServer = simpleSocket.Socket;
+            return OpenConnection();
+        }
+
         public static bool Connect()
         {
             if (ImageComparisonServer != null)
@@ -27,18 +35,30 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                 ImageComparisonServer = new TcpSocketClient();
                 var t = Task.Run(async () => await ImageComparisonServer.ConnectAsync(XenkoImageServerHost, XenkoImageServerPort));
                 t.Wait();
-
-                // Send initial parameters
-                var networkStream = ImageComparisonServer.WriteStream;
-                var binaryWriter = new BinaryWriter(networkStream);
-                ImageTestResultConnection.Write(binaryWriter);
-
-                return true;
             }
             catch (Exception)
             {
                 ImageComparisonServer = null;
 
+                return false;
+            }
+
+            return OpenConnection();
+        }
+
+        private static bool OpenConnection()
+        {
+            try
+            {
+                // Send initial parameters
+                var networkStream = ImageComparisonServer.WriteStream;
+                var binaryWriter = new BinaryWriter(networkStream);
+                ImageTestResultConnection.Write(binaryWriter);
+                return true;
+            }
+            catch
+            {
+                ImageComparisonServer = null;
                 return false;
             }
         }
@@ -53,6 +73,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                     var networkStream = ImageComparisonServer.WriteStream;
                     var binaryWriter = new BinaryWriter(networkStream);
                     binaryWriter.Write((int)ImageServerMessageType.ConnectionFinished);
+                    binaryWriter.Flush();
 
                     ImageComparisonServer.Dispose();
                 }
@@ -82,6 +103,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                 // Header
                 binaryWriter.Write((int)ImageServerMessageType.RequestImageComparisonStatus);
                 binaryWriter.Write(testName ?? "Unable to fetch test name");
+                binaryWriter.Flush();
 
                 return binaryReader.ReadBoolean();
             }
@@ -114,7 +136,14 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                 binaryWriter.Write((int)ImageServerMessageType.SendImage);
 
                 GameTestBase.TestGameLogger.Info(@"Sending image information...");
+
+                var sw = new Stopwatch();
+                sw.Start();
+
                 testResultImage.Write(binaryWriter);
+
+                sw.Stop();
+                GameTestBase.TestGameLogger.Info("Total calculation time: {0}", sw.Elapsed);
 
                 return binaryReader.ReadBoolean();
             }
