@@ -137,9 +137,6 @@ namespace SiliconStudio.Xenko.Graphics.Font
 
         private CharacterSpecification GetOrCreateCharacterData(Vector2 size, char character)
         {
-            size.X = (float)Math.Floor(size.X);
-            size.Y = (float)Math.Floor(size.Y);
-
             // build the dictionary look up key
             var lookUpKey = new CharacterKey(character, size);
 
