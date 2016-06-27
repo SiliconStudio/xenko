@@ -828,4 +828,11 @@ LCleanup:
 	return bIsXinputDevice;
 }
 
+#else
+
+extern "C" int IsXInputDevice(void* pGuidProductFromDirectInput)
+{
+	return 0;
+}
+
 #endif
