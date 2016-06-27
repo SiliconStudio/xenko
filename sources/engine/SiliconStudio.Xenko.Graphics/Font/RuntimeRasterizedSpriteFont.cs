@@ -137,6 +137,9 @@ namespace SiliconStudio.Xenko.Graphics.Font
 
         private CharacterSpecification GetOrCreateCharacterData(Vector2 size, char character)
         {
+            size.X = (float)Math.Floor(size.X);
+            size.Y = (float)Math.Floor(size.Y);
+
             // build the dictionary look up key
             var lookUpKey = new CharacterKey(character, size);
 
@@ -155,21 +158,19 @@ namespace SiliconStudio.Xenko.Graphics.Font
         {
             private readonly char character;
 
-            private readonly Vector2 size;
-
-            // Use 10% increments when generating new font sizes to avoid too many memory allocations
-            // This limits the worst case scenario from >3GB to <50MB
-            private const float AcceptableSizeDifference = 0.1f;
+            private readonly int sizeX;
+            private readonly int sizeY;
 
             public CharacterKey(char character, Vector2 size)
             {
                 this.character = character;
-                this.size = size;
+                this.sizeX = (int)size.X;
+                this.sizeY = (int)size.Y;
             }
 
             public bool Equals(CharacterKey other)
             {
-                return (character == other.character) && (Math.Abs(1f - size.X/other.size.X) <= AcceptableSizeDifference);
+                return (character == other.character) && (sizeX == other.sizeX) && (sizeY == other.sizeY);
             }
 
             public override bool Equals(object obj)
