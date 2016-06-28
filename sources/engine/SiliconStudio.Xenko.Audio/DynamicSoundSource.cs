@@ -26,6 +26,12 @@ namespace SiliconStudio.Xenko.Audio
 
         protected SoundInstance SoundInstance;
 
+        /// <summary>
+        /// Sub classes can implement their own streaming sources
+        /// </summary>
+        /// <param name="soundInstance">the sound instance associated</param>
+        /// <param name="numberOfBuffers">the size of the streaming ring-buffer</param>
+        /// <param name="maxBufferSizeBytes">the maximum size of each buffer</param>
         protected DynamicSoundSource(SoundInstance soundInstance, int numberOfBuffers, int maxBufferSizeBytes)
         {
             SoundInstance = soundInstance;
@@ -45,6 +51,9 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
+        /// <summary>
+        /// Checks if a buffer can be filled, before calling FillBuffer this should be checked
+        /// </summary>
         protected bool CanFill
         {
             get
@@ -60,11 +69,11 @@ namespace SiliconStudio.Xenko.Audio
         public abstract int MaxNumberOfBuffers { get; }
 
         /// <summary>
-        /// 
+        /// If CanFillis true with this method you can fill the next free buffer
         /// </summary>
-        /// <param name="pcm"></param>
-        /// <param name="bufferSize"></param>
-        /// <param name="endOfStream"></param>
+        /// <param name="pcm">The pointer to PCM data</param>
+        /// <param name="bufferSize">The full size in bytes of PCM data</param>
+        /// <param name="endOfStream">If this buffer is the last buffer of the stream set to true, if not false</param>
         protected void FillBuffer(IntPtr pcm, int bufferSize, bool endOfStream)
         {
             var buffer = freeBuffers.Dequeue();
@@ -79,11 +88,11 @@ namespace SiliconStudio.Xenko.Audio
         }
 
         /// <summary>
-        /// 
+        /// If CanFillis true with this method you can fill the next free buffer
         /// </summary>
-        /// <param name="pcm"></param>
-        /// <param name="bufferSize"></param>
-        /// <param name="endOfStream"></param>
+        /// <param name="pcm">The array containing PCM data</param>
+        /// <param name="bufferSize">The full size in bytes of PCM data</param>
+        /// <param name="endOfStream">If this buffer is the last buffer of the stream set to true, if not false</param>
         protected unsafe void FillBuffer(short[] pcm, int bufferSize, bool endOfStream)
         {
             var buffer = freeBuffers.Dequeue();
@@ -98,8 +107,15 @@ namespace SiliconStudio.Xenko.Audio
             ReadyToPlay.TrySetResult(true);
         }
 
+        /// <summary>
+        /// Restarts streaming from the beginning.
+        /// </summary>
         public abstract void Restart();
 
+        /// <summary>
+        /// Sets if the stream should be played in loop
+        /// </summary>
+        /// <param name="loop">if looped or not</param>
         public abstract void SetLooped(bool looped);
     }
 }

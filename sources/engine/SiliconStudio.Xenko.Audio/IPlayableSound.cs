@@ -19,29 +19,25 @@ namespace SiliconStudio.Xenko.Audio
         SoundPlayState PlayState { get; }
 
         /// <summary>
-        /// Does the sound is automatically looping from beginning when it reaches the end.
+        /// If the sound is automatically looping from beginning when it reaches the end.
         /// </summary>
-        /// <exception cref="ObjectDisposedException">The sound has already been disposed</exception>
         bool IsLooped { get; set; }
 
         /// <summary>
         /// Start or resume playing the sound.
         /// </summary>
-        /// <exception cref="ObjectDisposedException">The sound has already been disposed</exception>
         /// <remarks>A call to Play when the sound is already playing has no effects.</remarks>
         void Play();
 
         /// <summary>
         /// Pause the sounds.
         /// </summary>
-        /// <exception cref="ObjectDisposedException">The sound has already been disposed</exception>
         /// <remarks>A call to Pause when the sound is already paused or stopped has no effects.</remarks>
         void Pause();
 
         /// <summary>
         /// Stop playing the sound immediately and reset the sound to the beginning of the track.
         /// </summary>
-        /// <exception cref="ObjectDisposedException">The sound has already been disposed</exception>
         /// <remarks>A call to Stop when the sound is already stopped has no effects</remarks>
         void Stop();
 
@@ -49,7 +45,6 @@ namespace SiliconStudio.Xenko.Audio
         /// The global volume at which the sound is played.
         /// </summary>
         /// <remarks>Volume is ranging from 0.0f (silence) to 1.0f (full volume). Values beyond those limits are clamped.</remarks>
-        /// <exception cref="ObjectDisposedException">The sound has already been disposed</exception>
         float Volume { get; set; }
     }
 }

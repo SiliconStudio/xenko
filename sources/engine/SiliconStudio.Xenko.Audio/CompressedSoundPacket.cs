@@ -2,6 +2,9 @@
 
 namespace SiliconStudio.Xenko.Audio
 {
+    /// <summary>
+    /// Used internally in SoundAsset
+    /// </summary>
     [DataContract("CompressedSoundPacket")]
     public class CompressedSoundPacket
     {

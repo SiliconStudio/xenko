@@ -28,6 +28,15 @@ namespace SiliconStudio.Xenko.Audio
 
         internal AudioListener Listener;
 
+        /// <summary>
+        /// Creates a new SoundInstance using a dynamic sound source
+        /// </summary>
+        /// <param name="engine">The audio engine that will be used to play this instance</param>
+        /// <param name="listener">The listener of this instance</param>
+        /// <param name="dynamicSoundSource">The source from where the PCM data will be fetched</param>
+        /// <param name="sampleRate">The sample rate of this audio stream</param>
+        /// <param name="mono">Set to true if the souce is mono, false if stereo</param>
+        /// <param name="spatialized">If the SoundInstance will be used for spatialized audio set to true, if not false, if true mono must also be true</param>
         public SoundInstance(AudioEngine engine, AudioListener listener, DynamicSoundSource dynamicSoundSource, int sampleRate, bool mono, bool spatialized = false)
         {
             Listener = listener;
@@ -75,6 +84,9 @@ namespace SiliconStudio.Xenko.Audio
             ResetStateToDefault();
         }
 
+        /// <summary>
+        /// If the sound is automatically looping from beginning when it reaches the end.
+        /// </summary>
         public bool IsLooped
         {
             get
@@ -93,6 +105,12 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
+        /// <summary>
+        /// Set the sound balance between left and right speaker.
+        /// </summary>
+        /// <remarks>Panning is ranging from -1.0f (full left) to 1.0f (full right). 0.0f is centered. Values beyond this range are clamped. 
+        /// Panning modifies the total energy of the signal (Pan == -1 => Energy = 1 + 0, Pan == 0 => Energy = 1 + 1, Pan == 0.5 => Energy = 1 + 0.5, ...) 
+        /// <para>A call to <see cref="Pan"/> may conflict with Apply3D.</para></remarks>
         public float Pan
         {
             get
@@ -110,6 +128,10 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
+        /// <summary>
+        /// The global volume at which the sound is played.
+        /// </summary>
+        /// <remarks>Volume is ranging from 0.0f (silence) to 1.0f (full volume). Values beyond those limits are clamped.</remarks>
         public float Volume
         {
             get
@@ -127,6 +149,9 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
+        /// <summary>
+        /// Sets the pitch of the sound, might conflict with spatialized sound spatialization.
+        /// </summary>
         public float Pitch
         {
             get
@@ -144,12 +169,29 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
+        /// <summary>
+        /// A task that completes when the sound is ready to play
+        /// </summary>
+        /// <returns>Returns a task that will complete when the sound has been buffered and ready to play</returns>
         public async Task<bool> ReadyToPlay()
         {
             if (soundSource == null) return await Task.FromResult(true);
             return await soundSource.ReadyToPlay.Task;
         }
 
+        /// <summary>
+        /// Applies 3D positioning to the sound. 
+        /// More precisely adjust the channel volumes and pitch of the sound, 
+        /// such that the sound source seems to come from the <paramref name="emitter"/> to the listener/>.
+        /// </summary>
+        /// <param name="emitter">The emitter that correspond to this sound</param>
+        /// <remarks>
+        /// <see cref="Apply3D"/> can be used only on mono-sounds.
+        /// <para>
+        /// The final resulting pitch depends on the listener and emitter relative velocity. 
+        /// The final resulting channel volumes depend on the listener and emitter relative positions and the value of <see cref="IPlayableSound.Volume"/>. 
+        /// </para>
+        /// </remarks>
         public void Apply3D(AudioEmitter emitter)
         {
             if (engine.State == AudioEngineState.Invalidated)
@@ -163,6 +205,10 @@ namespace SiliconStudio.Xenko.Audio
            emitter.Apply3D(Source);
         }
 
+        /// <summary>
+        /// Pause the sounds.
+        /// </summary>
+        /// <remarks>A call to Pause when the sound is already paused or stopped has no effects.</remarks>
         public void Pause()
         {
             if (engine.State == AudioEngineState.Invalidated)
@@ -193,6 +239,10 @@ namespace SiliconStudio.Xenko.Audio
             PlayExtended(stopSiblingInstances);
         }
 
+        /// <summary>
+        /// Stop playing the sound immediately and reset the sound to the beginning of the track.
+        /// </summary>
+        /// <remarks>A call to Stop when the sound is already stopped has no effects</remarks>
         public void Stop()
         {
             if (engine.State == AudioEngineState.Invalidated)
@@ -268,6 +318,9 @@ namespace SiliconStudio.Xenko.Audio
 
         private SoundPlayState playState = SoundPlayState.Stopped;
 
+        /// <summary>
+        /// Gets the state of the SoundInstance
+        /// </summary>
         public SoundPlayState PlayState
         {
             get

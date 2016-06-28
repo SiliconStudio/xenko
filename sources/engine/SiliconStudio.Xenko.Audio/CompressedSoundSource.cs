@@ -40,7 +40,15 @@ namespace SiliconStudio.Xenko.Audio
         private static Task readFromDiskWorker;
         private static readonly ConcurrentBag<CompressedSoundSource> NewSources = new ConcurrentBag<CompressedSoundSource>();
         private static readonly List<CompressedSoundSource> Sources = new List<CompressedSoundSource>();
-        
+
+        /// <summary>
+        /// This type of DynamicSoundSource is streamed from Disk and reads compressed Celt encoded data, used internally.
+        /// </summary>
+        /// <param name="instance">The associated SoundInstance</param>
+        /// <param name="soundStreamUrl">The compressed stream internal URL</param>
+        /// <param name="sampleRate">The sample rate of the compressed data</param>
+        /// <param name="channels">The number of channels of the compressed data</param>
+        /// <param name="maxCompressedSize">The maximum size of a compressed packet</param>
         public CompressedSoundSource(SoundInstance instance, string soundStreamUrl, int sampleRate, int channels, int maxCompressedSize) : base(instance, NumberOfBuffers, SamplesPerBuffer * MaxChannels * sizeof(short))
         {
             looped = instance.IsLooped;
@@ -146,11 +154,18 @@ namespace SiliconStudio.Xenko.Audio
 
         public override int MaxNumberOfBuffers => NumberOfBuffers;
 
+        /// <summary>
+        /// Restarts streaming from the beginning.
+        /// </summary>
         public override void Restart()
         {
             restart = true;
         }
 
+        /// <summary>
+        /// Sets if the stream should be played in loop
+        /// </summary>
+        /// <param name="loop">if looped or not</param>
         public override void SetLooped(bool loop)
         {
             looped = loop;
