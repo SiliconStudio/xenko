@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SiliconStudio.Core.Transactions;
 using SiliconStudio.Presentation.Dirtiables;
 
@@ -34,6 +35,16 @@ namespace SiliconStudio.Presentation.Services
         /// Gets whether there is currently an undo/redo operation in progress.
         /// </summary>
         bool UndoRedoInProgress { get; }
+
+        /// <summary>
+        /// Gets a task that completes when the current transaction is over, or immediately if there is no transaction currently in progress.
+        /// </summary>
+        Task TransactionCompletion { get; }
+
+        /// <summary>
+        /// Gets a task that completes when the current undo/redo operation is over, or immediately if there is no undo/redo currently in progress.
+        /// </summary>
+        Task UndoRedoCompletion { get; }
 
         /// <summary>
         /// Raised when a transaction has been completed.

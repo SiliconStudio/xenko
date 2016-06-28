@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SiliconStudio.Core.Transactions;
 using SiliconStudio.Presentation.Dirtiables;
 
@@ -10,10 +11,13 @@ namespace SiliconStudio.Presentation.Services
         private readonly ITransactionStack stack;
         private readonly Dictionary<Guid, string> operationNames = new Dictionary<Guid, string>();
         private readonly DirtiableManager dirtiableManager;
+        private TaskCompletionSource<int> undoRedoCompletion;
+        private TaskCompletionSource<int> transactionCompletion;
 
         public UndoRedoService(int stackCapacity)
         {
             stack = TransactionStackFactory.Create(stackCapacity);
+            stack.TransactionCompleted += TransactionCompleted;
             dirtiableManager = new DirtiableManager(stack);
         }
 
@@ -27,6 +31,10 @@ namespace SiliconStudio.Presentation.Services
 
         public bool UndoRedoInProgress { get; private set; }
 
+        public Task UndoRedoCompletion => undoRedoCompletion?.Task ?? Task.FromResult(0);
+
+        public Task TransactionCompletion => transactionCompletion?.Task ?? Task.FromResult(0);
+
         public event EventHandler<TransactionEventArgs> Done { add { stack.TransactionCompleted += value; } remove { stack.TransactionCompleted -= value; } }
 
         public event EventHandler<TransactionEventArgs> Undone { add { stack.TransactionRollbacked += value; } remove { stack.TransactionRollbacked -= value; } }
@@ -39,7 +47,15 @@ namespace SiliconStudio.Presentation.Services
 
         public ITransaction CreateTransaction()
         {
-            return UndoRedoInProgress ? new DummyTransaction() : stack.CreateTransaction();
+            if (UndoRedoInProgress)
+            {
+                return new DummyTransaction();
+            }
+            else
+            {
+                transactionCompletion = new TaskCompletionSource<int>();
+                return stack.CreateTransaction();
+            }
         }
 
         public IEnumerable<IReadOnlyTransaction> RetrieveAllTransactions() => stack.RetrieveAllTransactions();
@@ -49,15 +65,33 @@ namespace SiliconStudio.Presentation.Services
         public void Undo()
         {
             UndoRedoInProgress = true;
-            stack.Rollback();
-            UndoRedoInProgress = false;
+            undoRedoCompletion = new TaskCompletionSource<int>();
+            try
+            {
+                stack.Rollback();
+            }
+            finally
+            {
+                undoRedoCompletion.SetResult(0);
+                undoRedoCompletion = null;
+                UndoRedoInProgress = false;
+            }
         }
 
         public void Redo()
         {
             UndoRedoInProgress = true;
-            stack.Rollforward();
-            UndoRedoInProgress = false;
+            undoRedoCompletion = new TaskCompletionSource<int>();
+            try
+            {
+                stack.Rollforward();
+            }
+            finally
+            {
+                undoRedoCompletion.SetResult(0);
+                undoRedoCompletion = null;
+                UndoRedoInProgress = false;
+            }
         }
 
         public void NotifySave() => dirtiableManager.CreateSnapshot();
@@ -110,6 +144,12 @@ namespace SiliconStudio.Presentation.Services
             string name;
             operationNames.TryGetValue(id, out name);
             return name;
+        }
+
+        private void TransactionCompleted(object sender, TransactionEventArgs e)
+        {
+            transactionCompletion?.SetResult(0);
+            transactionCompletion = null;
         }
     }
 }
