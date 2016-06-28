@@ -26,6 +26,11 @@ namespace SiliconStudio.Xenko.Audio
         float Pan { get; set; }
 
         /// <summary>
+        /// Gets or sets the pitch of the sound, might conflict with spatialized sound spatialization.
+        /// </summary>
+        float Pitch { get; set; }
+
+        /// <summary>
         /// Applies 3D positioning to the sound. 
         /// More precisely adjust the channel volumes and pitch of the sound, 
         /// such that the sound source seems to come from the <paramref name="emitter"/> to the listener/>.
