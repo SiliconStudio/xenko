@@ -328,60 +328,60 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             compEntities[0].Transform.Position += new Vector3(loopCount+1, 2 * loopCount+1, 3 * loopCount+1);
             compEntities[1].Transform.Position -= new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
 
-            emitComps[0].DistanceScale = loopCount;
-            emitComps[0].DopplerScale = 2 * loopCount;
-            emitComps[1].DistanceScale = 3 * loopCount;
-            emitComps[1].DopplerScale = 4 * loopCount;
+//            emitComps[0].DistanceScale = loopCount;
+//            emitComps[0].DopplerScale = 2 * loopCount;
+//            emitComps[1].DistanceScale = 3 * loopCount;
+//            emitComps[1].DopplerScale = 4 * loopCount;
         }
 
-        /// <summary>
-        /// Check that the values of the <see cref="AudioEmitter"/> associated to the <see cref="AudioEmitterComponent"/> are or are not updated as they should be.
-        /// </summary>
-        /// <param name="emitter1ShouldBeValid">boolean indicating if emitter component 1 is supposed to be updated.</param>
-        /// <param name="emitter2ShouldBeValid">boolean indicating if emitter component 2 is supposed to be updated.</param>
-        /// <param name="matchingEntities">the matching entities of the <see cref="AudioEmitterProcessor"/></param>
-        /// <param name="loopCount">the current loopCount of the game</param>
-        private void CheckEmittersValues(bool emitter1ShouldBeValid, bool emitter2ShouldBeValid, Dictionary<Entity, AudioEmitterProcessor.AssociatedData> matchingEntities, int loopCount)
-        {
-            var dataComp1 = matchingEntities[compEntities[0]];
-            var dataComp2 = matchingEntities[compEntities[1]];
-
-            // check that the boolean value of the AudioEmitterComponent indicating the processor if the AudioEmitter should be updated is valid.
-            Assert.IsTrue(dataComp1.AudioEmitterComponent.ShouldBeProcessed == emitter1ShouldBeValid, "value of ShouldBeProcessed for emitter 1 is not correct at loop turn" + loopCount);
-            Assert.IsTrue(dataComp2.AudioEmitterComponent.ShouldBeProcessed == emitter2ShouldBeValid, "value of ShouldBeProcessed for emitter 2 is not correct at loop turn" + loopCount);
-
-            var emitter1Velocity = 2 * new Vector3(loopCount, 2 * loopCount, 3 * loopCount) + Vector3.One;
-            if (emitter1ShouldBeValid)
-            {
-                // check the AudioEmitter 1 values are updated.
-                Assert.AreEqual(emitter1Velocity, dataComp1.AudioEmitter.Velocity, "The velocity of emitter 1 is not valid at loop turn" + loopCount);
-                Assert.AreEqual(loopCount, dataComp1.AudioEmitter.DistanceScale, "The distance scale of emitter 1 is not valid at loop turn" + loopCount);
-                Assert.AreEqual(2 * loopCount, dataComp1.AudioEmitter.DopplerScale, "The Doppler scale of emitter 1 is not valid at loop turn" + loopCount);
-            }
-            else
-            {
-                // check the AudioEmitter 1 values are not updated anymore
-                Assert.AreNotEqual(emitter1Velocity, dataComp1.AudioEmitter.Velocity, "The velocity of emitter 1 is calculated for nothing at loop turn" + loopCount);
-                Assert.AreNotEqual(loopCount, dataComp1.AudioEmitter.DistanceScale, "The distance scale of emitter 1 is calculated for nothing at loop turn" + loopCount);
-                Assert.AreNotEqual(2 * loopCount, dataComp1.AudioEmitter.DopplerScale, "The Doppler scale of emitter 1 is calculated for nothing loop turn" + loopCount);
-            }
-
-            var emitter2Velocity = new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
-            if (emitter2ShouldBeValid)
-            {
-                // check the AudioEmitter 2 values are updated.
-                Assert.AreEqual(emitter2Velocity, dataComp2.AudioEmitter.Velocity, "The velocity of emitter 2 is not valid at loop turn" + loopCount);
-                Assert.AreEqual(3 * loopCount, dataComp2.AudioEmitter.DistanceScale, "The distance scale of emitter 2 is not valid at loop turn" + loopCount);
-                Assert.AreEqual(4 * loopCount, dataComp2.AudioEmitter.DopplerScale, "The Doppler scale of emitter 2 is not valid at loop turn" + loopCount);
-            }
-            else
-            {
-                // check the AudioEmitter 2 values are not updated anymore
-                Assert.AreNotEqual(emitter2Velocity, dataComp2.AudioEmitter.Velocity, "The velocity of emitter 2 is calculated for nothing at loop turn" + loopCount);
-                Assert.AreNotEqual(3 * loopCount, dataComp2.AudioEmitter.DistanceScale, "The distance scale of emitter 2 is calculated for nothing at loop turn" + loopCount);
-                Assert.AreNotEqual(4 * loopCount, dataComp2.AudioEmitter.DopplerScale, "The Doppler scale of emitter 2 is calculated for nothing loop turn" + loopCount);
-            }
-        }
+//        /// <summary>
+//        /// Check that the values of the <see cref="AudioEmitter"/> associated to the <see cref="AudioEmitterComponent"/> are or are not updated as they should be.
+//        /// </summary>
+//        /// <param name="emitter1ShouldBeValid">boolean indicating if emitter component 1 is supposed to be updated.</param>
+//        /// <param name="emitter2ShouldBeValid">boolean indicating if emitter component 2 is supposed to be updated.</param>
+//        /// <param name="matchingEntities">the matching entities of the <see cref="AudioEmitterProcessor"/></param>
+//        /// <param name="loopCount">the current loopCount of the game</param>
+//        private void CheckEmittersValues(bool emitter1ShouldBeValid, bool emitter2ShouldBeValid, Dictionary<Entity, AudioEmitterProcessor.AssociatedData> matchingEntities, int loopCount)
+//        {
+//            var dataComp1 = matchingEntities[compEntities[0]];
+//            var dataComp2 = matchingEntities[compEntities[1]];
+//
+//            // check that the boolean value of the AudioEmitterComponent indicating the processor if the AudioEmitter should be updated is valid.
+//            Assert.IsTrue(dataComp1.AudioEmitterComponent.ShouldBeProcessed == emitter1ShouldBeValid, "value of ShouldBeProcessed for emitter 1 is not correct at loop turn" + loopCount);
+//            Assert.IsTrue(dataComp2.AudioEmitterComponent.ShouldBeProcessed == emitter2ShouldBeValid, "value of ShouldBeProcessed for emitter 2 is not correct at loop turn" + loopCount);
+//
+//            var emitter1Velocity = 2 * new Vector3(loopCount, 2 * loopCount, 3 * loopCount) + Vector3.One;
+//            if (emitter1ShouldBeValid)
+//            {
+//                // check the AudioEmitter 1 values are updated.
+//                Assert.AreEqual(emitter1Velocity, dataComp1.AudioEmitter.Velocity, "The velocity of emitter 1 is not valid at loop turn" + loopCount);
+//                Assert.AreEqual(loopCount, dataComp1.AudioEmitter.DistanceScale, "The distance scale of emitter 1 is not valid at loop turn" + loopCount);
+//                Assert.AreEqual(2 * loopCount, dataComp1.AudioEmitter.DopplerScale, "The Doppler scale of emitter 1 is not valid at loop turn" + loopCount);
+//            }
+//            else
+//            {
+//                // check the AudioEmitter 1 values are not updated anymore
+//                Assert.AreNotEqual(emitter1Velocity, dataComp1.AudioEmitter.Velocity, "The velocity of emitter 1 is calculated for nothing at loop turn" + loopCount);
+//                Assert.AreNotEqual(loopCount, dataComp1.AudioEmitter.DistanceScale, "The distance scale of emitter 1 is calculated for nothing at loop turn" + loopCount);
+//                Assert.AreNotEqual(2 * loopCount, dataComp1.AudioEmitter.DopplerScale, "The Doppler scale of emitter 1 is calculated for nothing loop turn" + loopCount);
+//            }
+//
+//            var emitter2Velocity = new Vector3(loopCount, 2 * loopCount, 3 * loopCount);
+//            if (emitter2ShouldBeValid)
+//            {
+//                // check the AudioEmitter 2 values are updated.
+//                Assert.AreEqual(emitter2Velocity, dataComp2.AudioEmitter.Velocity, "The velocity of emitter 2 is not valid at loop turn" + loopCount);
+//                Assert.AreEqual(3 * loopCount, dataComp2.AudioEmitter.DistanceScale, "The distance scale of emitter 2 is not valid at loop turn" + loopCount);
+//                Assert.AreEqual(4 * loopCount, dataComp2.AudioEmitter.DopplerScale, "The Doppler scale of emitter 2 is not valid at loop turn" + loopCount);
+//            }
+//            else
+//            {
+//                // check the AudioEmitter 2 values are not updated anymore
+//                Assert.AreNotEqual(emitter2Velocity, dataComp2.AudioEmitter.Velocity, "The velocity of emitter 2 is calculated for nothing at loop turn" + loopCount);
+//                Assert.AreNotEqual(3 * loopCount, dataComp2.AudioEmitter.DistanceScale, "The distance scale of emitter 2 is calculated for nothing at loop turn" + loopCount);
+//                Assert.AreNotEqual(4 * loopCount, dataComp2.AudioEmitter.DopplerScale, "The Doppler scale of emitter 2 is calculated for nothing loop turn" + loopCount);
+//            }
+//        }
 
 //        private bool soundController0WentToStopState;
 //        private bool soundController2WentToStopState;

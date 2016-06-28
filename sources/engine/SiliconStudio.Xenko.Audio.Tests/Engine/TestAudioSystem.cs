@@ -525,7 +525,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
 
             game.Audio.AddListener(listComps[0]);
 
-            emitComps[0].DistanceScale = 200f;  // increase distance scale so that the sound can be heard from far away too
+            //emitComps[0].DistanceScale = 200f;  // increase distance scale so that the sound can be heard from far away too
             soundControllers[0].IsLooped = true;
             soundControllers[0].Play();
         }

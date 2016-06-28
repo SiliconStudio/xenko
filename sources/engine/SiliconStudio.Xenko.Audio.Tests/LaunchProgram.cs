@@ -68,8 +68,8 @@ namespace SiliconStudio.Xenko.Audio.Tests
             var test = new TestAudioEmitter();
             test.TestPosition();
             test.TestVelocity();
-            test.TestDistanceScale();
-            test.TestDopplerScale();
+//            test.TestDistanceScale();
+//            test.TestDopplerScale();
         }
 //        public static void TestSoundEffectInstance()
 //        {
