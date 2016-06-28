@@ -9,6 +9,7 @@
   <ItemGroup>
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\libxenkonative.so"/>
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\libcore.so"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\*.config"/>
     <!-- Users custom native libraries -->
     <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\**\*.so" />
   </ItemGroup>

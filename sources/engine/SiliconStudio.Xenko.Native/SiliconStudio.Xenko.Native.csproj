@@ -15,7 +15,7 @@
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--serialization --parameter-key</SiliconStudioAssemblyProcessorOptions>
     <XenkoBuildTags>*</XenkoBuildTags>
-	<DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
+    <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
   <Choose>
     <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
@@ -40,6 +40,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="SiliconStudio.Xenko.Native.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="XenkoNative.h" />
     <None Include="SpriteBatchNative.c" />
     <None Include="symbols.def" />
