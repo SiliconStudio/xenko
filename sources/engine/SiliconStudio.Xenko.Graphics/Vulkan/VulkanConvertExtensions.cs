@@ -390,6 +390,11 @@ namespace SiliconStudio.Xenko.Graphics
                     compressed = true;
                     pixelSize = 1; // 4bpp
                     break;
+                case PixelFormat.ETC2_RGB_SRgb:
+                    format = Format.Etc2R8G8B8SRgbBlock;
+                    compressed = true;
+                    pixelSize = 1;
+                    break;
                 case PixelFormat.ETC2_RGB_A1:
                     format = Format.Etc2R8G8B8A1UNormBlock;
                     compressed = true;
@@ -397,6 +402,11 @@ namespace SiliconStudio.Xenko.Graphics
                     break;
                 case PixelFormat.ETC2_RGBA: // ETC2 + EAC
                     format = Format.Etc2R8G8B8A8UNormBlock;
+                    compressed = true;
+                    pixelSize = 2; // 8bpp
+                    break;
+                case PixelFormat.ETC2_RGBA_SRgb: // ETC2 + EAC
+                    format = Format.Etc2R8G8B8A8SRgbBlock;
                     compressed = true;
                     pixelSize = 2; // 8bpp
                     break;
