@@ -18,11 +18,11 @@ namespace SiliconStudio.Presentation.ValueConverters
             if (value == null)
                 return 0;
 
-            if (!(value is IEnumerable))
-                throw new ArgumentException(@"The given value must implement IEnumerable", "value");
+            var enumerable = value as IEnumerable;
+            if (enumerable == null)
+                throw new ArgumentException(@"The given value must implement IEnumerable", nameof(value));
 
-            var enumerable = (IEnumerable)value;
-            return enumerable.Cast<object>().Count();
+            return (value as ICollection)?.Count ?? enumerable.Cast<object>().Count();
         }
     }
 }

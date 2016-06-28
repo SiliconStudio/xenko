@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -34,8 +35,8 @@ namespace SiliconStudio.Xenko.Assets.Tests
             {
                 modelComponent
             };
-            prefab.Hierarchy.Entities.Add(entity);
-            prefab.Hierarchy.RootEntities.Add(entity.Id);
+            prefab.Hierarchy.Parts.Add(new EntityDesign(entity));
+            prefab.Hierarchy.RootPartIds.Add(entity.Id);
 
             var material1 = new MaterialNull();
             IdentifiableHelper.SetId(material1, new Guid("39E2B226-8752-4678-8E93-76FFBFBA337B"));
@@ -46,7 +47,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             Action<PrefabAsset> checkPrefab = (newPrefab) =>
             {
-                var previousEntityDesign = newPrefab.Hierarchy.Entities.FirstOrDefault();
+                var previousEntityDesign = newPrefab.Hierarchy.Parts.FirstOrDefault();
 
                 Assert.NotNull(previousEntityDesign);
 

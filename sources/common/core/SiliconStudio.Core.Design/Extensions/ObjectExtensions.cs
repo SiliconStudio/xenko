@@ -22,7 +22,7 @@ namespace SiliconStudio.Core.Extensions
         {
             try
             {
-                return obj != null ? obj.ToString() : "(null)";
+                return obj?.ToString() ?? "(null)";
             }
             catch
             {
@@ -55,7 +55,7 @@ namespace SiliconStudio.Core.Extensions
                 return (IEnumerable<T>)obj;
 
             var enumerable = obj as IEnumerable;
-            return enumerable != null ? enumerable.Cast<T>() : Yield((T)obj);
+            return enumerable?.Cast<T>() ?? Yield((T)obj);
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace SiliconStudio.Core.Extensions
         /// <remarks>This method can be used to test for null argument when forwarding members of the object to the <c>base</c> or <c>this</c> constructor.</remarks>
         public static T SafeArgument<T>(this T obj, string argumentName) where T : class
         {
-            if (argumentName == null) throw new ArgumentNullException("argumentName");
+            if (argumentName == null) throw new ArgumentNullException(nameof(argumentName));
             if (obj == null) throw new ArgumentNullException(argumentName);
             return obj;
         }

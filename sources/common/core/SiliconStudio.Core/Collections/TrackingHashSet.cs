@@ -16,7 +16,7 @@ namespace SiliconStudio.Core.Collections
     /// <typeparam name="T">The type of elements in the hash set.</typeparam>
     public class TrackingHashSet<T> : ISet<T>, IReadOnlySet<T>, ITrackingCollectionChanged
     {
-        private HashSet<T> innerHashSet = new HashSet<T>();
+        private readonly HashSet<T> innerHashSet = new HashSet<T>();
 
         private EventHandler<TrackingCollectionChangedEventArgs> itemAdded;
         private EventHandler<TrackingCollectionChangedEventArgs> itemRemoved;
@@ -42,9 +42,7 @@ namespace SiliconStudio.Core.Collections
         {
             if (innerHashSet.Add(item))
             {
-                var collectionChanged = itemAdded;
-                if (collectionChanged != null)
-                    collectionChanged(this, new TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, null, -1, true));
+                itemAdded?.Invoke(this, new TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, null, -1, true));
                 return true;
             }
 
@@ -146,27 +144,19 @@ namespace SiliconStudio.Core.Collections
         }
 
         /// <inheritdoc/>
-        public int Count
-        {
-            get { return innerHashSet.Count; }
-        }
+        public int Count => innerHashSet.Count;
 
         /// <inheritdoc/>
-        public bool IsReadOnly
-        {
-            get { return ((ICollection<T>)innerHashSet).IsReadOnly; }
-        }
+        public bool IsReadOnly => ((ICollection<T>)innerHashSet).IsReadOnly;
 
         /// <inheritdoc/>
         public bool Remove(T item)
         {
-            var result = innerHashSet.Remove(item);
+            if (!innerHashSet.Remove(item))
+                return false;
 
-            var collectionChanged = itemRemoved;
-            if (collectionChanged != null && result)
-                collectionChanged(this, new TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, null, -1, true));
-
-            return result;
+            itemRemoved?.Invoke(this, new TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, null, -1, true));
+            return true;
         }
 
         /// <inheritdoc/>

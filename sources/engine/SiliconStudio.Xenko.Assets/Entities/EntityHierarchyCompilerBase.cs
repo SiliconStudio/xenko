@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
@@ -14,7 +16,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     {
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, T asset, AssetCompilerResult result)
         {
-            foreach (var entityData in asset.Hierarchy.Entities)
+            foreach (var entityData in asset.Hierarchy.Parts)
             {
                 // TODO: How to make this code pluggable?
                 var modelComponent = entityData.Entity.Components.Get<ModelComponent>();
@@ -67,9 +69,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 var assetManager = new ContentManager();
 
                 var prefab = Create(AssetParameters);
-                foreach (var rootEntity in AssetParameters.Hierarchy.RootEntities)
+                foreach (var rootEntity in AssetParameters.Hierarchy.RootPartIds)
                 {
-                    prefab.Entities.Add(AssetParameters.Hierarchy.Entities[rootEntity].Entity);
+                    prefab.Entities.Add(AssetParameters.Hierarchy.Parts[rootEntity].Entity);
                 }
                 assetManager.Save(Url, prefab);
 
