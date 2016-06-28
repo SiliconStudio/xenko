@@ -37,10 +37,6 @@ namespace SiliconStudio.Xenko.Assets
     {
     }
 
-    public class DefaultSoundFactory : DefaultAssetFactory<SoundAsset>
-    {
-    }
-
     public class DefaultTextureFactory : DefaultAssetFactory<TextureAsset>
     {
     }
