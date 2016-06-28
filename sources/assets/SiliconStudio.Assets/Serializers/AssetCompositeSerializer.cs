@@ -70,6 +70,8 @@ namespace SiliconStudio.Assets.Serializers
         public override object ReadYaml(ref ObjectContext objectContext)
         {
             var type = objectContext.Descriptor.Type;
+            var oldContext = localContext.Value;
+
             if (typeof(AssetComposite).IsAssignableFrom(type))
             {
                 // Entering the asset root node, create the local context.
@@ -98,7 +100,7 @@ namespace SiliconStudio.Assets.Serializers
                 if (typeof(AssetComposite).IsAssignableFrom(type))
                 {
                     // Exiting the asset root node, clear the local context.
-                    localContext.Value = null;
+                    localContext.Value = oldContext;
                 }
             }
         }
