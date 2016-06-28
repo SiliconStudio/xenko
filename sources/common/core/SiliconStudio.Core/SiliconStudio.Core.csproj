@@ -26,12 +26,6 @@
       </ItemGroup>
     </When>
   </Choose>
-  <ItemGroup>
-    <None Include="$(SiliconStudioDependenciesDir)Core.Native\$(SiliconStudioPlatform)\**\*.*">
-      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
   <Choose>
     <When Condition=" '$(SiliconStudioPlatform)' == 'Android' ">
       <ItemGroup>

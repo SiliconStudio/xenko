@@ -1,3 +1,35 @@
-LIBRARY libxenkonative.dll
+LIBRARY libxenko.dll
 EXPORTS
 UpdateBufferValuesFromElementInfo
+xnCeltCreate
+xnCeltDestroy
+xnCeltEncodeFloat
+xnCeltDecodeFloat
+xnCeltEncodeShort
+xnCeltDecodeShort
+xnAudioInit
+xnAudioCreate
+xnAudioDestroy
+xnAudioListenerCreate
+xnAudioListenerDestroy
+xnAudioListenerEnable
+xnAudioListenerDisable
+xnAudioSourceCreate
+xnAudioSourceDestroy
+xnAudioSourceSetPan
+xnAudioBufferCreate
+xnAudioBufferDestroy
+xnAudioBufferFill
+xnAudioSourceSetBuffer
+xnAudioSourceQueueBuffer
+xnAudioSourceGetFreeBuffer
+xnAudioSourcePlay
+xnAudioSourcePause
+xnAudioSourceStop
+xnAudioSourceSetLooping
+xnAudioSourceSetGain
+xnAudioSourceSetPitch
+xnAudioListenerPush3D
+xnAudioSourcePush3D
+xnAudioSourceIsPlaying
+xnSleep

@@ -426,37 +426,6 @@ namespace SiliconStudio.Xenko.Graphics
             Draw(texture, ref elementInfo);
         }
 
-        /// <summary>
-        /// Batch the draws required to display the provided text to the draw list.
-        /// </summary>
-        /// <param name="fontSize">The size to use when rendering the font in virtual pixels</param>
-        /// <param name="internalScales">The internal scales to apply on the font glyphs</param>
-        /// <param name="text">The text to draw on the screen</param>
-        /// <param name="worldMatrix">The world matrix of the element</param>
-        /// <param name="elementSize">The 2D size of the element to draw in virtual pixels</param>
-        /// <param name="color">The color of the text to draw</param>
-        /// <param name="alignment">The alignment of the text to draw</param>
-        /// <param name="depthBias">The depth bias of the ui element</param>
-        /// <param name="font">The fond to use to draw the text</param>
-        /// <param name="snapText">Indicate if the rendered string should be snapped to the closed pixel.</param>
-        public void DrawString(SpriteFont font, string text, float fontSize, ref Vector2 internalScales, ref Matrix worldMatrix, ref Vector2  elementSize, 
-                                ref Color color, TextAlignment alignment, int depthBias, bool snapText)
-        {
-            var drawCommand = new SpriteFont.InternalUIDrawCommand
-                {
-                    Matrix = worldMatrix, 
-                    Batch = this, 
-                    Color = color, 
-                    DepthBias = depthBias, 
-                    FontScale = internalScales,
-                    SnapText = snapText,
-                    Alignment = alignment,
-                    Size = elementSize,
-                };
-
-            DrawString(font, text, ref drawCommand);
-        }
-
         internal void DrawString(SpriteFont font, string text, ref SpriteFont.InternalUIDrawCommand drawCommand)
         {
             if (font == null)
@@ -468,11 +437,11 @@ namespace SiliconStudio.Xenko.Graphics
             var proxy = new SpriteFont.StringProxy(text);
 
             // shift the string position so that it is written from the left/top corner of the element
-            var offsets = drawCommand.Size / 2;
+            var leftTopCornerOffset = drawCommand.TextBoxSize / 2;
             var worldMatrix = drawCommand.Matrix;
-            worldMatrix.M41 -= worldMatrix.M11 * offsets.X + worldMatrix.M21 * offsets.Y;
-            worldMatrix.M42 -= worldMatrix.M12 * offsets.X + worldMatrix.M22 * offsets.Y;
-            worldMatrix.M43 -= worldMatrix.M13 * offsets.X + worldMatrix.M23 * offsets.Y;
+            worldMatrix.M41 -= worldMatrix.M11 * leftTopCornerOffset.X + worldMatrix.M21 * leftTopCornerOffset.Y;
+            worldMatrix.M42 -= worldMatrix.M12 * leftTopCornerOffset.X + worldMatrix.M22 * leftTopCornerOffset.Y;
+            worldMatrix.M43 -= worldMatrix.M13 * leftTopCornerOffset.X + worldMatrix.M23 * leftTopCornerOffset.Y;
 
             // transform the world matrix into the world view project matrix
             Matrix.MultiplyTo(ref worldMatrix, ref viewProjectionMatrix, out drawCommand.Matrix);
@@ -481,15 +450,15 @@ namespace SiliconStudio.Xenko.Graphics
             if (font.FontType == SpriteFontType.SDF)
             {
                 drawCommand.SnapText = false;
-
-                float scaling = drawCommand.FontSize/font.Size;
-                drawCommand.FontScale = 1f / new Vector2(scaling, scaling);
+                float scaling = drawCommand.RequestedFontSize / font.Size;
+                drawCommand.RealVirtualResolutionRatio = 1 / new Vector2(scaling, scaling);
             }
-            else
-            if ((font.FontType != SpriteFontType.Dynamic) && (drawCommand.FontScale.X != 1 || drawCommand.FontScale.Y != 1)) 
+            else if ((font.FontType == SpriteFontType.Static)) 
             {
-                drawCommand.SnapText = false;   // we don't want snapping of the resolution of the screen does not match virtual resolution. (character alignment problems)
-                drawCommand.FontScale = Vector2.One; // ensure that static font are not scaled internally
+                if ((drawCommand.RealVirtualResolutionRatio.X != 1 || drawCommand.RealVirtualResolutionRatio.Y != 1))
+                    drawCommand.SnapText = false;   // we don't want snapping of the resolution of the screen does not match virtual resolution. (character alignment problems)
+
+                drawCommand.RealVirtualResolutionRatio = Vector2.One; // ensure that static font are not scaled internally
             }
 
             // snap draw start position to prevent characters to be drawn in between two pixels

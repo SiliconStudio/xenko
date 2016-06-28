@@ -286,6 +286,34 @@ namespace SiliconStudio.Xenko.Assets
                 }
             }
 
+            //Audio refactor
+            if (dependency.Version.MinVersion < new PackageVersion("1.7.0-alpha03"))
+            {
+                var audioAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xksnd").Select(x => x.AsYamlAsset()).ToArray();
+                foreach (var assetFile in audioAssets)
+                {
+                    //dispose will save back
+                    using (var assetYaml = assetFile)
+                    {
+                        if (assetYaml == null)
+                            continue;
+
+                        if (assetYaml.RootNode.Tag == "!SoundMusic")
+                        {
+                            assetYaml.RootNode.Tag = "!Sound";
+                            assetYaml.DynamicRootNode.Spatialized = false;
+                            assetYaml.DynamicRootNode.StreamFromDisk = true;  
+                        }
+                        else
+                        {
+                            assetYaml.RootNode.Tag = "!Sound";
+                            assetYaml.DynamicRootNode.Spatialized = true;
+                            assetYaml.DynamicRootNode.StreamFromDisk = false;
+                        }
+                    }
+                }
+            }
+
             if (dependency.Version.MinVersion < new PackageVersion("1.7.0-alpha03"))
             {
                 // Delete EffectLogAsset (now, most of it is auto generated automatically by drawing one frame of the game)

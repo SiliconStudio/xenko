@@ -124,6 +124,10 @@
       <Name>SiliconStudio.TextureConverter</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Audio\SiliconStudio.Xenko.Audio.csproj">
+      <Project>{DE042125-C270-4D1D-9270-0759C167567A}</Project>
+      <Name>SiliconStudio.Xenko.Audio</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj">
       <Project>{C121A566-555E-42B9-9B0A-1696529A9088}</Project>
       <Name>SiliconStudio.Xenko.Engine</Name>
@@ -133,6 +137,10 @@
       <Project>{42780CBD-3FE7-48E3-BD5B-59945EA20137}</Project>
       <Name>SiliconStudio.Xenko.Games</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj">
+      <Project>{1dbbc150-f085-43ef-b41d-27c72d133770}</Project>
+      <Name>SiliconStudio.Xenko.Native</Name>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Physics\SiliconStudio.Xenko.Physics.csproj">
       <Project>{dd592516-b341-40fe-9100-1b0fa784a060}</Project>
@@ -197,10 +205,9 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AssetCompilerContextExtensions.cs" />
-    <Compile Include="Audio\SoundEffectAsset.cs" />
+    <Compile Include="Audio\SoundFactories.cs" />
     <Compile Include="Audio\RawSoundAssetImporter.cs" />
     <Compile Include="Audio\SoundAsset.cs" />
-    <Compile Include="Audio\RawMusicAssetImporter.cs" />
     <Compile Include="Effect\CompileDefaultSceneEffectCommand.cs" />
     <Compile Include="Debugging\AssemblyReloader.cs" />
     <Compile Include="DefaultFactories.cs" />
@@ -250,6 +257,7 @@
     <Compile Include="SpriteFont\FontProviderBase.cs" />
     <Compile Include="SpriteFont\PrecompiledSpriteFontAsset.cs" />
     <Compile Include="SpriteFont\PrecompiledSpriteFontAssetCompiler.cs" />
+    <Compile Include="SpriteFont\SpriteFontAsset.Upgrader.cs" />
     <Compile Include="SpriteFont\SpriteFontAssetExtensions.cs" />
     <Compile Include="SpriteFont\SpriteFontAssetFactories.cs" />
     <Compile Include="SpriteFont\SpriteFontTypeBase.cs" />
@@ -271,7 +279,6 @@
     <Compile Include="Sprite\SpriteInfo.cs" />
     <Compile Include="Materials\MaterialAsset.cs" />
     <Compile Include="Materials\MaterialAssetCompiler.cs" />
-    <Compile Include="Audio\SoundMusicAsset.cs" />
     <Compile Include="Audio\SoundAssetCompiler.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="XenkoConfig.cs" />
@@ -334,6 +341,11 @@
   <ItemGroup>
     <Analyzer Include="..\..\..\build\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\..\..\build\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\deps\FFmpeg\ffmpeg.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

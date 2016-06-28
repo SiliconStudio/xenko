@@ -9,8 +9,8 @@ namespace SiliconStudio.Xenko.Audio.Tests
 {
     public class PauseResumeTest : AudioTestGame
     {
-        private SoundMusic music;
-        private SoundEffect effect;
+        private SoundInstance music;
+        private SoundInstance effect;
         
         public PauseResumeTest()
         {
@@ -21,8 +21,8 @@ namespace SiliconStudio.Xenko.Audio.Tests
         {
             await base.LoadContent();
 
-            music = Content.Load<SoundMusic>("MusicFishLampMp3");
-            effect = Content.Load<SoundEffect>("EffectBip");
+            music = Content.Load<Sound>("MusicFishLampMp3").CreateInstance(Audio.AudioEngine.DefaultListener);
+            effect = Content.Load<Sound>("EffectBip").CreateInstance(Audio.AudioEngine.DefaultListener);
             music.IsLooped = true;
             effect.IsLooped = true;
             music.Play();

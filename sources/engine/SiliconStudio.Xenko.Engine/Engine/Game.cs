@@ -326,8 +326,6 @@ namespace SiliconStudio.Xenko.Engine
 
             // TODO: data-driven?
             Content.Serializer.RegisterSerializer(new ImageSerializer());
-            Content.Serializer.RegisterSerializer(new SoundEffectSerializer(Audio.AudioEngine));
-            Content.Serializer.RegisterSerializer(new SoundMusicSerializer(Audio.AudioEngine));
 
             // enable multi-touch by default
             Input.MultiTouchEnabled = true;

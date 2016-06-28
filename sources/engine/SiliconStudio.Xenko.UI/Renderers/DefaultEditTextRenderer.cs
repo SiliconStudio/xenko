@@ -3,6 +3,7 @@
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Font;
 using SiliconStudio.Xenko.UI.Controls;
 using IServiceRegistry = SiliconStudio.Core.IServiceRegistry;
 using Vector3 = SiliconStudio.Core.Mathematics.Vector3;
@@ -57,11 +58,21 @@ namespace SiliconStudio.Xenko.UI.Renderers
                 var fontSize = new Vector2(fontScale.Y * editText.TextSize);
                 offsetTextStart = font.MeasureString(editText.TextToDisplay, ref fontSize, editText.SelectionStart).X;
                 selectionSize = font.MeasureString(editText.TextToDisplay, ref fontSize, editText.SelectionStart + editText.SelectionLength).X - offsetTextStart;
+                var lineSpacing = font.GetTotalLineSpacing(editText.TextSize);
                 if (font.FontType == SpriteFontType.Dynamic)
                 {
                     offsetTextStart /= fontScale.X;
                     selectionSize /= fontScale.X;
                 }
+
+                var scaleRatio = editText.TextSize / font.Size;
+                if (font.FontType == SpriteFontType.SDF)
+                {
+                    offsetTextStart *= scaleRatio;
+                    selectionSize   *= scaleRatio;
+                    lineSpacing *= editText.TextSize / font.Size;
+                }
+
 
                 offsetAlignment = -textRegionSize.X / 2f;
                 if (editText.TextAlignment != TextAlignment.Left)
@@ -69,13 +80,15 @@ namespace SiliconStudio.Xenko.UI.Renderers
                     var textWidth = font.MeasureString(editText.TextToDisplay, ref fontSize).X;
                     if (font.FontType == SpriteFontType.Dynamic)
                         textWidth /= fontScale.X;
+                    if (font.FontType == SpriteFontType.SDF)
+                        textWidth *= scaleRatio;
 
                     offsetAlignment = editText.TextAlignment == TextAlignment.Center ? -textWidth / 2 : -textRegionSize.X / 2f + (textRegionSize.X - textWidth);
                 }
 
                 var selectionWorldMatrix = element.WorldMatrixInternal;
                 selectionWorldMatrix.M41 += offsetTextStart + selectionSize / 2 + offsetAlignment;
-                var selectionScaleVector = new Vector3(selectionSize, editText.LineCount * editText.Font.GetTotalLineSpacing(editText.TextSize), 0);
+                var selectionScaleVector = new Vector3(selectionSize, editText.LineCount * lineSpacing, 0);
                 Batch.DrawRectangle(ref selectionWorldMatrix, ref selectionScaleVector, ref selectionColor, context.DepthBias + 1);
             }
 
@@ -84,19 +97,18 @@ namespace SiliconStudio.Xenko.UI.Renderers
             {
                 Color = editText.RenderOpacity * editText.TextColor,
                 DepthBias = context.DepthBias + 2,
-                FontScale = fontScale,
-                FontSize = editText.TextSize,
+                RealVirtualResolutionRatio = fontScale,
+                RequestedFontSize = editText.TextSize,
                 Batch = Batch,
                 SnapText = context.ShouldSnapText && !editText.DoNotSnapText,
                 Matrix = editText.WorldMatrixInternal,
                 Alignment = editText.TextAlignment,
-                Size = textRegionSize
+                TextBoxSize = textRegionSize
             };
 
             if (editText.Font.FontType == SpriteFontType.SDF)
             {
                 Batch.End();
-
                 Batch.BeginCustom(context.GraphicsContext, 1);
             }
 
@@ -106,17 +118,20 @@ namespace SiliconStudio.Xenko.UI.Renderers
             if (editText.Font.FontType == SpriteFontType.SDF)
             {
                 Batch.End();
-
                 Batch.BeginCustom(context.GraphicsContext, 0);
             }
 
             // Draw the cursor
             if (editText.IsCaretVisible)
             {
+                var lineSpacing = editText.Font.GetTotalLineSpacing(editText.TextSize);
+                if (editText.Font.FontType == SpriteFontType.SDF)
+                    lineSpacing *= editText.TextSize / font.Size;
+
                 var sizeCaret = editText.CaretWidth / fontScale.X;
                 var caretWorldMatrix = element.WorldMatrixInternal;
                 caretWorldMatrix.M41 += offsetTextStart + offsetAlignment + (editText.CaretPosition > editText.SelectionStart? selectionSize: 0);
-                var caretScaleVector = new Vector3(sizeCaret, editText.LineCount * editText.Font.GetTotalLineSpacing(editText.TextSize), 0);
+                var caretScaleVector = new Vector3(sizeCaret, editText.LineCount * lineSpacing, 0);
                 Batch.DrawRectangle(ref caretWorldMatrix, ref caretScaleVector, ref caretColor, context.DepthBias + 3);
             }
         }

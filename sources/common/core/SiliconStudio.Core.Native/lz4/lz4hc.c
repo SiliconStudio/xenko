@@ -121,9 +121,10 @@
 //**************************************
 // Includes
 //**************************************
-#include <stdlib.h>   // calloc, free
-#include <string.h>   // memset, memcpy
+#include "../../../../../deps/NativePath/standard/stdlib.h"
+#include "../../../../../deps/NativePath/standard/string.h"
 #include "lz4hc.h"
+#include "lz4.h"
 
 #define ALLOCATOR(s) calloc(1,s)
 #define FREEMEM free
@@ -133,22 +134,13 @@
 //**************************************
 // Basic Types
 //**************************************
-#if defined(_MSC_VER)    // Visual Studio does not support 'stdint' natively
-#define BYTE	unsigned __int8
-#define U16		unsigned __int16
-#define U32		unsigned __int32
-#define S32		__int32
-#define U64		unsigned __int64
-#define S64       __int64
-#else
-#include <stdint.h>
+#include "../../../../../deps/NativePath/standard/stdint.h"
 #define BYTE	uint8_t
 #define U16		uint16_t
 #define U32		uint32_t
 #define S32		int32_t
 #define U64		uint64_t
 #define S64       int64_t
-#endif
 
 #ifndef LZ4_FORCE_UNALIGNED_ACCESS
 #pragma pack(push, 1) 
@@ -742,7 +734,7 @@ _Search3:
 }
 
 
-CORE_EXPORT( int ) LZ4_compressHC_limitedOutput(const char* source, 
+int LZ4_compressHC_limitedOutput(const char* source, 
 				 char* dest,
 				 int inputSize,
 				 int maxOutputSize)
@@ -755,10 +747,10 @@ CORE_EXPORT( int ) LZ4_compressHC_limitedOutput(const char* source,
 }
 
 
-CORE_EXPORT( int ) LZ4_compressHC(const char* source, 
+int LZ4_compressHC(const char* source, 
 				 char* dest,
 				 int inputSize)
 {
-	return LZ4_compressHC_limitedOutput(source, dest, inputSize, LZ4_compressBound(inputSize)+1);
+	return LZ4_compressHC_limitedOutput(source, dest, inputSize, LZ4_COMPRESSBOUND(inputSize)+1);
 }
 

@@ -97,7 +97,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
             return FontManager.DoesFontContains(FontName, Style, c);
         }
 
-        protected override Glyph GetGlyph(CommandList commandList, char character, ref Vector2 fontSize, bool uploadGpuResources)
+        protected override Glyph GetGlyph(CommandList commandList, char character, ref Vector2 fontSize, bool uploadGpuResources, out Vector2 fixScaling)
         {
             // Add a safe guard to prevent the system to generate characters too big for the dynamic font cache texture
             fontSize.X = Math.Min(fontSize.X, 1024);
@@ -116,6 +116,8 @@ namespace SiliconStudio.Xenko.Graphics.Font
 
             // update the character usage info
             FontCacheManager.NotifyCharacterUtilization(characterData);
+
+            fixScaling = fontSize / characterData.Size;
 
             return characterData.Glyph;
         }
@@ -145,6 +147,7 @@ namespace SiliconStudio.Xenko.Graphics.Font
                 characterData = new CharacterSpecification(character, FontName, size, Style, AntiAlias);
                 sizedCharacterToCharacterData[lookUpKey] = characterData;
             }
+
             return characterData;
         }
 
@@ -152,17 +155,19 @@ namespace SiliconStudio.Xenko.Graphics.Font
         {
             private readonly char character;
 
-            private readonly Vector2 size;
+            private readonly int sizeX;
+            private readonly int sizeY;
 
             public CharacterKey(char character, Vector2 size)
             {
                 this.character = character;
-                this.size = size;
+                this.sizeX = (int)size.X;
+                this.sizeY = (int)size.Y;
             }
 
             public bool Equals(CharacterKey other)
             {
-                return character == other.character && size == other.size;
+                return (character == other.character) && (sizeX == other.sizeX) && (sizeY == other.sizeY);
             }
 
             public override bool Equals(object obj)

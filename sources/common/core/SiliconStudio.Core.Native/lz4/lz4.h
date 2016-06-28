@@ -33,12 +33,9 @@
 */
 #pragma once
 
-#include "../coreconfig.h"
-
 #ifdef LZ4_FUNC
 	#define LZ4_compress LZ4_FUNC(LZ4_compress)
 	#define LZ4_uncompress LZ4_FUNC(LZ4_uncompress)
-	#define LZ4_compressBound LZ4_FUNC(LZ4_compressBound)
 	#define LZ4_compress_limitedOutput LZ4_FUNC(LZ4_compress_limitedOutput)
 	#define LZ4_uncompress_unknownOutputSize LZ4_FUNC(LZ4_uncompress_unknownOutputSize)
 #endif
@@ -58,8 +55,8 @@ extern "C" {
 // Simple Functions
 //****************************
 
-CORE_EXPORT( int ) LZ4_compress   (const char* source, char* dest, int inputSize);
-CORE_EXPORT( int ) LZ4_uncompress (const char* source, char* dest, int outputSize);
+int LZ4_compress(const char* source, char* dest, int inputSize);
+int LZ4_uncompress(const char* source, char* dest, int outputSize);
 
 /*
 LZ4_compress() :
@@ -84,8 +81,8 @@ LZ4_uncompress() :
 // Advanced Functions
 //****************************
 
-static inline int LZ4_compressBound(int isize) { return ((isize) + ((isize)/255) + 16); }
-#define LZ4_COMPRESSBOUND(isize)                        ((isize) + ((isize)/255) + 16)
+//inline int LZ4_compressBound(int isize) { return ((isize) + ((isize)/255) + 16); }
+#define LZ4_COMPRESSBOUND(isize) ((isize) + ((isize)/255) + 16)
 
 /*
 LZ4_compressBound() :
@@ -100,7 +97,7 @@ LZ4_compressBound() :
 */
 
 
-CORE_EXPORT( int ) LZ4_compress_limitedOutput   (const char* source, char* dest, int isize, int maxOutputSize);
+int LZ4_compress_limitedOutput(const char* source, char* dest, int isize, int maxOutputSize);
 
 /*
 LZ4_compress_limitedOutput() :
@@ -115,7 +112,7 @@ LZ4_compress_limitedOutput() :
 */
 
 
-CORE_EXPORT( int ) LZ4_uncompress_unknownOutputSize (const char* source, char* dest, int isize, int maxOutputSize);
+int LZ4_uncompress_unknownOutputSize(const char* source, char* dest, int isize, int maxOutputSize);
 
 /*
 LZ4_uncompress_unknownOutputSize() :

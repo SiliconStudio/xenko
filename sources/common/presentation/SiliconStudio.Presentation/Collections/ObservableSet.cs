@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace SiliconStudio.Presentation.Collections
 {
-    public class ObservableSet<T> : IList<T>, IObservableCollection<T>, IReadOnlyObservableCollection<T>
+    public class ObservableSet<T> : IObservableList<T>, IReadOnlyObservableList<T>
     {
         private readonly HashSet<T> hashSet;
         private readonly List<T> list;

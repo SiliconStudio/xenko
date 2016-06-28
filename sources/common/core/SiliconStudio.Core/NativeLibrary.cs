@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
@@ -80,7 +80,7 @@ namespace SiliconStudio.Core
                 if (result == IntPtr.Zero)
                 {
                     //give a further try by using xenko env dir.. this is specially necessary when dealing with nunit tests
-                    libraryFilename = Path.Combine(Environment.GetEnvironmentVariable("SiliconStudioXenkoDir"), "Bin\\Windows-Direct3D11\\" + cpu, libraryName);
+                    libraryFilename = Path.Combine(Environment.GetEnvironmentVariable("SiliconStudioXenkoDir") + "\\Bin\\Windows-Direct3D11\\" + cpu, libraryName);
                     result = LoadLibrary(libraryFilename);
                 }
 
