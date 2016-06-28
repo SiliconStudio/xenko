@@ -316,7 +316,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     }
 
                     // find the maximum texture size supported
-                    var maximumSize = TextureHelper.FindBestTextureSize(new TextureHelper.ImportParameters(AssetParameters), new Size2(int.MaxValue/2, int.MaxValue/2));
+                    var maximumSize = TextureHelper.FindMaximumTextureSize(new TextureHelper.ImportParameters(AssetParameters), new Size2(int.MaxValue/2, int.MaxValue/2));
 
                     // Initialize packing configuration from GroupAsset
                     var texturePacker = new TexturePacker

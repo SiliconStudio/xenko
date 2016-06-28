@@ -1191,7 +1191,7 @@ namespace SiliconStudio.Xenko.Graphics
             var slicePitch = ComputeSlicePitch(mipLevel);
             var depth = CalculateMipSize(Description.Depth, mipLevel);
 
-            return (slicePitch*depth + TextureSubresourceAlignment - 1) / TextureSubresourceAlignment * TextureSubresourceAlignment;
+            return (slicePitch * depth + TextureSubresourceAlignment - 1) / TextureSubresourceAlignment * TextureSubresourceAlignment;
         }
 
         internal int ComputeBufferOffset(int subresource, int depthSlice)

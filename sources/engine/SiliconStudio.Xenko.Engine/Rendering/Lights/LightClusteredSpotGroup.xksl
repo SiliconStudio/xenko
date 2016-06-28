@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             streams.lightIndex++;
 
             // Build SpotLightData
-            SpotLightData spotLight;
+            SpotLightDataInternal spotLight;
             float4 spotLight1 = SpotLights.Load(realLightIndex * 4);
             float4 spotLight2 = SpotLights.Load(realLightIndex * 4 + 1);
             float4 spotLight3 = SpotLights.Load(realLightIndex * 4 + 2);

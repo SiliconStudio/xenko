@@ -904,6 +904,20 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
+        protected override void Destroy()
+        {
+            foreach (var effect in InstantiatedEffects)
+            {
+                var effectReflection = effect.Value;
+                effectReflection.RootSignature.Dispose();
+                effectReflection.PerDrawLayout?.DescriptorSetLayout.Dispose();
+                effectReflection.PerViewLayout?.DescriptorSetLayout.Dispose();
+                effectReflection.PerFrameLayout?.DescriptorSetLayout.Dispose();
+            }
+
+            base.Destroy();
+        }
+
         struct NamedSlotDefinition
         {
             public readonly string Variable;
