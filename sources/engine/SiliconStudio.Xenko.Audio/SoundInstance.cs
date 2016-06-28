@@ -150,7 +150,7 @@ namespace SiliconStudio.Xenko.Audio
         }
 
         /// <summary>
-        /// Sets the pitch of the sound, might conflict with spatialized sound spatialization.
+        /// Gets or sets the pitch of the sound, might conflict with spatialized sound spatialization.
         /// </summary>
         public float Pitch
         {
