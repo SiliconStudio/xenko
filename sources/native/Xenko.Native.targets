@@ -72,25 +72,25 @@
   
   <!-- The following condition $(SiliconStudioPackageBuild) should be removed but for now it prevents teamcity package build -->
   <Target Name="CompileNativeClang_Windows_Clean" Condition="'$(SiliconStudioPlatform)' == 'Windows' and '$(SiliconStudioPackageBuild)' != 'true' and '$(XenkoGraphicsApi)' != 'OpenGL'" BeforeTargets="Clean">
-    <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\WindowsDesktop\WindowsDesktop.sln" Targets="Clean" Properties="Configuration=$(Configuration);Platform=x86" />    
-    <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\WindowsDesktop\WindowsDesktop.sln" Targets="Clean" Properties="Configuration=$(Configuration);Platform=x64" />
+    <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\WindowsDesktop\WindowsDesktop.sln" Targets="Clean" Properties="XenkoNativeOutputName=$(XenkoNativeOutputName);XenkoNativeOutputDir=$(SiliconStudioXenkoSdkBinDir);XenkoDependenciesDir=$(XenkoDependenciesDir);XenkoNativePathLibs=libNativePath.lib $(XenkoNativePathLibs);XenkoNativeProjectFolder=$(ProjectDir);Configuration=$(Configuration);Platform=x86" />    
+    <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\WindowsDesktop\WindowsDesktop.sln" Targets="Clean" Properties="XenkoNativeOutputName=$(XenkoNativeOutputName);XenkoNativeOutputDir=$(SiliconStudioXenkoSdkBinDir);XenkoDependenciesDir=$(XenkoDependenciesDir);XenkoNativePathLibs=libNativePath.lib $(XenkoNativePathLibs);XenkoNativeProjectFolder=$(ProjectDir);Configuration=$(Configuration);Platform=x64" />
   </Target>
 
   <Target Name="CompileNativeClang_Windows10_Clean" Condition="'$(SiliconStudioPlatform)' == 'Windows10'" BeforeTargets="Clean">
-    <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\Windows10\Windows10.sln" Targets="Clean" Properties="Configuration=$(Configuration);Platform=x86" />
-    <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\Windows10\Windows10.sln" Targets="Clean" Properties="Configuration=$(Configuration);Platform=x64" />
-    <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\Windows10\Windows10.sln" Targets="Clean" Properties="Configuration=$(Configuration);Platform=ARM" />
+    <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\Windows10\Windows10.sln" Targets="Clean" Properties="XenkoNativeOutputName=$(XenkoNativeOutputName);XenkoNativeOutputDir=$(SiliconStudioXenkoSdkBinDir);XenkoDependenciesDir=$(XenkoDependenciesDir);XenkoNativePathLibs=libNativePath.lib $(XenkoNativePathLibs);XenkoNativeProjectFolder=$(ProjectDir);Configuration=$(Configuration);Platform=x86" />
+    <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\Windows10\Windows10.sln" Targets="Clean" Properties="XenkoNativeOutputName=$(XenkoNativeOutputName);XenkoNativeOutputDir=$(SiliconStudioXenkoSdkBinDir);XenkoDependenciesDir=$(XenkoDependenciesDir);XenkoNativePathLibs=libNativePath.lib $(XenkoNativePathLibs);XenkoNativeProjectFolder=$(ProjectDir);Configuration=$(Configuration);Platform=x64" />
+    <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\Windows10\Windows10.sln" Targets="Clean" Properties="XenkoNativeOutputName=$(XenkoNativeOutputName);XenkoNativeOutputDir=$(SiliconStudioXenkoSdkBinDir);XenkoDependenciesDir=$(XenkoDependenciesDir);XenkoNativePathLibs=libNativePath.lib $(XenkoNativePathLibs);XenkoNativeProjectFolder=$(ProjectDir);Configuration=$(Configuration);Platform=ARM" />
   </Target>
 
   <Target Name="CompileNativeClang_WindowsStore_Clean" Condition="'$(SiliconStudioPlatform)' == 'WindowsStore'" BeforeTargets="Clean">
-    <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\WindowsStore\WindowsStore.sln" Targets="Clean" Properties="Configuration=$(Configuration);Platform=x86" />
-    <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\WindowsStore\WindowsStore.sln" Targets="Clean" Properties="Configuration=$(Configuration);Platform=x64" />
-    <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\WindowsStore\WindowsStore.sln" Targets="Clean" Properties="Configuration=$(Configuration);Platform=ARM" />
+    <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\WindowsStore\WindowsStore.sln" Targets="Clean" Properties="XenkoNativeOutputName=$(XenkoNativeOutputName);XenkoNativeOutputDir=$(SiliconStudioXenkoSdkBinDir);XenkoDependenciesDir=$(XenkoDependenciesDir);XenkoNativePathLibs=libNativePath.lib $(XenkoNativePathLibs);XenkoNativeProjectFolder=$(ProjectDir);Configuration=$(Configuration);Platform=x86" />
+    <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\WindowsStore\WindowsStore.sln" Targets="Clean" Properties="XenkoNativeOutputName=$(XenkoNativeOutputName);XenkoNativeOutputDir=$(SiliconStudioXenkoSdkBinDir);XenkoDependenciesDir=$(XenkoDependenciesDir);XenkoNativePathLibs=libNativePath.lib $(XenkoNativePathLibs);XenkoNativeProjectFolder=$(ProjectDir);Configuration=$(Configuration);Platform=x64" />
+    <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\WindowsStore\WindowsStore.sln" Targets="Clean" Properties="XenkoNativeOutputName=$(XenkoNativeOutputName);XenkoNativeOutputDir=$(SiliconStudioXenkoSdkBinDir);XenkoDependenciesDir=$(XenkoDependenciesDir);XenkoNativePathLibs=libNativePath.lib $(XenkoNativePathLibs);XenkoNativeProjectFolder=$(ProjectDir);Configuration=$(Configuration);Platform=ARM" />
   </Target>
 
   <Target Name="CompileNativeClang_WindowsPhone_Clean" Condition="'$(SiliconStudioPlatform)' == 'WindowsPhone'" BeforeTargets="Clean">
-    <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\WindowsPhone\WindowsPhone.sln" Targets="Clean" Properties="Configuration=$(Configuration);Platform=x86" />
-    <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\WindowsPhone\WindowsPhone.sln" Targets="Clean" Properties="Configuration=$(Configuration);Platform=ARM" />
+    <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\WindowsPhone\WindowsPhone.sln" Targets="Clean" Properties="XenkoNativeOutputName=$(XenkoNativeOutputName);XenkoNativeOutputDir=$(SiliconStudioXenkoSdkBinDir);XenkoDependenciesDir=$(XenkoDependenciesDir);XenkoNativePathLibs=libNativePath.lib $(XenkoNativePathLibs);XenkoNativeProjectFolder=$(ProjectDir);Configuration=$(Configuration);Platform=x86" />
+    <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\WindowsPhone\WindowsPhone.sln" Targets="Clean" Properties="XenkoNativeOutputName=$(XenkoNativeOutputName);XenkoNativeOutputDir=$(SiliconStudioXenkoSdkBinDir);XenkoDependenciesDir=$(XenkoDependenciesDir);XenkoNativePathLibs=libNativePath.lib $(XenkoNativePathLibs);XenkoNativeProjectFolder=$(ProjectDir);Configuration=$(Configuration);Platform=ARM" />
   </Target>
   
   <Target Name="CompileNativeClang_iOS" Inputs="@(XenkoNativeCFiles);@(XenkoNativeHFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\$(XenkoNativeOutputName).a" Condition="'$(SiliconStudioPlatform)' == 'iOS'" BeforeTargets="Build">
