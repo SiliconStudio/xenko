@@ -423,6 +423,9 @@ namespace SiliconStudio.Xenko.Input
             {
                 uiElement.Loaded += uiElement_Loaded;
                 uiElement.Unloaded += uiElement_Unloaded;
+
+                uiElement_Loaded(uiElement, null); //todo verify, this fixes WIN10 issues but it's not so clear
+                //uiElement_Loaded never triggers because uiElement is already loaded but there is no way to check that unless by event...
             }
             else
             {
