@@ -494,6 +494,9 @@ namespace SiliconStudio.Shaders.Convertor
             // Add std140 layout
             ApplyStd140Layout();
 
+            // Sort qualifiers in the order GLSL expects them
+            ReorderVariableQualifiers();
+
             if (shaderPlatform == GlslShaderPlatform.OpenGLES && shaderVersion < 300)
                 FixupVaryingES2();
         }
@@ -4498,6 +4501,14 @@ namespace SiliconStudio.Shaders.Convertor
             return expression;
         }
 
+        private void ReorderVariableQualifiers()
+        {
+            foreach (var variable in shader.Declarations.OfType<Variable>())
+            {
+                variable.Qualifiers.Values.Sort(QualifierComparer.Default);
+            }
+        }
+
         private void ApplyStd140Layout()
         {
             foreach (var constantBuffer in shader.Declarations.OfType<ConstantBuffer>())
@@ -4586,6 +4597,22 @@ namespace SiliconStudio.Shaders.Convertor
             public Ast.Glsl.LayoutQualifier Qualifier;
 
             #endregion
+        }
+
+        /// <summary>
+        /// Sort qualifiers: layout(xx) first, then others (out, int, etc...)
+        /// </summary>
+        class QualifierComparer : IComparer<CompositeEnum>
+        {
+            public static readonly QualifierComparer Default = new QualifierComparer();
+
+            public int Compare(CompositeEnum x, CompositeEnum y)
+            {
+                int xOrder = x is LayoutQualifier ? 0 : 1;
+                int yOrder = y is LayoutQualifier ? 0 : 1;
+
+                return xOrder.CompareTo(yOrder);
+            }
         }
     }
 }

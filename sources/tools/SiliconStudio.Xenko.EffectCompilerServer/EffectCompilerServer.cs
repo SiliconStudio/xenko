@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Xenko.Assets.Effect;
 using SiliconStudio.Xenko.ConnectionRouter;
@@ -110,7 +111,13 @@ namespace SiliconStudio.Xenko.EffectCompilerServer
             var precompiledEffectShaderPass = await effectCompiler.Compile(remoteEffectCompilerEffectRequest.MixinTree, remoteEffectCompilerEffectRequest.EffectParameters, null).AwaitResult();
 
             // Send compiled shader
-            await socketMessageLayer.Send(new RemoteEffectCompilerEffectAnswer { StreamId = remoteEffectCompilerEffectRequest.StreamId, EffectBytecode = precompiledEffectShaderPass.Bytecode });
+            await socketMessageLayer.Send(new RemoteEffectCompilerEffectAnswer
+            {
+                StreamId = remoteEffectCompilerEffectRequest.StreamId,
+                LogMessages = precompiledEffectShaderPass.CompilationLog.Messages.Select(x => new SerializableLogMessage((LogMessage)x)).ToList(),
+                LogHasErrors = precompiledEffectShaderPass.CompilationLog.HasErrors,
+                EffectBytecode = precompiledEffectShaderPass.Bytecode,
+            });
         }
     }
 }
