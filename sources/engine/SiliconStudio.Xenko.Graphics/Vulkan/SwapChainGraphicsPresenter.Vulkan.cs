@@ -409,7 +409,7 @@ namespace SiliconStudio.Xenko.Graphics
                 throw new NotSupportedException("Non SDL Window used in SDL setup.");
             }
 
-            if (GraphicsAdapterFactory.HasXlibSurfaceSupport)
+            if (GraphicsAdapterFactory.GetInstance(GraphicsDevice.IsDebugMode).HasXlibSurfaceSupport)
             {
                 var createInfo = new XlibSurfaceCreateInfo
                 {
@@ -417,7 +417,7 @@ namespace SiliconStudio.Xenko.Graphics
                     Window = checked((uint)control.Handle), // On Linux, a Window identifier is 32-bit
                     Dpy = control.Display,
                 };
-                surface = GraphicsAdapterFactory.Instance.CreateXlibSurface(ref createInfo);
+                surface =GraphicsDevice.NativeInstance.CreateXlibSurface(ref createInfo);
             }
             else
             {
@@ -427,7 +427,7 @@ namespace SiliconStudio.Xenko.Graphics
                     Window = checked((uint)control.Handle), // On Linux, a Window identifier is 32-bit
                     Connection = control.XcbConnection,
                 };
-                surface = GraphicsAdapterFactory.Instance.CreateXcbSurface(ref createInfo);
+                surface = GraphicsDevice.NativeInstance.CreateXcbSurface(ref createInfo);
             }
 #else
             throw new NotSupportedException("Only SDL is supported for the time being on Linux");
