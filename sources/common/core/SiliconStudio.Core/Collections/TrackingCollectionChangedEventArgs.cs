@@ -7,7 +7,7 @@ namespace SiliconStudio.Core.Collections
 {
     public class TrackingCollectionChangedEventArgs : EventArgs
     {
-        public TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction action, object item, object oldItem, int index = -1, bool collectionChanged = false)
+        public TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction action, object item, object oldItem, int index, bool collectionChanged)
         {
             Action = action;
             Item = item;
@@ -16,7 +16,7 @@ namespace SiliconStudio.Core.Collections
             CollectionChanged = collectionChanged;
         }
 
-        public TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction action, object key, object item, object oldItem, bool collectionChanged = false)
+        public TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction action, object key, object item, object oldItem, bool collectionChanged)
         {
             Action = action;
             Item = item;

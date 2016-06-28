@@ -151,5 +151,23 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 }
             }
         }
+
+        protected sealed class EntityDesignUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                asset.Hierarchy.RootPartIds = asset.Hierarchy.RootEntities;
+                asset.Hierarchy.Parts = asset.Hierarchy.Entities;
+                asset.Hierarchy.RootEntities = DynamicYamlEmpty.Default;
+                asset.Hierarchy.Entities = DynamicYamlEmpty.Default;
+                foreach (var entityDesign in asset.Hierarchy.Parts)
+                {
+                    entityDesign.Folder = entityDesign.Design.Folder;
+                    entityDesign.BaseId = entityDesign.Design.BaseId;
+                    entityDesign.BasePartInstanceId = entityDesign.Design.BasePartInstanceId;
+                    entityDesign.Design = DynamicYamlEmpty.Default;
+                }
+            }
+        }
     }
 }

@@ -15,7 +15,7 @@ namespace SiliconStudio.Quantum
     /// A class describing the path of a node, relative to a root node. The path can cross references, array, etc.
     /// </summary>
     /// <remarks>This class is immutable.</remarks>
-    public class GraphNodePath : IEnumerable<IGraphNode>
+    public class GraphNodePath : IEnumerable<IGraphNode>, IEquatable<GraphNodePath>
     {
         /// <summary>
         /// An enum that describes the type of an item of a model node path.
@@ -64,6 +64,19 @@ namespace SiliconStudio.Quantum
             public static NodePathElement CreateIndex(Index index)
             {
                 return new NodePathElement(index, ElementType.Index);
+            }
+
+            public bool EqualsInPath(NodePathElement other)
+            {
+                return Type == ElementType.Target && other.Type == ElementType.Target || Equals(other);
+            }
+
+            public int GetHashCodeInPath()
+            {
+                unchecked
+                {
+                    return ((int)Type * 397) ^ (Type != ElementType.Target ? Value?.GetHashCode() ?? 0 : 0);
+                }
             }
 
             public bool Equals(NodePathElement other)
@@ -212,6 +225,11 @@ namespace SiliconStudio.Quantum
         /// <remarks>An empty path resolves to <see cref="RootNode"/>.</remarks>
         public bool IsEmpty { get; }
 
+        /// <summary>
+        /// Gets the number of items in this path.
+        /// </summary>
+        public int Count => path.Count;
+
         /// <inheritdoc/>
         public IEnumerator<IGraphNode> GetEnumerator()
         {
@@ -220,6 +238,58 @@ namespace SiliconStudio.Quantum
 
         /// <inheritdoc/>
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        public bool Equals(GraphNodePath other)
+        {
+            if (ReferenceEquals(null, other))
+                return false;
+            if (ReferenceEquals(this, other))
+                return true;
+            if (!Equals(RootNode, other.RootNode) || IsEmpty != other.IsEmpty || path.Count != other.path.Count)
+                return false;
+
+            for (var i = 0; i < path.Count; ++i)
+            {
+                if (!path[i].EqualsInPath(other.path[i]))
+                    return false;
+            }
+            return true;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj))
+                return false;
+            if (ReferenceEquals(this, obj))
+                return true;
+            if (obj.GetType() != GetType())
+                return false;
+            return Equals((GraphNodePath)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = RootNode?.GetHashCode() ?? 0;
+                hashCode = (hashCode*397) ^ IsEmpty.GetHashCode();
+                foreach (var item in path)
+                {
+                    hashCode = (hashCode * 397) ^ item.GetHashCodeInPath();
+                }
+                return hashCode;
+            }
+        }
+
+        public static bool operator ==(GraphNodePath left, GraphNodePath right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(GraphNodePath left, GraphNodePath right)
+        {
+            return !Equals(left, right);
+        }
 
         /// <inheritdoc/>
         public override string ToString()
@@ -235,17 +305,33 @@ namespace SiliconStudio.Quantum
         public IGraphNode GetNode() => this.Last();
 
         /// <summary>
+        /// Retrieve the parent path.
+        /// </summary>
+        /// <returns>A new <see cref="GraphNodePath"/> instance representing the parent path.</returns>
+        [Pure]
+        public GraphNodePath GetParent()
+        {
+            if (IsEmpty)
+                return null;
+
+            var result = new GraphNodePath(RootNode, path.Count == 1, path.Count - 1);
+            for (var i = 0; i < path.Count - 1; ++i)
+                result.path.Add(path[i]);
+            return result;
+        }
+
+        /// <summary>
         /// Clones this instance of <see cref="GraphNodePath"/> and remap the new instance to a new root node.
         /// </summary>
         /// <param name="newRoot">The root node for the cloned path.</param>
-        /// <returns></returns>
+        /// <returns>A copy of this path with the given node as root node.</returns>
         [Pure]
         public GraphNodePath Clone(IGraphNode newRoot) => Clone(newRoot, IsEmpty);
 
         /// <summary>
         /// Clones this instance of <see cref="GraphNodePath"/>.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>A copy of this path with the same root node.</returns>
         [Pure]
         public GraphNodePath Clone() => Clone(RootNode, IsEmpty);
 

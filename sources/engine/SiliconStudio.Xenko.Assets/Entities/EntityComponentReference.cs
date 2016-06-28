@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-
+using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Xenko.Engine;
@@ -12,20 +12,17 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [DataContract]
     [DataStyle(DataStyle.Compact)]
     [NonIdentifiable]
-    public sealed class EntityComponentReference : IEntityComponentReference
+    public sealed class EntityComponentReference : IAssetPartReference
     {
+        // TODO: we keep this type here internally to not break existing reference - but it's not used anywhere else. Remove it when writing a dedicated serialized for entity component reference
+        [DataContract]
+        [DataStyle(DataStyle.Compact)]
+        public sealed class EntityReference : IIdentifiable
+        {
+            public Guid Id { get; set; }
+        }
+        
         // TODO: implement a serializer and pass these fields readonly (and their related properties)
-
-        public EntityComponentReference()
-        {
-        }
-
-        public EntityComponentReference(EntityComponent entityComponent)
-        {
-            this.Entity = new EntityReference() { Id = entityComponent.Entity.Id };
-            this.Id = IdentifiableHelper.GetId(entityComponent);
-            this.Value = entityComponent;
-        }
 
         [DataMember(10)]
         public EntityReference Entity { get; set; }
@@ -34,14 +31,21 @@ namespace SiliconStudio.Xenko.Assets.Entities
         public Guid Id { get; set; }
 
         [DataMemberIgnore]
-        public EntityComponent Value { get; set; }
+        public Type InstanceType { get; set; }
 
-        [DataMemberIgnore]
-        public Type ComponentType { get; set; }
-
-        public static EntityComponentReference New(EntityComponent entityComponent)
+        public void FillFromPart(object assetPart)
         {
-            return new EntityComponentReference(entityComponent);
+            var component = (EntityComponent)assetPart;
+            Entity = new EntityReference { Id = component.Entity.Id };
+            Id = IdentifiableHelper.GetId(component);
+        }
+
+        public object GenerateProxyPart(Type partType)
+        {
+            var component = (EntityComponent)Activator.CreateInstance(partType);
+            component.Entity = new Entity { Id = Entity.Id };
+            IdentifiableHelper.SetId(component, Id);
+            return component;
         }
     }
 }

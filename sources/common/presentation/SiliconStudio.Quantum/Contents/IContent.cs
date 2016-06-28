@@ -54,11 +54,6 @@ namespace SiliconStudio.Quantum.Contents
         IEnumerable<Index> Indices { get; }
 
         /// <summary>
-        /// Gets whether the <see cref="Reference"/> contained in this content should lead to the creation of model node for the referenced object.
-        /// </summary>
-        bool ShouldProcessReference { get; }
-
-        /// <summary>
         /// Raised before the <see cref="Value"/> of this content changes and before the <see cref="Changing"/> event is raised.
         /// </summary>
         event EventHandler<ContentChangeEventArgs> PrepareChange;

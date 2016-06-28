@@ -25,5 +25,10 @@ namespace SiliconStudio.Core.Annotations
         /// Gets or sets the order value of the category.
         /// </summary>
         public int Order { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether to expand the category in the UI.
+        /// </summary>
+        public ExpandRule Expand { get; set; } = ExpandRule.Always;
     }
 }
