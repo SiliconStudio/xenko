@@ -41,6 +41,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
                         if (provider == null || provider.Node.Tag != "!SpriteFromSheet")
                             continue;
 
+                        // Copy the override type for the property to preserve prefab overriding and sealing
+                        provider.SetOverride("CurrentFrame", component.GetOverride("CurrentFrame"));
                         provider.AddChild("CurrentFrame", component.CurrentFrame);
                         component.RemoveChild("CurrentFrame");
                     }
@@ -73,22 +75,10 @@ namespace SiliconStudio.Xenko.Assets.Entities
                             continue;
 
                         // VirtualResolution
-                        var virtualResolution = component.VirtualResolution;
-                        var vrAsMap = virtualResolution as DynamicYamlMapping;
-                        if (vrAsMap != null)
-                        {
-                            component.AddChild("Resolution", virtualResolution);
-                            component.RemoveChild("VirtualResolution");
-                        }
+                        component.RenameChild("VirtualResolution", "Resolution");
 
                         // VirtualResolutionMode
-                        var resolutionStretch = component.VirtualResolutionMode;
-                        var vrmAsMap = resolutionStretch as DynamicYamlScalar;
-                        if (vrmAsMap != null)
-                        {
-                            component.AddChild("ResolutionStretch", resolutionStretch);
-                            component.RemoveChild("VirtualResolutionMode");
-                        }
+                        component.RenameChild("VirtualResolutionMode", "ResolutionStretch");
                     }
                 }
             }
@@ -127,6 +117,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                         colorValue.AddChild("B", kf.Value.Z);
                         colorValue.AddChild("A", kf.Value.W);
 
+                        // Overriden properties will be maekred Value* so this assignment doesn't break prefabs
                         kf.Value = colorValue;
                     }
                 };

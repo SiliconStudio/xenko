@@ -92,6 +92,26 @@ namespace SiliconStudio.Core.Yaml
             }
         }
 
+        /// <summary>
+        /// Renames a property to a new name while keeping all overrides and key mappings
+        /// </summary>
+        /// <param name="oldKey">Old property name</param>
+        /// <param name="newKey">New property name</param>
+        public void RenameChild(object oldKey, object newKey)
+        {
+            var yamlKey = ConvertFromDynamicForKey(oldKey);
+            var keyPosition = node.Children.IndexOf(yamlKey);
+
+            if (keyPosition < 0)
+                return; // Key not found, nothing to do
+
+            SetOverride(newKey.ToString(), GetOverride(oldKey.ToString()));
+
+            AddChild(newKey, node.Children[keyPosition].Value);
+
+            RemoveChild(oldKey);
+        }
+
         public int IndexOf(object key)
         {
             var yamlKey = ConvertFromDynamicForKey(key);
