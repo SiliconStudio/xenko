@@ -1,6 +1,6 @@
-cd ..\..\externals\SSH.NET\src
+set EXTERNALS_SSH_NET=..\..\externals\SSH.NET\src
+pushd %EXTERNALS_SSH_NET%
 msbuild /p:Configuration=Release Renci.SshNet.VS2015.sln
+popd
 
-copy Renci.SshNet\bin\Release\Renci.SshNet.* ..\..\..\deps\SSH.NET
-
-cd ..\..\..\deps\SSH.NET
+copy %EXTERNALS_SSH_NET%\Renci.SshNet\bin\Release\Renci.SshNet.* .
