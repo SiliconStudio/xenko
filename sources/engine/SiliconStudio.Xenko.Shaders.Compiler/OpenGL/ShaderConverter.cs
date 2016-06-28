@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Shaders.Analysis.Hlsl;
 using SiliconStudio.Shaders.Convertor;
@@ -19,6 +20,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
     {
         private GlslShaderPlatform shaderPlatform;
         private int shaderVersion;
+
+        private bool isVulkan;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderConverter"/> class.
@@ -77,7 +80,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
         /// <returns>
         /// The resulting glsl AST tree.
         /// </returns>
-        public global::SiliconStudio.Shaders.Ast.Shader Convert(string hlslSourcecode, string hlslEntryPoint, PipelineStage stage, string inputHlslFilepath, LoggerResult log)
+        public global::SiliconStudio.Shaders.Ast.Shader Convert(string hlslSourcecode, string hlslEntryPoint, PipelineStage stage, string inputHlslFilepath, IDictionary<int, string> inputAttributeNames, LoggerResult log)
         {
             try
             {
@@ -106,7 +109,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                     return null;
                 }
 
-                return Convert(result, hlslEntryPoint, stage, inputHlslFilepath, log);
+                return Convert(result, hlslEntryPoint, stage, inputHlslFilepath, inputAttributeNames, log);
             }
             catch (Exception ex)
             {
@@ -125,7 +128,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
         /// <returns>
         /// The resulting glsl AST tree.
         /// </returns>
-        private global::SiliconStudio.Shaders.Ast.Shader Convert(ParsingResult result, string hlslEntryPoint, PipelineStage stage, string inputHlslFilepath, LoggerResult log)
+        private global::SiliconStudio.Shaders.Ast.Shader Convert(ParsingResult result, string hlslEntryPoint, PipelineStage stage, string inputHlslFilepath, IDictionary<int, string> inputAttributeNames, LoggerResult log)
         {
             try
             {
@@ -141,9 +144,9 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                     //KeepNonUniformArrayInitializers = !isOpenGLES,
 
                     UseBindingLayout = false,
-                    UseLocationLayout = false,
                     UseSemanticForVariable = true,
                     IsPointSpriteShader = false,
+                    InputAttributeNames = inputAttributeNames
                 };
                 convertor.Run(result);
 

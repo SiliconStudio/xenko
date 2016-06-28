@@ -91,7 +91,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
                 await recv.ReceiveAsync();
 
-                Assert.AreNotEqual(currentFrame, frameCounter);
+                Assert.AreEqual(currentFrame, frameCounter);
 
                 test.Exit();
             });
@@ -152,14 +152,18 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
             var broadcaster = new EventKey();
 
+            var readyCount = 0;
+
             game.AddTask(async () =>
             {
                 var recv = new EventReceiver(broadcaster, EventReceiverOptions.Buffered);
 
+                Interlocked.Increment(ref readyCount);
+
                 for (;;)
                 {
                     await recv.ReceiveAsync();
-                    counter++;
+                    Interlocked.Increment(ref counter);
                 }
             });
 
@@ -167,10 +171,12 @@ namespace SiliconStudio.Xenko.Engine.Tests
             {
                 var recv = new EventReceiver(broadcaster, EventReceiverOptions.Buffered);
 
+                Interlocked.Increment(ref readyCount);
+
                 for (;;)
                 {
                     await recv.ReceiveAsync();
-                    counter++;
+                    Interlocked.Increment(ref counter);
                 }
             });
 
@@ -178,35 +184,44 @@ namespace SiliconStudio.Xenko.Engine.Tests
             {
                 var recv = new EventReceiver(broadcaster, EventReceiverOptions.Buffered);
 
+                Interlocked.Increment(ref readyCount);
+
                 for (;;)
                 {
                     await recv.ReceiveAsync();
-                    counter++;
+                    Interlocked.Increment(ref counter);
                 }
             });
 
             var t1W = new AutoResetEvent(false);
             var t2W = new AutoResetEvent(false);
 
+            var waitHandles = new WaitHandle[]
+            {
+                t1W,
+                t2W
+            };
+
             Exception threadException = null;
 
-            new Thread(async () =>
+            new Thread(() =>
             {
                 try
                 {
-                    while (!game.IsRunning)
+                    while (!game.IsRunning && readyCount < 3)
                     {
-                        await Task.Delay(100);
+                        Thread.Sleep(200);
                     }
 
                     var frameCounter = 0;
 
                     while (true)
                     {
-                        await Task.Delay(20);
+                        Thread.Sleep(50);
                         frameCounter++;
                         broadcaster.Broadcast();
-                        if (frameCounter != 200) continue;
+
+                        if (frameCounter < 200) continue;
                         t1W.Set();
                         return;
                     }
@@ -217,23 +232,24 @@ namespace SiliconStudio.Xenko.Engine.Tests
                 }
             }).Start();
 
-            new Thread(async () =>
+            new Thread(() =>
             {
                 try
                 {
-                    while (!game.IsRunning)
+                    while (!game.IsRunning && readyCount < 3)
                     {
-                        await Task.Delay(100);
+                        Thread.Sleep(200);
                     }
 
                     var frameCounter = 0;
 
                     while (true)
                     {
-                        await Task.Delay(20);
+                        Thread.Sleep(50);
                         frameCounter++;
                         broadcaster.Broadcast();
-                        if (frameCounter != 200) continue;
+
+                        if (frameCounter < 200) continue;
                         t2W.Set();
                         return;
                     }
@@ -244,19 +260,14 @@ namespace SiliconStudio.Xenko.Engine.Tests
                 }
             }).Start();
 
-            new Thread(async () =>
+            new Thread(() =>
             {
                 try
                 {
-                    var waitHandles = new WaitHandle[]
-                    {
-                        t1W,
-                        t2W
-                    };
-
+                    //wait until both threads have broadcasted 200 times each
                     WaitHandle.WaitAll(waitHandles);
 
-                    await Task.Delay(2000);
+                    Thread.Sleep(2000);
 
                     game.Exit();
                 }
@@ -267,7 +278,9 @@ namespace SiliconStudio.Xenko.Engine.Tests
             }).Start();
 
             game.Run();
+
             Assert.IsNull(threadException);
+
             Assert.AreEqual(1200, counter);
         }
 
