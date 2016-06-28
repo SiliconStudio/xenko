@@ -1298,6 +1298,8 @@ extern "C" {
 			int sampleRate_;
 			bool mono_;
 			bool streamed_;
+			volatile float pitch_ = 1.0f;
+			volatile float doppler_pitch_ = 1.0f;
 
 			SpinLock bufferLock;
 			xnAudioBuffer** freeBuffers;
@@ -1518,8 +1520,8 @@ extern "C" {
 
 		void xnAudioSourceSetPitch(xnAudioSource* source, float pitch)
 		{
-			//todo apply also doppler factor?
-			source->source_voice_->SetFrequencyRatio(pitch);
+			source->pitch_ = pitch;
+			source->source_voice_->SetFrequencyRatio(source->doppler_pitch_ * source->pitch_);
 		}
 
 		void xnAudioSource::OnVoiceProcessingPassStart(unsigned BytesRequired)
@@ -1626,7 +1628,8 @@ extern "C" {
 				X3DAUDIO_CALCULATE_MATRIX | X3DAUDIO_CALCULATE_DOPPLER | X3DAUDIO_CALCULATE_LPF_DIRECT | X3DAUDIO_CALCULATE_REVERB, source->dsp_settings_);
 
 			source->source_voice_->SetOutputMatrix(source->mastering_voice_, 1, AUDIO_CHANNELS, source->dsp_settings_->pMatrixCoefficients);
-			source->source_voice_->SetFrequencyRatio(source->dsp_settings_->DopplerFactor);
+			source->doppler_pitch_ = source->dsp_settings_->DopplerFactor;
+			source->source_voice_->SetFrequencyRatio(source->dsp_settings_->DopplerFactor * source->pitch_);
 			XAUDIO2_FILTER_PARAMETERS filter_parameters = { LowPassFilter, 2.0f * sin(X3DAUDIO_PI / 6.0f * source->dsp_settings_->LPFDirectCoefficient), 1.0f };
 			source->source_voice_->SetFilterParameters(&filter_parameters);
 		}

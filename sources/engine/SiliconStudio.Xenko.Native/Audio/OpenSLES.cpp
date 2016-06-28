@@ -109,6 +109,8 @@ extern "C" {
 			SLpermille maxRate;
 			volatile float gain = 1.0f;
 			float localizationGain = 1.0f;
+			volatile float pitch = 1.0f;
+			volatile float doppler_pitch = 1.0f;
 
 			xnAudioListener* listener;
 
@@ -389,6 +391,9 @@ extern "C" {
 		{
 			if (!source->canRateChange) return;
 
+			source->pitch = pitch;
+
+			pitch *= source->doppler_pitch;
 			pitch = pitch > 4.0f ? 4.0f : pitch < -4.0f ? -4.0f : pitch;
 			(*source->playRate)->SetRate(source->playRate, SLpermille(pitch * 1000.0f));
 		}
@@ -526,7 +531,10 @@ extern "C" {
 				}
 			}
 
-			xnAudioSourceSetPitch(source, dopplerShift);
+			source->doppler_pitch = dopplerShift;
+			auto pitch = source->pitch * dopplerShift;
+			pitch = pitch > 4.0f ? 4.0f : pitch < -4.0f ? -4.0f : pitch;
+			(*source->playRate)->SetRate(source->playRate, SLpermille(pitch * 1000.0f));
 
 			// After an analysis of the XAudio2 left/right stereo balance with respect to 3D world position, 
 			// it could be found the volume repartition is symmetric to the Up/Down and Front/Back planes.
