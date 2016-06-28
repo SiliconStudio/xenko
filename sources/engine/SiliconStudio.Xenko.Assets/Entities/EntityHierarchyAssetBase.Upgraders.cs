@@ -41,10 +41,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                         if (provider == null || provider.Node.Tag != "!SpriteFromSheet")
                             continue;
 
-                        // Copy the override type for the property to preserve prefab overriding and sealing
-                        provider.SetOverride("CurrentFrame", component.GetOverride("CurrentFrame"));
-                        provider.AddChild("CurrentFrame", component.CurrentFrame);
-                        component.RemoveChild("CurrentFrame");
+                        component.TransferChild("CurrentFrame", provider, "CurrentFrame");
                     }
                 }
             }
@@ -117,7 +114,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
                         colorValue.AddChild("B", kf.Value.Z);
                         colorValue.AddChild("A", kf.Value.W);
 
-                        // Overriden properties will be maekred Value* so this assignment doesn't break prefabs
                         kf.Value = colorValue;
                     }
                 };

@@ -112,6 +112,31 @@ namespace SiliconStudio.Core.Yaml
             RemoveChild(oldKey);
         }
 
+        /// <summary>
+        /// Transfers ownership of a property to another parent object and removes it from the current one
+        /// </summary>
+        /// <param name="oldKey">Old property name</param>
+        /// <param name="newParent">New owner for the property</param>
+        /// <param name="newKey">New property name</param>
+        public void TransferChild(object oldKey, object newParent, object newKey)
+        {
+            var yamlMapping = newParent as DynamicYamlMapping;
+            if (yamlMapping == null)
+                return;
+
+            var yamlKey = ConvertFromDynamicForKey(oldKey);
+            var keyPosition = node.Children.IndexOf(yamlKey);
+
+            if (keyPosition < 0)
+                return; // Key not found, nothing to do
+
+            yamlMapping.SetOverride(newKey.ToString(), GetOverride(oldKey.ToString()));
+
+            yamlMapping.AddChild(newKey, node.Children[keyPosition].Value);
+
+            RemoveChild(oldKey);
+        }
+
         public int IndexOf(object key)
         {
             var yamlKey = ConvertFromDynamicForKey(key);
