@@ -64,33 +64,39 @@ namespace SiliconStudio.Presentation.Services
 
         public void Undo()
         {
-            UndoRedoInProgress = true;
-            undoRedoCompletion = new TaskCompletionSource<int>();
-            try
+            if (CanUndo)
             {
-                stack.Rollback();
-            }
-            finally
-            {
-                undoRedoCompletion.SetResult(0);
-                undoRedoCompletion = null;
-                UndoRedoInProgress = false;
+                UndoRedoInProgress = true;
+                undoRedoCompletion = new TaskCompletionSource<int>();
+                try
+                {
+                    stack.Rollback();
+                }
+                finally
+                {
+                    undoRedoCompletion.SetResult(0);
+                    undoRedoCompletion = null;
+                    UndoRedoInProgress = false;
+                }
             }
         }
 
         public void Redo()
         {
-            UndoRedoInProgress = true;
-            undoRedoCompletion = new TaskCompletionSource<int>();
-            try
+            if (CanRedo)
             {
-                stack.Rollforward();
-            }
-            finally
-            {
-                undoRedoCompletion.SetResult(0);
-                undoRedoCompletion = null;
-                UndoRedoInProgress = false;
+                UndoRedoInProgress = true;
+                undoRedoCompletion = new TaskCompletionSource<int>();
+                try
+                {
+                    stack.Rollforward();
+                }
+                finally
+                {
+                    undoRedoCompletion.SetResult(0);
+                    undoRedoCompletion = null;
+                    UndoRedoInProgress = false;
+                }
             }
         }
 
