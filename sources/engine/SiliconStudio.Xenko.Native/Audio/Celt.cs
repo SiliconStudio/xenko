@@ -5,7 +5,7 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Native
 {
-    public class Celt : IDisposable
+    internal class Celt : IDisposable
     {
         public int SampleRate { get; set; }
 

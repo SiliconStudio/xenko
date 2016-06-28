@@ -20,6 +20,8 @@ namespace SiliconStudio.Xenko.Native
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS
             NativeLibrary.PreloadLibrary(Library + ".dll");
+#else
+            NativeLibrary.PreloadLibrary(Library);
 #endif
         }
 
