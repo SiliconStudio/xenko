@@ -24,12 +24,16 @@ echo Processing Linux
 ..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.ProjectGenerator.exe solution Xenko.sln -o Xenko.Linux.sln -p Linux
 echo.
 
-echo Processing Linux with Vulkan with CoreCLR
-..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.ProjectGenerator.exe solution Xenko.sln -o Xenko.Linux.Vulkan.CoreCLR.sln -p Linux
+echo Processing Linux with Vulkan
+..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.ProjectGenerator.exe solution Xenko.sln -o Xenko.Linux.Vulkan.sln -p Linux
 echo.
 
 echo Processing Linux with CoreCLR
 ..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.ProjectGenerator.exe solution Xenko.sln -o Xenko.Linux.CoreCLR.sln -p Linux
+echo.
+
+echo Processing Linux with Vulkan with CoreCLR
+..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.ProjectGenerator.exe solution Xenko.sln -o Xenko.Linux.Vulkan.CoreCLR.sln -p Linux
 echo.
 
 echo Processing Windows with OpenGL
