@@ -1,6 +1,6 @@
 !SpriteFont
 Id: 90b99454-a7b4-4b88-8d42-638acc73e34b
-SerializedVersion: {Xenko: 1.7.0-beta03}
+SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
 FontSource: !SystemFontProvider
     ~Id: bd7c2d04-3e1e-4208-b984-ec725be7fbbe
@@ -8,7 +8,7 @@ FontSource: !SystemFontProvider
     Style: Regular
 FontType: !OfflineRasterizedSpriteFontType
     ~Id: acd997cb-3149-4b36-b751-dd2373c86ca0
-    Size: 10.0
+    Size: 13.33333
     CharacterSet: 
     CharacterRegions:
         -   ~Id: 5e580dc4-e084-4d50-9f98-c0643c394343

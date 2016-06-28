@@ -16,9 +16,9 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// <inheritdoc/>
         [DataMember(30)]
         [DataMemberRange(MathUtil.ZeroTolerance, float.MaxValue)]
-        [DefaultValue(16.0f)]
+        [DefaultValue(20)]
         [Display("Default Size")]
-        public override float Size { get; set; } = 16.0f;
+        public override float Size { get; set; } = 20;
 
         /// <inheritdoc/>
         [DataMember(110)]

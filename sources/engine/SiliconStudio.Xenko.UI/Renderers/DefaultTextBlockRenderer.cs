@@ -3,6 +3,7 @@
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Font;
 using SiliconStudio.Xenko.UI.Controls;
 
 namespace SiliconStudio.Xenko.UI.Renderers
@@ -30,13 +31,13 @@ namespace SiliconStudio.Xenko.UI.Renderers
             {
                 Color = textBlock.RenderOpacity * textBlock.TextColor,
                 DepthBias = context.DepthBias,
-                FontScale = element.LayoutingContext.RealVirtualResolutionRatio,
-                FontSize = textBlock.TextSize,
+                RealVirtualResolutionRatio = element.LayoutingContext.RealVirtualResolutionRatio,
+                RequestedFontSize = textBlock.TextSize,
                 Batch = Batch,
                 SnapText = context.ShouldSnapText && !textBlock.DoNotSnapText,
                 Matrix = textBlock.WorldMatrixInternal,
                 Alignment = textBlock.TextAlignment,
-                Size = new Vector2(textBlock.ActualWidth, textBlock.ActualHeight)
+                TextBoxSize = new Vector2(textBlock.ActualWidth, textBlock.ActualHeight)
             };
 
             if (textBlock.Font.FontType == SpriteFontType.SDF)

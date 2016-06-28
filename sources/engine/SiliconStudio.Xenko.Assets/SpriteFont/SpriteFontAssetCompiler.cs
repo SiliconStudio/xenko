@@ -201,7 +201,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 var dynamicFont = FontDataFactory.NewDynamic(
-                    FontHelper.PointsToPixels(AssetParameters.FontType.Size), AssetParameters.FontSource.GetFontName(), AssetParameters.FontSource.Style, 
+                    AssetParameters.FontType.Size, AssetParameters.FontSource.GetFontName(), AssetParameters.FontSource.Style, 
                     AssetParameters.FontType.AntiAlias, useKerning:false, extraSpacing:AssetParameters.Spacing, extraLineSpacing:AssetParameters.LineSpacing, 
                     defaultCharacter:AssetParameters.DefaultCharacter);
 

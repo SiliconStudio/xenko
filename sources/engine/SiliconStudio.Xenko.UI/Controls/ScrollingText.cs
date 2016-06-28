@@ -6,6 +6,7 @@ using System.Diagnostics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics.Font;
 
 namespace SiliconStudio.Xenko.UI.Controls
 {
