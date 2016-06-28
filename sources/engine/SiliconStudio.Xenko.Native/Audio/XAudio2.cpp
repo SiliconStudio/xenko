@@ -1160,7 +1160,7 @@ extern "C" {
 			X3DAUDIO_LISTENER listener_;
 		};
 
-		xnAudioDevice* xnAudioCreate(const char* deviceName)
+		xnAudioDevice* xnAudioCreate(void* deviceName) //Device name is actually LPCWSTR, on C# side encoding is Unicode!
 		{
 			xnAudioDevice* res = new xnAudioDevice;
 
@@ -1217,7 +1217,7 @@ extern "C" {
 				}
 
 				//this means opening the real audio device, which will be virtual actually so in the case of default device change Xaudio will deal with it for us.
-				result = res->x_audio2_->CreateMasteringVoice(&res->mastering_voice_, AUDIO_CHANNELS);
+				result = res->x_audio2_->CreateMasteringVoice(&res->mastering_voice_, AUDIO_CHANNELS, 0, 0, deviceName);
 				if (FAILED(result))
 				{
 					delete res;
