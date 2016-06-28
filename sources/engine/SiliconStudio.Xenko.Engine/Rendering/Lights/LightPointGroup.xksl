@@ -22,7 +22,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// </summary>
         override void PrepareDirectLightCore(int lightIndex)
         {
-            ProcessLight(Lights[lightIndex]);
+            // TODO: Workaraound for SPIR-V compiler. Revert later
+            PointLightDataInternal data;
+            data.PositionWS = Lights[lightIndex].PositionWS;
+            data.InvSquareRadius = Lights[lightIndex].InvSquareRadius;
+            data.Color = Lights[lightIndex].Color;
+
+            ProcessLight(data);
         }
     };
 }

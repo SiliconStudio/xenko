@@ -56,7 +56,12 @@ namespace SiliconStudio.Xenko.Graphics
         /// OpenGL ES.
         /// </summary>
         [Display("OpenGL ES")]
-        OpenGLES
+        OpenGLES,
+
+        /// <summary>
+        /// Vulkan
+        /// </summary>
+        Vulkan
     }
 
     [DataContract]
@@ -156,13 +161,16 @@ namespace SiliconStudio.Xenko.Graphics
                     return preferredGraphicsPlatform == PreferredGraphicsPlatform.Direct3D11
                         || preferredGraphicsPlatform == PreferredGraphicsPlatform.Direct3D12
                         || preferredGraphicsPlatform == PreferredGraphicsPlatform.OpenGL
-                        || preferredGraphicsPlatform == PreferredGraphicsPlatform.OpenGLES;
+                        || preferredGraphicsPlatform == PreferredGraphicsPlatform.OpenGLES
+                        || preferredGraphicsPlatform == PreferredGraphicsPlatform.Vulkan;
                 case PlatformType.Android:
-                    return preferredGraphicsPlatform == PreferredGraphicsPlatform.OpenGLES;
+                    return preferredGraphicsPlatform == PreferredGraphicsPlatform.OpenGLES
+                        || preferredGraphicsPlatform == PreferredGraphicsPlatform.Vulkan;
                 case PlatformType.iOS:
                     return preferredGraphicsPlatform == PreferredGraphicsPlatform.OpenGLES;
                 case PlatformType.Linux:
-                    return preferredGraphicsPlatform == PreferredGraphicsPlatform.OpenGL;
+                    return preferredGraphicsPlatform == PreferredGraphicsPlatform.OpenGL
+                        || preferredGraphicsPlatform == PreferredGraphicsPlatform.Vulkan;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
             }
@@ -193,6 +201,9 @@ namespace SiliconStudio.Xenko.Graphics
                     break;
                 case PreferredGraphicsPlatform.OpenGLES:
                     graphicsPlatform = GraphicsPlatform.OpenGLES;
+                    break;
+                case PreferredGraphicsPlatform.Vulkan:
+                    graphicsPlatform = GraphicsPlatform.Vulkan;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
