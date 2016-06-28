@@ -110,12 +110,24 @@
   </Choose>
   <Choose>
     <When Condition=" '$(XenkoGraphicsApi)' == 'Vulkan' ">
-      <ItemGroup>
-        <Reference Include="SharpVulkan">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoDependenciesDir)\SharpVulkan\Bin\SharpVulkan.dll</HintPath>
-        </Reference>
-      </ItemGroup>
+      <Choose>
+        <When Condition=" '$(SiliconStudioPlatform)' == 'Windows'">
+          <ItemGroup>
+            <Reference Include="SharpVulkan">
+              <SpecificVersion>False</SpecificVersion>
+              <HintPath>$(XenkoDependenciesDir)\SharpVulkan\Windows\SharpVulkan.dll</HintPath>
+            </Reference>
+          </ItemGroup>
+		</When>
+        <Otherwise>
+          <ItemGroup>
+            <Reference Include="SharpVulkan">
+              <SpecificVersion>False</SpecificVersion>
+              <HintPath>$(XenkoDependenciesDir)\SharpVulkan\Other\SharpVulkan.dll</HintPath>
+            </Reference>
+          </ItemGroup>
+		</Otherwise>
+	  </Choose>	  
     </When>
   </Choose>
   <Choose>
