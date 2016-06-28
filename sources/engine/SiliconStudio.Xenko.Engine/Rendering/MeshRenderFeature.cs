@@ -115,14 +115,7 @@ namespace SiliconStudio.Xenko.Rendering
                 renderFeature.Draw(context, renderView, renderViewStage, startIndex, endIndex);
             }
 
-            if (descriptorSets == null)
-            {
-                descriptorSets = new DescriptorSet[EffectDescriptorSetSlotCount];
-            }
-            else if (descriptorSets.Length < EffectDescriptorSetSlotCount)
-            {
-                Array.Resize(ref descriptorSets, EffectDescriptorSetSlotCount);
-            }
+            Array.Resize(ref descriptorSets, EffectDescriptorSetSlotCount);
 
             MeshDraw currentDrawData = null;
             for (int index = startIndex; index < endIndex; index++)

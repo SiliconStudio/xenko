@@ -119,7 +119,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                     shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES", 1);
                     break;
                 case GraphicsPlatform.Vulkan:
-                    shaderMixinSource.AddMacro("SILICONSTUDIO_PARADOX_GRAPHICS_API_VULKAN", 1);
+                    shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN", 1);
                     break;
                 default:
                     throw new NotSupportedException();

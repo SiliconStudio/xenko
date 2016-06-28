@@ -322,6 +322,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                         .OrderBy(x => x.Key.Class == EffectParameterClass.ConstantBuffer ? 0 : 1))
                         .ToList();
 
+                    // Add layout(set, bindings) qualifier to all constant buffers
                     foreach (var constantBuffer in glslShader.Declarations.OfType<ConstantBuffer>())
                     {
                         var layoutBindingIndex = bindings.IndexOf(x => x.Key.RawName == constantBuffer.Name);
@@ -342,17 +343,10 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                         }
                     }
 
+                    // Add layout(set, bindings) qualifier to all other uniforms
                     foreach (var variable in glslShader.Declarations.OfType<Variable>().Where(x => (x.Qualifiers.Contains(StorageQualifier.Uniform))))
                     {
                         var layoutBindingIndex = bindings.IndexOf(x => variable.Name.Text.StartsWith(x.Key.RawName));
-
-                        //if (variable.Type.Name.Text.Contains("sampler1D")
-                        //    || variable.Type.Name.Text.Contains("sampler2D")
-                        //    || variable.Type.Name.Text.Contains("sampler3D"))
-                        //{
-                        //    // TODO: Make more robust
-                        //    layoutBindingIndex = bindings.IndexOf(x => variable.Name.ToString().StartsWith(x.Key.RawName));
-                        //}
 
                         if (layoutBindingIndex != -1)
                         {

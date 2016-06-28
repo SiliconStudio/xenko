@@ -243,14 +243,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             Matrix viewInverse;
             Matrix.Invert(ref renderView.View, out viewInverse);
 
-            if (descriptorSets == null)
-            {
-                descriptorSets = new DescriptorSet[EffectDescriptorSetSlotCount];
-            }
-            else if (descriptorSets.Length < EffectDescriptorSetSlotCount)
-            {
-                Array.Resize(ref descriptorSets, EffectDescriptorSetSlotCount);
-            }
+            Array.Resize(ref descriptorSets, EffectDescriptorSetSlotCount);
 
             for (var index = startIndex; index < endIndex; index++)
             {
