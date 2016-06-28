@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public TestSprite()
         {
-            CurrentVersion = 6;
+            CurrentVersion = 7;
         }
 
         protected override void RegisterTests()

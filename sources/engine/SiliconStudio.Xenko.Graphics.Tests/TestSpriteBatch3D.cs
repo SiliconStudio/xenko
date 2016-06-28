@@ -82,10 +82,10 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private void DrawScene()
         {
-            var cameraSize = 640f;
-            var cameraNear = 100;
+            var cameraSize = 320f;
+            var cameraNear = 50;
             var projectionMatrix = Matrix.PerspectiveRH(cameraSize, cameraSize, cameraNear, 10000);
-            var viewMatrix = Matrix.LookAtRH(cameraNear * Vector3.UnitZ, Vector3.Zero, Vector3.UnitY);
+            var viewMatrix = Matrix.LookAtRH(cameraNear * 2.0f * Vector3.UnitZ, Vector3.Zero, Vector3.UnitY);
 
             GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
             GraphicsContext.CommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);

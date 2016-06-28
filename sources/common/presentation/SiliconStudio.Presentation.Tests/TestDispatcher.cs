@@ -72,7 +72,7 @@ namespace SiliconStudio.Presentation.Tests
         }
         
         [Test]
-        public async void TestInvokeAsyncTask()
+        public async Task TestInvokeAsyncTask()
         {
             var dispatcher = CreateDispatcher();
             int count = 1;
@@ -84,7 +84,7 @@ namespace SiliconStudio.Presentation.Tests
         }
 
         [Test]
-        public async void TestInvokeAsyncTaskResult()
+        public async Task TestInvokeAsyncTaskResult()
         {
             var dispatcher = CreateDispatcher();
             int count = 1;

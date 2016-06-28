@@ -12,7 +12,7 @@ using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Core.Tests
 {
-    [TestFixture, Ignore]
+    [TestFixture, Ignore("Need check")]
     public class TestWatcher
     {
         [Test]

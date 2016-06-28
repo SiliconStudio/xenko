@@ -41,7 +41,7 @@ namespace SiliconStudio.BuildEngine.Tests
             CommonSingleOutput(false);
         }
 
-        [Test, Ignore]
+        [Test, Ignore("Need check")]
         public void TestRemoteSingleOutput()
         {
             Utils.CleanContext();
@@ -164,7 +164,7 @@ namespace SiliconStudio.BuildEngine.Tests
             Assert.That(step.SpawnedSteps.First().Result.OutputObjects[new ObjectUrl(UrlType.ContentLink, "/db/url2")], Is.EqualTo(outputId));
         }
 
-        [Test, Ignore]
+        [Test, Ignore("Need check")]
         public void TestRemoteSpawnCommandOutput()
         {
             Utils.CleanContext();

@@ -14,7 +14,7 @@ namespace SiliconStudio.Assets.Tests
     [TestFixture]
     public class TestTemplateManager: TemplateGeneratorBase<SessionTemplateGeneratorParameters>
     {
-        [Test, Ignore]
+        [Test, Ignore("Need check")]
         public void TestTemplateDescriptions()
         {
             // Preload templates defined in Xenko.xkpkg

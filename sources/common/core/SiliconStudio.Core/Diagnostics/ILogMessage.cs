@@ -27,5 +27,10 @@ namespace SiliconStudio.Core.Diagnostics
         /// </summary>
         /// <value>The text.</value>
         string Text { get; set; }
+
+        /// <summary>
+        /// Gets or sets the exception info.
+        /// </summary>
+        ExceptionInfo ExceptionInfo { get; }
     }
 }

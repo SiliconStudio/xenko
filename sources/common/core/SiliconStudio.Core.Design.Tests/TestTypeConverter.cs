@@ -37,34 +37,30 @@ namespace SiliconStudio.Core.Design.Tests
         }
 
         [Test]
-        [Ignore]
+        [Ignore("fix Half.ToString() and update converter accordingly (to match other converters)")]
         public void TestHalf()
         {
-            // TODO: fix Half.ToString() and update converter accordingly (to match other converters)
             TestConversionMultipleCultures(new Half(5.6f));
         }
 
         [Test]
-        [Ignore]
+        [Ignore("fix Half2.ToString() and update converter accordingly (to match other converters)")]
         public void TestHalf2()
         {
-            // TODO: fix Half2.ToString() and update converter accordingly (to match other converters)
             TestConversionMultipleCultures(new Half2(new Half(5.12f), new Half(2)));
         }
 
         [Test]
-        [Ignore]
+        [Ignore("fix Half3.ToString() and update converter accordingly (to match other converters)")]
         public void TestHalf3()
         {
-            // TODO: fix Half3.ToString() and update converter accordingly (to match other converters)
             TestConversionMultipleCultures(new Half3(new Half(5.12f), new Half(2), new Half(-17.54f)));
         }
 
         [Test]
-        [Ignore]
+        [Ignore("fix Half4.ToString() and update converter accordingly (to match other converters)")]
         public void TestHalf4()
         {
-            // TODO: fix Half4.ToString() and update converter accordingly (to match other converters)
             TestConversionMultipleCultures(new Half4(new Half(5.12f), new Half(2), new Half(-17.54f), new Half(-5)));
         }
 
