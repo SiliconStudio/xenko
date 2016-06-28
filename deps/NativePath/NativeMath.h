@@ -31,6 +31,8 @@ THE SOFTWARE.
 #ifndef nativemath_h
 #define nativemath_h
 
+#include "NativePath.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -136,6 +138,35 @@ extern double npLolCos(double x);
 extern void npLolSincos(double x, double *sinx, double *cosx);
 extern void npLolSincosf(float x, float *sinx, float *cosx);
 extern double npLolTan(double x);
+
+//Utility OpenCL vector goodies
+
+static inline float4 npCrossProductF4(float4 left, float4 right)
+{
+	return left.yzxw * right.zxyw - left.zxyw * right.yzxw;
+}
+
+static inline float4 npTransformNormalF4(float4 normal, float4 matrix[4])
+{
+    return normal.xxxx * matrix[0].xyzw + normal.yyyy * matrix[1].xyzw + normal.zzzz * matrix[2].xyzw + normal.wwww * matrix[3].xyzw;
+}
+
+static void npMatrixIdentityF4(float4* outMatrix)
+{
+    outMatrix[0].yzw = 0.0f;
+    outMatrix[1].xzw = 0.0f;
+    outMatrix[2].xyw = 0.0f;
+    outMatrix[3].xyz = 0.0f;
+    outMatrix[0].x = 1.0f;
+    outMatrix[1].y = 1.0f;
+    outMatrix[2].z = 1.0f;
+    outMatrix[3].w = 1.0f;
+}
+
+static float npLengthF4(float4 vec)
+{
+    return sqrtf(vec.x * vec.x + vec.y * vec.y + vec.z * vec.z + vec.w * vec.w);
+}
 
 #ifdef __cplusplus
 }

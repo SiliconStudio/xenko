@@ -7,14 +7,14 @@ namespace SiliconStudio.Xenko.Audio
     /// Reprensent an Audio Hardware Device.
     /// Can be used when creating an <see cref="AudioEngine"/> to specify the device on which to play the sound.
     /// </summary>
-    internal class AudioDevice
+    public class AudioDevice
     {
         /// <summary>
         /// Returns the name of the current device.
         /// </summary>
-        public string Name { get; internal protected set; }
+        public string Name { get; set; }
 
-        internal AudioDevice()
+        public AudioDevice()
         {
             Name = "default";
         }

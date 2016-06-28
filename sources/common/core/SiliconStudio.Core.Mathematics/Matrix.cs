@@ -46,11 +46,6 @@ namespace SiliconStudio.Core.Mathematics
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct Matrix : IEquatable<Matrix>, IFormattable
     {
-#if SILICONSTUDIO_PLATFORM_ANDROID
-        [DllImport(NativeLibrary.LibraryName, CallingConvention = NativeLibrary.CallConvention), SuppressUnmanagedCodeSecurity]
-        private static extern void NEON_Matrix4Mul(ref Matrix a, ref Matrix b, out Matrix output);
-#endif
-
         /// <summary>
         /// The size of the <see cref="SiliconStudio.Core.Mathematics.Matrix"/> type, in bytes.
         /// </summary>
@@ -985,14 +980,8 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="left">The first matrix to multiply.</param>
         /// <param name="right">The second matrix to multiply.</param>
         /// <param name="result">The product of the two matrices.</param>
-#if SILICONSTUDIO_PLATFORM_ANDROID
-       [MethodImpl(MethodImplOptions.AggressiveInlining)]
-#endif
         public static void Multiply(ref Matrix left, ref Matrix right, out Matrix result)
         {
-#if SILICONSTUDIO_PLATFORM_ANDROID
-            NEON_Matrix4Mul(ref left, ref right, out result);
-#else
             result.M11 = (left.M11 * right.M11) + (left.M12 * right.M21) + (left.M13 * right.M31) + (left.M14 * right.M41);
             result.M21 = (left.M21 * right.M11) + (left.M22 * right.M21) + (left.M23 * right.M31) + (left.M24 * right.M41);
             result.M31 = (left.M31 * right.M11) + (left.M32 * right.M21) + (left.M33 * right.M31) + (left.M34 * right.M41);
@@ -1009,7 +998,6 @@ namespace SiliconStudio.Core.Mathematics
             result.M24 = (left.M21 * right.M14) + (left.M22 * right.M24) + (left.M23 * right.M34) + (left.M24 * right.M44);
             result.M34 = (left.M31 * right.M14) + (left.M32 * right.M24) + (left.M33 * right.M34) + (left.M34 * right.M44);
             result.M44 = (left.M41 * right.M14) + (left.M42 * right.M24) + (left.M43 * right.M34) + (left.M44 * right.M44);
-#endif
         }
 
         /// <summary>

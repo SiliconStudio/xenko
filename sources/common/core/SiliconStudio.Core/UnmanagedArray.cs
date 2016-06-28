@@ -1,33 +1,35 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SiliconStudio.Core
 {
     public class UnmanagedArray<T> : IDisposable where T : struct
     {
         private readonly int sizeOfT;
+        private readonly bool isShared;
 
         public UnmanagedArray(int length)
         {
-            this.Length = length;
+            Length = length;
             sizeOfT = Utilities.SizeOf<T>();
             var finalSize = length * sizeOfT;
             Pointer = Utilities.AllocateMemory(finalSize);
+            isShared = false;
         }
 
         public UnmanagedArray(int length, IntPtr unmanagedDataPtr)
         {
-            this.Length = length;
+            Length = length;
             sizeOfT = Utilities.SizeOf<T>();
             Pointer = unmanagedDataPtr;
+            isShared = true;
         }
 
         public void Dispose()
         {
-            Utilities.FreeMemory(Pointer);
+            if (!isShared)
+            {
+                Utilities.FreeMemory(Pointer);
+            }
         }
 
         public T this[int index]
@@ -43,7 +45,7 @@ namespace SiliconStudio.Core
 
                 unsafe
                 {
-                    var bptr = (byte*)Pointer.ToPointer();
+                    var bptr = (byte*)Pointer;
                     bptr += index*sizeOfT;                   
                     Interop.Read<T>(bptr, ref res);
                 }
@@ -59,7 +61,7 @@ namespace SiliconStudio.Core
 
                 unsafe
                 {
-                    var bptr = (byte*)Pointer.ToPointer();
+                    var bptr = (byte*)Pointer;
                     bptr += index * sizeOfT;
                     Interop.Write<T>(bptr, ref value);
                 }
@@ -75,8 +77,23 @@ namespace SiliconStudio.Core
 
             unsafe
             {
-                Interop.Read(Pointer.ToPointer(), destination, offset, destination.Length);
+                Interop.Read((void*)Pointer, destination, offset, destination.Length);
             }        
+        }
+
+        public void Read(T[] destination, int pointerByteOffset, int arrayOffset, int arrayLen)
+        {
+            if (arrayOffset + arrayLen > Length)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            unsafe
+            {
+                var ptr = (byte*)Pointer;
+                ptr += pointerByteOffset;
+                Interop.Read(ptr, destination, arrayOffset, arrayLen);
+            }
         }
 
         public void Write(T[] source, int offset = 0)
@@ -88,7 +105,22 @@ namespace SiliconStudio.Core
 
             unsafe
             {
-                Interop.Write(Pointer.ToPointer(), source, offset, source.Length);
+                Interop.Write((void*)Pointer, source, offset, source.Length);
+            }
+        }
+
+        public void Write(T[] source, int pointerByteOffset, int arrayOffset, int arrayLen)
+        {
+            if (arrayOffset + arrayLen > Length)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            unsafe
+            {
+                var ptr = (byte*)Pointer;
+                ptr += pointerByteOffset;
+                Interop.Write(ptr , source, arrayOffset, arrayLen);
             }
         }
 

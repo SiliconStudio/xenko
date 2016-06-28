@@ -54,8 +54,7 @@ namespace SiliconStudio.Core.LZ4
         // ReSharper disable InconsistentNaming
 
         // mixed mode
-        private static ILZ4Service _service_Native32;
-        private static ILZ4Service _service_Native64;
+        private static ILZ4Service _service_Native;
 
         // ReSharper restore InconsistentNaming
 
@@ -77,31 +76,9 @@ namespace SiliconStudio.Core.LZ4
             // feel free to change preferred order, just don't do it willy-nilly
             // back it up with some evidence
 
-            if (IntPtr.Size == 4)
-            {
-                encoder =
-                    _service_Native32 ??
-                    _service_Native64;
-
-                decoder =
-                    _service_Native32 ??
-                    _service_Native64;
-                encoderHC =
-                    _service_Native32 ??
-                    _service_Native64;
-            }
-            else
-            {
-                encoder =
-                    _service_Native64 ??
-                    _service_Native32;
-                decoder =
-                    _service_Native64 ??
-                    _service_Native32;
-                encoderHC =
-                    _service_Native64 ??
-                    _service_Native32;
-            }
+            encoder = _service_Native;
+            decoder = _service_Native;
+            encoderHC = _service_Native;
 
             if (encoder == null || decoder == null)
             {
@@ -208,8 +185,7 @@ namespace SiliconStudio.Core.LZ4
         [MethodImpl(MethodImplOptions.NoInlining)]
         private static void InitializeLZ4Native()
         {
-            _service_Native32 = Try<Native32LZ4Service>();
-            _service_Native64 = Try<Native64LZ4Service>();
+            _service_Native = Try<NativeLz4Service>();
         }
 
         // ReSharper restore InconsistentNaming

@@ -5,35 +5,36 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Audio
 {
     /// <summary>
-    /// This class is used to control a <see cref="SiliconStudio.Xenko.Audio.SoundEffect"/> associated to a <see cref="AudioEmitterComponent"/>.
+    /// This class is used to control a <see cref="SiliconStudio.Xenko.Audio.Sound"/> associated to a <see cref="AudioEmitterComponent"/>.
     /// </summary>
     /// <remarks>
     /// <para>
     /// Instances of this class can not be directly created by the user, but need to queried from an <see cref="AudioEmitterComponent"/> 
-    /// instance using the <see cref="AudioEmitterComponent.GetSoundEffectController"/> function.
+    /// instance using the <see cref="AudioEmitterComponent.GetSoundController"/> function.
     /// </para>
     /// <para>
     /// An instance <see cref="AudioEmitterSoundController"/> is not valid anymore if any of those situations arrives: 
     /// <list type="bullet">
-    ///  <item><description>The underlying <see cref="SoundEffect"/> is disposed.</description></item>
+    ///  <item><description>The underlying <see cref="sound"/> is disposed.</description></item>
     ///  <item><description>The <see cref="AudioEmitterComponent"/> is detached from its entity.</description></item>
     ///  <item><description>The entity to which it is attached is removed from the Entity System.</description></item>
     /// </list>
     /// </para>
     /// </remarks>
-    [DebuggerDisplay("Controller for {soundEffect.Name}")]
+    [DebuggerDisplay("Controller for {sound.Name}")]
     public class AudioEmitterSoundController: IPlayableSound
     {
         /// <summary>
-        /// The underlying <see cref="SoundEffect"/>
+        /// The underlying <see cref="sound"/>
         /// </summary>
-        private readonly SoundEffect soundEffect;
+        private readonly Sound sound;
 
         /// <summary>
         /// The parent <see cref="AudioEmitterComponent"/> to which to controller is associated.
@@ -41,22 +42,23 @@ namespace SiliconStudio.Xenko.Audio
         private readonly AudioEmitterComponent parent;
 
         /// <summary>
-        /// The instances of <see cref="soundEffect"/> currently created by this controller (one for each listener).
+        /// The instances of <see cref="sound"/> currently created by this controller (one for each listener).
         /// </summary>
-        private readonly HashSet<SoundEffectInstance> associatedSoundEffectInstances = new HashSet<SoundEffectInstance>();
+        [DataMemberIgnore]
+        internal readonly Dictionary<SoundInstance, AudioListenerComponent> InstanceToListener = new Dictionary<SoundInstance, AudioListenerComponent>();
 
         /// <summary>
         /// Created a new <see cref="AudioEmitterSoundController"/> instance.
         /// </summary>
         /// <param name="parent">The parent AudioEmitterComponent to which the controller is associated.</param>
-        /// <param name="soundEffect">The underlying SoundEffect to be controlled</param>
-        /// <remarks>A <see cref="SoundEffect"/> can be associated to several controllers.</remarks>
-        internal AudioEmitterSoundController(AudioEmitterComponent parent, SoundEffect soundEffect)
+        /// <param name="sound">The underlying Sound to be controlled</param>
+        /// <remarks>A <see cref="sound"/> can be associated to several controllers.</remarks>
+        internal AudioEmitterSoundController(AudioEmitterComponent parent, Sound sound)
         {
-            if(soundEffect == null)
-                throw new ArgumentNullException("soundEffect");
+            if(sound == null)
+                throw new ArgumentNullException(nameof(sound));
 
-            this.soundEffect = soundEffect;
+            this.sound = sound;
             this.parent = parent;
 
             Volume = 1;
@@ -66,23 +68,24 @@ namespace SiliconStudio.Xenko.Audio
         /// Create an new instance of underlying sound, and register it in the controller's sound instance list.
         /// </summary>
         /// <returns>The new sound effect instance created</returns>
-        internal SoundEffectInstance CreateSoundInstance()
+        internal SoundInstance CreateSoundInstance(AudioListenerComponent listener)
         {
-            var newInstance = soundEffect.CreateInstance();
+            var newInstance = sound.CreateInstance(listener.Listener);
 
-            associatedSoundEffectInstances.Add(newInstance);
+            InstanceToListener.Add(newInstance, listener);
+
+            listener.AttachedInstances.Add(newInstance);
 
             return newInstance;
         }
 
-        /// <summary>
-        /// Dispose and sound instance and removes it from the controller sound instance list.
-        /// </summary>
-        /// <param name="soundInstance">Sound instance to destroy</param>
-        internal void DestroySoundInstance(SoundEffectInstance soundInstance)
+        internal void DestroySoundInstances(AudioListenerComponent listener)
         {
-            soundInstance.Dispose();
-            associatedSoundEffectInstances.Remove(soundInstance);
+            foreach (var instance in listener.AttachedInstances)
+            {
+                instance.Dispose();
+                InstanceToListener.Remove(instance);
+            }
         }
 
         /// <summary>
@@ -90,20 +93,21 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         internal void DestroyAllSoundInstances()
         {
-            foreach (var instance in associatedSoundEffectInstances)
+            foreach (var instance in InstanceToListener)
             {
-                instance.Dispose();
+                instance.Key.Dispose();
             }
-            associatedSoundEffectInstances.Clear();
+            InstanceToListener.Clear();
         }
 
         private SoundPlayState playState;
+
         public SoundPlayState PlayState 
         { 
             get 
             {
                 // force the play status to 'stopped' if there is no listeners.
-                if (!associatedSoundEffectInstances.Any())
+                if (!InstanceToListener.Any())
                     return SoundPlayState.Stopped;
 
                 // return the controller playStatus if not started playing.
@@ -116,7 +120,7 @@ namespace SiliconStudio.Xenko.Audio
                 // setting the state of the sound to Stopped when reaching the end of the track.
                 // For coherency, we consider a controller as stopped only when all its instances are stopped.
                 // (if not the case, a play call to a stopped controller would restart only some of the underlying instances)
-                if(associatedSoundEffectInstances.Any(x=>x.PlayState == SoundPlayState.Playing))
+                if(InstanceToListener.Any(x=>x.Key.PlayState == SoundPlayState.Playing))
                     return SoundPlayState.Playing;
 
                 return playState = SoundPlayState.Stopped;
@@ -124,6 +128,10 @@ namespace SiliconStudio.Xenko.Audio
         }
 
         private bool isLooped;
+
+        /// <summary>
+        /// Gets or sets whether the sound is automatically looping from beginning when it reaches the end.
+        /// </summary>
         public bool IsLooped
         {
             get
@@ -132,11 +140,29 @@ namespace SiliconStudio.Xenko.Audio
             }
             set
             {
-                foreach (var instance in associatedSoundEffectInstances)
+                foreach (var instance in InstanceToListener)
                 {
-                    instance.IsLooped = value;
+                    instance.Key.IsLooped = value;
                 }
                 isLooped = value;
+            }
+        }
+
+        private float pitch = 1.0f;
+
+        public float Pitch
+        {
+            get
+            {
+                return pitch;
+            }
+            set
+            {
+                foreach (var instance in InstanceToListener)
+                {
+                    instance.Key.Pitch = value;
+                }
+                pitch = value;
             }
         }
 
@@ -156,6 +182,7 @@ namespace SiliconStudio.Xenko.Audio
             // and apply localization to the sound before starting to play.
 
             parent.ShouldBeProcessed = true; // tells the EmitterProcessor to update to AudioEmiter values.
+
             ShouldBePlayed = true;  // tells the EmitterProcessor to start playing the underlying instances.
         }
 
@@ -166,10 +193,11 @@ namespace SiliconStudio.Xenko.Audio
 
             playState = SoundPlayState.Paused;
 
-            foreach (var instance in associatedSoundEffectInstances)
+            foreach (var instance in InstanceToListener)
             {
-                instance.Pause();
+                instance.Key.Pause();
             }
+
             ShouldBePlayed = false;
         }
 
@@ -177,26 +205,16 @@ namespace SiliconStudio.Xenko.Audio
         {
             playState = SoundPlayState.Stopped;
 
-            foreach (var instance in associatedSoundEffectInstances)
+            foreach (var instance in InstanceToListener)
             {
-                instance.Stop();
+                instance.Key.Stop();
             }
+
             ShouldBePlayed = false;
         }
 
-        internal bool ShouldExitLoop;
-        public void ExitLoop()
-        {
-            if (ShouldBePlayed)
-                ShouldExitLoop = true;
-
-            foreach (var instance in associatedSoundEffectInstances)
-            {
-                instance.ExitLoop();
-            }
-        }
-
         private float volume;
+
         public float Volume 
         {
             get
@@ -207,9 +225,9 @@ namespace SiliconStudio.Xenko.Audio
             {
                 volume = MathUtil.Clamp(value, 0, 1);
 
-                foreach (var instance in associatedSoundEffectInstances)
+                foreach (var instance in InstanceToListener)
                 {
-                    instance.Volume = volume;
+                    instance.Key.Volume = volume;
                 }
             }
         }

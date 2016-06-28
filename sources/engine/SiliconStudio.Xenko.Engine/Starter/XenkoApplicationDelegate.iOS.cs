@@ -2,9 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_PLATFORM_IOS
 using System;
-using System.Drawing;
 using CoreGraphics;
 using Foundation;
+using OpenTK;
 using UIKit;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
@@ -60,7 +60,8 @@ namespace SiliconStudio.Xenko.Starter
         protected virtual iOSXenkoView CreateView(CGRect bounds, nfloat? contentScaleFactor = null)
         {
             // create the xenko game view 
-            return new iOSXenkoView((RectangleF)bounds) { ContentScaleFactor = contentScaleFactor ?? UIScreen.MainScreen.Scale };
+            var rect = new System.Drawing.RectangleF((float)bounds.X, (float)bounds.Y, (float)bounds.Height, (float)bounds.Width);
+            return new iOSXenkoView(rect) { ContentScaleFactor = contentScaleFactor ?? UIScreen.MainScreen.Scale };
         }
 
         protected virtual XenkoGameController CreateViewController(iOSXenkoView xenkoGameView)

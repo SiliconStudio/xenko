@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Audio;
 using SiliconStudio.Xenko.Engine.Design;
@@ -20,7 +21,12 @@ namespace SiliconStudio.Xenko.Engine
     [DataContract("AudioListenerComponent")]
     [DefaultEntityComponentProcessor(typeof(AudioListenerProcessor), ExecutionMode = ExecutionMode.Runtime)]
     [ComponentOrder(6000)]
-    public sealed class AudioListenerComponent : EntityComponent
+    public sealed class AudioListenerComponent : ActivableEntityComponent
     {
+        [DataMemberIgnore]
+        internal HashSet<SoundInstance> AttachedInstances = new HashSet<SoundInstance>();
+
+        [DataMemberIgnore]
+        internal AudioListener Listener;
     }
 }

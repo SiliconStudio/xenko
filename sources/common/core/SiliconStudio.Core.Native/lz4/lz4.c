@@ -121,6 +121,27 @@
 #  define lz4_bswap16(x) ((unsigned short int) ((((x) >> 8) & 0xffu) | (((x) & 0xffu) << 8)))
 #endif
 
+//**************************************
+// Includes
+//**************************************
+#include "../../../../../deps/NativePath/standard/stdlib.h"
+#include "../../../../../deps/NativePath/standard/string.h"
+#include "lz4.h"
+
+
+//**************************************
+// Basic Types
+//**************************************
+#include "../../../../../deps/NativePath/standard/stdint.h"
+#  define BYTE      uint8_t
+#  define U16       uint16_t
+#  define U32       uint32_t
+#  define S32       int32_t
+#  define U64       uint64_t
+#  define S64       int64_t
+
+#undef expect
+
 #if (GCC_VERSION >= 302) || (__INTEL_COMPILER >= 800) || defined(__clang__)
 #  define expect(expr,value)    (__builtin_expect ((expr),(value)) )
 #else
@@ -129,35 +150,6 @@
 
 #define likely(expr)     expect((expr) != 0, 1)
 #define unlikely(expr)   expect((expr) != 0, 0)
-
-
-//**************************************
-// Includes
-//**************************************
-#include <stdlib.h>   // for malloc
-#include <string.h>   // for memset
-#include "lz4.h"
-
-
-//**************************************
-// Basic Types
-//**************************************
-#if defined(_MSC_VER)    // Visual Studio does not support 'stdint' natively
-#  define BYTE      unsigned __int8
-#  define U16       unsigned __int16
-#  define U32       unsigned __int32
-#  define S32       __int32
-#  define U64       unsigned __int64
-#  define S64       __int64
-#else
-#  include <stdint.h>
-#  define BYTE      uint8_t
-#  define U16       uint16_t
-#  define U32       uint32_t
-#  define S32       int32_t
-#  define U64       uint64_t
-#  define S64       int64_t
-#endif
 
 #ifndef LZ4_FORCE_UNALIGNED_ACCESS
 #  pragma pack(push, 1)
@@ -771,7 +763,7 @@ _last_literals:
 }
 
 
-CORE_EXPORT( int ) LZ4_compress_limitedOutput(const char* source,
+int LZ4_compress_limitedOutput(const char* source,
     char* dest,
     int isize,
     int maxOutputSize)
@@ -791,11 +783,11 @@ CORE_EXPORT( int ) LZ4_compress_limitedOutput(const char* source,
 #endif
 }
 
-CORE_EXPORT( int ) LZ4_compress(const char* source,
+int LZ4_compress(const char* source,
     char* dest,
     int isize)
 {
-    return LZ4_compress_limitedOutput(source, dest, isize, LZ4_compressBound(isize));
+    return LZ4_compress_limitedOutput(source, dest, isize, LZ4_COMPRESSBOUND(isize));
 }
 
 //****************************
@@ -809,7 +801,7 @@ CORE_EXPORT( int ) LZ4_compress(const char* source,
 //      LZ4_uncompress() guarantees that it will never read before source, nor beyond source + LZ4_compressBound(osize)
 //      A corrupted input will produce an error result, a negative int, indicating the position of the error within input stream.
 
-CORE_EXPORT( int ) LZ4_uncompress(const char* source,
+int LZ4_uncompress(const char* source,
     char* dest,
     int osize)
 {
@@ -913,7 +905,7 @@ _output_error:
     return (int) (-(((char*)ip)-source));
 }
 
-CORE_EXPORT( int ) LZ4_uncompress_unknownOutputSize(
+int LZ4_uncompress_unknownOutputSize(
     const char* source,
     char* dest,
     int isize,
