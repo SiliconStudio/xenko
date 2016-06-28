@@ -114,7 +114,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
 #endif
                 }
             }
-            if (effectParameters.Platform == GraphicsPlatform.Vulkan)
+            else if (effectParameters.Platform == GraphicsPlatform.Vulkan)
             {
                 string inputFileExtension;
                 switch (stage)
