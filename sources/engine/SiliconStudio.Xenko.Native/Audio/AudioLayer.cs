@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Native
 #if SILICONSTUDIO_PLATFORM_WINDOWS
             NativeLibrary.PreloadLibrary(NativeInvoke.Library + ".dll");
 #else
-            NativeLibrary.PreloadLibrary(NativeInvoke.Library + ".so");
+            NativeLibrary.PreloadLibrary(NativeInvoke.Library);
 #endif
         }
 
