@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.Games
         protected override void Initialize(GameContext<OpenTK.GameWindow> gameContext)
         {
             gameForm = gameContext.Control;
-            nativeWindow = new WindowHandle(AppContextType.DesktopOpenTK, gameForm);
+            nativeWindow = new WindowHandle(AppContextType.DesktopOpenTK, gameForm, gameForm.WindowInfo.Handle);
 
             // Setup the initial size of the window
             var width = gameContext.RequestedWidth;
