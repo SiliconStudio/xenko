@@ -297,10 +297,12 @@ namespace SiliconStudio.Xenko.Audio
 
             if (soundSource != null)
             {
+                playingQueued = true;
                 Task.Run(async () =>
                 {
                     await soundSource.ReadyToPlay.Task;
                     AudioLayer.SourcePlay(Source);
+                    playingQueued = false;
                 });
             }
             else
@@ -316,6 +318,8 @@ namespace SiliconStudio.Xenko.Audio
             sound?.StopConcurrentInstances(this);
         }
 
+        private volatile bool playingQueued;
+
         private SoundPlayState playState = SoundPlayState.Stopped;
 
         /// <summary>
@@ -328,7 +332,7 @@ namespace SiliconStudio.Xenko.Audio
                 if (engine.State == AudioEngineState.Invalidated)
                     return SoundPlayState.Stopped;
 
-                if (playState == SoundPlayState.Playing && !AudioLayer.SourceIsPlaying(Source))
+                if (playState == SoundPlayState.Playing && !playingQueued && !AudioLayer.SourceIsPlaying(Source))
                 {
                     Stop();
                 }
