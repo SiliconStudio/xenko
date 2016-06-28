@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             graphicsDevice = device;
             startingPresentationParameters = presentationParameters;
-            gameWindow = (iPhoneOSGameView)Description.DeviceWindowHandle.NativeHandle;
+            gameWindow = (iPhoneOSGameView)Description.DeviceWindowHandle.NativeWindow;
             device.InitDefaultRenderTarget(presentationParameters);
 
             backBuffer = Texture.New2D(device, Description.BackBufferWidth, Description.BackBufferHeight, presentationParameters.BackBufferFormat, TextureFlags.RenderTarget | TextureFlags.ShaderResource);

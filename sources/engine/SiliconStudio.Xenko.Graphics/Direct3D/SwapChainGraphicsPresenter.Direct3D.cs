@@ -346,7 +346,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <returns></returns>
         private SwapChain CreateSwapChainForWindows()
         {
-            var nativeHandle = Description.DeviceWindowHandle.NativeHandle;
+            var nativeHandle = Description.DeviceWindowHandle.NativeWindow;
             var handleProperty = nativeHandle.GetType().GetProperty("Handle", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
             if (handleProperty != null && handleProperty.PropertyType == typeof(IntPtr))
             {
