@@ -201,6 +201,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AssetCompilerContextExtensions.cs" />
+    <Compile Include="Audio\SoundFactories.cs" />
     <Compile Include="Audio\RawSoundAssetImporter.cs" />
     <Compile Include="Audio\SoundAsset.cs" />
     <Compile Include="Effect\CompileDefaultSceneEffectCommand.cs" />

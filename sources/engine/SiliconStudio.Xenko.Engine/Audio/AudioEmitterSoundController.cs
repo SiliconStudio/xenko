@@ -129,6 +129,9 @@ namespace SiliconStudio.Xenko.Audio
 
         private bool isLooped;
 
+        /// <summary>
+        /// Gets or sets whether the sound is automatically looping from beginning when it reaches the end.
+        /// </summary>
         public bool IsLooped
         {
             get

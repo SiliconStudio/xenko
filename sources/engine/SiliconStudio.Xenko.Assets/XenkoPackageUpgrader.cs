@@ -287,7 +287,7 @@ namespace SiliconStudio.Xenko.Assets
             }
 
             //Audio refactor
-            if (dependency.Version.MinVersion < new PackageVersion("1.7.0-alpha02"))
+            if (dependency.Version.MinVersion < new PackageVersion("1.7.0-alpha03"))
             {
                 var audioAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xksnd").Select(x => x.AsYamlAsset()).ToArray();
                 foreach (var assetFile in audioAssets)

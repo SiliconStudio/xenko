@@ -37,7 +37,7 @@ TemplateFolders:
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Animations/DefaultAdditiveAnimation.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Animations/DefaultAnimation.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Animations/DefaultSkeleton.xktpl
-        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Audio/SimpleSound.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Audio/DefaultSound.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Audio/SpatializedSound.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Audio/MusicSound.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Materials/DefaultMaterial.xktpl

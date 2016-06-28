@@ -16,7 +16,7 @@ namespace SiliconStudio.Core.Native
 #if SILICONSTUDIO_PLATFORM_WINDOWS
             NativeLibrary.PreloadLibrary(Library + ".dll");
 #else
-            NativeLibrary.PreloadLibrary(Library);
+            NativeLibrary.PreloadLibrary(Library + ".so");
 #endif
         }
     }

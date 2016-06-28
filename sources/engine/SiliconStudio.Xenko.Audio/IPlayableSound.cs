@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Audio
         SoundPlayState PlayState { get; }
 
         /// <summary>
-        /// If the sound is automatically looping from beginning when it reaches the end.
+        /// Gets or sets whether the sound is automatically looping from beginning when it reaches the end.
         /// </summary>
         bool IsLooped { get; set; }
 
