@@ -18,15 +18,12 @@ namespace AnimatedModel
             base.Start();
 
             // Setup the UI
-            Entity.Get<UIComponent>().Page = new UIPage
+            Entity.Get<UIComponent>().RootElement = new StackPanel
             {
-                RootElement = new StackPanel
-                {
-                    Orientation = Orientation.Vertical,
-                    HorizontalAlignment = HorizontalAlignment.Right,
-                    Margin = new Thickness(0, 10, 20, 0),
-                    Children = { CreateButton("Idle"), CreateButton("Run") }
-                }
+                Orientation = Orientation.Vertical,
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Margin = new Thickness(0, 10, 20, 0),
+                Children = { CreateButton("Idle"), CreateButton("Run") }
             };
 
             // Set the default animation

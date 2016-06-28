@@ -46,22 +46,18 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             var lifeBar = new ImageElement { Source = SpriteFromSheet.Create(sprites, "Logo"), HorizontalAlignment = HorizontalAlignment.Center };
             lifeBar.DependencyProperties.Set(GridBase.ColumnSpanPropertyKey, 3);
 
-            var quitText = new TextBlock { Text = "Quit Game", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15") };
-            ApplyTextBlockDefaultStyle(quitText);
             var quitGameButton = new Button
-            {
-                Content = quitText,
-                VerticalAlignment = VerticalAlignment.Bottom,
-                HorizontalAlignment = HorizontalAlignment.Left,
-                Padding = Thickness.UniformRectangle(10),
-            };
-            ApplyButtonDefaultStyle(quitGameButton);
+                {
+                    Content = new TextBlock { Text = "Quit Game", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15") },
+                    VerticalAlignment = VerticalAlignment.Bottom,
+                    HorizontalAlignment = HorizontalAlignment.Left,
+                    Padding = Thickness.UniformRectangle(10),
+                };
             quitGameButton.DependencyProperties.Set(GridBase.ColumnPropertyKey, 0);
             quitGameButton.DependencyProperties.Set(GridBase.RowPropertyKey, 2);
             quitGameButton.Click += (sender, args) => Exit();
 
             modalButton1Text = new TextBlock { Text = "Close Modal window 1", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15") };
-            ApplyTextBlockDefaultStyle(modalButton1Text);
             var modalButton1 = new Button
             {
                 Name = "Button Modal 1",
@@ -70,7 +66,6 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 HorizontalAlignment = HorizontalAlignment.Center,
                 Padding = Thickness.UniformRectangle(10),
             };
-            ApplyButtonDefaultStyle(modalButton1);
             modalButton1.Click += ModalButton1OnClick;
             modal1 = new ModalElement { Content = modalButton1, Name = "Modal 1"};
             modal1.DependencyProperties.Set(Panel.ZIndexPropertyKey, 1);
@@ -79,7 +74,6 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             modal1.OutsideClick += Modal1OnOutsideClick;
 
             modalButton2Text = new TextBlock { Text = "Close Modal window 2", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15") };
-            ApplyTextBlockDefaultStyle(modalButton2Text);
             var modalButton2 = new Button
             {
                 Name = "Button Modal 2",
@@ -88,7 +82,6 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 HorizontalAlignment = HorizontalAlignment.Center,
                 Padding = Thickness.UniformRectangle(10),
             };
-            ApplyButtonDefaultStyle(modalButton2);
             modalButton2.Click += ModalButton2OnClick;
             modal2 = new ModalElement { Content = modalButton2, Name = "Modal 2" };
             modal2.DependencyProperties.Set(Panel.ZIndexPropertyKey, 2);
@@ -102,7 +95,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             uniformGrid.Children.Add(lifeBar);
             uniformGrid.Children.Add(quitGameButton);
             
-            UIComponent.Page = new Engine.UIPage { RootElement = uniformGrid };
+            UIComponent.RootElement = uniformGrid;
         }
 
         private void Modal1OnOutsideClick(object sender, RoutedEventArgs routedEventArgs)
@@ -119,7 +112,6 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             uniformGrid.Children.Remove(modal1);
         }
-
         private void ModalButton2OnClick(object sender, RoutedEventArgs routedEventArgs)
         {
             uniformGrid.Children.Remove(modal2);

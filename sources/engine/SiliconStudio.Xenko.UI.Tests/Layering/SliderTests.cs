@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             UIElementLayeringTests.TestNoInvalidation(slider, () => slider.TrackForegroundImage = (SpriteFromTexture)new Sprite());
             UIElementLayeringTests.TestNoInvalidation(slider, () => slider.ThumbImage = (SpriteFromTexture)new Sprite());
             UIElementLayeringTests.TestNoInvalidation(slider, () => slider.MouseOverThumbImage = (SpriteFromTexture)new Sprite());
-            UIElementLayeringTests.TestNoInvalidation(slider, () => slider.TickImage = (SpriteFromTexture)new Sprite());
+            UIElementLayeringTests.TestNoInvalidation(slider, () => slider.DependencyProperties.Set(Slider.TickImagePropertyKey, (SpriteFromTexture)new Sprite()));
             UIElementLayeringTests.TestNoInvalidation(slider, () => slider.TickOffset = new float());
             UIElementLayeringTests.TestNoInvalidation(slider, () => slider.TrackStartingOffsets = new Vector2());
         }
@@ -218,7 +218,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
         /// Test the <see cref="Slider.MeasureOverride"/> method.
         /// </summary>
         [Test]
-        public void TestMeasureOverride()
+        public void TestMeausureOverride()
         {
             var slider = new Slider();
             var sprite = new Sprite { Region = new RectangleF(2, 3, 40, 50) };

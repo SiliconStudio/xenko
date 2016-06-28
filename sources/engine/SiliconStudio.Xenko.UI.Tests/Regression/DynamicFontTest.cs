@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 Content = textBlock
             };
 
-            UIComponent.Page = new Engine.UIPage { RootElement = decorator };
+            UIComponent.RootElement = decorator;
         }
 
         protected override void Update(GameTime gameTime)

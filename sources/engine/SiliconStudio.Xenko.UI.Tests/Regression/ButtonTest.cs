@@ -25,9 +25,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             await base.LoadContent();
 
             button = new Button();
-            ApplyButtonDefaultStyle(button);
 
-            UIComponent.Page = new Engine.UIPage { RootElement = button };
+            UIComponent.RootElement = button;
         }
 
         protected override void RegisterTests()

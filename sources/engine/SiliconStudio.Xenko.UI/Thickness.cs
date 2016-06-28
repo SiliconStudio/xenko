@@ -1,21 +1,15 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-
 using System;
-using System.ComponentModel;
 using System.Diagnostics;
-using SiliconStudio.Core;
-using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Xenko.UI
 {
     /// <summary>
     /// Describes the thickness of a frame around a cuboid. Six float values describe the Left, Top, Right, Bottom, Front, and Back sides of the cuboid, respectively.
     /// </summary>
-    [DataContract(nameof(Thickness))]
-    [DataStyle(DataStyle.Compact)]
     [DebuggerDisplay("Left:{Left}, Top:{Top}, Back:{Back}, Right:{Right}, Bottom:{Bottom}, Front:{Front}")]
-    public struct Thickness : IEquatable<Thickness>
+    public struct Thickness
     {
         /// <summary>
         /// Initializes a new instance of the Thickness structure that has the specified uniform length on the Left, Right, Top, Bottom side and 0 for the Front and Back side.
@@ -53,6 +47,38 @@ namespace SiliconStudio.Xenko.UI
             Front = 0;
             Back = 0;
         }
+
+        /// <summary>
+        /// Reverses the direction of a given Thickness.
+        /// </summary>
+        /// <param name="value">The Thickness to negate.</param>
+        /// <returns>A Thickness with the opposite direction.</returns>
+        public static Thickness operator -(Thickness value)
+        {
+            return new Thickness(-value.Left, -value.Top, -value.Back, -value.Right, -value.Bottom, -value.Front);
+        }
+
+        /// <summary>
+        /// Addition two Thickness together.
+        /// </summary>
+        /// <param name="value1">The first thickness to add.</param>
+        /// <param name="value2">The second thickness to add.</param>
+        /// <returns>A Thickness with the opposite direction.</returns>
+        public static Thickness operator +(Thickness value1, Thickness value2)
+        {
+            return new Thickness(value1.Left + value2.Left, value1.Top + value2.Top, value1.Back + value2.Back, value1.Right + value2.Right, value1.Bottom + value2.Bottom, value1.Front + value2.Front);
+        }
+
+        /// <summary>
+        /// Divide a Thickness by a float.
+        /// </summary>
+        /// <param name="value1">The first thickness to add.</param>
+        /// <param name="value2">The float value to divide by.</param>
+        /// <returns>The divided thickness</returns>
+        public static Thickness operator /(Thickness value1, float value2)
+        {
+            return new Thickness(value1.Left / value2, value1.Top / value2, value1.Back / value2, value1.Right / value2, value1.Bottom / value2, value1.Front / value2);
+        }    
         
         /// <summary>
         /// Initializes a new instance of the Thickness structure that has specific lengths applied to each side of the cuboid.
@@ -72,54 +98,36 @@ namespace SiliconStudio.Xenko.UI
             Front = front;
             Back = back;
         }
-        
-        /// <summary>
-        ///  The Back side of the bounding rectangle.
-        /// </summary>
-        [DataMember(5)]
-        [DataMemberRange(float.MinValue, float.MaxValue)]
-        [DefaultValue(0.0f)]
-        public float Back;
 
         /// <summary>
         ///  The bottom side of the bounding rectangle.
         /// </summary>
-        [DataMember(4)]
-        [DataMemberRange(float.MinValue, float.MaxValue)]
-        [DefaultValue(0.0f)]
         public float Bottom;
-
-        /// <summary>
-        ///  The front side of the bounding rectangle.
-        /// </summary>
-        [DataMember(2)]
-        [DataMemberRange(float.MinValue, float.MaxValue)]
-        [DefaultValue(0.0f)]
-        public float Front;
 
         /// <summary>
         ///  The left side of the bounding rectangle.
         /// </summary>
-        [DataMember(0)]
-        [DataMemberRange(float.MinValue, float.MaxValue)]
-        [DefaultValue(0.0f)]
         public float Left;
 
         /// <summary>
         ///  The right side of the bounding rectangle.
         /// </summary>
-        [DataMember(3)]
-        [DataMemberRange(float.MinValue, float.MaxValue)]
-        [DefaultValue(0.0f)]
         public float Right;
 
         /// <summary>
         ///  The upper side of the bounding rectangle.
         /// </summary>
-        [DataMember(1)]
-        [DataMemberRange(float.MinValue, float.MaxValue)]
-        [DefaultValue(0.0f)]
         public float Top;
+
+        /// <summary>
+        ///  The front side of the bounding rectangle.
+        /// </summary>
+        public float Front;
+
+        /// <summary>
+        ///  The Back side of the bounding rectangle.
+        /// </summary>
+        public float Back;
 
         /// <summary>
         /// Gets the component at the specified index.
@@ -128,7 +136,6 @@ namespace SiliconStudio.Xenko.UI
         /// 2 for the Front component, 3 for the Right component, 4 for the Bottom component, 5 for the Back component.</param>
         /// <returns>The value of the component at the specified index.</returns>
         /// <exception cref="System.ArgumentOutOfRangeException">Thrown when the <paramref name="index"/> is out of the range [0, 5].</exception>
-        [DataMemberIgnore]
         public float this[int index]
         {
             get
@@ -143,100 +150,8 @@ namespace SiliconStudio.Xenko.UI
                     case 5: return Back;
                 }
 
-                throw new ArgumentOutOfRangeException(nameof(index), $"Indices for {nameof(Thickness)} run from {0} to {5}, inclusive.");
+                throw new ArgumentOutOfRangeException("index", "Indices for Vector2 run from 0 to 1, inclusive.");
             }
         }
-
-        public bool Equals(Thickness other)
-        {
-            return Back.Equals(other.Back) && Bottom.Equals(other.Bottom)
-                && Front.Equals(other.Front) && Left.Equals(other.Left)
-                && Right.Equals(other.Right) && Top.Equals(other.Top);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj)) return false;
-            return obj is Thickness && Equals((Thickness)obj);
-        }
-
-        public override int GetHashCode()
-        {
-            unchecked
-            {
-                var hashCode = Back.GetHashCode();
-                hashCode = (hashCode * 397) ^ Bottom.GetHashCode();
-                hashCode = (hashCode * 397) ^ Front.GetHashCode();
-                hashCode = (hashCode * 397) ^ Left.GetHashCode();
-                hashCode = (hashCode * 397) ^ Right.GetHashCode();
-                hashCode = (hashCode * 397) ^ Top.GetHashCode();
-                return hashCode;
-            }
-        }
-
-        public static bool operator ==(Thickness left, Thickness right)
-        {
-            return left.Equals(right);
-        }
-
-        public static bool operator !=(Thickness left, Thickness right)
-        {
-            return !left.Equals(right);
-        }
-
-        /// <summary>
-        /// Reverses the direction of a given Thickness.
-        /// </summary>
-        /// <param name="value">The Thickness to negate.</param>
-        /// <returns>A Thickness with the opposite direction.</returns>
-        public static Thickness operator -(Thickness value)
-        {
-            return new Thickness(-value.Left, -value.Top, -value.Back, -value.Right, -value.Bottom, -value.Front);
-        }
-
-        /// <summary>
-        /// Substracts one Thickness with another.
-        /// </summary>
-        /// <param name="value1">The thickness to subtract from.</param>
-        /// <param name="value2">The thickness to substract.</param>
-        /// <returns>A Thickness representing the difference between the two Thickness.</returns>
-        public static Thickness operator -(Thickness value1, Thickness value2)
-        {
-            return new Thickness(value1.Left - value2.Left, value1.Top - value2.Top, value1.Back - value2.Back, value1.Right - value2.Right, value1.Bottom - value2.Bottom, value1.Front - value2.Front);
-        }
-
-        /// <summary>
-        /// Adds two Thickness together.
-        /// </summary>
-        /// <param name="value1">The first thickness to add.</param>
-        /// <param name="value2">The second thickness to add.</param>
-        /// <returns>A Thickness representing the sum of the two Thickness.</returns>
-        public static Thickness operator +(Thickness value1, Thickness value2)
-        {
-            return new Thickness(value1.Left + value2.Left, value1.Top + value2.Top, value1.Back + value2.Back, value1.Right + value2.Right, value1.Bottom + value2.Bottom, value1.Front + value2.Front);
-        }
-
-        /// <summary>
-        /// Divides a Thickness by a float.
-        /// </summary>
-        /// <param name="value1">The thickness.</param>
-        /// <param name="value2">The float value to divide by.</param>
-        /// <returns>The divided thickness</returns>
-        public static Thickness operator /(Thickness value1, float value2)
-        {
-            return new Thickness(value1.Left / value2, value1.Top / value2, value1.Back / value2, value1.Right / value2, value1.Bottom / value2, value1.Front / value2);
-        }
-
-        /// <summary>
-        /// Multiplies a Thickness by a float.
-        /// </summary>
-        /// <param name="value1">The thickness.</param>
-        /// <param name="value2">The float value to multiply with.</param>
-        /// <returns>The multiplied thickness</returns>
-        public static Thickness operator *(Thickness value1, float value2)
-        {
-            return new Thickness(value1.Left * value2, value1.Top * value2, value1.Back * value2, value1.Right * value2, value1.Bottom * value2, value1.Front * value2);
-        }
-
     }
 }

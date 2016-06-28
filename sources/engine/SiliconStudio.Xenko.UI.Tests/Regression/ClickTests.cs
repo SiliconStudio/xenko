@@ -31,31 +31,19 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            var textblock = new TextBlock { Font = Content.Load<SpriteFont>("CourierNew12"), SynchronousCharacterGeneration = true };
-            ApplyTextBlockDefaultStyle(textblock);
-            var element1 = new Button { Name = "1", Width = 800, Height = 400, Content = textblock };
-            ApplyButtonDefaultStyle(element1);
+            var element1 = new Button { Name = "1", Width = 800, Height = 400, Content = new TextBlock { Font = Content.Load<SpriteFont>("CourierNew12"), SynchronousCharacterGeneration = true } };
             element1.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, new Vector3(100, 50, 0));
             element1.DependencyProperties.Set(Panel.ZIndexPropertyKey, -1);
 
-            textblock = new TextBlock { Font = Content.Load<SpriteFont>("CourierNew12"), SynchronousCharacterGeneration = true };
-            ApplyTextBlockDefaultStyle(textblock);
-            var element2 = new Button { Name = "2", Width = 400, Height = 200, Content = textblock };
-            ApplyButtonDefaultStyle(element2);
+            var element2 = new Button { Name = "2", Width = 400, Height = 200, Content = new TextBlock { Font = Content.Load<SpriteFont>("CourierNew12"), SynchronousCharacterGeneration = true } };
             element2.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, new Vector3(300, 150, 0));
             element2.DependencyProperties.Set(Panel.ZIndexPropertyKey, 1);
 
-            textblock = new TextBlock { Font = Content.Load<SpriteFont>("CourierNew12"), SynchronousCharacterGeneration = true };
-            ApplyTextBlockDefaultStyle(textblock);
-            var element3 = new Button { Name = "3", Width = 400, Height = 200, Content = textblock };
-            ApplyButtonDefaultStyle(element3);
+            var element3 = new Button { Name = "3", Width = 400, Height = 200, Content = new TextBlock { Font = Content.Load<SpriteFont>("CourierNew12"), SynchronousCharacterGeneration = true } };
             element3.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, new Vector3(150, 225, 0));
             element3.DependencyProperties.Set(Panel.ZIndexPropertyKey, 2);
 
-            textblock = new TextBlock { Font = Content.Load<SpriteFont>("CourierNew12"), SynchronousCharacterGeneration = true };
-            ApplyTextBlockDefaultStyle(textblock);
-            var element4 = new Button { Name = "4", Width = 400, Height = 200, Content = textblock };
-            ApplyButtonDefaultStyle(element4);
+            var element4 = new Button { Name = "4", Width = 400, Height = 200, Content = new TextBlock { Font = Content.Load<SpriteFont>("CourierNew12"), SynchronousCharacterGeneration = true } };
             element4.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, new Vector3(450, 75, 0));
             element4.DependencyProperties.Set(Panel.ZIndexPropertyKey, 0);
 
@@ -67,7 +55,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             elements = new List<Button> { element1, element2, element3, element4 };
 
-            UIComponent.Page = new Engine.UIPage { RootElement = canvas };
+            UIComponent.RootElement = canvas;
         }
 
         protected override void Update(GameTime gameTime)

@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public ToggleButtonTest()
         {
-            CurrentVersion = 5;
+            CurrentVersion = 4;
         }
 
         protected override async Task LoadContent()
@@ -35,9 +35,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center,
             };
-            ApplyToggleButtonBlockDefaultStyle(toggle);
 
-            UIComponent.Page = new Engine.UIPage { RootElement = toggle };
+            UIComponent.RootElement = toggle;
         }
 
         protected override void Update(GameTime gameTime)
@@ -52,18 +51,36 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             base.RegisterTests();
             FrameGameSystem.DrawOrder = -1;
-            // Since click are evaluated before measuring/arranging/drawing, we need to render the UI at least once (see UIRenderFeature.Draw)
-            FrameGameSystem.Draw(() => { }).TakeScreenshot();
-            FrameGameSystem.Draw(Click).TakeScreenshot();
-            FrameGameSystem.Draw(Click).TakeScreenshot();
-            FrameGameSystem.Draw(Click).TakeScreenshot();
+            FrameGameSystem.Draw(Draw0).TakeScreenshot();
+            FrameGameSystem.Draw(Draw1).TakeScreenshot();
+            FrameGameSystem.Draw(Draw2).TakeScreenshot();
         }
 
-        private void Click()
+        public void Draw0()
         {
             Input.PointerEvents.Clear();
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.5f)));
             Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.5f)));
+
+            UI.Update(new GameTime());
+        }
+
+        public void Draw1()
+        {
+            Input.PointerEvents.Clear();
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.5f)));
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.5f)));
+
+            UI.Update(new GameTime());
+        }
+
+        public void Draw2()
+        {
+            Input.PointerEvents.Clear();
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Down, new Vector2(0.5f)));
+            Input.PointerEvents.Add(CreatePointerEvent(PointerState.Up, new Vector2(0.5f)));
+
+            UI.Update(new GameTime());
         }
 
         [Test]

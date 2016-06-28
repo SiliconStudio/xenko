@@ -8,7 +8,7 @@ namespace SiliconStudio.Xenko.UI
     /// <summary>
     /// Provides a services class for all the User Interface elements in Xenko applications.
     /// </summary>
-    internal struct UIElementServices
+    public struct UIElementServices
     {
         public IServiceRegistry Services { get; set; }
 

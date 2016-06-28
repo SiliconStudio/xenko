@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
             // round the size of the bar to nearest pixel modulo to avoid to have a bar varying by one pixel length while scrolling
             var barSize = bar.RenderSizeInternal;
             var realVirtualRatio = bar.LayoutingContext.RealVirtualResolutionRatio;
-            for (var i = 0; i < 2; i++)
+            for (int i = 0; i < 2; i++)
                 barSize[i] = (float)(Math.Ceiling(barSize[i] * realVirtualRatio[i]) / realVirtualRatio[i]);
             
             Batch.DrawRectangle(ref element.WorldMatrixInternal, ref barSize, ref bar.BarColorInternal, context.DepthBias);

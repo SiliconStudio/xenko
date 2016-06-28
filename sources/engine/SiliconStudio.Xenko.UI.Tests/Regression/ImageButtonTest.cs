@@ -11,11 +11,11 @@ using SiliconStudio.Xenko.UI.Controls;
 namespace SiliconStudio.Xenko.UI.Tests.Regression
 {
     /// <summary>
-    /// Class for rendering tests on the <see cref="Button"/>  that has <see cref="Button.SizeToContent"/> set to <c>false</c>.
+    /// Class for rendering tests on the <see cref="ImageButton"/> 
     /// </summary>
     public class ImageButtonTest : UITestGameBase
     {
-        private Button button;
+        private ImageButton imageButton;
 
         public ImageButtonTest()
         {
@@ -26,15 +26,13 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            button = new Button
+            imageButton = new ImageButton
             {
                 PressedImage = (SpriteFromTexture)new Sprite(Content.Load<Texture>("ImageButtonPressed")),
                 NotPressedImage = (SpriteFromTexture)new Sprite(Content.Load<Texture>("ImageButtonNotPressed")),
-                Content = null,
-                SizeToContent = false
             };
 
-            UIComponent.Page = new Engine.UIPage { RootElement = button };
+            UIComponent.RootElement = imageButton;
         }
 
         protected override void RegisterTests()
@@ -47,7 +45,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public void DrawTest1()
         {
-            button.RaiseTouchDownEvent(new TouchEventArgs());
+            imageButton.RaiseTouchDownEvent(new TouchEventArgs());
         }
 
         [Test]

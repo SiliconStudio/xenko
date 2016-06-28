@@ -103,7 +103,7 @@ namespace SiliconStudio.Xenko.UI
 
         /// <summary>
         /// Sets the origin of the element used when pinning it into its parent canvas.
-        /// This value is normalized between [0,1]. (0,0,0) represents the left/top/back corner, (1,1,1) represents the right/bottom/front corner, etc...
+        /// This value is normalized between [0,1]. (0,0,0) represents the left/top/front corner, (1,1,1) represents the left/top/back corner, etc...
         /// </summary>
         /// <remarks>Equivalent to set the <see cref="Canvas.PinOriginPropertyKey"/> of the element</remarks>
         /// <param name="element">The element</param>
@@ -115,7 +115,7 @@ namespace SiliconStudio.Xenko.UI
 
         /// <summary>
         /// Gets the origin of the element used when pinning it into its parent canvas.
-        /// This value is normalized between [0,1]. (0,0,0) represents the left/top/back corner, (1,1,1) represents the right/bottom/front corner, etc...
+        /// This value is normalized between [0,1]. (0,0,0) represents the left/top/back corner, (1,1,1) represents the left/top/back corner, etc...
         /// </summary>
         /// <remarks>Equivalent to get the <see cref="Canvas.PinOriginPropertyKey"/> of the element</remarks>
         /// <param name="element">The element</param>

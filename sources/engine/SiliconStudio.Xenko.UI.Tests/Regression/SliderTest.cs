@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             grid = new UniformGrid { Children = { slider } };
 
-            UIComponent.Page = new Engine.UIPage { RootElement = grid };
+            UIComponent.RootElement = grid;
         }
 
         private void SetSliderImages(bool setRotatedImages)

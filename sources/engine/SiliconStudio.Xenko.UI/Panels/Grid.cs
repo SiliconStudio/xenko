@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
-using SiliconStudio.Core;
+
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
@@ -14,7 +14,6 @@ namespace SiliconStudio.Xenko.UI.Panels
     /// <summary>
     /// Represents a grid control with adjustable columns, rows and layers.
     /// </summary>
-    [DataContract(nameof(Grid))]
     [DebuggerDisplay("Grid - Name={Name}")]
     public class Grid : GridBase
     {
@@ -133,7 +132,7 @@ namespace SiliconStudio.Xenko.UI.Panels
                     modifiedElement.DefinitionChanged -= OnStripDefinitionChanged;
                     break;
                 default:
-                    throw new NotSupportedException();
+                    throw new NotImplementedException();
             }
             InvalidateMeasure();
         }
@@ -147,25 +146,28 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// The definitions of the grid columns.
         /// </summary>
         /// <exception cref="ArgumentNullException">The provided value is null.</exception>
-        [DataMember]
-        [Display(category: LayoutCategory)]
-        public StripDefinitionCollection ColumnDefinitions => stripDefinitions[0];
+        public StripDefinitionCollection ColumnDefinitions
+        {
+            get { return stripDefinitions[0]; }
+        }
 
         /// <summary>
         /// The definitions of the grid rows.
         /// </summary>
         /// <exception cref="ArgumentNullException">The provided value is null.</exception>
-        [DataMember]
-        [Display(category: LayoutCategory)]
-        public StripDefinitionCollection RowDefinitions => stripDefinitions[1];
+        public StripDefinitionCollection RowDefinitions
+        {
+            get { return stripDefinitions[1]; }
+        }
 
         /// <summary>
         /// The definitions of the grid layers.
         /// </summary>
         /// <exception cref="ArgumentNullException">The provided value is null.</exception>
-        [DataMember]
-        [Display(category: LayoutCategory)]
-        public StripDefinitionCollection LayerDefinitions => stripDefinitions[2];
+        public StripDefinitionCollection LayerDefinitions
+        {
+            get { return stripDefinitions[2]; }
+        }
 
         protected override Vector3 MeasureOverride(Vector3 availableSizeWithoutMargins)
         {
@@ -689,30 +691,27 @@ namespace SiliconStudio.Xenko.UI.Panels
             }
         }
 
-        private static float SumStripCurrentSize(StripDefinitionCollection definitions)
+        private float SumStripCurrentSize(StripDefinitionCollection definitions)
         {
             var sum = 0f;
-            // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (var def in definitions) // do not use linq to avoid allocations
                 sum += def.ActualSize;
 
             return sum;
         }
         
-        private static float SumStripCurrentSize(List<StripDefinition> definitions)
+        private float SumStripCurrentSize(List<StripDefinition> definitions)
         {
             var sum = 0f;
-            // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (var def in definitions) // do not use linq to avoid allocations
                 sum += def.ActualSize;
 
             return sum;
         }
 
-        private static float SumStripAutoAndFixedSize(StripDefinitionCollection definitions)
+        private float SumStripAutoAndFixedSize(StripDefinitionCollection definitions)
         {
             var sum = 0f;
-            // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (var def in definitions) // do not use linq to avoid allocations
                 if (def.Type != StripType.Star)
                     sum += def.ActualSize;
@@ -720,17 +719,16 @@ namespace SiliconStudio.Xenko.UI.Panels
             return sum;
         }
 
-        private static float SumValues(List<StripDefinition> definitions) // use List instead of IEnumerable in  order to avoid boxing in "foreach"
+        private float SumValues(List<StripDefinition> definitions) // use List instead of IEnumerable in  order to avoid boxing in "foreach"
         {
             var sum = 0f;
-            // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (var def in definitions) // do not use linq to avoid allocations
                 sum += def.SizeValue;
 
             return sum;
         }
 
-        private static void GetDistanceToSurroundingAnchors(List<float> stripPosition, float position, out Vector2 distances)
+        private void GetDistanceToSurroundingAnchors(List<float> stripPosition, float position, out Vector2 distances)
         {
             if (stripPosition.Count < 2)
             {

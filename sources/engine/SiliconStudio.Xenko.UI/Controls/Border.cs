@@ -1,7 +1,5 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-
-using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.UI.Controls
@@ -9,7 +7,6 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// A border element adds an uniform color border around its content.
     /// </summary>
-    [DataContract(nameof(Border))]
     public class Border : ContentControl
     {
         internal Color BorderColorInternal = Color.Black;
@@ -18,8 +15,6 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the padding inside a control.
         /// </summary>
-        [DataMember]
-        [Display(category: AppearanceCategory)]
         public Thickness BorderThickness
         {
             get { return borderThickness; }
@@ -33,8 +28,6 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the color of the borders.
         /// </summary>
-        [DataMember]
-        [Display(category: AppearanceCategory)]
         public Color BorderColor
         {
             get { return BorderColorInternal; }

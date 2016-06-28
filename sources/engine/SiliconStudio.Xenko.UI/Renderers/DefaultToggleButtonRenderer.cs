@@ -1,6 +1,5 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-
 using System;
 
 using SiliconStudio.Core;
@@ -25,12 +24,13 @@ namespace SiliconStudio.Xenko.UI.Renderers
             base.RenderColor(element, context);
 
             var toggleButton = (ToggleButton)element;
-            var sprite = GetToggleStateImage(toggleButton);
-            if (sprite?.Texture == null)
+            var color = toggleButton.RenderOpacity * Color.White;
+
+            var image = GetToggleStateImage(toggleButton);
+            if (image?.Texture == null)
                 return;
             
-            var color = toggleButton.RenderOpacity * Color.White;
-            Batch.DrawImage(sprite.Texture, ref element.WorldMatrixInternal, ref sprite.RegionInternal, ref element.RenderSizeInternal, ref sprite.BordersInternal, ref color, context.DepthBias, sprite.Orientation);
+            Batch.DrawImage(image.Texture, ref toggleButton.WorldMatrixInternal, ref image.RegionInternal, ref toggleButton.RenderSizeInternal, ref image.BordersInternal, ref color, context.DepthBias, image.Orientation);
         }
 
         private static Sprite GetToggleStateImage(ToggleButton toggleButton)

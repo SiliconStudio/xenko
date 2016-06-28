@@ -54,75 +54,53 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             scrollViewer.Content = stackPanel;
 
             var button1 = new Button { Margin = Thickness.UniformRectangle(5), Padding = Thickness.UniformRectangle(5), LocalMatrix = Matrix.Scaling(2, 2, 2) };
-            ApplyButtonDefaultStyle(button1);
             var textOnly = new TextBlock { Text = "Text only button", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15"), TextColor = new Color(1f, 0, 0, 0.5f) };
             button1.Content = textOnly;
 
             var button2 = new Button { Name = "Button2", Margin = Thickness.UniformRectangle(5), Padding = Thickness.UniformRectangle(5) };
-            ApplyButtonDefaultStyle(button2);
             var imageContent = new ImageElement { Name = "Image Button2", Source = (SpriteFromTexture)new Sprite(Content.Load<Texture>("uv")), StretchType = StretchType.FillOnStretch, MaximumHeight = 50 };
             button2.Content = imageContent;
 
             var button3 = new Button { Margin = Thickness.UniformRectangle(5), Padding = Thickness.UniformRectangle(5) };
-            ApplyButtonDefaultStyle(button3);
             var stackContent = new StackPanel { Orientation = Orientation.Horizontal };
             var stackImage = new ImageElement { Name = "Image stack panel", Source = (SpriteFromTexture)new Sprite(Content.Load<Texture>("uv")), MaximumHeight = 50 };
             var stackText = new TextBlock { Text = "button text", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15"), Margin = Thickness.UniformRectangle(5) };
-            ApplyTextBlockDefaultStyle(stackText);
             stackContent.Children.Add(stackImage);
             stackContent.Children.Add(stackText);
             button3.Content = stackContent;
 
             var button4 = new Button { Margin = Thickness.UniformRectangle(5), HorizontalAlignment = HorizontalAlignment.Right, Padding = Thickness.UniformRectangle(5) };
-            ApplyButtonDefaultStyle(button4);
             var imageContent2 = new ImageElement { Name = "button 4 uv image", Source = (SpriteFromTexture)new Sprite(Content.Load<Texture>("uv")), StretchType = StretchType.FillOnStretch, MaximumHeight = 40, Opacity = 0.5f };
             button4.Content = imageContent2;
 
             var button5 = new Button { Margin = Thickness.UniformRectangle(5), HorizontalAlignment = HorizontalAlignment.Left, Padding = Thickness.UniformRectangle(5) };
-            ApplyButtonDefaultStyle(button5);
             var textOnly2 = new TextBlock { Text = "Left aligned", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15") };
-            ApplyTextBlockDefaultStyle(textOnly2);
             button5.Content = textOnly2;
 
-            var button6 = new Button
+            var button6 = new ImageButton
             {
                 Height = 50,
                 Margin = Thickness.UniformRectangle(5),
                 HorizontalAlignment = HorizontalAlignment.Center,
                 PressedImage = (SpriteFromTexture)new Sprite(Content.Load<Texture>("ImageButtonPressed")),
                 NotPressedImage = (SpriteFromTexture)new Sprite(Content.Load<Texture>("ImageButtonNotPressed")),
-                SizeToContent = false,
             };
 
-            var toggleButtonText = new TextBlock { Text = "Toggle button test", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15") };
-            ApplyTextBlockDefaultStyle(toggleButtonText);
             toggle = new ToggleButton
             {
-                IsThreeState = true,
-                Content = toggleButtonText
+                Content = new TextBlock { Text = "Toggle button test", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15") },
+                IsThreeState = true
             };
-            ApplyToggleButtonBlockDefaultStyle(toggle);
 
             scrollingText = new ScrollingText { Font = Content.Load<SpriteFont>("MicrosoftSansSerif15"), Text = "<<<--- Scrolling text in a button ", IsEnabled = IsUpdateAutomatic };
-            ApplyScrollingTextDefaultStyle(scrollingText);
             var button7 = new Button { Margin = Thickness.UniformRectangle(5), Content = scrollingText };
-            ApplyButtonDefaultStyle(button7);
 
             var uniformGrid = new UniformGrid { Rows = 2, Columns = 2 };
             var gridText = new TextBlock { Text = "Uniform grid", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15"), TextAlignment = TextAlignment.Center};
-            ApplyTextBlockDefaultStyle(gridText);
             gridText.DependencyProperties.Set(GridBase.ColumnSpanPropertyKey, 2);
-
-            var buttonLeftText = new TextBlock { Text = "unif-grid left", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15"), TextAlignment = TextAlignment.Center };
-            ApplyTextBlockDefaultStyle(buttonLeftText);
-            var buttonLeft = new Button { Content = buttonLeftText };
-            ApplyButtonDefaultStyle(buttonLeft);
+            var buttonLeft = new Button { Content = new TextBlock { Text = "unif-grid left", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15"), TextAlignment = TextAlignment.Center } };
             buttonLeft.DependencyProperties.Set(GridBase.RowPropertyKey, 1);
-
-            var buttonRightText = new TextBlock { Text = "unif-grid right", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15"), TextAlignment = TextAlignment.Center };
-            ApplyTextBlockDefaultStyle(buttonRightText);
-            var buttonRight = new Button { Content = buttonRightText };
-            ApplyButtonDefaultStyle(buttonRight);
+            var buttonRight = new Button { Content = new TextBlock { Text = "unif-grid right", Font = Content.Load<SpriteFont>("MicrosoftSansSerif15"), TextAlignment = TextAlignment.Center } };
             buttonRight.DependencyProperties.Set(GridBase.RowPropertyKey, 1);
             buttonRight.DependencyProperties.Set(GridBase.ColumnPropertyKey, 1);
             uniformGrid.Children.Add(gridText);
@@ -142,7 +120,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             canvas.Children.Add(imgElt);
             canvas.Children.Add(scrollViewer);
 
-            UIComponent.Page = new Engine.UIPage { RootElement = canvas };
+            UIComponent.RootElement = canvas;
         }
 
         protected override void Update(GameTime gameTime)

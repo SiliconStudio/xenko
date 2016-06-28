@@ -23,32 +23,38 @@ namespace SiliconStudio.Xenko.UI.Renderers
         /// </summary>
         public IAssetManager Asset { get; private set; }
 
-        private IGraphicsDeviceService GraphicsDeviceService { get; }
+        private IGraphicsDeviceService GraphicsDeviceService { get; set; }
 
         /// <summary>
         /// A reference to the game graphic device.
         /// </summary>
-        public GraphicsDevice GraphicsDevice => GraphicsDeviceService?.GraphicsDevice;
+        public GraphicsDevice GraphicsDevice 
+        { 
+            get
+            {
+                return GraphicsDeviceService == null? null: GraphicsDeviceService.GraphicsDevice;
+            }
+        }
 
         /// <summary>
         /// Gets a reference to the UI image drawer.
         /// </summary>
-        public UIBatch Batch => UI.Batch;
+        public UIBatch Batch { get { return UI.Batch; } }
 
         /// <summary>
         /// A depth stencil state that keep the stencil value in any cases.
         /// </summary>
-        public DepthStencilStateDescription KeepStencilValueState => UI.KeepStencilValueState;
+        public DepthStencilStateDescription KeepStencilValueState { get { return UI.KeepStencilValueState; } }
 
         /// <summary>
         /// A depth stencil state that increase the stencil value if the stencil test passes.
         /// </summary>
-        public DepthStencilStateDescription IncreaseStencilValueState => UI.IncreaseStencilValueState;
+        public DepthStencilStateDescription IncreaseStencilValueState { get { return UI.IncreaseStencilValueState; } }
 
         /// <summary>
         /// A depth stencil state that decrease the stencil value if the stencil test passes.
         /// </summary>
-        public DepthStencilStateDescription DecreaseStencilValueState => UI.DecreaseStencilValueState;
+        public DepthStencilStateDescription DecreaseStencilValueState { get { return UI.DecreaseStencilValueState; } }
 
         /// <summary>
         /// Create an instance of an UI element renderer.
@@ -77,7 +83,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
         /// If the user wants to perform some intermediate rendering, it is his responsibility to bind them back correctly before the final rendering.</remarks>
         public virtual void RenderColor(UIElement element, UIRenderingContext context)
         {
-            var backgroundColor = element.RenderOpacity * element.BackgroundColor;
+            var backgroundColor = element.Opacity * element.BackgroundColor;
 
             // optimization: don't draw the background if transparent
             if (backgroundColor == new Color())

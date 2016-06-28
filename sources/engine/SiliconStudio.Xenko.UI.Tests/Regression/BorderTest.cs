@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             ResetBorderElement();
 
-            UIComponent.Page = new Engine.UIPage { RootElement = new Canvas { Children = { border } } };
+            UIComponent.RootElement = new Canvas { Children = { border } };
         }
 
         protected override void Update(GameTime gameTime)

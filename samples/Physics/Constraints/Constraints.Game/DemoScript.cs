@@ -48,16 +48,13 @@ namespace Constraints
             constraintNameBlock.SetCanvasPinOrigin(new Vector3(0.5f, 0.5f, 0));
             constraintNameBlock.SetCanvasRelativePosition(new Vector3(0.5f, 0.93f, 0));
 
-            Entity.Get<UIComponent>().Page = new UIPage
+            Entity.Get<UIComponent>().RootElement = new Canvas
             {
-                RootElement = new Canvas
-                {
-                    Children = 
-                    { 
-                        constraintNameBlock, 
-                        CreateButton("Next Constraint", Font, 1), 
-                        CreateButton("Last Constraint", Font, -1) 
-                    }
+                Children = 
+                { 
+                    constraintNameBlock, 
+                    CreateButton("Next Constraint", Font, 1), 
+                    CreateButton("Last Constraint", Font, -1) 
                 }
             };
 

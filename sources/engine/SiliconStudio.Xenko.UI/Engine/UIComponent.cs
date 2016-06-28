@@ -7,11 +7,12 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.UI;
+using SiliconStudio.Xenko.UI;
 
 namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
-    /// Add an <see cref="UIPage"/> to an <see cref="Entity"/>.
+    /// Add an <see cref="UIElement"/> to an <see cref="Entity"/>.
     /// </summary>
     [DataContract("UIComponent")]
     [Display("UI", Expand = ExpandRule.Once)]
@@ -19,23 +20,24 @@ namespace SiliconStudio.Xenko.Engine
     [ComponentOrder(9800)]
     public sealed class UIComponent : ActivableEntityComponent
     {
-        public static readonly float DefaultDepth = 1000;
-        public static readonly float DefaultHeight = 720;
-        public static readonly float DefaultWidth = 1280;
-
         public UIComponent()
         {
-            Resolution = new Vector3(DefaultWidth, DefaultHeight, DefaultDepth);
+            SnapText = true;
+            IsBillboard = true;
+            IsFullScreen = true;
+            Resolution = new Vector3(1280, 720, 1000);
             Size = new Vector3(1, 1, 1);
+            ResolutionStretch = ResolutionStretch.FixedWidthAdaptableHeight;
         }
 
         /// <summary>
-        /// Gets or sets the UI page.
+        /// Gets or sets the root element of the UI hierarchy.
         /// </summary>
-        /// <userdoc>The UI page.</userdoc>
+        /// <userdoc>The root element of the UI hierarchy.</userdoc>
         [DataMember(10)]
-        [Display("Page")]
-        public UIPage Page { get; set; }
+        [Display("Root Element")]
+        [DataMemberIgnore] // TODO this is temporary as long as we don't have an UI editor and UI data asset.
+        public UIElement RootElement { get; set; }
 
         /// <summary>
         /// Gets or sets the value indicating whether the UI should be full screen.
@@ -44,7 +46,7 @@ namespace SiliconStudio.Xenko.Engine
         [DataMember(20)]
         [Display("Full Screen")]
         [DefaultValue(true)]
-        public bool IsFullScreen { get; set; } = true;
+        public bool IsFullScreen { get; set; }
 
         /// <summary>
         /// Gets or sets the virtual resolution of the UI in virtual pixels.
@@ -70,7 +72,7 @@ namespace SiliconStudio.Xenko.Engine
         [DataMember(40)]
         [Display("Resolution Stretch")]
         [DefaultValue(ResolutionStretch.FixedWidthAdaptableHeight)]
-        public ResolutionStretch ResolutionStretch { get; set; } = ResolutionStretch.FixedWidthAdaptableHeight;
+        public ResolutionStretch ResolutionStretch { get; set; }
 
         /// <summary>
         /// Gets or sets the value indicating whether the UI should be displayed as billboard.
@@ -79,7 +81,7 @@ namespace SiliconStudio.Xenko.Engine
         [DataMember(50)]
         [Display("Billboard")]
         [DefaultValue(true)]
-        public bool IsBillboard { get; set; } = true;
+        public bool IsBillboard { get; set; }
 
         /// <summary>
         /// Gets or sets the value indicating of the UI texts should be snapped to closest pixel.
@@ -88,7 +90,7 @@ namespace SiliconStudio.Xenko.Engine
         [DataMember(60)]
         [Display("Snap Text")]
         [DefaultValue(true)]
-        public bool SnapText { get; set; } = true;
+        public bool SnapText { get; set; }
 
         /// <summary>
         /// Gets or sets the value indicating whether the UI should be always a fixed size on the screen.

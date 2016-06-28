@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             contentDecorator = new ContentDecorator { Content = scrollViewer };
 
-            UIComponent.Page = new Engine.UIPage { RootElement = contentDecorator };
+            UIComponent.RootElement = contentDecorator;
         }
 
         protected override void Update(GameTime gameTime)

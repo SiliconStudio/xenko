@@ -30,7 +30,7 @@ namespace GravitySensor
             };
             textBlock.SetCanvasPinOrigin(new Vector3(0.5f, 0.5f, 0));
             textBlock.SetCanvasRelativePosition(new Vector3(0.5f, 0.75f, 0f));
-            Entity.Get<UIComponent>().Page = new UIPage { RootElement = new Canvas { Children = { textBlock } } };
+            Entity.Get<UIComponent>().RootElement = new Canvas { Children = { textBlock } };
 
             while (Game.IsRunning)
             {
@@ -40,7 +40,7 @@ namespace GravitySensor
                     !Input.IsKeyPressed(Keys.Down))
                     continue;
 
-                Entity.Get<UIComponent>().Page = null;
+                Entity.Get<UIComponent>().RootElement = null;
                 return;
             }
         }

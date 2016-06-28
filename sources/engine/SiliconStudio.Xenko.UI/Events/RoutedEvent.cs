@@ -37,6 +37,9 @@ namespace SiliconStudio.Xenko.UI.Events
     /// <typeparam name="T">The type of <see cref="RoutedEventArgs"/> the routed event triggers</typeparam>
     public sealed class RoutedEvent<T> : RoutedEvent where T : RoutedEventArgs
     {
-        internal override Type HandlerSecondArgumentType => typeof(T);
+        internal override Type HandlerSecondArgumentType
+        {
+            get { return typeof(T); }
+        }
     }
 }

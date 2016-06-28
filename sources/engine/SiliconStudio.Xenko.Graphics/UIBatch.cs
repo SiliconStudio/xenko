@@ -326,7 +326,9 @@ namespace SiliconStudio.Xenko.Graphics
         public void DrawImage(Texture texture, ref Matrix worldMatrix, ref RectangleF sourceRectangle, ref Vector3 elementSize, ref Vector4 borderSize, 
             ref Color color, int depthBias, ImageOrientation imageOrientation = ImageOrientation.AsIs, SwizzleMode swizzle = SwizzleMode.None, bool snapImage = false)
         {
-            if (texture == null) throw new ArgumentNullException(nameof(texture));
+            // Check that texture is not null
+            if (texture == null)
+                throw new ArgumentNullException("texture");
 
             // Skip items with null size
             if (elementSize.Length() < MathUtil.ZeroTolerance)
@@ -395,7 +397,9 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal void DrawCharacter(Texture texture, ref Matrix worldViewProjectionMatrix, ref RectangleF sourceRectangle, ref Color color, int depthBias, SwizzleMode swizzle)
         {
-            if (texture == null) throw new ArgumentNullException(nameof(texture));
+            // Check that texture is not null
+            if (texture == null)
+                throw new ArgumentNullException("texture");
 
             // Calculate the information needed to draw.
             var drawInfo = new UIImageDrawInfo
@@ -455,8 +459,11 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal void DrawString(SpriteFont font, string text, ref SpriteFont.InternalUIDrawCommand drawCommand)
         {
-            if (font == null) throw new ArgumentNullException(nameof(font));
-            if (text == null) throw new ArgumentNullException(nameof(text));
+            if (font == null)
+                throw new ArgumentNullException("font");
+
+            if (text == null)
+                throw new ArgumentNullException("text");
 
             var proxy = new SpriteFont.StringProxy(text);
 
@@ -479,7 +486,7 @@ namespace SiliconStudio.Xenko.Graphics
                 drawCommand.FontScale = 1f / new Vector2(scaling, scaling);
             }
             else
-            if ((font.FontType != SpriteFontType.Dynamic) && (Math.Abs(drawCommand.FontScale.X - 1) > MathUtil.ZeroTolerance || Math.Abs(drawCommand.FontScale.Y - 1) > MathUtil.ZeroTolerance)) 
+            if ((font.FontType != SpriteFontType.Dynamic) && (drawCommand.FontScale.X != 1 || drawCommand.FontScale.Y != 1)) 
             {
                 drawCommand.SnapText = false;   // we don't want snapping of the resolution of the screen does not match virtual resolution. (character alignment problems)
                 drawCommand.FontScale = Vector2.One; // ensure that static font are not scaled internally
@@ -533,16 +540,16 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        private static unsafe void CalculateCubeVertices(UIImageDrawInfo* drawInfo, VertexPositionColorTextureSwizzle* vertex)
+        private unsafe void CalculateCubeVertices(UIImageDrawInfo* drawInfo, VertexPositionColorTextureSwizzle* vertex)
         {
             var currentPosition = drawInfo->LeftTopCornerWorld;
             
             // set the two first line of vertices
             for (var l = 0; l < 2; ++l)
             {
-                for (var r = 0; r < 2; r++)
+                for (int r = 0; r < 2; r++)
                 {
-                    for (var c = 0; c < 2; c++)
+                    for (int c = 0; c < 2; c++)
                     {
                         vertex->Color = drawInfo->Color;
                         vertex->Swizzle = (int)drawInfo->Swizzle;
@@ -597,12 +604,12 @@ namespace SiliconStudio.Xenko.Graphics
             Vector4.Multiply(ref drawInfo->UnitYWorld, drawInfo->VertexShift.W, out shiftVectorY[2]);
             shiftVectorY[3] = drawInfo->UnitYWorld;
 
-            for (var r = 0; r < 4; r++)
+            for (int r = 0; r < 4; r++)
             {
                 Vector4 currentRowPosition;
                 Vector4.Add(ref drawInfo->LeftTopCornerWorld, ref shiftVectorY[r], out currentRowPosition);
 
-                for (var c = 0; c < 4; c++)
+                for (int c = 0; c < 4; c++)
                 {
                     Vector4 currentPosition;
                     Vector4.Add(ref currentRowPosition, ref shiftVectorX[c], out currentPosition);
@@ -647,9 +654,9 @@ namespace SiliconStudio.Xenko.Graphics
             var textureCoordY = new Vector2(drawInfo->Source.Top, drawInfo->Source.Bottom);
 
             // set the two first line of vertices
-            for (var r = 0; r < 2; r++)
+            for (int r = 0; r < 2; r++)
             {
-                for (var c = 0; c < 2; c++)
+                for (int c = 0; c < 2; c++)
                 {
                     vertex->Color = drawInfo->Color;
                     vertex->Swizzle = (int)drawInfo->Swizzle;
