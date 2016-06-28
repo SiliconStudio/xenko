@@ -5,7 +5,7 @@ namespace SiliconStudio.Core
     public class UnmanagedArray<T> : IDisposable where T : struct
     {
         private readonly int sizeOfT;
-        private readonly bool dontFree;
+        private readonly bool isShared;
 
         public UnmanagedArray(int length)
         {
@@ -13,7 +13,7 @@ namespace SiliconStudio.Core
             sizeOfT = Utilities.SizeOf<T>();
             var finalSize = length * sizeOfT;
             Pointer = Utilities.AllocateMemory(finalSize);
-            dontFree = false;
+            isShared = false;
         }
 
         public UnmanagedArray(int length, IntPtr unmanagedDataPtr)
@@ -21,12 +21,12 @@ namespace SiliconStudio.Core
             Length = length;
             sizeOfT = Utilities.SizeOf<T>();
             Pointer = unmanagedDataPtr;
-            dontFree = true;
+            isShared = true;
         }
 
         public void Dispose()
         {
-            if (!dontFree)
+            if (!isShared)
             {
                 Utilities.FreeMemory(Pointer);
             }
