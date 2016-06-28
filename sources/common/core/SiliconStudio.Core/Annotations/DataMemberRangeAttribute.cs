@@ -12,12 +12,6 @@ namespace SiliconStudio.Core.Annotations
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
     public class DataMemberRangeAttribute : Attribute
     {
-        private readonly double? minimum;
-        private readonly double? maximum;
-        private readonly double? smallStep;
-        private readonly double? largeStep;
-        private readonly int? decimalPlaces;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DataMemberRangeAttribute" /> class.
         /// </summary>
@@ -27,10 +21,10 @@ namespace SiliconStudio.Core.Annotations
         /// <param name="largeStep">The maximum step.</param>
         public DataMemberRangeAttribute(double minimum, double maximum, double smallStep, double largeStep)
         {
-            this.minimum = minimum;
-            this.maximum = maximum;
-            this.smallStep = smallStep;
-            this.largeStep = largeStep;
+            Minimum = minimum;
+            Maximum = maximum;
+            SmallStep = smallStep;
+            LargeStep = largeStep;
         }
 
         /// <summary>
@@ -40,8 +34,8 @@ namespace SiliconStudio.Core.Annotations
         /// <param name="maximum">The maximum.</param>
         public DataMemberRangeAttribute(double minimum, double maximum)
         {
-            this.minimum = minimum;
-            this.maximum = maximum;
+            Minimum = minimum;
+            Maximum = maximum;
         }
 
         /// <summary>
@@ -54,11 +48,11 @@ namespace SiliconStudio.Core.Annotations
         /// <param name="decimalPlaces">The decimal places</param>
         public DataMemberRangeAttribute(double minimum, double maximum, double smallStep, double largeStep, int decimalPlaces)
         {
-            this.minimum = minimum;
-            this.maximum = maximum;
-            this.smallStep = smallStep;
-            this.largeStep = largeStep;
-            this.decimalPlaces = decimalPlaces;
+            Minimum = minimum;
+            Maximum = maximum;
+            SmallStep = smallStep;
+            LargeStep = largeStep;
+            DecimalPlaces = decimalPlaces;
         }
 
         /// <summary>
@@ -69,54 +63,39 @@ namespace SiliconStudio.Core.Annotations
         /// <param name="decimalPlaces">The decimal places</param>
         public DataMemberRangeAttribute(double minimum, double maximum, int decimalPlaces)
         {
-            this.minimum = minimum;
-            this.maximum = maximum;
-            this.decimalPlaces = decimalPlaces;
+            Minimum = minimum;
+            Maximum = maximum;
+            DecimalPlaces = decimalPlaces;
         }
 
         /// <summary>
         /// Gets the minimum inclusive.
         /// </summary>
         /// <value>The minimum.</value>
-        public double? Minimum
-        {
-            get { return minimum; }
-        }
+        public double? Minimum { get; }
 
         /// <summary>
         /// Gets the maximum inclusive.
         /// </summary>
         /// <value>The maximum.</value>
-        public double? Maximum
-        {
-            get { return maximum; }
-        }
+        public double? Maximum { get; }
 
         /// <summary>
         /// Gets the minimum step.
         /// </summary>
         /// <value>The minimum step.</value>
-        public double? SmallStep
-        {
-            get { return smallStep; }
-        }
+        public double? SmallStep { get; }
 
         /// <summary>
         /// Gets the maximum step.
         /// </summary>
         /// <value>The maximum step.</value>
-        public double? LargeStep
-        {
-            get { return largeStep; }
-        }
+        public double? LargeStep { get; }
 
         /// <summary>
         /// Gets the decimal places.
         /// </summary>
         /// <value>The decimal places.</value>
-        public int? DecimalPlaces
-        {
-            get {  return decimalPlaces; }
-        }
+        public int? DecimalPlaces { get; }
     }
 }

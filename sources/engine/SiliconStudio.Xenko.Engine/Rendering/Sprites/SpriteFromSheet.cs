@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         /// </summary>
         /// <userdoc>The sheet that provides the sprites</userdoc>
         [DataMember]
-        [InlineProperty]
+        [InlineProperty(Expand = ExpandRule.Always)]
         public SpriteSheet Sheet { get; set; }
 
         /// <summary>

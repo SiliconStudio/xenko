@@ -389,6 +389,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             public T GetObject()
             {
+                // TODO D3D12: SpinLock
                 lock (liveObjects)
                 {
                     // Check if first allocator is ready for reuse
@@ -413,6 +414,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             public void RecycleObject(long fenceValue, T obj)
             {
+                // TODO D3D12: SpinLock
                 lock (liveObjects)
                 {
                     liveObjects.Enqueue(new KeyValuePair<long, T>(fenceValue, obj));

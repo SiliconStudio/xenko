@@ -40,6 +40,8 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
         public override Type SupportedRenderObjectType => typeof(RenderParticleEmitter);
 
+        private DescriptorSet[] descriptorSets;
+
         internal class ParticleMaterialInfo : MaterialRenderFeature.MaterialInfoBase
         {
             public readonly ParticleMaterial Material;
@@ -241,7 +243,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             Matrix viewInverse;
             Matrix.Invert(ref renderView.View, out viewInverse);
 
-            var descriptorSets = new DescriptorSet[EffectDescriptorSetSlotCount];
+            Array.Resize(ref descriptorSets, EffectDescriptorSetSlotCount);
 
             for (var index = startIndex; index < endIndex; index++)
             {

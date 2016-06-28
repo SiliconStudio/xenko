@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -59,19 +60,19 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var basePartAsset = new PrefabAsset();
             var entityPart1 = new Entity() { Name = "EPart1" };
             var entityPart2 = new Entity() { Name = "EPart2" };
-            basePartAsset.Hierarchy.Entities.Add(entityPart1);
-            basePartAsset.Hierarchy.Entities.Add(entityPart2);
-            basePartAsset.Hierarchy.RootEntities.Add(entityPart1.Id);
-            basePartAsset.Hierarchy.RootEntities.Add(entityPart2.Id);
+            basePartAsset.Hierarchy.Parts.Add(new EntityDesign(entityPart1));
+            basePartAsset.Hierarchy.Parts.Add(new EntityDesign(entityPart2));
+            basePartAsset.Hierarchy.RootPartIds.Add(entityPart1.Id);
+            basePartAsset.Hierarchy.RootPartIds.Add(entityPart2.Id);
 
             // Add 2 asset parts from the same base
             var instance = basePartAsset.CreatePrefabInstance(derivedAsset, "part");
-            derivedAsset.Hierarchy.Entities.AddRange(instance.Entities);
-            derivedAsset.Hierarchy.RootEntities.AddRange(instance.RootEntities);
+            derivedAsset.Hierarchy.Parts.AddRange(instance.Parts);
+            derivedAsset.Hierarchy.RootPartIds.AddRange(instance.RootPartIds);
 
             var instance2 = basePartAsset.CreatePrefabInstance(derivedAsset, "part");
-            derivedAsset.Hierarchy.Entities.AddRange(instance2.Entities);
-            derivedAsset.Hierarchy.RootEntities.AddRange(instance2.RootEntities);
+            derivedAsset.Hierarchy.Parts.AddRange(instance2.Parts);
+            derivedAsset.Hierarchy.RootPartIds.AddRange(instance2.RootPartIds);
 
             using (var stream = new MemoryStream())
             {
@@ -124,14 +125,14 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 // Test a component link between entity4 and entity 3
                 entity4.Add(new TestEntityComponent() { EntityComponentLink = entity3.Transform });
 
-                originAsset.Hierarchy.Entities.Add(entity1);
-                originAsset.Hierarchy.Entities.Add(entity2);
-                originAsset.Hierarchy.Entities.Add(entity3);
-                originAsset.Hierarchy.Entities.Add(entity4);
+                originAsset.Hierarchy.Parts.Add(new EntityDesign(entity1));
+                originAsset.Hierarchy.Parts.Add(new EntityDesign(entity2));
+                originAsset.Hierarchy.Parts.Add(new EntityDesign(entity3));
+                originAsset.Hierarchy.Parts.Add(new EntityDesign(entity4));
 
-                originAsset.Hierarchy.RootEntities.Add(entity1.Id);
-                originAsset.Hierarchy.RootEntities.Add(entity3.Id);
-                originAsset.Hierarchy.RootEntities.Add(entity4.Id);
+                originAsset.Hierarchy.RootPartIds.Add(entity1.Id);
+                originAsset.Hierarchy.RootPartIds.Add(entity3.Id);
+                originAsset.Hierarchy.RootPartIds.Add(entity4.Id);
             }
             return originAsset;
         }
@@ -139,12 +140,12 @@ namespace SiliconStudio.Xenko.Assets.Tests
         private static void CheckGenericAsset(PrefabAsset originAsset, PrefabAsset newAsset)
         {
             // Check that we have exactly the same root entities
-            Assert.AreEqual(originAsset.Hierarchy.RootEntities, newAsset.Hierarchy.RootEntities);
-            Assert.AreEqual(originAsset.Hierarchy.Entities.Count, newAsset.Hierarchy.Entities.Count);
+            Assert.AreEqual(originAsset.Hierarchy.RootPartIds, newAsset.Hierarchy.RootPartIds);
+            Assert.AreEqual(originAsset.Hierarchy.Parts.Count, newAsset.Hierarchy.Parts.Count);
 
-            foreach (var entityDesign in originAsset.Hierarchy.Entities)
+            foreach (var entityDesign in originAsset.Hierarchy.Parts)
             {
-                var newEntityDesign = newAsset.Hierarchy.Entities[entityDesign.Entity.Id];
+                var newEntityDesign = newAsset.Hierarchy.Parts[entityDesign.Entity.Id];
                 Assert.NotNull(newEntityDesign);
 
                 // Check properties
@@ -165,8 +166,8 @@ namespace SiliconStudio.Xenko.Assets.Tests
                     Assert.AreEqual(children.Entity.Id, newChildren.Entity.Id);
 
                     // Make sure that we resolve to the global entity and not a copy
-                    Assert.True(newAsset.Hierarchy.Entities.ContainsKey(newChildren.Entity.Id));
-                    Assert.AreEqual(newChildren.Entity, newAsset.Hierarchy.Entities[newChildren.Entity.Id].Entity);
+                    Assert.True(newAsset.Hierarchy.Parts.ContainsKey(newChildren.Entity.Id));
+                    Assert.AreEqual(newChildren.Entity, newAsset.Hierarchy.Parts[newChildren.Entity.Id].Entity);
                 }
             }
         }
@@ -175,16 +176,16 @@ namespace SiliconStudio.Xenko.Assets.Tests
         {
             CheckGenericAsset(originAsset, newAsset);
 
-            var entity1 = originAsset.Hierarchy.Entities.First(it => it.Entity.Name == "E1").Entity;
-            var entity2 = originAsset.Hierarchy.Entities.First(it => it.Entity.Name == "E2").Entity;
-            var entity3 = originAsset.Hierarchy.Entities.First(it => it.Entity.Name == "E3").Entity;
-            var entity4 = originAsset.Hierarchy.Entities.First(it => it.Entity.Name == "E4").Entity;
+            var entity1 = originAsset.Hierarchy.Parts.First(it => it.Entity.Name == "E1").Entity;
+            var entity2 = originAsset.Hierarchy.Parts.First(it => it.Entity.Name == "E2").Entity;
+            var entity3 = originAsset.Hierarchy.Parts.First(it => it.Entity.Name == "E3").Entity;
+            var entity4 = originAsset.Hierarchy.Parts.First(it => it.Entity.Name == "E4").Entity;
 
             // Check that we have exactly the same root entities
-            var newEntityDesign1 = newAsset.Hierarchy.Entities[entity1.Id];
-            var newEntityDesign2 = newAsset.Hierarchy.Entities[entity2.Id];
-            var newEntityDesign3 = newAsset.Hierarchy.Entities[entity3.Id];
-            var newEntityDesign4 = newAsset.Hierarchy.Entities[entity4.Id];
+            var newEntityDesign1 = newAsset.Hierarchy.Parts[entity1.Id];
+            var newEntityDesign2 = newAsset.Hierarchy.Parts[entity2.Id];
+            var newEntityDesign3 = newAsset.Hierarchy.Parts[entity3.Id];
+            var newEntityDesign4 = newAsset.Hierarchy.Parts[entity4.Id];
 
             // Check that Transform.Children is correctly setup
             Assert.AreEqual(newEntityDesign2.Entity.Transform, newEntityDesign1.Entity.Transform.Children.FirstOrDefault());

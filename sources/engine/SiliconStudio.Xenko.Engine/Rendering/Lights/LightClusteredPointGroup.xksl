@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             streams.lightIndex++;
 
             // Build PointLightData
-            PointLightData pointLight;
+            PointLightDataInternal pointLight;
             float4 pointLight1 = PointLights.Load(realLightIndex * 2);
             float4 pointLight2 = PointLights.Load(realLightIndex * 2 + 1);
             pointLight.PositionWS = pointLight1.xyz;

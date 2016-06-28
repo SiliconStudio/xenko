@@ -14,6 +14,7 @@
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
     <XenkoBuildTags>*</XenkoBuildTags>
+    <DefineConstants>$(DefineConstants);SILICONSTUDIO_XENKO_GRAPHICS_NO_DESCRIPTOR_COPIES</DefineConstants>
   </PropertyGroup>
   <Choose>
     <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
@@ -105,6 +106,28 @@
           </ItemGroup>
         </When>
       </Choose>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition=" '$(XenkoGraphicsApi)' == 'Vulkan' ">
+      <Choose>
+        <When Condition=" '$(SiliconStudioPlatform)' == 'Windows'">
+          <ItemGroup>
+            <Reference Include="SharpVulkan">
+              <SpecificVersion>False</SpecificVersion>
+              <HintPath>$(XenkoDependenciesDir)\SharpVulkan\Windows\SharpVulkan.dll</HintPath>
+            </Reference>
+          </ItemGroup>
+		</When>
+        <Otherwise>
+          <ItemGroup>
+            <Reference Include="SharpVulkan">
+              <SpecificVersion>False</SpecificVersion>
+              <HintPath>$(XenkoDependenciesDir)\SharpVulkan\Other\SharpVulkan.dll</HintPath>
+            </Reference>
+          </ItemGroup>
+		</Otherwise>
+	  </Choose>	  
     </When>
   </Choose>
   <Choose>
@@ -213,21 +236,29 @@
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.OpenGL.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.OpenGLES.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.Vulkan.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.Extensions.cs" />
+    <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecode.Vulkan.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecodeSRgb.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecodeSRgb.OpenGL.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecodeSRgb.OpenGLES.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecodeSRgb.Vulkan.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\SpriteEffect.bytecode.Vulkan.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\UIEffect.bytecode.Vulkan.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.OpenGL.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.OpenGLES.Level_9_1.cs" />
     <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.Extensions.cs" />
+    <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.Vulkan.Level_9_1.cs" />
     <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.Direct3D11.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.OpenGL.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.OpenGLES.Level_9_3.cs" />
+	<Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.Vulkan.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.Extensions.cs" />
     <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.Direct3D11.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.OpenGL.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.OpenGLES.Level_9_3.cs" />
+	<Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.Vulkan.Level_9_3.cs" />
     <Compile Include="Shaders\BackgroundEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -432,6 +463,27 @@
     <Compile Include="VertexPositionNormalColor.cs" />
     <Compile Include="VertexPositionNormalTexture.cs" />
     <Compile Include="VertexPositionTexture.cs" />
+    <Compile Include="Vulkan\Buffer.Vulkan.cs" />
+    <Compile Include="Vulkan\ColorHelper.cs" />
+    <Compile Include="Vulkan\CommandList.Vulkan.cs" />
+    <Compile Include="Vulkan\DescriptorPool.Vulkan.cs" />
+    <Compile Include="Vulkan\DescriptorSet.Vulkan.cs" />
+    <Compile Include="Vulkan\DescriptorSetLayout.Vulkan.cs" />
+    <Compile Include="Vulkan\DisplayMode.Vulkan.cs" />
+    <Compile Include="Vulkan\GraphicsAdapter.Vulkan.cs" />
+    <Compile Include="Vulkan\GraphicsAdapterFactory.Vulkan.cs" />
+    <Compile Include="Vulkan\GraphicsDevice.Vulkan.cs" />
+    <Compile Include="Vulkan\GraphicsDeviceFeatures.Vulkan.cs" />
+    <Compile Include="Vulkan\GraphicsOutput.Vulkan.cs" />
+    <Compile Include="Vulkan\GraphicsProfileHelper.cs" />
+    <Compile Include="Vulkan\GraphicsResource.Vulkan.cs" />
+    <Compile Include="Vulkan\GraphicsResourceBase.Vulkan.cs" />
+    <Compile Include="Vulkan\MappedResource.Vulkan.cs" />
+    <Compile Include="Vulkan\PipelineState.Vulkan.cs" />
+    <Compile Include="Vulkan\SamplerState.Vulkan.cs" />
+    <Compile Include="Vulkan\SwapChainGraphicsPresenter.Vulkan.cs" />
+    <Compile Include="Vulkan\Texture.Vulkan.cs" />
+    <Compile Include="Vulkan\VulkanConvertExtensions.cs" />
     <Compile Include="WindowContext.cs" />
   </ItemGroup>
   <!-- Files for Null device -->

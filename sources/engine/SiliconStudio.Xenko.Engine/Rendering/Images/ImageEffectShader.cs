@@ -42,6 +42,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
             base.InitializeCore();
 
             pipelineState = new MutablePipelineState(Context.GraphicsDevice);
+            pipelineState.State.SetDefaults();
+            pipelineState.State.InputElements = PrimitiveQuad.VertexDeclaration.CreateInputElements();
+            pipelineState.State.PrimitiveType = PrimitiveQuad.PrimitiveType;
 
             if (EffectName == null) throw new ArgumentNullException("No EffectName specified");
 
@@ -117,11 +120,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 // The EffectInstance might have been updated from outside
                 previousBytecode = EffectInstance.Effect.Bytecode;
 
-                pipelineState.State.SetDefaults();
                 pipelineState.State.RootSignature = EffectInstance.RootSignature;
                 pipelineState.State.EffectBytecode = EffectInstance.Effect.Bytecode;
-                pipelineState.State.InputElements = PrimitiveQuad.VertexDeclaration.CreateInputElements();
-                pipelineState.State.PrimitiveType = PrimitiveQuad.PrimitiveType;
                 pipelineState.State.BlendState = blendState;
                 pipelineState.State.Output.CaptureState(context.CommandList);
                 pipelineState.Update();

@@ -43,12 +43,12 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             // Create Base Asset
             var baseAsset = new PrefabAsset();
-            baseAsset.Hierarchy.Entities.Add(new EntityDesign(entityA, new EntityDesignData()));
-            baseAsset.Hierarchy.Entities.Add(new EntityDesign(entityB, new EntityDesignData()));
-            baseAsset.Hierarchy.Entities.Add(new EntityDesign(entityC, new EntityDesignData()));
-            baseAsset.Hierarchy.RootEntities.Add(entityA.Id);
-            baseAsset.Hierarchy.RootEntities.Add(entityB.Id);
-            baseAsset.Hierarchy.RootEntities.Add(entityC.Id);
+            baseAsset.Hierarchy.Parts.Add(new EntityDesign(entityA));
+            baseAsset.Hierarchy.Parts.Add(new EntityDesign(entityB));
+            baseAsset.Hierarchy.Parts.Add(new EntityDesign(entityC));
+            baseAsset.Hierarchy.RootPartIds.Add(entityA.Id);
+            baseAsset.Hierarchy.RootPartIds.Add(entityB.Id);
+            baseAsset.Hierarchy.RootPartIds.Add(entityC.Id);
 
             var baseAssetItem = new AssetItem("base", baseAsset);
 
@@ -56,26 +56,26 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var newAsset = (PrefabAsset)baseAssetItem.CreateChildAsset();
 
             // On a derive asset all entities must have a base value and base must come from baseAsset
-            Assert.True(newAsset.Hierarchy.Entities.All(item => item.Design.BaseId.HasValue && baseAsset.Hierarchy.Entities.ContainsKey(item.Design.BaseId.Value)));
+            Assert.True(newAsset.Hierarchy.Parts.All(item => item.BaseId.HasValue && baseAsset.Hierarchy.Parts.ContainsKey(item.BaseId.Value)));
 
             // Verify that we have exactly the same number of entities
-            Assert.AreEqual(baseAsset.Hierarchy.RootEntities.Count, newAsset.Hierarchy.RootEntities.Count);
-            Assert.AreEqual(baseAsset.Hierarchy.Entities.Count, newAsset.Hierarchy.Entities.Count);
+            Assert.AreEqual(baseAsset.Hierarchy.RootPartIds.Count, newAsset.Hierarchy.RootPartIds.Count);
+            Assert.AreEqual(baseAsset.Hierarchy.Parts.Count, newAsset.Hierarchy.Parts.Count);
 
             // Verify that baseId and newId is correctly setup
-            var entityAInNew = newAsset.Hierarchy.Entities.FirstOrDefault(item => item.Design.BaseId.Value == entityA.Id && item.Entity.Id != item.Design.BaseId.Value);
+            var entityAInNew = newAsset.Hierarchy.Parts.FirstOrDefault(item => item.BaseId.Value == entityA.Id && item.Entity.Id != item.BaseId.Value);
             Assert.NotNull(entityAInNew);
 
-            var entityBInNew = newAsset.Hierarchy.Entities.FirstOrDefault(item => item.Design.BaseId.Value == entityB.Id && item.Entity.Id != item.Design.BaseId.Value);
+            var entityBInNew = newAsset.Hierarchy.Parts.FirstOrDefault(item => item.BaseId.Value == entityB.Id && item.Entity.Id != item.BaseId.Value);
             Assert.NotNull(entityBInNew);
 
-            var entityCInNew = newAsset.Hierarchy.Entities.FirstOrDefault(item => item.Design.BaseId.Value == entityC.Id && item.Entity.Id != item.Design.BaseId.Value);
+            var entityCInNew = newAsset.Hierarchy.Parts.FirstOrDefault(item => item.BaseId.Value == entityC.Id && item.Entity.Id != item.BaseId.Value);
             Assert.NotNull(entityCInNew);
 
             // Verify that RootEntities are also correctly mapped
-            Assert.AreEqual(entityAInNew.Entity.Id, newAsset.Hierarchy.RootEntities[0]);
-            Assert.AreEqual(entityBInNew.Entity.Id, newAsset.Hierarchy.RootEntities[1]);
-            Assert.AreEqual(entityCInNew.Entity.Id, newAsset.Hierarchy.RootEntities[2]);
+            Assert.AreEqual(entityAInNew.Entity.Id, newAsset.Hierarchy.RootPartIds[0]);
+            Assert.AreEqual(entityBInNew.Entity.Id, newAsset.Hierarchy.RootPartIds[1]);
+            Assert.AreEqual(entityCInNew.Entity.Id, newAsset.Hierarchy.RootPartIds[2]);
         }
 
         [Test]
@@ -95,20 +95,20 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             // Create Base Asset
             var baseAsset = new PrefabAsset();
-            baseAsset.Hierarchy.Entities.Add(new EntityDesign(entityA, new EntityDesignData()));
-            baseAsset.Hierarchy.Entities.Add(new EntityDesign(entityB, new EntityDesignData()));
-            baseAsset.Hierarchy.Entities.Add(new EntityDesign(entityC, new EntityDesignData()));
-            baseAsset.Hierarchy.RootEntities.Add(entityA.Id);
-            baseAsset.Hierarchy.RootEntities.Add(entityB.Id);
-            baseAsset.Hierarchy.RootEntities.Add(entityC.Id);
+            baseAsset.Hierarchy.Parts.Add(new EntityDesign(entityA));
+            baseAsset.Hierarchy.Parts.Add(new EntityDesign(entityB));
+            baseAsset.Hierarchy.Parts.Add(new EntityDesign(entityC));
+            baseAsset.Hierarchy.RootPartIds.Add(entityA.Id);
+            baseAsset.Hierarchy.RootPartIds.Add(entityB.Id);
+            baseAsset.Hierarchy.RootPartIds.Add(entityC.Id);
 
             var baseAssetItem = new AssetItem("base", baseAsset);
 
             // Create new Base Asset
             var entityD = new Entity() { Name = "D" };
             var newBaseAsset = (PrefabAsset)AssetCloner.Clone(baseAsset);
-            newBaseAsset.Hierarchy.Entities.Add(new EntityDesign(entityD, new EntityDesignData()));
-            newBaseAsset.Hierarchy.RootEntities.Add(entityD.Id);
+            newBaseAsset.Hierarchy.Parts.Add(new EntityDesign(entityD));
+            newBaseAsset.Hierarchy.RootPartIds.Add(entityD.Id);
 
             // Create new Asset (from base)
             var newAsset = (PrefabAsset)baseAssetItem.CreateChildAsset();
@@ -118,27 +118,27 @@ namespace SiliconStudio.Xenko.Assets.Tests
             Assert.False(result.HasErrors);
 
             // Both root and entities must be the same
-            Assert.AreEqual(4, newAsset.Hierarchy.RootEntities.Count);
-            Assert.AreEqual(4, newAsset.Hierarchy.Entities.Count);
+            Assert.AreEqual(4, newAsset.Hierarchy.RootPartIds.Count);
+            Assert.AreEqual(4, newAsset.Hierarchy.Parts.Count);
 
             // All entities must have a base value
-            Assert.True(newAsset.Hierarchy.Entities.All(item => item.Design.BaseId.HasValue));
+            Assert.True(newAsset.Hierarchy.Parts.All(item => item.BaseId.HasValue));
 
-            var entityAInNewAsset = newAsset.Hierarchy.Entities.Where(item => item.Design.BaseId.Value == entityA.Id).Select(item => item.Entity).FirstOrDefault();
+            var entityAInNewAsset = newAsset.Hierarchy.Parts.Where(item => item.BaseId.Value == entityA.Id).Select(item => item.Entity).FirstOrDefault();
             Assert.NotNull(entityAInNewAsset);
-            var entityBInNewAsset = newAsset.Hierarchy.Entities.Where(item => item.Design.BaseId.Value == entityB.Id).Select(item => item.Entity).FirstOrDefault();
+            var entityBInNewAsset = newAsset.Hierarchy.Parts.Where(item => item.BaseId.Value == entityB.Id).Select(item => item.Entity).FirstOrDefault();
             Assert.NotNull(entityBInNewAsset);
-            var entityCInNewAsset = newAsset.Hierarchy.Entities.Where(item => item.Design.BaseId.Value == entityC.Id).Select(item => item.Entity).FirstOrDefault();
+            var entityCInNewAsset = newAsset.Hierarchy.Parts.Where(item => item.BaseId.Value == entityC.Id).Select(item => item.Entity).FirstOrDefault();
             Assert.NotNull(entityCInNewAsset);
 
-            var entityDInNewAsset = newAsset.Hierarchy.Entities.Where(item => item.Design.BaseId.Value == entityD.Id).Select(item => item.Entity).FirstOrDefault();
+            var entityDInNewAsset = newAsset.Hierarchy.Parts.Where(item => item.BaseId.Value == entityD.Id).Select(item => item.Entity).FirstOrDefault();
             Assert.NotNull(entityDInNewAsset);
 
             // Hierarchy must be: EA, EB, EC, ED
-            Assert.AreEqual(entityAInNewAsset.Id, newAsset.Hierarchy.RootEntities[0]);
-            Assert.AreEqual(entityBInNewAsset.Id, newAsset.Hierarchy.RootEntities[1]);
-            Assert.AreEqual(entityCInNewAsset.Id, newAsset.Hierarchy.RootEntities[2]);
-            Assert.AreEqual(entityDInNewAsset.Id, newAsset.Hierarchy.RootEntities[3]);
+            Assert.AreEqual(entityAInNewAsset.Id, newAsset.Hierarchy.RootPartIds[0]);
+            Assert.AreEqual(entityBInNewAsset.Id, newAsset.Hierarchy.RootPartIds[1]);
+            Assert.AreEqual(entityCInNewAsset.Id, newAsset.Hierarchy.RootPartIds[2]);
+            Assert.AreEqual(entityDInNewAsset.Id, newAsset.Hierarchy.RootPartIds[3]);
         }
 
         [Test]
@@ -167,33 +167,33 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             // Create Base Asset
             var baseAsset = new PrefabAsset();
-            baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA, new EntityDesignData()));
-            baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA1, new EntityDesignData()));
-            baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA2, new EntityDesignData()));
-            baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA3, new EntityDesignData()));
-            baseAsset.Hierarchy.RootEntities.Add(eA.Id);
+            baseAsset.Hierarchy.Parts.Add(new EntityDesign(eA));
+            baseAsset.Hierarchy.Parts.Add(new EntityDesign(eA1));
+            baseAsset.Hierarchy.Parts.Add(new EntityDesign(eA2));
+            baseAsset.Hierarchy.Parts.Add(new EntityDesign(eA3));
+            baseAsset.Hierarchy.RootPartIds.Add(eA.Id);
 
             var baseAssetItem = new AssetItem("base", baseAsset);
 
             // Create new Base Asset
             var newBaseAsset = (PrefabAsset)AssetCloner.Clone(baseAsset);
-            var eA2FromNewBase = newBaseAsset.Hierarchy.Entities.First(item => item.Entity.Id == eA2.Id);
-            newBaseAsset.Hierarchy.Entities[eA.Id].Entity.Transform.Children.Remove(eA2FromNewBase.Entity.Transform);
+            var eA2FromNewBase = newBaseAsset.Hierarchy.Parts.First(item => item.Entity.Id == eA2.Id);
+            newBaseAsset.Hierarchy.Parts[eA.Id].Entity.Transform.Children.Remove(eA2FromNewBase.Entity.Transform);
 
             // Create new Asset (from base)
             var newAsset = (PrefabAsset)baseAssetItem.CreateChildAsset();
             var eA4 = new Entity() { Name = "A4" };
-            newAsset.Hierarchy.Entities.Add(new EntityDesign(eA4, new EntityDesignData()));
-            newAsset.Hierarchy.Entities[newAsset.Hierarchy.RootEntities.First()].Entity.Transform.Children.Add(eA4.Transform);
+            newAsset.Hierarchy.Parts.Add(new EntityDesign(eA4));
+            newAsset.Hierarchy.Parts[newAsset.Hierarchy.RootPartIds.First()].Entity.Transform.Children.Add(eA4.Transform);
 
             // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
             var result = newAsset.Merge((EntityHierarchyAssetBase)AssetCloner.Clone(baseAsset), (EntityHierarchyAssetBase)AssetCloner.Clone(newBaseAsset), null);
             Assert.False(result.HasErrors);
 
-            Assert.AreEqual(1, newAsset.Hierarchy.RootEntities.Count);
-            Assert.AreEqual(4, newAsset.Hierarchy.Entities.Count); // EA, EA1', EA3', EA4'
+            Assert.AreEqual(1, newAsset.Hierarchy.RootPartIds.Count);
+            Assert.AreEqual(4, newAsset.Hierarchy.Parts.Count); // EA, EA1', EA3', EA4'
 
-            var rootEntity = newAsset.Hierarchy.Entities[newAsset.Hierarchy.RootEntities.First()];
+            var rootEntity = newAsset.Hierarchy.Parts[newAsset.Hierarchy.RootPartIds.First()];
 
             Assert.AreEqual(3, rootEntity.Entity.Transform.Children.Count);
 
@@ -227,18 +227,18 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             // Create Base Asset
             var baseAsset = new PrefabAsset();
-            baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA, new EntityDesignData()));
-            baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA1, new EntityDesignData()));
-            baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA2, new EntityDesignData()));
-            baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA3, new EntityDesignData()));
-            baseAsset.Hierarchy.RootEntities.Add(eA.Id);
+            baseAsset.Hierarchy.Parts.Add(new EntityDesign(eA));
+            baseAsset.Hierarchy.Parts.Add(new EntityDesign(eA1));
+            baseAsset.Hierarchy.Parts.Add(new EntityDesign(eA2));
+            baseAsset.Hierarchy.Parts.Add(new EntityDesign(eA3));
+            baseAsset.Hierarchy.RootPartIds.Add(eA.Id);
 
             var baseAssetItem = new AssetItem("base", baseAsset);
 
             // Create new Base Asset
             var newBaseAsset = (PrefabAsset)AssetCloner.Clone(baseAsset);
             var eA4 = new Entity() { Name = "A4" };
-            var rootInNewBase = newBaseAsset.Hierarchy.Entities[newBaseAsset.Hierarchy.RootEntities.First()];
+            var rootInNewBase = newBaseAsset.Hierarchy.Parts[newBaseAsset.Hierarchy.RootPartIds.First()];
             var eA1InNewBaseTransform = rootInNewBase.Entity.Transform.Children.FirstOrDefault(item => item.Entity.Id == eA1.Id);
             Assert.NotNull(eA1InNewBaseTransform);
 
@@ -253,7 +253,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             };
 
             eA4.Add(testComponent);
-            newBaseAsset.Hierarchy.Entities.Add(new EntityDesign(eA4, new EntityDesignData()));
+            newBaseAsset.Hierarchy.Parts.Add(new EntityDesign(eA4));
             rootInNewBase.Entity.Transform.Children.Add(eA4.Transform);
 
             // Create new Asset (from base)
@@ -263,10 +263,10 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var result = newAsset.Merge((EntityHierarchyAssetBase)AssetCloner.Clone(baseAsset), (EntityHierarchyAssetBase)AssetCloner.Clone(newBaseAsset), null);
             Assert.False(result.HasErrors);
 
-            Assert.AreEqual(1, newAsset.Hierarchy.RootEntities.Count);
-            Assert.AreEqual(5, newAsset.Hierarchy.Entities.Count); // EA, EA1', EA2', EA3', EA4'
+            Assert.AreEqual(1, newAsset.Hierarchy.RootPartIds.Count);
+            Assert.AreEqual(5, newAsset.Hierarchy.Parts.Count); // EA, EA1', EA2', EA3', EA4'
 
-            var rootEntity = newAsset.Hierarchy.Entities[newAsset.Hierarchy.RootEntities.First()];
+            var rootEntity = newAsset.Hierarchy.Parts[newAsset.Hierarchy.RootPartIds.First()];
 
             Assert.AreEqual(4, rootEntity.Entity.Transform.Children.Count);
 
@@ -311,25 +311,25 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             // Create Base Asset
             var baseAsset = new PrefabAsset();
-            baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA, new EntityDesignData()));
-            baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA1, new EntityDesignData()));
-            baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA2, new EntityDesignData()));
-            baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA3, new EntityDesignData()));
-            baseAsset.Hierarchy.RootEntities.Add(eA.Id);
+            baseAsset.Hierarchy.Parts.Add(new EntityDesign(eA));
+            baseAsset.Hierarchy.Parts.Add(new EntityDesign(eA1));
+            baseAsset.Hierarchy.Parts.Add(new EntityDesign(eA2));
+            baseAsset.Hierarchy.Parts.Add(new EntityDesign(eA3));
+            baseAsset.Hierarchy.RootPartIds.Add(eA.Id);
 
             var baseAssetItem = new AssetItem("base", baseAsset);
 
             // Create new Base Asset
             var newBaseAsset = (PrefabAsset)AssetCloner.Clone(baseAsset);
-            var eA2FromNewBase = newBaseAsset.Hierarchy.Entities.First(item => item.Entity.Id == eA2.Id);
-            newBaseAsset.Hierarchy.Entities[eA.Id].Entity.Transform.Children.Remove(eA2FromNewBase.Entity.Transform);
+            var eA2FromNewBase = newBaseAsset.Hierarchy.Parts.First(item => item.Entity.Id == eA2.Id);
+            newBaseAsset.Hierarchy.Parts[eA.Id].Entity.Transform.Children.Remove(eA2FromNewBase.Entity.Transform);
 
             // Create new Asset (from base)
             var newAsset = (PrefabAsset)baseAssetItem.CreateChildAsset();
 
             var eA4 = new Entity() { Name = "A4" };
 
-            var rootInNew = newAsset.Hierarchy.Entities[newAsset.Hierarchy.RootEntities.First()];
+            var rootInNew = newAsset.Hierarchy.Parts[newAsset.Hierarchy.RootPartIds.First()];
             var eA2InNewTransform = rootInNew.Entity.Transform.Children.FirstOrDefault(item => item.Entity.Name == "A2");
             Assert.NotNull(eA2InNewTransform);
 
@@ -340,17 +340,17 @@ namespace SiliconStudio.Xenko.Assets.Tests
             };
 
             eA4.Add(testComponent);
-            newAsset.Hierarchy.Entities.Add(new EntityDesign(eA4, new EntityDesignData()));
+            newAsset.Hierarchy.Parts.Add(new EntityDesign(eA4));
             rootInNew.Entity.Transform.Children.Add(eA4.Transform);
 
             // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
             var result = newAsset.Merge((EntityHierarchyAssetBase)AssetCloner.Clone(baseAsset), (EntityHierarchyAssetBase)AssetCloner.Clone(newBaseAsset), null);
             Assert.False(result.HasErrors);
 
-            Assert.AreEqual(1, newAsset.Hierarchy.RootEntities.Count);
-            Assert.AreEqual(4, newAsset.Hierarchy.Entities.Count); // EA, EA1', EA3', EA4'
+            Assert.AreEqual(1, newAsset.Hierarchy.RootPartIds.Count);
+            Assert.AreEqual(4, newAsset.Hierarchy.Parts.Count); // EA, EA1', EA3', EA4'
 
-            var rootEntity = newAsset.Hierarchy.Entities[newAsset.Hierarchy.RootEntities.First()];
+            var rootEntity = newAsset.Hierarchy.Parts[newAsset.Hierarchy.RootPartIds.First()];
 
             Assert.AreEqual(3, rootEntity.Entity.Transform.Children.Count);
 
@@ -389,18 +389,18 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             // Create Base Asset
             var baseAsset = new PrefabAsset();
-            baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA, new EntityDesignData()));
-            baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA1, new EntityDesignData()));
-            baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA2, new EntityDesignData()));
-            baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA3, new EntityDesignData()));
-            baseAsset.Hierarchy.RootEntities.Add(eA.Id);
+            baseAsset.Hierarchy.Parts.Add(new EntityDesign(eA));
+            baseAsset.Hierarchy.Parts.Add(new EntityDesign(eA1));
+            baseAsset.Hierarchy.Parts.Add(new EntityDesign(eA2));
+            baseAsset.Hierarchy.Parts.Add(new EntityDesign(eA3));
+            baseAsset.Hierarchy.RootPartIds.Add(eA.Id);
 
             var baseAssetItem = new AssetItem("base", baseAsset);
 
             // Create new Base Asset
             var newBaseAsset = (PrefabAsset)AssetCloner.Clone(baseAsset);
             var eA4 = new Entity() { Name = "A4" };
-            var rootInNewBase = newBaseAsset.Hierarchy.Entities[newBaseAsset.Hierarchy.RootEntities.First()];
+            var rootInNewBase = newBaseAsset.Hierarchy.Parts[newBaseAsset.Hierarchy.RootPartIds.First()];
 
             var eA2InNewBaseTransform = rootInNewBase.Entity.Transform.Children.FirstOrDefault(item => item.Entity.Id == eA2.Id);
             Assert.NotNull(eA2InNewBaseTransform);
@@ -412,7 +412,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             };
 
             eA2InNewBaseTransform.Entity.Add(testComponent);
-            newBaseAsset.Hierarchy.Entities.Add(new EntityDesign(eA4, new EntityDesignData()));
+            newBaseAsset.Hierarchy.Parts.Add(new EntityDesign(eA4));
             rootInNewBase.Entity.Transform.Children.Add(eA4.Transform);
 
             // Create new Asset (from base)
@@ -422,10 +422,10 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var result = newAsset.Merge((EntityHierarchyAssetBase)AssetCloner.Clone(baseAsset), (EntityHierarchyAssetBase)AssetCloner.Clone(newBaseAsset), null);
             Assert.False(result.HasErrors);
 
-            Assert.AreEqual(1, newAsset.Hierarchy.RootEntities.Count);
-            Assert.AreEqual(5, newAsset.Hierarchy.Entities.Count); // EA, EA1', EA2', EA3', EA4'
+            Assert.AreEqual(1, newAsset.Hierarchy.RootPartIds.Count);
+            Assert.AreEqual(5, newAsset.Hierarchy.Parts.Count); // EA, EA1', EA2', EA3', EA4'
 
-            var rootEntity = newAsset.Hierarchy.Entities[newAsset.Hierarchy.RootEntities.First()];
+            var rootEntity = newAsset.Hierarchy.Parts[newAsset.Hierarchy.RootPartIds.First()];
 
             Assert.AreEqual(4, rootEntity.Entity.Transform.Children.Count);
 
@@ -463,12 +463,12 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             // part1 Asset
             var basePart = new PrefabAsset();
-            basePart.Hierarchy.Entities.Add(new EntityDesign(entityA, new EntityDesignData()));
-            basePart.Hierarchy.Entities.Add(new EntityDesign(entityB, new EntityDesignData()));
-            basePart.Hierarchy.Entities.Add(new EntityDesign(entityC, new EntityDesignData()));
-            basePart.Hierarchy.RootEntities.Add(entityA.Id);
-            basePart.Hierarchy.RootEntities.Add(entityB.Id);
-            basePart.Hierarchy.RootEntities.Add(entityC.Id);
+            basePart.Hierarchy.Parts.Add(new EntityDesign(entityA));
+            basePart.Hierarchy.Parts.Add(new EntityDesign(entityB));
+            basePart.Hierarchy.Parts.Add(new EntityDesign(entityC));
+            basePart.Hierarchy.RootPartIds.Add(entityA.Id);
+            basePart.Hierarchy.RootPartIds.Add(entityB.Id);
+            basePart.Hierarchy.RootPartIds.Add(entityC.Id);
 
             // originalAsset: Add a new instanceId for this part
             var asset = new PrefabAsset();
@@ -477,47 +477,47 @@ namespace SiliconStudio.Xenko.Assets.Tests
             Guid part1InstanceId;
             Guid part12InstanceId;
             var part1 = basePart.CreatePrefabInstance(asset, "part", out part1InstanceId);
-            var entityB1 = part1.Entities.First(it => it.Entity.Name == "B").Entity;
+            var entityB1 = part1.Parts.First(it => it.Entity.Name == "B").Entity;
             var part12 = basePart.CreatePrefabInstance(asset, "part", out part12InstanceId);
-            var entityB2 = part12.Entities.First(it => it.Entity.Name == "B").Entity;
+            var entityB2 = part12.Parts.First(it => it.Entity.Name == "B").Entity;
 
             // create part2 assset
             var entityD = new Entity() { Name = "D" };
-            basePart.Hierarchy.Entities.Add(new EntityDesign(entityD, new EntityDesignData()));
-            basePart.Hierarchy.RootEntities.Add(entityD.Id);
+            basePart.Hierarchy.Parts.Add(new EntityDesign(entityD));
+            basePart.Hierarchy.RootPartIds.Add(entityD.Id);
             // ED + link: EB
-            var entityBFrom2 = basePart.Hierarchy.Entities.Where(it => it.Entity.Name == "B").Select(it => it.Entity).First();
+            var entityBFrom2 = basePart.Hierarchy.Parts.Where(it => it.Entity.Name == "B").Select(it => it.Entity).First();
             entityD.Add(new TestEntityComponent() { EntityLink = entityBFrom2 });
 
-            asset.Hierarchy.Entities.AddRange(part1.Entities);
-            asset.Hierarchy.Entities.AddRange(part12.Entities);
-            asset.Hierarchy.RootEntities.AddRange(part1.RootEntities);
-            asset.Hierarchy.RootEntities.AddRange(part12.RootEntities);
+            asset.Hierarchy.Parts.AddRange(part1.Parts);
+            asset.Hierarchy.Parts.AddRange(part12.Parts);
+            asset.Hierarchy.RootPartIds.AddRange(part1.RootPartIds);
+            asset.Hierarchy.RootPartIds.AddRange(part12.RootPartIds);
 
             // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
             var entityMerge = asset.Merge(null, null, new List<AssetBase>() { new AssetBase("part", (Asset)AssetCloner.Clone(basePart)) } );
             Assert.False(entityMerge.HasErrors);
 
             // EntityD must be now part of the new asset
-            Assert.AreEqual(8, asset.Hierarchy.RootEntities.Count);
-            Assert.AreEqual(8, asset.Hierarchy.Entities.Count);
-            Assert.AreEqual(2, asset.Hierarchy.Entities.Count(it => it.Entity.Name == "D"));
+            Assert.AreEqual(8, asset.Hierarchy.RootPartIds.Count);
+            Assert.AreEqual(8, asset.Hierarchy.Parts.Count);
+            Assert.AreEqual(2, asset.Hierarchy.Parts.Count(it => it.Entity.Name == "D"));
 
-            foreach (var entity in asset.Hierarchy.Entities.Where(it => it.Entity.Name == "D"))
+            foreach (var entity in asset.Hierarchy.Parts.Where(it => it.Entity.Name == "D"))
             {
                 // Check that we have the correct baesId and basePartInstanceId
-                Assert.True(entity.Design.BasePartInstanceId.HasValue);
-                Assert.True(entity.Design.BaseId.HasValue);
-                Assert.AreEqual(entityD.Id, entity.Design.BaseId.Value);
+                Assert.True(entity.BasePartInstanceId.HasValue);
+                Assert.True(entity.BaseId.HasValue);
+                Assert.AreEqual(entityD.Id, entity.BaseId.Value);
 
                 // Make sure that the entity is in the RootEntities
-                Assert.True(asset.Hierarchy.RootEntities.Contains(entity.Entity.Id));
+                Assert.True(asset.Hierarchy.RootPartIds.Contains(entity.Entity.Id));
             }
 
-            var entityDesignD1 = asset.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "D" && it.Design.BasePartInstanceId == part1InstanceId);
+            var entityDesignD1 = asset.Hierarchy.Parts.FirstOrDefault(it => it.Entity.Name == "D" && it.BasePartInstanceId == part1InstanceId);
             Assert.NotNull(entityDesignD1);
 
-            var entityDesignD2 = asset.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "D" && it.Design.BasePartInstanceId == part12InstanceId);
+            var entityDesignD2 = asset.Hierarchy.Parts.FirstOrDefault(it => it.Entity.Name == "D" && it.BasePartInstanceId == part12InstanceId);
             Assert.NotNull(entityDesignD2);
 
             // Check components
@@ -559,23 +559,23 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             // part1 Asset
             var part1 = new PrefabAsset();
-            part1.Hierarchy.Entities.Add(new EntityDesign(eRoot, new EntityDesignData()));
-            part1.Hierarchy.Entities.Add(new EntityDesign(entityA, new EntityDesignData()));
-            part1.Hierarchy.Entities.Add(new EntityDesign(entityB, new EntityDesignData()));
-            part1.Hierarchy.Entities.Add(new EntityDesign(entityC, new EntityDesignData()));
-            part1.Hierarchy.RootEntities.Add(eRoot.Id);
+            part1.Hierarchy.Parts.Add(new EntityDesign(eRoot));
+            part1.Hierarchy.Parts.Add(new EntityDesign(entityA));
+            part1.Hierarchy.Parts.Add(new EntityDesign(entityB));
+            part1.Hierarchy.Parts.Add(new EntityDesign(entityC));
+            part1.Hierarchy.RootPartIds.Add(eRoot.Id);
 
             // part2 Asset
             var part2 = (PrefabAsset)AssetCloner.Clone(part1);
-            var eRootPart2 = part2.Hierarchy.Entities.Where(it => it.Entity.Name == "Root").Select(it => it.Entity).First();
+            var eRootPart2 = part2.Hierarchy.Parts.Where(it => it.Entity.Name == "Root").Select(it => it.Entity).First();
 
             var entityD = new Entity() { Name = "D" };
             eRootPart2.Transform.Children.Add(entityD.Transform);
 
             // ED + link: EB
-            var entityBFrom2 = part2.Hierarchy.Entities.Where(it => it.Entity.Name == "B").Select(it => it.Entity).First();
+            var entityBFrom2 = part2.Hierarchy.Parts.Where(it => it.Entity.Name == "B").Select(it => it.Entity).First();
             entityD.Add(new TestEntityComponent() { EntityLink = entityBFrom2 });
-            part2.Hierarchy.Entities.Add(new EntityDesign(entityD, new EntityDesignData()));
+            part2.Hierarchy.Parts.Add(new EntityDesign(entityD));
 
             // originalAsset: Add a new instanceId for this part
             var asset = new PrefabAsset();
@@ -589,48 +589,48 @@ namespace SiliconStudio.Xenko.Assets.Tests
             Guid eRoot2Id;
             var eRoot1Asset = part1.CreatePrefabInstance(asset, "part", out eRoot1Id);
             var eRoot2Asset = part1.CreatePrefabInstance(asset, "part", out eRoot2Id);
-            asset.Hierarchy.Entities.AddRange(eRoot1Asset.Entities);
-            asset.Hierarchy.Entities.AddRange(eRoot2Asset.Entities);
-            asset.Hierarchy.RootEntities.AddRange(eRoot1Asset.RootEntities);
-            asset.Hierarchy.RootEntities.AddRange(eRoot2Asset.RootEntities);
+            asset.Hierarchy.Parts.AddRange(eRoot1Asset.Parts);
+            asset.Hierarchy.Parts.AddRange(eRoot2Asset.Parts);
+            asset.Hierarchy.RootPartIds.AddRange(eRoot1Asset.RootPartIds);
+            asset.Hierarchy.RootPartIds.AddRange(eRoot2Asset.RootPartIds);
 
             //var eRoot2 = asset.Hierarchy.Entities[eRoot2Asset.Hierarchy.RootEntities[0]];
-            var eRoot2 = asset.Hierarchy.Entities[eRoot2Asset.RootEntities[0]];
+            var eRoot2 = asset.Hierarchy.Parts[eRoot2Asset.RootPartIds[0]];
 
             var entityToRemove = eRoot2.Entity.Transform.Children.First(it => it.Entity.Name == "B");
             eRoot2.Entity.Transform.Children.Remove(entityToRemove);
-            asset.Hierarchy.Entities.Remove(entityToRemove.Entity.Id);
+            asset.Hierarchy.Parts.Remove(entityToRemove.Entity.Id);
 
             // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
             var entityMerge = asset.Merge(null, null, new List<AssetBase>() { new AssetBase("part", part2) } );
             Assert.False(entityMerge.HasErrors);
 
             // EntityD must be now part of the new asset
-            Assert.AreEqual(2, asset.Hierarchy.RootEntities.Count);
-            Assert.AreEqual(9, asset.Hierarchy.Entities.Count);
-            Assert.AreEqual(2, asset.Hierarchy.Entities.Count(it => it.Entity.Name == "D"));
+            Assert.AreEqual(2, asset.Hierarchy.RootPartIds.Count);
+            Assert.AreEqual(9, asset.Hierarchy.Parts.Count);
+            Assert.AreEqual(2, asset.Hierarchy.Parts.Count(it => it.Entity.Name == "D"));
 
-            foreach (var entity in asset.Hierarchy.Entities.Where(it => it.Entity.Name == "D"))
+            foreach (var entity in asset.Hierarchy.Parts.Where(it => it.Entity.Name == "D"))
             {
                 // Check that we have the correct baesId and basePartInstanceId
-                Assert.True(entity.Design.BasePartInstanceId.HasValue);
-                Assert.True(entity.Design.BaseId.HasValue);
-                Assert.AreEqual(entityD.Id, entity.Design.BaseId.Value);
+                Assert.True(entity.BasePartInstanceId.HasValue);
+                Assert.True(entity.BaseId.HasValue);
+                Assert.AreEqual(entityD.Id, entity.BaseId.Value);
             }
 
-            var entityDesignD1 = asset.Hierarchy.Entities[asset.Hierarchy.Entities[asset.Hierarchy.RootEntities[0]].Entity.Transform.Children.Where(it => it.Entity.Name == "D").Select(it => it.Entity.Id).FirstOrDefault()];
+            var entityDesignD1 = asset.Hierarchy.Parts[asset.Hierarchy.Parts[asset.Hierarchy.RootPartIds[0]].Entity.Transform.Children.Where(it => it.Entity.Name == "D").Select(it => it.Entity.Id).FirstOrDefault()];
             Assert.NotNull(entityDesignD1);
             //Assert.AreEqual(eRoot1Asset.Id, entityDesignD1.Design.BasePartInstanceId);
-            Assert.AreEqual(eRoot1Id, entityDesignD1.Design.BasePartInstanceId);
+            Assert.AreEqual(eRoot1Id, entityDesignD1.BasePartInstanceId);
             var testComponentD1 = entityDesignD1.Entity.Get<TestEntityComponent>();
             Assert.NotNull(testComponentD1);
-            var entityB1 = asset.Hierarchy.Entities[asset.Hierarchy.RootEntities[0]].Entity.Transform.Children.Where(it => it.Entity.Name == "B").Select(it => it.Entity).First();
+            var entityB1 = asset.Hierarchy.Parts[asset.Hierarchy.RootPartIds[0]].Entity.Transform.Children.Where(it => it.Entity.Name == "B").Select(it => it.Entity).First();
             Assert.AreEqual(entityB1, testComponentD1.EntityLink);
 
-            var entityDesignD2 = asset.Hierarchy.Entities[asset.Hierarchy.Entities[asset.Hierarchy.RootEntities[1]].Entity.Transform.Children.Where(it => it.Entity.Name == "D").Select(it => it.Entity.Id).FirstOrDefault()];
+            var entityDesignD2 = asset.Hierarchy.Parts[asset.Hierarchy.Parts[asset.Hierarchy.RootPartIds[1]].Entity.Transform.Children.Where(it => it.Entity.Name == "D").Select(it => it.Entity.Id).FirstOrDefault()];
             Assert.NotNull(entityDesignD2);
             //Assert.AreEqual(eRoot2Asset.Id, entityDesignD2.Design.BasePartInstanceId);
-            Assert.AreEqual(eRoot2Id, entityDesignD2.Design.BasePartInstanceId);
+            Assert.AreEqual(eRoot2Id, entityDesignD2.BasePartInstanceId);
             var testComponentD2 = entityDesignD2.Entity.Get<TestEntityComponent>();
             Assert.NotNull(testComponentD2);
             Assert.AreEqual(null, testComponentD2.EntityLink);
@@ -667,23 +667,23 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var a1 = new PrefabAsset();
             var ea = new Entity("ea");
             var eb = new Entity("eb");
-            a1.Hierarchy.Entities.Add(ea);
-            a1.Hierarchy.Entities.Add(eb);
-            a1.Hierarchy.RootEntities.Add(ea.Id);
-            a1.Hierarchy.RootEntities.Add(eb.Id);
+            a1.Hierarchy.Parts.Add(new EntityDesign(ea));
+            a1.Hierarchy.Parts.Add(new EntityDesign(eb));
+            a1.Hierarchy.RootPartIds.Add(ea.Id);
+            a1.Hierarchy.RootPartIds.Add(eb.Id);
 
             var a2 = new PrefabAsset();
             var aPartInstance1 = a1.CreatePrefabInstance(a2, "a1");
             var aPartInstance2 = a1.CreatePrefabInstance(a2, "a1");
-            a2.Hierarchy.Entities.AddRange(aPartInstance1.Entities);
-            a2.Hierarchy.Entities.AddRange(aPartInstance2.Entities);
-            a2.Hierarchy.RootEntities.AddRange(aPartInstance1.RootEntities);
-            a2.Hierarchy.RootEntities.AddRange(aPartInstance2.RootEntities);
+            a2.Hierarchy.Parts.AddRange(aPartInstance1.Parts);
+            a2.Hierarchy.Parts.AddRange(aPartInstance2.Parts);
+            a2.Hierarchy.RootPartIds.AddRange(aPartInstance1.RootPartIds);
+            a2.Hierarchy.RootPartIds.AddRange(aPartInstance2.RootPartIds);
 
             // Modify a1 to add entity ec
             var ec = new Entity("ec");
-            a1.Hierarchy.Entities.Add(ec);
-            a1.Hierarchy.RootEntities.Add(ec.Id);
+            a1.Hierarchy.Parts.Add(new EntityDesign(ec));
+            a1.Hierarchy.RootPartIds.Add(ec.Id);
 
             var a3 = (PrefabAsset)a2.CreateChildAsset("a2");
 
@@ -694,16 +694,16 @@ namespace SiliconStudio.Xenko.Assets.Tests
             });
 
             Assert.False(result2.HasErrors);
-            Assert.AreEqual(6, a2.Hierarchy.RootEntities.Count);
-            Assert.True(a2.Hierarchy.Entities.All(it => it.Design.BaseId.HasValue && it.Design.BasePartInstanceId.HasValue));
+            Assert.AreEqual(6, a2.Hierarchy.RootPartIds.Count);
+            Assert.True(a2.Hierarchy.Parts.All(it => it.BaseId.HasValue && it.BasePartInstanceId.HasValue));
 
             // Merge a3
             var result3 = a3.Merge((Asset)AssetCloner.Clone(a3.Base.Asset), (Asset)AssetCloner.Clone(a2), null);
 
             Assert.False(result3.HasErrors);
-            Assert.AreEqual(6, a3.Hierarchy.RootEntities.Count);
-            Assert.True(a3.Hierarchy.Entities.All(it => !it.Design.BasePartInstanceId.HasValue));
-            Assert.True(a3.Hierarchy.Entities.All(it => it.Design.BaseId.HasValue && a2.Hierarchy.Entities.ContainsKey(it.Design.BaseId.Value)));
+            Assert.AreEqual(6, a3.Hierarchy.RootPartIds.Count);
+            Assert.True(a3.Hierarchy.Parts.All(it => !it.BasePartInstanceId.HasValue));
+            Assert.True(a3.Hierarchy.Parts.All(it => it.BaseId.HasValue && a2.Hierarchy.Parts.ContainsKey(it.BaseId.Value)));
         }
 
         [Test]
@@ -744,26 +744,26 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var a1 = new PrefabAsset();
             var ea = new Entity("ea");
             var eb = new Entity("eb");
-            a1.Hierarchy.Entities.Add(ea);
-            a1.Hierarchy.Entities.Add(eb);
-            a1.Hierarchy.RootEntities.Add(ea.Id);
-            a1.Hierarchy.RootEntities.Add(eb.Id);
+            a1.Hierarchy.Parts.Add(new EntityDesign(ea));
+            a1.Hierarchy.Parts.Add(new EntityDesign(eb));
+            a1.Hierarchy.RootPartIds.Add(ea.Id);
+            a1.Hierarchy.RootPartIds.Add(eb.Id);
 
             assetItems.Add(new AssetItem("a1", a1));
 
             var a2 = new PrefabAsset();
             var aPartInstance1 = a1.CreatePrefabInstance(a2, "a1");
             var aPartInstance2 = a1.CreatePrefabInstance(a2, "a1");
-            a2.Hierarchy.Entities.AddRange(aPartInstance1.Entities);
-            a2.Hierarchy.Entities.AddRange(aPartInstance2.Entities);
-            a2.Hierarchy.RootEntities.AddRange(aPartInstance1.RootEntities);
-            a2.Hierarchy.RootEntities.AddRange(aPartInstance2.RootEntities);
+            a2.Hierarchy.Parts.AddRange(aPartInstance1.Parts);
+            a2.Hierarchy.Parts.AddRange(aPartInstance2.Parts);
+            a2.Hierarchy.RootPartIds.AddRange(aPartInstance1.RootPartIds);
+            a2.Hierarchy.RootPartIds.AddRange(aPartInstance2.RootPartIds);
             assetItems.Add(new AssetItem("a2", a2));
 
             // Modify a1 to add entity ec
             var ec = new Entity("ec");
-            a1.Hierarchy.Entities.Add(ec);
-            a1.Hierarchy.RootEntities.Add(ec.Id);
+            a1.Hierarchy.Parts.Add(new EntityDesign(ec));
+            a1.Hierarchy.RootPartIds.Add(ec.Id);
 
             var a3 = (PrefabAsset)a2.CreateChildAsset("a2");
 
@@ -777,12 +777,12 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
                 Assert.False(logger.HasErrors);
 
-                Assert.AreEqual(6, a2.Hierarchy.RootEntities.Count);
-                Assert.True(a2.Hierarchy.Entities.All(it => it.Design.BaseId.HasValue && it.Design.BasePartInstanceId.HasValue));
+                Assert.AreEqual(6, a2.Hierarchy.RootPartIds.Count);
+                Assert.True(a2.Hierarchy.Parts.All(it => it.BaseId.HasValue && it.BasePartInstanceId.HasValue));
 
-                Assert.AreEqual(6, a3.Hierarchy.RootEntities.Count);
-                Assert.True(a3.Hierarchy.Entities.All(it => !it.Design.BasePartInstanceId.HasValue));
-                Assert.True(a3.Hierarchy.Entities.All(it => it.Design.BaseId.HasValue && a2.Hierarchy.Entities.ContainsKey(it.Design.BaseId.Value)));
+                Assert.AreEqual(6, a3.Hierarchy.RootPartIds.Count);
+                Assert.True(a3.Hierarchy.Parts.All(it => !it.BasePartInstanceId.HasValue));
+                Assert.True(a3.Hierarchy.Parts.All(it => it.BaseId.HasValue && a2.Hierarchy.Parts.ContainsKey(it.BaseId.Value)));
             }
         }
 
@@ -827,11 +827,11 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var ea = new Entity("ea");
             var eb = new Entity("eb");
             var ec = new Entity("ec");
-            a1.Hierarchy.Entities.Add(er);
-            a1.Hierarchy.Entities.Add(ea);
-            a1.Hierarchy.Entities.Add(eb);
-            a1.Hierarchy.Entities.Add(ec);
-            a1.Hierarchy.RootEntities.Add(er.Id);
+            a1.Hierarchy.Parts.Add(new EntityDesign(er));
+            a1.Hierarchy.Parts.Add(new EntityDesign(ea));
+            a1.Hierarchy.Parts.Add(new EntityDesign(eb));
+            a1.Hierarchy.Parts.Add(new EntityDesign(ec));
+            a1.Hierarchy.RootPartIds.Add(er.Id);
             er.AddChild(ea);
             er.AddChild(eb);
             er.AddChild(ec);
@@ -842,68 +842,68 @@ namespace SiliconStudio.Xenko.Assets.Tests
             
             var a2 = new PrefabAsset();
             var a2PartInstance1 = a1.CreatePrefabInstance(a2, "a1");
-            foreach (var entity in a2PartInstance1.Entities)
+            foreach (var entity in a2PartInstance1.Parts)
             {
                 entity.Entity.Name += "1";
                 entity.Entity.SetOverride(member, OverrideType.New);
             }
 
             var a2PartInstance2 = a1.CreatePrefabInstance(a2, "a1");
-            foreach (var entity in a2PartInstance2.Entities)
+            foreach (var entity in a2PartInstance2.Parts)
             {
                 entity.Entity.Name += "2";
                 entity.Entity.SetOverride(member, OverrideType.New);
             }
 
-            a2.Hierarchy.Entities.AddRange(a2PartInstance1.Entities);
-            a2.Hierarchy.Entities.AddRange(a2PartInstance2.Entities);
-            a2.Hierarchy.RootEntities.AddRange(a2PartInstance1.RootEntities);
-            a2.Hierarchy.RootEntities.AddRange(a2PartInstance2.RootEntities);
-            Assert.AreEqual(8, a2.Hierarchy.Entities.Count);
-            Assert.AreEqual(2, a2.Hierarchy.RootEntities.Count);
+            a2.Hierarchy.Parts.AddRange(a2PartInstance1.Parts);
+            a2.Hierarchy.Parts.AddRange(a2PartInstance2.Parts);
+            a2.Hierarchy.RootPartIds.AddRange(a2PartInstance1.RootPartIds);
+            a2.Hierarchy.RootPartIds.AddRange(a2PartInstance2.RootPartIds);
+            Assert.AreEqual(8, a2.Hierarchy.Parts.Count);
+            Assert.AreEqual(2, a2.Hierarchy.RootPartIds.Count);
             assetItems.Add(new AssetItem("a2", a2));
 
             var a3 = new PrefabAsset();
             var a3PartInstance1 = a1.CreatePrefabInstance(a3, "a1");
-            foreach (var entity in a3PartInstance1.Entities)
+            foreach (var entity in a3PartInstance1.Parts)
             {
                 entity.Entity.Name += "1'";
                 entity.Entity.SetOverride(member, OverrideType.New);
             }
-            a3.Hierarchy.Entities.AddRange(a3PartInstance1.Entities);
-            a3.Hierarchy.RootEntities.AddRange(a3PartInstance1.RootEntities);
-            Assert.AreEqual(4, a3.Hierarchy.Entities.Count);
-            Assert.AreEqual(1, a3.Hierarchy.RootEntities.Count);
+            a3.Hierarchy.Parts.AddRange(a3PartInstance1.Parts);
+            a3.Hierarchy.RootPartIds.AddRange(a3PartInstance1.RootPartIds);
+            Assert.AreEqual(4, a3.Hierarchy.Parts.Count);
+            Assert.AreEqual(1, a3.Hierarchy.RootPartIds.Count);
             assetItems.Add(new AssetItem("a3", a3));
 
             var a4 = new PrefabAsset();
             var eRoot = new Entity("eRoot");
             var a2PartInstance3 = a2.CreatePrefabInstance(a4, "a2");
 
-            foreach (var entity in a2PartInstance3.Entities)
+            foreach (var entity in a2PartInstance3.Parts)
             {
                 entity.Entity.Name += "*";
                 entity.Entity.SetOverride(member, OverrideType.New);
             }
-            foreach (var entity in a2PartInstance3.Entities.Where(t => a2PartInstance3.RootEntities.Contains(t.Entity.Id)))
+            foreach (var entity in a2PartInstance3.Parts.Where(t => a2PartInstance3.RootPartIds.Contains(t.Entity.Id)))
             {
                 eRoot.AddChild(entity.Entity);
             }
             var a3PartInstance2 = a3.CreatePrefabInstance(a4, "a3");
-            foreach (var entity in a3PartInstance2.Entities)
+            foreach (var entity in a3PartInstance2.Parts)
             {
                 entity.Entity.Name += "*";
                 entity.Entity.SetOverride(member, OverrideType.New);
             }
 
-            a4.Hierarchy.Entities.Add(eRoot);
-            a4.Hierarchy.Entities.AddRange(a2PartInstance3.Entities);
-            a4.Hierarchy.Entities.AddRange(a3PartInstance2.Entities);
-            a4.Hierarchy.RootEntities.Add(eRoot.Id);
-            a4.Hierarchy.RootEntities.AddRange(a3PartInstance2.RootEntities);
+            a4.Hierarchy.Parts.Add(new EntityDesign(eRoot));
+            a4.Hierarchy.Parts.AddRange(a2PartInstance3.Parts);
+            a4.Hierarchy.Parts.AddRange(a3PartInstance2.Parts);
+            a4.Hierarchy.RootPartIds.Add(eRoot.Id);
+            a4.Hierarchy.RootPartIds.AddRange(a3PartInstance2.RootPartIds);
 
-            Assert.AreEqual(13, a4.Hierarchy.Entities.Count);
-            Assert.AreEqual(2, a4.Hierarchy.RootEntities.Count);
+            Assert.AreEqual(13, a4.Hierarchy.Parts.Count);
+            Assert.AreEqual(2, a4.Hierarchy.RootPartIds.Count);
 
             assetItems.Add(new AssetItem("a4", a4));
 
@@ -943,11 +943,11 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var ey = new Entity("ey");
             ey.Components.Add(new TestEntityComponent() { EntityLink = eb });
             ex.AddChild(ey);
-            a1.Hierarchy.Entities.Add(ex);
-            a1.Hierarchy.Entities.Add(ey);
-            a1.Hierarchy.RootEntities.Add(ex.Id);
-            Assert.AreEqual(6, a1.Hierarchy.Entities.Count);
-            Assert.AreEqual(2, a1.Hierarchy.RootEntities.Count);
+            a1.Hierarchy.Parts.Add(new EntityDesign(ex));
+            a1.Hierarchy.Parts.Add(new EntityDesign(ey));
+            a1.Hierarchy.RootPartIds.Add(ex.Id);
+            Assert.AreEqual(6, a1.Hierarchy.Parts.Count);
+            Assert.AreEqual(2, a1.Hierarchy.RootPartIds.Count);
 
             // Simulates the loading of this package
             using (var session = new PackageSession())
@@ -977,19 +977,19 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 //    | ey(2) + link eb2             
                 {
                     Assert.True(a2.DumpTo(Console.Out, "a2 AFTER PrefabMergeAsset"));
-                    Assert.AreEqual(4, a2.Hierarchy.RootEntities.Count);
-                    Assert.True(a2.Hierarchy.Entities.All(it => it.Design.BaseId.HasValue && it.Design.BasePartInstanceId.HasValue));
+                    Assert.AreEqual(4, a2.Hierarchy.RootPartIds.Count);
+                    Assert.True(a2.Hierarchy.Parts.All(it => it.BaseId.HasValue && it.BasePartInstanceId.HasValue));
 
                     // Check that we have all expected entities
-                    Assert.AreEqual(12, a2.Hierarchy.Entities.Count);
+                    Assert.AreEqual(12, a2.Hierarchy.Parts.Count);
 
-                    var eb1 = a2.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "eb1")?.Entity;
-                    var eb2 = a2.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "eb2")?.Entity;
+                    var eb1 = a2.Hierarchy.Parts.FirstOrDefault(it => it.Entity.Name == "eb1")?.Entity;
+                    var eb2 = a2.Hierarchy.Parts.FirstOrDefault(it => it.Entity.Name == "eb2")?.Entity;
                     Assert.NotNull(eb1);
                     Assert.NotNull(eb2);
 
                     // Check that we have ex and ey
-                    var exList = a2.Hierarchy.Entities.Where(it => it.Entity.Name == ex.Name).ToList();
+                    var exList = a2.Hierarchy.Parts.Where(it => it.Entity.Name == ex.Name).ToList();
                     Assert.AreEqual(2, exList.Count);
 
                     // Check that both [ex] have both 1 element [ey] and the links to eb1/eb2 are correct
@@ -1011,10 +1011,10 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
                     // Check link from ec1 to ea1
                     {
-                        var ec1 = a2.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "ec1")?.Entity;
+                        var ec1 = a2.Hierarchy.Parts.FirstOrDefault(it => it.Entity.Name == "ec1")?.Entity;
                         Assert.NotNull(ec1);
 
-                        var ea1 = a2.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "ea1")?.Entity;
+                        var ea1 = a2.Hierarchy.Parts.FirstOrDefault(it => it.Entity.Name == "ea1")?.Entity;
                         Assert.NotNull(ea1);
 
                         Assert.NotNull(ec1.Get<TestEntityComponent>());
@@ -1023,10 +1023,10 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
                     // Check link from ec2 to ea2
                     {
-                        var ec2 = a2.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "ec2")?.Entity;
+                        var ec2 = a2.Hierarchy.Parts.FirstOrDefault(it => it.Entity.Name == "ec2")?.Entity;
                         Assert.NotNull(ec2);
 
-                        var ea2 = a2.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "ea2")?.Entity;
+                        var ea2 = a2.Hierarchy.Parts.FirstOrDefault(it => it.Entity.Name == "ea2")?.Entity;
                         Assert.NotNull(ea2);
 
                         Assert.NotNull(ec2.Get<TestEntityComponent>());
@@ -1047,17 +1047,17 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 {
                     Assert.True(a3.DumpTo(Console.Out, "a3 AFTER PrefabMergeAsset"));
 
-                    Assert.AreEqual(2, a3.Hierarchy.RootEntities.Count);
-                    Assert.True(a3.Hierarchy.Entities.All(it => it.Design.BaseId.HasValue && it.Design.BasePartInstanceId.HasValue));
+                    Assert.AreEqual(2, a3.Hierarchy.RootPartIds.Count);
+                    Assert.True(a3.Hierarchy.Parts.All(it => it.BaseId.HasValue && it.BasePartInstanceId.HasValue));
 
                     // Check that we have all expected entities
-                    Assert.AreEqual(6, a3.Hierarchy.Entities.Count);
+                    Assert.AreEqual(6, a3.Hierarchy.Parts.Count);
 
-                    var eb1 = a3.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "eb1'")?.Entity;
+                    var eb1 = a3.Hierarchy.Parts.FirstOrDefault(it => it.Entity.Name == "eb1'")?.Entity;
                     Assert.NotNull(eb1);
 
                     // Check that we have ex and ey
-                    var exList = a3.Hierarchy.Entities.Where(it => it.Entity.Name == ex.Name).ToList();
+                    var exList = a3.Hierarchy.Parts.Where(it => it.Entity.Name == ex.Name).ToList();
                     Assert.AreEqual(1, exList.Count);
 
                     // Check that [ex] have 1 element [ey] and the link to eb1 is correct
@@ -1072,10 +1072,10 @@ namespace SiliconStudio.Xenko.Assets.Tests
                     }
 
                     {
-                        var ec1 = a3.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "ec1'")?.Entity;
+                        var ec1 = a3.Hierarchy.Parts.FirstOrDefault(it => it.Entity.Name == "ec1'")?.Entity;
                         Assert.NotNull(ec1);
 
-                        var ea1 = a3.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "ea1'")?.Entity;
+                        var ea1 = a3.Hierarchy.Parts.FirstOrDefault(it => it.Entity.Name == "ea1'")?.Entity;
                         Assert.NotNull(ea1);
 
                         Assert.NotNull(ec1.Get<TestEntityComponent>());
@@ -1109,21 +1109,21 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 {
                     Assert.True(a4.DumpTo(Console.Out, "a4 AFTER PrefabMergeAsset"));
 
-                    Assert.AreEqual(5, a4.Hierarchy.RootEntities.Count);
-                    Assert.True(a4.Hierarchy.Entities.Where(it => it.Entity.Name != "eRoot").All(it => it.Entity.Name != "eRoot" && it.Design.BaseId.HasValue && it.Design.BasePartInstanceId.HasValue));
+                    Assert.AreEqual(5, a4.Hierarchy.RootPartIds.Count);
+                    Assert.True(a4.Hierarchy.Parts.Where(it => it.Entity.Name != "eRoot").All(it => it.Entity.Name != "eRoot" && it.BaseId.HasValue && it.BasePartInstanceId.HasValue));
 
                     // Check that we have all expected entities
-                    Assert.AreEqual(19, a4.Hierarchy.Entities.Count);
+                    Assert.AreEqual(19, a4.Hierarchy.Parts.Count);
 
-                    var eb1 = a4.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "eb1*")?.Entity;
-                    var eb1_2 = a4.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "eb1'*")?.Entity;
-                    var eb2 = a4.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "eb2*")?.Entity;
+                    var eb1 = a4.Hierarchy.Parts.FirstOrDefault(it => it.Entity.Name == "eb1*")?.Entity;
+                    var eb1_2 = a4.Hierarchy.Parts.FirstOrDefault(it => it.Entity.Name == "eb1'*")?.Entity;
+                    var eb2 = a4.Hierarchy.Parts.FirstOrDefault(it => it.Entity.Name == "eb2*")?.Entity;
                     Assert.NotNull(eb1);
                     Assert.NotNull(eb1_2);
                     Assert.NotNull(eb2);
 
                     // Check that we have ex and ey
-                    var exList = a4.Hierarchy.Entities.Where(it => it.Entity.Name == ex.Name).ToList();
+                    var exList = a4.Hierarchy.Parts.Where(it => it.Entity.Name == ex.Name).ToList();
                     Assert.AreEqual(3, exList.Count);
 
                     // Check that both [ex] have both 1 element [ey] and the links to eb1/eb2 are correct
@@ -1147,7 +1147,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
                     // Check all [er] entities
                     Action<string> checkErX = (erName) =>
                     {
-                        var er1 = a4.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == erName)?.Entity;
+                        var er1 = a4.Hierarchy.Parts.FirstOrDefault(it => it.Entity.Name == erName)?.Entity;
                         Assert.NotNull(er1);
                         Assert.AreEqual(3, er1.Transform.Children.Count);
 
