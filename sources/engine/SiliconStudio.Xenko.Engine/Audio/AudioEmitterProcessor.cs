@@ -130,8 +130,6 @@ namespace SiliconStudio.Xenko.Audio
                 }
 
                 // First update the emitter data if required.
-                emitter.DistanceScale = associatedData.AudioEmitterComponent.DistanceScale;
-                emitter.DopplerScale = associatedData.AudioEmitterComponent.DopplerScale;
                 emitter.Velocity = pos - emitter.Position;
                 emitter.Position = pos;
                 emitter.Forward = Vector3.Normalize((Vector3)worldMatrix.Row3);

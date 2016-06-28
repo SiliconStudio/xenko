@@ -145,6 +145,24 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
+        private float pitch = 1.0f;
+
+        public float Pitch
+        {
+            get
+            {
+                return pitch;
+            }
+            set
+            {
+                foreach (var instance in InstanceToListener)
+                {
+                    instance.Key.Pitch = value;
+                }
+                pitch = value;
+            }
+        }
+
         /// <summary>
         /// Indicate the <see cref="AudioListenerProcessor"/> if the controller's sound instances need to be played.
         /// This variable is need because <see cref="Play"/> is asynchronous and actually starts playing only on next system update.
