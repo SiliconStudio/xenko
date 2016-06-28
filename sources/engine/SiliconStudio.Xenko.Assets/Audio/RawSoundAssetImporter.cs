@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Assets.Audio
     public class RawSoundAssetImporter : AssetImporterBase
     {
         // Supported file extensions for this importer
-        public const string FileExtensions = ".wav,.mp3,.ogg,.aac,.aiff,.flac,.m4a,.wma";
+        public const string FileExtensions = ".wav,.mp3,.ogg,.aac,.aiff,.flac,.m4a,.wma,.mpc";
 
         private static readonly Guid Uid = new Guid("634842fa-d1db-45c2-b13d-bc11486dae4d");
         public override Guid Id => Uid;
