@@ -58,7 +58,7 @@ namespace SiliconStudio.Assets.Serializers
                 var lastEntered = EnteredTypes.Count > 0 ? EnteredTypes.Peek() : null;
 
                 // It is a container for the type we're evaluating?
-                if (lastEntered != null && !lastEntered.ContainsType.Any(x => x.IsAssignableFrom(type)))
+                if (lastEntered != null && !lastEntered.ContainedTypes.Any(x => x.IsAssignableFrom(type)))
                 {
                     // Otherwise, serialize a reference to this object instead.
                     SerializeAsReference = true;
