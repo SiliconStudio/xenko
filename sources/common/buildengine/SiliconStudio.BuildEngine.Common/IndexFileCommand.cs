@@ -34,18 +34,7 @@ namespace SiliconStudio.BuildEngine
         /// <summary>
         /// Gets the currently mounted microthread-local database provider.
         /// </summary>
-        public static DatabaseFileProvider DatabaseFileProvider
-        {
-            get
-            {
-                var databaseFileProvider = MicroThreadLocalDatabaseFileProvider.Value;
-                if (databaseFileProvider == null)
-                {
-                    throw new InvalidOperationException("No VirtualFileProvider set for this microthread.");                    
-                }
-                return databaseFileProvider;
-            }
-        }
+        public static DatabaseFileProvider DatabaseFileProvider => MicroThreadLocalDatabaseFileProvider.Value;
 
         /// <summary>
         /// Merges the given dictionary of build output objects into the common group. Objects merged here will be integrated to every database,

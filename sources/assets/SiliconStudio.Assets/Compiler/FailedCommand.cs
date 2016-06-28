@@ -17,13 +17,7 @@ namespace SiliconStudio.Assets.Compiler
             this.objectThatFailed = objectThatFailed;
         }
 
-        public override string Title
-        {
-            get
-            {
-                return string.Format("Failed command [Object={0}]", objectThatFailed);
-            }
-        }
+        public override string Title => $"Failed command [Object={objectThatFailed}]";
 
         protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
         {
