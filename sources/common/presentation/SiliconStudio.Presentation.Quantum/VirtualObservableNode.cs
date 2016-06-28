@@ -82,7 +82,7 @@ namespace SiliconStudio.Presentation.Quantum
             base.AddCommand(command);
         }
 
-        protected void SetTypedValue(object value)
+        protected virtual void SetTypedValue(object value)
         {
             updatingValue = true;
             SetValue(() => Setter(value), nameof(VirtualObservableNode<object>.TypedValue));

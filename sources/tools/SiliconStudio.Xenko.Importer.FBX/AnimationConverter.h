@@ -10,6 +10,7 @@ using namespace System::IO;
 using namespace System::Collections::Generic;
 using namespace System::Runtime::InteropServices;
 using namespace SiliconStudio::Core::Mathematics;
+using namespace SiliconStudio::Xenko::Importer::Common;
 
 namespace SiliconStudio {
 	namespace Xenko {
@@ -19,15 +20,20 @@ namespace SiliconStudio {
 				ref class AnimationConverter
 				{
 				private:
+					Logger^ logger;
 					FbxScene* scene;
 					bool exportedFromMaya;
 					SceneMapping^ sceneMapping;
 
+					CompressedTimeSpan animStartTime;
+
 				public:
-					AnimationConverter(SceneMapping^ sceneMapping)
+					AnimationConverter(Logger^ logger, SceneMapping^ sceneMapping)
 					{
+						if (logger == nullptr) throw gcnew ArgumentNullException("logger");
 						if (sceneMapping == nullptr) throw gcnew ArgumentNullException("sceneMapping");
 
+						this->logger = logger;
 						this->sceneMapping = sceneMapping;
 						this->scene = sceneMapping->Scene;;
 
@@ -58,38 +64,72 @@ namespace SiliconStudio {
 						return false;
 					}
 
-					Dictionary<System::String^, AnimationClip^>^ ProcessAnimation()
+					AnimationInfo^ ProcessAnimation()
 					{
-						auto animationClips = gcnew Dictionary<System::String^, AnimationClip^>();
+						auto animationData = gcnew AnimationInfo();
 
 						int animStackCount = scene->GetMemberCount<FbxAnimStack>();
-						// We support only anim stack count.
+						if (animStackCount == 0)
+							return animationData;
+						
+						// We support only anim stack count == 1
 						if (animStackCount > 1)
 						{
-							// TODO: Add a log
-							animStackCount = 1;
+							logger->Warning("Multiple FBX animation stacks detected, exporting only the first one");
 						}
 
-						for (int i = 0; i < animStackCount; ++i)
+						FbxAnimStack* animStack = scene->GetMember<FbxAnimStack>(0);
+						int animLayerCount = animStack->GetMemberCount<FbxAnimLayer>();
+
+						// We support only anim layer count == 1
+						if (animLayerCount > 1)
 						{
-							FbxAnimStack* animStack = scene->GetMember<FbxAnimStack>(i);
-							int animLayerCount = animStack->GetMemberCount<FbxAnimLayer>();
-							FbxAnimLayer* animLayer = animStack->GetMember<FbxAnimLayer>(0);
-
-							// Optimized code
-							// From http://www.the-area.com/forum/autodesk-fbx/fbx-sdk/resetpivotsetandconvertanimation-issue/page-1/
-							scene->GetRootNode()->ResetPivotSet(FbxNode::eDestinationPivot);
-							SetPivotStateRecursive(scene->GetRootNode());
-							scene->GetRootNode()->ConvertPivotAnimationRecursive(animStack, FbxNode::eDestinationPivot, 30.0f);
-							ProcessAnimationByCurve(animationClips, animLayer, scene->GetRootNode());
-							scene->GetRootNode()->ResetPivotSet(FbxNode::eSourcePivot);
-
-							// Reference code (Uncomment Optimized code to use this part)
-							//scene->SetCurrentAnimationStack(animStack);
-							//ProcessAnimation(animationClip, animStack, scene->GetRootNode());
+							logger->Warning("Multiple FBX animation layers detected, exporting only the first one");
 						}
 
-						return animationClips;
+						FbxAnimLayer* animLayer = animStack->GetMember<FbxAnimLayer>(0);
+
+						FbxTime animStart, animEnd;
+
+						// Store start/end info
+						const FbxTakeInfo* take_info = scene->GetTakeInfo(animStack->GetName());
+						if (take_info)
+						{
+							animStart = take_info->mLocalTimeSpan.GetStart();
+							animEnd = take_info->mLocalTimeSpan.GetStop();
+						}
+						else
+						{
+							// Take the time line value.
+							FbxTimeSpan lTimeLineTimeSpan;
+							scene->GetGlobalSettings().GetTimelineDefaultTimeSpan(lTimeLineTimeSpan);
+							animStart = lTimeLineTimeSpan.GetStart();
+							animEnd = lTimeLineTimeSpan.GetStop();
+						}
+
+						animStartTime = FBXTimeToTimeSpan(animStart);
+
+						// Optimized code
+						// From http://www.the-area.com/forum/autodesk-fbx/fbx-sdk/resetpivotsetandconvertanimation-issue/page-1/
+						scene->GetRootNode()->ResetPivotSet(FbxNode::eDestinationPivot);
+						SetPivotStateRecursive(scene->GetRootNode());
+						scene->GetRootNode()->ConvertPivotAnimationRecursive(animStack, FbxNode::eDestinationPivot, 30.0f);
+						ProcessAnimationByCurve(animationData->AnimationClips, animLayer, scene->GetRootNode());
+						scene->GetRootNode()->ResetPivotSet(FbxNode::eSourcePivot);
+
+						// Set duration
+						// Note: we can't use animEnd - animStart since some FBX has wrong data there
+						for each (auto animationClip in animationData->AnimationClips)
+						{
+							if (animationData->Duration < animationClip.Value->Duration)
+								animationData->Duration = animationClip.Value->Duration;
+						}
+
+						// Reference code (Uncomment Optimized code to use this part)
+						//scene->SetCurrentAnimationStack(animStack);
+						//ProcessAnimation(animationClip, animStack, scene->GetRootNode());
+
+						return animationData;
 					}
 
 					List<String^>^ ExtractAnimationNodesNoInit()
@@ -308,7 +348,7 @@ namespace SiliconStudio {
 								time = endTime;
 							}
 
-							key.Time = FBXTimeToTimeSpan(time);
+							key.Time = FBXTimeToTimeSpan(time) - animStartTime;
 
 							bool hasAnyDiscontinuity = false;
 							bool hasDiscontinuity[4];
@@ -519,28 +559,12 @@ namespace SiliconStudio {
 					}
 
 					// This code is not used but is a reference code for code animation but less optimized than ProcessAnimationByCurve. 
-					void ProcessAnimation(AnimationClip^ animationClip, FbxAnimStack* animStack, FbxNode* pNode)
+					void ProcessAnimation(FbxTime animStart, FbxTime animEnd, AnimationClip^ animationClip, FbxAnimStack* animStack, FbxNode* pNode)
 					{
 						auto layer0 = animStack->GetMember<FbxAnimLayer>(0);
 
 						if (HasAnimation(layer0, pNode))
 						{
-							float start, end;
-							const FbxTakeInfo* take_info = scene->GetTakeInfo(animStack->GetName());
-							if (take_info)
-							{
-								start = (float)take_info->mLocalTimeSpan.GetStart().GetSecondDouble();
-								end = (float)take_info->mLocalTimeSpan.GetStop().GetSecondDouble();
-							}
-							else
-							{
-								// Take the time line value.
-								FbxTimeSpan lTimeLineTimeSpan;
-								scene->GetGlobalSettings().GetTimelineDefaultTimeSpan(lTimeLineTimeSpan);
-								start = (float)lTimeLineTimeSpan.GetStart().GetSecondDouble();
-								end = (float)lTimeLineTimeSpan.GetStop().GetSecondDouble();
-							}
-
 							auto evaluator = scene->GetAnimationEvaluator();
 
 							auto animationName = animStack->GetName();
@@ -560,21 +584,22 @@ namespace SiliconStudio {
 								parentNodeName = sceneMapping->FindNode(parentNode).Name;
 							}
 
-							const float sampling_period = 1.f / 60.0f;
+							float start = animStart.GetSecondDouble();
+							float end = animEnd.GetSecondDouble();
+
+							FbxTime sampling_period = FbxTimeSeconds(1.f / 60.0f);
 							bool loop_again = true;
-							for (float t = start; loop_again; t += sampling_period) {
+							for (FbxTime t = start; loop_again; t += sampling_period) {
 								if (t >= end) {
 									t = end;
 									loop_again = false;
 								}
 
-								auto fbxTime = FbxTimeSeconds(t);
-
 								// Use GlobalTransform instead of LocalTransform
-								auto fbxMatrix = evaluator->GetNodeGlobalTransform(pNode, fbxTime);
+								auto fbxMatrix = evaluator->GetNodeGlobalTransform(pNode, t);
 								if (parentNode != nullptr)
 								{
-									auto parentMatrixInverse = evaluator->GetNodeGlobalTransform(parentNode, fbxTime).Inverse();
+									auto parentMatrixInverse = evaluator->GetNodeGlobalTransform(parentNode, t).Inverse();
 									fbxMatrix = parentMatrixInverse * fbxMatrix;
 								}
 								auto matrix = sceneMapping->ConvertMatrixFromFbx(fbxMatrix);
@@ -584,7 +609,7 @@ namespace SiliconStudio {
 								Quaternion rotation;
 								matrix.Decompose(scaling, rotation, translation);
 
-								auto time = FBXTimeToTimeSpan(fbxTime);
+								auto time = FBXTimeToTimeSpan(t);
 
 								scalingFrames->Add(KeyFrameData<Vector3>(time, scaling));
 								translationFrames->Add(KeyFrameData<Vector3>(time, translation));
@@ -601,7 +626,7 @@ namespace SiliconStudio {
 
 						for (int i = 0; i < pNode->GetChildCount(); ++i)
 						{
-							ProcessAnimation(animationClip, animStack, pNode->GetChild(i));
+							ProcessAnimation(animStart, animEnd, animationClip, animStack, pNode->GetChild(i));
 						}
 					}
 

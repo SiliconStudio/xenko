@@ -36,12 +36,6 @@ namespace SiliconStudio.Quantum
         ICollection<INodeCommand> AvailableCommands { get; }
 
         /// <summary>
-        /// Raised when a node is about to be constructed.
-        /// </summary>
-        [Obsolete("This event will be removed in a future release")]
-        event EventHandler<NodeConstructingArgs> NodeConstructing;
-
-        /// <summary>
         /// Registers a type as a primitive type.
         /// </summary>
         /// <param name="type">The type to register.</param>

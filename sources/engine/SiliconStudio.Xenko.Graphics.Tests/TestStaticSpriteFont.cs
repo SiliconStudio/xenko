@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         public TestStaticSpriteFont()
             : base("StaticFonts/", "sta")
         {
-            CurrentVersion = 2;
+            CurrentVersion = 5;
         }
 
         public static void Main()

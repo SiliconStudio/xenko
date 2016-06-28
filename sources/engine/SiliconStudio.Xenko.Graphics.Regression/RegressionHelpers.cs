@@ -56,6 +56,8 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             result.DeviceName = "OpenGLES";
     #elif SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
             result.DeviceName = "OpenGL";
+    #elif SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
+            result.DeviceName = "Vulkan";
     #endif
 #elif SILICONSTUDIO_PLATFORM_ANDROID
             result.Platform = "Android";
@@ -142,6 +144,8 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             return TestPlatform.WindowsOgles;
 #elif SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
             return TestPlatform.WindowsOgl;
+#elif SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
+            return TestPlatform.WindowsVulkan;
 #endif
 
         }
@@ -183,85 +187,6 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         }
     }
 
-    public class TestResultImage
-    {
-        public string TestName;
-        public string CurrentVersion;
-        public string Frame;
-
-        // Image
-        public Image Image;
-
-        public TestResultImage()
-        {
-        }
-
-        public unsafe void Read(BinaryReader reader)
-        {
-            TestName = reader.ReadString();
-            CurrentVersion = reader.ReadString();
-            Frame = reader.ReadString();
-
-            // Read image header
-            var width = reader.ReadInt32();
-            var height = reader.ReadInt32();
-            var format = (PixelFormat)reader.ReadInt32();
-            var textureSize = reader.ReadInt32();
-
-            // Read image data
-            var imageData = new byte[textureSize];
-            var copiedSize = 0;
-            using (var lz4Stream = new LZ4Stream(new BlockingBufferStream(reader.BaseStream), CompressionMode.Decompress, false, textureSize))
-            {
-                lz4Stream.Read(imageData, copiedSize, textureSize - copiedSize);
-            }
-
-            var pinnedImageData = GCHandle.Alloc(imageData, GCHandleType.Pinned);
-            var description = new ImageDescription
-            {
-                Dimension = TextureDimension.Texture2D,
-                Width = width,
-                Height = height,
-                ArraySize = 1,
-                Depth = 1,
-                Format = format,
-                MipLevels = 1,
-            };
-            Image = Image.New(description, pinnedImageData.AddrOfPinnedObject(), 0, pinnedImageData, false);
-        }
-
-        public void Write(BinaryWriter writer)
-        {
-            writer.Write(TestName);
-            writer.Write(CurrentVersion);
-            writer.Write(Frame);
-            
-            // This call returns the pixels without any extra stride
-            var pixels = Image.PixelBuffer[0].GetPixels<byte>();
-
-            writer.Write(Image.PixelBuffer[0].Width);
-            writer.Write(Image.PixelBuffer[0].Height);
-            writer.Write((int)Image.PixelBuffer[0].Format);
-            writer.Write(pixels.Length);
-
-            var sw = new Stopwatch();
-
-            sw.Start();
-            // Write image data
-            var lz4Stream = new LZ4Stream(writer.BaseStream, CompressionMode.Compress, false, pixels.Length);
-            lz4Stream.Write(pixels, 0, pixels.Length);
-            lz4Stream.Flush();
-            writer.BaseStream.Flush();
-            sw.Stop();
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-            Console.WriteLine("Total calculation time: {0}", sw.Elapsed);
-#else
-            GameTestBase.TestGameLogger.Info("Total calculation time: {0}", sw.Elapsed);
-#endif
-            //writer.Write(pixels, 0, pixels.Length);
-        }
-    }
-
     public struct ImageInformation
     {
         public int Width;
@@ -279,6 +204,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         WindowsDx,
         WindowsOgl,
         WindowsOgles,
+        WindowsVulkan,
         WindowsStore,
         WindowsPhone,
         Android,

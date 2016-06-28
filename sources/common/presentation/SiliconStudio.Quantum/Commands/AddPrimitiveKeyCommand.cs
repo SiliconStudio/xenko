@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -33,7 +34,8 @@ namespace SiliconStudio.Quantum.Commands
             var dictionaryDescriptor = typeDescriptor as DictionaryDescriptor;
             if (dictionaryDescriptor == null)
                 return false;
-            return !dictionaryDescriptor.KeyType.IsClass || dictionaryDescriptor.KeyType == typeof(string) || dictionaryDescriptor.KeyType.GetConstructor(new Type[0]) != null;
+
+            return !dictionaryDescriptor.KeyType.IsClass || dictionaryDescriptor.KeyType == typeof(string) || dictionaryDescriptor.KeyType.GetConstructor(Type.EmptyTypes) != null;
         }
 
         protected override void ExecuteSync(IContent content, Index index, object parameter)
@@ -51,8 +53,8 @@ namespace SiliconStudio.Quantum.Commands
         private static Index GenerateStringKey(object value, ITypeDescriptor descriptor, string baseValue)
         {
             // TODO: use a dialog service and popup a message when the given key is invalid
-            string baseName = GenerateBaseName(baseValue);
-            int i = 1;
+            var baseName = GenerateBaseName(baseValue);
+            var i = 1;
 
             var dictionary = (DictionaryDescriptor)descriptor;
             while (dictionary.ContainsKey(value, baseName))

@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Xenko.Assets.Effect;
 using SiliconStudio.Xenko.ConnectionRouter;
@@ -110,9 +111,13 @@ namespace SiliconStudio.Xenko.EffectCompilerServer
             var precompiledEffectShaderPass = await effectCompiler.Compile(remoteEffectCompilerEffectRequest.MixinTree, remoteEffectCompilerEffectRequest.EffectParameters, null).AwaitResult();
 
             // Send compiled shader
-            await socketMessageLayer.Send(new RemoteEffectCompilerEffectAnswer { StreamId = remoteEffectCompilerEffectRequest.StreamId, EffectBytecode = precompiledEffectShaderPass.Bytecode });
-
-            Console.WriteLine($"Done compiling shader: {remoteEffectCompilerEffectRequest.MixinTree.Name}");
+            await socketMessageLayer.Send(new RemoteEffectCompilerEffectAnswer
+            {
+                StreamId = remoteEffectCompilerEffectRequest.StreamId,
+                LogMessages = precompiledEffectShaderPass.CompilationLog.Messages.Select(x => new SerializableLogMessage((LogMessage)x)).ToList(),
+                LogHasErrors = precompiledEffectShaderPass.CompilationLog.HasErrors,
+                EffectBytecode = precompiledEffectShaderPass.Bytecode,
+            });
         }
     }
 }

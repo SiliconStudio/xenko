@@ -36,14 +36,16 @@ namespace SiliconStudio.Core.Design.Tests.Transactions
         {
             var stack = TransactionStackFactory.Create(5);
             var raiseCount = 0;
-            var expectedRaiseCount = 0;
+            var expectedRaiseCount = 1;
             stack.TransactionCompleted += (sender, e) => Assert.AreEqual(expectedRaiseCount, ++raiseCount);
             using (stack.CreateTransaction())
             {
                 // Empty transaction
             }
-            Assert.AreEqual(0, expectedRaiseCount);
-            Assert.AreEqual(0, raiseCount);
+            Assert.AreEqual(1, expectedRaiseCount);
+            Assert.AreEqual(1, raiseCount);
+
+            ++expectedRaiseCount;
             using (stack.CreateTransaction())
             {
                 using (stack.CreateTransaction())
@@ -51,8 +53,8 @@ namespace SiliconStudio.Core.Design.Tests.Transactions
                     // Empty transaction
                 }
             }
-            Assert.AreEqual(0, expectedRaiseCount);
-            Assert.AreEqual(0, raiseCount);
+            Assert.AreEqual(2, expectedRaiseCount);
+            Assert.AreEqual(2, raiseCount);
         }
 
         [Test]

@@ -12,15 +12,16 @@ namespace SiliconStudio.Xenko.Graphics
             // Find resource groups
             // TODO: We should precompute most of that at compile time in BytecodeReflection
             // just waiting for format to be more stable
-            var descriptorSetLayouts = new EffectDescriptorSetReflection();
+            var descriptorSetLayouts = new EffectDescriptorSetReflection { DefaultSetSlot = defaultSetSlot };
             foreach (var effectDescriptorSetSlot in effectDescriptorSetSlots)
             {
                 // Find all resources related to this slot name
+                // NOTE: Ordering is mirrored by GLSL layout in Vulkan
                 var descriptorSetLayoutBuilder = new DescriptorSetLayoutBuilder();
                 bool hasBindings = false;
                 foreach (var resourceBinding in effectBytecode.Reflection.ResourceBindings
                     .Where(x => x.ResourceGroup == effectDescriptorSetSlot || (effectDescriptorSetSlot == defaultSetSlot && (x.ResourceGroup == null || x.ResourceGroup == "Globals")))
-                    .GroupBy(x => new { Key = x.KeyInfo.Key, Class = x.Class, SlotCount = x.SlotCount, LogicalGroup = x.LogicalGroup })
+                    .GroupBy(x => new { Key = x.KeyInfo.Key, Class = x.Class, Type = x.Type, SlotCount = x.SlotCount, LogicalGroup = x.LogicalGroup })
                     .OrderBy(x => x.Key.Class == EffectParameterClass.ConstantBuffer ? 0 : 1)) // Note: Putting cbuffer first for now
                 {
                     SamplerState samplerState = null;
@@ -31,13 +32,17 @@ namespace SiliconStudio.Xenko.Graphics
                             samplerState = SamplerState.New(graphicsDevice, matchingSamplerState.Description);
                     }
                     hasBindings = true;
-                    descriptorSetLayoutBuilder.AddBinding(resourceBinding.Key.Key, resourceBinding.Key.LogicalGroup, resourceBinding.Key.Class, resourceBinding.Key.SlotCount, samplerState);
+
+                    descriptorSetLayoutBuilder.AddBinding(resourceBinding.Key.Key, resourceBinding.Key.LogicalGroup, resourceBinding.Key.Class, resourceBinding.Key.Type, resourceBinding.Key.SlotCount, samplerState);
                 }
+
                 descriptorSetLayouts.AddLayout(effectDescriptorSetSlot, hasBindings ? descriptorSetLayoutBuilder : null);
             }
 
             return descriptorSetLayouts;
         }
+
+        internal string DefaultSetSlot { get; private set; }
 
         internal List<LayoutEntry> Layouts { get; } = new List<LayoutEntry>();
 

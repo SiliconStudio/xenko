@@ -86,8 +86,14 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                 EffectParameters = effectParameters,
             });
 
-            // TODO: Get LoggerResult as well
-            return new EffectBytecodeCompilerResult(shaderCompilerAnswer.EffectBytecode, EffectBytecodeCacheLoadSource.JustCompiled);
+            var result = new EffectBytecodeCompilerResult(shaderCompilerAnswer.EffectBytecode, EffectBytecodeCacheLoadSource.JustCompiled);
+
+            foreach (var message in shaderCompilerAnswer.LogMessages)
+                result.CompilationLog.Messages.Add(message);
+
+            result.CompilationLog.HasErrors = shaderCompilerAnswer.LogHasErrors;
+
+            return result;
         }
 
         private async Task<SocketMessageLayer> GetOrCreateConnection()

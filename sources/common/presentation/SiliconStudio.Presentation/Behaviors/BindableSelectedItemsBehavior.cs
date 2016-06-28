@@ -39,18 +39,18 @@ namespace SiliconStudio.Presentation.Behaviors
         /// <summary>
         /// Identifies the <see cref="SelectedItems"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty SelectedItemsProperty = DependencyProperty.Register("SelectedItems", typeof(ObservableList<object>), typeof(BindableSelectedItemsBehavior<T>), new PropertyMetadata(null, SelectedItemsChanged));
+        public static readonly DependencyProperty SelectedItemsProperty = DependencyProperty.Register(nameof(SelectedItems), typeof(IObservableList<object>), typeof(BindableSelectedItemsBehavior<T>), new PropertyMetadata(null, SelectedItemsChanged));
 
         /// <summary>
         /// Identifies the <see cref="GiveFocusOnSelectionChange"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty GiveFocusOnSelectionChangeProperty = DependencyProperty.Register("GiveFocusOnSelectionChange", typeof(bool), typeof(BindableSelectedItemsBehavior<T>), new PropertyMetadata(true));
+        public static readonly DependencyProperty GiveFocusOnSelectionChangeProperty = DependencyProperty.Register(nameof(GiveFocusOnSelectionChange), typeof(bool), typeof(BindableSelectedItemsBehavior<T>), new PropertyMetadata(true));
 
         /// <summary>
         /// Gets or sets the view model collection that should be bound to the selected item collection of the control.
         /// </summary>
         /// <remarks>The view model collection must be an instance of the <see cref="ObservableList{Object}"/> class.</remarks>
-        public ObservableList<object> SelectedItems { get { return (ObservableList<object>)GetValue(SelectedItemsProperty); } set { SetValue(SelectedItemsProperty, value); } }
+        public IObservableList<object> SelectedItems { get { return (IObservableList<object>)GetValue(SelectedItemsProperty); } set { SetValue(SelectedItemsProperty, value); } }
 
         /// <summary>
         /// Gets or sets whether changes in the selected item collection of the view model should give the focus to the control. The focus is not given if the selection is cleared.
@@ -186,13 +186,13 @@ namespace SiliconStudio.Presentation.Behaviors
 
             if (e.OldValue != null)
             {
-                var oldList = (ObservableList<object>)e.OldValue;
+                var oldList = (IObservableList<object>)e.OldValue;
                 oldList.CollectionChanged -= behavior.CollectionSelectionChanged;
             }
 
             if (e.NewValue != null)
             {
-                var newList = (ObservableList<object>)e.NewValue;
+                var newList = (IObservableList<object>)e.NewValue;
                 newList.CollectionChanged += behavior.CollectionSelectionChanged;
                 if (behavior.AssociatedObject != null)
                 {

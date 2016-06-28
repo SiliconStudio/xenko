@@ -1066,10 +1066,7 @@ namespace SiliconStudio.Core.Serialization
                         objectReferences[index] = obj;
 
                         // Call Reference Callback
-                        if (referenceCallback != null)
-                        {
-                            referenceCallback(index, obj);
-                        }
+                        referenceCallback?.Invoke(index, obj);
                     }
                 }
             }
@@ -1249,10 +1246,7 @@ namespace SiliconStudio.Core.Serialization
                         objectReferences[index] = obj;
 
                         // Call Reference Callback
-                        if (referenceCallback != null)
-                        {
-                            referenceCallback(index, obj);
-                        }
+                        referenceCallback?.Invoke(index, obj);
                     }
                 }
             }
@@ -1460,10 +1454,7 @@ namespace SiliconStudio.Core.Serialization
                         objectReferences[index] = obj;
 
                         // Call Reference Callback
-                        if (referenceCallback != null)
-                        {
-                            referenceCallback(index, obj);
-                        }
+                        referenceCallback?.Invoke(index, obj);
                     }
                 }
             }
@@ -1652,10 +1643,7 @@ namespace SiliconStudio.Core.Serialization
                         objectReferences[index] = obj;
 
                         // Call Reference Callback
-                        if (referenceCallback != null)
-                        {
-                            referenceCallback(index, obj);
-                        }
+                        referenceCallback?.Invoke(index, obj);
                     }
                 }
             }

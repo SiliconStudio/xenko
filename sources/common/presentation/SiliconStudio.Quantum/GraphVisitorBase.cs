@@ -11,12 +11,21 @@ namespace SiliconStudio.Quantum
     public class GraphVisitorBase
     {
         private readonly HashSet<IGraphNode> visitedNodes = new HashSet<IGraphNode>();
-        private IGraphNode rootNode;
 
         /// <summary>
         /// Gets or sets whether to skip the root node passed to <see cref="Visit"/> when raising the <see cref="Visiting"/> event.
         /// </summary>
         public bool SkipRootNode { get; set; }
+
+        /// <summary>
+        /// Gets or sets a method that will be invoked to check whether a node should be visited or not.
+        /// </summary>
+        public Func<IGraphNode, GraphNodePath, bool> ShouldVisit { get; set; }
+
+        /// <summary>
+        /// Gets the root node of the current visit.
+        /// </summary>
+        protected IGraphNode RootNode { get; private set; }
 
         /// <summary>
         /// Raised when a node is visited.
@@ -31,9 +40,12 @@ namespace SiliconStudio.Quantum
         public virtual void Visit(IGraphNode node, GraphNodePath initialPath = null)
         {
             var path = initialPath ?? new GraphNodePath(node);
-            rootNode = node;
-            VisitNode(node, path);
-            rootNode = null;
+            RootNode = node;
+            if (ShouldVisitNode(node, path))
+            {
+                VisitNode(node, path);
+            }
+            RootNode = null;
         }
 
         /// <summary>
@@ -45,7 +57,7 @@ namespace SiliconStudio.Quantum
         protected virtual void VisitNode(IGraphNode node, GraphNodePath currentPath)
         {
             visitedNodes.Add(node);
-            if (node != rootNode || !SkipRootNode)
+            if (node != RootNode || !SkipRootNode)
             {
                 Visiting?.Invoke(node, currentPath);
             }
@@ -127,7 +139,7 @@ namespace SiliconStudio.Quantum
         /// <returns>True if the node should be visited, False otherwise.</returns>
         protected virtual bool ShouldVisitNode(IGraphNode node, GraphNodePath currentPath)
         {
-            return !visitedNodes.Contains(node);
+            return !visitedNodes.Contains(node) && (ShouldVisit?.Invoke(node, currentPath) ?? true);
         }
     }
 }

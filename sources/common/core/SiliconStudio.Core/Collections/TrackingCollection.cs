@@ -37,17 +37,13 @@ namespace SiliconStudio.Core.Collections
         protected override void InsertItem(int index, T item)
         {
             base.InsertItem(index, item);
-            var collectionChanged = itemAdded;
-            if (collectionChanged != null)
-                collectionChanged(this, new TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, null, index, true));
+            itemAdded?.Invoke(this, new TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, null, index, true));
         }
 
         /// <inheritdoc/>
         protected override void RemoveItem(int index)
         {
-            var collectionChanged = itemRemoved;
-            if (collectionChanged != null)
-                collectionChanged(this, new TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, this[index], null, index, true));
+            itemRemoved?.Invoke(this, new TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, this[index], null, index, true));
             base.RemoveItem(index);
         }
 
@@ -60,10 +56,11 @@ namespace SiliconStudio.Core.Collections
 
         protected void ClearItemsEvents()
         {
+            // Note: Changing CollectionChanged is not thread-safe
             var collectionChanged = itemRemoved;
             if (collectionChanged != null)
             {
-                for (int i = this.Count - 1; i >= 0; --i)
+                for (var i = Count - 1; i >= 0; --i)
                     collectionChanged(this, new TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, this[i], null, i, true));
             }
         }
@@ -74,15 +71,12 @@ namespace SiliconStudio.Core.Collections
             // Note: Changing CollectionChanged is not thread-safe
             var collectionChangedRemoved = itemRemoved;
 
-            object oldItem = (collectionChangedRemoved != null) ? (object)this[index] : null;
-            if (collectionChangedRemoved != null)
-                collectionChangedRemoved(this, new TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldItem, null, index, false));
+            var oldItem = collectionChangedRemoved != null ? (object)this[index] : null;
+            collectionChangedRemoved?.Invoke(this, new TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldItem, null, index, false));
 
             base.SetItem(index, item);
 
-            var collectionChangedAdded = itemAdded;
-            if (collectionChangedAdded != null)
-                collectionChangedAdded(this, new TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, oldItem, index, false));
+            itemAdded?.Invoke(this, new TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, oldItem, index, false));
         }
     }
 
@@ -113,7 +107,7 @@ namespace SiliconStudio.Core.Collections
         /// <inheritdoc/>
         protected override void ClearItems()
         {
-            for (int i = this.Count - 1; i >= 0; --i)
+            for (var i = Count - 1; i >= 0; --i)
                 RemoveItem2(i, this[i]);
             base.ClearItems();
         }

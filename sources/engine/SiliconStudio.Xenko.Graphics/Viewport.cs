@@ -153,7 +153,17 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="world">The world matrix.</param>
         public Vector3 Unproject(Vector3 source, Matrix projection, Matrix view, Matrix world)
         {
-            Matrix matrix = Matrix.Invert(Matrix.Multiply(Matrix.Multiply(world, view), projection));
+            Matrix matrix = Matrix.Multiply(Matrix.Multiply(world, view), projection);
+            return Unproject(source, ref matrix);
+        }
+
+        /// <summary>Converts a screen space point into a corresponding point in world space.</summary>
+        /// <param name="source">The vector to project.</param>
+        /// <param name="worldViewProjection">The World-View-Projection matrix.</param>
+        public Vector3 Unproject(Vector3 source, ref Matrix worldViewProjection)
+        {
+            Matrix matrix = Matrix.Invert(worldViewProjection);
+
             source.X = (((source.X - X) / Width) * 2f) - 1f;
             source.Y = -((((source.Y - Y) / Height) * 2f) - 1f);
             source.Z = (source.Z - MinDepth) / (MaxDepth - MinDepth);
