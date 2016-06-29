@@ -1,8 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Generic;
-using System.Windows;
-using System.Windows.Threading;
+using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using SiliconStudio.Presentation.Services;
 
@@ -10,8 +10,8 @@ namespace SiliconStudio.Presentation.Dialogs
 {
     public class FileOpenModalDialog : ModalDialogBase, IFileOpenModalDialog
     {
-        internal FileOpenModalDialog(Dispatcher dispatcher, Window parentWindow)
-            : base(dispatcher, parentWindow)
+        internal FileOpenModalDialog(IDispatcherService dispatcher)
+            : base(dispatcher)
         {
             Dialog = new CommonOpenFileDialog { EnsureFileExists = true };
             Filters = new List<FileDialogFilter>();
@@ -33,19 +33,19 @@ namespace SiliconStudio.Presentation.Dialogs
         /// <inheritdoc/>
         public string DefaultFileName { get { return OpenDlg.DefaultFileName; } set { OpenDlg.DefaultFileName = value; } }
 
-        private CommonOpenFileDialog OpenDlg { get { return (CommonOpenFileDialog)Dialog; } }
+        private CommonOpenFileDialog OpenDlg => (CommonOpenFileDialog)Dialog;
 
         /// <inheritdoc/>
-        public override DialogResult Show()
+        public override async Task<DialogResult> ShowModal()
         {
             OpenDlg.Filters.Clear();
-            foreach (var filter in Filters)
+            foreach (var filter in Filters.Where(x => !string.IsNullOrEmpty(x.ExtensionList)))
             {
                 OpenDlg.Filters.Add(new CommonFileDialogFilter(filter.Description, filter.ExtensionList));
             }
-            var result = InvokeDialog();
-            FilePaths = result != DialogResult.Cancel ? new List<string>(OpenDlg.FileNames) : new List<string>();
-            return result;
+            await InvokeDialog();
+            FilePaths = Result != DialogResult.Cancel ? new List<string>(OpenDlg.FileNames) : new List<string>();
+            return Result;
         }
     }
 }

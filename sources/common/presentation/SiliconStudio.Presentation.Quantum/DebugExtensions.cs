@@ -31,7 +31,7 @@ namespace SiliconStudio.Presentation.Quantum
         {
             PrintIndentation(indentation, builder);
             builder.Append(node.Name ?? "<untitled>");
-            if (node.Index != null)
+            if (!node.Index.IsEmpty)
             {
                 builder.Append("[");
                 builder.Append(node.Index);
@@ -40,7 +40,7 @@ namespace SiliconStudio.Presentation.Quantum
             builder.Append(": [");
             builder.Append(node.Type.Name);
             builder.Append("] = ");
-            builder.Append(node.Value == null ? "(null)" : node.Value.ToString().Replace(Environment.NewLine, " "));
+            builder.Append(node.Value?.ToString().Replace(Environment.NewLine, " ") ?? "(null)");
 
             if (node.Commands.Any())
             {

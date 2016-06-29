@@ -18,21 +18,9 @@ namespace SiliconStudio.Assets
             Order = int.MaxValue;
         }
 
-        public override Guid Id
-        {
-            get
-            {
-                return Uid;
-            }
-        }
+        public override Guid Id => Uid;
 
-        public override string Description
-        {
-            get
-            {
-                return "Generic importer for raw assets";
-            }
-        }
+        public override string Description => "Generic importer for raw assets";
 
         public override bool IsSupportingFile(string filePath)
         {
@@ -40,26 +28,16 @@ namespace SiliconStudio.Assets
             return true;
         }
 
-        public override string SupportedFileExtensions
-        {
-            get
-            {
-                return "*.*";
-            }
-        }
+        public override IEnumerable<Type> RootAssetTypes { get { yield return typeof(RawAsset); } }
 
-        public override AssetImporterParameters GetDefaultParameters(bool isForReImport)
-        {
-            return new AssetImporterParameters(SupportedTypes);
-        }
-        private static readonly Type[] SupportedTypes = { typeof(RawAsset) };
+        public override string SupportedFileExtensions => "*.*";
 
         public override IEnumerable<AssetItem> Import(UFile rawAssetPath, AssetImporterParameters importParameters)
         {
             var asset = new RawAsset { Source = rawAssetPath };
 
             // Creates the url to the raw asset
-            var rawAssetUrl = new UFile(rawAssetPath.GetFileName(), null);
+            var rawAssetUrl = new UFile(rawAssetPath.GetFileName());
 
             yield return new AssetItem(rawAssetUrl, asset);
         }

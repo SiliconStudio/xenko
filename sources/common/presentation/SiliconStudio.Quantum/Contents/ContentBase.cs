@@ -44,7 +44,7 @@ namespace SiliconStudio.Quantum.Contents
         public IReference Reference { get; }
 
         /// <inheritdoc/>
-        public IEnumerable<object> Indices => GetIndices();
+        public IEnumerable<Index> Indices => GetIndices();
 
         /// <inheritdoc/>
         public bool ShouldProcessReference { get; internal set; }
@@ -62,43 +62,34 @@ namespace SiliconStudio.Quantum.Contents
         public event EventHandler<ContentChangeEventArgs> Changed;
 
         /// <inheritdoc/>
-        public virtual object Retrieve(object index)
+        public virtual object Retrieve()
         {
-            return Retrieve(Value, index);
+            return Content.Retrieve(Value, Index.Empty, Descriptor);
         }
 
         /// <inheritdoc/>
-        public virtual object Retrieve(object value, object index)
+        public virtual object Retrieve(Index index)
         {
-            if (index != null)
-            {
-                var collectionDescriptor = Descriptor as CollectionDescriptor;
-                var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
-                if (collectionDescriptor != null)
-                {
-                    return collectionDescriptor.GetValue(value, (int)index);
-                }
-                if (dictionaryDescriptor != null)
-                {
-                    return dictionaryDescriptor.GetValue(value, index);
-                }
-
-                throw new NotSupportedException("Unable to get the node value, the collection is unsupported");
-            }
-            return value;
+            return Content.Retrieve(Value, index, Descriptor);
         }
 
         /// <inheritdoc/>
-        public abstract void Update(object newValue, object index = null);
+        public virtual void Update(object newValue)
+        {
+            Update(newValue, Index.Empty);
+        }
+
+        /// <inheritdoc/>
+        public abstract void Update(object newValue, Index index);
 
         /// <inheritdoc/>
         public abstract void Add(object newItem);
 
         /// <inheritdoc/>
-        public abstract void Add(object itemIndex, object newItem);
+        public abstract void Add(object newItem, Index itemIndex);
 
         /// <inheritdoc/>
-        public abstract void Remove(object itemIndex, object item);
+        public abstract void Remove(object item, Index itemIndex);
 
         /// <inheritdoc/>
         public override string ToString()
@@ -114,13 +105,24 @@ namespace SiliconStudio.Quantum.Contents
         }
 
         /// <summary>
+        /// Updates this content from one of its member.
+        /// </summary>
+        /// <param name="newValue">The new value for this content.</param>
+        /// <param name="index">new index of the value to update.</param>
+        /// <remarks>
+        /// This method is intended to update a boxed content when one of its member changes.
+        /// It allows to properly update boxed structs.
+        /// </remarks>
+        protected internal abstract void UpdateFromMember(object newValue, Index index);
+
+        /// <summary>
         /// Raises the <see cref="Changing"/> event with the given parameters.
         /// </summary>
         /// <param name="index">The index where the change occurred, if applicable. <c>null</c> otherwise.</param>
         /// <param name="changeType">The type of change that occurred.</param>
         /// <param name="oldValue">The old value of this content.</param>
         /// <param name="newValue">The new value of this content.</param>
-        protected void NotifyContentChanging(object index, ContentChangeType changeType, object oldValue, object newValue)
+        protected void NotifyContentChanging(Index index, ContentChangeType changeType, object oldValue, object newValue)
         {
             var args = new ContentChangeEventArgs(this, index, changeType, oldValue, newValue);
             PrepareChange?.Invoke(this, args);
@@ -134,14 +136,14 @@ namespace SiliconStudio.Quantum.Contents
         /// <param name="changeType">The type of change that occurred.</param>
         /// <param name="oldValue">The old value of this content.</param>
         /// <param name="newValue">The new value of this content.</param>
-        protected void NotifyContentChanged(object index, ContentChangeType changeType, object oldValue, object newValue)
+        protected void NotifyContentChanged(Index index, ContentChangeType changeType, object oldValue, object newValue)
         {
             var args = new ContentChangeEventArgs(this, index, changeType, oldValue, newValue);
             Changed?.Invoke(this, args);
             FinalizeChange?.Invoke(this, args);
         }
 
-        private IEnumerable<object> GetIndices()
+        private IEnumerable<Index> GetIndices()
         {
             var enumRef = Reference as ReferenceEnumerable;
             if (enumRef != null)
@@ -150,10 +152,10 @@ namespace SiliconStudio.Quantum.Contents
             var collectionDescriptor = Descriptor as CollectionDescriptor;
             if (collectionDescriptor != null)
             {
-                return Enumerable.Range(0, collectionDescriptor.GetCollectionCount(Value)).Cast<object>();
+                return Enumerable.Range(0, collectionDescriptor.GetCollectionCount(Value)).Select(x => new Index(x));
             }
             var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
-            return dictionaryDescriptor?.GetKeys(Value).Cast<object>();
+            return dictionaryDescriptor?.GetKeys(Value).Cast<Index>();
         }
     }
 }

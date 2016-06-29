@@ -34,6 +34,8 @@ namespace SiliconStudio.ExecServer
 
         private readonly string mainAssemblyPath;
 
+        private readonly bool shadowCache;
+
         private bool isDllImportShadowCopy;
 
         private AppDomain appDomain;
@@ -46,17 +48,18 @@ namespace SiliconStudio.ExecServer
 
         private bool isUpToDate = true;
 
-        private DateTime lastRunTime; 
+        private DateTime lastRunTime;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AppDomainShadow" /> class.
         /// </summary>
         /// <param name="appDomainName">Name of the application domain.</param>
         /// <param name="mainAssemblyPath">The main assembly path.</param>
+        /// <param name="shadowCache">If [true], use shadow cache.</param>
         /// <param name="nativeDllsPathOrFolderList">An array of folders path (containing only native dlls) or directly a specific path to a dll.</param>
         /// <exception cref="System.ArgumentNullException">mainAssemblyPath</exception>
         /// <exception cref="System.InvalidOperationException">If the assembly does not exist</exception>
-        public AppDomainShadow(string appDomainName, string mainAssemblyPath, params string[] nativeDllsPathOrFolderList)
+        public AppDomainShadow(string appDomainName, string mainAssemblyPath, bool shadowCache, params string[] nativeDllsPathOrFolderList)
         {
             if (mainAssemblyPath == null) throw new ArgumentNullException("mainAssemblyPath");
             if (nativeDllsPathOrFolderList == null) throw new ArgumentNullException("nativeDllsPathOrFolderList");
@@ -65,6 +68,7 @@ namespace SiliconStudio.ExecServer
             this.appDomainName = appDomainName;
             this.mainAssemblyPath = mainAssemblyPath;
             this.nativeDllsPathOrFolderList = nativeDllsPathOrFolderList;
+            this.shadowCache = shadowCache;
             applicationPath = Path.GetDirectoryName(mainAssemblyPath);
             filesLoaded = new List<FileLoaded>();
             CreateAppDomain();
@@ -94,6 +98,11 @@ namespace SiliconStudio.ExecServer
             {
                 return appDomain;
             }
+        }
+
+        public bool ShadowCache
+        {
+            get { return shadowCache; }
         }
 
         public DateTime LastRunTime
@@ -176,11 +185,11 @@ namespace SiliconStudio.ExecServer
                     appDomainCallback.EnvironmentVariables = environmentVariables;
                     appDomainCallback.Arguments = args;
                     appDomain.DoCallBack(appDomainCallback.Run);
-                    var result = appDomainCallback.Result;
+                    var result = appDomain.GetData("Result") as int?;
 
                     //var result = appDomain.ExecuteAssembly(mainAssemblyPath, args);
                     Console.WriteLine("Return result: {0}", result);
-                    return result;
+                    return result ?? -1;
                 }
             }
             catch (Exception exception)
@@ -209,7 +218,7 @@ namespace SiliconStudio.ExecServer
                 return;
             }
 
-            if (!isDllImportShadowCopy)
+            if (shadowCache && !isDllImportShadowCopy)
             {
                 var cachePath = GetRootCachePath(location);
                 if (cachePath != null)
@@ -371,9 +380,13 @@ namespace SiliconStudio.ExecServer
             var appDomainSetup = new AppDomainSetup
             {
                 ApplicationBase = applicationPath,
-                ShadowCopyFiles = "true",
-                CachePath = Path.Combine(applicationPath, CacheFolder),
             };
+
+            if (shadowCache)
+            {
+                appDomainSetup.ShadowCopyFiles = "true";
+                appDomainSetup.CachePath = Path.Combine(applicationPath, CacheFolder);
+            }
 
             // Create AppDomain
             appDomain = AppDomain.CreateDomain(appDomainName, AppDomain.CurrentDomain.Evidence, appDomainSetup);
@@ -438,8 +451,6 @@ namespace SiliconStudio.ExecServer
 
             public string[] Arguments { get; set; }
 
-            public int Result { get; private set; }
-
             public void RegisterAssemblyLoad()
             {
                 var currentDomain = AppDomain.CurrentDomain;
@@ -473,7 +484,7 @@ namespace SiliconStudio.ExecServer
 
                 currentDomain.SetData(AppDomainLogToActionKey, new Action<string, ConsoleColor>((text, color) => Logger.OnLog(text, color)));
                 var assembly = (Assembly)currentDomain.GetData(AppDomainExecServerEntryAssemblyKey);
-                Result = Convert.ToInt32(assembly.EntryPoint.Invoke(null, new object[] { Arguments }));
+                AppDomain.CurrentDomain.SetData("Result", Convert.ToInt32(assembly.EntryPoint.Invoke(null, new object[] { Arguments })));
 
                 // Force a GC after the process is finished
                 GC.Collect(2, GCCollectionMode.Forced);

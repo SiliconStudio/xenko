@@ -19,17 +19,21 @@ namespace SiliconStudio.Presentation.Behaviors
         /// <summary>
         /// Identifies the <see cref="Command"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty CommandProperty = DependencyProperty.Register("Command", typeof(ICommandBase), typeof(CommandBindingBehavior), new PropertyMetadata(null, CommandChanged));
-
+        public static readonly DependencyProperty CommandProperty =
+            DependencyProperty.Register(nameof(Command), typeof(ICommandBase), typeof(CommandBindingBehavior), new PropertyMetadata(null, CommandChanged));
         /// <summary>
         /// Identifies the <see cref="IsEnabled"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsEnabledProperty = DependencyProperty.Register("IsEnabled", typeof(bool), typeof(CommandBindingBehavior), new PropertyMetadata(true));
+        public static readonly DependencyProperty IsEnabledProperty =
+            DependencyProperty.Register(nameof(IsEnabled), typeof(bool), typeof(CommandBindingBehavior), new PropertyMetadata(true));
+        // Using a DependencyProperty as the backing store for RoutedCommand.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty RoutedCommandProperty =
+            DependencyProperty.Register(nameof(RoutedCommand), typeof(RoutedCommand), typeof(CommandBindingBehavior));
 
         /// <summary>
         /// Gets or sets the <see cref="RoutedCommand"/> to bind.
         /// </summary>
-        public RoutedCommand RoutedCommand { get; set; }
+        public RoutedCommand RoutedCommand { get { return (RoutedCommand)GetValue(RoutedCommandProperty); } set { SetValue(RoutedCommandProperty, value); } }
 
         /// <summary>
         /// Gets or sets the <see cref="ICommandBase"/> to bind.

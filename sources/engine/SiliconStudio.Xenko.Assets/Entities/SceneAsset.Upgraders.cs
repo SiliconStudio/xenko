@@ -5,14 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using Microsoft.CodeAnalysis;
-using Microsoft.CSharp.RuntimeBinder;
 using SharpYaml.Serialization;
 using SiliconStudio.Assets;
-using SiliconStudio.Assets.Visitors;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Physics;
@@ -23,6 +19,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     public partial class SceneAsset
     {
         // All upgraders for SceneAsset
+
         class RemoveSourceUpgrader : AssetUpgraderBase
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)

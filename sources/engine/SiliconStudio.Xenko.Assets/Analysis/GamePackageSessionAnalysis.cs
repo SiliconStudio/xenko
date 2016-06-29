@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Assets.Analysis
         /// <param name="log">The log to output the result of the validation.</param>
         public override void Run(ILogger log)
         {
-            if (log == null) throw new ArgumentNullException("log");
+            if (log == null) throw new ArgumentNullException(nameof(log));
 
             foreach (var package in Session.Packages)
             {
@@ -45,22 +45,16 @@ namespace SiliconStudio.Xenko.Assets.Analysis
                 AssetItem defaultScene = null;
 
                 // If game settings is found, try to find default scene inside
-                if (gameSettingsAssetItem != null)
+                var defaultSceneRuntime = ((GameSettingsAsset)gameSettingsAssetItem?.Asset)?.DefaultScene;
+                var defaultSceneReference = AttachedReferenceManager.GetAttachedReference(defaultSceneRuntime);
+                if (defaultSceneReference != null)
                 {
-                    var defaultSceneRuntime = ((GameSettingsAsset)gameSettingsAssetItem.Asset).DefaultScene;
-                    if (defaultSceneRuntime != null)
-                    {
-                        var defaultSceneReference = AttachedReferenceManager.GetAttachedReference(defaultSceneRuntime);
-                        if (defaultSceneReference != null)
-                        {
-                            // Find it either by Url or Id
-                            defaultScene = package.Assets.Find(defaultSceneReference.Id) ?? package.Assets.Find(defaultSceneReference.Url);
+                    // Find it either by Url or Id
+                    defaultScene = package.Assets.Find(defaultSceneReference.Id) ?? package.Assets.Find(defaultSceneReference.Url);
 
-                            // Check it is actually a scene asset
-                            if (defaultScene != null && !(defaultScene.Asset is SceneAsset))
-                                defaultScene = null;
-                        }
-                    }
+                    // Check it is actually a scene asset
+                    if (defaultScene != null && !(defaultScene.Asset is SceneAsset))
+                        defaultScene = null;
                 }
 
                 // Find or create default scene
@@ -81,7 +75,7 @@ namespace SiliconStudio.Xenko.Assets.Analysis
                     log.Error(package, null, AssetMessageCode.DefaultSceneNotFound, null);
 
                     var defaultSceneName = NamingHelper.ComputeNewName(GameSettingsAsset.DefaultSceneLocation, package.Assets, a => a.Location);
-                    var defaultSceneAsset = SceneAsset.Create();
+                    var defaultSceneAsset = DefaultAssetFactory<SceneAsset>.Create();
 
                     defaultScene = new AssetItem(defaultSceneName, defaultSceneAsset);
                     package.Assets.Add(defaultScene);
@@ -93,9 +87,9 @@ namespace SiliconStudio.Xenko.Assets.Analysis
                 {
                     log.Error(package, null, AssetMessageCode.AssetNotFound, GameSettingsAsset.GameSettingsLocation);
 
-                    var gameSettingsAsset = new GameSettingsAsset();
+                    var gameSettingsAsset = GameSettingsFactory.Create();
 
-                    gameSettingsAsset.DefaultScene = AttachedReferenceManager.CreateSerializableVersion<Scene>(defaultScene.Id, defaultScene.Location);
+                    gameSettingsAsset.DefaultScene = AttachedReferenceManager.CreateProxyObject<Scene>(defaultScene.Id, defaultScene.Location);
 
                     gameSettingsAssetItem = new AssetItem(GameSettingsAsset.GameSettingsLocation, gameSettingsAsset);
                     package.Assets.Add(gameSettingsAssetItem);

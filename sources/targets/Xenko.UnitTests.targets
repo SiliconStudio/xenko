@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <!-- Do not compile unit test when packaging -->
@@ -14,6 +15,7 @@
          However, that means that Tests dependencies must be compiled properly on Windows (should be the case usually).
     -->
     <SiliconStudioXenkoCompileAssetOptions>--compile-property:SolutionDir=$([System.IO.Path]::GetFullPath('$(SiliconStudioXenkoDir)'))\build\;SolutionName=Xenko;BuildProjectReferences=false</SiliconStudioXenkoCompileAssetOptions>
+
   </PropertyGroup>
   
   <!-- On Windows, let's sign the assemblies with fake strong signing (OpenSource Signing, OSS),
@@ -55,7 +57,7 @@
         <Reference Include="MonoTouch.NUnitLite"/>
       </ItemGroup>
     </When>
-    <When Condition=" '$(SiliconStudioPlatform)' == 'Windows'">
+    <When Condition="('$(SiliconStudioRuntime)' == '') and (('$(SiliconStudioPlatform)' == 'Windows') or ('$(SiliconStudioPlatform)' == 'Linux'))">
       <ItemGroup>
         <Reference Include="nunit.framework">
           <HintPath>$(SiliconStudioDependenciesDir)NUnit\nunit.framework.dll</HintPath>
@@ -65,13 +67,25 @@
         </Reference>
       </ItemGroup>
     </When>
-    <When Condition=" '$(SiliconStudioPlatform)' == 'WindowsStore' OR '$(SiliconStudioPlatform)' == 'WindowsPhone'">
+    <When Condition="('$(SiliconStudioRuntime)' == 'CoreCLR') or ('$(SiliconStudioPlatform)' == 'WindowsStore' OR '$(SiliconStudioPlatform)' == 'WindowsPhone')">
       <ItemGroup>
         <Reference Include="nunitlite">
           <HintPath>$(SiliconStudioDependenciesDir)NUnitLite\Portable\nunitlite.dll</HintPath>
         </Reference>
       </ItemGroup>
+      <ItemGroup>
+        <Reference Include="nunit.framework">
+          <HintPath>$(SiliconStudioDependenciesDir)NUnitLite\Portable\nunit.framework.dll</HintPath>
+        </Reference>
+      </ItemGroup>
     </When>
   </Choose>
-  
+
+  <!-- Override graphics platform (no need to get it from game settings asset) -->
+  <Target Name="SiliconStudioGetGraphicsPlatform">
+    <!-- Do nothing for SiliconStudioXenkoGraphicsApi, keep it as set by locals target -->
+    <PropertyGroup>
+      <SiliconStudioXenkoCompileAssetOptions>$(SiliconStudioXenkoCompileAssetOptions) --property:SiliconStudioXenkoGraphicsApi=$(SiliconStudioXenkoGraphicsApi)</SiliconStudioXenkoCompileAssetOptions>
+    </PropertyGroup>
+  </Target>
 </Project>

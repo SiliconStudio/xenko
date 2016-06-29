@@ -41,14 +41,14 @@ Example of use:
   <!--
   Package Launcher
   -->
-  <Target Name="PackageLauncher">
+  <Target Name="PackageLauncher" DependsOnTargets="LauncherPrerequisitesInstaller">
     <ItemGroup>
       <FilesToDeleteLauncher Include="$(MSBuildThisFileDirectory)SiliconStudio.Launcher*.nupkg"/>
     </ItemGroup>
 
     <Delete Files="@(FilesToDeleteLauncher)"/>
 
-    <MSBuild Targets="10-Assets\SiliconStudio_LauncherApp" Projects="$(XenkoSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+    <MSBuild Targets="40-Editor\SiliconStudio_LauncherApp" Projects="$(XenkoSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
     <!-- IL Repack is not used anymore -->
     <!--<Exec Command='"$(ILRepackPath)" SiliconStudio.LauncherApp.exe Nuget.Core.dll /out:Xenko.exe' WorkingDirectory="$(XenkoRoot)sources\install\SiliconStudio.LauncherApp\bin\Release"/>-->
     <!-- Generate the nuget package for the launcher application -->
@@ -88,7 +88,15 @@ Example of use:
     <Exec Command='"$(AdvancedInstallerPath)" /rebuild "$(XenkoRoot)sources\install\Prerequisites\prerequisites.aip"'/>
     <Copy SourceFiles="$(XenkoRoot)sources\install\Prerequisites\install-prerequisites.exe" DestinationFolder="$(XenkoRoot)Bin\Prerequisites"/>
   </Target>
-  
+
+  <!--
+  Package Installer: launcher-prerequisites.exe
+  -->
+  <Target Name="LauncherPrerequisitesInstaller">
+    <Delete Files="$(XenkoRoot)Bin\Prerequisites\launcher-prerequisites.exe"/>
+    <Exec Command='"$(AdvancedInstallerPath)" /rebuild "$(XenkoRoot)sources\install\Prerequisites\launcher-prerequisites.aip"'/>
+  </Target>
+
   <!--
   Perform a full build: Build, Package and PackageInstaller
   -->

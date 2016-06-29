@@ -15,10 +15,5 @@ class Camera
         stage float2 ViewSize;
         // Camera aspect ratio.
         stage float AspectRatio;
-        // Camera field of view for a perspective camera.
-        stage float VerticalFieldOfView;
-
-        // Camera size for an orthographics camera
-        stage float OrthoSize;
     };
 };

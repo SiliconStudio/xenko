@@ -302,7 +302,7 @@ namespace SiliconStudio.CoreCLRBuilder
                         Version version = new Version(versionDir.Name);
 
                             // Take all the assemblies we found that matched the lowest version.
-                        if ((maxVersion == null) || (maxVersion < version))
+                        if ((maxVersion == null) || (version > maxVersion))
                         {
                             maxVersion = version;
                             assemblies = EnumerateDlls(versionDir);

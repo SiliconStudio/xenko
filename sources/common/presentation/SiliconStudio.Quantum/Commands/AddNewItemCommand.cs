@@ -15,7 +15,7 @@ namespace SiliconStudio.Quantum.Commands
     /// or an exception will be thrown if T could not be determinated or has no parameterless constructor.
     /// </summary>
     /// <remarks>No parameter is required when invoking this command.</remarks>
-    public class AddNewItemCommand : NodeCommandBase
+    public class AddNewItemCommand : SyncNodeCommandBase
     {
         public const string CommandName = "AddNewItem";
 
@@ -43,9 +43,9 @@ namespace SiliconStudio.Quantum.Commands
             return collectionDescriptor.HasAdd && (!elementType.IsClass || elementType.GetConstructor(Type.EmptyTypes) != null || elementType.IsAbstract || elementType.IsNullable() || elementType == typeof(string));
         }
 
-        public override void Execute(IContent content, object index, object parameter)
+        protected override void ExecuteSync(IContent content, Index index, object parameter)
         {
-            var value = content.Retrieve();
+            var value = content.Retrieve(index);
             var collectionDescriptor = (CollectionDescriptor)TypeDescriptorFactory.Default.Find(value.GetType());
             object itemToAdd = null;
             // TODO: Find a better solution for ContentSerializerAttribute that doesn't require to reference Core.Serialization (and unreference this assembly)
@@ -64,7 +64,17 @@ namespace SiliconStudio.Quantum.Commands
             {
                 itemToAdd = parameter ?? ObjectFactory.NewInstance(collectionDescriptor.ElementType);
             }
-            content.Add(itemToAdd);
+            if (index.IsEmpty)
+            {
+                content.Add(itemToAdd);
+            }
+            else
+            {
+                // Handle collections in collections
+                // TODO: this is not working on the observable node side
+                var collectionNode = content.Reference.AsEnumerable[index].TargetNode;
+                collectionNode.Content.Add(itemToAdd);
+            }
         }
     }
 }

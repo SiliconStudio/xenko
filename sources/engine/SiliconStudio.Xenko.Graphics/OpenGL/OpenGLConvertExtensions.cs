@@ -8,20 +8,7 @@ using OpenTK.Graphics.ES30;
 using ES30 = OpenTK.Graphics.ES30;
 using PixelFormatGl = OpenTK.Graphics.ES30.PixelFormat;
 using PixelInternalFormat = OpenTK.Graphics.ES30.TextureComponentCount;
-#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
-using PrimitiveTypeGl = OpenTK.Graphics.ES30.BeginMode;
-#else
 using PrimitiveTypeGl = OpenTK.Graphics.ES30.PrimitiveType;
-#endif
-#if SILICONSTUDIO_PLATFORM_IOS
-using ExtTextureFormatBgra8888 = OpenTK.Graphics.ES30.All;
-using ImgTextureCompressionPvrtc = OpenTK.Graphics.ES30.All;
-using OesPackedDepthStencil = OpenTK.Graphics.ES30.All;
-#elif SILICONSTUDIO_PLATFORM_ANDROID
-using ExtTextureFormatBgra8888 = OpenTK.Graphics.ES20.ExtTextureFormatBgra8888;
-using OesCompressedEtc1Rgb8Texture = OpenTK.Graphics.ES20.OesCompressedEtc1Rgb8Texture;
-#else
-#endif
 #else
 using OpenTK.Graphics.OpenGL;
 using PixelFormatGl = OpenTK.Graphics.OpenGL.PixelFormat;
@@ -32,28 +19,9 @@ namespace SiliconStudio.Xenko.Graphics
 {
     internal static class OpenGLConvertExtensions
     {
-
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-        private const PixelInternalFormat SrgbAlpha = (PixelInternalFormat)0x8C42;
-        private const PixelInternalFormat Srgb8Alpha8 = (PixelInternalFormat)0x8C43;
-#else
-        private const PixelInternalFormat SrgbAlpha = PixelInternalFormat.SrgbAlpha;
-        private const PixelInternalFormat Srgb8Alpha8 = PixelInternalFormat.Srgb8Alpha8;
-#endif
-
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
-        private const TextureWrapMode TextureWrapModeMirroredRepeat = (TextureWrapMode)0x8370;
-#else
-        private const TextureWrapMode TextureWrapModeMirroredRepeat = TextureWrapMode.MirroredRepeat;
-#endif
-
         public static ErrorCode GetErrorCode()
         {
-#if SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS
-            return GL.GetErrorCode();
-#else
             return GL.GetError();
-#endif
         }
 
         public static unsafe Color4 ToOpenGL(Core.Mathematics.Color4 color)
@@ -149,7 +117,11 @@ namespace SiliconStudio.Xenko.Graphics
                 case TextureAddressMode.Clamp:
                     return TextureWrapMode.ClampToEdge;
                 case TextureAddressMode.Mirror:
-                    return TextureWrapModeMirroredRepeat;
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+                    return (TextureWrapMode)EsVersion20.MirroredRepeat;
+#else
+                    return TextureWrapMode.MirroredRepeat;
+#endif
                 case TextureAddressMode.Wrap:
                     return TextureWrapMode.Repeat;
                 default:
@@ -181,7 +153,7 @@ namespace SiliconStudio.Xenko.Graphics
                     throw new NotImplementedException();
             }
         }
-        
+
         public static StencilFunction ToOpenGLStencilFunction(this CompareFunction function)
         {
             switch (function)
@@ -232,24 +204,56 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        public static void ConvertPixelFormat(GraphicsDevice graphicsDevice, ref PixelFormat inputFormat, out PixelInternalFormat internalFormat, out PixelFormatGl format, out PixelType type, out int pixelSize, out bool compressed)
+        public static void ConvertPixelFormat(GraphicsDevice graphicsDevice, ref PixelFormat inputFormat, out PixelInternalFormat internalFormat, out PixelFormatGl format, out PixelType type,
+            out int pixelSize, out bool compressed)
         {
             compressed = false;
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            // check formats is the device is initialized with OpenGL ES 2
-            if (graphicsDevice.IsOpenGLES2)
+            // check formats more carefully if the device is initialized with OpenGL ES 2
+            if (graphicsDevice.currentVersion < 300)
             {
                 switch (inputFormat)
                 {
-                    case PixelFormat.R32_UInt:
+                    case PixelFormat.R16_Float:
+                    case PixelFormat.R16G16_Float:
+                        if (!graphicsDevice.HasTextureRG || !graphicsDevice.HasTextureHalf)
+                            goto unsupported;
+                        break;
+                    case PixelFormat.R16G16B16A16_Float:
+                        if (!graphicsDevice.HasTextureHalf)
+                            goto unsupported;
+                        break;
+                    case PixelFormat.R16_UInt:
+                    case PixelFormat.R16_SInt:
+                    case PixelFormat.R16G16_UInt:
+                    case PixelFormat.R16G16_SInt:
+                    case PixelFormat.R16G16B16A16_UInt:
+                    case PixelFormat.R16G16B16A16_SInt:
+                        goto unsupported;
                     case PixelFormat.R32_Float:
                     case PixelFormat.R32G32_Float:
                     case PixelFormat.R32G32B32_Float:
-                    case PixelFormat.R16G16B16A16_Float:
+                        if (!graphicsDevice.HasTextureRG || !graphicsDevice.HasTextureFloat)
+                            goto unsupported;
+                        break;
                     case PixelFormat.R32G32B32A32_Float:
+                        if (!graphicsDevice.HasTextureFloat)
+                            goto unsupported;
+                        break;
+                    case PixelFormat.R32_UInt:
+                    case PixelFormat.R32_SInt:
+                    case PixelFormat.R32G32_UInt:
+                    case PixelFormat.R32G32_SInt:
+                    case PixelFormat.R32G32B32_UInt:
+                    case PixelFormat.R32G32B32_SInt:
+                    case PixelFormat.R32G32B32A32_UInt:
+                    case PixelFormat.R32G32B32A32_SInt:
+                        goto unsupported;
                     case PixelFormat.D32_Float:
-                        throw new NotSupportedException(String.Format("Texture format {0} not supported", inputFormat));
+                        goto unsupported;
+                    unsupported:
+                        throw new NotSupportedException($"Texture format {inputFormat} not supported with OpenGL ES 2.0");
 
                     // NOTE: We always allow PixelFormat.D24_UNorm_S8_UInt.
                     // If it is not supported we will fall back to separate D24/D16 and S8 resources when creating a texture.
@@ -299,7 +303,7 @@ namespace SiliconStudio.Xenko.Graphics
                     break;
                 case PixelFormat.R8_UNorm:
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                    if (!graphicsDevice.HasTextureRG && graphicsDevice.IsOpenGLES2)
+                    if (!graphicsDevice.HasTextureRG && graphicsDevice.currentVersion < 300)
                     {
                         internalFormat = PixelInternalFormat.Luminance;
                         format = PixelFormatGl.Luminance;
@@ -307,13 +311,8 @@ namespace SiliconStudio.Xenko.Graphics
                     else
 #endif
                     {
-#if SILICONSTUDIO_PLATFORM_IOS
-                        internalFormat = PixelInternalFormat.Luminance;
-                        format = PixelFormatGl.Luminance;
-#else
                         internalFormat = PixelInternalFormat.R8;
                         format = PixelFormatGl.Red;
-#endif
                     }
                     type = PixelType.UnsignedByte;
                     pixelSize = 1;
@@ -344,20 +343,15 @@ namespace SiliconStudio.Xenko.Graphics
                     pixelSize = 4;
                     break;
                 case PixelFormat.R8G8B8A8_UNorm_SRgb:
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-                    internalFormat = graphicsDevice.IsOpenGLES2 ? SrgbAlpha : Srgb8Alpha8;
-                    format = graphicsDevice.IsOpenGLES2 ? (PixelFormatGl)SrgbAlpha : PixelFormatGl.Rgba;
-#else
-                    internalFormat = Srgb8Alpha8;
+                    internalFormat = PixelInternalFormat.Srgb8Alpha8;
                     format = PixelFormatGl.Rgba;
-#endif
                     type = PixelType.UnsignedByte;
                     pixelSize = 4;
                     break;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE
                 case PixelFormat.B8G8R8A8_UNorm_SRgb:
                     // TODO: Check on iOS/Android and OpenGL 3
-                    internalFormat = Srgb8Alpha8;
+                    internalFormat = PixelInternalFormat.Srgb8Alpha8;
                     format = PixelFormatGl.Bgra;
                     type = PixelType.UnsignedByte;
                     pixelSize = 4;
@@ -435,6 +429,12 @@ namespace SiliconStudio.Xenko.Graphics
                     type = PixelType.HalfFloat;
                     pixelSize = 8;
                     break;
+                case PixelFormat.R32_SInt:
+                    internalFormat = PixelInternalFormat.R32i;
+                    format = PixelFormatGl.RedInteger;
+                    type = PixelType.Int;
+                    pixelSize = 4;
+                    break;
                 case PixelFormat.R32_UInt:
                     internalFormat = PixelInternalFormat.R32ui;
                     format = PixelFormatGl.RedInteger;
@@ -447,17 +447,53 @@ namespace SiliconStudio.Xenko.Graphics
                     type = PixelType.Float;
                     pixelSize = 4;
                     break;
+                case PixelFormat.R32G32_SInt:
+                    internalFormat = PixelInternalFormat.Rg32i;
+                    format = PixelFormatGl.RgInteger;
+                    type = PixelType.Int;
+                    pixelSize = 8;
+                    break;
+                case PixelFormat.R32G32_UInt:
+                    internalFormat = PixelInternalFormat.Rg32ui;
+                    format = PixelFormatGl.RgInteger;
+                    type = PixelType.UnsignedInt;
+                    pixelSize = 8;
+                    break;
                 case PixelFormat.R32G32_Float:
                     internalFormat = PixelInternalFormat.Rg32f;
                     format = PixelFormatGl.Rg;
                     type = PixelType.Float;
                     pixelSize = 8;
                     break;
+                case PixelFormat.R32G32B32_SInt:
+                    internalFormat = PixelInternalFormat.Rgb32i;
+                    format = PixelFormatGl.RgbInteger;
+                    type = PixelType.Int;
+                    pixelSize = 12;
+                    break;
+                case PixelFormat.R32G32B32_UInt:
+                    internalFormat = PixelInternalFormat.Rgb32ui;
+                    format = PixelFormatGl.RgbInteger;
+                    type = PixelType.UnsignedInt;
+                    pixelSize = 12;
+                    break;
                 case PixelFormat.R32G32B32_Float:
                     internalFormat = PixelInternalFormat.Rgb32f;
                     format = PixelFormatGl.Rgb;
                     type = PixelType.Float;
                     pixelSize = 12;
+                    break;
+                case PixelFormat.R32G32B32A32_SInt:
+                    internalFormat = PixelInternalFormat.Rgba32i;
+                    format = PixelFormatGl.RgbaInteger;
+                    type = PixelType.Int;
+                    pixelSize = 16;
+                    break;
+                case PixelFormat.R32G32B32A32_UInt:
+                    internalFormat = PixelInternalFormat.Rgba32ui;
+                    format = PixelFormatGl.RgbaInteger;
+                    type = PixelType.UnsignedInt;
+                    pixelSize = 16;
                     break;
                 case PixelFormat.R32G32B32A32_Float:
                     internalFormat = PixelInternalFormat.Rgba32f;
@@ -512,36 +548,36 @@ namespace SiliconStudio.Xenko.Graphics
                     compressed = true;
                     pixelSize = 2;
                     type = PixelType.UnsignedByte;
-                    break;  
+                    break;
                 case PixelFormat.PVRTC_4bpp_RGB_SRgb:
-                    internalFormat = (PixelInternalFormat)ImgTextureCompressionPvrtc.CompressedSrgbPvrtc4Bppv1Ext;
-                    format = (PixelFormatGl)ImgTextureCompressionPvrtc.CompressedSrgbPvrtc4Bppv1Ext;
+                    internalFormat = (PixelInternalFormat)ExtPvrtcSrgb.CompressedSrgbPvrtc4Bppv1Ext;
+                    format = (PixelFormatGl)ExtPvrtcSrgb.CompressedSrgbPvrtc4Bppv1Ext;
                     compressed = true;
                     pixelSize = 4;
                     type = PixelType.UnsignedByte;
-                    break;		
+                    break;
                 case PixelFormat.PVRTC_2bpp_RGB_SRgb:
-                    internalFormat = (PixelInternalFormat)ImgTextureCompressionPvrtc.CompressedSrgbPvrtc2Bppv1Ext;
-                    format = (PixelFormatGl)ImgTextureCompressionPvrtc.CompressedSrgbPvrtc2Bppv1Ext;
+                    internalFormat = (PixelInternalFormat)ExtPvrtcSrgb.CompressedSrgbPvrtc2Bppv1Ext;
+                    format = (PixelFormatGl)ExtPvrtcSrgb.CompressedSrgbPvrtc2Bppv1Ext;
                     compressed = true;
                     pixelSize = 2;
                     type = PixelType.UnsignedByte;
                     break;
                 case PixelFormat.PVRTC_4bpp_RGBA_SRgb:
-                    internalFormat = (PixelInternalFormat)ImgTextureCompressionPvrtc.CompressedSrgbAlphaPvrtc4Bppv1Ext;
-                    format = (PixelFormatGl)ImgTextureCompressionPvrtc.CompressedSrgbAlphaPvrtc4Bppv1Ext;
+                    internalFormat = (PixelInternalFormat)ExtPvrtcSrgb.CompressedSrgbAlphaPvrtc4Bppv1Ext;
+                    format = (PixelFormatGl)ExtPvrtcSrgb.CompressedSrgbAlphaPvrtc4Bppv1Ext;
                     compressed = true;
                     pixelSize = 4;
                     type = PixelType.UnsignedByte;
                     break;
                 case PixelFormat.PVRTC_2bpp_RGBA_SRgb:
-                    internalFormat = (PixelInternalFormat)ImgTextureCompressionPvrtc.CompressedSrgbAlphaPvrtc2Bppv1Ext;
-                    format = (PixelFormatGl)ImgTextureCompressionPvrtc.CompressedSrgbAlphaPvrtc2Bppv1Ext;
+                    internalFormat = (PixelInternalFormat)ExtPvrtcSrgb.CompressedSrgbAlphaPvrtc2Bppv1Ext;
+                    format = (PixelFormatGl)ExtPvrtcSrgb.CompressedSrgbAlphaPvrtc2Bppv1Ext;
                     compressed = true;
                     pixelSize = 2;
                     type = PixelType.UnsignedByte;
-                    break;  
-#elif SILICONSTUDIO_PLATFORM_ANDROID || !SILICONSTUDIO_PLATFORM_MONO_MOBILE && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+                    break;
+#elif SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 // Desktop OpenGLES
                 case PixelFormat.ETC1:
                     // TODO: Runtime check for extension?
@@ -575,6 +611,68 @@ namespace SiliconStudio.Xenko.Graphics
                 default:
                     throw new InvalidOperationException("Unsupported texture format");
             }
+
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+            // override some formats for ES2.0
+            if (graphicsDevice.currentVersion < 300)
+            {
+                switch (inputFormat)
+                {
+                    case PixelFormat.R8G8B8A8_UNorm_SRgb:
+                        // HasSRgb was true because we have GL_EXT_sRGB
+                        // Note: Qualcomm Adreno 4xx fails to use GL_EXT_sRGB with FBO,
+                        // but they will report a currentVersion >= 300 (ES 3.0) anyway
+                        internalFormat = (PixelInternalFormat)ExtSrgb.SrgbAlphaExt;
+                        format = (PixelFormatGl)ExtSrgb.SrgbAlphaExt;
+                        break;
+                    case PixelFormat.R8_UNorm:
+                    case PixelFormat.R8_SNorm:
+                    case PixelFormat.R8_UInt:
+                    case PixelFormat.R8_SInt:
+                    case PixelFormat.R16_Float:
+                    case PixelFormat.R16_UNorm:
+                    case PixelFormat.R16_SNorm:
+                    case PixelFormat.R16_UInt:
+                    case PixelFormat.R16_SInt:
+                    case PixelFormat.R32_Float:
+                    case PixelFormat.R32_UInt:
+                    case PixelFormat.R32_SInt:
+                        if (inputFormat == PixelFormat.R16_Float)
+                            type = (PixelType)OesTextureHalfFloat.HalfFloatOes;
+                        if (graphicsDevice.HasTextureRG)
+                            internalFormat = (PixelInternalFormat)ExtTextureRg.RedExt;
+                        break;
+                    case PixelFormat.R16G16_Float:
+                    case PixelFormat.R16G16_UNorm:
+                    case PixelFormat.R16G16_SNorm:
+                    case PixelFormat.R16G16_UInt:
+                    case PixelFormat.R16G16_SInt:
+                    case PixelFormat.R32G32_Float:
+                    case PixelFormat.R32G32_UInt:
+                    case PixelFormat.R32G32_SInt:
+                        if (inputFormat == PixelFormat.R16G16_Float)
+                            type = (PixelType)OesTextureHalfFloat.HalfFloatOes;
+                        if (graphicsDevice.HasTextureRG)
+                            internalFormat = (PixelInternalFormat)ExtTextureRg.RgExt;
+                        break;
+                    case PixelFormat.R32G32B32_Float:
+                    case PixelFormat.R32G32B32_UInt:
+                    case PixelFormat.R32G32B32_SInt:
+                        internalFormat = PixelInternalFormat.Rgb;
+                        break;
+                    case PixelFormat.R16G16B16A16_Float:
+                    case PixelFormat.R32G32B32A32_Float:
+                    case PixelFormat.R16G16B16A16_UInt:
+                    case PixelFormat.R32G32B32A32_UInt:
+                    case PixelFormat.R16G16B16A16_SInt:
+                    case PixelFormat.R32G32B32A32_SInt:
+                        if (inputFormat == PixelFormat.R16G16B16A16_Float)
+                            type = (PixelType)OesTextureHalfFloat.HalfFloatOes;
+                        internalFormat = PixelInternalFormat.Rgba;
+                        break;
+                }
+            }
+#endif
         }
     }
 }

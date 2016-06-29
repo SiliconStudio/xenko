@@ -1,0 +1,34 @@
+!MaterialAsset
+Id: e3b3bd7d-7f5d-458b-9661-96a487c6dfc2
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Attributes:
+    MicroSurface: !MaterialGlossinessMapFeature
+        GlossinessMap: !ComputeTextureScalar
+            Texture: b947002a-3c45-4386-bb08-a4d45e7bb584/270acfc0-1bf9-43ca-8ae1-f8f10a16e009:MaterialTests/stone4_gls
+            FallbackValue:
+                Value: 1.0
+            Scale: {X: 1.0, Y: 1.0}
+            Offset: {X: 0.0, Y: 0.0}
+    Diffuse: !MaterialDiffuseMapFeature
+        DiffuseMap: !ComputeTextureColor
+            Texture: d6ed0b30-47ec-45e3-861b-0d490b33e0b3/e8a73264-e909-4e38-943e-b8b5c7b6950a:MaterialTests/stone4_dif
+            FallbackValue:
+                Value: {R: 0.98, G: 0.9, B: 0.7, A: 1.0}
+            Scale: {X: 1.0, Y: 1.0}
+            Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
+    DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+    Specular: !MaterialMetalnessMapFeature
+        MetalnessMap: !ComputeFloat
+            Value: 0.134616
+    SpecularModel: !MaterialSpecularMicrofacetModelFeature
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
+            ~Id: dcd7292f-bfe5-4e79-b5c1-ac212e9716b2
+        Visibility: !MaterialSpecularMicrofacetVisibilitySmithSchlickGGX
+            ~Id: 2dd6945a-1987-466c-9266-fdd3ed12a036
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
+            ~Id: b6f6bc82-4e0b-441a-8d93-d3895f84a954
+    Overrides:
+        UVScale: {X: 1.0, Y: 1.0}
+Layers: []

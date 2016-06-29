@@ -21,7 +21,7 @@ namespace SiliconStudio.Assets.Templates
         /// <exception cref="System.ArgumentNullException">factory</exception>
         public static void Register(ITemplateGenerator generator)
         {
-            if (generator == null) throw new ArgumentNullException("generator");
+            if (generator == null) throw new ArgumentNullException(nameof(generator));
 
             lock (ThisLock)
             {
@@ -39,7 +39,7 @@ namespace SiliconStudio.Assets.Templates
         /// <exception cref="System.ArgumentNullException">factory</exception>
         public static void Unregister(ITemplateGenerator generator)
         {
-            if (generator == null) throw new ArgumentNullException("generator");
+            if (generator == null) throw new ArgumentNullException(nameof(generator));
 
             lock (ThisLock)
             {
@@ -50,7 +50,7 @@ namespace SiliconStudio.Assets.Templates
         /// <summary>
         /// Finds all template descriptions.
         /// </summary>
-        /// <returns>IEnumerable&lt;TemplateGeneratorDescription&gt;.</returns>
+        /// <returns>A sequence containing all registered template descriptions.</returns>
         public static IEnumerable<TemplateDescription> FindTemplates()
         {
             // TODO this will not work if the same package has different versions
@@ -58,20 +58,51 @@ namespace SiliconStudio.Assets.Templates
         }
 
         /// <summary>
+        /// Finds template descriptions that match the given scope.
+        /// </summary>
+        /// <returns>A sequence containing all registered template descriptions that match the given scope.</returns>
+        public static IEnumerable<TemplateDescription> FindTemplates(TemplateScope scope)
+        {
+            return FindTemplates().Where(x => x.Scope == scope);
+        }
+
+        /// <summary>
         /// Finds a template generator supporting the specified template description
         /// </summary>
         /// <param name="description">The description.</param>
         /// <returns>A template generator supporting the specified description or null if not found.</returns>
-        public static ITemplateGenerator FindTemplateGenerator(TemplateDescription description)
+        public static ITemplateGenerator<TParameters> FindTemplateGenerator<TParameters>(TemplateDescription description) where TParameters : TemplateGeneratorParameters
         {
-            if (description == null) throw new ArgumentNullException("description");
+            if (description == null) throw new ArgumentNullException(nameof(description));
             lock (ThisLock)
             {
                 // From most recently registered to older
-                for (int i = Generators.Count - 1; i >=0 ; i--)
+                for (int i = Generators.Count - 1; i >= 0; i--)
                 {
-                    var generator = Generators[i];
-                    if (generator.IsSupportingTemplate(description))
+                    var generator = Generators[i] as ITemplateGenerator<TParameters>;
+                    if (generator != null && generator.IsSupportingTemplate(description))
+                    {
+                        return generator;
+                    }
+                }
+            }
+            return null;
+        }
+        /// <summary>
+        /// Finds a template generator supporting the specified template description
+        /// </summary>
+        /// <param name="parameters">The parameters.</param>
+        /// <returns>A template generator supporting the specified description or null if not found.</returns>
+        public static ITemplateGenerator<TParameters> FindTemplateGenerator<TParameters>(TParameters parameters) where TParameters : TemplateGeneratorParameters
+        {
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
+            lock (ThisLock)
+            {
+                // From most recently registered to older
+                for (int i = Generators.Count - 1; i >= 0; i--)
+                {
+                    var generator = Generators[i] as ITemplateGenerator<TParameters>;
+                    if (generator != null && generator.IsSupportingTemplate(parameters.Description))
                     {
                         return generator;
                     }

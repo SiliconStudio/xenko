@@ -47,16 +47,21 @@ namespace SiliconStudio.Xenko.Rendering.Images
             [unroll]
             for(int i = 1; i < TWeightCount; i++)
             {
-                [unroll]
-                for (int j = -1.0; j <= 1.0; j += 2) // Backward(-1) and forward(+1) along the direction
-                {                     
-                    float2 tapUV = streams.TexCoord + j * i * Direction * tapOffset;
-                    int tapIndex = centerIndex + (j * i);
-                    tapColor[tapIndex] = Texture0.Sample(LinearSampler, tapUV).xyzw;
-                    // Premultiply alpha
-                    tapColor[tapIndex].rgb *= tapColor[tapIndex].a;
-                    tapOriginalWeight[tapIndex] = TapWeights[i];
-                }
+                // Backwards
+                float2 tapUV = streams.TexCoord - i * Direction * tapOffset;
+                int tapIndex = centerIndex - i; 
+                tapColor[tapIndex] = Texture0.Sample(LinearSampler, tapUV).xyzw;
+                // Premultiply alpha
+                tapColor[tapIndex].rgb *= tapColor[tapIndex].a;
+                tapOriginalWeight[tapIndex] = TapWeights[i];
+
+                // Forwards
+                tapUV = streams.TexCoord + i * Direction * tapOffset;
+                tapIndex = centerIndex + i;
+                tapColor[tapIndex] = Texture0.Sample(LinearSampler, tapUV).xyzw;
+                // Premultiply alpha
+                tapColor[tapIndex].rgb *= tapColor[tapIndex].a;
+                tapOriginalWeight[tapIndex] = TapWeights[i];
             }
 
             // Calculate the final average color

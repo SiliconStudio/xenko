@@ -6,6 +6,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI.Controls;
 
 namespace SiliconStudio.Xenko.UI.Tests.Layering
@@ -26,7 +27,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             var services = new ServiceRegistry();
             services.AddService(typeof(IGame), new Game());
 
-            var edit = new EditText(services);
+            var edit = new EditText();
+            edit.UIElementServices = new UIElementServices { Services = services };
 
             // - test the properties that are supposed to invalidate the object measurement
             UIElementLayeringTests.TestMeasureInvalidation(edit, () => edit.Font = null);
@@ -38,8 +40,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
 
             // - test the properties that are not supposed to invalidate the object layout state
             UIElementLayeringTests.TestNoInvalidation(edit, () => edit.IsReadOnly = !edit.IsReadOnly);
-            UIElementLayeringTests.TestNoInvalidation(edit, () => edit.ActiveImage = new Sprite());
-            UIElementLayeringTests.TestNoInvalidation(edit, () => edit.InactiveImage = new Sprite());
+            UIElementLayeringTests.TestNoInvalidation(edit, () => edit.ActiveImage = (SpriteFromTexture)new Sprite());
+            UIElementLayeringTests.TestNoInvalidation(edit, () => edit.InactiveImage = (SpriteFromTexture)new Sprite());
             UIElementLayeringTests.TestNoInvalidation(edit, () => edit.TextColor = new Color(1, 2, 3, 4));
             UIElementLayeringTests.TestNoInvalidation(edit, () => edit.SelectionColor = new Color(1, 2, 3, 4));
             UIElementLayeringTests.TestNoInvalidation(edit, () => edit.CaretColor = new Color(1, 7, 3, 4));

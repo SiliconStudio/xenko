@@ -5,7 +5,7 @@ using System;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.UI.Events;
 
@@ -25,27 +25,27 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The key to the TrackBackgroundImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> TrackBackgroundImagePropertyKey = new PropertyKey<Sprite>("TrackBackgroundImageKey", typeof(Slider), DefaultValueMetadata.Static<Sprite>(null), ObjectInvalidationMetadata.New<Sprite>(InvalidateTrackBackground));
+        public static readonly PropertyKey<ISpriteProvider> TrackBackgroundImagePropertyKey = new PropertyKey<ISpriteProvider>("TrackBackgroundImageKey", typeof(Slider), DefaultValueMetadata.Static<ISpriteProvider>(null), ObjectInvalidationMetadata.New<ISpriteProvider>(InvalidateTrackBackground));
 
         /// <summary>
         /// The key to the TrackForegroundImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> TrackForegroundImagePropertyKey = new PropertyKey<Sprite>("TrackForegroundImageKey", typeof(Slider), DefaultValueMetadata.Static<Sprite>(null));
+        public static readonly PropertyKey<ISpriteProvider> TrackForegroundImagePropertyKey = new PropertyKey<ISpriteProvider>("TrackForegroundImageKey", typeof(Slider), DefaultValueMetadata.Static<ISpriteProvider>(null));
 
         /// <summary>
         /// The key to the ThumbImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> ThumbImagePropertyKey = new PropertyKey<Sprite>("ThumbImageKey", typeof(Slider), DefaultValueMetadata.Static<Sprite>(null));
+        public static readonly PropertyKey<ISpriteProvider> ThumbImagePropertyKey = new PropertyKey<ISpriteProvider>("ThumbImageKey", typeof(Slider), DefaultValueMetadata.Static<ISpriteProvider>(null));
 
         /// <summary>
         /// The key to the TickImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> TickImagePropertyKey = new PropertyKey<Sprite>("ThickImageKey", typeof(Slider), DefaultValueMetadata.Static<Sprite>(null));
+        public static readonly PropertyKey<ISpriteProvider> TickImagePropertyKey = new PropertyKey<ISpriteProvider>("ThickImageKey", typeof(Slider), DefaultValueMetadata.Static<ISpriteProvider>(null));
 
         /// <summary>
         /// The key to the MouseOverThumbImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> MouseOverThumbImagePropertyKey = new PropertyKey<Sprite>("MouseOverThumbImageKey", typeof(Slider), DefaultValueMetadata.Static<Sprite>(null));
+        public static readonly PropertyKey<ISpriteProvider> MouseOverThumbImagePropertyKey = new PropertyKey<ISpriteProvider>("MouseOverThumbImageKey", typeof(Slider), DefaultValueMetadata.Static<ISpriteProvider>(null));
 
         /// <summary>
         /// The key to the Minimum dependency property.
@@ -77,17 +77,17 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         public static readonly PropertyKey<Vector2> TrackStartingOffsetsrPropertyKey = new PropertyKey<Vector2>("TrackStartingOffsetKey", typeof(Slider), DefaultValueMetadata.Static(new Vector2()));
 
-        private static void InvalidateTrackBackground(object propertyowner, PropertyKey<Sprite> propertykey, Sprite propertyoldvalue)
+        private static void InvalidateTrackBackground(object propertyowner, PropertyKey<ISpriteProvider> propertykey, ISpriteProvider propertyoldvalue)
         {
             var slider = (Slider)propertyowner;
 
             slider.InvalidateMeasure();
 
             if (propertyoldvalue != null)
-                propertyoldvalue.SizeChanged -= slider.OnSizeChanged;
+                propertyoldvalue.GetSprite().SizeChanged -= slider.OnSizeChanged;
 
             if(slider.TrackBackgroundImage != null)
-                slider.TrackBackgroundImage.SizeChanged += slider.OnSizeChanged;
+                slider.TrackBackgroundImage.GetSprite().SizeChanged += slider.OnSizeChanged;
         }
 
         private void OnSizeChanged(object sender, EventArgs e)
@@ -137,7 +137,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image to display as Track background.
         /// </summary>
-        public Sprite TrackBackgroundImage
+        public ISpriteProvider TrackBackgroundImage
         {
             get { return DependencyProperties.Get(TrackBackgroundImagePropertyKey); }
             set { DependencyProperties.Set(TrackBackgroundImagePropertyKey, value); }
@@ -146,7 +146,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image to display as Track foreground.
         /// </summary>
-        public Sprite TrackForegroundImage
+        public ISpriteProvider TrackForegroundImage
         {
             get { return DependencyProperties.Get(TrackForegroundImagePropertyKey); }
             set { DependencyProperties.Set(TrackForegroundImagePropertyKey, value); }
@@ -155,7 +155,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image to display as slider thumb (button).
         /// </summary>
-        public Sprite ThumbImage
+        public ISpriteProvider ThumbImage
         {
             get { return DependencyProperties.Get(ThumbImagePropertyKey); }
             set { DependencyProperties.Set(ThumbImagePropertyKey, value); }
@@ -164,7 +164,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image to display as slider thumb (button) when the mouse is over the slider.
         /// </summary>
-        public Sprite MouseOverThumbImage
+        public ISpriteProvider MouseOverThumbImage
         {
             get { return DependencyProperties.Get(MouseOverThumbImagePropertyKey); }
             set { DependencyProperties.Set(MouseOverThumbImagePropertyKey, value); }
@@ -173,7 +173,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image to display as tick.
         /// </summary>
-        public Sprite TickImage
+        public ISpriteProvider TickImage
         {
             get { return DependencyProperties.Get(TickImagePropertyKey); }
             set { DependencyProperties.Set(TickImagePropertyKey, value); }
@@ -341,7 +341,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             if (image == null)
                 return base.MeasureOverride(availableSizeWithoutMargins);
 
-            var idealSize = image.SizeInPixels.Y;
+            var idealSize = image.GetSprite().SizeInPixels.Y;
             var desiredSize = new Vector3(idealSize, idealSize, 0);
             desiredSize[(int)Orientation] = availableSizeWithoutMargins[(int)Orientation];
 

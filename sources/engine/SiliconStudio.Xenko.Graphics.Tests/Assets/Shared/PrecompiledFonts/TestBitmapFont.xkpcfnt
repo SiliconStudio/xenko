@@ -1,0 +1,95 @@
+!PregeneratedSpriteFont
+Id: 37849a2b-82f1-4e4b-9ef6-680331c5fa87
+SerializedVersion: {Xenko: 1.7.0-alpha01}
+Tags: []
+OriginalFont: 21069bb0-91b2-4570-be00-a70a1df67cb1:StaticFonts/TestBitmapFont
+FontDataFile: ../../../../../data/tests/PrecompileFonts/TestBitmapFont (Precompiled).png
+DefaultLineSpacing: 32.0
+Glyphs:
+    -   ~Id: 514816de-57f3-4883-a50c-07e961b90e54
+        BitmapIndex: 0
+        Character: 32
+        Offset: {X: 31.0, Y: 31.0}
+        Subrect: {X: 62, Y: 47, Width: 1, Height: 1}
+        XAdvance: 32.0
+    -   ~Id: 258db7f0-cedb-465d-b291-9f7af6b0212e
+        BitmapIndex: 0
+        Character: 48
+        Offset: {X: 8.0, Y: 6.0}
+        Subrect: {X: 1, Y: 1, Width: 14, Height: 21}
+        XAdvance: 32.0
+    -   ~Id: 8a0f4c54-b730-4a9d-bbb4-890c8384ddc5
+        BitmapIndex: 0
+        Character: 49
+        Offset: {X: 10.0, Y: 6.0}
+        Subrect: {X: 33, Y: 47, Width: 11, Height: 21}
+        XAdvance: 32.0
+    -   ~Id: 07005c40-a483-4fb1-a22c-41db98e14df3
+        BitmapIndex: 0
+        Character: 50
+        Offset: {X: 9.0, Y: 5.0}
+        Subrect: {X: 17, Y: 1, Width: 14, Height: 21}
+        XAdvance: 32.0
+    -   ~Id: 922b7572-8689-41aa-aede-e09ce520c5da
+        BitmapIndex: 0
+        Character: 51
+        Offset: {X: 8.0, Y: 5.0}
+        Subrect: {X: 33, Y: 1, Width: 14, Height: 21}
+        XAdvance: 32.0
+    -   ~Id: 62449619-153c-4bb6-9e5a-b88c2515ffe4
+        BitmapIndex: 0
+        Character: 52
+        Offset: {X: 8.0, Y: 5.0}
+        Subrect: {X: 49, Y: 1, Width: 14, Height: 21}
+        XAdvance: 32.0
+    -   ~Id: 0e409704-5232-484b-8aa0-99523724891b
+        BitmapIndex: 0
+        Character: 53
+        Offset: {X: 8.0, Y: 5.0}
+        Subrect: {X: 1, Y: 24, Width: 14, Height: 21}
+        XAdvance: 32.0
+    -   ~Id: c3424d12-9fcb-4843-bdac-0543c93c4aa2
+        BitmapIndex: 0
+        Character: 54
+        Offset: {X: 8.0, Y: 5.0}
+        Subrect: {X: 17, Y: 24, Width: 14, Height: 21}
+        XAdvance: 32.0
+    -   ~Id: e7d2a4d8-8970-480e-a81a-8856b0aad908
+        BitmapIndex: 0
+        Character: 55
+        Offset: {X: 9.0, Y: 5.0}
+        Subrect: {X: 33, Y: 24, Width: 14, Height: 21}
+        XAdvance: 32.0
+    -   ~Id: aef2dab5-166b-4a3b-b0b6-7893119279cf
+        BitmapIndex: 0
+        Character: 56
+        Offset: {X: 9.0, Y: 6.0}
+        Subrect: {X: 49, Y: 24, Width: 14, Height: 21}
+        XAdvance: 32.0
+    -   ~Id: 3d1c60c2-22a7-4445-aea2-8d541c9ea74e
+        BitmapIndex: 0
+        Character: 57
+        Offset: {X: 10.0, Y: 5.0}
+        Subrect: {X: 1, Y: 47, Width: 14, Height: 21}
+        XAdvance: 32.0
+    -   ~Id: c41ce951-990d-42ab-a62a-e45cd3654d08
+        BitmapIndex: 0
+        Character: 101
+        Offset: {X: 10.0, Y: 10.0}
+        Subrect: {X: 46, Y: 67, Width: 12, Height: 14}
+        XAdvance: 32.0
+    -   ~Id: 09b320ad-66f8-4ac5-82ce-febd439316ca
+        BitmapIndex: 0
+        Character: 115
+        Offset: {X: 6.0, Y: 7.0}
+        Subrect: {X: 46, Y: 47, Width: 14, Height: 18}
+        XAdvance: 32.0
+    -   ~Id: c472bbd3-0c76-421f-b186-a25863fa0121
+        BitmapIndex: 0
+        Character: 116
+        Offset: {X: 7.0, Y: 5.0}
+        Subrect: {X: 17, Y: 47, Width: 14, Height: 21}
+        XAdvance: 32.0
+Kernings: []
+FontName: TestFont
+Size: 8.25

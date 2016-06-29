@@ -3,18 +3,26 @@
 
 using System;
 using System.ComponentModel;
+using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Particles.BoundingShapes;
 using SiliconStudio.Xenko.Particles.DebugDraw;
+using SiliconStudio.Xenko.Particles.Initializers;
 
 namespace SiliconStudio.Xenko.Particles
 {
     [DataContract("ParticleSystem")]
     public class ParticleSystem : IDisposable
     {
+        /// <summary>
+        /// If positive, it indicates how much remaining time there is before the system calls Stop()
+        /// </summary>
+        private float timeout = 0f;
+
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="ParticleSystem"/> is enabled.
         /// </summary>
@@ -109,7 +117,7 @@ namespace SiliconStudio.Xenko.Particles
         /// AABB (Axis-Aligned Bounding Box) used for fast culling and optimizations. Can be specified by the user. Leave it Null to disable culling.
         /// </userdoc>
         [DataMember(5)]
-        [Display("Bounding Shape")]
+        [Display("Culling AABB")]
         public BoundingShape BoundingShape { get; set; } = null;
 
         /// <summary>
@@ -121,6 +129,7 @@ namespace SiliconStudio.Xenko.Particles
             return BoundingShape?.GetAABB(Translation, Rotation, UniformScale) ?? new BoundingBox(Translation, Translation);
         }
 
+        private int oldEmitterCount = 0;
         private readonly SafeList<ParticleEmitter> emitters;
         /// <summary>
         /// List of Emitters in this <see cref="ParticleSystem"/>. Each Emitter has a separate <see cref="ParticlePool"/> (group) of Particles in it
@@ -164,7 +173,7 @@ namespace SiliconStudio.Xenko.Particles
         /// Rotation of the ParticleSystem, expressed as a quaternion rotation. Usually inherited directly from the ParticleSystemComponent or can be directly set.
         /// </userdoc>
         [DataMemberIgnore]
-        public Quaternion Rotation = new Quaternion(0, 0, 0, 1);
+        public Quaternion Rotation = Quaternion.Identity;
 
         /// <summary>
         /// Scale of the ParticleSystem. Only uniform scale is supported. Usually inherited directly from the ParticleSystemComponent or can be directly set.
@@ -175,6 +184,16 @@ namespace SiliconStudio.Xenko.Particles
         [DataMemberIgnore]
         public float UniformScale = 1f;
 
+
+        /// <summary>
+        /// Invalidates relation of this emitter to any other emitters that might be referenced
+        /// </summary>
+        public void InvalidateRelations()
+        {
+            // Setting the count to an invalid value will force validation update on the next step
+            oldEmitterCount = -1;
+        }
+
         /// <summary>
         /// Updates the particles
         /// </summary>
@@ -184,6 +203,26 @@ namespace SiliconStudio.Xenko.Particles
         /// </userdoc>
         public void Update(float dt)
         {
+            if (timeout > 0f)
+            {
+                timeout -= dt;
+                if (timeout <= 0f)
+                {
+                    Stop();
+                }
+            }
+
+            // Check for changes in the emitters
+            if (oldEmitterCount != Emitters.Count)
+            {
+                foreach (var particleEmitter in Emitters)
+                {
+                    particleEmitter.InvalidateRelations();
+                }
+
+                oldEmitterCount = Emitters.Count;
+            }
+
             if (BoundingShape != null) BoundingShape.Dirty = true;
 
             // If the particle system is paused skip the rest of the update state
@@ -285,7 +324,33 @@ namespace SiliconStudio.Xenko.Particles
             isPaused = true;
         }
 
+        /// <summary>
+        /// Disables emission of new particles and sets a time limit on the system. After the time expires, the system stops.
+        /// </summary>
+        public void Timeout(float timeLimit)
+        {
+            if (timeLimit < 0f)
+                return;
 
+            foreach (var particleEmitter in Emitters)
+            {
+                particleEmitter.CanEmitParticles = false;
+            }
+
+            timeout = timeLimit;
+        }
+
+        /// <summary>
+        /// Gets the first emitter with matching name which is contained in this <see cref="ParticleSystem"/>
+        /// </summary>
+        /// <param name="name">Name of the emitter. Some emitters might not have a name and cannot be referenced</param>
+        /// <returns><see cref="ParticleEmitter"/> with the same <see cref="ParticleEmitter.EmitterName"/> or <c>null</c> if not found</returns>
+        public ParticleEmitter GetEmitterByName(string name)
+        {
+            return (name.IsNullOrEmpty()) ?
+                null : 
+                Emitters.FirstOrDefault(e => !e.EmitterName.IsNullOrEmpty() && e.EmitterName.Equals(name));
+        }
 
         #region Dispose
         private bool disposed;

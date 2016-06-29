@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI.Controls;
 
 namespace SiliconStudio.Xenko.UI.Tests.Layering
@@ -56,7 +57,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
 
             // - test the properties that are supposed to invalidate the object layout state
             UIElementLayeringTests.TestMeasureInvalidation(slider, () => slider.Orientation = Orientation.Vertical);
-            UIElementLayeringTests.TestMeasureInvalidation(slider, () => slider.TrackBackgroundImage = new Sprite());
+            UIElementLayeringTests.TestMeasureInvalidation(slider, () => slider.TrackBackgroundImage = (SpriteFromTexture)new Sprite());
             
             // - test the properties that are not supposed to invalidate the object layout state
             UIElementLayeringTests.TestNoInvalidation(slider, () => slider.AreTicksDisplayed = true);
@@ -67,10 +68,10 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             UIElementLayeringTests.TestNoInvalidation(slider, () => slider.Step = 0.2f);
             UIElementLayeringTests.TestNoInvalidation(slider, () => slider.Maximum = 0.2f);
             UIElementLayeringTests.TestNoInvalidation(slider, () => slider.Minimum = 0.1f);
-            UIElementLayeringTests.TestNoInvalidation(slider, () => slider.TrackForegroundImage = new Sprite());
-            UIElementLayeringTests.TestNoInvalidation(slider, () => slider.ThumbImage = new Sprite());
-            UIElementLayeringTests.TestNoInvalidation(slider, () => slider.MouseOverThumbImage = new Sprite());
-            UIElementLayeringTests.TestNoInvalidation(slider, () => slider.DependencyProperties.Set(Slider.TickImagePropertyKey, new Sprite()));
+            UIElementLayeringTests.TestNoInvalidation(slider, () => slider.TrackForegroundImage = (SpriteFromTexture)new Sprite());
+            UIElementLayeringTests.TestNoInvalidation(slider, () => slider.ThumbImage = (SpriteFromTexture)new Sprite());
+            UIElementLayeringTests.TestNoInvalidation(slider, () => slider.MouseOverThumbImage = (SpriteFromTexture)new Sprite());
+            UIElementLayeringTests.TestNoInvalidation(slider, () => slider.DependencyProperties.Set(Slider.TickImagePropertyKey, (SpriteFromTexture)new Sprite()));
             UIElementLayeringTests.TestNoInvalidation(slider, () => slider.TickOffset = new float());
             UIElementLayeringTests.TestNoInvalidation(slider, () => slider.TrackStartingOffsets = new Vector2());
         }
@@ -220,11 +221,12 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
         public void TestMeausureOverride()
         {
             var slider = new Slider();
-            
+            var sprite = new Sprite { Region = new RectangleF(2, 3, 40, 50) };
+
             slider.Measure(new Vector3(100, 200, 300));
             Assert.AreEqual(new Vector3(0), slider.RenderSize);
             
-            slider.TrackBackgroundImage = new Sprite { Region = new RectangleF(2, 3, 40, 50) };
+            slider.TrackBackgroundImage = (SpriteFromTexture)sprite;
             slider.Measure(new Vector3(100, 200, 300));
             Assert.AreEqual(new Vector3(100, 50, 0), slider.DesiredSize);
 
@@ -237,7 +239,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             Assert.AreEqual(new Vector3(50, 50, 300), slider.DesiredSize); // subject to changes
 
             slider.Orientation = Orientation.Horizontal;
-            slider.TrackBackgroundImage.Orientation = ImageOrientation.Rotated90;
+            sprite.Orientation = ImageOrientation.Rotated90;
             slider.Measure(new Vector3(100, 200, 300));
             Assert.AreEqual(new Vector3(100, 40, 0), slider.DesiredSize);
             
@@ -245,7 +247,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             slider.Measure(new Vector3(100, 200, 300));
             Assert.AreEqual(new Vector3(40, 200, 0), slider.DesiredSize);
 
-            slider.TrackBackgroundImage.Orientation = ImageOrientation.AsIs;
+            sprite.Orientation = ImageOrientation.AsIs;
             slider.Measure(new Vector3(100, 200, 300));
             Assert.AreEqual(new Vector3(50, 200, 0), slider.DesiredSize);
         }

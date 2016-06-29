@@ -72,26 +72,26 @@ namespace SiliconStudio.Xenko.Input
 
         protected override void SetMousePosition(Vector2 normalizedPosition)
         {
-            var newPos = Control.PointToScreen(
-                new System.Windows.Point((int)(ClientWidth(Control)*normalizedPosition.X), (int)(ClientHeight(Control)*normalizedPosition.Y)));
+            var newPos = UiControl.PointToScreen(
+                new System.Windows.Point((int)(ClientWidth(UiControl)*normalizedPosition.X), (int)(ClientHeight(UiControl)*normalizedPosition.Y)));
             Cursor.Position = new System.Drawing.Point((int)newPos.X, (int)newPos.Y);
         }
 
         private void InitializeFromWindowsWpf(GameContext<Window> uiContext)
         {
-            Control = uiContext.Control;
+            UiControl = uiContext.Control;
 
-            BindRawInputKeyboard(Control);
-            Control.LostFocus += (_, e) => OnUiControlLostFocus();
-            Control.Deactivated += (_, e) => OnUiControlLostFocus();
-            Control.MouseMove += (_, e) => OnMouseMoveEvent(PointToVector2(e.GetPosition(Control)));
-            Control.MouseDown += (_, e) => OnMouseInputEvent(PointToVector2(e.GetPosition(Control)), ConvertMouseButton(e.ChangedButton), InputEventType.Down);
-            Control.MouseUp += (_, e) => OnMouseInputEvent(PointToVector2(e.GetPosition(Control)), ConvertMouseButton(e.ChangedButton), InputEventType.Up);
-            Control.MouseWheel += (_, e) => OnMouseInputEvent(PointToVector2(e.GetPosition(Control)), MouseButton.Middle, InputEventType.Wheel, e.Delta);
-            Control.SizeChanged += OnWpfSizeChanged;
+            BindRawInputKeyboard(UiControl);
+            UiControl.LostFocus += (_, e) => OnUiControlLostFocus();
+            UiControl.Deactivated += (_, e) => OnUiControlLostFocus();
+            UiControl.MouseMove += (_, e) => OnMouseMoveEvent(PointToVector2(e.GetPosition(UiControl)));
+            UiControl.MouseDown += (_, e) => OnMouseInputEvent(PointToVector2(e.GetPosition(UiControl)), ConvertMouseButton(e.ChangedButton), InputEventType.Down);
+            UiControl.MouseUp += (_, e) => OnMouseInputEvent(PointToVector2(e.GetPosition(UiControl)), ConvertMouseButton(e.ChangedButton), InputEventType.Up);
+            UiControl.MouseWheel += (_, e) => OnMouseInputEvent(PointToVector2(e.GetPosition(UiControl)), MouseButton.Middle, InputEventType.Wheel, e.Delta);
+            UiControl.SizeChanged += OnWpfSizeChanged;
 
-            ControlWidth = (float)Control.ActualWidth;
-            ControlHeight = (float)Control.ActualHeight;
+            ControlWidth = (float)UiControl.ActualWidth;
+            ControlHeight = (float)UiControl.ActualHeight;
         }
 
         private static int ClientWidth(Window ctrl)
@@ -133,7 +133,7 @@ namespace SiliconStudio.Xenko.Input
         private void OnMouseInputEvent(Vector2 pixelPosition, MouseButton button, InputEventType type, float value = 0)
         {
             // The mouse wheel event are still received even when the mouse cursor is out of the control boundaries. Discard the event in this case.
-            if (type == InputEventType.Wheel && !Control.IsMouseOver)
+            if (type == InputEventType.Wheel && !UiControl.IsMouseOver)
                 return;
 
             // the mouse events series has been interrupted because out of the window.

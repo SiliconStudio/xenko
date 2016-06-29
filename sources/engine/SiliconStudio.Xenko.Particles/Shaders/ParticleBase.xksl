@@ -1,12 +1,27 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-class ParticleBase : ShaderBase, Texturing
+#ifndef UsesSoftEdge
+# define UsesSoftEdge 0
+#endif
+
+class ParticleBase : DepthBase, ShaderBase, Texturing, ParticleUtilities
 {
     // -------------------------------------
     // streams
     // -------------------------------------
+
+    // Shading position of the vertices/pixels
     stage stream float4 Position : POSITION;
+
+#if SILICONSTUDIO_XENKO_GRAPHICS_PROFILE >= GRAPHICS_PROFILE_LEVEL_10_0
+    // No extra streams are required
+#else
+    stage stream float4 ScreenPosition : SCREEN_POSITION;
+#endif
+
+    // Linear depth of the position in view space in world units, used for soft edges
+    stage stream float ZDepth : Z_DEPTH_VALUE;
 
     // -------------------------------------
     // conditional streams - may or may not be present depending on existing particle fields
@@ -15,85 +30,100 @@ class ParticleBase : ShaderBase, Texturing
     nointerpolation stage stream float Lifetime : BATCH_LIFETIME;
     nointerpolation stage stream float RandomSeed : BATCH_RANDOMSEED; // Ideally should be uint. Note! The xksl doesn't support nointerpolation, so cast the float as int before using it
 
-    // -------------------------------------
-    // uniforms
-    // -------------------------------------
-
-    // !When a bigger structure (float4) follow a smaller structure (float) the binding seems off
-    // Declare the uniforms in the order float4x4 > float4 > float > uint
-
-    cbuffer PerView
-    {
-        stage float4x4 MatrixTransform;
-    }
-
     cbuffer PerMaterial
     {
         stage float4 ColorScale;
 
         // When the value is 0 there is no occlusion (100% emissive), when it is 1 there is 100% occlusion (still limited by alpha)
         stage float AlphaAdditive;
+
+        // Z offset is how much the depth should be adjusted when rendering
+        stage float ZOffset;
+
+        // 0 if disabled, equal to 1/Distance otherwise
+        stage float SoftEdgeInverseDistance;
     }
             
     // -------------------------------------
     // VertexShader
     // -------------------------------------
+
+    // Override Vertex shader main method from the ShaderBase class
     stage override void VSMain()
     {
         float4 worldPos = streams.Position;
 
-        streams.ShadingPosition = mul(worldPos, MatrixTransform);
+        float4 viewPos = mul(worldPos, ViewMatrix);
+
+        streams.ShadingPosition = mul(viewPos, ProjectionMatrix);
+
+#if SILICONSTUDIO_XENKO_GRAPHICS_PROFILE >= GRAPHICS_PROFILE_LEVEL_10_0
+        // No extra code is required
+#else
+        // TODO Check if we can optimize the code here. Possible that the .x/.w and .y/.w operations can't be optimized because of inproper interpolation.
+        streams.ScreenPosition = streams.ShadingPosition;
+#endif
+
+        // Z Offset
+        viewPos.w = 1;
+        viewPos.z += ZOffset;
+
+        streams.ZDepth = viewPos.z;
+
+        float4 viewProjPos = mul(viewPos, ProjectionMatrix);
+
+        streams.ShadingPosition.z = (viewProjPos.z / viewProjPos.w) * streams.ShadingPosition.w;
     }
 
-    // Shading of the sprite
+    // -------------------------------------
+    // PixelShader
+    // -------------------------------------
+
+    // Override Pixel shader main method from the ShaderBase class
     stage override void PSMain()
     {
         float4 colorTarget = Shading();
+
+        if (UsesSoftEdge > 0)
+        {
+            float screenWidth  = ViewFrustum.x;
+            float screenHeight = ViewFrustum.y;
+
+#if SILICONSTUDIO_XENKO_GRAPHICS_PROFILE >= GRAPHICS_PROFILE_LEVEL_10_0
+            var screenCoords = streams.ShadingPosition.xy;
+            screenCoords.x /= screenWidth;
+            screenCoords.y /= screenHeight;
+#else
+            var screenCoords = (streams.ScreenPosition.xy / streams.ScreenPosition.ww) * float2(0.5, 0.5) + float2(0.5, 0.5);
+            screenCoords.y = 1 - screenCoords.y;
+#endif
+
+            // Convert to linear depth for proper edge smoothing
+            float linearZOwn = -streams.ZDepth;
+            float linearZOpaque = GetLinearDepth(DepthStencil.Sample(Texturing.PointSampler, screenCoords).r);
+
+            //  Get the positive difference
+            var depthDistance = linearZOpaque - linearZOwn;
+
+            // TODO Maybe set upper and lower bounds for more interesting effects
+
+            // smoothstep(...) looks more natural than saturate(...):
+            var softEdge = smoothstep(0, 1, depthDistance * SoftEdgeInverseDistance); 
+            colorTarget.rgba *= softEdge;
+        }
+        else
+        {
+            // Do nothing. The depth testing is enabled
+        }
 
         colorTarget.a *= AlphaAdditive;
 
         streams.ColorTarget = colorTarget;
     }
-
-    //compose ParticleColor particleColor;
-
+    
     stage float4 Shading()
     {
         return ColorScale;
-        //return ColorScale * particleColor.Compute();
     }
 
-    // -------------------------------------
-    // Randomness
-    // -------------------------------------
-
-    //stage float4 GenerateRandomColor()
-    //{
-    //    float fSeed = (float) (streams.RandomSeed + ColorScaleOffset);
-
-    //    return lerp(ColorScaleMin, ColorScaleMax, GetRandom(fSeed));
-    //}
-
-    // Some notes on randomness
-    //  The algorithm below is uses unsigned integer as input and generates deterministic random values with good distribution.
-    //  Because we can't pass uint as vertex input, we use a float and cast it twice to prevent interpolation errors.
-    //  Also, casting a huge uint value to float causes underflow, so we limit the input value to 0 .. 0xFFFF (the masking is done on the CPU side)
-
-    static const float  GelfondConst = 23.1406926327792690; // e to the power of Pi = (-1) to the power of -i
-    static const float  GelfondSchneiderConst = 2.6651441426902251; // 2 to the power of sqrt(2)
-    static const float2 Gelfond = float2(GelfondConst, GelfondSchneiderConst);
-    static const float  Numerator = 123456789;
-
-    stage float GetRandom(float fSeed)
-    {
-        // Cast to int once to prevent interpolation errors
-        int uSeed = (int) (fSeed);
-        fSeed = (float) uSeed;
-
-        float2 rand2 = float2(cos(fSeed), sin(fSeed));
-
-        float dotProduct = dot(rand2, Gelfond);
-
-        return frac(fmod(Numerator, 1e-7 + 256.f * dotProduct));
-    }
 };

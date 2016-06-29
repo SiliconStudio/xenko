@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Templates;
 using SiliconStudio.Core.IO;
@@ -11,7 +12,7 @@ namespace SiliconStudio.Xenko.ProjectGenerator
     /// <summary>
     /// Create a package.
     /// </summary>
-    public class PackageUnitTestGenerator : TemplateGeneratorBase
+    public class PackageUnitTestGenerator : TemplateGeneratorBase<SessionTemplateGeneratorParameters>
     {
         public static readonly PackageUnitTestGenerator Default = new PackageUnitTestGenerator();
 
@@ -23,15 +24,15 @@ namespace SiliconStudio.Xenko.ProjectGenerator
             return templateDescription.Id == TemplateId;
         }
 
-        public override Func<bool> PrepareForRun(TemplateGeneratorParameters parameters)
+        public override Task<bool> PrepareForRun(SessionTemplateGeneratorParameters parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             parameters.Validate();
 
-            return () => Generate(parameters);
+            return Task.FromResult(true);
         }
 
-        public bool Generate(TemplateGeneratorParameters parameters)
+        public sealed override bool Run(SessionTemplateGeneratorParameters parameters)
         {
             if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             parameters.Validate();
@@ -41,15 +42,13 @@ namespace SiliconStudio.Xenko.ProjectGenerator
 
             // Creates the package
             var package = NewPackage(name);
+            package.Id = parameters.Id;
 
             // Setup the default namespace
             package.Meta.RootNamespace = parameters.Namespace;
 
             // Setup the path to save it
             package.FullPath = UPath.Combine(outputDirectory, new UFile(name + Package.PackageFileExtension));
-
-            // Set the package
-            parameters.Package = package;
 
             // Add it to the current session
             var session = parameters.Session;

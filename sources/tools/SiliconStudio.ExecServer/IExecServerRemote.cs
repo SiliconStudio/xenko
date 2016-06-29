@@ -16,6 +16,6 @@ namespace SiliconStudio.ExecServer
         void Check();
 
         [OperationContract(IsTerminating = true)]
-        int Run(string currentDirectory, Dictionary<string, string> environmentVariables, string[] args);
+        int Run(string currentDirectory, Dictionary<string, string> environmentVariables, string[] args, bool shadowCache);
     }
 }

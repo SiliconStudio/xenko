@@ -12,23 +12,32 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Xenko.Assets.Entities;
 using SiliconStudio.Xenko.Assets.Materials;
-using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Importer.Common;
 
 namespace SiliconStudio.Xenko.Assets.Model
 {
     public abstract class ModelAssetImporter : AssetImporterBase
     {
-        private static readonly Type[] supportedTypes = { typeof(ModelAsset), typeof(TextureAsset), typeof(MaterialAsset), typeof(SkeletonAsset), typeof(AnimationAsset) };
-
-        public override AssetImporterParameters GetDefaultParameters(bool isForReImport)
+        public override IEnumerable<Type> RootAssetTypes
         {
-            return new AssetImporterParameters(supportedTypes);
+            get
+            {
+                yield return typeof(ModelAsset);
+                yield return typeof(AnimationAsset);
+                yield return typeof(SkeletonAsset);
+            }
+        }
+
+        public override IEnumerable<Type> AdditionalAssetTypes
+        {
+            get
+            {
+                yield return typeof(MaterialAsset);
+                yield return typeof(TextureAsset);
+            }
         }
 
         /// <summary>
@@ -36,8 +45,9 @@ namespace SiliconStudio.Xenko.Assets.Model
         /// </summary>
         /// <param name="localPath">The path of the asset.</param>
         /// <param name="logger">The logger to use to log import message.</param>
+        /// <param name="importParameters">The import parameters.</param>
         /// <returns>The EntityInfo.</returns>
-        public abstract EntityInfo GetEntityInfo(UFile localPath, Logger logger);
+        public abstract EntityInfo GetEntityInfo(UFile localPath, Logger logger, AssetImporterParameters importParameters);
         
         /// <summary>
         /// Imports the model.
@@ -49,17 +59,15 @@ namespace SiliconStudio.Xenko.Assets.Model
         {
             var rawAssetReferences = new List<AssetItem>(); // the asset references without subdirectory path
 
-            var entityInfo = GetEntityInfo(localPath, importParameters.Logger);
+            var entityInfo = GetEntityInfo(localPath, importParameters.Logger, importParameters);
 
             //var isImportingEntity = importParameters.IsTypeSelectedForOutput<PrefabAsset>();
 
             var isImportingModel = importParameters.IsTypeSelectedForOutput<ModelAsset>();
 
-            var isImportingMaterial = importParameters.IsTypeSelectedForOutput<MaterialAsset>() ||
-                                      isImportingModel;
+            var isImportingMaterial = importParameters.IsTypeSelectedForOutput<MaterialAsset>();
 
-            var isImportingTexture = importParameters.IsTypeSelectedForOutput<TextureAsset>() ||
-                                     isImportingMaterial;
+            var isImportingTexture = importParameters.IsTypeSelectedForOutput<TextureAsset>();
 
             // 1. Textures
             if (isImportingTexture)
@@ -89,16 +97,7 @@ namespace SiliconStudio.Xenko.Assets.Model
             // 5. Model
             if (isImportingModel)
             {
-                var modelItem = ImportModel(rawAssetReferences, localPath, localPath, entityInfo, false, skeletonAsset);
-
-                // 5. Entity (currently disabled)
-                //if (isImportingEntity)
-                //{
-                //    var entityAssetItem = ImportEntity(rawAssetReferences, localPath, modelItem);
-                //
-                //    // Apply EntityAnalysis 
-                //    EntityAnalysis.UpdateEntityReferences(((PrefabAsset)entityAssetItem.Asset).Hierarchy);
-                //}
+                ImportModel(rawAssetReferences, localPath, localPath, entityInfo, false, skeletonAsset);
             }
 
             return rawAssetReferences;
@@ -140,7 +139,7 @@ namespace SiliconStudio.Xenko.Assets.Model
             if (entityInfo.AnimationNodes != null && entityInfo.AnimationNodes.Count > 0)
                 asset.PreserveNodes(entityInfo.AnimationNodes);
 
-            var skeletonUrl = new UFile(localPath.GetFileName() + " Skeleton", null);
+            var skeletonUrl = new UFile(localPath.GetFileName() + " Skeleton");
             var assetItem = new AssetItem(skeletonUrl, asset);
             assetReferences.Add(assetItem);
             return assetItem;
@@ -156,7 +155,7 @@ namespace SiliconStudio.Xenko.Assets.Model
                 var animUrl = localPath.GetFileName() + (shouldPostFixName ? " Animation" : "");
 
                 if (skeletonAsset != null)
-                    asset.Skeleton = AttachedReferenceManager.CreateSerializableVersion<Skeleton>(skeletonAsset.Id, skeletonAsset.Location);
+                    asset.Skeleton = AttachedReferenceManager.CreateProxyObject<Skeleton>(skeletonAsset.Id, skeletonAsset.Location);
 
                 assetReferences.Add(new AssetItem(animUrl, asset));
             }
@@ -171,16 +170,19 @@ namespace SiliconStudio.Xenko.Assets.Model
                 var loadedMaterials = assetReferences.Where(x => x.Asset is MaterialAsset).ToList();
                 foreach (var material in entityInfo.Materials)
                 {
-                    var foundMaterial = loadedMaterials.FirstOrDefault(x => x.Location == new UFile(material.Key, null));
+                    var modelMaterial = new ModelMaterial
+                    {
+                        Name = material.Key,
+                        MaterialInstance = new MaterialInstance()
+                    };
+                    var foundMaterial = loadedMaterials.FirstOrDefault(x => x.Location == new UFile(material.Key));
                     if (foundMaterial != null)
                     {
-                        var modelMaterial = new ModelMaterial
-                        {
-                            Name = material.Key,
-                            MaterialInstance = new MaterialInstance() { Material = AttachedReferenceManager.CreateSerializableVersion<Material>(foundMaterial.Id, foundMaterial.Location) }
-                        };
-                        asset.Materials.Add(AttachId(modelMaterial));
+                        var reference = AttachedReferenceManager.CreateProxyObject<Material>(foundMaterial.Id, foundMaterial.Location);
+                        modelMaterial.MaterialInstance.Material = reference;
                     }
+                    //todo Instead of null material add a default xenko material
+                    asset.Materials.Add(AttachId(modelMaterial));
                 }
                 //handle the case where during import we imported no materials at all
                 //todo Instead of null material add a default xenko material
@@ -192,9 +194,9 @@ namespace SiliconStudio.Xenko.Assets.Model
             }
 
             if (skeletonAsset != null)
-                asset.Skeleton = AttachedReferenceManager.CreateSerializableVersion<Skeleton>(skeletonAsset.Id, skeletonAsset.Location);
+                asset.Skeleton = AttachedReferenceManager.CreateProxyObject<Skeleton>(skeletonAsset.Id, skeletonAsset.Location);
 
-            var modelUrl = new UFile(localPath.GetFileName() + (shouldPostFixName?" Model": ""), null);
+            var modelUrl = new UFile(localPath.GetFileName() + (shouldPostFixName?" Model": ""));
             var assetItem = new AssetItem(modelUrl, asset);
             assetReferences.Add(assetItem);
             return assetItem;
@@ -225,7 +227,7 @@ namespace SiliconStudio.Xenko.Assets.Model
                     var materialAssetReferences = AssetReferenceAnalysis.Visit(material);
                     foreach (var materialAssetReferenceLink in materialAssetReferences)
                     {
-                        var materialAssetReference = materialAssetReferenceLink.Reference as IContentReference;
+                        var materialAssetReference = materialAssetReferenceLink.Reference as IReference;
                         if (materialAssetReference == null)
                             continue;
 

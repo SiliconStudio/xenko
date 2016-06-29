@@ -99,7 +99,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         }
 
         /// <inheritdoc />
-        public override int BuildVertexBuffer(ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY,
+        public unsafe override int BuildVertexBuffer(ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY,
             ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticleSorter sorter)
         {
             // Get all the required particle fields
@@ -108,16 +108,34 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 return 0;
             var sizeField = sorter.GetField(ParticleFields.Size);
 
+            var orderField = sorter.GetField(ParticleFields.Order);
+
             // Check if the draw space is identity - in this case we don't need to transform the position, scale and rotation vectors
             var trsIdentity = (spaceScale == 1f);
             trsIdentity = trsIdentity && (spaceTranslation.Equals(new Vector3(0, 0, 0)));
-            trsIdentity = trsIdentity && (spaceRotation.Equals(new Quaternion(0, 0, 0, 1)));
+            trsIdentity = trsIdentity && (spaceRotation.Equals(Quaternion.Identity));
 
 
             var renderedParticles = 0;
+            vtxBuilder.RestartBuffer();
+
+            uint oldOrderValue = 0;
 
             foreach (var particle in sorter)
             {
+                if (orderField.IsValid())
+                {
+                    var orderValue = (*((uint*)particle[orderField]));
+
+                    if ((orderValue >> 16) != (oldOrderValue >> 16)) 
+                    {
+                        ribbonizer.Ribbonize(vtxBuilder, invViewX, invViewY, QuadsPerParticle);
+                        ribbonizer.RibbonSplit();
+                    }
+
+                    oldOrderValue = orderValue;
+                }
+
                 var centralPos = particle.Get(positionField);
 
                 var particleSize = sizeField.IsValid() ? particle.Get(sizeField) : 1f;
@@ -130,7 +148,6 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 }
                 
                 ribbonizer.AddParticle(ref centralPos, particleSize);
-
                 renderedParticles++;
             }
 
@@ -200,6 +217,14 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             }
 
             /// <summary>
+            /// Splits (cuts) the ribbon without restarting or rebuilding the vertex buffer
+            /// </summary>
+            public void RibbonSplit()
+            {
+                lastParticle = 0;
+            }
+
+            /// <summary>
             /// Adds a new particle position and size to the point string
             /// </summary>
             /// <param name="position"></param>
@@ -251,7 +276,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 var Pt1 = positions[0];
                 var Pt2 = positions[sections];
 
-                var O1 = Vector3.Circumcenter(ref Pt0, ref Pt1, ref Pt2);
+                var O1 = Circumcenter(ref Pt0, ref Pt1, ref Pt2);
                 var R1 = (O1 - Pt1).Length();
 
                 var s1 = sizes[0];
@@ -262,7 +287,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 {
                     var Pt3 = (index + sections * 2 < lastParticle) ? positions[index + sections * 2] : Pt2;
                     var s3  = (index + sections * 2 < lastParticle) ? sizes[index + sections * 2] : 0f;
-                    var O2 = Vector3.Circumcenter(ref Pt1, ref Pt2, ref Pt3);
+                    var O2 = Circumcenter(ref Pt1, ref Pt2, ref Pt3);
                     var R2 = (O2 - Pt2).Length();
 
                     if (index + sections * 2 >= lastParticle)
@@ -342,8 +367,6 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 if (lastParticle <= 0)
                     return;
 
-                vtxBuilder.RestartBuffer();
-
                 var posAttribute = vtxBuilder.GetAccessor(VertexAttributes.Position);
                 var texAttribute = vtxBuilder.GetAccessor(vtxBuilder.DefaultTexCoords);
 
@@ -370,9 +393,9 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                 if (sections > 1)
                 {
-                    if (sections > 5)
+                    if (SmoothingPolicy == SmoothingPolicy.Best)
                         ExpandVertices_Circular();
-                    else
+                    else // if (SmoothingPolicy == SmoothingPolicy.Fast)
                         ExpandVertices_CatmullRom();
                 }
 

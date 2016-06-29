@@ -137,6 +137,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="TestMaterialGenerator.cs" />
     <Compile Include="TestMaterials.cs" />
     <Compile Include="TestPrefabAssetMerge.cs" />
     <Compile Include="Program.cs" />
@@ -145,7 +146,6 @@
     <Compile Include="AssetImportTests.cs" />
     <Compile Include="TestDependencyResolver.cs" />
     <Compile Include="TestPrefabAsset.cs" />
-    <Compile Include="ModelAssetTests.cs" />
     <Compile Include="TestPackageArchive.cs" />
     <Compile Include="TestSceneUpgrader.cs" />
     <Compile Include="TexturePackerTests.cs" />

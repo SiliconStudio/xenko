@@ -6,6 +6,7 @@ using System.Text;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Font;
@@ -34,7 +35,7 @@ namespace SiliconStudio.Xenko.UI.Controls
 
         private float caretWith;
         private float caretFrequency;
-        private bool caretHided;
+        private bool caretHidden;
         private float accumulatedTime;
 
         private bool synchronousCharacterGeneration;
@@ -103,17 +104,17 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The key to the ActiveImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> ActiveImagePropertyKey = new PropertyKey<Sprite>("EditActiveImageKey", typeof(EditText), DefaultValueMetadata.Static<Sprite>(null));
+        public static readonly PropertyKey<ISpriteProvider> ActiveImagePropertyKey = new PropertyKey<ISpriteProvider>("EditActiveImageKey", typeof(EditText), DefaultValueMetadata.Static<ISpriteProvider>(null));
 
         /// <summary>
         /// The key to the InactiveImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> InactiveImagePropertyKey = new PropertyKey<Sprite>("EditInactiveImageKey", typeof(EditText), DefaultValueMetadata.Static<Sprite>(null));
+        public static readonly PropertyKey<ISpriteProvider> InactiveImagePropertyKey = new PropertyKey<ISpriteProvider>("EditInactiveImageKey", typeof(EditText), DefaultValueMetadata.Static<ISpriteProvider>(null));
 
         /// <summary>
         /// The key to the MouseOverImage dependency property.
         /// </summary>
-        public static readonly PropertyKey<Sprite> MouseOverImagePropertyKey = new PropertyKey<Sprite>("MouseOverImageModeKey", typeof(EditText), DefaultValueMetadata.Static<Sprite>(null));
+        public static readonly PropertyKey<ISpriteProvider> MouseOverImagePropertyKey = new PropertyKey<ISpriteProvider>("MouseOverImageModeKey", typeof(EditText), DefaultValueMetadata.Static<ISpriteProvider>(null));
 
         private static void CheckStrictlyPositive(ref int value)
         {
@@ -209,18 +210,8 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Create a new instance of <see cref="EditText"/>.
         /// </summary>
-        /// <param name="services">The game services</param>
-        /// <exception cref="ArgumentNullException"><paramref name="services"/> is null</exception>
-        /// <exception cref="ArgumentException"><paramref name="services"/> does not contain an <see cref="IGame"/> service.</exception>
-        public EditText(IServiceRegistry services)
+        public EditText()
         {
-            if (services == null)
-                throw new ArgumentNullException("services");
-
-            game = services.GetService(typeof(IGame)) as GameBase;
-            if(game == null)
-                throw new ArgumentException("Provided services need to contain a provider for the IGame interface.");
-
             InitializeImpl();
 
             CanBeHitByUser = true;
@@ -232,9 +223,6 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         private bool isSelectionActive;
-
-        // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
-        private readonly GameBase game;
 
         private Func<char, bool> characterFilterPredicate;
 
@@ -282,7 +270,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
         
         /// <summary>
-        /// Gets or sets the value indicating if the text block should generate <see cref="DynamicSpriteFont"/> characters synchronously or asynchronously.
+        /// Gets or sets the value indicating if the text block should generate <see cref="RuntimeRasterizedSpriteFont"/> characters synchronously or asynchronously.
         /// </summary>
         /// <remarks>If synchronous generation is activated, the game will be block until all the characters have finished to be generate.
         /// If asynchronous generation is activated, some characters can appears with one or two frames of delay.</remarks>
@@ -384,7 +372,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image that is displayed in background when the edit is active
         /// </summary>
-        public Sprite ActiveImage
+        public ISpriteProvider ActiveImage
         {
             get { return DependencyProperties.Get(ActiveImagePropertyKey); }
             set { DependencyProperties.Set(ActiveImagePropertyKey, value); }
@@ -393,7 +381,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image that is displayed in background when the edit is inactive
         /// </summary>
-        public Sprite InactiveImage
+        public ISpriteProvider InactiveImage
         {
             get { return DependencyProperties.Get(InactiveImagePropertyKey); }
             set { DependencyProperties.Set(InactiveImagePropertyKey, value); }
@@ -402,7 +390,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image that the button displays when the mouse is over it
         /// </summary>
-        public Sprite MouseOverImage
+        public ISpriteProvider MouseOverImage
         {
             get { return DependencyProperties.Get(MouseOverImagePropertyKey); }
             set { DependencyProperties.Set(MouseOverImagePropertyKey, value); }
@@ -452,20 +440,23 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets the value indicating if the blinking caret is currently visible or not.
         /// </summary>
-        public bool IsCaretVisible { get { return IsSelectionActive && !caretHided; } }
+        public bool IsCaretVisible { get { return IsSelectionActive && !caretHidden; } }
         
         /// <summary>
         /// Reset the caret blinking to initial state (visible).
         /// </summary>
         public void ResetCaretBlinking()
         {
-            caretHided = false;
+            caretHidden = false;
             accumulatedTime = 0f;
         }
 
         protected override void Update(GameTime time)
         {
             base.Update(time);
+
+            if (!IsEnabled)
+                return;
 
             if (IsSelectionActive)
             {
@@ -474,7 +465,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                 while (accumulatedTime > displayTime)
                 {
                     accumulatedTime -= displayTime;
-                    caretHided = !caretHided;
+                    caretHidden = !caretHidden;
                 }
             }
             else
@@ -764,11 +755,18 @@ namespace SiliconStudio.Xenko.UI.Controls
             if (SynchronousCharacterGeneration)
                 Font.PreGenerateGlyphs(textToMeasure, measureFontSize);
 
-            if (Font.IsDynamic)
+            if (Font.FontType == SpriteFontType.Dynamic)
             {
                 // rescale the real size to the virtual size
                 realSize.X /= sizeRatio.X;
                 realSize.Y /= sizeRatio.Y;
+            }
+
+            if (Font.FontType == SpriteFontType.SDF)
+            {
+                var scaleRatio = TextSize / Font.Size;
+                realSize.X *= scaleRatio;
+                realSize.Y *= scaleRatio;
             }
 
             return realSize;

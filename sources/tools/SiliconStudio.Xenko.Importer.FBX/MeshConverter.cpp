@@ -1139,8 +1139,8 @@ public:
 		auto texturePath = FindFilePath(lFileTexture);
 		auto wrapModeU = lFileTexture->GetWrapModeU();
 		auto wrapModeV = lFileTexture->GetWrapModeV();
-		bool wrapTextureU = (wrapModeU == FbxTexture::EWrapMode::eRepeat);
-		bool wrapTextureV = (wrapModeV == FbxTexture::EWrapMode::eRepeat);
+		auto wrapTextureU = (wrapModeU == FbxTexture::EWrapMode::eRepeat) ? TextureAddressMode::Wrap : TextureAddressMode::Clamp;
+		auto wrapTextureV = (wrapModeV == FbxTexture::EWrapMode::eRepeat) ? TextureAddressMode::Wrap : TextureAddressMode::Clamp;
 		
 		ComputeTextureColor^ textureValue;
 		
@@ -1867,7 +1867,7 @@ private:
 	}
 
 public:
-	EntityInfo^ ExtractEntity(String^ inputFileName)
+	EntityInfo^ ExtractEntity(String^ inputFileName, bool extractTextureDependencies)
 	{
 		try
 		{
@@ -1876,7 +1876,8 @@ public:
 			auto animationConverter = gcnew AnimationConverter(sceneMapping);
 			
 			auto entityInfo = gcnew EntityInfo();
-			entityInfo->TextureDependencies = ExtractTextureDependenciesNoInit();
+			if (extractTextureDependencies)
+				entityInfo->TextureDependencies = ExtractTextureDependenciesNoInit();
 			entityInfo->AnimationNodes = animationConverter->ExtractAnimationNodesNoInit();
 			auto models = ExtractModelNoInit();
 			entityInfo->Models = models->Models;

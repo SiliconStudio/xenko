@@ -119,8 +119,41 @@ namespace SiliconStudio.Xenko.Rendering
 
             // TODO: Handle support for shared depth stencil buffer
 
-            // Sets the depth and render target
             renderContext.CommandList.SetRenderTargetsAndViewport(enableDepth ? DepthStencil : null, RenderTargets);
+        }
+
+        public void Activate(RenderDrawContext renderContext, Texture depthStencilTexture)
+        {
+            if (renderContext == null) throw new ArgumentNullException("renderContext");
+
+            renderContext.CommandList.SetRenderTargetsAndViewport(depthStencilTexture, RenderTargets);
+        }
+
+
+        /// <summary>
+        /// Gets a <see cref="RenderOutputDescription"/> that matches current depth stencil and render target formats.
+        /// </summary>
+        /// <returns>The <see cref="RenderOutputDescription"/>.</returns>
+        public unsafe RenderOutputDescription GetRenderOutputDescription()
+        {
+            var result = new RenderOutputDescription
+            {
+                DepthStencilFormat = DepthStencil != null ? DepthStencil.ViewFormat : PixelFormat.None,
+                MultiSampleLevel = DepthStencil != null ? DepthStencil.MultiSampleLevel : MSAALevel.None,
+            };
+
+            if (RenderTargets != null)
+            {
+                result.RenderTargetCount = RenderTargets.Length;
+                var renderTargetFormat = &result.RenderTargetFormat0;
+                for (int i = 0; i < RenderTargets.Length; ++i)
+                {
+                    *renderTargetFormat++ = RenderTargets[i].ViewFormat;
+                    result.MultiSampleLevel = RenderTargets[i].MultiSampleLevel; // multisample should all be equal
+                }
+            }
+
+            return result;
         }
 
         /// <summary>

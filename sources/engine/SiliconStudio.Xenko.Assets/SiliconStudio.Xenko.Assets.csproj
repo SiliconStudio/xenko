@@ -89,6 +89,8 @@
       <HintPath>..\..\..\build\packages\System.Reflection.Metadata.1.1.0\lib\dotnet5.2\System.Reflection.Metadata.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
     <Reference Include="VHACDSharp">
       <HintPath>..\..\..\deps\VHACD\VHACDSharp.dll</HintPath>
     </Reference>
@@ -192,6 +194,7 @@
     <Compile Include="Audio\SoundAsset.cs" />
     <Compile Include="Audio\RawMusicAssetImporter.cs" />
     <Compile Include="Debugging\AssemblyReloader.cs" />
+    <Compile Include="DefaultFactories.cs" />
     <Compile Include="EditorSettings.cs" />
     <Compile Include="Effect\EffectByteCodeToSourceCodeWriter.cs" />
     <Compile Include="Effect\EffectCompileCommand.cs" />
@@ -203,6 +206,7 @@
     <Compile Include="Effect\EffectShaderAsset.cs" />
     <Compile Include="Entities\ConvertedDescriptor.cs" />
     <Compile Include="Entities\EntityAnalysis.cs" />
+    <Compile Include="Entities\EntityHierarchyAssetBase.Upgraders.cs" />
     <Compile Include="Entities\PrefabAsset.cs" />
     <Compile Include="Entities\EntityHierarchyAssetBase.cs" />
     <Compile Include="Entities\PrefabAssetCompiler.cs" />
@@ -221,6 +225,7 @@
     <Compile Include="Entities\SceneAsset.cs" />
     <Compile Include="GameSettingsAssetCompiler.cs" />
     <Compile Include="GameSettingsAssetExtensions.cs" />
+    <Compile Include="GameSettingsFactory.cs" />
     <Compile Include="GameSettingsProfileBase.cs" />
     <Compile Include="GameUserSettings.cs" />
     <Compile Include="IGameSettingsProfile.cs" />
@@ -228,11 +233,24 @@
     <Compile Include="Materials\MaterialNodeClassLoader.cs" />
     <Compile Include="Materials\MaterialStreamFactory.cs" />
     <Compile Include="Materials\ShaderGeneratorContextExtensions.cs" />
+    <Compile Include="Physics\ColliderShapeFactories.cs" />
     <Compile Include="Serializers\MaterialNullSerializer.cs" />
     <Compile Include="Skyboxes\SkyboxUsage.cs" />
+    <Compile Include="SpriteFont\Compiler\SignedDistanceFieldFontCompiler.cs" />
+    <Compile Include="SpriteFont\Compiler\SignedDistanceFieldFontWriter.cs" />
+    <Compile Include="SpriteFont\Compiler\SignedDistanceFieldFontImporter.cs" />
+    <Compile Include="SpriteFont\FileFontProvider.cs" />
+    <Compile Include="SpriteFont\FontProviderBase.cs" />
     <Compile Include="SpriteFont\PrecompiledSpriteFontAsset.cs" />
     <Compile Include="SpriteFont\PrecompiledSpriteFontAssetCompiler.cs" />
     <Compile Include="SpriteFont\SpriteFontAssetExtensions.cs" />
+    <Compile Include="SpriteFont\SpriteFontAssetFactories.cs" />
+    <Compile Include="SpriteFont\SpriteFontTypeBase.cs" />
+    <Compile Include="SpriteFont\RuntimeRasterizedSpriteFontType.cs" />
+    <Compile Include="SpriteFont\SignedDistanceFieldSpriteFontType.cs" />
+    <Compile Include="SpriteFont\OfflineRasterizedSpriteFontType.cs" />
+    <Compile Include="SpriteFont\SystemFontProvider.cs" />
+    <Compile Include="Sprite\SpriteSheetFactories.cs" />
     <Compile Include="Tasks\PackageArchive.cs" />
     <Compile Include="Tasks\PackageArchiveTask.cs" />
     <Compile Include="Tasks\PackageGetVersionTask.cs" />
@@ -263,7 +281,6 @@
     <Compile Include="Skyboxes\SkyboxGenerator.cs" />
     <Compile Include="Skyboxes\SkyboxPreFilteringDiffuseOrder.cs" />
     <Compile Include="Sprite\SpriteSheetType.cs" />
-    <Compile Include="Templates\TemplateScriptDescription.cs" />
     <Compile Include="Textures\TextureColorSpace.cs" />
     <Compile Include="Sprite\PackingAttributes.cs" />
     <Compile Include="Textures\Packing\AtlasTextureElement.cs" />
@@ -283,13 +300,13 @@
     <Compile Include="SpriteFont\Compiler\BitmapUtils.cs" />
     <Compile Include="SpriteFont\Compiler\CharacterRegionTypeConverter.cs" />
     <Compile Include="SpriteFont\Compiler\ContentCompilerResult.cs" />
-    <Compile Include="SpriteFont\Compiler\StaticFontCompiler.cs" />
+    <Compile Include="SpriteFont\Compiler\OfflineRasterizedFontCompiler.cs" />
     <Compile Include="SpriteFont\Compiler\FontNotFoundException.cs" />
     <Compile Include="SpriteFont\Compiler\Glyph.cs" />
     <Compile Include="SpriteFont\Compiler\GlyphCropper.cs" />
     <Compile Include="SpriteFont\Compiler\GlyphPacker.cs" />
     <Compile Include="SpriteFont\Compiler\IFontImporter.cs" />
-    <Compile Include="SpriteFont\Compiler\StaticSpriteFontWriter.cs" />
+    <Compile Include="SpriteFont\Compiler\OfflineRasterizedSpriteFontWriter.cs" />
     <Compile Include="SpriteFont\Compiler\TrueTypeImporter.cs" />
     <Compile Include="SpriteFont\SpriteFontAsset.cs" />
     <Compile Include="SpriteFont\SpriteFontAssetCompiler.cs" />

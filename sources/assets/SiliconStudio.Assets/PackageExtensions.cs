@@ -44,11 +44,11 @@ namespace SiliconStudio.Assets
         /// It will first try by id, then location.
         /// </summary>
         /// <param name="package">The package.</param>
-        /// <param name="contentReference">The reference to the asset.</param>
+        /// <param name="reference">The reference to the asset.</param>
         /// <returns>An <see cref="AssetItem" /> or <c>null</c> if not found.</returns>
-        public static AssetItem FindAsset(this Package package, IContentReference contentReference)
+        public static AssetItem FindAsset(this Package package, IReference reference)
         {
-            return package.FindAsset(contentReference.Id) ?? package.FindAsset(contentReference.Location);
+            return package.FindAsset(reference.Id) ?? package.FindAsset(reference.Location);
         }
 
         /// <summary>
@@ -60,8 +60,6 @@ namespace SiliconStudio.Assets
         /// <returns>An <see cref="AssetItem" /> or <c>null</c> if not found.</returns>
         public static AssetItem FindAssetFromAttachedReference(this Package package, object obj)
         {
-            if (obj == null)
-                return null;
             var attachedReference = AttachedReferenceManager.GetAttachedReference(obj);
             return attachedReference != null ? package.FindAsset(attachedReference) : null;
         }

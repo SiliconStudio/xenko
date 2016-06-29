@@ -99,7 +99,7 @@ namespace SiliconStudio.BuildEngine
                 }
                 catch (Exception)
                 {
-                    // If an exception occured, we are going to try to recover from it by reseting it.
+                    // If an exception occurred, we are going to try to recover from it by reseting it.
                     // reset file length to 0
                     fileStream.SetLength(0);
                     tracker.Dispose();
@@ -134,6 +134,7 @@ namespace SiliconStudio.BuildEngine
             {
                 if (!storage.TryGetValue(inputVersionKey, out hash))
                 {
+                    // TODO: we might want to allow retries, timeout, etc. since file processed here are files currently being edited by user
                     try
                     {
                         using (var fileStream = File.OpenRead(filePath))

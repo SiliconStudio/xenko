@@ -316,11 +316,7 @@ namespace SiliconStudio.Xenko.Graphics
                     var member = constantBuffer.Members[i];
                     constantBuffer.Members[i] = member;
 
-                    hashBuilder.Write(member.KeyInfo.Key.Name);
-                    hashBuilder.Write(member.Offset);
-                    hashBuilder.Write(member.Size);
-
-                    HashType(hashBuilder, member.Type);
+                    HashConstantBufferMember(ref hashBuilder, ref member);
                 }
 
                 // Update the hash
@@ -328,7 +324,16 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        private static void HashType(ObjectIdBuilder hashBuilder, EffectTypeDescription type)
+        internal static void HashConstantBufferMember(ref ObjectIdBuilder hashBuilder, ref EffectValueDescription member)
+        {
+            hashBuilder.Write(member.KeyInfo.Key.Name);
+            hashBuilder.Write(member.Offset);
+            hashBuilder.Write(member.Size);
+
+            HashType(ref hashBuilder, ref member.Type);
+        }
+
+        private static void HashType(ref ObjectIdBuilder hashBuilder, ref EffectTypeDescription type)
         {
             hashBuilder.Write(type.RowCount);
             hashBuilder.Write(type.ColumnCount);
@@ -342,7 +347,8 @@ namespace SiliconStudio.Xenko.Graphics
                 {
                     hashBuilder.Write(member.Name);
                     hashBuilder.Write(member.Offset);
-                    HashType(hashBuilder, member.Type);
+                    var memberType = member.Type;
+                    HashType(ref hashBuilder, ref memberType);
                 }
             }
         }

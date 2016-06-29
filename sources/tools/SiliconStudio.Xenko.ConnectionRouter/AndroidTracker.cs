@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                         if (output.ExitCode == 0)
                         {
                             localPort = testedLocalPort;
-                            Log.Info("Device connected: {0}; successfully mapped port {1}:{2}", connectedDevice.Name, testedLocalPort, RouterClient.DefaultListenPort);
+                            Log.Info("Android Device connected: {0}; successfully mapped port {1}:{2}", connectedDevice.Name, testedLocalPort, RouterClient.DefaultListenPort);
                             break;
                         }
                     }
@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                     if (localPort == 0)
                     {
                         int lastTestedLocalPort = startLocalPort;
-                        Log.Info("Device connected: {0}; error when mapping port [{1}-{2}]:{3}", connectedDevice.Name, firstTestedLocalPort, lastTestedLocalPort - 1, RouterClient.DefaultListenPort);
+                        Log.Info("Android Device connected: {0}; error when mapping port [{1}-{2}]:{3}", connectedDevice.Name, firstTestedLocalPort, lastTestedLocalPort - 1, RouterClient.DefaultListenPort);
                         return;
                     }
 

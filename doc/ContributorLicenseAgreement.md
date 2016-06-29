@@ -2,7 +2,7 @@
 
 Thank you for your interest in contributing to Xenko ("We" or "Us").
 
-This contributor agreement ("Agreement") documents the rights granted by contributors to Us. To make this document effective, please sign it and send it to Us by electronic submission, following the instructions at https://licensing.xenko3d.net. This is a legally binding document, so please read it carefully before agreeing to it. The Agreement may cover more than one software project managed by Us.
+This contributor agreement ("Agreement") documents the rights granted by contributors to Us. To make this document effective, please sign it and send it to Us by electronic submission, following the instructions at https://xenko.com/features/licensing/. This is a legally binding document, so please read it carefully before agreeing to it. The Agreement may cover more than one software project managed by Us.
 
 ## 1. Definitions
 
@@ -34,13 +34,19 @@ For patent claims including, without limitation, method, process, and apparatus 
 
 ### 2.3 Outbound License
 
-<!--(Option One)-->As a condition on the grant of rights in Sections 2.1 and 2.2, We agree to license the Contribution only under the terms of the license or licenses which We are using on the Submission Date for the Material (including any rights to adopt any future version of a license if permitted).
+Based on the grant of rights in Sections 2.1 and 2.2, if We include Your Contribution in a Material, We may license the Contribution under any license, including copyleft, permissive, commercial, or proprietary licenses.
 
-<span class="heading">2.4 Moral Rights.</span> If moral rights apply to the Contribution, to the maximum extent permitted by law, You waive and agree not to assert such moral rights against Us or our successors in interest, or any of our licensees, either direct or indirect.
+### 2.4 Moral Rights
 
-<span class="heading">2.5 Our Rights.</span> You acknowledge that We are not obligated to use Your Contribution as part of the Material and may decide to include any Contribution We consider appropriate.
+If moral rights apply to the Contribution, to the maximum extent permitted by law, You waive and agree not to assert such moral rights against Us or our successors in interest, or any of our licensees, either direct or indirect.
 
-<span class="heading">2.6 Reservation of Rights.</span> Any rights not expressly  licensed under this section are expressly reserved by You.
+### 2.5 Our Rights
+
+You acknowledge that We are not obligated to use Your Contribution as part of the Material and may decide to include any Contribution We consider appropriate.
+
+### 2.6 Reservation of Rights
+
+Any rights not expressly  licensed under this section are expressly reserved by You.
 
 ## 3. Agreement
 

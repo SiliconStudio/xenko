@@ -18,8 +18,6 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         static Window()
         {
             SDL.SDL_Init(SDL.SDL_INIT_EVERYTHING);
-                // Disable effect of doing Alt+F4
-            SDL.SDL_SetHint(SDL.SDL_HINT_WINDOWS_NO_CLOSE_ON_ALT_F4, "1");
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
             // Set our OpenGL version. It has to be done before any SDL window creation
             // SDL_GL_CONTEXT_CORE gives us only the newer version, deprecated functions are disabled
@@ -116,6 +114,23 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         public static Point MousePosition
         {
             get { return Application.MousePosition; }
+        }
+
+        /// <summary>
+        /// Get the coordinate of the mouse in Window coordinates
+        /// </summary>
+        public Point RelativeCursorPosition
+        {
+            get
+            {
+                int x, y;
+                SDL.SDL_GetMouseState(out x, out y);
+                return new Point(x, y);
+            }
+            set
+            {
+                SDL.SDL_WarpMouseInWindow(SdlHandle, value.X, value.Y);
+            }
         }
 
         /// <summary>
@@ -405,6 +420,9 @@ namespace SiliconStudio.Xenko.Graphics.SDL
                     break;
 
                 case SDL.SDL_EventType.SDL_MOUSEWHEEL:
+                    // To match the Windows behavior we multiply the value by 120
+                    e.wheel.x *= 120;
+                    e.wheel.y *= 120;
                     MouseWheelActions?.Invoke(e.wheel);
                     break;
 

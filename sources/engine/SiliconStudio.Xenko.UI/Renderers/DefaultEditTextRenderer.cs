@@ -31,11 +31,10 @@ namespace SiliconStudio.Xenko.UI.Renderers
             // determine the image to draw in background of the edit text
             var fontScale = element.LayoutingContext.RealVirtualResolutionRatio;
             var color = editText.RenderOpacity * Color.White;
-            var image = editText.ActiveImage;
-            if(!editText.IsSelectionActive)
-                image = editText.MouseOverState == MouseOverState.MouseOverElement? editText.MouseOverImage : editText.InactiveImage;
+            var provider = editText.IsSelectionActive ? editText.ActiveImage : editText.MouseOverState == MouseOverState.MouseOverElement ? editText.MouseOverImage : editText.InactiveImage;
+            var image = provider?.GetSprite();
 
-            if (image != null && image.Texture != null)
+            if (image?.Texture != null)
             {
                 Batch.DrawImage(image.Texture, ref editText.WorldMatrixInternal, ref image.RegionInternal, ref editText.RenderSizeInternal, ref image.BordersInternal, ref color, context.DepthBias, image.Orientation);
             }
@@ -58,7 +57,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
                 var fontSize = new Vector2(fontScale.Y * editText.TextSize);
                 offsetTextStart = font.MeasureString(editText.TextToDisplay, ref fontSize, editText.SelectionStart).X;
                 selectionSize = font.MeasureString(editText.TextToDisplay, ref fontSize, editText.SelectionStart + editText.SelectionLength).X - offsetTextStart;
-                if (font.IsDynamic)
+                if (font.FontType == SpriteFontType.Dynamic)
                 {
                     offsetTextStart /= fontScale.X;
                     selectionSize /= fontScale.X;
@@ -68,7 +67,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
                 if (editText.TextAlignment != TextAlignment.Left)
                 {
                     var textWidth = font.MeasureString(editText.TextToDisplay, ref fontSize).X;
-                    if (font.IsDynamic)
+                    if (font.FontType == SpriteFontType.Dynamic)
                         textWidth /= fontScale.X;
 
                     offsetAlignment = editText.TextAlignment == TextAlignment.Center ? -textWidth / 2 : -textRegionSize.X / 2f + (textRegionSize.X - textWidth);
@@ -94,8 +93,22 @@ namespace SiliconStudio.Xenko.UI.Renderers
                 Size = textRegionSize
             };
 
+            if (editText.Font.FontType == SpriteFontType.SDF)
+            {
+                Batch.End();
+
+                Batch.BeginCustom(context.GraphicsContext, 1);
+            }
+
             // Draw the text
             Batch.DrawString(font, editText.TextToDisplay, ref drawCommand);
+
+            if (editText.Font.FontType == SpriteFontType.SDF)
+            {
+                Batch.End();
+
+                Batch.BeginCustom(context.GraphicsContext, 0);
+            }
 
             // Draw the cursor
             if (editText.IsCaretVisible)

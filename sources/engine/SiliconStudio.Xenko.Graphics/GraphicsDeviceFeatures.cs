@@ -72,6 +72,16 @@ namespace SiliconStudio.Xenko.Graphics
         public readonly bool HasSRgb;
 
         /// <summary>
+        /// Boolean indicating if the Depth buffer can also be used as ShaderResourceView for some passes.
+        /// </summary>
+        public readonly bool HasDepthAsSRV;
+
+        /// <summary>
+        /// Boolean indicating if the Depth buffer can directly be used as a read only RenderTarget
+        /// </summary>
+        public readonly bool HasDepthAsReadOnlyRT;
+
+        /// <summary>
         /// Gets the <see cref="FeaturesPerFormat" /> for the specified <see cref="SharpDX.DXGI.Format" />.
         /// </summary>
         /// <param name="dxgiFormat">The dxgi format.</param>

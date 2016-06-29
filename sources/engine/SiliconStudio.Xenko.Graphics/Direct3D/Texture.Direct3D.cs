@@ -34,6 +34,10 @@ namespace SiliconStudio.Xenko.Graphics
         private DepthStencilView depthStencilView;
         internal bool HasStencil;
 
+        private int TexturePixelSize => Format.SizeInBytes();
+        private const int TextureRowPitchAlignment = 1;
+        private const int TextureSubresourceAlignment = 1;
+
         internal DepthStencilView NativeDepthStencilView
         {
             get
@@ -129,7 +133,7 @@ namespace SiliconStudio.Xenko.Graphics
             NativeDepthStencilView = GetDepthStencilView(out HasStencil);           
         }
 
-        protected override void DestroyImpl()
+        protected internal override void OnDestroyed()
         {
             // If it was a View, do not release reference
             if (ParentTexture != null)
@@ -144,14 +148,7 @@ namespace SiliconStudio.Xenko.Graphics
             ReleaseComObject(ref renderTargetView);
             ReleaseComObject(ref depthStencilView);
 
-            base.DestroyImpl();
-        }
-
-        /// <inheritdoc/>
-        protected internal override void OnDestroyed()
-        {
             base.OnDestroyed();
-            DestroyImpl();
         }
 
         private void OnRecreateImpl()
@@ -769,7 +766,6 @@ namespace SiliconStudio.Xenko.Graphics
         {
             return Math.Min(CalculateMipCountFromSize(width, minimumSizeLastMip), CalculateMipCountFromSize(height, minimumSizeLastMip));
         }
-
 
         internal static bool IsStencilFormat(PixelFormat format)
         {

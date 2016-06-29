@@ -133,7 +133,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the value indicating if the text block should generate <see cref="DynamicSpriteFont"/> characters synchronously or asynchronously.
+        /// Gets or sets the value indicating if the text block should generate <see cref="RuntimeRasterizedSpriteFont"/> characters synchronously or asynchronously.
         /// </summary>
         /// <remarks>If synchronous generation is activated, the game will be block until all the characters have finished to be generate.
         /// If asynchronous generation is activated, some characters can appears with one or two frames of delay.</remarks>
@@ -204,11 +204,18 @@ namespace SiliconStudio.Xenko.UI.Controls
             if(SynchronousCharacterGeneration)
                 Font.PreGenerateGlyphs(ref textToMeasure, ref measureFontSize);
 
-            if (Font.IsDynamic)
+            if (Font.FontType == SpriteFontType.Dynamic)
             {
                 // rescale the real size to the virtual size
                 realSize.X /= sizeRatio.X;
                 realSize.Y /= sizeRatio.Y;
+            }
+
+            if (Font.FontType == SpriteFontType.SDF)
+            {
+                var scaleRatio = TextSize / Font.Size;
+                realSize.X *= scaleRatio;
+                realSize.Y *= scaleRatio;
             }
 
             return realSize;

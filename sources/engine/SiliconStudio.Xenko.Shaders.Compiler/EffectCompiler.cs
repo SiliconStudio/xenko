@@ -389,6 +389,12 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             for (int i = reflection.ResourceBindings.Count - 1; i >= 0; i--)
             {
                 var resourceBinding = reflection.ResourceBindings[i];
+
+                // Do not touch anything if there is logical groups
+                // TODO: We can do better than that: remove only if the full group can be optimized away
+                if (resourceBinding.LogicalGroup != null)
+                    continue;
+
                 if (resourceBinding.Stage == ShaderStage.None && !(hasMaterialGroup && resourceBinding.ResourceGroup == "PerMaterial") && !(hasLightingGroup && resourceBinding.ResourceGroup == "PerLighting"))
                 {
                     reflection.ResourceBindings.RemoveAt(i);
@@ -405,6 +411,22 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             for (int i = reflection.ConstantBuffers.Count - 1; i >= 0; i--)
             {
                 var cbuffer = reflection.ConstantBuffers[i];
+
+                // Do not touch anything if there is logical groups
+                // TODO: We can do better than that: remove only if the full group can be optimized away
+                var hasLogicalGroup = false;
+                foreach (var member in cbuffer.Members)
+                {
+                    if (member.LogicalGroup != null)
+                    {
+                        hasLogicalGroup = true;
+                        break;
+                    }
+                }
+
+                if (hasLogicalGroup)
+                    continue;
+
                 if (!usedConstantBuffers.Contains(cbuffer.Name))
                 {
                     reflection.ConstantBuffers.RemoveAt(i);

@@ -43,7 +43,7 @@ namespace SiliconStudio.Assets.Serializers
                 throw new YamlException(fromScalar.Start, fromScalar.End, "Unable to decode asset reference [{0}]. Expecting format GUID:LOCATION".ToFormat(fromScalar.Value));
             }
 
-            var instance = AttachedReferenceManager.CreateSerializableVersion(context.Descriptor.Type, guid, location);
+            var instance = AttachedReferenceManager.CreateProxyObject(context.Descriptor.Type, guid, location);
 
             // If the referenceId is empty, force its creation, else attach it to the reference
             if (referenceId == Guid.Empty)
@@ -61,7 +61,7 @@ namespace SiliconStudio.Assets.Serializers
         {
             var attachedReference = AttachedReferenceManager.GetAttachedReference(objectContext.Instance);
             if (attachedReference == null)
-                throw new YamlException(string.Format("Unable to extract asset reference from object [{0}]", objectContext.Instance));
+                throw new YamlException($"Unable to extract asset reference from object [{objectContext.Instance}]");
 
             var referenceId = IdentifiableHelper.GetId(objectContext.Instance);
             return $"{referenceId}/{attachedReference.Id}:{attachedReference.Url}";

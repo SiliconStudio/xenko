@@ -13,6 +13,7 @@ using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Regression;
 using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI.Controls;
 
 namespace SiliconStudio.Xenko.UI.Tests.Regression
@@ -73,6 +74,12 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         }
 
         /// <summary>
+        /// Gets the UI system.
+        /// </summary>
+        /// <value>The UI.</value>
+        protected UISystem UI { get; private set; }
+
+        /// <summary>
         /// Create an instance of the game test
         /// </summary>
         public UITestGameBase()
@@ -102,8 +109,15 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             Camera.Transform.Position = new Vector3(0, 0, 1000);
 
             UIComponent.IsFullScreen = true;
-            UIComponent.VirtualResolution = new Vector3(1000, 500, 500);
-            UIComponent.VirtualResolutionMode = VirtualResolutionMode.FixedWidthFixedHeight;
+            UIComponent.Resolution = new Vector3(1000, 500, 500);
+            UIComponent.ResolutionStretch = ResolutionStretch.FixedWidthFixedHeight;
+
+            UI = (UISystem)Services.GetService(typeof(UISystem));
+            if (UI == null)
+            {
+                UI = new UISystem(Services);
+                GameSystems.Add(UI);
+            }
         }
 
         protected virtual void SpecificDrawBeforeUI(RenderDrawContext context, RenderFrame renderFrame)
@@ -143,9 +157,9 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             {
                 Setters =
                 {
-                    new Setter<Sprite>(Button.PressedImagePropertyKey, new Sprite("Test button pressed design", buttonPressedTexture) { Borders = 8 * Vector4.One }),
-                    new Setter<Sprite>(Button.NotPressedImagePropertyKey, new Sprite("Test button not pressed design", buttonNotPressedTexture) { Borders = 8 * Vector4.One }),
-                    new Setter<Sprite>(Button.MouseOverImagePropertyKey, new Sprite("Test button overred design", buttonOverredTexture) { Borders = 8 * Vector4.One }),
+                    new Setter<ISpriteProvider>(Button.PressedImagePropertyKey, (SpriteFromTexture)new Sprite("Test button pressed design", buttonPressedTexture) { Borders = 8 * Vector4.One }),
+                    new Setter<ISpriteProvider>(Button.NotPressedImagePropertyKey, (SpriteFromTexture)new Sprite("Test button not pressed design", buttonNotPressedTexture) { Borders = 8 * Vector4.One }),
+                    new Setter<ISpriteProvider>(Button.MouseOverImagePropertyKey, (SpriteFromTexture)new Sprite("Test button overred design", buttonOverredTexture) { Borders = 8 * Vector4.One }),
                 }
             };
 
@@ -160,9 +174,9 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                     new Setter<Color>(EditText.TextColorPropertyKey, Color.LightGray),
                     new Setter<Color>(EditText.SelectionColorPropertyKey, Color.FromAbgr(0x623574FF)),
                     new Setter<Color>(EditText.CaretColorPropertyKey, Color.FromAbgr(0xF0F0F0FF)),
-                    new Setter<Sprite>(EditText.ActiveImagePropertyKey, new Sprite("Test edit active design", editActiveTexture) { Borders = 12 * Vector4.One }),
-                    new Setter<Sprite>(EditText.InactiveImagePropertyKey, new Sprite("Test edit inactive design", editInactiveTexture) { Borders = 12 * Vector4.One }),
-                    new Setter<Sprite>(EditText.MouseOverImagePropertyKey, new Sprite("Test edit overred design", editOverredTexture) { Borders = 12 * Vector4.One }),
+                    new Setter<ISpriteProvider>(EditText.ActiveImagePropertyKey, (SpriteFromTexture)new Sprite("Test edit active design", editActiveTexture) { Borders = 12 * Vector4.One }),
+                    new Setter<ISpriteProvider>(EditText.InactiveImagePropertyKey, (SpriteFromTexture)new Sprite("Test edit inactive design", editInactiveTexture) { Borders = 12 * Vector4.One }),
+                    new Setter<ISpriteProvider>(EditText.MouseOverImagePropertyKey, (SpriteFromTexture)new Sprite("Test edit overred design", editOverredTexture) { Borders = 12 * Vector4.One }),
                 }
             };
 
@@ -174,9 +188,9 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             {
                 Setters =
                 {
-                    new Setter<Sprite>(ToggleButton.CheckedImagePropertyKey, new Sprite("Test toggle button checked design", toggleButtonChecked) { Borders = 8 * Vector4.One }),
-                    new Setter<Sprite>(ToggleButton.UncheckedImagePropertyKey, new Sprite("Test toggle button unchecked design", toggleButtonUnchecked) { Borders = 8 * Vector4.One }),
-                    new Setter<Sprite>(ToggleButton.IndeterminateImagePropertyKey, new Sprite("Test toggle button indeterminate design", toggleButtonIndeterminate) { Borders = 8 * Vector4.One }),
+                    new Setter<ISpriteProvider>(ToggleButton.CheckedImagePropertyKey, (SpriteFromTexture)new Sprite("Test toggle button checked design", toggleButtonChecked) { Borders = 8 * Vector4.One }),
+                    new Setter<ISpriteProvider>(ToggleButton.UncheckedImagePropertyKey, (SpriteFromTexture)new Sprite("Test toggle button unchecked design", toggleButtonUnchecked) { Borders = 8 * Vector4.One }),
+                    new Setter<ISpriteProvider>(ToggleButton.IndeterminateImagePropertyKey, (SpriteFromTexture)new Sprite("Test toggle button indeterminate design", toggleButtonIndeterminate) { Borders = 8 * Vector4.One }),
                 }
             };
 

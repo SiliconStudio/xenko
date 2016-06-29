@@ -350,7 +350,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine(@"An error occured when trying to send the data to the server.");
+                        Console.WriteLine(@"An error occurred when trying to send the data to the server.");
                     }
                 }
             }

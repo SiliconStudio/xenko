@@ -42,6 +42,7 @@ namespace SiliconStudio.Xenko.Rendering.Background
         public override void Draw(RenderContext context)
         {
             var previousBackground = ActiveBackground;
+            ActiveBackground = null;
 
             // Start by making it not visible
             foreach (var entityKeyPair in ComponentDatas)
@@ -53,6 +54,7 @@ namespace SiliconStudio.Xenko.Rendering.Background
                     // Select the first active background
                     renderBackground.Texture = backgroundComponent.Texture;
                     renderBackground.Intensity = backgroundComponent.Intensity;
+                    renderBackground.RenderGroup = backgroundComponent.Entity.Group;
 
                     ActiveBackground = renderBackground;
                     break;

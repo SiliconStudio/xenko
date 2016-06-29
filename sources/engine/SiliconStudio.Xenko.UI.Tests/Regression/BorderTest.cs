@@ -9,6 +9,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.UI.Controls;
 using SiliconStudio.Xenko.UI.Panels;
 
@@ -30,7 +31,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            border = new Border { Width = 200, Height = 150, Content = new Button { NotPressedImage = new Sprite(Content.Load<Texture>("uv")), DepthAlignment = DepthAlignment.Back}};
+            border = new Border { Width = 200, Height = 150, Content = new Button { NotPressedImage = (SpriteFromTexture)new Sprite(Content.Load<Texture>("uv")), DepthAlignment = DepthAlignment.Back}};
             border.SetCanvasPinOrigin(new Vector3(0.5f));
             
             border.BackgroundColor = Color.Red;

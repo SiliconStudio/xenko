@@ -31,10 +31,17 @@
     <Compile Include="Components\StateControl.cs" />
     <Compile Include="DebugDraw\DebugDrawShape.cs" />
     <Compile Include="Initializers\Initial3DRotationSeed.cs" />
+    <Compile Include="Initializers\InitialColorParent.cs" />
     <Compile Include="Initializers\InitialColorSeed.cs" />
     <Compile Include="Initializers\InitialDefaultFields.cs" />
     <Compile Include="Initializers\InitialDirectionSeed.cs" />
+    <Compile Include="Initializers\InitialPositionArc.cs" />
+    <Compile Include="Initializers\InitialOrderParent.cs" />
+    <Compile Include="Initializers\InitialPositionParent.cs" />
+    <Compile Include="Initializers\InitialSizeParent.cs" />
     <Compile Include="Initializers\InitialSpawnOrder.cs" />
+    <Compile Include="Initializers\InitialVelocityParent.cs" />
+    <Compile Include="Initializers\ParticleChildInitializer.cs" />
     <Compile Include="Initializers\ParticleInitializer.cs" />
     <Compile Include="Initializers\InitialPositionSeed.cs" />
     <Compile Include="Initializers\InitialRotationSeed.cs" />
@@ -91,9 +98,16 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ParticleEffect.xkfx</DependentUpon>
     </Compile>
+    <Compile Include="Shaders\ParticleUtilities.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ParticleUtilities.xksl</DependentUpon>
+    </Compile>
     <Compile Include="ShapeBuilders\EdgePolicy.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderCommon.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderHexagon.cs" />
+    <Compile Include="ShapeBuilders\ShapeBuilderOrientedQuad.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderQuad.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderRibbon.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderTrail.cs" />
@@ -104,6 +118,18 @@
     <Compile Include="Sorters\ParticleSorterCustom.cs" />
     <Compile Include="Sorters\ParticleSorterDefault.cs" />
     <Compile Include="Sorters\ParticleSorterLiving.cs" />
+    <Compile Include="Spawners\ParticleSpawnerTriggerBirth.cs" />
+    <Compile Include="Spawners\ParticleSpawnTriggerDeath.cs" />
+    <Compile Include="Spawners\ParticleSpawnTriggerDistance.cs" />
+    <Compile Include="Spawners\SpawnerBurst.cs" />
+    <Compile Include="Spawners\ParentControlFlag.cs" />
+    <Compile Include="Spawners\ParticleChildrenAttribute.cs" />
+    <Compile Include="Spawners\ParticleSpawnTrigger.cs" />
+    <Compile Include="Spawners\ParticleSpawnTriggerCollision.cs" />
+    <Compile Include="Spawners\ParticleSpawnTriggerLifetime.cs" />
+    <Compile Include="Spawners\SpawnerFromDistance.cs" />
+    <Compile Include="Spawners\SpawnerFromParent.cs" />
+    <Compile Include="Updaters\ParticleCollisionAttribute.cs" />
     <Compile Include="Updaters\UpdaterColorOverTime.cs" />
     <Compile Include="Updaters\UpdaterGravity.cs" />
     <Compile Include="Updaters\UpdaterRotationOverTime.cs" />
@@ -141,6 +167,7 @@
     <Compile Include="Spawners\ParticleSpawner.cs" />
     <Compile Include="Spawners\SpawnerPerFrame.cs" />
     <Compile Include="Spawners\SpawnerPerSecond.cs" />
+    <Compile Include="Updaters\UpdaterSpeedToDirection.cs" />
     <Compile Include="VertexLayouts\AttributeAccessor.cs" />
     <Compile Include="VertexLayouts\AttributeDescription.cs" />
     <Compile Include="VertexLayouts\AttributeTransformer.cs" />
@@ -218,6 +245,10 @@
     <None Include="Shaders\ParticleEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ParticleEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\ParticleUtilities.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ParticleUtilities.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -13,7 +13,7 @@ namespace SiliconStudio.Assets.Analysis
 {
     /// <summary>
     /// This analysis provides a method for visiting asset and file references 
-    /// (<see cref="IContentReference" /> or <see cref="UFile" /> or <see cref="UDirectory" />)
+    /// (<see cref="IReference" /> or <see cref="UFile" /> or <see cref="UDirectory" />)
     /// </summary>
     public class AssetReferenceAnalysis
     {
@@ -48,7 +48,7 @@ namespace SiliconStudio.Assets.Analysis
         }
 
         /// <summary>
-        /// Gets all references (subclass of <see cref="IContentReference" /> and <see cref="UFile" />) from the specified asset
+        /// Gets all references (subclass of <see cref="IReference" /> and <see cref="UFile" />) from the specified asset
         /// </summary>
         /// <param name="obj">The object.</param>
         /// <returns>A list of references.</returns>
@@ -102,7 +102,7 @@ namespace SiliconStudio.Assets.Analysis
                 base.VisitArrayItem(array, descriptor, index, item, itemDescriptor);
                 var assetReference = item as AssetReference;
                 var assetBase = item as AssetBase;
-                var attachedReference = item != null ? AttachedReferenceManager.GetAttachedReference(item) : null;
+                var attachedReference = AttachedReferenceManager.GetAttachedReference(item);
                 if (assetReference != null)
                 {
                     AddLink(item,
@@ -128,7 +128,7 @@ namespace SiliconStudio.Assets.Analysis
                     AddLink(attachedReference,
                         (guid, location) =>
                         {
-                            object newValue = guid.HasValue && guid.Value != Guid.Empty ? AttachedReferenceManager.CreateSerializableVersion(descriptor.ElementType, guid.Value, location) : null;
+                            object newValue = guid.HasValue && guid.Value != Guid.Empty ? AttachedReferenceManager.CreateProxyObject(descriptor.ElementType, guid.Value, location) : null;
                             if (newValue != null)
                             {
                                 IdentifiableHelper.SetId(newValue, IdentifiableHelper.GetId(item));
@@ -164,7 +164,7 @@ namespace SiliconStudio.Assets.Analysis
                 base.VisitCollectionItem(collection, descriptor, index, item, itemDescriptor);
                 var assetReference = item as AssetReference;
                 var assetBase = item as AssetBase;
-                var attachedReference = item != null ? AttachedReferenceManager.GetAttachedReference(item) : null;
+                var attachedReference = AttachedReferenceManager.GetAttachedReference(item);
 
                 // We cannot set links if we do not have indexer accessor
                 if (!descriptor.HasIndexerAccessors)
@@ -192,7 +192,7 @@ namespace SiliconStudio.Assets.Analysis
                 {
                     AddLink(attachedReference, (guid, location) =>
                     {
-                        var link = guid.HasValue && guid.Value != Guid.Empty ? AttachedReferenceManager.CreateSerializableVersion(descriptor.ElementType, guid.Value, location) : null;
+                        var link = guid.HasValue && guid.Value != Guid.Empty ? AttachedReferenceManager.CreateProxyObject(descriptor.ElementType, guid.Value, location) : null;
                         if (link != null)
                         {
                             IdentifiableHelper.SetId(link, IdentifiableHelper.GetId(item));
@@ -226,7 +226,7 @@ namespace SiliconStudio.Assets.Analysis
                 base.VisitDictionaryKeyValue(dictionaryObj, descriptor, key, keyDescriptor, value, valueDescriptor);
                 var assetReference = value as AssetReference;
                 var assetBase = value as AssetBase;
-                var attachedReference = value != null ? AttachedReferenceManager.GetAttachedReference(value) : null;
+                var attachedReference = AttachedReferenceManager.GetAttachedReference(value);
                 if (assetReference != null)
                 {
                     AddLink(assetReference,
@@ -252,7 +252,7 @@ namespace SiliconStudio.Assets.Analysis
                     AddLink(attachedReference,
                         (guid, location) =>
                         {
-                            object newValue = guid.HasValue && guid.Value != Guid.Empty ? AttachedReferenceManager.CreateSerializableVersion(descriptor.ValueType, guid.Value, location) : null;
+                            object newValue = guid.HasValue && guid.Value != Guid.Empty ? AttachedReferenceManager.CreateProxyObject(descriptor.ValueType, guid.Value, location) : null;
                             if (newValue != null)
                             {
                                 IdentifiableHelper.SetId(newValue, IdentifiableHelper.GetId(value));
@@ -288,7 +288,7 @@ namespace SiliconStudio.Assets.Analysis
                 base.VisitObjectMember(container, containerDescriptor, member, value);
                 var assetReference = value as AssetReference;
                 var assetBase = value as AssetBase;
-                var attachedReference = value != null ? AttachedReferenceManager.GetAttachedReference(value) : null;
+                var attachedReference = AttachedReferenceManager.GetAttachedReference(value);
                 if (assetReference != null)
                 {
                     AddLink(assetReference,
@@ -314,7 +314,7 @@ namespace SiliconStudio.Assets.Analysis
                     AddLink(attachedReference,
                         (guid, location) =>
                         {
-                            object newValue = guid.HasValue && guid.Value != Guid.Empty ? AttachedReferenceManager.CreateSerializableVersion(member.Type, guid.Value, location) : null;
+                            object newValue = guid.HasValue && guid.Value != Guid.Empty ? AttachedReferenceManager.CreateProxyObject(member.Type, guid.Value, location) : null;
                             if (newValue != null)
                             {
                                 IdentifiableHelper.SetId(newValue, IdentifiableHelper.GetId(value));

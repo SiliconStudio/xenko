@@ -15,7 +15,6 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Assets
 {
@@ -67,9 +66,9 @@ namespace SiliconStudio.Assets
         private readonly Lazy<PackageUserSettings> settings;
 
         /// <summary>
-        /// Occurs when an asset dirty changed occured.
+        /// Occurs when an asset dirty changed occurred.
         /// </summary>
-        public event Action<Asset> AssetDirtyChanged;
+        public event DirtyFlagChangedDelegate<Asset> AssetDirtyChanged;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Package"/> class.
@@ -188,8 +187,9 @@ namespace SiliconStudio.Assets
             }
             set
             {
+                var oldValue = isDirty;
                 isDirty = value;
-                OnAssetDirtyChanged(this);
+                OnAssetDirtyChanged(this, oldValue, value);
             }
         }
 
@@ -382,9 +382,10 @@ namespace SiliconStudio.Assets
             }
         }
 
-        internal void OnAssetDirtyChanged(Asset asset)
+        internal void OnAssetDirtyChanged(Asset asset, bool oldValue, bool newValue)
         {
-            AssetDirtyChanged?.Invoke(asset);
+            if (asset == null) throw new ArgumentNullException(nameof(asset));
+            AssetDirtyChanged?.Invoke(asset, oldValue, newValue);
         }
 
         /// <summary>
@@ -445,12 +446,6 @@ namespace SiliconStudio.Assets
 
                     try
                     {
-                        // Notifies the dependency manager that a package with the specified path is being saved
-                        if (session != null && session.HasDependencyManager)
-                        {
-                            session.DependencyManager.AddFileBeingSaveDuringSessionSave(FullPath);
-                        }
-
                         AssetSerializer.Save(FullPath, this);
 
                         // Move the package if the path has changed
@@ -555,12 +550,6 @@ namespace SiliconStudio.Assets
                                         project.AddItem("Compile", codeFile.ToWindowsPath());
                                     }                                
                                 }
-                            }
-
-                            // Notifies the dependency manager that an asset with the specified path is being saved
-                            if (session != null && session.HasDependencyManager)
-                            {
-                                session.DependencyManager.AddFileBeingSaveDuringSessionSave(assetPath);
                             }
 
                             // Inject a copy of the base into the current asset when saving
@@ -791,7 +780,7 @@ namespace SiliconStudio.Assets
                 // Load assets
                 if (loadParameters.AutoLoadTemporaryAssets)
                 {
-                    LoadTemporaryAssets(log, loadParameters.AssetFiles, loadParameters.CancelToken);
+                    LoadTemporaryAssets(log, loadParameters.AssetFiles, loadParameters.CancelToken, loadParameters.AssetFilter);
                 }
 
                 // Convert UPath to absolute
@@ -879,11 +868,12 @@ namespace SiliconStudio.Assets
         /// <param name="log">The log.</param>
         /// <param name="assetFiles">The asset files (loaded from <see cref="ListAssetFiles"/> if null).</param>
         /// <param name="cancelToken">The cancel token.</param>
+        /// <param name="filterFunc">A function that will filter assets loading</param>
         /// <returns>A logger that contains error messages while refreshing.</returns>
         /// <exception cref="System.InvalidOperationException">Package RootDirectory is null
         /// or
         /// Package RootDirectory [{0}] does not exist.ToFormat(RootDirectory)</exception>
-        public void LoadTemporaryAssets(ILogger log, IList<PackageLoadingAssetFile> assetFiles = null, CancellationToken? cancelToken = null)
+        public void LoadTemporaryAssets(ILogger log, IList<PackageLoadingAssetFile> assetFiles = null, CancellationToken? cancelToken = null, Func<PackageLoadingAssetFile, bool> filterFunc = null)
         {
             if (log == null) throw new ArgumentNullException(nameof(log));
 
@@ -918,6 +908,12 @@ namespace SiliconStudio.Assets
             for (int i = 0; i < assetFiles.Count; i++)
             {
                 var assetFile = assetFiles[i];
+
+                if (filterFunc != null && !filterFunc(assetFile))
+                {
+                    continue;
+                }
+
                 // Update the loading progress
                 loggerResult?.Progress(progressMessage, i, assetFiles.Count);
 
@@ -1324,8 +1320,9 @@ namespace SiliconStudio.Assets
             foreach (var libs in profile.ProjectReferences.Where(x => x.Type == ProjectType.Library))
             {
                 var realFullPath = UPath.Combine(package.RootDirectory, libs.Location);
-                string @namespace;
-                var codePaths = FindCodeAssetsInProject(realFullPath, out @namespace);
+                string defaultNamespace;
+                var codePaths = FindCodeAssetsInProject(realFullPath, out defaultNamespace);
+                libs.RootNamespace = defaultNamespace;
                 var dir = new UDirectory(realFullPath.GetFullDirectory());
                 var parentDir = dir.GetParent();
 
@@ -1333,47 +1330,6 @@ namespace SiliconStudio.Assets
                 {
                     list.Add(new PackageLoadingAssetFile(codePath, parentDir, realFullPath));
                 }
-            }
-        }
-
-        /// <summary>
-        /// Fixes asset import that were imported by the previous method. Add a AssetImport.SourceHash and ImporterId
-        /// </summary>
-        /// <param name="item">The item.</param>
-        private static void FixAssetImport(AssetItem item)
-        {
-            // TODO: this whole method is a temporary migration. This should be removed in the next version
-
-            var assetImport = item.Asset as AssetImport;
-            if (assetImport == null || assetImport.Source == null)
-            {
-                return;
-            }
-
-            // If the asset has a source but no import base, then we are going to simulate an original import
-            if (assetImport.Base == null)
-            {
-                var assetImportBase = (AssetImport)AssetCloner.Clone(assetImport);
-                assetImportBase.SetAsRootImport();
-                assetImportBase.SetDefaults();
-
-                // Setup default importer
-                if (!String.IsNullOrEmpty(assetImport.Source.GetFileExtension()))
-                {
-                    var importerId = AssetRegistry.FindImporterForFile(assetImport.Source).FirstOrDefault();
-                    if (importerId != null)
-                    {
-                        assetImport.ImporterId = importerId.Id;
-                    }
-                }
-                var assetImportTracked = assetImport as AssetImportTracked;
-                if (assetImportTracked != null)
-                {
-                    assetImportTracked.SourceHash = ObjectId.Empty;
-                }
-
-                assetImport.Base = new AssetBase(assetImportBase);
-                item.IsDirty = true;
             }
         }
 

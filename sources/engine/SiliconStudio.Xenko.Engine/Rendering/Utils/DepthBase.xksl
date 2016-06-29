@@ -6,10 +6,14 @@
 /// </summary>
 class DepthBase : Camera, Texturing
 {
-    // The depth stencil texture
-    [Link("RenderTarget.DepthStencilSource")]
-    //[Type("DepthStencilBuffer")]
-    stage Texture2D DepthStencil;
+    // -------------------------------------
+    // Resources
+    // -------------------------------------
+    rgroup PerView.Depth
+    {
+        //[Link("RenderTarget.DepthStencilSource")]
+        stage Texture2D DepthStencil;
+    }
 
     // Sample the depth from the texture
     float GetZProjDepthFromUV(float2 uv) {

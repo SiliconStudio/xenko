@@ -8,6 +8,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Rendering;
@@ -15,14 +16,14 @@ using SiliconStudio.Xenko.Rendering;
 namespace SiliconStudio.Xenko.Assets.Model
 {
     [DataContract("Model")]
-    [AssetDescription(FileExtension, false, AllowArchetype = false)]
+    [AssetDescription(FileExtension, AllowArchetype = false)]
     [AssetCompiler(typeof(ModelAssetCompiler))]
     [Display(190, "Model")]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.5.0-alpha02")]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 2, typeof(Upgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.2", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.5.0-alpha02", typeof(EmptyAssetUpgrader))]
-    public sealed class ModelAsset : AssetImportTracked, IModelAsset, IAssetCompileTimeDependencies
+    public sealed class ModelAsset : Asset, IModelAsset, IAssetCompileTimeDependencies
     {
         /// <summary>
         /// The default file extension used by the <see cref="ModelAsset"/>.
@@ -30,14 +31,16 @@ namespace SiliconStudio.Xenko.Assets.Model
         public const string FileExtension = ".xkm3d;pdxm3d";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ModelAsset"/> class.
+        /// Gets or sets the source file of this asset.
         /// </summary>
-        public ModelAsset()
-        {
-            ScaleImport = 1.0f;
-            Materials = new List<ModelMaterial>();
-            SetDefaults();
-        }
+        /// <value>The source.</value>
+        /// <userdoc>
+        /// The source file of this asset.
+        /// </userdoc>
+        [DataMember(-50)]
+        [DefaultValue(null)]
+        [SourceFileMember(true)]
+        public UFile Source { get; set; } = new UFile("");
 
         /// <summary>
         /// Gets or sets the scale import.
@@ -46,12 +49,12 @@ namespace SiliconStudio.Xenko.Assets.Model
         /// <userdoc>The scale applied when importing a model.</userdoc>
         [DataMember(10)]
         [DefaultValue(1.0f)]
-        public float ScaleImport { get; set; }
+        public float ScaleImport { get; set; } = 1.0f;
 
         /// <inheritdoc/>
         [DataMember(40)]
         [MemberCollection(ReadOnly = true)]
-        public List<ModelMaterial> Materials { get; }
+        public List<ModelMaterial> Materials { get; } = new List<ModelMaterial>();
 
         /// <summary>
         /// Gets or sets the Skeleton.
@@ -62,10 +65,13 @@ namespace SiliconStudio.Xenko.Assets.Model
         [DataMember(50)]
         public Skeleton Skeleton { get; set; }
 
+        [DataMemberIgnore]
+        public override UFile MainSource => Source;
+
         protected override int InternalBuildOrder => -100; // We want Model to be scheduled early since they tend to take the longest (bad concurrency at end of build)
 
         /// <inheritdoc/>
-        public IEnumerable<IContentReference> EnumerateCompileTimeDependencies()
+        public IEnumerable<IReference> EnumerateCompileTimeDependencies()
         {
             if (Skeleton != null)
             {

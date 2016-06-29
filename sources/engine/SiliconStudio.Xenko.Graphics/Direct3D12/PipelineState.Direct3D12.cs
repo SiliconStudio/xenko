@@ -74,9 +74,10 @@ namespace SiliconStudio.Xenko.Graphics
                                 {
                                     immutableSamplers.Add(new StaticSamplerDescription((ShaderVisibility)binding.Stage, binding.SlotStart, 0)
                                     {
-                                        // TODO D3D12 other states
                                         // TODO D3D12 ImmutableSampler should only be a state description instead of a GPU object?
                                         Filter = (Filter)item.ImmutableSampler.Description.Filter,
+                                        ComparisonFunc = (Comparison)item.ImmutableSampler.Description.CompareFunction,
+                                        BorderColor = ColorHelper.ConvertStatic(item.ImmutableSampler.Description.BorderColor),
                                         AddressU = (SharpDX.Direct3D12.TextureAddressMode)item.ImmutableSampler.Description.AddressU,
                                         AddressV = (SharpDX.Direct3D12.TextureAddressMode)item.ImmutableSampler.Description.AddressV,
                                         AddressW = (SharpDX.Direct3D12.TextureAddressMode)item.ImmutableSampler.Description.AddressW,
@@ -248,6 +249,17 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
+        protected internal override void OnDestroyed()
+        {
+            RootSignature?.Dispose();
+            RootSignature = null;
+
+            CompiledState?.Dispose();
+            CompiledState = null;
+
+            base.OnDestroyed();
+        }
+
         private unsafe SharpDX.Direct3D12.BlendStateDescription CreateBlendState(BlendStateDescription description)
         {
             var nativeDescription = new SharpDX.Direct3D12.BlendStateDescription();
@@ -283,7 +295,7 @@ namespace SiliconStudio.Xenko.Graphics
             nativeDescription.DepthBiasClamp = description.DepthBiasClamp;
             nativeDescription.IsDepthClipEnabled = description.DepthClipEnable;
             //nativeDescription.IsScissorEnabled = description.ScissorTestEnable;
-            nativeDescription.IsMultisampleEnabled = description.MultiSampleAntiAlias;
+            nativeDescription.IsMultisampleEnabled = description.MultiSampleLevel >= MSAALevel.None;
             nativeDescription.IsAntialiasedLineEnabled = description.MultiSampleAntiAliasLine;
 
             nativeDescription.ConservativeRaster = ConservativeRasterizationMode.Off;

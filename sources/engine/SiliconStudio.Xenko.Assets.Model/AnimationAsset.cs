@@ -1,14 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Xenko.Animations;
 using SiliconStudio.Xenko.Rendering;
@@ -18,11 +16,10 @@ namespace SiliconStudio.Xenko.Assets.Model
     [DataContract("Animation")]
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(AnimationAssetCompiler))]
-    [ObjectFactory(typeof(AnimationFactory))]
     [Display(180, "Animation")]
     [AssetFormatVersion(XenkoConfig.PackageName, "1.5.0-alpha02")]
     [AssetUpgrader(XenkoConfig.PackageName, "0", "1.5.0-alpha02", typeof(EmptyAssetUpgrader))]
-    public class AnimationAsset : AssetImport, IAssetCompileTimeDependencies
+    public class AnimationAsset : AssetWithSource, IAssetCompileTimeDependencies
     {
         /// <summary>
         /// The default file extension used by the <see cref="AnimationAsset"/>.
@@ -36,7 +33,7 @@ namespace SiliconStudio.Xenko.Assets.Model
         /// <userdoc>The scale factor to apply to the imported animation.</userdoc>
         [DataMember(10)]
         [DefaultValue(1.0f)]
-        public float ScaleImport { get; set; }
+        public float ScaleImport { get; set; } = 1.0f;
 
         /// <summary>
         /// Gets or sets the animation repeat mode.
@@ -44,7 +41,7 @@ namespace SiliconStudio.Xenko.Assets.Model
         /// <value>The repeat mode</value>
         /// <userdoc>Specifies how the animation should be played. That is played once and stop, infinitely loop, etc...</userdoc>
         [DataMember(20)]
-        public AnimationRepeatMode RepeatMode { get; set; }
+        public AnimationRepeatMode RepeatMode { get; set; } = AnimationRepeatMode.LoopInfinite;
 
         /// <summary>
         /// Gets or sets the Skeleton.
@@ -74,33 +71,13 @@ namespace SiliconStudio.Xenko.Assets.Model
         [DataMember(100)]
         public Rendering.Model PreviewModel { get; set; }
 
-        /// <summary>
-        /// Create an instance of <see cref="AnimationAsset"/> with default values.
-        /// </summary>
-        public AnimationAsset()
-        {
-            RepeatMode = AnimationRepeatMode.LoopInfinite;
-            ScaleImport = 1.0f;
-        }
-
         /// <inheritdoc/>
-        public IEnumerable<IContentReference> EnumerateCompileTimeDependencies()
+        public IEnumerable<IReference> EnumerateCompileTimeDependencies()
         {
-            if (Skeleton != null)
+            var reference = AttachedReferenceManager.GetAttachedReference(Skeleton);
+            if (reference != null)
             {
-                var reference = AttachedReferenceManager.GetAttachedReference(Skeleton);
-                if (reference != null)
-                {
-                    yield return new AssetReference<Asset>(reference.Id, reference.Url);
-                }
-            }
-        }
-
-        private class AnimationFactory : IObjectFactory
-        {
-            public object New(Type type)
-            {
-                return new AnimationAsset();
+                yield return new AssetReference<Asset>(reference.Id, reference.Url);
             }
         }
     }

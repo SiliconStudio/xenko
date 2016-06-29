@@ -1,13 +1,14 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-
+using System.Threading.Tasks;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.ViewModel;
 
 namespace SiliconStudio.Presentation.Commands
 {
     /// <summary>
-    /// An implementation of <see cref="CommandBase"/> that route <see cref="Execute"/> calls to a given anonymous method.
+    /// An implementation of <see cref="CommandBase"/> that routes <see cref="Execute"/> calls to a given anonymous method.
     /// </summary>
     /// <seealso cref="AnonymousCommand{T}"/>
     public class AnonymousCommand : CommandBase
@@ -20,25 +21,11 @@ namespace SiliconStudio.Presentation.Commands
         /// </summary>
         /// <param name="serviceProvider">A service provider that can provide a <see cref="Services.IDispatcherService"/> to use for this view model.</param>
         /// <param name="action">An anonymous method that will be called each time the command is executed.</param>
-        public AnonymousCommand(IViewModelServiceProvider serviceProvider, Action action)
-            : base(serviceProvider)
-        {
-            if (action == null) throw new ArgumentNullException(nameof(action));
-
-            this.action = x => action();
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AnonymousCommand"/> class.
-        /// </summary>
-        /// <param name="serviceProvider">A service provider that can provide a <see cref="Services.IDispatcherService"/> to use for this view model.</param>
-        /// <param name="action">An anonymous method that will be called each time the command is executed.</param>
         /// <param name="canExecute">An anonymous method that will be called each time the command <see cref="CommandBase.CanExecute(object)"/> method is invoked.</param>
-        public AnonymousCommand(IViewModelServiceProvider serviceProvider, Action action, Func<bool> canExecute)
+        public AnonymousCommand(IViewModelServiceProvider serviceProvider, Action action, Func<bool> canExecute = null)
             : base(serviceProvider)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
-
             this.action = x => action();
             this.canExecute = canExecute;
         }
@@ -48,25 +35,11 @@ namespace SiliconStudio.Presentation.Commands
         /// </summary>
         /// <param name="serviceProvider">A service provider that can provide a <see cref="Services.IDispatcherService"/> to use for this view model.</param>
         /// <param name="action">An anonymous method that will be called each time the command is executed.</param>
-        public AnonymousCommand(IViewModelServiceProvider serviceProvider, Action<object> action)
-            : base(serviceProvider)
-        {
-            if (action == null) throw new ArgumentNullException(nameof(action));
-
-            this.action = action;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AnonymousCommand"/> class.
-        /// </summary>
-        /// <param name="serviceProvider">A service provider that can provide a <see cref="Services.IDispatcherService"/> to use for this view model.</param>
-        /// <param name="action">An anonymous method that will be called each time the command is executed.</param>
         /// <param name="canExecute">An anonymous method that will be called each time the command <see cref="CommandBase.CanExecute(object)"/> method is invoked.</param>
-        public AnonymousCommand(IViewModelServiceProvider serviceProvider, Action<object> action, Func<bool> canExecute)
+        public AnonymousCommand(IViewModelServiceProvider serviceProvider, Action<object> action, Func<bool> canExecute = null)
             : base(serviceProvider)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
-
             this.action = action;
             this.canExecute = canExecute;
         }
@@ -95,7 +68,26 @@ namespace SiliconStudio.Presentation.Commands
     }
 
     /// <summary>
-    /// An implementation of <see cref="CommandBase"/> that route <see cref="Execute"/> calls to a given anonymous method with a typed parameter.
+    /// An implementation of <see cref="CommandBase"/> that routes <see cref="AnonymousCommand.Execute(object)"/> calls to a given anonymous task.
+    /// </summary>
+    /// <seealso cref="AnonymousCommand{T}"/>
+    public class AnonymousTaskCommand : AnonymousCommand
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AnonymousCommand"/> class.
+        /// </summary>
+        /// <param name="serviceProvider">A service provider that can provide a <see cref="Services.IDispatcherService"/> to use for this view model.</param>
+        /// <param name="task">A method returning a task that will be called each time the command is executed.</param>
+        /// <param name="canExecute">An anonymous method that will be called each time the command <see cref="CommandBase.CanExecute(object)"/> method is invoked.</param>
+        public AnonymousTaskCommand(IViewModelServiceProvider serviceProvider, Func<Task> task, Func<bool> canExecute = null)
+            : base(serviceProvider, x => task().Forget(), canExecute)
+        {
+            if (task == null) throw new ArgumentNullException(nameof(task));
+        }
+    }
+
+    /// <summary>
+    /// An implementation of <see cref="CommandBase"/> that routes <see cref="Execute"/> calls to a given anonymous method with a typed parameter.
     /// </summary>
     /// <typeparam name="T">The type of parameter to use with the command.</typeparam>
     /// <seealso cref="AnonymousCommand"/>
@@ -109,25 +101,11 @@ namespace SiliconStudio.Presentation.Commands
         /// </summary>
         /// <param name="serviceProvider">A service provider that can provide a <see cref="Services.IDispatcherService"/> to use for this view model.</param>
         /// <param name="action">An anonymous method with a typed parameter that will be called each time the command is executed.</param>
-        public AnonymousCommand(IViewModelServiceProvider serviceProvider, Action<T> action)
-            : base(serviceProvider)
-        {
-            if (action == null) throw new ArgumentNullException(nameof(action));
-
-            this.action = action;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AnonymousCommand{T}"/> class.
-        /// </summary>
-        /// <param name="serviceProvider">A service provider that can provide a <see cref="Services.IDispatcherService"/> to use for this view model.</param>
-        /// <param name="action">An anonymous method with a typed parameter that will be called each time the command is executed.</param>
         /// <param name="canExecute">An anonymous method that will be called each time the command <see cref="CommandBase.CanExecute(object)"/> method is invoked.</param>
-        public AnonymousCommand(IViewModelServiceProvider serviceProvider, Action<T> action, Func<T, bool> canExecute)
+        public AnonymousCommand(IViewModelServiceProvider serviceProvider, Action<T> action, Func<T, bool> canExecute = null)
             : base(serviceProvider)
         {
             if (action == null) throw new ArgumentNullException(nameof(action));
-
             this.action = action;
             this.canExecute = canExecute;
         }
@@ -157,6 +135,25 @@ namespace SiliconStudio.Presentation.Commands
 
             var result = base.CanExecute(parameter);
             return result && canExecute != null ? canExecute((T)parameter) : result;
+        }
+    }
+    /// <summary>
+    /// An implementation of <see cref="CommandBase"/> that routes <see cref="AnonymousCommand{T}.Execute(object)"/> calls to a given anonymous method with a typed parameter.
+    /// </summary>
+    /// <typeparam name="T">The type of parameter to use with the command.</typeparam>
+    /// <seealso cref="AnonymousTaskCommand"/>
+    public class AnonymousTaskCommand<T> : AnonymousCommand<T>
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AnonymousCommand"/> class.
+        /// </summary>
+        /// <param name="serviceProvider">A service provider that can provide a <see cref="Services.IDispatcherService"/> to use for this view model.</param>
+        /// <param name="task">A method with a typed parameter returning a task that will be called each time the command is executed.</param>
+        /// <param name="canExecute">An anonymous method that will be called each time the command <see cref="CommandBase.CanExecute(object)"/> method is invoked.</param>
+        public AnonymousTaskCommand(IViewModelServiceProvider serviceProvider, Func<T, Task> task, Func<T, bool> canExecute = null)
+            : base(serviceProvider, x => task(x).Forget(), canExecute)
+        {
+            if (task == null) throw new ArgumentNullException(nameof(task));
         }
     }
 }

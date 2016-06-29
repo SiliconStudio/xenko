@@ -27,6 +27,7 @@ using System.Reflection;
 using SharpDX;
 using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
+using SiliconStudio.Core.Collections;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
 using BackBufferResourceType = SharpDX.Direct3D11.Texture2D;
 #elif SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
@@ -159,7 +160,8 @@ namespace SiliconStudio.Xenko.Graphics
             }
             catch (SharpDXException sharpDxException)
             {
-                throw new GraphicsException("Unexpected error on Present", sharpDxException, GraphicsDevice.GraphicsDeviceStatus);
+                var deviceStatus = GraphicsDevice.GraphicsDeviceStatus;
+                throw new GraphicsException($"Unexpected error on Present (device status: {deviceStatus})", sharpDxException, deviceStatus);
             }
         }
 
@@ -172,20 +174,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        protected override void Destroy()
-        {
-            base.Destroy();
-            DestroyImpl();
-        }
-
-        public override void OnDestroyed()
-        {
-            DestroyImpl();
-
-            base.OnDestroyed();
-        }
-
-        private void DestroyImpl()
+        protected internal override void OnDestroyed()
         {
             // Manually update back buffer texture
             backBuffer.OnDestroyed();
@@ -193,6 +182,8 @@ namespace SiliconStudio.Xenko.Graphics
 
             swapChain.Dispose();
             swapChain = null;
+
+            base.OnDestroyed();
         }
 
         public override void OnRecreated()
@@ -215,6 +206,9 @@ namespace SiliconStudio.Xenko.Graphics
         {
             // Manually update back buffer texture
             backBuffer.OnDestroyed();
+
+            // Manually update all children textures
+            var fastList = DestroyChildrenTextures(backBuffer);
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
             var swapChainPanel = Description.DeviceWindowHandle.NativeHandle as Windows.UI.Xaml.Controls.SwapChainPanel;
@@ -241,6 +235,11 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Put it in our back buffer texture
             backBuffer.InitializeFrom(backBufferTexture, Description.BackBufferFormat.IsSRgb());
+
+            foreach (var texture in fastList)
+            {
+                texture.InitializeFrom(backBuffer, texture.ViewDescription);
+            }
         }
 
         protected override void ResizeDepthStencilBuffer(int width, int height, PixelFormat format)
@@ -252,10 +251,38 @@ namespace SiliconStudio.Xenko.Graphics
             // Manually update the texture
             DepthStencilBuffer.OnDestroyed();
 
+            // Manually update all children textures
+            var fastList = DestroyChildrenTextures(DepthStencilBuffer);
+
             // Put it in our back buffer texture
             DepthStencilBuffer.InitializeFrom(newTextureDescrition);
+
+            foreach (var texture in fastList)
+            {
+                texture.InitializeFrom(DepthStencilBuffer, texture.ViewDescription);
+            }
         }
 
+        /// <summary>
+        /// Calls <see cref="Texture.OnDestroyed"/> for all children of the specified texture
+        /// </summary>
+        /// <param name="parentTexture">Specified parent texture</param>
+        /// <returns>A list of the children textures which were destroyed</returns>
+        private FastList<Texture> DestroyChildrenTextures(Texture parentTexture)
+        {
+            var fastList = new FastList<Texture>();
+            foreach (var resource in GraphicsDevice.Resources)
+            {
+                var texture = resource as Texture;
+                if (texture != null && texture.ParentTexture == parentTexture)
+                {
+                    texture.OnDestroyed();
+                    fastList.Add(texture);
+                }
+            }
+
+            return fastList;
+        }
 
         private SwapChain CreateSwapChain()
         {
@@ -283,7 +310,7 @@ namespace SiliconStudio.Xenko.Graphics
                 Height = Description.BackBufferHeight,
                 Format = (SharpDX.DXGI.Format)Description.BackBufferFormat.ToNonSRgb(),
                 Stereo = false,
-                SampleDescription = new SharpDX.DXGI.SampleDescription((int)Description.MultiSampleCount, 0),
+                SampleDescription = new SharpDX.DXGI.SampleDescription((int)Description.MultiSampleLevel, 0),
                 Usage = Usage.BackBuffer | Usage.RenderTargetOutput,
                 // Use two buffers to enable flip effect.
                 BufferCount = bufferCount,
@@ -347,7 +374,7 @@ namespace SiliconStudio.Xenko.Graphics
                     ModeDescription = new ModeDescription(Description.BackBufferWidth, Description.BackBufferHeight, Description.RefreshRate.ToSharpDX(), (SharpDX.DXGI.Format)backbufferFormat), 
                     BufferCount = bufferCount, // TODO: Do we really need this to be configurable by the user?
                     OutputHandle = handle,
-                    SampleDescription = new SampleDescription((int)Description.MultiSampleCount, 0),
+                    SampleDescription = new SampleDescription((int)Description.MultiSampleLevel, 0),
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
                     SwapEffect = SwapEffect.Discard,
 #elif SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12

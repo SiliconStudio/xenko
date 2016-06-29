@@ -261,6 +261,7 @@ Sprites:
         Source: ../../../data/tests/Sphere2.bmp
         Name: sphere32
         TextureRegion: {X: 154, Y: 770, Width: 150, Height: 150}
+        PixelsPerUnit: 1.0
         Center: {X: 0.0, Y: 0.0}
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}

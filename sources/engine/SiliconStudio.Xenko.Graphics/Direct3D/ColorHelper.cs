@@ -21,6 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using SharpDX;
 using SharpDX.Mathematics.Interop;
 using SiliconStudio.Core.Mathematics;
@@ -43,6 +44,26 @@ namespace SiliconStudio.Xenko.Graphics
         {
             return *(RawVector4*)&color;
         }
+
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
+        public unsafe static SharpDX.Direct3D12.StaticBorderColor ConvertStatic(Color4 color)
+        {
+            if (color == Color4.Black)
+            {
+                return SharpDX.Direct3D12.StaticBorderColor.OpaqueBlack;
+            }
+            else if (color == Color4.White)
+            {
+                return SharpDX.Direct3D12.StaticBorderColor.OpaqueWhite;
+            }
+            else if (color == new Color4())
+            {
+                return SharpDX.Direct3D12.StaticBorderColor.TransparentBlack;
+            }
+
+            throw new NotSupportedException("Static sampler can only have opaque black, opaque white or transparent white as border color.");
+        }
+#endif
     }
 }
 

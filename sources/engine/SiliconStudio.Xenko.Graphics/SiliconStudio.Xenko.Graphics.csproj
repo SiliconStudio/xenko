@@ -98,9 +98,9 @@
         </When>
         <When Condition=" '$(SiliconStudioPlatform)' == 'Android' Or '$(SiliconStudioPlatform)' == 'iOS' ">
           <ItemGroup>
-            <Reference Include="OpenTK-1.0" />
-            <Reference Include="OpenTK">
-              <Aliases>opentkold</Aliases>
+            <Reference Include="OpenTK-1.1">
+              <HintPath Condition="'$(SiliconStudioPlatform)' == 'Android'">$(XenkoDependenciesDir)OpenTK\Android\OpenTK-1.1.dll</HintPath>
+              <HintPath Condition="'$(SiliconStudioPlatform)' == 'iOS'">$(XenkoDependenciesDir)OpenTK\iOS\OpenTK-1.1.dll</HintPath>
             </Reference>
           </ItemGroup>
         </When>
@@ -148,6 +148,11 @@
     <Compile Include="BufferPool.cs" />
     <Compile Include="BufferPoolAllocationResult.cs" />
     <Compile Include="CommandList.cs" />
+    <Compile Include="Font\SignedDistanceFieldSpriteFont.cs" />
+    <Compile Include="OpenGL\GraphicsResource.OpenGL.cs" />
+    <Compile Include="Font\SignedDistanceFieldSpriteFontContentSerializer.cs" />
+    <Compile Include="OpenGL\MappedResource.OpenGL.cs" />
+    <Compile Include="Font\SignedDistanceFieldSpriteFontSerializer.cs" />
     <Compile Include="RenderingSettings.cs" />
     <Compile Include="Data\TextureContentSerializer.cs" />
     <Compile Include="DescriptorPool.cs" />
@@ -186,11 +191,11 @@
     <Compile Include="ResourceGroupAllocator.cs" />
     <Compile Include="ResourceGroupBufferUploader.cs" />
     <Compile Include="EffectDescriptorSetReflection.cs" />
-    <Compile Include="Font\DynamicSpriteFontContentSerializer.cs" />
+    <Compile Include="Font\RuntimeRasterizedSpriteFontContentSerializer.cs" />
     <Compile Include="Font\FontDataFactory.cs" />
-    <Compile Include="Font\StaticSpriteFontContentSerializer.cs" />
-    <Compile Include="Font\StaticSpriteFontSerializer.cs" />
-    <Compile Include="Font\DynamicSpriteFontSerializer.cs" />
+    <Compile Include="Font\OfflineRasterizedSpriteFontContentSerializer.cs" />
+    <Compile Include="Font\OfflineRasterizedSpriteFontSerializer.cs" />
+    <Compile Include="Font\RuntimeRasterizedSpriteFontSerializer.cs" />
     <Compile Include="GraphicsDeviceServiceLocal.cs" />
     <Compile Include="ParameterCollectionLayoutExtensions.cs" />
     <Compile Include="PipelineState.cs" />
@@ -221,6 +226,14 @@
     <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.OpenGL.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.OpenGLES.Level_9_1.cs" />
+    <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.Extensions.cs" />
+    <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.Direct3D11.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.OpenGL.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.OpenGLES.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.Extensions.cs" />
+    <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.Direct3D11.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.OpenGL.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.OpenGLES.Level_9_3.cs" />
     <Compile Include="Shaders\BackgroundEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -232,6 +245,24 @@
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Shaders\SignedDistanceFieldFontShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SignedDistanceFieldFontShader.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Shaders\SignedDistanceFieldFont.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SignedDistanceFieldFont.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Shaders\SpriteSignedDistanceFieldFontShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>SpriteSignedDistanceFieldFontShader.xksl</DependentUpon>
     </Compile>
     <Compile Include="Shaders\UIEffect.cs">
       <DependentUpon>UIEffect.xkfx</DependentUpon>
@@ -252,6 +283,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="SpriteFontType.cs" />
     <Compile Include="VertexHelper.cs" />
     <Compile Include="Font\FontAntiAliasMode.cs" />
     <Compile Include="Font\FontStyleExtensions.cs" />
@@ -274,13 +306,13 @@
     <Compile Include="Font\FontHelper.cs" />
     <Compile Include="Font\FontManager.cs" />
     <Compile Include="Font\CharacterBitmap.cs" />
-    <Compile Include="Font\DynamicSpriteFont.cs" />
+    <Compile Include="Font\RuntimeRasterizedSpriteFont.cs" />
     <Compile Include="Font\FontCacheManager.cs" />
     <Compile Include="Font\CharacterSpecification.cs" />
     <Compile Include="Font\FontStyle.cs" />
     <Compile Include="Font\FontSystem.cs" />
     <Compile Include="Font\IFontFactory.cs" />
-    <Compile Include="Font\StaticSpriteFont.cs" />
+    <Compile Include="Font\OfflineRasterizedSpriteFont.cs" />
     <Compile Include="FrameworkResources.Designer.cs">
       <DependentUpon>FrameworkResources.resx</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -363,7 +395,6 @@
     <Compile Include="GraphicsDeviceStatus.cs" />
     <Compile Include="GraphicsException.cs" />
     <Compile Include="OpenGL\SwapChainGraphicsPresenter.Android.cs" />
-    <Compile Include="OpenGL\AndroidAsyncGraphicsContext.cs" />
     <Compile Include="GraphicsPresenter.cs" />
     <Compile Include="IGraphicsDeviceService.cs" />
     <Compile Include="OpenGL\SwapChainGraphicsPresenter.OpenTK.cs" />
@@ -567,6 +598,18 @@
     <None Include="Shaders\BackgroundEffect.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>BackgroundEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\SignedDistanceFieldFontShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SignedDistanceFieldFontShader.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\SignedDistanceFieldFont.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SignedDistanceFieldFont.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\SpriteSignedDistanceFieldFontShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>SpriteSignedDistanceFieldFontShader.cs</LastGenOutput>
     </None>
     <None Include="Shaders\UIEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>

@@ -47,13 +47,13 @@ namespace SiliconStudio.ProjectTemplating
         /// Gets or sets the files part of the template.
         /// </summary>
         /// <value>The files.</value>
-        public List<ProjectTemplateItem> Files { get; private set; }
+        public List<ProjectTemplateItem> Files { get; }
 
         /// <summary>
         /// Gets or sets the assemblies.
         /// </summary>
         /// <value>The assemblies.</value>
-        public List<UFile> Assemblies { get; private set; }
+        public List<UFile> Assemblies { get; }
 
         /// <summary>
         /// Generates this project template to the specified output directory.
@@ -69,8 +69,8 @@ namespace SiliconStudio.ProjectTemplating
         /// <exception cref="System.InvalidOperationException">FilePath cannot be null on this instance</exception>
         public LoggerResult Generate(string outputDirectory, string projectName, Guid projectGuid, Dictionary<string, object> options = null)
         {
-            if (outputDirectory == null) throw new ArgumentNullException("outputDirectory");
-            if (projectName == null) throw new ArgumentNullException("projectName");
+            if (outputDirectory == null) throw new ArgumentNullException(nameof(outputDirectory));
+            if (projectName == null) throw new ArgumentNullException(nameof(projectName));
             if (FilePath == null) throw new InvalidOperationException("FilePath cannot be null on this instance");
 
             var result = new LoggerResult();
@@ -91,11 +91,11 @@ namespace SiliconStudio.ProjectTemplating
         /// or
         /// projectName</exception>
         /// <exception cref="System.InvalidOperationException">FilePath cannot be null on this instance</exception>
-        public void Generate(string outputDirectory, string projectName, Guid projectGuid, ILogger log, Dictionary<string, object> options = null, List<string> generatedOutputFiles = null )
+        public void Generate(string outputDirectory, string projectName, Guid projectGuid, ILogger log, IReadOnlyDictionary<string, object> options = null, List<string> generatedOutputFiles = null )
         {
-            if (outputDirectory == null) throw new ArgumentNullException("outputDirectory");
-            if (projectName == null) throw new ArgumentNullException("projectName");
-            if (log == null) throw new ArgumentNullException("log");
+            if (outputDirectory == null) throw new ArgumentNullException(nameof(outputDirectory));
+            if (projectName == null) throw new ArgumentNullException(nameof(projectName));
+            if (log == null) throw new ArgumentNullException(nameof(log));
             if (FilePath == null) throw new InvalidOperationException("FilePath cannot be null on this instance");
 
             try
@@ -152,7 +152,7 @@ namespace SiliconStudio.ProjectTemplating
                         log.Warning("Invalid empty file item [{0}] with no source location", fileItem);
                         continue;
                     }
-                    var sourceFilePath = System.IO.Path.Combine(templateDirectory.FullName, fileItem.Source);
+                    var sourceFilePath = Path.Combine(templateDirectory.FullName, fileItem.Source);
                     var targetLocation = fileItem.Target ?? fileItem.Source;
                     if (Path.IsPathRooted(targetLocation))
                     {
@@ -184,8 +184,29 @@ namespace SiliconStudio.ProjectTemplating
                         if (fileItem.IsTemplate)
                         {
                             var content = File.ReadAllText(sourceFilePath);
+                            // Replace the default platform with the selected one from the ProjectItemTemplate.
+                            object oldPlatform = null;
+                            if (fileItem.CurrentPlatform != null)
+                            {
+                                if (expandoOptionsAsDictionary.ContainsKey(nameof(fileItem.CurrentPlatform)))
+                                {
+                                    oldPlatform = expandoOptionsAsDictionary[nameof(fileItem.CurrentPlatform)];
+                                }
+                                expandoOptionsAsDictionary[nameof(fileItem.CurrentPlatform)] = fileItem.CurrentPlatform;
+                            }
                             var host = new ProjectTemplatingHost(log, sourceFilePath, templateDirectory.FullName, expandoOptions, Assemblies.Select(assembly => assembly.FullPath));
                             var newContent = engine.ProcessTemplate(content, host);
+                            if (fileItem.CurrentPlatform != null)
+                            {
+                                if (oldPlatform != null)
+                                {
+                                    expandoOptionsAsDictionary[nameof(fileItem.CurrentPlatform)] = oldPlatform;
+                                }
+                                else
+                                {
+                                    expandoOptionsAsDictionary.Remove(nameof(fileItem.CurrentPlatform));
+                                }
+                            }
                             if (newContent != null)
                             {
                                 fileGenerated = true;
@@ -216,10 +237,10 @@ namespace SiliconStudio.ProjectTemplating
             }
         }
 
-        public string GeneratePart(string templatePathPart, ILogger log, Dictionary<string, object> options)
+        public string GeneratePart(string templatePathPart, ILogger log, IReadOnlyDictionary<string, object> options)
         {
-            if (templatePathPart == null) throw new ArgumentNullException("templatePathPart");
-            if (log == null) throw new ArgumentNullException("log");
+            if (templatePathPart == null) throw new ArgumentNullException(nameof(templatePathPart));
+            if (log == null) throw new ArgumentNullException(nameof(log));
             var expandoOptions = new ExpandoObject();
             var expandoOptionsAsDictionary = (IDictionary<string, object>)expandoOptions;
             foreach (var option in options)
@@ -228,7 +249,7 @@ namespace SiliconStudio.ProjectTemplating
             }
 
             var templateDirectory = new FileInfo(FilePath).Directory;
-            var sourceFilePath = System.IO.Path.Combine(templateDirectory.FullName, templatePathPart);
+            var sourceFilePath = Path.Combine(templateDirectory.FullName, templatePathPart);
             var content = File.ReadAllText(sourceFilePath);
 
             var engine = new TemplatingEngine();
@@ -246,8 +267,8 @@ namespace SiliconStudio.ProjectTemplating
 
         private static string Expand(string str, IDictionary<string, object> properties, ILogger log)
         {
-            if (str == null) throw new ArgumentNullException("str");
-            if (properties == null) throw new ArgumentNullException("properties");
+            if (str == null) throw new ArgumentNullException(nameof(str));
+            if (properties == null) throw new ArgumentNullException(nameof(properties));
 
             return ExpandRegex.Replace(str, match =>
             {
@@ -255,7 +276,7 @@ namespace SiliconStudio.ProjectTemplating
                 object propertyValue;
                 if (properties.TryGetValue(propertyName, out propertyValue))
                 {
-                    return propertyValue == null ? string.Empty : propertyValue.ToString();
+                    return propertyValue?.ToString() ?? string.Empty;
                 }
                 log.Warning("Unable to replace property [{0}] not found in options");
                 return match.Value;
@@ -270,9 +291,9 @@ namespace SiliconStudio.ProjectTemplating
         /// <exception cref="System.ArgumentNullException">filePath</exception>
         public static ProjectTemplate Load(string filePath)
         {
-            if (filePath == null) throw new ArgumentNullException("filePath");
+            if (filePath == null) throw new ArgumentNullException(nameof(filePath));
 
-            var fullFilePath = System.IO.Path.Combine(Environment.CurrentDirectory, filePath);
+            var fullFilePath = Path.Combine(Environment.CurrentDirectory, filePath);
             var projectFile = File.ReadAllText(fullFilePath);
             ProjectTemplate template;
             // If this a project template?

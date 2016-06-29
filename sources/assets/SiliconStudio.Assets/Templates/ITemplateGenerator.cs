@@ -1,11 +1,14 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
+
+using System.Threading.Tasks;
 
 namespace SiliconStudio.Assets.Templates
 {
+    public delegate bool RunGeneratorDelegate();
+
     /// <summary>
-    /// A template generator.
+    /// The interface to represent a template generator.
     /// </summary>
     public interface ITemplateGenerator
     {
@@ -15,37 +18,32 @@ namespace SiliconStudio.Assets.Templates
         /// <param name="templateDescription">The template description.</param>
         /// <returns><c>true</c> if this generator is supporting the specified template; otherwise, <c>false</c>.</returns>
         bool IsSupportingTemplate(TemplateDescription templateDescription);
-
-        /// <summary>
-        /// Prepares this generator with the specified parameters and return a runnable function that must be run just after 
-        /// this method. The returned runnable function should return true if it succeeded or false otherwise.
-        /// </summary>
-        /// <remarks>This method can also return <see langword="null"/> in case the preparation did not complete and nothing
-        /// can be further executed.</remarks>
-        /// <param name="parameters">The parameters.</param>
-        Func<bool> PrepareForRun(TemplateGeneratorParameters parameters);
-
-        /// <summary>
-        /// Called only if the generation succeeded.
-        /// </summary>
-        /// <param name="parameters"></param>
-        /// <returns>True if the method succeeded, False otherwise.</returns>
-        bool AfterRun(TemplateGeneratorParameters parameters);
     }
 
-
     /// <summary>
-    /// Base implementation for <see cref="ITemplateGenerator"/>.
+    /// The interface to represent a template generator.
     /// </summary>
-    public abstract class TemplateGeneratorBase : ITemplateGenerator
+    /// <typeparam name="TParameters">The type of parameters this generator uses.</typeparam>
+    public interface ITemplateGenerator<in TParameters> : ITemplateGenerator where TParameters : TemplateGeneratorParameters
     {
-        public abstract bool IsSupportingTemplate(TemplateDescription templateDescription);
+        /// <summary>
+        /// Prepares this generator with the specified parameters.
+        /// </summary>
+        /// <param name="parameters">The parameters for the template generator.</param>
+        /// <remarks>This method should be used to verify that the parameters are correct, and to ask user for additional
+        /// information before running the template.
+        /// </remarks>
+        /// <returns>A task completing when the preparation is finished, with the result <c>True</c> if the preparation was successful, <c>false</c> otherwise.</returns>
+        Task<bool> PrepareForRun(TParameters parameters);
 
-        public abstract Func<bool> PrepareForRun(TemplateGeneratorParameters parameters);
-
-        public virtual bool AfterRun(TemplateGeneratorParameters parameters)
-        {
-            return true;
-        }
+        /// <summary>
+        /// Runs the generator with the given parameter.
+        /// </summary>
+        /// <param name="parameters">The parameters for the template generator.</param>
+        /// <remarks>
+        /// This method should work in unattended mode and should not ask user for information anymore.
+        /// </remarks>
+        /// <returns><c>True</c> if the generation was successful, <c>false</c> otherwise.</returns>
+        bool Run(TParameters parameters);
     }
 }

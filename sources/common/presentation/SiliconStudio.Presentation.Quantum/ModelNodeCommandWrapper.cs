@@ -11,13 +11,15 @@ namespace SiliconStudio.Presentation.Quantum
     public class ModelNodeCommandWrapper : NodeCommandWrapperBase
     {
         public readonly GraphNodePath NodePath;
+        public readonly Index Index;
         protected readonly ObservableViewModelService Service;
 
-        public ModelNodeCommandWrapper(IViewModelServiceProvider serviceProvider, INodeCommand nodeCommand, GraphNodePath nodePath)
+        public ModelNodeCommandWrapper(IViewModelServiceProvider serviceProvider, INodeCommand nodeCommand, GraphNodePath nodePath, Index index)
             : base(serviceProvider)
         {
             if (nodeCommand == null) throw new ArgumentNullException(nameof(nodeCommand));
             NodePath = nodePath;
+            Index = index;
             NodeCommand = nodeCommand;
             Service = serviceProvider.Get<ObservableViewModelService>();
         }
@@ -30,14 +32,15 @@ namespace SiliconStudio.Presentation.Quantum
 
         public override async Task Invoke(object parameter)
         {
-            ActionStack?.BeginTransaction();
-            object index;
-            var modelNode = NodePath.GetSourceNode(out index);
-            if (modelNode == null)
-                throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
+            using (var transaction = ActionService?.CreateTransaction())
+            {
+                var modelNode = NodePath.GetNode();
+                if (modelNode == null)
+                    throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
 
-            NodeCommand.Execute(modelNode.Content, index, parameter);
-            ActionStack?.EndTransaction($"Execute {Name}");
+                await NodeCommand.Execute(modelNode.Content, Index, parameter);
+                ActionService?.SetName(transaction, ActionName);
+            }
         }
     }
 }

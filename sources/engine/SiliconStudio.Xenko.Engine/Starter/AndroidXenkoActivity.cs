@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Starter
     // So the methods are implemented but the class does not implement View.IOnSystemUiVisibilityChangeListener.
     // Maybe this will change when support for API Level 10 is dropped
     // TODO: make this class implement View.IOnSystemUiVisibilityChangeListener when support of Android < 3.0 is dropped.
-    public class AndroidXenkoActivity : Activity, View.IOnTouchListener
+    public class AndroidXenkoActivity : Activity
     {
         private AndroidXenkoGameView gameView;
 
@@ -146,11 +146,6 @@ namespace SiliconStudio.Xenko.Starter
 
             if (gameView != null)
                 gameView.Resume();
-        }
-
-        public bool OnTouch(View v, MotionEvent e)
-        {
-            throw new NotImplementedException();
         }
 
         private void InitializeFullscreenViewCallback()

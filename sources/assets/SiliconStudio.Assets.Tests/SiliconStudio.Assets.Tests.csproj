@@ -57,9 +57,7 @@
     <Compile Include="TestAssetInheritance.cs" />
     <Compile Include="TestAssetReferenceAnalysis.cs" />
     <Compile Include="AssetObjectTest.cs" />
-    <Compile Include="TestAssetImport.cs" />
     <Compile Include="TestAssetReferenceCollection.cs" />
-    <Compile Include="TestAssetUpdater.cs" />
     <Compile Include="TestAssetUpgrade.cs" />
     <Compile Include="TestBase.cs" />
     <Compile Include="TestDependencyManager.cs" />
@@ -110,6 +108,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="data\SiliconStudio.Assets.Tests\TestPackage\SubPackage\SubPackage.xkpkg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -128,11 +127,9 @@
     <Content Include="data\SiliconStudio.Assets.Tests\TestFileVersionManager\test.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="data\box.fbx" />
     <None Include="data\SiliconStudio.Assets.Tests\TestPackage\TestRaw.xkraw">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="data\uv.dds" />
   </ItemGroup>
   <ItemGroup>
     <None Include="data\SiliconStudio.Assets.Tests\TestBasicPackageCreateSaveLoad\TestPackage_TestBasicPackageCreateSaveLoad_Reference.xkpkg">

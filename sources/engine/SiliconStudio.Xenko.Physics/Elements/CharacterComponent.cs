@@ -216,9 +216,10 @@ namespace SiliconStudio.Xenko.Physics
 
         protected override void OnDetach()
         {
+            if (KinematicCharacter == null) return;
+
             Simulation.RemoveCharacter(this);
 
-            if (KinematicCharacter == null) return;
             KinematicCharacter.Dispose();
             KinematicCharacter = null;
 

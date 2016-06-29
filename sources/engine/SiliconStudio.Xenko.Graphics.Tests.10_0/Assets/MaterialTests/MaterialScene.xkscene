@@ -1,0 +1,171 @@
+!SceneAsset
+Id: 6e4549c1-7159-432a-ac4c-6b3cca4aad90
+SerializedVersion: {Xenko: 1.7.0-beta02}
+Tags: []
+Hierarchy:
+    ~Id: 293e4498-0657-40a4-93c1-3c7e7acdb544
+    RootEntities:
+        - 067bf333-bbd8-43ab-8949-143f3c69817b
+        - 46fe1447-58b7-4f31-9693-37b181b38b74
+        - 86ac4789-1822-43bd-bff2-9aba4e00ffdb
+        - 038e5b08-3712-4585-8c94-99be4e1be5a3
+        - a5de332d-3e13-4cc9-b2d8-60217e9d2b9c
+        - e1fa637d-8eb5-4a29-adf4-6d4901de24c8
+    Entities:
+        -   Entity:
+                Id: 038e5b08-3712-4585-8c94-99be4e1be5a3
+                Name: Ambient light
+                Components:
+                    - !TransformComponent
+                        ~Id: ecbb45ce-fbb1-4c52-8bdb-2cb2a198da87
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !LightComponent
+                        ~Id: 5e857376-8e3a-4b18-a12a-5ac50848df76
+                        Type: !LightAmbient
+                            ~Id: 4c287855-686b-434f-a72f-858622ff4f71
+                            Color: !ColorRgbProvider
+                                ~Id: 93d49fa2-205d-4408-af8e-8f6ac5271f8c
+                                Value: {R: 1.0, G: 1.0, B: 1.0}
+                        Intensity: 0.2
+            Design: {}
+        -   Entity:
+                Id: 067bf333-bbd8-43ab-8949-143f3c69817b
+                Name: Cube
+                Components:
+                    - !TransformComponent
+                        ~Id: 5d7e81a1-3e95-4066-86b7-5d879e069412
+                        Position: {X: -0.8, Y: 0.0, Z: 0.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !ModelComponent
+                        ~Id: cd8b7bf8-ca53-4a04-a641-3de57b12ec52
+                        Model: b5b68611-5eae-402c-aeff-cfa3854a2f42/cc33dd40-6f1e-4ae5-bcfe-a9be98a1a729:MaterialTests/Cube
+                        Materials:
+                            - null
+            Design: {}
+        -   Entity:
+                Id: 46fe1447-58b7-4f31-9693-37b181b38b74
+                Name: Sphere
+                Components:
+                    - !TransformComponent
+                        ~Id: 6a4efd05-0b07-4277-b6af-1e5738281148
+                        Position: {X: 0.8, Y: 0.0, Z: 0.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !ModelComponent
+                        ~Id: 1a7865eb-b2ae-4096-ba48-b329dec8a09e
+                        Model: 25c9ef6c-4e48-4ebf-9676-a8aed0a76fa7/840c905d-04c7-40c6-b81a-95d7a69d6885:MaterialTests/Sphere
+                        Materials:
+                            - null
+            Design: {}
+        -   Entity:
+                Id: 86ac4789-1822-43bd-bff2-9aba4e00ffdb
+                Name: Camera
+                Components:
+                    - !TransformComponent
+                        ~Id: 59a0653b-8fe3-469e-9e77-97d920481ff6
+                        Position: {X: 0.6, Y: 1.0, Z: 2.0}
+                        Rotation: {W: 0.960398436, X: -0.23057127, Y: 0.152112171, Z: 0.0365189}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !CameraComponent
+                        ~Id: 284c7dcf-0804-414f-bf66-d6cebb9f05da
+                        Projection: Perspective
+            Design: {}
+        -   Entity:
+                Id: a5de332d-3e13-4cc9-b2d8-60217e9d2b9c
+                Name: Directional light
+                Components:
+                    - !TransformComponent
+                        ~Id: 41c07970-f362-4e94-a320-6fa51989dcb5
+                        Position: {X: 0.0, Y: 2.0, Z: 0.0}
+                        Rotation: {W: 0.791240036, X: -0.5540324, Y: 0.212012142, Z: 0.14845252}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !LightComponent
+                        ~Id: cdea7082-14fd-4997-872d-a0e86f3273a2
+                        Type: !LightDirectional
+                            ~Id: f79eed99-9694-4123-acbc-3fc5ce146aca
+                            Color: !ColorRgbProvider
+                                ~Id: ca7c6418-3cc2-483d-acc2-9b21c59652b5
+                                Value: {R: 1.0, G: 1.0, B: 1.0}
+                            Shadow:
+                                ~Id: 9b6865f8-ff39-46a5-af81-a1f3cf233405
+                                Size: Large
+                                DepthRange:
+                                    ~Id: a5e62ea7-1b9b-47bc-9cb7-3d20559b94ea
+                                PartitionMode: !LightDirectionalShadowMap.PartitionLogarithmic
+                                    ~Id: 29bf94ad-cf0d-46d7-becc-28fd9836a60e
+                                BiasParameters:
+                                    ~Id: 03bf307b-5e70-48a5-9421-3aaaac79426f
+                        Intensity: 0.4
+            Design: {}
+        -   Entity:
+                Id: e1fa637d-8eb5-4a29-adf4-6d4901de24c8
+                Name: Directional light (2)
+                Components:
+                    - !TransformComponent
+                        ~Id: 41c07970-f362-4e94-a320-6fa51989dcb5
+                        Position: {X: 0.0, Y: 2.0, Z: 0.0}
+                        Rotation: {W: -0.336824059, X: 0.05939117, Y: 0.9254165, Z: 0.163175911}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !LightComponent
+                        ~Id: cdea7082-14fd-4997-872d-a0e86f3273a2
+                        Type: !LightDirectional
+                            ~Id: f79eed99-9694-4123-acbc-3fc5ce146aca
+                            Color: !ColorRgbProvider
+                                ~Id: ca7c6418-3cc2-483d-acc2-9b21c59652b5
+                                Value: {R: 1.0, G: 1.0, B: 1.0}
+                            Shadow:
+                                ~Id: 9b6865f8-ff39-46a5-af81-a1f3cf233405
+                                Size: Large
+                                DepthRange:
+                                    ~Id: a5e62ea7-1b9b-47bc-9cb7-3d20559b94ea
+                                PartitionMode: !LightDirectionalShadowMap.PartitionLogarithmic
+                                    ~Id: 29bf94ad-cf0d-46d7-becc-28fd9836a60e
+                                BiasParameters:
+                                    ~Id: 03bf307b-5e70-48a5-9421-3aaaac79426f
+                        Intensity: 0.4
+            Design: {}
+SceneSettings:
+    ~Id: 62ecd57f-a6ab-4a48-b39b-7c5e038e141a
+    GraphicsCompositor: !SceneGraphicsCompositorLayers
+        ~Id: 4d0b88b3-fab9-4a34-8cc9-570ee8d82d8b
+        Cameras:
+            -   ~Id: 23f2a733-ce82-45be-81da-a77046b97406
+                Name: null
+                Camera:
+                    Entity: {Id: 86ac4789-1822-43bd-bff2-9aba4e00ffdb}
+                    Id: 284c7dcf-0804-414f-bf66-d6cebb9f05da
+        Layers: []
+        Master:
+            ~Id: a9613bc1-6bb7-4762-b85e-482f7c641ddd
+            Name: SceneGraphicsLayer
+            Output: !MasterRenderFrameProvider {}
+            Renderers:
+                - !ClearRenderFrameRenderer
+                    ~Id: bdb3eeb9-4c0b-488f-894e-20575d572e8a
+                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
+                    Output: !CurrentRenderFrameProvider {}
+                - !SceneCameraRenderer
+                    ~Id: 032b0618-08d2-4b63-a76a-04dd6b100671
+                    Mode: !CameraRendererModeForward
+                        ~Id: 5f89a24b-b07c-43eb-bf1f-be2f2a194644
+                    Camera:
+                        ~Id: 91beb2ba-11a9-4997-b457-c329a1e7aac5
+                        Index: 0
+                    Output: !CurrentRenderFrameProvider {}
+                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
+    EditorSettings:
+        ~Id: bfb45faf-2691-42dd-8581-2b6746ea8c08
+        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
+        SceneUnit: 1.0
+        Mode: !SceneEditorGraphicsModeLDRSettings
+            ~Id: e2acc833-6101-4c8f-856e-68f91bfcd23f
+            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}

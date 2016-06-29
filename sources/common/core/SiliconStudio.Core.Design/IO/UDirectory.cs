@@ -35,6 +35,16 @@ namespace SiliconStudio.Core.IO
         }
 
         /// <summary>
+        /// Gets the name of the directory.
+        /// </summary>
+        /// <returns>The name of the directory.</returns>
+        public string GetDirectoryName()
+        {
+            var index = FullPath.IndexOfReverse(DirectorySeparatorChar);
+            return index >= 0 ? FullPath.Substring(index + 1) : "";
+        }
+
+        /// <summary>
         /// Makes this instance relative to the specified anchor directory.
         /// </summary>
         /// <param name="anchorDirectory">The anchor directory.</param>
@@ -55,16 +65,24 @@ namespace SiliconStudio.Core.IO
         }
 
         /// <summary>
+        /// Combines the specified left uniform location and right location and return a new <see cref="UDirectory"/>
+        /// </summary>
+        /// <param name="leftPath">The left path.</param>
+        /// <param name="rightPath">The right path.</param>
+        /// <returns>The combination of both paths.</returns>
+        public static UDirectory Combine(UDirectory leftPath, UDirectory rightPath)
+        {
+            return UPath.Combine(leftPath, rightPath);
+        }
+
+        /// <summary>
         /// Determines whether this directory contains the specified path.
         /// </summary>
         /// <param name="path">The path.</param>
         /// <returns><c>true</c> if this directory contains the specified path; otherwise, <c>false</c>.</returns>
         public bool Contains(UPath path)
         {
-            if (path == null) throw new ArgumentNullException("path");
-            if (FullPath == null) return false;
-            if (path.FullPath == null) return false;
-
+            if (path == null) throw new ArgumentNullException(nameof(path));
             return path.FullPath.StartsWith(FullPath, StringComparison.OrdinalIgnoreCase) && path.FullPath.Length > FullPath.Length && path.FullPath[FullPath.Length] == DirectorySeparatorChar;
         }
     }

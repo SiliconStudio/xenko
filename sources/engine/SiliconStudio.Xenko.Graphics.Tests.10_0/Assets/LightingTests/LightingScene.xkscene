@@ -1,0 +1,460 @@
+!SceneAsset
+Id: 413fc3cf-56da-4cfd-ba3f-370f6a1f4b87
+SerializedVersion: {Xenko: 1.7.0-beta02}
+Tags: []
+Hierarchy:
+    ~Id: 293e4498-0657-40a4-93c1-3c7e7acdb544
+    RootEntities:
+        - 121144a7-d914-42cf-851e-3aac370c336f
+        - 9e0edc07-f97f-48ed-b363-5d22f2865f9d
+        - 40b50304-4226-47bf-8ea6-2fa899574180
+        - 184df18b-afc8-4c9a-b0c6-ae108ba4ddd7
+        - 97ddc423-ce5d-45a8-a37d-ac0e53f9678e
+        - 422689ef-7d4f-4d01-9a99-a22584ae849f
+        - 5361ab21-8647-4c2e-8d17-df0fba6c2c00
+        - 5baf917b-3c1c-4dbf-ab58-d251b33d2f6d
+        - 3d2744bf-a0f7-4185-b3f1-dbe10dc66af4
+        - bfc01958-63e8-4d7b-a457-fe144ba678fa
+        - d6126c1f-087c-4cbe-892c-f28f634ee998
+        - 90a7660f-37e2-45c0-be72-474c2b0a9021
+        - 5b1812d9-0604-4511-a106-16324294502b
+        - 36819535-1828-4623-b229-22987ad0d5a0
+        - eab78ae2-ab62-439c-811b-bc51957bf109
+        - 8967ed06-9b29-45d0-a52b-a3020bb70355
+        - c719333c-2c49-4db4-ae4b-7b1dddaeb6eb
+        - f72ac81c-ef07-4575-9a6d-6e16c676225c
+    Entities:
+        -   Entity:
+                Id: 121144a7-d914-42cf-851e-3aac370c336f
+                Name: Ground
+                Components:
+                    - !TransformComponent
+                        ~Id: e1fd2968-abf8-4daf-9fd3-ccac8cfcb59f
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !ModelComponent
+                        ~Id: 9ff713db-5381-4f8e-af94-24fdb085c073
+                        Model: 42e045ad-1966-46f2-90ad-3ae6c88b8142/70047e97-56f4-482f-9d9a-aa21edefd002:LightingTests/Ground
+                        Materials:
+                            - null
+            Design: {}
+        -   Entity:
+                Id: 184df18b-afc8-4c9a-b0c6-ae108ba4ddd7
+                Name: Cube (3)
+                Components:
+                    - !TransformComponent
+                        ~Id: ed4a715c-e0b1-436e-a6f3-076cb67d8627
+                        Position: {X: -2.0, Y: 0.25, Z: 2.5}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 0.5, Y: 0.5, Z: 0.5}
+                        Children: []
+                    - !ModelComponent
+                        ~Id: 94d50bfc-d5a2-4896-88d1-05d99175a3b8
+                        Model: 750869ab-446d-4111-a2bf-fa0d63f64adb/6050c0d0-b0d7-4f9a-a85c-ce1400becce2:LightingTests/Cube
+                        Materials:
+                            - null
+            Design: {}
+        -   Entity:
+                Id: 36819535-1828-4623-b229-22987ad0d5a0
+                Name: DirectionalLightShadowOneCascade2
+                Components:
+                    - !TransformComponent
+                        ~Id: 6b073038-a250-453d-a849-520a16e6fc5d
+                        Position: {X: 2.871928E-07, Y: 4.14986849, Z: 0.0}
+                        Rotation: {W: 0.0998552442, X: 0.154929191, Y: 0.958999753, Z: 0.2152795}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !LightComponent
+                        ~Id: 177c3566-f65a-4d1c-accd-6730f99645cb
+                        Enabled: false
+                        Type: !LightDirectional
+                            ~Id: 2eb1a310-6ed8-45c1-bab9-e56a609fffb9
+                            Color: !ColorRgbProvider
+                                ~Id: ba0ac596-7ef3-4215-a534-2787aa7b3797
+                                Value: {R: 1.0, G: 1.0, B: 1.0}
+                            Shadow:
+                                ~Id: 83a7f278-7838-4bdb-9ae7-a8fc288b8245
+                                Enabled: true
+                                Size: Large
+                                CascadeCount: OneCascade
+                                DepthRange:
+                                    ~Id: a08d4af1-2080-442d-b894-b55df7d80c41
+                                PartitionMode: !LightDirectionalShadowMap.PartitionLogarithmic
+                                    ~Id: 734fc906-e789-48ff-913b-4ec3d3d3fbd3
+                                BiasParameters:
+                                    ~Id: c3fb2b98-c43d-474e-afa0-a10c2823396b
+            Design: {}
+        -   Entity:
+                Id: 3d2744bf-a0f7-4185-b3f1-dbe10dc66af4
+                Name: PointLight
+                Components:
+                    - !TransformComponent
+                        ~Id: a020cb93-e4f6-4957-9b9d-150db41ed4bf
+                        Position: {X: -2.34720039, Y: 0.2006323, Z: 2.41369367}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !LightComponent
+                        ~Id: f0fa5185-fcea-4d94-85ac-72edfffab013
+                        Enabled: false
+                        Type: !LightPoint
+                            ~Id: 6df13f8c-581c-49b3-9528-6c0b888beaca
+                            Color: !ColorRgbProvider
+                                ~Id: 93f3d9d9-76b5-42b4-ab0c-52b4f7c8e8f8
+                                Value: {R: 1.0, G: 1.0, B: 1.0}
+                            Radius: 2.0
+                            Shadow:
+                                ~Id: e0f21fa9-9122-4ed5-a453-4234d5b1efde
+                                Size: Small
+                                BiasParameters:
+                                    ~Id: 8de86f9b-2b51-48d7-a47d-f9cbe07c654a
+            Design: {}
+        -   Entity:
+                Id: 40b50304-4226-47bf-8ea6-2fa899574180
+                Name: Cube (2)
+                Components:
+                    - !TransformComponent
+                        ~Id: ed4a715c-e0b1-436e-a6f3-076cb67d8627
+                        Position: {X: -1.0, Y: 0.5, Z: 1.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !ModelComponent
+                        ~Id: 94d50bfc-d5a2-4896-88d1-05d99175a3b8
+                        Model: 750869ab-446d-4111-a2bf-fa0d63f64adb/6050c0d0-b0d7-4f9a-a85c-ce1400becce2:LightingTests/Cube
+                        Materials:
+                            - null
+            Design: {}
+        -   Entity:
+                Id: 422689ef-7d4f-4d01-9a99-a22584ae849f
+                Name: Sphere
+                Components:
+                    - !TransformComponent
+                        ~Id: bd26c71d-0452-4f36-bb7e-751069834cde
+                        Position: {X: -2.5, Y: 0.5, Z: 0.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !ModelComponent
+                        ~Id: 59c7cd92-4801-4a0b-951f-0f1861b9dd15
+                        Model: 32756de6-f281-48da-a48d-07ee45adc31a/914f3f2f-1b18-4a25-ada6-e694ff7a6ca6:LightingTests/Sphere
+                        Materials:
+                            - null
+            Design: {}
+        -   Entity:
+                Id: 5361ab21-8647-4c2e-8d17-df0fba6c2c00
+                Name: Camera
+                Components:
+                    - !TransformComponent
+                        ~Id: dcd498b2-fadc-4579-898e-83bece580609
+                        Position: {X: -3.09373069, Y: 2.76244831, Z: 4.629441}
+                        Rotation: {W: 0.8962008, X: -0.326190382, Y: -0.282571018, Z: -0.102847442}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !CameraComponent
+                        ~Id: cd6898f8-c09f-4361-ac6c-2ab28aef9437
+                        Projection: Perspective
+            Design: {}
+        -   Entity:
+                Id: 5b1812d9-0604-4511-a106-16324294502b
+                Name: DirectionalLightShadowOneCascade
+                Components:
+                    - !TransformComponent
+                        ~Id: 6b073038-a250-453d-a849-520a16e6fc5d
+                        Position: {X: 2.871928E-07, Y: 4.14986849, Z: 0.0}
+                        Rotation: {W: 0.90915966, X: -0.128036618, Y: 0.321061224, Z: 0.232282013}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !LightComponent
+                        ~Id: 177c3566-f65a-4d1c-accd-6730f99645cb
+                        Enabled: false
+                        Type: !LightDirectional
+                            ~Id: 2eb1a310-6ed8-45c1-bab9-e56a609fffb9
+                            Color: !ColorRgbProvider
+                                ~Id: ba0ac596-7ef3-4215-a534-2787aa7b3797
+                                Value: {R: 1.0, G: 1.0, B: 1.0}
+                            Shadow:
+                                ~Id: 83a7f278-7838-4bdb-9ae7-a8fc288b8245
+                                Enabled: true
+                                Size: Large
+                                CascadeCount: OneCascade
+                                DepthRange:
+                                    ~Id: a08d4af1-2080-442d-b894-b55df7d80c41
+                                PartitionMode: !LightDirectionalShadowMap.PartitionLogarithmic
+                                    ~Id: 734fc906-e789-48ff-913b-4ec3d3d3fbd3
+                                BiasParameters:
+                                    ~Id: c3fb2b98-c43d-474e-afa0-a10c2823396b
+            Design: {}
+        -   Entity:
+                Id: 5baf917b-3c1c-4dbf-ab58-d251b33d2f6d
+                Name: AmbientLight
+                Components:
+                    - !TransformComponent
+                        ~Id: a3c20e9e-15b0-4875-96ef-6ea02826d35a
+                        Position: {X: 0.0, Y: 2.33830357, Z: 0.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !LightComponent
+                        ~Id: ac8297d8-1458-4da7-b12f-8c5a7dc43c95
+                        Type: !LightAmbient
+                            ~Id: 74d5c8b2-3e28-4e4a-a422-aefc80e3e13e
+                            Color: !ColorRgbProvider
+                                ~Id: 2407df8d-4d9f-45b3-98bc-ad8d4429a48d
+                                Value: {R: 1.0, G: 1.0, B: 1.0}
+                        Intensity: 0.5
+            Design: {}
+        -   Entity:
+                Id: 8967ed06-9b29-45d0-a52b-a3020bb70355
+                Name: DirectionalLightShadowOneCascadePCF
+                Components:
+                    - !TransformComponent
+                        ~Id: 6b073038-a250-453d-a849-520a16e6fc5d
+                        Position: {X: 2.871928E-07, Y: 4.14986849, Z: 0.0}
+                        Rotation: {W: 0.90915966, X: -0.128036618, Y: 0.321061224, Z: 0.232282013}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !LightComponent
+                        ~Id: 177c3566-f65a-4d1c-accd-6730f99645cb
+                        Enabled: false
+                        Type: !LightDirectional
+                            ~Id: 2eb1a310-6ed8-45c1-bab9-e56a609fffb9
+                            Color: !ColorRgbProvider
+                                ~Id: ba0ac596-7ef3-4215-a534-2787aa7b3797
+                                Value: {R: 1.0, G: 1.0, B: 1.0}
+                            Shadow:
+                                ~Id: 83a7f278-7838-4bdb-9ae7-a8fc288b8245
+                                Enabled: true
+                                Filter: !LightShadowMapFilterTypePcf
+                                    ~Id: d432861c-a638-41a1-9f50-97d25b6d9eb0
+                                    FilterSize: Filter5x5
+                                Size: Large
+                                CascadeCount: OneCascade
+                                DepthRange:
+                                    ~Id: a08d4af1-2080-442d-b894-b55df7d80c41
+                                PartitionMode: !LightDirectionalShadowMap.PartitionLogarithmic
+                                    ~Id: 734fc906-e789-48ff-913b-4ec3d3d3fbd3
+                                BiasParameters:
+                                    ~Id: c3fb2b98-c43d-474e-afa0-a10c2823396b
+            Design: {}
+        -   Entity:
+                Id: 90a7660f-37e2-45c0-be72-474c2b0a9021
+                Name: DirectionalLight
+                Components:
+                    - !TransformComponent
+                        ~Id: 6b073038-a250-453d-a849-520a16e6fc5d
+                        Position: {X: 2.871928E-07, Y: 4.14986849, Z: 0.0}
+                        Rotation: {W: 0.90915966, X: -0.128036618, Y: 0.321061224, Z: 0.232282013}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !LightComponent
+                        ~Id: 177c3566-f65a-4d1c-accd-6730f99645cb
+                        Enabled: false
+                        Type: !LightDirectional
+                            ~Id: 2eb1a310-6ed8-45c1-bab9-e56a609fffb9
+                            Color: !ColorRgbProvider
+                                ~Id: ba0ac596-7ef3-4215-a534-2787aa7b3797
+                                Value: {R: 1.0, G: 1.0, B: 1.0}
+                            Shadow:
+                                ~Id: 83a7f278-7838-4bdb-9ae7-a8fc288b8245
+                                Size: Large
+                                DepthRange:
+                                    ~Id: a08d4af1-2080-442d-b894-b55df7d80c41
+                                PartitionMode: !LightDirectionalShadowMap.PartitionLogarithmic
+                                    ~Id: 734fc906-e789-48ff-913b-4ec3d3d3fbd3
+                                BiasParameters:
+                                    ~Id: c3fb2b98-c43d-474e-afa0-a10c2823396b
+            Design: {}
+        -   Entity:
+                Id: 97ddc423-ce5d-45a8-a37d-ac0e53f9678e
+                Name: CubeNoCast
+                Components:
+                    - !TransformComponent
+                        ~Id: 10eeff6e-bbcb-45a8-bef8-c5ff2581de39
+                        Position: {X: 1.0, Y: 0.5, Z: 3.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !ModelComponent
+                        ~Id: 56214636-c48e-477c-b743-993b7b3e8ace
+                        Model: d3edb732-7347-4d97-a038-7f2c8a65bdee/4a9278e7-43ac-4f5c-8e43-265766c6dae3:LightingTests/CubeNoCast
+                        Materials:
+                            - null
+            Design: {}
+        -   Entity:
+                Id: 9e0edc07-f97f-48ed-b363-5d22f2865f9d
+                Name: Cube
+                Components:
+                    - !TransformComponent
+                        ~Id: ed4a715c-e0b1-436e-a6f3-076cb67d8627
+                        Position: {X: -1.0, Y: 0.5, Z: 3.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !ModelComponent
+                        ~Id: 94d50bfc-d5a2-4896-88d1-05d99175a3b8
+                        Model: 750869ab-446d-4111-a2bf-fa0d63f64adb/6050c0d0-b0d7-4f9a-a85c-ce1400becce2:LightingTests/Cube
+                        Materials:
+                            - null
+            Design: {}
+        -   Entity:
+                Id: bfc01958-63e8-4d7b-a457-fe144ba678fa
+                Name: SpotLight
+                Components:
+                    - !TransformComponent
+                        ~Id: f72279bd-ff9f-4e79-a126-ff07dcc4b40f
+                        Position: {X: -1.19172478, Y: 2.335762, Z: 3.27401161}
+                        Rotation: {W: 0.6040228, X: -0.7198463, Y: -0.2198463, Z: -0.262002617}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !LightComponent
+                        ~Id: 13eddd41-701a-4290-a962-98d2e7ac7925
+                        Enabled: false
+                        Type: !LightSpot
+                            ~Id: 3ab8a1f1-9cf1-4512-b3c1-696b6e46deab
+                            Color: !ColorRgbProvider
+                                ~Id: c2af4c47-6d95-490b-bb9a-366f18c6e49a
+                                Value: {R: 1.0, G: 1.0, B: 1.0}
+                            Range: 6.0
+                            AngleOuter: 40.0
+                            Shadow:
+                                ~Id: 21a966aa-ffbe-4417-bb59-47ba44633907
+                                BiasParameters:
+                                    ~Id: 1b399d45-ba8c-4963-98a4-1cb56fa0ac85
+                                    DepthBias: 0.001
+                        Intensity: 2.0
+            Design: {}
+        -   Entity:
+                Id: c719333c-2c49-4db4-ae4b-7b1dddaeb6eb
+                Name: Skybox
+                Components:
+                    - !TransformComponent
+                        ~Id: 3b7d5216-1501-49c9-a7b4-19b7a9778d21
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !LightComponent
+                        ~Id: d35cac2d-a1e8-4352-886e-c4fb9acaec3c
+                        Enabled: false
+                        Type: !LightSkybox
+                            ~Id: 893707e6-b073-4abe-806e-f77af7933191
+                    - !SkyboxComponent
+                        ~Id: 86d3058f-ef39-4eca-8cce-b35a3125d933
+                        Enabled: false
+                        Skybox: d3c9ed63-1678-40c2-98d9-b7963b773751/bf8844a5-1ce4-402f-a538-b8a7edb40fcf:Skybox
+            Design: {}
+        -   Entity:
+                Id: d6126c1f-087c-4cbe-892c-f28f634ee998
+                Name: SpotLightShadow
+                Components:
+                    - !TransformComponent
+                        ~Id: f72279bd-ff9f-4e79-a126-ff07dcc4b40f
+                        Position: {X: -1.19172478, Y: 2.335762, Z: 3.27401161}
+                        Rotation: {W: 0.6040228, X: -0.7198463, Y: -0.2198463, Z: -0.262002617}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !LightComponent
+                        ~Id: 13eddd41-701a-4290-a962-98d2e7ac7925
+                        Type: !LightSpot
+                            ~Id: 3ab8a1f1-9cf1-4512-b3c1-696b6e46deab
+                            Color: !ColorRgbProvider
+                                ~Id: c2af4c47-6d95-490b-bb9a-366f18c6e49a
+                                Value: {R: 1.0, G: 1.0, B: 1.0}
+                            Range: 6.0
+                            AngleOuter: 40.0
+                            Shadow:
+                                ~Id: 21a966aa-ffbe-4417-bb59-47ba44633907
+                                Enabled: true
+                                BiasParameters:
+                                    ~Id: 1b399d45-ba8c-4963-98a4-1cb56fa0ac85
+                                    DepthBias: 0.001
+                        Intensity: 2.0
+            Design: {}
+        -   Entity:
+                Id: eab78ae2-ab62-439c-811b-bc51957bf109
+                Name: DirectionalLightShadowFourCascades
+                Components:
+                    - !TransformComponent
+                        ~Id: 6b073038-a250-453d-a849-520a16e6fc5d
+                        Position: {X: 2.871928E-07, Y: 4.14986849, Z: 0.0}
+                        Rotation: {W: 0.90915966, X: -0.128036618, Y: 0.321061224, Z: 0.232282013}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !LightComponent
+                        ~Id: 177c3566-f65a-4d1c-accd-6730f99645cb
+                        Enabled: false
+                        Type: !LightDirectional
+                            ~Id: 2eb1a310-6ed8-45c1-bab9-e56a609fffb9
+                            Color: !ColorRgbProvider
+                                ~Id: ba0ac596-7ef3-4215-a534-2787aa7b3797
+                                Value: {R: 1.0, G: 1.0, B: 1.0}
+                            Shadow:
+                                ~Id: 83a7f278-7838-4bdb-9ae7-a8fc288b8245
+                                Enabled: true
+                                Size: Large
+                                DepthRange:
+                                    ~Id: a08d4af1-2080-442d-b894-b55df7d80c41
+                                PartitionMode: !LightDirectionalShadowMap.PartitionLogarithmic
+                                    ~Id: 734fc906-e789-48ff-913b-4ec3d3d3fbd3
+                                BiasParameters:
+                                    ~Id: c3fb2b98-c43d-474e-afa0-a10c2823396b
+            Design: {}
+        -   Entity:
+                Id: f72ac81c-ef07-4575-9a6d-6e16c676225c
+                Name: SkyboxRotated
+                Components:
+                    - !TransformComponent
+                        ~Id: 3b7d5216-1501-49c9-a7b4-19b7a9778d21
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {W: -4.371139E-08, X: 1.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !LightComponent
+                        ~Id: d35cac2d-a1e8-4352-886e-c4fb9acaec3c
+                        Enabled: false
+                        Type: !LightSkybox
+                            ~Id: 893707e6-b073-4abe-806e-f77af7933191
+                    - !SkyboxComponent
+                        ~Id: 86d3058f-ef39-4eca-8cce-b35a3125d933
+                        Enabled: false
+                        Skybox: d3c9ed63-1678-40c2-98d9-b7963b773751/bf8844a5-1ce4-402f-a538-b8a7edb40fcf:Skybox
+            Design: {}
+SceneSettings:
+    ~Id: 62ecd57f-a6ab-4a48-b39b-7c5e038e141a
+    GraphicsCompositor: !SceneGraphicsCompositorLayers
+        ~Id: 4d0b88b3-fab9-4a34-8cc9-570ee8d82d8b
+        Cameras:
+            -   ~Id: 019af490-6775-4506-bcea-3464c128cffb
+                Name: null
+                Camera:
+                    Entity: {Id: 5361ab21-8647-4c2e-8d17-df0fba6c2c00}
+                    Id: cd6898f8-c09f-4361-ac6c-2ab28aef9437
+        Layers: []
+        Master:
+            ~Id: a9613bc1-6bb7-4762-b85e-482f7c641ddd
+            Name: SceneGraphicsLayer
+            Output: !MasterRenderFrameProvider {}
+            Renderers:
+                - !ClearRenderFrameRenderer
+                    ~Id: d3e8260d-a2a0-47ed-99ca-a3417b643971
+                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
+                    Output: !CurrentRenderFrameProvider {}
+                - !SceneCameraRenderer
+                    ~Id: fa353407-48a6-469d-824c-a3e216ca73e8
+                    Mode: !CameraRendererModeForward
+                        ~Id: 968a6e09-dd3d-4cee-b01f-57e55b09a599
+                    Camera:
+                        ~Id: 7531cf28-f390-424a-88dd-3e765e57cbc9
+                        Index: 0
+                    Output: !CurrentRenderFrameProvider {}
+                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
+    EditorSettings:
+        ~Id: bfb45faf-2691-42dd-8581-2b6746ea8c08
+        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
+        SceneUnit: 1.0
+        Mode: !SceneEditorGraphicsModeLDRSettings
+            ~Id: e2acc833-6101-4c8f-856e-68f91bfcd23f
+            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}

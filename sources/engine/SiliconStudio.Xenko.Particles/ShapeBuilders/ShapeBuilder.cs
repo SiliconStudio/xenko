@@ -68,5 +68,21 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         /// <param name="livingParticles">Number of living particles this frame</param>
         /// <param name="totalParticles">Number of total number of possible particles for the parent emitter</param>
         public virtual void SetRequiredQuads(int quadsPerParticle, int livingParticles, int totalParticles) { }
+
+        /// <summary>
+        /// Finds the circumcenter coordinates for triangle ABC
+        /// </summary>
+        public static Vector3 Circumcenter(ref Vector3 A, ref Vector3 B, ref Vector3 C)
+        {
+            var a = A - C;
+            var b = B - C;
+
+            var crossAB = Vector3.Cross(a, b);
+            var lenAB = crossAB.LengthSquared();
+            if (lenAB < MathUtil.ZeroTolerance)
+                return C;
+
+            return C + Vector3.Cross(a.LengthSquared() * b - b.LengthSquared() * a, crossAB) / (2 * lenAB);
+        }
     }
 }

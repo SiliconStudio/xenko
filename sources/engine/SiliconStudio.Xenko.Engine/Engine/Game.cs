@@ -21,7 +21,6 @@ using SiliconStudio.Xenko.Profiling;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Fonts;
 using SiliconStudio.Xenko.Rendering.Sprites;
-using SiliconStudio.Xenko.UI;
 
 namespace SiliconStudio.Xenko.Engine
 {
@@ -86,12 +85,6 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         /// <value>The audio.</value>
         public AudioSystem Audio { get; private set; }
-
-        /// <summary>
-        /// Gets the UI system.
-        /// </summary>
-        /// <value>The UI.</value>
-        protected UISystem UI { get; private set; }
 
         /// <summary>
         /// Gets the sprite animation system.
@@ -187,7 +180,6 @@ namespace SiliconStudio.Xenko.Engine
             Script = new ScriptSystem(Services);
             SceneSystem = new SceneSystem(Services);
             Audio = new AudioSystem(Services);
-            UI = new UISystem(Services);
             gameFontSystem = new GameFontSystem(Services);
             SpriteAnimation = new SpriteAnimationSystem(Services);
             ProfilerSystem = new GameProfilingSystem(Services);
@@ -200,6 +192,7 @@ namespace SiliconStudio.Xenko.Engine
             AutoLoadDefaultSettings = true;
         }
 
+        /// <inheritdoc/>
         protected override void Destroy()
         {
             OnGameDestroyed(this);
@@ -210,7 +203,8 @@ namespace SiliconStudio.Xenko.Engine
                 GlobalLogger.GlobalMessageLogged -= logListener;
         }
 
-        protected internal override void PrepareContext()
+        /// <inheritdoc/>
+        protected override void PrepareContext()
         {
             base.PrepareContext();
 
@@ -243,10 +237,41 @@ namespace SiliconStudio.Xenko.Engine
                     {
                         deviceManager.PreferredGraphicsProfile = new[] { renderingSettings.DefaultGraphicsProfile };
                     }
+
                     if (renderingSettings.DefaultBackBufferWidth > 0) deviceManager.PreferredBackBufferWidth = renderingSettings.DefaultBackBufferWidth;
                     if (renderingSettings.DefaultBackBufferHeight > 0) deviceManager.PreferredBackBufferHeight = renderingSettings.DefaultBackBufferHeight;
+
                     deviceManager.PreferredColorSpace = renderingSettings.ColorSpace;
                     SceneSystem.InitialSceneUrl = Settings?.DefaultSceneUrl;
+                }
+            }
+        }
+
+        private void ConfirmRenderingSettings()
+        {
+            var renderingSettings = Settings?.Configurations.Get<RenderingSettings>();
+            if (renderingSettings == null) return;
+
+            var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
+
+            deviceManager.PreferredGraphicsProfile = Context.RequestedGraphicsProfile = new[] { renderingSettings.DefaultGraphicsProfile };
+
+            //if our device height is actually smaller then requested we use the device one
+            deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = Math.Min(renderingSettings.DefaultBackBufferHeight, Window.ClientBounds.Height);
+            //if our device width is actually smaller then requested we use the device one
+            deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = Math.Min(renderingSettings.DefaultBackBufferWidth, Window.ClientBounds.Width);
+
+            if (renderingSettings.AdaptBackBufferToScreen)
+            {
+                var deviceAr = Window.ClientBounds.Width / (float)Window.ClientBounds.Height;
+
+                if (renderingSettings.DefaultBackBufferHeight > renderingSettings.DefaultBackBufferWidth)
+                {
+                    deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = (int)(deviceManager.PreferredBackBufferHeight * deviceAr);
+                }
+                else
+                { 
+                    deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = (int)(deviceManager.PreferredBackBufferWidth / deviceAr);
                 }
             }
         }
@@ -255,17 +280,10 @@ namespace SiliconStudio.Xenko.Engine
         {
             base.Initialize();
 
-            //now we probably are capable of detecting the gpu so we try again settings
+            //now we probably are capable of detecting the gpu/cpu/etc so we confirm rendering settings
             if (AutoLoadDefaultSettings)
             {
-                var renderingSettings = Settings?.Configurations.Get<RenderingSettings>();
-                if (renderingSettings != null)
-                {
-                    var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
-                    deviceManager.PreferredGraphicsProfile = Context.RequestedGraphicsProfile = new[] { renderingSettings.DefaultGraphicsProfile };
-                    deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = renderingSettings.DefaultBackBufferWidth;
-                    deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = renderingSettings.DefaultBackBufferHeight;
-                }
+                ConfirmRenderingSettings();
             }
 
             // ---------------------------------------------------------
@@ -282,9 +300,6 @@ namespace SiliconStudio.Xenko.Engine
             // - Must be before Entities/Camera/Audio/UI, so that scripts can apply
             // changes in the same frame they will be applied
             GameSystems.Add(Script);
-
-            // Add the UI System
-            GameSystems.Add(UI);
 
             // Add the Audio System
             GameSystems.Add(Audio);
@@ -345,11 +360,7 @@ namespace SiliconStudio.Xenko.Engine
                     && Input.IsKeyDown(Keys.C)
                     && Input.IsKeyReleased(Keys.F12))
                 {
-#if !SILICONSTUDIO_RUNTIME_CORECLR
                     var currentFilePath = Assembly.GetEntryAssembly().Location;
-#else
-                    var currentFilePath = Directory.GetCurrentDirectory();
-#endif
                     var timeNow = DateTime.Now.ToString("s", CultureInfo.InvariantCulture).Replace(':', '_');
                     var newFileName = Path.Combine(
                         Path.GetDirectoryName(currentFilePath),

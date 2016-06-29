@@ -64,7 +64,7 @@ namespace SiliconStudio.ExecServer
         {
         }
 
-        public int Run(string currentDirectory, Dictionary<string, string> environmentVariables, string[] args)
+        public int Run(string currentDirectory, Dictionary<string, string> environmentVariables, string[] args, bool shadowCache)
         {
             bool lockTaken = false;
             try
@@ -82,7 +82,7 @@ namespace SiliconStudio.ExecServer
                 upTime.Restart();
 
                 var logger = OperationContext.Current.GetCallbackChannel<IServerLogger>();
-                var result = shadowManager.Run(currentDirectory, environmentVariables, args, logger);
+                var result = shadowManager.Run(currentDirectory, environmentVariables, args, shadowCache, logger);
                 return result;
             }
             finally
