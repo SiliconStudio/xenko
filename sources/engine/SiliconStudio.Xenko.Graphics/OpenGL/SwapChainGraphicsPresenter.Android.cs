@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         public SwapChainGraphicsPresenter(GraphicsDevice device, PresentationParameters presentationParameters) : base(device, presentationParameters)
         {
-            gameWindow = (AndroidGameView)Description.DeviceWindowHandle.NativeHandle;
+            gameWindow = (AndroidGameView)Description.DeviceWindowHandle.NativeWindow;
 
             graphicsDevice = device;
             startingPresentationParameters = presentationParameters;

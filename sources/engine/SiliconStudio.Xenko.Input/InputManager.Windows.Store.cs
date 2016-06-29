@@ -245,7 +245,7 @@ namespace SiliconStudio.Xenko.Input
             switch (windowHandle.Context)
             {
                 case AppContextType.WindowsRuntime:
-                    InitializeFromFrameworkElement((FrameworkElement)windowHandle.NativeHandle);
+                    InitializeFromFrameworkElement((FrameworkElement)windowHandle.NativeWindow);
                     break;
                 default:
                     throw new ArgumentException(string.Format("WindowContext [{0}] not supported", Game.Context.ContextType));

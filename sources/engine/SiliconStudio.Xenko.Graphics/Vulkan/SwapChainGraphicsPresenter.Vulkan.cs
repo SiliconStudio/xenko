@@ -28,9 +28,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
 using SDL2;
-#if SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF
-using System.Windows.Forms;
-#elif SILICONSTUDIO_XENKO_UI_SDL
+#if SILICONSTUDIO_XENKO_UI_SDL
 using Control = SiliconStudio.Xenko.Graphics.SDL.Window;
 #endif
 using SharpVulkan;
@@ -377,12 +375,8 @@ namespace SiliconStudio.Xenko.Graphics
             }
             // Create surface
 #if SILICONSTUDIO_PLATFORM_WINDOWS
-#if SILICONSTUDIO_XENKO_UI_SDL && !SILICONSTUDIO_XENKO_UI_WINFORMS && !SILICONSTUDIO_XENKO_UI_WPF
-            var control = Description.DeviceWindowHandle.NativeHandle as SDL.Window;
-#else
-            var control = Description.DeviceWindowHandle.NativeHandle as Control;
-#endif
-            if (control == null)
+            var controlHandle = Description.DeviceWindowHandle.Handle;
+            if (controlHandle == IntPtr.Zero)
             {
                 throw new NotSupportedException($"Form of type [{Description.DeviceWindowHandle.GetType().Name}] is not supported. Only System.Windows.Control are supported");
             }
@@ -396,14 +390,14 @@ namespace SiliconStudio.Xenko.Graphics
                 // To implement for CoreCLR, currently passing a NULL pointer seems to work
                 InstanceHandle = IntPtr.Zero,
 #endif
-                WindowHandle = control.Handle,
+                WindowHandle = controlHandle,
             };
             surface = GraphicsDevice.NativeInstance.CreateWin32Surface(surfaceCreateInfo);
 #elif SILICONSTUDIO_PLATFORM_ANDROID
             throw new NotImplementedException();
 #elif SILICONSTUDIO_PLATFORM_LINUX
 #if SILICONSTUDIO_XENKO_UI_SDL
-            var control = Description.DeviceWindowHandle.NativeHandle as SDL.Window;
+            var control = Description.DeviceWindowHandle.NativeWindow as SDL.Window;
             if (control == null)
             {
                 throw new NotSupportedException("Non SDL Window used in SDL setup.");

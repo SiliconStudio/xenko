@@ -28,7 +28,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Ignore]
+        [Ignore("Need check")]
         [TestCase("TextureArray_WMipMaps_BC3.dds")]
         [TestCase("TextureCube_WMipMaps_BC3.dds")]
         [TestCase("Texture3D_WMipMaps_BGRA8888.dds")]
@@ -51,7 +51,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Ignore]
+        [Ignore("Need check")]
         [TestCase("TextureArray_WMipMaps_BC3.dds")]
         [TestCase("TextureCube_WMipMaps_BC3.dds")]
         [TestCase("Texture3D_WMipMaps_BGRA8888.dds")]
@@ -65,7 +65,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Test, Ignore]
+        [Test, Ignore("Need check")]
         public void CanHandleRequestTest()
         {
             TexImage image = TestTools.Load(library, "TextureArray_WMipMaps_BC3.dds");
@@ -82,7 +82,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Ignore]
+        [Ignore("Need check")]
         [TestCase("TextureArray_WMipMaps_BC3.dds")]
         [TestCase("TextureCube_WMipMaps_BC3.dds")]
         public void DecompressTest(string file)
@@ -95,7 +95,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Ignore]
+        [Ignore("Need check")]
         [TestCase("Texture3D_WMipMaps_BGRA8888.dds")]
         public void DecompressFailTest(string file)
         {
@@ -117,7 +117,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Ignore]
+        [Ignore("Need check")]
         [TestCase("TextureArray_WMipMaps_BGRA8888.dds", Xenko.Graphics.PixelFormat.BC3_UNorm)]
         [TestCase("TextureCube_WMipMaps_BGRA8888.dds", Xenko.Graphics.PixelFormat.BC3_UNorm)]
         [TestCase("Texture3D_WMipMaps_BGRA8888.dds", Xenko.Graphics.PixelFormat.BC3_UNorm)]
@@ -134,7 +134,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Ignore]
+        [Ignore("Need check")]
         [TestCase("TextureArray_WOMipMaps_BC3.dds", Filter.MipMapGeneration.Box)]
         [TestCase("TextureCube_WOMipMaps_BC3.dds", Filter.MipMapGeneration.Cubic)]
         [TestCase("Texture3D_WOMipMaps_BC3.dds", Filter.MipMapGeneration.Linear)]
@@ -149,7 +149,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Ignore]
+        [Ignore("Need check")]
         [TestCase("TextureArray_WOMipMaps_BC3.dds", "DxtTexLib_GenerateNormalMapTest_TextureArray_WOMipMaps_BC3.dds")]
         [TestCase("TextureCube_WOMipMaps_BC3.dds", "DxtTexLib_GenerateNormalMapTest_TextureCube_WOMipMaps_BC3.dds")]
         [TestCase("Texture3D_WOMipMaps_BC3.dds", "DxtTexLib_GenerateNormalMapTest_Texture3D_WOMipMaps_BC3.dds")]
@@ -163,7 +163,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Ignore]
+        [Ignore("Need check")]
         [TestCase("TextureArray_WMipMaps_BGRA8888.dds", Filter.Rescaling.Bicubic)]
         [TestCase("TextureCube_WMipMaps_BGRA8888.dds", Filter.Rescaling.Bilinear)]
         [TestCase("Texture3D_WMipMaps_BGRA8888.dds", Filter.Rescaling.Nearest)]
@@ -177,7 +177,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Ignore]
+        [Ignore("Need check")]
         [TestCase("TextureArray_WMipMaps_BGRA8888.dds", Filter.Rescaling.Bicubic)]
         [TestCase("TextureCube_WMipMaps_BGRA8888.dds", Filter.Rescaling.Bilinear)]
         [TestCase("Texture3D_WMipMaps_BGRA8888.dds", Filter.Rescaling.Box)]
@@ -191,7 +191,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Ignore]
+        [Ignore("Need check")]
         [TestCase("TextureArray_WMipMaps_BC3.dds")]
         [TestCase("TextureCube_WMipMaps_BC3.dds")]
         [TestCase("Texture3D_WMipMaps_BGRA8888.dds")]
@@ -205,7 +205,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Ignore]
+        [Ignore("Need check")]
         [TestCase("TextureArray_WMipMaps_BC3.dds", 16)]
         [TestCase("TextureArray_WMipMaps_BC3.dds", 512)]
         [TestCase("TextureCube_WMipMaps_BC3.dds", 8)]
@@ -220,7 +220,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Ignore]
+        [Ignore("Need check")]
         [TestCase("TextureArray_WMipMaps_BGRA8888.dds")]
         [TestCase("TextureCube_WMipMaps_BGRA8888.dds")]
         [TestCase("Texture3D_WMipMaps_BGRA8888.dds")]

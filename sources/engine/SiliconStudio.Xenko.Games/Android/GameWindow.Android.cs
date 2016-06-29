@@ -61,7 +61,7 @@ namespace SiliconStudio.Xenko.Games
         protected override void Initialize(GameContext<AndroidXenkoGameView> gameContext)
         {
             xenkoGameForm = gameContext.Control;
-            nativeWindow = new WindowHandle(AppContextType.Android, xenkoGameForm);
+            nativeWindow = new WindowHandle(AppContextType.Android, xenkoGameForm, xenkoGameForm.Handle);
 
             xenkoGameForm.Load += gameForm_Resume;
             xenkoGameForm.OnPause += gameForm_OnPause;

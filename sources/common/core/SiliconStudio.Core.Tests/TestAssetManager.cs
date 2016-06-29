@@ -228,7 +228,7 @@ namespace SiliconStudio.Core.Tests
             Assert.That(((IReferencable)c1ChildCopy).ReferenceCount, Is.EqualTo(0));
         }
 
-        [Test, Ignore]
+        [Test, Ignore("Need check")]
         public void LifetimeNoSimpleConstructor()
         {
             var c1 = new C { I = 18 };

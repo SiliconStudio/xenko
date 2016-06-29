@@ -307,6 +307,12 @@ namespace SiliconStudio.Assets.CompilerApp
             builder.Append((clock.ElapsedMilliseconds * 0.001).ToString("0.000"));
             builder.Append("s: ");
             builder.Append(message.Text);
+            var exceptionInfo = message.ExceptionInfo;
+            if (exceptionInfo != null)
+            {
+                builder.Append(". Exception: ");
+                builder.Append(exceptionInfo);
+            }
             return builder.ToString();
         }
     }

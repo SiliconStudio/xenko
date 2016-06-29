@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Graphics
         private readonly GlyphAction<InternalUIDrawCommand> internalUIDrawGlyphAction;
         private readonly GlyphAction<Vector2> measureStringGlyphAction;
 
-        protected SpriteFont()
+        public SpriteFont()
         {
             internalDrawGlyphAction = InternalDrawGlyph;
             internalUIDrawGlyphAction = InternalUIDrawGlyph;

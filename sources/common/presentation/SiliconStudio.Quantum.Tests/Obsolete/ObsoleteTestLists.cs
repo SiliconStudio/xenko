@@ -10,7 +10,7 @@ using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum.Tests.Obsolete
 {
-    [TestFixture(Ignore = true)]
+    [TestFixture(Ignore = "Obsolete")]
     public class ObsoleteTestLists
     {
         #region Test class definitions

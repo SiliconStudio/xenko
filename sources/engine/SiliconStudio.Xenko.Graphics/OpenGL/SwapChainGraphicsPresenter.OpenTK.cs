@@ -38,11 +38,11 @@ namespace SiliconStudio.Xenko.Graphics
         {
             get
             {
-                return ((OpenGLWindow)Description.DeviceWindowHandle.NativeHandle).WindowState == WindowState.Fullscreen;
+                return ((OpenGLWindow)Description.DeviceWindowHandle.NativeWindow).WindowState == WindowState.Fullscreen;
             }
             set
             {
-                var gameWindow = (OpenGLWindow)Description.DeviceWindowHandle.NativeHandle;
+                var gameWindow = (OpenGLWindow)Description.DeviceWindowHandle.NativeWindow;
                 if (gameWindow.Exists)
                     gameWindow.WindowState = value ? WindowState.Fullscreen : WindowState.Normal;
             }

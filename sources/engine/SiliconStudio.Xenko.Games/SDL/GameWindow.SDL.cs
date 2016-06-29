@@ -159,7 +159,7 @@ namespace SiliconStudio.Xenko.Games
                 height = window.ClientSize.Height;
             }
 
-            windowHandle = new WindowHandle(AppContextType.Desktop, window);
+            windowHandle = new WindowHandle(AppContextType.Desktop, window, window.Handle);
 
             window.ClientSize = new Size2(width, height);
 

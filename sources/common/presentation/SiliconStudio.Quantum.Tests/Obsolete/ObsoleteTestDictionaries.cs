@@ -8,7 +8,7 @@ using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum.Tests.Obsolete
 {
-    [TestFixture(Ignore = true)]
+    [TestFixture(Ignore = "Obsolete")]
     class ObsoleteTestDictionaries
     {
         #region Test class definitions
