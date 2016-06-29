@@ -1,15 +1,53 @@
 !SceneAsset
 Id: 67a9eb30-7686-4b8c-89c3-19f12755774e
-SerializedVersion: {Xenko: 1.7.0-beta02}
+SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
+SceneSettings:
+    ~Id: 8dfe4154-403a-48cb-9020-dbc029d08503
+    GraphicsCompositor: !SceneGraphicsCompositorLayers
+        ~Id: 750f0b40-c963-4032-ab5a-75ad76b6e446
+        Cameras:
+            -   ~Id: b60169a3-8403-4551-a598-391b2a68c9ea
+                Name: null
+                Camera:
+                    Entity: {Id: d9876ddf-0675-4113-8dc5-5d363fbae7f6}
+                    Id: 2f657057-5b7b-4b74-a75d-9271f7f7d086
+        Layers: []
+        Master:
+            ~Id: d7f24a45-9ba3-4362-8b93-fea4cdcd55f3
+            Name: SceneGraphicsLayer
+            Output: !MasterRenderFrameProvider {}
+            Renderers:
+                - !ClearRenderFrameRenderer
+                    ~Id: 9be27e72-27f0-4bc1-b0b0-6d8ef2ba7d96
+                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
+                    Output: !CurrentRenderFrameProvider {}
+                - !SceneCameraRenderer
+                    ~Id: 2d84fd5f-db31-44bb-b106-459cf1fa3820
+                    Mode: !CameraRendererModeForward
+                        ~Id: 8f0e0310-92f0-41bb-93d0-6187229debfa
+                    Camera:
+                        ~Id: e1afcf0c-5299-40c2-bcab-c2b9e04da888
+                        Index: 0
+                    Output: !CurrentRenderFrameProvider {}
+                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
+                    ForceAspectRatio: false
+    EditorSettings:
+        ~Id: df9ebb5c-51f9-4edb-b4bb-eb8af7533d02
+        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
+        SceneUnit: 1.0
+        Mode: !SceneEditorGraphicsModeLDRSettings
+            ~Id: 23067b86-4714-400d-8328-0b2f6ca4113a
+            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
 Hierarchy:
     ~Id: f6179207-c6a1-4692-a2df-cffa00f09103
-    RootEntities:
+    RootPartIds:
         - 820d34a8-2971-4381-abfa-2965d94ec672
         - d9876ddf-0675-4113-8dc5-5d363fbae7f6
+        - 5b9322e4-89dd-4d55-b459-87ad6966eda1
         - 28270aa9-8a00-4a01-97ac-10adf1aa3b87
         - 57b67568-c112-44f5-8d1a-589ca71f1900
-    Entities:
+    Parts:
         -   Entity:
                 Id: 28270aa9-8a00-4a01-97ac-10adf1aa3b87
                 Name: Background
@@ -23,32 +61,6 @@ Hierarchy:
                     - !BackgroundComponent
                         ~Id: 032155b1-b423-4db5-b4cd-4538259e1123
                         Texture: 08e2fd46-3506-4012-b826-6b9bc485c5e1/16a0b153-2f28-481b-a88d-732348e47464:XenkoBackground
-            Design: {}
-        -   Entity:
-                Id: 4c5a2749-4a83-4634-996d-c189695cbb6c
-                Name: Blue Light
-                Components:
-                    - !TransformComponent
-                        ~Id: ccc19d2e-57cd-4416-a843-b2d2f2c0c3dc
-                        Position: {X: -31.9079342, Y: 199.02533, Z: 25.7247124}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 200.0, Y: 200.0, Z: 200.0}
-                        Children: []
-                    - !LightComponent
-                        ~Id: cdca2c83-b61b-461e-ab32-182593eb19b0
-                        Type: !LightPoint
-                            ~Id: 79c0b5a4-6b4b-4b25-b806-3f02a29821a6
-                            Color: !ColorRgbProvider
-                                ~Id: a8c71b64-4b67-448c-9d56-567d6f7f638d
-                                Value: {R: 0.79375, G: 0.9690625, B: 1.0}
-                            Radius: 200.0
-                            Shadow:
-                                ~Id: a04b8904-f8b4-47ad-8bfb-d7c4d101e9b4
-                                Size: Small
-                                BiasParameters:
-                                    ~Id: 2ef1edd7-67ce-4cd1-bb84-a65e40f010d3
-                        Intensity: 1000.0
-            Design: {}
         -   Entity:
                 Id: 57b67568-c112-44f5-8d1a-589ca71f1900
                 Name: FollowingEntity
@@ -61,10 +73,6 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: ef08d60e-261c-480b-abf4-c7b8ba929ca6}
                                 Id: b2dea873-1850-4918-9f67-a5f9322ae8ef
-                            -   Entity: {Id: 4c5a2749-4a83-4634-996d-c189695cbb6c}
-                                Id: ccc19d2e-57cd-4416-a843-b2d2f2c0c3dc
-                            -   Entity: {Id: bd23bbad-2a25-4da4-b80f-03433f764f45}
-                                Id: ccc19d2e-57cd-4416-a843-b2d2f2c0c3dc
                             -   Entity: {Id: 98d284d2-cf3d-4f34-a7e8-009146c3d708}
                                 Id: a08345b4-9f50-45ef-9a6f-3a2c09d17047
                             -   Entity: {Id: d2d6bd43-72ac-4cbc-99bc-5e0ea20663e4}
@@ -76,7 +84,32 @@ Hierarchy:
                         Target:
                             Entity: {Id: 820d34a8-2971-4381-abfa-2965d94ec672}
                             Id: a8b1b6f6-8ad4-4580-bd94-0370455f3450
-            Design: {}
+        -   Entity:
+                Id: 5b9322e4-89dd-4d55-b459-87ad6966eda1
+                Name: Directional light
+                Components:
+                    - !TransformComponent
+                        ~Id: 9413f55f-657d-4277-8852-0ff5b1ea7cf8
+                        Position: {X: 0.0, Y: 2.0, Z: 0.0}
+                        Rotation: {W: 0.819152057, X: -0.57357645, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !LightComponent
+                        ~Id: f3b7d9cb-d855-40e8-9024-a0296ff2c465
+                        Type: !LightDirectional
+                            ~Id: b7ceb541-ef83-4ebc-8d9a-29dada3abdce
+                            Color: !ColorRgbProvider
+                                ~Id: 14227ad1-ce1b-42f6-8c16-dcf54865dd32
+                                Value: {R: 1.0, G: 1.0, B: 1.0}
+                            Shadow:
+                                ~Id: d3dafee4-17a7-47b2-a50d-0dc8f9f0c96a
+                                Size: Large
+                                DepthRange:
+                                    ~Id: 576e4a22-e325-4845-92d7-8c34001c59cb
+                                PartitionMode: !LightDirectionalShadowMap.PartitionLogarithmic
+                                    ~Id: 107d0969-5ebb-474f-be9f-3485e46ad726
+                                BiasParameters:
+                                    ~Id: 47cde0c2-be12-419c-878f-f97369e2a2dd
         -   Entity:
                 Id: 820d34a8-2971-4381-abfa-2965d94ec672
                 Name: Splash
@@ -91,12 +124,10 @@ Hierarchy:
                         ~Id: 802787a7-fdee-42c5-b488-0d3c4b46f129
                         NextScene: TiltedScreen
                         SplashScreenImages: feefd366-28b9-404c-80e5-a083cd45e7d8/e8e2f386-e79e-4875-993f-8bdaf0ef72c5:SplashScreenImages
-                        WesternFont: fe95c3b6-1014-4c00-8ddf-55902252f1d2/9843be29-4f2a-4052-b122-88b8ed337467:WesternFont
                     - !UIComponent
                         ~Id: a8b1b6f6-8ad4-4580-bd94-0370455f3450
                         Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
                         Size: {X: 1.0, Y: 1.0, Z: 1.0}
-            Design: {}
         -   Entity:
                 Id: 98d284d2-cf3d-4f34-a7e8-009146c3d708
                 Name: Smoke Effect
@@ -122,12 +153,7 @@ Hierarchy:
                             BoundingShape: null
                             Emitters:
                                 -   ~Id: f4f029e6-1d83-4d8c-9568-b28c27ac02e3
-                                    EmitterName: null
-                                    MaxParticlesOverride: 0
                                     ParticleLifetime: {X: 1.0, Y: 2.0}
-                                    SimulationSpace: World
-                                    RandomSeedMethod: Time
-                                    SortingPolicy: None
                                     ShapeBuilder: !ShapeBuilderBillboard
                                         ~Id: bdbfd350-1e6e-4733-a6a1-87117ddf8d6e
                                         SamplerPosition: null
@@ -135,8 +161,6 @@ Hierarchy:
                                         SamplerRotation: null
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: d75d7932-4af0-4aeb-beaa-02ebee54ca1e
-                                        AlphaAdditive: 0.0
-                                        FaceCulling: CullNone
                                         ComputeColor: !ComputeTextureColor
                                             Texture: a366ca98-e5de-4667-9dfe-b347ab206772/73b27696-e29d-4f96-bd5d-bac6fa523214:Particles/smoke
                                             FallbackValue:
@@ -223,32 +247,6 @@ Hierarchy:
                                             DisplayParticleScaleUniform: false
                                             AngularRotation: {X: 0.0, Y: 360.0}
                                     Updaters: []
-            Design: {}
-        -   Entity:
-                Id: bd23bbad-2a25-4da4-b80f-03433f764f45
-                Name: Yellow Light
-                Components:
-                    - !TransformComponent
-                        ~Id: ccc19d2e-57cd-4416-a843-b2d2f2c0c3dc
-                        Position: {X: 32.4058456, Y: 165.4758, Z: 16.3137245}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: []
-                    - !LightComponent
-                        ~Id: cdca2c83-b61b-461e-ab32-182593eb19b0
-                        Type: !LightPoint
-                            ~Id: 79c0b5a4-6b4b-4b25-b806-3f02a29821a6
-                            Color: !ColorRgbProvider
-                                ~Id: a8c71b64-4b67-448c-9d56-567d6f7f638d
-                                Value: {R: 1.0, G: 0.948203146, B: 0.75625}
-                            Radius: 300.0
-                            Shadow:
-                                ~Id: a04b8904-f8b4-47ad-8bfb-d7c4d101e9b4
-                                Size: Small
-                                BiasParameters:
-                                    ~Id: 2ef1edd7-67ce-4cd1-bb84-a65e40f010d3
-                        Intensity: 1000.0
-            Design: {}
         -   Entity:
                 Id: d2d6bd43-72ac-4cbc-99bc-5e0ea20663e4
                 Name: Running Knight
@@ -277,7 +275,6 @@ Hierarchy:
                                 RepeatMode: LoopInfinite
                                 BlendOperation: LinearBlend
                                 CurrentTime: 0:00:00:00.0000000
-            Design: {}
         -   Entity:
                 Id: d9876ddf-0675-4113-8dc5-5d363fbae7f6
                 Name: UICamera
@@ -296,7 +293,6 @@ Hierarchy:
                         NearClipPlane: 500.0
                         FarClipPlane: 1500.0
                         AspectRatio: 1.777778
-            Design: {}
         -   Entity:
                 Id: ef08d60e-261c-480b-abf4-c7b8ba929ca6
                 Name: Ball
@@ -312,40 +308,3 @@ Hierarchy:
                         Model: 3029de5d-637f-41a3-9d3d-00ae6d26ea65/be1aa9c8-4b3f-48d4-a759-d3b28603cb41:ProceduralModel
                         Materials:
                             - null
-            Design: {}
-SceneSettings:
-    ~Id: 8dfe4154-403a-48cb-9020-dbc029d08503
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        ~Id: 750f0b40-c963-4032-ab5a-75ad76b6e446
-        Cameras:
-            -   ~Id: b60169a3-8403-4551-a598-391b2a68c9ea
-                Name: null
-                Camera:
-                    Entity: {Id: d9876ddf-0675-4113-8dc5-5d363fbae7f6}
-                    Id: 2f657057-5b7b-4b74-a75d-9271f7f7d086
-        Layers: []
-        Master:
-            ~Id: d7f24a45-9ba3-4362-8b93-fea4cdcd55f3
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                - !ClearRenderFrameRenderer
-                    ~Id: 9be27e72-27f0-4bc1-b0b0-6d8ef2ba7d96
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                - !SceneCameraRenderer
-                    ~Id: 2d84fd5f-db31-44bb-b106-459cf1fa3820
-                    Mode: !CameraRendererModeForward
-                        ~Id: 8f0e0310-92f0-41bb-93d0-6187229debfa
-                    Camera:
-                        ~Id: e1afcf0c-5299-40c2-bcab-c2b9e04da888
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-    EditorSettings:
-        ~Id: df9ebb5c-51f9-4edb-b4bb-eb8af7533d02
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            ~Id: 23067b86-4714-400d-8328-0b2f6ca4113a
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
