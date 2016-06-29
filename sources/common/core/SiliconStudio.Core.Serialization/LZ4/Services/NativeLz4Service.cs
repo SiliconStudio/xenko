@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under BSD 2-Clause License. See LICENSE.md for details.
 using System;
+using SiliconStudio.Core.Native;
 
 namespace SiliconStudio.Core.LZ4.Services
 {

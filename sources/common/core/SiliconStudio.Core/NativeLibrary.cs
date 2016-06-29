@@ -1,10 +1,10 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace SiliconStudio.Core
@@ -29,22 +29,6 @@ namespace SiliconStudio.Core
 #endif
 
         /// <summary>
-        /// Defines the location of the core native DLL.
-        /// </summary>
-#if SILICONSTUDIO_PLATFORM_IOS
-        public const string LibraryName = "__Internal";
-#elif SILICONSTUDIO_PLATFORM_LINUX
-        public const string LibraryName = "libcore.so";
-#else
-        public const string LibraryName = "libcore.dll";
-#endif
-
-        /// <summary>
-        /// Defines the calling convention for P/Invoking the native core methods.
-        /// </summary>
-        public const CallingConvention CallConvention = CallingConvention.Cdecl;
-
-        /// <summary>
         /// Try to preload the library.
         /// This is useful when we want to have AnyCPU .NET and CPU-specific native code.
         /// Only available on Windows for now.
@@ -63,7 +47,7 @@ namespace SiliconStudio.Core
                     return;
                 }
 
-                var systemInfo = new SYSTEM_INFO();
+                SYSTEM_INFO systemInfo;
                 GetNativeSystemInfo(out systemInfo);
 
                 string cpu;
