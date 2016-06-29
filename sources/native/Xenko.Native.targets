@@ -176,7 +176,7 @@
     <OFiles Include="$(ProjectDir)\obj\*.o" />
   </ItemGroup>
 
-  <Target Name="CompileNativeClang_Clean" Condition="'$(SiliconStudioPackageBuild)' == ''" BeforeTargets="Clean">
+  <Target Name="CompileNativeClang_Clean" AfterTargets="CompileNativeClang_Windows;CompileNativeClang_Windows10;CompileNativeClang_WindowsStore;CompileNativeClang_WindowsPhone;CompileNativeClang_iOS;CompileNativeClang_Android;CompileNativeClang_Linux">
     <Delete Files="@(ObjFiles)" />
     <Delete Files="@(OFiles)" />
   </Target>
