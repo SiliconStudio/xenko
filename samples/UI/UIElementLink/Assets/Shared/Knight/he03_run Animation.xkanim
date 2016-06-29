@@ -7,14 +7,3 @@ RepeatMode: LoopInfinite
 Skeleton: ebdddec7-7532-49a0-a72e-7fd0e182d634/1e2af2c8-b557-4f60-88b5-bbe764539fd4:Knight/knight Skeleton
 RootMotion: false
 PreviewModel: 6cbe2eda-e519-4e6c-902d-8dc8519bd9c4/55733c87-8e99-4d26-8eac-32a172399d18:Knight/knight
-~Base:
-    Location: --import--
-    Asset: !Animation
-        Id: 00000000-0000-0000-0000-000000000000
-        SerializedVersion: {Xenko: 1.5.0-alpha02}
-        Tags: []
-        ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
-        RepeatMode: LoopInfinite
-        Skeleton: 4252d570-125b-48ef-ae4a-2e38518816e5/b54b49ac-864b-4ab8-a829-56c84894b368:he03_run Skeleton
-        RootMotion: false
-        PreviewModel: null
