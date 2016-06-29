@@ -36,7 +36,6 @@
     <Compile Include="LZ4\LZ4Codec.cs" />
     <Compile Include="LZ4\LZ4Stream.cs" />
     <Compile Include="LZ4\Services\NativeLz4Service.cs" />
-    <Compile Include="LZ4\Services\NativeLZ4Base.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reflection\IdentifiableHelper.cs" />
     <Compile Include="Reflection\ShadowObject.cs" />
