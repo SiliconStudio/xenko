@@ -29,11 +29,7 @@ namespace SiliconStudio.Xenko.Native
 
         static AudioLayer()
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS
-            NativeLibrary.PreloadLibrary(NativeInvoke.Library + ".dll");
-#else
-            NativeLibrary.PreloadLibrary(NativeInvoke.Library + ".so");
-#endif
+            NativeInvoke.PreLoad();
         }
 
         [SuppressUnmanagedCodeSecurity]
