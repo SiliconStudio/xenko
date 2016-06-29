@@ -31,6 +31,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Audio\Celt.cs" />
+    <Compile Include="DirectInput\XInputChecker.cs" />
     <Compile Include="NativeInvoke.cs" />
     <Compile Include="Audio\AudioLayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -64,6 +65,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Audio\OpenSLES.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DirectInput\XInputChecker.cpp" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
