@@ -23,11 +23,11 @@ namespace SiliconStudio.Xenko.Graphics.Direct3D
         /// <summary>
         /// Gets the DX11 native device context
         /// </summary>
-        /// <param name="device">The Xenko GraphicsDevice</param>
+        /// <param name="commandList">The Xenko CommandList</param>
         /// <returns></returns>
-        public static DeviceContext GetNativeDeviceContext(GraphicsDevice device)
+        public static DeviceContext GetNativeDeviceContext(CommandList commandList)
         {
-            return device.NativeDeviceContext;
+            return commandList.NativeDeviceContext;
         }
 
         /// <summary>
@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Graphics.Direct3D
         /// </summary>
         /// <param name="resource">The Xenko GraphicsResourceBase</param>
         /// <returns></returns>
-        public static Resource GetNativeResource(GraphicsResourceBase resource)
+        public static Resource GetNativeResource(GraphicsResource resource)
         {
             return resource.NativeResource;
         }
@@ -46,10 +46,9 @@ namespace SiliconStudio.Xenko.Graphics.Direct3D
         /// </summary>
         /// <param name="device">The GraphicsDevice in use</param>
         /// <param name="dxTexture2D">The DX11 texture</param>
-        /// <param name="isSrgb">If the texture is SRGB</param>
         /// <param name="takeOwnership">If false AddRef will be called on the texture, if true will not, effectively taking ownership</param>
         /// <returns></returns>
-        public static Texture CreateTextureFromNative(GraphicsDevice device, Texture2D dxTexture2D, bool isSrgb, bool takeOwnership)
+        public static Texture CreateTextureFromNative(GraphicsDevice device, Texture2D dxTexture2D, bool takeOwnership)
         {
             var tex = new Texture(device);
 
@@ -59,7 +58,7 @@ namespace SiliconStudio.Xenko.Graphics.Direct3D
                 unknown.AddReference();
             }
 
-            tex.InitializeFrom(dxTexture2D, isSrgb);
+            tex.InitializeFrom(dxTexture2D, false);
 
             return tex;
         }
