@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
     public class TestPackageArchive
     {
 
-        [Test, Ignore]
+        [Test, Ignore("Need to check why it was disabled")]
         public void TestBasicPackageCreateSaveLoad()
         {
             var defaultPackage = PackageStore.Instance.DefaultPackage;

@@ -33,7 +33,8 @@ namespace SiliconStudio.Xenko.Particles.Tests
         //        const int ParticleTestVersion = 7;  // Children Particles visual test updated
         //        const int ParticleTestVersion = 8;  // Camera ignores scaling, due to float precision issues it renders slightly differently
         //        const int ParticleTestVersion = 10;  // Skip 2 (to ignore colliding with tests on the master branch) + Camera ignores scaling, due to float precision issues it renders slightly differently
-        const int ParticleTestVersion = 11;  // Merged version between version 8 and 10
+        //        const int ParticleTestVersion = 11;  // Merged version between version 8 and 10
+        const int ParticleTestVersion = 12; // NUnit3 switch
 
         /// <summary>
         ///  The <see cref="IndividualTestVersion"/> can be defined per test when only one of them is affected

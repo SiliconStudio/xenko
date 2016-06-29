@@ -962,7 +962,7 @@ namespace SiliconStudio.Assets.Tests
             }
         }
 
-        //[Test, Ignore]
+        //[Test, Ignore("Need check")]
         //public void TestTrackingPackageWithAssetsAndSave()
         //{
         //    var dirPath = Path.Combine(Environment.CurrentDirectory, DirectoryTestBase + @"TestTracking");

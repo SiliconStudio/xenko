@@ -33,6 +33,10 @@
     <Compile Include="Dirtiables\SimpleDirtiable.cs" />
     <Compile Include="Dirtiables\SimpleDirtyingOperation.cs" />
     <Compile Include="Dirtiables\TestDirtiable.cs" />
+    <Compile Include="NUnitAsync\BlockingQueue.cs" />
+    <Compile Include="NUnitAsync\SendOrPostCallbackItem.cs" />
+    <Compile Include="NUnitAsync\StaSynchronizationContext.cs" />
+    <Compile Include="NUnitAsync\StaThread.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TestCore.cs" />
     <Compile Include="TestDispatcher.cs" />
