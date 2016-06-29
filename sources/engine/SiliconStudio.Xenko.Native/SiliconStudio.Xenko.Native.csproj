@@ -64,7 +64,7 @@
     <None Include="Audio\OpenSLES.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="OculusOVR\OculusOVR.cpp" />
+    <None Include="OculusOVR\OculusOVR.cpp" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
