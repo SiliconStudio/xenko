@@ -43,6 +43,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="symbols.def" />
+    <None Include="SiliconStudio.Core.Native.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="LZ4\lz4.c" />
