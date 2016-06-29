@@ -1,10 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection;
 
@@ -19,8 +18,7 @@ namespace SiliconStudio.Core.Extensions
         /// <returns>Returns true if the data source is readonly, false otherwise.</returns>
         public static bool IsReadOnly(this IEnumerable source)
         {
-            if (source == null)
-                throw new ArgumentNullException("source");
+            if (source == null) throw new ArgumentNullException(nameof(source));
 
             var collection = source as ICollection<object>;
             if (collection != null)
@@ -59,18 +57,18 @@ namespace SiliconStudio.Core.Extensions
 
         public static IEnumerable<Tuple<T1, T2>> Zip<T1, T2>(this IEnumerable<T1> enumerable1, IEnumerable<T2> enumerable2)
         {
-            if (enumerable1 == null) throw new ArgumentNullException("enumerable1");
-            if (enumerable2 == null) throw new ArgumentNullException("enumerable2");
+            if (enumerable1 == null) throw new ArgumentNullException(nameof(enumerable1));
+            if (enumerable2 == null) throw new ArgumentNullException(nameof(enumerable2));
 
-            using (IEnumerator<T1> enumerator1 = enumerable1.GetEnumerator())
+            using (var enumerator1 = enumerable1.GetEnumerator())
             {
-                using (IEnumerator<T2> enumerator2 = enumerable2.GetEnumerator())
+                using (var enumerator2 = enumerable2.GetEnumerator())
                 {
-                    bool enumMoved = true;
+                    var enumMoved = true;
                     while (enumMoved)
                     {
                         enumMoved = enumerator1.MoveNext();
-                        bool enum2Moved = enumerator2.MoveNext();
+                        var enum2Moved = enumerator2.MoveNext();
                         if (enumMoved != enum2Moved)
                             throw new InvalidOperationException("Enumerables do not have the same number of items.");
 
@@ -92,6 +90,8 @@ namespace SiliconStudio.Core.Extensions
         /// <returns></returns>
         public static IEnumerable<T> SelectDeep<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> childrenSelector)
         {
+            if (childrenSelector == null) throw new ArgumentNullException(nameof(childrenSelector));
+
             var stack = new Stack<IEnumerable<T>>();
             stack.Push(source);
             while (stack.Count != 0)
@@ -100,12 +100,103 @@ namespace SiliconStudio.Core.Extensions
                 if (current == null)
                     continue;
 
-                foreach (T item in current)
+                foreach (var item in current)
                 {
                     yield return item;
                     stack.Push(childrenSelector(item));
                 }
-            } 
+            }
+        }
+
+        /// <summary>
+        /// Visits a tree (or sub-tree) in breadth-first order.
+        /// </summary>
+        /// <typeparam name="T">Type of the tree's node.</typeparam>
+        /// <param name="root">The root node of the tree (or sub-tree)</param>
+        /// <param name="childrenSelector">A function that returns an enumeration of a node's direct children.</param>
+        /// <returns>An enumeration of the tree's (or sub-tree's) node in breadth-first order.</returns>
+        public static IEnumerable<T> BreadthFirst<T>(this T root, Func<T, IEnumerable<T>> childrenSelector)
+        {
+            if (root == null) throw new ArgumentNullException(nameof(root));
+            if (childrenSelector == null) throw new ArgumentNullException(nameof(childrenSelector));
+
+            yield return root;
+            foreach (var child in BreadthFirst(childrenSelector(root), childrenSelector))
+            {
+                yield return child;
+            }
+        }
+
+        /// <summary>
+        /// Iterates over all elements of source and their children in breadth-first order.
+        /// </summary>
+        /// <typeparam name="T">Type of the elements.</typeparam>
+        /// <param name="source">The root enumeration.</param>
+        /// <param name="childrenSelector">A function that returns the children of an element.</param>
+        /// <returns>An enumeration of all elements of source and their children in breadth-first order.</returns>
+        public static IEnumerable<T> BreadthFirst<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> childrenSelector)
+        {
+            if (childrenSelector == null) throw new ArgumentNullException(nameof(childrenSelector));
+
+            var queue = new Queue<IEnumerable<T>>();
+            queue.Enqueue(source);
+
+            while (queue.Count > 0)
+            {
+                var current = queue.Dequeue();
+                if (current == null)
+                    continue;
+
+                foreach (var item in current)
+                {
+                    yield return item;
+                    queue.Enqueue(childrenSelector(item));
+                }
+            }
+        }
+
+        /// <summary>
+        /// Visits a tree (or sub-tree) in depth-first order (root node first a.k.a. pre-order).
+        /// </summary>
+        /// <typeparam name="T">Type of the tree's node.</typeparam>
+        /// <param name="root">The root node of the tree (or sub-tree)</param>
+        /// <param name="childrenSelector">A function that returns an enumeration of a node's direct children.</param>
+        /// <returns>An enumeration of the tree's (or sub-tree's) node in depth-first order.</returns>
+        public static IEnumerable<T> DepthFirst<T>(this T root, Func<T, IEnumerable<T>> childrenSelector)
+        {
+            if (root == null) throw new ArgumentNullException(nameof(root));
+            if (childrenSelector == null) throw new ArgumentNullException(nameof(childrenSelector));
+
+            var nodes = new Stack<T>();
+            nodes.Push(root);
+
+            while (nodes.Count > 0)
+            {
+                var node = nodes.Pop();
+                yield return node;
+                foreach (var n in childrenSelector(node).Reverse()) nodes.Push(n);
+            }
+        }
+
+        /// <summary>
+        /// Iterates over all elements of source and their children in depth-first order.
+        /// </summary>
+        /// <typeparam name="T">Type of the elements.</typeparam>
+        /// <param name="source">The root enumeration.</param>
+        /// <param name="childrenSelector">A function that returns the children of an element.</param>
+        /// <returns>An enumeration of all elements of source and their children in depth-first order.</returns>
+        public static IEnumerable<T> DepthFirst<T>(this IEnumerable<T> source, Func<T, IEnumerable<T>> childrenSelector)
+        {
+            if (source == null) throw new ArgumentNullException(nameof(source));
+            if (childrenSelector == null) throw new ArgumentNullException(nameof(childrenSelector));
+
+            foreach (var item in source)
+            {
+                foreach (var child in item.DepthFirst(childrenSelector))
+                {
+                    yield return child;
+                }
+            }
         }
 
         public static IEnumerable<T> Distinct<T, TKey>(this IEnumerable<T> source, Func<T, TKey> selector)
@@ -129,8 +220,8 @@ namespace SiliconStudio.Core.Extensions
 
             while (true)
             {
-                bool move1 = e1.MoveNext();
-                bool move2 = e2.MoveNext();
+                var move1 = e1.MoveNext();
+                var move2 = e2.MoveNext();
 
                 // End of enumeration, success!
                 if (!move1 && !move2)
@@ -160,8 +251,8 @@ namespace SiliconStudio.Core.Extensions
 
             while (true)
             {
-                bool move1 = e1.MoveNext();
-                bool move2 = e2.MoveNext();
+                var move1 = e1.MoveNext();
+                var move2 = e2.MoveNext();
 
                 // End of enumeration, success!
                 if (!move1 && !move2)
@@ -184,7 +275,7 @@ namespace SiliconStudio.Core.Extensions
         public static bool AllEqual(this IEnumerable<object> values, out object value)
         {
             value = null;
-            object firstNotNull = values.FirstOrDefault(x => x != null);
+            var firstNotNull = values.FirstOrDefault(x => x != null);
             // Either empty, or everything is null
             if (firstNotNull == null)
                 return true;
@@ -213,7 +304,7 @@ namespace SiliconStudio.Core.Extensions
 
         public static int RemoveWhere<T>(this IList<T> list, Predicate<T> predicate)
         {
-            int count = 0;
+            var count = 0;
             var array = list.ToArray();
             for (var i = array.Length - 1; i >= 0; --i)
             {
@@ -227,7 +318,7 @@ namespace SiliconStudio.Core.Extensions
 
         public static int RemoveWhere<T>(this ICollection<T> collection, Predicate<T> predicate)
         {
-            int count = 0;
+            var count = 0;
             foreach (var item in collection.ToArray().Where(x => predicate(x)))
             {
                 collection.Remove(item);
@@ -236,9 +327,9 @@ namespace SiliconStudio.Core.Extensions
             return count;
         }
 
-        class SelectorEqualityComparer<T, TKey> : IEqualityComparer<T>
+        private class SelectorEqualityComparer<T, TKey> : IEqualityComparer<T>
         {
-            Func<T, TKey> selector;
+            private readonly Func<T, TKey> selector;
 
             public SelectorEqualityComparer(Func<T, TKey> selector)
             {

@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Native
 #if SILICONSTUDIO_PLATFORM_IOS
         internal const string Library = "__Internal";
 #else
-        internal const string Library = "libxenkonative";
+        internal const string Library = "libxenko";
 #endif
 
         static NativeInvoke()
@@ -25,9 +25,7 @@ namespace SiliconStudio.Xenko.Native
 #endif
         }
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
-#endif
         [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
         internal static extern void UpdateBufferValuesFromElementInfo(IntPtr drawInfo, IntPtr vertexPtr, IntPtr indexPtr, int vertexOffset);
 
@@ -123,5 +121,8 @@ namespace SiliconStudio.Xenko.Native
                 return $"OculusOVR-Error({error}): {errorStr}";
             }
         }
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport(Library, EntryPoint = "xnSleep", CallingConvention = CallingConvention.Cdecl)]
+        internal static extern void Sleep(int ms);
     }
 }

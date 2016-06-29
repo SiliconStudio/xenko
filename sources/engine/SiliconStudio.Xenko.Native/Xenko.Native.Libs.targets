@@ -1,0 +1,14 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--
+    We need both XenkoNativePathLibs and XenkoNativePathLibs2 as in Windows platforms it's a simple string while on other platforms they need to be iterated and processed
+  -->
+  <PropertyGroup>
+    <XenkoNativePathLibs Condition="'$(SiliconStudioPlatform)' == 'Windows'">libCompilerRt.lib libCelt.lib</XenkoNativePathLibs>
+    <XenkoNativePathLibs Condition="'$(SiliconStudioPlatform)' == 'Windows10' or '$(SiliconStudioPlatform)' == 'WindowsStore' or '$(SiliconStudioPlatform)' == 'WindowsPhone'">libCompilerRt.lib libCelt.lib Xaudio2.lib</XenkoNativePathLibs>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <XenkoNativePathLibs2 Condition="'$(SiliconStudioPlatform)' == 'iOS'" Include="$(XenkoDependenciesDir)\NativePath\iOS\libCelt.a" />
+    <XenkoNativePathLibs2 Condition="'$(SiliconStudioPlatform)' == 'Linux' or '$(SiliconStudioPlatform)' == 'Android'" Include="libCelt.a;libCompilerRt.a" />
+  </ItemGroup>
+</Project>

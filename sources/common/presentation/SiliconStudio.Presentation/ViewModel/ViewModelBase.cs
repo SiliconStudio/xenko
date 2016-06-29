@@ -64,7 +64,7 @@ namespace SiliconStudio.Presentation.ViewModel
         {
             if (IsDestroyed)
             {
-                throw new ObjectDisposedException(name, "This view model has already been disposed.");
+                throw new ObjectDisposedException(name ?? GetType().Name, "This view model has already been disposed.");
             }
         }
 

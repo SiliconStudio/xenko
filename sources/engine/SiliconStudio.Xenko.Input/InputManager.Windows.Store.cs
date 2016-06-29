@@ -423,12 +423,18 @@ namespace SiliconStudio.Xenko.Input
             {
                 uiElement.Loaded += uiElement_Loaded;
                 uiElement.Unloaded += uiElement_Unloaded;
+
+                uiElement_Loaded(uiElement, null); //todo verify, this fixes WIN10 issues but it's not so clear
+                //uiElement_Loaded never triggers because uiElement is already loaded but there is no way to check that unless by event...
             }
             else
             {
                 uiElement.KeyDown += (_, e) => HandleKeyFrameworkElement(e, InputEventType.Down);
                 uiElement.KeyUp += (_, e) => HandleKeyFrameworkElement(e, InputEventType.Up);
             }
+
+            ControlWidth = (float)uiElement.ActualWidth;
+            ControlHeight = (float)uiElement.ActualHeight;
 
             uiElement.SizeChanged += (_, e) => HandleSizeChangedEvent(e.NewSize);
             uiElement.PointerPressed += (_, e) => HandlePointerEventFrameworkElement(uiElement, e, PointerState.Down);
@@ -466,6 +472,9 @@ namespace SiliconStudio.Xenko.Input
         
         private void InitializeFromCoreWindow(CoreWindow coreWindow)
         {
+            ControlWidth = (float)coreWindow.Bounds.Width;
+            ControlHeight = (float)coreWindow.Bounds.Height;
+
             coreWindow.SizeChanged += (_, args) => { HandleSizeChangedEvent(args.Size); args.Handled = true; };
             coreWindow.PointerPressed += (_, args) => HandlePointerEventCoreWindow(args, PointerState.Down);
             coreWindow.PointerReleased += (_, args) => HandlePointerEventCoreWindow(args, PointerState.Up);
@@ -480,8 +489,8 @@ namespace SiliconStudio.Xenko.Input
 
         private void HandleSizeChangedEvent(Size size)
         {
-            ControlHeight = (float)size.Height;
             ControlWidth = (float)size.Width;
+            ControlHeight = (float)size.Height;
         }
 
         private void HandleKeyFrameworkElement(KeyRoutedEventArgs args, InputEventType inputEventType)
@@ -498,6 +507,12 @@ namespace SiliconStudio.Xenko.Input
 
         private bool HandleKey(VirtualKey virtualKey, CorePhysicalKeyStatus keyStatus, InputEventType type)
         {
+            // If our EditText TextBox is active, let's ignore all key events
+            if (Game.Context is GameContextWindowsRuntime && ((GameContextWindowsRuntime)Game.Context).EditTextBox.Parent != null)
+            {
+                return false;
+            }
+
             // Remap certain keys
             switch (virtualKey)
             {

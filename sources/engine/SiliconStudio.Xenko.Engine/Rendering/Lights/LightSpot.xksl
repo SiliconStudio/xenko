@@ -16,7 +16,16 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             float3 Color;
         };
 
-        void ProcessLight(SpotLightData light)
+        struct SpotLightDataInternal
+        {
+            float3 PositionWS;
+            float3 DirectionWS;
+            float3 AngleOffsetAndInvSquareRadius;
+            [Color]
+            float3 Color;
+        };
+
+        void ProcessLight(SpotLightDataInternal light)
         {
             float3 lightVector = light.PositionWS - streams.PositionWS;
             float lightVectorLength = length(lightVector);

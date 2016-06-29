@@ -96,7 +96,7 @@ namespace SiliconStudio.Assets.Tests
             Assert.DoesNotThrow(() => asset.Id = Guid.Empty);
         }
 
-        [Test, Ignore]
+        [Test, Ignore("Need check")]
         public void TestPackageLoadingWithAssets()
         {
             var basePath = Path.Combine(DirectoryTestBase, @"TestPackage");
@@ -137,7 +137,7 @@ namespace SiliconStudio.Assets.Tests
             Assert.AreEqual(3, project2.Assets.Count);
         }
 
-        [Test, Ignore]
+        [Test, Ignore("Need check")]
         public void TestMovingAssets()
         {
             var basePath = Path.Combine(DirectoryTestBase, @"TestPackage");

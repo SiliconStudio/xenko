@@ -41,8 +41,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                         if (provider == null || provider.Node.Tag != "!SpriteFromSheet")
                             continue;
 
-                        provider.AddChild("CurrentFrame", component.CurrentFrame);
-                        component.RemoveChild("CurrentFrame");
+                        component.TransferChild("CurrentFrame", provider, "CurrentFrame");
                     }
                 }
             }
@@ -73,22 +72,10 @@ namespace SiliconStudio.Xenko.Assets.Entities
                             continue;
 
                         // VirtualResolution
-                        var virtualResolution = component.VirtualResolution;
-                        var vrAsMap = virtualResolution as DynamicYamlMapping;
-                        if (vrAsMap != null)
-                        {
-                            component.AddChild("Resolution", virtualResolution);
-                            component.RemoveChild("VirtualResolution");
-                        }
+                        component.RenameChild("VirtualResolution", "Resolution");
 
                         // VirtualResolutionMode
-                        var resolutionStretch = component.VirtualResolutionMode;
-                        var vrmAsMap = resolutionStretch as DynamicYamlScalar;
-                        if (vrmAsMap != null)
-                        {
-                            component.AddChild("ResolutionStretch", resolutionStretch);
-                            component.RemoveChild("VirtualResolutionMode");
-                        }
+                        component.RenameChild("VirtualResolutionMode", "ResolutionStretch");
                     }
                 }
             }
@@ -161,6 +148,24 @@ namespace SiliconStudio.Xenko.Assets.Entities
                             }
                         }
                     }
+                }
+            }
+        }
+
+        protected sealed class EntityDesignUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                asset.Hierarchy.RootPartIds = asset.Hierarchy.RootEntities;
+                asset.Hierarchy.Parts = asset.Hierarchy.Entities;
+                asset.Hierarchy.RootEntities = DynamicYamlEmpty.Default;
+                asset.Hierarchy.Entities = DynamicYamlEmpty.Default;
+                foreach (var entityDesign in asset.Hierarchy.Parts)
+                {
+                    entityDesign.Folder = entityDesign.Design.Folder;
+                    entityDesign.BaseId = entityDesign.Design.BaseId;
+                    entityDesign.BasePartInstanceId = entityDesign.Design.BasePartInstanceId;
+                    entityDesign.Design = DynamicYamlEmpty.Default;
                 }
             }
         }

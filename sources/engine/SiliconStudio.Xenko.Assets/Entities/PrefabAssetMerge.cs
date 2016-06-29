@@ -136,19 +136,19 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
                 if (!baseEntities.ContainsKey(key))
                 {
-                    var tempHiearchy = new EntityHierarchyData();
-                    tempHiearchy.Entities.Add(entityFromNewBase.Value.EntityDesign);
+                    var tempHiearchy = new AssetCompositeHierarchyData<EntityDesign, Entity>();
+                    tempHiearchy.Parts.Add(entityFromNewBase.Value.EntityDesign);
 
                     // The new entity added by the newbase
                     // Because we are cloning the entity, we need to restore children temporarely in order to clone them as well
                     entityFromNewBase.Value.PopChildren();
-                    var newEntityDesign = ((EntityHierarchyData)AssetCloner.Clone(tempHiearchy)).Entities[0];
+                    var newEntityDesign = ((AssetCompositeHierarchyData<EntityDesign, Entity>)AssetCloner.Clone(tempHiearchy)).Parts[0];
                     entityFromNewBase.Value.PushChildren();
 
                     var newId = Guid.NewGuid();
                     newEntityDesign.Entity.Id = newId;
-                    newEntityDesign.Design.BaseId = entityId;
-                    newEntityDesign.Design.BasePartInstanceId = basePartInstanceId;
+                    newEntityDesign.BaseId = entityId;
+                    newEntityDesign.BasePartInstanceId = basePartInstanceId;
 
                     // Because we are going to modify the NewBase we need to clone it
                     // We tag this entry as special, as we will have to process its children differently later in the merge hierarchy
@@ -162,7 +162,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     newEntities.Add(new GroupPartKey(null, newId), item);
 
                     // If the entity is coming from a part and is from root Entities, we need to add it to the rootEntities by default
-                    if (basePartInstanceId.HasValue && entityFromNewBase.Value.Hierarchy.RootEntities.Contains(entityId))
+                    if (basePartInstanceId.HasValue && entityFromNewBase.Value.Hierarchy.RootPartIds.Contains(entityId))
                     {
                         rootEntitiesToAdd.Add(newId);
                     }
@@ -185,18 +185,18 @@ namespace SiliconStudio.Xenko.Assets.Entities
             var baseRootEntities = new Dictionary<Guid, int>();
             if (baseAsset != null)
             {
-                for (int i = 0; i < baseAsset.Hierarchy.RootEntities.Count; i++)
+                for (int i = 0; i < baseAsset.Hierarchy.RootPartIds.Count; i++)
                 {
-                    var id = baseAsset.Hierarchy.RootEntities[i];
+                    var id = baseAsset.Hierarchy.RootPartIds[i];
                     baseRootEntities.Add(id, i);
                 }
             }
             var newBaseRootEntities = new Dictionary<Guid, int>();
             if (newBaseAsset != null)
             {
-                for (int i = 0; i < newBaseAsset.Hierarchy.RootEntities.Count; i++)
+                for (int i = 0; i < newBaseAsset.Hierarchy.RootPartIds.Count; i++)
                 {
-                    var id = newBaseAsset.Hierarchy.RootEntities[i];
+                    var id = newBaseAsset.Hierarchy.RootPartIds[i];
                     newBaseRootEntities.Add(id, i);
                 }
             }
@@ -206,15 +206,15 @@ namespace SiliconStudio.Xenko.Assets.Entities
             {
                 // Skip entities that don't have a base, as we don't have to do anything in the merge
                 var entityDesign = newEntityEntry.Value.EntityDesign;
-                if (!entityDesign.Design.BaseId.HasValue)
+                if (!entityDesign.BaseId.HasValue)
                 {
                     continue;
                 }
 
                 // Else we will associate entries
                 var newEntity = entityDesign.Entity;
-                var baseId = entityDesign.Design.BaseId.Value;
-                var baseKey = new GroupPartKey(entityDesign.Design.BasePartInstanceId, baseId);
+                var baseId = entityDesign.BaseId.Value;
+                var baseKey = new GroupPartKey(entityDesign.BasePartInstanceId, baseId);
 
                 BaseEntityEntry baseRemap;
                 BaseEntityEntry newBaseRemap;
@@ -250,14 +250,14 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     if (baseAsset != null && baseRootEntities.TryGetValue(baseId, out index))
                     {
                         baseRootEntities.Remove(baseId);
-                        baseAsset.Hierarchy.RootEntities[index] = newEntity.Id;
+                        baseAsset.Hierarchy.RootPartIds[index] = newEntity.Id;
                     }
 
                     // Remap ids in the RootEntities for newBase
                     if (newBaseAsset != null && newBaseRootEntities.TryGetValue(baseId, out index))
                     {
                         newBaseRootEntities.Remove(baseId);
-                        newBaseAsset.Hierarchy.RootEntities[index] = newEntity.Id;
+                        newBaseAsset.Hierarchy.RootPartIds[index] = newEntity.Id;
                     }
                 }
             }
@@ -282,7 +282,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         private void MergeEntities()
         {
             // Clear all entities
-            newAsset.Hierarchy.Entities.Clear();
+            newAsset.Hierarchy.Parts.Clear();
 
             // Visit all existing entities, coming both from newAsset and new entities from newBase
             foreach (var entityEntry in newEntities.OrderBy(x => x.Value.Order))
@@ -329,9 +329,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
                     // Merge folder
                     // If folder was not changed compare to the base, always take the version coming from the new base, otherwise leave the modified version
-                    if (baseRemap.EntityDesign.Design.Folder == entityDesign.Design.Folder)
+                    if (baseRemap.EntityDesign.Folder == entityDesign.Folder)
                     {
-                        entityDesign.Design.Folder = newBaseRemap.EntityDesign.Design.Folder;
+                        entityDesign.Folder = newBaseRemap.EntityDesign.Folder;
                     }
 
                     // Restore Ids
@@ -340,7 +340,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 }
 
                 // Add the entity
-                newAsset.Hierarchy.Entities.Add(entityDesign);
+                newAsset.Hierarchy.Parts.Add(entityDesign);
             }
         }
 
@@ -351,7 +351,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         {
             if (baseAsset != null && newBaseAsset != null)
             {
-                var diff = new AssetDiff(baseAsset.Hierarchy.RootEntities, newAsset.Hierarchy.RootEntities, newBaseAsset.Hierarchy.RootEntities)
+                var diff = new AssetDiff(baseAsset.Hierarchy.RootPartIds, newAsset.Hierarchy.RootPartIds, newBaseAsset.Hierarchy.RootPartIds)
                 {
                     UseOverrideMode = true,
                 };
@@ -364,16 +364,16 @@ namespace SiliconStudio.Xenko.Assets.Entities
             var newHierarchy = newAsset.Hierarchy;
 
             // Add entities coming from parts that are roots
-            newHierarchy.RootEntities.AddRange(rootEntitiesToAdd);
+            newHierarchy.RootPartIds.AddRange(rootEntitiesToAdd);
 
-            foreach (var rootEntity in newHierarchy.RootEntities)
+            foreach (var rootEntity in newHierarchy.RootPartIds)
             {
                 entitiesInHierarchy.Add(rootEntity);
             }
 
             // Process hierarchy level by level
             // This way, we give higher importance to top levels
-            var entityIdsToProcess = new List<Guid>(newHierarchy.RootEntities);
+            var entityIdsToProcess = new List<Guid>(newHierarchy.RootPartIds);
             while (entityIdsToProcess.Count > 0)
             {
                 entityIdsToProcess = MergeHierarchyByLevel(entityIdsToProcess);
@@ -385,7 +385,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </summary>
         private void FixHierarchy()
         { 
-            var entitiesNotInHierarchy = newAsset.Hierarchy.Entities.ToDictionary(entityDesign => entityDesign.Entity.Id);
+            var entitiesNotInHierarchy = newAsset.Hierarchy.Parts.ToDictionary(entityDesign => entityDesign.Entity.Id);
             foreach (var entityId in entitiesInHierarchy)
             {
                 entitiesNotInHierarchy.Remove(entityId);
@@ -397,24 +397,24 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 var entityId = entityEntry.Key;
                 entitiesToRemoveFromNew.Add(entityId);
 
-                newAsset.Hierarchy.Entities.Remove(entityId);
+                newAsset.Hierarchy.Parts.Remove(entityId);
             }
 
             // Collect PartInstanceId,EntityId => newId
             // If no group part (plain base), use the empty Guid
             var finalMapBaseIdToNewId = new Dictionary<GroupPartKey, Guid>();
-            foreach (var entityEntry in newAsset.Hierarchy.Entities)
+            foreach (var entityEntry in newAsset.Hierarchy.Parts)
             {
-                if (entityEntry.Design.BaseId.HasValue)
+                if (entityEntry.BaseId.HasValue)
                 {
-                    var baseId = entityEntry.Design.BaseId.Value;
-                    var groupKey = new GroupPartKey(entityEntry.Design.BasePartInstanceId, baseId);
+                    var baseId = entityEntry.BaseId.Value;
+                    var groupKey = new GroupPartKey(entityEntry.BasePartInstanceId, baseId);
                     finalMapBaseIdToNewId[groupKey] = entityEntry.Entity.Id;
                 }
             }
 
             // If there were any references to entities that have been removed, we need to clean them
-            foreach (var entityEntry in newAsset.Hierarchy.Entities)
+            foreach (var entityEntry in newAsset.Hierarchy.Parts)
             {
                 FixReferencesToEntities(entityEntry, finalMapBaseIdToNewId);
             }
@@ -426,8 +426,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
         private void CleanupEntities()
         {
             // Collect all Entity ids used (either as RootEntities or child entities)
-            var entityIds = new HashSet<Guid>(newAsset.Hierarchy.RootEntities);
-            foreach (var entityEntry in newAsset.Hierarchy.Entities)
+            var entityIds = new HashSet<Guid>(newAsset.Hierarchy.RootPartIds);
+            foreach (var entityEntry in newAsset.Hierarchy.Parts)
             {
                 foreach (var children in entityEntry.Entity.Transform.Children)
                 {
@@ -436,12 +436,12 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
 
             // Remove them from the list
-            var tempList = new List<EntityDesign>(newAsset.Hierarchy.Entities);
+            var tempList = new List<EntityDesign>(newAsset.Hierarchy.Parts);
             foreach (var entityEntry in tempList)
             {
                 if (!entityIds.Contains(entityEntry.Entity.Id))
                 {
-                    newAsset.Hierarchy.Entities.Remove(entityEntry.Entity.Id);
+                    newAsset.Hierarchy.Parts.Remove(entityEntry.Entity.Id);
                 }
             }
         }
@@ -479,15 +479,15 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 var nodes = idNodes.Value;
 
                 // If entity id is not in the current list, it is more likely that it was a link to a base entity
-                if (!newAsset.Hierarchy.Entities.ContainsKey(id))
+                if (!newAsset.Hierarchy.Parts.ContainsKey(id))
                 {
-                    var groupKey = new GroupPartKey(newEntityDesign.Design.BasePartInstanceId, id);
+                    var groupKey = new GroupPartKey(newEntityDesign.BasePartInstanceId, id);
 
                     // We are trying to remap the base id to the new id from known entities from newAsset
                     Guid newId;
                     if (mapBaseIdToNewId.TryGetValue(groupKey, out newId))
                     {
-                        var linkedEntity = newAsset.Hierarchy.Entities[newId].Entity;
+                        var linkedEntity = newAsset.Hierarchy.Parts[newId].Entity;
                         foreach (var node in nodes)
                         {
                             var entityComponent = node.Instance as EntityComponent;
@@ -533,7 +533,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     // Build a list of Entities Ids for the BaseEntity.Transform.Children remapped to the new entities (using the BasePartInstanceId of the entity being processed)
                     var baseChildrenId = new List<Guid>();
 
-                    var basePartInstanceId = remap.EntityDesign.Design.BasePartInstanceId;
+                    var basePartInstanceId = remap.EntityDesign.BasePartInstanceId;
 
                     if (remap.Base.Children != null)
                     {
@@ -608,7 +608,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     var children = new List<TransformComponent>(remap.Children);
                     remap.Children.Clear();
 
-                    var basePartInstanceId = remap.EntityDesign.Design.BasePartInstanceId;
+                    var basePartInstanceId = remap.EntityDesign.BasePartInstanceId;
 
                     foreach (var transformComponent in children)
                     {
@@ -670,7 +670,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
-        private void MapEntities<T>(EntityHierarchyData hierarchyData, Dictionary<GroupPartKey, T> entities, Guid? instancePartIdArg = null) where T : EntityEntry
+        private void MapEntities<T>(AssetCompositeHierarchyData<EntityDesign, Entity> hierarchyData, Dictionary<GroupPartKey, T> entities, Guid? instancePartIdArg = null) where T : EntityEntry
         {
             if (hierarchyData == null)
             {
@@ -681,15 +681,15 @@ namespace SiliconStudio.Xenko.Assets.Entities
             // and associate correctly the instancePartId with each entities that it is composed of.
             if (instancePartIdArg.HasValue)
             {
-                hierarchyData = (EntityHierarchyData)AssetCloner.Clone(hierarchyData);
+                hierarchyData = (AssetCompositeHierarchyData<EntityDesign, Entity>)AssetCloner.Clone(hierarchyData);
             }
 
 
-            foreach (var entityDesign in hierarchyData.Entities)
+            foreach (var entityDesign in hierarchyData.Parts)
             {
                 if (instancePartIdArg.HasValue)
                 {
-                    entityDesign.Design.BasePartInstanceId = instancePartIdArg;
+                    entityDesign.BasePartInstanceId = instancePartIdArg;
                 }
 
                 var key = new GroupPartKey(instancePartIdArg, entityDesign.Entity.Id);
@@ -721,7 +721,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         private class BaseEntityEntry : EntityEntry
         {
 
-            public BaseEntityEntry(EntityDesign entityDesign, EntityHierarchyData hierarchy, int order) : base(entityDesign, hierarchy, order)
+            public BaseEntityEntry(EntityDesign entityDesign, AssetCompositeHierarchyData<EntityDesign, Entity> hierarchy, int order) : base(entityDesign, hierarchy, order)
             {
             }
 
@@ -734,7 +734,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         private class NewEntityEntry : EntityEntry
         {
-            public NewEntityEntry(EntityDesign entityDesign, EntityHierarchyData hierarchy, int order) : base(entityDesign, hierarchy, order)
+            public NewEntityEntry(EntityDesign entityDesign, AssetCompositeHierarchyData<EntityDesign, Entity> hierarchy, int order) : base(entityDesign, hierarchy, order)
             {
             }
 
@@ -758,7 +758,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         [DebuggerDisplay("Remap {EntityDesign}")]
         private abstract class EntityEntry
         {
-            public EntityEntry(EntityDesign entityDesign, EntityHierarchyData hierarchy, int order)
+            public EntityEntry(EntityDesign entityDesign, AssetCompositeHierarchyData<EntityDesign, Entity> hierarchy, int order)
             {
                 if (entityDesign == null) throw new ArgumentNullException(nameof(entityDesign));
                 Order = order;
@@ -771,7 +771,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
             public int Order { get; set; }
 
-            public EntityHierarchyData Hierarchy { get; }
+            public AssetCompositeHierarchyData<EntityDesign, Entity> Hierarchy { get; }
 
             public readonly EntityDesign EntityDesign;
 

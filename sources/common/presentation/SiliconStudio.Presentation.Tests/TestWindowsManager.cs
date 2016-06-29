@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
+using NUnitAsync;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Presentation.Tests.WPF;
 using SiliconStudio.Presentation.Windows;
@@ -17,15 +18,25 @@ namespace SiliconStudio.Presentation.Tests
     public class TestWindowManager
     {
         private static readonly object LockObj = new object();
+        private StaSynchronizationContext syncContext;
 
         [SetUp]
-        protected virtual void Setup() => Monitor.Enter(LockObj);
+        protected virtual void Setup()
+        {
+            Monitor.Enter(LockObj);
+            syncContext = new StaSynchronizationContext();
+        }
 
         [TearDown]
-        protected virtual void TearDown() => Monitor.Exit(LockObj);
+        protected virtual void TearDown()
+        {
+            syncContext.Dispose();
+            syncContext = null;
+            Monitor.Exit(LockObj);
+        }
 
         [Test]
-        public async void TestInitDistroy()
+        public async Task TestInitDistroy()
         {
             LoggerResult loggerResult;
             var dispatcher = await WindowManagerHelper.CreateUIThread();
@@ -36,7 +47,7 @@ namespace SiliconStudio.Presentation.Tests
         }
 
         [Test, RequiresSTA]
-        public async void TestOpenCloseWindow()
+        public async Task TestOpenCloseWindow()
         {
             LoggerResult loggerResult;
             var dispatcher = await WindowManagerHelper.CreateUIThread();
@@ -66,7 +77,7 @@ namespace SiliconStudio.Presentation.Tests
         }
 
         [Test, RequiresSTA]
-        public async void TestMainWindowThenModalBox()
+        public async Task TestMainWindowThenModalBox()
         {
             LoggerResult loggerResult;
             const string messageBoxName = nameof(TestMainWindowThenModalBox);
@@ -115,7 +126,7 @@ namespace SiliconStudio.Presentation.Tests
         }
 
         [Test, RequiresSTA]
-        public async void TestMainWindowThenModalBoxCloseMain()
+        public async Task TestMainWindowThenModalBoxCloseMain()
         {
             LoggerResult loggerResult;
             const string messageBoxName = nameof(TestMainWindowThenModalBoxCloseMain);
@@ -156,7 +167,7 @@ namespace SiliconStudio.Presentation.Tests
         }
 
         [Test, RequiresSTA]
-        public async void TestSameModalTwice()
+        public async Task TestSameModalTwice()
         {
             LoggerResult loggerResult;
             const string messageBoxName = nameof(TestMainWindowThenModalBoxCloseMain);
@@ -178,7 +189,7 @@ namespace SiliconStudio.Presentation.Tests
         }
 
         [Test, RequiresSTA]
-        public async void TestMainWindowThenTwoModalBoxes()
+        public async Task TestMainWindowThenTwoModalBoxes()
         {
             LoggerResult loggerResult;
             const string messageBoxName = nameof(TestMainWindowThenTwoModalBoxes);
@@ -254,7 +265,7 @@ namespace SiliconStudio.Presentation.Tests
         }
 
         [Test, RequiresSTA]
-        public async void TestMainWindowThenTwoModalBoxesReverseClose()
+        public async Task TestMainWindowThenTwoModalBoxesReverseClose()
         {
             LoggerResult loggerResult;
             const string messageBoxName = nameof(TestMainWindowThenTwoModalBoxesReverseClose);
@@ -330,7 +341,7 @@ namespace SiliconStudio.Presentation.Tests
         }
 
         [Test, RequiresSTA]
-        public async void TestMainWindowThenModalBoxThenBackgroundModal()
+        public async Task TestMainWindowThenModalBoxThenBackgroundModal()
         {
             LoggerResult loggerResult;
             const string messageBoxName = nameof(TestMainWindowThenModalBoxThenBackgroundModal);
@@ -406,7 +417,7 @@ namespace SiliconStudio.Presentation.Tests
         }
 
         [Test, RequiresSTA]
-        public async void TestMainWindowThenMessageBox()
+        public async Task TestMainWindowThenMessageBox()
         {
             LoggerResult loggerResult;
             const string messageBoxName = nameof(TestMainWindowThenMessageBox);
@@ -460,7 +471,7 @@ namespace SiliconStudio.Presentation.Tests
         }
 
         [Test, RequiresSTA]
-        public async void TestMainWindowThenModalBoxThenMessageBox()
+        public async Task TestMainWindowThenModalBoxThenMessageBox()
         {
             LoggerResult loggerResult;
             const string messageBoxName = nameof(TestMainWindowThenModalBoxThenMessageBox);
@@ -535,7 +546,7 @@ namespace SiliconStudio.Presentation.Tests
         }
 
         [Test, RequiresSTA]
-        public async void TestMainWindowThenMessageBoxThenBackgroundModalBox()
+        public async Task TestMainWindowThenMessageBoxThenBackgroundModalBox()
         {
             LoggerResult loggerResult;
             const string messageBoxName = nameof(TestMainWindowThenMessageBoxThenBackgroundModalBox);
@@ -610,7 +621,7 @@ namespace SiliconStudio.Presentation.Tests
         }
 
         [Test, RequiresSTA]
-        public async void TestMainWindowThenMessageBoxThenBackgroundModalBoxReverseClose()
+        public async Task TestMainWindowThenMessageBoxThenBackgroundModalBoxReverseClose()
         {
             LoggerResult loggerResult;
             const string messageBoxName = nameof(TestMainWindowThenMessageBoxThenBackgroundModalBoxReverseClose);
@@ -685,7 +696,7 @@ namespace SiliconStudio.Presentation.Tests
         }
 
         [Test, RequiresSTA]
-        public async void TestModalBoxThenCloseThenModalBox()
+        public async Task TestModalBoxThenCloseThenModalBox()
         {
             LoggerResult loggerResult;
             const string messageBoxName = nameof(TestMainWindowThenModalBox);
@@ -723,7 +734,7 @@ namespace SiliconStudio.Presentation.Tests
         }
 
         [Test, RequiresSTA]
-        public async void TestMainWindowThenModalBoxClosedBeforeShown()
+        public async Task TestMainWindowThenModalBoxClosedBeforeShown()
         {
             LoggerResult loggerResult;
             const string messageBoxName = nameof(TestMainWindowThenModalBox);

@@ -20,5 +20,5 @@ popd
 
 rem Copying assemblies
 copy ..\..\externals\SDL2-CS\bin\%1\SDL2-CS.dll .
-copy ..\..\externals\SDL2-CS\bin\%1\SDL2-CS.pdb .
+if exist ..\..\externals\SDL2-CS\bin\%1\SDL2-CS.pdb copy ..\..\externals\SDL2-CS\bin\%1\SDL2-CS.pdb .
 

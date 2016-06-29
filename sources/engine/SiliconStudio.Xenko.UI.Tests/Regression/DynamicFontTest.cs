@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public DynamicFontTest()
         {
-            CurrentVersion = 4;
+            CurrentVersion = 5; // Slight size changes but visually correct
         }
 
         protected override async Task LoadContent()

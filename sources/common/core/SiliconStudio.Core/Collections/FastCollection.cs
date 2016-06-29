@@ -12,7 +12,7 @@ using SiliconStudio.Core.Serialization.Serializers;
 namespace SiliconStudio.Core.Collections
 {
     /// <summary>
-    /// Faster and lightter implementation of <see cref="System.Collections.ObjectModel.Collection{T}"/> with value types enumerators to avoid allocation in foreach loops, and various helper functions.
+    /// Faster and lighter implementation of <see cref="System.Collections.ObjectModel.Collection{T}"/> with value types enumerators to avoid allocation in foreach loops, and various helper functions.
     /// </summary>
     /// <typeparam name="T">Type of elements of this collection </typeparam>
     [DataSerializer(typeof(ListAllSerializer<,>), Mode = DataSerializerGenericMode.TypeAndGenericArguments)]

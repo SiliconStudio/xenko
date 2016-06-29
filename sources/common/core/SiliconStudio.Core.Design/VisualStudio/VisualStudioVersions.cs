@@ -14,6 +14,7 @@ namespace SiliconStudio.Core.VisualStudio
             VisualStudio2012,
             VisualStudio2013,
             VisualStudio2015,
+            VisualStudio15,
             VisualCSharpExpress2012,
             VisualCSharpExpress2013,
             VisualCSharpExpress2015,
@@ -24,6 +25,7 @@ namespace SiliconStudio.Core.VisualStudio
         public const string VisualStudio2012 = "Visual Studio 2012";
         public const string VisualStudio2013 = "Visual Studio 2013";
         public const string VisualStudio2015 = "Visual Studio 2015";
+        public const string VisualStudio15 = "Visual Studio 15";
         public const string VisualCSharpExpress2012 = "Visual C# Express 2012";
         public const string VisualCSharpExpress2013 = "Visual C# Express 2013";
         public const string VisualCSharpExpress2015 = "Visual C# Express 2015";
@@ -57,6 +59,8 @@ namespace SiliconStudio.Core.VisualStudio
                 case VisualStudio2015:
                 case VisualCSharpExpress2015:
                     return ("14.0");
+                case VisualStudio15:
+                    return ("15.0");
                 default:
                     return null;
             }
@@ -85,6 +89,7 @@ namespace SiliconStudio.Core.VisualStudio
                 case VisualCSharpExpress2012:
                 case VisualCSharpExpress2013:
                 case VisualCSharpExpress2015:
+                case VisualStudio15:
                     return GetSpecificVisualStudioPath(GetVersionNumber(visualStudioVersion), IsExpressVersion(visualStudioVersion));
                 case XamarinStudio:
                     return GetXamarinStudioPath();

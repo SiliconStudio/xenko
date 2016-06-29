@@ -36,13 +36,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\engine\SiliconStudio.Xenko.Graphics.Regression\BlockingBufferedStream.cs">
-      <Link>BlockingBufferedStream.cs</Link>
-    </Compile>
     <Compile Include="..\..\engine\SiliconStudio.Xenko.Graphics.Regression\RegressionHelpers.cs">
       <Link>RegressionHelpers.cs</Link>
     </Compile>
     <None Include="GraphicsTestBase.Deprecated.cs" />
+    <Compile Include="..\..\engine\SiliconStudio.Xenko.Graphics.Regression\TestResultImage.cs">
+      <Link>TestResultImage.cs</Link>
+    </Compile>
     <Compile Include="..\..\shared\Process\ProcessOutputs.cs">
       <Link>ProcessOutputs.cs</Link>
     </Compile>

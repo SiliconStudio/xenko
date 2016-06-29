@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Quantum.Contents;
 
@@ -16,15 +15,17 @@ namespace SiliconStudio.Quantum
     public class GraphNodeChangeListener : IDisposable
     {
         private readonly IGraphNode rootNode;
-        private readonly Dictionary<IGraphNode, GraphNodePath> registeredNodes = new Dictionary<IGraphNode, GraphNodePath>();
+        private readonly Func<IGraphNode, GraphNodePath, bool> shouldRegisterNode;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphNodeChangeListener"/> class.
         /// </summary>
         /// <param name="rootNode">The root node for which to track referenced node changes.</param>
-        public GraphNodeChangeListener(IGraphNode rootNode)
+        /// <param name="shouldRegisterNode">A method that can indicate whether a node of the hierarchy should be registered to the listener.</param>
+        public GraphNodeChangeListener(IGraphNode rootNode, Func<IGraphNode, GraphNodePath, bool> shouldRegisterNode = null)
         {
             this.rootNode = rootNode;
+            this.shouldRegisterNode = shouldRegisterNode;
             RegisterAllNodes();
         }
 
@@ -56,24 +57,8 @@ namespace SiliconStudio.Quantum
             visitor.Visit(rootNode);
         }
 
-        public GraphNodePath GetPath(IContentNode node)
-        {
-            GraphNodePath path;
-            var graphNode = node as IGraphNode;
-            if (graphNode == null)
-                return null;
-
-            registeredNodes.TryGetValue(graphNode, out path);
-            return path;
-        }
-
         protected virtual void RegisterNode(IGraphNode node, GraphNodePath path)
         {
-            if (registeredNodes.ContainsKey(node))
-                throw new InvalidOperationException("Node already registered");
-
-            registeredNodes.Add(node, path);
-
             node.Content.PrepareChange += ContentPrepareChange;
             node.Content.FinalizeChange += ContentFinalizeChange;
             node.Content.Changing += ContentChanging;
@@ -82,10 +67,6 @@ namespace SiliconStudio.Quantum
 
         protected virtual void UnregisterNode(IGraphNode node, GraphNodePath path)
         {
-            if (!registeredNodes.ContainsKey(node))
-                throw new InvalidOperationException("Node not registered");
-
-            registeredNodes.Remove(node);
             node.Content.PrepareChange -= ContentPrepareChange;
             node.Content.FinalizeChange -= ContentFinalizeChange;
             node.Content.Changing -= ContentChanging;
@@ -96,95 +77,90 @@ namespace SiliconStudio.Quantum
         {
             var visitor = new GraphVisitorBase();
             visitor.Visiting += RegisterNode;
+            visitor.ShouldVisit = shouldRegisterNode;
             visitor.Visit(rootNode);
         }
 
         private void ContentPrepareChange(object sender, ContentChangeEventArgs e)
         {
             var node = e.Content.OwnerNode as IGraphNode;
-            var path = GetPath(e.Content.OwnerNode);
             if (node != null)
             {
                 var visitor = new GraphVisitorBase();
                 visitor.Visiting += UnregisterNode;
+                visitor.ShouldVisit = shouldRegisterNode;
                 switch (e.ChangeType)
                 {
                     case ContentChangeType.ValueChange:
                         // The changed node itself is still valid, we don't want to unregister it
                         visitor.SkipRootNode = true;
-                        visitor.Visit(node, path);
+                        visitor.Visit(node);
                         break;
                     case ContentChangeType.CollectionRemove:
                         if (node.Content.IsReference && e.OldValue != null)
                         {
                             var removedNode = node.Content.Reference.AsEnumerable[e.Index].TargetNode;
-                            var removedNodePath = path?.PushIndex(e.Index);
                             if (removedNode != null)
                             {
-                                visitor.Visit(removedNode, removedNodePath);
+                                visitor.Visit(removedNode);
                             }
                         }
                         break;
                 }
             }
 
-            PrepareChange?.Invoke(sender, new GraphContentChangeEventArgs(e, path));
+            PrepareChange?.Invoke(sender, new GraphContentChangeEventArgs(e));
         }
 
         private void ContentFinalizeChange(object sender, ContentChangeEventArgs e)
         {
             var node = e.Content.OwnerNode as IGraphNode;
-            var path = GetPath(e.Content.OwnerNode);
             if (node != null)
             {
                 var visitor = new GraphVisitorBase();
                 visitor.Visiting += RegisterNode;
+                visitor.ShouldVisit = shouldRegisterNode;
                 switch (e.ChangeType)
                 {
                     case ContentChangeType.ValueChange:
                         // The changed node itself is still valid, we don't want to re-register it
                         visitor.SkipRootNode = true;
-                        visitor.Visit(node, path);
+                        visitor.Visit(node);
                         break;
                     case ContentChangeType.CollectionAdd:
                         if (node.Content.IsReference && e.NewValue != null)
                         {
-                            var index = e.Index;
                             IGraphNode addedNode;
-                            if (!index.IsEmpty)
+                            if (!e.Index.IsEmpty)
                             {
                                 addedNode = node.Content.Reference.AsEnumerable[e.Index].TargetNode;
                             }
                             else
                             {
                                 var reference = node.Content.Reference.AsEnumerable.First(x => x.TargetNode.Content.Retrieve() == e.NewValue);
-                                index = reference.Index;
                                 addedNode = reference.TargetNode;
                             }
 
                             if (addedNode != null)
                             {
-                                var addedNodePath = path?.PushIndex(index);
-                                visitor.Visit(addedNode, addedNodePath);
+                                visitor.Visit(addedNode);
                             }
                         }
                         break;
                 }
             }
 
-            FinalizeChange?.Invoke(sender, new GraphContentChangeEventArgs(e, path));
+            FinalizeChange?.Invoke(sender, new GraphContentChangeEventArgs(e));
         }
 
         private void ContentChanging(object sender, ContentChangeEventArgs e)
         {
-            var path = GetPath(e.Content.OwnerNode);
-            Changing?.Invoke(sender, new GraphContentChangeEventArgs(e, path));
+            Changing?.Invoke(sender, new GraphContentChangeEventArgs(e));
         }
 
         private void ContentChanged(object sender, ContentChangeEventArgs e)
         {
-            var path = GetPath(e.Content.OwnerNode);
-            Changed?.Invoke(sender, new GraphContentChangeEventArgs(e, path));
+            Changed?.Invoke(sender, new GraphContentChangeEventArgs(e));
         }
     }
 }

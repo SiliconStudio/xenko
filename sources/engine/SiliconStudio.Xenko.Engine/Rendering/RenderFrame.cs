@@ -306,14 +306,14 @@ namespace SiliconStudio.Xenko.Rendering
             if (description.DepthFormat == RenderFrameDepthFormat.None && description.Format == RenderFrameFormat.None)
                 return;
 
-            // TODO GRAPHICS REFACTOR check if it's OK to use Presenter targets
-            var referenceTexture = referenceFrame != null ? referenceFrame.ReferenceTexture : device.Presenter.BackBuffer;
-
             int width = description.Width;
             int height = description.Height;
 
             if (description.Mode == RenderFrameSizeMode.Relative)
             {
+                // TODO GRAPHICS REFACTOR check if it's OK to use Presenter targets
+                var referenceTexture = referenceFrame != null ? referenceFrame.ReferenceTexture : device.Presenter.BackBuffer;
+
                 width = (width * referenceTexture.Width) / 100;
                 height = (height * referenceTexture.Height) / 100;
             }

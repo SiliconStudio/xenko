@@ -27,7 +27,7 @@ namespace SiliconStudio.TextureConverter.Tests
             library.Dispose();
         }
 
-        [Ignore]
+        [Ignore("Need check")]
         [TestCase("duck.jpg")]
         [TestCase("stones.png")]
         [TestCase("snap1.psd")]
@@ -41,7 +41,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Ignore]
+        [Ignore("Need check")]
         [TestCase("duck.jpg")]
         [TestCase("stones.png")]
         public void EndLibraryTest(string file)
@@ -54,7 +54,7 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
-        [Ignore]
+        [Ignore("Need check")]
         [TestCase("duck.jpg")]
         [TestCase("stones.png")]
         public void CorrectGammaTest(string file)
@@ -66,7 +66,7 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
-        [Ignore]
+        [Ignore("Need check")]
         [TestCase("duck.jpg", Orientation.Horizontal)]
         [TestCase("stones.png", Orientation.Vertical)]
         public void FlipTest(string file, Orientation orientation)
@@ -78,7 +78,7 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
-        [Ignore]
+        [Ignore("Need check")]
         [TestCase("duck.jpg", Filter.Rescaling.Bicubic)]
         [TestCase("stones.png", Filter.Rescaling.Bilinear)]
         [TestCase("duck.jpg", Filter.Rescaling.Box)]
@@ -94,7 +94,7 @@ namespace SiliconStudio.TextureConverter.Tests
             image.Dispose();
         }
 
-        [Test, Ignore]
+        [Test, Ignore("Need check")]
         public void FixedRescale3DTest()
         {
             DxtTexLib lib = new DxtTexLib();
@@ -110,7 +110,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Ignore]
+        [Ignore("Need check")]
         [TestCase("stones.png", Filter.Rescaling.Bicubic)]
         [TestCase("stones.png", Filter.Rescaling.Bilinear)]
         [TestCase("stones.png", Filter.Rescaling.Box)]
@@ -127,7 +127,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Ignore]
+        [Ignore("Need check")]
         [TestCase("duck.jpg")]
         [TestCase("stones.png")]
         public void SwitchChannelsTest(string file)
@@ -140,7 +140,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Ignore]
+        [Ignore("Need check")]
         [TestCase("TextureArray_WMipMaps_BGRA8888", ".dds", 0)]
         [TestCase("TextureArray_WMipMaps_BGRA8888", ".dds", 16)]
         public void ExportArrayTest(string fileName, string extension, int minMipMapSize)
@@ -174,7 +174,7 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
 
-        [Test, Ignore]
+        [Test, Ignore("Need check")]
         public void CanHandleRequestTest()
         {
             TexImage image = TestTools.Load(library, "stones.png");

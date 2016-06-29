@@ -21,12 +21,15 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             TestUtilities.ExecuteScriptInUpdateLoop(TestSoundEffectLoadingImpl, TestUtilities.ExitGameAfterSleep(1000));
         }
 
+        private static SoundInstance testInstance;
+
         private static void TestSoundEffectLoadingImpl(Game game)
         {
-            SoundEffect sound = null;
-            Assert.DoesNotThrow(() => sound = game.Content.Load<SoundEffect>("EffectBip"), "Failed to load the soundEffect.");
+            Sound sound = null;
+            Assert.DoesNotThrow(() => sound = game.Content.Load<Sound>("EffectBip"), "Failed to load the soundEffect.");
             Assert.IsNotNull(sound, "The soundEffect loaded is null.");
-            sound.Play();
+            testInstance = sound.CreateInstance(game.Audio.AudioEngine.DefaultListener);
+            testInstance.Play();
             // Should hear the sound here.
         }
 
@@ -41,10 +44,11 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
 
         private static void TestSoundMusicLoadingImpl(Game game)
         {
-            SoundMusic sound = null;
-            Assert.DoesNotThrow(() => sound = game.Content.Load<SoundMusic>("EffectBip"), "Failed to load the SoundMusic.");
+            Sound sound = null;
+            Assert.DoesNotThrow(() => sound = game.Content.Load<Sound>("EffectBip"), "Failed to load the SoundMusic.");
             Assert.IsNotNull(sound, "The SoundMusic loaded is null.");
-            sound.Play();
+            testInstance = sound.CreateInstance(game.Audio.AudioEngine.DefaultListener);
+            testInstance.Play();
             // Should hear the sound here.
         }
     }

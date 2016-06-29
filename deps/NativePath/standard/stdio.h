@@ -24,6 +24,8 @@ typedef void FILE;
 #define printf npPrintf
 #undef sprintf
 #define sprintf npSprintf
+#undef fprintf
+#define fprintf npFprintf
 
 extern FILE* npGetStderr();
 extern FILE* npGetStdin();
@@ -31,6 +33,7 @@ extern FILE* npGetStdout();
 extern int npFflush(FILE* file);
 extern int npPrintf(const char* format, ...);
 extern int npSprintf(char* buffer, const char* format, ...);
+extern int npFprintf(FILE *stream, const char *format, ...);
 
 #ifdef __cplusplus
 }

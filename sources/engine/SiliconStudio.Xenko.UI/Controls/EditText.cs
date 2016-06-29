@@ -779,6 +779,8 @@ namespace SiliconStudio.Xenko.UI.Controls
             {
                 // take the maximum between the text size and the minimum visible line size as text desired size
                 var fontLineSpacing = Font.GetTotalLineSpacing(TextSize);
+                if (Font.FontType == SpriteFontType.SDF)
+                    fontLineSpacing *= TextSize/Font.Size;
                 var currentTextSize = new Vector3(CalculateTextSize(), 0);
                 desiredSize = new Vector3(currentTextSize.X, Math.Min(Math.Max(currentTextSize.Y, fontLineSpacing * MinLines), fontLineSpacing * MaxLines), currentTextSize.Z);
             }
@@ -841,7 +843,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         {
             base.OnTouchDown(args);
 
-           IsSelectionActive = !IsReadOnly;
+            IsSelectionActive = !IsReadOnly;
 
             OnTouchDownImpl(args);
         }

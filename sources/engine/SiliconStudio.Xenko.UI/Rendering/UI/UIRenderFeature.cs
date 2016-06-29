@@ -15,11 +15,12 @@ using SiliconStudio.Xenko.UI.Renderers;
 
 namespace SiliconStudio.Xenko.Rendering.UI
 {
-    public class UIRenderFeature : RootRenderFeature
+    public partial class UIRenderFeature : RootRenderFeature
     {
         private IGame game;
         private UISystem uiSystem;
         private InputManager input;
+        private IGraphicsDeviceService graphicsDeviceService;
 
         private RendererManager rendererManager;
 
@@ -28,13 +29,6 @@ namespace SiliconStudio.Xenko.Rendering.UI
         private UIBatch batch;
 
         private readonly LayoutingContext layoutingContext = new LayoutingContext();
-
-        private Vector2 lastMousePosition;
-
-        // object to avoid allocation at each element leave event
-        private readonly HashSet<UIElement> newlySelectedElementParents = new HashSet<UIElement>();
-
-        private readonly List<PointerEvent> compactedPointerEvents = new List<PointerEvent>();
 
         private readonly List<RenderUIElement> uiElementStates = new List<RenderUIElement>();
 
@@ -53,16 +47,25 @@ namespace SiliconStudio.Xenko.Rendering.UI
             game = (IGame)RenderSystem.Services.GetService(typeof(IGame));
             input = (InputManager)RenderSystem.Services.GetService(typeof(InputManager));
             uiSystem = (UISystem)RenderSystem.Services.GetService(typeof(UISystem));
+            graphicsDeviceService = RenderSystem.Services.GetSafeServiceAs<IGraphicsDeviceService>();
+
             if (uiSystem == null)
             {
+                var gameSytems = RenderSystem.Services.GetServiceAs<IGameSystemCollection>();
                 uiSystem = new UISystem(RenderSystem.Services);
-                game?.GameSystems.Add(uiSystem);
+                gameSytems.Add(uiSystem);
             }
 
             rendererManager = new RendererManager(new DefaultRenderersFactory(RenderSystem.Services));
 
             batch = uiSystem.Batch;
         }
+
+        partial void PickingPrepare(RenderDrawContext context);
+
+        partial void PickingUpdate(RenderUIElement renderUIElement, Viewport viewport, GameTime drawTime);
+
+        partial void PickingClear();
 
         public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
@@ -74,38 +77,6 @@ namespace SiliconStudio.Xenko.Rendering.UI
             if (uiProcessor == null)
                 return;
 
-            //foreach (var uiRoot in uiProcessor.UIRoots)
-            //{
-            //    // Perform culling on group and accept
-            //    if (!renderView.SceneCameraRenderer.CullingMask.Contains(uiRoot.UIComponent.Entity.Group))
-            //        continue;
-
-            //    // skips empty UI elements
-            //    if (uiRoot.UIComponent.RootElement == null)
-            //        continue;
-
-            //    // Project the position
-            //    // TODO: This code is duplicated from SpriteComponent -> unify it at higher level?
-            //    var worldPosition = new Vector4(uiRoot.TransformComponent.WorldMatrix.TranslationVector, 1.0f);
-
-            //    float projectedZ;
-            //    if (uiRoot.UIComponent.IsFullScreen)
-            //    {
-            //        projectedZ = -uiRoot.TransformComponent.WorldMatrix.M43;
-            //    }
-            //    else
-            //    {
-            //        Vector4 projectedPosition;
-            //        var cameraComponent = renderView.Camera;
-            //        if (cameraComponent == null)
-            //            continue;
-
-            //        Vector4.Transform(ref worldPosition, ref cameraComponent.ViewProjectionMatrix, out projectedPosition);
-            //        projectedZ = projectedPosition.Z / projectedPosition.W;
-            //    }
-
-            //    transparentList.Add(new RenderItem(this, uiRoot, projectedZ));
-            //}
 
             // build the list of the UI elements to render
             uiElementStates.Clear();
@@ -126,15 +97,8 @@ namespace SiliconStudio.Xenko.Rendering.UI
             renderingContext.Time = drawTime;
             renderingContext.RenderTarget = currentRenderFrame.RenderTargets[0]; // TODO: avoid hardcoded index 0
 
-            var viewport = context.CommandList.Viewport;
-
-            // cache the ratio between viewport and target.
-            var viewportSize = viewport.Size;
-            viewportTargetRatio = new Vector2(viewportSize.X / renderingContext.RenderTarget.Width, viewportSize.Y / renderingContext.RenderTarget.Height);
-            viewportOffset = new Vector2(viewport.X/ viewport.Width, viewport.Y/ viewport.Height);
-
-            // compact all the pointer events that happened since last frame to avoid performing useless hit tests.
-            CompactPointerEvents();
+            // Prepare content required for Picking and MouseOver events
+            PickingPrepare(context);
 
             // allocate temporary graphics resources if needed
             Texture scopedDepthBuffer = null;
@@ -182,40 +146,33 @@ namespace SiliconStudio.Xenko.Rendering.UI
                         viewParameters.Update(uiComponent.Entity, cameraComponent);
                 }
 
-                // Analyze the input and trigger the UI element touch and key events
-                // Note: this is done before measuring/arranging/drawing the element in order to avoid one frame latency on clicks.
-                //       But by doing so the world matrices taken for hit test are the ones calculated during last frame.
+                // Check if the current UI component is being picked based on the current ViewParameters (used to draw this element)
                 using (Profiler.Begin(UIProfilerKeys.TouchEventsUpdate))
                 {
-                    foreach (var uiState in uiElementStates)
-                    {
-                        if (uiState.UIComponent.RootElement == null)
-                            continue;
-
-                        UpdateMouseOver(uiState);
-                        UpdateTouchEvents(uiState, drawTime);
-                    }
+                    PickingUpdate(uiElementState, context.CommandList.Viewport, drawTime);
                 }
 
                 // update the rendering context values specific to this element
                 renderingContext.Resolution = virtualResolution;
-                renderingContext.ViewMatrix = viewParameters.ViewMatrix;
+                renderingContext.ViewMatrix = viewParameters.WorldViewMatrix;
                 renderingContext.ProjectionMatrix = viewParameters.ProjectionMatrix;
-                renderingContext.ViewProjectionMatrix = viewParameters.ViewProjectionMatrix;
+                renderingContext.ViewProjectionMatrix = viewParameters.WorldViewProjectionMatrix;
                 renderingContext.DepthStencilBuffer = uiComponent.IsFullScreen ? scopedDepthBuffer : currentRenderFrame.DepthStencil;
                 renderingContext.ShouldSnapText = uiComponent.SnapText;
 
                 // calculate an estimate of the UI real size by projecting the element virtual resolution on the screen
-                var virtualOrigin = viewParameters.ViewProjectionMatrix.Row4;
+                var virtualOrigin = viewParameters.WorldViewProjectionMatrix.Row4;
                 var virtualWidth = new Vector4(virtualResolution.X / 2, 0, 0, 1);
                 var virtualHeight = new Vector4(0, virtualResolution.Y / 2, 0, 1);
                 var transformedVirtualWidth = Vector4.Zero;
                 var transformedVirtualHeight = Vector4.Zero;
                 for (var i = 0; i < 4; i++)
                 {
-                    transformedVirtualWidth[i] = virtualWidth[0] * viewParameters.ViewProjectionMatrix[0 + i] + viewParameters.ViewProjectionMatrix[12 + i];
-                    transformedVirtualHeight[i] = virtualHeight[1] * viewParameters.ViewProjectionMatrix[4 + i] + viewParameters.ViewProjectionMatrix[12 + i];
+                    transformedVirtualWidth[i] = virtualWidth[0] * viewParameters.WorldViewProjectionMatrix[0 + i] + viewParameters.WorldViewProjectionMatrix[12 + i];
+                    transformedVirtualHeight[i] = virtualHeight[1] * viewParameters.WorldViewProjectionMatrix[4 + i] + viewParameters.WorldViewProjectionMatrix[12 + i];
                 }
+
+                var viewportSize = context.CommandList.Viewport.Size;
                 var projectedOrigin = virtualOrigin.XY() / virtualOrigin.W;
                 var projectedVirtualWidth = viewportSize * (transformedVirtualWidth.XY() / transformedVirtualWidth.W - projectedOrigin);
                 var projectedVirtualHeight = viewportSize * (transformedVirtualHeight.XY() / transformedVirtualHeight.W - projectedOrigin);
@@ -240,7 +197,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 rootElement.Arrange(virtualResolution, false);
 
                 // update the UI element hierarchical properties
-                var rootMatrix = Matrix.Translation(-virtualResolution / 2); // UI world is rotated of 180degrees along Ox
+                var rootMatrix = Matrix.Translation(-virtualResolution / 2); // UI world is translated by a half resolution compared to its quad, which is centered around the origin
                 updatableRootElement.UpdateWorldMatrix(ref rootMatrix, rootMatrix != uiElementState.LastRootMatrix);
                 updatableRootElement.UpdateElementState(0);
                 uiElementState.LastRootMatrix = rootMatrix;
@@ -254,7 +211,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
                 // start the image draw session
                 renderingContext.StencilTestReferenceValue = 0;
-                batch.Begin(context.GraphicsContext, ref viewParameters.ViewProjectionMatrix, BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(context.GraphicsContext, ref viewParameters.WorldViewProjectionMatrix, BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
 
                 // Render the UI elements in the final render target
                 ReccursiveDrawWithClipping(context, rootElement);
@@ -263,8 +220,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 batch.End();
             }
 
-            // clear the list of compacted pointer events of time frame
-            ClearPointerEvents();
+            PickingClear();
 
             // revert the depth stencil buffer to the default value 
             context.CommandList.SetRenderTargets(currentRenderFrame.DepthStencil, currentRenderFrame.RenderTargets);
@@ -292,13 +248,13 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 batch.End();
 
                 // render the clipping region
-                batch.Begin(context.GraphicsContext, ref viewParameters.ViewProjectionMatrix, BlendStates.ColorDisabled, uiSystem.IncreaseStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(context.GraphicsContext, ref viewParameters.WorldViewProjectionMatrix, BlendStates.ColorDisabled, uiSystem.IncreaseStencilValueState, renderingContext.StencilTestReferenceValue);
                 renderer.RenderClipping(element, renderingContext);
                 batch.End();
 
                 // update context and restart the batch
                 renderingContext.StencilTestReferenceValue += 1;
-                batch.Begin(context.GraphicsContext, ref viewParameters.ViewProjectionMatrix, BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(context.GraphicsContext, ref viewParameters.WorldViewProjectionMatrix, BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
             }
 
             // render the design of the element
@@ -317,294 +273,14 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 renderingContext.DepthBias = element.MaxChildrenDepthBias;
 
                 // render the clipping region
-                batch.Begin(context.GraphicsContext, ref viewParameters.ViewProjectionMatrix, BlendStates.ColorDisabled, uiSystem.DecreaseStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(context.GraphicsContext, ref viewParameters.WorldViewProjectionMatrix, BlendStates.ColorDisabled, uiSystem.DecreaseStencilValueState, renderingContext.StencilTestReferenceValue);
                 renderer.RenderClipping(element, renderingContext);
                 batch.End();
 
                 // update context and restart the batch
                 renderingContext.StencilTestReferenceValue -= 1;
-                batch.Begin(context.GraphicsContext, ref viewParameters.ViewProjectionMatrix, BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(context.GraphicsContext, ref viewParameters.WorldViewProjectionMatrix, BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
             }
-        }
-
-        private void CompactPointerEvents()
-        {
-            if (input == null) // no input for thumbnails
-                return;
-
-            // compact all the move events of the frame together
-            var aggregatedTranslation = Vector2.Zero;
-            for (var index = 0; index < input.PointerEvents.Count; ++index)
-            {
-                var pointerEvent = input.PointerEvents[index];
-
-                if (pointerEvent.State != PointerState.Move)
-                {
-                    aggregatedTranslation = Vector2.Zero;
-                    compactedPointerEvents.Add(pointerEvent.Clone());
-                    continue;
-                }
-
-                aggregatedTranslation += pointerEvent.DeltaPosition;
-
-                if (index + 1 >= input.PointerEvents.Count || input.PointerEvents[index + 1].State != PointerState.Move)
-                {
-                    var compactedMoveEvent = pointerEvent.Clone();
-                    compactedMoveEvent.DeltaPosition = aggregatedTranslation;
-                    compactedPointerEvents.Add(compactedMoveEvent);
-                }
-            }
-        }
-
-        private void ClearPointerEvents()
-        {
-            // collect back pointer event not used anymore
-            lock (PointerEvent.Pool)
-            {
-                foreach (var pointerEvent in compactedPointerEvents)
-                    PointerEvent.Pool.Enqueue(pointerEvent);
-            }
-            compactedPointerEvents.Clear();
-        }
-
-        private void UpdateTouchEvents(RenderUIElement state, GameTime gameTime)
-        {
-            var rootElement = state.UIComponent.RootElement;
-            var intersectionPoint = Vector3.Zero;
-            var lastTouchPosition = new Vector2(float.NegativeInfinity);
-
-            // analyze pointer event input and trigger UI touch events depending on hit Tests
-            foreach (var pointerEvent in compactedPointerEvents)
-            {
-                // performance optimization: skip all the events that started outside of the UI
-                var lastTouchedElement = state.LastTouchedElement;
-                if (lastTouchedElement == null && pointerEvent.State != PointerState.Down)
-                    continue;
-
-                var time = gameTime.Total;
-
-                var currentTouchPosition = pointerEvent.Position;
-                var currentTouchedElement = lastTouchedElement;
-
-                // re-calculate the element under cursor if click position changed.
-                if (lastTouchPosition != currentTouchPosition)
-                    currentTouchedElement = GetElementAtScreenPosition(rootElement, pointerEvent.Position, ref intersectionPoint);
-
-                if (pointerEvent.State == PointerState.Down || pointerEvent.State == PointerState.Up)
-                    state.LastIntersectionPoint = intersectionPoint;
-
-                var touchEvent = new TouchEventArgs
-                {
-                    Action = TouchAction.Down,
-                    Timestamp = time,
-                    ScreenPosition = currentTouchPosition,
-                    ScreenTranslation = pointerEvent.DeltaPosition,
-                    WorldPosition = intersectionPoint,
-                    WorldTranslation = intersectionPoint - state.LastIntersectionPoint
-                };
-
-                switch (pointerEvent.State)
-                {
-                    case PointerState.Down:
-                        touchEvent.Action = TouchAction.Down;
-                        currentTouchedElement?.RaiseTouchDownEvent(touchEvent);
-                        break;
-
-                    case PointerState.Up:
-                        touchEvent.Action = TouchAction.Up;
-
-                        // generate enter/leave events if we passed from an element to another without move events
-                        if (currentTouchedElement != lastTouchedElement)
-                            ThrowEnterAndLeaveTouchEvents(currentTouchedElement, lastTouchedElement, touchEvent);
-
-                        // trigger the up event
-                        currentTouchedElement?.RaiseTouchUpEvent(touchEvent);
-                        break;
-
-                    case PointerState.Move:
-                        touchEvent.Action = TouchAction.Move;
-
-                        // first notify the move event (even if the touched element changed in between it is still coherent in one of its parents)
-                        currentTouchedElement?.RaiseTouchMoveEvent(touchEvent);
-
-                        // then generate enter/leave events if we passed from an element to another
-                        if (currentTouchedElement != lastTouchedElement)
-                            ThrowEnterAndLeaveTouchEvents(currentTouchedElement, lastTouchedElement, touchEvent);
-                        break;
-
-                    case PointerState.Out:
-                    case PointerState.Cancel:
-                        touchEvent.Action = TouchAction.Move;
-
-                        // generate enter/leave events if we passed from an element to another without move events
-                        if (currentTouchedElement != lastTouchedElement)
-                            ThrowEnterAndLeaveTouchEvents(currentTouchedElement, lastTouchedElement, touchEvent);
-
-                        // then raise leave event to all the hierarchy of the previously selected element.
-                        var element = currentTouchedElement;
-                        while (element != null)
-                        {
-                            if (element.IsTouched)
-                                element.RaiseTouchLeaveEvent(touchEvent);
-                            element = element.VisualParent;
-                        }
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-
-                lastTouchPosition = currentTouchPosition;
-                state.LastTouchedElement = currentTouchedElement;
-                state.LastIntersectionPoint = intersectionPoint;
-            }
-        }
-
-        private void UpdateMouseOver(RenderUIElement state)
-        {
-            if (input == null || !input.HasMouse)
-                return;
-
-            var intersectionPoint = Vector3.Zero;
-            var mousePosition = input.MousePosition;
-            var rootElement = state.UIComponent.RootElement;
-            var lastOveredElement = state.LastOveredElement;
-            var overredElement = lastOveredElement;
-
-            // determine currently overred element.
-            if (mousePosition != lastMousePosition)
-                overredElement = GetElementAtScreenPosition(rootElement, mousePosition, ref intersectionPoint);
-
-            // find the common parent between current and last overred elements
-            var commonElement = FindCommonParent(overredElement, lastOveredElement);
-
-            // disable mouse over state to previously overred hierarchy
-            var parent = lastOveredElement;
-            while (parent != commonElement && parent != null)
-            {
-                parent.MouseOverState = MouseOverState.MouseOverNone;
-                parent = parent.VisualParent;
-            }
-
-            // enable mouse over state to currently overred hierarchy
-            if (overredElement != null)
-            {
-                // the element itself
-                overredElement.MouseOverState = MouseOverState.MouseOverElement;
-
-                // its hierarchy
-                parent = overredElement.VisualParent;
-                while (parent != null)
-                {
-                    if (parent.IsHierarchyEnabled)
-                        parent.MouseOverState = MouseOverState.MouseOverChild;
-
-                    parent = parent.VisualParent;
-                }
-            }
-
-            // update cached values
-            state.LastOveredElement = overredElement;
-            lastMousePosition = mousePosition;
-        }
-
-        private UIElement FindCommonParent(UIElement element1, UIElement element2)
-        {
-            // build the list of the parents of the newly selected element
-            newlySelectedElementParents.Clear();
-            var newElementParent = element1;
-            while (newElementParent != null)
-            {
-                newlySelectedElementParents.Add(newElementParent);
-                newElementParent = newElementParent.VisualParent;
-            }
-
-            // find the common element into the previously and newly selected element hierarchy
-            var commonElement = element2;
-            while (commonElement != null && !newlySelectedElementParents.Contains(commonElement))
-                commonElement = commonElement.VisualParent;
-
-            return commonElement;
-        }
-
-        private void ThrowEnterAndLeaveTouchEvents(UIElement currentElement, UIElement previousElement, TouchEventArgs touchEvent)
-        {
-            var commonElement = FindCommonParent(currentElement, previousElement);
-
-            // raise leave events to the hierarchy: previousElt -> commonElementParent
-            var previousElementParent = previousElement;
-            while (previousElementParent != commonElement && previousElementParent != null)
-            {
-                if (previousElementParent.IsHierarchyEnabled && previousElementParent.IsTouched)
-                {
-                    touchEvent.Handled = false; // reset 'handled' because it corresponds to another event
-                    previousElementParent.RaiseTouchLeaveEvent(touchEvent);
-                }
-                previousElementParent = previousElementParent.VisualParent;
-            }
-
-            // raise enter events to the hierarchy: newElt -> commonElementParent
-            var newElementParent = currentElement;
-            while (newElementParent != commonElement && newElementParent != null)
-            {
-                if (newElementParent.IsHierarchyEnabled && !newElementParent.IsTouched)
-                {
-                    touchEvent.Handled = false; // reset 'handled' because it corresponds to another event
-                    newElementParent.RaiseTouchEnterEvent(touchEvent);
-                }
-                newElementParent = newElementParent.VisualParent;
-            }
-        }
-
-        private UIElement GetElementAtScreenPosition(UIElement rootElement, Vector2 position, ref Vector3 intersectionPoint)
-        {
-            // here we use a trick to take into the calculation the viewport => we multiply the screen position by the viewport ratio (easier than modifying the view matrix)
-            var positionForHitTest = (Vector2.Demodulate(position, viewportTargetRatio) - viewportOffset) - new Vector2(0.5f);
-
-            // calculate the ray corresponding to the click
-            var rayDirectionView = Vector3.Normalize(new Vector3(positionForHitTest.X * viewParameters.FrustumHeight * viewParameters.AspectRatio, -positionForHitTest.Y * viewParameters.FrustumHeight, -1));
-            var clickRay = new Ray(viewParameters.ViewMatrixInverse.TranslationVector, Vector3.TransformNormal(rayDirectionView, viewParameters.ViewMatrixInverse));
-
-            // perform the hit test
-            UIElement clickedElement = null;
-            var smallestDepth = float.PositiveInfinity;
-            PerformRecursiveHitTest(rootElement, ref clickRay, ref clickedElement, ref intersectionPoint, ref smallestDepth);
-
-            return clickedElement;
-        }
-
-        private void PerformRecursiveHitTest(UIElement element, ref Ray ray, ref UIElement clickedElement, ref Vector3 intersectionPoint, ref float smallestDepth)
-        {
-            // if the element is not visible, we also remove all its children
-            if (!element.IsVisible)
-                return;
-
-            if (element.ClipToBounds || element.CanBeHitByUser)
-            {
-                Vector3 intersection;
-                var intersect = element.Intersects(ref ray, out intersection);
-
-                // don't perform the hit test on children if clipped and parent no hit
-                if (element.ClipToBounds && !intersect)
-                    return;
-
-                // Calculate the depth of the element with the depth bias so that hit test corresponds to visuals.
-                Vector4 projectedIntersection;
-                var intersection4 = new Vector4(intersection, 1);
-                Vector4.Transform(ref intersection4, ref viewParameters.ViewProjectionMatrix, out projectedIntersection);
-                var depthWithBias = projectedIntersection.Z / projectedIntersection.W - element.DepthBias * BatchBase<int>.DepthBiasShiftOneUnit;
-
-                // update the closest element hit
-                if (element.CanBeHitByUser && intersect && depthWithBias < smallestDepth)
-                {
-                    smallestDepth = depthWithBias;
-                    intersectionPoint = intersection;
-                    clickedElement = element;
-                }
-            }
-
-            // render the children
-            foreach (var child in element.HitableChildren)
-                PerformRecursiveHitTest(child, ref ray, ref clickedElement, ref intersectionPoint, ref smallestDepth);
         }
 
         public ElementRenderer GetRenderer(UIElement element)
@@ -626,10 +302,9 @@ namespace SiliconStudio.Xenko.Rendering.UI
         {
             public float AspectRatio;
             public float FrustumHeight;
-            public Matrix ViewMatrix;
-            public Matrix ViewMatrixInverse;
+            public Matrix WorldViewMatrix;
             public Matrix ProjectionMatrix;
-            public Matrix ViewProjectionMatrix;
+            public Matrix WorldViewProjectionMatrix;
 
             public void Update(Entity entity, CameraComponent camera)
             {
@@ -642,7 +317,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 // rotate the UI element perpendicular to the camera view vector, if billboard is activated
                 var uiComponent = entity.Get<UIComponent>();
 
-                if (!uiComponent.IsFullScreen && (uiComponent.IsBillboard || uiComponent.IsFixedSize))
+                if (!uiComponent.IsFullScreen)
                 {
                     Matrix viewInverse;
                     Matrix.Invert(ref camera.ViewMatrix, out viewInverse);
@@ -678,23 +353,18 @@ namespace SiliconStudio.Xenko.Rendering.UI
                         worldMatrix.Row2 *= worldScale;
                         worldMatrix.Row3 *= worldScale;
                     }
-                }
 
+                    // If the UI component is not drawn fullscreen it should be drawn as a quad with world sizes corresponding to its actual size
+                    worldMatrix = Matrix.Scaling(uiComponent.Size / uiComponent.Resolution) * worldMatrix;
+                }
 
                 // Rotation of Pi along 0x to go from UI space to world space
                 worldMatrix.Row2 = -worldMatrix.Row2;
                 worldMatrix.Row3 = -worldMatrix.Row3;
 
-                // If the UI component is not drawn fullscreen it should be drawn as a quad with world sizes corresponding to its actual size
-                if (!uiComponent.IsFullScreen)
-                {
-                    worldMatrix = Matrix.Scaling(uiComponent.Size / uiComponent.Resolution) * worldMatrix;
-                }
-
                 ProjectionMatrix = camera.ProjectionMatrix;
-                Matrix.Multiply(ref worldMatrix, ref camera.ViewMatrix, out ViewMatrix);
-                Matrix.Invert(ref ViewMatrix, out ViewMatrixInverse);
-                Matrix.Multiply(ref ViewMatrix, ref ProjectionMatrix, out ViewProjectionMatrix);
+                Matrix.Multiply(ref worldMatrix, ref camera.ViewMatrix, out WorldViewMatrix);
+                Matrix.Multiply(ref WorldViewMatrix, ref ProjectionMatrix, out WorldViewProjectionMatrix);
             }
 
             public void Update(Entity entity, Vector3 virtualResolution)

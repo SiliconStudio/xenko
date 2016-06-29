@@ -25,12 +25,15 @@ namespace SiliconStudio.Xenko.Assets.Model
         {
             // Read from model file
             var modelSkeleton = LoadSkeleton(commandContext, contentManager); // we get model skeleton to compare it to real skeleton we need to map to
-            var animationClips = LoadAnimation(commandContext, contentManager);
+
+            TimeSpan duration;
+            var animationClips = LoadAnimation(commandContext, contentManager, out duration);
             AnimationClip animationClip = null;
 
             if (animationClips.Count > 0)
             {
                 animationClip = new AnimationClip();
+                animationClip.Duration = duration;
 
                 AnimationClip rootMotionAnimationClip = null;
 
@@ -62,10 +65,6 @@ namespace SiliconStudio.Xenko.Assets.Model
                                 animationClip.AddCurve($"[CameraComponent.Key]." + channelName.Replace("Camera.", string.Empty), curve);
                             }
                         }
-
-                        // Take max of durations
-                        if (animationClip.Duration < rootMotionAnimationClip.Duration)
-                            animationClip.Duration = rootMotionAnimationClip.Duration;
                     }
                 }
 
@@ -205,10 +204,6 @@ namespace SiliconStudio.Xenko.Assets.Model
                                 animationClip.AddCurve($"[ModelComponent.Key].Skeleton.NodeTransformations[{skeletonMapping.SourceToTarget[nodeIndex]}]." + channelName, curve);
                             }
                         }
-
-                        // Take max of durations
-                        if (animationClip.Duration < nodeAnimationClip.Duration)
-                            animationClip.Duration = nodeAnimationClip.Duration;
                     }
                 }
             }

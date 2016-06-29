@@ -1,19 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Collections.Generic;
 using System.ComponentModel;
-using Microsoft.CodeAnalysis;
-using SharpYaml.Serialization;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Graphics.Font;
 
 namespace SiliconStudio.Xenko.Assets.SpriteFont
 {
@@ -23,14 +16,15 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     [DataContract("SpriteFont")]
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(SpriteFontAssetCompiler))]
-    [AssetFormatVersion(XenkoConfig.PackageName, "1.7.0-beta03")]
+    [AssetFormatVersion(XenkoConfig.PackageName, "1.7.0-beta04")]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.5.0-alpha09", typeof(PremultiplyUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha09", "1.7.0-beta02", typeof(FontTypeUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.7.0-beta02", "1.7.0-beta03", typeof(FontClassUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.7.0-beta03", "1.7.0-beta04", typeof(FontSizeUpgrader))]
     [Display(140, "Sprite Font")]
     [CategoryOrder(10, "Font")]
     [CategoryOrder(30, "Rendering")]
-    public class SpriteFontAsset : Asset
+    public partial class SpriteFontAsset : Asset
     {
         /// <summary>
         /// The default file extension used by the <see cref="SpriteFontAsset"/>.
@@ -137,132 +131,6 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                     asset.IsPremultiplied = !(bool)asset.IsNotPremultiply;
                     asset.IsNotPremultiply = DynamicYamlEmpty.Default;
                 }
-            }
-        }
-
-        /// <summary>
-        /// Removes the IsDynamic checkbox and changes it with an enum (Static, Dynamic, SDF)
-        /// </summary>
-        class FontTypeUpgrader : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile,
-                OverrideUpgraderHint overrideHint)
-            {
-                if (asset.IsDynamic != null)
-                {
-                    var isDynamic = (bool)asset.IsDynamic;
-
-                    // There is also SDF type, but old assets don't have it yet
-                    asset.AddChild("FontType", isDynamic ? "Dynamic" : "Static");
-
-                    asset.RemoveChild("IsDynamic");
-                }
-            }
-
-        }
-
-        /// <summary>
-        /// Removes the enum (Static, Dynamic, SDF) and changes them with an abstract sub-module while also moving the character regions to the sub-module
-        /// </summary>
-        class FontClassUpgrader : AssetUpgraderBase
-        {
-            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile,
-                OverrideUpgraderHint overrideHint)
-            {
-                dynamic newSource = new DynamicYamlMapping(new YamlMappingNode());
-
-                var assetName = (asset.FontName != null) ? (string)asset.FontName : null;
-                var assetSource = (asset.Source != null) ? (string)asset.Source : null;
-
-                // First check if the asset has a valid source
-                if (assetSource != null && !assetSource.IsNullOrEmpty() && !assetSource.Equals("null"))
-                {
-                    newSource.Node.Tag = "!FileFontProvider";
-                    newSource.AddChild("Source", assetSource);
-                }
-
-                // Only if the asset doesn't have a valid source can it be a system font
-                else
-                if (assetName != null && !assetName.IsNullOrEmpty() && !assetName.Equals("null"))
-                {
-                    newSource.Node.Tag = "!SystemFontProvider";
-                    newSource.AddChild("FontName", assetName);
-
-                    if (asset.Style != null)
-                    {
-                        newSource.AddChild("Style", asset.Style);
-                    }
-                }
-
-
-
-                asset.RemoveChild("FontName");
-                asset.RemoveChild("Source");
-                asset.RemoveChild("Style");
-
-                asset.AddChild("FontSource", newSource);
-
-
-                if (asset.FontType != null)
-                {
-                    var fontType = (string)asset.FontType;
-                    asset.RemoveChild("FontType");
-
-                    dynamic newType = new DynamicYamlMapping(new YamlMappingNode());
-
-                    if (fontType.Equals("Dynamic"))
-                    {
-                        newType.Node.Tag = "!RuntimeRasterizedSpriteFontType";
-
-                        if (asset.Size != null)
-                            newType.AddChild("Size", asset.Size);
-
-                        if (asset.AntiAlias != null)
-                            newType.AddChild("AntiAlias", asset.AntiAlias);
-                    }
-                    else 
-                    if (fontType.Equals("SDF"))
-                    {
-                        newType.Node.Tag = "!SignedDistanceFieldSpriteFontType";
-
-                        if (asset.Size != null)
-                            newType.AddChild("Size", asset.Size);
-
-                        if (asset.CharacterSet != null)
-                            newType.AddChild("CharacterSet", asset.CharacterSet);
-
-                        if (asset.CharacterRegions != null)
-                            newType.AddChild("CharacterRegions", asset.CharacterRegions);
-                    }
-                    else
-                    {
-                        newType.Node.Tag = "!OfflineRasterizedSpriteFontType";
-
-                        if (asset.Size != null)
-                            newType.AddChild("Size", asset.Size);
-
-                        if (asset.CharacterSet != null)
-                            newType.AddChild("CharacterSet", asset.CharacterSet);
-
-                        if (asset.CharacterRegions != null)
-                            newType.AddChild("CharacterRegions", asset.CharacterRegions);
-
-                        if (asset.AntiAlias != null)
-                            newType.AddChild("AntiAlias", asset.AntiAlias);
-
-                        if (asset.IsPremultiplied != null)
-                            newType.AddChild("IsPremultiplied", asset.IsPremultiplied);
-                    }
-
-                    asset.AddChild("FontType", newType);
-                }
-
-                asset.RemoveChild("IsPremultiplied");
-                asset.RemoveChild("AntiAlias");
-                asset.RemoveChild("UseKerning");
-                asset.RemoveChild("Size");
-                asset.RemoveChild("CharacterSet");
-                asset.RemoveChild("CharacterRegions");
             }
         }
     }

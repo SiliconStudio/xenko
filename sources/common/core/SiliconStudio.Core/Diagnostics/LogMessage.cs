@@ -82,6 +82,9 @@ namespace SiliconStudio.Core.Diagnostics
         /// <value>The caller information.</value>
         public CallerInfo CallerInfo { get; set; }
 
+        /// <inheritdoc/>
+        public ExceptionInfo ExceptionInfo => Exception != null ? new ExceptionInfo(Exception) : null;
+
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>

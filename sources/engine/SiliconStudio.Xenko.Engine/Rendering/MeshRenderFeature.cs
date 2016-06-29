@@ -14,6 +14,8 @@ namespace SiliconStudio.Xenko.Rendering
     {
         public TrackingCollection<SubRenderFeature> RenderFeatures = new TrackingCollection<SubRenderFeature>();
 
+        private DescriptorSet[] descriptorSets;
+
         /// <inheritdoc/>
         public override Type SupportedRenderObjectType => typeof(RenderMesh);
 
@@ -113,7 +115,7 @@ namespace SiliconStudio.Xenko.Rendering
                 renderFeature.Draw(context, renderView, renderViewStage, startIndex, endIndex);
             }
 
-            var descriptorSets = new DescriptorSet[EffectDescriptorSetSlotCount];
+            Array.Resize(ref descriptorSets, EffectDescriptorSetSlotCount);
 
             MeshDraw currentDrawData = null;
             for (int index = startIndex; index < endIndex; index++)
