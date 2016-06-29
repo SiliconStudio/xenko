@@ -11,33 +11,14 @@ namespace SiliconStudio.Xenko.Audio
         /// <returns>A platform specific instance of <see cref="AudioEngine"/></returns>
         public static AudioEngine NewAudioEngine()
         {
-#if SILICONSTUDIO_PLATFORM_ANDROID
-            var engine = new AudioEngine();
-            engine.InitializeAudioEngine();
-            return engine;
-#elif SILICONSTUDIO_PLATFORM_IOS        
-            var engine = new AudioEngineIos();
-            engine.InitializeAudioEngine();
-            return engine;
-#elif SILICONSTUDIO_PLATFORM_WINDOWS
-#if SILICONSTUDIO_XENKO_SOUND_SDL
-            return new AudioEngineSDL();
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
-            var engine = new AudioEngine();
-            engine.InitializeAudioEngine();
-            return engine;
+            AudioEngine engine = null;
+#if SILICONSTUDIO_PLATFORM_IOS
+            engine = new AudioEngineIos();
 #else
-            var engine = new AudioEngine();
+            engine = new AudioEngine();
+#endif
             engine.InitializeAudioEngine();
             return engine;
-#endif
-#elif SILICONSTUDIO_PLATFORM_LINUX
-            var engine = new AudioEngine();
-            engine.InitializeAudioEngine();
-            return engine;
-#else
-            return null;
-#endif
         }
     }
 }
