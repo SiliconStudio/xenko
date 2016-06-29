@@ -33,6 +33,7 @@
     <Compile Include="Audio\Celt.cs" />
     <Compile Include="NativeInvoke.cs" />
     <Compile Include="Audio\AudioLayer.cs" />
+    <Compile Include="OculusOVR\OculusOVR.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -63,7 +64,7 @@
     <None Include="Audio\OpenSLES.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="OculusOVR.cpp" />
+    <Content Include="OculusOVR\OculusOVR.cpp" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

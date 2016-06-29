@@ -11,7 +11,6 @@ using SiliconStudio.Xenko.Rendering.Composers;
 
 namespace SiliconStudio.Xenko.Engine
 {
-    [DataContract]
     public class OculusOvrSystemPost : GameSystem
     {
         private readonly OculusOvrSystem system;
@@ -68,16 +67,16 @@ namespace SiliconStudio.Xenko.Engine
             logger.Info("Initialize");
 #endif
 
-            if (!NativeInvoke.OculusOvr.Startup())
+            if (!OculusOvr.Startup())
             {
-                throw new Exception(NativeInvoke.OculusOvr.GetError());
+                throw new Exception(OculusOvr.GetError());
             }
 
             long luid;
-            sessionPtr = NativeInvoke.OculusOvr.CreateSessionDx(out luid);
+            sessionPtr = OculusOvr.CreateSessionDx(out luid);
             if (sessionPtr == IntPtr.Zero)
             {
-                throw new Exception(NativeInvoke.OculusOvr.GetError());
+                throw new Exception(OculusOvr.GetError());
             }
 
             Game.GraphicsDeviceManager.RequiredAdapterUid = luid.ToString();
@@ -85,19 +84,19 @@ namespace SiliconStudio.Xenko.Engine
 
         protected override void LoadContent()
         {
-            if (!NativeInvoke.OculusOvr.CreateTexturesDx(sessionPtr, GraphicsDevice.NativeDevice.NativePointer, out texturesCount))
+            if (!OculusOvr.CreateTexturesDx(sessionPtr, GraphicsDevice.NativeDevice.NativePointer, out texturesCount, GraphicsDevice.Presenter.BackBuffer.Width, GraphicsDevice.Presenter.BackBuffer.Height))
             {
-                throw new Exception(NativeInvoke.OculusOvr.GetError());
+                throw new Exception(OculusOvr.GetError());
             }
 
             textures = new Texture[texturesCount];
             frameProviders = new DirectRenderFrameProvider[texturesCount];
             for (var i = 0; i < texturesCount; i++)
             {
-                var ptr = NativeInvoke.OculusOvr.GetTextureDx(sessionPtr, new Guid("6f15aaf2-d208-4e89-9ab4-489535d34f9c"), i);
+                var ptr = OculusOvr.GetTextureDx(sessionPtr, new Guid("6f15aaf2-d208-4e89-9ab4-489535d34f9c"), i);
                 if (ptr == IntPtr.Zero)
                 {
-                    throw new Exception(NativeInvoke.OculusOvr.GetError());
+                    throw new Exception(OculusOvr.GetError());
                 }
                 var dxTex = new Texture2D(ptr);
                 textures[i] = new Texture(GraphicsDevice);
@@ -112,14 +111,14 @@ namespace SiliconStudio.Xenko.Engine
                 frameProviders[i] = new DirectRenderFrameProvider(RenderFrame.FromTexture(textures[i], depthBuffer));
             }
 
-            var mirrorPtr = NativeInvoke.OculusOvr.GetMirrorTexture(sessionPtr, new Guid("6f15aaf2-d208-4e89-9ab4-489535d34f9c"));
+            var mirrorPtr = OculusOvr.GetMirrorTexture(sessionPtr, new Guid("6f15aaf2-d208-4e89-9ab4-489535d34f9c"));
             mirrorTexture = new Texture2D(mirrorPtr);
         }
 
         protected override void Destroy()
         {
-            if(sessionPtr != IntPtr.Zero) NativeInvoke.OculusOvr.DestroySession(sessionPtr);
-            NativeInvoke.OculusOvr.Shutdown();
+            if(sessionPtr != IntPtr.Zero) OculusOvr.DestroySession(sessionPtr);
+            OculusOvr.Shutdown();
         }
 
         public override void Draw(GameTime gameTime)
@@ -150,7 +149,7 @@ namespace SiliconStudio.Xenko.Engine
             Matrix leftProj, rightProj;
             Vector3 posLeft, posRight;
             Quaternion rotLeft, rotRight;
-            NativeInvoke.OculusOvr.PrepareRender(sessionPtr, cameraLeft.NearClipPlane, cameraLeft.FarClipPlane, 
+            OculusOvr.PrepareRender(sessionPtr, cameraLeft.NearClipPlane, cameraLeft.FarClipPlane, 
                 (float*)&leftProj, (float*)&rightProj, (float*)&posLeft, (float*)&posRight, (float*)&rotLeft, (float*)&rotRight);
 
             cameraLeft.ProjectionMatrix = leftProj;
@@ -169,7 +168,7 @@ namespace SiliconStudio.Xenko.Engine
             var viewR = Matrix.LookAtRH(posR, posR + finalForwardR, finalUpR);
             cameraRight.ViewMatrix = viewR;
 
-            var index = NativeInvoke.OculusOvr.GetCurrentTargetIndex(sessionPtr);
+            var index = OculusOvr.GetCurrentTargetIndex(sessionPtr);
 
             clearRenderFrameRenderer.Output = frameProviders[index];
 
@@ -179,8 +178,8 @@ namespace SiliconStudio.Xenko.Engine
 
         public void Commit()
         {
-            NativeInvoke.OculusOvr.CommitFrame(sessionPtr);
-
+            OculusOvr.CommitFrame(sessionPtr);
+           
             GraphicsDevice.NativeDeviceContext.CopyResource(mirrorTexture, GraphicsDevice.Presenter.BackBuffer.NativeResource);
         }
     }

@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-#include "../../../deps/NativePath/NativeDynamicLinking.h"
-#include "../../../deps/NativePath/NativePath.h"
-#include "../../../deps/NativePath/standard/stdio.h"
-#include "../../../deps/NativePath/standard/stddef.h"
+#if defined(WINDOWS_DESKTOP) || !defined(__clang__)
+
+#include "../../../../deps/NativePath/NativeDynamicLinking.h"
+#include "../../../../deps/NativePath/NativePath.h"
 
 #ifndef __clang__
 //Make resharper work!
@@ -12,7 +12,7 @@
 #error "The compiler must be clang!"
 #endif
 
-#include "../../../deps/OculusOVR/Include/OVR_CAPI.h"
+#include "../../../../deps/OculusOVR/Include/OVR_CAPI.h"
 
 typedef struct _GUID {
 	unsigned long  Data1;
@@ -73,59 +73,59 @@ typedef ovrMatrix4f (*ovrMatrix4f_ProjectionPtr)(ovrFovPort fov, float znear, fl
 
 extern "C" {
 
-	void* __libOvr = nullptr;
+	void* __libOvr = NULL;
 	
-	ovr_InitializePtr ovr_InitializeFunc = nullptr;
-	ovr_ShutdownPtr ovr_ShutdownFunc = nullptr;
-	ovr_GetLastErrorInfoPtr ovr_GetLastErrorInfoFunc = nullptr;
-	ovr_GetVersionStringPtr ovr_GetVersionStringFunc = nullptr;
-	ovr_TraceMessagePtr ovr_TraceMessageFunc = nullptr;
-	ovr_GetHmdDescPtr ovr_GetHmdDescFunc = nullptr;
-	ovr_GetTrackerCountPtr ovr_GetTrackerCountFunc = nullptr;
-	ovr_GetTrackerDescPtr ovr_GetTrackerDescFunc = nullptr;
-	ovr_CreatePtr ovr_CreateFunc = nullptr;
-	ovr_DestroyPtr ovr_DestroyFunc = nullptr;
-	ovr_GetSessionStatusPtr ovr_GetSessionStatusFunc = nullptr;
-	ovr_SetTrackingOriginTypePtr ovr_SetTrackingOriginTypeFunc = nullptr;
-	ovr_GetTrackingOriginTypePtr ovr_GetTrackingOriginTypeFunc = nullptr;
-	ovr_RecenterTrackingOriginPtr ovr_RecenterTrackingOriginFunc = nullptr;
-	ovr_ClearShouldRecenterFlagPtr ovr_ClearShouldRecenterFlagFunc = nullptr;
-	ovr_GetTrackingStatePtr ovr_GetTrackingStateFunc = nullptr;
-	ovr_GetTrackerPosePtr ovr_GetTrackerPoseFunc = nullptr;
-	ovr_GetInputStatePtr ovr_GetInputStateFunc = nullptr;
-	ovr_GetConnectedControllerTypesPtr ovr_GetConnectedControllerTypesFunc = nullptr;
-	ovr_SetControllerVibrationPtr ovr_SetControllerVibrationFunc = nullptr;
-	ovr_GetTextureSwapChainLengthPtr ovr_GetTextureSwapChainLengthFunc = nullptr;
-	ovr_GetTextureSwapChainCurrentIndexPtr ovr_GetTextureSwapChainCurrentIndexFunc = nullptr;
-	ovr_GetTextureSwapChainDescPtr ovr_GetTextureSwapChainDescFunc = nullptr;
-	ovr_CommitTextureSwapChainPtr ovr_CommitTextureSwapChainFunc = nullptr;
-	ovr_DestroyTextureSwapChainPtr ovr_DestroyTextureSwapChainFunc = nullptr;
-	ovr_DestroyMirrorTexturePtr ovr_DestroyMirrorTextureFunc = nullptr;
-	ovr_GetFovTextureSizePtr ovr_GetFovTextureSizeFunc = nullptr;
-	ovr_GetRenderDescPtr ovr_GetRenderDescFunc = nullptr;
-	ovr_SubmitFramePtr ovr_SubmitFrameFunc = nullptr;
-	ovr_GetPredictedDisplayTimePtr ovr_GetPredictedDisplayTimeFunc = nullptr;
-	ovr_GetTimeInSecondsPtr ovr_GetTimeInSecondsFunc = nullptr;
-	ovr_GetBoolPtr ovr_GetBoolFunc = nullptr;
-	ovr_SetBoolPtr ovr_SetBoolFunc = nullptr;
-	ovr_GetIntPtr ovr_GetIntFunc = nullptr;
-	ovr_SetIntPtr ovr_SetIntFunc = nullptr;
-	ovr_GetFloatPtr ovr_GetFloatFunc = nullptr;
-	ovr_SetFloatPtr ovr_SetFloatFunc = nullptr;
-	ovr_GetFloatArrayPtr ovr_GetFloatArrayFunc = nullptr;
-	ovr_SetFloatArrayPtr ovr_SetFloatArrayFunc = nullptr;
-	ovr_GetStringPtr ovr_GetStringFunc = nullptr;
-	ovr_SetStringPtr ovr_SetStringFunc = nullptr;
+	ovr_InitializePtr ovr_InitializeFunc = NULL;
+	ovr_ShutdownPtr ovr_ShutdownFunc = NULL;
+	ovr_GetLastErrorInfoPtr ovr_GetLastErrorInfoFunc = NULL;
+	ovr_GetVersionStringPtr ovr_GetVersionStringFunc = NULL;
+	ovr_TraceMessagePtr ovr_TraceMessageFunc = NULL;
+	ovr_GetHmdDescPtr ovr_GetHmdDescFunc = NULL;
+	ovr_GetTrackerCountPtr ovr_GetTrackerCountFunc = NULL;
+	ovr_GetTrackerDescPtr ovr_GetTrackerDescFunc = NULL;
+	ovr_CreatePtr ovr_CreateFunc = NULL;
+	ovr_DestroyPtr ovr_DestroyFunc = NULL;
+	ovr_GetSessionStatusPtr ovr_GetSessionStatusFunc = NULL;
+	ovr_SetTrackingOriginTypePtr ovr_SetTrackingOriginTypeFunc = NULL;
+	ovr_GetTrackingOriginTypePtr ovr_GetTrackingOriginTypeFunc = NULL;
+	ovr_RecenterTrackingOriginPtr ovr_RecenterTrackingOriginFunc = NULL;
+	ovr_ClearShouldRecenterFlagPtr ovr_ClearShouldRecenterFlagFunc = NULL;
+	ovr_GetTrackingStatePtr ovr_GetTrackingStateFunc = NULL;
+	ovr_GetTrackerPosePtr ovr_GetTrackerPoseFunc = NULL;
+	ovr_GetInputStatePtr ovr_GetInputStateFunc = NULL;
+	ovr_GetConnectedControllerTypesPtr ovr_GetConnectedControllerTypesFunc = NULL;
+	ovr_SetControllerVibrationPtr ovr_SetControllerVibrationFunc = NULL;
+	ovr_GetTextureSwapChainLengthPtr ovr_GetTextureSwapChainLengthFunc = NULL;
+	ovr_GetTextureSwapChainCurrentIndexPtr ovr_GetTextureSwapChainCurrentIndexFunc = NULL;
+	ovr_GetTextureSwapChainDescPtr ovr_GetTextureSwapChainDescFunc = NULL;
+	ovr_CommitTextureSwapChainPtr ovr_CommitTextureSwapChainFunc = NULL;
+	ovr_DestroyTextureSwapChainPtr ovr_DestroyTextureSwapChainFunc = NULL;
+	ovr_DestroyMirrorTexturePtr ovr_DestroyMirrorTextureFunc = NULL;
+	ovr_GetFovTextureSizePtr ovr_GetFovTextureSizeFunc = NULL;
+	ovr_GetRenderDescPtr ovr_GetRenderDescFunc = NULL;
+	ovr_SubmitFramePtr ovr_SubmitFrameFunc = NULL;
+	ovr_GetPredictedDisplayTimePtr ovr_GetPredictedDisplayTimeFunc = NULL;
+	ovr_GetTimeInSecondsPtr ovr_GetTimeInSecondsFunc = NULL;
+	ovr_GetBoolPtr ovr_GetBoolFunc = NULL;
+	ovr_SetBoolPtr ovr_SetBoolFunc = NULL;
+	ovr_GetIntPtr ovr_GetIntFunc = NULL;
+	ovr_SetIntPtr ovr_SetIntFunc = NULL;
+	ovr_GetFloatPtr ovr_GetFloatFunc = NULL;
+	ovr_SetFloatPtr ovr_SetFloatFunc = NULL;
+	ovr_GetFloatArrayPtr ovr_GetFloatArrayFunc = NULL;
+	ovr_SetFloatArrayPtr ovr_SetFloatArrayFunc = NULL;
+	ovr_GetStringPtr ovr_GetStringFunc = NULL;
+	ovr_SetStringPtr ovr_SetStringFunc = NULL;
 
-	ovr_CreateTextureSwapChainDXPtr ovr_CreateTextureSwapChainDXFunc = nullptr;
-	ovr_GetTextureSwapChainBufferDXPtr ovr_GetTextureSwapChainBufferDXFunc = nullptr;
-	ovr_CreateMirrorTextureDXPtr ovr_CreateMirrorTextureDXFunc = nullptr;
-	ovr_GetMirrorTextureBufferDXPtr ovr_GetMirrorTextureBufferDXFunc = nullptr;
+	ovr_CreateTextureSwapChainDXPtr ovr_CreateTextureSwapChainDXFunc = NULL;
+	ovr_GetTextureSwapChainBufferDXPtr ovr_GetTextureSwapChainBufferDXFunc = NULL;
+	ovr_CreateMirrorTextureDXPtr ovr_CreateMirrorTextureDXFunc = NULL;
+	ovr_GetMirrorTextureBufferDXPtr ovr_GetMirrorTextureBufferDXFunc = NULL;
 
-	ovr_CalcEyePosesPtr ovr_CalcEyePosesFunc = nullptr;
-	ovrMatrix4f_ProjectionPtr ovrMatrix4f_ProjectionFunc = nullptr;
+	ovr_CalcEyePosesPtr ovr_CalcEyePosesFunc = NULL;
+	ovrMatrix4f_ProjectionPtr ovrMatrix4f_ProjectionFunc = NULL;
 
-	bool XenkoOvrStartup()
+	bool xnOvrStartup()
 	{
 		if(!__libOvr)
 		{
@@ -242,7 +242,7 @@ extern "C" {
 		return OVR_SUCCESS(result);
 	}
 
-	void XenkoOvrShutdown()
+	void xnOvrShutdown()
 	{
 		if (!__libOvr) return;
 
@@ -252,7 +252,7 @@ extern "C" {
 		__libOvr = NULL;
 	}
 
-	int XenkoOvrGetError(char* errorString)
+	int xnOvrGetError(char* errorString)
 	{
 		ovrErrorInfo errInfo;
 		ovr_GetLastErrorInfoFunc(&errInfo);
@@ -260,7 +260,7 @@ extern "C" {
 		return errInfo.Result;
 	}
 
-	struct XenkoOvrSession
+	struct xnOvrSession
 	{
 		ovrSession Session;
 		ovrTextureSwapChain SwapChain;
@@ -271,7 +271,7 @@ extern "C" {
 		ovrHmdDesc HmdDesc;
 	};
 
-	XenkoOvrSession* XenkoOvrCreateSessionDx(int64_t* luidOut)
+	xnOvrSession* xnOvrCreateSessionDx(int64_t* luidOut)
 	{
 		ovrSession session;
 		ovrGraphicsLuid luid;
@@ -280,23 +280,23 @@ extern "C" {
 		bool success = OVR_SUCCESS(result);
 		if(success)
 		{
-			auto sessionOut = new XenkoOvrSession();
+			auto sessionOut = new xnOvrSession();
 			sessionOut->Session = session;
-			sessionOut->SwapChain = nullptr;
+			sessionOut->SwapChain = NULL;
 
 			*luidOut = *((int64_t*)luid.Reserved);
 			return sessionOut;
 		}
 
-		return nullptr;
+		return NULL;
 	}
 
-	void XenkoOvrDestroySession(XenkoOvrSession* session)
+	void xnOvrDestroySession(xnOvrSession* session)
 	{
 		ovr_DestroyFunc(session->Session);
 	}
 
-	bool XenkoOvrCreateTexturesDx(XenkoOvrSession* session, void* dxDevice, int* outTextureCount)
+	bool xnOvrCreateTexturesDx(xnOvrSession* session, void* dxDevice, int* outTextureCount, int backBufferWidth, int backBufferHeight)
 	{
 		session->HmdDesc = ovr_GetHmdDescFunc(session->Session);
 		ovrSizei sizel = ovr_GetFovTextureSizeFunc(session->Session, ovrEye_Left, session->HmdDesc.DefaultEyeFov[0], 1.0f);
@@ -350,8 +350,8 @@ extern "C" {
 		//create mirror as well
 		ovrMirrorTextureDesc mirrorDesc = {};
 		mirrorDesc.Format = OVR_FORMAT_R8G8B8A8_UNORM_SRGB;
-		mirrorDesc.Width = bufferSize.w / 2;
-		mirrorDesc.Height = bufferSize.h / 2;
+		mirrorDesc.Width = backBufferWidth;
+		mirrorDesc.Height = backBufferHeight;
 		if (!OVR_SUCCESS(ovr_CreateMirrorTextureDXFunc(session->Session, dxDevice, &mirrorDesc, &session->Mirror)))
 		{
 			return false;
@@ -360,7 +360,7 @@ extern "C" {
 		return true;
 	}
 
-	void* XenkoOvrGetTextureAtIndexDx(XenkoOvrSession* session, GUID textureGuid, int index)
+	void* xnOvrGetTextureAtIndexDx(xnOvrSession* session, GUID textureGuid, int index)
 	{
 		void* texture = NULL;
 		if (!OVR_SUCCESS(ovr_GetTextureSwapChainBufferDXFunc(session->Session, session->SwapChain, index, textureGuid, &texture)))
@@ -370,7 +370,7 @@ extern "C" {
 		return texture;
 	}
 
-	void* XenkoOvrGetMirrorTextureDx(XenkoOvrSession* session, GUID textureGuid)
+	void* xnOvrGetMirrorTextureDx(xnOvrSession* session, GUID textureGuid)
 	{
 		void* texture = NULL;
 		if (!OVR_SUCCESS(ovr_GetMirrorTextureBufferDXFunc(session->Session, session->Mirror, textureGuid, &texture)))
@@ -380,14 +380,14 @@ extern "C" {
 		return texture;
 	}
 
-	int XenkoOvrGetCurrentTargetIndex(XenkoOvrSession* session)
+	int xnOvrGetCurrentTargetIndex(xnOvrSession* session)
 	{
 		int index;
 		ovr_GetTextureSwapChainCurrentIndexFunc(session->Session, session->SwapChain, &index);
 		return index;
 	}
 
-	void XenkoOvrPrepareRender(XenkoOvrSession* session, 
+	void xnOvrPrepareRender(xnOvrSession* session, 
 		float near, float far, 
 		float* projLeft, float* projRight, 
 		float* positionLeft, float* positionRight, 
@@ -414,7 +414,7 @@ extern "C" {
 		memcpy(rotationRight, &session->Layer.RenderPose[1].Orientation, sizeof(float) * 4);
 	}
 
-	bool XenkoOvrCommitFrame(XenkoOvrSession* session)
+	bool xnOvrCommitFrame(xnOvrSession* session)
 	{
 		ovr_CommitTextureSwapChainFunc(session->Session, session->SwapChain);
 		auto layers = &session->Layer.Header;
@@ -427,3 +427,75 @@ extern "C" {
 	}
 
 }
+
+#else
+
+extern "C" {
+	typedef struct _GUID {
+		unsigned long  Data1;
+		unsigned short Data2;
+		unsigned short Data3;
+		unsigned char  Data4[8];
+	} GUID;
+
+	bool xnOvrStartup()
+	{
+		return true;
+	}
+
+	void xnOvrShutdown()
+	{
+		
+	}
+
+	int xnOvrGetError(char* errorString)
+	{
+		return 0;
+	}
+
+	void* xnOvrCreateSessionDx(void* luidOut)
+	{
+		return 0;
+	}
+
+	void xnOvrDestroySession(void* session)
+	{
+		
+	}
+
+	bool xnOvrCreateTexturesDx(void* session, void* dxDevice, int* outTextureCount)
+	{
+		return true;
+	}
+
+	void* xnOvrGetTextureAtIndexDx(void* session, GUID textureGuid, int index)
+	{
+		return 0;
+	}
+
+	void* xnOvrGetMirrorTextureDx(void* session, GUID textureGuid)
+	{
+		return 0;
+	}
+
+	int xnOvrGetCurrentTargetIndex(void* session)
+	{
+		return 0;
+	}
+
+	void xnOvrPrepareRender(void* session,
+		float near, float far,
+		float* projLeft, float* projRight,
+		float* positionLeft, float* positionRight,
+		float* rotationLeft, float* rotationRight)
+	{
+		
+	}
+
+	bool xnOvrCommitFrame(void* session)
+	{
+		return true;
+	}
+}
+
+#endif
