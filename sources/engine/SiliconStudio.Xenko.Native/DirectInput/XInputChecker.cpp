@@ -2,7 +2,7 @@
 
 //Borrowed from: https://msdn.microsoft.com/en-us/library/windows/desktop/ee417014(v=vs.85).aspx#XInput_and_DirectInput_Side_by_Side
 
-#include "../../../../../deps/NativePath/NativePath.h"
+#include "../../../../deps/NativePath/NativePath.h"
 
 typedef struct _GUID {
 	unsigned long  Data1;
@@ -714,7 +714,7 @@ extern "C"
 // "IG_" (ex. "VID_045E&PID_028E&IG_00").  If it does, then it's an XInput device
 // Unfortunately this information can not be found by just using DirectInput 
 //-----------------------------------------------------------------------------
-extern "C" __declspec(dllexport) BOOL IsXInputDevice(const GUID* pGuidProductFromDirectInput)
+extern "C" BOOL IsXInputDevice(const GUID* pGuidProductFromDirectInput)
 {
 	IWbemLocator*           pIWbemLocator = NULL;
 	IEnumWbemClassObject*   pEnumDevices = NULL;
