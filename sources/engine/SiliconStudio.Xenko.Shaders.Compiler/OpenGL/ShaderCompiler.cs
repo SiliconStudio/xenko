@@ -415,21 +415,22 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
 
             var realShaderSource = glslShaderCode.ToString();
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-            // optimize shader
-            try
-            {
-                var optShaderSource = RunOptimizer(shaderBytecodeResult, realShaderSource, shaderPlatform, shaderVersion, pipelineStage == PipelineStage.Vertex);
-                if (!String.IsNullOrEmpty(optShaderSource))
-                    realShaderSource = optShaderSource;
-            }
-            catch (Exception e)
-            {
-                shaderBytecodeResult.Warning("Could not run GLSL optimizer:\n{0}", e.Message);
-            }
-#else
-            shaderBytecodeResult.Warning("GLSL optimized has not been executed because it is currently not supported on this platform.");
-#endif
+// TODO: Disabled because glsl optimizer don't properly put lowp/highp qualifier inside struct (which make shader compilation fails since we use struct for lighting)
+//#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+//            // optimize shader
+//            try
+//            {
+//                var optShaderSource = RunOptimizer(shaderBytecodeResult, realShaderSource, shaderPlatform, shaderVersion, pipelineStage == PipelineStage.Vertex);
+//                if (!String.IsNullOrEmpty(optShaderSource))
+//                    realShaderSource = optShaderSource;
+//            }
+//            catch (Exception e)
+//            {
+//                shaderBytecodeResult.Warning("Could not run GLSL optimizer:\n{0}", e.Message);
+//            }
+//#else
+//            shaderBytecodeResult.Warning("GLSL optimized has not been executed because it is currently not supported on this platform.");
+//#endif
 
             return realShaderSource;
         }
