@@ -107,9 +107,9 @@ namespace SiliconStudio.Xenko.Graphics
             // prepare resource bindings used internally
             for (int i = 0; i < reflection.ResourceBindings.Count; i++)
             {
-                var resourceBinding = reflection.ResourceBindings[i];
-                UpdateResourceBindingKey(ref resourceBinding);
-                reflection.ResourceBindings[i] = resourceBinding;
+                // it is fine if multiple threads do this at the same time (same result)
+                // we use ref to avoid reassigning to the list (which cause a Collection modified during enumeration exception)
+                UpdateResourceBindingKey(ref reflection.ResourceBindings.Items[i]);
             }
             foreach (var constantBuffer in reflection.ConstantBuffers)
             {
@@ -314,8 +314,6 @@ namespace SiliconStudio.Xenko.Graphics
                 for (int i = 0; i < constantBuffer.Members.Length; ++i)
                 {
                     var member = constantBuffer.Members[i];
-                    constantBuffer.Members[i] = member;
-
                     HashConstantBufferMember(ref hashBuilder, ref member);
                 }
 
