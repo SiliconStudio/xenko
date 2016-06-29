@@ -115,6 +115,7 @@ namespace SiliconStudio.Presentation.Controls
         static FilteringComboBox()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(FilteringComboBox), new FrameworkPropertyMetadata(typeof(FilteringComboBox)));
+            IsDropDownOpenProperty.OverrideMetadata(typeof(FilteringComboBox), new FrameworkPropertyMetadata(false, OnIsDropDownOpenChanged));
         }
 
         public FilteringComboBox()
@@ -185,13 +186,16 @@ namespace SiliconStudio.Presentation.Controls
 
             if (newValue != null)
             {
-                var cvs = (CollectionView)CollectionViewSource.GetDefaultView(newValue);
-                cvs.Filter = InternalFilter;
-                var listCollectionView = cvs as ListCollectionView;
-                if (listCollectionView != null)
-                {
-                    listCollectionView.CustomSort = Sort;
-                }
+                UpdateCollectionView();
+            }
+        }
+
+        private static void OnIsDropDownOpenChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var filteringComboBox = (FilteringComboBox)d;
+            if ((bool)e.NewValue && filteringComboBox.ItemsSource != null)
+            {
+                filteringComboBox.UpdateCollectionView();
             }
         }
 
@@ -364,13 +368,10 @@ namespace SiliconStudio.Presentation.Controls
                 Sort.Token = editableTextBox.Text;
 
             // TODO: this will update the selected index because the collection view is shared. If UpdateSelectionOnValidation is true, this will still modify the SelectedIndex
+            UpdateCollectionView();
+
             var collectionView = CollectionViewSource.GetDefaultView(ItemsSource);
-            collectionView.Filter = InternalFilter;
             var listCollectionView = collectionView as ListCollectionView;
-            if (listCollectionView != null)
-            {
-                listCollectionView.CustomSort = Sort;
-            }
 
             collectionView.Refresh();
             if (!validating)
@@ -381,6 +382,17 @@ namespace SiliconStudio.Presentation.Controls
                 }
             }
             updatingSelection = false;
+        }
+
+        private void UpdateCollectionView()
+        {
+            var collectionView = CollectionViewSource.GetDefaultView(ItemsSource);
+            collectionView.Filter = InternalFilter;
+            var listCollectionView = collectionView as ListCollectionView;
+            if (listCollectionView != null)
+            {
+                listCollectionView.CustomSort = Sort;
+            }
         }
 
         private void EditableTextBoxPreviewKeyDown(object sender, KeyEventArgs e)
