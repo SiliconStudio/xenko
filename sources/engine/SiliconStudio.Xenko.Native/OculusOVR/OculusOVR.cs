@@ -17,63 +17,43 @@ namespace SiliconStudio.Xenko.Native
 #endif
         }
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
-#endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrStartup", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool Startup();
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
-#endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrShutdown", CallingConvention = CallingConvention.Cdecl)]
         public static extern void Shutdown();
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
-#endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrCreateSessionDx", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr CreateSessionDx(out long adapterLuidStr);
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
-#endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrDestroySession", CallingConvention = CallingConvention.Cdecl)]
         public static extern void DestroySession(IntPtr outSessionPtr);
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
-#endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrCreateTexturesDx", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool CreateTexturesDx(IntPtr session, IntPtr dxDevice, out int outTextureCount, int backBufferWidth, int backBufferHeight);
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
-#endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrGetTextureAtIndexDx", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr GetTextureDx(IntPtr session, Guid textureGuid, int index);
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
-#endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrGetMirrorTextureDx", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr GetMirrorTexture(IntPtr session, Guid textureGuid);
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
-#endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrGetCurrentTargetIndex", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetCurrentTargetIndex(IntPtr session);
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
-#endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrCommitFrame", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool CommitFrame(IntPtr session);
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
-#endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrPrepareRender", CallingConvention = CallingConvention.Cdecl)]
         public static extern unsafe void PrepareRender(IntPtr session,
             float near, float far,
@@ -82,9 +62,7 @@ namespace SiliconStudio.Xenko.Native
             float* rotationLeft, float* rotationRight
             );
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
-#endif
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrGetError", CallingConvention = CallingConvention.Cdecl)]
         private static extern int GetError(IntPtr errorString);
 
