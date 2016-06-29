@@ -9,6 +9,7 @@ namespace SiliconStudio.Core.Native
     {
 #if SILICONSTUDIO_PLATFORM_IOS
         internal const string Library = "__Internal";
+        internal const string LibraryName = "libcore.so";
 #else
         internal const string Library = "libcore";
 #if SILICONSTUDIO_PLATFORM_WINDOWS
