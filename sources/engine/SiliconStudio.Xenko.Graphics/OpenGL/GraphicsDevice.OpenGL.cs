@@ -734,14 +734,14 @@ namespace SiliconStudio.Xenko.Graphics
 
 #if SILICONSTUDIO_PLATFORM_LINUX || SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 #if SILICONSTUDIO_XENKO_UI_SDL
-            gameWindow = (SiliconStudio.Xenko.Graphics.SDL.Window)windowHandle.NativeHandle;
+            gameWindow = (SiliconStudio.Xenko.Graphics.SDL.Window)windowHandle.NativeWindow;
 #else
-            gameWindow = (OpenTK.GameWindow)windowHandle.NativeHandle;
+            gameWindow = (OpenTK.GameWindow)windowHandle.NativeWindow;
 #endif
 #elif SILICONSTUDIO_PLATFORM_ANDROID
-            gameWindow = (AndroidGameView)windowHandle.NativeHandle;
+            gameWindow = (AndroidGameView)windowHandle.NativeWindow;
 #elif SILICONSTUDIO_PLATFORM_IOS
-            gameWindow = (iPhoneOSGameView)windowHandle.NativeHandle;
+            gameWindow = (iPhoneOSGameView)windowHandle.NativeWindow;
 #endif
 
             windowInfo = gameWindow.WindowInfo;
