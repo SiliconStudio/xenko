@@ -211,7 +211,7 @@ namespace SiliconStudio.Xenko.Graphics
             var fastList = DestroyChildrenTextures(backBuffer);
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
-            var swapChainPanel = Description.DeviceWindowHandle.NativeHandle as Windows.UI.Xaml.Controls.SwapChainPanel;
+            var swapChainPanel = Description.DeviceWindowHandle.NativeWindow as Windows.UI.Xaml.Controls.SwapChainPanel;
             if (swapChainPanel != null)
             {
                 var swapChain2 = swapChain.QueryInterface<SwapChain2>();
@@ -323,7 +323,7 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 case Games.AppContextType.WindowsRuntime:
                 {
-                    var nativePanel = ComObject.As<ISwapChainPanelNative>(Description.DeviceWindowHandle.NativeHandle);
+                    var nativePanel = ComObject.As<ISwapChainPanelNative>(Description.DeviceWindowHandle.NativeWindow);
                     // Creates the swap chain for XAML composition
                     swapChain = new SwapChain1(GraphicsAdapterFactory.NativeFactory, GraphicsDevice.NativeDevice, ref description);
 
@@ -346,7 +346,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <returns></returns>
         private SwapChain CreateSwapChainForWindows()
         {
-            var nativeHandle = Description.DeviceWindowHandle.NativeHandle;
+            var nativeHandle = Description.DeviceWindowHandle.NativeWindow;
             var handleProperty = nativeHandle.GetType().GetProperty("Handle", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
             if (handleProperty != null && handleProperty.PropertyType == typeof(IntPtr))
             {

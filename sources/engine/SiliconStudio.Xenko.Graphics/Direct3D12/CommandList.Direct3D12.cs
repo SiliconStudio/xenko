@@ -765,7 +765,7 @@ namespace SiliconStudio.Xenko.Graphics
                     ResourceStates.GenericRead);
 
 
-                GraphicsDevice.TemporaryResources.Enqueue(new KeyValuePair<long, Pageable>(GraphicsDevice.NextFenceValue, nativeUploadTexture));
+                GraphicsDevice.TemporaryResources.Enqueue(new KeyValuePair<long, DeviceChild>(GraphicsDevice.NextFenceValue, nativeUploadTexture));
 
                 nativeUploadTexture.WriteToSubresource(0, null, databox.DataPointer, databox.RowPitch, databox.SlicePitch);
 

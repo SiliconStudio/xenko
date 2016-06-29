@@ -44,3 +44,4 @@ xnAudioListenerPush3D
 xnAudioSourcePush3D
 xnAudioSourceIsPlaying
 xnSleep
+IsXInputDevice

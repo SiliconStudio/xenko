@@ -15,14 +15,6 @@ namespace SiliconStudio.Xenko.Input
 {
     public partial class InputManager
     {
-        [DllImport(Core.NativeLibrary.LibraryName, CallingConvention = CallingConvention.Cdecl)]
-        private static extern bool IsXInputDevice(ref Guid guid);
-
-        static InputManager()
-        {
-            Core.NativeLibrary.PreloadLibrary(Core.NativeLibrary.LibraryName);
-        }
-
         /// <summary>
         /// Internal GamePad factory handling DirectInput gamepads.
         /// </summary>
@@ -38,7 +30,7 @@ namespace SiliconStudio.Xenko.Input
             public override IEnumerable<GamePadKey> GetConnectedPads()
             {
                 return directInput.GetDevices(DeviceClass.GameControl, DeviceEnumerationFlags.AllDevices).
-                    Where(x => !IsXInputDevice(ref x.ProductGuid)).
+                    Where(x => !Native.DirectInput.XInputChecker.IsXInputDevice(ref x.ProductGuid)).
                     Select(deviceInstance => new GamePadKey(deviceInstance.InstanceGuid, this));
             }
 

@@ -61,7 +61,7 @@ namespace SiliconStudio.Xenko.Games
         protected override void Initialize(GameContext<iOSWindow> gameContext)
         {
             gameForm = gameContext.Control.GameView;
-            nativeWindow = new WindowHandle(AppContextType.iOS, gameForm);
+            nativeWindow = new WindowHandle(AppContextType.iOS, gameForm, gameForm.Handle);
 
             gameForm.Load += gameForm_Load;
             gameForm.Unload += gameForm_Unload;

@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Xenko.Graphics;
 
@@ -19,7 +20,7 @@ namespace SiliconStudio.Xenko.Shaders
         public EffectReflection()
         {
             SamplerStates = new List<EffectSamplerStateBinding>();
-            ResourceBindings = new List<EffectResourceBindingDescription>();
+            ResourceBindings = new FastList<EffectResourceBindingDescription>();
             ConstantBuffers = new List<EffectConstantBufferDescription>();
             ShaderStreamOutputDeclarations = new List<ShaderStreamOutputDeclarationEntry>();
         }
@@ -34,7 +35,7 @@ namespace SiliconStudio.Xenko.Shaders
         /// Gets the parameter binding descriptions.
         /// </summary>
         /// <value>The resource bindings.</value>
-        public List<EffectResourceBindingDescription> ResourceBindings { get; set; }
+        public FastList<EffectResourceBindingDescription> ResourceBindings { get; set; }
 
         /// <summary>
         /// Gets the constant buffer descriptions (if any).

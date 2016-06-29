@@ -117,10 +117,4 @@
         $(BuildDependsOn);
     </BuildDependsOn>  
   </PropertyGroup>
-  
-  <!-- Copy the libcore.a and libfreetype.a libraries to the project root directory for future native link.
-       Note: this target is redefined in References.targets for user projects -->
-  <Target Name="CopySiliconStudioNativeLibraries" Condition=" '$(SiliconStudioPlatform)' == 'iOS' and '$(OutputType)' == 'Exe'">
-    <Copy SourceFiles="$(SiliconStudioDependenciesDir)Core.Native\$(SiliconStudioPlatform)\libcore.a" DestinationFolder="$(ProjectDir)"/>
-  </Target>
 </Project>

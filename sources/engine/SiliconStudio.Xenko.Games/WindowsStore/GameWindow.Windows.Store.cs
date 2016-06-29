@@ -197,7 +197,7 @@ namespace SiliconStudio.Xenko.Games
         {
             Debug.Assert(windowContext is GameContextWindowsRuntime, "By design only one descendant of GameContext<SwapChainPanel>");
             swapChainPanel = windowContext.Control;
-            windowHandle = new WindowHandle(AppContextType.WindowsRuntime, swapChainPanel);
+            windowHandle = new WindowHandle(AppContextType.WindowsRuntime, swapChainPanel, IntPtr.Zero);
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_10
             applicationView = ApplicationView.GetForCurrentView();            

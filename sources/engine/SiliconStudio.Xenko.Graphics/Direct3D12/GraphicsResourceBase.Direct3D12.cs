@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 using SharpDX;
@@ -52,7 +53,12 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         protected internal virtual void OnDestroyed()
         {
-            ReleaseComObject(ref nativeDeviceChild);
+            if (nativeDeviceChild != null)
+            {
+                // Schedule the resource for destruction (as soon as we are done with it)
+                GraphicsDevice.TemporaryResources.Enqueue(new KeyValuePair<long, SharpDX.Direct3D12.DeviceChild>(GraphicsDevice.NextFenceValue, nativeDeviceChild));
+                nativeDeviceChild = null;
+            }
             NativeResource = null;
         }
 
@@ -73,15 +79,11 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
         
-        internal static void ReleaseComObject<T>(ref T comObject) where T : class
+        internal static void ReleaseComObject<T>(ref T comObject) where T : class, IUnknown
         {
             // We can't put IUnknown as a constraint on the generic as it would break compilation (trying to import SharpDX in projects with InternalVisibleTo)
-            var iUnknownObject = comObject as IUnknown;
-            if (iUnknownObject != null)
-            {
-                var refCountResult = iUnknownObject.Release();
-                comObject = null;
-            }
+            var refCountResult = comObject.Release();
+            comObject = null;
         }
     }
 }
