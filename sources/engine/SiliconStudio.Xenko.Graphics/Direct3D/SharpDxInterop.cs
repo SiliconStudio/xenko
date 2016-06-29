@@ -8,7 +8,7 @@ using SharpDX.Direct3D11;
 
 namespace SiliconStudio.Xenko.Graphics.Direct3D
 {
-    public static class SharpDxInterop
+    public static class SharpDXInterop
     {
         /// <summary>
         /// Gets the DX11 native device

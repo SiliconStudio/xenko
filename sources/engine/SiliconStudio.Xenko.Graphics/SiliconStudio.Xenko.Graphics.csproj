@@ -165,7 +165,7 @@
     <Compile Include="BufferPool.cs" />
     <Compile Include="BufferPoolAllocationResult.cs" />
     <Compile Include="CommandList.cs" />
-    <Compile Include="Direct3D\SharpDxInterop.cs" />
+    <Compile Include="Direct3D\SharpDXInterop.cs" />
     <Compile Include="Font\SignedDistanceFieldSpriteFont.cs" />
     <Compile Include="OpenGL\GraphicsResource.OpenGL.cs" />
     <Compile Include="Font\SignedDistanceFieldSpriteFontContentSerializer.cs" />
