@@ -23,6 +23,10 @@
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
           <Visible>False</Visible>
         </Content>
+        <None Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'" Include="$(SiliconStudioPackageXenkoPlatformBin)\runtimeconfig.json">
+          <Link>%(RecursiveDir)$(AssemblyName).runtimeconfig.json</Link>
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
       </ItemGroup>
 	  </When>
   </Choose>
@@ -30,7 +34,6 @@
   <UsingTask TaskName="PackageDeployTask" AssemblyFile="$(SiliconStudioPackageXenko)\bin\Windows-Direct3D11\SiliconStudio.Xenko.Assets.dll"/>
 
   <Target Name="DeployOnLinux" AfterTargets="SiliconStudioCompileAsset" Condition="('$(SiliconStudioIsExecutable)' == 'true') AND ('$(SiliconStudioUnitTest)' != 'true') AND ('$(SiliconStudioDeploy)' == 'true')">
-    <Copy Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'" SourceFiles="$(SiliconStudioPackageXenkoPlatformBin)\runtimeconfig.json" DestinationFiles="$(TargetDir)\$(AssemblyName).runtimeconfig.json"/>
     <PackageDeployTask
         Directory="$(TargetDir)"
         Machine="$(SiliconStudioLinuxTarget)"
