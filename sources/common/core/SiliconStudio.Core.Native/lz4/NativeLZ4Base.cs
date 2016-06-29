@@ -2,9 +2,9 @@
 // This file is distributed under BSD 2-Clause License. See LICENSE.md for details.
 using System.Runtime.InteropServices;
 
-namespace SiliconStudio.Core.LZ4.Services
+namespace SiliconStudio.Core.Native
 {
-    internal abstract class NativeLz4Base
+    public abstract class NativeLz4Base
     {
         static NativeLz4Base()
         {
