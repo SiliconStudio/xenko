@@ -47,13 +47,20 @@ namespace SiliconStudio.Xenko.Graphics.Direct3D
         /// <param name="device">The GraphicsDevice in use</param>
         /// <param name="dxTexture2D">The DX11 texture</param>
         /// <param name="isSrgb">If the texture is SRGB</param>
+        /// <param name="takeOwnership">If false AddRef will be called on the texture, if true will not, effectively taking ownership</param>
         /// <returns></returns>
-        public static Texture CreateTextureFromNative(GraphicsDevice device, Texture2D dxTexture2D, bool isSrgb)
+        public static Texture CreateTextureFromNative(GraphicsDevice device, Texture2D dxTexture2D, bool isSrgb, bool takeOwnership)
         {
             var tex = new Texture(device);
-            var unknown = dxTexture2D as IUnknown;
-            unknown.AddReference();
+
+            if (takeOwnership)
+            {
+                var unknown = dxTexture2D as IUnknown;
+                unknown.AddReference();
+            }
+
             tex.InitializeFrom(dxTexture2D, isSrgb);
+
             return tex;
         }
     }
