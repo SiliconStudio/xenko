@@ -10,7 +10,6 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Graphics.Font;
 
 using Color = SiliconStudio.Core.Mathematics.Color;
@@ -23,7 +22,6 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     [DataContract]
     [DataSerializerGlobal(typeof(ReferenceSerializer<SpriteFont>), Profile = "Content")]
-    [ContentSerializer(typeof(DataContentSerializer<SpriteFont>))]
     public class SpriteFont : ComponentBase
     {
         public static readonly Logger Logger = GlobalLogger.GetLogger("SpriteFont");
@@ -63,7 +61,7 @@ namespace SiliconStudio.Xenko.Graphics
         private readonly GlyphAction<InternalUIDrawCommand> internalUIDrawGlyphAction;
         private readonly GlyphAction<Vector2> measureStringGlyphAction;
 
-        public SpriteFont()
+        internal SpriteFont()
         {
             internalDrawGlyphAction = InternalDrawGlyph;
             internalUIDrawGlyphAction = InternalUIDrawGlyph;
