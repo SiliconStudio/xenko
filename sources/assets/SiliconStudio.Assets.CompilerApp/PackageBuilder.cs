@@ -18,6 +18,7 @@ using System.Threading;
 using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Assets.Effect;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Shaders.Compiler;
 
 namespace SiliconStudio.Assets.CompilerApp
 {
@@ -151,7 +152,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 // Add specific steps to generate shaders
                 // TODO: This doesn't really belong here, where should we move it?
                 assetBuildResult.BuildSteps.Add(new WaitBuildStep());
-                assetBuildResult.BuildSteps.Add(new CompileDefaultSceneEffectCommand(context, package));
+                assetBuildResult.BuildSteps.Add(new CompileDefaultSceneEffectCommand(context, package, assetBuildResult));
 
                 // Create the builder
                 var indexName = "index." + builderOptions.BuildProfile;

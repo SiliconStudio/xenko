@@ -55,13 +55,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
 
                     foreach (var entry in recordedEffectCompile.GetValues())
                     {
-                        var effectCompileRequest = entry.Key;
-
-                        var compilerParameters = new CompilerParameters(effectCompileRequest.UsedParameters);
-                        compilerParameters.EffectParameters.Platform = context.GetGraphicsPlatform(package);
-                        compilerParameters.EffectParameters.Profile = context.GetGameSettingsAsset().Get<RenderingSettings>(context.Platform).DefaultGraphicsProfile;
-                        compilerParameters.EffectParameters.ApplyCompilationMode(context.GetCompilationMode());
-                        steps.Add(new CommandBuildStep(new EffectCompileCommand(context, urlRoot, effectCompileRequest.EffectName, compilerParameters, package)));
+                        steps.Add(EffectCompileCommand.FromRequest(context, package, urlRoot, entry.Key));
                     }
                 }
 
