@@ -6,7 +6,7 @@
 using SharpDX;
 using SharpDX.Direct3D11;
 
-namespace SiliconStudio.Xenko.Graphics.Direct3D
+namespace SiliconStudio.Xenko.Graphics
 {
     public static class SharpDXInterop
     {
