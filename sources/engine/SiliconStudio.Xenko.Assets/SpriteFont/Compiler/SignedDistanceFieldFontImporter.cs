@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing.Text;
 using System.IO;
+using SiliconStudio.Assets;
+using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Xenko.Graphics.Font;
 
 namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
@@ -113,7 +116,17 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
             if (string.IsNullOrEmpty(fontSource))
               return;
 
-            msdfgenExe = $"{Environment.GetEnvironmentVariable("SiliconStudioXenkoDir")}\\deps\\msdfgen\\msdfgen.exe";
+            // Get the msdfgen.exe location
+            var installationDir = DirectoryHelper.GetInstallationDirectory("Xenko");
+            var binDir = UPath.Combine(installationDir, new UDirectory("Bin"));
+            binDir = UPath.Combine(binDir, new UDirectory("Windows-Direct3D11"));
+            var msdfgen = UPath.Combine(binDir, new UFile("msdfgen.exe"));
+            if (!File.Exists(msdfgen))
+            {
+                throw new AssetException("Failed to compile a font asset, msdfgen was not found.");
+            }
+
+            msdfgenExe = msdfgen.FullPath;
             tempDir = $"{Environment.GetEnvironmentVariable("TEMP")}\\";
 
             var factory = new Factory();
