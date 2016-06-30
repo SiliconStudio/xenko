@@ -3,14 +3,10 @@
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using SharpDX.Direct3D;
 using SharpDX.Direct3D12;
 using SharpDX.Mathematics.Interop;
-using SiliconStudio.Core;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Shaders;
+using Utilities = SiliconStudio.Core.Utilities;
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -27,8 +23,8 @@ namespace SiliconStudio.Xenko.Graphics
         private PipelineState boundPipelineState;
         private DescriptorHeap[] descriptorHeaps = new DescriptorHeap[2];
 
-        private Dictionary<IntPtr, GpuDescriptorHandle> srvMapping = new Dictionary<IntPtr, GpuDescriptorHandle>();
-        private Dictionary<IntPtr, GpuDescriptorHandle> samplerMapping = new Dictionary<IntPtr, GpuDescriptorHandle>();
+        private Dictionary<long, GpuDescriptorHandle> srvMapping = new Dictionary<long, GpuDescriptorHandle>();
+        private Dictionary<long, GpuDescriptorHandle> samplerMapping = new Dictionary<long, GpuDescriptorHandle>();
 
         public CommandList(GraphicsDevice device) : base(device)
         {
