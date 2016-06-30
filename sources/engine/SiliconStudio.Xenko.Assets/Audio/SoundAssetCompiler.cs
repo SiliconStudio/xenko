@@ -133,16 +133,10 @@ namespace SiliconStudio.Xenko.Assets.Audio
                             newSound.MaxPacketLength = Math.Max(newSound.MaxPacketLength, len);
                         }
 
-                        try
-                        {
-                            //todo use position vs length!! lazy me
-                            buffer[count] = reader.ReadSingle();
-                        }
-                        catch (EndOfStreamException)
-                        {
-                            break;
-                        }
+                        buffer[count] = reader.ReadSingle();
                         count++;
+
+                        if (reader.BaseStream.Position == reader.BaseStream.Length) break;
                     }
 
                     if (count > 0) //flush

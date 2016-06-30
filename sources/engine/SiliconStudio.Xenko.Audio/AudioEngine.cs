@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Xenko.Native;
 
 namespace SiliconStudio.Xenko.Audio
 {
@@ -59,14 +60,16 @@ namespace SiliconStudio.Xenko.Audio
             audioDevice = device;
         }
 
+        private float masterVolume = 1.0f;
+
         internal Native.AudioLayer.Device AudioDevice;
 
         /// <summary>
         /// Initialize audio engine
         /// </summary>
-        public virtual void InitializeAudioEngine()
+        internal virtual void InitializeAudioEngine()
         {
-            AudioDevice = Native.AudioLayer.Create(audioDevice.Name == "default" ? null : audioDevice.Name);
+            AudioDevice = AudioLayer.Create(audioDevice.Name == "default" ? null : audioDevice.Name);
             if (AudioDevice.Ptr == IntPtr.Zero)
             {
                 State = AudioEngineState.Invalidated;
@@ -110,6 +113,23 @@ namespace SiliconStudio.Xenko.Audio
         /// The current state of the <see cref="AudioEngine"/>.
         /// </summary>
         public AudioEngineState State { get; protected set; }
+
+        public float MasterVolume
+        {
+            get
+            {
+                return masterVolume;
+            }
+            set
+            {
+                if (State != AudioEngineState.Disposed && State != AudioEngineState.Invalidated)
+                {
+                    AudioLayer.SetMasterVolume(AudioDevice, value);
+                }
+
+                masterVolume = value;
+            }
+        }
 
         /// <summary>
         /// Pause the audio engine. That is, pause all the currently playing <see cref="SoundInstance"/>, and block any future play until <see cref="ResumeAudio"/> is called.
