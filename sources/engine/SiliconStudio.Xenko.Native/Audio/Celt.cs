@@ -5,6 +5,9 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Native
 {
+    /// <summary>
+    /// Wrapper around Celt
+    /// </summary>
     internal class Celt : IDisposable
     {
         public int SampleRate { get; set; }
@@ -131,26 +134,26 @@ namespace SiliconStudio.Xenko.Native
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern IntPtr xnCeltCreate(int sampleRate, int bufferSize, int channels, bool decoderOnly);
+        private static extern IntPtr xnCeltCreate(int sampleRate, int bufferSize, int channels, bool decoderOnly);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void xnCeltDestroy(IntPtr celt);
+        private static extern void xnCeltDestroy(IntPtr celt);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern unsafe int xnCeltEncodeFloat(IntPtr celt, float* inputSamples, int numberOfInputSamples, byte* outputBuffer, int maxOutputSize);
+        private static extern unsafe int xnCeltEncodeFloat(IntPtr celt, float* inputSamples, int numberOfInputSamples, byte* outputBuffer, int maxOutputSize);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern unsafe int xnCeltDecodeFloat(IntPtr celt, byte* inputBuffer, int inputBufferSize, float* outputBuffer, int numberOfOutputSamples);
+        private static extern unsafe int xnCeltDecodeFloat(IntPtr celt, byte* inputBuffer, int inputBufferSize, float* outputBuffer, int numberOfOutputSamples);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern unsafe int xnCeltEncodeShort(IntPtr celt, short* inputSamples, int numberOfInputSamples, byte* outputBuffer, int maxOutputSize);
+        private static extern unsafe int xnCeltEncodeShort(IntPtr celt, short* inputSamples, int numberOfInputSamples, byte* outputBuffer, int maxOutputSize);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern unsafe int xnCeltDecodeShort(IntPtr celt, byte* inputBuffer, int inputBufferSize, short* outputBuffer, int numberOfOutputSamples);
+        private static extern unsafe int xnCeltDecodeShort(IntPtr celt, byte* inputBuffer, int inputBufferSize, short* outputBuffer, int numberOfOutputSamples);
     }
 }
