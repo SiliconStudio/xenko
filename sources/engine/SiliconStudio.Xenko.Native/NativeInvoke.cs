@@ -12,18 +12,17 @@ namespace SiliconStudio.Xenko.Native
     {
 #if SILICONSTUDIO_PLATFORM_IOS
         internal const string Library = "__Internal";
-        internal const string LibraryName = "libxenko.so";
 #else
         internal const string Library = "libxenko";
-#if SILICONSTUDIO_PLATFORM_WINDOWS
-        internal const string LibraryName = "libxenko.dll";
-#else
-        internal const string LibraryName = "libxenko.so";
 #endif
-#endif
+
         internal static void PreLoad()
         {
-            NativeLibrary.PreloadLibrary(LibraryName);
+#if SILICONSTUDIO_PLATFORM_WINDOWS
+            NativeLibrary.PreloadLibrary(Library + ".dll");
+#else
+            NativeLibrary.PreloadLibrary(Library + ".so");
+#endif
         }
 
         static NativeInvoke()
@@ -33,10 +32,10 @@ namespace SiliconStudio.Xenko.Native
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void UpdateBufferValuesFromElementInfo(IntPtr drawInfo, IntPtr vertexPtr, IntPtr indexPtr, int vertexOffset);
+        public static extern void UpdateBufferValuesFromElementInfo(IntPtr drawInfo, IntPtr vertexPtr, IntPtr indexPtr, int vertexOffset);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(Library, EntryPoint = "xnSleep", CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void Sleep(int ms);
+        public static extern void Sleep(int ms);
     }
 }
