@@ -85,7 +85,7 @@
           <ItemGroup>
             <Reference Include="OpenTK">
               <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(XenkoDependenciesDir)OpenTK\Linux\OpenTK.dll</HintPath>
-              <HintPath Condition="'$(SiliconStudioRuntime)' != ''">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\OpenTK.dll</HintPath>
+              <HintPath Condition="'$(SiliconStudioRuntime)' != ''">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\Linux\OpenTK.dll</HintPath>
             </Reference>
           </ItemGroup>
         </When>
@@ -93,7 +93,7 @@
           <ItemGroup>
             <Reference Include="OpenTK">
               <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(XenkoDependenciesDir)OpenTK\OpenTK.dll</HintPath>
-              <HintPath Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\OpenTK.dll</HintPath>
+              <HintPath Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\Windows\OpenTK.dll</HintPath>
             </Reference>
           </ItemGroup>
         </When>
