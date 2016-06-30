@@ -35,6 +35,7 @@ namespace SiliconStudio.Presentation.Quantum
         private readonly HashSet<string> combinedNodeChanges = new HashSet<string>();
         private IObservableNode rootNode;
         private ObservableViewModel parent;
+        private List<ObservableViewModel> children = new List<ObservableViewModel>();
 
         private Func<CombinedObservableNode, object, string> formatCombinedUpdateMessage = (node, value) => $"Update property '{node.Name}'";
 
@@ -103,6 +104,7 @@ namespace SiliconStudio.Presentation.Quantum
                     throw new ArgumentException(@"The view models to combine must contains SingleObservableNode.", nameof(viewModels));
 
                 viewModel.parent = combinedViewModel;
+                combinedViewModel.children.Add(viewModel);
                 var rootNode = (ObservableModelNode)viewModel.RootNode;
                 rootNodes.Add(rootNode);
             }
@@ -151,6 +153,16 @@ namespace SiliconStudio.Presentation.Quantum
         /// Gets the <see cref="Logger"/> associated to this view model.
         /// </summary>
         public Logger Logger { get; private set; }
+
+        /// <summary>
+        /// Gets the parent of this view model.
+        /// </summary>
+        public ObservableViewModel Parent => parent;
+
+        /// <summary>
+        /// Gets the children of this view model (in case of combined node).
+        /// </summary>
+        public IReadOnlyList<ObservableViewModel> Children => children;
 
         /// <summary>
         /// Raised when the value of an <see cref="IObservableNode"/> contained into this view model has changed.
