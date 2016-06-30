@@ -5,6 +5,9 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Native
 {
+    /// <summary>
+    /// Wrapper around OpenAL
+    /// </summary>
     public class AudioLayer
     {
         public struct Device
