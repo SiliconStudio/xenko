@@ -31,6 +31,6 @@ if %ERRORLEVEL% neq 0 (
 
 popd
 rem Copying assemblies
-copy ..\..\externals\SDL2-CS\bin\%1\SDL2-CS.dll CoreCLR\
-if exist ..\..\externals\SDL2-CS\bin\%1\SDL2-CS.pdb copy ..\..\externals\SDL2-CS\bin\%1\SDL2-CS.pdb CoreCLR\
+copy ..\..\externals\SDL2-CS\bin\Linux\%1\SDL2-CS.dll Linux\
+if exist ..\..\externals\SDL2-CS\bin\Linux\%1\SDL2-CS.pdb copy ..\..\externals\SDL2-CS\bin\Linux\%1\SDL2-CS.pdb Linux\
 
