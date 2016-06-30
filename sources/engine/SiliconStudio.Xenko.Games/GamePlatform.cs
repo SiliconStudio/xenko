@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.Xenko.Games
 {
@@ -264,8 +265,11 @@ namespace SiliconStudio.Xenko.Games
             // Iterate on each adapter
             foreach (var graphicsAdapter in GraphicsAdapterFactory.Adapters)
             {
-                // Skip adapeters that don't have graphics output
-                if (graphicsAdapter.Outputs.Length == 0)
+                if (!preferredParameters.RequiredAdapterUid.IsNullOrEmpty() && graphicsAdapter.AdapterUid != preferredParameters.RequiredAdapterUid) continue;
+
+                // Skip adapeters that don't have graphics output 
+                // but only if no RequiredAdapterUid is provided (OculusVR at init time might be in a device with no outputs)
+                if (graphicsAdapter.Outputs.Length == 0 && preferredParameters.RequiredAdapterUid.IsNullOrEmpty())
                 {
                     continue;
                 }
@@ -273,10 +277,8 @@ namespace SiliconStudio.Xenko.Games
                 var preferredGraphicsProfiles = preferredParameters.PreferredGraphicsProfile;
 
                 // Iterate on each preferred graphics profile
-                for (int index = 0; index < preferredGraphicsProfiles.Length; index++)
+                foreach (var featureLevel in preferredGraphicsProfiles)
                 {
-                    var featureLevel = preferredGraphicsProfiles[index];
-
                     // Check if this profile is supported.
                     if (graphicsAdapter.IsProfileSupported(featureLevel))
                     {

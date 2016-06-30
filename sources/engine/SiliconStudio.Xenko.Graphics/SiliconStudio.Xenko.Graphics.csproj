@@ -118,7 +118,7 @@
               <HintPath>$(XenkoDependenciesDir)\SharpVulkan\Windows\SharpVulkan.dll</HintPath>
             </Reference>
           </ItemGroup>
-		</When>
+        </When>
         <Otherwise>
           <ItemGroup>
             <Reference Include="SharpVulkan">
@@ -126,8 +126,8 @@
               <HintPath>$(XenkoDependenciesDir)\SharpVulkan\Other\SharpVulkan.dll</HintPath>
             </Reference>
           </ItemGroup>
-		</Otherwise>
-	  </Choose>	  
+        </Otherwise>
+      </Choose>
     </When>
   </Choose>
   <Choose>
@@ -165,6 +165,7 @@
     <Compile Include="BufferPool.cs" />
     <Compile Include="BufferPoolAllocationResult.cs" />
     <Compile Include="CommandList.cs" />
+    <Compile Include="SharpDXInterop.cs" />
     <Compile Include="Font\SignedDistanceFieldSpriteFont.cs" />
     <Compile Include="OpenGL\GraphicsResource.OpenGL.cs" />
     <Compile Include="Font\SignedDistanceFieldSpriteFontContentSerializer.cs" />
@@ -253,12 +254,12 @@
     <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.Direct3D11.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.OpenGL.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.OpenGLES.Level_9_3.cs" />
-	<Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.Vulkan.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.Vulkan.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.Extensions.cs" />
     <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.Direct3D11.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.OpenGL.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.OpenGLES.Level_9_3.cs" />
-	<Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.Vulkan.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.Vulkan.Level_9_3.cs" />
     <Compile Include="Shaders\BackgroundEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

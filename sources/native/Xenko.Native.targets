@@ -1,4 +1,4 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildThisFileDirectory)\..\targets\Xenko.PreSettings.targets" />
   
   <Import Condition="Exists('$(MSBuildProjectDirectory)\Xenko.Native.Libs.targets')" Project="$(MSBuildProjectDirectory)\Xenko.Native.Libs.targets" />

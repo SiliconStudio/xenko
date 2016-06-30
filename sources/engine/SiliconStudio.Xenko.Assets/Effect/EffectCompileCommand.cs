@@ -12,6 +12,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Shaders;
 using SiliconStudio.Xenko.Shaders.Compiler;
@@ -159,6 +160,15 @@ namespace SiliconStudio.Xenko.Assets.Effect
 
                 return compiler;
             }
+        }
+
+        public static BuildStep FromRequest(AssetCompilerContext context, Package package, UDirectory urlRoot, EffectCompileRequest effectCompileRequest)
+        {
+            var compilerParameters = new CompilerParameters(effectCompileRequest.UsedParameters);
+            compilerParameters.EffectParameters.Platform = context.GetGraphicsPlatform(package);
+            compilerParameters.EffectParameters.Profile = context.GetGameSettingsAsset().Get<RenderingSettings>(context.Platform).DefaultGraphicsProfile;
+            compilerParameters.EffectParameters.ApplyCompilationMode(context.GetCompilationMode());
+            return new CommandBuildStep(new EffectCompileCommand(context, urlRoot, effectCompileRequest.EffectName, compilerParameters, package));
         }
     }
 }
