@@ -180,6 +180,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         public void UnsetReadWriteBuffers()
         {
+            // TODO: This should be done automatically on SetPipelineState
             // TODO optimize it using SetUnorderedAccessViews
             for (int i = 0; i < UnorderedAcccesViewCount; i++)
             {
