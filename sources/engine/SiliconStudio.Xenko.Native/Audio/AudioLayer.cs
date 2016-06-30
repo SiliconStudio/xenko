@@ -49,6 +49,10 @@ namespace SiliconStudio.Xenko.Native
         public static extern void Destroy(Device device);
 
         [SuppressUnmanagedCodeSecurity]
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSetMasterVolume", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SetMasterVolume(Device device, float volume);
+
+        [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioListenerCreate", CallingConvention = CallingConvention.Cdecl)]
         public static extern Listener ListenerCreate(Device device);
 
