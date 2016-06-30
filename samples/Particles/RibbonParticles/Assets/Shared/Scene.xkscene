@@ -1,10 +1,47 @@
 !SceneAsset
 Id: 6736d805-6194-40bf-8056-7c52758e2e4b
-SerializedVersion: {Xenko: 1.7.0-beta02}
+SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
+SceneSettings:
+    ~Id: ea4beb3a-6866-43b6-bcfc-8b8251d919b5
+    GraphicsCompositor: !SceneGraphicsCompositorLayers
+        ~Id: bcbb1b4b-7295-4d2f-b1e5-805014849e36
+        Cameras:
+            -   ~Id: 2dba9ddf-a75f-4695-b491-465de66097a7
+                Name: null
+                Camera:
+                    Entity: {Id: b5279763-d0ee-4fc2-bf4c-710ff412bd93}
+                    Id: 794a9a18-82e3-4894-aeaa-84772e97d29e
+        Layers: []
+        Master:
+            ~Id: e246798a-4250-4c03-a5d4-159588546141
+            Name: SceneGraphicsLayer
+            Output: !MasterRenderFrameProvider {}
+            Renderers:
+                - !ClearRenderFrameRenderer
+                    ~Id: 06318bd9-d406-4da8-b157-a9fd3118db61
+                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
+                    Output: !CurrentRenderFrameProvider {}
+                - !SceneCameraRenderer
+                    ~Id: d545f66d-4a67-46fb-b8b3-c9c39aef7cb3
+                    Mode: !CameraRendererModeForward
+                        ~Id: 9ff10095-871e-4c97-baa3-94454c8369f0
+                    Camera:
+                        ~Id: de067b83-e38a-4000-8073-b5fb5ee8eaa9
+                        Index: 0
+                    Output: !CurrentRenderFrameProvider {}
+                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
+                    ForceAspectRatio: false
+    EditorSettings:
+        ~Id: 91322daa-ca80-43a5-af2a-a92eb5b79a20
+        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
+        SceneUnit: 1.0
+        Mode: !SceneEditorGraphicsModeLDRSettings
+            ~Id: ad14456c-cd86-46cf-8d16-67756961d6be
+            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
 Hierarchy:
     ~Id: 8ea4b31c-374c-48ef-a71f-0f91be1a5e2b
-    RootEntities:
+    RootPartIds:
         - b5279763-d0ee-4fc2-bf4c-710ff412bd93
         - 3aedbca9-d0a2-4833-a577-22f967ba13ee
         - d13ce4bf-5e8e-4bdf-8415-42cfc8405415
@@ -16,7 +53,7 @@ Hierarchy:
         - 19b87b8e-9b1a-46e5-9534-fda3f95d23d8
         - 666eeaba-21ff-4595-9005-c91027a334c2
         - 6b65e133-4d5e-49ed-9af9-8949cfe883ce
-    Entities:
+    Parts:
         -   Entity:
                 Id: 032d264e-ec29-4d14-bbe9-e58290d49cb5
                 Name: ProceduralModel (3)
@@ -32,7 +69,6 @@ Hierarchy:
                         Model: 9594ba77-67e5-49b1-a3f5-6f5c40c7fdb9/b5c33e7e-0e72-4011-95cd-cbd0c8601774:Prefabs/Ring
                         Materials:
                             - null
-            Design: {}
         -   Entity:
                 Id: 03c8d317-792f-4cea-a12a-f5d62a0222af
                 Name: ProceduralModel (3)
@@ -48,7 +84,6 @@ Hierarchy:
                         Model: 9594ba77-67e5-49b1-a3f5-6f5c40c7fdb9/b5c33e7e-0e72-4011-95cd-cbd0c8601774:Prefabs/Ring
                         Materials:
                             - null
-            Design: {}
         -   Entity:
                 Id: 03dd5648-2a32-4ff3-9267-1b1bcf8406b5
                 Name: PrefabRibbon
@@ -65,8 +100,9 @@ Hierarchy:
                                 Id: 39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
                             -   Entity: {Id: e5bf4202-a2c0-4fca-a9be-72e94817c531}
                                 Id: 39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
-            Design: {}
-        -   Entity:
+        -   BaseId: 73b67cca-fec1-4630-87d1-113a8ec9036b
+            BasePartInstanceId: 0ca212f6-de67-4195-a9b5-665269ad1785
+            Entity:
                 Id: 073732dc-d6ae-4279-8789-d246ea9683b0
                 Name: SwooshRed
                 Components:
@@ -230,9 +266,6 @@ Hierarchy:
                                             DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
-            Design:
-                BaseId: 73b67cca-fec1-4630-87d1-113a8ec9036b
-                BasePartInstanceId: 0ca212f6-de67-4195-a9b5-665269ad1785
         -   Entity:
                 Id: 12622a05-f706-4b32-bea0-84dac916eafe
                 Name: PrefabPedestal
@@ -247,7 +280,6 @@ Hierarchy:
                                 Id: 21ffa16c-b85b-410f-8b69-13e72c558b07
                             -   Entity: {Id: 75508145-9633-47b2-932b-4e7087505a68}
                                 Id: 349bfe8b-99d5-463d-a181-7bd51ca6a483
-            Design: {}
         -   Entity:
                 Id: 1296a39e-c94d-4589-8bc4-74900238a559
                 Name: ProceduralModel
@@ -263,7 +295,6 @@ Hierarchy:
                         Model: 292dd20d-568e-46bf-8e50-1a26b0ff84ce/522783bc-8761-432d-9c35-fec9651dc4d8:Prefabs/ProceduralModel
                         Materials:
                             - null
-            Design: {}
         -   Entity:
                 Id: 1304e7b3-798b-4602-afe4-374726417b27
                 Name: ProceduralModel
@@ -279,7 +310,6 @@ Hierarchy:
                         Model: 292dd20d-568e-46bf-8e50-1a26b0ff84ce/522783bc-8761-432d-9c35-fec9651dc4d8:Prefabs/ProceduralModel
                         Materials:
                             - null
-            Design: {}
         -   Entity:
                 Id: 196b3578-6c33-421d-923b-f1fb41f50145
                 Name: ProceduralModel
@@ -295,7 +325,6 @@ Hierarchy:
                         Model: 292dd20d-568e-46bf-8e50-1a26b0ff84ce/522783bc-8761-432d-9c35-fec9651dc4d8:Prefabs/ProceduralModel
                         Materials:
                             - null
-            Design: {}
         -   Entity:
                 Id: 19b87b8e-9b1a-46e5-9534-fda3f95d23d8
                 Name: Mr Seven
@@ -331,7 +360,6 @@ Hierarchy:
                             - null
                             - null
                             - null
-            Design: {}
         -   Entity:
                 Id: 1b92f0e7-d75d-4623-826d-c7c1c14489f8
                 Name: Entity
@@ -344,8 +372,9 @@ Hierarchy:
                         Children: []
                     - !RibbonParticles.GameProfiler,RibbonParticles.Game
                         ~Id: f5f146ce-7a89-4dc3-8d52-4db6cc951774
-            Design: {}
-        -   Entity:
+        -   BaseId: 7ec2ead0-9009-428f-9f87-c0cb3464e0ab
+            BasePartInstanceId: 0ca212f6-de67-4195-a9b5-665269ad1785
+            Entity:
                 Id: 2aea2699-19ec-4610-83de-b34d01da6596
                 Name: SwooshYellow
                 Components:
@@ -509,9 +538,6 @@ Hierarchy:
                                             DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
-            Design:
-                BaseId: 7ec2ead0-9009-428f-9f87-c0cb3464e0ab
-                BasePartInstanceId: 0ca212f6-de67-4195-a9b5-665269ad1785
         -   Entity:
                 Id: 2d0ae995-a282-4530-98f7-46f32ce84599
                 Name: RedRibbon
@@ -534,7 +560,6 @@ Hierarchy:
                         Key: Space
                         TimeInterval: 1.0
                         TimeDelay: 0.25
-            Design: {}
         -   Entity:
                 Id: 3aedbca9-d0a2-4833-a577-22f967ba13ee
                 Name: Ambient light
@@ -561,7 +586,6 @@ Hierarchy:
                                     ~Id: 349da3f3-ef49-4208-9811-5007e4ff3b3b
                                 BiasParameters:
                                     ~Id: 080577c6-6d6f-47fb-b7a0-5c662f2354a9
-            Design: {}
         -   Entity:
                 Id: 4954b776-8fc0-4bad-ba33-1bd5f6626553
                 Name: Khan Leaping Rend
@@ -597,7 +621,6 @@ Hierarchy:
                             - null
                             - null
                             - null
-            Design: {}
         -   Entity:
                 Id: 5155035a-71ad-4958-98e8-e7950c7c8f78
                 Name: PrefabPedestal
@@ -612,7 +635,6 @@ Hierarchy:
                                 Id: 21ffa16c-b85b-410f-8b69-13e72c558b07
                             -   Entity: {Id: e517c737-f9b8-4e83-b8a5-9ad2adb1e2cd}
                                 Id: 349bfe8b-99d5-463d-a181-7bd51ca6a483
-            Design: {}
         -   Entity:
                 Id: 52d382a7-941a-4235-b62a-2db3da8f165f
                 Name: ProceduralModel
@@ -628,7 +650,6 @@ Hierarchy:
                         Model: 292dd20d-568e-46bf-8e50-1a26b0ff84ce/522783bc-8761-432d-9c35-fec9651dc4d8:Prefabs/ProceduralModel
                         Materials:
                             - null
-            Design: {}
         -   Entity:
                 Id: 56a4f13c-ad90-4bb1-bf0c-cf6a0ab85085
                 Name: PrefabPedestal
@@ -643,7 +664,6 @@ Hierarchy:
                                 Id: 21ffa16c-b85b-410f-8b69-13e72c558b07
                             -   Entity: {Id: 03c8d317-792f-4cea-a12a-f5d62a0222af}
                                 Id: 349bfe8b-99d5-463d-a181-7bd51ca6a483
-            Design: {}
         -   Entity:
                 Id: 5acf4055-9e3a-4c1b-98aa-5d8bd93884c8
                 Name: PrefabRibbon
@@ -660,7 +680,6 @@ Hierarchy:
                                 Id: 39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
                             -   Entity: {Id: 8ff313e5-2282-4955-961f-e6ee746dbfdd}
                                 Id: 39cb0c6e-3714-4460-b5f4-7d0b8f04ddf9
-            Design: {}
         -   Entity:
                 Id: 61434ff9-95e0-4d57-a1de-dc7182af7ec6
                 Name: Sir Upperslash
@@ -696,7 +715,6 @@ Hierarchy:
                             - null
                             - null
                             - null
-            Design: {}
         -   Entity:
                 Id: 664db320-87a7-4342-b7de-4ab3efd17f36
                 Name: PrefabPedestal
@@ -711,7 +729,6 @@ Hierarchy:
                                 Id: 21ffa16c-b85b-410f-8b69-13e72c558b07
                             -   Entity: {Id: 92855e75-a308-4fd8-8328-62c00ae56893}
                                 Id: 349bfe8b-99d5-463d-a181-7bd51ca6a483
-            Design: {}
         -   Entity:
                 Id: 666eeaba-21ff-4595-9005-c91027a334c2
                 Name: Khan Devastating Rend
@@ -747,7 +764,6 @@ Hierarchy:
                             - null
                             - null
                             - null
-            Design: {}
         -   Entity:
                 Id: 6a112d70-e784-4a20-850a-9010e43bb3aa
                 Name: RedRibbon
@@ -770,7 +786,6 @@ Hierarchy:
                         Key: Space
                         TimeInterval: 0.82
                         TimeDelay: 0.2
-            Design: {}
         -   Entity:
                 Id: 6b65e133-4d5e-49ed-9af9-8949cfe883ce
                 Name: Directional light
@@ -797,7 +812,6 @@ Hierarchy:
                                     ~Id: a04cf1ab-4c95-42a3-8111-7b4de4f99293
                                 BiasParameters:
                                     ~Id: 08cae8b9-87da-4f7a-9821-798773d9e9e9
-            Design: {}
         -   Entity:
                 Id: 71513b46-5e4a-4125-b431-311580f1ef8b
                 Name: ProceduralModel (3)
@@ -813,7 +827,6 @@ Hierarchy:
                         Model: 9594ba77-67e5-49b1-a3f5-6f5c40c7fdb9/b5c33e7e-0e72-4011-95cd-cbd0c8601774:Prefabs/Ring
                         Materials:
                             - null
-            Design: {}
         -   Entity:
                 Id: 75508145-9633-47b2-932b-4e7087505a68
                 Name: ProceduralModel (3)
@@ -829,7 +842,6 @@ Hierarchy:
                         Model: 9594ba77-67e5-49b1-a3f5-6f5c40c7fdb9/b5c33e7e-0e72-4011-95cd-cbd0c8601774:Prefabs/Ring
                         Materials:
                             - null
-            Design: {}
         -   Entity:
                 Id: 796468cf-3194-482d-b1a8-8bb105d9bfc7
                 Name: PrefabPedestal
@@ -844,7 +856,6 @@ Hierarchy:
                                 Id: 21ffa16c-b85b-410f-8b69-13e72c558b07
                             -   Entity: {Id: 032d264e-ec29-4d14-bbe9-e58290d49cb5}
                                 Id: 349bfe8b-99d5-463d-a181-7bd51ca6a483
-            Design: {}
         -   Entity:
                 Id: 8a3b8daa-0d73-4522-beea-89bcd38b6c7a
                 Name: LeftShoulder
@@ -861,8 +872,9 @@ Hierarchy:
                         ~Id: 83684059-259b-44f0-9ae2-8d05b19b1c93
                         NodeName: LeftShoulder
                         Target: null
-            Design: {}
-        -   Entity:
+        -   BaseId: 70784fb7-8085-44bc-9615-8ab8b33df3a1
+            BasePartInstanceId: 0ca212f6-de67-4195-a9b5-665269ad1785
+            Entity:
                 Id: 8ff313e5-2282-4955-961f-e6ee746dbfdd
                 Name: SwooshBlue
                 Components:
@@ -1026,9 +1038,6 @@ Hierarchy:
                                             DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
-            Design:
-                BaseId: 70784fb7-8085-44bc-9615-8ab8b33df3a1
-                BasePartInstanceId: 0ca212f6-de67-4195-a9b5-665269ad1785
         -   Entity:
                 Id: 92855e75-a308-4fd8-8328-62c00ae56893
                 Name: ProceduralModel (3)
@@ -1044,8 +1053,9 @@ Hierarchy:
                         Model: 9594ba77-67e5-49b1-a3f5-6f5c40c7fdb9/b5c33e7e-0e72-4011-95cd-cbd0c8601774:Prefabs/Ring
                         Materials:
                             - null
-            Design: {}
-        -   Entity:
+        -   BaseId: 73b67cca-fec1-4630-87d1-113a8ec9036b
+            BasePartInstanceId: 2f324a7a-a2f1-4ebd-92ea-7ef9d18e097a
+            Entity:
                 Id: 9b590d0c-a428-42ca-a839-cce3e6b98479
                 Name: SwooshRed
                 Components:
@@ -1209,10 +1219,9 @@ Hierarchy:
                                             DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
-            Design:
-                BaseId: 73b67cca-fec1-4630-87d1-113a8ec9036b
-                BasePartInstanceId: 2f324a7a-a2f1-4ebd-92ea-7ef9d18e097a
-        -   Entity:
+        -   BaseId: 7ec2ead0-9009-428f-9f87-c0cb3464e0ab
+            BasePartInstanceId: 66c4cf88-8368-493a-a7a0-f674b6693881
+            Entity:
                 Id: af7180fc-0e8e-4f31-961c-320dec6f9aa0
                 Name: SwooshYellow
                 Components:
@@ -1376,9 +1385,6 @@ Hierarchy:
                                             DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
-            Design:
-                BaseId: 7ec2ead0-9009-428f-9f87-c0cb3464e0ab
-                BasePartInstanceId: 66c4cf88-8368-493a-a7a0-f674b6693881
         -   Entity:
                 Id: b5279763-d0ee-4fc2-bf4c-710ff412bd93
                 Name: Camera
@@ -1394,7 +1400,6 @@ Hierarchy:
                         Projection: Perspective
                         FarClipPlane: 100.0
                         AspectRatio: 0.5634
-            Design: {}
         -   Entity:
                 Id: c5d6e044-6e0b-4599-b8e3-e4a7a8f6ba67
                 Name: Angel
@@ -1432,7 +1437,6 @@ Hierarchy:
                             - null
                             - null
                             - null
-            Design: {}
         -   Entity:
                 Id: ca05946c-cce2-4970-8d8b-56b28c19e01e
                 Name: RightShoulder
@@ -1449,7 +1453,6 @@ Hierarchy:
                         ~Id: 83684059-259b-44f0-9ae2-8d05b19b1c93
                         NodeName: RightShoulder
                         Target: null
-            Design: {}
         -   Entity:
                 Id: d1043432-3d65-4f68-a696-54921013baeb
                 Name: RedRibbon
@@ -1472,7 +1475,6 @@ Hierarchy:
                         Key: Space
                         TimeInterval: 0.79
                         TimeDelay: 0.1
-            Design: {}
         -   Entity:
                 Id: d13ce4bf-5e8e-4bdf-8415-42cfc8405415
                 Name: Background
@@ -1486,7 +1488,6 @@ Hierarchy:
                     - !BackgroundComponent
                         ~Id: 4a58a89d-ac9b-4066-afb8-0f4656231d6a
                         Texture: daae9484-2784-444e-a7e8-12b6a3f36a07/05c67510-1363-46fd-b0ff-79eca123c1c1:Textures/XenkoBackground
-            Design: {}
         -   Entity:
                 Id: d272773c-92dc-4919-b39e-04971a6ebfd8
                 Name: Yokogiri Tono
@@ -1522,7 +1523,6 @@ Hierarchy:
                             - null
                             - null
                             - null
-            Design: {}
         -   Entity:
                 Id: db4ea214-db93-420e-9b01-4127f25ec861
                 Name: ProceduralModel
@@ -1538,7 +1538,6 @@ Hierarchy:
                         Model: 292dd20d-568e-46bf-8e50-1a26b0ff84ce/522783bc-8761-432d-9c35-fec9651dc4d8:Prefabs/ProceduralModel
                         Materials:
                             - null
-            Design: {}
         -   Entity:
                 Id: dee3f678-cff4-45f0-ba78-0c68aab480d1
                 Name: PrefabPedestal
@@ -1553,7 +1552,6 @@ Hierarchy:
                                 Id: 21ffa16c-b85b-410f-8b69-13e72c558b07
                             -   Entity: {Id: 71513b46-5e4a-4125-b431-311580f1ef8b}
                                 Id: 349bfe8b-99d5-463d-a181-7bd51ca6a483
-            Design: {}
         -   Entity:
                 Id: e517c737-f9b8-4e83-b8a5-9ad2adb1e2cd
                 Name: ProceduralModel (3)
@@ -1569,8 +1567,9 @@ Hierarchy:
                         Model: 9594ba77-67e5-49b1-a3f5-6f5c40c7fdb9/b5c33e7e-0e72-4011-95cd-cbd0c8601774:Prefabs/Ring
                         Materials:
                             - null
-            Design: {}
-        -   Entity:
+        -   BaseId: 70784fb7-8085-44bc-9615-8ab8b33df3a1
+            BasePartInstanceId: c77eec2f-790c-4fff-8ced-0f1c48579d41
+            Entity:
                 Id: e5bf4202-a2c0-4fca-a9be-72e94817c531
                 Name: SwooshBlue
                 Components:
@@ -1734,9 +1733,6 @@ Hierarchy:
                                             DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
-            Design:
-                BaseId: 70784fb7-8085-44bc-9615-8ab8b33df3a1
-                BasePartInstanceId: c77eec2f-790c-4fff-8ced-0f1c48579d41
         -   Entity:
                 Id: e5c3b2c9-6475-4ff9-b111-e6a87b14a84b
                 Name: 7Ribbons
@@ -1759,7 +1755,6 @@ Hierarchy:
                         Key: Space
                         TimeInterval: 0.82
                         TimeDelay: 0.2
-            Design: {}
         -   Entity:
                 Id: f8eb0a0b-de53-4894-8add-ff3d2b6bc173
                 Name: RedRibbon
@@ -1782,7 +1777,6 @@ Hierarchy:
                         Key: Space
                         TimeInterval: 1.0
                         TimeDelay: 0.25
-            Design: {}
         -   Entity:
                 Id: fd3518cf-80d7-4fbe-b3fa-12a22df3427a
                 Name: ProceduralModel
@@ -1798,55 +1792,19 @@ Hierarchy:
                         Model: 292dd20d-568e-46bf-8e50-1a26b0ff84ce/522783bc-8761-432d-9c35-fec9651dc4d8:Prefabs/ProceduralModel
                         Materials:
                             - 10cb2fd5-92a9-4f3e-93f5-6023a1ad05be/9c1aa720-fc74-44ec-86b4-0dda38ed9bf6:Prefabs/Material
-            Design: {}
-SceneSettings:
-    ~Id: ea4beb3a-6866-43b6-bcfc-8b8251d919b5
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        ~Id: bcbb1b4b-7295-4d2f-b1e5-805014849e36
-        Cameras:
-            -   ~Id: 2dba9ddf-a75f-4695-b491-465de66097a7
-                Name: null
-                Camera:
-                    Entity: {Id: b5279763-d0ee-4fc2-bf4c-710ff412bd93}
-                    Id: 794a9a18-82e3-4894-aeaa-84772e97d29e
-        Layers: []
-        Master:
-            ~Id: e246798a-4250-4c03-a5d4-159588546141
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                - !ClearRenderFrameRenderer
-                    ~Id: 06318bd9-d406-4da8-b157-a9fd3118db61
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                - !SceneCameraRenderer
-                    ~Id: d545f66d-4a67-46fb-b8b3-c9c39aef7cb3
-                    Mode: !CameraRendererModeForward
-                        ~Id: 9ff10095-871e-4c97-baa3-94454c8369f0
-                    Camera:
-                        ~Id: de067b83-e38a-4000-8073-b5fb5ee8eaa9
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-    EditorSettings:
-        ~Id: 91322daa-ca80-43a5-af2a-a92eb5b79a20
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            ~Id: ad14456c-cd86-46cf-8d16-67756961d6be
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
 ~BaseParts:
     -   Location: Prefabs/PrefabRibbon
         Asset: !PrefabAsset
             Id: 7c2178f1-ca46-4b61-94f0-a52990454502
+            SerializedVersion: {Xenko: 1.7.0-beta04}
             Tags: []
             Hierarchy:
                 ~Id: e8c342d3-560b-4a8f-890f-6528a64c72c3
-                RootEntities:
+                RootPartIds:
                     - 73b67cca-fec1-4630-87d1-113a8ec9036b
                     - 7ec2ead0-9009-428f-9f87-c0cb3464e0ab
                     - 70784fb7-8085-44bc-9615-8ab8b33df3a1
-                Entities:
+                Parts:
                     -   Entity:
                             Id: 70784fb7-8085-44bc-9615-8ab8b33df3a1
                             Name: SwooshBlue
@@ -2011,7 +1969,6 @@ SceneSettings:
                                                         DisplayParticleRotation: false
                                                         DisplayParticleScale: false
                                                         DisplayParticleScaleUniform: false
-                        Design: {}
                     -   Entity:
                             Id: 73b67cca-fec1-4630-87d1-113a8ec9036b
                             Name: SwooshRed
@@ -2176,7 +2133,6 @@ SceneSettings:
                                                         DisplayParticleRotation: false
                                                         DisplayParticleScale: false
                                                         DisplayParticleScaleUniform: false
-                        Design: {}
                     -   Entity:
                             Id: 7ec2ead0-9009-428f-9f87-c0cb3464e0ab
                             Name: SwooshYellow
@@ -2341,4 +2297,3 @@ SceneSettings:
                                                         DisplayParticleRotation: false
                                                         DisplayParticleScale: false
                                                         DisplayParticleScaleUniform: false
-                        Design: {}

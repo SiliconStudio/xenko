@@ -2,7 +2,6 @@
 Id: 84cbd6b6-9d7e-4c63-9d7f-5570b7e14f00
 Tags: []
 Source: ../../Resources/knight/knight.fbx
-SourceHash: af4ac6da9a62b02bd84f4a8147dd38a7
 ScaleImport: 0.0
 Nodes:
     - {~Id: 65363bed-ca99-4cf5-9f54-52b4eac022a9, Name: RootNode, Depth: 0}
@@ -77,3 +76,5 @@ Nodes:
     - {~Id: fd0d0ff6-e966-4900-9250-a3d5d355b9ed, Name: ch00_Knight_directionalLight1, Depth: 2}
     - {~Id: 9cb48e49-4833-43d8-b80d-b4d95b2f9444, Name: ch00_Knight_directionalLight2, Depth: 2}
     - {~Id: afdd484c-ba48-44b4-9451-5d95bdea2d82, Name: ch00_Knight_ambientLight1, Depth: 2}
+~SourceHashes:
+    ../../Resources/knight/knight.fbx: af4ac6da9a62b02bd84f4a8147dd38a7
