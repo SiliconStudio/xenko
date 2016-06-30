@@ -1,11 +1,12 @@
 !PrefabAsset
 Id: 311ff46f-bf71-4dd0-aa39-230dbf355536
+SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
 Hierarchy:
     ~Id: 5a94fb0c-5d2b-4f83-a436-04b5505c6d2a
-    RootEntities:
+    RootPartIds:
         - 577fd387-7fd3-40d7-8780-14695cc57730
-    Entities:
+    Parts:
         -   Entity:
                 Id: 04e87e84-9c4f-4b69-85f2-8fbac0028df2
                 Name: ArcTarget
@@ -16,7 +17,6 @@ Hierarchy:
                         Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
-            Design: {}
         -   Entity:
                 Id: 11531b59-2e60-415e-82cf-81bdfafeb1d6
                 Name: Entity
@@ -29,7 +29,6 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design: {}
         -   Entity:
                 Id: 1f576934-655a-4878-8388-3ff907555fdb
                 Name: ProceduralModel
@@ -44,7 +43,6 @@ Hierarchy:
                         ~Id: 1b0896b3-be6a-4b97-a751-8fad96ed31ae
                         Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:ProceduralModel
                         Materials: []
-            Design: {}
         -   Entity:
                 Id: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d
                 Name: MetalRing
@@ -62,7 +60,6 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
-            Design: {}
         -   Entity:
                 Id: 342cd7e6-22a0-4f21-88f0-11e54f7b0bd4
                 Name: Entity (2)
@@ -75,7 +72,6 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 771289b2-0bf6-47f1-afef-aab30a29b874}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design: {}
         -   Entity:
                 Id: 4d184225-610c-40fd-96a8-1409ca9f8729
                 Name: Entity (3)
@@ -88,7 +84,6 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 735bf6ce-0f55-46ee-8a86-44b04c0c814d}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design: {}
         -   Entity:
                 Id: 577fd387-7fd3-40d7-8780-14695cc57730
                 Name: LightningRod
@@ -111,7 +106,6 @@ Hierarchy:
                                 Id: de390457-c420-49b8-99a8-6528b5971e83
                             -   Entity: {Id: 04e87e84-9c4f-4b69-85f2-8fbac0028df2}
                                 Id: 0092eadc-6e4f-4295-b138-a52d7b0fc079
-            Design: {}
         -   Entity:
                 Id: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
                 Name: Sphere
@@ -126,7 +120,6 @@ Hierarchy:
                         ~Id: bb18a562-a78b-4db6-ad17-a646b90e3045
                         Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/2da54fd5-e615-4a91-ae7b-91dfb574d66a:Sphere
                         Materials: []
-            Design: {}
         -   Entity:
                 Id: 735bf6ce-0f55-46ee-8a86-44b04c0c814d
                 Name: MetalRing
@@ -144,7 +137,6 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
-            Design: {}
         -   Entity:
                 Id: 771289b2-0bf6-47f1-afef-aab30a29b874
                 Name: MetalRing
@@ -162,4 +154,3 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
-            Design: {}

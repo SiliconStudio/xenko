@@ -7,6 +7,7 @@
 #include "../../../../deps/NativePath/NativeDynamicLinking.h"
 #include "../../../../deps/NativePath/NativeThreading.h"
 #include "../../../../deps/NativePath/TINYSTL/unordered_map.h"
+#include "../../../../deps/NativePath/TINYSTL/unordered_set.h"
 
 
 #define HAVE_STDINT_H
@@ -193,9 +194,13 @@ extern "C" {
 		#define AL_ERROR //if (auto err = GetErrorAL() != AL_NO_ERROR) debugtrap()
 		#define ALC_ERROR(__device__) //if (auto err = GetErrorALC(__device__) != ALC_NO_ERROR) debugtrap()
 
+		struct xnAudioListener;
+
 		struct xnAudioDevice
 		{
 			ALCdevice* device;
+			SpinLock deviceLock;
+			tinystl::unordered_set<xnAudioListener*> listeners;
 		};
 
 		struct xnAudioBuffer
@@ -205,6 +210,7 @@ extern "C" {
 
 		struct xnAudioListener
 		{
+			xnAudioDevice* device;
 			ALCcontext* context;
 			tinystl::unordered_map<ALuint, xnAudioBuffer*> buffers;
 		};
@@ -240,19 +246,46 @@ extern "C" {
 		xnAudioListener* xnAudioListenerCreate(xnAudioDevice* device)
 		{
 			auto res = new xnAudioListener;
+			res->device = device;
+
 			res->context = CreateContext(device->device, NULL);
 			ALC_ERROR(device->device);
 			MakeContextCurrent(res->context);
 			ALC_ERROR(device->device);
 			ProcessContext(res->context);
 			ALC_ERROR(device->device);
+
+			device->deviceLock.Lock();
+
+			device->listeners.insert(res);
+
+			device->deviceLock.Unlock();
+
 			return res;
 		}
 
 		void xnAudioListenerDestroy(xnAudioListener* listener)
 		{
+			listener->device->deviceLock.Lock();
+
+			listener->device->listeners.erase(listener);
+
+			listener->device->deviceLock.Unlock();
+
 			DestroyContext(listener->context);
+
 			delete listener;
+		}
+
+		void xnAudioSetMasterVolume(xnAudioDevice* device, float volume)
+		{
+			device->deviceLock.Lock();
+			for(auto listener : device->listeners)
+			{
+				ContextState lock(listener->context);
+				alListenerf(AL_GAIN, volume);
+			}
+			device->deviceLock.Unlock();
 		}
 
 		npBool xnAudioListenerEnable(xnAudioListener* listener)
