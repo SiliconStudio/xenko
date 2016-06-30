@@ -1,4 +1,4 @@
-call "%ProgramFiles(x86)%\Microsoft Visual Studio 12.0\vc\vcvarsall.bat" x86
+call "%ProgramFiles(x86)%\Microsoft Visual Studio 14.0\vc\vcvarsall.bat" x86
 
 REM Windows
 msbuild ..\..\externals\opentk\OpenTK.sln /Property:Configuration=Release;Platform="Any CPU"
