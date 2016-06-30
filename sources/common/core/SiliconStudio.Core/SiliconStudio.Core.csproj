@@ -44,7 +44,9 @@
     <When Condition=" '$(SiliconStudioRuntime)' == 'CoreCLR' ">
       <ItemGroup>
         <None Include="..\..\..\data\Linux\runtimeconfig.json">
-          <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="..\..\..\data\Linux\CoreCLRSetup.sh">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
       </ItemGroup>

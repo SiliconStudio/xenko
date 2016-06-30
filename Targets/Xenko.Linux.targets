@@ -24,6 +24,9 @@
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
           <Visible>False</Visible>
         </Content>
+        <None Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'" Include="$(SiliconStudioPackageXenkoPlatformBin)\CoreCLRSetup.sh">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
         <None Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'" Include="$(SiliconStudioPackageXenkoPlatformBin)\runtimeconfig.json">
           <Link>%(RecursiveDir)$(AssemblyName).runtimeconfig.json</Link>
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
