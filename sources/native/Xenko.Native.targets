@@ -1,4 +1,4 @@
-<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildThisFileDirectory)\..\targets\Xenko.PreSettings.targets" />
   
   <Import Condition="Exists('$(MSBuildProjectDirectory)\Xenko.Native.Libs.targets')" Project="$(MSBuildProjectDirectory)\Xenko.Native.Libs.targets" />
@@ -74,23 +74,33 @@
   <Target Name="CompileNativeClang_Windows_Clean" Condition="'$(SiliconStudioPlatform)' == 'Windows' and '$(SiliconStudioPackageBuild)' != 'true' and '$(XenkoGraphicsApi)' != 'OpenGL'" BeforeTargets="Clean">
     <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\WindowsDesktop\WindowsDesktop.sln" Targets="Clean" Properties="XenkoNativeOutputName=$(XenkoNativeOutputName);XenkoNativeOutputDir=$(SiliconStudioXenkoSdkBinDir);XenkoDependenciesDir=$(XenkoDependenciesDir);XenkoNativePathLibs=libNativePath.lib $(XenkoNativePathLibs);XenkoNativeProjectFolder=$(ProjectDir);Configuration=$(Configuration);Platform=x86" />    
     <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\WindowsDesktop\WindowsDesktop.sln" Targets="Clean" Properties="XenkoNativeOutputName=$(XenkoNativeOutputName);XenkoNativeOutputDir=$(SiliconStudioXenkoSdkBinDir);XenkoDependenciesDir=$(XenkoDependenciesDir);XenkoNativePathLibs=libNativePath.lib $(XenkoNativePathLibs);XenkoNativeProjectFolder=$(ProjectDir);Configuration=$(Configuration);Platform=x64" />
+    <Delete Files="$(SiliconStudioXenkoSdkBinDir)\x64\$(XenkoNativeOutputName).*" />
+    <Delete Files="$(SiliconStudioXenkoSdkBinDir)\x86\$(XenkoNativeOutputName).*" />
   </Target>
 
   <Target Name="CompileNativeClang_Windows10_Clean" Condition="'$(SiliconStudioPlatform)' == 'Windows10'" BeforeTargets="Clean">
     <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\Windows10\Windows10.sln" Targets="Clean" Properties="XenkoNativeOutputName=$(XenkoNativeOutputName);XenkoNativeOutputDir=$(SiliconStudioXenkoSdkBinDir);XenkoDependenciesDir=$(XenkoDependenciesDir);XenkoNativePathLibs=libNativePath.lib $(XenkoNativePathLibs);XenkoNativeProjectFolder=$(ProjectDir);Configuration=$(Configuration);Platform=x86" />
     <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\Windows10\Windows10.sln" Targets="Clean" Properties="XenkoNativeOutputName=$(XenkoNativeOutputName);XenkoNativeOutputDir=$(SiliconStudioXenkoSdkBinDir);XenkoDependenciesDir=$(XenkoDependenciesDir);XenkoNativePathLibs=libNativePath.lib $(XenkoNativePathLibs);XenkoNativeProjectFolder=$(ProjectDir);Configuration=$(Configuration);Platform=x64" />
     <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\Windows10\Windows10.sln" Targets="Clean" Properties="XenkoNativeOutputName=$(XenkoNativeOutputName);XenkoNativeOutputDir=$(SiliconStudioXenkoSdkBinDir);XenkoDependenciesDir=$(XenkoDependenciesDir);XenkoNativePathLibs=libNativePath.lib $(XenkoNativePathLibs);XenkoNativeProjectFolder=$(ProjectDir);Configuration=$(Configuration);Platform=ARM" />
+    <Delete Files="$(SiliconStudioXenkoSdkBinDir)\x64\$(XenkoNativeOutputName).*" />
+    <Delete Files="$(SiliconStudioXenkoSdkBinDir)\ARM\$(XenkoNativeOutputName).*" />
+    <Delete Files="$(SiliconStudioXenkoSdkBinDir)\x86\$(XenkoNativeOutputName).*" />
   </Target>
 
   <Target Name="CompileNativeClang_WindowsStore_Clean" Condition="'$(SiliconStudioPlatform)' == 'WindowsStore'" BeforeTargets="Clean">
     <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\WindowsStore\WindowsStore.sln" Targets="Clean" Properties="XenkoNativeOutputName=$(XenkoNativeOutputName);XenkoNativeOutputDir=$(SiliconStudioXenkoSdkBinDir);XenkoDependenciesDir=$(XenkoDependenciesDir);XenkoNativePathLibs=libNativePath.lib $(XenkoNativePathLibs);XenkoNativeProjectFolder=$(ProjectDir);Configuration=$(Configuration);Platform=x86" />
     <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\WindowsStore\WindowsStore.sln" Targets="Clean" Properties="XenkoNativeOutputName=$(XenkoNativeOutputName);XenkoNativeOutputDir=$(SiliconStudioXenkoSdkBinDir);XenkoDependenciesDir=$(XenkoDependenciesDir);XenkoNativePathLibs=libNativePath.lib $(XenkoNativePathLibs);XenkoNativeProjectFolder=$(ProjectDir);Configuration=$(Configuration);Platform=x64" />
     <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\WindowsStore\WindowsStore.sln" Targets="Clean" Properties="XenkoNativeOutputName=$(XenkoNativeOutputName);XenkoNativeOutputDir=$(SiliconStudioXenkoSdkBinDir);XenkoDependenciesDir=$(XenkoDependenciesDir);XenkoNativePathLibs=libNativePath.lib $(XenkoNativePathLibs);XenkoNativeProjectFolder=$(ProjectDir);Configuration=$(Configuration);Platform=ARM" />
+    <Delete Files="$(SiliconStudioXenkoSdkBinDir)\x64\$(XenkoNativeOutputName).*" />
+    <Delete Files="$(SiliconStudioXenkoSdkBinDir)\ARM\$(XenkoNativeOutputName).*" />
+    <Delete Files="$(SiliconStudioXenkoSdkBinDir)\x86\$(XenkoNativeOutputName).*" />
   </Target>
 
   <Target Name="CompileNativeClang_WindowsPhone_Clean" Condition="'$(SiliconStudioPlatform)' == 'WindowsPhone'" BeforeTargets="Clean">
     <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\WindowsPhone\WindowsPhone.sln" Targets="Clean" Properties="XenkoNativeOutputName=$(XenkoNativeOutputName);XenkoNativeOutputDir=$(SiliconStudioXenkoSdkBinDir);XenkoDependenciesDir=$(XenkoDependenciesDir);XenkoNativePathLibs=libNativePath.lib $(XenkoNativePathLibs);XenkoNativeProjectFolder=$(ProjectDir);Configuration=$(Configuration);Platform=x86" />
     <MSBuild Projects="$(MSBuildThisFileDirectory)\WindowsProjects\WindowsPhone\WindowsPhone.sln" Targets="Clean" Properties="XenkoNativeOutputName=$(XenkoNativeOutputName);XenkoNativeOutputDir=$(SiliconStudioXenkoSdkBinDir);XenkoDependenciesDir=$(XenkoDependenciesDir);XenkoNativePathLibs=libNativePath.lib $(XenkoNativePathLibs);XenkoNativeProjectFolder=$(ProjectDir);Configuration=$(Configuration);Platform=ARM" />
+    <Delete Files="$(SiliconStudioXenkoSdkBinDir)\x64\$(XenkoNativeOutputName).*" />
+    <Delete Files="$(SiliconStudioXenkoSdkBinDir)\x86\$(XenkoNativeOutputName).*" />
   </Target>
   
   <Target Name="CompileNativeClang_iOS" Inputs="@(XenkoNativeCFiles);@(XenkoNativeHFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\$(XenkoNativeOutputName).a" Condition="'$(SiliconStudioPlatform)' == 'iOS'" BeforeTargets="Build">
@@ -119,6 +129,12 @@
     <Copy SourceFiles="$(XenkoDependenciesDir)\NativePath\iOS\libNativePath.a" DestinationFolder="$(SiliconStudioXenkoSdkBinDir)" />
     
     <Copy SourceFiles="@(XenkoNativePathLibs2)" DestinationFolder="$(SiliconStudioXenkoSdkBinDir)" />
+  </Target>
+
+  <Target Name="CompileNativeClang_iOS_Clean" Condition="'$(SiliconStudioPlatform)' == 'iOS'" BeforeTargets="Clean">
+    <Delete Files="$(SiliconStudioXenkoSdkBinDir)\$(XenkoNativeOutputName).a" />
+    <Delete Files="$(SiliconStudioXenkoSdkBinDir)\libNativePath.a" />
+    <Delete Files="@(XenkoNativePathLibs2->'$(SiliconStudioXenkoSdkBinDir)\%(Filename).a', ' ')" />
   </Target>
 
   <PropertyGroup Condition="Exists('$(ANDROID_NDK_PATH)\RELEASE.TXT')">
@@ -156,6 +172,14 @@
     <Exec Command="&quot;$(ANDROID_NDK_PATH)\toolchains\x86_64-4.9\prebuilt\windows$(XenkoNativeAndroidIs64Bit)\bin\x86_64-linux-android-gcc.exe&quot; -v -shared -o &quot;$(SiliconStudioXenkoSdkBinDir)\x86_64\$(XenkoNativeOutputName).so&quot; @(XenkoNativeCFiles->'&quot;$(ProjectDir)\obj\%(Filename).o&quot;', ' ') --sysroot=&quot;$(ANDROID_NDK_PATH)\platforms\android-21\arch-x86_64&quot; @(XenkoNativePathLibs2->'&quot;$(XenkoDependenciesDir)\NativePath\Android\x86_64\%(Filename).a&quot;', ' ') &quot;$(XenkoDependenciesDir)\NativePath\Android\x86_64\libNativePath.a&quot; $(XenkoNativeAndroidGCC)" />
   </Target>
 
+  <Target Name="CompileNativeClang_Android_Clean" Condition="'$(SiliconStudioPlatform)' == 'Android'" BeforeTargets="Clean">
+    <Delete Files="$(SiliconStudioXenkoSdkBinDir)\x86_64\$(XenkoNativeOutputName).so" />
+    <Delete Files="$(SiliconStudioXenkoSdkBinDir)\x86\\$(XenkoNativeOutputName).so" />
+    <Delete Files="$(SiliconStudioXenkoSdkBinDir)\arm64-v8a\$(XenkoNativeOutputName).so" />
+    <Delete Files="$(SiliconStudioXenkoSdkBinDir)\armeabi\$(XenkoNativeOutputName).so" />
+    <Delete Files="$(SiliconStudioXenkoSdkBinDir)\armeabi-v7a\$(XenkoNativeOutputName).so" />
+  </Target>
+  
   <Target Name="CompileNativeClang_Linux" Inputs="@(XenkoNativeCFiles);@(XenkoNativeHFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\x86\$(XenkoNativeOutputName).so;$(SiliconStudioXenkoSdkBinDir)\x64\$(XenkoNativeOutputName).so" Condition="'$(SiliconStudioPlatform)' == 'Linux'" BeforeTargets="Build">
     <MakeDir Directories="$(SiliconStudioXenkoSdkBinDir)\x86;$(SiliconStudioXenkoSdkBinDir)\x64;"/>
     <Exec Condition="'%(XenkoNativeCFiles.Extension)' != '.cpp'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; $(XenkoNativeClang) -o &quot;$(ProjectDir)\obj\%(XenkoNativeCFiles.Filename).o&quot; -c &quot;%(XenkoNativeCFiles.FullPath)&quot; -DLINUX -fPIC -target x86_64-linux-gnu" />
@@ -167,16 +191,17 @@
     <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\lld.exe&quot; -flavor gnu --eh-frame-hdr -m elf_i386 -shared -o &quot;$(SiliconStudioXenkoSdkBinDir)\x86\$(XenkoNativeOutputName).so&quot; @(XenkoNativeCFiles->'&quot;$(ProjectDir)\obj\%(Filename).o&quot;', ' ') @(XenkoNativePathLibs2->'&quot;$(XenkoDependenciesDir)\NativePath\Linux\x86\%(Filename).a&quot;', ' ') &quot;$(XenkoDependenciesDir)\NativePath\Linux\x86\libNativePath.a&quot;" />
   </Target>
 
-  <Target Name="CompileNativeClang_Linux_Clean" Condition="'$(SiliconStudioPlatform)' == 'Linux'" BeforeTargets="Clean">
+  <Target Name="CompileNativeClang_Linux_Clean" Condition="'$(SiliconStudioPlatform)' == 'Linux'" BeforeTargets="Clean;CompileNativeClang_Android">
     <Delete Files="$(SiliconStudioXenkoSdkBinDir)\x86\$(XenkoNativeOutputName).so;$(SiliconStudioXenkoSdkBinDir)\x64\$(XenkoNativeOutputName).so" />
   </Target>
 
   <ItemGroup>
     <ObjFiles Include="$(ProjectDir)\obj\*.obj" />
     <OFiles Include="$(ProjectDir)\obj\*.o" />
+    <OFiles Include="$(ProjectDir)\obj\*.a" />
   </ItemGroup>
 
-  <Target Name="CompileNativeClang_Clean" AfterTargets="Clean;CompileNativeClang_Windows;CompileNativeClang_Windows10;CompileNativeClang_WindowsStore;CompileNativeClang_WindowsPhone;CompileNativeClang_iOS;CompileNativeClang_Android;CompileNativeClang_Linux">
+  <Target Name="CompileNativeClang_Clean" Condition="'$(SiliconStudioPackageBuild)' != 'true'" BeforeTargets="Clean;CompileNativeClang_Windows;CompileNativeClang_Windows10;CompileNativeClang_WindowsStore;CompileNativeClang_WindowsPhone;CompileNativeClang_iOS;CompileNativeClang_Android;CompileNativeClang_Linux">
     <Delete Files="@(ObjFiles)" />
     <Delete Files="@(OFiles)" />
   </Target>

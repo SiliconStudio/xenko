@@ -1260,6 +1260,11 @@ extern "C" {
 			delete device;
 		}
 
+		void xnAudioSetMasterVolume(xnAudioDevice* device, float volume)
+		{
+			device->mastering_voice_->SetVolume(volume);
+		}
+
 		xnAudioListener* xnAudioListenerCreate(xnAudioDevice* device)
 		{
 			auto res = new xnAudioListener;

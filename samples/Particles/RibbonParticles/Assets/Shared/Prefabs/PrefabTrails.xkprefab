@@ -1,11 +1,12 @@
 !PrefabAsset
 Id: 305bb0a7-f5ff-46dc-a51b-ccc7c79e9fc8
+SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
 Hierarchy:
     ~Id: e8c342d3-560b-4a8f-890f-6528a64c72c3
-    RootEntities:
+    RootPartIds:
         - 73b67cca-fec1-4630-87d1-113a8ec9036b
-    Entities:
+    Parts:
         -   Entity:
                 Id: 73b67cca-fec1-4630-87d1-113a8ec9036b
                 Name: Swoosh
@@ -31,10 +32,7 @@ Hierarchy:
                             BoundingShape: null
                             Emitters:
                                 -   ~Id: 4a1169c2-4a53-4936-942b-d9a5533391fa
-                                    MaxParticlesOverride: 0
                                     ParticleLifetime: {X: 0.3, Y: 0.3}
-                                    SimulationSpace: World
-                                    RandomSeedMethod: Time
                                     SortingPolicy: ByOrder
                                     ShapeBuilder: !ShapeBuilderTrail
                                         ~Id: 741eb45b-05eb-4459-94d1-3909719f6ffe
@@ -46,11 +44,10 @@ Hierarchy:
                                         UVRotate:
                                             FlipX: false
                                             FlipY: false
-                                            UvClockwise: Degree270
+                                            UVClockwise: Degree0
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 1737e1ea-7294-40bb-8914-3b74bdd480ae
                                         AlphaAdditive: 1.0
-                                        FaceCulling: CullNone
                                         ComputeColor: !ComputeTextureColor
                                             Texture: 540a8e5f-c18a-426b-96bc-dd28f14e042d/f8a9d365-cece-45f9-9abc-c59ffb6b03c3:Textures/swoosh
                                             FallbackValue:
@@ -161,4 +158,3 @@ Hierarchy:
                                                             TangentType: Linear
                                             SamplerOptional: null
                                             SeedOffset: 0
-            Design: {}

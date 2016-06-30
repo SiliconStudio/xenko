@@ -16,6 +16,7 @@
     <SiliconStudioEmbeddedNativeLibrary Condition="$(SiliconStudioUI.Contains('SDL'))" Include="$(SiliconStudioPackageXenkoPlatformBin)\**\SDL2.dll"/>
     <!-- Users custom native libraries -->
     <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\**\*.dll" />
+	<SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\glslangValidator.exe" />
   </ItemGroup>
 
   <!-- On Windows platform automatically add the following references -->

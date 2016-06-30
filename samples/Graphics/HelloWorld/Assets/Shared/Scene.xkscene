@@ -1,26 +1,7 @@
 !SceneAsset
 Id: 460f337e-ff7e-4eb0-b36c-b753bb15fd54
-SerializedVersion: {Xenko: 1.7.0-beta02}
+SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
-Hierarchy:
-    ~Id: 0443a79a-bd82-4a28-90be-9570c78573fe
-    RootEntities:
-        - 644baa73-27c9-489a-a6be-a9cc9052de7b
-    Entities:
-        -   Entity:
-                Id: 644baa73-27c9-489a-a6be-a9cc9052de7b
-                Name: Background
-                Components:
-                    - !TransformComponent
-                        ~Id: ad563f24-c616-495f-ade0-b6d8ad7ec39c
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: []
-                    - !BackgroundComponent
-                        ~Id: d28aa848-cb2a-45e8-863d-63ab89a11e54
-                        Texture: 3cf2fd4a-150e-4a27-9c02-dc4b98f05cef/ea26ff28-74e8-42fa-8eb0-274b48180f02:XenkoBackground
-            Design: {}
 SceneSettings:
     ~Id: 5ec24d43-f659-49d2-a08e-3114adce2add
     GraphicsCompositor: !SceneGraphicsCompositorLayers
@@ -56,3 +37,21 @@ SceneSettings:
         Mode: !SceneEditorGraphicsModeLDRSettings
             ~Id: fbe71199-07c2-4050-b4aa-60d365f8a5f1
             BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+Hierarchy:
+    ~Id: 0443a79a-bd82-4a28-90be-9570c78573fe
+    RootPartIds:
+        - 644baa73-27c9-489a-a6be-a9cc9052de7b
+    Parts:
+        -   Entity:
+                Id: 644baa73-27c9-489a-a6be-a9cc9052de7b
+                Name: Background
+                Components:
+                    - !TransformComponent
+                        ~Id: ad563f24-c616-495f-ade0-b6d8ad7ec39c
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !BackgroundComponent
+                        ~Id: d28aa848-cb2a-45e8-863d-63ab89a11e54
+                        Texture: 3cf2fd4a-150e-4a27-9c02-dc4b98f05cef/ea26ff28-74e8-42fa-8eb0-274b48180f02:XenkoBackground

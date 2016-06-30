@@ -1,0 +1,15 @@
+---
+!EffectCompileRequest
+EffectName: ParticleEffect
+UsedParameters:
+    ParticleBase.UsesSoftEdge: 0
+    ParticleBase.BaseColor: !ShaderMixinSource
+        Mixins:
+            -   ClassName: ComputeColorOverlay3ds
+        Compositions:
+            color1: !ShaderClassSource
+                ClassName: ComputeColorFromStream
+                GenericArguments: [COLOR0, rgba]
+            color2: !ShaderClassSource
+                ClassName: ComputeColorTextureScaledOffsetDynamicSampler
+                GenericArguments: [ParticleBase.EmissiveMap, TEXCOORD0, Material.Sampler.i0, rgba, Material.TextureScale, Material.TextureOffset]

@@ -1,11 +1,12 @@
 !PrefabAsset
 Id: 74316bd3-3393-4654-850c-00837f64bac9
+SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
 Hierarchy:
     ~Id: 1eff4c0d-9553-4a59-995f-3dadf4c60eb5
-    RootEntities:
+    RootPartIds:
         - 03cfa9c2-5d24-4b93-b97f-e4fa3313762d
-    Entities:
+    Parts:
         -   Entity:
                 Id: 03cfa9c2-5d24-4b93-b97f-e4fa3313762d
                 Name: CylindricalLaser
@@ -22,7 +23,6 @@ Hierarchy:
                                 Id: 49281aee-efd1-4116-ba45-0cd50d2e2f44
                             -   Entity: {Id: c9ad1043-e5d2-440c-8df2-f7d5a7913c6a}
                                 Id: 77f08bad-d80a-4b9f-8279-5209039a7bf0
-            Design: {}
         -   Entity:
                 Id: 1fa0ec17-12a1-4c34-ae03-423318c62744
                 Name: BlueTube
@@ -38,7 +38,6 @@ Hierarchy:
                         Model: fb1191db-ee0d-432e-a7a2-24b750258fc9/e6716a5e-47ef-4eca-a079-45655587b48f:LaserAssets/BlueTube
                         Materials:
                             - null
-            Design: {}
         -   Entity:
                 Id: a3ccc846-034e-409a-ac44-0626a1898680
                 Name: RedTube
@@ -54,7 +53,6 @@ Hierarchy:
                         Model: c08ba2eb-f1d2-4ac2-b88b-051dbb6310ba/3a57fc61-9428-47be-b916-1d1a3bd4495d:LaserAssets/RedTube
                         Materials:
                             - null
-            Design: {}
         -   Entity:
                 Id: c9ad1043-e5d2-440c-8df2-f7d5a7913c6a
                 Name: GreenTube
@@ -70,4 +68,3 @@ Hierarchy:
                         Model: 78810043-4184-4704-9330-eef2df9f7591/0628b61c-a92c-4836-bd45-988da11c6aac:LaserAssets/GreenTube
                         Materials:
                             - null
-            Design: {}

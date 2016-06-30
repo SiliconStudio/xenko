@@ -21,6 +21,7 @@ xnCeltDecodeShort
 xnAudioInit
 xnAudioCreate
 xnAudioDestroy
+xnAudioSetMasterVolume
 xnAudioListenerCreate
 xnAudioListenerDestroy
 xnAudioListenerEnable

@@ -1,10 +1,90 @@
 !SceneAsset
 Id: 71292a97-5a05-4865-9ac8-e113ffad9561
-SerializedVersion: {Xenko: 1.7.0-beta02}
+SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
+SceneSettings:
+    ~Id: 2b632eac-33e9-4d59-91cd-410162839997
+    GraphicsCompositor: !SceneGraphicsCompositorLayers
+        ~Id: f432b587-afc7-44af-b40c-7fb51c772124
+        Cameras:
+            -   ~Id: 73c46b86-68f1-4f1b-8223-54878150666b
+                Name: null
+                Camera:
+                    Entity: {Id: a41aa685-3271-4e96-a72c-639c52070011}
+                    Id: 2d3c6f87-3797-4988-95bd-0c6964dd3579
+        Layers: []
+        Master:
+            ~Id: cba63263-aa0d-4b80-9d57-d44b94f4b703
+            Name: SceneGraphicsLayer
+            Output: !MasterRenderFrameProvider {}
+            Renderers:
+                - !ClearRenderFrameRenderer
+                    ~Id: 41044a92-9ac3-4f99-8673-04c9b4b9f43c
+                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
+                    Output: !CurrentRenderFrameProvider {}
+                - !SceneCameraRenderer
+                    ~Id: 836fe639-759b-487f-84cc-8fb7ef1d4f92
+                    Mode: !CameraRendererModeForward
+                        ~Id: c05b9e40-4452-4650-94f2-9ba91e55d129
+                    Camera:
+                        ~Id: 2e95b946-a708-4bc1-a007-2acc1e6524fc
+                        Index: 0
+                    Output: !CurrentRenderFrameProvider {}
+                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
+                    ForceAspectRatio: false
+    EditorSettings:
+        ~Id: 5e3599ac-8469-48ea-a58c-f4336c6e29a0
+        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
+        SceneUnit: 1.0
+        Mode: !SceneEditorGraphicsModeHDRSettings
+            ~Id: 089c307b-b452-46b8-a3ec-9f52d0ecf611
+            BackgroundColor: {R: 0.470588237, G: 0.470588237, B: 0.470588237}
+            PostProcessingEffects:
+                ~Id: 06ffc876-74ac-4702-8035-160f8c67d34b
+                Camera:
+                    ~Id: 66d584c7-b2f0-4f1e-86e5-2a84528cc62e
+                    Index: 0
+                DepthOfField:
+                    ~Id: e5c3fbbf-bc93-4a2d-83f1-d94a41ef9cb7
+                    Enabled: false
+                    DOFAreas: {X: 0.5, Y: 6.0, Z: 50.0, W: 200.0}
+                BrightFilter:
+                    ~Id: 417025ef-7a1e-4334-8cac-2487e3ee701c
+                    Enabled: false
+                    Color: {R: 1.0, G: 1.0, B: 1.0}
+                Bloom:
+                    ~Id: beb74a18-a1d2-43aa-9b8a-72fb1f6971fa
+                    Distortion: {X: 1.0, Y: 1.0}
+                    Afterimage:
+                        ~Id: 6763bd93-cd76-4d5c-894c-ccfa9acb4d04
+                        Enabled: false
+                LightStreak:
+                    ~Id: af2be13c-9e4f-4d59-b37f-6a3eba5b75d1
+                    Enabled: false
+                    Attenuation: 0.7
+                LensFlare:
+                    ~Id: 761ae17b-a549-4251-8faf-93fe7ab9d045
+                    Enabled: false
+                ColorTransforms:
+                    ~Id: 13acc7bc-2cb9-4b7a-ab2a-d90d1f11f868
+                    Transforms:
+                        - !ToneMap
+                            ~Id: 3cfcf527-2628-4949-b58a-7026cec3436d
+                            Enabled: false
+                            Operator: !ToneMapHejl2Operator
+                                ~Id: 49e7b9b1-0d3f-4638-8809-91dc0621842c
+                        - !FilmGrain
+                            ~Id: ea320d9d-38e8-4420-a3ba-c023242e236d
+                            Enabled: false
+                        - !Vignetting
+                            ~Id: 5af57123-9932-4e02-b98a-9241f8ddbbc8
+                            Enabled: false
+                            Color: {R: 0.0, G: 0.0, B: 0.0}
+                Antialiasing: !FXAAEffect
+                    ~Id: 2b0060e7-5e39-4a0a-84b8-7d0f8c0ac37e
 Hierarchy:
     ~Id: aecd4341-53ba-488c-a2ff-8542bb30980d
-    RootEntities:
+    RootPartIds:
         - a41aa685-3271-4e96-a72c-639c52070011
         - 64152308-88f1-4c34-a604-a4c77d963543
         - 79735979-e91a-4eae-b702-070a873dfa9c
@@ -21,7 +101,7 @@ Hierarchy:
         - bb66c45b-34d7-4b3c-b0c1-33133ee0f7db
         - f7181193-0904-41a9-9615-1ae4e56b9627
         - f1abb6b2-1dfd-414e-831c-7972150839d4
-    Entities:
+    Parts:
         -   Entity:
                 Id: 2571f0bf-c6ea-4cc7-b300-615d83b8d48f
                 Name: ProceduralCylinder
@@ -37,7 +117,6 @@ Hierarchy:
                         Model: 40f061ef-7c24-49da-8559-6468e7668f39/d9636b73-cb4a-4ef1-853b-a9e9583d0480:Stand/ProceduralCylinder
                         Materials:
                             - null
-            Design: {}
         -   Entity:
                 Id: 2a699cb7-2468-45e6-be28-2f0c1b11d0a5
                 Name: ProceduralTorus
@@ -53,7 +132,6 @@ Hierarchy:
                         Model: 6d1ebe93-9f1f-4449-a14f-0696552e4d34/13b625f4-1180-4b26-a04c-9698cce6f4b9:Stand/ProceduralTorus
                         Materials:
                             - null
-            Design: {}
         -   Entity:
                 Id: 2ac9ec66-567f-478f-a6b1-7846d5d95d76
                 Name: ProceduralTorus
@@ -69,7 +147,6 @@ Hierarchy:
                         Model: 6d1ebe93-9f1f-4449-a14f-0696552e4d34/13b625f4-1180-4b26-a04c-9698cce6f4b9:Stand/ProceduralTorus
                         Materials:
                             - null
-            Design: {}
         -   Entity:
                 Id: 2d712fb9-648d-418a-a5de-54d72c35271b
                 Name: Background
@@ -83,7 +160,6 @@ Hierarchy:
                     - !BackgroundComponent
                         ~Id: 98864749-098e-4590-8cd0-319867a3b541
                         Texture: 57095419-b6d2-4885-9942-fb3c6f9a8be5/a92a0e5c-6f9f-4d1d-bff8-38b596819274:XenkoBackground
-            Design: {}
         -   Entity:
                 Id: 37f3d857-c364-4b0b-9f47-203c76b707b0
                 Name: ProceduralCylinder
@@ -99,7 +175,6 @@ Hierarchy:
                         Model: 40f061ef-7c24-49da-8559-6468e7668f39/d9636b73-cb4a-4ef1-853b-a9e9583d0480:Stand/ProceduralCylinder
                         Materials:
                             - null
-            Design: {}
         -   Entity:
                 Id: 4e6f902c-15ae-4263-99a4-fffb61c3b407
                 Name: ProceduralCylinder
@@ -115,7 +190,6 @@ Hierarchy:
                         Model: 40f061ef-7c24-49da-8559-6468e7668f39/d9636b73-cb4a-4ef1-853b-a9e9583d0480:Stand/ProceduralCylinder
                         Materials:
                             - null
-            Design: {}
         -   Entity:
                 Id: 50bbd3e2-78a5-4f2f-bac3-dbde01315dd6
                 Name: ProceduralTorus
@@ -131,7 +205,6 @@ Hierarchy:
                         Model: 6d1ebe93-9f1f-4449-a14f-0696552e4d34/13b625f4-1180-4b26-a04c-9698cce6f4b9:Stand/ProceduralTorus
                         Materials:
                             - null
-            Design: {}
         -   Entity:
                 Id: 64152308-88f1-4c34-a604-a4c77d963543
                 Name: Ribbons
@@ -433,7 +506,6 @@ Hierarchy:
                                                             TangentType: Linear
                                             SamplerOptional: null
                                             SeedOffset: 0
-            Design: {}
         -   Entity:
                 Id: 6a0191a4-fefe-483d-be2b-c55bae7fa77f
                 Name: Smoke
@@ -711,7 +783,6 @@ Hierarchy:
                                             DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
-            Design: {}
         -   Entity:
                 Id: 7698999c-4c4d-43e0-ac5d-5e2360bafde7
                 Name: AmbientLight
@@ -730,7 +801,6 @@ Hierarchy:
                                 ~Id: 534cc5fa-904b-4665-b893-0ee0204094f2
                                 Value: {R: 0.768627465, G: 0.843137264, B: 1.0}
                         Intensity: 0.05
-            Design: {}
         -   Entity:
                 Id: 79133ba3-0fc3-4c37-9c88-497abb280900
                 Name: Stand (2)
@@ -745,7 +815,6 @@ Hierarchy:
                                 Id: dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
                             -   Entity: {Id: 50bbd3e2-78a5-4f2f-bac3-dbde01315dd6}
                                 Id: 54550fef-1b7c-4a35-8c9c-acf8f7656118
-            Design: {}
         -   Entity:
                 Id: 79735979-e91a-4eae-b702-070a873dfa9c
                 Name: Directional light
@@ -777,7 +846,6 @@ Hierarchy:
                                 BiasParameters:
                                     ~Id: 0f3bf030-229f-4068-8175-ab1f58dc6bb3
                         Intensity: 0.8
-            Design: {}
         -   Entity:
                 Id: 85cc27c5-b70a-4419-a0ce-51f11dbc695d
                 Name: ProceduralTorus
@@ -793,7 +861,6 @@ Hierarchy:
                         Model: 6d1ebe93-9f1f-4449-a14f-0696552e4d34/13b625f4-1180-4b26-a04c-9698cce6f4b9:Stand/ProceduralTorus
                         Materials:
                             - null
-            Design: {}
         -   Entity:
                 Id: a41aa685-3271-4e96-a72c-639c52070011
                 Name: Camera
@@ -809,7 +876,6 @@ Hierarchy:
                         Projection: Perspective
                     - !ChildParticles.CameraOrbitScript,ChildParticles.Game
                         ~Id: 5bc83c29-7826-49d6-a70b-5c6f5b9f20ee
-            Design: {}
         -   Entity:
                 Id: bb66c45b-34d7-4b3c-b0c1-33133ee0f7db
                 Name: Sign02
@@ -829,7 +895,6 @@ Hierarchy:
                         SpriteType: Billboard
                         Color: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                         IgnoreDepth: true
-            Design: {}
         -   Entity:
                 Id: c390f2ae-dd0c-4250-bccd-b0da0890e929
                 Name: Fireworks
@@ -1215,7 +1280,6 @@ Hierarchy:
                                             DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
-            Design: {}
         -   Entity:
                 Id: c392f952-51b2-4dde-aad9-9449a33be394
                 Name: Sign01
@@ -1235,7 +1299,6 @@ Hierarchy:
                         SpriteType: Billboard
                         Color: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                         IgnoreDepth: true
-            Design: {}
         -   Entity:
                 Id: c4271149-6500-4d2b-928b-7eb41b8eb9be
                 Name: Stand (5)
@@ -1250,7 +1313,6 @@ Hierarchy:
                                 Id: dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
                             -   Entity: {Id: 85cc27c5-b70a-4419-a0ce-51f11dbc695d}
                                 Id: 54550fef-1b7c-4a35-8c9c-acf8f7656118
-            Design: {}
         -   Entity:
                 Id: dbf4ae4f-162b-486c-9db5-4ba9bfb2d775
                 Name: Colliding Particles
@@ -1461,7 +1523,6 @@ Hierarchy:
                                             KillParticles: false
                                             Restitution: 0.7
                                             Friction: 0.1
-            Design: {}
         -   Entity:
                 Id: ec35c281-2510-44b4-b37d-927c58ef95e9
                 Name: Stand (3)
@@ -1476,7 +1537,6 @@ Hierarchy:
                                 Id: dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
                             -   Entity: {Id: 2ac9ec66-567f-478f-a6b1-7846d5d95d76}
                                 Id: 54550fef-1b7c-4a35-8c9c-acf8f7656118
-            Design: {}
         -   Entity:
                 Id: f195ae7e-31de-4754-a8b8-3658ea3629bb
                 Name: Stand (4)
@@ -1491,7 +1551,6 @@ Hierarchy:
                                 Id: dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
                             -   Entity: {Id: 2a699cb7-2468-45e6-be28-2f0c1b11d0a5}
                                 Id: 54550fef-1b7c-4a35-8c9c-acf8f7656118
-            Design: {}
         -   Entity:
                 Id: f1abb6b2-1dfd-414e-831c-7972150839d4
                 Name: Sign04
@@ -1511,7 +1570,6 @@ Hierarchy:
                         SpriteType: Billboard
                         Color: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                         IgnoreDepth: true
-            Design: {}
         -   Entity:
                 Id: f7181193-0904-41a9-9615-1ae4e56b9627
                 Name: Sign03
@@ -1531,7 +1589,6 @@ Hierarchy:
                         SpriteType: Billboard
                         Color: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                         IgnoreDepth: true
-            Design: {}
         -   Entity:
                 Id: fc8d67af-0cc5-4c76-b926-9fd081f745ef
                 Name: ProceduralCylinder
@@ -1547,83 +1604,3 @@ Hierarchy:
                         Model: 40f061ef-7c24-49da-8559-6468e7668f39/d9636b73-cb4a-4ef1-853b-a9e9583d0480:Stand/ProceduralCylinder
                         Materials:
                             - null
-            Design: {}
-SceneSettings:
-    ~Id: 2b632eac-33e9-4d59-91cd-410162839997
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        ~Id: f432b587-afc7-44af-b40c-7fb51c772124
-        Cameras:
-            -   ~Id: 73c46b86-68f1-4f1b-8223-54878150666b
-                Name: null
-                Camera:
-                    Entity: {Id: a41aa685-3271-4e96-a72c-639c52070011}
-                    Id: 2d3c6f87-3797-4988-95bd-0c6964dd3579
-        Layers: []
-        Master:
-            ~Id: cba63263-aa0d-4b80-9d57-d44b94f4b703
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                - !ClearRenderFrameRenderer
-                    ~Id: 41044a92-9ac3-4f99-8673-04c9b4b9f43c
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                - !SceneCameraRenderer
-                    ~Id: 836fe639-759b-487f-84cc-8fb7ef1d4f92
-                    Mode: !CameraRendererModeForward
-                        ~Id: c05b9e40-4452-4650-94f2-9ba91e55d129
-                    Camera:
-                        ~Id: 2e95b946-a708-4bc1-a007-2acc1e6524fc
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-    EditorSettings:
-        ~Id: 5e3599ac-8469-48ea-a58c-f4336c6e29a0
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeHDRSettings
-            ~Id: 089c307b-b452-46b8-a3ec-9f52d0ecf611
-            BackgroundColor: {R: 0.470588237, G: 0.470588237, B: 0.470588237}
-            PostProcessingEffects:
-                ~Id: 06ffc876-74ac-4702-8035-160f8c67d34b
-                Camera:
-                    ~Id: 66d584c7-b2f0-4f1e-86e5-2a84528cc62e
-                    Index: 0
-                DepthOfField:
-                    ~Id: e5c3fbbf-bc93-4a2d-83f1-d94a41ef9cb7
-                    Enabled: false
-                    DOFAreas: {X: 0.5, Y: 6.0, Z: 50.0, W: 200.0}
-                BrightFilter:
-                    ~Id: 417025ef-7a1e-4334-8cac-2487e3ee701c
-                    Enabled: false
-                    Color: {R: 1.0, G: 1.0, B: 1.0}
-                Bloom:
-                    ~Id: beb74a18-a1d2-43aa-9b8a-72fb1f6971fa
-                    Distortion: {X: 1.0, Y: 1.0}
-                    Afterimage:
-                        ~Id: 6763bd93-cd76-4d5c-894c-ccfa9acb4d04
-                        Enabled: false
-                LightStreak:
-                    ~Id: af2be13c-9e4f-4d59-b37f-6a3eba5b75d1
-                    Enabled: false
-                    Attenuation: 0.7
-                LensFlare:
-                    ~Id: 761ae17b-a549-4251-8faf-93fe7ab9d045
-                    Enabled: false
-                ColorTransforms:
-                    ~Id: 13acc7bc-2cb9-4b7a-ab2a-d90d1f11f868
-                    Transforms:
-                        - !ToneMap
-                            ~Id: 3cfcf527-2628-4949-b58a-7026cec3436d
-                            Enabled: false
-                            Operator: !ToneMapHejl2Operator
-                                ~Id: 49e7b9b1-0d3f-4638-8809-91dc0621842c
-                        - !FilmGrain
-                            ~Id: ea320d9d-38e8-4420-a3ba-c023242e236d
-                            Enabled: false
-                        - !Vignetting
-                            ~Id: 5af57123-9932-4e02-b98a-9241f8ddbbc8
-                            Enabled: false
-                            Color: {R: 0.0, G: 0.0, B: 0.0}
-                Antialiasing: !FXAAEffect
-                    ~Id: 2b0060e7-5e39-4a0a-84b8-7d0f8c0ac37e
