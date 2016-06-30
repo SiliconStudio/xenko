@@ -1,10 +1,28 @@
 !SceneAsset
 Id: d5969c6e-1456-4aac-a656-598bf1e16c2d
-SerializedVersion: {Xenko: 1.7.0-beta02}
+SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
+SceneSettings:
+    ~Id: c5f0fa26-3055-4ed6-96d9-d47af97d1caf
+    GraphicsCompositor: !SceneGraphicsCompositorLayers
+        ~Id: da55c81b-bec9-42b9-acd0-ddb40b107b8b
+        Cameras: []
+        Layers: []
+        Master:
+            ~Id: e523cbb3-b6b7-48b2-9404-3fd1094d2ad1
+            Name: SceneGraphicsLayer
+            Output: !MasterRenderFrameProvider {}
+            Renderers: []
+    EditorSettings:
+        ~Id: 914c9f30-7217-4d75-864b-ae477f9bca1a
+        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
+        SceneUnit: 1.0
+        Mode: !SceneEditorGraphicsModeLDRSettings
+            ~Id: 5e66496a-c332-4763-8683-d32d01f78e1e
+            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
 Hierarchy:
     ~Id: 2afaae41-3633-48bf-9e7b-72250df90474
-    RootEntities:
+    RootPartIds:
         - be0f7749-0809-4e50-931b-13570ea885ca
         - 732ee867-c723-4583-9f6a-b071c59a7fab
         - d594e60f-c93c-4ae2-add6-8f2fa6b7c170
@@ -15,7 +33,7 @@ Hierarchy:
         - cedaf0e3-3c28-49ef-b60f-05b755b85cdc
         - 422d91bc-cfe1-439e-a2d1-631886e95537
         - e322652e-175e-4563-9135-82ddef7c8973
-    Entities:
+    Parts:
         -   Entity:
                 Id: 1a63d9fd-0265-4837-8996-8c8f1cd0c17c
                 Name: Background_b02
@@ -40,7 +58,6 @@ Hierarchy:
                             - null
                             - null
                             - null
-            Design: {}
         -   Entity:
                 Id: 375a70a7-8bd1-42c8-ba80-db8ccd698c28
                 Name: Background_b00
@@ -62,7 +79,6 @@ Hierarchy:
                             - null
                             - null
                             - null
-            Design: {}
         -   Entity:
                 Id: 422d91bc-cfe1-439e-a2d1-631886e95537
                 Name: Obstacle1
@@ -81,7 +97,6 @@ Hierarchy:
                         Model: b349358e-78d8-4420-9619-043ce700f45e/e19ec8c3-699e-4a5f-ad09-9f5e750b9b0d:obj00
                         Materials:
                             - null
-            Design: {}
         -   Entity:
                 Id: 4af9a192-21ff-4f1b-9c09-e7d80dae4e0a
                 Name: Background_b01
@@ -106,7 +121,6 @@ Hierarchy:
                             - null
                             - null
                             - null
-            Design: {}
         -   Entity:
                 Id: 732ee867-c723-4583-9f6a-b071c59a7fab
                 Name: LevelBlocks
@@ -135,7 +149,6 @@ Hierarchy:
                             Id: 422d91bc-cfe1-439e-a2d1-631886e95537
                         Obstacle2:
                             Id: e322652e-175e-4563-9135-82ddef7c8973
-            Design: {}
         -   Entity:
                 Id: 8ec3b5fc-a576-4cb1-89ae-1dea02261dfe
                 Name: Background_b03
@@ -163,7 +176,6 @@ Hierarchy:
                             - null
                             - null
                             - null
-            Design: {}
         -   Entity:
                 Id: be0f7749-0809-4e50-931b-13570ea885ca
                 Name: Ambient light
@@ -181,7 +193,6 @@ Hierarchy:
                             Color: !ColorRgbProvider
                                 ~Id: ef982932-5f44-4f8a-88c3-a1c69e8050db
                                 Value: {R: 1.0, G: 1.0, B: 1.0}
-            Design: {}
         -   Entity:
                 Id: cedaf0e3-3c28-49ef-b60f-05b755b85cdc
                 Name: Background_b04
@@ -206,7 +217,6 @@ Hierarchy:
                             - null
                             - null
                             - null
-            Design: {}
         -   Entity:
                 Id: d594e60f-c93c-4ae2-add6-8f2fa6b7c170
                 Name: Background_a00
@@ -229,7 +239,6 @@ Hierarchy:
                             - null
                             - null
                             - null
-            Design: {}
         -   Entity:
                 Id: e322652e-175e-4563-9135-82ddef7c8973
                 Name: Obstacle2
@@ -256,22 +265,3 @@ Hierarchy:
                         Model: f4fa887a-e121-426e-a613-4ec1200b4ed9/f81db4ee-5929-42c9-9008-2cd624296caa:obj01
                         Materials:
                             - null
-            Design: {}
-SceneSettings:
-    ~Id: c5f0fa26-3055-4ed6-96d9-d47af97d1caf
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        ~Id: da55c81b-bec9-42b9-acd0-ddb40b107b8b
-        Cameras: []
-        Layers: []
-        Master:
-            ~Id: e523cbb3-b6b7-48b2-9404-3fd1094d2ad1
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers: []
-    EditorSettings:
-        ~Id: 914c9f30-7217-4d75-864b-ae477f9bca1a
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            ~Id: 5e66496a-c332-4763-8683-d32d01f78e1e
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}

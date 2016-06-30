@@ -1,18 +1,58 @@
 !SceneAsset
 Id: a5a4f13e-6366-43de-b071-a87c1dfff115
-SerializedVersion: {Xenko: 1.7.0-beta02}
+SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
+SceneSettings:
+    ~Id: 5e74f5af-2766-44b5-8e0c-b362a3b3590d
+    GraphicsCompositor: !SceneGraphicsCompositorLayers
+        ~Id: 1dc008fb-39ad-44b9-9a72-fb2297e6e1de
+        Cameras:
+            -   ~Id: 411985ec-72b0-430f-aec2-7a01790fbb53
+                Name: null
+                Camera:
+                    Entity: {Id: 34123ad7-7f97-4c0a-b592-d844e0400f5e}
+                    Id: b5838899-93ff-4e3e-b9ad-2bc49a8669d6
+        Layers: []
+        Master:
+            ~Id: 17a2cee1-74fc-4e3c-a5f8-0a0b1e0eac85
+            Name: SceneGraphicsLayer
+            Output: !MasterRenderFrameProvider {}
+            Renderers:
+                - !ClearRenderFrameRenderer
+                    ~Id: 35fdb302-464e-4e14-8fbf-27a8e2d37865
+                    Color: {R: 0.2790703, G: 0.3313535, B: 0.425249964, A: 1.0}
+                    ColorSpace: Linear
+                    Output: !CurrentRenderFrameProvider {}
+                - !SceneCameraRenderer
+                    ~Id: 8eb765cd-5a6a-436c-8ca6-f17cb89ffaa8
+                    Mode: !CameraRendererModeForward
+                        ~Id: 0b7ba40e-2325-44a0-ad55-e9ded74b9590
+                    Camera:
+                        ~Id: 26675861-d311-4d46-8893-e6b8dac3c294
+                        Index: 0
+                    Output: !CurrentRenderFrameProvider {}
+                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
+                    ForceAspectRatio: false
+    EditorSettings:
+        ~Id: 1096c3a4-86a1-4c49-94ea-11857af6fe72
+        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
+        SceneUnit: 1.0
+        Mode: !SceneEditorGraphicsModeLDRSettings
+            ~Id: 2bc05061-b9c5-4ffd-9d92-965a3dd14eed
+            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
 Hierarchy:
     ~Id: 60e0c56a-a89d-4ecb-8c32-7e57276c9659
-    RootEntities:
+    RootPartIds:
         - f230b77a-bd6f-40d2-9e98-dbba399c378e
         - 4946b032-53e8-4029-b72c-4396af3b286d
         - b0299af4-0f94-47f0-8d94-e87d157024c5
         - cfe82ef3-b615-435c-a9b6-15793dca565d
         - 8de69e45-ea72-4bf7-a80c-e747c6099e9f
         - 9f268b58-3b8b-4ade-975f-cb8649743d26
-    Entities:
-        -   Entity:
+    Parts:
+        -   BaseId: 462c1a6d-4105-4d81-a6ff-4d2922a68f53
+            BasePartInstanceId: 2e872639-5cde-427d-b313-2c22c21e9989
+            Entity:
                 Id: 0da87cf3-7179-4d1f-8739-45d8691c49cf
                 Name: Cube7
                 Components:
@@ -51,10 +91,9 @@ Hierarchy:
                         Model: 873f71b4-3fd4-49af-87c5-6214e0879a89/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
                         Materials:
                             - null
-            Design:
-                BaseId: 462c1a6d-4105-4d81-a6ff-4d2922a68f53
-                BasePartInstanceId: 2e872639-5cde-427d-b313-2c22c21e9989
-        -   Entity:
+        -   BaseId: 1f974780-9e25-478c-ac1d-177b8fec5b12
+            BasePartInstanceId: 2e872639-5cde-427d-b313-2c22c21e9989
+            Entity:
                 Id: 1e1de2cd-6c7b-484b-8498-b501a88096be
                 Name: Cube6
                 Components:
@@ -93,10 +132,9 @@ Hierarchy:
                         Model: 873f71b4-3fd4-49af-87c5-6214e0879a89/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
                         Materials:
                             - null
-            Design:
-                BaseId: 1f974780-9e25-478c-ac1d-177b8fec5b12
-                BasePartInstanceId: 2e872639-5cde-427d-b313-2c22c21e9989
-        -   Entity:
+        -   BaseId: 554f8faa-e43d-4790-92e3-31fa97ad884d
+            BasePartInstanceId: 2e872639-5cde-427d-b313-2c22c21e9989
+            Entity:
                 Id: 24791b49-f177-4a80-82ea-7ff41208fa11
                 Name: Cube9
                 Components:
@@ -135,9 +173,6 @@ Hierarchy:
                         Model: 873f71b4-3fd4-49af-87c5-6214e0879a89/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
                         Materials:
                             - null
-            Design:
-                BaseId: 554f8faa-e43d-4790-92e3-31fa97ad884d
-                BasePartInstanceId: 2e872639-5cde-427d-b313-2c22c21e9989
         -   Entity:
                 Id: 34123ad7-7f97-4c0a-b592-d844e0400f5e
                 Name: Camera
@@ -151,7 +186,6 @@ Hierarchy:
                     - !CameraComponent
                         ~Id: b5838899-93ff-4e3e-b9ad-2bc49a8669d6
                         Projection: Perspective
-            Design: {}
         -   Entity:
                 Id: 4946b032-53e8-4029-b72c-4396af3b286d
                 Name: Player
@@ -190,8 +224,9 @@ Hierarchy:
                         Model: cb4bb5f3-4de7-496d-bff7-6d9dd6a0f60c/9fab8da2-f2c8-4586-9435-20d8fad479e2:Player
                         Materials:
                             - null
-            Design: {}
-        -   Entity:
+        -   BaseId: 9a21b30e-26ff-406d-aeba-d3e0788bbb75
+            BasePartInstanceId: 2e872639-5cde-427d-b313-2c22c21e9989
+            Entity:
                 Id: 6210c6b5-a405-45e9-9735-7e113b2d7235
                 Name: Cube8
                 Components:
@@ -230,10 +265,9 @@ Hierarchy:
                         Model: 873f71b4-3fd4-49af-87c5-6214e0879a89/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
                         Materials:
                             - null
-            Design:
-                BaseId: 9a21b30e-26ff-406d-aeba-d3e0788bbb75
-                BasePartInstanceId: 2e872639-5cde-427d-b313-2c22c21e9989
-        -   Entity:
+        -   BaseId: c35ab69e-a4cc-41ac-a740-89706a59148d
+            BasePartInstanceId: 2e872639-5cde-427d-b313-2c22c21e9989
+            Entity:
                 Id: 748aba8c-a6d0-4a16-b844-946006ce49ad
                 Name: Cube4
                 Components:
@@ -272,9 +306,6 @@ Hierarchy:
                         Model: 873f71b4-3fd4-49af-87c5-6214e0879a89/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
                         Materials:
                             - null
-            Design:
-                BaseId: c35ab69e-a4cc-41ac-a740-89706a59148d
-                BasePartInstanceId: 2e872639-5cde-427d-b313-2c22c21e9989
         -   Entity:
                 Id: 8de69e45-ea72-4bf7-a80c-e747c6099e9f
                 Name: BallPrefab
@@ -287,8 +318,9 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: c6485208-a49a-4142-918c-e49b1da1c1a6}
                                 Id: 0901b52e-31e0-4802-9fb2-a602898cc11d
-            Design: {}
-        -   Entity:
+        -   BaseId: 333ac088-05d4-4b0e-859c-d545cbf033ad
+            BasePartInstanceId: 2e872639-5cde-427d-b313-2c22c21e9989
+            Entity:
                 Id: 8f3e22d1-bd8d-453e-a244-693b4cc9b441
                 Name: Cube3
                 Components:
@@ -327,9 +359,6 @@ Hierarchy:
                         Model: 873f71b4-3fd4-49af-87c5-6214e0879a89/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
                         Materials:
                             - null
-            Design:
-                BaseId: 333ac088-05d4-4b0e-859c-d545cbf033ad
-                BasePartInstanceId: 2e872639-5cde-427d-b313-2c22c21e9989
         -   Entity:
                 Id: 9f268b58-3b8b-4ade-975f-cb8649743d26
                 Name: Colliders
@@ -358,7 +387,6 @@ Hierarchy:
                                 Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee
                             -   Entity: {Id: 24791b49-f177-4a80-82ea-7ff41208fa11}
                                 Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee
-            Design: {}
         -   Entity:
                 Id: b0299af4-0f94-47f0-8d94-e87d157024c5
                 Name: Directional light
@@ -388,8 +416,9 @@ Hierarchy:
                                     ~Id: 81c471cd-bc49-4b42-b422-43c0395d0855
                                 BiasParameters:
                                     ~Id: e6623656-7d48-486e-879d-3513cdc45ab8
-            Design: {}
-        -   Entity:
+        -   BaseId: 7e967465-e0f1-4346-ba03-bfaf8f3a04c0
+            BasePartInstanceId: 2e872639-5cde-427d-b313-2c22c21e9989
+            Entity:
                 Id: c5ba9b19-2910-4b34-a0ab-882bb29c7993
                 Name: Cube2
                 Components:
@@ -428,10 +457,9 @@ Hierarchy:
                         Model: 873f71b4-3fd4-49af-87c5-6214e0879a89/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
                         Materials:
                             - null
-            Design:
-                BaseId: 7e967465-e0f1-4346-ba03-bfaf8f3a04c0
-                BasePartInstanceId: 2e872639-5cde-427d-b313-2c22c21e9989
-        -   Entity:
+        -   BaseId: c016fcd8-5ab1-4212-9784-954709ca481d
+            BasePartInstanceId: ff0c3bc4-9a07-4225-8151-cf80a3aade90
+            Entity:
                 Id: c6485208-a49a-4142-918c-e49b1da1c1a6
                 Name: Ball
                 Components:
@@ -472,9 +500,6 @@ Hierarchy:
                         Model: 1d79c934-1273-410e-b13a-a82e46c92c4e/ad7e799e-d4fa-4bc2-8e00-49bf70e31434:Ball
                         Materials:
                             - null
-            Design:
-                BaseId: c016fcd8-5ab1-4212-9784-954709ca481d
-                BasePartInstanceId: ff0c3bc4-9a07-4225-8151-cf80a3aade90
         -   Entity:
                 Id: cfe82ef3-b615-435c-a9b6-15793dca565d
                 Name: Trigger
@@ -509,8 +534,9 @@ Hierarchy:
                         Model: b3102ad4-d4a3-4b7a-85a2-801cd1c8c49a/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
                         Materials:
                             - b2cde09c-a639-49ac-92e9-428e0988691e/cf9193b2-993a-4329-b6de-983ae136628a:TriggerMat
-            Design: {}
-        -   Entity:
+        -   BaseId: e4055f69-b082-49a3-8c1c-51004796b9cf
+            BasePartInstanceId: 2e872639-5cde-427d-b313-2c22c21e9989
+            Entity:
                 Id: edce808c-89be-4445-8762-5deb3dd98284
                 Name: Cube1
                 Components:
@@ -549,9 +575,6 @@ Hierarchy:
                         Model: 873f71b4-3fd4-49af-87c5-6214e0879a89/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
                         Materials:
                             - null
-            Design:
-                BaseId: e4055f69-b082-49a3-8c1c-51004796b9cf
-                BasePartInstanceId: 2e872639-5cde-427d-b313-2c22c21e9989
         -   Entity:
                 Id: f230b77a-bd6f-40d2-9e98-dbba399c378e
                 Name: Ground
@@ -582,8 +605,9 @@ Hierarchy:
                         Model: 77d5a1e9-6b88-4adc-858f-c59f9e01c532/6993a85b-a9ab-4c74-89d3-5643c2d48cba:Ground
                         Materials:
                             - null
-            Design: {}
-        -   Entity:
+        -   BaseId: 8b979eea-e7ca-4c96-91f9-716520ecffa6
+            BasePartInstanceId: 2e872639-5cde-427d-b313-2c22c21e9989
+            Entity:
                 Id: ff29c179-d1d9-49ce-97b9-c6f1dbb98618
                 Name: Cube5
                 Components:
@@ -622,58 +646,17 @@ Hierarchy:
                         Model: 873f71b4-3fd4-49af-87c5-6214e0879a89/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
                         Materials:
                             - null
-            Design:
-                BaseId: 8b979eea-e7ca-4c96-91f9-716520ecffa6
-                BasePartInstanceId: 2e872639-5cde-427d-b313-2c22c21e9989
-SceneSettings:
-    ~Id: 5e74f5af-2766-44b5-8e0c-b362a3b3590d
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        ~Id: 1dc008fb-39ad-44b9-9a72-fb2297e6e1de
-        Cameras:
-            -   ~Id: 411985ec-72b0-430f-aec2-7a01790fbb53
-                Name: null
-                Camera:
-                    Entity: {Id: 34123ad7-7f97-4c0a-b592-d844e0400f5e}
-                    Id: b5838899-93ff-4e3e-b9ad-2bc49a8669d6
-        Layers: []
-        Master:
-            ~Id: 17a2cee1-74fc-4e3c-a5f8-0a0b1e0eac85
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                - !ClearRenderFrameRenderer
-                    ~Id: 35fdb302-464e-4e14-8fbf-27a8e2d37865
-                    Color: {R: 0.2790703, G: 0.3313535, B: 0.425249964, A: 1.0}
-                    ColorSpace: Linear
-                    Output: !CurrentRenderFrameProvider {}
-                - !SceneCameraRenderer
-                    ~Id: 8eb765cd-5a6a-436c-8ca6-f17cb89ffaa8
-                    Mode: !CameraRendererModeForward
-                        ~Id: 0b7ba40e-2325-44a0-ad55-e9ded74b9590
-                    Camera:
-                        ~Id: 26675861-d311-4d46-8893-e6b8dac3c294
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                    ForceAspectRatio: false
-    EditorSettings:
-        ~Id: 1096c3a4-86a1-4c49-94ea-11857af6fe72
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            ~Id: 2bc05061-b9c5-4ffd-9d92-965a3dd14eed
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
 ~BaseParts:
     -   Location: BallPrefab
         Asset: !PrefabAsset
             Id: 2603278e-1a16-4d57-a24c-563472a5b86b
-            SerializedVersion: {Xenko: 1.7.0-beta02}
+            SerializedVersion: {Xenko: 1.7.0-beta04}
             Tags: []
             Hierarchy:
                 ~Id: e29a41a1-54c5-4d5d-bab0-c4afaca25327
-                RootEntities:
+                RootPartIds:
                     - c016fcd8-5ab1-4212-9784-954709ca481d
-                Entities:
+                Parts:
                     -   Entity:
                             Id: c016fcd8-5ab1-4212-9784-954709ca481d
                             Name: Ball
@@ -714,15 +697,14 @@ SceneSettings:
                                     Model: 1d79c934-1273-410e-b13a-a82e46c92c4e/ad7e799e-d4fa-4bc2-8e00-49bf70e31434:Ball
                                     Materials:
                                         - null
-                        Design: {}
     -   Location: Colliders
         Asset: !PrefabAsset
             Id: e13cbc01-7701-438b-b6d4-c97e66098dd8
-            SerializedVersion: {Xenko: 1.7.0-beta02}
+            SerializedVersion: {Xenko: 1.7.0-beta04}
             Tags: []
             Hierarchy:
                 ~Id: fa564810-a090-42a2-a7bf-db3b69a3426f
-                RootEntities:
+                RootPartIds:
                     - e4055f69-b082-49a3-8c1c-51004796b9cf
                     - 7e967465-e0f1-4346-ba03-bfaf8f3a04c0
                     - 333ac088-05d4-4b0e-859c-d545cbf033ad
@@ -732,8 +714,10 @@ SceneSettings:
                     - 462c1a6d-4105-4d81-a6ff-4d2922a68f53
                     - 9a21b30e-26ff-406d-aeba-d3e0788bbb75
                     - 554f8faa-e43d-4790-92e3-31fa97ad884d
-                Entities:
-                    -   Entity:
+                Parts:
+                    -   BaseId: bd21c191-c738-4b04-aa3b-1ea9736fb9a0
+                        BasePartInstanceId: 04211d09-fbcc-43b3-acf6-e9fb6608435c
+                        Entity:
                             Id: 1f974780-9e25-478c-ac1d-177b8fec5b12
                             Name*: Cube6
                             Components:
@@ -771,10 +755,9 @@ SceneSettings:
                                     Model: 873f71b4-3fd4-49af-87c5-6214e0879a89/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
                                     Materials:
                                         - null
-                        Design:
-                            BaseId: bd21c191-c738-4b04-aa3b-1ea9736fb9a0
-                            BasePartInstanceId: 04211d09-fbcc-43b3-acf6-e9fb6608435c
-                    -   Entity:
+                    -   BaseId: bd21c191-c738-4b04-aa3b-1ea9736fb9a0
+                        BasePartInstanceId: 71591d1d-8448-4de6-bffe-9444b68c75cf
+                        Entity:
                             Id: 333ac088-05d4-4b0e-859c-d545cbf033ad
                             Name*: Cube3
                             Components:
@@ -812,10 +795,9 @@ SceneSettings:
                                     Model: 873f71b4-3fd4-49af-87c5-6214e0879a89/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
                                     Materials:
                                         - null
-                        Design:
-                            BaseId: bd21c191-c738-4b04-aa3b-1ea9736fb9a0
-                            BasePartInstanceId: 71591d1d-8448-4de6-bffe-9444b68c75cf
-                    -   Entity:
+                    -   BaseId: bd21c191-c738-4b04-aa3b-1ea9736fb9a0
+                        BasePartInstanceId: 42bca581-f3b0-4c84-82ae-aada5ad6edfd
+                        Entity:
                             Id: 462c1a6d-4105-4d81-a6ff-4d2922a68f53
                             Name*: Cube7
                             Components:
@@ -853,10 +835,9 @@ SceneSettings:
                                     Model: 873f71b4-3fd4-49af-87c5-6214e0879a89/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
                                     Materials:
                                         - null
-                        Design:
-                            BaseId: bd21c191-c738-4b04-aa3b-1ea9736fb9a0
-                            BasePartInstanceId: 42bca581-f3b0-4c84-82ae-aada5ad6edfd
-                    -   Entity:
+                    -   BaseId: bd21c191-c738-4b04-aa3b-1ea9736fb9a0
+                        BasePartInstanceId: 36562445-42fc-4b29-84b9-b96db4881859
+                        Entity:
                             Id: 554f8faa-e43d-4790-92e3-31fa97ad884d
                             Name*: Cube9
                             Components:
@@ -894,10 +875,9 @@ SceneSettings:
                                     Model: 873f71b4-3fd4-49af-87c5-6214e0879a89/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
                                     Materials:
                                         - null
-                        Design:
-                            BaseId: bd21c191-c738-4b04-aa3b-1ea9736fb9a0
-                            BasePartInstanceId: 36562445-42fc-4b29-84b9-b96db4881859
-                    -   Entity:
+                    -   BaseId: bd21c191-c738-4b04-aa3b-1ea9736fb9a0
+                        BasePartInstanceId: 7e0c0e30-dba7-4c4b-a20d-299e2dae07b8
+                        Entity:
                             Id: 7e967465-e0f1-4346-ba03-bfaf8f3a04c0
                             Name*: Cube2
                             Components:
@@ -935,10 +915,9 @@ SceneSettings:
                                     Model: 873f71b4-3fd4-49af-87c5-6214e0879a89/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
                                     Materials:
                                         - null
-                        Design:
-                            BaseId: bd21c191-c738-4b04-aa3b-1ea9736fb9a0
-                            BasePartInstanceId: 7e0c0e30-dba7-4c4b-a20d-299e2dae07b8
-                    -   Entity:
+                    -   BaseId: bd21c191-c738-4b04-aa3b-1ea9736fb9a0
+                        BasePartInstanceId: e7813fd7-7fe8-43c0-a4a8-4c68ebabf1f0
+                        Entity:
                             Id: 8b979eea-e7ca-4c96-91f9-716520ecffa6
                             Name*: Cube5
                             Components:
@@ -976,10 +955,9 @@ SceneSettings:
                                     Model: 873f71b4-3fd4-49af-87c5-6214e0879a89/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
                                     Materials:
                                         - null
-                        Design:
-                            BaseId: bd21c191-c738-4b04-aa3b-1ea9736fb9a0
-                            BasePartInstanceId: e7813fd7-7fe8-43c0-a4a8-4c68ebabf1f0
-                    -   Entity:
+                    -   BaseId: bd21c191-c738-4b04-aa3b-1ea9736fb9a0
+                        BasePartInstanceId: d4ab52d6-eaa6-49e8-98a3-5ef1558d4b24
+                        Entity:
                             Id: 9a21b30e-26ff-406d-aeba-d3e0788bbb75
                             Name*: Cube8
                             Components:
@@ -1017,10 +995,9 @@ SceneSettings:
                                     Model: 873f71b4-3fd4-49af-87c5-6214e0879a89/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
                                     Materials:
                                         - null
-                        Design:
-                            BaseId: bd21c191-c738-4b04-aa3b-1ea9736fb9a0
-                            BasePartInstanceId: d4ab52d6-eaa6-49e8-98a3-5ef1558d4b24
-                    -   Entity:
+                    -   BaseId: bd21c191-c738-4b04-aa3b-1ea9736fb9a0
+                        BasePartInstanceId: f900ee98-b321-43e5-a2e9-ce47d36de943
+                        Entity:
                             Id: c35ab69e-a4cc-41ac-a740-89706a59148d
                             Name*: Cube4
                             Components:
@@ -1058,10 +1035,9 @@ SceneSettings:
                                     Model: 873f71b4-3fd4-49af-87c5-6214e0879a89/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
                                     Materials:
                                         - null
-                        Design:
-                            BaseId: bd21c191-c738-4b04-aa3b-1ea9736fb9a0
-                            BasePartInstanceId: f900ee98-b321-43e5-a2e9-ce47d36de943
-                    -   Entity:
+                    -   BaseId: bd21c191-c738-4b04-aa3b-1ea9736fb9a0
+                        BasePartInstanceId: 80bbd32c-3741-4c9a-b7ac-f5556993dca8
+                        Entity:
                             Id: e4055f69-b082-49a3-8c1c-51004796b9cf
                             Name: Cube1
                             Components:
@@ -1099,6 +1075,3 @@ SceneSettings:
                                     Model: 873f71b4-3fd4-49af-87c5-6214e0879a89/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
                                     Materials:
                                         - null
-                        Design:
-                            BaseId: bd21c191-c738-4b04-aa3b-1ea9736fb9a0
-                            BasePartInstanceId: 80bbd32c-3741-4c9a-b7ac-f5556993dca8
