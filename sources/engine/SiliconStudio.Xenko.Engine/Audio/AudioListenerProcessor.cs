@@ -17,7 +17,6 @@ namespace SiliconStudio.Xenko.Audio
     /// </summary>
     /// <remarks>
     /// The processor updates only <see cref="AudioListener"/> associated to <see cref="AudioListenerComponent"/>s 
-    /// added to the <see cref="AudioSystem"/> via the <see cref="AudioSystem.AddListener"/> function.
     /// The processor is subscribing to the <see cref="audioSystem"/> <see cref="AudioListenerComponent"/> collection events to be informed of required <see cref="AudioEmitter"/> updates.
     /// When a <see cref="AudioListenerComponent"/> is added to the <see cref="audioSystem"/>, the processor set the associated <see cref="AudioEmitter"/>.
     /// When a <see cref="AudioListenerComponent"/> is removed from the entity system, 

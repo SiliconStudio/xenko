@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         /// <param name="listener">The listener to add to the audio system.</param>
         /// <remarks>Adding a listener already added as no effects.</remarks>
-        public void AddListener(AudioListenerComponent listener)
+        internal void AddListener(AudioListenerComponent listener)
         {
             if(!Listeners.ContainsKey(listener))
                 Listeners[listener] = null;
@@ -72,7 +72,7 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         /// <param name="listener">The listener to remove from the audio system.</param>
         /// <exception cref="System.ArgumentException">The provided listener was not present in the Audio System.</exception>
-        public void RemoveListener(AudioListenerComponent listener)
+        internal void RemoveListener(AudioListenerComponent listener)
         {
             if(!Listeners.ContainsKey(listener))
                 throw new ArgumentException("The provided listener was not present in the Audio System.");

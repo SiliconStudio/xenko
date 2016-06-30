@@ -62,6 +62,8 @@ namespace SiliconStudio.Xenko.Graphics
             outputs = new GraphicsOutput[count];
             for (var i = 0; i < outputs.Length; i++)
                 outputs[i] = new GraphicsOutput(this, i).DisposeBy(this);
+
+            AdapterUid = adapter.Description1.Luid.ToString();
         }
 
         /// <summary>
