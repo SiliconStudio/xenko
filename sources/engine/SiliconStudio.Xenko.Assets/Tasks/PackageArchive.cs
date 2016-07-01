@@ -48,6 +48,7 @@ namespace SiliconStudio.Xenko.Assets.Tasks
                     NewFile(@"Bin\**\*.winmd", "Bin", @"Bin\**\.*\**\*.winmd"),
                     NewFile(@"deps\AssemblyProcessor\*.exe", @"deps/AssemblyProcessor"),
                     NewFile(@"deps\AssemblyProcessor\*.dll", @"deps/AssemblyProcessor"),
+                    NewFile(@"deps\CoreFX\**\*.*", @"deps\CoreFX"),
                     NewFile($@"Bin\{mainPlatformDirectory}\ios-tcprelay\*.py",$@"Bin\{mainPlatformDirectory}\ios-tcprelay"),
                     NewFile(@"Targets\*.targets", "Targets"),
                     NewFile($@"Bin\{mainPlatformDirectory}\SiliconStudio.*.pdb", $@"Bin\{mainPlatformDirectory}", @"Bin\**\SiliconStudio.Xenko.Importer*.pdb;Bin\**\SiliconStudio.Xenko.Assimp.Translation.pdb"),
