@@ -16,15 +16,29 @@
     <SiliconStudioAssemblyProcessorOptions>--serialization</SiliconStudioAssemblyProcessorOptions>
     <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="CppNet">
-      <!-- It would be nice for Windows that the path becomes CppNet\Windows\CppNet.dll but for the time
-           being to preseve compatibility, we use the old path. -->
-      <HintPath Condition="'$(SiliconStudioRuntime)' == ''">..\..\deps\CppNet\CppNet.dll</HintPath>
-      <HintPath Condition="'$(SiliconStudioRuntime)' != ''">..\..\deps\CppNet\$(SiliconStudioRuntime)\CppNet.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
+  <Choose>
+    <When Condition="('$(SiliconStudioPlatform)' == 'Windows10') OR ('$(SiliconStudioPlatform)' == 'WindowsPhone') OR ('$(SiliconStudioPlatform)' == 'WindowsStore')">
+      <ItemGroup>
+        <Reference Include="CppNet">
+          <HintPath>..\..\deps\CppNet\UWP\CppNet.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="'$(SiliconStudioRuntime)' != ''">
+      <ItemGroup>
+        <Reference Include="CppNet">
+          <HintPath>..\..\deps\CppNet\$(SiliconStudioRuntime)\CppNet.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <Reference Include="CppNet">
+          <HintPath>..\..\deps\CppNet\CppNet.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
   <Choose>
     <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
       <ItemGroup>
