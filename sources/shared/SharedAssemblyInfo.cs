@@ -46,7 +46,7 @@ namespace SiliconStudio
         /// please use a double digit like alpha00 alpha01...etc. in order to make sure that we will follow the correct
         /// order for the versions.
         /// </remarks>
-        public const string CurrentAsText = CurrentAssemblyAsText + "-alpha03"; 
+        public const string CurrentAsText = CurrentAssemblyAsText + "-beta"; 
     }
 
     partial class PublicKeys
