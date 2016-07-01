@@ -25,7 +25,7 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition="$(SiliconStudioUI.Contains('SDL'))">
+    <When Condition="$(SiliconStudioUI.Contains('SDL')) AND ('$(SiliconStudioPlatform)' != 'Linux')">
       <ItemGroup>
         <Reference Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
           <SpecificVersion>False</SpecificVersion>
@@ -33,12 +33,12 @@
         </Reference>
       </ItemGroup>
     </When>
-  </Choose>
-  <Choose>
-    <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
+    <When Condition="$(SiliconStudioUI.Contains('SDL')) AND ('$(SiliconStudioPlatform)' == 'Linux')">
       <ItemGroup>
-        <Reference Condition="($(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))) OR ($(SiliconStudioUI.Contains('OPENTK')) AND '$(SiliconStudioRuntime)' == '')" Include="System.Drawing" />
-        <Reference Condition="$(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))" Include="System.Windows.Forms" />
+        <Reference Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(XenkoDependenciesDir)\SDL2-CS\Linux\SDL2-CS.dll</HintPath>
+        </Reference>
       </ItemGroup>
     </When>
   </Choose>
@@ -85,7 +85,7 @@
           <ItemGroup>
             <Reference Include="OpenTK">
               <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(XenkoDependenciesDir)OpenTK\Linux\OpenTK.dll</HintPath>
-              <HintPath Condition="'$(SiliconStudioRuntime)' != ''">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\OpenTK.dll</HintPath>
+              <HintPath Condition="'$(SiliconStudioRuntime)' != ''">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\Linux\OpenTK.dll</HintPath>
             </Reference>
           </ItemGroup>
         </When>
@@ -93,7 +93,7 @@
           <ItemGroup>
             <Reference Include="OpenTK">
               <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(XenkoDependenciesDir)OpenTK\OpenTK.dll</HintPath>
-              <HintPath Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\OpenTK.dll</HintPath>
+              <HintPath Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\Windows\OpenTK.dll</HintPath>
             </Reference>
           </ItemGroup>
         </When>

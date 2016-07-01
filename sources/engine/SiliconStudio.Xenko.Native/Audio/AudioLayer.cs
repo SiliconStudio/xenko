@@ -5,6 +5,9 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Native
 {
+    /// <summary>
+    /// Wrapper around OpenAL
+    /// </summary>
     public class AudioLayer
     {
         public struct Device
@@ -29,11 +32,7 @@ namespace SiliconStudio.Xenko.Native
 
         static AudioLayer()
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS
-            NativeLibrary.PreloadLibrary(NativeInvoke.Library + ".dll");
-#else
-            NativeLibrary.PreloadLibrary(NativeInvoke.Library + ".so");
-#endif
+            NativeInvoke.PreLoad();
         }
 
         [SuppressUnmanagedCodeSecurity]

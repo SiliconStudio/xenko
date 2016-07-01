@@ -49,6 +49,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="SiliconStudio.Xenko.Native.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Xenko.Native.Libs.targets">
       <SubType>Designer</SubType>
     </None>
@@ -67,6 +70,9 @@
   <ItemGroup>
     <None Include="OculusOVR\OculusOVR.cpp" />
     <None Include="DirectInput\XInputChecker.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="LinuxAllocator.cpp" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

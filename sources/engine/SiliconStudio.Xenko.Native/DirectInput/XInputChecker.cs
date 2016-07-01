@@ -7,15 +7,14 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Native.DirectInput
 {
+    /// <summary>
+    /// Finds out if a device is an XInputDevice
+    /// </summary>
     public static class XInputChecker
     {
         static XInputChecker()
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS
-            NativeLibrary.PreloadLibrary(NativeInvoke.Library + ".dll");
-#else
-            NativeLibrary.PreloadLibrary(NativeInvoke.Library + ".so");
-#endif
+            NativeInvoke.PreLoad();
         }
 
         /// <summary>

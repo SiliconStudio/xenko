@@ -47,10 +47,10 @@ namespace SiliconStudio.Core
                     return;
                 }
 
+                string cpu;
                 SYSTEM_INFO systemInfo;
                 GetNativeSystemInfo(out systemInfo);
 
-                string cpu;
                 if (systemInfo.processorArchitecture == PROCESSOR_ARCHITECTURE.PROCESSOR_ARCHITECTURE_ARM)
                     cpu = "ARM";
                 else
@@ -120,11 +120,8 @@ namespace SiliconStudio.Core
 #endif
         }
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
-        private const string SYSINFO_FILE = "API-MS-WIN-CORE-SYSINFO-L1-2-1.DLL";
-#else
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
         private const string SYSINFO_FILE = "kernel32.dll";
-#endif
 
         [DllImport(SYSINFO_FILE)]
         static extern void GetNativeSystemInfo(out SYSTEM_INFO lpSystemInfo);
@@ -153,5 +150,6 @@ namespace SiliconStudio.Core
             PROCESSOR_ARCHITECTURE_INTEL = 0,
             PROCESSOR_ARCHITECTURE_UNKNOWN = 0xffff
         }
+#endif
     }
 }
