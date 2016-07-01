@@ -74,10 +74,15 @@ namespace SiliconStudio.Xenko.Assets.Textures.Packing
                     Utilities.Swap(ref sourceRegionSize.X, ref sourceRegionSize.Y);
                 }
 
-                unsafe
                 {
-                    var atlasData = (Color *)atlasTexture.DataPointer;
-                    var textureData = (Color *)sourceTexture.DataPointer;
+                    var format = sourceTexture.Description.Format;
+                    GetColorDelegate getPixel = GetColorBlack;
+                    if (format == PixelFormat.R8G8B8A8_UNorm_SRgb || format == PixelFormat.R8G8B8A8_UNorm)
+                        getPixel = GetColorRGBA;
+                    if (format == PixelFormat.A8_UNorm || format == PixelFormat.R8_UNorm)
+                        getPixel = GetColorRRR1;
+                    if (format == PixelFormat.R8G8_UNorm)
+                        getPixel = GetColorRG01;
 
                     for (var y = 0; y < element.DestinationRegion.Height; ++y)
                     {
@@ -120,7 +125,7 @@ namespace SiliconStudio.Xenko.Assets.Textures.Packing
                             var targetCoordinateY = element.DestinationRegion.Y + y;
                             var writeToIndex = targetCoordinateY*atlasTextureLayout.Width + targetCoordinateX; // write index to atlas buffer
 
-                            atlasData[writeToIndex] = isBorderMode ? borderColor : textureData[readFromIndex];
+                            SetPixel(atlasTexture.DataPointer, writeToIndex, isBorderMode ? borderColor : getPixel(sourceTexture.DataPointer, readFromIndex));
                         }
                     }
                 }
@@ -158,6 +163,36 @@ namespace SiliconStudio.Xenko.Assets.Textures.Packing
                 default:
                     throw new ArgumentOutOfRangeException("mode");
             }
+        }
+
+        private static unsafe void SetPixel(IntPtr outBufferPointer, int writeIndex, Color borderColor)
+        {
+            ((Color*)outBufferPointer)[writeIndex] = borderColor;
+        }
+
+        private delegate Color GetColorDelegate(IntPtr inBufferPointer, int readIndex);
+
+        private static unsafe Color GetColorRGBA(IntPtr inBufferPointer, int readIndex)
+        {
+            return ((Color*)inBufferPointer)[readIndex];
+        }
+
+        private static unsafe Color GetColorRRR1(IntPtr inBufferPointer, int readIndex)
+        {
+            var R = ((byte*)inBufferPointer)[readIndex];
+            return new Color(R, R, R);
+        }
+
+        private static unsafe Color GetColorRG01(IntPtr inBufferPointer, int readIndex)
+        {
+            var R = ((byte*)inBufferPointer)[readIndex * 2];
+            var G = ((byte*)inBufferPointer)[readIndex * 2 + 1];
+            return new Color(R, G, 0);
+        }
+
+        private static unsafe Color GetColorBlack(IntPtr inBufferPointer, int readIndex)
+        {
+            return Color.Black;
         }
     }
 }
