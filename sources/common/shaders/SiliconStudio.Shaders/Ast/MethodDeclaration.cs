@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// Declaration of a method.
     /// </summary>
-    public class MethodDeclaration : Node, IDeclaration, IAttributes, IQualifiers, IScopeContainer
+    public partial class MethodDeclaration : Node, IDeclaration, IAttributes, IQualifiers, IScopeContainer
     {
         #region Constructors and Destructors
 

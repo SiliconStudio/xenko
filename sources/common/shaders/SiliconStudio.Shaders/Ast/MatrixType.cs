@@ -7,7 +7,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// Matrix type.
     /// </summary>
-    public class MatrixType : GenericType<TypeBase, Literal, Literal>
+    public partial class MatrixType : GenericType
     {
         #region Constructors and Destructors
 
@@ -15,8 +15,11 @@ namespace SiliconStudio.Shaders.Ast
         ///   Initializes a new instance of the <see cref = "MatrixType" /> class.
         /// </summary>
         public MatrixType()
-            : base("matrix")
+            : base("matrix", 3)
         {
+            ParameterTypes.Add(typeof(TypeBase));
+            ParameterTypes.Add(typeof(Literal));
+            ParameterTypes.Add(typeof(Literal));
         }
 
         /// <summary>

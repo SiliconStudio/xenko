@@ -52,31 +52,30 @@ namespace SiliconStudio.Shaders.Analysis
         /// Visits the specified assignement expression.
         /// </summary>
         /// <param name="assignmentExpression">The assignement expression.</param>
-        [VisitorBase.VisitAttribute]
-        protected virtual void Visit(AssignmentExpression assignmentExpression)
+        public override Node Visit(AssignmentExpression assignmentExpression)
         {
-            Visit((Node)assignmentExpression);
+            base.Visit(assignmentExpression);
 
             // An assignment expression get the
             assignmentExpression.TypeInference = (TypeInference)assignmentExpression.Target.TypeInference.Clone();
 
             // TODO: check if types are compatible?
+            return assignmentExpression;
         }
 
         /// <summary>
         /// Visits the specified binary expression.
         /// </summary>
         /// <param name="binaryExpression">The binary expression.</param>
-        [VisitorBase.VisitAttribute]
-        protected virtual void Visit(BinaryExpression binaryExpression)
+        public override Node Visit(BinaryExpression binaryExpression)
         {
-            Visit((Node)binaryExpression);
+            base.Visit(binaryExpression);
 
             var leftType = binaryExpression.Left.TypeInference.TargetType;
             var rightType = binaryExpression.Right.TypeInference.TargetType;
 
-            // No need to log an error as it has been done by the initial Visit((Node)
-            if (leftType == null || rightType == null) return;
+            // No need to log an error as it has been done by the initial base.Visit(
+            if (leftType == null || rightType == null) return binaryExpression;
 
             switch (binaryExpression.Operator)
             {
@@ -108,16 +107,17 @@ namespace SiliconStudio.Shaders.Analysis
                     binaryExpression.TypeInference.TargetType = TypeBase.CreateWithBaseType(returnType, ScalarType.Bool);
                     break;
             }
+
+            return binaryExpression;
         }
 
         /// <summary>
         /// Visits the specified conditional expression.
         /// </summary>
         /// <param name="conditionalExpression">The conditional expression.</param>
-        [VisitorBase.VisitAttribute]
-        protected virtual void Visit(ConditionalExpression conditionalExpression)
+        public override Node Visit(ConditionalExpression conditionalExpression)
         {
-            Visit((Node)conditionalExpression);
+            base.Visit(conditionalExpression);
 
             // Type inference for conditional expression is using the left result
             var leftType = conditionalExpression.Left.TypeInference.TargetType;
@@ -129,25 +129,28 @@ namespace SiliconStudio.Shaders.Analysis
             {
                 conditionalExpression.TypeInference.TargetType = rightType;
             }
+
+            return conditionalExpression;
         }
 
         /// <summary>
         /// Visits the specified indexer expression.
         /// </summary>
         /// <param name="indexerExpression">The indexer expression.</param>
-        [VisitorBase.VisitAttribute]
-        protected virtual void Visit(IndexerExpression indexerExpression)
+        public override Node Visit(IndexerExpression indexerExpression)
         {
-            Visit((Node)indexerExpression);
+            base.Visit(indexerExpression);
 
             ProcessIndexerExpression(indexerExpression);
+
+            return indexerExpression;
         }
 
         /// <summary>
         /// Find the type of the expression
         /// </summary>
         /// <param name="indexerExpression">the indexer expression</param>
-        protected virtual void ProcessIndexerExpression(IndexerExpression indexerExpression)
+        public virtual void ProcessIndexerExpression(IndexerExpression indexerExpression)
         {
             TypeBase type = null;
             var targetType = indexerExpression.Target.TypeInference.TargetType;
@@ -192,10 +195,9 @@ namespace SiliconStudio.Shaders.Analysis
         /// Visits the specified literal expression.
         /// </summary>
         /// <param name="literalExpression">The literal expression.</param>
-        [VisitorBase.VisitAttribute]
-        protected virtual void Visit(LiteralExpression literalExpression)
+        public override Node Visit(LiteralExpression literalExpression)
         {
-            Visit((Node)literalExpression);
+            base.Visit(literalExpression);
 
             if (literalExpression.Value is int)
                 literalExpression.TypeInference.TargetType = ScalarType.Int;
@@ -214,28 +216,32 @@ namespace SiliconStudio.Shaders.Analysis
             {
                 Error(MessageCode.ErrorLiteralType, literalExpression.Span, literalExpression.Text);
             }
+
+            return literalExpression;
         }
 
-        [VisitorBase.VisitAttribute]
-        protected virtual void Visit(ReturnStatement returnStatement)
+        public override Node Visit(ReturnStatement returnStatement)
         {
             // First, dispatch to resolve type of node at deeper level
-            Visit((Node)returnStatement);
+            base.Visit(returnStatement);
 
             if (returnStatement.Value != null)
             {
                 var function = NodeStack.OfType<MethodDefinition>().Last();
                 returnStatement.Value.TypeInference.ExpectedType = function.ReturnType.ResolveType();
             }
+
+            return returnStatement;
         }
 
-        [VisitorBase.VisitAttribute]
-        protected virtual void Visit(IfStatement ifStatement)
+        public override Node Visit(IfStatement ifStatement)
         {
             // First, dispatch to resolve type of node at deeper level
-            Visit((Node)ifStatement);
+            base.Visit(ifStatement);
 
             ifStatement.Condition.TypeInference.ExpectedType = ScalarType.Bool;
+
+            return ifStatement;
         }
 
         /// <summary>
@@ -483,10 +489,9 @@ namespace SiliconStudio.Shaders.Analysis
         /// Visits the specified method invocation expression.
         /// </summary>
         /// <param name="expression">The method invocation expression.</param>
-        [VisitorBase.VisitAttribute]
-        protected virtual void Visit(MethodInvocationExpression expression)
+        public override Node Visit(MethodInvocationExpression expression)
         {
-            Visit((Node)expression);
+            base.Visit(expression);
             
             var methodAsVariable = expression.Target as VariableReferenceExpression;
             var methodAsType = expression.Target as TypeReferenceExpression;
@@ -509,7 +514,7 @@ namespace SiliconStudio.Shaders.Analysis
                 if (!(returnType is ScalarType || returnType is VectorType || returnType is MatrixType))
                     Warning(MessageCode.WarningTypeAsConstructor, expression.Span, expression.Target);
 
-                return;
+                return expression;
             }
             else
             {
@@ -532,12 +537,14 @@ namespace SiliconStudio.Shaders.Analysis
             if (declarationsIterator == null)
             {
                 Error(MessageCode.ErrorNoReferencedMethod, expression.Span, methodName);
-                return;
+                return expression;
             }
 
             // Grab the declarations
             var declarations = declarationsIterator.ToList();
             ProcessMethodInvocation(expression, methodName, declarations);
+
+            return expression;
         }
 
         protected virtual IEnumerable<IDeclaration> FindDeclarationsFromObject(TypeBase typeBase, string memberName)
@@ -549,26 +556,26 @@ namespace SiliconStudio.Shaders.Analysis
         /// Visits the specified member reference.
         /// </summary>
         /// <param name="memberReference">The member reference.</param>
-        [VisitorBase.VisitAttribute]
-        protected virtual void Visit(MemberReferenceExpression memberReference)
+        public override Node Visit(MemberReferenceExpression memberReference)
         {
-            Visit((Node)memberReference);
+            base.Visit(memberReference);
 
             CommonVisit(memberReference);
 
             // If member reference is used from method invocation expression, let the method invocation resolve the type
             if (!(ParentNode is MethodInvocationExpression) && memberReference.TypeInference.TargetType == null)
                 Warning(MessageCode.WarningNoTypeReferenceMember, memberReference.Span, memberReference);
+
+            return memberReference;
         }
 
         /// <summary>
         /// Visits the specified member reference.
         /// </summary>
         /// <param name="memberReference">The member reference.</param>
-        [VisitorBase.VisitAttribute]
-        protected virtual MethodDefinition Visit(MethodDefinition methodDefinition)
+        public override Node Visit(MethodDefinition methodDefinition)
         {
-            Visit((Node)methodDefinition);
+            base.Visit(methodDefinition);
 
             // Check that this method definition doesn't have a method declaration before
             foreach (var declaration in FindDeclarations(methodDefinition.Name))
@@ -609,36 +616,35 @@ namespace SiliconStudio.Shaders.Analysis
         /// Visits the specified parenthesized expression.
         /// </summary>
         /// <param name="parenthesizedExpression">The parenthesized expression.</param>
-        [VisitorBase.VisitAttribute]
-        protected virtual void Visit(ParenthesizedExpression parenthesizedExpression)
+        public override Node Visit(ParenthesizedExpression parenthesizedExpression)
         {
-            Visit((Node)parenthesizedExpression);
+            base.Visit(parenthesizedExpression);
 
             // Get the type from the last item
             parenthesizedExpression.TypeInference = (TypeInference)parenthesizedExpression.Content.TypeInference.Clone();
+            return parenthesizedExpression;
         }
 
         /// <summary>
         /// Visits the specified expression list.
         /// </summary>
         /// <param name="expressionList">The expression list.</param>
-        [VisitorBase.VisitAttribute]
-        protected virtual void Visit(ExpressionList expressionList)
+        public override Node Visit(ExpressionList expressionList)
         {
-            Visit((Node)expressionList);
+            base.Visit(expressionList);
 
             // Get the type from the last item
             expressionList.TypeInference = (TypeInference)expressionList[expressionList.Count - 1].TypeInference.Clone();
+            return expressionList;
         }
 
         /// <summary>
         /// Visits the specified array type.
         /// </summary>
         /// <param name="arrayType">Array type.</param>
-        [VisitorBase.VisitAttribute]
-        protected virtual ArrayType Visit(ArrayType arrayType)
+        public override Node Visit(ArrayType arrayType)
         {
-            Visit((Node)arrayType);
+            base.Visit(arrayType);
 
             // Process only if there is non-literal expressions
             if (arrayType.TypeInference.TargetType == null
@@ -666,10 +672,9 @@ namespace SiliconStudio.Shaders.Analysis
         /// Visits the specified type name.
         /// </summary>
         /// <param name="typeName">Name of the type.</param>
-        [VisitorBase.VisitAttribute]
-        protected virtual TypeBase Visit(TypeName typeName)
+        public override Node Visit(TypeName typeName)
         {
-            Visit((Node)typeName);
+            base.Visit(typeName);
 
             if (typeName.TypeInference.TargetType == null)
             {
@@ -704,24 +709,23 @@ namespace SiliconStudio.Shaders.Analysis
         /// Visits the specified variable reference expression.
         /// </summary>
         /// <param name="variableReferenceExpression">The variable reference expression.</param>
-        [VisitorBase.VisitAttribute]
-        protected virtual void Visit(VariableReferenceExpression variableReferenceExpression)
+        public override Node Visit(VariableReferenceExpression variableReferenceExpression)
         {
-            Visit((Node)variableReferenceExpression);
+            base.Visit(variableReferenceExpression);
 
             var typeReference = variableReferenceExpression.TypeInference;
             typeReference.Declaration = FindDeclaration(variableReferenceExpression.Name);
             typeReference.TargetType = ResolveTypeFromDeclaration(typeReference.Declaration);
+            return variableReferenceExpression;
         }
 
         /// <summary>
         /// Visits the specified unary expression.
         /// </summary>
         /// <param name="unaryExpression">The unary expression.</param>
-        [VisitorBase.VisitAttribute]
-        protected virtual void Visit(UnaryExpression unaryExpression)
+        public override Node Visit(UnaryExpression unaryExpression)
         {
-            Visit((Node)unaryExpression);
+            base.Visit(unaryExpression);
 
             // TODO check for 
             unaryExpression.TypeInference = (TypeInference)unaryExpression.Expression.TypeInference.Clone();
@@ -730,6 +734,8 @@ namespace SiliconStudio.Shaders.Analysis
             var subType = unaryExpression.Expression.TypeInference.TargetType;
             if (subType != null && unaryExpression.Operator == UnaryOperator.LogicalNot)
                 unaryExpression.TypeInference.TargetType = TypeBase.CreateWithBaseType(subType, ScalarType.Bool);
+
+            return unaryExpression;
         }
 
         #endregion

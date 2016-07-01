@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using SiliconStudio.Xenko.Shaders.Parser.Analysis;
-using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Shaders.Ast.Xenko;
 using SiliconStudio.Xenko.Shaders.Parser.Utility;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
@@ -14,7 +14,7 @@ using SiliconStudio.Shaders.Visitor;
 
 namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
-    internal class XenkoStreamAnalyzer : ShaderVisitor
+    internal class XenkoStreamAnalyzer : ShaderWalker
     {
         #region Private members
 
@@ -101,13 +101,12 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// Analyse the method definition and store it in the correct lists (based on storage and stream usage)
         /// </summary>
         /// <param name="methodDefinition">the MethodDefinition</param>
-        [Visit]
-        protected void Visit(MethodDefinition methodDefinition)
+        public override void Visit(MethodDefinition methodDefinition)
         {
             currentStreamUsageList = new List<StreamUsageInfo>();
             alreadyAddedMethodsList = new List<MethodDeclaration>();
             
-            Visit((Node)methodDefinition);
+            base.Visit(methodDefinition);
 
             if (currentStreamUsageList.Count > 0)
                 StreamsUsageByMethodDefinition.Add(methodDefinition, currentStreamUsageList);
@@ -117,10 +116,9 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// Calls the base method but modify the stream usage beforehand
         /// </summary>
         /// <param name="expression">the method expression</param>
-        [Visit]
-        protected void Visit(MethodInvocationExpression expression)
+        public override void Visit(MethodInvocationExpression expression)
         {
-            Visit((Node)expression);
+            base.Visit(expression);
 
             var methodDecl = expression.Target.TypeInference.Declaration as MethodDeclaration;
             
@@ -171,10 +169,9 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// Analyse the VariableReferenceExpression, detects streams, propagate type inference, get stored in the correct list for later analysis
         /// </summary>
         /// <param name="variableReferenceExpression">the VariableReferenceExpression</param>
-        [Visit]
-        protected void Visit(VariableReferenceExpression variableReferenceExpression)
+        public override void Visit(VariableReferenceExpression variableReferenceExpression)
         {
-            Visit((Node)variableReferenceExpression);
+            base.Visit(variableReferenceExpression);
             // HACK: force types on base, this and stream keyword to eliminate errors in the log an use the standard type inference
             if (variableReferenceExpression.Name == StreamsType.ThisStreams.Name)
             {
@@ -183,12 +180,11 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             }
         }
 
-        [Visit]
-        protected void Visit(MemberReferenceExpression memberReferenceExpression)
+        public override void Visit(MemberReferenceExpression memberReferenceExpression)
         {
             var usageCopy = currentStreamUsage;
             currentStreamUsage |= StreamUsage.Partial;
-            Visit((Node)memberReferenceExpression);
+            base.Visit(memberReferenceExpression);
             currentStreamUsage = usageCopy;
 
             // check if it is a stream
@@ -196,21 +192,19 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 AddStreamUsage(memberReferenceExpression.TypeInference.Declaration as Variable, memberReferenceExpression, currentStreamUsage);
         }
 
-        [Visit]
-        protected void Visit(BinaryExpression expression)
+        public override void Visit(BinaryExpression expression)
         {
             var prevStreamUsage = currentStreamUsage;
             currentStreamUsage = StreamUsage.Read;
-            Visit((Node)expression);
+            base.Visit(expression);
             currentStreamUsage = prevStreamUsage;
         }
 
-        [Visit]
-        protected void Visit(UnaryExpression expression)
+        public override void Visit(UnaryExpression expression)
         {
             var prevStreamUsage = currentStreamUsage;
             currentStreamUsage = StreamUsage.Read;
-            Visit((Node)expression);
+            base.Visit(expression);
             currentStreamUsage = prevStreamUsage;
         }
 
@@ -218,8 +212,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// Analyse the AssignmentExpression to correctly infer the potential stream usage
         /// </summary>
         /// <param name="assignmentExpression">the AssignmentExpression</param>
-        [Visit]
-        private void Visit(AssignmentExpression assignmentExpression)
+        public override void Visit(AssignmentExpression assignmentExpression)
         {
             if (currentAssignmentOperatorStatus != AssignmentOperatorStatus.Read)
                 errorWarningLog.Error(XenkoMessageCode.ErrorNestedAssignment, assignmentExpression.Span, assignmentExpression, shaderName);
@@ -246,10 +239,9 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             }
         }
 
-        [Visit]
-        private void Visit(Variable variableStatement)
+        public override void Visit(Variable variableStatement)
         {
-            Visit((Node)variableStatement);
+            base.Visit(variableStatement);
 
             var parentBlock = this.NodeStack.OfType<StatementList>().LastOrDefault();
             if (parentBlock != null && variableStatement.Type == StreamsType.Streams && variableStatement.InitialValue is VariableReferenceExpression && ((VariableReferenceExpression)(variableStatement.InitialValue)).TypeInference.TargetType is StreamsType)

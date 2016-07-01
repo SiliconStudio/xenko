@@ -7,7 +7,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     /// <summary>
     /// Type of constant buffer.
     /// </summary>
-    public class ConstantBufferType : CompositeEnum
+    public partial class ConstantBufferType : CompositeEnum
     {
         #region Constants and Fields
 

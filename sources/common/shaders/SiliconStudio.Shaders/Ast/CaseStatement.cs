@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A single case or default statement.
     /// </summary>
-    public class CaseStatement : Statement
+    public partial class CaseStatement : Statement
     {
         #region Constructors and Destructors
 

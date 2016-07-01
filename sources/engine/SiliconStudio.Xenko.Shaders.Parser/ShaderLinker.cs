@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Shaders.Ast.Xenko;
 using SiliconStudio.Xenko.Shaders.Parser.Mixins;
 using SiliconStudio.Xenko.Shaders.Parser.Utility;
 using SiliconStudio.Shaders.Ast;
@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
     /// <summary>
     /// This AST Visitor will look for any "Link" annotation in order to bind EffectVariable to their associated HLSL variables.
     /// </summary>
-    internal class ShaderLinker : ShaderVisitor
+    internal class ShaderLinker : ShaderWalker
     {
         private readonly Dictionary<string, SamplerStateDescription> samplers = new Dictionary<string, SamplerStateDescription>();
         private readonly EffectReflection effectReflection;
@@ -94,8 +94,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
         /// </summary>
         /// <param name="variable">The variable.</param>
         /// <returns>The variable visited</returns>
-        [Visit]
-        protected void Visit(Variable variable)
+        public override void Visit(Variable variable)
         {
             var parameterKey = GetLinkParameterKey(variable);
             if (parameterKey == null) return;
@@ -245,8 +244,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
         /// </summary>
         /// <param name="constantBuffer">The constant buffer.</param>
         /// <returns></returns>
-        [Visit]
-        protected void Visit(ConstantBuffer constantBuffer)
+        public override void Visit(ConstantBuffer constantBuffer)
         {
             foreach (var variable in constantBuffer.Members.OfType<Variable>().SelectMany(x => x.Instances()))
             {
@@ -254,8 +252,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
             }
         }
 
-        [Visit]
-        protected void Visit(MethodDefinition method)
+        public override void Visit(MethodDefinition method)
         {
             // Parse stream output declarations (if any)
             // TODO: Currently done twice, one time in ShaderMixer, one time in ShaderLinker
@@ -281,8 +278,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
         }
 
         /// <inheritdoc/>
-        [Visit]
-        protected override Node Visit(Node node)
+        public override void VisitNode(Node node)
         {
             if (node is IDeclaration)
             {
@@ -291,13 +287,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                     LinkVariable(effectReflection, ((IDeclaration)node).Name, parameterKey, parameterKey.Type.Elements);
             }
 
-            node.Childrens(OnProcessor);
-            return node;
-        }
-
-        private Node OnProcessor(Node nodeArg, ref NodeProcessorContext explorer)
-        {
-            return VisitDynamic(nodeArg);
+            base.VisitNode(node);
         }
 
         private LocalParameterKey GetLinkParameterKey(Node node)

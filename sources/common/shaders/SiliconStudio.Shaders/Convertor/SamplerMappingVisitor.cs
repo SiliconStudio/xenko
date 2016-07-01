@@ -91,13 +91,13 @@ namespace SiliconStudio.Shaders.Convertor
             return null;
         }
 
-        [VisitorBase.VisitAttribute]
-        protected void Visit(VariableReferenceExpression variableRef)
+        public override Node Visit(VariableReferenceExpression variableRef)
         {
             ((ScopeDeclarationWithRef)ScopeStack.Peek()).VariableReferences.Add(variableRef);
+            return variableRef;
         }
 
-        protected override void Visit(MethodInvocationExpression methodInvocationExpression)
+        public override Node Visit(MethodInvocationExpression methodInvocationExpression)
         {
             // Visit first children
             base.Visit(methodInvocationExpression);
@@ -217,7 +217,9 @@ namespace SiliconStudio.Shaders.Convertor
                         this.ChangeVariableType(samplerVariable, newSamplerType);
                     }
                 }
-            }            
+            }
+
+            return methodInvocationExpression;
         }
 
         private void ChangeVariableType(Variable samplerVariable, TypeBase newType)

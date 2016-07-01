@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A literal expression.
     /// </summary>
-    public class LiteralExpression : Expression
+    public partial class LiteralExpression : Expression
     {
         #region Constructors and Destructors
 

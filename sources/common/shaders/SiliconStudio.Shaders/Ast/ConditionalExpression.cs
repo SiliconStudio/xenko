@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A Conditional expression
     /// </summary>
-    public class ConditionalExpression : Expression
+    public partial class ConditionalExpression : Expression
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ConditionalExpression"/> class.

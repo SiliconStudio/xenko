@@ -21,8 +21,6 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
         private GlslShaderPlatform shaderPlatform;
         private int shaderVersion;
 
-        private bool isVulkan;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderConverter"/> class.
         /// </summary>

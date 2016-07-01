@@ -10,7 +10,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     /// <summary>
     /// Describes a packoffset(value).
     /// </summary>
-    public class PackOffset : Qualifier
+    public partial class PackOffset : Qualifier
     {
         #region Constructors and Destructors
 

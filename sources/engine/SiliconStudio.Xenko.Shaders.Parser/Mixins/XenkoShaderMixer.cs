@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using SiliconStudio.Xenko.Shaders.Parser.Analysis;
-using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Shaders.Ast.Xenko;
 using SiliconStudio.Xenko.Shaders.Parser.Utility;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
@@ -302,7 +302,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 
             foreach (var variable in mixin.LocalVirtualTable.Variables.Select(x => x.Variable))
             {
-                if (variable.Qualifiers.Contains(XenkoStorageQualifier.Extern))
+                if (variable.Qualifiers.Contains(SiliconStudio.Shaders.Ast.Hlsl.StorageQualifier.Extern))
                 {
                     List<ModuleMixin> mixins;
                     if (CompositionsPerVariable.TryGetValue(variable, out mixins))
@@ -325,7 +325,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 
                 if (!(variable.Qualifiers.Values.Contains(XenkoStorageQualifier.Stream)
                       || variable.Qualifiers.Values.Contains(XenkoStorageQualifier.PatchStream)
-                      || variable.Qualifiers.Values.Contains(XenkoStorageQualifier.Extern)))
+                      || variable.Qualifiers.Values.Contains(SiliconStudio.Shaders.Ast.Hlsl.StorageQualifier.Extern)))
                 {
                     var attribute = variable.Attributes.OfType<AttributeDeclaration>().FirstOrDefault(x => x.Name == "Link");
                     if (attribute == null)
@@ -481,7 +481,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 index = (int)(indexerExpression.Index as LiteralExpression).Value;
             }
 
-            if (result != null && result.Qualifiers.Contains(XenkoStorageQualifier.Extern) && !(result.Type is ArrayType))
+            if (result != null && result.Qualifiers.Contains(SiliconStudio.Shaders.Ast.Hlsl.StorageQualifier.Extern) && !(result.Type is ArrayType))
                 mixin = CompositionsPerVariable[result][index];
 
             return result;
@@ -557,7 +557,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                     result = FindVariable(target, ref mixin);
 
                 var index = (int)(indexerExpression.Index as LiteralExpression).Value;
-                if (result != null && result.Qualifiers.Contains(XenkoStorageQualifier.Extern))
+                if (result != null && result.Qualifiers.Contains(SiliconStudio.Shaders.Ast.Hlsl.StorageQualifier.Extern))
                     mixin = CompositionsPerVariable[result][index];
             }
         }
@@ -1282,7 +1282,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                     variablesUsages.Add(variable, false);
             }
 
-            MixedShader.Members.RemoveAll(x => x is Variable && (x as Variable).Qualifiers.Contains(XenkoStorageQualifier.Extern));
+            MixedShader.Members.RemoveAll(x => x is Variable && (x as Variable).Qualifiers.Contains(SiliconStudio.Shaders.Ast.Hlsl.StorageQualifier.Extern));
             
             var variableUsageVisitor = new XenkoVariableUsageVisitor(variablesUsages);
             variableUsageVisitor.Run(MixedShader);
@@ -1315,7 +1315,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// <returns>true/false</returns>
         private bool KeepVariableInCBuffer(Variable variable)
         {
-            return !(variable.Qualifiers.Contains(XenkoStorageQualifier.Extern) || variable.Qualifiers.Contains(XenkoStorageQualifier.Stream) || variable.Qualifiers.Contains(XenkoStorageQualifier.PatchStream) || IsOutOfCBufferVariable(variable) || variable.Qualifiers.Contains(StorageQualifier.Const));
+            return !(variable.Qualifiers.Contains(SiliconStudio.Shaders.Ast.Hlsl.StorageQualifier.Extern) || variable.Qualifiers.Contains(XenkoStorageQualifier.Stream) || variable.Qualifiers.Contains(XenkoStorageQualifier.PatchStream) || IsOutOfCBufferVariable(variable) || variable.Qualifiers.Contains(StorageQualifier.Const));
         }
 
         // Group everything by constant buffers
@@ -1488,7 +1488,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// <param name="mixin">the mixin</param>
         private static void ExpandForEachStatements(ModuleMixin mixin)
         {
-            foreach (var statementNodeCouple in mixin.ParsingInfo.ForEachStatements.Where(x => !(x.Statement as ForEachStatement).Variable.Qualifiers.Contains(XenkoStorageQualifier.Extern)))
+            foreach (var statementNodeCouple in mixin.ParsingInfo.ForEachStatements.Where(x => !(x.Statement as ForEachStatement).Variable.Qualifiers.Contains(SiliconStudio.Shaders.Ast.Hlsl.StorageQualifier.Extern)))
             {
                 var newStatement = ExpandForEachStatement(statementNodeCouple.Statement as ForEachStatement);
                 if (newStatement != null)

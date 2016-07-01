@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// Toplevel container of a shader parsing result.
     /// </summary>
-    public class Shader : Node
+    public partial class Shader : Node
     {
         #region Constructors and Destructors
 

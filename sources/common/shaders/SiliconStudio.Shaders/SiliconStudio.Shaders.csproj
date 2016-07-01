@@ -53,9 +53,37 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Ast\Xenko\ClassIdentifierGeneric.cs" />
+    <Compile Include="Ast\Xenko\EnumType.cs" />
+    <Compile Include="Ast\Xenko\ForEachStatement.cs" />
+    <Compile Include="Ast\Xenko\IGenericStringArgument.cs" />
+    <Compile Include="Ast\Xenko\ImportBlockStatement.cs" />
+    <Compile Include="Ast\Xenko\LinkType.cs" />
+    <Compile Include="Ast\Xenko\LiteralIdentifier.cs" />
+    <Compile Include="Ast\Xenko\MemberName.cs" />
+    <Compile Include="Ast\Xenko\MixinStatement.cs" />
+    <Compile Include="Ast\Xenko\MixinStatementType.cs" />
+    <Compile Include="Ast\Xenko\NamespaceBlock.cs" />
+    <Compile Include="Ast\Xenko\ParametersBlock.cs" />
+    <Compile Include="Ast\Xenko\SemanticType.cs" />
+    <Compile Include="Ast\Xenko\ShaderBlock.cs" />
+    <Compile Include="Ast\Xenko\ShaderClassType.cs" />
+    <Compile Include="Ast\Xenko\ShaderRootClassType.cs" />
+    <Compile Include="Ast\Xenko\ShaderTypeName.cs" />
+    <Compile Include="Ast\Xenko\StreamsType.cs" />
+    <Compile Include="Ast\Xenko\TypelIdentifier.cs" />
+    <Compile Include="Ast\Xenko\UsingParametersStatement.cs" />
+    <Compile Include="Ast\Xenko\UsingStatement.cs" />
+    <Compile Include="Ast\Xenko\VarType.cs" />
+    <Compile Include="Ast\Xenko\XenkoAttributes.cs" />
+    <Compile Include="Ast\Xenko\XenkoConstantBufferType.cs" />
+    <Compile Include="Ast\Xenko\XenkoStorageQualifier.cs" />
+    <Compile Include="Ast\Xenko\XenkoTags.cs" />
     <Compile Include="Convertor\BreakContinueVisitor.cs" />
     <Compile Include="Convertor\GlslShaderPlatform.cs" />
     <Compile Include="Convertor\SamplerTextureKey.cs" />
+    <Compile Include="Grammar\Xenko\XenkoGrammar.Ast.cs" />
+    <Compile Include="Grammar\Xenko\XenkoGrammar.cs" />
     <Compile Include="Properties\Resources.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -101,7 +129,6 @@
     <Compile Include="Ast\Glsl\InterfaceType.cs" />
     <Compile Include="Ast\Hlsl\ClassType.Helpers.cs" />
     <Compile Include="Ast\Hlsl\StreamTypeName.cs" />
-    <Compile Include="Ast\LayoutQualifier.cs" />
     <Compile Include="Ast\Node.Clone.Extension.cs" />
     <Compile Include="Ast\ExpressionList.cs" />
     <Compile Include="Ast\GenericDeclaration.cs" />
@@ -233,11 +260,15 @@
     <Compile Include="Visitor\ExpressionEvaluator.cs" />
     <Compile Include="Visitor\ExpressionResult.cs" />
     <Compile Include="Visitor\ScopeDeclaration.cs" />
-    <Compile Include="Ast\Node.Iterator.Extensions.cs" />
     <Compile Include="Visitor\SearchVisitor.cs" />
     <Compile Include="Visitor\ShaderVisitor.cs" />
     <Compile Include="Visitor\VisitorBase.cs" />
     <Compile Include="Convertor\HlslToGlslWriter.cs" />
+    <Compile Include="Visitor\VisitorGenerated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VisitorGenerated.tt</DependentUpon>
+    </Compile>
     <Compile Include="Writer\Hlsl\HlslWriter.cs" />
     <Compile Include="Writer\ShaderWriter.cs" />
     <Compile Include="Analysis\CastAnalysis.cs" />
@@ -272,6 +303,12 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Visitor\VisitorGenerated.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>VisitorGenerated.cs</LastGenOutput>
+    </Content>
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

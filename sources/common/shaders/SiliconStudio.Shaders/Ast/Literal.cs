@@ -10,7 +10,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A field of a struct.
     /// </summary>
-    public sealed class Literal : Node
+    public sealed partial class Literal : Node
     {
         private object value;
 

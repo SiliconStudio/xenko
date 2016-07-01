@@ -7,7 +7,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// Base class for all vector types
     /// </summary>
-    public class VectorType : GenericType<TypeBase, Literal>
+    public partial class VectorType : GenericType
     {
         #region Constants and Fields
 
@@ -80,8 +80,10 @@ namespace SiliconStudio.Shaders.Ast
         ///   Initializes a new instance of the <see cref = "VectorType" /> class.
         /// </summary>
         public VectorType()
-            : base("vector")
+            : base("vector", 2)
         {
+            ParameterTypes.Add(typeof(TypeBase));
+            ParameterTypes.Add(typeof(Literal));
         }
 
         /// <summary>

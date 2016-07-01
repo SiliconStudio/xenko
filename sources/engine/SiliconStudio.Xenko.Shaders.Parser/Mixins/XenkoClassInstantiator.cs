@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Shaders.Ast.Xenko;
 using SiliconStudio.Xenko.Shaders.Parser.Utility;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
@@ -16,7 +16,7 @@ using StorageQualifier = SiliconStudio.Shaders.Ast.StorageQualifier;
 
 namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
-    internal class XenkoClassInstantiator : ShaderVisitor
+    internal class XenkoClassInstantiator : ShaderWalker
     {
         private ShaderClassType shaderClassType;
 
@@ -85,10 +85,9 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             }
         }
 
-        [Visit]
-        protected void Visit(MemberReferenceExpression memberReferenceExpression)
+        public override void Visit(MemberReferenceExpression memberReferenceExpression)
         {
-            Visit((Node)memberReferenceExpression);
+            base.Visit(memberReferenceExpression);
 
             // Try to find usage of all MemberName 'yyy' in reference expressions like "xxx.yyy" and replace by their
             // generic instantiation
@@ -107,20 +106,18 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             }
         }
 
-        [Visit]
-        public void Visit(ConstantBuffer constantBuffer)
+        public override void Visit(ConstantBuffer constantBuffer)
         {
             string remappedConstantBufferName;
             if (stringGenerics.TryGetValue(constantBuffer.Name.Text, out remappedConstantBufferName))
                 constantBuffer.Name = new Identifier(remappedConstantBufferName);
 
-            Visit((Node)constantBuffer);
+            base.Visit(constantBuffer);
         }
 
-        [Visit]
-        protected void Visit(Variable variable)
+        public override void Visit(Variable variable)
         {
-            Visit((Node)variable);
+            base.Visit(variable);
             //TODO: check types
 
             // Don't perform any replacement if we are just auto instancing shaders
@@ -180,10 +177,9 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             }
         }
 
-        [Visit]
-        protected void Visit(IdentifierGeneric identifierGeneric)
+        public override void Visit(IdentifierGeneric identifierGeneric)
         {
-            Visit((Node)identifierGeneric);
+            base.Visit(identifierGeneric);
 
             for (var i = 0; i < identifierGeneric.Identifiers.Count; ++i)
             {

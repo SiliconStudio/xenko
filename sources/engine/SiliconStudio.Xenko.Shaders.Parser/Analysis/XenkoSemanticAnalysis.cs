@@ -3,7 +3,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Shaders.Ast.Xenko;
 using SiliconStudio.Xenko.Shaders.Parser.Mixins;
 using SiliconStudio.Xenko.Shaders.Parser.Utility;
 using SiliconStudio.Shaders.Ast;
@@ -135,12 +135,11 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
         /// Visits the specified shader type name.
         /// </summary>
         /// <param name="shaderTypeName">Name of the type.</param>
-        [Visit]
-        protected TypeBase Visit(ShaderTypeName shaderTypeName)
+        public override Node Visit(ShaderTypeName shaderTypeName)
         {
             // just here to prevent a problem when a mixin class is called Texture (that creates an hlsl typename instead)
             // grammar was changed accordingly
-            Visit((Node)shaderTypeName);
+            base.Visit(shaderTypeName);
             return shaderTypeName;
         }
 
@@ -174,8 +173,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
         /// Analyse the method declaration and store it in the correct list
         /// </summary>
         /// <param name="methodDeclaration">The MethodDeclaration</param>
-        [Visit]
-        protected void Visit(MethodDeclaration methodDeclaration)
+        public override Node Visit(MethodDeclaration methodDeclaration)
         {
             currentVisitedMethod = methodDeclaration;
             
@@ -184,8 +182,10 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
             if (methodDeclaration.Qualifiers.Contains(XenkoStorageQualifier.Override))
                 Error(XenkoMessageCode.ErrorUnnecessaryOverride, methodDeclaration.Span, methodDeclaration, analyzedModuleMixin.MixinName);
 
-            Visit((Node)methodDeclaration);
+            base.Visit(methodDeclaration);
             PostMethodDeclarationVisit(methodDeclaration);
+
+            return methodDeclaration;
         }
 
         /// <summary>
@@ -193,8 +193,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
         /// </summary>
         /// <param name="methodDefinition">the MethodDefinition</param>
         /// <returns>the input method definition</returns>
-        [Visit]
-        protected override MethodDefinition Visit(MethodDefinition methodDefinition)
+        public override Node Visit(MethodDefinition methodDefinition)
         {
             currentVisitedMethod = methodDefinition;
             
@@ -223,11 +222,10 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
         /// Visits the specified variable
         /// </summary>
         /// <param name="variable">The variable</param>
-        [Visit]
-        protected void Visit(Variable variable)
+        public override Node Visit(Variable variable)
         {
             if (inSampler)
-                return;
+                return variable;
             
             if (variable.Type is StateType)
                 inSampler = true;
@@ -242,12 +240,12 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
                     if (finalType is ArrayType)
                         finalType = (finalType as ArrayType).Type;
                     variable.Type = finalType;
-                    if ((forEachStatement.Collection.TypeInference.Declaration as Variable).Qualifiers.Contains(XenkoStorageQualifier.Extern))
-                        variable.Qualifiers |= XenkoStorageQualifier.Extern;
+                    if ((forEachStatement.Collection.TypeInference.Declaration as Variable).Qualifiers.Contains(StorageQualifier.Extern))
+                        variable.Qualifiers |= StorageQualifier.Extern;
                 }
             }
 
-            Visit((Node)variable);
+            base.Visit(variable);
 
             inSampler = false;
 
@@ -309,6 +307,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
                 if (FindFinalType(variable.Type) is ShaderClassType)
                     Error(XenkoMessageCode.ErrorShaderVariable, variable.Span, variable, analyzedModuleMixin.MixinName);
             }
+
+            return variable;
         }
 
         /// <summary>
@@ -327,25 +327,27 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
         /// store the Typedef
         /// </summary>
         /// <param name="typedef">the Typedef</param>
-        [Visit]
-        private void Visit(Typedef typedef)
+        public override Node Visit(Typedef typedef)
         {
-            Visit((Node)typedef);
+            base.Visit(typedef);
 
             if (currentVisitedMethod != null)
                 Error(XenkoMessageCode.ErrorTypedefInMethod, typedef.Span, typedef, currentVisitedMethod, analyzedModuleMixin.MixinName);
 
             parsingInfo.Typedefs.Add(typedef);
+
+            return typedef;
         }
 
         /// <summary>
         /// Visit a technique, store an error
         /// </summary>
         /// <param name="technique">the technique</param>
-        [Visit]
-        public override void Visit(Technique technique)
+        public override Node Visit(Technique technique)
         {
             Error(XenkoMessageCode.ErrorTechniqueFound, technique.Span, technique, analyzedModuleMixin.MixinName); // TODO: remove because parsing may fail before
+
+            return technique;
         }
 
         /// <summary>
@@ -578,8 +580,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
         /// Calls the base method but modify the stream usage beforehand
         /// </summary>
         /// <param name="expression">the method expression</param>
-        [Visit]
-        protected override void Visit(MethodInvocationExpression expression)
+        public override Node Visit(MethodInvocationExpression expression)
         {
             expression.SetTag(XenkoTags.CurrentShader, analyzedModuleMixin);
 
@@ -601,7 +602,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
                     && !methodDecl.Qualifiers.Contains(StorageQualifier.Static)
                     && methodDecl.GetTag(XenkoTags.BaseDeclarationMixin) != null)
                 {
-                        Error(XenkoMessageCode.ErrorNonStaticCallInStaticMethod, expression.Span, currentVisitedMethod, methodDecl, analyzedModuleMixin.MixinName);
+                    Error(XenkoMessageCode.ErrorNonStaticCallInStaticMethod, expression.Span, currentVisitedMethod, methodDecl, analyzedModuleMixin.MixinName);
                 }
             }
 
@@ -610,6 +611,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
 
             if (methodDecl != null)
                 expression.Target.SetTag(XenkoTags.VirtualTableReference, methodDecl.GetTag(XenkoTags.VirtualTableReference));
+
+            return expression;
         }
 
         /// <summary>
@@ -762,8 +765,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
         /// Analyse the AssignmentExpression to correctly infer the potential stream usage
         /// </summary>
         /// <param name="assignmentExpression">the AssignmentExpression</param>
-        [Visit]
-        protected override void Visit(AssignmentExpression assignmentExpression)
+        public override Node Visit(AssignmentExpression assignmentExpression)
         {
             if (currentAssignmentOperatorStatus != AssignmentOperatorStatus.Read)
                 Error(XenkoMessageCode.ErrorNestedAssignment, assignmentExpression.Span, assignmentExpression, analyzedModuleMixin.MixinName);
@@ -774,6 +776,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
             assignmentExpression.Target = (Expression)VisitDynamic(assignmentExpression.Target);
 
             currentAssignmentOperatorStatus = AssignmentOperatorStatus.Read;
+
+            return assignmentExpression;
         }
 
         /// <summary>
@@ -795,8 +799,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
         /// Analyse the VariableReferenceExpression, detects streams, propagate type inference, get stored in the correct list for later analysis
         /// </summary>
         /// <param name="variableReferenceExpression">the VariableReferenceExpression</param>
-        [Visit]
-        protected override void Visit(VariableReferenceExpression variableReferenceExpression)
+        public override Node Visit(VariableReferenceExpression variableReferenceExpression)
         {
             // HACK: force types on base, this and stream keyword to eliminate errors in the log and use the standard type inference
             var name = variableReferenceExpression.Name.Text;
@@ -804,20 +807,20 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
             {
                 variableReferenceExpression.TypeInference.Declaration = analyzedModuleMixin.Shader;
                 variableReferenceExpression.TypeInference.TargetType = analyzedModuleMixin.Shader;
-                return;
+                return variableReferenceExpression;
             }
             if (name == "this")
             {
                 variableReferenceExpression.TypeInference.Declaration = analyzedModuleMixin.Shader;
                 variableReferenceExpression.TypeInference.TargetType = analyzedModuleMixin.Shader;
-                return;
+                return variableReferenceExpression;
             }
             if (name == "stage")
             {
                 if (!(ParentNode is Variable && (ParentNode as Variable).InitialValue == variableReferenceExpression))
                     Error(XenkoMessageCode.ErrorStageOutsideVariable, ParentNode.Span, ParentNode, analyzedModuleMixin.MixinName);
 
-                return;
+                return variableReferenceExpression;
             }
             if (name == StreamsType.ThisStreams.Name.Text)
             {
@@ -861,13 +864,15 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
 
             // Add to the variables references list
             AddToVariablesReference(variableReferenceExpression);
+
+            return variableReferenceExpression;
         }
 
         /// <summary>
         /// Find the type of the expression
         /// </summary>
         /// <param name="indexerExpression">the indexer expression</param>
-        protected override void ProcessIndexerExpression(IndexerExpression indexerExpression)
+        public override void ProcessIndexerExpression(IndexerExpression indexerExpression)
         {
             var targetType = indexerExpression.Target.TypeInference.TargetType;
 
@@ -879,7 +884,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
             if (!(indexerExpression.Index is LiteralExpression) && indexerExpression.Target.TypeInference.Declaration is Variable)
             {
                 var varDecl = indexerExpression.Target.TypeInference.Declaration as Variable;
-                if (varDecl.Qualifiers.Contains(XenkoStorageQualifier.Extern))
+                if (varDecl.Qualifiers.Contains(StorageQualifier.Extern))
                     Error(XenkoMessageCode.ErrorIndexerNotLiteral, indexerExpression.Span, indexerExpression, analyzedModuleMixin.MixinName);
             }
         }
@@ -888,31 +893,29 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
         /// Visit an interface to send an error
         /// </summary>
         /// <param name="interfaceType">the interface.</param>
-        [Visit]
-        private void Visit(InterfaceType interfaceType)
+        public override Node Visit(InterfaceType interfaceType)
         {
             Error(XenkoMessageCode.ErrorInterfaceFound, interfaceType.Span, interfaceType, analyzedModuleMixin.MixinName);
+            return interfaceType;
         }
 
         /// <summary>
         /// Visit a structure and store its definition
         /// </summary>
         /// <param name="structType">the structure definition</param>
-        [Visit]
-        private void Visit(StructType structType)
+        public override Node Visit(StructType structType)
         {
-            Visit((Node)structType);
-
             if (structType.ContainsTag(XenkoTags.ShaderScope))
                 parsingInfo.StructureDefinitions.Add(structType);
+
+            return base.Visit(structType);
         }
 
         /// <summary>
         /// Visit a generic type and test that it has no shader class type
         /// </summary>
         /// <param name="genericType">the generic type</param>
-        [Visit]
-        protected override void Visit(GenericType genericType)
+        public override Node Visit(GenericType genericType)
         {
             base.Visit(genericType);
 
@@ -921,6 +924,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
                 if (param.TypeInference.TargetType is ShaderClassType)
                     Error(XenkoMessageCode.ErrorMixinAsGeneric, param.Span, param, genericType, analyzedModuleMixin.MixinName);
             }
+
+            return genericType;
         }
 
         /// <summary>
@@ -971,10 +976,9 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
             }
         }
 
-        [Visit]
-        private void Visit(ShaderClassType shaderClassType)
+        public override Node Visit(ShaderClassType shaderClassType)
         {
-            Visit((Node)shaderClassType);
+            base.Visit(shaderClassType);
 
             // Allow to navigate to base classes
             foreach (var baseClass in shaderClassType.BaseClasses)
@@ -988,12 +992,13 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
 
                 parsingInfo.NavigableNodes.Add(baseClass);
             }
+
+            return shaderClassType;
         }
 
-        [Visit]
-        protected override TypeBase Visit(TypeName typeName)
+        public override Node Visit(TypeName typeName)
         {
-            var newTypeName = base.Visit(typeName);
+            var newTypeName = (TypeBase)base.Visit(typeName);
 
             if (newTypeName.TypeInference.Declaration != null)
             {
@@ -1006,13 +1011,12 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
         /// Visits the ForEachStatement Node and collects information from it.
         /// </summary>
         /// <param name="forEachStatement">The ForEachStatement</param>
-        [Visit]
-        private Node Visit(ForEachStatement forEachStatement)
+        public override Node Visit(ForEachStatement forEachStatement)
         {
             if (expandForEachStatements)
             {
                 // run analysis on collection
-                Visit(forEachStatement.Collection);
+                VisitDynamic(forEachStatement.Collection);
 
                 var inference = forEachStatement.Collection.TypeInference.Declaration as Variable;
                 if (!(inference != null && inference.Type is ArrayType))
@@ -1035,12 +1039,12 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
                     result.Add(cloned.Body);
                 }
 
-                Visit((Node)result);
+                VisitDynamic(result);
                 return result;
             }
             else
             {
-                Visit((Node)forEachStatement);
+                base.Visit(forEachStatement);
                 parsingInfo.ForEachStatements.Add(new StatementNodeCouple(forEachStatement, ParentNode));
                 return forEachStatement;
             }

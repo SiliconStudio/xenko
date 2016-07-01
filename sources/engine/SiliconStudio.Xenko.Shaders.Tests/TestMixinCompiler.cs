@@ -38,17 +38,18 @@ namespace SiliconStudio.Xenko.Shaders.Tests
         public void TestMaterial()
         {
             var compiler = new EffectCompiler { UseFileSystem = true };
-            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Xenko.Graphics\Shaders");
-            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Xenko.Engine\Shaders");
-            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Core");
-            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Lights");
-            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Materials");
-            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Shadows");
-            compiler.SourceDirectories.Add(@"..\..\sources\shaders\ComputeColor");
-            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Skinning");
-            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Shading");
-            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Transformation");
-            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Utils");
+            var currentPath = Core.PlatformFolders.ApplicationBinaryDirectory;
+            compiler.SourceDirectories.Add(Path.Combine(currentPath, @"..\..\sources\engine\SiliconStudio.Xenko.Graphics\Shaders"));
+            compiler.SourceDirectories.Add(Path.Combine(currentPath, @"..\..\sources\engine\SiliconStudio.Xenko.Engine\Rendering\Shaders"));
+            compiler.SourceDirectories.Add(Path.Combine(currentPath, @"..\..\sources\engine\SiliconStudio.Xenko.Engine\Rendering\Core"));
+            compiler.SourceDirectories.Add(Path.Combine(currentPath, @"..\..\sources\engine\SiliconStudio.Xenko.Engine\Rendering\Lights"));
+            compiler.SourceDirectories.Add(Path.Combine(currentPath, @"..\..\sources\engine\SiliconStudio.Xenko.Engine\Rendering\Shadows"));
+            compiler.SourceDirectories.Add(Path.Combine(currentPath, @"..\..\sources\engine\SiliconStudio.Xenko.Engine\Rendering\Materials\Shaders"));
+            compiler.SourceDirectories.Add(Path.Combine(currentPath, @"..\..\sources\engine\SiliconStudio.Xenko.Engine\Rendering\Materials\ComputeColors\Shaders"));
+            compiler.SourceDirectories.Add(Path.Combine(currentPath, @"..\..\sources\engine\SiliconStudio.Xenko.Engine\Rendering\Skinning"));
+            compiler.SourceDirectories.Add(Path.Combine(currentPath, @"..\..\sources\engine\SiliconStudio.Xenko.Engine\Rendering\Shading"));
+            compiler.SourceDirectories.Add(Path.Combine(currentPath, @"..\..\sources\engine\SiliconStudio.Xenko.Engine\Rendering\Transformation"));
+            compiler.SourceDirectories.Add(Path.Combine(currentPath, @"..\..\sources\engine\SiliconStudio.Xenko.Engine\Rendering\Utils"));
             var compilerParameters = new CompilerParameters { EffectParameters = { Platform = GraphicsPlatform.OpenGL } };
 
             var layers = new MaterialBlendLayers();
@@ -103,18 +104,19 @@ namespace SiliconStudio.Xenko.Shaders.Tests
         public void TestStream()
         {
             var compiler = new EffectCompiler { UseFileSystem = true };
-            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Xenko.Shaders.Tests\GameAssets\Compiler");
-            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Xenko.Graphics\Shaders");
-            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Xenko.Engine\Shaders");
-            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Core");
-            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Lights");
-            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Materials");
-            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Shadows");
-            compiler.SourceDirectories.Add(@"..\..\sources\shaders\ComputeColor");
-            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Skinning");
-            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Shading");
-            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Transformation");
-            compiler.SourceDirectories.Add(@"..\..\sources\shaders\Utils");
+            var currentPath = Core.PlatformFolders.ApplicationBinaryDirectory;
+            compiler.SourceDirectories.Add(Path.Combine(currentPath, @"..\..\sources\engine\SiliconStudio.Xenko.Shaders.Tests\GameAssets\Compiler"));
+            compiler.SourceDirectories.Add(Path.Combine(currentPath, @"..\..\sources\engine\SiliconStudio.Xenko.Graphics\Shaders"));
+            compiler.SourceDirectories.Add(Path.Combine(currentPath, @"..\..\sources\engine\SiliconStudio.Xenko.Engine\Rendering\Shaders"));
+            compiler.SourceDirectories.Add(Path.Combine(currentPath, @"..\..\sources\engine\SiliconStudio.Xenko.Engine\Rendering\Core"));
+            compiler.SourceDirectories.Add(Path.Combine(currentPath, @"..\..\sources\engine\SiliconStudio.Xenko.Engine\Rendering\Lights"));
+            compiler.SourceDirectories.Add(Path.Combine(currentPath, @"..\..\sources\engine\SiliconStudio.Xenko.Engine\Rendering\Shadows"));
+            compiler.SourceDirectories.Add(Path.Combine(currentPath, @"..\..\sources\engine\SiliconStudio.Xenko.Engine\Rendering\Materials\Shaders"));
+            compiler.SourceDirectories.Add(Path.Combine(currentPath, @"..\..\sources\engine\SiliconStudio.Xenko.Engine\Rendering\Materials\ComputeColors\Shaders"));
+            compiler.SourceDirectories.Add(Path.Combine(currentPath, @"..\..\sources\engine\SiliconStudio.Xenko.Engine\Rendering\Skinning"));
+            compiler.SourceDirectories.Add(Path.Combine(currentPath, @"..\..\sources\engine\SiliconStudio.Xenko.Engine\Rendering\Shading"));
+            compiler.SourceDirectories.Add(Path.Combine(currentPath, @"..\..\sources\engine\SiliconStudio.Xenko.Engine\Rendering\Transformation"));
+            compiler.SourceDirectories.Add(Path.Combine(currentPath, @"..\..\sources\engine\SiliconStudio.Xenko.Engine\Rendering\Utils"));
             var compilerParameters = new CompilerParameters { EffectParameters = { Platform = GraphicsPlatform.Direct3D11 } };
             var results = compiler.Compile(new ShaderClassSource("TestStream"), compilerParameters);
 
@@ -129,8 +131,9 @@ namespace SiliconStudio.Xenko.Shaders.Tests
         public void TestMixinAndComposeKeys()
         {
             var compiler = new EffectCompiler { UseFileSystem = true };
-            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Xenko.Graphics\Shaders");
-            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Xenko.Shaders.Tests\GameAssets\Mixins");
+            var currentPath = Core.PlatformFolders.ApplicationBinaryDirectory;
+            compiler.SourceDirectories.Add(Path.Combine(currentPath, @"..\..\sources\engine\SiliconStudio.Xenko.Graphics\Shaders"));
+            compiler.SourceDirectories.Add(Path.Combine(currentPath, @"..\..\sources\engine\SiliconStudio.Xenko.Shaders.Tests\GameAssets\Mixins"));
 
             var compilerParameters = new CompilerParameters { EffectParameters = { Platform = GraphicsPlatform.Direct3D11 } };
 

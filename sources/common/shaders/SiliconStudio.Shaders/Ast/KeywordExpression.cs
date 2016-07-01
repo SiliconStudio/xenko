@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// Keyword expression statement like continue; break; discard;
     /// </summary>
-    public class KeywordExpression : Expression
+    public partial class KeywordExpression : Expression
     {
         #region Constructors and Destructors
 

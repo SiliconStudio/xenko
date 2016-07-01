@@ -18,8 +18,6 @@ using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Convertor;
 using SiliconStudio.Shaders.Writer.Hlsl;
 using ConstantBuffer = SiliconStudio.Shaders.Ast.Hlsl.ConstantBuffer;
-using LayoutQualifier = SiliconStudio.Shaders.Ast.LayoutQualifier;
-using ParameterQualifier = SiliconStudio.Shaders.Ast.Hlsl.ParameterQualifier;
 using StorageQualifier = SiliconStudio.Shaders.Ast.StorageQualifier;
 
 namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL

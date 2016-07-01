@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     /// <summary>
     /// A State type.
     /// </summary>
-    public class SamplerType : ObjectType
+    public partial class SamplerType : ObjectType
     {
         #region Constants and Fields
 

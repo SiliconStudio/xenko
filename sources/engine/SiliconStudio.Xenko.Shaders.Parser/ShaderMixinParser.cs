@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Shaders.Ast.Xenko;
 using SiliconStudio.Xenko.Shaders.Parser.Mixins;
 using SiliconStudio.Xenko.Shaders.Parser.Utility;
 using SiliconStudio.Shaders.Analysis.Hlsl;
@@ -141,7 +141,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                 // If we have a ShaderClassSource and it is not an inline one, then we can store the hash sources
                 if (ast != null && shaderClassSource != null)
                 {
-                    parsingResult.HashSources[shaderClassSource.ClassName] = ast.SourceHash;
+                    parsingResult.HashSources[shaderClassSource.ClassName] = moduleMixinInfo.SourceHash;
                 }
             }
 

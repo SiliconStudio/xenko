@@ -8,7 +8,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     /// <summary>
     /// A State type.
     /// </summary>
-    public class StreamTypeName : ObjectType
+    public partial class StreamTypeName : ObjectType
     {
         #region Constants and Fields
 

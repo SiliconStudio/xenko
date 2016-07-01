@@ -8,7 +8,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     /// <summary>
     /// A State type.
     /// </summary>
-    public class StateType : ObjectType
+    public partial class StateType : ObjectType
     {
         #region Constants and Fields
 

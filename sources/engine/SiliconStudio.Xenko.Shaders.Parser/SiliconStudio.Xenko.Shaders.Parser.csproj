@@ -35,34 +35,6 @@
     <Compile Include="Analysis\XenkoSemanticAnalysis.cs" />
     <Compile Include="Analysis\XenkoTypeAnalysis.cs" />
     <Compile Include="Analysis\StatementNodeCouple.cs" />
-    <Compile Include="Ast\ClassIdentifierGeneric.cs" />
-    <Compile Include="Ast\EnumType.cs" />
-    <Compile Include="Ast\ForEachStatement.cs" />
-    <Compile Include="Ast\IGenericStringArgument.cs" />
-    <Compile Include="Ast\ImportBlockStatement.cs" />
-    <Compile Include="Ast\LinkType.cs" />
-    <Compile Include="Ast\LiteralIdentifier.cs" />
-    <Compile Include="Ast\MixinStatement.cs" />
-    <Compile Include="Ast\MixinStatementType.cs" />
-    <Compile Include="Ast\NamespaceBlock.cs" />
-    <Compile Include="Ast\XenkoAttributes.cs" />
-    <Compile Include="Ast\XenkoConstantBufferType.cs" />
-    <Compile Include="Ast\XenkoStorageQualifier.cs" />
-    <Compile Include="Ast\XenkoTags.cs" />
-    <Compile Include="Ast\ParametersBlock.cs" />
-    <Compile Include="Ast\SemanticType.cs" />
-    <Compile Include="Ast\ShaderBlock.cs" />
-    <Compile Include="Ast\ShaderClassType.cs" />
-    <Compile Include="Ast\ShaderRootClassType.cs" />
-    <Compile Include="Ast\ShaderTypeName.cs" />
-    <Compile Include="Ast\MemberName.cs" />
-    <Compile Include="Ast\StreamsType.cs" />
-    <Compile Include="Ast\TypelIdentifier.cs" />
-    <Compile Include="Ast\UsingParametersStatement.cs" />
-    <Compile Include="Ast\UsingStatement.cs" />
-    <Compile Include="Ast\VarType.cs" />
-    <Compile Include="Grammar\XenkoGrammar.Ast.cs" />
-    <Compile Include="Grammar\XenkoGrammar.cs" />
     <Compile Include="Mixins\CompositionDictionary.cs" />
     <Compile Include="Mixins\ExpressionSimplifierVisitor.cs" />
     <Compile Include="Mixins\MethodDeclarationShaderCouple.cs" />
@@ -149,6 +121,9 @@
       <Name>SiliconStudio.Xenko</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />

@@ -10,7 +10,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     /// <summary>
     /// A composite identifier.
     /// </summary>
-    public abstract class CompositeIdentifier : Identifier
+    public abstract partial class CompositeIdentifier : Identifier
     {
         #region Constructors and Destructors
 

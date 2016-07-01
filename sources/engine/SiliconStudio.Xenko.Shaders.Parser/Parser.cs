@@ -6,10 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-using SiliconStudio.Xenko.Shaders.Parser.Ast;
-using SiliconStudio.Xenko.Shaders.Parser.Grammar;
+using SiliconStudio.Shaders.Ast.Xenko;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
+using SiliconStudio.Shaders.Grammar.Xenko;
 using SiliconStudio.Shaders.Parser;
 using SiliconStudio.Shaders.Visitor;
 

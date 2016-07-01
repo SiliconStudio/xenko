@@ -10,7 +10,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A group of cases and default attached to their statements.
     /// </summary>
-    public class SwitchCaseGroup : Node
+    public partial class SwitchCaseGroup : Node
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SwitchCaseGroup"/> class.

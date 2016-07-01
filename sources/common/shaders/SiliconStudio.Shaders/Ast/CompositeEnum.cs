@@ -13,9 +13,8 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A composite enum.
     /// </summary>
-    public class CompositeEnum : Node, IEnumerable<CompositeEnum>
+    public partial class CompositeEnum : Node, IEnumerable<CompositeEnum>
     {
-        [VisitorIgnore]
         private OrderedSet<CompositeEnum> values;
         
         #region Constructors and Destructors
@@ -76,7 +75,7 @@ namespace SiliconStudio.Shaders.Ast
         /// <value>
         ///   <c>true</c> if this instance is an enum flag; otherwise, <c>false</c>.
         /// </value>
-        public bool IsFlag { get; private set; }
+        public bool IsFlag { get; set; }
 
         /// <summary>
         /// Gets or sets the key.
@@ -93,6 +92,7 @@ namespace SiliconStudio.Shaders.Ast
         /// <value>
         ///   The values.
         /// </value>
+        [VisitorIgnore]
         public OrderedSet<CompositeEnum> Values
         {
             get
@@ -379,7 +379,7 @@ namespace SiliconStudio.Shaders.Ast
         /// <returns>
         /// A pre-computed dictionary with all allowed mapping name =&gt; enum
         /// </returns>
-        protected static StringEnumMap PrepareParsing<T>() where T : CompositeEnum
+        public static StringEnumMap PrepareParsing<T>() where T : CompositeEnum
         {
             var map = new StringEnumMap();
 
@@ -460,7 +460,7 @@ namespace SiliconStudio.Shaders.Ast
         /// <summary>
         /// Internal dictionary that provides conversion helper methods.
         /// </summary>
-        protected class StringEnumMap : Dictionary<object, CompositeEnum>
+        public class StringEnumMap : Dictionary<object, CompositeEnum>
         {
             #region Public Methods
 
@@ -472,7 +472,7 @@ namespace SiliconStudio.Shaders.Ast
             /// <returns>
             /// The converted enum or null otherwises
             /// </returns>
-            public T ParseEnumFromName<T>(object key) where T : CompositeEnum, new()
+            public T ParseEnumFromName<T>(string key) where T : CompositeEnum, new()
             {
                 CompositeEnum value;
                 if (!TryGetValue(key, out value))

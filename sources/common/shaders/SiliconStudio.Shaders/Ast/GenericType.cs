@@ -11,9 +11,13 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// Base class for all generic types.
     /// </summary>
-    public abstract class GenericType : TypeBase
+    public partial class GenericType : TypeBase
     {
         #region Constructors and Destructors
+
+        public GenericType() : this(null, 0)
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GenericType"/> class.
@@ -24,7 +28,7 @@ namespace SiliconStudio.Shaders.Ast
         /// <param name="parameterCount">
         /// The parameter count.
         /// </param>
-        protected GenericType(string name, int parameterCount)
+        public GenericType(string name, int parameterCount)
             : base(name)
         {
             ParameterTypes = new List<Type>();
@@ -190,176 +194,6 @@ namespace SiliconStudio.Shaders.Ast
         public static bool operator !=(GenericType left, GenericType right)
         {
             return !Equals(left, right);
-        }
-
-        #endregion
-    }
-
-    /// <summary>
-    /// Generic with one parameter.
-    /// </summary>
-    /// <typeparam name="T1">
-    /// The type of the parameter 1.
-    /// </typeparam>
-    public class GenericType<T1> : GenericType
-    {
-        #region Constants and Fields
-
-        private static readonly List<Type> ParameterTypeT1 = new List<Type> { typeof(T1) };
-
-        #endregion
-
-        #region Constructors and Destructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GenericType&lt;T1&gt;"/> class.
-        /// </summary>
-        /// <param name="name">
-        /// The name.
-        /// </param>
-        public GenericType(string name)
-            : this(name, 1)
-        {
-        }
-
-        /// <summary>
-        ///   Initializes a new instance of the <see cref = "GenericType&lt;T1&gt;" /> class.
-        /// </summary>
-        public GenericType()
-            : this(null, 1)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GenericType&lt;T1&gt;"/> class.
-        /// </summary>
-        /// <param name="name">
-        /// The name.
-        /// </param>
-        /// <param name="parameterCount">
-        /// The parameter count.
-        /// </param>
-        protected GenericType(string name, int parameterCount)
-            : base(name, parameterCount)
-        {
-            ParameterTypes = ParameterTypeT1;
-        }
-
-        #endregion
-    }
-
-    /// <summary>
-    /// Generic type with two parameters.
-    /// </summary>
-    /// <typeparam name="T1">
-    /// The type of the parameter 1.
-    /// </typeparam>
-    /// <typeparam name="T2">
-    /// The type of the parameter 2.
-    /// </typeparam>
-    public class GenericType<T1, T2> : GenericType<T1>
-    {
-        #region Constants and Fields
-
-        private static readonly List<Type> ParameterTypeT1T2 = new List<Type> { typeof(T1), typeof(T2) };
-
-        #endregion
-
-        #region Constructors and Destructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GenericType&lt;T1, T2&gt;"/> class.
-        /// </summary>
-        /// <param name="name">
-        /// The name.
-        /// </param>
-        public GenericType(string name)
-            : this(name, 2)
-        {
-        }
-
-        /// <summary>
-        ///   Initializes a new instance of the <see cref = "GenericType&lt;T1, T2&gt;" /> class.
-        /// </summary>
-        public GenericType()
-            : this(null, 2)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GenericType&lt;T1, T2&gt;"/> class.
-        /// </summary>
-        /// <param name="name">
-        /// The name.
-        /// </param>
-        /// <param name="parameterCount">
-        /// The parameter count.
-        /// </param>
-        protected GenericType(string name, int parameterCount)
-            : base(name, parameterCount)
-        {
-            ParameterTypes = ParameterTypeT1T2;
-        }
-
-        #endregion
-    }
-
-    /// <summary>
-    /// Generic type with three parameters.
-    /// </summary>
-    /// <typeparam name="T1">
-    /// The type of the parameter 1.
-    /// </typeparam>
-    /// <typeparam name="T2">
-    /// The type of the parameter 2.
-    /// </typeparam>
-    /// <typeparam name="T3">
-    /// The type of the parameter 3.
-    /// </typeparam>
-    public class GenericType<T1, T2, T3> : GenericType<T1, T2>
-    {
-        #region Constants and Fields
-
-        private static readonly List<Type> ParameterTypeT1T2T3 = new List<Type> { typeof(T1), typeof(T2), typeof(T3) };
-
-        #endregion
-
-        #region Constructors and Destructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GenericType&lt;T1, T2, T3&gt;"/> class.
-        /// </summary>
-        /// <param name="name">
-        /// The name.
-        /// </param>
-        public GenericType(string name)
-            : this(name, 3)
-        {
-            ParameterTypes = ParameterTypeT1T2T3;
-        }
-
-        /// <summary>
-        ///   Initializes a new instance of the <see cref = "GenericType&lt;T1, T2, T3&gt;" /> class.
-        /// </summary>
-        public GenericType()
-            : this(null, 3)
-        {
-            ParameterTypes = ParameterTypeT1T2T3;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GenericType&lt;T1, T2, T3&gt;"/> class.
-        /// </summary>
-        /// <param name="name">
-        /// The name.
-        /// </param>
-        /// <param name="parameterCount">
-        /// The parameter count.
-        /// </param>
-        protected GenericType(string name, int parameterCount)
-            : base(name, parameterCount)
-        {
-            ParameterTypes = ParameterTypeT1T2T3;
         }
 
         #endregion

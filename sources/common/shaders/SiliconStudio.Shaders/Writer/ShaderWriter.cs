@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using SiliconStudio.Shaders.Ast;
+using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Visitor;
 
 namespace SiliconStudio.Shaders.Writer
@@ -12,7 +13,7 @@ namespace SiliconStudio.Shaders.Writer
     /// <summary>
     /// A writer for a shader.
     /// </summary>
-    public class ShaderWriter : ShaderVisitor
+    public class ShaderWriter : ShaderWalker
     {
         private bool isInVariableGroup;
         private bool isVisitingVariableInlines;
@@ -141,15 +142,13 @@ namespace SiliconStudio.Shaders.Writer
         /// </summary>
         /// <param name="shader">The shader.</param>
         /// <returns></returns>
-        [Visit]
-        public virtual void Visit(Shader shader)
+        public override void Visit(Shader shader)
         {
-            Visit((Node)shader);
+            base.Visit(shader);
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(StructType structType)
+        public override void Visit(StructType structType)
         {
             WriteLinkLine(structType);
 
@@ -177,11 +176,10 @@ namespace SiliconStudio.Shaders.Writer
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(WhileStatement whileStatement)
+        public override void Visit(WhileStatement whileStatement)
         {
             WriteLinkLine(whileStatement);
-            Visit((Statement)whileStatement);
+            VisitStatement(whileStatement);
 
             if (whileStatement.IsDoWhile)
             {
@@ -205,8 +203,7 @@ namespace SiliconStudio.Shaders.Writer
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(ArrayInitializerExpression arrayInitializerExpression)
+        public override void Visit(ArrayInitializerExpression arrayInitializerExpression)
         {
             Write("{").WriteSpace();
             for (int i = 0; i < arrayInitializerExpression.Items.Count; i++)
@@ -221,8 +218,7 @@ namespace SiliconStudio.Shaders.Writer
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(BlockStatement blockStatement)
+        public override void Visit(BlockStatement blockStatement)
         {
             OpenBrace();
             foreach (var statement in blockStatement.Statements)
@@ -234,8 +230,7 @@ namespace SiliconStudio.Shaders.Writer
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(AssignmentExpression assignmentExpression)
+        public override void Visit(AssignmentExpression assignmentExpression)
         {
             VisitDynamic(assignmentExpression.Target);
             WriteSpace().Write(assignmentExpression.Operator.ConvertToString()).WriteSpace();
@@ -243,8 +238,7 @@ namespace SiliconStudio.Shaders.Writer
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(BinaryExpression binaryExpression)
+        public override void Visit(BinaryExpression binaryExpression)
         {
             VisitDynamic(binaryExpression.Left);
             WriteSpace().Write(binaryExpression.Operator.ConvertToString()).WriteSpace();
@@ -252,8 +246,7 @@ namespace SiliconStudio.Shaders.Writer
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(CaseStatement statement)
+        public override void Visit(CaseStatement statement)
         {
             WriteLinkLine(statement);
             if (statement.Case == null) WriteLine("default:");
@@ -266,16 +259,14 @@ namespace SiliconStudio.Shaders.Writer
         }
 
         /// <inheritdoc/>
-        [Visit]
-        public virtual void Visit(ArrayType arrayType)
+        public override void Visit(ArrayType arrayType)
         {
             VisitDynamic(arrayType.Type);
             WriteRankSpecifiers(arrayType.Dimensions);
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(ExpressionStatement expressionStatement)
+        public override void Visit(ExpressionStatement expressionStatement)
         {
             WriteLinkLine(expressionStatement);
             VisitDynamic(expressionStatement.Expression);
@@ -283,12 +274,11 @@ namespace SiliconStudio.Shaders.Writer
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(ForStatement forStatement)
+        public override void Visit(ForStatement forStatement)
         {
             WriteLine();
             WriteLinkLine(forStatement);
-            Visit((Statement)forStatement);
+            VisitStatement(forStatement);
             Write("for").WriteSpace().Write("(");
             EnableNewLine = false;
             VisitDynamic(forStatement.Start);
@@ -303,33 +293,29 @@ namespace SiliconStudio.Shaders.Writer
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(Identifier identifier)
+        public override void Visit(Identifier identifier)
         {
             Write(identifier);
         }
 
         /// <inheritdoc/>
-        [Visit]
-        public virtual void Visit(Statement statement)
+        public void VisitStatement(Statement statement)
         {
             Write(statement.Attributes, true);
         }
 
         /// <inheritdoc/>
-        [Visit]
-        public virtual void Visit(StatementList statementList)
+        public override void Visit(StatementList statementList)
         {
             foreach (var statement in statementList)
                 VisitDynamic(statement);
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(IfStatement ifStatement)
+        public override void Visit(IfStatement ifStatement)
         {
             WriteLinkLine(ifStatement);
-            Visit((Statement)ifStatement);
+            VisitStatement(ifStatement);
 
             Write("if").WriteSpace().Write("(");
             VisitDynamic(ifStatement.Condition);
@@ -350,8 +336,7 @@ namespace SiliconStudio.Shaders.Writer
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(IndexerExpression indexerExpression)
+        public override void Visit(IndexerExpression indexerExpression)
         {
             VisitDynamic(indexerExpression.Target);
             Write("[");
@@ -360,8 +345,7 @@ namespace SiliconStudio.Shaders.Writer
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(MemberReferenceExpression memberReferenceExpression)
+        public override void Visit(MemberReferenceExpression memberReferenceExpression)
         {
             VisitDynamic(memberReferenceExpression.Target);
             Write(".");
@@ -369,8 +353,7 @@ namespace SiliconStudio.Shaders.Writer
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(MethodInvocationExpression methodInvocationExpression)
+        public override void Visit(MethodInvocationExpression methodInvocationExpression)
         {
             VisitDynamic(methodInvocationExpression.Target);
             Write("(");
@@ -386,15 +369,13 @@ namespace SiliconStudio.Shaders.Writer
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(Parameter parameter)
+        public override void Visit(Parameter parameter)
         {
             WriteVariable(parameter);
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(ParenthesizedExpression parenthesizedExpression)
+        public override void Visit(ParenthesizedExpression parenthesizedExpression)
         {
             Write("(");
             VisitDynamic(parenthesizedExpression.Content);
@@ -402,8 +383,7 @@ namespace SiliconStudio.Shaders.Writer
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(ExpressionList expressionList)
+        public override void Visit(ExpressionList expressionList)
         {
             for (int i = 0; i < expressionList.Count; i++)
             {
@@ -414,8 +394,7 @@ namespace SiliconStudio.Shaders.Writer
         }
         
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(ReturnStatement returnStatement)
+        public override void Visit(ReturnStatement returnStatement)
         {
             WriteLinkLine(returnStatement);
             Write("return");
@@ -429,8 +408,7 @@ namespace SiliconStudio.Shaders.Writer
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(ConditionalExpression conditionalExpression)
+        public override void Visit(ConditionalExpression conditionalExpression)
         {
             VisitDynamic(conditionalExpression.Condition);
             WriteSpace().Write("?").WriteSpace();
@@ -440,8 +418,7 @@ namespace SiliconStudio.Shaders.Writer
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(UnaryExpression unaryExpression)
+        public override void Visit(UnaryExpression unaryExpression)
         {
             if (unaryExpression.Operator.IsPostFix())
             {
@@ -456,8 +433,7 @@ namespace SiliconStudio.Shaders.Writer
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(SwitchStatement switchStatement)
+        public override void Visit(SwitchStatement switchStatement)
         {
             WriteLinkLine(switchStatement);
             Write("switch").WriteSpace().Write("(");
@@ -466,40 +442,36 @@ namespace SiliconStudio.Shaders.Writer
             WriteLine();
             OpenBrace();
 
-            VisitDynamicList(switchStatement.Groups);
+            VisitList(switchStatement.Groups);
 
             CloseBrace();
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(SwitchCaseGroup switchCaseGroup)
+        public override void Visit(SwitchCaseGroup switchCaseGroup)
         {
-            VisitDynamicList(switchCaseGroup.Cases);
+            VisitList(switchCaseGroup.Cases);
             Indent();
             VisitDynamic(switchCaseGroup.Statements);
             Outdent();
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(DeclarationStatement declarationStatement)
+        public override void Visit(DeclarationStatement declarationStatement)
         {
             WriteLinkLine(declarationStatement);
             VisitDynamic(declarationStatement.Content);
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(MethodDeclaration methodDeclaration)
+        public override void Visit(MethodDeclaration methodDeclaration)
         {
             WriteLinkLine(methodDeclaration);
             WriteMethodDeclaration(methodDeclaration).WriteLine(";");
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(MethodDefinition methodDefinition)
+        public override void Visit(MethodDefinition methodDefinition)
         {
             WriteLinkLine(methodDefinition);
             WriteMethodDeclaration(methodDefinition);
@@ -511,38 +483,33 @@ namespace SiliconStudio.Shaders.Writer
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(Variable variable)
+        public override void Visit(Variable variable)
         {
             WriteLinkLine(variable);
             WriteVariable(variable);
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(ObjectType typeBase)
+        public override void Visit(ObjectType typeBase)
         {
             Write(typeBase.Name);
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(TypeName typeBase)
+        public override void Visit(TypeName typeBase)
         {
             Write(typeBase.Name);
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(ScalarType scalarType)
+        public override void Visit(ScalarType scalarType)
         {
             Write(scalarType.Qualifiers, true);
             Write(scalarType.Name);
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(GenericType genericType)
+        public override void Visit(GenericType genericType)
         {
             Write(genericType.Name).Write("<");
             for (int i = 0; i < genericType.Parameters.Count; i++)
@@ -557,8 +524,7 @@ namespace SiliconStudio.Shaders.Writer
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(Literal literal)
+        public override void Visit(Literal literal)
         {
             if (literal == null)
             {
@@ -581,26 +547,16 @@ namespace SiliconStudio.Shaders.Writer
             }
         }
 
-        /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(Qualifier qualifier)
+        /// <inheritdoc/>
+        public override void Visit(Qualifier qualifier)
         {
-            // Each qualifier should have a custom visit instead of using this default one.
             Write(qualifier.Key.ToString());
         }
 
-        /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(ParameterQualifier parameterQualifier)
+        /// <inheritdoc/>
+        public override void Visit(Ast.Glsl.LayoutQualifier layoutQualifier)
         {
-            Write(parameterQualifier.Key.ToString());
-        }
-
-        /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(StorageQualifier storageQualifier)
-        {
-            Write(storageQualifier.Key.ToString());
+            Write(layoutQualifier.Key.ToString());
         }
 
         /// <summary>

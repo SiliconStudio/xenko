@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Threading;
-
+using SiliconStudio.Shaders.Visitor;
 using SourceSpan = SiliconStudio.Shaders.Ast.SourceSpan;
 
 namespace SiliconStudio.Shaders.Ast
@@ -17,7 +17,6 @@ namespace SiliconStudio.Shaders.Ast
         /// <summary>
         /// list of childrens for ast navigation.
         /// </summary>
-        [VisitorIgnore]
         private List<Node> childrenList = null;
         private Dictionary<object, object> tags;
 
@@ -60,6 +59,7 @@ namespace SiliconStudio.Shaders.Ast
         /// <summary>
         /// Gets the childrens.
         /// </summary>
+        [VisitorIgnore]
         protected List<Node> ChildrenList
         {
             get
@@ -134,5 +134,9 @@ namespace SiliconStudio.Shaders.Ast
         {
             return GetType().Name;
         }
+
+        public abstract void Accept(ShaderVisitor visitor);
+
+        public abstract TResult Accept<TResult>(ShaderVisitor<TResult> visitor);
     }
 }
