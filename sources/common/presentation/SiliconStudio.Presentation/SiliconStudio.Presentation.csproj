@@ -161,7 +161,6 @@
     <Compile Include="ValueConverters\ConverterHelper.cs" />
     <Compile Include="ValueConverters\EmptyStringToBool.cs" />
     <Compile Include="ValueConverters\SumMultiConverter.cs" />
-    <Compile Include="ValueConverters\LightenDarken.cs" />
     <Compile Include="ValueConverters\ThicknessMultiConverter.cs" />
     <Compile Include="ValueConverters\VectorEditingModeToBoolean.cs" />
     <Compile Include="ViewModel\CollectionChangeOperation.cs" />
