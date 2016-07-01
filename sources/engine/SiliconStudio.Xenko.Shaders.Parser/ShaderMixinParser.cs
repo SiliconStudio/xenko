@@ -3,12 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Xenko.Shaders.Parser.Ast;
 using SiliconStudio.Xenko.Shaders.Parser.Mixins;
-using SiliconStudio.Xenko.Shaders.Parser.Performance;
 using SiliconStudio.Xenko.Shaders.Parser.Utility;
 using SiliconStudio.Shaders.Analysis.Hlsl;
 using SiliconStudio.Shaders.Ast;

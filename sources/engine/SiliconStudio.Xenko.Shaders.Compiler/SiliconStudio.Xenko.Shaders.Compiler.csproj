@@ -11,16 +11,15 @@
     <OutputType>Library</OutputType>
     <RootNamespace>SiliconStudio.Xenko.Shaders.Compiler</RootNamespace>
     <AssemblyName>SiliconStudio.Xenko.Shaders.Compiler</AssemblyName>
-    <XenkoBuildTags>Windows</XenkoBuildTags>
+    <XenkoBuildTags>*</XenkoBuildTags>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer</SiliconStudioAssemblyProcessorOptions>
-    <SiliconStudioCompilerTargetsEnable Condition=" '$(XenkoEffectCompiler)' != 'true' ">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
   <PropertyGroup Condition="'$(DisableRegistryUse)' != 'true' And '$(SiliconStudioPlatform)' == 'Windows'">
     <WindowsSdkDir_81 Condition="'$(WindowsSdkDir_81)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\Windows\v8.1@InstallationFolder)</WindowsSdkDir_81>
     <WindowsSdkDir_81 Condition="'$(WindowsSdkDir_81)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Microsoft SDKs\Windows\v8.1@InstallationFolder)</WindowsSdkDir_81>
   </PropertyGroup>
-  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
+  <ItemGroup Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' Or '$(XenkoGraphicsApi)' == 'Direct3D12' ">
     <Reference Include="SharpDX">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>

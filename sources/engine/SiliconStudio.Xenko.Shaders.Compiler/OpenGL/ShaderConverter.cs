@@ -31,7 +31,6 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             this.shaderPlatform = shaderPlatform;
             this.shaderVersion = shaderVersion;
 
-            Log = Console.Out;
             IsVerboseLog = true;
             Macros = new List<ShaderMacro>();
         }
@@ -60,14 +59,6 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
         /// The macros.
         /// </value>
         public List<ShaderMacro> Macros { get; set; }
-
-        /// <summary>
-        /// Gets or sets the log used by this instance.
-        /// </summary>
-        /// <value>
-        /// The log used by this instance.
-        /// </value>
-        public TextWriter Log { get; set; }
 
         /// <summary>
         /// Converts the specified hlsl source code to glsl.

@@ -12,7 +12,7 @@ namespace SiliconStudio.Shaders.Grammar
     public class ShaderLanguageData : LanguageData
     {
         private Dictionary<string, Terminal> keywordToTerminal = new Dictionary<string, Terminal>();
-#if !SILICONSTUDIO_RUNTIME_CORECLR
+#if !SILICONSTUDIO_RUNTIME_CORECLR && !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
         private Dictionary<string, Terminal> caseInsensitiveKeywordToTerminal = new Dictionary<string, Terminal>(StringComparer.InvariantCultureIgnoreCase);
 #else
         private Dictionary<string, Terminal> caseInsensitiveKeywordToTerminal = new Dictionary<string, Terminal>(CultureInfo.InvariantCulture.CompareInfo.GetStringComparer(CompareOptions.IgnoreCase));
