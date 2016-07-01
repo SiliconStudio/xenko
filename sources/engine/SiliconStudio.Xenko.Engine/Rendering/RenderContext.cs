@@ -90,8 +90,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         internal void OnRendererInitialized(IGraphicsRendererCore obj)
         {
-            Action<IGraphicsRendererCore> handler = RendererInitialized;
-            if (handler != null) handler(obj);
+            RendererInitialized?.Invoke(obj);
         }
     }
 }

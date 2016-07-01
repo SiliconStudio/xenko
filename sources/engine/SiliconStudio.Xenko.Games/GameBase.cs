@@ -856,11 +856,7 @@ namespace SiliconStudio.Xenko.Games
         /// <param name="args">Arguments for the Activated event.</param>
         protected virtual void OnActivated(object sender, EventArgs args)
         {
-            var handler = Activated;
-            if (handler != null)
-            {
-                handler(this, args);
-            }
+            Activated?.Invoke(this, args);
         }
 
         /// <summary>
@@ -870,11 +866,7 @@ namespace SiliconStudio.Xenko.Games
         /// <param name="args">Arguments for the Deactivated event.</param>
         protected virtual void OnDeactivated(object sender, EventArgs args)
         {
-            var handler = Deactivated;
-            if (handler != null)
-            {
-                handler(this, args);
-            }
+            Deactivated?.Invoke(this, args);
         }
 
         /// <summary>
@@ -884,20 +876,12 @@ namespace SiliconStudio.Xenko.Games
         /// <param name="args">Arguments for the Exiting event.</param>
         protected virtual void OnExiting(object sender, EventArgs args)
         {
-            var handler = Exiting;
-            if (handler != null)
-            {
-                handler(this, args);
-            }
+            Exiting?.Invoke(this, args);
         }
 
         protected virtual void OnWindowCreated()
         {
-            EventHandler<EventArgs> handler = WindowCreated;
-            if (handler != null)
-            {
-                handler(this, EventArgs.Empty);
-            }
+            WindowCreated?.Invoke(this, EventArgs.Empty);
         }
 
         private void GamePlatformOnWindowCreated(object sender, EventArgs eventArgs)

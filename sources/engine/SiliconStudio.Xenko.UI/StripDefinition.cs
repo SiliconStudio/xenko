@@ -61,8 +61,7 @@ namespace SiliconStudio.Xenko.UI
 
                 maximumSize = value;
 
-                if (DefinitionChanged != null)
-                    DefinitionChanged(this, EventArgs.Empty);
+                DefinitionChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -84,8 +83,7 @@ namespace SiliconStudio.Xenko.UI
 
                 minimumSize = value;
 
-                if (DefinitionChanged != null)
-                    DefinitionChanged(this, EventArgs.Empty);
+                DefinitionChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -102,9 +100,7 @@ namespace SiliconStudio.Xenko.UI
 
                 type = value;
 
-                var handler = DefinitionChanged;
-                if (handler != null)
-                    handler(this, EventArgs.Empty);
+                DefinitionChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -123,9 +119,7 @@ namespace SiliconStudio.Xenko.UI
 
                 sizeValue = value;
 
-                var handler = DefinitionChanged;
-                if (handler!= null)
-                    handler(this, EventArgs.Empty);
+                DefinitionChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 

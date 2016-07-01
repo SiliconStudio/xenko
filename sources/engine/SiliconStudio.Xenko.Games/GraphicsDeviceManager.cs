@@ -879,47 +879,27 @@ namespace SiliconStudio.Xenko.Games
 
         protected virtual void OnDeviceCreated(object sender, EventArgs args)
         {
-            var handler = DeviceCreated;
-            if (handler != null)
-            {
-                handler(sender, args);
-            }
+            DeviceCreated?.Invoke(sender, args);
         }
 
         protected virtual void OnDeviceDisposing(object sender, EventArgs args)
         {
-            var handler = DeviceDisposing;
-            if (handler != null)
-            {
-                handler(sender, args);
-            }
+            DeviceDisposing?.Invoke(sender, args);
         }
         
         protected virtual void OnDeviceReset(object sender, EventArgs args)
         {
-            var handler = DeviceReset;
-            if (handler != null)
-            {
-                handler(sender, args);
-            }
+            DeviceReset?.Invoke(sender, args);
         }
         
         protected virtual void OnDeviceResetting(object sender, EventArgs args)
         {
-            var handler = DeviceResetting;
-            if (handler != null)
-            {
-                handler(sender, args);
-            }
+            DeviceResetting?.Invoke(sender, args);
         }
         
         protected virtual void OnPreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs args)
         {
-            var handler = PreparingDeviceSettings;
-            if (handler != null)
-            {
-                handler(sender, args);
-            }
+            PreparingDeviceSettings?.Invoke(sender, args);
         }
 
         private void Window_ClientSizeChanged(object sender, EventArgs e)
