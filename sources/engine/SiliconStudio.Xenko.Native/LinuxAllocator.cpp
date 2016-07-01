@@ -4,7 +4,7 @@
 // Provide implementation for new/delete operator for C++ code but only for our Linux
 // implementation as other implementations seems to be able to get it otherwise
 
-#if SILICONSTUDIO_PLATFORM_LINUX
+#if PLATFORM_LINUX
 
 #include "../../../deps/NativePath/NativeMemory.h"
 
