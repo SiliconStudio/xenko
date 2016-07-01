@@ -35,6 +35,17 @@
 	  </When>
   </Choose>
 
+  <!-- On Vulkan embed the SPIR-V shader compiler -->
+  <Target Name="EmbedShaderCompiler" BeforeTargets="SiliconStudioUpdateGraphicsPlatform" Condition="'$(SiliconStudioXenkoGraphicsApi)' == 'Vulkan'">
+    <ItemGroup>
+      <Content Condition="'$(SiliconStudioUnitTest)' != 'true'" Include="$(SiliconStudioPackageXenkoPlatformBin)\glslangValidator">
+        <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Visible>False</Visible>
+      </Content>
+    </ItemGroup>
+  </Target>  
+  
   <UsingTask TaskName="PackageDeployTask" AssemblyFile="$(SiliconStudioPackageXenko)\bin\Windows-Direct3D11\SiliconStudio.Xenko.Assets.dll"/>
 
   <Target Name="DeployOnLinux" AfterTargets="SiliconStudioCompileAsset" Condition="('$(SiliconStudioIsExecutable)' == 'true') AND ('$(SiliconStudioUnitTest)' != 'true') AND ('$(SiliconStudioDeploy)' == 'true')">
