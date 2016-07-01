@@ -39,9 +39,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             Matrix viewInverse;
             Matrix.Invert(ref renderView.View, out viewInverse);
 
-            BlendStateDescription? previousBlendState = null;
-            DepthStencilStateDescription? previousDepthStencilState = null;
-            EffectInstance previousEffect = null;
+            uint previousBatchState = uint.MaxValue;
 
             //TODO string comparison ...?
             var isPicking = renderViewStage.RenderStage.Name == "Picking";
@@ -56,7 +54,6 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
 
                 var spriteComp = renderSprite.SpriteComponent;
                 var transfoComp = renderSprite.TransformComponent;
-                var depthStencilState = renderSprite.SpriteComponent.IgnoreDepth ? DepthStencilStates.None : DepthStencilStates.Default;
 
                 var sprite = spriteComp.CurrentSprite;
                 if (sprite == null)
@@ -71,11 +68,17 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                 Vector4.Transform(ref worldPosition, ref renderView.ViewProjection, out projectedPosition);
                 var projectedZ = projectedPosition.Z / projectedPosition.W;
 
-                // Update the sprite batch
-                var blendState = isPicking ? BlendStates.Default : sprite.IsTransparent ? (spriteComp.PremultipliedAlpha ? BlendStates.AlphaBlend : BlendStates.NonPremultiplied) : BlendStates.Opaque;
-                var currentEffect = isPicking ? GetOrCreatePickingSpriteEffect() : null; // TODO remove this code when material are available
-                if (previousEffect != currentEffect || blendState != previousBlendState || depthStencilState != previousDepthStencilState)
+                // Check if the current blend state has changed in any way, if not
+                // Note! It doesn't really matter in what order we build the bitmask, the result is not preserved anywhere except in this method
+                var currentBatchState = isPicking ? 0U : sprite.IsTransparent ? (spriteComp.PremultipliedAlpha ? 1U : 2U) : 3U;
+                currentBatchState = (currentBatchState << 1) + (renderSprite.SpriteComponent.IgnoreDepth ? 1U : 0U);
+
+                if (previousBatchState != currentBatchState)
                 {
+                    var blendState = isPicking ? BlendStates.Default : sprite.IsTransparent ? (spriteComp.PremultipliedAlpha ? BlendStates.AlphaBlend : BlendStates.NonPremultiplied) : BlendStates.Opaque;
+                    var currentEffect = isPicking ? GetOrCreatePickingSpriteEffect() : null; // TODO remove this code when material are available
+                    var depthStencilState = renderSprite.SpriteComponent.IgnoreDepth ? DepthStencilStates.None : DepthStencilStates.Default;
+
                     if (hasBegin)
                     {
                         sprite3DBatch.End();
@@ -83,9 +86,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                     sprite3DBatch.Begin(context.GraphicsContext, renderView.ViewProjection, SpriteSortMode.Deferred, blendState, null, depthStencilState, RasterizerStates.CullNone, currentEffect);
                     hasBegin = true;
                 }
-                previousEffect = currentEffect;
-                previousBlendState = blendState;
-                previousDepthStencilState = depthStencilState;
+                previousBatchState = currentBatchState;
 
                 var sourceRegion = sprite.Region;
                 var texture = sprite.Texture;
