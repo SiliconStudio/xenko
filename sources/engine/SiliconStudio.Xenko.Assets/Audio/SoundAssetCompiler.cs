@@ -4,7 +4,6 @@
 using System;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
@@ -74,7 +73,9 @@ namespace SiliconStudio.Xenko.Assets.Audio
                 var assetDirectory = AssetParameters.Source.GetParent();
                 var assetSource = UPath.Combine(assetDirectory, AssetParameters.Source);
 
-                var binDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                var installationDir = DirectoryHelper.GetPackageDirectory("Xenko");
+                var binDir = UPath.Combine(installationDir, new UDirectory("Bin"));
+                binDir = UPath.Combine(binDir, new UDirectory("Windows-Direct3D11"));
                 var ffmpeg = UPath.Combine(binDir, new UFile("ffmpeg.exe"));
                 if (!File.Exists(ffmpeg))
                 {
