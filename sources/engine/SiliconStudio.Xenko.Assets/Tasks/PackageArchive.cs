@@ -46,6 +46,8 @@ namespace SiliconStudio.Xenko.Assets.Tasks
                     NewFile(@"Bin\**\*.xml", "Bin", @"Bin\**\.*\**\*.xml"),
                     NewFile(@"Bin\**\*.usrdoc", "Bin", @"Bin\**\.*\**\*.usrdoc"),
                     NewFile(@"Bin\**\*.winmd", "Bin", @"Bin\**\.*\**\*.winmd"),
+                    NewFile(@"Bin\**\*.sh", "Bin", @"Bin\**\.*\**\*.sh"),
+                    NewFile(@"Bin\**\*.json", "Bin", @"Bin\**\.*\**\*.json"),
                     NewFile(@"deps\AssemblyProcessor\*.exe", @"deps/AssemblyProcessor"),
                     NewFile(@"deps\AssemblyProcessor\*.dll", @"deps/AssemblyProcessor"),
                     NewFile(@"deps\CoreFX\**\*.*", @"deps\CoreFX"),
