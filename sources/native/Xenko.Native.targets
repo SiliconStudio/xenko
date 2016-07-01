@@ -74,7 +74,7 @@
   </Target>
   
   <!-- The following condition $(SiliconStudioPackageBuild) should be removed but for now it prevents teamcity package build -->
-  <Target Name="CompileNativeClang_Windows_Clean" Condition="'$(SiliconStudioPlatform)' == 'Windows' and '$(SiliconStudioPackageBuild)' != 'true' and '$(XenkoGraphicsApi)' != 'OpenGL'" BeforeTargets="Clean">
+  <Target Name="CompileNativeClang_Windows_Clean" Condition="'$(SiliconStudioPlatform)' == 'Windows' and '$(SiliconStudioPackageBuild)' != 'true'" BeforeTargets="Clean">
     <Delete Files="$(SiliconStudioXenkoSdkBinDir)\x64\$(XenkoNativeOutputName).*" />
     <Delete Files="$(SiliconStudioXenkoSdkBinDir)\x86\$(XenkoNativeOutputName).*" />
   </Target>
