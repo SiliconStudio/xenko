@@ -24,10 +24,13 @@ It can convert HLSL code to various GLSL dialect, including Core, ES 2.0, ES 3.0
 | Integer reinterpret intrinsics | :heavy_multiplication_x: asuint, asint |
 | Flow statements         | :heavy_check_mark: except: errorf, printf, abort |
 | Texture objects         | :heavy_check_mark: |
+| Buffer objects          | :heavy_check_mark: |
 | Class/struct methods    | :heavy_multiplication_x: |
 | Preprocessor            | :heavy_check_mark: |
 | Remap VS projected coordinates | :heavy_check_mark: |
 | Multiple Render Targets | :heavy_check_mark: |
+| Constant Buffers        | :heavy_check_mark: |
+| RW and Structured Buffers | :heavy_multiplication_x: |
 
 ### Texture / samplers
 
