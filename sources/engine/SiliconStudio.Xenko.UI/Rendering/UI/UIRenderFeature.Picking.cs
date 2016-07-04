@@ -3,15 +3,12 @@
 
 using System;
 using System.Collections.Generic;
-using SiliconStudio.Core;
-using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.UI;
-using SiliconStudio.Xenko.UI.Renderers;
 
 namespace SiliconStudio.Xenko.Rendering.UI
 {
@@ -24,7 +21,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
         partial void PickingUpdate(RenderUIElement renderUIElement, Viewport viewport, GameTime drawTime)
         {
-            if (renderUIElement.UIComponent.RootElement == null)
+            if (renderUIElement.UIComponent.Page?.RootElement == null)
                 return;
 
              UpdateMouseOver(viewport, renderUIElement);
@@ -145,7 +142,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
         private void UpdateTouchEvents(Viewport viewport, RenderUIElement state, GameTime gameTime)
         {
-            var rootElement = state.UIComponent.RootElement;
+            var rootElement = state.UIComponent.Page.RootElement;
             var intersectionPoint = Vector3.Zero;
             var lastTouchPosition = new Vector2(float.NegativeInfinity);
 
@@ -248,7 +245,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
             var intersectionPoint = Vector3.Zero;
             var mousePosition = input.MousePosition;
-            var rootElement = state.UIComponent.RootElement;
+            var rootElement = state.UIComponent.Page.RootElement;
             var lastMouseOverElement = state.LastMouseOverElement;
             var mouseOverElement = lastMouseOverElement;
 

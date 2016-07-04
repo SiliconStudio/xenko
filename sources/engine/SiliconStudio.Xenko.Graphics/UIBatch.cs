@@ -326,9 +326,7 @@ namespace SiliconStudio.Xenko.Graphics
         public void DrawImage(Texture texture, ref Matrix worldMatrix, ref RectangleF sourceRectangle, ref Vector3 elementSize, ref Vector4 borderSize, 
             ref Color color, int depthBias, ImageOrientation imageOrientation = ImageOrientation.AsIs, SwizzleMode swizzle = SwizzleMode.None, bool snapImage = false)
         {
-            // Check that texture is not null
-            if (texture == null)
-                throw new ArgumentNullException("texture");
+            if (texture == null) throw new ArgumentNullException(nameof(texture));
 
             // Skip items with null size
             if (elementSize.Length() < MathUtil.ZeroTolerance)
@@ -397,9 +395,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal void DrawCharacter(Texture texture, ref Matrix worldViewProjectionMatrix, ref RectangleF sourceRectangle, ref Color color, int depthBias, SwizzleMode swizzle)
         {
-            // Check that texture is not null
-            if (texture == null)
-                throw new ArgumentNullException("texture");
+            if (texture == null) throw new ArgumentNullException(nameof(texture));
 
             // Calculate the information needed to draw.
             var drawInfo = new UIImageDrawInfo
@@ -428,11 +424,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal void DrawString(SpriteFont font, string text, ref SpriteFont.InternalUIDrawCommand drawCommand)
         {
-            if (font == null)
-                throw new ArgumentNullException("font");
-
-            if (text == null)
-                throw new ArgumentNullException("text");
+            if (font == null) throw new ArgumentNullException(nameof(font));
+            if (text == null) throw new ArgumentNullException(nameof(text));
 
             var proxy = new SpriteFont.StringProxy(text);
 
@@ -509,16 +502,16 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        private unsafe void CalculateCubeVertices(UIImageDrawInfo* drawInfo, VertexPositionColorTextureSwizzle* vertex)
+        private static unsafe void CalculateCubeVertices(UIImageDrawInfo* drawInfo, VertexPositionColorTextureSwizzle* vertex)
         {
             var currentPosition = drawInfo->LeftTopCornerWorld;
             
             // set the two first line of vertices
             for (var l = 0; l < 2; ++l)
             {
-                for (int r = 0; r < 2; r++)
+                for (var r = 0; r < 2; r++)
                 {
-                    for (int c = 0; c < 2; c++)
+                    for (var c = 0; c < 2; c++)
                     {
                         vertex->Color = drawInfo->Color;
                         vertex->Swizzle = (int)drawInfo->Swizzle;
@@ -573,12 +566,12 @@ namespace SiliconStudio.Xenko.Graphics
             Vector4.Multiply(ref drawInfo->UnitYWorld, drawInfo->VertexShift.W, out shiftVectorY[2]);
             shiftVectorY[3] = drawInfo->UnitYWorld;
 
-            for (int r = 0; r < 4; r++)
+            for (var r = 0; r < 4; r++)
             {
                 Vector4 currentRowPosition;
                 Vector4.Add(ref drawInfo->LeftTopCornerWorld, ref shiftVectorY[r], out currentRowPosition);
 
-                for (int c = 0; c < 4; c++)
+                for (var c = 0; c < 4; c++)
                 {
                     Vector4 currentPosition;
                     Vector4.Add(ref currentRowPosition, ref shiftVectorX[c], out currentPosition);
@@ -623,9 +616,9 @@ namespace SiliconStudio.Xenko.Graphics
             var textureCoordY = new Vector2(drawInfo->Source.Top, drawInfo->Source.Bottom);
 
             // set the two first line of vertices
-            for (int r = 0; r < 2; r++)
+            for (var r = 0; r < 2; r++)
             {
-                for (int c = 0; c < 2; c++)
+                for (var c = 0; c < 2; c++)
                 {
                     vertex->Color = drawInfo->Color;
                     vertex->Swizzle = (int)drawInfo->Swizzle;

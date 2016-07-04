@@ -235,6 +235,7 @@
     <Compile Include="Analysis\GamePackageSessionAnalysis.cs" />
     <Compile Include="Entities\SceneAsset.Upgraders.cs" />
     <Compile Include="Entities\SceneAssetFactories.cs" />
+    <Compile Include="Entities\UIElementHierarchyData.cs" />
     <Compile Include="GameSettingsAsset.cs" />
     <Compile Include="Entities\SceneAsset.cs" />
     <Compile Include="GameSettingsAssetCompiler.cs" />
