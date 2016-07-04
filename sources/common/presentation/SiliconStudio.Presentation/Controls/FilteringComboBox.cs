@@ -103,6 +103,13 @@ namespace SiliconStudio.Presentation.Controls
         public static readonly DependencyProperty ValidatedItemProperty = DependencyProperty.Register("ValidatedItem", typeof(object), typeof(FilteringComboBox));
 
         /// <summary>
+        /// Identifies the <see cref="ValidateOnLostFocus"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ValidateOnLostFocusProperty =
+            DependencyProperty.Register(nameof(ValidateOnLostFocus), typeof(bool), typeof(FilteringComboBox), new PropertyMetadata(true));
+
+
+        /// <summary>
         /// Raised just before the TextBox changes are validated. This event is cancellable
         /// </summary>
         public static readonly RoutedEvent ValidatingEvent = EventManager.RegisterRoutedEvent("Validating", RoutingStrategy.Bubble, typeof(CancelRoutedEventHandler), typeof(FilteringComboBox));
@@ -169,6 +176,11 @@ namespace SiliconStudio.Presentation.Controls
         public object ValidatedValue { get { return GetValue(ValidatedValueProperty); } set { SetValue(ValidatedValueProperty, value); } }
 
         public object ValidatedItem { get { return GetValue(ValidatedItemProperty); } set { SetValue(ValidatedItemProperty, value); } }
+
+        /// <summary>
+        /// Gets or sets whether the validation should happen when the control losts focus.
+        /// </summary>
+        public bool ValidateOnLostFocus { get { return (bool)GetValue(ValidateOnLostFocusProperty); } set { SetValue(ValidateOnLostFocusProperty, value); } }
 
         /// <summary>
         /// Raised just before the TextBox changes are validated. This event is cancellable
@@ -345,7 +357,10 @@ namespace SiliconStudio.Presentation.Controls
                 SelectedItem = null;
                 updatingSelection = false;
             }
-            editableTextBox.Validate();
+            if (ValidateOnLostFocus)
+            {
+                editableTextBox.Validate();
+            }
             // Make sure the drop down is closed
             IsDropDownOpen = false;
             clearing = false;

@@ -8,6 +8,7 @@
 #include "../../../../deps/NativePath/NativeThreading.h"
 #include "../../../../deps/NativePath/NativeMath.h"
 #include "../../../../deps/NativePath/TINYSTL/vector.h"
+#include "../../../../deps/NativePath/TINYSTL/unordered_set.h"
 #include "../../../../deps/OpenSLES/OpenSLES.h"
 #include "../../../../deps/OpenSLES/OpenSLES_Android.h"
 
@@ -74,11 +75,16 @@ extern "C" {
 			return true;
 		}
 
+		struct xnAudioSource;
+
 		struct xnAudioDevice
 		{
 			SLObjectItf device; 
 			SLEngineItf engine;
 			SLObjectItf outputMix;
+			SpinLock deviceLock;
+			tinystl::unordered_set<xnAudioSource*> sources;
+			volatile float masterVolume = 1.0f;
 		};
 
 		struct xnAudioBuffer
@@ -182,6 +188,22 @@ extern "C" {
 			(*device->outputMix)->Destroy(device->outputMix);
 			(*device->device)->Destroy(device->device);
 			delete device;
+		}
+
+		void xnAudioSetMasterVolume(xnAudioDevice* device, float volume)
+		{
+			device->masterVolume = volume;
+
+			device->deviceLock.Lock();
+			
+			for (xnAudioSource* source : device->sources)
+			{
+				auto dbVolume = SLmillibel(20 * log10(volume * source->gain * source->localizationGain) * 100);
+				if (dbVolume < SL_MILLIBEL_MIN) dbVolume = SL_MILLIBEL_MIN;
+				(*source->volume)->SetVolumeLevel(source->volume, dbVolume);
+			}
+			
+			device->deviceLock.Unlock();
 		}
 
 		xnAudioListener* xnAudioListenerCreate(xnAudioDevice* device)
@@ -359,12 +381,25 @@ extern "C" {
 				return NULL;
 			}
 
+			listener->audioDevice->deviceLock.Lock();
+
+			listener->audioDevice->sources.insert(res);
+			
+			listener->audioDevice->deviceLock.Unlock();
+
 			return res;
 		}
 
 		void xnAudioSourceDestroy(xnAudioSource* source)
 		{
+			source->listener->audioDevice->deviceLock.Lock();
+
+			source->listener->audioDevice->sources.erase(source);
+
+			source->listener->audioDevice->deviceLock.Unlock();
+		
 			(*source->object)->Destroy(source->object);
+			
 			delete source;
 		}
 
@@ -381,7 +416,7 @@ extern "C" {
 		void xnAudioSourceSetGain(xnAudioSource* source, float gain)
 		{
 			source->gain = gain;
-			gain *= source->localizationGain;
+			gain *= source->localizationGain * source->listener->audioDevice->masterVolume;
 			auto dbVolume = SLmillibel(20 * log10(gain) * 100);
 			if (dbVolume < SL_MILLIBEL_MIN) dbVolume = SL_MILLIBEL_MIN;
 			(*source->volume)->SetVolumeLevel(source->volume, dbVolume);

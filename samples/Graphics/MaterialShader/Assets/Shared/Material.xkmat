@@ -40,11 +40,12 @@ Attributes:
             Value: 0.735426
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
-            Texture: 73a678b3-1b69-437f-a447-29d9b473864c:water
+            Texture: 3a1664c1-46f2-478c-ba5e-36c6f421acd1/73a678b3-1b69-437f-a447-29d9b473864c:water
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
     DiffuseModel: !MaterialDiffuseLambertModelFeature {}
     Specular: !MaterialSpecularMapFeature
         SpecularMap: !ComputeTextureColor
@@ -52,6 +53,7 @@ Attributes:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
         Intensity: !ComputeFloat
             Value: 0.067265
     SpecularModel: !MaterialSpecularMicrofacetModelFeature

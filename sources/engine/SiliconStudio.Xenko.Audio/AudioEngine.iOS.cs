@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Audio
 {
     public class AudioEngineIos : AudioEngine
     {
-        public override void InitializeAudioEngine()
+        internal override void InitializeAudioEngine()
         {
             ActivateAudioSession();
             base.InitializeAudioEngine();

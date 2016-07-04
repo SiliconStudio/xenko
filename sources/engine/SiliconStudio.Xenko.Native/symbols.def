@@ -1,6 +1,17 @@
-LIBRARY libxenko.dll
+﻿LIBRARY libxenko.dll
 EXPORTS
 UpdateBufferValuesFromElementInfo
+xnOvrStartup
+xnOvrShutdown
+xnOvrGetError
+xnOvrCreateSessionDx
+xnOvrDestroySession
+xnOvrCreateTexturesDx
+xnOvrGetTextureAtIndexDx
+xnOvrGetCurrentTargetIndex
+xnOvrCommitFrame
+xnOvrPrepareRender
+xnOvrGetMirrorTextureDx
 xnCeltCreate
 xnCeltDestroy
 xnCeltEncodeFloat
@@ -10,6 +21,7 @@ xnCeltDecodeShort
 xnAudioInit
 xnAudioCreate
 xnAudioDestroy
+xnAudioSetMasterVolume
 xnAudioListenerCreate
 xnAudioListenerDestroy
 xnAudioListenerEnable

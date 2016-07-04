@@ -189,6 +189,26 @@ Example of use:
     <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).WindowsPhone.sln" Properties="$(BuildProperties);Platform=WindowsPhone"/>
   </Target>
   
+  <Target Name="BuildWindowsVulkan" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).Vulkan.sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+  </Target>
+  
+  <Target Name="BuildLinux" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).Linux.sln" Properties="$(BuildProperties);Platform=Linux"/>
+  </Target> 
+
+  <Target Name="BuildLinuxVulkan" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).Linux.Vulkan.sln" Properties="$(BuildProperties);Platform=Linux"/>
+  </Target> 
+  
+  <Target Name="BuildLinuxCoreCLR" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).Linux.CoreCLR.sln" Properties="$(BuildProperties);Platform=Linux"/>
+  </Target> 
+  
+  <Target Name="BuildLinuxCoreCLRVulkan" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).Linux.Vulkan.CoreCLR.sln" Properties="$(BuildProperties);Platform=Linux"/>
+  </Target> 
+    
   <Target Name="WritePackageVersionToFile">
     <PackageGetVersionTask File="$(XenkoPackage)" SpecialVersion="$(XenkoPackageSpecialVersion)">
       <Output TaskParameter="Version" PropertyName="XenkoPackageVersion"/>

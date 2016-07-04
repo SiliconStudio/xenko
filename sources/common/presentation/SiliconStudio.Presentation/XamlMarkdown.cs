@@ -451,10 +451,10 @@ namespace SiliconStudio.Presentation
             var image = new Image();
             try
             {
-                if (!(Uri.IsWellFormedUriString(url, UriKind.Absolute) || System.IO.Path.IsPathRooted(url)))
+                if (!Uri.IsWellFormedUriString(url, UriKind.Absolute) && (!System.IO.Path.IsPathRooted(url) || !url.StartsWith("/") || !url.StartsWith("\\")))
                 {
                     // Make relative URL absolute
-                    url = System.IO.Path.Combine(ImageBaseUrl ?? string.Empty, url);
+                    url = (ImageBaseUrl ?? string.Empty) + url;
                 }
                 // Attempt to set the source of the image.
                 // Note: initialization of image downloading can fail in some cases (see System.Windows.Media.Imaging.BitmapDownload.BeginDownload).

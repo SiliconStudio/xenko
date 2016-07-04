@@ -34,6 +34,7 @@
     <Compile Include="DirectInput\XInputChecker.cs" />
     <Compile Include="NativeInvoke.cs" />
     <Compile Include="Audio\AudioLayer.cs" />
+    <Compile Include="OculusOVR\OculusOVR.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -48,6 +49,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="SiliconStudio.Xenko.Native.dll.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Xenko.Native.Libs.targets">
       <SubType>Designer</SubType>
     </None>
@@ -64,7 +68,11 @@
     <None Include="Audio\OpenSLES.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="OculusOVR\OculusOVR.cpp" />
     <None Include="DirectInput\XInputChecker.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="LinuxAllocator.cpp" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

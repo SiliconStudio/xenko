@@ -1,10 +1,47 @@
 !SceneAsset
 Id: 4b722b46-48b5-4585-9f5e-f9a590faf4eb
-SerializedVersion: {Xenko: 1.7.0-beta02}
+SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
+SceneSettings:
+    ~Id: a9a91884-0d85-41c1-a47d-b050debd3121
+    GraphicsCompositor: !SceneGraphicsCompositorLayers
+        ~Id: 3f26a667-0b9c-449e-870f-256616b41371
+        Cameras:
+            -   ~Id: af4be4b7-88bf-4df2-b428-da9ef5493b8e
+                Name: null
+                Camera:
+                    Entity: {Id: 0aa895fb-6425-436b-b4ae-964210c3ada6}
+                    Id: d8d38afa-0110-4116-a878-70e266cd78ea
+        Layers: []
+        Master:
+            ~Id: 7e5318e4-9a74-4cfd-be29-2197572eee0f
+            Name: SceneGraphicsLayer
+            Output: !MasterRenderFrameProvider {}
+            Renderers:
+                - !ClearRenderFrameRenderer
+                    ~Id: b55ee8e7-d303-46e6-8ba1-bfe30323c544
+                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
+                    Output: !CurrentRenderFrameProvider {}
+                - !SceneCameraRenderer
+                    ~Id: 7d1559b2-1e2d-40b2-8b6e-22c029c1c8de
+                    Mode: !CameraRendererModeForward
+                        ~Id: 1dd520e4-b850-467d-8c98-d74cb026dde2
+                    Camera:
+                        ~Id: 6a347547-d83d-4ee0-87cf-cb10038e7c99
+                        Index: 0
+                    Output: !CurrentRenderFrameProvider {}
+                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
+                    ForceAspectRatio: false
+    EditorSettings:
+        ~Id: 51a833e5-7e65-41fa-9baa-0844a1052de3
+        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
+        SceneUnit: 1.0
+        Mode: !SceneEditorGraphicsModeLDRSettings
+            ~Id: 69686fb3-2e21-4591-bec9-ef3ccad8dfd8
+            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
 Hierarchy:
     ~Id: 98dbbab5-03a8-4f89-9541-7265202f5faa
-    RootEntities:
+    RootPartIds:
         - 5700e7f9-4aed-4697-99bc-165c7fb5b549
         - 0aa895fb-6425-436b-b4ae-964210c3ada6
         - f9e60aeb-b946-4d42-b957-d421863da396
@@ -12,7 +49,7 @@ Hierarchy:
         - 8e731909-f0c2-420e-9329-fe9a2890c477
         - f08d1282-a256-4c2c-aa94-048dd95eed88
         - 4855a6ef-94da-4170-abb8-e8c421efa246
-    Entities:
+    Parts:
         -   Entity:
                 Id: 0aa895fb-6425-436b-b4ae-964210c3ada6
                 Name: Camera
@@ -26,7 +63,6 @@ Hierarchy:
                     - !CameraComponent
                         ~Id: d8d38afa-0110-4116-a878-70e266cd78ea
                         Projection: Perspective
-            Design: {}
         -   Entity:
                 Id: 4855a6ef-94da-4170-abb8-e8c421efa246
                 Name: Background
@@ -40,7 +76,6 @@ Hierarchy:
                     - !BackgroundComponent
                         ~Id: 97292521-5985-4508-95d4-47c3e580f16f
                         Texture: 29e81d18-809d-4074-b640-395a7b603d45/26ae807e-f11d-48c0-ac9d-4f5c500841f0:XenkoBackground
-            Design: {}
         -   Entity:
                 Id: 5700e7f9-4aed-4697-99bc-165c7fb5b549
                 Name: Ground
@@ -56,7 +91,6 @@ Hierarchy:
                         Model: 4668a137-c7fe-4030-a88a-f8e35dc69556/269f31ef-80d5-415a-bdf2-4f7cb3553fdf:Ground
                         Materials:
                             - null
-            Design: {}
         -   Entity:
                 Id: 79ed5cbf-60bb-4912-89f5-3c1862a01b98
                 Name: ConeEmitter30
@@ -156,7 +190,6 @@ Hierarchy:
                                             DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
-            Design: {}
         -   Entity:
                 Id: 8e731909-f0c2-420e-9329-fe9a2890c477
                 Name: ConeEmitter15
@@ -256,7 +289,6 @@ Hierarchy:
                                             DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
-            Design: {}
         -   Entity:
                 Id: f08d1282-a256-4c2c-aa94-048dd95eed88
                 Name: ConeEmitter45
@@ -356,7 +388,6 @@ Hierarchy:
                                             DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
-            Design: {}
         -   Entity:
                 Id: f9e60aeb-b946-4d42-b957-d421863da396
                 Name: Directional light
@@ -388,41 +419,3 @@ Hierarchy:
                                 BiasParameters:
                                     ~Id: ea85427b-3dfb-44a0-9f61-74c744539677
                         Intensity: 0.8
-            Design: {}
-SceneSettings:
-    ~Id: a9a91884-0d85-41c1-a47d-b050debd3121
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        ~Id: 3f26a667-0b9c-449e-870f-256616b41371
-        Cameras:
-            -   ~Id: af4be4b7-88bf-4df2-b428-da9ef5493b8e
-                Name: null
-                Camera:
-                    Entity: {Id: 0aa895fb-6425-436b-b4ae-964210c3ada6}
-                    Id: d8d38afa-0110-4116-a878-70e266cd78ea
-        Layers: []
-        Master:
-            ~Id: 7e5318e4-9a74-4cfd-be29-2197572eee0f
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                - !ClearRenderFrameRenderer
-                    ~Id: b55ee8e7-d303-46e6-8ba1-bfe30323c544
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                - !SceneCameraRenderer
-                    ~Id: 7d1559b2-1e2d-40b2-8b6e-22c029c1c8de
-                    Mode: !CameraRendererModeForward
-                        ~Id: 1dd520e4-b850-467d-8c98-d74cb026dde2
-                    Camera:
-                        ~Id: 6a347547-d83d-4ee0-87cf-cb10038e7c99
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-                    ForceAspectRatio: false
-    EditorSettings:
-        ~Id: 51a833e5-7e65-41fa-9baa-0844a1052de3
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeLDRSettings
-            ~Id: 69686fb3-2e21-4591-bec9-ef3ccad8dfd8
-            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}

@@ -5,6 +5,9 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Native
 {
+    /// <summary>
+    /// Wrapper around OpenAL
+    /// </summary>
     public class AudioLayer
     {
         public struct Device
@@ -29,11 +32,7 @@ namespace SiliconStudio.Xenko.Native
 
         static AudioLayer()
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS
-            NativeLibrary.PreloadLibrary(NativeInvoke.Library + ".dll");
-#else
-            NativeLibrary.PreloadLibrary(NativeInvoke.Library + ".so");
-#endif
+            NativeInvoke.PreLoad();
         }
 
         [SuppressUnmanagedCodeSecurity]
@@ -47,6 +46,10 @@ namespace SiliconStudio.Xenko.Native
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioDestroy", CallingConvention = CallingConvention.Cdecl)]
         public static extern void Destroy(Device device);
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSetMasterVolume", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SetMasterVolume(Device device, float volume);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioListenerCreate", CallingConvention = CallingConvention.Cdecl)]

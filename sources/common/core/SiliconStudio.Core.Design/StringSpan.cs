@@ -23,7 +23,7 @@ namespace SiliconStudio.Core
         }
 
         /// <summary>
-        /// The start of the span.
+        /// The start offset of the span.
         /// </summary>
         public int Start;
 
@@ -48,13 +48,12 @@ namespace SiliconStudio.Core
         /// Gets the next position = Start + Length.
         /// </summary>
         /// <value>The next.</value>
-        public int Next
-        {
-            get
-            {
-                return Start + Length;
-            }
-        }
+        public int Next => Start + Length;
+
+        /// <summary>
+        /// The end offset of the span.
+        /// </summary>
+        public int End => Start + Length - 1;
 
         public bool Equals(StringSpan other)
         {
@@ -87,7 +86,7 @@ namespace SiliconStudio.Core
 
         public override string ToString()
         {
-            return IsValid ? string.Format("[{0}-{1}]", Start, Next - 1) : "[N/A]";
+            return IsValid ? string.Format("[{0}-{1}]", Start, End) : "[N/A]";
         }
     }
 }

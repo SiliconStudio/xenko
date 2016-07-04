@@ -141,7 +141,11 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                 {
                     StartInfo =
                     {
+#if SILICONSTUDIO_PLATFORM_WINDOWS
                         FileName = "glslangValidator.exe",
+#else
+                        FileName = "glslangValidator",
+#endif
                         Arguments = $"-V -s -o {outputFileName} {inputFileName}",
                         RedirectStandardOutput = true,
                         RedirectStandardError = true,

@@ -45,6 +45,10 @@
     <Reference Include="NuGet">
       <HintPath>..\..\..\deps\Nuget\NuGet.core.dll</HintPath>
     </Reference>
+    <Reference Include="Renci.SshNet, Version=2016.0.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\deps\SSH.NET\Renci.SshNet.dll</HintPath>
+    </Reference>
     <Reference Include="SharpYaml, Version=1.0.2.26673, Culture=neutral, PublicKeyToken=1ced8108e942bc02, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\common\deps\SharpYaml\SharpYaml.dll</HintPath>
@@ -266,6 +270,7 @@
     <Compile Include="Sprite\SpriteSheetFactories.cs" />
     <Compile Include="Tasks\PackageArchive.cs" />
     <Compile Include="Tasks\PackageArchiveTask.cs" />
+    <Compile Include="Tasks\PackageDeployTask.cs" />
     <Compile Include="Tasks\PackageGetVersionTask.cs" />
     <Compile Include="Textures\TextureSettings.cs" />
     <Compile Include="XenkoPackageUpgrader.cs" />
@@ -343,6 +348,14 @@
     <None Include="..\..\..\deps\FFmpeg\ffmpeg.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\..\deps\msdfgen\freetype6.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\..\..\deps\msdfgen\msdfgen.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

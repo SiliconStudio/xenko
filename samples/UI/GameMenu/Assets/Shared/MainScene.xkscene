@@ -1,34 +1,7 @@
 !SceneAsset
 Id: 9294c606-6173-4215-a8dc-0d5043d68333
-SerializedVersion: {Xenko: 1.7.0-beta02}
+SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
-Hierarchy:
-    ~Id: e397c235-ffba-44db-b2c5-f251b3c80139
-    RootEntities:
-        - 50f9b452-2012-451b-95cd-57ff4f313e4b
-    Entities:
-        -   Entity:
-                Id: 50f9b452-2012-451b-95cd-57ff4f313e4b
-                Name: UI
-                Components:
-                    - !TransformComponent
-                        ~Id: 9acf979c-68b7-4e07-959c-e282a2740efb
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: []
-                    - !GameMenu.MainScript,GameMenu.Game
-                        ~Id: 22b8232d-2333-4478-8565-0a003fa813fe
-                        JapaneseFont: dd9a8112-eb31-47b3-978a-80443dba6d94/cb333065-ba29-41a4-b07c-eeb5d39b5cc6:JapaneseFont
-                        MainSceneImages: 56f2c06f-0010-420f-8814-96c5f0f1ffcd/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
-                        WesternFont: 08b90328-e57a-4afd-b64b-785f89e51782/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
-                    - !UIComponent
-                        ~Id: 55e6243c-8b03-4f7a-8aba-c6fc8959c49a
-                        Page: null
-                        Resolution: {X: 640.0, Y: 1136.0, Z: 1000.0}
-                        Size: {X: 1.0, Y: 1.0, Z: 1.0}
-                        ResolutionStretch: FixedWidthFixedHeight
-            Design: {}
 SceneSettings:
     ~Id: 1d1dff26-e925-415a-9895-add9f612b42d
     GraphicsCompositor: !SceneGraphicsCompositorLayers
@@ -57,3 +30,28 @@ SceneSettings:
         Mode: !SceneEditorGraphicsModeLDRSettings
             ~Id: 13c83252-be07-452d-ab67-557f1fecf7da
             BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+Hierarchy:
+    ~Id: e397c235-ffba-44db-b2c5-f251b3c80139
+    RootPartIds:
+        - 50f9b452-2012-451b-95cd-57ff4f313e4b
+    Parts:
+        -   Entity:
+                Id: 50f9b452-2012-451b-95cd-57ff4f313e4b
+                Name: UI
+                Components:
+                    - !TransformComponent
+                        ~Id: 9acf979c-68b7-4e07-959c-e282a2740efb
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !GameMenu.MainScript,GameMenu.Game
+                        ~Id: 22b8232d-2333-4478-8565-0a003fa813fe
+                        JapaneseFont: dd9a8112-eb31-47b3-978a-80443dba6d94/cb333065-ba29-41a4-b07c-eeb5d39b5cc6:JapaneseFont
+                        MainSceneImages: 56f2c06f-0010-420f-8814-96c5f0f1ffcd/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                        WesternFont: 08b90328-e57a-4afd-b64b-785f89e51782/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
+                    - !UIComponent
+                        ~Id: 55e6243c-8b03-4f7a-8aba-c6fc8959c49a
+                        Resolution: {X: 640.0, Y: 1136.0, Z: 1000.0}
+                        Size: {X: 1.0, Y: 1.0, Z: 1.0}
+                        ResolutionStretch: FixedWidthFixedHeight

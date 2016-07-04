@@ -25,12 +25,12 @@ pushd "%x86_output%"
 popd
 
 REM build x64 projects
-call "%ProgramFiles(x86)%\Microsoft Visual Studio 12.0\vc\vcvarsall.bat" x64
+call "%ProgramFiles(x86)%\Microsoft Visual Studio 14.0\vc\vcvarsall.bat" x64
 cd "%output%"
 msbuild "%x64_output%\code\assimp.vcxproj" /p:Platform="x64";Configuration="Release"
 
 REM build x86 projects
-call "%ProgramFiles(x86)%\Microsoft Visual Studio 12.0\vc\vcvarsall.bat" x86
+call "%ProgramFiles(x86)%\Microsoft Visual Studio 14.0\vc\vcvarsall.bat" x86
 cd "%output%"
 msbuild "%x86_output%\code\assimp.vcxproj" /p:Platform="x86";Configuration="Release"
 

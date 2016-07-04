@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 14.0.23107.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "90-Tools", "90-Tools", "{1AE1AC60-5D2F-4CA7-AE20-888F44551185}"
 EndProject
@@ -341,6 +341,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.SamplesBootstrapper", "..\sources\editor\SiliconStudio.Xenko.SamplesBootstrapper\SiliconStudio.Xenko.SamplesBootstrapper.csproj", "{FF2A1FBB-3AB3-4CE5-AA81-A10E68232CD6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Native", "..\sources\engine\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj", "{1DBBC150-F085-43EF-B41D-27C72D133770}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FCF36D39-BFFE-4719-B245-05640EE34C5F} = {FCF36D39-BFFE-4719-B245-05640EE34C5F}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Assets.Tests2", "..\sources\engine\SiliconStudio.Xenko.Assets.Tests2\SiliconStudio.Xenko.Assets.Tests2.csproj", "{370ADF53-DFFA-461E-B72A-1302C0A0DE00}"
 	ProjectSection(ProjectDependencies) = postProject

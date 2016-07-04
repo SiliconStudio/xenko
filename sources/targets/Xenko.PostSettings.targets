@@ -11,7 +11,7 @@
               <ItemGroup>
                 <Reference Include="OpenTK">
                   <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(XenkoDependenciesDir)OpenTK\Linux\OpenTK.dll</HintPath>
-                  <HintPath Condition="'$(SiliconStudioRuntime)' != ''">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\OpenTK.dll</HintPath>
+                  <HintPath Condition="'$(SiliconStudioRuntime)' != ''">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\Linux\OpenTK.dll</HintPath>
                 </Reference>
               </ItemGroup>
             </When>
@@ -23,7 +23,7 @@
               <ItemGroup>
                 <Reference Include="OpenTK">
                   <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(XenkoDependenciesDir)OpenTK\OpenTK.dll</HintPath>
-                  <HintPath Condition="'$(SiliconStudioRuntime)' != ''">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\OpenTK.dll</HintPath>
+                  <HintPath Condition="'$(SiliconStudioRuntime)' != ''">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\Windows\OpenTK.dll</HintPath>
                 </Reference>
               </ItemGroup>
             </When>
@@ -53,10 +53,20 @@
               </ItemGroup>
             </When>
           </Choose>
-          <ItemGroup>
-            <Reference Condition="($(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))) OR ($(SiliconStudioUI.Contains('OPENTK')) AND '$(SiliconStudioRuntime)' == '')" Include="System.Drawing" />
-            <Reference Condition="$(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))" Include="System.Windows.Forms" />
-          </ItemGroup>
+          <Choose>
+            <When Condition="($(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))) OR ($(SiliconStudioUI.Contains('OPENTK')) AND '$(SiliconStudioRuntime)' == '')">
+              <ItemGroup>
+                <Reference Include="System.Drawing" />
+              </ItemGroup>
+            </When>
+          </Choose>
+          <Choose>
+            <When Condition="$(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))">
+              <ItemGroup>
+                <Reference Include="System.Windows.Forms" />
+              </ItemGroup>
+            </When>
+          </Choose>
         </When>
         <When Condition=" '$(SiliconStudioPlatform)' == 'Android' or '$(SiliconStudioPlatform)' == 'iOS'">
           <ItemGroup>

@@ -53,13 +53,13 @@ namespace SiliconStudio.Xenko.Assets
             coreClrDebug.Properties.AddRange(new[]
             {
                 "<SiliconStudioRuntime Condition=\"'$(SiliconStudioProjectType)' == 'Executable'\">CoreCLR</SiliconStudioRuntime>",
-                "<SiliconStudioBuildDirExtension>$(SiliconStudioRuntime)</SiliconStudioBuildDirExtension>",
+                "<SiliconStudioBuildDirExtension Condition=\"'$(SiliconStudioBuildDirExtension)' == ''\">CoreCLR</SiliconStudioBuildDirExtension>",
                 "<DefineConstants>SILICONSTUDIO_RUNTIME_CORECLR;$(DefineConstants)</DefineConstants>"
             });
             coreClrRelease.Properties.AddRange(new[]
             {
                 "<SiliconStudioRuntime Condition=\"'$(SiliconStudioProjectType)' == 'Executable'\">CoreCLR</SiliconStudioRuntime>",
-                "<SiliconStudioBuildDirExtension>$(SiliconStudioRuntime)</SiliconStudioBuildDirExtension>",
+                "<SiliconStudioBuildDirExtension Condition=\"'$(SiliconStudioBuildDirExtension)' == ''\">CoreCLR</SiliconStudioBuildDirExtension>",
                 "<DefineConstants>SILICONSTUDIO_RUNTIME_CORECLR;$(DefineConstants)</DefineConstants>"
             });
 

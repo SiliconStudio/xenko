@@ -5,6 +5,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
+using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Xenko.Engine;
@@ -23,13 +24,15 @@ namespace SiliconStudio.Xenko.Assets.Effect
     {
         private readonly AssetCompilerContext context;
         private readonly Package package;
+        private readonly AssetCompilerResult compilerResult;
 
         public override string Title => "Compiling scene effects";
 
-        public CompileDefaultSceneEffectCommand(AssetCompilerContext context, Package package)
+        public CompileDefaultSceneEffectCommand(AssetCompilerContext context, Package package, AssetCompilerResult compilerResult)
         {
             this.context = context;
             this.package = package;
+            this.compilerResult = compilerResult;
         }
 
         protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
@@ -75,6 +78,8 @@ namespace SiliconStudio.Xenko.Assets.Effect
             if (defaultSceneUrl == null)
                 return Task.FromResult(ResultStatus.Successful);
 
+            var baseUrl = new UFile(defaultSceneUrl).GetParent();
+
             try
             {
                 commandContext.Logger.Info($"Trying to compile effects for scene '{defaultSceneUrl}'");
@@ -86,6 +91,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
                     ((EffectCompilerCache)sceneRenderer.EffectSystem.Compiler).CompileEffectAsynchronously = true;
                     ((EffectCompilerCache)sceneRenderer.EffectSystem.Compiler).FileProvider = DatabaseFileProvider;
                     ((EffectCompilerCache)sceneRenderer.EffectSystem.Compiler).CurrentCache = EffectBytecodeCacheLoadSource.StartupCache;
+                    sceneRenderer.EffectSystem.EffectUsed += (effectCompileRequest, result) => compilerResult.BuildSteps.Add(EffectCompileCommand.FromRequest(context, package, baseUrl, effectCompileRequest));
 
                     sceneRenderer.GameSystems.LoadContent();
 

@@ -40,6 +40,18 @@
       </ItemGroup>
     </When>
   </Choose>
+  <Choose>
+    <When Condition=" '$(SiliconStudioRuntime)' == 'CoreCLR' ">
+      <ItemGroup>
+        <None Include="..\..\..\data\Linux\runtimeconfig.json">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="..\..\..\data\Linux\CoreCLRSetup.sh">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+      </ItemGroup>
+    </When>
+  </Choose>
   <ItemGroup>
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>

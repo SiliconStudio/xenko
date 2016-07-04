@@ -1,12 +1,12 @@
 !PrefabAsset
 Id: b6784169-c2e8-436b-8945-a9fb1ba4baa5
-SerializedVersion: {Xenko: 1.7.0-beta02}
+SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
 Hierarchy:
     ~Id: 5f6f7847-0e78-4824-8813-a70db8f1176d
-    RootEntities:
+    RootPartIds:
         - bd21c191-c738-4b04-aa3b-1ea9736fb9a0
-    Entities:
+    Parts:
         -   Entity:
                 Id: bd21c191-c738-4b04-aa3b-1ea9736fb9a0
                 Name: Cube1
@@ -45,4 +45,3 @@ Hierarchy:
                         Model: 873f71b4-3fd4-49af-87c5-6214e0879a89/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
                         Materials:
                             - null
-            Design: {}

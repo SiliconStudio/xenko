@@ -51,6 +51,7 @@ namespace SiliconStudio.Quantum.Commands
 
             object itemToAdd = null;
             // TODO: Find a better solution for ContentSerializerAttribute that doesn't require to reference Core.Serialization (and unreference this assembly)
+            // TODO: Fix this for asset part types that are also references
             if (collectionDescriptor.ElementType.IsAbstract || collectionDescriptor.ElementType.IsNullable() || collectionDescriptor.ElementType.GetCustomAttributes(typeof(ContentSerializerAttribute), true).Any())
             {
                 // If the parameter is a type instead of an instance, try to construct an instance of this type

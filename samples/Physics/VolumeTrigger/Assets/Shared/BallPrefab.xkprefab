@@ -1,12 +1,12 @@
 !PrefabAsset
 Id: 2603278e-1a16-4d57-a24c-563472a5b86b
-SerializedVersion: {Xenko: 1.7.0-beta02}
+SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
 Hierarchy:
     ~Id: e29a41a1-54c5-4d5d-bab0-c4afaca25327
-    RootEntities:
+    RootPartIds:
         - c016fcd8-5ab1-4212-9784-954709ca481d
-    Entities:
+    Parts:
         -   Entity:
                 Id: c016fcd8-5ab1-4212-9784-954709ca481d
                 Name: Ball
@@ -47,4 +47,3 @@ Hierarchy:
                         Model: 1d79c934-1273-410e-b13a-a82e46c92c4e/ad7e799e-d4fa-4bc2-8e00-49bf70e31434:Ball
                         Materials:
                             - null
-            Design: {}

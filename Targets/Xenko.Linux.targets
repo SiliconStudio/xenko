@@ -7,8 +7,10 @@
   
   <!-- Embed native libraries -->
   <ItemGroup>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\libxenkonative.so"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\libxenko.so"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\libbulletc.so"/>
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\libcore.so"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\*.config"/>
     <!-- Users custom native libraries -->
     <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\**\*.so" />
   </ItemGroup>
@@ -22,7 +24,37 @@
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
           <Visible>False</Visible>
         </Content>
+        <None Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'" Include="$(SiliconStudioPackageXenkoPlatformBin)\CoreCLRSetup.sh">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'" Include="$(SiliconStudioPackageXenkoPlatformBin)\runtimeconfig.json">
+          <Link>%(RecursiveDir)$(AssemblyName).runtimeconfig.json</Link>
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
       </ItemGroup>
 	  </When>
   </Choose>
+
+  <!-- On Vulkan embed the SPIR-V shader compiler -->
+  <Target Name="EmbedShaderCompiler" BeforeTargets="SiliconStudioUpdateGraphicsPlatform" Condition="'$(SiliconStudioXenkoGraphicsApi)' == 'Vulkan'">
+    <ItemGroup>
+      <Content Condition="'$(SiliconStudioUnitTest)' != 'true'" Include="$(SiliconStudioPackageXenkoPlatformBin)\glslangValidator">
+        <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        <Visible>False</Visible>
+      </Content>
+    </ItemGroup>
+  </Target>  
+  
+  <UsingTask TaskName="PackageDeployTask" AssemblyFile="$(SiliconStudioPackageXenko)\bin\Windows-Direct3D11\SiliconStudio.Xenko.Assets.dll"/>
+
+  <Target Name="DeployOnLinux" AfterTargets="SiliconStudioCompileAsset" Condition="('$(SiliconStudioIsExecutable)' == 'true') AND ('$(SiliconStudioUnitTest)' != 'true') AND ('$(SiliconStudioDeploy)' == 'true')">
+    <PackageDeployTask
+        Directory="$(TargetDir)"
+        Machine="$(SiliconStudioLinuxTarget)"
+        Username="$(SiliconStudioLinuxUsername)"
+        Password="$(SiliconStudioLinuxPassword)"
+        Location="local/Projects/$(MSBuildProjectName)" />
+  </Target>
+
 </Project>
