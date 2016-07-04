@@ -18,15 +18,8 @@ set UseEnv=true
 
 call "%ProgramFiles(x86)%\Microsoft Visual Studio 14.0\vc\vcvarsall.bat" x86
 msbuild /tv:14.0 /t:Build /verbosity:quiet /clp:ErrorsOnly /fl /flp:logfile=BuildErrors.log;ErrorsOnly "/p:Configuration=Release;Platform=x86" %MSDFGEN%\Msdfgen.sln
-if NOT ERRORLEVEL 0 pause
-
-REM xcopy /Y %SHARPDIFF%\SharpDiff\Bin\Release\SharpDiff.dll .
-REM xcopy /Y %SHARPDIFF%\SharpDiff\Bin\Release\SharpDiff.pdb .
-REM xcopy /Y %SHARPDIFF%\SharpDiff\Bin\Release\SharpDiff.xml .
-if NOT ERRORLEVEL 0  pause
 
 :CopyOutput
-REM xcopy %MSDFGEN%\msdfgen.exe . /Y
-REM xcopy %MSDFGEN%\freetype6.dll . /Y
-REM xcopy %MSDFGEN%\LICENSE.txt . /Y
+xcopy %MSDFGEN%\msdfgen.exe . /Y
+xcopy %MSDFGEN%\LICENSE.txt . /Y
 
