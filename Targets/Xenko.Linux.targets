@@ -51,9 +51,9 @@
   <Target Name="DeployOnLinux" AfterTargets="SiliconStudioCompileAsset" Condition="('$(SiliconStudioIsExecutable)' == 'true') AND ('$(SiliconStudioUnitTest)' != 'true') AND ('$(SiliconStudioDeploy)' == 'true')">
     <PackageDeployTask
         Directory="$(TargetDir)"
-        Machine="$(SiliconStudioLinuxTarget)"
-        Username="$(SiliconStudioLinuxUsername)"
-        Password="$(SiliconStudioLinuxPassword)"
+        Machine="$(SiliconStudioRemoteTarget)"
+        Username="$(SiliconStudioRemoteUsername)"
+        Password="$(SiliconStudioRemotePassword)"
         Location="local/Projects/$(MSBuildProjectName)" />
   </Target>
 
