@@ -23,10 +23,12 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Indicates whether the members of the given reference should be constructed for the view model.
         /// </summary>
+        /// <param name="member">The member content containing the reference.</param>
         /// <param name="reference">The reference to a <see cref="GraphNode"/> contained in a parent node.</param>
         /// <param name="targetNodePath">The path to the target node of the reference.</param>
         /// <returns><c>True</c> if the members of the referenced node should be constructed, <c>False</c> otherwise.</returns>
-        bool ShouldExpandReference(ObjectReference reference, GraphNodePath targetNodePath);
+        // TODO: in some case of "boxing" the reference can actually be contained in an ObjectContent. Might need to update the signature of this method for proper support
+        bool ShouldExpandReference(MemberContent member, ObjectReference reference, GraphNodePath targetNodePath);
 
         /// <summary>
         /// Indicates whether the member corresponding to the given content should be constructed for the view model.
