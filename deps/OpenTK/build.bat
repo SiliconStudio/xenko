@@ -32,3 +32,13 @@ msbuild ..\..\externals\opentk\source\OpenTK\OpenTK.csproj /Property:Configurati
 mkdir Linux
 copy /Y ..\..\externals\opentk\Binaries\OpenTK\Linux\ReleaseMinimal\OpenTK.dll Linux
 copy /Y ..\..\externals\opentk\Binaries\OpenTK\Linux\ReleaseMinimal\OpenTK.pdb Linux
+
+msbuild ..\..\externals\opentk\source\OpenTK\OpenTK.csproj /Property:Configuration=ReleaseCoreCLR;Platform=macOS
+mkdir CoreCLR\macOS
+copy /Y ..\..\externals\opentk\Binaries\OpenTK\macOS\ReleaseCoreCLR\OpenTK.dll CoreCLR\macOS
+copy /Y ..\..\externals\opentk\Binaries\OpenTK\macOS\ReleaseCoreCLR\OpenTK.pdb CoreCLR\macOS
+
+msbuild ..\..\externals\opentk\source\OpenTK\OpenTK.csproj /Property:Configuration=ReleaseMinimal;Platform=macOS
+mkdir macOS
+copy /Y ..\..\externals\opentk\Binaries\OpenTK\macOS\ReleaseMinimal\OpenTK.dll macOS
+copy /Y ..\..\externals\opentk\Binaries\OpenTK\macOS\ReleaseMinimal\OpenTK.pdb macOS
