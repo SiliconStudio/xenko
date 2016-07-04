@@ -1027,16 +1027,14 @@ extern "C" {
 			//  InputChannels - Number of channels in this voice's input audio data.
 			//  InputSampleRate - Sample rate of this voice's input audio data.
 			//  Flags - XAUDIO2_VOICE flags specifying the mastering voice's behavior.
-			//  szDeviceId - Identifier of the device to receive the output audio.
+			//  DeviceIndex - Identifier of the device to receive the output audio.
 			//  pEffectChain - Optional list of effects to apply to the audio data.
-			//  StreamCategory - The audio stream category to use for this mastering voice
 			//
-			STDMETHOD(CreateMasteringVoice) (THIS_ _Outptr_ IXAudio2MasteringVoice** ppMasteringVoice,
+			STDMETHOD(CreateMasteringVoice) (THIS_ IXAudio2MasteringVoice** ppMasteringVoice,
 				UINT32 InputChannels X2DEFAULT(XAUDIO2_DEFAULT_CHANNELS),
 				UINT32 InputSampleRate X2DEFAULT(XAUDIO2_DEFAULT_SAMPLERATE),
-				UINT32 Flags X2DEFAULT(0), _In_opt_z_ void* szDeviceId X2DEFAULT(NULL),
-				_In_opt_ const XAUDIO2_EFFECT_CHAIN* pEffectChain X2DEFAULT(NULL),
-				_In_ AUDIO_STREAM_CATEGORY StreamCategory X2DEFAULT(AudioCategory_GameEffects)) PURE;
+				UINT32 Flags X2DEFAULT(0), UINT32 DeviceIndex X2DEFAULT(0),
+				const XAUDIO2_EFFECT_CHAIN* pEffectChain X2DEFAULT(NULL)) PURE;
 
 			// NAME: IXAudio2::StartEngine
 			// DESCRIPTION: Creates and starts the audio processing thread.
