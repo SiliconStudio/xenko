@@ -1,9 +1,5 @@
 <!-- Build file post-included by all Xenko projects -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-    <!--
-	  Note that the content of Xenko.Linux.targets is already loaded by Xenko.targets,
-	  so here we define whatever is missing for the Linux targets file to target CoreCLR.
-    -->
   <PropertyGroup>
     <!-- For the time being we hardcode the location of CoreFX to the Xenko installation -->
     <TargetFrameworkRootPath>$(SiliconStudioPackageXenko)\deps\CoreFX</TargetFrameworkRootPath>

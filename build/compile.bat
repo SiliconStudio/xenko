@@ -90,6 +90,15 @@ set Project=Xenko.Linux.Vulkan.CoreCLR.sln
 call :compile
 if %ERRORLEVEL% != 0 goto exit
 
+set Project=Xenko.macOS.sln
+set _platform_target=macOS
+call :compile
+if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
+
+set Project=Xenko.macOS.CoreCLR.sln
+call :compile
+if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
+
 set Project=Xenko.OpenGL.sln
 set _platform_target=Mixed Platforms
 call :compile

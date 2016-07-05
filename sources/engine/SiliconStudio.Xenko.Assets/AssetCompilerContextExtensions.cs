@@ -54,6 +54,7 @@ namespace SiliconStudio.Xenko.Assets
                 case PlatformType.iOS:
                     return GraphicsPlatform.OpenGLES;
                 case PlatformType.Linux:
+                case PlatformType.macOS:
                     return GraphicsPlatform.OpenGL;
                 default:
                     throw new ArgumentOutOfRangeException();

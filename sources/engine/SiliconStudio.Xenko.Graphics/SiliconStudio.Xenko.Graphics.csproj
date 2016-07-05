@@ -81,7 +81,7 @@
   <Choose>
     <When Condition=" '$(XenkoGraphicsApi)' == 'OpenGL' Or '$(XenkoGraphicsApi)' == 'OpenGLES' ">
       <Choose>
-        <When Condition=" '$(SiliconStudioPlatform)' == 'Linux'">
+        <When Condition="('$(SiliconStudioPlatform)' == 'Linux') or ('$(SiliconStudioPlatform)' == 'macOS')">
           <ItemGroup>
             <Reference Include="OpenTK">
               <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(XenkoDependenciesDir)OpenTK\Linux\OpenTK.dll</HintPath>

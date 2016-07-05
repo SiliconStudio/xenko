@@ -5,13 +5,13 @@
   <Choose>
     <When Condition="'$(XenkoProjectPlatformDependentWindows)' == 'true'">
       <Choose>
-        <When Condition=" '$(SiliconStudioPlatform)' == 'Linux'">
+        <When Condition="('$(SiliconStudioPlatform)' == 'Linux') or '$(SiliconStudioPlatform)' == 'macOS'">
           <Choose>
             <When Condition="'$(XenkoGraphicsApi)' == 'OpenGL' Or '$(XenkoGraphicsApi)' == 'OpenGLES'">
               <ItemGroup>
                 <Reference Include="OpenTK">
-                  <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(XenkoDependenciesDir)OpenTK\Linux\OpenTK.dll</HintPath>
-                  <HintPath Condition="'$(SiliconStudioRuntime)' != ''">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\Linux\OpenTK.dll</HintPath>
+                  <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioPlatform)\OpenTK.dll</HintPath>
+                  <HintPath Condition="'$(SiliconStudioRuntime)' != ''">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\$(SiliconStudioPlatform)\OpenTK.dll</HintPath>
                 </Reference>
               </ItemGroup>
             </When>
