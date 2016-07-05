@@ -120,6 +120,10 @@ namespace SiliconStudio.Xenko.Native
         public static extern void SourceSetLooping(Source source, bool looped);
 
         [SuppressUnmanagedCodeSecurity]
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceSetRange", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SourceSetRange(Source source, double startTime, double stopTime);
+
+        [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceSetGain", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SourceSetGain(Source source, float gain);
 

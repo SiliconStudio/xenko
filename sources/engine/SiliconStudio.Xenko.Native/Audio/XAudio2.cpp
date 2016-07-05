@@ -1149,6 +1149,7 @@ extern "C" {
 		struct xnAudioBuffer
 		{
 			XAUDIO2_BUFFER buffer_;
+			int length_;
 			xnAudioSource* source_;
 		};
 
@@ -1516,6 +1517,37 @@ extern "C" {
 			source->looped_ = looping;
 		}
 
+		void xnAudioSourceSetRange(xnAudioSource* source, double startTime, double stopTime)
+		{
+			if (startTime > stopTime) return; //this is most likely a mistake... get out of here ?
+
+			if(!source->streamed_)
+			{
+				auto singleBuffer = source->freeBuffers[0];
+				auto sampleStart = int(double(source->sampleRate_) * (source->mono_ ? 1.0 : 2.0) * startTime);
+				auto sampleStop = int(double(source->sampleRate_) * (source->mono_ ? 1.0 : 2.0) * stopTime);
+
+				if (sampleStart > singleBuffer->length_)
+				{
+					return; //the starting position must be less then the total length of the buffer
+				}
+
+				if(sampleStop > singleBuffer->length_) //if the end point is more then the length of the buffer fix the value
+				{
+					sampleStop = singleBuffer->length_;
+				}
+
+				auto len = sampleStop - sampleStart;
+				if(len > 0)
+				{
+					singleBuffer->buffer_.PlayBegin = sampleStart;
+					singleBuffer->buffer_.LoopBegin = sampleStart;
+					singleBuffer->buffer_.PlayLength = len;
+					singleBuffer->buffer_.LoopLength = len;
+				}
+			}
+		}
+
 		void xnAudioSourceSetGain(xnAudioSource* source, float gain)
 		{
 			source->source_voice_->SetVolume(gain);
@@ -1540,6 +1572,7 @@ extern "C" {
 			if (streamed_ && playing_)
 			{
 				//buffer was flagged as end of stream
+				//looping is handled by the streamer, in the top level layer
 				xnAudioSourceStop(this);
 			}
 		}
@@ -1573,8 +1606,6 @@ extern "C" {
 			memcpy(const_cast<char*>(buffer->buffer_.pAudioData), pcm, bufferSize);
 			source->source_voice_->SubmitSourceBuffer(&buffer->buffer_);
 		}
-
-		
 
 		void xnAudioSourcePause(xnAudioSource* source)
 		{
@@ -1639,12 +1670,13 @@ extern "C" {
 
 		npBool xnAudioSourceIsPlaying(xnAudioSource* source)
 		{
-			return source->playing_;;
+			return source->playing_;
 		}
 
 		xnAudioBuffer* xnAudioBufferCreate(int maxBufferSize)
 		{
 			auto buffer = new xnAudioBuffer;
+			buffer->length_ = 0;
 			buffer->buffer_ = {};
 			buffer->buffer_.pContext = buffer;
 			buffer->buffer_.PlayBegin = 0;
@@ -1666,7 +1698,12 @@ extern "C" {
 		{
 			(void)sampleRate;
 			(void)mono;
+			
 			buffer->buffer_.AudioBytes = bufferSize;
+			
+			buffer->buffer_.LoopBegin = buffer->buffer_.PlayBegin = 0;
+			buffer->buffer_.LoopLength = buffer->buffer_.PlayLength = buffer->length_ = bufferSize / sizeof(short);
+			
 			memcpy(const_cast<char*>(buffer->buffer_.pAudioData), pcm, bufferSize);
 		}
 

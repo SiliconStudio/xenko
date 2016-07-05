@@ -39,6 +39,7 @@ xnAudioSourcePlay
 xnAudioSourcePause
 xnAudioSourceStop
 xnAudioSourceSetLooping
+xnAudioSourceSetRange
 xnAudioSourceSetGain
 xnAudioSourceSetPitch
 xnAudioListenerPush3D
