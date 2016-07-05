@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -256,8 +255,7 @@ namespace SiliconStudio.ExecServer
                 // Native dll files to load
                 var files = File.Exists(absolutePathOrFolder) ? 
                     new[] { new FileInfo(absolutePathOrFolder) } : 
-                    new DirectoryInfo(absolutePathOrFolder).EnumerateFiles().
-                    Where(x => x.Name.ToLower().EndsWith(".dll") || x.Name.ToLower().EndsWith(".exe"));
+                    new DirectoryInfo(absolutePathOrFolder).EnumerateFiles("*.dll");
 
                 var hashBuffer = new MemoryStream(new byte[1024]);
                 foreach (var file in files)
