@@ -105,6 +105,8 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
+        
+
         /// <summary>
         /// Set the sound balance between left and right speaker.
         /// </summary>
@@ -339,6 +341,16 @@ namespace SiliconStudio.Xenko.Audio
 
                 return playState;
             }
+        }
+
+
+
+        public void SetRange(PlayRange range)
+        {
+            if (engine.State == AudioEngineState.Invalidated)
+                return;
+
+            AudioLayer.SourceSetRange(Source, range.Start, range.End);
         }
     }
 }

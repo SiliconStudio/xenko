@@ -116,6 +116,7 @@ namespace SiliconStudio.Xenko.Audio
                             offset += SamplesPerFrame * source.channels;
 
                             if (source.compressedSoundStream.Position != source.compressedSoundStream.Length) continue;
+
                             if (source.looped)
                             {
                                 source.compressedSoundStream.Position = 0; //reset if we reach the end
@@ -125,6 +126,7 @@ namespace SiliconStudio.Xenko.Audio
                                 source.ended = true;
                                 source.Ended.TrySetResult(true);
                             }
+
                             break;
                         }
                         
@@ -168,6 +170,11 @@ namespace SiliconStudio.Xenko.Audio
         public override void SetLooped(bool loop)
         {
             looped = loop;
+        }
+
+        public override void SetRange(PlayRange range)
+        {
+            throw new NotImplementedException();
         }
 
         private void Destroy()

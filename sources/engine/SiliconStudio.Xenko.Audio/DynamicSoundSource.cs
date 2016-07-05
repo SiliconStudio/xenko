@@ -115,7 +115,9 @@ namespace SiliconStudio.Xenko.Audio
         /// <summary>
         /// Sets if the stream should be played in loop
         /// </summary>
-        /// <param name="loop">if looped or not</param>
+        /// <param name="looped">if looped or not</param>
         public abstract void SetLooped(bool looped);
+
+        public abstract void SetRange(PlayRange range);
     }
 }
