@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using System.Linq;
+
 using NUnit.Framework;
 
 using SiliconStudio.Xenko.UI.Controls;
@@ -373,7 +373,5 @@ namespace SiliconStudio.Xenko.UI.Tests.Events
             if (clickCount < 10)
                 ((Button)sender).RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
         }
-
-        protected override IEnumerable<IUIElementChildren> EnumerateChildren() => Enumerable.Empty<IUIElementChildren>();
     }
 }

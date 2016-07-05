@@ -274,6 +274,11 @@
     <Compile Include="Tasks\PackageDeployTask.cs" />
     <Compile Include="Tasks\PackageGetVersionTask.cs" />
     <Compile Include="Textures\TextureSettings.cs" />
+    <Compile Include="UI\UIFactories.cs" />
+    <Compile Include="UI\UILibraryAsset.cs" />
+    <Compile Include="UI\UILibraryAssetCompiler.cs" />
+    <Compile Include="UI\UIPageAsset.cs" />
+    <Compile Include="UI\UIPageAssetCompiler.cs" />
     <Compile Include="XenkoPackageUpgrader.cs" />
     <Compile Include="RenderingMode.cs" />
     <Compile Include="Scripts\ScriptSourceFileAsset.cs" />
