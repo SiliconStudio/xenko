@@ -69,9 +69,14 @@
     </Otherwise>
   </Choose>
 
+  <PropertyGroup>
+    <SiliconStudioCompilerTargetsEnable Condition="!Exists('$(SiliconStudioCompilerTargets)')">false</SiliconStudioCompilerTargetsEnable>
+    <SiliconStudioCompilerTargetsEnable Condition=" '$(SiliconStudioPlatform)' != 'Windows' and $(SiliconStudioWindowsOnly) == 'true'">false</SiliconStudioCompilerTargetsEnable>
+  </PropertyGroup>
+
   <!-- Import the specific compiler targets for the selected platform/language if it exists and if `SiliconStudioWindowsOnly` is true, makes sure
   to do nothing if this is not a Windows platform -->
-  <Import Condition="Exists('$(SiliconStudioCompilerTargets)') and ('$(SiliconStudioPlatform)' == 'Windows' or $(SiliconStudioWindowsOnly) != 'true')" Project="$(SiliconStudioCompilerTargets)" />
+  <Import Condition="'$(SiliconStudioCompilerTargetsEnable)' != 'false'" Project="$(SiliconStudioCompilerTargets)" />
   
   <UsingTask TaskName="AssemblyProcessorTask" AssemblyFile="$(SolutionDir)\..\deps\AssemblyProcessor\SiliconStudio.AssemblyProcessor.exe"/>
   
