@@ -69,10 +69,6 @@ namespace SiliconStudio.Shaders.Visitor
         {
             return DefaultVisit(shaderTypeName);
         }
-        public virtual TResult Visit(SiliconStudio.Shaders.Ast.Xenko.StreamsType streamsType)
-        {
-            return DefaultVisit(streamsType);
-        }
         public virtual TResult Visit(SiliconStudio.Shaders.Ast.Xenko.TypeIdentifier typeIdentifier)
         {
             return DefaultVisit(typeIdentifier);
@@ -149,14 +145,6 @@ namespace SiliconStudio.Shaders.Visitor
         {
             return DefaultVisit(classType);
         }
-        public virtual TResult Visit(SiliconStudio.Shaders.Ast.Hlsl.StreamTypeName streamTypeName)
-        {
-            return DefaultVisit(streamTypeName);
-        }
-        public virtual TResult Visit(SiliconStudio.Shaders.Ast.Hlsl.SamplerStateType samplerStateType)
-        {
-            return DefaultVisit(samplerStateType);
-        }
         public virtual TResult Visit(SiliconStudio.Shaders.Ast.Hlsl.IdentifierGeneric identifierGeneric)
         {
             return DefaultVisit(identifierGeneric);
@@ -172,10 +160,6 @@ namespace SiliconStudio.Shaders.Visitor
         public virtual TResult Visit(SiliconStudio.Shaders.Ast.Hlsl.TextureType textureType)
         {
             return DefaultVisit(textureType);
-        }
-        public virtual TResult Visit(SiliconStudio.Shaders.Ast.Hlsl.SamplerType samplerType)
-        {
-            return DefaultVisit(samplerType);
         }
         public virtual TResult Visit(SiliconStudio.Shaders.Ast.Hlsl.Annotations annotations)
         {
@@ -240,10 +224,6 @@ namespace SiliconStudio.Shaders.Visitor
         public virtual TResult Visit(SiliconStudio.Shaders.Ast.Hlsl.Typedef typedef)
         {
             return DefaultVisit(typedef);
-        }
-        public virtual TResult Visit(SiliconStudio.Shaders.Ast.Hlsl.StateType stateType)
-        {
-            return DefaultVisit(stateType);
         }
         public virtual TResult Visit(SiliconStudio.Shaders.Ast.ExpressionList expressionList)
         {
@@ -507,13 +487,6 @@ namespace SiliconStudio.Shaders.Visitor
             shaderTypeName.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(shaderTypeName.Qualifiers);
             return base.Visit(shaderTypeName);
         }
-        public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.StreamsType streamsType)
-        {
-            VisitList(streamsType.Attributes);
-            streamsType.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(streamsType.Name);
-            streamsType.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(streamsType.Qualifiers);
-            return base.Visit(streamsType);
-        }
         public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.TypeIdentifier typeIdentifier)
         {
             VisitList(typeIdentifier.Indices);
@@ -632,20 +605,6 @@ namespace SiliconStudio.Shaders.Visitor
             VisitList(classType.Members);
             return base.Visit(classType);
         }
-        public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.StreamTypeName streamTypeName)
-        {
-            VisitList(streamTypeName.Attributes);
-            streamTypeName.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(streamTypeName.Name);
-            streamTypeName.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(streamTypeName.Qualifiers);
-            return base.Visit(streamTypeName);
-        }
-        public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.SamplerStateType samplerStateType)
-        {
-            VisitList(samplerStateType.Attributes);
-            samplerStateType.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(samplerStateType.Name);
-            samplerStateType.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(samplerStateType.Qualifiers);
-            return base.Visit(samplerStateType);
-        }
         public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.IdentifierGeneric identifierGeneric)
         {
             VisitList(identifierGeneric.Indices);
@@ -670,13 +629,6 @@ namespace SiliconStudio.Shaders.Visitor
             textureType.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(textureType.Name);
             textureType.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(textureType.Qualifiers);
             return base.Visit(textureType);
-        }
-        public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.SamplerType samplerType)
-        {
-            VisitList(samplerType.Attributes);
-            samplerType.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(samplerType.Name);
-            samplerType.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(samplerType.Qualifiers);
-            return base.Visit(samplerType);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.Annotations annotations)
         {
@@ -779,13 +731,6 @@ namespace SiliconStudio.Shaders.Visitor
             VisitList(typedef.SubDeclarators);
             typedef.Type = (SiliconStudio.Shaders.Ast.TypeBase)VisitDynamic(typedef.Type);
             return base.Visit(typedef);
-        }
-        public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.StateType stateType)
-        {
-            VisitList(stateType.Attributes);
-            stateType.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(stateType.Name);
-            stateType.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(stateType.Qualifiers);
-            return base.Visit(stateType);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.ExpressionList expressionList)
         {
@@ -1231,20 +1176,6 @@ namespace SiliconStudio.Shaders.Visitor
                 IsBuiltIn = shaderTypeName.IsBuiltIn,
             };
         }
-        public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.StreamsType streamsType)
-        {
-            streamsType = (SiliconStudio.Shaders.Ast.Xenko.StreamsType)base.Visit(streamsType);
-            return new SiliconStudio.Shaders.Ast.Xenko.StreamsType
-            {
-                Span = streamsType.Span,
-                Attributes = streamsType.Attributes,
-                TypeInference = streamsType.TypeInference,
-                Name = streamsType.Name,
-                Qualifiers = streamsType.Qualifiers,
-                IsBuiltIn = streamsType.IsBuiltIn,
-                AlternativeNames = streamsType.AlternativeNames,
-            };
-        }
         public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.TypeIdentifier typeIdentifier)
         {
             typeIdentifier = (SiliconStudio.Shaders.Ast.Xenko.TypeIdentifier)base.Visit(typeIdentifier);
@@ -1464,34 +1395,6 @@ namespace SiliconStudio.Shaders.Visitor
                 Members = classType.Members,
             };
         }
-        public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.StreamTypeName streamTypeName)
-        {
-            streamTypeName = (SiliconStudio.Shaders.Ast.Hlsl.StreamTypeName)base.Visit(streamTypeName);
-            return new SiliconStudio.Shaders.Ast.Hlsl.StreamTypeName
-            {
-                Span = streamTypeName.Span,
-                Attributes = streamTypeName.Attributes,
-                TypeInference = streamTypeName.TypeInference,
-                Name = streamTypeName.Name,
-                Qualifiers = streamTypeName.Qualifiers,
-                IsBuiltIn = streamTypeName.IsBuiltIn,
-                AlternativeNames = streamTypeName.AlternativeNames,
-            };
-        }
-        public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.SamplerStateType samplerStateType)
-        {
-            samplerStateType = (SiliconStudio.Shaders.Ast.Hlsl.SamplerStateType)base.Visit(samplerStateType);
-            return new SiliconStudio.Shaders.Ast.Hlsl.SamplerStateType
-            {
-                Span = samplerStateType.Span,
-                Attributes = samplerStateType.Attributes,
-                TypeInference = samplerStateType.TypeInference,
-                Name = samplerStateType.Name,
-                Qualifiers = samplerStateType.Qualifiers,
-                IsBuiltIn = samplerStateType.IsBuiltIn,
-                AlternativeNames = samplerStateType.AlternativeNames,
-            };
-        }
         public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.IdentifierGeneric identifierGeneric)
         {
             identifierGeneric = (SiliconStudio.Shaders.Ast.Hlsl.IdentifierGeneric)base.Visit(identifierGeneric);
@@ -1540,20 +1443,6 @@ namespace SiliconStudio.Shaders.Visitor
                 Qualifiers = textureType.Qualifiers,
                 IsBuiltIn = textureType.IsBuiltIn,
                 AlternativeNames = textureType.AlternativeNames,
-            };
-        }
-        public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.SamplerType samplerType)
-        {
-            samplerType = (SiliconStudio.Shaders.Ast.Hlsl.SamplerType)base.Visit(samplerType);
-            return new SiliconStudio.Shaders.Ast.Hlsl.SamplerType
-            {
-                Span = samplerType.Span,
-                Attributes = samplerType.Attributes,
-                TypeInference = samplerType.TypeInference,
-                Name = samplerType.Name,
-                Qualifiers = samplerType.Qualifiers,
-                IsBuiltIn = samplerType.IsBuiltIn,
-                AlternativeNames = samplerType.AlternativeNames,
             };
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.Annotations annotations)
@@ -1742,20 +1631,6 @@ namespace SiliconStudio.Shaders.Visitor
                 IsBuiltIn = typedef.IsBuiltIn,
                 SubDeclarators = typedef.SubDeclarators,
                 Type = typedef.Type,
-            };
-        }
-        public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.StateType stateType)
-        {
-            stateType = (SiliconStudio.Shaders.Ast.Hlsl.StateType)base.Visit(stateType);
-            return new SiliconStudio.Shaders.Ast.Hlsl.StateType
-            {
-                Span = stateType.Span,
-                Attributes = stateType.Attributes,
-                TypeInference = stateType.TypeInference,
-                Name = stateType.Name,
-                Qualifiers = stateType.Qualifiers,
-                IsBuiltIn = stateType.IsBuiltIn,
-                AlternativeNames = stateType.AlternativeNames,
             };
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.ExpressionList expressionList)
@@ -2258,10 +2133,6 @@ namespace SiliconStudio.Shaders.Visitor
         {
             DefaultVisit(shaderTypeName);
         }
-        public virtual void Visit(SiliconStudio.Shaders.Ast.Xenko.StreamsType streamsType)
-        {
-            DefaultVisit(streamsType);
-        }
         public virtual void Visit(SiliconStudio.Shaders.Ast.Xenko.TypeIdentifier typeIdentifier)
         {
             DefaultVisit(typeIdentifier);
@@ -2338,14 +2209,6 @@ namespace SiliconStudio.Shaders.Visitor
         {
             DefaultVisit(classType);
         }
-        public virtual void Visit(SiliconStudio.Shaders.Ast.Hlsl.StreamTypeName streamTypeName)
-        {
-            DefaultVisit(streamTypeName);
-        }
-        public virtual void Visit(SiliconStudio.Shaders.Ast.Hlsl.SamplerStateType samplerStateType)
-        {
-            DefaultVisit(samplerStateType);
-        }
         public virtual void Visit(SiliconStudio.Shaders.Ast.Hlsl.IdentifierGeneric identifierGeneric)
         {
             DefaultVisit(identifierGeneric);
@@ -2361,10 +2224,6 @@ namespace SiliconStudio.Shaders.Visitor
         public virtual void Visit(SiliconStudio.Shaders.Ast.Hlsl.TextureType textureType)
         {
             DefaultVisit(textureType);
-        }
-        public virtual void Visit(SiliconStudio.Shaders.Ast.Hlsl.SamplerType samplerType)
-        {
-            DefaultVisit(samplerType);
         }
         public virtual void Visit(SiliconStudio.Shaders.Ast.Hlsl.Annotations annotations)
         {
@@ -2429,10 +2288,6 @@ namespace SiliconStudio.Shaders.Visitor
         public virtual void Visit(SiliconStudio.Shaders.Ast.Hlsl.Typedef typedef)
         {
             DefaultVisit(typedef);
-        }
-        public virtual void Visit(SiliconStudio.Shaders.Ast.Hlsl.StateType stateType)
-        {
-            DefaultVisit(stateType);
         }
         public virtual void Visit(SiliconStudio.Shaders.Ast.ExpressionList expressionList)
         {
@@ -2696,13 +2551,6 @@ namespace SiliconStudio.Shaders.Visitor
             VisitDynamic(shaderTypeName.Qualifiers);
             base.Visit(shaderTypeName);
         }
-        public override void Visit(SiliconStudio.Shaders.Ast.Xenko.StreamsType streamsType)
-        {
-            VisitList(streamsType.Attributes);
-            VisitDynamic(streamsType.Name);
-            VisitDynamic(streamsType.Qualifiers);
-            base.Visit(streamsType);
-        }
         public override void Visit(SiliconStudio.Shaders.Ast.Xenko.TypeIdentifier typeIdentifier)
         {
             VisitList(typeIdentifier.Indices);
@@ -2821,20 +2669,6 @@ namespace SiliconStudio.Shaders.Visitor
             VisitList(classType.Members);
             base.Visit(classType);
         }
-        public override void Visit(SiliconStudio.Shaders.Ast.Hlsl.StreamTypeName streamTypeName)
-        {
-            VisitList(streamTypeName.Attributes);
-            VisitDynamic(streamTypeName.Name);
-            VisitDynamic(streamTypeName.Qualifiers);
-            base.Visit(streamTypeName);
-        }
-        public override void Visit(SiliconStudio.Shaders.Ast.Hlsl.SamplerStateType samplerStateType)
-        {
-            VisitList(samplerStateType.Attributes);
-            VisitDynamic(samplerStateType.Name);
-            VisitDynamic(samplerStateType.Qualifiers);
-            base.Visit(samplerStateType);
-        }
         public override void Visit(SiliconStudio.Shaders.Ast.Hlsl.IdentifierGeneric identifierGeneric)
         {
             VisitList(identifierGeneric.Indices);
@@ -2859,13 +2693,6 @@ namespace SiliconStudio.Shaders.Visitor
             VisitDynamic(textureType.Name);
             VisitDynamic(textureType.Qualifiers);
             base.Visit(textureType);
-        }
-        public override void Visit(SiliconStudio.Shaders.Ast.Hlsl.SamplerType samplerType)
-        {
-            VisitList(samplerType.Attributes);
-            VisitDynamic(samplerType.Name);
-            VisitDynamic(samplerType.Qualifiers);
-            base.Visit(samplerType);
         }
         public override void Visit(SiliconStudio.Shaders.Ast.Hlsl.Annotations annotations)
         {
@@ -2968,13 +2795,6 @@ namespace SiliconStudio.Shaders.Visitor
             VisitList(typedef.SubDeclarators);
             VisitDynamic(typedef.Type);
             base.Visit(typedef);
-        }
-        public override void Visit(SiliconStudio.Shaders.Ast.Hlsl.StateType stateType)
-        {
-            VisitList(stateType.Attributes);
-            VisitDynamic(stateType.Name);
-            VisitDynamic(stateType.Qualifiers);
-            base.Visit(stateType);
         }
         public override void Visit(SiliconStudio.Shaders.Ast.ExpressionList expressionList)
         {
@@ -3430,20 +3250,6 @@ namespace SiliconStudio.Shaders.Ast.Xenko
 }
 namespace SiliconStudio.Shaders.Ast.Xenko
 {
-    public partial class StreamsType
-    {
-        public override void Accept(ShaderVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
-        public override TResult Accept<TResult>(ShaderVisitor<TResult> visitor)
-        {
-            return visitor.Visit(this);
-        }
-    }
-}
-namespace SiliconStudio.Shaders.Ast.Xenko
-{
     public partial class TypeIdentifier
     {
         public override void Accept(ShaderVisitor visitor)
@@ -3710,34 +3516,6 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
 }
 namespace SiliconStudio.Shaders.Ast.Hlsl
 {
-    public partial class StreamTypeName
-    {
-        public override void Accept(ShaderVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
-        public override TResult Accept<TResult>(ShaderVisitor<TResult> visitor)
-        {
-            return visitor.Visit(this);
-        }
-    }
-}
-namespace SiliconStudio.Shaders.Ast.Hlsl
-{
-    public partial class SamplerStateType
-    {
-        public override void Accept(ShaderVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
-        public override TResult Accept<TResult>(ShaderVisitor<TResult> visitor)
-        {
-            return visitor.Visit(this);
-        }
-    }
-}
-namespace SiliconStudio.Shaders.Ast.Hlsl
-{
     public partial class IdentifierGeneric
     {
         public override void Accept(ShaderVisitor visitor)
@@ -3781,20 +3559,6 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
 namespace SiliconStudio.Shaders.Ast.Hlsl
 {
     public partial class TextureType
-    {
-        public override void Accept(ShaderVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
-        public override TResult Accept<TResult>(ShaderVisitor<TResult> visitor)
-        {
-            return visitor.Visit(this);
-        }
-    }
-}
-namespace SiliconStudio.Shaders.Ast.Hlsl
-{
-    public partial class SamplerType
     {
         public override void Accept(ShaderVisitor visitor)
         {
@@ -4019,20 +3783,6 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
 namespace SiliconStudio.Shaders.Ast.Hlsl
 {
     public partial class Typedef
-    {
-        public override void Accept(ShaderVisitor visitor)
-        {
-            visitor.Visit(this);
-        }
-        public override TResult Accept<TResult>(ShaderVisitor<TResult> visitor)
-        {
-            return visitor.Visit(this);
-        }
-    }
-}
-namespace SiliconStudio.Shaders.Ast.Hlsl
-{
-    public partial class StateType
     {
         public override void Accept(ShaderVisitor visitor)
         {

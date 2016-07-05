@@ -1558,7 +1558,7 @@ namespace SiliconStudio.Shaders.Convertor
             for (int i = expression.Arguments.Count - 1; i >= 0; i--)
             {
                 var argument = expression.Arguments[i];
-                if (ClassType.IsStreamType(argument.TypeInference.TargetType))
+                if (ClassType.IsStreamOutputType(argument.TypeInference.TargetType))
                 {
                     expression.Arguments.RemoveAt(i);
                 }
@@ -1571,7 +1571,7 @@ namespace SiliconStudio.Shaders.Convertor
             for (int i = declaration.Parameters.Count - 1; i >= 0; i--)
             {
                 var argument = declaration.Parameters[i];
-                if (ClassType.IsStreamType(argument.Type.TypeInference.TargetType))
+                if (ClassType.IsStreamOutputType(argument.Type.TypeInference.TargetType))
                 {
                     declaration.Parameters.RemoveAt(i);
                 }
@@ -2294,7 +2294,7 @@ namespace SiliconStudio.Shaders.Convertor
                         {
                             var targetVariable = (VariableReferenceExpression) method.Target;
                             var targetType = targetVariable.TypeInference.TargetType;
-                            if (ClassType.IsStreamType(targetType))
+                            if (ClassType.IsStreamOutputType(targetType))
                             {
                                 if (method.Member == "Append")
                                 {
@@ -2480,7 +2480,7 @@ namespace SiliconStudio.Shaders.Convertor
             }
             else
             {
-                AddGlobalDeclaration(new Variable(SamplerStateType.SamplerState, "NoSampler"));
+                AddGlobalDeclaration(new Variable(StateType.SamplerState, "NoSampler"));
             }
         }
 
@@ -3140,7 +3140,7 @@ namespace SiliconStudio.Shaders.Convertor
                 // Remove any kind of register location
                 // if (forceImplicitLayout)
                 // variable.Qualifiers.Values.RemoveAll((type) => type is RegisterLocation);
-                var allocatedRegister = variable.Type is SamplerType ? allocatedRegistersForSamplers : allocatedRegistersForUniforms;
+                var allocatedRegister = variable.Type.IsSamplerType() ? allocatedRegistersForSamplers : allocatedRegistersForUniforms;
                 var size = GetNumberOfFloat4FromVariable(variable.Type);
 
                 int registerIndex = FindAvailableBinding(allocatedRegister, 0, size);
@@ -4161,9 +4161,8 @@ namespace SiliconStudio.Shaders.Convertor
             mapToGlsl.Add(new MatrixType(ScalarType.Float, 1, 1), ScalarType.Float);
 
             // Sampler objects
-            mapToGlsl.Add(SamplerStateType.SamplerState, new TypeName("sampler"));
-            mapToGlsl.Add(new StateType("SamplerState"), new TypeName("sampler"));
-            mapToGlsl.Add(new StateType("SamplerComparisonState"), new TypeName("samplerShadow"));
+            mapToGlsl.Add(StateType.SamplerState, new TypeName("sampler"));
+            mapToGlsl.Add(StateType.SamplerComparisonState, new TypeName("samplerShadow"));
             //mapToGlsl.Add(SamplerStateType.SamplerComparisonState, new TypeName("sampler"));
 
             // Texture objects

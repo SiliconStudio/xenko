@@ -267,9 +267,10 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// Visits the specified type.
         /// </summary>
         /// <param name="type">the type.</param>
-        public override void Visit(StateType type)
+        public override void Visit(ObjectType type)
         {
-            Write("SamplerState");
+            if (type.IsSamplerType())
+                Write("SamplerState");
         }
 
         /// <summary>
@@ -305,7 +306,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             if (typeBase != null)
             {
                 // Unhandled types only
-                if (!(typeBase is TypeName || typeBase is ScalarType || typeBase is MatrixType || typeBase is TextureType || typeBase is StateType || typeBase is ArrayType))
+                if (!(typeBase is TypeName || typeBase is ScalarType || typeBase is MatrixType || typeBase is TextureType || typeBase.IsStateType() || typeBase is ArrayType))
                 {
                     Write(typeBase.Name);
                     ProcessInitialValueStatus = true;

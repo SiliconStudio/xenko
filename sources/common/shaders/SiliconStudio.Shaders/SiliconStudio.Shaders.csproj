@@ -135,7 +135,6 @@
     <Compile Include="Ast\GenericParameterConstraint.cs" />
     <Compile Include="Ast\GenericParameterType.cs" />
     <Compile Include="Ast\Hlsl\GenericType.Extensions.cs" />
-    <Compile Include="Ast\Hlsl\SamplerStateType.cs" />
     <Compile Include="Ast\Hlsl\IdentifierGeneric.cs" />
     <Compile Include="Ast\Hlsl\IdentifierNs.cs" />
     <Compile Include="Ast\Hlsl\IdentifierDot.cs" />

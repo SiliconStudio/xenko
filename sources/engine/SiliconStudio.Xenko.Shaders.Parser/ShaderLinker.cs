@@ -107,7 +107,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                 slotCount = (int)((LiteralExpression)((ArrayType)resolvedType).Dimensions[0]).Literal.Value;
                 resolvedType = ((ArrayType)resolvedType).Type;
             }
-            if (resolvedType is StateType)
+            if (resolvedType.IsStateType())
             {
                 var samplerState = SamplerStateDescription.Default;
 
@@ -351,7 +351,80 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                     variableType = variableType.TypeInference.TargetType;
             }
 
-            if (variableType.IsBuiltIn)
+            if (variableType is ScalarType)
+            {
+                // Uint and int are collapsed to int
+                if (variableType == ScalarType.Int || variableType == ScalarType.UInt)
+                {
+                    parameterTypeInfo.Class = EffectParameterClass.Scalar;
+                    parameterTypeInfo.Type = variableType == ScalarType.Int ? EffectParameterType.Int : EffectParameterType.UInt;
+                }
+                else if (variableType == ScalarType.Float)
+                {
+                    parameterTypeInfo.Class = EffectParameterClass.Scalar;
+                    parameterTypeInfo.Type = EffectParameterType.Float;
+                }
+                else if (variableType == ScalarType.Bool)
+                {
+                    parameterTypeInfo.Class = EffectParameterClass.Scalar;
+                    parameterTypeInfo.Type = EffectParameterType.Bool;
+                }
+
+                parameterTypeInfo.RowCount = 1;
+                parameterTypeInfo.ColumnCount = 1;
+            }
+            else if (variableType is VectorType)
+            {
+                if (variableType == VectorType.Float2 || variableType == VectorType.Float3 || variableType == VectorType.Float4)
+                {
+                    bool isColor = attributes.OfType<AttributeDeclaration>().Any(x => x.Name == "Color");
+                    parameterTypeInfo.Class = isColor ? EffectParameterClass.Color : EffectParameterClass.Vector;
+                    parameterTypeInfo.Type = EffectParameterType.Float;
+                }
+                else if (variableType == VectorType.Int2 || variableType == VectorType.Int3 || variableType == VectorType.Int4)
+                {
+                    parameterTypeInfo.Class = EffectParameterClass.Vector;
+                    parameterTypeInfo.Type = EffectParameterType.Int;
+                }
+                else if (variableType == VectorType.UInt2 || variableType == VectorType.UInt3 || variableType == VectorType.UInt4)
+                {
+                    parameterTypeInfo.Class = EffectParameterClass.Vector;
+                    parameterTypeInfo.Type = EffectParameterType.UInt;
+                }
+
+                parameterTypeInfo.RowCount = 1;
+                parameterTypeInfo.ColumnCount = ((VectorType)variableType).Dimension;
+            }
+            else if (variableType is MatrixType)
+            {
+                parameterTypeInfo.Class = EffectParameterClass.MatrixColumns;
+                parameterTypeInfo.Type = EffectParameterType.Float;
+                parameterTypeInfo.RowCount = ((MatrixType)variableType).RowCount;
+                parameterTypeInfo.ColumnCount = ((MatrixType)variableType).ColumnCount;
+            }
+            else if (variableType is StructType)
+            {
+                var structType = (StructType)variableType;
+
+                parameterTypeInfo.Class = EffectParameterClass.Struct;
+                parameterTypeInfo.RowCount = 1;
+                parameterTypeInfo.ColumnCount = 1;
+                parameterTypeInfo.Name = structType.Name.Text;
+
+                var members = new List<EffectTypeMemberDescription>();
+                foreach (var field in structType.Fields)
+                {
+                    var memberInfo = new EffectTypeMemberDescription
+                    {
+                        Name = field.Name.Text,
+                        Type = CreateTypeInfo(field.Type, field.Attributes),
+                    };
+                    members.Add(memberInfo);
+                }
+
+                parameterTypeInfo.Members = members.ToArray();
+            }
+            else
             {
                 var variableTypeName = variableType.Name.Text.ToLower();
 
@@ -466,79 +539,6 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                         parameterTypeInfo.Type = EffectParameterType.Sampler;
                         break;
                 }
-            }
-            else if (variableType is ScalarType)
-            {
-                // Uint and int are collapsed to int
-                if (variableType == ScalarType.Int || variableType == ScalarType.UInt)
-                {
-                    parameterTypeInfo.Class = EffectParameterClass.Scalar;
-                    parameterTypeInfo.Type = variableType == ScalarType.Int ? EffectParameterType.Int : EffectParameterType.UInt;
-                }
-                else if (variableType == ScalarType.Float)
-                {
-                    parameterTypeInfo.Class = EffectParameterClass.Scalar;
-                    parameterTypeInfo.Type = EffectParameterType.Float;
-                }
-                else if (variableType == ScalarType.Bool)
-                {
-                    parameterTypeInfo.Class = EffectParameterClass.Scalar;
-                    parameterTypeInfo.Type = EffectParameterType.Bool;
-                }
-
-                parameterTypeInfo.RowCount = 1;
-                parameterTypeInfo.ColumnCount = 1;
-            }
-            else if (variableType is VectorType)
-            {
-                if (variableType == VectorType.Float2 || variableType == VectorType.Float3 || variableType == VectorType.Float4)
-                {
-                    bool isColor = attributes.OfType<AttributeDeclaration>().Any(x => x.Name == "Color");
-                    parameterTypeInfo.Class = isColor ? EffectParameterClass.Color : EffectParameterClass.Vector;
-                    parameterTypeInfo.Type = EffectParameterType.Float;
-                }
-                else if (variableType == VectorType.Int2 || variableType == VectorType.Int3 || variableType == VectorType.Int4)
-                {
-                    parameterTypeInfo.Class = EffectParameterClass.Vector;
-                    parameterTypeInfo.Type = EffectParameterType.Int;
-                }
-                else if (variableType == VectorType.UInt2 || variableType == VectorType.UInt3 || variableType == VectorType.UInt4)
-                {
-                    parameterTypeInfo.Class = EffectParameterClass.Vector;
-                    parameterTypeInfo.Type = EffectParameterType.UInt;
-                }
-
-                parameterTypeInfo.RowCount = 1;
-                parameterTypeInfo.ColumnCount = ((VectorType)variableType).Dimension;
-            }
-            else if (variableType is MatrixType)
-            {
-                parameterTypeInfo.Class = EffectParameterClass.MatrixColumns;
-                parameterTypeInfo.Type = EffectParameterType.Float;
-                parameterTypeInfo.RowCount = ((MatrixType)variableType).RowCount;
-                parameterTypeInfo.ColumnCount = ((MatrixType)variableType).ColumnCount;
-            }
-            else if (variableType is StructType)
-            {
-                var structType = (StructType)variableType;
-
-                parameterTypeInfo.Class = EffectParameterClass.Struct;
-                parameterTypeInfo.RowCount = 1;
-                parameterTypeInfo.ColumnCount = 1;
-                parameterTypeInfo.Name = structType.Name.Text;
-
-                var members = new List<EffectTypeMemberDescription>();
-                foreach (var field in structType.Fields)
-                {
-                    var memberInfo = new EffectTypeMemberDescription
-                    {
-                        Name = field.Name.Text,
-                        Type = CreateTypeInfo(field.Type, field.Attributes),
-                    };
-                    members.Add(memberInfo);
-                }
-
-                parameterTypeInfo.Members = members.ToArray();
             }
 
             return parameterTypeInfo;

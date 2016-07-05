@@ -434,7 +434,7 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
                 foreach (var parameter in methodDeclaration.Parameters)
                 {
                     var parameterType = parameter.Type;
-                    if (parameterType is SamplerType)
+                    if (parameterType.IsSamplerType())
                     {
                         parameterType = SamplerType.Sampler;
                     }

@@ -227,7 +227,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
             if (inSampler)
                 return variable;
             
-            if (variable.Type is StateType)
+            if (variable.Type.IsSamplerStateType())
                 inSampler = true;
 
             // type inference for variable
@@ -414,7 +414,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
                         Error(XenkoMessageCode.ErrorExtraStreamsPrefix, memberReference.Span, memberReference, refAsVariable, analyzedModuleMixin.MixinName);
                 }
             }
-            else if (IsInputOutputMember(memberReference))
+            else if (IsMutableMember(memberReference))
             {
                 CheckStreamMemberReference(memberReference);
             }
@@ -755,7 +755,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
         {
             if (argTypeBase == StreamsType.Streams && expectedTypeBase == StreamsType.Output) // streams and output are the same
                 return true;
-            if (argTypeBase is StreamsType && expectedType is StreamsType)
+            if (argTypeBase.IsStreamsType() && expectedType.IsStreamsType())
                 return argTypeBase == expectedType;
 
             return base.TestMethodInvocationArgument(argTypeBase, expectedTypeBase, argType, expectedType, ref score);
@@ -1062,7 +1062,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
         /// </returns>
         protected override TypeBase GetBinaryImplicitConversionType(SourceSpan span, TypeBase left, TypeBase right, bool isBinaryOperator)
         {
-            if (left.ResolveType() is StreamsType || right.ResolveType() is StreamsType)
+            if (left.ResolveType().IsStreamsType() || right.ResolveType().IsStreamsType())
                 return StreamsType.Streams;
 
             return base.GetBinaryImplicitConversionType(span, left, right, isBinaryOperator);
@@ -1077,7 +1077,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
         /// <returns>The implicit conversion between between to two types</returns>
         protected override TypeBase GetMultiplyImplicitConversionType(SourceSpan span, TypeBase left, TypeBase right)
         {
-            if (left.ResolveType() is StreamsType || right.ResolveType() is StreamsType)
+            if (left.ResolveType().IsStreamsType() || right.ResolveType().IsStreamsType())
                 return StreamsType.Streams;
 
             return base.GetMultiplyImplicitConversionType(span, left, right);
@@ -1092,7 +1092,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
         /// <returns>The implicit conversion between between to two types</returns>
         protected override TypeBase GetDivideImplicitConversionType(SourceSpan span, TypeBase left, TypeBase right)
         {
-            if (left.ResolveType() is StreamsType || right.ResolveType() is StreamsType)
+            if (left.ResolveType().IsStreamsType() || right.ResolveType().IsStreamsType())
                 return StreamsType.Streams;
 
             return base.GetDivideImplicitConversionType(span, left, right);
@@ -1141,7 +1141,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
         {
             if (expression != null)
             {
-                if (expression.Target.TypeInference.TargetType is StreamsType)
+                var targetType = expression.Target.TypeInference.TargetType;
+                if (targetType != null && targetType.IsStreamsType())
                     return true;
 
                 // iterate until the base "class" is found and compare it to "streams"
@@ -1150,7 +1151,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
                     target = (target as MemberReferenceExpression).Target;
                 
                 var variableReferenceExpression = target as VariableReferenceExpression;
-                return variableReferenceExpression != null && (variableReferenceExpression.Name == StreamsType.ThisStreams.Name || variableReferenceExpression.TypeInference.TargetType is StreamsType);
+                return variableReferenceExpression != null && (variableReferenceExpression.Name == StreamsType.ThisStreams.Name || (variableReferenceExpression.TypeInference.TargetType != null && variableReferenceExpression.TypeInference.TargetType.IsStreamsType()));
             }
             return false;
         }
@@ -1160,10 +1161,10 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
         /// </summary>
         /// <param name="expression">the expression to analyze</param>
         /// <returns>true if it is a member of an Input/Output type</returns>
-        private static bool IsInputOutputMember(MemberReferenceExpression expression)
+        private static bool IsMutableMember(MemberReferenceExpression expression)
         {
-            var targetType = expression.Target.TypeInference.TargetType as StreamsType;
-            return targetType != null && targetType.IsInputOutput;
+            var targetType = expression.Target.TypeInference.TargetType as ObjectType;
+            return targetType != null && targetType.IsStreamsType() && targetType.IsStreamsMutable();
         }
 
         #endregion

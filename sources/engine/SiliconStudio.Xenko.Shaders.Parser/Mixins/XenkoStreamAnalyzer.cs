@@ -244,7 +244,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             base.Visit(variableStatement);
 
             var parentBlock = this.NodeStack.OfType<StatementList>().LastOrDefault();
-            if (parentBlock != null && variableStatement.Type == StreamsType.Streams && variableStatement.InitialValue is VariableReferenceExpression && ((VariableReferenceExpression)(variableStatement.InitialValue)).TypeInference.TargetType is StreamsType)
+            if (parentBlock != null && variableStatement.Type == StreamsType.Streams && variableStatement.InitialValue is VariableReferenceExpression && ((VariableReferenceExpression)(variableStatement.InitialValue)).TypeInference.TargetType.IsStreamsType())
             {
                 VariableStreamsAssignment.Add(variableStatement, parentBlock);
             }

@@ -1065,31 +1065,32 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             {
                 foreach (var varRef in variable.Value)
                 {
-                    if (varRef.Expression is MemberReferenceExpression)
+                    var memberReferenceExpression = varRef.Expression as MemberReferenceExpression;
+                    if (memberReferenceExpression != null)
                     {
                         if (variable.Key.Qualifiers.Contains(XenkoStorageQualifier.Stream)) // TODO: change test
                         {
-                            (varRef.Expression as MemberReferenceExpression).Member = variable.Key.Name;
+                            memberReferenceExpression.Member = variable.Key.Name;
 
-                            var type = (varRef.Expression as MemberReferenceExpression).Target.TypeInference.TargetType as StreamsType;
-                            if (type == null || !type.IsInputOutput)
-                                (varRef.Expression as MemberReferenceExpression).Target = new VariableReferenceExpression(StreamsType.ThisStreams);
+                            var type = memberReferenceExpression.Target.TypeInference.TargetType;
+                            if (type == null || !type.IsStreamsType() || !type.IsStreamsMutable())
+                                memberReferenceExpression.Target = new VariableReferenceExpression(StreamsType.ThisStreams);
                         }
                         else if (variable.Key.Qualifiers.Contains(XenkoStorageQualifier.PatchStream))
                         {
-                            (varRef.Expression as MemberReferenceExpression).Member = variable.Key.Name;
+                            memberReferenceExpression.Member = variable.Key.Name;
                         }
                         else
                         {
                             var vre = new VariableReferenceExpression(variable.Key.Name);
                             vre.TypeInference.Declaration = variable.Key;
                             vre.TypeInference.TargetType = variable.Key.Type.ResolveType();
-                            ReplaceMemberReferenceExpressionByVariableReferenceExpression(varRef.Expression as MemberReferenceExpression, vre, varRef.Node);
+                            ReplaceMemberReferenceExpressionByVariableReferenceExpression(memberReferenceExpression, vre, varRef.Node);
                             varRef.Expression = vre;
                         }
                     }
                     else
-                        (varRef.Expression as VariableReferenceExpression).Name = variable.Key.Name;
+                        ((VariableReferenceExpression)varRef.Expression).Name = variable.Key.Name;
                 }
 
                 variable.Key.Name.Text += "_id" + id;
@@ -1305,7 +1306,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// <returns>true/false</returns>
         private bool IsOutOfCBufferVariable(Variable variable)
         {
-            return variable.Type is SamplerType || variable.Type is SamplerStateType || variable.Type is TextureType || variable.Type is StateType || variable.Type.ResolveType() is ObjectType;
+            return variable.Type.IsSamplerType() || variable.Type is TextureType || variable.Type.IsStateType() || variable.Type.ResolveType() is ObjectType;
         }
 
         /// <summary>

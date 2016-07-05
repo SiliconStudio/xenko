@@ -114,7 +114,7 @@ namespace SiliconStudio.Shaders.Convertor
                 {
                     var textureType = textureVariable.Type.ResolveType();
 
-                    if (textureType is TextureType || (textureType.IsBuiltIn && CultureInfo.InvariantCulture.CompareInfo.IsPrefix(textureType.Name.Text, "Texture", CompareOptions.IgnoreCase))
+                    if (textureType is TextureType || (CultureInfo.InvariantCulture.CompareInfo.IsPrefix(textureType.Name.Text, "Texture", CompareOptions.IgnoreCase))
                         || (textureType.IsBuiltIn && textureType.Name.Text.StartsWith("Buffer")))
                     {
                         switch (memberRef.Member)
@@ -213,7 +213,7 @@ namespace SiliconStudio.Shaders.Convertor
                     if (samplerRefExpr != null)
                     {
                         var samplerVariable = samplerRefExpr.TypeInference.Declaration as Variable;
-                        var newSamplerType = texFetchInfo.Item1 < 4 ? new SamplerType("sampler" + texFetchInfo.Item1 + "D") : new SamplerType("samplerCube");
+                        var newSamplerType = texFetchInfo.Item1 < 4 ? new ObjectType("sampler" + texFetchInfo.Item1 + "D") : new ObjectType("samplerCube");
                         this.ChangeVariableType(samplerVariable, newSamplerType);
                     }
                 }
@@ -251,7 +251,7 @@ namespace SiliconStudio.Shaders.Convertor
             for (int i = 0; i < method.Parameters.Count; i++)
             {
                 var parameter = method.Parameters[i];
-                if (parameter.Type is TextureType || parameter.Type is StateType)
+                if (parameter.Type is TextureType || parameter.Type.IsStateType())
                 {
                     textureParameters.Add(parameter);
 
@@ -268,7 +268,7 @@ namespace SiliconStudio.Shaders.Convertor
                 else if ( i < invoke.Arguments.Count)
                 {
                     parameterValues.Add(invoke.Arguments[i]);
-                    if (parameter.Type is SamplerType)
+                    if (parameter.Type.IsSamplerType())
                     {
                         samplerTypes.Add(i);
                     }

@@ -8,99 +8,32 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     /// <summary>
     /// A State type.
     /// </summary>
-    public partial class StreamTypeName : ObjectType
+    public static class StreamTypeName
     {
         #region Constants and Fields
 
         /// <summary>
         /// A PointStream
         /// </summary>
-        public static readonly StreamTypeName PointStream = new StreamTypeName("PointStream");
+        public static readonly ObjectType PointStream = new ObjectType("PointStream");
 
         /// <summary>
         /// A LineStream.
         /// </summary>
-        public static readonly StreamTypeName LineStream = new StreamTypeName("LineStream");
+        public static readonly ObjectType LineStream = new ObjectType("LineStream");
 
         /// <summary>
         /// A TriangleStream.
         /// </summary>
-        public static readonly StreamTypeName TriangleStream = new StreamTypeName("TriangleStream");
+        public static readonly ObjectType TriangleStream = new ObjectType("TriangleStream");
 
-        private static readonly StreamTypeName[] StreamTypesName = new[] { PointStream, LineStream, TriangleStream };
+        private static readonly ObjectType[] StreamTypesName = new[] { PointStream, LineStream, TriangleStream };
 
         #endregion
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StreamTypeName"/> class.
-        /// </summary>
-        public StreamTypeName()
+        public static bool IsStreamTypeName(this TypeBase type)
         {
-            IsBuiltIn = true;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StreamTypeName"/> class.
-        /// </summary>
-        /// <param name="name">
-        /// The name.
-        /// </param>
-        public StreamTypeName(string name, params string[] altNames)
-            : base(name, altNames)
-        {
-            IsBuiltIn = true;
-        }
-
-        /// <inheritdoc/>
-        public bool Equals(StreamTypeName other)
-        {
-            return base.Equals(other);
-        }
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj))
-            {
-                return false;
-            }
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-            return Equals(obj as StreamTypeName);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
-        /// <summary>
-        /// Implements the operator ==.
-        /// </summary>
-        /// <param name="left">The left.</param>
-        /// <param name="right">The right.</param>
-        /// <returns>
-        /// The result of the operator.
-        /// </returns>
-        public static bool operator ==(StreamTypeName left, StreamTypeName right)
-        {
-            return Equals(left, right);
-        }
-
-        /// <summary>
-        /// Implements the operator !=.
-        /// </summary>
-        /// <param name="left">The left.</param>
-        /// <param name="right">The right.</param>
-        /// <returns>
-        /// The result of the operator.
-        /// </returns>
-        public static bool operator !=(StreamTypeName left, StreamTypeName right)
-        {
-            return !Equals(left, right);
+            return Parse(type.Name) != null;
         }
 
         /// <summary>
@@ -108,7 +41,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns></returns>
-        public static StreamTypeName Parse(string name)
+        public static ObjectType Parse(string name)
         {
             return StreamTypesName.FirstOrDefault(streamType =>  CultureInfo.InvariantCulture.CompareInfo.Compare(name, streamType.Name.Text, CompareOptions.None) == 0);
         }
