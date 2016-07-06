@@ -61,7 +61,7 @@ namespace SiliconStudio.Core.Serialization
 
         protected DataSerializer<T> dataSerializer;
 
-        public MemberSerializer(DataSerializer<T> dataSerializer)
+        protected MemberSerializer(DataSerializer<T> dataSerializer)
         {
             this.dataSerializer = dataSerializer;
         }
