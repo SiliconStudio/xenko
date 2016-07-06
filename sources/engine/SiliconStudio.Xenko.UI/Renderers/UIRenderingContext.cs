@@ -55,16 +55,6 @@ namespace SiliconStudio.Xenko.UI.Renderers
         public Vector3 Resolution;
 
         /// <summary>
-        /// Gets the view matrix of the UI.
-        /// </summary>
-        public Matrix ViewMatrix;
-
-        /// <summary>
-        /// Gets the projection matrix of the UI.
-        /// </summary>
-        public Matrix ProjectionMatrix;
-
-        /// <summary>
         /// Gets the view projection matrix of the UI.
         /// </summary>
         public Matrix ViewProjectionMatrix;

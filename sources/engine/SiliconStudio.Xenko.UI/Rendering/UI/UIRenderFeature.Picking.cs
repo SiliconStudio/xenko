@@ -34,15 +34,8 @@ namespace SiliconStudio.Xenko.Rendering.UI
             ClearPointerEvents();
         }
 
-        partial void PickingPrepare(RenderDrawContext context)
+        partial void PickingPrepare()
         {
-            var viewport = context.CommandList.Viewport;
-
-            // cache the ratio between viewport and target.
-            var viewportSize = viewport.Size;
-            viewportTargetRatio = new Vector2(viewportSize.X / renderingContext.RenderTarget.Width, viewportSize.Y / renderingContext.RenderTarget.Height);
-            viewportOffset = new Vector2(viewport.X / viewport.Width, viewport.Y / viewport.Height);
-
             // compact all the pointer events that happened since last frame to avoid performing useless hit tests.
             CompactPointerEvents();
         }
