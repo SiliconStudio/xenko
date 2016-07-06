@@ -1,5 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 
 using SiliconStudio.Xenko.UI.Controls;
@@ -11,6 +14,11 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
     /// </summary>
     class ControlTests : Control
     {
+        protected override IEnumerable<IUIElementChildren> EnumerateChildren()
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Launch all the tests contained in <see cref="ControlTests"/>
         /// </summary>
