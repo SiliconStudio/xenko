@@ -148,6 +148,7 @@
     <Compile Include="Ast\ExpressionStatement.cs" />
     <Compile Include="Ast\ForStatement.cs" />
     <Compile Include="Ast\GenericType.cs" />
+    <Compile Include="Ast\GenericBaseType.cs" />
     <Compile Include="Ast\Hlsl\Annotations.cs" />
     <Compile Include="Ast\Hlsl\AsmExpression.cs" />
     <Compile Include="Ast\Hlsl\AttributeDeclaration.cs" />

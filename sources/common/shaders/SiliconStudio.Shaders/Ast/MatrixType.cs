@@ -1,13 +1,15 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
+using SiliconStudio.Core;
 
 namespace SiliconStudio.Shaders.Ast
 {
     /// <summary>
     /// Matrix type.
     /// </summary>
-    public partial class MatrixType : GenericType
+    public partial class MatrixType : GenericBaseType
     {
         #region Constructors and Destructors
 

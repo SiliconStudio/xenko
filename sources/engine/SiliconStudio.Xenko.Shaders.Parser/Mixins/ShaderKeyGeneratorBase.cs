@@ -322,13 +322,13 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         protected static bool IsTextureType(TypeBase type)
         {
             // TODO we should improve AST type system
-            return type is TextureType || (type is GenericType && type.Name.Text.Contains("Texture"));
+            return type is TextureType || (type is GenericBaseType && type.Name.Text.Contains("Texture"));
         }
 
         protected static bool IsBufferType(TypeBase type)
         {
             // TODO we should improve AST type system
-            return type is GenericType && type.Name.Text.Contains("Buffer");
+            return type is GenericBaseType && type.Name.Text.Contains("Buffer");
         }
     }
 }

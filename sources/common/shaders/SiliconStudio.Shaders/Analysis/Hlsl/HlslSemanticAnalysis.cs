@@ -385,7 +385,7 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
 
         #region Methods
 
-        private static TypeBase GetGenericInstance(string typename, GenericType genericType, TypeBase predefinedType)
+        private static TypeBase GetGenericInstance(string typename, GenericBaseType genericType, TypeBase predefinedType)
         {
             var key = new GenericInstanceKey(typename, genericType.Parameters);
 

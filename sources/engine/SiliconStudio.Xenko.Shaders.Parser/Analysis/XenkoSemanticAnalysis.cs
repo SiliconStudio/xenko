@@ -289,9 +289,9 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
                 {
                     variable.Type = variable.InitialValue.TypeInference.TargetType.ResolveType();
                     // If we have a var type referencing a generic type, try to use the non-generic version of it
-                    if (variable.Type is GenericType)
+                    if (variable.Type is GenericBaseType)
                     {
-                        variable.Type = ((GenericType)variable.Type).ToNonGenericType();
+                        variable.Type = ((GenericBaseType)variable.Type).ToNonGenericType();
                     }
                 }
             }

@@ -229,7 +229,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
 
                 LinkVariable(effectReflection, variable.Name, parameterKey, slotCount);
             }
-            else if (variable.Type is TextureType || variable.Type is GenericType)
+            else if (variable.Type is TextureType || variable.Type is GenericBaseType)
             {
                 LinkVariable(effectReflection, variable.Name, parameterKey, slotCount);
             }

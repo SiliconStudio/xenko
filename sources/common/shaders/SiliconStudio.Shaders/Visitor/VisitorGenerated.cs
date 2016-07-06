@@ -817,7 +817,6 @@ namespace SiliconStudio.Shaders.Visitor
             VisitList(matrixType.Attributes);
             matrixType.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(matrixType.Name);
             matrixType.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(matrixType.Qualifiers);
-            VisitList(matrixType.Parameters);
             matrixType.Type = (SiliconStudio.Shaders.Ast.TypeBase)VisitDynamic(matrixType.Type);
             return base.Visit(matrixType);
         }
@@ -960,7 +959,6 @@ namespace SiliconStudio.Shaders.Visitor
             VisitList(vectorType.Attributes);
             vectorType.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(vectorType.Name);
             vectorType.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(vectorType.Qualifiers);
-            VisitList(vectorType.Parameters);
             vectorType.Type = (SiliconStudio.Shaders.Ast.TypeBase)VisitDynamic(vectorType.Type);
             return base.Visit(vectorType);
         }
@@ -1862,8 +1860,6 @@ namespace SiliconStudio.Shaders.Visitor
                 Name = matrixType.Name,
                 Qualifiers = matrixType.Qualifiers,
                 IsBuiltIn = matrixType.IsBuiltIn,
-                ParameterTypes = matrixType.ParameterTypes,
-                Parameters = matrixType.Parameters,
                 RowCount = matrixType.RowCount,
                 ColumnCount = matrixType.ColumnCount,
                 Type = matrixType.Type,
@@ -2140,8 +2136,6 @@ namespace SiliconStudio.Shaders.Visitor
                 Name = vectorType.Name,
                 Qualifiers = vectorType.Qualifiers,
                 IsBuiltIn = vectorType.IsBuiltIn,
-                ParameterTypes = vectorType.ParameterTypes,
-                Parameters = vectorType.Parameters,
                 Dimension = vectorType.Dimension,
                 Type = vectorType.Type,
             };
@@ -2971,7 +2965,6 @@ namespace SiliconStudio.Shaders.Visitor
             VisitList(matrixType.Attributes);
             VisitDynamic(matrixType.Name);
             VisitDynamic(matrixType.Qualifiers);
-            VisitList(matrixType.Parameters);
             VisitDynamic(matrixType.Type);
             base.Visit(matrixType);
         }
@@ -3114,7 +3107,6 @@ namespace SiliconStudio.Shaders.Visitor
             VisitList(vectorType.Attributes);
             VisitDynamic(vectorType.Name);
             VisitDynamic(vectorType.Qualifiers);
-            VisitList(vectorType.Parameters);
             VisitDynamic(vectorType.Type);
             base.Visit(vectorType);
         }

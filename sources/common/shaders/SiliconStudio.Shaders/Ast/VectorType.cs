@@ -1,13 +1,15 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
+using SiliconStudio.Core;
 
 namespace SiliconStudio.Shaders.Ast
 {
     /// <summary>
     /// Base class for all vector types
     /// </summary>
-    public partial class VectorType : GenericType
+    public partial class VectorType : GenericBaseType
     {
         #region Constants and Fields
 
