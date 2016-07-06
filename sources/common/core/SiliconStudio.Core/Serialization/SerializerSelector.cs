@@ -62,6 +62,8 @@ namespace SiliconStudio.Core.Serialization
 
         public IEnumerable<string> Profiles { get { return profiles; } }
 
+        public SerializerSelector SelectorOverride;
+
         private bool invalidated;
 
         static SerializerSelector()
@@ -134,6 +136,16 @@ namespace SiliconStudio.Core.Serialization
         /// </value>
         public bool ReuseReferences { get { return reuseReferences; } }
 
+        public virtual DataSerializer CreateSerializer(ref ObjectId typeId)
+        {
+            return null;
+        }
+
+        public virtual DataSerializer CreateSerializer(Type type)
+        {
+            return null;
+        }
+
         public DataSerializer GetSerializer(ref ObjectId typeId)
         {
             lock (Lock)
@@ -142,7 +154,15 @@ namespace SiliconStudio.Core.Serialization
                     UpdateDataSerializers();
 
                 DataSerializer dataSerializer;
-                dataSerializersByTypeId.TryGetValue(typeId, out dataSerializer);
+                if (!dataSerializersByTypeId.TryGetValue(typeId, out dataSerializer))
+                {
+                    dataSerializer = CreateSerializer(ref typeId);
+                    if (dataSerializer != null)
+                    {
+                        dataSerializersByTypeId[dataSerializer.SerializationTypeId] = dataSerializer;
+                        dataSerializersByType[dataSerializer.SerializationType] = dataSerializer;
+                    }
+                }
                 return dataSerializer;
             }
         }
@@ -160,7 +180,15 @@ namespace SiliconStudio.Core.Serialization
                     UpdateDataSerializers();
 
                 DataSerializer dataSerializer;
-                dataSerializersByType.TryGetValue(type, out dataSerializer);
+                if (!dataSerializersByType.TryGetValue(type, out dataSerializer))
+                {
+                    dataSerializer = CreateSerializer(type);
+                    if (dataSerializer != null)
+                    {
+                        dataSerializersByTypeId[dataSerializer.SerializationTypeId] = dataSerializer;
+                        dataSerializersByType[dataSerializer.SerializationType] = dataSerializer;
+                    }
+                }
                 return dataSerializer;
             }
         }
@@ -254,7 +282,7 @@ namespace SiliconStudio.Core.Serialization
             }
 
             if (dataSerializer is IDataSerializerInitializer)
-                ((IDataSerializerInitializer)dataSerializer).Initialize(this);
+                ((IDataSerializerInitializer)dataSerializer).Initialize(SelectorOverride ?? this);
         }
     }
 }
