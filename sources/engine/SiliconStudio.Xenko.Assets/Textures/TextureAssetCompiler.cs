@@ -40,10 +40,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// </summary>
         public class TextureConvertCommand : AssetCommand<TextureConvertParameters>
         {
-            public TextureConvertCommand()
-            {
-            }
-
             public TextureConvertCommand(string url, TextureConvertParameters description)
                 : base(url, description)
             {
