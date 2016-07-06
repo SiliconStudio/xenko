@@ -94,6 +94,7 @@
     <Compile Include="Reflection\ObjectFactory.cs" />
     <Compile Include="Reflection\ObjectFactoryAttribute.cs" />
     <Compile Include="Serialization\NullSerializer.cs" />
+    <Compile Include="Serialization\Serializers\HashSetSerializer.cs" />
     <Compile Include="Storage\ObjectIdSimpleBuilder.cs" />
     <Compile Include="ThreadHelper.WindowsRuntime.cs" />
     <Compile Include="Collections\PriorityNodeQueue.cs" />
