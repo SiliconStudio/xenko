@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Quantum.Contents;
 
@@ -16,7 +17,7 @@ namespace SiliconStudio.Quantum
     {
         private readonly IGraphNode rootNode;
         private readonly Func<IGraphNode, GraphNodePath, bool> shouldRegisterNode;
-
+        private readonly HashSet<IGraphNode> registeredNodes = new HashSet<IGraphNode>();
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphNodeChangeListener"/> class.
         /// </summary>
@@ -71,20 +72,31 @@ namespace SiliconStudio.Quantum
             return shouldRegisterNode?.Invoke(content, node) ?? true;
         }
 
-        protected virtual void RegisterNode(IGraphNode node)
+        protected virtual bool RegisterNode(IGraphNode node)
         {
-            node.Content.PrepareChange += ContentPrepareChange;
-            node.Content.FinalizeChange += ContentFinalizeChange;
-            node.Content.Changing += ContentChanging;
-            node.Content.Changed += ContentChanged;
+            // A node can be registered multiple times when it is referenced via multiple paths
+            if (registeredNodes.Add(node))
+            {
+                node.Content.PrepareChange += ContentPrepareChange;
+                node.Content.FinalizeChange += ContentFinalizeChange;
+                node.Content.Changing += ContentChanging;
+                node.Content.Changed += ContentChanged;
+                return true;
+            }
+            return false;
         }
 
-        protected virtual void UnregisterNode(IGraphNode node)
+        protected virtual bool UnregisterNode(IGraphNode node)
         {
-            node.Content.PrepareChange -= ContentPrepareChange;
-            node.Content.FinalizeChange -= ContentFinalizeChange;
-            node.Content.Changing -= ContentChanging;
-            node.Content.Changed -= ContentChanged;
+            if (registeredNodes.Remove(node))
+            {
+                node.Content.PrepareChange -= ContentPrepareChange;
+                node.Content.FinalizeChange -= ContentFinalizeChange;
+                node.Content.Changing -= ContentChanging;
+                node.Content.Changed -= ContentChanged;
+                return true;
+            }
+            return false;
         }
 
         private void RegisterAllNodes()
