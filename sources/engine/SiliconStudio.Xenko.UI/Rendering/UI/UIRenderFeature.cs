@@ -30,9 +30,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
         private readonly LayoutingContext layoutingContext = new LayoutingContext();
 
-        private readonly List<RenderUIElement> uiElementStates = new List<RenderUIElement>();
-
-        private readonly ViewParameters viewParameters = new ViewParameters();
+        private readonly List<UIElementState> uiElementStates = new List<UIElementState>();
 
         private Vector2 viewportTargetRatio;
         private Vector2 viewportOffset;
@@ -63,7 +61,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
         partial void PickingPrepare(RenderDrawContext context);
 
-        partial void PickingUpdate(RenderUIElement renderUIElement, Viewport viewport, GameTime drawTime);
+        partial void PickingUpdate(RenderUIElement renderUIElement, Viewport viewport, ref Matrix worldViewProj, GameTime drawTime);
 
         partial void PickingClear();
 
@@ -86,7 +84,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 var renderNode = GetRenderNode(renderNodeReference);
                 var renderElement = (RenderUIElement)renderNode.RenderObject;
  
-                uiElementStates.Add(renderElement);
+                uiElementStates.Add(new UIElementState(renderElement, new ViewParameters()));
             }
 
             // evaluate the current draw time (game instance is null for thumbnails)
@@ -104,7 +102,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
             Texture scopedDepthBuffer = null;
             foreach (var uiElement in uiElementStates)
             {
-                if (uiElement.UIComponent.IsFullScreen)
+                if (uiElement.RenderObject.UIComponent.IsFullScreen)
                 {
                     var renderTarget = renderingContext.RenderTarget;
                     var description = TextureDescription.New2D(renderTarget.Width, renderTarget.Height, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil);
@@ -113,19 +111,17 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 }
             }
 
-            // render the UI elements of all the entities
+            // update view parameters and perform UI picking
             foreach (var uiElementState in uiElementStates)
             {
-                var uiComponent = uiElementState.UIComponent;
+                var uiComponent = uiElementState.RenderObject.UIComponent;
                 var rootElement = uiComponent.RootElement;
                 if (rootElement == null)
                     continue;
-
-                var updatableRootElement = (IUIElementUpdate)rootElement;
-
+                
                 // calculate the size of the virtual resolution depending on target size (UI canvas)
                 var virtualResolution = uiComponent.Resolution;
-                
+
                 if (uiComponent.IsFullScreen)
                 {
                     //var targetSize = viewportSize;
@@ -137,20 +133,33 @@ namespace SiliconStudio.Xenko.Rendering.UI
                     if (uiComponent.ResolutionStretch == ResolutionStretch.FixedHeightAdaptableWidth)
                         virtualResolution.X = virtualResolution.Y * targetSize.X / targetSize.Y;
 
-                    viewParameters.Update(uiComponent.Entity, virtualResolution);
+                    uiElementState.ViewParameters.Update(uiComponent.Entity, virtualResolution);
                 }
                 else
                 {
                     var cameraComponent = context.RenderContext.Tags.Get(CameraComponentRendererExtensions.Current);
                     if (cameraComponent != null)
-                        viewParameters.Update(uiComponent.Entity, cameraComponent);
+                        uiElementState.ViewParameters.Update(uiComponent.Entity, cameraComponent);
                 }
 
                 // Check if the current UI component is being picked based on the current ViewParameters (used to draw this element)
                 using (Profiler.Begin(UIProfilerKeys.TouchEventsUpdate))
                 {
-                    PickingUpdate(uiElementState, context.CommandList.Viewport, drawTime);
+                    PickingUpdate(uiElementState.RenderObject, context.CommandList.Viewport, ref uiElementState.ViewParameters.WorldViewProjectionMatrix, drawTime);
                 }
+            }
+
+            // render the UI elements of all the entities
+            foreach (var uiElementState in uiElementStates)
+            {
+                var uiComponent = uiElementState.RenderObject.UIComponent;
+                var rootElement = uiComponent.RootElement;
+                if (rootElement == null)
+                    continue;
+
+                var updatableRootElement = (IUIElementUpdate)rootElement;
+                var viewParameters = uiElementState.ViewParameters;
+                var virtualResolution = uiComponent.Resolution;
 
                 // update the rendering context values specific to this element
                 renderingContext.Resolution = virtualResolution;
@@ -198,9 +207,9 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
                 // update the UI element hierarchical properties
                 var rootMatrix = Matrix.Translation(-virtualResolution / 2); // UI world is translated by a half resolution compared to its quad, which is centered around the origin
-                updatableRootElement.UpdateWorldMatrix(ref rootMatrix, rootMatrix != uiElementState.LastRootMatrix);
+                updatableRootElement.UpdateWorldMatrix(ref rootMatrix, rootMatrix != uiElementState.RenderObject.LastRootMatrix);
                 updatableRootElement.UpdateElementState(0);
-                uiElementState.LastRootMatrix = rootMatrix;
+                uiElementState.RenderObject.LastRootMatrix = rootMatrix;
 
                 // clear and set the Depth buffer as required
                 if (uiComponent.IsFullScreen)
@@ -214,7 +223,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 batch.Begin(context.GraphicsContext, ref viewParameters.WorldViewProjectionMatrix, BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
 
                 // Render the UI elements in the final render target
-                ReccursiveDrawWithClipping(context, rootElement);
+                ReccursiveDrawWithClipping(context, rootElement, viewParameters);
 
                 // end the image draw session
                 batch.End();
@@ -232,7 +241,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
             }
         }
 
-        private void ReccursiveDrawWithClipping(RenderDrawContext context, UIElement element)
+        private void ReccursiveDrawWithClipping(RenderDrawContext context, UIElement element, ViewParameters viewParameters)
         {
             // if the element is not visible, we also remove all its children
             if (!element.IsVisible)
@@ -262,7 +271,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
             // render the children
             foreach (var child in element.VisualChildrenCollection)
-                ReccursiveDrawWithClipping(context, child);
+                ReccursiveDrawWithClipping(context, child, viewParameters);
 
             // clear the element clipping region from the stencil buffer
             if (element.ClipToBounds)
@@ -296,6 +305,18 @@ namespace SiliconStudio.Xenko.Rendering.UI
         public void RegisterRenderer(UIElement element, ElementRenderer renderer)
         {
             rendererManager.RegisterRenderer(element, renderer);
+        }
+
+        private struct UIElementState
+        {
+            public readonly RenderUIElement RenderObject;
+            public readonly ViewParameters ViewParameters;
+
+            public UIElementState(RenderUIElement renderObject, ViewParameters viewParameters)
+            {
+                RenderObject = renderObject;
+                ViewParameters = viewParameters;
+            }
         }
 
         private class ViewParameters
