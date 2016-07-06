@@ -525,7 +525,7 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
                 DeepCloner.DeepCollect(decl, cloneContext);
 
             foreach (var bInObj in BuiltinObjects)
-                DeepCloner.DeepCollect(bInObj, cloneContext);
+                DeepCloner.DeepCollect(bInObj.Value, cloneContext);
 
             UpdateCloneContext(cloneContext);
         }

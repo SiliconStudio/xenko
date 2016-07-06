@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using SiliconStudio.Core;
 using SiliconStudio.Xenko.Shaders.Parser.Analysis;
 using SiliconStudio.Shaders.Ast.Xenko;
 using SiliconStudio.Xenko.Shaders.Parser.Utility;
@@ -517,6 +517,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         #endregion
     }
 
+    [DataContract]
     internal class VTableReference
     {
         public string Shader = "";

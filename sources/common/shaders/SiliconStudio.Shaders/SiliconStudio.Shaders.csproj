@@ -288,6 +288,10 @@
     <None Include="Analysis\Hlsl\HlslDeclarations.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
+      <Name>SiliconStudio.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Irony\Irony.csproj">
       <Project>{d81f5c91-d7db-46e5-bc99-49488fb6814c}</Project>
       <Name>Irony</Name>

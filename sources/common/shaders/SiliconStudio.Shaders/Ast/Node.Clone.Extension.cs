@@ -2,41 +2,136 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Shaders.Utility;
 using LinqExpression = System.Linq.Expressions.Expression;
 
 namespace SiliconStudio.Shaders.Ast
 {
+    public class CloneContext : Dictionary<object, object>
+    {
+        private MemoryStream memoryStream;
+        private BinarySerializationWriter writer;
+        private BinarySerializationReader reader;
+        private Dictionary<object, int> serializeReferences;
+        private List<object> deserializeReferences;
+
+        public CloneContext(CloneContext parent = null) : base(MemberSerializer.ObjectReferenceEqualityComparer.Default)
+        {
+            if (parent != null)
+            {
+                foreach (var item in parent)
+                {
+                    Add(item.Key, item.Value);
+                }
+            }
+
+            // Setup
+            memoryStream = new MemoryStream(4096);
+            writer = new BinarySerializationWriter(memoryStream);
+            reader = new BinarySerializationReader(memoryStream);
+
+            writer.Context.SerializerSelector = SerializerSelector.AssetWithReuse;
+            reader.Context.SerializerSelector = SerializerSelector.AssetWithReuse;
+
+            serializeReferences = writer.Context.Tags.Get(MemberSerializer.ObjectSerializeReferences);
+            deserializeReferences = reader.Context.Tags.Get(MemberSerializer.ObjectDeserializeReferences);
+        }
+
+        internal void DeepCollect<T>(T obj)
+        {
+            // Collect
+            writer.SerializeExtended(obj, ArchiveMode.Serialize);
+
+            // Register each reference found
+            foreach (var serializeReference in serializeReferences)
+            {
+                this[serializeReference.Key] = serializeReference.Key;
+            }
+
+            // Reset stream and references
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            memoryStream.SetLength(0);
+
+            serializeReferences.Clear();
+        }
+
+        internal T DeepClone<T>(T obj)
+        {
+            // Prepare previously collected references
+            foreach (var reference in this)
+            {
+                serializeReferences.Add(reference.Key, deserializeReferences.Count);
+                deserializeReferences.Add(reference.Value);
+            }
+
+            // Serialize
+            writer.SerializeExtended(obj, ArchiveMode.Serialize);
+
+            // Deserialize
+            obj = default(T);
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            reader.SerializeExtended(ref obj, ArchiveMode.Deserialize);
+
+            // Reset stream and references
+            memoryStream.Seek(0, SeekOrigin.Begin);
+            memoryStream.SetLength(0);
+
+            serializeReferences.Clear();
+            deserializeReferences.Clear();
+
+            return obj;
+        }
+    }
+
+    public static class DeepCloner
+    {
+        public static void DeepCollect<T>(T obj, CloneContext context)
+        {
+            context.DeepCollect(obj);
+        }
+
+        public static T DeepClone<T>(this T obj, CloneContext context = null)
+        {
+            // Setup contexts
+            if (context == null)
+                context = new CloneContext();
+
+            return context.DeepClone(obj);
+        }
+    }
+
     /// <summary>
     /// Provides a dictionary of cloned values, where the [key] is the original object 
     /// and [value] the new object cloned associated to the original object.
     /// </summary>
-    public class CloneContext : Dictionary<object, object>
+    public class CloneContextOld : Dictionary<object, object>
     {
         /// <summary>
         /// Internal cache of delegates used on calling DeepClone.
-        /// It avoids to use directly the ThreadStatic field in <see cref="DeepCloner"/>
+        /// It avoids to use directly the ThreadStatic field in <see cref="DeepClonerOld"/>
         /// </summary>
-        internal Dictionary<DeepCloner.CacheKey, Delegate> Cache;
+        internal Dictionary<DeepClonerOld.CacheKey, Delegate> Cache;
 
         internal bool IsSelfClone;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CloneContext"/> class.
+        /// Initializes a new instance of the <see cref="CloneContextOld"/> class.
         /// </summary>
-        public CloneContext()
+        public CloneContextOld()
             : this(null)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CloneContext"/> class.
+        /// Initializes a new instance of the <see cref="CloneContextOld"/> class.
         /// </summary>
         /// <param name="parent">The parent context use for chaining several clone context.</param>
-        public CloneContext(CloneContext parent) : base(new ReferenceEqualityComparer<object>())
+        public CloneContextOld(CloneContextOld parent) : base(new ReferenceEqualityComparer<object>())
         {
             Parent = parent;
         }
@@ -45,7 +140,7 @@ namespace SiliconStudio.Shaders.Ast
         /// Gets the parent.
         /// </summary>
         /// <value>The parent.</value>
-        public CloneContext Parent { get; private set; }
+        public CloneContextOld Parent { get; private set; }
 
         public new bool ContainsKey(object key)
         {
@@ -74,23 +169,22 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// DeepClone extension.
     /// </summary>
-    public static class DeepCloner
+    public static class DeepClonerOld
     {
         #region Constants and Fields
-
         [ThreadStatic]
         private static Dictionary<CacheKey, Delegate> deepcache;
 
         [ThreadStatic]
         private static Dictionary<CacheKey, Delegate> deepCacheSelf;
 
-        private static readonly MethodInfo DeepcloneArray = MethodReflector(() => DeepClone<object>(new object[0], out tempObjects, null));
+        private static readonly MethodInfo DeepcloneArray = MethodReflector(() => DeepCloneOld<object>(new object[0], out tempObjects, null));
 
-        private static readonly MethodInfo DeepcloneObject = MethodReflector(() => DeepClone(ref tempObject, out tempObject, null));
+        private static readonly MethodInfo DeepcloneObject = MethodReflector(() => DeepCloneOld(ref tempObject, out tempObject, null));
 
         private static readonly MethodInfo MethodAdd = typeof(Dictionary<object, object>).GetTypeInfo().GetDeclaredMethod("Add");
 
-        private static readonly MethodInfo MethodTryGetValue = typeof(CloneContext).GetTypeInfo().GetDeclaredMethod("TryGetValue");
+        private static readonly MethodInfo MethodTryGetValue = typeof(CloneContextOld).GetTypeInfo().GetDeclaredMethod("TryGetValue");
 
         private static object tempObject = new object();
 
@@ -100,13 +194,13 @@ namespace SiliconStudio.Shaders.Ast
 
         #region Delegates
 
-        private delegate void CloneDelegate<T>(ref T toClone, out T output, CloneContext context);
+        private delegate void CloneDelegate<T>(ref T toClone, out T output, CloneContextOld context);
 
         #endregion
 
         #region Public Methods
 
-        private static Dictionary<CacheKey, Delegate> GetCache(CloneContext context)
+        private static Dictionary<CacheKey, Delegate> GetCache(CloneContextOld context)
         {
             if (context.IsSelfClone)
             {
@@ -126,18 +220,18 @@ namespace SiliconStudio.Shaders.Ast
         /// <remarks>
         /// In order to be cloneable, all objects and sub-objects are required to provide a public parameter-less constructor.
         /// </remarks>
-        public static T DeepClone<T>(this T obj, CloneContext context = null)
+        public static T DeepCloneOld<T>(this T obj, CloneContextOld context = null)
         {
             if (ReferenceEquals(obj, null))
                 return default(T);
 
             // Create a new context if no context was given
             if (context == null)
-                context = new CloneContext();
+                context = new CloneContextOld();
 
             context.Cache = GetCache(context);
             T result;
-            DeepClone(ref obj, out result, context);
+            DeepCloneOld(ref obj, out result, context);
             return result;
         }
 
@@ -148,14 +242,14 @@ namespace SiliconStudio.Shaders.Ast
         /// <param name="obj">The object instance to collect object references recursively.</param>
         /// <param name="context">The context dictionary to fill with collected object references while cloning this object.</param>
         /// <exception cref="System.ArgumentNullException">context</exception>
-        public static void DeepCollect<T>(T obj, CloneContext context)
+        public static void DeepCollectOld<T>(T obj, CloneContextOld context)
         {
             if (context == null)
                 throw new ArgumentNullException("context");
 
             // Just run the DeepClone in IsSelfClone mode.
             context.IsSelfClone = true;
-            DeepClone(obj, context);
+            DeepCloneOld(obj, context);
             context.IsSelfClone = false;
         }
 
@@ -163,7 +257,7 @@ namespace SiliconStudio.Shaders.Ast
 
         #region Methods
 
-        private static void DeepClone<T>(ref T obj, out T dest, CloneContext context)
+        private static void DeepCloneOld<T>(ref T obj, out T dest, CloneContextOld context)
         {
             if (ReferenceEquals(obj, null))
                 dest = default(T);
@@ -193,7 +287,7 @@ namespace SiliconStudio.Shaders.Ast
             }
         }
 
-        private static void DeepClone<T>(T[] obj, out T[] dest, CloneContext context)
+        private static void DeepCloneOld<T>(T[] obj, out T[] dest, CloneContextOld context)
         {
             if (ReferenceEquals(obj, null))
                 dest = null;
@@ -214,7 +308,7 @@ namespace SiliconStudio.Shaders.Ast
                         dest = context.IsSelfClone ? obj : new T[obj.Length];
                         context.Add(obj, dest);
                         for (var i = 0; i < dest.Length; i++)
-                            DeepClone(ref obj[i], out dest[i], context);
+                            DeepCloneOld(ref obj[i], out dest[i], context);
                     }
                 }
             }
@@ -233,7 +327,7 @@ namespace SiliconStudio.Shaders.Ast
             return fields;
         }
 
-        private static CloneDelegate<T> GetObjectCloner<T>(Type type, CloneContext context)
+        private static CloneDelegate<T> GetObjectCloner<T>(Type type, CloneContextOld context)
         {
             Delegate result;
             var cache = context.Cache;
@@ -245,7 +339,7 @@ namespace SiliconStudio.Shaders.Ast
 
                 var param = LinqExpression.Parameter(typeof(T).MakeByRefType(), "input");
                 var output = LinqExpression.Parameter(typeof(T).MakeByRefType(), "output");
-                var contextParam = LinqExpression.Parameter(typeof(CloneContext), "context");
+                var contextParam = LinqExpression.Parameter(typeof(CloneContextOld), "context");
 
                 ParameterExpression localCast;
                 ParameterExpression localOutput;

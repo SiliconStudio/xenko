@@ -2,12 +2,14 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.IO;
+using SiliconStudio.Core;
 
 namespace SiliconStudio.Shaders.Ast
 {
     /// <summary>
     /// A Source location.
     /// </summary>
+    [DataContract]
     public struct SourceLocation
     {
         #region Constants and Fields

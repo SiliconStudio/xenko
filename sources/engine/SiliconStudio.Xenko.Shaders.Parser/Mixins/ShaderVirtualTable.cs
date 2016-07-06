@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Generic;
 using System.Linq;
-
+using SiliconStudio.Core;
 using SiliconStudio.Shaders.Ast.Xenko;
 using SiliconStudio.Xenko.Shaders.Parser.Utility;
 using SiliconStudio.Shaders.Ast;
@@ -10,6 +10,7 @@ using SiliconStudio.Shaders.Utility;
 
 namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
+    [DataContract(Inherited = true)]
     internal class ShaderVirtualTable
     {
         #region Public member

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Threading;
+using SiliconStudio.Core;
 using SiliconStudio.Shaders.Visitor;
 using SourceSpan = SiliconStudio.Shaders.Ast.SourceSpan;
 
@@ -12,6 +13,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// Abstract node.
     /// </summary>
+    [DataContract(Inherited = true)]
     public abstract class Node
     {
         /// <summary>
@@ -59,6 +61,7 @@ namespace SiliconStudio.Shaders.Ast
         /// <summary>
         /// Gets the childrens.
         /// </summary>
+        [DataMemberIgnore]
         [VisitorIgnore]
         protected List<Node> ChildrenList
         {
@@ -68,6 +71,15 @@ namespace SiliconStudio.Shaders.Ast
                     childrenList = new List<Node>();
                 return childrenList;
             }
+        }
+
+        /// <summary>
+        /// Gets or sets tags collection.
+        /// </summary>
+        public Dictionary<object, object> Tags
+        {
+            get { return tags; }
+            set { tags = value; }
         }
 
         /// <summary>
@@ -82,7 +94,6 @@ namespace SiliconStudio.Shaders.Ast
             tags.TryGetValue(tagKey, out result);
             return result;
         }
-
 
         /// <summary>
         /// Gets a tag value associated to this node..

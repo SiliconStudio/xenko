@@ -981,6 +981,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Xenko.ClassIdentifierGeneric
             {
                 Span = classIdentifierGeneric.Span,
+                Tags = classIdentifierGeneric.Tags,
                 Indices = classIdentifierGeneric.Indices,
                 IsSpecialReference = classIdentifierGeneric.IsSpecialReference,
                 Text = classIdentifierGeneric.Text,
@@ -993,6 +994,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Xenko.EnumType
             {
                 Span = enumType.Span,
+                Tags = enumType.Tags,
                 Attributes = enumType.Attributes,
                 TypeInference = enumType.TypeInference,
                 Name = enumType.Name,
@@ -1007,6 +1009,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Xenko.ForEachStatement
             {
                 Span = forEachStatement.Span,
+                Tags = forEachStatement.Tags,
                 Attributes = forEachStatement.Attributes,
                 Collection = forEachStatement.Collection,
                 Variable = forEachStatement.Variable,
@@ -1019,6 +1022,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Xenko.ImportBlockStatement
             {
                 Span = importBlockStatement.Span,
+                Tags = importBlockStatement.Tags,
                 Attributes = importBlockStatement.Attributes,
                 Statements = importBlockStatement.Statements,
                 Name = importBlockStatement.Name,
@@ -1030,6 +1034,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Xenko.LinkType
             {
                 Span = linkType.Span,
+                Tags = linkType.Tags,
                 Attributes = linkType.Attributes,
                 TypeInference = linkType.TypeInference,
                 Name = linkType.Name,
@@ -1043,6 +1048,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Xenko.LiteralIdentifier
             {
                 Span = literalIdentifier.Span,
+                Tags = literalIdentifier.Tags,
                 Indices = literalIdentifier.Indices,
                 IsSpecialReference = literalIdentifier.IsSpecialReference,
                 Text = literalIdentifier.Text,
@@ -1055,6 +1061,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Xenko.MemberName
             {
                 Span = memberName.Span,
+                Tags = memberName.Tags,
                 Attributes = memberName.Attributes,
                 TypeInference = memberName.TypeInference,
                 Name = memberName.Name,
@@ -1068,6 +1075,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Xenko.MixinStatement
             {
                 Span = mixinStatement.Span,
+                Tags = mixinStatement.Tags,
                 Attributes = mixinStatement.Attributes,
                 Type = mixinStatement.Type,
                 Value = mixinStatement.Value,
@@ -1079,6 +1087,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Xenko.NamespaceBlock
             {
                 Span = namespaceBlock.Span,
+                Tags = namespaceBlock.Tags,
                 Attributes = namespaceBlock.Attributes,
                 TypeInference = namespaceBlock.TypeInference,
                 Name = namespaceBlock.Name,
@@ -1093,6 +1102,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Xenko.ParametersBlock
             {
                 Span = parametersBlock.Span,
+                Tags = parametersBlock.Tags,
                 Name = parametersBlock.Name,
                 Body = parametersBlock.Body,
             };
@@ -1103,6 +1113,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Xenko.SemanticType
             {
                 Span = semanticType.Span,
+                Tags = semanticType.Tags,
                 Attributes = semanticType.Attributes,
                 TypeInference = semanticType.TypeInference,
                 Name = semanticType.Name,
@@ -1116,6 +1127,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Xenko.ShaderBlock
             {
                 Span = shaderBlock.Span,
+                Tags = shaderBlock.Tags,
                 Attributes = shaderBlock.Attributes,
                 TypeInference = shaderBlock.TypeInference,
                 Name = shaderBlock.Name,
@@ -1131,6 +1143,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Xenko.ShaderClassType
             {
                 Span = shaderClassType.Span,
+                Tags = shaderClassType.Tags,
                 Attributes = shaderClassType.Attributes,
                 TypeInference = shaderClassType.TypeInference,
                 Name = shaderClassType.Name,
@@ -1150,6 +1163,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Xenko.ShaderRootClassType
             {
                 Span = shaderRootClassType.Span,
+                Tags = shaderRootClassType.Tags,
                 Attributes = shaderRootClassType.Attributes,
                 TypeInference = shaderRootClassType.TypeInference,
                 Name = shaderRootClassType.Name,
@@ -1169,6 +1183,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Xenko.ShaderTypeName
             {
                 Span = shaderTypeName.Span,
+                Tags = shaderTypeName.Tags,
                 Attributes = shaderTypeName.Attributes,
                 TypeInference = shaderTypeName.TypeInference,
                 Name = shaderTypeName.Name,
@@ -1182,6 +1197,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Xenko.TypeIdentifier
             {
                 Span = typeIdentifier.Span,
+                Tags = typeIdentifier.Tags,
                 Indices = typeIdentifier.Indices,
                 IsSpecialReference = typeIdentifier.IsSpecialReference,
                 Text = typeIdentifier.Text,
@@ -1194,6 +1210,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Xenko.UsingParametersStatement
             {
                 Span = usingParametersStatement.Span,
+                Tags = usingParametersStatement.Tags,
                 Attributes = usingParametersStatement.Attributes,
                 Name = usingParametersStatement.Name,
                 Body = usingParametersStatement.Body,
@@ -1205,6 +1222,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Xenko.UsingStatement
             {
                 Span = usingStatement.Span,
+                Tags = usingStatement.Tags,
                 Attributes = usingStatement.Attributes,
                 Name = usingStatement.Name,
             };
@@ -1215,6 +1233,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Xenko.VarType
             {
                 Span = varType.Span,
+                Tags = varType.Tags,
                 Attributes = varType.Attributes,
                 TypeInference = varType.TypeInference,
                 Name = varType.Name,
@@ -1228,6 +1247,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Xenko.XenkoConstantBufferType
             {
                 Span = xenkoConstantBufferType.Span,
+                Tags = xenkoConstantBufferType.Tags,
                 IsFlag = xenkoConstantBufferType.IsFlag,
                 Key = xenkoConstantBufferType.Key,
             };
@@ -1238,6 +1258,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.ArrayInitializerExpression
             {
                 Span = arrayInitializerExpression.Span,
+                Tags = arrayInitializerExpression.Tags,
                 TypeInference = arrayInitializerExpression.TypeInference,
                 Items = arrayInitializerExpression.Items,
             };
@@ -1248,6 +1269,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.ArrayType
             {
                 Span = arrayType.Span,
+                Tags = arrayType.Tags,
                 Attributes = arrayType.Attributes,
                 TypeInference = arrayType.TypeInference,
                 Name = arrayType.Name,
@@ -1263,6 +1285,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.AssignmentExpression
             {
                 Span = assignmentExpression.Span,
+                Tags = assignmentExpression.Tags,
                 TypeInference = assignmentExpression.TypeInference,
                 Operator = assignmentExpression.Operator,
                 Target = assignmentExpression.Target,
@@ -1275,6 +1298,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.BinaryExpression
             {
                 Span = binaryExpression.Span,
+                Tags = binaryExpression.Tags,
                 TypeInference = binaryExpression.TypeInference,
                 Left = binaryExpression.Left,
                 Operator = binaryExpression.Operator,
@@ -1287,6 +1311,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.BlockStatement
             {
                 Span = blockStatement.Span,
+                Tags = blockStatement.Tags,
                 Attributes = blockStatement.Attributes,
                 Statements = blockStatement.Statements,
             };
@@ -1297,6 +1322,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.CaseStatement
             {
                 Span = caseStatement.Span,
+                Tags = caseStatement.Tags,
                 Attributes = caseStatement.Attributes,
                 Case = caseStatement.Case,
             };
@@ -1307,6 +1333,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.CompositeEnum
             {
                 Span = compositeEnum.Span,
+                Tags = compositeEnum.Tags,
                 IsFlag = compositeEnum.IsFlag,
                 Key = compositeEnum.Key,
             };
@@ -1317,6 +1344,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.ConditionalExpression
             {
                 Span = conditionalExpression.Span,
+                Tags = conditionalExpression.Tags,
                 TypeInference = conditionalExpression.TypeInference,
                 Condition = conditionalExpression.Condition,
                 Left = conditionalExpression.Left,
@@ -1329,6 +1357,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.EmptyStatement
             {
                 Span = emptyStatement.Span,
+                Tags = emptyStatement.Tags,
                 Attributes = emptyStatement.Attributes,
             };
         }
@@ -1338,6 +1367,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.EmptyExpression
             {
                 Span = emptyExpression.Span,
+                Tags = emptyExpression.Tags,
                 TypeInference = emptyExpression.TypeInference,
             };
         }
@@ -1347,6 +1377,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Glsl.LayoutKeyValue
             {
                 Span = layoutKeyValue.Span,
+                Tags = layoutKeyValue.Tags,
                 Name = layoutKeyValue.Name,
                 Value = layoutKeyValue.Value,
             };
@@ -1357,6 +1388,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Glsl.LayoutQualifier
             {
                 Span = layoutQualifier.Span,
+                Tags = layoutQualifier.Tags,
                 IsFlag = layoutQualifier.IsFlag,
                 Key = layoutQualifier.Key,
                 IsPost = layoutQualifier.IsPost,
@@ -1369,6 +1401,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Glsl.InterfaceType
             {
                 Span = interfaceType.Span,
+                Tags = interfaceType.Tags,
                 Attributes = interfaceType.Attributes,
                 TypeInference = interfaceType.TypeInference,
                 Name = interfaceType.Name,
@@ -1383,6 +1416,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Hlsl.ClassType
             {
                 Span = classType.Span,
+                Tags = classType.Tags,
                 Attributes = classType.Attributes,
                 TypeInference = classType.TypeInference,
                 Name = classType.Name,
@@ -1401,6 +1435,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Hlsl.IdentifierGeneric
             {
                 Span = identifierGeneric.Span,
+                Tags = identifierGeneric.Tags,
                 Indices = identifierGeneric.Indices,
                 IsSpecialReference = identifierGeneric.IsSpecialReference,
                 Text = identifierGeneric.Text,
@@ -1413,6 +1448,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Hlsl.IdentifierNs
             {
                 Span = identifierNs.Span,
+                Tags = identifierNs.Tags,
                 Indices = identifierNs.Indices,
                 IsSpecialReference = identifierNs.IsSpecialReference,
                 Text = identifierNs.Text,
@@ -1425,6 +1461,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Hlsl.IdentifierDot
             {
                 Span = identifierDot.Span,
+                Tags = identifierDot.Tags,
                 Indices = identifierDot.Indices,
                 IsSpecialReference = identifierDot.IsSpecialReference,
                 Text = identifierDot.Text,
@@ -1437,6 +1474,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Hlsl.TextureType
             {
                 Span = textureType.Span,
+                Tags = textureType.Tags,
                 Attributes = textureType.Attributes,
                 TypeInference = textureType.TypeInference,
                 Name = textureType.Name,
@@ -1451,6 +1489,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Hlsl.Annotations
             {
                 Span = annotations.Span,
+                Tags = annotations.Tags,
                 Variables = annotations.Variables,
             };
         }
@@ -1460,6 +1499,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Hlsl.AsmExpression
             {
                 Span = asmExpression.Span,
+                Tags = asmExpression.Tags,
                 TypeInference = asmExpression.TypeInference,
                 Text = asmExpression.Text,
             };
@@ -1470,6 +1510,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Hlsl.AttributeDeclaration
             {
                 Span = attributeDeclaration.Span,
+                Tags = attributeDeclaration.Tags,
                 Name = attributeDeclaration.Name,
                 Parameters = attributeDeclaration.Parameters,
             };
@@ -1480,6 +1521,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Hlsl.CastExpression
             {
                 Span = castExpression.Span,
+                Tags = castExpression.Tags,
                 TypeInference = castExpression.TypeInference,
                 From = castExpression.From,
                 Target = castExpression.Target,
@@ -1491,6 +1533,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Hlsl.CompileExpression
             {
                 Span = compileExpression.Span,
+                Tags = compileExpression.Tags,
                 TypeInference = compileExpression.TypeInference,
                 Function = compileExpression.Function,
                 Profile = compileExpression.Profile,
@@ -1502,6 +1545,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Hlsl.ConstantBuffer
             {
                 Span = constantBuffer.Span,
+                Tags = constantBuffer.Tags,
                 Attributes = constantBuffer.Attributes,
                 Type = constantBuffer.Type,
                 Members = constantBuffer.Members,
@@ -1516,6 +1560,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Hlsl.ConstantBufferType
             {
                 Span = constantBufferType.Span,
+                Tags = constantBufferType.Tags,
                 IsFlag = constantBufferType.IsFlag,
                 Key = constantBufferType.Key,
             };
@@ -1526,6 +1571,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Hlsl.InterfaceType
             {
                 Span = interfaceType.Span,
+                Tags = interfaceType.Tags,
                 Attributes = interfaceType.Attributes,
                 TypeInference = interfaceType.TypeInference,
                 Name = interfaceType.Name,
@@ -1543,6 +1589,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Hlsl.PackOffset
             {
                 Span = packOffset.Span,
+                Tags = packOffset.Tags,
                 IsFlag = packOffset.IsFlag,
                 Key = packOffset.Key,
                 IsPost = packOffset.IsPost,
@@ -1555,6 +1602,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Hlsl.Pass
             {
                 Span = pass.Span,
+                Tags = pass.Tags,
                 Attributes = pass.Attributes,
                 Items = pass.Items,
                 Name = pass.Name,
@@ -1566,6 +1614,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Hlsl.RegisterLocation
             {
                 Span = registerLocation.Span,
+                Tags = registerLocation.Tags,
                 IsFlag = registerLocation.IsFlag,
                 Key = registerLocation.Key,
                 IsPost = registerLocation.IsPost,
@@ -1579,6 +1628,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Hlsl.Semantic
             {
                 Span = semantic.Span,
+                Tags = semantic.Tags,
                 IsFlag = semantic.IsFlag,
                 Key = semantic.Key,
                 IsPost = semantic.IsPost,
@@ -1591,6 +1641,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Hlsl.StateExpression
             {
                 Span = stateExpression.Span,
+                Tags = stateExpression.Tags,
                 TypeInference = stateExpression.TypeInference,
                 Initializer = stateExpression.Initializer,
                 StateType = stateExpression.StateType,
@@ -1602,6 +1653,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Hlsl.StateInitializer
             {
                 Span = stateInitializer.Span,
+                Tags = stateInitializer.Tags,
                 TypeInference = stateInitializer.TypeInference,
                 Items = stateInitializer.Items,
             };
@@ -1612,6 +1664,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Hlsl.Technique
             {
                 Span = technique.Span,
+                Tags = technique.Tags,
                 Type = technique.Type,
                 Attributes = technique.Attributes,
                 Name = technique.Name,
@@ -1624,6 +1677,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Hlsl.Typedef
             {
                 Span = typedef.Span,
+                Tags = typedef.Tags,
                 Attributes = typedef.Attributes,
                 TypeInference = typedef.TypeInference,
                 Name = typedef.Name,
@@ -1639,6 +1693,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.ExpressionList
             {
                 Span = expressionList.Span,
+                Tags = expressionList.Tags,
                 TypeInference = expressionList.TypeInference,
                 Expressions = expressionList.Expressions,
             };
@@ -1649,6 +1704,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.GenericDeclaration
             {
                 Span = genericDeclaration.Span,
+                Tags = genericDeclaration.Tags,
                 Name = genericDeclaration.Name,
                 Holder = genericDeclaration.Holder,
                 Index = genericDeclaration.Index,
@@ -1661,6 +1717,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.GenericParameterType
             {
                 Span = genericParameterType.Span,
+                Tags = genericParameterType.Tags,
                 Attributes = genericParameterType.Attributes,
                 TypeInference = genericParameterType.TypeInference,
                 Name = genericParameterType.Name,
@@ -1674,6 +1731,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.DeclarationStatement
             {
                 Span = declarationStatement.Span,
+                Tags = declarationStatement.Tags,
                 Attributes = declarationStatement.Attributes,
                 Content = declarationStatement.Content,
             };
@@ -1684,6 +1742,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.ExpressionStatement
             {
                 Span = expressionStatement.Span,
+                Tags = expressionStatement.Tags,
                 Attributes = expressionStatement.Attributes,
                 Expression = expressionStatement.Expression,
             };
@@ -1694,6 +1753,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.ForStatement
             {
                 Span = forStatement.Span,
+                Tags = forStatement.Tags,
                 Attributes = forStatement.Attributes,
                 Start = forStatement.Start,
                 Condition = forStatement.Condition,
@@ -1707,6 +1767,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.GenericType
             {
                 Span = genericType.Span,
+                Tags = genericType.Tags,
                 Attributes = genericType.Attributes,
                 TypeInference = genericType.TypeInference,
                 Name = genericType.Name,
@@ -1722,6 +1783,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Identifier
             {
                 Span = identifier.Span,
+                Tags = identifier.Tags,
                 Indices = identifier.Indices,
                 IsSpecialReference = identifier.IsSpecialReference,
                 Text = identifier.Text,
@@ -1733,6 +1795,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.IfStatement
             {
                 Span = ifStatement.Span,
+                Tags = ifStatement.Tags,
                 Attributes = ifStatement.Attributes,
                 Condition = ifStatement.Condition,
                 Else = ifStatement.Else,
@@ -1745,6 +1808,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.IndexerExpression
             {
                 Span = indexerExpression.Span,
+                Tags = indexerExpression.Tags,
                 TypeInference = indexerExpression.TypeInference,
                 Index = indexerExpression.Index,
                 Target = indexerExpression.Target,
@@ -1756,6 +1820,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.KeywordExpression
             {
                 Span = keywordExpression.Span,
+                Tags = keywordExpression.Tags,
                 TypeInference = keywordExpression.TypeInference,
                 Name = keywordExpression.Name,
             };
@@ -1766,6 +1831,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Literal
             {
                 Span = literal.Span,
+                Tags = literal.Tags,
                 Text = literal.Text,
                 Value = literal.Value,
                 SubLiterals = literal.SubLiterals,
@@ -1777,6 +1843,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.LiteralExpression
             {
                 Span = literalExpression.Span,
+                Tags = literalExpression.Tags,
                 TypeInference = literalExpression.TypeInference,
                 Literal = literalExpression.Literal,
                 Text = literalExpression.Text,
@@ -1789,6 +1856,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.MatrixType
             {
                 Span = matrixType.Span,
+                Tags = matrixType.Tags,
                 Attributes = matrixType.Attributes,
                 TypeInference = matrixType.TypeInference,
                 Name = matrixType.Name,
@@ -1807,6 +1875,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.MemberReferenceExpression
             {
                 Span = memberReferenceExpression.Span,
+                Tags = memberReferenceExpression.Tags,
                 TypeInference = memberReferenceExpression.TypeInference,
                 Member = memberReferenceExpression.Member,
                 Target = memberReferenceExpression.Target,
@@ -1818,6 +1887,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.MethodDeclaration
             {
                 Span = methodDeclaration.Span,
+                Tags = methodDeclaration.Tags,
                 Attributes = methodDeclaration.Attributes,
                 Name = methodDeclaration.Name,
                 ParameterConstraints = methodDeclaration.ParameterConstraints,
@@ -1833,6 +1903,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.MethodDefinition
             {
                 Span = methodDefinition.Span,
+                Tags = methodDefinition.Tags,
                 Attributes = methodDefinition.Attributes,
                 Name = methodDefinition.Name,
                 ParameterConstraints = methodDefinition.ParameterConstraints,
@@ -1849,6 +1920,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.MethodInvocationExpression
             {
                 Span = methodInvocationExpression.Span,
+                Tags = methodInvocationExpression.Tags,
                 TypeInference = methodInvocationExpression.TypeInference,
                 Target = methodInvocationExpression.Target,
                 Arguments = methodInvocationExpression.Arguments,
@@ -1860,6 +1932,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.ObjectType
             {
                 Span = objectType.Span,
+                Tags = objectType.Tags,
                 Attributes = objectType.Attributes,
                 TypeInference = objectType.TypeInference,
                 Name = objectType.Name,
@@ -1874,6 +1947,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Parameter
             {
                 Span = parameter.Span,
+                Tags = parameter.Tags,
                 Attributes = parameter.Attributes,
                 Qualifiers = parameter.Qualifiers,
                 Type = parameter.Type,
@@ -1888,6 +1962,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.ParenthesizedExpression
             {
                 Span = parenthesizedExpression.Span,
+                Tags = parenthesizedExpression.Tags,
                 TypeInference = parenthesizedExpression.TypeInference,
                 Content = parenthesizedExpression.Content,
             };
@@ -1898,6 +1973,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Qualifier
             {
                 Span = qualifier.Span,
+                Tags = qualifier.Tags,
                 IsFlag = qualifier.IsFlag,
                 Key = qualifier.Key,
                 IsPost = qualifier.IsPost,
@@ -1909,6 +1985,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.ReturnStatement
             {
                 Span = returnStatement.Span,
+                Tags = returnStatement.Tags,
                 Attributes = returnStatement.Attributes,
                 Value = returnStatement.Value,
             };
@@ -1919,6 +1996,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.ScalarType
             {
                 Span = scalarType.Span,
+                Tags = scalarType.Tags,
                 Attributes = scalarType.Attributes,
                 TypeInference = scalarType.TypeInference,
                 Name = scalarType.Name,
@@ -1933,6 +2011,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Shader
             {
                 Span = shader.Span,
+                Tags = shader.Tags,
                 Declarations = shader.Declarations,
             };
         }
@@ -1942,6 +2021,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.StatementList
             {
                 Span = statementList.Span,
+                Tags = statementList.Tags,
                 Attributes = statementList.Attributes,
                 Statements = statementList.Statements,
             };
@@ -1952,6 +2032,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.StructType
             {
                 Span = structType.Span,
+                Tags = structType.Tags,
                 Attributes = structType.Attributes,
                 TypeInference = structType.TypeInference,
                 Name = structType.Name,
@@ -1966,6 +2047,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.SwitchCaseGroup
             {
                 Span = switchCaseGroup.Span,
+                Tags = switchCaseGroup.Tags,
                 Cases = switchCaseGroup.Cases,
                 Statements = switchCaseGroup.Statements,
             };
@@ -1976,6 +2058,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.SwitchStatement
             {
                 Span = switchStatement.Span,
+                Tags = switchStatement.Tags,
                 Attributes = switchStatement.Attributes,
                 Condition = switchStatement.Condition,
                 Groups = switchStatement.Groups,
@@ -1987,6 +2070,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.TypeName
             {
                 Span = typeName.Span,
+                Tags = typeName.Tags,
                 Attributes = typeName.Attributes,
                 TypeInference = typeName.TypeInference,
                 Name = typeName.Name,
@@ -2000,6 +2084,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.TypeReferenceExpression
             {
                 Span = typeReferenceExpression.Span,
+                Tags = typeReferenceExpression.Tags,
                 TypeInference = typeReferenceExpression.TypeInference,
                 Type = typeReferenceExpression.Type,
                 Declaration = typeReferenceExpression.Declaration,
@@ -2011,6 +2096,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.UnaryExpression
             {
                 Span = unaryExpression.Span,
+                Tags = unaryExpression.Tags,
                 TypeInference = unaryExpression.TypeInference,
                 Operator = unaryExpression.Operator,
                 Expression = unaryExpression.Expression,
@@ -2022,6 +2108,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.Variable
             {
                 Span = variable.Span,
+                Tags = variable.Tags,
                 Attributes = variable.Attributes,
                 Qualifiers = variable.Qualifiers,
                 Type = variable.Type,
@@ -2036,6 +2123,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.VariableReferenceExpression
             {
                 Span = variableReferenceExpression.Span,
+                Tags = variableReferenceExpression.Tags,
                 TypeInference = variableReferenceExpression.TypeInference,
                 Name = variableReferenceExpression.Name,
             };
@@ -2046,6 +2134,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.VectorType
             {
                 Span = vectorType.Span,
+                Tags = vectorType.Tags,
                 Attributes = vectorType.Attributes,
                 TypeInference = vectorType.TypeInference,
                 Name = vectorType.Name,
@@ -2063,6 +2152,7 @@ namespace SiliconStudio.Shaders.Visitor
             return new SiliconStudio.Shaders.Ast.WhileStatement
             {
                 Span = whileStatement.Span,
+                Tags = whileStatement.Tags,
                 Attributes = whileStatement.Attributes,
                 Condition = whileStatement.Condition,
                 IsDoWhile = whileStatement.IsDoWhile,
