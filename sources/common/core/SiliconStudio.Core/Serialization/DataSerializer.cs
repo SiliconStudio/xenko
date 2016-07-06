@@ -18,6 +18,11 @@ namespace SiliconStudio.Core.Serialization
 
         public ObjectId SerializationTypeId;
 
+        /// <summary>
+        /// Used internally to know if the serializer has been initialized.
+        /// </summary>
+        internal bool Initialized = false;
+
         /// <inheritdoc/>
         public abstract Type SerializationType { get; }
 

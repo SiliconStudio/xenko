@@ -163,6 +163,8 @@ namespace SiliconStudio.Core.Serialization
                         dataSerializersByType[dataSerializer.SerializationType] = dataSerializer;
                     }
                 }
+                if (dataSerializer != null)
+                    EnsureInitialized(dataSerializer);
                 return dataSerializer;
             }
         }
@@ -189,7 +191,21 @@ namespace SiliconStudio.Core.Serialization
                         dataSerializersByType[dataSerializer.SerializationType] = dataSerializer;
                     }
                 }
+                if (dataSerializer != null)
+                    EnsureInitialized(dataSerializer);
                 return dataSerializer;
+            }
+        }
+
+        private void EnsureInitialized(DataSerializer dataSerializer)
+        {
+            if (!dataSerializer.Initialized)
+            {
+                // Mark it as initialized first (avoid infinite recursion)
+                dataSerializer.Initialized = true;
+
+                // Initialize (if necessary)
+                (dataSerializer as IDataSerializerInitializer)?.Initialize(SelectorOverride ?? this);
             }
         }
 
@@ -280,9 +296,6 @@ namespace SiliconStudio.Core.Serialization
                 var typeName = dataSerializer.SerializationType.FullName;
                 dataSerializer.SerializationTypeId = ObjectId.FromBytes(System.Text.Encoding.UTF8.GetBytes(typeName));
             }
-
-            if (dataSerializer is IDataSerializerInitializer)
-                ((IDataSerializerInitializer)dataSerializer).Initialize(SelectorOverride ?? this);
         }
     }
 }
