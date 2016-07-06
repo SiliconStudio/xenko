@@ -357,9 +357,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\..\..\deps\msdfgen\freetype6.dll">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <Content Include="..\..\..\deps\msdfgen\msdfgen.exe">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
