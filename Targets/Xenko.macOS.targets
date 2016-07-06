@@ -38,13 +38,7 @@
 
   <!-- On Vulkan embed the SPIR-V shader compiler -->
   <Target Name="EmbedShaderCompiler" BeforeTargets="SiliconStudioUpdateGraphicsPlatform" Condition="'$(SiliconStudioXenkoGraphicsApi)' == 'Vulkan'">
-    <ItemGroup>
-      <Content Condition="'$(SiliconStudioUnitTest)' != 'true'" Include="$(SiliconStudioPackageXenkoPlatformBin)\glslangValidator">
-        <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        <Visible>False</Visible>
-      </Content>
-    </ItemGroup>
+    <Copy Condition="Exists('$(SiliconStudioPackageXenkoPlatformBin)\glslangValidator')" SourceFiles="$(SiliconStudioPackageXenkoPlatformBin)\glslangValidator" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
   </Target>  
   
   <UsingTask TaskName="PackageDeployTask" AssemblyFile="$(SiliconStudioPackageXenko)\bin\Windows-Direct3D11\SiliconStudio.Xenko.Assets.dll"/>
