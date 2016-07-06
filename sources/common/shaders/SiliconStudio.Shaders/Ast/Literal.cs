@@ -40,14 +40,6 @@ namespace SiliconStudio.Shaders.Ast
         #region Public Properties
 
         /// <summary>
-        ///   Gets or sets the text.
-        /// </summary>
-        /// <value>
-        ///   The text.
-        /// </value>
-        public string Text { get; set; }
-
-        /// <summary>
         ///   Gets or sets the value.
         /// </summary>
         /// <value>
@@ -66,6 +58,15 @@ namespace SiliconStudio.Shaders.Ast
                 Text = ConvertValueToString(value);
             }
         }
+
+        /// <summary>
+        ///   Gets or sets the text.
+        /// </summary>
+        /// <value>
+        ///   The text.
+        /// </value>
+        public string Text { get; set; }
+
 
         /// <summary>
         /// Gets or sets the sub literals.
