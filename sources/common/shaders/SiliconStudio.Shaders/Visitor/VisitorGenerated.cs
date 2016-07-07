@@ -382,85 +382,131 @@ namespace SiliconStudio.Shaders.Visitor
         public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.EnumType enumType)
         {
             VisitList(enumType.Attributes);
-            enumType.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(enumType.Name);
-            enumType.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(enumType.Qualifiers);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(enumType.Name);
+            if (!ReferenceEquals(nameTemp, enumType.Name))
+                enumType.Name = nameTemp;
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(enumType.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, enumType.Qualifiers))
+                enumType.Qualifiers = qualifiersTemp;
             VisitList(enumType.Values);
             return base.Visit(enumType);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.ForEachStatement forEachStatement)
         {
             VisitList(forEachStatement.Attributes);
-            forEachStatement.Collection = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(forEachStatement.Collection);
-            forEachStatement.Variable = (SiliconStudio.Shaders.Ast.Variable)VisitDynamic(forEachStatement.Variable);
-            forEachStatement.Body = (SiliconStudio.Shaders.Ast.Statement)VisitDynamic(forEachStatement.Body);
+            var collectionTemp = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(forEachStatement.Collection);
+            if (!ReferenceEquals(collectionTemp, forEachStatement.Collection))
+                forEachStatement.Collection = collectionTemp;
+            var variableTemp = (SiliconStudio.Shaders.Ast.Variable)VisitDynamic(forEachStatement.Variable);
+            if (!ReferenceEquals(variableTemp, forEachStatement.Variable))
+                forEachStatement.Variable = variableTemp;
+            var bodyTemp = (SiliconStudio.Shaders.Ast.Statement)VisitDynamic(forEachStatement.Body);
+            if (!ReferenceEquals(bodyTemp, forEachStatement.Body))
+                forEachStatement.Body = bodyTemp;
             return base.Visit(forEachStatement);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.ImportBlockStatement importBlockStatement)
         {
             VisitList(importBlockStatement.Attributes);
-            importBlockStatement.Statements = (SiliconStudio.Shaders.Ast.StatementList)VisitDynamic(importBlockStatement.Statements);
+            var statementsTemp = (SiliconStudio.Shaders.Ast.StatementList)VisitDynamic(importBlockStatement.Statements);
+            if (!ReferenceEquals(statementsTemp, importBlockStatement.Statements))
+                importBlockStatement.Statements = statementsTemp;
             return base.Visit(importBlockStatement);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.LinkType linkType)
         {
             VisitList(linkType.Attributes);
-            linkType.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(linkType.Name);
-            linkType.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(linkType.Qualifiers);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(linkType.Name);
+            if (!ReferenceEquals(nameTemp, linkType.Name))
+                linkType.Name = nameTemp;
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(linkType.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, linkType.Qualifiers))
+                linkType.Qualifiers = qualifiersTemp;
             return base.Visit(linkType);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.LiteralIdentifier literalIdentifier)
         {
             VisitList(literalIdentifier.Indices);
-            literalIdentifier.Value = (SiliconStudio.Shaders.Ast.Literal)VisitDynamic(literalIdentifier.Value);
+            var valueTemp = (SiliconStudio.Shaders.Ast.Literal)VisitDynamic(literalIdentifier.Value);
+            if (!ReferenceEquals(valueTemp, literalIdentifier.Value))
+                literalIdentifier.Value = valueTemp;
             return base.Visit(literalIdentifier);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.MemberName memberName)
         {
             VisitList(memberName.Attributes);
-            memberName.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(memberName.Name);
-            memberName.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(memberName.Qualifiers);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(memberName.Name);
+            if (!ReferenceEquals(nameTemp, memberName.Name))
+                memberName.Name = nameTemp;
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(memberName.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, memberName.Qualifiers))
+                memberName.Qualifiers = qualifiersTemp;
             return base.Visit(memberName);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.MixinStatement mixinStatement)
         {
             VisitList(mixinStatement.Attributes);
-            mixinStatement.Value = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(mixinStatement.Value);
+            var valueTemp = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(mixinStatement.Value);
+            if (!ReferenceEquals(valueTemp, mixinStatement.Value))
+                mixinStatement.Value = valueTemp;
             return base.Visit(mixinStatement);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.NamespaceBlock namespaceBlock)
         {
             VisitList(namespaceBlock.Attributes);
-            namespaceBlock.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(namespaceBlock.Name);
-            namespaceBlock.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(namespaceBlock.Qualifiers);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(namespaceBlock.Name);
+            if (!ReferenceEquals(nameTemp, namespaceBlock.Name))
+                namespaceBlock.Name = nameTemp;
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(namespaceBlock.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, namespaceBlock.Qualifiers))
+                namespaceBlock.Qualifiers = qualifiersTemp;
             VisitList(namespaceBlock.Body);
             return base.Visit(namespaceBlock);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.ParametersBlock parametersBlock)
         {
-            parametersBlock.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(parametersBlock.Name);
-            parametersBlock.Body = (SiliconStudio.Shaders.Ast.BlockStatement)VisitDynamic(parametersBlock.Body);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(parametersBlock.Name);
+            if (!ReferenceEquals(nameTemp, parametersBlock.Name))
+                parametersBlock.Name = nameTemp;
+            var bodyTemp = (SiliconStudio.Shaders.Ast.BlockStatement)VisitDynamic(parametersBlock.Body);
+            if (!ReferenceEquals(bodyTemp, parametersBlock.Body))
+                parametersBlock.Body = bodyTemp;
             return base.Visit(parametersBlock);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.SemanticType semanticType)
         {
             VisitList(semanticType.Attributes);
-            semanticType.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(semanticType.Name);
-            semanticType.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(semanticType.Qualifiers);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(semanticType.Name);
+            if (!ReferenceEquals(nameTemp, semanticType.Name))
+                semanticType.Name = nameTemp;
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(semanticType.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, semanticType.Qualifiers))
+                semanticType.Qualifiers = qualifiersTemp;
             return base.Visit(semanticType);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.EffectBlock effectBlock)
         {
             VisitList(effectBlock.Attributes);
-            effectBlock.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(effectBlock.Name);
-            effectBlock.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(effectBlock.Qualifiers);
-            effectBlock.Body = (SiliconStudio.Shaders.Ast.BlockStatement)VisitDynamic(effectBlock.Body);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(effectBlock.Name);
+            if (!ReferenceEquals(nameTemp, effectBlock.Name))
+                effectBlock.Name = nameTemp;
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(effectBlock.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, effectBlock.Qualifiers))
+                effectBlock.Qualifiers = qualifiersTemp;
+            var bodyTemp = (SiliconStudio.Shaders.Ast.BlockStatement)VisitDynamic(effectBlock.Body);
+            if (!ReferenceEquals(bodyTemp, effectBlock.Body))
+                effectBlock.Body = bodyTemp;
             return base.Visit(effectBlock);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.ShaderClassType shaderClassType)
         {
             VisitList(shaderClassType.Attributes);
-            shaderClassType.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(shaderClassType.Name);
-            shaderClassType.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(shaderClassType.Qualifiers);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(shaderClassType.Name);
+            if (!ReferenceEquals(nameTemp, shaderClassType.Name))
+                shaderClassType.Name = nameTemp;
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(shaderClassType.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, shaderClassType.Qualifiers))
+                shaderClassType.Qualifiers = qualifiersTemp;
             VisitList(shaderClassType.BaseClasses);
             VisitList(shaderClassType.GenericParameters);
             VisitList(shaderClassType.GenericArguments);
@@ -471,8 +517,12 @@ namespace SiliconStudio.Shaders.Visitor
         public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.ShaderRootClassType shaderRootClassType)
         {
             VisitList(shaderRootClassType.Attributes);
-            shaderRootClassType.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(shaderRootClassType.Name);
-            shaderRootClassType.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(shaderRootClassType.Qualifiers);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(shaderRootClassType.Name);
+            if (!ReferenceEquals(nameTemp, shaderRootClassType.Name))
+                shaderRootClassType.Name = nameTemp;
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(shaderRootClassType.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, shaderRootClassType.Qualifiers))
+                shaderRootClassType.Qualifiers = qualifiersTemp;
             VisitList(shaderRootClassType.BaseClasses);
             VisitList(shaderRootClassType.GenericParameters);
             VisitList(shaderRootClassType.GenericArguments);
@@ -483,34 +533,50 @@ namespace SiliconStudio.Shaders.Visitor
         public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.ShaderTypeName shaderTypeName)
         {
             VisitList(shaderTypeName.Attributes);
-            shaderTypeName.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(shaderTypeName.Name);
-            shaderTypeName.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(shaderTypeName.Qualifiers);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(shaderTypeName.Name);
+            if (!ReferenceEquals(nameTemp, shaderTypeName.Name))
+                shaderTypeName.Name = nameTemp;
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(shaderTypeName.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, shaderTypeName.Qualifiers))
+                shaderTypeName.Qualifiers = qualifiersTemp;
             return base.Visit(shaderTypeName);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.TypeIdentifier typeIdentifier)
         {
             VisitList(typeIdentifier.Indices);
-            typeIdentifier.Type = (SiliconStudio.Shaders.Ast.TypeBase)VisitDynamic(typeIdentifier.Type);
+            var typeTemp = (SiliconStudio.Shaders.Ast.TypeBase)VisitDynamic(typeIdentifier.Type);
+            if (!ReferenceEquals(typeTemp, typeIdentifier.Type))
+                typeIdentifier.Type = typeTemp;
             return base.Visit(typeIdentifier);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.UsingParametersStatement usingParametersStatement)
         {
             VisitList(usingParametersStatement.Attributes);
-            usingParametersStatement.Name = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(usingParametersStatement.Name);
-            usingParametersStatement.Body = (SiliconStudio.Shaders.Ast.BlockStatement)VisitDynamic(usingParametersStatement.Body);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(usingParametersStatement.Name);
+            if (!ReferenceEquals(nameTemp, usingParametersStatement.Name))
+                usingParametersStatement.Name = nameTemp;
+            var bodyTemp = (SiliconStudio.Shaders.Ast.BlockStatement)VisitDynamic(usingParametersStatement.Body);
+            if (!ReferenceEquals(bodyTemp, usingParametersStatement.Body))
+                usingParametersStatement.Body = bodyTemp;
             return base.Visit(usingParametersStatement);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.UsingStatement usingStatement)
         {
             VisitList(usingStatement.Attributes);
-            usingStatement.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(usingStatement.Name);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(usingStatement.Name);
+            if (!ReferenceEquals(nameTemp, usingStatement.Name))
+                usingStatement.Name = nameTemp;
             return base.Visit(usingStatement);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.VarType varType)
         {
             VisitList(varType.Attributes);
-            varType.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(varType.Name);
-            varType.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(varType.Qualifiers);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(varType.Name);
+            if (!ReferenceEquals(nameTemp, varType.Name))
+                varType.Name = nameTemp;
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(varType.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, varType.Qualifiers))
+                varType.Qualifiers = qualifiersTemp;
             return base.Visit(varType);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.XenkoConstantBufferType xenkoConstantBufferType)
@@ -525,34 +591,52 @@ namespace SiliconStudio.Shaders.Visitor
         public override Node Visit(SiliconStudio.Shaders.Ast.ArrayType arrayType)
         {
             VisitList(arrayType.Attributes);
-            arrayType.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(arrayType.Name);
-            arrayType.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(arrayType.Qualifiers);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(arrayType.Name);
+            if (!ReferenceEquals(nameTemp, arrayType.Name))
+                arrayType.Name = nameTemp;
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(arrayType.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, arrayType.Qualifiers))
+                arrayType.Qualifiers = qualifiersTemp;
             VisitList(arrayType.Dimensions);
-            arrayType.Type = (SiliconStudio.Shaders.Ast.TypeBase)VisitDynamic(arrayType.Type);
+            var typeTemp = (SiliconStudio.Shaders.Ast.TypeBase)VisitDynamic(arrayType.Type);
+            if (!ReferenceEquals(typeTemp, arrayType.Type))
+                arrayType.Type = typeTemp;
             return base.Visit(arrayType);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.AssignmentExpression assignmentExpression)
         {
-            assignmentExpression.Target = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(assignmentExpression.Target);
-            assignmentExpression.Value = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(assignmentExpression.Value);
+            var targetTemp = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(assignmentExpression.Target);
+            if (!ReferenceEquals(targetTemp, assignmentExpression.Target))
+                assignmentExpression.Target = targetTemp;
+            var valueTemp = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(assignmentExpression.Value);
+            if (!ReferenceEquals(valueTemp, assignmentExpression.Value))
+                assignmentExpression.Value = valueTemp;
             return base.Visit(assignmentExpression);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.BinaryExpression binaryExpression)
         {
-            binaryExpression.Left = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(binaryExpression.Left);
-            binaryExpression.Right = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(binaryExpression.Right);
+            var leftTemp = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(binaryExpression.Left);
+            if (!ReferenceEquals(leftTemp, binaryExpression.Left))
+                binaryExpression.Left = leftTemp;
+            var rightTemp = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(binaryExpression.Right);
+            if (!ReferenceEquals(rightTemp, binaryExpression.Right))
+                binaryExpression.Right = rightTemp;
             return base.Visit(binaryExpression);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.BlockStatement blockStatement)
         {
             VisitList(blockStatement.Attributes);
-            blockStatement.Statements = (SiliconStudio.Shaders.Ast.StatementList)VisitDynamic(blockStatement.Statements);
+            var statementsTemp = (SiliconStudio.Shaders.Ast.StatementList)VisitDynamic(blockStatement.Statements);
+            if (!ReferenceEquals(statementsTemp, blockStatement.Statements))
+                blockStatement.Statements = statementsTemp;
             return base.Visit(blockStatement);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.CaseStatement caseStatement)
         {
             VisitList(caseStatement.Attributes);
-            caseStatement.Case = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(caseStatement.Case);
+            var caseTemp = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(caseStatement.Case);
+            if (!ReferenceEquals(caseTemp, caseStatement.Case))
+                caseStatement.Case = caseTemp;
             return base.Visit(caseStatement);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.CompositeEnum compositeEnum)
@@ -561,9 +645,15 @@ namespace SiliconStudio.Shaders.Visitor
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.ConditionalExpression conditionalExpression)
         {
-            conditionalExpression.Condition = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(conditionalExpression.Condition);
-            conditionalExpression.Left = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(conditionalExpression.Left);
-            conditionalExpression.Right = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(conditionalExpression.Right);
+            var conditionTemp = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(conditionalExpression.Condition);
+            if (!ReferenceEquals(conditionTemp, conditionalExpression.Condition))
+                conditionalExpression.Condition = conditionTemp;
+            var leftTemp = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(conditionalExpression.Left);
+            if (!ReferenceEquals(leftTemp, conditionalExpression.Left))
+                conditionalExpression.Left = leftTemp;
+            var rightTemp = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(conditionalExpression.Right);
+            if (!ReferenceEquals(rightTemp, conditionalExpression.Right))
+                conditionalExpression.Right = rightTemp;
             return base.Visit(conditionalExpression);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.EmptyStatement emptyStatement)
@@ -577,8 +667,12 @@ namespace SiliconStudio.Shaders.Visitor
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Glsl.LayoutKeyValue layoutKeyValue)
         {
-            layoutKeyValue.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(layoutKeyValue.Name);
-            layoutKeyValue.Value = (SiliconStudio.Shaders.Ast.LiteralExpression)VisitDynamic(layoutKeyValue.Value);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(layoutKeyValue.Name);
+            if (!ReferenceEquals(nameTemp, layoutKeyValue.Name))
+                layoutKeyValue.Name = nameTemp;
+            var valueTemp = (SiliconStudio.Shaders.Ast.LiteralExpression)VisitDynamic(layoutKeyValue.Value);
+            if (!ReferenceEquals(valueTemp, layoutKeyValue.Value))
+                layoutKeyValue.Value = valueTemp;
             return base.Visit(layoutKeyValue);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Glsl.LayoutQualifier layoutQualifier)
@@ -589,16 +683,24 @@ namespace SiliconStudio.Shaders.Visitor
         public override Node Visit(SiliconStudio.Shaders.Ast.Glsl.InterfaceType interfaceType)
         {
             VisitList(interfaceType.Attributes);
-            interfaceType.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(interfaceType.Name);
-            interfaceType.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(interfaceType.Qualifiers);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(interfaceType.Name);
+            if (!ReferenceEquals(nameTemp, interfaceType.Name))
+                interfaceType.Name = nameTemp;
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(interfaceType.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, interfaceType.Qualifiers))
+                interfaceType.Qualifiers = qualifiersTemp;
             VisitList(interfaceType.Fields);
             return base.Visit(interfaceType);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.ClassType classType)
         {
             VisitList(classType.Attributes);
-            classType.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(classType.Name);
-            classType.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(classType.Qualifiers);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(classType.Name);
+            if (!ReferenceEquals(nameTemp, classType.Name))
+                classType.Name = nameTemp;
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(classType.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, classType.Qualifiers))
+                classType.Qualifiers = qualifiersTemp;
             VisitList(classType.BaseClasses);
             VisitList(classType.GenericParameters);
             VisitList(classType.GenericArguments);
@@ -626,8 +728,12 @@ namespace SiliconStudio.Shaders.Visitor
         public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.TextureType textureType)
         {
             VisitList(textureType.Attributes);
-            textureType.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(textureType.Name);
-            textureType.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(textureType.Qualifiers);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(textureType.Name);
+            if (!ReferenceEquals(nameTemp, textureType.Name))
+                textureType.Name = nameTemp;
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(textureType.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, textureType.Qualifiers))
+                textureType.Qualifiers = qualifiersTemp;
             return base.Visit(textureType);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.Annotations annotations)
@@ -641,30 +747,48 @@ namespace SiliconStudio.Shaders.Visitor
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.AttributeDeclaration attributeDeclaration)
         {
-            attributeDeclaration.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(attributeDeclaration.Name);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(attributeDeclaration.Name);
+            if (!ReferenceEquals(nameTemp, attributeDeclaration.Name))
+                attributeDeclaration.Name = nameTemp;
             VisitList(attributeDeclaration.Parameters);
             return base.Visit(attributeDeclaration);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.CastExpression castExpression)
         {
-            castExpression.From = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(castExpression.From);
-            castExpression.Target = (SiliconStudio.Shaders.Ast.TypeBase)VisitDynamic(castExpression.Target);
+            var fromTemp = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(castExpression.From);
+            if (!ReferenceEquals(fromTemp, castExpression.From))
+                castExpression.From = fromTemp;
+            var targetTemp = (SiliconStudio.Shaders.Ast.TypeBase)VisitDynamic(castExpression.Target);
+            if (!ReferenceEquals(targetTemp, castExpression.Target))
+                castExpression.Target = targetTemp;
             return base.Visit(castExpression);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.CompileExpression compileExpression)
         {
-            compileExpression.Function = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(compileExpression.Function);
-            compileExpression.Profile = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(compileExpression.Profile);
+            var functionTemp = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(compileExpression.Function);
+            if (!ReferenceEquals(functionTemp, compileExpression.Function))
+                compileExpression.Function = functionTemp;
+            var profileTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(compileExpression.Profile);
+            if (!ReferenceEquals(profileTemp, compileExpression.Profile))
+                compileExpression.Profile = profileTemp;
             return base.Visit(compileExpression);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.ConstantBuffer constantBuffer)
         {
             VisitList(constantBuffer.Attributes);
-            constantBuffer.Type = (SiliconStudio.Shaders.Ast.Hlsl.ConstantBufferType)VisitDynamic(constantBuffer.Type);
+            var typeTemp = (SiliconStudio.Shaders.Ast.Hlsl.ConstantBufferType)VisitDynamic(constantBuffer.Type);
+            if (!ReferenceEquals(typeTemp, constantBuffer.Type))
+                constantBuffer.Type = typeTemp;
             VisitList(constantBuffer.Members);
-            constantBuffer.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(constantBuffer.Name);
-            constantBuffer.Register = (SiliconStudio.Shaders.Ast.Hlsl.RegisterLocation)VisitDynamic(constantBuffer.Register);
-            constantBuffer.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(constantBuffer.Qualifiers);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(constantBuffer.Name);
+            if (!ReferenceEquals(nameTemp, constantBuffer.Name))
+                constantBuffer.Name = nameTemp;
+            var registerTemp = (SiliconStudio.Shaders.Ast.Hlsl.RegisterLocation)VisitDynamic(constantBuffer.Register);
+            if (!ReferenceEquals(registerTemp, constantBuffer.Register))
+                constantBuffer.Register = registerTemp;
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(constantBuffer.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, constantBuffer.Qualifiers))
+                constantBuffer.Qualifiers = qualifiersTemp;
             return base.Visit(constantBuffer);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.ConstantBufferType constantBufferType)
@@ -674,8 +798,12 @@ namespace SiliconStudio.Shaders.Visitor
         public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.InterfaceType interfaceType)
         {
             VisitList(interfaceType.Attributes);
-            interfaceType.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(interfaceType.Name);
-            interfaceType.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(interfaceType.Qualifiers);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(interfaceType.Name);
+            if (!ReferenceEquals(nameTemp, interfaceType.Name))
+                interfaceType.Name = nameTemp;
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(interfaceType.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, interfaceType.Qualifiers))
+                interfaceType.Qualifiers = qualifiersTemp;
             VisitList(interfaceType.GenericParameters);
             VisitList(interfaceType.GenericArguments);
             VisitList(interfaceType.Methods);
@@ -683,31 +811,45 @@ namespace SiliconStudio.Shaders.Visitor
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.PackOffset packOffset)
         {
-            packOffset.Value = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(packOffset.Value);
+            var valueTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(packOffset.Value);
+            if (!ReferenceEquals(valueTemp, packOffset.Value))
+                packOffset.Value = valueTemp;
             return base.Visit(packOffset);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.Pass pass)
         {
             VisitList(pass.Attributes);
             VisitList(pass.Items);
-            pass.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(pass.Name);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(pass.Name);
+            if (!ReferenceEquals(nameTemp, pass.Name))
+                pass.Name = nameTemp;
             return base.Visit(pass);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.RegisterLocation registerLocation)
         {
-            registerLocation.Profile = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(registerLocation.Profile);
-            registerLocation.Register = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(registerLocation.Register);
+            var profileTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(registerLocation.Profile);
+            if (!ReferenceEquals(profileTemp, registerLocation.Profile))
+                registerLocation.Profile = profileTemp;
+            var registerTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(registerLocation.Register);
+            if (!ReferenceEquals(registerTemp, registerLocation.Register))
+                registerLocation.Register = registerTemp;
             return base.Visit(registerLocation);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.Semantic semantic)
         {
-            semantic.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(semantic.Name);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(semantic.Name);
+            if (!ReferenceEquals(nameTemp, semantic.Name))
+                semantic.Name = nameTemp;
             return base.Visit(semantic);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.StateExpression stateExpression)
         {
-            stateExpression.Initializer = (SiliconStudio.Shaders.Ast.Hlsl.StateInitializer)VisitDynamic(stateExpression.Initializer);
-            stateExpression.StateType = (SiliconStudio.Shaders.Ast.TypeBase)VisitDynamic(stateExpression.StateType);
+            var initializerTemp = (SiliconStudio.Shaders.Ast.Hlsl.StateInitializer)VisitDynamic(stateExpression.Initializer);
+            if (!ReferenceEquals(initializerTemp, stateExpression.Initializer))
+                stateExpression.Initializer = initializerTemp;
+            var stateTypeTemp = (SiliconStudio.Shaders.Ast.TypeBase)VisitDynamic(stateExpression.StateType);
+            if (!ReferenceEquals(stateTypeTemp, stateExpression.StateType))
+                stateExpression.StateType = stateTypeTemp;
             return base.Visit(stateExpression);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.StateInitializer stateInitializer)
@@ -717,19 +859,29 @@ namespace SiliconStudio.Shaders.Visitor
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.Technique technique)
         {
-            technique.Type = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(technique.Type);
+            var typeTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(technique.Type);
+            if (!ReferenceEquals(typeTemp, technique.Type))
+                technique.Type = typeTemp;
             VisitList(technique.Attributes);
-            technique.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(technique.Name);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(technique.Name);
+            if (!ReferenceEquals(nameTemp, technique.Name))
+                technique.Name = nameTemp;
             VisitList(technique.Passes);
             return base.Visit(technique);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Hlsl.Typedef typedef)
         {
             VisitList(typedef.Attributes);
-            typedef.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(typedef.Name);
-            typedef.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(typedef.Qualifiers);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(typedef.Name);
+            if (!ReferenceEquals(nameTemp, typedef.Name))
+                typedef.Name = nameTemp;
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(typedef.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, typedef.Qualifiers))
+                typedef.Qualifiers = qualifiersTemp;
             VisitList(typedef.SubDeclarators);
-            typedef.Type = (SiliconStudio.Shaders.Ast.TypeBase)VisitDynamic(typedef.Type);
+            var typeTemp = (SiliconStudio.Shaders.Ast.TypeBase)VisitDynamic(typedef.Type);
+            if (!ReferenceEquals(typeTemp, typedef.Type))
+                typedef.Type = typeTemp;
             return base.Visit(typedef);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.ExpressionList expressionList)
@@ -739,42 +891,64 @@ namespace SiliconStudio.Shaders.Visitor
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.GenericDeclaration genericDeclaration)
         {
-            genericDeclaration.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(genericDeclaration.Name);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(genericDeclaration.Name);
+            if (!ReferenceEquals(nameTemp, genericDeclaration.Name))
+                genericDeclaration.Name = nameTemp;
             return base.Visit(genericDeclaration);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.GenericParameterType genericParameterType)
         {
             VisitList(genericParameterType.Attributes);
-            genericParameterType.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(genericParameterType.Name);
-            genericParameterType.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(genericParameterType.Qualifiers);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(genericParameterType.Name);
+            if (!ReferenceEquals(nameTemp, genericParameterType.Name))
+                genericParameterType.Name = nameTemp;
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(genericParameterType.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, genericParameterType.Qualifiers))
+                genericParameterType.Qualifiers = qualifiersTemp;
             return base.Visit(genericParameterType);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.DeclarationStatement declarationStatement)
         {
             VisitList(declarationStatement.Attributes);
-            declarationStatement.Content = (SiliconStudio.Shaders.Ast.Node)VisitDynamic(declarationStatement.Content);
+            var contentTemp = (SiliconStudio.Shaders.Ast.Node)VisitDynamic(declarationStatement.Content);
+            if (!ReferenceEquals(contentTemp, declarationStatement.Content))
+                declarationStatement.Content = contentTemp;
             return base.Visit(declarationStatement);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.ExpressionStatement expressionStatement)
         {
             VisitList(expressionStatement.Attributes);
-            expressionStatement.Expression = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(expressionStatement.Expression);
+            var expressionTemp = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(expressionStatement.Expression);
+            if (!ReferenceEquals(expressionTemp, expressionStatement.Expression))
+                expressionStatement.Expression = expressionTemp;
             return base.Visit(expressionStatement);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.ForStatement forStatement)
         {
             VisitList(forStatement.Attributes);
-            forStatement.Start = (SiliconStudio.Shaders.Ast.Statement)VisitDynamic(forStatement.Start);
-            forStatement.Condition = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(forStatement.Condition);
-            forStatement.Next = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(forStatement.Next);
-            forStatement.Body = (SiliconStudio.Shaders.Ast.Statement)VisitDynamic(forStatement.Body);
+            var startTemp = (SiliconStudio.Shaders.Ast.Statement)VisitDynamic(forStatement.Start);
+            if (!ReferenceEquals(startTemp, forStatement.Start))
+                forStatement.Start = startTemp;
+            var conditionTemp = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(forStatement.Condition);
+            if (!ReferenceEquals(conditionTemp, forStatement.Condition))
+                forStatement.Condition = conditionTemp;
+            var nextTemp = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(forStatement.Next);
+            if (!ReferenceEquals(nextTemp, forStatement.Next))
+                forStatement.Next = nextTemp;
+            var bodyTemp = (SiliconStudio.Shaders.Ast.Statement)VisitDynamic(forStatement.Body);
+            if (!ReferenceEquals(bodyTemp, forStatement.Body))
+                forStatement.Body = bodyTemp;
             return base.Visit(forStatement);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.GenericType genericType)
         {
             VisitList(genericType.Attributes);
-            genericType.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(genericType.Name);
-            genericType.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(genericType.Qualifiers);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(genericType.Name);
+            if (!ReferenceEquals(nameTemp, genericType.Name))
+                genericType.Name = nameTemp;
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(genericType.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, genericType.Qualifiers))
+                genericType.Qualifiers = qualifiersTemp;
             VisitList(genericType.Parameters);
             return base.Visit(genericType);
         }
@@ -786,20 +960,32 @@ namespace SiliconStudio.Shaders.Visitor
         public override Node Visit(SiliconStudio.Shaders.Ast.IfStatement ifStatement)
         {
             VisitList(ifStatement.Attributes);
-            ifStatement.Condition = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(ifStatement.Condition);
-            ifStatement.Else = (SiliconStudio.Shaders.Ast.Statement)VisitDynamic(ifStatement.Else);
-            ifStatement.Then = (SiliconStudio.Shaders.Ast.Statement)VisitDynamic(ifStatement.Then);
+            var conditionTemp = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(ifStatement.Condition);
+            if (!ReferenceEquals(conditionTemp, ifStatement.Condition))
+                ifStatement.Condition = conditionTemp;
+            var elseTemp = (SiliconStudio.Shaders.Ast.Statement)VisitDynamic(ifStatement.Else);
+            if (!ReferenceEquals(elseTemp, ifStatement.Else))
+                ifStatement.Else = elseTemp;
+            var thenTemp = (SiliconStudio.Shaders.Ast.Statement)VisitDynamic(ifStatement.Then);
+            if (!ReferenceEquals(thenTemp, ifStatement.Then))
+                ifStatement.Then = thenTemp;
             return base.Visit(ifStatement);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.IndexerExpression indexerExpression)
         {
-            indexerExpression.Index = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(indexerExpression.Index);
-            indexerExpression.Target = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(indexerExpression.Target);
+            var indexTemp = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(indexerExpression.Index);
+            if (!ReferenceEquals(indexTemp, indexerExpression.Index))
+                indexerExpression.Index = indexTemp;
+            var targetTemp = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(indexerExpression.Target);
+            if (!ReferenceEquals(targetTemp, indexerExpression.Target))
+                indexerExpression.Target = targetTemp;
             return base.Visit(indexerExpression);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.KeywordExpression keywordExpression)
         {
-            keywordExpression.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(keywordExpression.Name);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(keywordExpression.Name);
+            if (!ReferenceEquals(nameTemp, keywordExpression.Name))
+                keywordExpression.Name = nameTemp;
             return base.Visit(keywordExpression);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Literal literal)
@@ -809,68 +995,110 @@ namespace SiliconStudio.Shaders.Visitor
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.LiteralExpression literalExpression)
         {
-            literalExpression.Literal = (SiliconStudio.Shaders.Ast.Literal)VisitDynamic(literalExpression.Literal);
+            var literalTemp = (SiliconStudio.Shaders.Ast.Literal)VisitDynamic(literalExpression.Literal);
+            if (!ReferenceEquals(literalTemp, literalExpression.Literal))
+                literalExpression.Literal = literalTemp;
             return base.Visit(literalExpression);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.MatrixType matrixType)
         {
             VisitList(matrixType.Attributes);
-            matrixType.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(matrixType.Name);
-            matrixType.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(matrixType.Qualifiers);
-            matrixType.Type = (SiliconStudio.Shaders.Ast.TypeBase)VisitDynamic(matrixType.Type);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(matrixType.Name);
+            if (!ReferenceEquals(nameTemp, matrixType.Name))
+                matrixType.Name = nameTemp;
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(matrixType.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, matrixType.Qualifiers))
+                matrixType.Qualifiers = qualifiersTemp;
+            var typeTemp = (SiliconStudio.Shaders.Ast.TypeBase)VisitDynamic(matrixType.Type);
+            if (!ReferenceEquals(typeTemp, matrixType.Type))
+                matrixType.Type = typeTemp;
             return base.Visit(matrixType);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.MemberReferenceExpression memberReferenceExpression)
         {
-            memberReferenceExpression.Member = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(memberReferenceExpression.Member);
-            memberReferenceExpression.Target = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(memberReferenceExpression.Target);
+            var memberTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(memberReferenceExpression.Member);
+            if (!ReferenceEquals(memberTemp, memberReferenceExpression.Member))
+                memberReferenceExpression.Member = memberTemp;
+            var targetTemp = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(memberReferenceExpression.Target);
+            if (!ReferenceEquals(targetTemp, memberReferenceExpression.Target))
+                memberReferenceExpression.Target = targetTemp;
             return base.Visit(memberReferenceExpression);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.MethodDeclaration methodDeclaration)
         {
             VisitList(methodDeclaration.Attributes);
-            methodDeclaration.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(methodDeclaration.Name);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(methodDeclaration.Name);
+            if (!ReferenceEquals(nameTemp, methodDeclaration.Name))
+                methodDeclaration.Name = nameTemp;
             VisitList(methodDeclaration.Parameters);
-            methodDeclaration.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(methodDeclaration.Qualifiers);
-            methodDeclaration.ReturnType = (SiliconStudio.Shaders.Ast.TypeBase)VisitDynamic(methodDeclaration.ReturnType);
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(methodDeclaration.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, methodDeclaration.Qualifiers))
+                methodDeclaration.Qualifiers = qualifiersTemp;
+            var returnTypeTemp = (SiliconStudio.Shaders.Ast.TypeBase)VisitDynamic(methodDeclaration.ReturnType);
+            if (!ReferenceEquals(returnTypeTemp, methodDeclaration.ReturnType))
+                methodDeclaration.ReturnType = returnTypeTemp;
             return base.Visit(methodDeclaration);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.MethodDefinition methodDefinition)
         {
             VisitList(methodDefinition.Attributes);
-            methodDefinition.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(methodDefinition.Name);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(methodDefinition.Name);
+            if (!ReferenceEquals(nameTemp, methodDefinition.Name))
+                methodDefinition.Name = nameTemp;
             VisitList(methodDefinition.Parameters);
-            methodDefinition.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(methodDefinition.Qualifiers);
-            methodDefinition.ReturnType = (SiliconStudio.Shaders.Ast.TypeBase)VisitDynamic(methodDefinition.ReturnType);
-            methodDefinition.Body = (SiliconStudio.Shaders.Ast.StatementList)VisitDynamic(methodDefinition.Body);
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(methodDefinition.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, methodDefinition.Qualifiers))
+                methodDefinition.Qualifiers = qualifiersTemp;
+            var returnTypeTemp = (SiliconStudio.Shaders.Ast.TypeBase)VisitDynamic(methodDefinition.ReturnType);
+            if (!ReferenceEquals(returnTypeTemp, methodDefinition.ReturnType))
+                methodDefinition.ReturnType = returnTypeTemp;
+            var bodyTemp = (SiliconStudio.Shaders.Ast.StatementList)VisitDynamic(methodDefinition.Body);
+            if (!ReferenceEquals(bodyTemp, methodDefinition.Body))
+                methodDefinition.Body = bodyTemp;
             return base.Visit(methodDefinition);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.MethodInvocationExpression methodInvocationExpression)
         {
-            methodInvocationExpression.Target = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(methodInvocationExpression.Target);
+            var targetTemp = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(methodInvocationExpression.Target);
+            if (!ReferenceEquals(targetTemp, methodInvocationExpression.Target))
+                methodInvocationExpression.Target = targetTemp;
             VisitList(methodInvocationExpression.Arguments);
             return base.Visit(methodInvocationExpression);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.ObjectType objectType)
         {
             VisitList(objectType.Attributes);
-            objectType.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(objectType.Name);
-            objectType.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(objectType.Qualifiers);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(objectType.Name);
+            if (!ReferenceEquals(nameTemp, objectType.Name))
+                objectType.Name = nameTemp;
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(objectType.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, objectType.Qualifiers))
+                objectType.Qualifiers = qualifiersTemp;
             return base.Visit(objectType);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Parameter parameter)
         {
             VisitList(parameter.Attributes);
-            parameter.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(parameter.Qualifiers);
-            parameter.Type = (SiliconStudio.Shaders.Ast.TypeBase)VisitDynamic(parameter.Type);
-            parameter.InitialValue = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(parameter.InitialValue);
-            parameter.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(parameter.Name);
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(parameter.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, parameter.Qualifiers))
+                parameter.Qualifiers = qualifiersTemp;
+            var typeTemp = (SiliconStudio.Shaders.Ast.TypeBase)VisitDynamic(parameter.Type);
+            if (!ReferenceEquals(typeTemp, parameter.Type))
+                parameter.Type = typeTemp;
+            var initialValueTemp = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(parameter.InitialValue);
+            if (!ReferenceEquals(initialValueTemp, parameter.InitialValue))
+                parameter.InitialValue = initialValueTemp;
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(parameter.Name);
+            if (!ReferenceEquals(nameTemp, parameter.Name))
+                parameter.Name = nameTemp;
             VisitList(parameter.SubVariables);
             return base.Visit(parameter);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.ParenthesizedExpression parenthesizedExpression)
         {
-            parenthesizedExpression.Content = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(parenthesizedExpression.Content);
+            var contentTemp = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(parenthesizedExpression.Content);
+            if (!ReferenceEquals(contentTemp, parenthesizedExpression.Content))
+                parenthesizedExpression.Content = contentTemp;
             return base.Visit(parenthesizedExpression);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Qualifier qualifier)
@@ -880,14 +1108,20 @@ namespace SiliconStudio.Shaders.Visitor
         public override Node Visit(SiliconStudio.Shaders.Ast.ReturnStatement returnStatement)
         {
             VisitList(returnStatement.Attributes);
-            returnStatement.Value = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(returnStatement.Value);
+            var valueTemp = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(returnStatement.Value);
+            if (!ReferenceEquals(valueTemp, returnStatement.Value))
+                returnStatement.Value = valueTemp;
             return base.Visit(returnStatement);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.ScalarType scalarType)
         {
             VisitList(scalarType.Attributes);
-            scalarType.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(scalarType.Name);
-            scalarType.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(scalarType.Qualifiers);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(scalarType.Name);
+            if (!ReferenceEquals(nameTemp, scalarType.Name))
+                scalarType.Name = nameTemp;
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(scalarType.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, scalarType.Qualifiers))
+                scalarType.Qualifiers = qualifiersTemp;
             return base.Visit(scalarType);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Shader shader)
@@ -904,69 +1138,105 @@ namespace SiliconStudio.Shaders.Visitor
         public override Node Visit(SiliconStudio.Shaders.Ast.StructType structType)
         {
             VisitList(structType.Attributes);
-            structType.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(structType.Name);
-            structType.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(structType.Qualifiers);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(structType.Name);
+            if (!ReferenceEquals(nameTemp, structType.Name))
+                structType.Name = nameTemp;
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(structType.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, structType.Qualifiers))
+                structType.Qualifiers = qualifiersTemp;
             VisitList(structType.Fields);
             return base.Visit(structType);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.SwitchCaseGroup switchCaseGroup)
         {
             VisitList(switchCaseGroup.Cases);
-            switchCaseGroup.Statements = (SiliconStudio.Shaders.Ast.StatementList)VisitDynamic(switchCaseGroup.Statements);
+            var statementsTemp = (SiliconStudio.Shaders.Ast.StatementList)VisitDynamic(switchCaseGroup.Statements);
+            if (!ReferenceEquals(statementsTemp, switchCaseGroup.Statements))
+                switchCaseGroup.Statements = statementsTemp;
             return base.Visit(switchCaseGroup);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.SwitchStatement switchStatement)
         {
             VisitList(switchStatement.Attributes);
-            switchStatement.Condition = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(switchStatement.Condition);
+            var conditionTemp = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(switchStatement.Condition);
+            if (!ReferenceEquals(conditionTemp, switchStatement.Condition))
+                switchStatement.Condition = conditionTemp;
             VisitList(switchStatement.Groups);
             return base.Visit(switchStatement);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.TypeName typeName)
         {
             VisitList(typeName.Attributes);
-            typeName.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(typeName.Name);
-            typeName.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(typeName.Qualifiers);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(typeName.Name);
+            if (!ReferenceEquals(nameTemp, typeName.Name))
+                typeName.Name = nameTemp;
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(typeName.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, typeName.Qualifiers))
+                typeName.Qualifiers = qualifiersTemp;
             return base.Visit(typeName);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.TypeReferenceExpression typeReferenceExpression)
         {
-            typeReferenceExpression.Type = (SiliconStudio.Shaders.Ast.TypeBase)VisitDynamic(typeReferenceExpression.Type);
+            var typeTemp = (SiliconStudio.Shaders.Ast.TypeBase)VisitDynamic(typeReferenceExpression.Type);
+            if (!ReferenceEquals(typeTemp, typeReferenceExpression.Type))
+                typeReferenceExpression.Type = typeTemp;
             return base.Visit(typeReferenceExpression);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.UnaryExpression unaryExpression)
         {
-            unaryExpression.Expression = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(unaryExpression.Expression);
+            var expressionTemp = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(unaryExpression.Expression);
+            if (!ReferenceEquals(expressionTemp, unaryExpression.Expression))
+                unaryExpression.Expression = expressionTemp;
             return base.Visit(unaryExpression);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Variable variable)
         {
             VisitList(variable.Attributes);
-            variable.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(variable.Qualifiers);
-            variable.Type = (SiliconStudio.Shaders.Ast.TypeBase)VisitDynamic(variable.Type);
-            variable.InitialValue = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(variable.InitialValue);
-            variable.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(variable.Name);
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(variable.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, variable.Qualifiers))
+                variable.Qualifiers = qualifiersTemp;
+            var typeTemp = (SiliconStudio.Shaders.Ast.TypeBase)VisitDynamic(variable.Type);
+            if (!ReferenceEquals(typeTemp, variable.Type))
+                variable.Type = typeTemp;
+            var initialValueTemp = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(variable.InitialValue);
+            if (!ReferenceEquals(initialValueTemp, variable.InitialValue))
+                variable.InitialValue = initialValueTemp;
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(variable.Name);
+            if (!ReferenceEquals(nameTemp, variable.Name))
+                variable.Name = nameTemp;
             VisitList(variable.SubVariables);
             return base.Visit(variable);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.VariableReferenceExpression variableReferenceExpression)
         {
-            variableReferenceExpression.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(variableReferenceExpression.Name);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(variableReferenceExpression.Name);
+            if (!ReferenceEquals(nameTemp, variableReferenceExpression.Name))
+                variableReferenceExpression.Name = nameTemp;
             return base.Visit(variableReferenceExpression);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.VectorType vectorType)
         {
             VisitList(vectorType.Attributes);
-            vectorType.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(vectorType.Name);
-            vectorType.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(vectorType.Qualifiers);
-            vectorType.Type = (SiliconStudio.Shaders.Ast.TypeBase)VisitDynamic(vectorType.Type);
+            var nameTemp = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(vectorType.Name);
+            if (!ReferenceEquals(nameTemp, vectorType.Name))
+                vectorType.Name = nameTemp;
+            var qualifiersTemp = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(vectorType.Qualifiers);
+            if (!ReferenceEquals(qualifiersTemp, vectorType.Qualifiers))
+                vectorType.Qualifiers = qualifiersTemp;
+            var typeTemp = (SiliconStudio.Shaders.Ast.TypeBase)VisitDynamic(vectorType.Type);
+            if (!ReferenceEquals(typeTemp, vectorType.Type))
+                vectorType.Type = typeTemp;
             return base.Visit(vectorType);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.WhileStatement whileStatement)
         {
             VisitList(whileStatement.Attributes);
-            whileStatement.Condition = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(whileStatement.Condition);
-            whileStatement.Statement = (SiliconStudio.Shaders.Ast.Statement)VisitDynamic(whileStatement.Statement);
+            var conditionTemp = (SiliconStudio.Shaders.Ast.Expression)VisitDynamic(whileStatement.Condition);
+            if (!ReferenceEquals(conditionTemp, whileStatement.Condition))
+                whileStatement.Condition = conditionTemp;
+            var statementTemp = (SiliconStudio.Shaders.Ast.Statement)VisitDynamic(whileStatement.Statement);
+            if (!ReferenceEquals(statementTemp, whileStatement.Statement))
+                whileStatement.Statement = statementTemp;
             return base.Visit(whileStatement);
         }
     }

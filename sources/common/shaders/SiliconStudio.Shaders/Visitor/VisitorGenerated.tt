@@ -71,10 +71,13 @@ namespace SiliconStudio.Shaders.Visitor
    foreach (var member in GetNodeMembers(type)) {
        var memberType = GetSymbolType(member);
        var memberTypeName = memberType.ToDisplayString();
+	   var memberVariableName = member.Name.First().ToString().ToLower() + member.Name.Substring(1) + "Temp";
 	   var isNodeList = memberType.AllInterfaces.Any(x => x.IsGenericType && x.ConstructUnboundGenericType().ToDisplayString() == ilistName && InheritsFromNode(x.TypeArguments[0]));
 	   var isNode = InheritsFromNode(memberType);
 	   if (isNode) { #>
-            <#=variableName#>.<#=member.Name#> = (<#=memberTypeName#>)VisitDynamic(<#=variableName#>.<#=member.Name#>);
+            var <#=memberVariableName#> = (<#=memberTypeName#>)VisitDynamic(<#=variableName#>.<#=member.Name#>);
+            if (!ReferenceEquals(<#=memberVariableName#>, <#=variableName#>.<#=member.Name#>))
+                <#=variableName#>.<#=member.Name#> = <#=memberVariableName#>;
 <#     } else if (isNodeList) { #>
             VisitList(<#=variableName#>.<#=member.Name#>);
 <#     }
