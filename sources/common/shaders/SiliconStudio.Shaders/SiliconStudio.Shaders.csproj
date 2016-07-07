@@ -12,7 +12,7 @@
     <RootNamespace>SiliconStudio.Shaders</RootNamespace>
     <AssemblyName>SiliconStudio.Shaders</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <SiliconStudioAssemblyProcessor Condition=" '$(SiliconStudioShaderUseSharpDX)' == 'true' ">true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--serialization</SiliconStudioAssemblyProcessorOptions>
     <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
