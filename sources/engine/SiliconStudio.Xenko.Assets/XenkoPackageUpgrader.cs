@@ -274,7 +274,7 @@ namespace SiliconStudio.Xenko.Assets
                             assetYaml.DynamicRootNode.SourceHash = DynamicYamlEmpty.Default;
                         }
                         assetYaml.DynamicRootNode.ImporterId = DynamicYamlEmpty.Default;
-                        assetYaml.DynamicRootNode.KeepSourceSideBySide = DynamicYamlEmpty.Default;
+                        assetYaml.DynamicRootNode.SourceKeepSideBySide = DynamicYamlEmpty.Default;
 
                         var assetBase = assetYaml.DynamicRootNode["~Base"];
                         if (assetBase != null)

@@ -609,7 +609,7 @@ namespace SiliconStudio.Xenko.Graphics
                     pixelSize = 1;
                     break;
                 default:
-                    throw new InvalidOperationException("Unsupported texture format");
+                    throw new InvalidOperationException("Unsupported texture format: " + inputFormat);
             }
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
