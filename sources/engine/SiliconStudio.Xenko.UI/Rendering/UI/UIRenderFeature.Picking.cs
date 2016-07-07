@@ -3,15 +3,12 @@
 
 using System;
 using System.Collections.Generic;
-using SiliconStudio.Core;
-using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.UI;
-using SiliconStudio.Xenko.UI.Renderers;
 
 namespace SiliconStudio.Xenko.Rendering.UI
 {
@@ -22,13 +19,13 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
         private readonly List<PointerEvent> compactedPointerEvents = new List<PointerEvent>();
 
-        partial void PickingUpdate(RenderUIElement renderUIElement, Viewport viewport, GameTime drawTime)
+        partial void PickingUpdate(RenderUIElement renderUIElement, Viewport viewport, ref Matrix worldViewProj, GameTime drawTime)
         {
             if (renderUIElement.UIComponent.RootElement == null)
                 return;
 
-             UpdateMouseOver(viewport, renderUIElement);
-             UpdateTouchEvents(viewport, renderUIElement, drawTime);
+             UpdateMouseOver(ref viewport, ref worldViewProj, renderUIElement);
+             UpdateTouchEvents(ref viewport, ref worldViewProj, renderUIElement, drawTime);
         }
 
         partial void PickingClear()
@@ -37,15 +34,8 @@ namespace SiliconStudio.Xenko.Rendering.UI
             ClearPointerEvents();
         }
 
-        partial void PickingPrepare(RenderDrawContext context)
+        partial void PickingPrepare()
         {
-            var viewport = context.CommandList.Viewport;
-
-            // cache the ratio between viewport and target.
-            var viewportSize = viewport.Size;
-            viewportTargetRatio = new Vector2(viewportSize.X / renderingContext.RenderTarget.Width, viewportSize.Y / renderingContext.RenderTarget.Height);
-            viewportOffset = new Vector2(viewport.X / viewport.Width, viewport.Y / viewport.Height);
-
             // compact all the pointer events that happened since last frame to avoid performing useless hit tests.
             CompactPointerEvents();
         }
@@ -121,17 +111,18 @@ namespace SiliconStudio.Xenko.Rendering.UI
         /// </summary>
         /// <param name="uiComponent">The <see cref="UIComponent"/> to be tested</param>
         /// <param name="viewport">The <see cref="Viewport"/> in which the component is being rendered</param>
+        /// <param name="worldViewProj"></param>
         /// <param name="screenPosition">The position of the lick on the screen in normalized (0..1, 0..1) range</param>
         /// <param name="uiRay"><see cref="Ray"/> from the click in object space of the ui component in (-Resolution.X/2 .. Resolution.X/2, -Resolution.Y/2 .. Resolution.Y/2) range</param>
         /// <returns></returns>
-        private bool GetTouchPosition(UIComponent uiComponent, ref Viewport viewport, Vector2 screenPosition, out Ray uiRay)
+        private bool GetTouchPosition(UIComponent uiComponent, ref Viewport viewport, ref Matrix worldViewProj, Vector2 screenPosition, out Ray uiRay)
         {
             uiRay = new Ray(new Vector3(float.NegativeInfinity), new Vector3(0, 1, 0));
 
             // TODO XK-3367 This only works for a single view
 
             // Get a touch ray in object (UI component) space
-            var touchRay = GetWorldRay(ref viewport, screenPosition, ref viewParameters.WorldViewProjectionMatrix);
+            var touchRay = GetWorldRay(ref viewport, screenPosition, ref worldViewProj);
 
             // If the click point is outside the canvas ignore any further testing
             var dist = -touchRay.Position.Z / touchRay.Direction.Z;
@@ -143,7 +134,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
             return true;
         }
 
-        private void UpdateTouchEvents(Viewport viewport, RenderUIElement state, GameTime gameTime)
+        private void UpdateTouchEvents(ref Viewport viewport, ref Matrix worldViewProj, RenderUIElement state, GameTime gameTime)
         {
             var rootElement = state.UIComponent.RootElement;
             var intersectionPoint = Vector3.Zero;
@@ -166,10 +157,10 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 if (lastTouchPosition != currentTouchPosition)
                 {
                     Ray uiRay;
-                    if (!GetTouchPosition(state.UIComponent, ref viewport, currentTouchPosition, out uiRay))
+                    if (!GetTouchPosition(state.UIComponent, ref viewport, ref worldViewProj, currentTouchPosition, out uiRay))
                         continue;
 
-                    currentTouchedElement = GetElementAtScreenPosition(rootElement, uiRay, ref intersectionPoint);
+                    currentTouchedElement = GetElementAtScreenPosition(rootElement, uiRay, ref worldViewProj, ref intersectionPoint);
                 }
 
                 if (pointerEvent.State == PointerState.Down || pointerEvent.State == PointerState.Up)
@@ -241,7 +232,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
             }
         }
 
-        private void UpdateMouseOver(Viewport viewport, RenderUIElement state)
+        private void UpdateMouseOver(ref Viewport viewport, ref Matrix worldViewProj, RenderUIElement state)
         {
             if (input == null || !input.HasMouse)
                 return;
@@ -256,10 +247,10 @@ namespace SiliconStudio.Xenko.Rendering.UI
             if (mousePosition != state.LastMousePosition)
             {
                 Ray uiRay;
-                if (!GetTouchPosition(state.UIComponent, ref viewport, mousePosition, out uiRay))
+                if (!GetTouchPosition(state.UIComponent, ref viewport, ref worldViewProj, mousePosition, out uiRay))
                     return;
 
-                mouseOverElement = GetElementAtScreenPosition(rootElement, uiRay, ref intersectionPoint);
+                mouseOverElement = GetElementAtScreenPosition(rootElement, uiRay, ref worldViewProj, ref intersectionPoint);
             }
 
             // find the common parent between current and last overred elements
@@ -348,18 +339,19 @@ namespace SiliconStudio.Xenko.Rendering.UI
         /// </summary>
         /// <param name="rootElement">The root <see cref="UIElement"/> from which it should test</param>
         /// <param name="clickRay"><see cref="Ray"/> from the click in object space of the ui component in (-Resolution.X/2 .. Resolution.X/2, -Resolution.Y/2 .. Resolution.Y/2) range</param>
+        /// <param name="worldViewProj"></param>
         /// <param name="intersectionPoint">Intersection point between the ray and the element</param>
         /// <returns>The <see cref="UIElement"/> with which the ray intersects</returns>
-        private UIElement GetElementAtScreenPosition(UIElement rootElement, Ray clickRay, ref Vector3 intersectionPoint)
+        private static UIElement GetElementAtScreenPosition(UIElement rootElement, Ray clickRay, ref Matrix worldViewProj, ref Vector3 intersectionPoint)
         {
             UIElement clickedElement = null;
             var smallestDepth = float.PositiveInfinity;
-            PerformRecursiveHitTest(rootElement, ref clickRay, ref clickedElement, ref intersectionPoint, ref smallestDepth);
+            PerformRecursiveHitTest(rootElement, ref clickRay, ref worldViewProj, ref clickedElement, ref intersectionPoint, ref smallestDepth);
 
             return clickedElement;
         }
 
-        private void PerformRecursiveHitTest(UIElement element, ref Ray ray, ref UIElement clickedElement, ref Vector3 intersectionPoint, ref float smallestDepth)
+        private static void PerformRecursiveHitTest(UIElement element, ref Ray ray, ref Matrix worldViewProj, ref UIElement clickedElement, ref Vector3 intersectionPoint, ref float smallestDepth)
         {
             // if the element is not visible, we also remove all its children
             if (!element.IsVisible)
@@ -377,7 +369,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 // Calculate the depth of the element with the depth bias so that hit test corresponds to visuals.
                 Vector4 projectedIntersection;
                 var intersection4 = new Vector4(intersection, 1);
-                Vector4.Transform(ref intersection4, ref viewParameters.WorldViewProjectionMatrix, out projectedIntersection);
+                Vector4.Transform(ref intersection4, ref worldViewProj, out projectedIntersection);
                 var depthWithBias = projectedIntersection.Z / projectedIntersection.W - element.DepthBias * BatchBase<int>.DepthBiasShiftOneUnit;
 
                 // update the closest element hit
@@ -391,7 +383,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
             // render the children
             foreach (var child in element.HitableChildren)
-                PerformRecursiveHitTest(child, ref ray, ref clickedElement, ref intersectionPoint, ref smallestDepth);
+                PerformRecursiveHitTest(child, ref ray, ref worldViewProj, ref clickedElement, ref intersectionPoint, ref smallestDepth);
         }
     }
 }
