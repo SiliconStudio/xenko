@@ -192,13 +192,14 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                 return parsingResult;
 
             // Update the clone context in case new instances of classes are created
+            CloneContext mixCloneContext;
             lock (hlslCloneContext)
             {
                 HlslSemanticAnalysis.UpdateCloneContext(hlslCloneContext);
+                mixCloneContext = new CloneContext(hlslCloneContext);
             }
 
             // only clone once the stage classes
-            var mixCloneContext = new CloneContext(hlslCloneContext);
             foreach (var mixinInfo in mixinsToAnalyze)
             {
                 foreach (var mixin in mixinInfo.Mixin.MinimalContext.Where(x => x.StageOnlyClass))
