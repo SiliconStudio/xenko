@@ -25,8 +25,7 @@
   <!--Import Local Pre Settings for the solution being loaded -->
   <Import Project="$(SolutionDir)$(SolutionName).PreSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).PreSettings.Local.targets')" />
   <PropertyGroup>
-    <StartupObject>
-    </StartupObject>
+    <StartupObject>SiliconStudio.Xenko.Shaders.Tests.TestMixinCompiler</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>

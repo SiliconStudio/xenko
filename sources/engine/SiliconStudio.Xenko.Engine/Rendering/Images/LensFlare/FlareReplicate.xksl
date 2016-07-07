@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <summary>
     /// Replicates lens flare artifacts around. 
     /// </summary>
-    internal class FlareReplicate : ImageEffectShader
+    internal shader FlareReplicate : ImageEffectShader
     {
 
         // Amount of blending

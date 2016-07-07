@@ -6,7 +6,7 @@
 /// <remarks>
 /// NAME: generic Semantic - the name of the texcoord (e.g. TEXCOORD0).
 /// </remarks>
-class DynamicTextureStream<Semantic NAME>
+shader DynamicTextureStream<Semantic NAME>
 {
     stream float2 TexCoord : NAME;
 };

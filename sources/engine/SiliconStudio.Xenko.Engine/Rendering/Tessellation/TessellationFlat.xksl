@@ -11,7 +11,7 @@
 #define InputControlPointCount 3
 #endif
 
-class TessellationFlat : TessellationBase
+shader TessellationFlat : TessellationBase
 {
     stage override float ComputeClipping(InputPatch<Input, InputControlPointCount> input, const OutputPatch<Input2, 3> output, inout Constants constants)
     {

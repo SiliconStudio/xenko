@@ -6,9 +6,9 @@ using SiliconStudio.Xenko.Rendering.Materials;
 namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
-    /// Base shader
+    /// Base effect
     /// </summary>
-    partial shader XenkoEffectBase
+    partial effect XenkoEffectBase
     {
         using params MaterialKeys;
         using params XenkoEffectBaseKeys;
@@ -83,7 +83,7 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         // --------------------------------------------
-        // Mix material tessellation for Domain shader
+        // Mix material tessellation for Domain effect
         //---------------------------------------------
         var extensionTessellationShader = MaterialKeys.TessellationShader;
         if(extensionTessellationShader != null)

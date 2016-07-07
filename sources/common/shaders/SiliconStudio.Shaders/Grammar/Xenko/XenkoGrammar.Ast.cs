@@ -6,6 +6,7 @@ using System.Linq;
 using Irony.Parsing;
 
 using SiliconStudio.Shaders.Ast;
+using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Ast.Xenko;
 using SiliconStudio.Shaders.Utility;
 
@@ -25,7 +26,7 @@ namespace SiliconStudio.Shaders.Grammar.Xenko
             parseNode.AstNode = value;
         }
 
-        private static void CreateShaderClassSpecifierAst(ParsingContext context, ParseTreeNode node)
+        private static void CreateShaderBlockAst(ParsingContext context, ParseTreeNode node)
         {
             //   [0]        [1]               [2]             [3]             [4]              [5]
             // "class" + type_name + shader_class_base_type.Star() + "{" + scope_declaration.Star() + "}";
@@ -185,9 +186,9 @@ namespace SiliconStudio.Shaders.Grammar.Xenko
             value.Body = (BlockStatement)node.ChildNodes[3].AstNode;
         }
 
-        private static void CreateShaderBlockAst(ParsingContext context, ParseTreeNode node)
+        private static void CreateEffectBlockAst(ParsingContext context, ParseTreeNode node)
         {
-            var value = Ast<ShaderBlock>(node);
+            var value = Ast<EffectBlock>(node);
             //                               [0]                        [1]                      [2]             [3]             [4]           
             // shader_block.Rule = attribute_qualifier_pre + Keyword("partial").Opt() + Keyword("shader") + identifier_raw + block_statement;
 

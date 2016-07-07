@@ -1,4 +1,4 @@
-﻿class TransformationBendWorld : TransformationBase, PositionStream4
+﻿shader TransformationBendWorld : TransformationBase, PositionStream4
 {
     cbuffer PerDraw
     {

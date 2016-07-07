@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     ///  - Texture1: a color buffer with the top-right rhombi blur
     ///  - Texture2: a color buffer with the bottom rhombi blur
     /// </summary>
-    class TripleRhombiCombineShader : ImageEffectShader
+    shader TripleRhombiCombineShader : ImageEffectShader
     {
         // Offset to apply when reading a texture coordinate (for each of the 3 rhombis)
         stage float2 RhombiTapOffsets[3];

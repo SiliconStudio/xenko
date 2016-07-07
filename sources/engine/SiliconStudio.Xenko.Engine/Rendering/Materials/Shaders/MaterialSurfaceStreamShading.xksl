@@ -3,7 +3,7 @@
 namespace SiliconStudio.Xenko.Rendering.Materials
 {
     // Temporary code for testing IMaterialSurface
-    class MaterialSurfaceStreamShading<MemberName TStreamName, MemberName TStreamRGB> : ShadingBase, MaterialPixelShadingStream
+    shader MaterialSurfaceStreamShading<MemberName TStreamName, MemberName TStreamRGB> : ShadingBase, MaterialPixelShadingStream
     {
         stage override float4 Shading()
         {

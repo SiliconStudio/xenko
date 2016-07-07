@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <summary>
     /// A shader combiner
     /// </summary>
-    internal class ColorCombinerShader<int count> : ImageEffectShader
+    internal shader ColorCombinerShader<int count> : ImageEffectShader
     {
         float Factors[10];
 

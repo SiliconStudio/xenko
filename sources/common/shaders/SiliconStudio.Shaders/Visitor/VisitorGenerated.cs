@@ -53,9 +53,9 @@ namespace SiliconStudio.Shaders.Visitor
         {
             return DefaultVisit(semanticType);
         }
-        public virtual TResult Visit(SiliconStudio.Shaders.Ast.Xenko.ShaderBlock shaderBlock)
+        public virtual TResult Visit(SiliconStudio.Shaders.Ast.Xenko.EffectBlock effectBlock)
         {
-            return DefaultVisit(shaderBlock);
+            return DefaultVisit(effectBlock);
         }
         public virtual TResult Visit(SiliconStudio.Shaders.Ast.Xenko.ShaderClassType shaderClassType)
         {
@@ -448,13 +448,13 @@ namespace SiliconStudio.Shaders.Visitor
             semanticType.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(semanticType.Qualifiers);
             return base.Visit(semanticType);
         }
-        public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.ShaderBlock shaderBlock)
+        public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.EffectBlock effectBlock)
         {
-            VisitList(shaderBlock.Attributes);
-            shaderBlock.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(shaderBlock.Name);
-            shaderBlock.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(shaderBlock.Qualifiers);
-            shaderBlock.Body = (SiliconStudio.Shaders.Ast.BlockStatement)VisitDynamic(shaderBlock.Body);
-            return base.Visit(shaderBlock);
+            VisitList(effectBlock.Attributes);
+            effectBlock.Name = (SiliconStudio.Shaders.Ast.Identifier)VisitDynamic(effectBlock.Name);
+            effectBlock.Qualifiers = (SiliconStudio.Shaders.Ast.Qualifier)VisitDynamic(effectBlock.Qualifiers);
+            effectBlock.Body = (SiliconStudio.Shaders.Ast.BlockStatement)VisitDynamic(effectBlock.Body);
+            return base.Visit(effectBlock);
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.ShaderClassType shaderClassType)
         {
@@ -1119,20 +1119,20 @@ namespace SiliconStudio.Shaders.Visitor
                 IsBuiltIn = semanticType.IsBuiltIn,
             };
         }
-        public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.ShaderBlock shaderBlock)
+        public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.EffectBlock effectBlock)
         {
-            shaderBlock = (SiliconStudio.Shaders.Ast.Xenko.ShaderBlock)base.Visit(shaderBlock);
-            return new SiliconStudio.Shaders.Ast.Xenko.ShaderBlock
+            effectBlock = (SiliconStudio.Shaders.Ast.Xenko.EffectBlock)base.Visit(effectBlock);
+            return new SiliconStudio.Shaders.Ast.Xenko.EffectBlock
             {
-                Span = shaderBlock.Span,
-                Tags = shaderBlock.Tags,
-                Attributes = shaderBlock.Attributes,
-                TypeInference = shaderBlock.TypeInference,
-                Name = shaderBlock.Name,
-                Qualifiers = shaderBlock.Qualifiers,
-                IsBuiltIn = shaderBlock.IsBuiltIn,
-                IsPartial = shaderBlock.IsPartial,
-                Body = shaderBlock.Body,
+                Span = effectBlock.Span,
+                Tags = effectBlock.Tags,
+                Attributes = effectBlock.Attributes,
+                TypeInference = effectBlock.TypeInference,
+                Name = effectBlock.Name,
+                Qualifiers = effectBlock.Qualifiers,
+                IsBuiltIn = effectBlock.IsBuiltIn,
+                IsPartial = effectBlock.IsPartial,
+                Body = effectBlock.Body,
             };
         }
         public override Node Visit(SiliconStudio.Shaders.Ast.Xenko.ShaderClassType shaderClassType)
@@ -1830,8 +1830,8 @@ namespace SiliconStudio.Shaders.Visitor
             {
                 Span = literal.Span,
                 Tags = literal.Tags,
-                Text = literal.Text,
                 Value = literal.Value,
+                Text = literal.Text,
                 SubLiterals = literal.SubLiterals,
             };
         }
@@ -2201,9 +2201,9 @@ namespace SiliconStudio.Shaders.Visitor
         {
             DefaultVisit(semanticType);
         }
-        public virtual void Visit(SiliconStudio.Shaders.Ast.Xenko.ShaderBlock shaderBlock)
+        public virtual void Visit(SiliconStudio.Shaders.Ast.Xenko.EffectBlock effectBlock)
         {
-            DefaultVisit(shaderBlock);
+            DefaultVisit(effectBlock);
         }
         public virtual void Visit(SiliconStudio.Shaders.Ast.Xenko.ShaderClassType shaderClassType)
         {
@@ -2596,13 +2596,13 @@ namespace SiliconStudio.Shaders.Visitor
             VisitDynamic(semanticType.Qualifiers);
             base.Visit(semanticType);
         }
-        public override void Visit(SiliconStudio.Shaders.Ast.Xenko.ShaderBlock shaderBlock)
+        public override void Visit(SiliconStudio.Shaders.Ast.Xenko.EffectBlock effectBlock)
         {
-            VisitList(shaderBlock.Attributes);
-            VisitDynamic(shaderBlock.Name);
-            VisitDynamic(shaderBlock.Qualifiers);
-            VisitDynamic(shaderBlock.Body);
-            base.Visit(shaderBlock);
+            VisitList(effectBlock.Attributes);
+            VisitDynamic(effectBlock.Name);
+            VisitDynamic(effectBlock.Qualifiers);
+            VisitDynamic(effectBlock.Body);
+            base.Visit(effectBlock);
         }
         public override void Visit(SiliconStudio.Shaders.Ast.Xenko.ShaderClassType shaderClassType)
         {
@@ -3276,7 +3276,7 @@ namespace SiliconStudio.Shaders.Ast.Xenko
 }
 namespace SiliconStudio.Shaders.Ast.Xenko
 {
-    public partial class ShaderBlock
+    public partial class EffectBlock
     {
         public override void Accept(ShaderVisitor visitor)
         {

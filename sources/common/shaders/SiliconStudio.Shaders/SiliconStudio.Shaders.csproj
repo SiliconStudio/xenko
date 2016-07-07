@@ -66,7 +66,7 @@
     <Compile Include="Ast\Xenko\NamespaceBlock.cs" />
     <Compile Include="Ast\Xenko\ParametersBlock.cs" />
     <Compile Include="Ast\Xenko\SemanticType.cs" />
-    <Compile Include="Ast\Xenko\ShaderBlock.cs" />
+    <Compile Include="Ast\Xenko\EffectBlock.cs" />
     <Compile Include="Ast\Xenko\ShaderClassType.cs" />
     <Compile Include="Ast\Xenko\ShaderRootClassType.cs" />
     <Compile Include="Ast\Xenko\ShaderTypeName.cs" />

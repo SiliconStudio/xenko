@@ -3,6 +3,6 @@
 /// <summary>
 /// Transforms the local position of the vertex into the projection space.
 /// </summary>
-class TransformationWVP : TransformationMatrix<Transformation.WorldViewProjection>
+shader TransformationWVP : TransformationMatrix<Transformation.WorldViewProjection>
 {
 };

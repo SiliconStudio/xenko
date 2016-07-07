@@ -22,9 +22,12 @@ namespace SiliconStudio.Shaders.Grammar.Xenko
         protected readonly NonTerminal streams_type = T("streams_type", CreateStreamsType);
         protected readonly NonTerminal foreach_statement = T("foreach_statement", CreateForEachStatementAst);
         protected readonly NonTerminal foreach_params_statement = T("foreach_params_statement", CreateForEachParamsStatementAst);
-        protected readonly NonTerminal class_type = T("class_type", CreateClassTypeAst); // TODO: look if really needed
         protected readonly NonTerminal params_block = T("params_block", CreateParametersAst);
+        protected readonly NonTerminal effect_block = T("effect_block", CreateEffectBlockAst);
         protected readonly NonTerminal shader_block = T("shader_block", CreateShaderBlockAst);
+        protected readonly NonTerminal shader_base_type = T("shader_base_type", CreateClassBaseTypeAst);
+        protected readonly NonTerminal shader_base_type_list = T("shader_base_type_list", CreateListFromNode<ShaderTypeName>);
+        protected readonly NonTerminal shader_class_type = T("shader_class_type", CreateClassTypeAst); // TODO: look if really needed
         protected readonly NonTerminal toplevel_declaration_block = T("toplevel_declaration_block", CreateDeclarationBlockAst);
         protected readonly NonTerminal mixin_statement = T("mixin_statement", CreateMixinStatementAst);
         protected readonly NonTerminal using_statement = T("using_statement", CreateUsingStatement);
@@ -34,10 +37,10 @@ namespace SiliconStudio.Shaders.Grammar.Xenko
         protected readonly NonTerminal enum_item_list = T("enum_item_list", CreateListFromNode<Expression>);
         protected readonly NonTerminal namespace_block = T("namespace_block", CreateNamespaceBlockAst);
 
-        protected readonly NonTerminal class_identifier_or_generic = TT("class_identifier_or_generic");
-        protected readonly NonTerminal class_identifier_generic = T("class_identifier_generic", CreateClassIdentifierGenericAst);
-        protected readonly NonTerminal class_identifier_generic_parameter_list = T("class_identifier_generic_parameter_list", CreateListFromNode<Variable>);
-        protected readonly NonTerminal class_identifier_sub_generic = T("class_identifier_sub_generic");
+        protected readonly NonTerminal shader_identifier_or_generic = TT("shader_identifier_or_generic");
+        protected readonly NonTerminal shader_identifier_generic = T("shader_identifier_generic", CreateClassIdentifierGenericAst);
+        protected readonly NonTerminal shader_identifier_generic_parameter_list = T("shader_identifier_generic_parameter_list", CreateListFromNode<Variable>);
+        protected readonly NonTerminal shader_identifier_sub_generic = T("shader_identifier_sub_generic");
 
         public NonTerminal ExpressionNonTerminal
         {
@@ -91,13 +94,6 @@ namespace SiliconStudio.Shaders.Grammar.Xenko
             constant_buffer_name.Rule = MakePlusRule(constant_buffer_name, ToTerm("."), identifier_raw);
             constant_buffer_resource.Rule = attribute_qualifier_pre + constant_buffer_resource_type + constant_buffer_name.Opt() + register.Opt() + "{" + declaration.ListOpt() + "}" + semi_opt;
 
-            // override Hlsl class
-            class_specifier.AstNodeCreator = CreateShaderClassSpecifierAst;
-            class_base_type.AstNodeCreator = CreateShaderClassBaseTypeAst;
-            class_base_type_list.AstNodeCreator = CreateListFromNode<ShaderTypeName>;
-            class_base_type_list.Rule = MakePlusRule(class_base_type_list, ToTerm(","), class_type);
-            class_type.Rule = identifier_or_generic;
-
             variable_identifier.Rule |= identifier_generic;
 
             // Allow generic identifier on member expressions
@@ -108,7 +104,7 @@ namespace SiliconStudio.Shaders.Grammar.Xenko
             // ---------------------------------------------------
             params_block.Rule = attribute_qualifier_pre + Keyword("params") + identifier_raw + block_statement;
 
-            shader_block.Rule = attribute_qualifier_pre + Keyword("partial").Opt() + Keyword("shader") + identifier_raw + block_statement;
+            effect_block.Rule = attribute_qualifier_pre + Keyword("partial").Opt() + Keyword("effect") + identifier_raw + block_statement;
 
             using_params_statement.Rule = Keyword("using") + Keyword("params") + expression + ";"
                                           | Keyword("using") + Keyword("params") + expression + block_statement;
@@ -139,16 +135,25 @@ namespace SiliconStudio.Shaders.Grammar.Xenko
 
             namespace_block.Rule = Keyword("namespace") + identifier_or_dot + toplevel_declaration_block;
 
-            toplevel_declaration.Rule |= params_block | shader_block | enum_block | namespace_block | using_statement;
+            toplevel_declaration.Rule |= params_block | effect_block | shader_block | enum_block | namespace_block | using_statement;
 
-            // override class specifier
-            class_specifier.Rule = Keyword("class") + class_identifier_or_generic + class_base_type + "{" + scope_declaration.ListOpt() + "}";
-            class_identifier_or_generic.Rule = identifier + new IdentifierResolverHint(true)
-                                                | class_identifier_generic + this.ReduceHere();
-            class_identifier_generic.Rule = identifier + new GenericResolverHint(_skipTokensInPreview) + "<" + class_identifier_generic_parameter_list + ">";
-            class_identifier_generic_parameter_list.Rule = MakePlusRule(class_identifier_generic_parameter_list, ToTerm(","), class_identifier_sub_generic);
-            class_identifier_sub_generic.Rule = type + identifier;
-            class_identifier_sub_generic.AstNodeCreator = CreateClassIdentifierSubGenericAst;
+            // Shader class type & base
+            shader_class_type.Rule = identifier_or_generic;
+            shader_base_type.AstNodeCreator = CreateShaderClassBaseTypeAst;
+            shader_base_type.Rule = shader_base_type;
+            shader_base_type_list.Rule = MakePlusRule(shader_base_type_list, ToTerm(","), shader_class_type);
+            shader_base_type.Rule = (ToTerm(":") + shader_base_type_list).Opt();
+
+            // add shader class
+            shader_block.Rule = Keyword("shader") + shader_identifier_or_generic + shader_base_type + "{" + scope_declaration.ListOpt() + "}";
+
+            // shader identifiers (allow type + name inside generics)
+            shader_identifier_or_generic.Rule = identifier + new IdentifierResolverHint(true)
+                                                | shader_identifier_generic + this.ReduceHere();
+            shader_identifier_generic.Rule = identifier + new GenericResolverHint(_skipTokensInPreview) + "<" + shader_identifier_generic_parameter_list + ">";
+            shader_identifier_generic_parameter_list.Rule = MakePlusRule(shader_identifier_generic_parameter_list, ToTerm(","), shader_identifier_sub_generic);
+            shader_identifier_sub_generic.Rule = identifier_sub_generic | type + identifier;
+            shader_identifier_sub_generic.AstNodeCreator = CreateClassIdentifierSubGenericAst;
         }
     }
 }

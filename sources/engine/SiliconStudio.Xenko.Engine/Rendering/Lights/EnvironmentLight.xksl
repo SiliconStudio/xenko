@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// <summary>
     /// Defines an environment light (ambient, IBL... etc.)
     /// </summary>
-    class EnvironmentLight : LightStream, ShadowGroup, NormalStream
+    shader EnvironmentLight : LightStream, ShadowGroup, NormalStream
     {
         void PrepareEnvironmentLight()
         {

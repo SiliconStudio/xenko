@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// <summary>
     /// Modify the alpha color based on the matDiffuseSpecularAlphaBlend alpha
     /// </summary>
-    class MaterialSurfaceDiffuseSpecularAlphaBlendColor : IMaterialSurfacePixel, MaterialPixelShadingStream
+    shader MaterialSurfaceDiffuseSpecularAlphaBlendColor : IMaterialSurfacePixel, MaterialPixelShadingStream
     {
         override void Compute()
         {

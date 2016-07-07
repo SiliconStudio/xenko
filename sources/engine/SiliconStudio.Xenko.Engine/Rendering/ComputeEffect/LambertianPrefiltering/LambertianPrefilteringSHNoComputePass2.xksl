@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <summary>
     /// The second pass of a shader performing Lambertian pre-filtering using Spherical Harmonics
     /// </summary>
-    class LambertianPrefilteringSHNoComputePass2 : ImageEffectShader, Texturing
+    shader LambertianPrefilteringSHNoComputePass2 : ImageEffectShader, Texturing
     {   
         stage override float4 Shading()
         {

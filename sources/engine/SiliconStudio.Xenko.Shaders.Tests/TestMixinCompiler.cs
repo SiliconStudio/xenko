@@ -31,6 +31,10 @@ namespace SiliconStudio.Xenko.Shaders.Tests
     [TestFixture]
     public partial class TestMixinCompiler
     {
+        public static void Main()
+        {
+            new TestMixinCompiler().TestMaterial();
+        }
         /// <summary>
         /// Tests mixin and compose keys with compilation.
         /// </summary>

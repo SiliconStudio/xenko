@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         private const string BlockContextTag = "BlockContextTag";
         private readonly LoggerResult logging;
         private readonly Shader shader;
-        private ShaderBlock currentBlock;
+        private EffectBlock currentBlock;
         private int localVariableCount;
         private readonly HashSet<string> parameterKeysReferenced = new HashSet<string>();
         private readonly HashSet<string> mixinsReferenced = new HashSet<string>();
@@ -58,8 +58,14 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// <exception cref="System.InvalidOperationException"></exception>
         public static string GenerateCsharp(string xkfxShaderCode, string filePath)
         {
+            // In .xkfx, shader has been renamed to effect, in order to avoid ambiguities with HLSL and .xksl
+            var macros = new []
+            {
+                new SiliconStudio.Shaders.Parser.ShaderMacro("shader", "effect")
+            };
+
             // Compile
-            var shader = XenkoShaderParser.PreProcessAndParse(xkfxShaderCode, filePath);
+            var shader = XenkoShaderParser.PreProcessAndParse(xkfxShaderCode, filePath, macros);
 
             // Try to generate a mixin code.
             var loggerResult = new LoggerResult();
@@ -344,11 +350,11 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// <summary>
         /// Visits the specified shader block.
         /// </summary>
-        /// <param name="shaderBlock">The shader block.</param>
-        public override void Visit(ShaderBlock shaderBlock)
+        /// <param name="effectBlock">The shader block.</param>
+        public override void Visit(EffectBlock effectBlock)
         {
-            WriteLinkLine(shaderBlock);
-            currentBlock = shaderBlock;
+            WriteLinkLine(effectBlock);
+            currentBlock = effectBlock;
 
             VariableAsParameterKey = false;
 
@@ -362,7 +368,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 OpenBrace();
                 Write("internal partial class");
                 Write(" ");
-                Write(shaderBlock.Name);
+                Write(effectBlock.Name);
                 WriteSpace();
                 Write(" : IShaderMixinBuilder");
                 {
@@ -372,7 +378,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                     {
                         OpenBrace();
                         // Create a context associated with ShaderBlock
-                        foreach (Statement statement in shaderBlock.Body.Statements)
+                        foreach (Statement statement in effectBlock.Body.Statements)
                         {
                             VisitDynamic(statement);
                         }
@@ -384,7 +390,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                     WriteLine("internal static void __Initialize__()");
                     {
                         OpenBrace();
-                        Write("ShaderMixinManager.Register(\"").Write(shaderBlock.Name).Write("\", new ").Write(shaderBlock.Name).WriteLine("());");
+                        Write("ShaderMixinManager.Register(\"").Write(effectBlock.Name).Write("\", new ").Write(effectBlock.Name).WriteLine("());");
                         CloseBrace();
                     }
                     CloseBrace();
@@ -784,15 +790,15 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             }
 
 
-            public override void Visit(ShaderBlock shaderBlock)
+            public override void Visit(EffectBlock effectBlock)
             {
                 HasMixin = true;
 
                 // Create a context associated with ShaderBlock
                 currentContext = new ShaderBlockContext();
-                shaderBlock.SetTag(BlockContextTag, currentContext);
+                effectBlock.SetTag(BlockContextTag, currentContext);
 
-                foreach (Statement statement in shaderBlock.Body.Statements)
+                foreach (Statement statement in effectBlock.Body.Statements)
                 {
                     VisitDynamic(statement);
                 }

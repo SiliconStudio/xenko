@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast.Xenko
     /// <summary>
     /// A Shader block.
     /// </summary>
-    public partial class ShaderBlock : TypeBase, IScopeContainer
+    public partial class EffectBlock : TypeBase, IScopeContainer
     {
         #region Public Properties
 

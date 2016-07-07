@@ -6,7 +6,7 @@
 /// <remarks>
 /// TVALUE: generic float4 - the color (as a float4).
 /// </remarks>
-class ComputeColorFixed<float4 TVALUE> : ComputeColor
+shader ComputeColorFixed<float4 TVALUE> : ComputeColor
 {
     override float4 Compute()
     {

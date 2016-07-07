@@ -3,7 +3,7 @@
 /// <summary>
 /// Various helper functions.
 /// </summary>
-class Utilities
+shader Utilities
 {
     // -------------------------------------
     // type definition

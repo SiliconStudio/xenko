@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     ///  - Texture0: a color buffer with diagonal blur
     ///  - Texture1: a color buffer with diagonal blur
     /// </summary>
-    class McIntoshCombineShader : ImageEffectShader
+    shader McIntoshCombineShader : ImageEffectShader
     {
 
         stage override float4 Shading()
