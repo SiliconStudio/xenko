@@ -19,7 +19,7 @@
     <WindowsSdkDir_81 Condition="'$(WindowsSdkDir_81)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Microsoft SDKs\Windows\v8.1@InstallationFolder)</WindowsSdkDir_81>
     <WindowsSdkDir_81 Condition="'$(WindowsSdkDir_81)' == ''">$(Registry:HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Microsoft SDKs\Windows\v8.1@InstallationFolder)</WindowsSdkDir_81>
   </PropertyGroup>
-  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
+  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' Or '$(XenkoGraphicsApi)' == 'Direct3D11' Or '$(XenkoGraphicsApi)' == 'Direct3D12' ">
     <Reference Include="SharpDX">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
