@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-
+using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Storage;
@@ -136,24 +136,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                 File.WriteAllBytes(inputFileName, Encoding.ASCII.GetBytes(shader));
 
                 // Run shader compiler
-                var process = new Process
-                {
-                    StartInfo =
-                    {
-#if SILICONSTUDIO_PLATFORM_WINDOWS
-                        FileName = "glslangValidator.exe",
-#else
-                        FileName = "glslangValidator",
-#endif
-                        Arguments = $"-V -s -o {outputFileName} {inputFileName}",
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true,
-                        UseShellExecute = false,
-                        CreateNoWindow = true
-                    }
-                };
-                process.Start();
-                process.WaitForExit();
+                var filename = Platform.Type == PlatformType.Windows ? "glslangValidator.exe" : "glslangValidator";
+                ShellHelper.RunProcessAndRedirectToLogger(filename, $"-V -o {outputFileName} {inputFileName}", null, shaderBytecodeResult);
 
                 if (!File.Exists(outputFileName))
                 {

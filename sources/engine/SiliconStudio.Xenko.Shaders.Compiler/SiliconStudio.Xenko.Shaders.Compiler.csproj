@@ -38,6 +38,12 @@
     </When>
   </Choose>
   <ItemGroup>
+    <Compile Include="..\..\shared\Process\ProcessOutputs.cs">
+      <Link>OpenGL\ProcessOutputs.cs</Link>
+    </Compile>
+    <Compile Include="..\..\shared\Process\ShellHelper.cs">
+      <Link>OpenGL\ShellHelper.cs</Link>
+    </Compile>
     <Compile Include="Direct3D\ShaderCompiler.cs" />
     <Compile Include="IShaderCompiler.cs" />
     <Compile Include="OpenGL\ShaderCompiler.cs" />

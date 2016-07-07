@@ -1,12 +1,14 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+#if !SILICONSTUDIO_RUNTIME_CORECLR && !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
 using System.Collections.Generic;
 using System.Diagnostics;
 using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio
 {
-    public class ShellHelper
+    class ShellHelper
     {
         /// <summary>
         /// Run the process and get the output without deadlocks.
@@ -127,3 +129,4 @@ namespace SiliconStudio
         }
     }
 }
+#endif
