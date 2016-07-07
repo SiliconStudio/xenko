@@ -55,23 +55,28 @@ namespace SiliconStudio.Shaders.Visitor
             if (list == null)
                 return;
 
-            for (int i = 0; i < list.Count; i++)
+            int i = 0;
+            while (i < list.Count)
             {
-                var item = list[i];
+                var previousValue = (Node)list[i];
+                var temp = VisitDynamic(previousValue);
 
-                // Filter the element
-                if (filter != null && filter(item)) continue;
+                // Recover the position as the list can be modified while processing a node
+                for (i = 0; i < list.Count; i++)
+                {
+                    if (ReferenceEquals(previousValue, list[i]))
+                        break;
+                }
 
-                var newNode = VisitDynamic(list[i]);
-
-                if (newNode == null)
+                if (temp == null)
                 {
                     list.RemoveAt(i);
-                    i--;
                 }
-                else if (!ReferenceEquals(newNode, item))
+                else
                 {
-                    list[i] = (T)newNode;
+                    if (!ReferenceEquals(previousValue, temp))
+                        list[i] = (T)temp;
+                    i++;
                 }
             }
         }
