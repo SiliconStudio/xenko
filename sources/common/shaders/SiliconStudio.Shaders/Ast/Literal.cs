@@ -119,6 +119,8 @@ namespace SiliconStudio.Shaders.Ast
                 return ((int)value).ToString(CultureInfo.InvariantCulture);
             if (value is uint)
                 return ((uint)value).ToString(CultureInfo.InvariantCulture);
+            if (value is bool)
+                return (bool)value ? "true" : "false";
 
             return value.ToString();            
         }
