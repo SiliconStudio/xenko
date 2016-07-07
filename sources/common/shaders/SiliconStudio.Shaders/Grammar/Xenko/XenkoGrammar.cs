@@ -135,7 +135,9 @@ namespace SiliconStudio.Shaders.Grammar.Xenko
 
             namespace_block.Rule = Keyword("namespace") + identifier_or_dot + toplevel_declaration_block;
 
-            toplevel_declaration.Rule |= params_block | effect_block | shader_block | enum_block | namespace_block | using_statement;
+            toplevel_declaration.Rule |= params_block | effect_block | enum_block | namespace_block | using_statement;
+
+            object_type.Rule |= shader_block;
 
             // Shader class type & base
             shader_class_type.Rule = identifier_or_generic;
