@@ -33,8 +33,7 @@ namespace SiliconStudio.AssemblyProcessor
                 return assembly.MainModule.ImportReference(typeType.Methods.First(x => x.Name == "GetTypeFromHandle"));
             });
 
-            var effectKeysStaticConstructors = new List<MethodReference>();
-            var effectKeysArrayElemementTypes = new HashSet<TypeReference>();
+            var effectKeysToMerge = new List<Tuple<TypeDefinition, FieldReference>>();
 
             foreach (var type in assembly.MainModule.GetTypes())
             {
@@ -47,17 +46,6 @@ namespace SiliconStudio.AssemblyProcessor
                     {
                         if (fieldBaseType.FullName == "SiliconStudio.Xenko.Rendering.ParameterKey")
                             break;
-
-                        // TODO: Get PropertyKey.PropertyType instead
-                        var genericInstance = fieldBaseType as GenericInstanceType;
-                        if (genericInstance != null && genericInstance.ElementType.FullName == "SiliconStudio.Xenko.Rendering.ParameterKey`1")
-                        {
-                            var genericArgument = genericInstance.GenericArguments.First();
-                            if (genericArgument.IsArray)
-                            {
-                                effectKeysArrayElemementTypes.Add(genericArgument.GetElementType());
-                            }
-                        }
 
                         var resolvedFieldBaseType = fieldBaseType.Resolve();
                         if (resolvedFieldBaseType == null)
@@ -105,18 +93,9 @@ namespace SiliconStudio.AssemblyProcessor
                     assemblyEffectKeysAttributeType = xenkoEngineAssembly.MainModule.GetTypes().First(x => x.Name == "AssemblyEffectKeysAttribute");
                 }
 
-                var cctorIL = cctor.Body.GetILProcessor();
                 var cctorInstructions = cctor.Body.Instructions;
 
-                var keyClassName = type.Name;
-                if (keyClassName.EndsWith("Keys"))
-                    keyClassName = keyClassName.Substring(0, keyClassName.Length - 4);
-
-                keyClassName += '.';
-
-                bool cctorModified = false;
-
-                // Find field store instruction
+                // Every field which has a stsfld instruction will be processed
                 for (int i = 0; i < cctorInstructions.Count; ++i)
                 {
                     var fieldInstruction = cctorInstructions[i];
@@ -125,27 +104,12 @@ namespace SiliconStudio.AssemblyProcessor
                         && fields.Contains(fieldInstruction.Operand))
                     {
                         var activeField = (FieldReference)fieldInstruction.Operand;
-
-                        var nextInstruction = cctorInstructions[i + 1];
-                        cctorIL.InsertBefore(nextInstruction, Instruction.Create(OpCodes.Ldsfld, activeField));
-                        cctorIL.InsertBefore(nextInstruction, Instruction.Create(OpCodes.Ldtoken, type));
-                        cctorIL.InsertBefore(nextInstruction, Instruction.Create(OpCodes.Call, getTypeFromHandleMethod.Value));
-                        cctorIL.InsertBefore(nextInstruction, Instruction.Create(OpCodes.Ldstr, keyClassName + activeField.Name));
-                        cctorIL.InsertBefore(nextInstruction, Instruction.Create(OpCodes.Call, assembly.MainModule.ImportReference(parameterKeysMergeMethod)));
-                        cctorIL.InsertBefore(nextInstruction, Instruction.Create(OpCodes.Castclass, activeField.FieldType));
-                        cctorIL.InsertBefore(nextInstruction, Instruction.Create(OpCodes.Stsfld, activeField));
-                        i = cctorInstructions.IndexOf(nextInstruction);
-                        cctorModified = true;
+                        effectKeysToMerge.Add(Tuple.Create(type, activeField));
                     }
-                }
-
-                if (cctorModified)
-                {
-                    effectKeysStaticConstructors.Add(cctor);
                 }
             }
 
-            if (effectKeysStaticConstructors.Count > 0)
+            if (effectKeysToMerge.Count > 0)
             {
                 // Add [AssemblyEffectKeysAttribute] to the assembly
                 assembly.CustomAttributes.Add(new CustomAttribute(assembly.MainModule.ImportReference(assemblyEffectKeysAttributeType.GetConstructors().First(x => !x.HasParameters))));
@@ -173,46 +137,27 @@ namespace SiliconStudio.AssemblyProcessor
                 returnInstruction.OpCode = OpCodes.Nop;
                 returnInstruction.Operand = null;
 
-                var typeType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(Type).FullName);
-                var typeHandleProperty = typeType.Properties.First(x => x.Name == "TypeHandle");
-                var getTypeHandleMethod = assembly.MainModule.ImportReference(typeHandleProperty.GetMethod);
-
-                var runtimeHelpersType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(RuntimeHelpers).FullName);
-                var runClassConstructorMethod = assembly.MainModule.ImportReference(runtimeHelpersType.Methods.Single(x => x.IsPublic && x.Name == "RunClassConstructor" && x.Parameters.Count == 1 && x.Parameters[0].ParameterType.FullName == typeof(RuntimeTypeHandle).FullName));
-
-                // Call every key class static constructor from the module static constructor so that they are properly constructed (because accessing through reflection might cause problems)
+                // TODO: Move that to a sub function?
+                // Call PropertyKey.Merge on every keys
                 staticConstructor.Body.SimplifyMacros();
-                foreach (var effectKeysStaticConstructor in effectKeysStaticConstructors)
+                foreach (var effectKeysStaticConstructor in effectKeysToMerge)
                 {
-                    il.Append(Instruction.Create(OpCodes.Ldtoken, effectKeysStaticConstructor.DeclaringType));
+                    var type = effectKeysStaticConstructor.Item1;
+                    var activeField = effectKeysStaticConstructor.Item2;
+
+                    var keyClassName = type.Name;
+                    if (keyClassName.EndsWith("Keys"))
+                        keyClassName = keyClassName.Substring(0, keyClassName.Length - 4);
+
+                    keyClassName += '.';
+
+                    il.Append(Instruction.Create(OpCodes.Ldsfld, activeField));
+                    il.Append(Instruction.Create(OpCodes.Ldtoken, type));
                     il.Append(Instruction.Create(OpCodes.Call, getTypeFromHandleMethod.Value));
-                    il.Append(Instruction.Create(OpCodes.Callvirt, getTypeHandleMethod));
-                    il.Append(Instruction.Create(OpCodes.Call, runClassConstructorMethod));
-                }
-
-                if (effectKeysArrayElemementTypes.Count > 0)
-                {
-                    var methodImplAttributeType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(MethodImplAttribute).FullName);
-                    var methodImplAttributesType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(MethodImplOptions).FullName);
-
-                    var attribute = new CustomAttribute(methodImplAttributeType.GetConstructors().First(x => x.HasParameters && x.Parameters[0].ParameterType.FullName == methodImplAttributesType.FullName));
-                    attribute.ConstructorArguments.Add(new CustomAttributeArgument(methodImplAttributesType, MethodImplOptions.NoOptimization));
-
-                    staticConstructor.CustomAttributes.Add(attribute);
-                }
-
-                // Create instances of InternalValueArray<T>. Required for LLVM AOT
-                foreach (var elementType in effectKeysArrayElemementTypes)
-                {
-                    var siliconStudioXenkoAssembly = assembly.Name.Name == "SiliconStudio.Xenko" ? assembly : assembly.MainModule.AssemblyResolver.Resolve("SiliconStudio.Xenko");
-                    var parameterCollectionType = siliconStudioXenkoAssembly.MainModule.GetTypeResolved("SiliconStudio.Xenko.Rendering.ParameterCollection");
-                    var internalValueArrayType = parameterCollectionType.NestedTypes.First(x => x.Name == "InternalValueArray`1");
-                    var constructor = internalValueArrayType.GetConstructors().First();
-                    var internalValueArrayConstructor = siliconStudioXenkoAssembly.MainModule.ImportReference(constructor).MakeGeneric(elementType);
-
-                    il.Append(Instruction.Create(OpCodes.Ldc_I4_0));
-                    il.Append(Instruction.Create(OpCodes.Newobj, internalValueArrayConstructor));
-                    il.Append(Instruction.Create(OpCodes.Pop));
+                    il.Append(Instruction.Create(OpCodes.Ldstr, keyClassName + activeField.Name));
+                    il.Append(Instruction.Create(OpCodes.Call, assembly.MainModule.ImportReference(parameterKeysMergeMethod)));
+                    il.Append(Instruction.Create(OpCodes.Castclass, activeField.FieldType));
+                    il.Append(Instruction.Create(OpCodes.Stsfld, activeField));
                 }
 
                 il.Append(newReturnInstruction);
