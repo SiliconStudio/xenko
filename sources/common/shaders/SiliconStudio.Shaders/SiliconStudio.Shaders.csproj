@@ -309,10 +309,10 @@
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Visitor\VisitorGenerated.tt">
+    <None Include="Visitor\VisitorGenerated.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>VisitorGenerated.cs</LastGenOutput>
-    </Content>
+    </None>
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
