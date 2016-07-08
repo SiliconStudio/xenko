@@ -38,12 +38,6 @@
     </When>
   </Choose>
   <ItemGroup>
-    <Compile Include="..\..\shared\Process\ProcessOutputs.cs">
-      <Link>OpenGL\ProcessOutputs.cs</Link>
-    </Compile>
-    <Compile Include="..\..\shared\Process\ShellHelper.cs">
-      <Link>OpenGL\ShellHelper.cs</Link>
-    </Compile>
     <Compile Include="Direct3D\ShaderCompiler.cs" />
     <Compile Include="IShaderCompiler.cs" />
     <Compile Include="OpenGL\ShaderCompiler.cs" />
@@ -117,6 +111,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <Import Project="..\..\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems" Label="Shared" />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
