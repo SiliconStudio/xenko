@@ -29,42 +29,5 @@ namespace SiliconStudio.Xenko.Assets.UI
         /// The default file extension used by the <see cref="UIPageAsset"/>.
         /// </summary>
         public const string FileExtension = ".xkuipage";
-
-        [DataMember]
-        [NotNull]
-        [Display("Design")]
-        public UIDesign Design { get; set; } = new UIDesign();
-
-        [DataContract("UIDesign")]
-        [NonIdentifiable]
-        public sealed class UIDesign
-        {
-            [DataMember]
-            public float Depth { get; set; } = UIComponent.DefaultDepth;
-
-            [DataMember]
-            public float Height { get; set; } = UIComponent.DefaultHeight;
-
-            [DataMember]
-            public float Width { get; set; } = UIComponent.DefaultWidth;
-
-            [DataMember]
-            public Color AreaBackgroundColor { get; set; } = Color.WhiteSmoke*0.5f;
-
-            [DataMember]
-            public Color AreaBorderColor { get; set; } = Color.WhiteSmoke;
-
-            [DataMember]
-            public float AreaBorderThickness { get; set; } = 2.0f;
-
-            [DataMember]
-            public Color AdornerBackgroundColor { get; set; } = Color.LimeGreen*0.2f;
-
-            [DataMember]
-            public Color AdornerBorderColor { get; set; } = Color.LimeGreen;
-
-            [DataMember]
-            public float AdornerBorderThickness { get; set; } = 2.0f;
-        }
     }
 }

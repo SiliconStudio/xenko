@@ -26,6 +26,7 @@ namespace SiliconStudio.Xenko.Assets.UI
         /// <summary>
         /// Gets the dictionary of publicly exposed controls.
         /// </summary>
+        [DataMember(20)]
         public Dictionary<string, Guid> PublicUIElements { get; } = new Dictionary<string, Guid>();
     }
 }
