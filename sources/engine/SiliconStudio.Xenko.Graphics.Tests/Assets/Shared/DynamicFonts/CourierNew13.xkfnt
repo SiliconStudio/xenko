@@ -1,12 +1,12 @@
 !SpriteFont
-Id: 2fba8d24-2510-463f-b5d0-af0ad5b1da80
+Id: 0dbf1792-c53a-41ea-9f98-ba65014c5277
 SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
 FontSource: !SystemFontProvider
-    ~Id: dc214107-90c5-4862-b0dd-be801b239aff
-    FontName: MS Mincho
+    ~Id: 4ccc497b-fdc9-48a4-89a3-2e22815d4eed
+    FontName: Courier New
     Style: Regular
 FontType: !RuntimeRasterizedSpriteFontType
-    ~Id: a23ff56d-0647-4d93-8567-15964d2ed7aa
-    Size: 13.33333
+    ~Id: 8733244b-911b-4021-bccf-8d461eda1618
+    Size: 13.0
     AntiAlias: Aliased
