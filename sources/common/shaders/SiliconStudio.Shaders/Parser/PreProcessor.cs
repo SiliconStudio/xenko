@@ -49,7 +49,6 @@ namespace SiliconStudio.Shaders
                 }
             }
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR && !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
             // Setup input directories.
             var tempDirectories = new List<string>() { Path.GetDirectoryName(sourceFileName) };
             tempDirectories.AddRange(includeDirectories);
@@ -58,7 +57,6 @@ namespace SiliconStudio.Shaders
             var inputSource = new StringLexerSource(shaderSource, true, sourceFileName);
 
             cpp.addInput(inputSource);
-#endif
 
             var textBuilder = new StringBuilder();
 

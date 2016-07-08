@@ -3,7 +3,7 @@ setlocal
 set CPPNET=%~dp0..\..\externals\CppNet
 call "%ProgramFiles(x86)%\Microsoft Visual Studio 14.0\vc\vcvarsall.bat" x86
 
-pushd %CPPNET
+pushd %CPPNET%
 
 rem We have to delete the lock file otherwise we cannot compile non-UWP target in the same location
 if exist project.lock.json del project.lock.json
