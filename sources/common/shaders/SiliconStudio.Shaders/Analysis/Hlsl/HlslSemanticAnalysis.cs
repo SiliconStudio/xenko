@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Shaders.Grammar.Hlsl;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
@@ -18,6 +19,7 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
     /// <summary>
     /// A Type reference analysis is building type references.
     /// </summary>
+    [DataSerializerGlobal(null, typeof(List<MatrixType.Indexer>))]
     public class HlslSemanticAnalysis : SemanticAnalysis
     {
         private static readonly Object lockInit = new Object();

@@ -176,6 +176,7 @@ namespace SiliconStudio.Shaders.Ast
         /// <summary>
         /// Index information.
         /// </summary>
+        [DataContract]
         public struct Indexer
         {
             /// <summary>
