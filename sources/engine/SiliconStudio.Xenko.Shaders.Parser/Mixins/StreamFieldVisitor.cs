@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 
         private Expression ProcessExpression(Expression expression)
         {
-            if (expression.TypeInference.TargetType.IsStreamsType())
+            if (expression.TypeInference.TargetType != null && expression.TypeInference.TargetType.IsStreamsType())
             {
                 var mre = new MemberReferenceExpression(expression, typeInference.Name) { TypeInference = { Declaration = typeInference, TargetType = typeInference.Type.ResolveType() } };
                 if (arrayIndex == null)
