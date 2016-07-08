@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters
         /// <inheritdoc />
         public override void Update(float dt, ParticlePool pool)
         {
-            if (!pool.FieldExists(ParticleFields.Size) || !pool.FieldExists(ParticleFields.Life))
+            if (!pool.FieldExists(ParticleFields.Angle) || !pool.FieldExists(ParticleFields.Life))
                 return;
 
             if (SamplerOptional == null)

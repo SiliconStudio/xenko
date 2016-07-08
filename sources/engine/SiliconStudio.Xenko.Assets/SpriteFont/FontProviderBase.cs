@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// Gets the actual file path to the font file
         /// </summary>
         /// <returns>Path to the font file</returns>
-        public abstract string GetFontPath();
+        public abstract string GetFontPath(AssetCompilerResult result = null);
 
         /// <summary>
         /// Gets the actual font name

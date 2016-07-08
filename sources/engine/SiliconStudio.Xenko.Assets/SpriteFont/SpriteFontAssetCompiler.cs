@@ -46,9 +46,10 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             else
             if (asset.FontType is RuntimeRasterizedSpriteFontType)
             {
-                UFile fontPathOnDisk = asset.FontSource.GetFontPath();
+                UFile fontPathOnDisk = asset.FontSource.GetFontPath(result);
                 if (fontPathOnDisk == null)
                 {
+                    result.Error("Runtime rasterized font compilation failed. Font {0} was not found on this machine.", asset.FontSource.GetFontName());
                     result.BuildSteps = new AssetBuildStep(AssetItem) { new FailedFontCommand() };
                     return;
                 }

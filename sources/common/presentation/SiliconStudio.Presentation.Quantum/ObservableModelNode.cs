@@ -255,7 +255,7 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 var objectReference = SourceNode.Content.Reference as ObjectReference;
                 // Discard the children of the referenced object if requested by the property provider
-                if (objectReference != null && !Owner.PropertiesProvider.ShouldExpandReference(objectReference, targetNodePath))
+                if (objectReference != null && !Owner.PropertiesProvider.ShouldExpandReference(SourceNode.Content as MemberContent, objectReference))
                     return;
             }
 
@@ -276,7 +276,7 @@ namespace SiliconStudio.Presentation.Quantum
                         // a boxed float to double for example. Otherwise, we don't want to have a node type that is value-dependent.
                         var type = reference.TargetNode != null && reference.TargetNode.Content.IsPrimitive ? reference.TargetNode.Content.Type : reference.Type;
                         var actualPath = targetNodePath.PushIndex(reference.Index);
-                        if (Owner.PropertiesProvider.ShouldExpandReference(reference, actualPath))
+                        if (Owner.PropertiesProvider.ShouldExpandReference(SourceNode.Content as MemberContent, reference))
                         {
                             var observableNode = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, false, targetNode, targetNodePath, type, reference.Index);
                             AddChild(observableNode);
@@ -322,7 +322,7 @@ namespace SiliconStudio.Presentation.Quantum
                     if (displayAttribute == null || displayAttribute.Browsable)
                     {
                         // The path is the source path here - the target path might contain the target resolution that we don't want at that point
-                        if (Owner.PropertiesProvider.ShouldConstructMember(memberContent, SourceNodePath))
+                        if (Owner.PropertiesProvider.ShouldConstructMember(memberContent))
                         {
                             var childPath = targetNodePath.PushMember(child.Name);
                             var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, child.Name, child.Content.IsPrimitive, child, childPath, child.Content.Type, Index.Empty);
