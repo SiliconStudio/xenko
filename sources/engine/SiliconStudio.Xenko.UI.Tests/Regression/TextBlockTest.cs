@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public TextBlockTest()
         {
-            CurrentVersion = 6;
+            CurrentVersion = 7; // Font type, names & sizes changed slightly
         }
 
         protected override async Task LoadContent()
@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             textBlock = new TextBlock
             {
                 TextColor = Color.Black,
-                Font = Content.Load<SpriteFont>("MSMincho10"),
+                Font = Content.Load<SpriteFont>("HanSans13"),
                 Text = @"Text Block test
 にほんご ニホンゴ 人
 Several line of texts with different width.
