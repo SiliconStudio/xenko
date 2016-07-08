@@ -1,3 +1,5 @@
+using System;
+
 namespace SiliconStudio.Xenko.Audio
 {
     public struct PlayRange

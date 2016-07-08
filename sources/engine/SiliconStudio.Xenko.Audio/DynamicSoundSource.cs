@@ -107,6 +107,8 @@ namespace SiliconStudio.Xenko.Audio
             ReadyToPlay.TrySetResult(true);
         }
 
+        public abstract void StartBuffering();
+
         /// <summary>
         /// Restarts streaming from the beginning.
         /// </summary>
@@ -118,6 +120,10 @@ namespace SiliconStudio.Xenko.Audio
         /// <param name="looped">if looped or not</param>
         public abstract void SetLooped(bool looped);
 
+        /// <summary>
+        /// Sets the region of time to play from the sample
+        /// </summary>
+        /// <param name="range"></param>
         public abstract void SetRange(PlayRange range);
     }
 }

@@ -21,8 +21,12 @@ namespace SiliconStudio.Xenko.Audio
         private Stream compressedSoundStream;
         private BinarySerializationReader reader;
         private bool ended;
-        private bool looped;
+        private volatile bool looped;
         private bool restart;
+        private readonly int numberOfPackets;
+        private int currentPacketIndex;
+        private int endPacketIndex;
+        private PlayRange playRange;
 
         private Celt decoder;
 
@@ -45,23 +49,19 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         /// <param name="instance">The associated SoundInstance</param>
         /// <param name="soundStreamUrl">The compressed stream internal URL</param>
+        /// <param name="numberOfPackets"></param>
         /// <param name="sampleRate">The sample rate of the compressed data</param>
         /// <param name="channels">The number of channels of the compressed data</param>
         /// <param name="maxCompressedSize">The maximum size of a compressed packet</param>
-        public CompressedSoundSource(SoundInstance instance, string soundStreamUrl, int sampleRate, int channels, int maxCompressedSize) : base(instance, NumberOfBuffers, SamplesPerBuffer * MaxChannels * sizeof(short))
+        public CompressedSoundSource(SoundInstance instance, string soundStreamUrl, int numberOfPackets, int sampleRate, int channels, int maxCompressedSize) : base(instance, NumberOfBuffers, SamplesPerBuffer * MaxChannels * sizeof(short))
         {
             looped = instance.IsLooped;
             this.channels = channels;
             this.maxCompressedSize = maxCompressedSize;
             this.soundStreamUrl = soundStreamUrl;
             this.sampleRate = sampleRate;
-
-            if (readFromDiskWorker == null)
-            {
-                readFromDiskWorker = Task.Factory.StartNew(Worker, TaskCreationOptions.LongRunning);
-            }
-
-            NewSources.Add(this);
+            this.numberOfPackets = numberOfPackets;
+            playRange = new PlayRange(0, 0);
         }
 
         private static unsafe void Worker()
@@ -82,6 +82,7 @@ namespace SiliconStudio.Xenko.Audio
                     source.decoder = new Celt(source.sampleRate, SamplesPerFrame, source.channels, true);
                     source.compressedBuffer = new byte[source.maxCompressedSize];
                     source.reader = new BinarySerializationReader(source.compressedSoundStream);
+                    source.restart = true;
 
                     Sources.Add(source);
                 }
@@ -90,11 +91,39 @@ namespace SiliconStudio.Xenko.Audio
                 {
                     if (!source.dispose)
                     {
+restart:
                         if (source.restart)
                         {
                             source.compressedSoundStream.Position = 0;
                             source.ended = false;
                             source.restart = false;
+                            source.currentPacketIndex = 0;
+                            source.endPacketIndex = source.numberOfPackets;
+
+                            //flush buffers, remove any queued buffer
+                            AudioLayer.SourceFlushBuffers(source.SoundInstance.Source);
+
+                            var range = source.playRange;
+                            if (range.Start != 0 && range.Length != 0)
+                            {
+                                //ok we need to handle this case properly, this means that the user wants to use a different then full audio stream range...
+                                var sampleStart = source.sampleRate * (double)source.channels * range.Start;
+                                var sampleStop = source.sampleRate * (double)source.channels * range.End;
+                                var startingPacket = (int)Math.Floor(sampleStart / ((double)SamplesPerFrame * source.channels));
+                                source.endPacketIndex = (int)Math.Floor(sampleStop / ((double)SamplesPerFrame * source.channels));
+                                // skip to the starting packet
+                                if (startingPacket < source.numberOfPackets && source.endPacketIndex < source.numberOfPackets && startingPacket < source.endPacketIndex)
+                                {
+                                    //valid offsets.. process it
+                                    while (startingPacket-- > 0)
+                                    {
+                                        //skip data to reach starting packet
+                                        var len = source.reader.ReadInt16();
+                                        source.compressedSoundStream.Position = source.compressedSoundStream.Position + len;
+                                        source.currentPacketIndex++;
+                                    }
+                                }
+                            }
                         }
 
                         if (source.ended || !source.CanFill) continue;
@@ -104,8 +133,12 @@ namespace SiliconStudio.Xenko.Audio
                         var bufferPtr = (short*)utilityBuffer.Pointer;
                         for (var i = 0; i < passes; i++)
                         {
+                            if(source.restart) goto restart; //abort and restart
+
+                            //read one packet, size first, then data
                             var len = source.reader.ReadInt16();
                             source.compressedSoundStream.Read(source.compressedBuffer, 0, len);
+                            source.currentPacketIndex++;
 
                             var writePtr = bufferPtr + offset;
                             if (source.decoder.Decode(source.compressedBuffer, len, writePtr) != SamplesPerFrame)
@@ -115,11 +148,11 @@ namespace SiliconStudio.Xenko.Audio
 
                             offset += SamplesPerFrame * source.channels;
 
-                            if (source.compressedSoundStream.Position != source.compressedSoundStream.Length) continue;
+                            if (source.compressedSoundStream.Position != source.compressedSoundStream.Length && source.currentPacketIndex < source.endPacketIndex) continue;
 
                             if (source.looped)
                             {
-                                source.compressedSoundStream.Position = 0; //reset if we reach the end
+                                source.restart = true;
                             }
                             else
                             {
@@ -155,6 +188,16 @@ namespace SiliconStudio.Xenko.Audio
 
         public override int MaxNumberOfBuffers => NumberOfBuffers;
 
+        public override void StartBuffering()
+        {
+            if (readFromDiskWorker == null)
+            {
+                readFromDiskWorker = Task.Factory.StartNew(Worker, TaskCreationOptions.LongRunning);
+            }
+
+            NewSources.Add(this);
+        }
+
         /// <summary>
         /// Restarts streaming from the beginning.
         /// </summary>
@@ -174,7 +217,8 @@ namespace SiliconStudio.Xenko.Audio
 
         public override void SetRange(PlayRange range)
         {
-            throw new NotImplementedException();
+            playRange = range;
+            restart = true; //flag for restart, flush etc
         }
 
         private void Destroy()

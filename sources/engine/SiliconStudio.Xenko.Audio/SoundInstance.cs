@@ -4,7 +4,6 @@
 using System;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Native;
 
 namespace SiliconStudio.Xenko.Audio
@@ -74,7 +73,7 @@ namespace SiliconStudio.Xenko.Audio
 
             if (staticSound.StreamFromDisk)
             {
-                soundSource = new CompressedSoundSource(this, staticSound.CompressedDataUrl, staticSound.SampleRate, staticSound.Channels, staticSound.MaxPacketLength);
+                soundSource = new CompressedSoundSource(this, staticSound.CompressedDataUrl, staticSound.NumberOfPackets, staticSound.SampleRate, staticSound.Channels, staticSound.MaxPacketLength);
             }
             else
             {
@@ -299,7 +298,10 @@ namespace SiliconStudio.Xenko.Audio
 
             if (soundSource != null)
             {
+                soundSource.StartBuffering();
+
                 playingQueued = true;
+
                 Task.Run(async () =>
                 {
                     await soundSource.ReadyToPlay.Task;
@@ -343,14 +345,24 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-
+        /// <summary>
+        /// Gets the DynamicSoundSource, might be null if the sound is not using DynamicSoundSource, e.g. not streamed from disk or not using a DynamicSoundSource derived class as backing
+        /// </summary>
+        public DynamicSoundSource DynamicSoundSource => soundSource;
 
         public void SetRange(PlayRange range)
         {
             if (engine.State == AudioEngineState.Invalidated)
                 return;
 
-            AudioLayer.SourceSetRange(Source, range.Start, range.End);
+            if (soundSource == null)
+            {
+                AudioLayer.SourceSetRange(Source, range.Start, range.End);
+            }
+            else
+            {
+                soundSource.SetRange(range);
+            }
         }
     }
 }
