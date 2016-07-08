@@ -54,7 +54,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 
         public override Node Visit(ExpressionStatement expressionStatement)
         {
-            VisitDynamic(expressionStatement);
+            base.Visit(expressionStatement);
 
             if (appendMethodsList.Contains(expressionStatement.Expression))
             {
