@@ -19,7 +19,7 @@ namespace SiliconStudio.Shaders.Ast
         /// list of childrens for ast navigation.
         /// </summary>
         private List<Node> childrenList = null;
-        private Dictionary<object, object> tags;
+        private Dictionary<string, object> tags;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Node"/> class.
@@ -75,7 +75,7 @@ namespace SiliconStudio.Shaders.Ast
         /// <summary>
         /// Gets or sets tags collection.
         /// </summary>
-        public Dictionary<object, object> Tags
+        public Dictionary<string, object> Tags
         {
             get { return tags; }
             set { tags = value; }
@@ -86,7 +86,7 @@ namespace SiliconStudio.Shaders.Ast
         /// </summary>
         /// <param name="tagKey">The tag key.</param>
         /// <returns>The tag value</returns>
-        public object GetTag(object tagKey)
+        public object GetTag(string tagKey)
         {
             if (tags == null) return null;
             object result;
@@ -99,7 +99,7 @@ namespace SiliconStudio.Shaders.Ast
         /// </summary>
         /// <param name="tagKey">The tag key.</param>
         /// <returns>The tag value</returns>
-        public bool RemoveTag(object tagKey)
+        public bool RemoveTag(string tagKey)
         {
             if (tags == null) return true;
             return tags.Remove(tagKey);
@@ -112,7 +112,7 @@ namespace SiliconStudio.Shaders.Ast
         /// <returns>
         ///   <c>true</c> if the specified instance contains this tag; otherwise, <c>false</c>.
         /// </returns>
-        public bool ContainsTag(object tagKey)
+        public bool ContainsTag(string tagKey)
         {
             if (tags == null) return false;
             return tags.ContainsKey(tagKey);
@@ -123,9 +123,9 @@ namespace SiliconStudio.Shaders.Ast
         /// </summary>
         /// <param name="tagKey">The tag key.</param>
         /// <param name="tagValue">The tag value.</param>
-        public void SetTag(object tagKey, object tagValue)
+        public void SetTag(string tagKey, object tagValue)
         {
-            if (tags == null) tags = new Dictionary<object, object>();
+            if (tags == null) tags = new Dictionary<string, object>();
             tags.Remove(tagKey);
             tags.Add(tagKey, tagValue);
         }

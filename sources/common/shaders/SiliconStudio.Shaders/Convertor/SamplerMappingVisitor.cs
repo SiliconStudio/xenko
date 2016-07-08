@@ -20,7 +20,7 @@ namespace SiliconStudio.Shaders.Convertor
         private HashSet<Variable> textureAccesses;
         private Shader shader;
         private List<TextureSamplerMethodKey> textureSamplerMethods = new List<TextureSamplerMethodKey>();
-        private static readonly object ScopeValueKey = new object();
+        private static readonly string ScopeValueKey = "ScopeValue";
         private CloneContext cloneContext = new CloneContext();
 
         public SamplerMappingVisitor(Shader shader, Dictionary<SamplerTextureKey, Variable> samplerMapping)

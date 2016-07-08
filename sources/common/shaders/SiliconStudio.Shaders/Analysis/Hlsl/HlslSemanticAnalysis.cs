@@ -44,7 +44,7 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
 
         #region Public Methods
 
-        private static readonly object SwizzleTag = "MatrixSwizzleDecode";
+        private static readonly string SwizzleTag = "MatrixSwizzleDecode";
 
 
         /// <summary>
