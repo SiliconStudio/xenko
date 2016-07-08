@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public TestDynamicSpriteFontVarious()
         {
-            CurrentVersion = 3; // Slight size changes but visually correct 
+            CurrentVersion = 4;  // Font names & sizes changed slightly
         }
 
         protected override void RegisterTests()

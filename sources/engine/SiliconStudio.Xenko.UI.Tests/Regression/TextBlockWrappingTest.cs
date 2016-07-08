@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public TextBlockWrappingTest()
         {
-            CurrentVersion = 6;
+            CurrentVersion = 7; // Font type, names & sizes changed slightly
         }
 
         protected override async Task LoadContent()
