@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             await base.LoadContent();
 
-            msMincho10 = Content.Load<SpriteFont>(AssetPrefix + "MSMincho10");
+            msMincho10 = Content.Load<SpriteFont>(AssetPrefix + "HanSans13");
 
             // Instantiate a SpriteBatch
             spriteBatch = new SpriteBatch(GraphicsDevice);

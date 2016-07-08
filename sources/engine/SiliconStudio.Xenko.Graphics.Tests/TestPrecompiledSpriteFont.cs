@@ -5,6 +5,9 @@ using NUnit.Framework;
 
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
+    /// <summary>
+    /// DEPRECATED. Precompiled fonts are not supported anymore and will be merged as a feature of the other fonts (Offline/SDF) soon
+    /// </summary>
     public class TestPrecompiledSpriteFont : TestSpriteFont
     {
         public TestPrecompiledSpriteFont()
