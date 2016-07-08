@@ -124,7 +124,7 @@
     </When>
   </Choose>
   <ItemGroup>
-    <None Include="..\..\..\deps\freetype\$(SiliconStudioPlatform)\$(Configuration)\**\*.*">
+    <None Include="$(XenkoDependenciesDir)\freetype\$(SiliconStudioPlatform)\**\*.*">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
