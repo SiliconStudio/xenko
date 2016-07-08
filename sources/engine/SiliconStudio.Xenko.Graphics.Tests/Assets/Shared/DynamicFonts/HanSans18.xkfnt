@@ -4,7 +4,7 @@ SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
 FontSource: !FileFontProvider
     ~Id: 985e77ae-5548-4eac-a5bb-b7d95632a45e
-    Source: ../../../Resources/Fonts/SourceHanSans-Light.otf
+    Source: ../../../../../data/tests/Fonts/SourceHanSans-Light.otf
 FontType: !RuntimeRasterizedSpriteFontType
     ~Id: 3b267a3a-ebca-4a08-85d0-9ec87feda2ae
     Size: 18.0
