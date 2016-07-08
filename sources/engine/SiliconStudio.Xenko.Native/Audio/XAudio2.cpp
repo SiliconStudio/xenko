@@ -1607,6 +1607,11 @@ extern "C" {
 			source->source_voice_->SubmitSourceBuffer(&buffer->buffer_);
 		}
 
+		void xnAudioSourceFlushBuffers(xnAudioSource* source)
+		{
+			source->source_voice_->FlushSourceBuffers();
+		}
+
 		void xnAudioSourcePause(xnAudioSource* source)
 		{
 			source->source_voice_->Stop();
@@ -1716,7 +1721,6 @@ extern "C" {
 		{
 		}
 	}
-
 }
 
 SpinLock::SpinLock()
