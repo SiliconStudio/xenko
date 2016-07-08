@@ -98,12 +98,7 @@ namespace Irony.Parsing {
     public Grammar(bool caseSensitive) {
       _currentGrammar = this;
       this.CaseSensitive = caseSensitive;
-#if !SILICONSTUDIO_RUNTIME_CORECLR && !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
-      bool ignoreCase =  !this.CaseSensitive;
-      LanguageStringComparer = StringComparer.Create(CultureInfo.InvariantCulture, ignoreCase);
-#else
-      LanguageStringComparer = CultureInfo.InvariantCulture.CompareInfo.GetStringComparer(caseSensitive ? CompareOptions.None : CompareOptions.IgnoreCase);
-#endif
+      LanguageStringComparer = caseSensitive ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase;
       KeyTerms = new KeyTermTable(LanguageStringComparer);
       //Initialize console attributes
       ConsoleTitle = Resources.MsgDefaultConsoleTitle;
