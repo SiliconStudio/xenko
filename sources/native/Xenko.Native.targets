@@ -196,11 +196,11 @@
     <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\darwin_ld.exe&quot; -arch i386 -w -undefined dynamic_lookup -sdk_version 10.11  -macosx_version_min 10.11 -dylib -o &quot;$(SiliconStudioXenkoSdkBinDir)\x86\$(XenkoNativeOutputName).dylib&quot; @(XenkoNativeCFiles->'&quot;$(MSBuildProjectDirectory)\obj\%(Filename).o&quot;', ' ') @(XenkoNativePathLibs2->'&quot;$(XenkoDependenciesDir)\NativePath\$(SiliconStudioPlatform)\%(Filename).a&quot;', ' ') &quot;$(XenkoDependenciesDir)\NativePath\$(SiliconStudioPlatform)\libNativePath.a&quot;" />
   </Target>
 
-  <Target Name="CompileNativeClang_Linux_Clean" Condition="'$(SiliconStudioPlatform)' == 'Linux'" BeforeTargets="Clean;CompileNativeClang_Android">
+  <Target Name="CompileNativeClang_Linux_Clean" Condition="'$(SiliconStudioPlatform)' == 'Linux'" BeforeTargets="Clean">
     <Delete Files="$(SiliconStudioXenkoSdkBinDir)\x86\$(XenkoNativeOutputName).so;$(SiliconStudioXenkoSdkBinDir)\x64\$(XenkoNativeOutputName).so" />
   </Target>
 
-  <Target Name="CompileNativeClang_macOS_Clean" Condition="'$(SiliconStudioPlatform)' == 'macOS'" BeforeTargets="Clean;CompileNativeClang_Android">
+  <Target Name="CompileNativeClang_macOS_Clean" Condition="'$(SiliconStudioPlatform)' == 'macOS'" BeforeTargets="Clean">
     <Delete Files="$(SiliconStudioXenkoSdkBinDir)\x86\$(XenkoNativeOutputName).dylib;$(SiliconStudioXenkoSdkBinDir)\x64\$(XenkoNativeOutputName).dylib" />
   </Target>
 
