@@ -56,7 +56,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
         {
             foreach (var objectType in SamplerStateTypes)
             {
-                if (string.Compare(type.Name.Text, objectType.Name.Text, true) == 0)
+                if (string.Compare(type.Name.Text, objectType.Name.Text, StringComparison.OrdinalIgnoreCase) == 0)
                     return true;
             }
             return false;
@@ -71,7 +71,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
         {
             foreach (var objectType in ObjectTypes)
             {
-                if (string.Compare(name, objectType.Name.Text, true) == 0)
+                if (string.Compare(name, objectType.Name.Text, StringComparison.OrdinalIgnoreCase) == 0)
                     return objectType;
             }
             return null;

@@ -167,7 +167,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             else
             {
                 // store string on OpenGL platforms
-                rawData = Encoding.ASCII.GetBytes(shader);
+                rawData = Encoding.UTF8.GetBytes(shader);
             }
             
             var bytecodeId = ObjectId.FromBytes(rawData);

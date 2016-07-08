@@ -136,16 +136,6 @@ namespace SiliconStudio.Shaders.Grammar
             return builder.ToString();
         }
 
-        private static T ParseEnumFromNode<T>(ParseTreeNode node) where T : struct, IConvertible
-        {
-            if (node.ChildNodes.Count != 1)
-            {
-                return (T)Enum.ToObject(typeof(T), 0);
-            }
-
-            return (T)Enum.Parse(typeof(T), node.ChildNodes[0].Token.Text, true);
-        }
-
         protected static string ParseStringFromNode(ParseTreeNode node)
         {
             while (node.ChildNodes.Count == 1)

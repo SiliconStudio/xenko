@@ -53,7 +53,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
         {
             foreach (var stateType in ObjectTypes)
             {
-                if (string.Compare(name, stateType.Name.Text, true) == 0)
+                if (string.Compare(name, stateType.Name.Text, StringComparison.OrdinalIgnoreCase) == 0)
                     return stateType;
             }
             return null;

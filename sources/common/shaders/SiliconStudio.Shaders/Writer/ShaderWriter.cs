@@ -1000,7 +1000,7 @@ namespace SiliconStudio.Shaders.Writer
         {
             var fileSource = Path.GetFileName(node.Span.Location.FileSource);
 
-            if (string.Compare(fileSource, "internal_hlsl_declarations.hlsl", true) != 0 && node.Span.Length > 0)
+            if (string.Compare(fileSource, "internal_hlsl_declarations.hlsl", StringComparison.OrdinalIgnoreCase) != 0 && node.Span.Length > 0)
             {
                 while (SourceLocations.Count < lineCount)
                 {

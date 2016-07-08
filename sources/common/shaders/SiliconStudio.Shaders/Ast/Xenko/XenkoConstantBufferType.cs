@@ -9,12 +9,7 @@ namespace SiliconStudio.Shaders.Ast.Xenko
         /// <summary>
         ///   Resource group keyword (rgroup).
         /// </summary>
-        public static readonly SiliconStudio.Shaders.Ast.Hlsl.ConstantBufferType ResourceGroup = new XenkoConstantBufferType("rgroup");
-
-        /// <summary>
-        ///   Internal map used for parsing.
-        /// </summary>
-        private static readonly StringEnumMap Map = PrepareParsing<XenkoConstantBufferType>();
+        public static readonly XenkoConstantBufferType ResourceGroup = new XenkoConstantBufferType("rgroup");
 
         /// <summary>
         /// Initializes a new instance of the <see cref="XenkoStorageQualifier"/> class.
@@ -45,7 +40,10 @@ namespace SiliconStudio.Shaders.Ast.Xenko
         /// </returns>
         public static new SiliconStudio.Shaders.Ast.Hlsl.ConstantBufferType Parse(string enumName)
         {
-            return Map.ParseEnumFromName<SiliconStudio.Shaders.Ast.Hlsl.ConstantBufferType>(enumName);
+            if (enumName == (string)ResourceGroup.Key)
+                return ResourceGroup;
+
+            return ConstantBufferType.Parse(enumName);
         }
     }
 }

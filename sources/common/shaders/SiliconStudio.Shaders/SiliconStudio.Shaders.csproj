@@ -20,7 +20,7 @@
     <When Condition="('$(SiliconStudioPlatform)' == 'Windows10') OR ('$(SiliconStudioPlatform)' == 'WindowsPhone') OR ('$(SiliconStudioPlatform)' == 'WindowsStore')">
       <ItemGroup>
         <Reference Include="CppNet">
-          <HintPath>..\..\deps\CppNet\UWP\CppNet.dll</HintPath>
+          <HintPath>..\..\deps\CppNet\Store\CppNet.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
@@ -82,6 +82,7 @@
     <Compile Include="Convertor\BreakContinueVisitor.cs" />
     <Compile Include="Convertor\GlslShaderPlatform.cs" />
     <Compile Include="Convertor\SamplerTextureKey.cs" />
+    <Compile Include="GoldParser\GoldParserException.cs" />
     <Compile Include="Grammar\Xenko\XenkoGrammar.Ast.cs" />
     <Compile Include="Grammar\Xenko\XenkoGrammar.cs" />
     <Compile Include="Properties\Resources.cs">

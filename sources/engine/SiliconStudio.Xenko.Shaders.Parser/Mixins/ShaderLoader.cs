@@ -33,8 +33,6 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// <value>The source manager.</value>
         public ShaderSourceManager SourceManager { get; private set; }
 
-        private readonly static Regex MatchHeader = new Regex(@"\{.*}\s*;", RegexOptions.Singleline | RegexOptions.Compiled);
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderLoader"/> class.
         /// </summary>
@@ -306,7 +304,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                     return null;
                 }
 
-                byte[] byteArray = Encoding.ASCII.GetBytes(preprocessedSource);
+                byte[] byteArray = Encoding.UTF8.GetBytes(preprocessedSource);
                 var hashPreprocessSource = ObjectId.FromBytes(byteArray);
    
                 // Compile

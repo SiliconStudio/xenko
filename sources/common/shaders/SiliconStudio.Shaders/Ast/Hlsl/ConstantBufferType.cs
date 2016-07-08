@@ -21,11 +21,6 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
         /// </summary>
         public static readonly ConstantBufferType Texture = new ConstantBufferType("tbuffer");
 
-        /// <summary>
-        ///   Internal map used for parsing.
-        /// </summary>
-        private static readonly StringEnumMap Map = PrepareParsing<ConstantBufferType>();
-
         #endregion
 
         #region Constructors and Destructors
@@ -59,7 +54,12 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
         /// </returns>
         public static ConstantBufferType Parse(string enumName)
         {
-            return Map.ParseEnumFromName<ConstantBufferType>(enumName);
+            if (enumName == (string)Constant.Key)
+                return Constant;
+            if (enumName == (string)Texture.Key)
+                return Texture;
+
+            throw new ArgumentException(string.Format("Unable to convert [{0}] to constant buffer type", enumName), "key");
         }
 
         #endregion

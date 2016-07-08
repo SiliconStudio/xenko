@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Xenko.Shaders.Parser.Performance
 {
@@ -179,7 +180,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Performance
             if (globalCount == limit)
             {
                 PrintResult();
-                TextWriter tw = new StreamWriter(File.Open("performance.csv", FileMode.Append));
+                TextWriter tw = new StreamWriter(VirtualFileSystem.ApplicationLocal.OpenStream("performance.csv", VirtualFileMode.Append, VirtualFileAccess.Write));
                 tw.WriteLine("loading,type,semantic,mix,deepclone,global");
 
                 for (var i = 0; i < limit; ++i)
