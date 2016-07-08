@@ -27,6 +27,8 @@ namespace SiliconStudio.Xenko.Audio
         private int currentPacketIndex;
         private int endPacketIndex;
         private PlayRange playRange;
+        private int startPktSampleIndex;
+        private int endPktSampleIndex;
 
         private Celt decoder;
 
@@ -98,19 +100,27 @@ restart:
                             source.ended = false;
                             source.restart = false;
                             source.currentPacketIndex = 0;
+                            source.startPktSampleIndex = 0;
+                            source.endPktSampleIndex = 0;
                             source.endPacketIndex = source.numberOfPackets;
 
                             //flush buffers, remove any queued buffer
                             AudioLayer.SourceFlushBuffers(source.SoundInstance.Source);
 
                             var range = source.playRange;
-                            if (range.Start != 0 && range.Length != 0)
+                            if (range.Start != 0 || range.Length != 0)
                             {
+                                var frameSize = SamplesPerFrame*source.channels;
                                 //ok we need to handle this case properly, this means that the user wants to use a different then full audio stream range...
                                 var sampleStart = source.sampleRate * (double)source.channels * range.Start;
+                                source.startPktSampleIndex = (int)sampleStart % (frameSize);
+
                                 var sampleStop = source.sampleRate * (double)source.channels * range.End;
-                                var startingPacket = (int)Math.Floor(sampleStart / ((double)SamplesPerFrame * source.channels));
-                                source.endPacketIndex = (int)Math.Floor(sampleStop / ((double)SamplesPerFrame * source.channels));
+                                source.endPktSampleIndex = frameSize - ((int)sampleStart % frameSize);
+
+                                var startingPacket = (int)Math.Floor(sampleStart / frameSize);
+                                source.endPacketIndex = (int)Math.Floor(sampleStop / frameSize);
+                                
                                 // skip to the starting packet
                                 if (startingPacket < source.numberOfPackets && source.endPacketIndex < source.numberOfPackets && startingPacket < source.endPacketIndex)
                                 {
@@ -163,7 +173,9 @@ restart:
                             break;
                         }
                         
-                        source.FillBuffer(utilityBuffer.Pointer, offset * sizeof(short), source.ended);
+                        var finalPtr = new IntPtr(bufferPtr + source.startPktSampleIndex);
+                        var finalSize = (offset - source.startPktSampleIndex - source.endPktSampleIndex) * sizeof(short);
+                        source.FillBuffer(finalPtr, finalSize, source.ended);
                     }
                     else
                     {
