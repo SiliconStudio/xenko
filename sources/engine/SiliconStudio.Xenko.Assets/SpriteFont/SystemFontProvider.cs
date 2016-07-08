@@ -3,7 +3,9 @@
 
 using System.Linq;
 using SharpDX.DirectWrite;
+using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Assets.SpriteFont.Compiler;
 using SiliconStudio.Xenko.Graphics.Font;
 
@@ -13,6 +15,8 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     [Display("System Font")]
     public class SystemFontProvider : FontProviderBase
     {
+        private static readonly Logger Log = GlobalLogger.GetLogger("SystemFontProvider");
+
         public const string DefaultFontName = "Arial";
 
         public SystemFontProvider()
@@ -71,7 +75,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             return new FontFace(font);
         }
 
-        public override string GetFontPath()
+        public override string GetFontPath(AssetCompilerResult result = null)
         {
             using (var factory = new Factory())
             {
@@ -82,7 +86,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                     int index;
                     if (!fontCollection.FindFamilyName(FontName, out index))
                     {
-                        //result.Error("Can't find font '{0}'.", asset.FontName);
+                        result?.Error("Cannot find system font '{0}'. Make sure it is installed on this machine.", FontName);
                         return null;
                     }
 
@@ -93,7 +97,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                         font = fontFamily.GetFirstMatchingFont(weight, FontStretch.Normal, style);
                         if (font == null)
                         {
-                            //result.Error("Cannot find style '{0}' for font family {1}.", asset.Style, asset.FontName);
+                            result?.Error("Cannot find style '{0}' for font family {1}. Make sure it is installed on this machine.", Style, FontName);
                             return null;
                         }
                     }

@@ -8,6 +8,7 @@ using SharpYaml.Serialization;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Assets.Compiler;
+using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
@@ -37,6 +38,7 @@ namespace SiliconStudio.Assets
         private static readonly List<IDataCustomVisitor> RegisteredDataVisitNodes = new List<IDataCustomVisitor>();
         private static readonly List<IDataCustomVisitor> RegisteredDataVisitNodeBuilders = new List<IDataCustomVisitor>();
         private static readonly Dictionary<string, IAssetFactory<Asset>> RegisteredAssetFactories = new Dictionary<string, IAssetFactory<Asset>>();
+        private static readonly Dictionary<Type, HashSet<AssetPartReferenceAttribute>> RegisteredAssetCompositePartTypes = new Dictionary<Type, HashSet<AssetPartReferenceAttribute>>();
 
         private static Func<object, string, string> stringExpander;
 
@@ -393,6 +395,24 @@ namespace SiliconStudio.Assets
             }
         }
 
+        public static bool IsAssetPartType(Type type)
+        {
+            lock (RegistryLock)
+            {
+                return RegisteredAssetCompositePartTypes.ContainsKey(type);
+            }
+        }
+
+        public static IEnumerable<AssetPartReferenceAttribute> GetPartReferenceAttributes(Type partType)
+        {
+            lock (RegistryLock)
+            {
+                HashSet<AssetPartReferenceAttribute> attributes;
+                RegisteredAssetCompositePartTypes.TryGetValue(partType, out attributes);
+                return attributes;
+            }
+        }
+
         /// <summary>
         /// Registers the asset assembly. This assembly should provide <see cref="Asset"/> objects, associated with
         /// <see cref="IAssetCompiler"/> and optionaly a <see cref="IAssetImporter"/>.
@@ -574,6 +594,21 @@ namespace SiliconStudio.Assets
                         {
                             upgraderCollection.Validate(minVersion);
                             RegisteredAssetUpgraders.Add(new KeyValuePair<Type, string>(assetType, assetFormatVersion.Name), upgraderCollection);
+                        }
+                    }
+
+                    if (typeof(AssetComposite).IsAssignableFrom(assetType))
+                    {
+                        var attributes = assetType.GetCustomAttributes(typeof(AssetPartReferenceAttribute), true).Cast<AssetPartReferenceAttribute>().ToList();
+                        foreach (var attribute in attributes)
+                        {
+                            HashSet<AssetPartReferenceAttribute> relatedPartTypes;
+                            if (!RegisteredAssetCompositePartTypes.TryGetValue(attribute.ReferenceableType, out relatedPartTypes))
+                            {
+                                relatedPartTypes = new HashSet<AssetPartReferenceAttribute>();
+                                RegisteredAssetCompositePartTypes.Add(attribute.ReferenceableType, relatedPartTypes);
+                            }
+                            attributes.ForEach(x => relatedPartTypes.Add(x));
                         }
                     }
                 }
