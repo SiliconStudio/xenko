@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Assets.UI
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(UIPageAssetCompiler))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
-    [Display("UI")]
+    [Display("UI Page")]
     [AssetPartReference(typeof(UIElement))]
     public sealed class UIPageAsset : UIAssetBase
     {
@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Assets.UI
         /// <summary>
         /// The default file extension used by the <see cref="UIPageAsset"/>.
         /// </summary>
-        public const string FileExtension = ".xkui";
+        public const string FileExtension = ".xkuipage";
 
         [DataMember]
         [NotNull]
