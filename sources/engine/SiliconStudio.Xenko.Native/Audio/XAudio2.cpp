@@ -1524,26 +1524,36 @@ extern "C" {
 			if(!source->streamed_)
 			{
 				auto singleBuffer = source->freeBuffers[0];
-				auto sampleStart = int(double(source->sampleRate_) * (source->mono_ ? 1.0 : 2.0) * startTime);
-				auto sampleStop = int(double(source->sampleRate_) * (source->mono_ ? 1.0 : 2.0) * stopTime);
-
-				if (sampleStart > singleBuffer->length_)
+				if(startTime == 0 && stopTime == 0)
 				{
-					return; //the starting position must be less then the total length of the buffer
+					singleBuffer->buffer_.PlayBegin = 0;
+					singleBuffer->buffer_.LoopBegin = 0;
+					singleBuffer->buffer_.PlayLength = 0;
+					singleBuffer->buffer_.LoopLength = 0;
 				}
+				else
+				{					
+					auto sampleStart = int(double(source->sampleRate_) * (source->mono_ ? 1.0 : 2.0) * startTime);
+					auto sampleStop = int(double(source->sampleRate_) * (source->mono_ ? 1.0 : 2.0) * stopTime);
 
-				if(sampleStop > singleBuffer->length_) //if the end point is more then the length of the buffer fix the value
-				{
-					sampleStop = singleBuffer->length_;
-				}
+					if (sampleStart > singleBuffer->length_)
+					{
+						return; //the starting position must be less then the total length of the buffer
+					}
 
-				auto len = sampleStop - sampleStart;
-				if(len > 0)
-				{
-					singleBuffer->buffer_.PlayBegin = sampleStart;
-					singleBuffer->buffer_.LoopBegin = sampleStart;
-					singleBuffer->buffer_.PlayLength = len;
-					singleBuffer->buffer_.LoopLength = len;
+					if (sampleStop > singleBuffer->length_) //if the end point is more then the length of the buffer fix the value
+					{
+						sampleStop = singleBuffer->length_;
+					}
+
+					auto len = sampleStop - sampleStart;
+					if (len > 0)
+					{
+						singleBuffer->buffer_.PlayBegin = sampleStart;
+						singleBuffer->buffer_.LoopBegin = sampleStart;
+						singleBuffer->buffer_.PlayLength = len;
+						singleBuffer->buffer_.LoopLength = len;
+					}
 				}
 			}
 		}

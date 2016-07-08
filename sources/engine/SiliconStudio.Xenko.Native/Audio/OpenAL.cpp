@@ -5,6 +5,7 @@
 
 #include "../../../../deps/NativePath/NativePath.h"
 #include "../../../../deps/NativePath/NativeDynamicLinking.h"
+#include "../../../../deps/NativePath/NativeMemory.h"
 #include "../../../../deps/NativePath/NativeThreading.h"
 #include "../../../../deps/NativePath/TINYSTL/unordered_map.h"
 #include "../../../../deps/NativePath/TINYSTL/unordered_set.h"
@@ -205,6 +206,9 @@ extern "C" {
 
 		struct xnAudioBuffer
 		{
+			short* pcm = NULL;
+			int size;
+			int sampleRate;
 			ALuint buffer;
 		};
 
@@ -220,7 +224,10 @@ extern "C" {
 			ALuint source;
 			int sampleRate;
 			bool mono;
+
 			xnAudioListener* listener;
+
+			xnAudioBuffer* singleBuffer;
 		};
 
 		xnAudioDevice* xnAudioCreate(const char* deviceName)
@@ -305,6 +312,7 @@ extern "C" {
 		{
 			(void)spatialized;
 			(void)streamed;
+			(void)maxNBuffers;
 
 			auto res = new xnAudioSource;
 			res->listener = listener;
@@ -362,6 +370,41 @@ extern "C" {
 			SourceI(source->source, AL_LOOPING, looping ? AL_TRUE : AL_FALSE);
 		}
 
+		void xnAudioSourceSetRange(xnAudioSource* source, double startTime, double stopTime)
+		{
+			ContextState lock(source->listener->context);
+
+			//OpenAL is kinda bad and offers only starting offset...
+			//As result we need to rewrite the buffer
+			if(startTime == 0 && stopTime == 0)
+			{
+				//cancel the offsetting
+				BufferData(source->singleBuffer->buffer, source->mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, source->singleBuffer->pcm, source->singleBuffer->size, source->singleBuffer->sampleRate);
+			}
+			else
+			{
+				//offset the data
+				auto sampleStart = int(double(source->singleBuffer->sampleRate) * (source->mono ? 1.0 : 2.0) * startTime);
+				auto sampleStop = int(double(source->singleBuffer->sampleRate) * (source->mono ? 1.0 : 2.0) * stopTime);
+
+				if (sampleStart > source->singleBuffer->size)
+				{
+					return; //the starting position must be less then the total length of the buffer
+				}
+
+				if (sampleStop > source->singleBuffer->size) //if the end point is more then the length of the buffer fix the value
+				{
+					sampleStop = source->singleBuffer->size;
+				}
+
+				auto len = sampleStop - sampleStart;
+
+				auto offsettedBuffer = source->singleBuffer->buffer + sampleStart;
+
+				BufferData(source->singleBuffer->buffer, source->mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, (void*)offsettedBuffer, len * sizeof(short), source->singleBuffer->sampleRate);
+			}
+		}
+
 		void xnAudioSourceSetGain(xnAudioSource* source, float gain)
 		{
 			ContextState lock(source->listener->context);
@@ -380,6 +423,7 @@ extern "C" {
 		{
 			ContextState lock(source->listener->context);
 
+			source->singleBuffer = buffer;
 			SourceI(source->source, AL_BUFFER, buffer->buffer);
 		}
 
@@ -392,6 +436,18 @@ extern "C" {
 			BufferData(buffer->buffer, source->mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, pcm, bufferSize, source->sampleRate);
 			SourceQueueBuffers(source->source, 1, &buffer->buffer);
 			source->listener->buffers[buffer->buffer] = buffer;
+		}
+
+		void xnAudioSourceFlushBuffers(xnAudioSource* source)
+		{
+			ContextState lock(source->listener->context);
+			ALint queued = 0;
+			GetSourceI(source->source, AL_BUFFERS_QUEUED, &queued);
+			while (queued--)
+			{
+				ALuint buffer;
+				SourceUnqueueBuffers(source->source, 1, &buffer);
+			}
 		}
 
 		xnAudioBuffer* xnAudioSourceGetFreeBuffer(xnAudioSource* source)
@@ -519,6 +575,7 @@ extern "C" {
 		xnAudioBuffer* xnAudioBufferCreate(int maxBufferSize)
 		{
 			auto res = new xnAudioBuffer;
+			res->pcm = (short*)malloc(maxBufferSize);
 			GenBuffers(1, &res->buffer);
 			return res;
 		}
@@ -526,11 +583,17 @@ extern "C" {
 		void xnAudioBufferDestroy(xnAudioBuffer* buffer)
 		{
 			DeleteBuffers(1, &buffer->buffer);
+			free(buffer->pcm);
 			delete buffer;
 		}
 
 		void xnAudioBufferFill(xnAudioBuffer* buffer, short* pcm, int bufferSize, int sampleRate, npBool mono)
 		{
+			//we have to keep a copy sadly because we might need to offset the data at some point			
+			memcpy(buffer->pcm, pcm, sizeof(short) * bufferSize);
+			buffer->size = bufferSize;
+			buffer->sampleRate = sampleRate;
+			
 			BufferData(buffer->buffer, mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, pcm, bufferSize, sampleRate);
 		}
 
