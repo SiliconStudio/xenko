@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
     [Description("Check Dynamic Font various")]
     public class TestDynamicSpriteFontVarious : GraphicTestGameBase
     {
-        private SpriteFont msMincho10;
+        private SpriteFont hanSans13;
 
         private SpriteBatch spriteBatch;
         
@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             await base.LoadContent();
 
-            msMincho10 = Content.Load<SpriteFont>(AssetPrefix + "HanSans13");
+            hanSans13 = Content.Load<SpriteFont>(AssetPrefix + "HanSans13");
 
             // Instantiate a SpriteBatch
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -87,39 +87,39 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             var y = 10;
             
             var size = 11;
-            msMincho10.PreGenerateGlyphs(BuildTextSize(size), size * Vector2.One);
-            var dim = msMincho10.MeasureString(BuildTextSize(size), size);
-            spriteBatch.DrawString(msMincho10, BuildTextSize(size), size, new Vector2(x, y), Color.White);
+            hanSans13.PreGenerateGlyphs(BuildTextSize(size), size * Vector2.One);
+            var dim = hanSans13.MeasureString(BuildTextSize(size), size);
+            spriteBatch.DrawString(hanSans13, BuildTextSize(size), size, new Vector2(x, y), Color.White);
             size = 13;
             y += (int)Math.Ceiling(dim.Y);
-            msMincho10.PreGenerateGlyphs(BuildTextSize(size), size * Vector2.One);
-            dim = msMincho10.MeasureString(BuildTextSize(size), size);
-            spriteBatch.DrawString(msMincho10, BuildTextSize(size), size, new Vector2(x, y), Color.White);
+            hanSans13.PreGenerateGlyphs(BuildTextSize(size), size * Vector2.One);
+            dim = hanSans13.MeasureString(BuildTextSize(size), size);
+            spriteBatch.DrawString(hanSans13, BuildTextSize(size), size, new Vector2(x, y), Color.White);
             size = 16;
             y += (int)Math.Ceiling(dim.Y);
-            msMincho10.PreGenerateGlyphs(BuildTextSize(size), size * Vector2.One);
-            dim = msMincho10.MeasureString(BuildTextSize(size), size);
-            spriteBatch.DrawString(msMincho10, BuildTextSize(size), size, new Vector2(x, y), Color.White);
+            hanSans13.PreGenerateGlyphs(BuildTextSize(size), size * Vector2.One);
+            dim = hanSans13.MeasureString(BuildTextSize(size), size);
+            spriteBatch.DrawString(hanSans13, BuildTextSize(size), size, new Vector2(x, y), Color.White);
             size = 19;
             y += (int)Math.Ceiling(dim.Y);
-            msMincho10.PreGenerateGlyphs(BuildTextSize(size), size * Vector2.One);
-            dim = msMincho10.MeasureString(BuildTextSize(size), size);
-            spriteBatch.DrawString(msMincho10, BuildTextSize(size), size, new Vector2(x, y), Color.White);
+            hanSans13.PreGenerateGlyphs(BuildTextSize(size), size * Vector2.One);
+            dim = hanSans13.MeasureString(BuildTextSize(size), size);
+            spriteBatch.DrawString(hanSans13, BuildTextSize(size), size, new Vector2(x, y), Color.White);
             size = 21;
             y += (int)Math.Ceiling(dim.Y);
-            msMincho10.PreGenerateGlyphs(BuildTextSize(size), size * Vector2.One);
-            dim = msMincho10.MeasureString(BuildTextSize(size), size);
-            spriteBatch.DrawString(msMincho10, BuildTextSize(size), size, new Vector2(x, y), Color.White);
+            hanSans13.PreGenerateGlyphs(BuildTextSize(size), size * Vector2.One);
+            dim = hanSans13.MeasureString(BuildTextSize(size), size);
+            spriteBatch.DrawString(hanSans13, BuildTextSize(size), size, new Vector2(x, y), Color.White);
             size = 27;
             y += (int)Math.Ceiling(dim.Y);
-            msMincho10.PreGenerateGlyphs(BuildTextSize(size), size * Vector2.One);
-            dim = msMincho10.MeasureString(BuildTextSize(size), size);
-            spriteBatch.DrawString(msMincho10, BuildTextSize(size), size, new Vector2(x, y), Color.White);
+            hanSans13.PreGenerateGlyphs(BuildTextSize(size), size * Vector2.One);
+            dim = hanSans13.MeasureString(BuildTextSize(size), size);
+            spriteBatch.DrawString(hanSans13, BuildTextSize(size), size, new Vector2(x, y), Color.White);
             size = 33;
             y += (int)Math.Ceiling(dim.Y);
-            msMincho10.PreGenerateGlyphs(BuildTextSize(size), size * Vector2.One);
-            dim = msMincho10.MeasureString(BuildTextSize(size), size);
-            spriteBatch.DrawString(msMincho10, BuildTextSize(size), size, new Vector2(x, y), Color.White);
+            hanSans13.PreGenerateGlyphs(BuildTextSize(size), size * Vector2.One);
+            dim = hanSans13.MeasureString(BuildTextSize(size), size);
+            spriteBatch.DrawString(hanSans13, BuildTextSize(size), size, new Vector2(x, y), Color.White);
 
             // change the varying string if necessary
             if (accumulatedSeconds > VaryingStringTimeInterval)
@@ -147,15 +147,15 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             // print varying text
             y += (int)Math.Ceiling(dim.Y) + 10;
-            msMincho10.PreGenerateGlyphs(varyingString.ToString(), 21 * Vector2.One);
-            spriteBatch.DrawString(msMincho10, varyingString, 21, new Vector2(x, y), Color.White);
+            hanSans13.PreGenerateGlyphs(varyingString.ToString(), 21 * Vector2.One);
+            spriteBatch.DrawString(hanSans13, varyingString, 21, new Vector2(x, y), Color.White);
 
             spriteBatch.End();
         }
 
         private string BuildTextSize(int size)
         {
-            return "MS Mincho size " + size +" pixels. 漢字のサイズは" + size + "ピクセル。";
+            return "HanSans size " + size +" pixels. 漢字のサイズは" + size + "ピクセル。";
         }
 
         public static void Main()

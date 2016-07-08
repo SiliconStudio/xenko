@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         public TestPrecompiledSpriteFont()
             : base("PrecompiledFonts/", "pre")
         {
-            CurrentVersion = 6;
+            CurrentVersion = 7; // Font names & sizes changed slightly
         }
 
         public static void Main()

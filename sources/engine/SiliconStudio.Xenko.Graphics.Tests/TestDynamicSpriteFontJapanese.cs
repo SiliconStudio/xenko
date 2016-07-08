@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public TestDynamicSpriteFontJapanese()
         {
-            CurrentVersion = 3;
+            CurrentVersion = 4; // Font names & sizes changed slightly
         }
 
         protected override void RegisterTests()
