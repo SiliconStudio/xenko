@@ -49,11 +49,14 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
 
         public static bool IsStateType(this TypeBase type)
         {
-            return Parse(type.Name) != null;
+            return type != null && Parse(type.Name) != null;
         }
 
         public static bool IsSamplerStateType(this TypeBase type)
         {
+            if (type == null)
+                return false;
+
             foreach (var objectType in SamplerStateTypes)
             {
                 if (string.Compare(type.Name.Text, objectType.Name.Text, StringComparison.OrdinalIgnoreCase) == 0)

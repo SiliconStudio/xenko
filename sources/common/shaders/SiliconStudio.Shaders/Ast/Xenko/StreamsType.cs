@@ -62,12 +62,12 @@ namespace SiliconStudio.Shaders.Ast.Xenko
         
         public static bool IsStreamsMutable(this TypeBase type)
         {
-            return IsStreamsType(type) && type.Name != Constants;
+            return type != null && IsStreamsType(type) && type.Name != Constants;
         }
 
         public static bool IsStreamsType(this TypeBase type)
         {
-            return Parse(type.Name) != null;
+            return type != null && Parse(type.Name) != null;
         }
 
         /// <summary>
