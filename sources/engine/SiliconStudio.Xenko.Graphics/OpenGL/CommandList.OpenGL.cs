@@ -810,6 +810,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void BeginProfile(Color profileColor, string name)
         {
+#if !SILICONSTUDIO_PLATFORM_IOS
             if (GraphicsDevice.ProfileEnabled)
             {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
@@ -819,10 +820,12 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
                     GL.PushDebugGroup(DebugSourceExternal.DebugSourceApplication, 1, -1, name);
             }
+#endif
         }
 
         public void EndProfile()
         {
+#if !SILICONSTUDIO_PLATFORM_IOS
             if (GraphicsDevice.ProfileEnabled)
             {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
@@ -832,6 +835,7 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
                     GL.PopDebugGroup();
             }
+#endif
         }
 
         public MappedResource MapSubresource(GraphicsResource resource, int subResourceIndex, MapMode mapMode, bool doNotWait = false, int offsetInBytes = 0, int lengthInBytes = 0)
