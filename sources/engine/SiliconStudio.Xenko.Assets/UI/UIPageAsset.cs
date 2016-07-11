@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Assets.UI
         /// </summary>
         public const string FileExtension = ".xkui";
 
-        [DataMember]
+        [DataMember(10)]
         [NotNull]
         [Display("Design")]
         public UIDesign Design { get; set; } = new UIDesign();
