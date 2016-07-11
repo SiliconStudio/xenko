@@ -40,9 +40,9 @@ namespace SiliconStudio.Xenko.UI.Renderers
                 case ToggleState.Checked:
                     return toggleButton.CheckedImage?.GetSprite();
                 case ToggleState.Indeterminate:
-                    return toggleButton.IndeterminateImage.GetSprite();
+                    return toggleButton.IndeterminateImage?.GetSprite();
                 case ToggleState.UnChecked:
-                    return toggleButton.UncheckedImage.GetSprite();
+                    return toggleButton.UncheckedImage?.GetSprite();
                 default:
                     throw new ArgumentOutOfRangeException();
             }
