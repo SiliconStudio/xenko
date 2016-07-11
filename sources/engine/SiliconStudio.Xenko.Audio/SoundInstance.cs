@@ -104,8 +104,6 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-        
-
         /// <summary>
         /// Set the sound balance between left and right speaker.
         /// </summary>
