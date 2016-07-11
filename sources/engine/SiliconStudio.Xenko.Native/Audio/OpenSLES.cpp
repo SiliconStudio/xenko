@@ -118,6 +118,9 @@ extern "C" {
 			volatile float pitch = 1.0f;
 			volatile float doppler_pitch = 1.0f;
 
+			volatile char* subDataPtr;
+			volatile int subLength;
+
 			xnAudioListener* listener;
 
 			SLObjectItf object;
@@ -230,14 +233,15 @@ extern "C" {
 			(void)listener;
 		}
 
-		void PlayerCallback(SLAndroidSimpleBufferQueueItf bq, void *context) {
+		void PlayerCallback(SLAndroidSimpleBufferQueueItf bq, void *context) 
+		{
 			(void)bq;
 			auto source = static_cast<xnAudioSource*>(context);
 			if(!source->streamed) //looped
 			{
 				if (source->looped)
 				{
-					(*source->queue)->Enqueue(source->queue, source->streamBuffers[0]->dataPtr, source->streamBuffers[0]->dataLength);
+					(*source->queue)->Enqueue(source->queue, (void*)source->subDataPtr, source->subLength);
 				}
 				else
 				{
@@ -413,6 +417,45 @@ extern "C" {
 			source->looped = looping;
 		}
 
+		void xnAudioSourceSetRange(xnAudioSource* source, double startTime, double stopTime)
+		{
+			if (source->streamed) return;
+
+			//OpenAL is kinda bad and offers only starting offset...
+			//As result we need to rewrite the buffer
+			if (startTime == 0 && stopTime == 0)
+			{
+				//cancel the offsetting
+				source->subLength = source->streamBuffers[0]->dataLength;
+				source->subDataPtr = source->streamBuffers[0]->dataPtr;
+
+				(*source->queue)->Clear(source->queue);
+				(*source->queue)->Enqueue(source->queue, (void*)source->subDataPtr, source->subLength);
+			}
+			else
+			{
+				//offset the data
+				auto sampleStart = int(double(source->sampleRate) * (source->mono ? 1.0 : 2.0) * startTime);
+				auto sampleStop = int(double(source->sampleRate) * (source->mono ? 1.0 : 2.0) * stopTime);
+
+				if (sampleStart > source->streamBuffers[0]->dataLength / sizeof(short))
+				{
+					return; //the starting position must be less then the total length of the buffer
+				}
+
+				if (sampleStop > source->streamBuffers[0]->dataLength / sizeof(short)) //if the end point is more then the length of the buffer fix the value
+				{
+					sampleStop = source->streamBuffers[0]->dataLength / sizeof(short);
+				}
+
+				source->subLength = (sampleStop - sampleStart) * sizeof(short);
+				source->subDataPtr = source->streamBuffers[0]->dataPtr + sampleStart;
+
+				(*source->queue)->Clear(source->queue);
+				(*source->queue)->Enqueue(source->queue, (void*)source->subDataPtr, source->subLength);
+			}
+		}
+
 		void xnAudioSourceSetGain(xnAudioSource* source, float gain)
 		{
 			source->gain = gain;
@@ -439,8 +482,11 @@ extern "C" {
 
 			source->buffersLock.Lock();
 
-			source->streamBuffers[0] = buffer;
-			(*source->queue)->Enqueue(source->queue, buffer->dataPtr, buffer->dataLength);
+			source->streamBuffers.clear();
+			source->streamBuffers.push_back(buffer);
+			source->subLength = buffer->dataLength;
+			source->subDataPtr = buffer->dataPtr;
+			(*source->queue)->Enqueue(source->queue, (void*)source->subDataPtr, source->subLength);
 
 			source->buffersLock.Unlock();
 		}
@@ -457,6 +503,23 @@ extern "C" {
 
 			source->streamBuffers.push_back(buffer);
 			(*source->queue)->Enqueue(source->queue, buffer->dataPtr, buffer->dataLength);
+
+			source->buffersLock.Unlock();
+		}
+
+		void xnAudioSourceFlushBuffers(xnAudioSource* source)
+		{
+			if (!source->streamed) return;
+
+			(*source->queue)->Clear(source->queue);
+
+			source->buffersLock.Lock();
+
+			for (auto buffer : source->streamBuffers)
+			{
+				source->freeBuffers.push_back(buffer);
+			}
+			source->streamBuffers.clear();
 
 			source->buffersLock.Unlock();
 		}
@@ -493,6 +556,20 @@ extern "C" {
 		void xnAudioSourceStop(xnAudioSource* source)
 		{
 			(*source->player)->SetPlayState(source->player, SL_PLAYSTATE_STOPPED);
+
+			if(source->streamed)
+			{
+				source->buffersLock.Lock();
+
+				//flush buffers
+				for (auto buffer : source->streamBuffers)
+				{
+					source->freeBuffers.push_back(buffer);
+				}
+				source->streamBuffers.clear();
+
+				source->buffersLock.Unlock();
+			}
 		}
 
 		void xnAudioListenerPush3D(xnAudioListener* listener, float* pos, float* forward, float* up, float* vel)
