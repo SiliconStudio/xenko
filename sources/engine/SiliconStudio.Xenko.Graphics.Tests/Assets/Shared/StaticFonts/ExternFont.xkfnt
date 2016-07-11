@@ -7,7 +7,6 @@ FontSource: !FileFontProvider
     Source: ../../../../../data/tests/Risaltyp_024.ttf
 FontType: !OfflineRasterizedSpriteFontType
     ~Id: e906c0c0-6ba1-4105-a948-eef8a756b33b
-    Size: 21.33333
     CharacterSet: null
     CharacterRegions:
         -   ~Id: fb81d7e8-e8d7-4ddc-a01e-8f7ad260e74e
