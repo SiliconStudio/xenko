@@ -22,7 +22,8 @@ namespace SiliconStudio.Xenko.Audio
         private BinarySerializationReader reader;
         private bool ended;
         private volatile bool looped;
-        private bool restart;
+        private volatile bool restart;
+        private volatile bool flushAndRestart;
         private readonly int numberOfPackets;
         private int currentPacketIndex;
         private int endPacketIndex;
@@ -94,18 +95,23 @@ namespace SiliconStudio.Xenko.Audio
                     if (!source.dispose)
                     {
 restart:
-                        if (source.restart)
+                        if (source.restart || source.flushAndRestart)
                         {
                             source.compressedSoundStream.Position = 0;
                             source.ended = false;
-                            source.restart = false;
+                            source.restart = false;                           
                             source.currentPacketIndex = 0;
                             source.startPktSampleIndex = 0;
                             source.endPktSampleIndex = 0;
                             source.endPacketIndex = source.numberOfPackets;
 
                             //flush buffers, remove any queued buffer
-                            AudioLayer.SourceFlushBuffers(source.SoundInstance.Source);
+                            if (source.flushAndRestart)
+                            {
+                                AudioLayer.SourceFlushBuffers(source.SoundInstance.Source);
+                            }
+
+                            source.flushAndRestart = false;
 
                             var range = source.playRange;
                             if (range.Start != 0 || range.Length != 0)
@@ -215,7 +221,7 @@ restart:
         /// </summary>
         public override void Restart()
         {
-            restart = true;
+            flushAndRestart = true;
         }
 
         /// <summary>
@@ -230,7 +236,7 @@ restart:
         public override void SetRange(PlayRange range)
         {
             playRange = range;
-            restart = true; //flag for restart, flush etc
+            flushAndRestart = true; //flag for restart, flush etc
         }
 
         private void Destroy()
