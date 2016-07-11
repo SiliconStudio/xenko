@@ -379,7 +379,13 @@ extern "C" {
 			if(startTime == 0 && stopTime == 0)
 			{
 				//cancel the offsetting
+				ALint playing;
+				GetSourceI(source->source, AL_SOURCE_STATE, &playing);
+				if (playing == AL_PLAYING) SourceStop(source->source);
+				SourceI(source->source, AL_BUFFER, 0);
 				BufferData(source->singleBuffer->buffer, source->mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, source->singleBuffer->pcm, source->singleBuffer->size, source->singleBuffer->sampleRate);
+				SourceI(source->source, AL_BUFFER, source->singleBuffer->buffer);
+				if (playing == AL_PLAYING) SourcePlay(source->source);
 			}
 			else
 			{
@@ -387,21 +393,27 @@ extern "C" {
 				auto sampleStart = int(double(source->singleBuffer->sampleRate) * (source->mono ? 1.0 : 2.0) * startTime);
 				auto sampleStop = int(double(source->singleBuffer->sampleRate) * (source->mono ? 1.0 : 2.0) * stopTime);
 
-				if (sampleStart > source->singleBuffer->size)
+				if (sampleStart > source->singleBuffer->size / sizeof(short))
 				{
 					return; //the starting position must be less then the total length of the buffer
 				}
 
-				if (sampleStop > source->singleBuffer->size) //if the end point is more then the length of the buffer fix the value
+				if (sampleStop > source->singleBuffer->size / sizeof(short)) //if the end point is more then the length of the buffer fix the value
 				{
-					sampleStop = source->singleBuffer->size;
+					sampleStop = source->singleBuffer->size / sizeof(short);
 				}
 
 				auto len = sampleStop - sampleStart;
 
-				auto offsettedBuffer = source->singleBuffer->buffer + sampleStart;
+				auto offsettedBuffer = source->singleBuffer->pcm + sampleStart;
 
+				ALint playing;
+				GetSourceI(source->source, AL_SOURCE_STATE, &playing);
+				if (playing == AL_PLAYING) SourceStop(source->source);
+				SourceI(source->source, AL_BUFFER, 0);
 				BufferData(source->singleBuffer->buffer, source->mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, (void*)offsettedBuffer, len * sizeof(short), source->singleBuffer->sampleRate);
+				SourceI(source->source, AL_BUFFER, source->singleBuffer->buffer);
+				if (playing == AL_PLAYING) SourcePlay(source->source);
 			}
 		}
 
@@ -590,7 +602,7 @@ extern "C" {
 		void xnAudioBufferFill(xnAudioBuffer* buffer, short* pcm, int bufferSize, int sampleRate, npBool mono)
 		{
 			//we have to keep a copy sadly because we might need to offset the data at some point			
-			memcpy(buffer->pcm, pcm, sizeof(short) * bufferSize);
+			memcpy(buffer->pcm, pcm, bufferSize);
 			buffer->size = bufferSize;
 			buffer->sampleRate = sampleRate;
 			
