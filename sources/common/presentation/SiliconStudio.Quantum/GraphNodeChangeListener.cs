@@ -15,7 +15,7 @@ namespace SiliconStudio.Quantum
     public class GraphNodeChangeListener : IDisposable
     {
         private readonly IGraphNode rootNode;
-        private readonly Func<IGraphNode, GraphNodePath, bool> shouldRegisterNode;
+        private readonly Func<MemberContent, IGraphNode, bool> shouldRegisterNode;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphNodeChangeListener"/> class.
@@ -25,7 +25,7 @@ namespace SiliconStudio.Quantum
         public GraphNodeChangeListener(IGraphNode rootNode, Func<MemberContent, IGraphNode, bool> shouldRegisterNode = null)
         {
             this.rootNode = rootNode;
-            this.shouldRegisterNode = (node, path) => ShouldRegisterHelper(node, path, shouldRegisterNode);
+            this.shouldRegisterNode = shouldRegisterNode;
             RegisterAllNodes();
         }
 
@@ -55,20 +55,6 @@ namespace SiliconStudio.Quantum
             var visitor = new GraphVisitorBase();
             visitor.Visiting += (node, path) => UnregisterNode(node);
             visitor.Visit(rootNode);
-        }
-
-        // TODO: move this method in a proper location - it just converts a Func<IGraphNode, GraphNodePath, bool> to a Func<MemberContent, IGraphNode, bool>
-        public static bool ShouldRegisterHelper(IGraphNode node, GraphNodePath path, Func<MemberContent, IGraphNode, bool> shouldRegisterNode = null)
-        {
-            var content = node.Content as MemberContent;
-            if (content == null)
-            {
-                var parent = path.GetParent()?.GetNode();
-                content = (MemberContent)parent?.Content;
-                if (content == null)
-                    return true;
-            }
-            return shouldRegisterNode?.Invoke(content, node) ?? true;
         }
 
         protected virtual void RegisterNode(IGraphNode node)

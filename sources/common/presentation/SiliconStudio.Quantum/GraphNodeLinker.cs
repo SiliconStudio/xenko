@@ -104,10 +104,10 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Indicates whether the linker should visit the given source node.
         /// </summary>
-        /// <param name="graphNode">The source node to evaluate.</param>
-        /// <param name="graphNodePath">The current path to the source node. This path will be relative to the node passed to <see cref="LinkGraph"/>.</param>
+        /// <param name="memberContent">The member content referencing the source node to evaluate.</param>
+        /// <param name="targetNode">The source node to evaluate. Can be the node holding the <paramref name="memberContent"/>, or one of its target node if this node contains a reference.</param>
         /// <returns>True if the node should be visited, false otherwise.</returns>
-        protected virtual bool ShouldVisitSourceNode(IGraphNode graphNode, GraphNodePath graphNodePath)
+        protected virtual bool ShouldVisitSourceNode(MemberContent memberContent, IGraphNode targetNode)
         {
             return true;
         }
