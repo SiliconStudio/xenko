@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Graphics
         private AutoResetEvent fenceEvent = new AutoResetEvent(false);
 
         // Temporary or destroyed resources kept around until the GPU doesn't need them anymore
-        internal Queue<KeyValuePair<long, DeviceChild>> TemporaryResources = new Queue<KeyValuePair<long, DeviceChild>>();
+        internal Queue<KeyValuePair<long, object>> TemporaryResources = new Queue<KeyValuePair<long, object>>();
 
         /// <summary>
         ///     Gets the status of this device.
@@ -249,7 +249,7 @@ namespace SiliconStudio.Xenko.Graphics
                 if (nativeUploadBuffer != null)
                 {
                     nativeUploadBuffer.Unmap(0);
-                    TemporaryResources.Enqueue(new KeyValuePair<long, DeviceChild>(NextFenceValue, nativeUploadBuffer));
+                    TemporaryResources.Enqueue(new KeyValuePair<long, object>(NextFenceValue, nativeUploadBuffer));
                 }
 
                 // Allocate new buffer
@@ -275,7 +275,17 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 var temporaryResource = TemporaryResources.Dequeue().Value;
                 //temporaryResource.Value.Dispose();
-                GraphicsResourceBase.ReleaseComObject(ref temporaryResource);
+                var comObject = temporaryResource as SharpDX.ComObject;
+                if (comObject != null)
+                    ((SharpDX.IUnknown)comObject).Release();
+                else
+                {
+                    var referenceLink = temporaryResource as GraphicsResourceLink;
+                    if (referenceLink != null)
+                    {
+                        referenceLink.ReferenceCount--;
+                    }
+                }
             }
         }
 
@@ -367,7 +377,26 @@ namespace SiliconStudio.Xenko.Graphics
                 lastCompletedFence = fenceValue;
             }
         }
-        
+
+        internal void TagResource(GraphicsResourceLink resourceLink)
+        {
+            var texture = resourceLink.Resource as Texture;
+            if (texture != null && texture.Usage == GraphicsResourceUsage.Dynamic)
+            {
+                // Increase the reference count until GPU is done with the resource
+                resourceLink.ReferenceCount++;
+                TemporaryResources.Enqueue(new KeyValuePair<long, object>(NextFenceValue, resourceLink));
+            }
+
+            var buffer = resourceLink.Resource as Buffer;
+            if (buffer != null && buffer.Usage == GraphicsResourceUsage.Dynamic)
+            {
+                // Increase the reference count until GPU is done with the resource
+                resourceLink.ReferenceCount++;
+                TemporaryResources.Enqueue(new KeyValuePair<long, object>(NextFenceValue, resourceLink));
+            }
+        }
+
         internal abstract class ResourcePool<T> : IDisposable where T : Pageable
         {
             protected readonly GraphicsDevice GraphicsDevice;

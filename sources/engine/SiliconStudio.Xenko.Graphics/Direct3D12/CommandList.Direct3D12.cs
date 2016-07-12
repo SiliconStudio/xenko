@@ -761,7 +761,7 @@ namespace SiliconStudio.Xenko.Graphics
                     ResourceStates.GenericRead);
 
 
-                GraphicsDevice.TemporaryResources.Enqueue(new KeyValuePair<long, DeviceChild>(GraphicsDevice.NextFenceValue, nativeUploadTexture));
+                GraphicsDevice.TemporaryResources.Enqueue(new KeyValuePair<long, object>(GraphicsDevice.NextFenceValue, nativeUploadTexture));
 
                 nativeUploadTexture.WriteToSubresource(0, null, databox.DataPointer, databox.RowPitch, databox.SlicePitch);
 
@@ -842,69 +842,44 @@ namespace SiliconStudio.Xenko.Graphics
                 }
             }
 
-            // TODO D3D12 WriteDiscard should just reallocate new buffer, and WriteNoOverwrite shouldn't use that path (for now we defer to upload buffer)
-            if (mapMode == MapMode.WriteDiscard || mapMode == MapMode.WriteNoOverwrite)
+            if (mapMode == MapMode.Read || mapMode == MapMode.ReadWrite || mapMode == MapMode.Write)
             {
-                SharpDX.Direct3D12.Resource uploadResource;
-                int uploadOffset;
-                var uploadMemory = GraphicsDevice.AllocateUploadBuffer(lengthInBytes, out uploadResource, out uploadOffset);
-
-                return new MappedResource(resource, subResourceIndex, new DataBox(uploadMemory, rowPitch, depthStride), offsetInBytes, lengthInBytes)
-                {
-                    UploadResource = uploadResource, UploadOffset = uploadOffset,
-                };
-            }
-            else if (mapMode == MapMode.Read || mapMode == MapMode.ReadWrite || mapMode == MapMode.Write)
-            {
-                // Is non-staging ever possible?
+                // Is non-staging ever possible for Read/Write?
                 if (usage != GraphicsResourceUsage.Staging)
                     throw new InvalidOperationException();
-
-                if (mapMode != MapMode.WriteNoOverwrite)
-                {
-                    // Need to wait?
-                    if (!GraphicsDevice.IsFenceCompleteInternal(resource.StagingFenceValue))
-                    {
-                        if (doNotWait)
-                        {
-                            return new MappedResource(resource, subResourceIndex, new DataBox(IntPtr.Zero, 0, 0));
-                        }
-
-                        // Need to flush (part of current command list)
-                        if (resource.StagingFenceValue == GraphicsDevice.NextFenceValue)
-                            FlushInternal(false);
-
-                        GraphicsDevice.WaitForFenceInternal(resource.StagingFenceValue);
-                    }
-                }
-
-                var mappedMemory = resource.NativeResource.Map(subResourceIndex) + offsetInBytes;
-                return new MappedResource(resource, subResourceIndex, new DataBox(mappedMemory, rowPitch, depthStride), offsetInBytes, lengthInBytes);
             }
-            else
+
+            if (mapMode == MapMode.WriteDiscard)
             {
-                throw new NotImplementedException();
+                throw new InvalidOperationException("Can't use WriteDiscard on Graphics API that don't support renaming");
             }
+
+            if (mapMode != MapMode.WriteNoOverwrite)
+            {
+                // Need to wait?
+                if (!GraphicsDevice.IsFenceCompleteInternal(resource.StagingFenceValue))
+                {
+                    if (doNotWait)
+                    {
+                        return new MappedResource(resource, subResourceIndex, new DataBox(IntPtr.Zero, 0, 0));
+                    }
+
+                    // Need to flush (part of current command list)
+                    if (resource.StagingFenceValue == GraphicsDevice.NextFenceValue)
+                        FlushInternal(false);
+
+                    GraphicsDevice.WaitForFenceInternal(resource.StagingFenceValue);
+                }
+            }
+
+            var mappedMemory = resource.NativeResource.Map(subResourceIndex) + offsetInBytes;
+            return new MappedResource(resource, subResourceIndex, new DataBox(mappedMemory, rowPitch, depthStride), offsetInBytes, lengthInBytes);
         }
 
         // TODO GRAPHICS REFACTOR what should we do with this?
         public void UnmapSubresource(MappedResource unmapped)
         {
-            if (unmapped.UploadResource != null)
-            {
-                // Copy back
-                var buffer = unmapped.Resource as Buffer;
-                if (buffer != null)
-                {
-                    NativeCommandList.ResourceBarrierTransition(buffer.NativeResource, buffer.NativeResourceState, ResourceStates.CopyDestination);
-                    NativeCommandList.CopyBufferRegion(buffer.NativeResource, unmapped.OffsetInBytes, unmapped.UploadResource, unmapped.UploadOffset, unmapped.SizeInBytes);
-                    NativeCommandList.ResourceBarrierTransition(buffer.NativeResource, ResourceStates.CopyDestination, buffer.NativeResourceState);
-                }
-            }
-            else
-            {
-                unmapped.Resource.NativeResource.Unmap(unmapped.SubResourceIndex);
-            }
+            unmapped.Resource.NativeResource.Unmap(unmapped.SubResourceIndex);
         }
     }
 }

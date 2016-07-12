@@ -1,5 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using SiliconStudio.Core;
+
 namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
@@ -15,12 +18,16 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Gets the current resource group allocator.
         /// </summary>
-        public ResourceGroupAllocator ResourceGroupAllocator { get; set; }
+        public ResourceGroupAllocator ResourceGroupAllocator { get; private set; }
 
-        public GraphicsContext(CommandList commandList, ResourceGroupAllocator resourceGroupAllocator)
+        public GraphicsResourceAllocator Allocator { get; private set; }
+
+
+        public GraphicsContext(IServiceRegistry services, CommandList commandList)
         {
             CommandList = commandList;
-            ResourceGroupAllocator = resourceGroupAllocator;
+            Allocator = services.GetServiceAs<GraphicsResourceAllocator>() ?? new GraphicsResourceAllocator(services).DisposeBy(CommandList.GraphicsDevice);
+            ResourceGroupAllocator = new ResourceGroupAllocator(Allocator, commandList);
         }
     }
 }

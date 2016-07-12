@@ -37,6 +37,8 @@ namespace SiliconStudio.Xenko.Graphics
             Services = serviceRegistry;
             GraphicsDevice = serviceRegistry.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
 
+            serviceRegistry.AddService(typeof(GraphicsResourceAllocator), this);
+
             getTextureDefinitionDelegate = GetTextureDefinition;
             getBufferDescriptionDelegate = GetBufferDescription;
             createTextureDelegate = CreateTexture;
@@ -343,6 +345,9 @@ namespace SiliconStudio.Xenko.Graphics
             resourceLink.AccessTotalCount++;
             resourceLink.AccessCountSinceLastRecycle++;
             resourceLink.LastAccessTime = DateTime.Now;
+
+            if (resourceLink.ReferenceCount == 0)
+                GraphicsDevice.TagResource(resourceLink);
         }
 
         /// <summary>

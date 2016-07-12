@@ -111,32 +111,50 @@ namespace SiliconStudio.Xenko.Graphics
             if ((bufferFlags & BufferFlags.ArgumentBuffer) == BufferFlags.ArgumentBuffer)
                 NativeResourceState |= ResourceStates.IndirectArgument;
 
+            var heapType = HeapType.Default;
+            if (Usage == GraphicsResourceUsage.Staging)
+            {
+                throw new NotImplementedException();
+            }
+            else if (Usage == GraphicsResourceUsage.Dynamic)
+            {
+                heapType = HeapType.Upload;
+                NativeResourceState = ResourceStates.GenericRead;
+            }
+
             // TODO D3D12 move that to a global allocator in bigger committed resources
-            NativeDeviceChild = GraphicsDevice.NativeDevice.CreateCommittedResource(new HeapProperties(HeapType.Default), HeapFlags.None, nativeDescription, dataPointer != IntPtr.Zero ? ResourceStates.CopyDestination : NativeResourceState);
+            NativeDeviceChild = GraphicsDevice.NativeDevice.CreateCommittedResource(new HeapProperties(heapType), HeapFlags.None, nativeDescription, dataPointer != IntPtr.Zero ? ResourceStates.CopyDestination : NativeResourceState);
 
             if (dataPointer != IntPtr.Zero)
             {
-                // Copy data in upload heap for later copy
-                // TODO D3D12 move that to a shared upload heap
-                SharpDX.Direct3D12.Resource uploadResource;
-                int uploadOffset;
-                var uploadMemory = GraphicsDevice.AllocateUploadBuffer(SizeInBytes, out uploadResource, out uploadOffset);
-                Utilities.CopyMemory(uploadMemory, dataPointer, SizeInBytes);
+                if (heapType == HeapType.Upload)
+                {
+                    var uploadMemory = NativeResource.Map(0);
+                    Utilities.CopyMemory(uploadMemory, dataPointer, SizeInBytes);
+                    NativeResource.Unmap(0);
+                }
+                else
+                {
+                    // Copy data in upload heap for later copy
+                    // TODO D3D12 move that to a shared upload heap
+                    SharpDX.Direct3D12.Resource uploadResource;
+                    int uploadOffset;
+                    var uploadMemory = GraphicsDevice.AllocateUploadBuffer(SizeInBytes, out uploadResource, out uploadOffset);
+                    Utilities.CopyMemory(uploadMemory, dataPointer, SizeInBytes);
 
-                // TODO D3D12 lock NativeCopyCommandList usages
-                var commandList = GraphicsDevice.NativeCopyCommandList;
-                commandList.Reset(GraphicsDevice.NativeCopyCommandAllocator, null);
-                // Copy from upload heap to actual resource
-                commandList.CopyBufferRegion(NativeResource, 0, uploadResource, uploadOffset, SizeInBytes);
+                    // TODO D3D12 lock NativeCopyCommandList usages
+                    var commandList = GraphicsDevice.NativeCopyCommandList;
+                    commandList.Reset(GraphicsDevice.NativeCopyCommandAllocator, null);
+                    // Copy from upload heap to actual resource
+                    commandList.CopyBufferRegion(NativeResource, 0, uploadResource, uploadOffset, SizeInBytes);
 
-                // Switch resource to proper read state
-                commandList.ResourceBarrierTransition(NativeResource, 0, ResourceStates.CopyDestination, NativeResourceState);
+                    // Switch resource to proper read state
+                    commandList.ResourceBarrierTransition(NativeResource, 0, ResourceStates.CopyDestination, NativeResourceState);
 
-                commandList.Close();
+                    commandList.Close();
 
-                GraphicsDevice.NativeCommandQueue.ExecuteCommandList(commandList);
-
-                // TODO D3D12 release uploadResource (using a fence to know when copy is done)
+                    GraphicsDevice.NativeCommandQueue.ExecuteCommandList(commandList);
+                }
             }
 
             this.NativeShaderResourceView = GetShaderResourceView(ViewFormat);

@@ -33,14 +33,15 @@ namespace SiliconStudio.Xenko.Graphics
         public static class Constant
         {
             /// <summary>
-            /// Creates a new constant buffer with <see cref="GraphicsResourceUsage.Dynamic"/> usage.
+            /// Creates a new constant buffer with a default <see cref="GraphicsResourceUsage.Dynamic"/> usage.
             /// </summary>
             /// <param name="device">The <see cref="GraphicsDevice"/>.</param>
             /// <param name="size">The size in bytes.</param>
+            /// <param name="usage">The usage.</param>
             /// <returns>A constant buffer</returns>
-            public static Buffer New(GraphicsDevice device, int size)
+            public static Buffer New(GraphicsDevice device, int size, GraphicsResourceUsage usage = GraphicsResourceUsage.Dynamic)
             {
-                return Buffer.New(device, size, BufferFlags.ConstantBuffer, GraphicsResourceUsage.Dynamic);
+                return Buffer.New(device, size, BufferFlags.ConstantBuffer, usage);
             }
 
             /// <summary>

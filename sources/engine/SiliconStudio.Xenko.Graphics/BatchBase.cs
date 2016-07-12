@@ -138,7 +138,7 @@ namespace SiliconStudio.Xenko.Graphics
             vertexStructSize = vertexDeclaration.CalculateSize();
 
             // Creates the vertex buffer (shared by within a device context).
-            ResourceContext = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerContext, resourceBufferInfo.ResourceKey, d => new DeviceResourceContext(GraphicsDevice, DefaultEffect.Effect, vertexDeclaration, resourceBufferInfo, indexStructSize));
+            ResourceContext = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerContext, resourceBufferInfo.ResourceKey, d => new DeviceResourceContext(GraphicsDevice, vertexDeclaration, resourceBufferInfo));
         }
 
         /// <summary>
@@ -237,9 +237,10 @@ namespace SiliconStudio.Xenko.Graphics
             GraphicsContext.CommandList.SetPipelineState(MutablePipeline.CurrentState);
 
             // Bind VB/IB
-            GraphicsContext.CommandList.SetVertexBuffer(0, ResourceContext.VertexBufferBinding.Buffer, ResourceContext.VertexBufferBinding.Offset, ResourceContext.VertexBufferBinding.Stride);
+            if (ResourceContext.VertexBuffer != null)
+                GraphicsContext.CommandList.SetVertexBuffer(0, ResourceContext.VertexBuffer, 0, vertexStructSize);
             if (ResourceContext.IndexBuffer != null)
-                GraphicsContext.CommandList.SetIndexBuffer(ResourceContext.IndexBufferBinding.Buffer, ResourceContext.IndexBufferBinding.Offset, ResourceContext.IndexBufferBinding.Is32Bit);
+                GraphicsContext.CommandList.SetIndexBuffer(ResourceContext.IndexBuffer, 0, indexStructSize == sizeof(int));
 
             // If this is a deferred D3D context, reset position so the first Map call will use D3D11_MAP_WRITE_DISCARD.
             if (GraphicsDevice.IsDeferred)
@@ -450,9 +451,22 @@ namespace SiliconStudio.Xenko.Graphics
                 // Sets the data directly to the buffer in memory
                 var offsetVertexInBytes = ResourceContext.VertexBufferPosition * vertexStructSize;
                 var offsetIndexInBytes = ResourceContext.IndexBufferPosition * indexStructSize;
-                
-                var noOverwriteVertex = ResourceContext.VertexBufferPosition == 0 ? MapMode.WriteDiscard : MapMode.WriteNoOverwrite;
-                var noOverwriteIndex = ResourceContext.IndexBufferPosition == 0 ? MapMode.WriteDiscard : MapMode.WriteNoOverwrite;
+
+                if (ResourceContext.VertexBufferPosition == 0)
+                {
+                    if (ResourceContext.VertexBuffer == null)
+                        GraphicsContext.Allocator.ReleaseReference(ResourceContext.VertexBuffer);
+                    ResourceContext.VertexBuffer = GraphicsContext.Allocator.GetTemporaryBuffer(new BufferDescription(ResourceContext.VertexCount * vertexStructSize, BufferFlags.VertexBuffer, GraphicsResourceUsage.Dynamic));
+                    GraphicsContext.CommandList.SetVertexBuffer(0, ResourceContext.VertexBuffer, 0, vertexStructSize);
+                }
+
+                if (ResourceContext.IsIndexBufferDynamic && ResourceContext.IndexBufferPosition == 0)
+                {
+                    if (ResourceContext.IndexBuffer == null)
+                        GraphicsContext.Allocator.ReleaseReference(ResourceContext.IndexBuffer);
+                    ResourceContext.IndexBuffer = GraphicsContext.Allocator.GetTemporaryBuffer(new BufferDescription(ResourceContext.IndexCount * indexStructSize, BufferFlags.IndexBuffer, GraphicsResourceUsage.Dynamic));
+                    GraphicsContext.CommandList.SetIndexBuffer(ResourceContext.IndexBuffer, 0, indexStructSize == sizeof(int));
+                }
 
                 // ------------------------------------------------------------------------------------------------------------
                 // CAUTION: Performance problem under x64 resolved by this special codepath:
@@ -481,9 +495,9 @@ namespace SiliconStudio.Xenko.Graphics
                 //else
                 {
                     var mappedIndices = new MappedResource();
-                    var mappedVertices = GraphicsContext.CommandList.MapSubresource(ResourceContext.VertexBuffer, 0, noOverwriteVertex, false, offsetVertexInBytes, vertexCount * vertexStructSize);
+                    var mappedVertices = GraphicsContext.CommandList.MapSubresource(ResourceContext.VertexBuffer, 0, MapMode.WriteNoOverwrite, false, offsetVertexInBytes, vertexCount * vertexStructSize);
                     if (ResourceContext.IsIndexBufferDynamic)
-                        mappedIndices = GraphicsContext.CommandList.MapSubresource(ResourceContext.IndexBuffer, 0, noOverwriteIndex, false, offsetIndexInBytes, indexCount * indexStructSize);
+                        mappedIndices = GraphicsContext.CommandList.MapSubresource(ResourceContext.IndexBuffer, 0, MapMode.WriteNoOverwrite, false, offsetIndexInBytes, indexCount * indexStructSize);
 
                     var vertexPointer = mappedVertices.DataBox.DataPointer;
                     var indexPointer = mappedIndices.DataBox.DataPointer;
@@ -731,7 +745,7 @@ namespace SiliconStudio.Xenko.Graphics
             /// <summary>
             /// The vertex buffer of the batch.
             /// </summary>
-            public readonly Buffer VertexBuffer;
+            public Buffer VertexBuffer;
 
             /// <summary>
             /// Gets the number of indices.
@@ -741,19 +755,14 @@ namespace SiliconStudio.Xenko.Graphics
             /// <summary>
             /// The index buffer of the batch.
             /// </summary>
-            public readonly Buffer IndexBuffer;
+            public Buffer IndexBuffer;
 
             /// <summary>
             /// Gets a boolean indicating if the index buffer is dynamic.
             /// </summary>
             public readonly bool IsIndexBufferDynamic;
 
-            /// <summary>
-            /// The VertexBufferBinding of the batch.
-            /// </summary>
-            public readonly VertexBufferBinding VertexBufferBinding;
-
-            public readonly IndexBufferBinding IndexBufferBinding;
+            public readonly VertexDeclaration VertexDeclaration;
 
             public readonly InputElementDescription[] InputElements;
 
@@ -772,29 +781,20 @@ namespace SiliconStudio.Xenko.Graphics
             /// </summary>
             public bool IsInImmediateMode;
 
-            public DeviceResourceContext(GraphicsDevice device, Effect effect, VertexDeclaration declaration, ResourceBufferInfo resourceBufferInfo, int indexStructSize)
+            public DeviceResourceContext(GraphicsDevice device, VertexDeclaration declaration, ResourceBufferInfo resourceBufferInfo)
             {
-                var vertexSize = declaration.CalculateSize();
-
+                VertexDeclaration = declaration;
                 VertexCount = resourceBufferInfo.VertexCount;
                 IndexCount = resourceBufferInfo.IndexCount;
                 IsIndexBufferDynamic = resourceBufferInfo.IsIndexBufferDynamic;
 
-                VertexBuffer = Buffer.Vertex.New(device, VertexCount * vertexSize, GraphicsResourceUsage.Dynamic).DisposeBy(this);
-
-                if (IsIndexBufferDynamic)
-                {
-                    IndexBuffer = Buffer.Index.New(device, IndexCount * indexStructSize, GraphicsResourceUsage.Dynamic).DisposeBy(this);
-                }
-                else
+                if (!IsIndexBufferDynamic)
                 {
                     IndexBuffer = Buffer.Index.New(device, resourceBufferInfo.StaticIndices).DisposeBy(this);
                     IndexBuffer.Reload = graphicsResource => ((Buffer)graphicsResource).Recreate(resourceBufferInfo.StaticIndices);
                 }
 
-                IndexBufferBinding = new IndexBufferBinding(IndexBuffer, indexStructSize == sizeof(int), IndexBuffer.Description.SizeInBytes / indexStructSize);
-                VertexBufferBinding = new VertexBufferBinding(VertexBuffer, declaration, VertexCount, vertexSize);
-                InputElements = VertexBufferBinding.Declaration.CreateInputElements();
+                InputElements = declaration.CreateInputElements();
             }
         }
 

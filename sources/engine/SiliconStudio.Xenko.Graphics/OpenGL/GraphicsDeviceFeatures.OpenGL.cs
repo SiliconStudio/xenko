@@ -117,6 +117,8 @@ namespace SiliconStudio.Xenko.Graphics
 
             deviceRoot.HasAnisotropicFiltering = SupportedExtensions.Contains("GL_EXT_texture_filter_anisotropic");
 
+            HasResourceRenaming = true;
+
             HasDriverCommandLists = false;
             HasMultiThreadingConcurrentResources = false;
 
