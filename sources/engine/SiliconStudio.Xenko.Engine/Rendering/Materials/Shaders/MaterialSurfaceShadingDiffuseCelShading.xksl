@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// <summary>
     /// Performs a Cel shading
     /// </summary>
-    class MaterialSurfaceShadingDiffuseCelShading<bool TIsEnergyConservative> : IMaterialSurfaceShading, Math, MaterialPixelShadingStream
+    class MaterialSurfaceShadingDiffuseCelShading<bool TIsEnergyConservative> : IMaterialSurfaceShading, Math, MaterialPixelShadingStream, LightStream, ShadowGroup
     {
         // compose IMaterialSpecularMicrofacetFresnelFunction celLightFunction;
 
@@ -38,9 +38,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 diffuseColor *= (1 - streams.matSpecularVisible);
             }
 
-            float celLight = GetCelLight(streams.lightColorNdotL);
-            //float celNdotL = GetCelLight(streams.NdotL);
-            //float celLight = streams.lightColor * streams.shadowColor * celNdotL * streams.lightDirectAmbientOcclusion;
+            //float celLight = GetCelLight(streams.lightColorNdotL);
+            float celNdotL = GetCelLight(streams.NdotL);
+            float celLight = streams.lightColor * streams.shadowColor * celNdotL * streams.lightDirectAmbientOcclusion;
 
             return diffuseColor / PI * celLight * streams.matDiffuseSpecularAlphaBlend.x;
 
