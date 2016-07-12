@@ -12,26 +12,12 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         // TODO USE LAMBERT DIRECTLY: Maybe we can expose this when we support different models
         // MaterialSurfaceShadingDiffuseLambert lambertModel;
 
-        float GetCelLight(float lightIn)
-        {
-            lightIn *= 0.3;
-
-            // Cel Ramp
-            if (lightIn > 0.8)
-                return 1;
-
-            if (lightIn > 0.5)
-                return 0.8f;
-
-            if (lightIn > 0.2)
-                return 0.3f;
-
-            return 0;
-        }
-
         override float3 ComputeDirectLightContribution()
         {
-            //float oldNdotL = streams.NdotL;
+            float oldLightColorNdotL = streams.lightColorNdotL;
+            streams.lightColorNdotL = celLightFunction.Compute(streams.lightColorNdotL);
+            //float celNdotL = celLightFunction.Compute(streams.NdotL);
+            //streams.lightColorNdotL = streams.lightColor * streams.shadowColor * celNdotL * streams.lightDirectAmbientOcclusion;
 
             var diffuseColor = streams.matDiffuseVisible;
             if (TIsEnergyConservative)
@@ -40,12 +26,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 diffuseColor *= (1 - streams.matSpecularVisible);
             }
 
-            float celLight = GetCelLight(streams.lightColorNdotL);
-            //float celNdotL = GetCelLight(streams.NdotL);
-            //float celLight = streams.lightColor * streams.shadowColor * celNdotL * streams.lightDirectAmbientOcclusion;
+            float3 result =  diffuseColor / PI * streams.lightColorNdotL * streams.matDiffuseSpecularAlphaBlend.x;
 
-            return diffuseColor / PI * celLight * streams.matDiffuseSpecularAlphaBlend.x;
-
+            streams.lightColorNdotL = oldLightColorNdotL;
+            return result;
         }
 
         override float3 ComputeEnvironmentLightContribution()
@@ -57,8 +41,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 diffuseColor *= (1 - streams.matSpecularVisible);
             }
 
-            float celLight = GetCelLight(streams.envLightDiffuseColor);
-            //float celLight = celLightFunction.Compute(streams.envLightDiffuseColor);
+            float celLight = celLightFunction.Compute(streams.envLightDiffuseColor);
             return diffuseColor * celLight;
         }
     };
