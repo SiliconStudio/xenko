@@ -7,21 +7,23 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// </summary>
     class MaterialSurfaceShadingDiffuseCelShading<bool TIsEnergyConservative> : IMaterialSurfaceShading, Math, MaterialPixelShadingStream, LightStream, ShadowGroup
     {
-        // compose IMaterialSpecularMicrofacetFresnelFunction celLightFunction;
+        compose IMaterialCelShadingCelLightFunction celLightFunction;
 
-        // TODO Maybe we can expose this when we support different models
+        // TODO USE LAMBERT DIRECTLY: Maybe we can expose this when we support different models
         // MaterialSurfaceShadingDiffuseLambert lambertModel;
 
-        float GetCelLight(float ligntIn)
+        float GetCelLight(float lightIn)
         {
+            lightIn *= 0.3;
+
             // Cel Ramp
-            if (ligntIn > 0.8)
+            if (lightIn > 0.8)
                 return 1;
 
-            if (ligntIn > 0.5)
+            if (lightIn > 0.5)
                 return 0.8f;
 
-            if (ligntIn > 0.2)
+            if (lightIn > 0.2)
                 return 0.3f;
 
             return 0;
@@ -38,9 +40,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 diffuseColor *= (1 - streams.matSpecularVisible);
             }
 
-            //float celLight = GetCelLight(streams.lightColorNdotL);
-            float celNdotL = GetCelLight(streams.NdotL);
-            float celLight = streams.lightColor * streams.shadowColor * celNdotL * streams.lightDirectAmbientOcclusion;
+            float celLight = GetCelLight(streams.lightColorNdotL);
+            //float celNdotL = GetCelLight(streams.NdotL);
+            //float celLight = streams.lightColor * streams.shadowColor * celNdotL * streams.lightDirectAmbientOcclusion;
 
             return diffuseColor / PI * celLight * streams.matDiffuseSpecularAlphaBlend.x;
 

@@ -35,14 +35,14 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         public override void VisitFeature(MaterialGeneratorContext context)
         {
-            //var shaderSource = new ShaderMixinSource();
-            //shaderSource.Mixins.Add(new ShaderClassSource("MaterialSurfaceShadingDiffuseCelShading", IsEnergyConservative));
-            //if (RampFunction != null)
-            //{
-            //    shaderSource.AddComposition("celLightFunction", RampFunction.Generate());
-            //}
+            var shaderSource = new ShaderMixinSource();
+            shaderSource.Mixins.Add(new ShaderClassSource("MaterialSurfaceShadingDiffuseCelShading", IsEnergyConservative));
+            if (RampFunction != null)
+            {
+                shaderSource.AddComposition("celLightFunction", RampFunction.Generate());
+            }
 
-            var shaderSource = new ShaderClassSource("MaterialSurfaceShadingDiffuseCelShading", IsEnergyConservative);
+            //var shaderSource = new ShaderClassSource("MaterialSurfaceShadingDiffuseCelShading", IsEnergyConservative);
             context.AddShading(this, shaderSource);
         }
 

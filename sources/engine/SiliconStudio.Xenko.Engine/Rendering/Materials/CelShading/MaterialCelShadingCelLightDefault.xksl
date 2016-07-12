@@ -7,7 +7,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     {
         override float Compute(float ligntIn)
         {
-            ligntIn *= 0.3; // Factor
+            ligntIn *= 0.5; // Factor
 
             // Cel Ramp
             if (ligntIn > 0.8)
@@ -21,5 +21,5 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
             return 0;
         }
-    }
+    };
 }

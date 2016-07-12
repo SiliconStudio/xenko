@@ -2,11 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 namespace SiliconStudio.Xenko.Rendering.Materials
 {
-    class IMaterialCelShadingCelLightFunction
+    class IMaterialCelShadingCelLightFunction : MaterialPixelShadingStream
     {
-        float Compute(float ligntIn)
+        float Compute(float lightIn)
         {
-            return ligntIn;
+            return lightIn;
         }
-    }
+    };
 }
