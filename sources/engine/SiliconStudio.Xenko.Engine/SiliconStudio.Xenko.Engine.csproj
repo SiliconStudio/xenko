@@ -200,6 +200,13 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\IMaterialCelShadingCelLightFunction.cs" />
+    <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingCelLightDefault.cs" />
+    <Compile Include="Rendering\Materials\MaterialCelShadingMapFeature.cs" />
+    <None Include="Rendering\Materials\CelShading\MaterialCelShadingCelLightDefault.xksl" />
+    <None Include="Rendering\Materials\Shaders\IMaterialCelShadingCelLightFunction.xksl" />
+    <None Include="Rendering\Materials\Shaders\MaterialSurfaceShadingDiffuseCelShading.xksl" />
+    <Compile Include="Rendering\Materials\MaterialDiffuseCelShadingModelFeature.cs" />
     <Compile Include="Rendering\ResourceResolver.cs" />
     <Compile Include="Rendering\DynamicEffectInstance.cs" />
     <Compile Include="Rendering\EffectSelector.cs" />
@@ -439,6 +446,7 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>LightClusteredPointGroup.cs</LastGenOutput>
     </None>
+    <None Include="Rendering\Materials\Shaders\MaterialSurfaceCelShader.xksl" />
     <None Include="Rendering\Utils\HighlightShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>HighlightShader.cs</LastGenOutput>

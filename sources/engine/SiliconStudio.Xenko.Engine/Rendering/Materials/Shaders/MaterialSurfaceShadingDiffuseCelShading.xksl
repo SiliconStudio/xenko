@@ -1,0 +1,63 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Xenko.Rendering.Materials
+{
+    /// <summary>
+    /// Performs a Cel shading
+    /// </summary>
+    class MaterialSurfaceShadingDiffuseCelShading<bool TIsEnergyConservative> : IMaterialSurfaceShading, Math, MaterialPixelShadingStream
+    {
+        // compose IMaterialSpecularMicrofacetFresnelFunction celLightFunction;
+
+        // TODO Maybe we can expose this when we support different models
+        // MaterialSurfaceShadingDiffuseLambert lambertModel;
+
+        float GetCelLight(float ligntIn)
+        {
+            // Cel Ramp
+            if (ligntIn > 0.8)
+                return 1;
+
+            if (ligntIn > 0.5)
+                return 0.8f;
+
+            if (ligntIn > 0.2)
+                return 0.3f;
+
+            return 0;
+        }
+
+        override float3 ComputeDirectLightContribution()
+        {
+            //float oldNdotL = streams.NdotL;
+
+            var diffuseColor = streams.matDiffuseVisible;
+            if (TIsEnergyConservative)
+            {
+                // Approximation see: http://research.tri-ace.com/Data/course_note_practical_implementation_at_triace.pdf
+                diffuseColor *= (1 - streams.matSpecularVisible);
+            }
+
+            float celLight = GetCelLight(streams.lightColorNdotL);
+            //float celNdotL = GetCelLight(streams.NdotL);
+            //float celLight = streams.lightColor * streams.shadowColor * celNdotL * streams.lightDirectAmbientOcclusion;
+
+            return diffuseColor / PI * celLight * streams.matDiffuseSpecularAlphaBlend.x;
+
+        }
+
+        override float3 ComputeEnvironmentLightContribution()
+        {
+            // TODO: Check how to factorize this with DirectLight
+            var diffuseColor = streams.matDiffuseVisible;
+            if (TIsEnergyConservative)
+            {
+                diffuseColor *= (1 - streams.matSpecularVisible);
+            }
+
+            float celLight = GetCelLight(streams.envLightDiffuseColor);
+            //float celLight = celLightFunction.Compute(streams.envLightDiffuseColor);
+            return diffuseColor * celLight;
+        }
+    };
+}

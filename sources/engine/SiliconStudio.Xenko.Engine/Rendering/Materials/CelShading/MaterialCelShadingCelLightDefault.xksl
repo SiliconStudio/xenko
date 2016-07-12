@@ -1,0 +1,25 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Materials
+{
+    class MaterialCelShadingCelLightDefault : IMaterialCelShadingCelLightFunction
+    {
+        override float Compute(float ligntIn)
+        {
+            ligntIn *= 0.3; // Factor
+
+            // Cel Ramp
+            if (ligntIn > 0.8)
+                return 1;
+
+            if (ligntIn > 0.5)
+                return 0.8f;
+
+            if (ligntIn > 0.2)
+                return 0.3f;
+
+            return 0;
+        }
+    }
+}

@@ -114,6 +114,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
             streams.NdotV = max(dot(streams.normalWS, streams.viewWS), 0.0001f);
 
+//			streams.NdotV = 1 + clamp(floor(streams.NdotV), -1, 0);
+//			if (streams.NdotV <= 0) streams.NdotV = 0;
+//			else streams.NdotV = 1;
+
             // Calculate shading roughtness using Disney-Burley method
             var roughness = 1.0f - streams.matGlossiness;
 
