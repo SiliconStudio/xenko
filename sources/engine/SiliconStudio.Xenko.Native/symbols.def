@@ -28,6 +28,7 @@ xnAudioListenerEnable
 xnAudioListenerDisable
 xnAudioSourceCreate
 xnAudioSourceDestroy
+xnAudioSourceGetPosition
 xnAudioSourceSetPan
 xnAudioBufferCreate
 xnAudioBufferDestroy

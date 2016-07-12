@@ -64,6 +64,7 @@ extern "C" {
 		LPALSOURCEQUEUEBUFFERS SourceQueueBuffers;
 		LPALSOURCEUNQUEUEBUFFERS SourceUnqueueBuffers;
 		LPALGETSOURCEI GetSourceI;
+		LPALGETSOURCEF GetSourceF;
 		LPALSOURCEFV SourceFV;
 		LPALLISTENERFV ListenerFV;
 		LPALGETERROR GetErrorAL;
@@ -182,6 +183,8 @@ extern "C" {
 			if (!SourceUnqueueBuffers) return false;
 			GetSourceI = (LPALGETSOURCEI)GetSymbolAddress(OpenALLibrary, "alGetSourcei");
 			if (!GetSourceI) return false;
+			GetSourceF = (LPALGETSOURCEF)GetSymbolAddress(OpenALLibrary, "alGetSourcef");
+			if (!GetSourceF) return false;
 			SourceFV = (LPALSOURCEFV)GetSymbolAddress(OpenALLibrary, "alSourcefv");
 			if (!SourceFV) return false;
 			ListenerFV = (LPALLISTENERFV)GetSymbolAddress(OpenALLibrary, "alListenerfv");
@@ -348,6 +351,15 @@ extern "C" {
 			AL_ERROR;
 
 			delete source;
+		}
+
+		double xnAudioSourceGetPosition(xnAudioSource* source)
+		{
+			ContextState lock(source->listener->context);
+
+			ALfloat offset;
+			GetSourceF(source->source, AL_SEC_OFFSET, &offset);
+			return offset;
 		}
 
 		void xnAudioSourceSetPan(xnAudioSource* source, float pan)

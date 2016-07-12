@@ -76,6 +76,10 @@ namespace SiliconStudio.Xenko.Native
         public static extern void SourceDestroy(Source source);
 
         [SuppressUnmanagedCodeSecurity]
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceGetPosition", CallingConvention = CallingConvention.Cdecl)]
+        public static extern double SourceGetPosition(Source source);
+
+        [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceSetPan", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SourceSetPan(Source source, float pan);
 

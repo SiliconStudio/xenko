@@ -657,6 +657,94 @@ extern "C" {
 			STDMETHOD(SetSourceSampleRate) (THIS_ UINT32 NewSourceSampleRate) PURE;
 		};
 
+		struct IXAudio2SourceVoice1 : IXAudio2Voice
+		{
+			// NAME: IXAudio2SourceVoice::Start
+			// DESCRIPTION: Makes this voice start consuming and processing audio.
+			//
+			// ARGUMENTS:
+			//  Flags - Flags controlling how the voice should be started.
+			//  OperationSet - Used to identify this call as part of a deferred batch.
+			//
+			STDMETHOD(Start) (THIS_ UINT32 Flags X2DEFAULT(0), UINT32 OperationSet X2DEFAULT(XAUDIO2_COMMIT_NOW)) PURE;
+
+			// NAME: IXAudio2SourceVoice::Stop
+			// DESCRIPTION: Makes this voice stop consuming audio.
+			//
+			// ARGUMENTS:
+			//  Flags - Flags controlling how the voice should be stopped.
+			//  OperationSet - Used to identify this call as part of a deferred batch.
+			//
+			STDMETHOD(Stop) (THIS_ UINT32 Flags X2DEFAULT(0), UINT32 OperationSet X2DEFAULT(XAUDIO2_COMMIT_NOW)) PURE;
+
+			// NAME: IXAudio2SourceVoice::SubmitSourceBuffer
+			// DESCRIPTION: Adds a new audio buffer to this voice's input queue.
+			//
+			// ARGUMENTS:
+			//  pBuffer - Pointer to the buffer structure to be queued.
+			//  pBufferWMA - Additional structure used only when submitting XWMA data.
+			//
+			STDMETHOD(SubmitSourceBuffer) (THIS_ const XAUDIO2_BUFFER* pBuffer, const XAUDIO2_BUFFER_WMA* pBufferWMA X2DEFAULT(NULL)) PURE;
+
+			// NAME: IXAudio2SourceVoice::FlushSourceBuffers
+			// DESCRIPTION: Removes all pending audio buffers from this voice's queue.
+			//
+			STDMETHOD(FlushSourceBuffers) (THIS) PURE;
+
+			// NAME: IXAudio2SourceVoice::Discontinuity
+			// DESCRIPTION: Notifies the voice of an intentional break in the stream of
+			//              audio buffers (e.g. the end of a sound), to prevent XAudio2
+			//              from interpreting an empty buffer queue as a glitch.
+			//
+			STDMETHOD(Discontinuity) (THIS) PURE;
+
+			// NAME: IXAudio2SourceVoice::ExitLoop
+			// DESCRIPTION: Breaks out of the current loop when its end is reached.
+			//
+			// ARGUMENTS:
+			//  OperationSet - Used to identify this call as part of a deferred batch.
+			//
+			STDMETHOD(ExitLoop) (THIS_ UINT32 OperationSet X2DEFAULT(XAUDIO2_COMMIT_NOW)) PURE;
+
+			// NAME: IXAudio2SourceVoice::GetState
+			// DESCRIPTION: Returns the number of buffers currently queued on this voice,
+			//              the pContext value associated with the currently processing
+			//              buffer (if any), and other voice state information.
+			//
+			// ARGUMENTS:
+			//  pVoiceState - Returns the state information.
+			//
+			STDMETHOD_(void, GetState) (THIS_ XAUDIO2_VOICE_STATE* pVoiceState) PURE;
+
+			// NAME: IXAudio2SourceVoice::SetFrequencyRatio
+			// DESCRIPTION: Sets this voice's frequency adjustment, i.e. its pitch.
+			//
+			// ARGUMENTS:
+			//  Ratio - Frequency change, expressed as source frequency / target frequency.
+			//  OperationSet - Used to identify this call as part of a deferred batch.
+			//
+			STDMETHOD(SetFrequencyRatio) (THIS_ float Ratio,
+				UINT32 OperationSet X2DEFAULT(XAUDIO2_COMMIT_NOW)) PURE;
+
+			// NAME: IXAudio2SourceVoice::GetFrequencyRatio
+			// DESCRIPTION: Returns this voice's current frequency adjustment ratio.
+			//
+			// ARGUMENTS:
+			//  pRatio - Returns the frequency adjustment.
+			//
+			STDMETHOD_(void, GetFrequencyRatio) (THIS_ float* pRatio) PURE;
+
+			// NAME: IXAudio2SourceVoice::SetSourceSampleRate
+			// DESCRIPTION: Reconfigures this voice to treat its source data as being
+			//              at a different sample rate than the original one specified
+			//              in CreateSourceVoice's pSourceFormat argument.
+			//
+			// ARGUMENTS:
+			//  UINT32 - The intended sample rate of further submitted source data.
+			//
+			STDMETHOD(SetSourceSampleRate) (THIS_ UINT32 NewSourceSampleRate) PURE;
+		};
+
 		typedef struct tWAVEFORMATEX
 		{
 			WORD        wFormatTag;         /* format type */
@@ -1333,7 +1421,7 @@ extern "C" {
 			res->playing_ = false;
 			res->sampleRate_ = sampleRate;
 			res->mono_ = mono;
-			res->streamed_ = false;
+			res->streamed_ = streamed;
 			res->looped_ = false;
 			res->mastering_voice_ = listener->device_->mastering_voice_;
 			if(spatialized)
@@ -1510,6 +1598,34 @@ extern "C" {
 				}
 				source->source_voice_->SetOutputMatrix(source->mastering_voice_, 2, AUDIO_CHANNELS, panning);
 			}
+		}
+
+		double xnAudioSourceGetPosition(xnAudioSource* source)
+		{
+			XAUDIO2_VOICE_STATE state;
+			if(xnAudioWindows7Hacks)
+			{
+				auto win7Voice = reinterpret_cast<IXAudio2SourceVoice1*>(source->source_voice_);
+				win7Voice->GetState(&state);
+			}
+			else
+			{
+				source->source_voice_->GetState(&state, 0);
+			}
+
+			if (!source->streamed_)
+			{
+				auto elapsed = double(state.SamplesPlayed) / double(source->sampleRate_);
+				auto singleBuffer = source->freeBuffers[0];
+				auto length = singleBuffer->buffer_.PlayLength == 0 ? double(singleBuffer->length_) / double(source->sampleRate_) : double(singleBuffer->buffer_.PlayLength) / double(source->sampleRate_);
+				auto position = elapsed / length;
+				auto repeats = floor(position);
+				position = (position - repeats) * length;
+				return position;
+			}
+			
+			// the c# side will process this as we don't have enough info here
+			return double(state.SamplesPlayed) / double(source->sampleRate_);
 		}
 
 		void xnAudioSourceSetLooping(xnAudioSource* source, npBool looping)
