@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Audio
             this.soundStreamUrl = soundStreamUrl;
             this.sampleRate = sampleRate;
             this.numberOfPackets = numberOfPackets;
-            playRange = new PlayRange(0, 0);
+            playRange = new PlayRange(TimeSpan.Zero, TimeSpan.Zero);
         }
 
         private static unsafe void Worker()
@@ -114,14 +114,14 @@ restart:
                             source.flushAndRestart = false;
 
                             var range = source.playRange;
-                            if (range.Start != 0 || range.Length != 0)
+                            if (range.Start != TimeSpan.Zero || range.Length != TimeSpan.Zero)
                             {
                                 var frameSize = SamplesPerFrame*source.channels;
                                 //ok we need to handle this case properly, this means that the user wants to use a different then full audio stream range...
-                                var sampleStart = source.sampleRate * (double)source.channels * range.Start;
+                                var sampleStart = source.sampleRate * (double)source.channels * range.Start.TotalSeconds;
                                 source.startPktSampleIndex = (int)sampleStart % (frameSize);
 
-                                var sampleStop = source.sampleRate * (double)source.channels * range.End;
+                                var sampleStop = source.sampleRate * (double)source.channels * range.End.TotalSeconds;
                                 source.endPktSampleIndex = frameSize - ((int)sampleStart % frameSize);
 
                                 var startingPacket = (int)Math.Floor(sampleStart / frameSize);
@@ -237,6 +237,34 @@ restart:
         {
             playRange = range;
             flushAndRestart = true; //flag for restart, flush etc
+        }
+
+        public override TimeSpan Position
+        {
+            get
+            {
+                var elapsed = AudioLayer.SourceGetPosition(SoundInstance.Source);
+                var range = playRange;
+                var length = 0.0;
+                if (range.Start == TimeSpan.Zero && range.Length == TimeSpan.Zero)
+                {
+                    length = ((double)channels * (double)numberOfPackets * (double)SamplesPerFrame) / (double)sampleRate;
+                }
+                else
+                {
+                    length = range.Length.TotalSeconds;
+                }
+
+                if (elapsed < length)
+                {
+                    return TimeSpan.FromSeconds(elapsed);
+                }
+
+                var position = elapsed / length;
+                var repeats = Math.Floor(position);
+                position = (position - repeats) * length;
+                return TimeSpan.FromSeconds(position);
+            }
         }
 
         private void Destroy()

@@ -124,6 +124,10 @@ namespace SiliconStudio.Xenko.Audio
         /// Sets the region of time to play from the sample
         /// </summary>
         /// <param name="range"></param>
-        public abstract void SetRange(PlayRange range);
+        public virtual void SetRange(PlayRange range)
+        {          
+        }
+
+        public virtual TimeSpan Position => TimeSpan.Zero;
     }
 }

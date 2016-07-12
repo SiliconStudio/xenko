@@ -355,11 +355,27 @@ namespace SiliconStudio.Xenko.Audio
 
             if (soundSource == null)
             {
-                AudioLayer.SourceSetRange(Source, range.Start, range.End);
+                AudioLayer.SourceSetRange(Source, range.Start.TotalSeconds, range.End.TotalSeconds);
             }
             else
             {
                 soundSource.SetRange(range);
+            }
+        }
+
+        public TimeSpan Position
+        {
+            get
+            {
+                if (soundSource == null)
+                {
+                    var position = AudioLayer.SourceGetPosition(Source);
+                    return TimeSpan.FromSeconds(position);
+                }
+                else
+                {
+                    return soundSource.Position;
+                }
             }
         }
     }

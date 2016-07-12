@@ -4,16 +4,16 @@ namespace SiliconStudio.Xenko.Audio
 {
     public struct PlayRange
     {
-        public double Start;
-        public double Length;
+        public TimeSpan Start;
+        public TimeSpan Length;
 
-        public PlayRange(double start, double length)
+        public PlayRange(TimeSpan start, TimeSpan length)
         {
             Start = start;
             Length = length;
         }
 
-        public double End
+        public TimeSpan End
         {
             get { return Start + Length; }
             set { Length = value - Start; }
