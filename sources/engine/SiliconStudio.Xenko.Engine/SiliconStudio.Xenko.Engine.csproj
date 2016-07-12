@@ -200,13 +200,13 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
-    <Compile Include="Rendering\IMaterialCelShadingCelLightFunction.cs" />
+    <Compile Include="Rendering\Materials\CelShading\IMaterialCelShadingCelLightFunction.cs" />
     <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingCelLightDefault.cs" />
-    <Compile Include="Rendering\Materials\MaterialCelShadingMapFeature.cs" />
+    <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingMapFeature.cs" />
     <None Include="Rendering\Materials\CelShading\MaterialCelShadingCelLightDefault.xksl" />
-    <None Include="Rendering\Materials\Shaders\IMaterialCelShadingCelLightFunction.xksl" />
-    <None Include="Rendering\Materials\Shaders\MaterialSurfaceShadingDiffuseCelShading.xksl" />
-    <Compile Include="Rendering\Materials\MaterialDiffuseCelShadingModelFeature.cs" />
+    <None Include="Rendering\Materials\CelShading\IMaterialCelShadingCelLightFunction.xksl" />
+    <None Include="Rendering\Materials\CelShading\MaterialSurfaceShadingDiffuseCelShading.xksl" />
+    <Compile Include="Rendering\Materials\CelShading\MaterialDiffuseCelShadingModelFeature.cs" />
     <Compile Include="Rendering\ResourceResolver.cs" />
     <Compile Include="Rendering\DynamicEffectInstance.cs" />
     <Compile Include="Rendering\EffectSelector.cs" />
