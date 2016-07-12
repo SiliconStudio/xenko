@@ -1,10 +1,13 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Runtime.ExceptionServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering.Shadows;
 
@@ -87,6 +90,7 @@ namespace SiliconStudio.Xenko.Rendering
             view.MaximumDistance = float.NegativeInfinity;
 
             Matrix viewInverse = view.View;
+            var viewDirection = new Vector3(view.View.M11, view.View.M21, view.View.M31);
             viewInverse.Invert();
             var plane = new Plane(viewInverse.Forward, Vector3.Dot(viewInverse.TranslationVector, viewInverse.Forward)); // TODO: Point-normal-constructor seems wrong. Check.
 
@@ -110,17 +114,19 @@ namespace SiliconStudio.Xenko.Rendering
             // This is still supported so that existing gizmo code kept working with new graphics refactor. Might be reconsidered at some point.
             var cullingMask = view.CullingMask;
 
-            // Process objects
-            foreach (var renderObject in RenderObjects)
+            lock (ViewObjectFilters)
             {
-                // Skip not enabled objects
-                if (!renderObject.Enabled || ((EntityGroupMask)(1U << (int)renderObject.RenderGroup) & cullingMask) == 0)
-                    continue;
-
-                // Custom per-view filtering
-                bool skip = false;
-                lock (ViewObjectFilters)
+                // Process objects
+                //foreach (var renderObject in RenderObjects)
+                Dispatcher.ForEach(RenderObjects, renderObject =>
                 {
+                    // Skip not enabled objects
+                    if (!renderObject.Enabled || ((EntityGroupMask)(1U << (int)renderObject.RenderGroup) & cullingMask) == 0)
+                        return;
+
+                    // Custom per-view filtering
+                    bool skip = false;
+
                     // TODO HACK First filter with global static filters
                     foreach (var filter in ViewObjectFilters)
                     {
@@ -132,68 +138,67 @@ namespace SiliconStudio.Xenko.Rendering
                     }
 
                     if (skip)
-                        continue;
-                }
+                        return;
 
-                // TODO HACK Then filter with RenderSystem filters
-                foreach (var filter in RenderSystem.ViewObjectFilters)
-                {
-                    if (!filter(view, renderObject))
+                    // TODO HACK Then filter with RenderSystem filters
+                    foreach (var filter in RenderSystem.ViewObjectFilters)
                     {
-                        skip = true;
-                        break;
-                    }
-                }
-
-                if (skip)
-                    continue;
-
-                var renderStageMask = RenderData.GetData(RenderStageMaskKey);
-                var renderStageMaskNode = renderObject.VisibilityObjectNode * stageMaskMultiplier;
-
-                // Determine if this render object belongs to this view
-                bool renderStageMatch = false;
-                unsafe
-                {
-                    fixed (uint* viewRenderStageMaskStart = viewRenderStageMask)
-                    fixed (uint* objectRenderStageMaskStart = renderStageMask.Data)
-                    {
-                        var viewRenderStageMaskPtr = viewRenderStageMaskStart;
-                        var objectRenderStageMaskPtr = objectRenderStageMaskStart + renderStageMaskNode.Index;
-                        for (int i = 0; i < viewRenderStageMask.Length; ++i)
+                        if (!filter(view, renderObject))
                         {
-                            if ((*viewRenderStageMaskPtr++ & *objectRenderStageMaskPtr++) != 0)
+                            skip = true;
+                            break;
+                        }
+                    }
+
+                    if (skip)
+                        return;
+
+                    var renderStageMask = RenderData.GetData(RenderStageMaskKey);
+                    var renderStageMaskNode = renderObject.VisibilityObjectNode * stageMaskMultiplier;
+
+                    // Determine if this render object belongs to this view
+                    bool renderStageMatch = false;
+                    unsafe
+                    {
+                        fixed (uint* viewRenderStageMaskStart = viewRenderStageMask)
+                        fixed (uint* objectRenderStageMaskStart = renderStageMask.Data)
+                        {
+                            var viewRenderStageMaskPtr = viewRenderStageMaskStart;
+                            var objectRenderStageMaskPtr = objectRenderStageMaskStart + renderStageMaskNode.Index;
+                            for (int i = 0; i < viewRenderStageMask.Length; ++i)
                             {
-                                renderStageMatch = true;
-                                break;
+                                if ((*viewRenderStageMaskPtr++ & *objectRenderStageMaskPtr++) != 0)
+                                {
+                                    renderStageMatch = true;
+                                    break;
+                                }
                             }
                         }
                     }
-                }
 
-                // Object not part of this view because no render stages in this objects are visible in this view
-                if (!renderStageMatch)
-                    continue;
+                    // Object not part of this view because no render stages in this objects are visible in this view
+                    if (!renderStageMatch)
+                        return;
 
-                // Fast AABB transform: http://zeuxcg.org/2010/10/17/aabb-from-obb-with-component-wise-abs/
-                // Compute transformed AABB (by world)
-                if (cullingMode == CameraCullingMode.Frustum
-                    && renderObject.BoundingBox.Extent != Vector3.Zero
-                    && !FrustumContainsBox(ref frustum, ref renderObject.BoundingBox, ignoreDepthPlanes))
-                {
-                    continue;
-                }
+                    // Fast AABB transform: http://zeuxcg.org/2010/10/17/aabb-from-obb-with-component-wise-abs/
+                    // Compute transformed AABB (by world)
+                    if (cullingMode == CameraCullingMode.Frustum
+                        && renderObject.BoundingBox.Extent != Vector3.Zero
+                        && !FrustumContainsBox(ref frustum, ref renderObject.BoundingBox, ignoreDepthPlanes))
+                    {
+                        return;
+                    }
 
-                // Add object to list of visible objects
-                // TODO GRAPHICS REFACTOR we should be able to push multiple elements with future VisibilityObject
-                // TODO GRAPHICS REFACTOR not thread-safe
-                view.RenderObjects.Add(renderObject);
+                    // Add object to list of visible objects
+                    // TODO GRAPHICS REFACTOR we should be able to push multiple elements with future VisibilityObject
+                    view.RenderObjects.Add(renderObject);
 
-                // Calculate bounding box of all render objects in the view
-                if (renderObject.BoundingBox.Extent != Vector3.Zero)
-                {
-                    CalculateMinMaxDistance(ref plane, ref renderObject.BoundingBox, ref view.MinimumDistance, ref view.MaximumDistance);
-                }
+                    // Calculate bounding box of all render objects in the view
+                    if (renderObject.BoundingBox.Extent != Vector3.Zero)
+                    {
+                        CalculateMinMaxDistance(ref plane, ref renderObject.BoundingBox, ref view.MinimumDistance, ref view.MaximumDistance);
+                    }
+                });
             }
         }
 
@@ -228,7 +233,7 @@ namespace SiliconStudio.Xenko.Rendering
         {
             var nearCorner = boundingBox.Minimum;
             var farCorner = boundingBox.Maximum;
-
+            
             if (plane.Normal.X < 0)
                 Utilities.Swap(ref nearCorner.X, ref farCorner.X);
 
@@ -246,15 +251,7 @@ namespace SiliconStudio.Xenko.Rendering
             if (maxDistance < distance)
                 maxDistance = distance;
         }
-
-        private static void MinMax(float distance, ref float min, ref float max)
-        {
-            if (distance < min)
-                min = distance;
-            if (distance > max)
-                max = distance;
-        }
-
+        
         internal void AddRenderObject(List<RenderObject> renderObjects, RenderObject renderObject)
         {
             if (renderObject.VisibilityObjectNode != StaticObjectNodeReference.Invalid)

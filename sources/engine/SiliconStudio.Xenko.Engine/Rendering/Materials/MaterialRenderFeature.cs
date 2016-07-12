@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Extensions;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Shaders;
@@ -99,6 +100,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             int effectSlotCount = ((RootEffectRenderFeature)RootRenderFeature).EffectPermutationSlotCount;
 
             foreach (var renderObject in RootRenderFeature.RenderObjects)
+            //Dispatcher.ForEach(RootRenderFeature.RenderObjects, renderObject =>
             {
                 var staticObjectNode = renderObject.StaticObjectNode;
 

@@ -93,34 +93,15 @@ namespace SiliconStudio.Xenko.Engine.Processors
 
         internal static void UpdateTransformations(FastCollection<TransformComponent> transformationComponents)
         {
-            // To avoid GC pressure (due to lambda), parallelize only if required
-            if (transformationComponents.Count >= 1024)
+            //foreach (var transformation in transformationComponents)
+            Dispatcher.ForEach(transformationComponents, transformation =>
             {
-                TaskList.Dispatch(
-                    transformationComponents,
-                    8,
-                    1024,
-                    (i, transformation) =>
-                        {
-                            UpdateTransformation(transformation);
+                UpdateTransformation(transformation);
 
-                            // Recurse
-                            if (transformation.Children.Count > 0)
-                                UpdateTransformations(transformation.Children);
-                        }
-                    );
-            }
-            else
-            {
-                foreach (var transformation in transformationComponents)
-                {
-                    UpdateTransformation(transformation);
-
-                    // Recurse
-                    if (transformation.Children.Count > 0)
-                        UpdateTransformations(transformation.Children);
-                }
-            }
+                // Recurse
+                if (transformation.Children.Count > 0)
+                    UpdateTransformations(transformation.Children);
+            });
         }
 
         private static void UpdateTransformation(TransformComponent transform)

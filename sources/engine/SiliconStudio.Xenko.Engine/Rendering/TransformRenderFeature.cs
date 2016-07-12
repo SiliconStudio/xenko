@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
 
@@ -49,15 +50,18 @@ namespace SiliconStudio.Xenko.Rendering
         {
             var renderModelObjectInfo = RootRenderFeature.RenderData.GetData(renderModelObjectInfoKey);
 
-            foreach (var objectNodeReference in RootRenderFeature.ObjectNodeReferences)
+            //for (int index = 0; index < RootRenderFeature.ObjectNodeReferences.Count; index++)
+            Dispatcher.For(0, RootRenderFeature.ObjectNodeReferences.Count, index =>
             {
+                var objectNodeReference = RootRenderFeature.ObjectNodeReferences[index];
                 var objectNode = RootRenderFeature.GetObjectNode(objectNodeReference);
                 var renderMesh = objectNode.RenderObject as RenderMesh;
+
                 // TODO: Extract world
-                var world = (renderMesh != null) ? renderMesh.World : Matrix.Identity;
+                var world = renderMesh?.World ?? Matrix.Identity;
 
                 renderModelObjectInfo[objectNodeReference] = new RenderModelFrameInfo { World = world };
-            }
+            });
         }
 
         /// <param name="context"></param>
@@ -91,7 +95,8 @@ namespace SiliconStudio.Xenko.Rendering
                 var viewFeature = view.Features[RootRenderFeature.Index];
 
                 // Compute WorldView and WorldViewProjection
-                foreach (var renderPerViewNodeReference in viewFeature.ViewObjectNodes)
+                // foreach (var renderPerViewNodeReference in viewFeature.ViewObjectNodes)
+                Dispatcher.ForEach(viewFeature.ViewObjectNodes, renderPerViewNodeReference =>
                 {
                     var renderPerViewNode = RootRenderFeature.GetViewObjectNode(renderPerViewNodeReference);
                     var renderModelFrameInfo = renderModelObjectInfoData[renderPerViewNode.ObjectNode];
@@ -102,7 +107,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                     // TODO: Use ref locals or Utilities instead, to avoid double copy
                     renderModelViewInfoData[renderPerViewNodeReference] = renderModelViewInfo;
-                }
+                });
 
                 // Copy ViewProjection to PerView cbuffer
                 foreach (var viewLayout in viewFeature.Layouts)
@@ -150,15 +155,16 @@ namespace SiliconStudio.Xenko.Rendering
             // Update PerDraw (World, WorldViewProj, etc...)
             // Copy Entity.World to PerDraw cbuffer
             // TODO: Have a PerObject cbuffer?
-            foreach (var renderNode in ((RootEffectRenderFeature)RootRenderFeature).RenderNodes)
+            //foreach (var renderNode in ((RootEffectRenderFeature)RootRenderFeature).RenderNodes)
+            Dispatcher.ForEach(((RootEffectRenderFeature)RootRenderFeature).RenderNodes, renderNode =>
             {
                 var perDrawLayout = renderNode.RenderEffect.Reflection.PerDrawLayout;
                 if (perDrawLayout == null)
-                    continue;
+                    return;
 
                 var worldOffset = perDrawLayout.GetConstantBufferOffset(this.world);
                 if (worldOffset == -1)
-                    continue;
+                    return;
 
                 var renderModelObjectInfo = renderModelObjectInfoData[renderNode.RenderObject.ObjectNode];
                 var renderModelViewInfo = renderModelViewInfoData[renderNode.ViewObjectNode];
@@ -187,7 +193,7 @@ namespace SiliconStudio.Xenko.Rendering
                 perDrawData.EyeMS = new Vector4(perDrawData.WorldInverse.M41, perDrawData.WorldInverse.M42, perDrawData.WorldInverse.M43, 1.0f);
 
                 *perDraw = perDrawData;
-            }
+            });
         }
 
         [StructLayout(LayoutKind.Sequential)]

@@ -2,8 +2,12 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Threading;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
 
@@ -11,7 +15,7 @@ namespace SiliconStudio.Xenko.Animations
 {
     public class AnimationProcessor : EntityProcessor<AnimationComponent, AnimationProcessor.AssociatedData>
     {
-        private readonly FastList<AnimationOperation> animationOperations = new FastList<AnimationOperation>(2);
+        private readonly ConcurrentBag<FastList<AnimationOperation>> animationOperationCollections = new ConcurrentBag<FastList<AnimationOperation>>();
 
         public AnimationProcessor()
         {
@@ -65,9 +69,11 @@ namespace SiliconStudio.Xenko.Animations
         {
             var time = context.Time;
 
-            foreach (var entity in ComponentDatas)
+            //foreach (var entity in ComponentDatas.Values)
+            Dispatcher.ForEach(ComponentDatas, entity =>
             {
                 var associatedData = entity.Value;
+
                 var animationUpdater = associatedData.AnimationUpdater;
                 var animationComponent = associatedData.AnimationComponent;
 
@@ -93,7 +99,11 @@ namespace SiliconStudio.Xenko.Animations
                 }
 
                 // Regenerate animation operations
-                animationOperations.Clear();
+                FastList<AnimationOperation> animationOperations;
+                if (!animationOperationCollections.TryTake(out animationOperations))
+                {
+                    animationOperations = new FastList<AnimationOperation>();
+                }
 
                 float totalWeight = 0.0f;
 
@@ -149,7 +159,7 @@ namespace SiliconStudio.Xenko.Animations
                     bool removeAnimation = false;
                     if (playingAnimation.RemainingTime > TimeSpan.Zero)
                     {
-                        playingAnimation.Weight += (playingAnimation.WeightTarget - playingAnimation.Weight)*
+                        playingAnimation.Weight += (playingAnimation.WeightTarget - playingAnimation.Weight) *
                                                    ((float)time.Elapsed.Ticks / playingAnimation.RemainingTime.Ticks);
                         playingAnimation.RemainingTime -= time.Elapsed;
                         if (playingAnimation.RemainingTime <= TimeSpan.Zero)
@@ -179,7 +189,10 @@ namespace SiliconStudio.Xenko.Animations
                         }
                     }
                 }
-            }
+
+                animationOperations.Clear();
+                animationOperationCollections.Add(animationOperations);
+            });
         }
 
         private AnimationOperation CreatePushOperation(PlayingAnimation playingAnimation)

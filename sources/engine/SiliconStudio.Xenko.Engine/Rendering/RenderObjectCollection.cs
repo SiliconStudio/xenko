@@ -7,7 +7,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// <summary>
     /// A collection of <see cref="RenderObject"/>.
     /// </summary>
-    public class RenderObjectCollection : ICollection<RenderObject>
+    public class RenderObjectCollection : ICollection<RenderObject>, IReadOnlyList<RenderObject>
     {
         private readonly VisibilityGroup visibilityGroup;
         private readonly List<RenderObject> items = new List<RenderObject>();
@@ -60,5 +60,7 @@ namespace SiliconStudio.Xenko.Rendering
         {
             return ((IEnumerable)items).GetEnumerator();
         }
+
+        public RenderObject this[int index] => items[index];
     }
 }

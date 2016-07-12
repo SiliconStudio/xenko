@@ -8,6 +8,8 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Graphics;
 using System.Reflection;
+using System.Threading;
+using SiliconStudio.Core.Threading;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -117,10 +119,14 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 // Sort per render feature (used for later sorting)
                 // We'll be able to process data more efficiently for the next steps
-                view.RenderObjects.Sort(RenderObjectFeatureComparer.Default);
+                //view.RenderObjects.Sort(RenderObjectFeatureComparer.Default);
+                Dispatcher.Sort(view.RenderObjects, RenderObjectFeatureComparer.Default);
 
-                foreach (var renderObject in view.RenderObjects)
+                //foreach (var renderObject in view.RenderObjects)
+                //Dispatcher.For(0, view.RenderObjects.Count, index =>
+                for (int index = 0; index < view.RenderObjects.Count; index++)
                 {
+                    var renderObject = view.RenderObjects[index];
                     var renderFeature = renderObject.RenderFeature;
                     var viewFeature = view.Features[renderFeature.Index];
 
@@ -130,7 +136,7 @@ namespace SiliconStudio.Xenko.Rendering
                     // Let's create the view object node
                     var renderViewNode = renderFeature.CreateViewObjectNode(view, renderObject);
                     viewFeature.ViewObjectNodes.Add(renderViewNode);
-
+                    
                     // Collect object
                     // TODO: Check which stage it belongs to (and skip everything if it doesn't belong to any stage)
                     // TODO: For now, we build list and then copy. Another way would be to count and then fill (might be worse, need to check)
@@ -150,12 +156,12 @@ namespace SiliconStudio.Xenko.Rendering
                         // Note: Used mostly during rendering
                         renderViewStage.RenderNodes.Add(new RenderNodeFeatureReference(renderFeature, renderNode, renderObject));
                     }
-                }
+                }//);
 
                 // Also sort view|stage per render feature
                 foreach (var renderViewStage in view.RenderStages)
                 {
-                    renderViewStage.RenderNodes.Sort(RenderNodeFeatureReferenceComparer.Default);
+                    Dispatcher.Sort(renderViewStage.RenderNodes, RenderNodeFeatureReferenceComparer.Default);
                 }
             }
 
@@ -339,18 +345,18 @@ namespace SiliconStudio.Xenko.Rendering
             foreach (var view in Views)
             {
                 // Clear nodes
-                view.RenderObjects.Clear();
+                view.RenderObjects.Clear(false);
 
                 foreach (var renderViewFeature in view.Features)
                 {
-                    renderViewFeature.RenderNodes.Clear();
-                    renderViewFeature.ViewObjectNodes.Clear();
-                    renderViewFeature.Layouts.Clear();
+                    renderViewFeature.RenderNodes.Clear(true);
+                    renderViewFeature.ViewObjectNodes.Clear(true);
+                    renderViewFeature.Layouts.Clear(false);
                 }
 
                 foreach (var renderViewStage in view.RenderStages)
                 {
-                    renderViewStage.RenderNodes.Clear();
+                    renderViewStage.RenderNodes.Clear(true);
                 }
             }
         }

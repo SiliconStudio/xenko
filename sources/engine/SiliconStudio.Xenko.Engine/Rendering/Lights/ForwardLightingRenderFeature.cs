@@ -7,6 +7,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Storage;
+using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Shadows;
@@ -267,12 +268,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             var directLightShaders = GetReadonlyShaderSources(ShaderPermutation.DirectLightShaders);
             var environmentLightShaders = GetReadonlyShaderSources(ShaderPermutation.EnvironmentLightShaders);
 
-            foreach (var renderObject in RootRenderFeature.RenderObjects)
+            //foreach (var renderObject in RootRenderFeature.RenderObjects)
+            Dispatcher.ForEach(RootRenderFeature.RenderObjects, renderObject =>
             {
                 var renderMesh = (RenderMesh)renderObject;
 
                 if (!renderMesh.Material.IsLightDependent)
-                    continue;
+                    return;
 
                 var staticObjectNode = renderMesh.StaticObjectNode;
 
@@ -296,7 +298,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     foreach (var lightGroup in ShaderPermutation.PermutationLightGroups)
                         lightGroup.ApplyEffectPermutations(renderEffect);
                 }
-            }
+            });
         }
 
         /// <summary>
