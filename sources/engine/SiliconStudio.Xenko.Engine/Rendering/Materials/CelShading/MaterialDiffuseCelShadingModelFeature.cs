@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             shaderSource.Mixins.Add(new ShaderClassSource("MaterialSurfaceShadingDiffuseCelShading", IsEnergyConservative));
             if (RampFunction != null)
             {
-                shaderSource.AddComposition("celLightFunction", RampFunction.Generate());
+                shaderSource.AddComposition("celLightFunction", RampFunction.Generate(context));
             }
 
             //var shaderSource = new ShaderClassSource("MaterialSurfaceShadingDiffuseCelShading", IsEnergyConservative);

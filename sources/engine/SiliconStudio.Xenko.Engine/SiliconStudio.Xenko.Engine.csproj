@@ -202,9 +202,11 @@
     </Compile>
     <Compile Include="Rendering\Materials\CelShading\IMaterialCelShadingCelLightFunction.cs" />
     <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingCelLightDefault.cs" />
+    <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingCelLightRamp.cs" />
     <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingMapFeature.cs" />
     <None Include="Rendering\Materials\CelShading\MaterialCelShadingCelLightDefault.xksl" />
     <None Include="Rendering\Materials\CelShading\IMaterialCelShadingCelLightFunction.xksl" />
+    <None Include="Rendering\Materials\CelShading\MaterialCelShadingCelLightRamp.xksl" />
     <None Include="Rendering\Materials\CelShading\MaterialSurfaceShadingDiffuseCelShading.xksl" />
     <Compile Include="Rendering\Materials\CelShading\MaterialDiffuseCelShadingModelFeature.cs" />
     <Compile Include="Rendering\ResourceResolver.cs" />

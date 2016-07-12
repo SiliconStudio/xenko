@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     [Display("Default")]
     public class MaterialCelShadingCelLightDefault : IMaterialCelShadingCelLightFunction
     {
-        public ShaderSource Generate()
+        public ShaderSource Generate(MaterialGeneratorContext context)
         {
             return new ShaderClassSource("MaterialCelShadingCelLightDefault");
         }

@@ -1,0 +1,20 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Materials
+{
+	// TODO inherit Texturing
+
+    class MaterialCelShadingCelLightRamp<LinkType TTextureName> : 
+												IMaterialCelShadingCelLightFunction,
+												Texturing,
+												DynamicTexture<TTextureName, PerMaterial>
+    {
+        override float Compute(float lightIn)
+        {
+            float2 texCoord = float2(clamp(lightIn, 0, 1), 0.5);
+
+			return Texture.Sample(LinearSampler, texCoord);
+        }
+    };
+}
