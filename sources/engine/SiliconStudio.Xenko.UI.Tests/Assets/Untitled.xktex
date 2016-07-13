@@ -6,14 +6,3 @@ Source: ../../../data/tests/cube/Untitled.png
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 Alpha: Mask
 PremultiplyAlpha: false
-~Base:
-    ~Id: eabc2012-b97d-4146-a1cc-5d1edfebbe00
-    Location: --import--
-    Asset: !Texture
-        Id: 00000000-0000-0000-0000-000000000000
-        SerializedVersion: {Xenko: 1.4.0-beta}
-        Tags: []
-        Source: 
-        ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
-        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
-        PremultiplyAlpha: false

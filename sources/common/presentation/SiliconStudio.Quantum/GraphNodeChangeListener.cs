@@ -16,7 +16,8 @@ namespace SiliconStudio.Quantum
     public class GraphNodeChangeListener : IDisposable
     {
         private readonly IGraphNode rootNode;
-        private readonly Func<IGraphNode, GraphNodePath, bool> shouldRegisterNode;
+        private readonly Func<MemberContent, IGraphNode, bool> shouldRegisterNode;
+        protected readonly HashSet<IGraphNode> RegisteredNodes = new HashSet<IGraphNode>();
         private readonly HashSet<IGraphNode> registeredNodes = new HashSet<IGraphNode>();
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphNodeChangeListener"/> class.
@@ -26,7 +27,7 @@ namespace SiliconStudio.Quantum
         public GraphNodeChangeListener(IGraphNode rootNode, Func<MemberContent, IGraphNode, bool> shouldRegisterNode = null)
         {
             this.rootNode = rootNode;
-            this.shouldRegisterNode = (node, path) => ShouldRegisterHelper(node, path, shouldRegisterNode);
+            this.shouldRegisterNode = shouldRegisterNode;
             RegisterAllNodes();
         }
 
@@ -58,20 +59,6 @@ namespace SiliconStudio.Quantum
             visitor.Visit(rootNode);
         }
 
-        // TODO: move this method in a proper location - it just converts a Func<IGraphNode, GraphNodePath, bool> to a Func<MemberContent, IGraphNode, bool>
-        public static bool ShouldRegisterHelper(IGraphNode node, GraphNodePath path, Func<MemberContent, IGraphNode, bool> shouldRegisterNode = null)
-        {
-            var content = node.Content as MemberContent;
-            if (content == null)
-            {
-                var parent = path.GetParent()?.GetNode();
-                content = (MemberContent)parent?.Content;
-                if (content == null)
-                    return true;
-            }
-            return shouldRegisterNode?.Invoke(content, node) ?? true;
-        }
-
         protected virtual bool RegisterNode(IGraphNode node)
         {
             // A node can be registered multiple times when it is referenced via multiple paths
@@ -88,7 +75,7 @@ namespace SiliconStudio.Quantum
 
         protected virtual bool UnregisterNode(IGraphNode node)
         {
-            if (registeredNodes.Remove(node))
+            if (RegisteredNodes.Remove(node))
             {
                 node.Content.PrepareChange -= ContentPrepareChange;
                 node.Content.FinalizeChange -= ContentFinalizeChange;

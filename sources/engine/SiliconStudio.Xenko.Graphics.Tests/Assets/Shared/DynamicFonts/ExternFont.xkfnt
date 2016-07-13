@@ -7,4 +7,3 @@ FontSource: !FileFontProvider
     Source: ../../../../../data/tests/Risaltyp_024.ttf
 FontType: !RuntimeRasterizedSpriteFontType
     ~Id: 8f366a0d-22a6-4289-8d9a-ca36bf40f000
-    Size: 21.33333

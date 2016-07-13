@@ -5,11 +5,12 @@ Tags: []
 Attributes:
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
-            Texture: 5c26c05f-77e8-4226-b86a-794c98c24c9b:Untitled
+            Texture: 11b5077b-a953-478a-b25e-73ad3b1b294a/5c26c05f-77e8-4226-b86a-794c98c24c9b:Untitled
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
     DiffuseModel: !MaterialDiffuseLambertModelFeature {}
     Transparency: !MaterialTransparencyCutoffFeature
         Alpha: !ComputeFloat
@@ -17,22 +18,3 @@ Attributes:
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
 Layers: []
-~Base:
-    ~Id: 86aa3858-6154-4375-9d23-51d2ef170a17
-    Location: --import--
-    Asset: !MaterialAsset
-        Id: 00000000-0000-0000-0000-000000000000
-        SerializedVersion: {Xenko: 1.4.0-beta}
-        Tags: []
-        Attributes:
-            Diffuse: !MaterialDiffuseMapFeature
-                DiffuseMap: !ComputeTextureColor
-                    Texture: 5c26c05f-77e8-4226-b86a-794c98c24c9b:Untitled
-                    FallbackValue:
-                        Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
-                    Scale: {X: 1.0, Y: 1.0}
-                    Offset: {X: 0.0, Y: 0.0}
-            DiffuseModel: !MaterialDiffuseLambertModelFeature {}
-            Overrides:
-                UVScale: {X: 1.0, Y: 1.0}
-        Layers: []

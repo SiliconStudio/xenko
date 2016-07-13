@@ -9,7 +9,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.6.0-beta
+            Version: 1.7.0-alpha03
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -61,7 +61,7 @@ ExplicitFolders: []
 Bundles: []
 TemplateFolders: []
 RootAssets:
-    - 08cf0491-78f1-42ee-93e4-7ad8732c766e:MSMincho10
+    - 08cf0491-78f1-42ee-93e4-7ad8732c766e:HanSans13
     - 0d564cf9-3de7-4550-8bdd-ad29f7c57d36:RotatedImages
     - 0f6f5a81-cd3c-4935-9dcb-127adfd7c35c:ImageButtonPressed
     - 457f3a9f-4761-48d1-8eaf-bc741453070f:uv
