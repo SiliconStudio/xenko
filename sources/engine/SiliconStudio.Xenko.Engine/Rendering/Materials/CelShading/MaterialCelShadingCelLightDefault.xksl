@@ -5,16 +5,16 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 {
     class MaterialCelShadingCelLightDefault : IMaterialCelShadingCelLightFunction
     {
-        override float Compute(float lightIn)
+        override float3 Compute(float lightIn)
         {
             if (lightIn > 0.8)
-                return 1;
+                return float3(1, 1, 1);
 
             if (lightIn > 0.5)
-                return 0.8f;
+                return float3(0.8f, 0.8f, 0.8f);
 
             if (lightIn > 0.2)
-                return 0.3f;
+                return float3(0.3f, 0.3f, 0.3f);
 
             return 0;
         }

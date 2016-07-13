@@ -12,17 +12,19 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         override float3 ComputeDirectLightContribution()
         {
             float oldLightColorNdotL = streams.lightColorNdotL;
+            float3 celLight = float3(1, 1, 1);
 
             if (FakeNDotL)
             {
                 // Fake - this gradient depends on light intensity as well
-                streams.lightColorNdotL = celLightFunction.Compute(streams.lightColorNdotL);
+                streams.lightColorNdotL = 1;
+				celLight = celLightFunction.Compute(streams.lightColorNdotL);
             }
             else
             {
 				// Correct
-				float celNdotL = celLightFunction.Compute(streams.NdotL);
-				streams.lightColorNdotL = streams.lightColor * streams.shadowColor * celNdotL * streams.lightDirectAmbientOcclusion;                
+				celLight = celLightFunction.Compute(streams.NdotL);
+				streams.lightColorNdotL = streams.lightColor * streams.shadowColor * streams.lightDirectAmbientOcclusion;                
             }
 
             var diffuseColor = streams.matDiffuseVisible;
@@ -35,7 +37,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             float3 result =  diffuseColor / PI * streams.lightColorNdotL * streams.matDiffuseSpecularAlphaBlend.x;
 
             streams.lightColorNdotL = oldLightColorNdotL;
-            return result;
+            return result * celLight;
         }
 
         override float3 ComputeEnvironmentLightContribution()
@@ -47,7 +49,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 diffuseColor *= (1 - streams.matSpecularVisible);
             }
 
-            float celLight = celLightFunction.Compute(streams.envLightDiffuseColor);
+            float3 celLight = celLightFunction.Compute(streams.envLightDiffuseColor);
             return diffuseColor * celLight;
         }
     };

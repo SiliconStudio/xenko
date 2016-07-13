@@ -4,9 +4,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 {
     class IMaterialCelShadingCelLightFunction : MaterialPixelShadingStream
     {
-        float Compute(float lightIn)
+        float3 Compute(float lightIn)
         {
-            return lightIn;
+            return float3(lightIn, lightIn, lightIn);
         }
     };
 }
