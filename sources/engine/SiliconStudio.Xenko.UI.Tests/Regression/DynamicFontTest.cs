@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public DynamicFontTest()
         {
-            CurrentVersion = 5; // Slight size changes but visually correct
+            CurrentVersion = 6; // Font type, names & sizes changed slightly
         }
 
         protected override async Task LoadContent()
@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             textBlock = new TextBlock
                 {
-                    Font = Content.Load<SpriteFont>("MSMincho10"), 
+                    Font = Content.Load<SpriteFont>("HanSans13"), 
                     Text = "Simple Text - 簡単な文章。", 
                     TextColor = Color.Black,
                     HorizontalAlignment = HorizontalAlignment.Center,

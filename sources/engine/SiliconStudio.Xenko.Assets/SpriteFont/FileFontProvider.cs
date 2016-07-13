@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using SharpDX.DirectWrite;
 using SharpDX.Mathematics.Interop;
+using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Xenko.Assets.SpriteFont.Compiler;
@@ -68,8 +69,12 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         }
 
         /// <inheritdoc/>
-        public override string GetFontPath()
+        public override string GetFontPath(AssetCompilerResult result = null)
         {
+            if (!File.Exists(Source))
+            {
+                result?.Error("Cannot find font file '{0}'. Make sure it exists and is referenced correctly.", Source);
+            }
             return Source;
         }
 

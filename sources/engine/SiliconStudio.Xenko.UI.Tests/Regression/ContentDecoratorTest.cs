@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public ContentDecoratorTest()
         {
-            CurrentVersion = 5;
+            CurrentVersion = 6; // Font type, names & sizes changed slightly
         }
 
         protected override async Task LoadContent()
@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             textBlock = new TextBlock
             {
                 TextColor = Color.Black,
-                Font = Content.Load<SpriteFont>("MSMincho10"),
+                Font = Content.Load<SpriteFont>("HanSans13"),
                 Text = @"Simple sample text surrounded by decorator.",
                 SynchronousCharacterGeneration = true
             };

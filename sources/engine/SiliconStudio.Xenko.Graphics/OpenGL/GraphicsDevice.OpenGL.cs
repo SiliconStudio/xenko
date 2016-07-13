@@ -840,6 +840,7 @@ namespace SiliconStudio.Xenko.Graphics
             // Restore FBO
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
 
+#if !SILICONSTUDIO_PLATFORM_IOS
             if (IsDebugMode && HasKhronosDebug)
             {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
@@ -876,6 +877,7 @@ namespace SiliconStudio.Xenko.Graphics
                 GL.Enable((EnableCap)KhrDebug.DebugOutputSynchronous);
                 graphicsContext.MakeCurrent(windowInfo);
             }
+#endif
         }
 
         private void AdjustDefaultPipelineStateDescription(ref PipelineStateDescription pipelineStateDescription)

@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public TestSpriteBatchResolution()
         {
-            CurrentVersion = 4;
+            CurrentVersion = 5; // Changes in font type/size
         }
 
         protected override void RegisterTests()
@@ -44,8 +44,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             spriteBatch = new SpriteBatch(GraphicsDevice) { VirtualResolution = virtualResolution };
             spheres = Content.Load<SpriteSheet>("SpriteSphere");
             round = Content.Load<Texture>("round");
-            staticFont = Content.Load<SpriteFont>("StaticFonts/CourierNew10");
-            dynamicFont = Content.Load<SpriteFont>("DynamicFonts/CourierNew10");
+            staticFont = Content.Load<SpriteFont>("StaticFonts/CourierNew13");
+            dynamicFont = Content.Load<SpriteFont>("DynamicFonts/CourierNew13");
             colorTexture = Texture.New2D(GraphicsDevice, 1, 1, PixelFormat.R8G8B8A8_UNorm, new[] { Color.White });
         }
 
