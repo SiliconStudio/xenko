@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// <summary>
     /// Performs a Cel shading
     /// </summary>
-    class MaterialSurfaceShadingDiffuseCelShading<bool TIsEnergyConservative, bool FakeNDotL> : IMaterialSurfaceShading, Math, MaterialPixelShadingStream, LightStream, ShadowGroup
+    class MaterialSurfaceShadingDiffuseCelShading<bool TIsEnergyConservative, float FakeNDotL> : IMaterialSurfaceShading, Math, MaterialPixelShadingStream, LightStream, ShadowGroup
     {
         compose IMaterialCelShadingCelLightFunction celLightFunction;
 
@@ -14,11 +14,12 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             float oldLightColorNdotL = streams.lightColorNdotL;
             float3 celLight = float3(1, 1, 1);
 
-            if (FakeNDotL)
+            if (FakeNDotL > 0)
             {
                 // Fake - this gradient depends on light intensity as well
-                streams.lightColorNdotL = celLightFunction.Compute(streams.lightColorNdotL).r;
-				//celLight = celLightFunction.Compute(streams.lightColorNdotL);
+                //streams.lightColorNdotL = celLightFunction.Compute(streams.lightColorNdotL).rgb;
+				celLight = celLightFunction.Compute(streams.lightColorNdotL * FakeNDotL);
+				streams.lightColorNdotL = streams.lightColor * streams.shadowColor * streams.lightDirectAmbientOcclusion;                
             }
             else
             {

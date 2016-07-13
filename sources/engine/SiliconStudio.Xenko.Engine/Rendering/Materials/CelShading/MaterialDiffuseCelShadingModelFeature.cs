@@ -26,9 +26,12 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [DataMemberIgnore]
         internal bool IsEnergyConservative { get; set; }
 
+        /// <summary>
+        /// When positive, the dot product between N and L will be modified to account for light intensity with the specified value as a factor
+        /// </summary>
         [DataMember(5)]
-        [Display("Modify N.L")]
-        public bool FakeNDotL { get; set; } = false;
+        [Display("Modify N.L factor")]
+        public float FakeNDotL { get; set; } = 0;
 
         [DataMember(10)]
         [Display("Ramp Function")]
