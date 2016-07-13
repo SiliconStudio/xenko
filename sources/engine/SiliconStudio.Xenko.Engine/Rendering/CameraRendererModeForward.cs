@@ -131,7 +131,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             // Draw [main view | main stage]
-            RenderSystem.Draw(context, MainRenderView, MainRenderStage);
+            RenderSystem.Draw(context, MainRenderView, MainRenderStage, true);
 
             // Some transparent shaders will require the depth as a shader resource - resolve it only once and set it here
             Texture depthStencilSRV = ResolveDepthAsSRV(context);

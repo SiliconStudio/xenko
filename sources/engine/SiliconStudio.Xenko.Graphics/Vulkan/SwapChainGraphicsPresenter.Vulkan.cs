@@ -340,6 +340,8 @@ namespace SiliconStudio.Xenko.Graphics
                 }
             }
 
+            //swapChainPresentMode = PresentMode.Immediate;
+
             // Create swapchain
             var swapchainCreateInfo = new SwapchainCreateInfo
             {

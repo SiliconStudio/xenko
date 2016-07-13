@@ -253,7 +253,7 @@ namespace SiliconStudio.Xenko.Rendering
             context.ResourceGroupAllocator.Flush();
         }
 
-        public void Draw(RenderDrawContext renderDrawContext, RenderView renderView, RenderStage renderStage)
+        public void Draw(RenderDrawContext renderDrawContext, RenderView renderView, RenderStage renderStage, bool parallel = false)
         {
             // Sync point: draw (from now, we should execute with a graphics device context to perform rendering)
 
@@ -273,23 +273,63 @@ namespace SiliconStudio.Xenko.Rendering
                 throw new InvalidOperationException("Requested RenderView|RenderStage combination doesn't exist. Please add it to RenderView.RenderStages.");
             }
 
+            if (!parallel)
+                return;
+
+            renderDrawContext.CommandList.Close();
+            renderDrawContext.CommandList.Reset();
+
             // Generate and execute draw jobs
             var renderNodes = renderViewStage.SortedRenderNodes;
             var renderNodeCount = renderViewStage.RenderNodes.Count;
-            int currentStart, currentEnd;
+            //int currentStart, currentEnd;
 
-            for (currentStart = 0; currentStart < renderNodeCount; currentStart = currentEnd)
+            //for (currentStart = 0; currentStart < renderNodeCount; currentStart = currentEnd)
+            //{
+            //    var currentRenderFeature = renderNodes[currentStart].RootRenderFeature;
+            //    currentEnd = currentStart + 1;
+            //    while (currentEnd < renderNodeCount && renderNodes[currentEnd].RootRenderFeature == currentRenderFeature)
+            //    {
+            //        currentEnd++;
+            //    }
+
+            //    // Divide into task chunks for parallelism
+            //    currentRenderFeature.Draw(renderDrawContext, renderView, renderViewStage, currentStart, currentEnd);
+            //}
+
+            int batchCount = 2;//Math.Min(Environment.ProcessorCount, renderNodeCount);
+            int batchSize = (renderNodeCount + (batchCount - 1)) / batchCount;
+
+            Dispatcher.For(0, batchCount, batchIndex =>
             {
-                var currentRenderFeature = renderNodes[currentStart].RootRenderFeature;
-                currentEnd = currentStart + 1;
-                while (currentEnd < renderNodeCount && renderNodes[currentEnd].RootRenderFeature == currentRenderFeature)
+                var threadContext = renderDrawContext.RenderContext.GetThreadContext();
+                threadContext.CommandList.Reset();
+                threadContext.CommandList.SetRenderTargetAndViewport(renderDrawContext.CommandList.DepthStencilBuffer, renderDrawContext.CommandList.RenderTarget);
+                threadContext.CommandList.SetViewport(renderDrawContext.CommandList.Viewport);
+
+                var currentStart = batchSize * batchIndex;
+                int currentEnd;
+
+                var endExclusive = Math.Min(renderNodeCount, currentStart + batchSize);
+
+                if (endExclusive <= currentStart)
+                    return;
+
+                for (; currentStart < endExclusive; currentStart = currentEnd)
                 {
-                    currentEnd++;
+                    var currentRenderFeature = renderNodes[currentStart].RootRenderFeature;
+                    currentEnd = currentStart + 1;
+                    while (currentEnd < endExclusive && renderNodes[currentEnd].RootRenderFeature == currentRenderFeature)
+                    {
+                        currentEnd++;
+                    }
+
+                    // Divide into task chunks for parallelism
+                    currentRenderFeature.Draw(threadContext, renderView, renderViewStage, currentStart, currentEnd);
                 }
 
-                // Divide into task chunks for parallelism
-                currentRenderFeature.Draw(renderDrawContext, renderView, renderViewStage, currentStart, currentEnd);
-            }
+                threadContext.CommandList.Close();
+            });
         }
 
         /// <summary>

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 using SharpVulkan;
 
 using SiliconStudio.Core;
@@ -39,7 +40,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         private Queue<KeyValuePair<long, Fence>> nativeFences = new Queue<KeyValuePair<long, Fence>>();
         private long lastCompletedFence;
-        internal long NextFenceValue = 1;
+        private long NextFenceValue = 1;
 
         internal HeapPool descriptorPools;
         internal const uint MaxDescriptorSetCount = 256;
@@ -428,7 +429,12 @@ namespace SiliconStudio.Xenko.Graphics
         {
         }
 
-        internal unsafe long ExecuteCommandListInternal(CommandBuffer nativeCommandBuffer)
+        internal long PushFence()
+        {
+            return Interlocked.Increment(ref NextFenceValue) - 1;
+        }
+
+        internal unsafe void ExecuteCommandListInternal(CommandBuffer nativeCommandBuffer, long fenceValue)
         {
             //if (nativeUploadBuffer != SharpVulkan.Buffer.Null)
             //{
@@ -442,7 +448,7 @@ namespace SiliconStudio.Xenko.Graphics
             // Create new fence
             var fenceCreateInfo = new FenceCreateInfo { StructureType = StructureType.FenceCreateInfo };
             var fence = nativeDevice.CreateFence(ref fenceCreateInfo);
-            nativeFences.Enqueue(new KeyValuePair<long, Fence>(NextFenceValue, fence));
+            nativeFences.Enqueue(new KeyValuePair<long, Fence>(fenceValue, fence));
 
             // Submit commands
             var nativeCommandBufferCopy = nativeCommandBuffer;
@@ -463,8 +469,6 @@ namespace SiliconStudio.Xenko.Graphics
             presentSemaphore = Semaphore.Null;
             nativeResourceCollector.Release();
             graphicsResourceLinkCollector.Release();
-
-            return NextFenceValue++;
         }
 
         internal bool IsFenceCompleteInternal(long fenceValue)

@@ -96,7 +96,7 @@ namespace SiliconStudio.Core.Threading
             }
             else
             {
-                int batchCount = Environment.ProcessorCount;
+                int batchCount = Math.Min(Environment.ProcessorCount, toExclusive - fromInclusive);
                 int batchSize = (toExclusive - fromInclusive + (batchCount - 1)) / batchCount;
 
                 var finishedLock = new BatchState { Count = batchCount };

@@ -35,6 +35,8 @@ namespace SiliconStudio.Xenko.Graphics
         private uint allocatedSetCount;
 
         private uint? activeStencilReference = 0;
+        
+        private long fenceValue;
 
         public CommandList(GraphicsDevice device) : base(device)
         {
@@ -69,6 +71,8 @@ namespace SiliconStudio.Xenko.Graphics
             };
             NativeCommandBuffer.Begin(ref beginInfo);
 
+            fenceValue = GraphicsDevice.PushFence();
+            
             activeStencilReference = null;
         }
 
@@ -77,7 +81,7 @@ namespace SiliconStudio.Xenko.Graphics
             End();
 
             // Submit
-            GraphicsDevice.ExecuteCommandListInternal(NativeCommandBuffer);
+            GraphicsDevice.ExecuteCommandListInternal(NativeCommandBuffer, fenceValue);
 
             activePipeline = null;
         }
@@ -90,14 +94,14 @@ namespace SiliconStudio.Xenko.Graphics
             // Close
             NativeCommandBuffer.End();
 
-            commandBufferPool.RecycleObject(GraphicsDevice.NextFenceValue, NativeCommandBuffer);
+            commandBufferPool.RecycleObject(fenceValue, NativeCommandBuffer);
         }
 
         private unsafe long FlushInternal(bool wait)
         {
             End();
 
-            var fenceValue = GraphicsDevice.ExecuteCommandListInternal(NativeCommandBuffer);
+            GraphicsDevice.ExecuteCommandListInternal(NativeCommandBuffer, fenceValue);
 
             if (wait)
                 GraphicsDevice.WaitForFenceInternal(fenceValue);
@@ -110,6 +114,7 @@ namespace SiliconStudio.Xenko.Graphics
                 Flags = CommandBufferUsageFlags.OneTimeSubmit,
             };
             NativeCommandBuffer.Begin(ref beginInfo);
+            fenceValue = GraphicsDevice.PushFence();
 
             NativeCommandBuffer.SetStencilReference(StencilFaceFlags.FrontAndBack, activeStencilReference ?? 0);
 
@@ -261,7 +266,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (isPoolExhausted)
             {
                 // Retrive a new pool
-                GraphicsDevice.descriptorPools.RecycleObject(GraphicsDevice.NextFenceValue, descriptorPool);
+                GraphicsDevice.descriptorPools.RecycleObject(fenceValue, descriptorPool);
                 descriptorPool = GraphicsDevice.descriptorPools.GetObject();
 
                 allocatedSetCount = 1;
@@ -854,7 +859,7 @@ namespace SiliconStudio.Xenko.Graphics
                     }
 
                     // Fence for host access
-                    destinationParent.StagingFenceValue = GraphicsDevice.NextFenceValue;
+                    destinationParent.StagingFenceValue = fenceValue;
                 }
                 else
                 {
@@ -1103,7 +1108,8 @@ namespace SiliconStudio.Xenko.Graphics
                     }
 
                     // Need to flush (part of current command list)
-                    if (resource.StagingFenceValue == GraphicsDevice.NextFenceValue)
+                    throw new NotImplementedException(); // Range of fence values
+                    if (resource.StagingFenceValue == fenceValue)
                         FlushInternal(false);
 
                     GraphicsDevice.WaitForFenceInternal(resource.StagingFenceValue);
@@ -1147,7 +1153,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (descriptorPool != SharpVulkan.DescriptorPool.Null)
             {
-                GraphicsDevice.descriptorPools.RecycleObject(GraphicsDevice.NextFenceValue, descriptorPool);
+                GraphicsDevice.descriptorPools.RecycleObject(fenceValue, descriptorPool);
                 descriptorPool = SharpVulkan.DescriptorPool.Null;
             }
 

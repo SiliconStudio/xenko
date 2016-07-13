@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Threading;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Rendering
     public sealed class RenderContext : ComponentBase
     {
         private const string SharedImageEffectContextKey = "__SharedRenderContext__";
-        private readonly GraphicsResourceAllocator allocator;
+        private readonly ThreadLocal<RenderDrawContext> threadContext = new ThreadLocal<RenderDrawContext>(true);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContext" /> class.
@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Rendering
             Services = services;
             Effects = services.GetSafeServiceAs<EffectSystem>();
             GraphicsDevice = services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
-            allocator = services.GetServiceAs<GraphicsContext>().Allocator ?? new GraphicsResourceAllocator(GraphicsDevice).DisposeBy(GraphicsDevice);
+            Allocator = services.GetServiceAs<GraphicsContext>().Allocator ?? new GraphicsResourceAllocator(GraphicsDevice).DisposeBy(GraphicsDevice);
         }
 
         /// <summary>
@@ -47,19 +47,19 @@ namespace SiliconStudio.Xenko.Rendering
         /// Gets the content manager.
         /// </summary>
         /// <value>The content manager.</value>
-        public EffectSystem Effects { get; private set; }
+        public EffectSystem Effects { get; }
 
         /// <summary>
         /// Gets the graphics device.
         /// </summary>
         /// <value>The graphics device.</value>
-        public GraphicsDevice GraphicsDevice { get; private set; }
+        public GraphicsDevice GraphicsDevice { get; }
 
         /// <summary>
         /// Gets the services registry.
         /// </summary>
         /// <value>The services registry.</value>
-        public IServiceRegistry Services { get; private set; }
+        public IServiceRegistry Services { get; }
 
         /// <summary>
         /// Gets the time.
@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// Gets the <see cref="GraphicsResource"/> allocator.
         /// </summary>
         /// <value>The allocator.</value>
-        public GraphicsResourceAllocator Allocator => allocator;
+        public GraphicsResourceAllocator Allocator { get; }
 
         /// <summary>
         /// Gets a global shared context.
@@ -80,17 +80,36 @@ namespace SiliconStudio.Xenko.Rendering
         /// <returns>RenderContext.</returns>
         public static RenderContext GetShared(IServiceRegistry services)
         {
-            if (services == null) throw new ArgumentNullException("services");
+            if (services == null) throw new ArgumentNullException(nameof(services));
 
             // Store RenderContext shared into the GraphicsDevice
             var graphicsDevice = services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
             return graphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, SharedImageEffectContextKey, d => new RenderContext(services));
         }
 
+        public RenderDrawContext GetThreadContext()
+        {
+            if (!threadContext.IsValueCreated)
+            {
+                var graphicsContext = new GraphicsContext(new CommandList(GraphicsDevice), new ResourceGroupAllocator(GraphicsDevice));
+                threadContext.Value = new RenderDrawContext(Services, this, graphicsContext);
+            }
+
+            return threadContext.Value;
+        }
+
+        public void Reset()
+        {
+            foreach (var context in threadContext.Values)
+            {
+                context.GraphicsContext.CommandList.Reset();
+                context.GraphicsContext.ResourceGroupAllocator.Reset();
+            }
+        }
+
         internal void OnRendererInitialized(IGraphicsRendererCore obj)
         {
-            Action<IGraphicsRendererCore> handler = RendererInitialized;
-            if (handler != null) handler(obj);
+            RendererInitialized?.Invoke(obj);
         }
     }
 }
