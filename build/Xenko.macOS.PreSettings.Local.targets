@@ -10,6 +10,5 @@
     <!-- Defines the platform used by Xenko - Values are Windows/WindowsStore/WindowsPhone/Android/iOS...etc. -->
     <SiliconStudioPlatform Condition=" '$(SiliconStudioPlatform)' == '' ">macOS</SiliconStudioPlatform>
     <SiliconStudioUI Condition=" '$(SiliconStudioUI)' == '' ">SDL;OPENTK</SiliconStudioUI>
-    <SiliconStudioAudio>SDL</SiliconStudioAudio>
   </PropertyGroup>
 </Project>
