@@ -24,6 +24,17 @@ namespace SiliconStudio.Assets.Serializers
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="AssetCompositeVisitorContext"/> class.
+        /// </summary>
+        /// <param name="assetPartReferenceAttributes">The list of <see cref="AssetPartReferenceAttribute"/> defining the behavior of the visit.</param>
+        public AssetCompositeVisitorContext(IEnumerable<AssetPartReferenceAttribute> assetPartReferenceAttributes)
+        {
+            var attributes = assetPartReferenceAttributes.ToArray();
+            References = attributes;
+            EnteredTypes = new Stack<AssetPartReferenceAttribute>();
+        }
+
+        /// <summary>
         /// Gets the collection of <see cref="AssetPartReferenceAttribute"/> describing part types and their behavior during serialization.
         /// </summary>
         public AssetPartReferenceAttribute[] References { get; }
