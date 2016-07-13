@@ -95,6 +95,11 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Gets the game profiler system
         /// </summary>
+        public DebugDrawingSystem DebugDrawingSystem { get; private set; }
+
+        /// <summary>
+        /// Gets the game profiler system
+        /// </summary>
         public GameProfilingSystem ProfilerSystem { get; private set; }
 
         /// <summary>
@@ -182,6 +187,7 @@ namespace SiliconStudio.Xenko.Engine
             Audio = new AudioSystem(Services);
             gameFontSystem = new GameFontSystem(Services);
             SpriteAnimation = new SpriteAnimationSystem(Services);
+            DebugDrawingSystem = new DebugDrawingSystem(Services);
             ProfilerSystem = new GameProfilingSystem(Services);
 
             Content.Serializer.LowLevelSerializerSelector = ParameterContainerExtensions.DefaultSceneSerializerSelector;
@@ -313,6 +319,7 @@ namespace SiliconStudio.Xenko.Engine
             //Add the sprite animation System
             GameSystems.Add(SpriteAnimation);
 
+            GameSystems.Add(DebugDrawingSystem);
             GameSystems.Add(ProfilerSystem);
 
             EffectSystem = new EffectSystem(Services);
