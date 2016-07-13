@@ -13,9 +13,13 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     [Display("Default")]
     public class MaterialCelShadingCelLightDefault : IMaterialCelShadingCelLightFunction
     {
+        [DataMember(5)]
+        [Display("Black and White")]
+        public bool IsBlackAndWhite { get; set; } = false;
+
         public ShaderSource Generate(MaterialGeneratorContext context)
         {
-            return new ShaderClassSource("MaterialCelShadingCelLightDefault");
+            return new ShaderClassSource("MaterialCelShadingCelLightDefault", IsBlackAndWhite);
         }
 
         public override bool Equals(object obj)

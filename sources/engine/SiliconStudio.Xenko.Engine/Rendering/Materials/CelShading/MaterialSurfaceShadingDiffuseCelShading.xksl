@@ -17,8 +17,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             if (FakeNDotL)
             {
                 // Fake - this gradient depends on light intensity as well
-                streams.lightColorNdotL = 1;
-				celLight = celLightFunction.Compute(streams.lightColorNdotL);
+                streams.lightColorNdotL = celLightFunction.Compute(streams.lightColorNdotL).r;
+				//celLight = celLightFunction.Compute(streams.lightColorNdotL);
             }
             else
             {

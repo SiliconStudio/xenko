@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         {
             // If we haven't specified a texture use the default implementation
             if (RampTexture == null)
-                return new ShaderClassSource("MaterialCelShadingCelLightDefault");
+                return new ShaderClassSource("MaterialCelShadingCelLightDefault", false);
 
             context.Material.Parameters.Set(MaterialCelShadingCelLightRampKeys.CelShaderRamp, RampTexture);
 

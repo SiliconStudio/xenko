@@ -211,6 +211,7 @@
     </None>
     <None Include="Rendering\Materials\CelShading\MaterialSurfaceShadingDiffuseCelShading.xksl" />
     <Compile Include="Rendering\Materials\CelShading\MaterialDiffuseCelShadingModelFeature.cs" />
+    <Compile Include="Rendering\Materials\CelShading\MaterialSpecularCelShadingModelFeature.cs" />
     <Compile Include="Rendering\ResourceResolver.cs" />
     <Compile Include="Rendering\DynamicEffectInstance.cs" />
     <Compile Include="Rendering\EffectSelector.cs" />
@@ -442,6 +443,7 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>LightPoint1.cs</LastGenOutput>
     </None>
+    <None Include="Rendering\Materials\CelShading\MaterialSurfaceShadingSpecularCelShading.xksl" />
     <None Include="Rendering\Materials\ComputeColors\Shaders\ComputeColorThreshold.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorThreshold.cs</LastGenOutput>
