@@ -1238,6 +1238,7 @@ extern "C" {
 		{
 			XAUDIO2_BUFFER buffer_;
 			int length_;
+			bool beginOfStream_;
 			xnAudioSource* source_;
 		};
 
@@ -1396,6 +1397,8 @@ extern "C" {
 			SpinLock bufferLock;
 			xnAudioBuffer** freeBuffers;
 			int freeBuffersMax;
+
+			volatile int samplesAtBegin = 0;
 
 			void __stdcall OnVoiceProcessingPassStart(UINT32 BytesRequired) override;
 
@@ -1615,6 +1618,7 @@ extern "C" {
 
 			if (!source->streamed_)
 			{
+				//note we are ignoring mono/channels because it will be homogeneous
 				auto elapsed = double(state.SamplesPlayed) / double(source->sampleRate_);
 				auto singleBuffer = source->freeBuffers[0];
 				auto length = singleBuffer->buffer_.PlayLength == 0 ? double(singleBuffer->length_) / double(source->sampleRate_) : double(singleBuffer->buffer_.PlayLength) / double(source->sampleRate_);
@@ -1625,7 +1629,7 @@ extern "C" {
 			}
 			
 			// the c# side will process this as we don't have enough info here
-			return double(state.SamplesPlayed) / double(source->sampleRate_);
+			return double(state.SamplesPlayed - source->samplesAtBegin) / double(source->sampleRate_);
 		}
 
 		void xnAudioSourceSetLooping(xnAudioSource* source, npBool looping)
@@ -1705,6 +1709,24 @@ extern "C" {
 
 		void xnAudioSource::OnBufferStart(void* context)
 		{
+			auto buffer = static_cast<xnAudioBuffer*>(context);
+
+			if (buffer->beginOfStream_)
+			{
+				//we need this info to compute position of stream
+				XAUDIO2_VOICE_STATE state;
+				if (xnAudioWindows7Hacks)
+				{
+					auto win7Voice = reinterpret_cast<IXAudio2SourceVoice1*>(buffer->source_->source_voice_);
+					win7Voice->GetState(&state);
+				}
+				else
+				{
+					buffer->source_->source_voice_->GetState(&state, 0);
+				}
+
+				buffer->source_->samplesAtBegin = state.SamplesPlayed;
+			}
 		}
 
 		void xnAudioSource::OnLoopEnd(void* context)
@@ -1716,7 +1738,14 @@ extern "C" {
 			}
 		}
 
-		void xnAudioSourceQueueBuffer(xnAudioSource* source, xnAudioBuffer* buffer, short* pcm, int bufferSize, npBool endOfStream)
+		enum BufferType
+		{
+			None,
+			BeginOfStream,
+			EndOfStream
+		};
+
+		void xnAudioSourceQueueBuffer(xnAudioSource* source, xnAudioBuffer* buffer, short* pcm, int bufferSize, BufferType type)
 		{
 			//used only when streaming, to fill a buffer, often..
 			source->streamed_ = true;
@@ -1725,10 +1754,11 @@ extern "C" {
 			//we also have to avoid looping single buffers
 			buffer->buffer_.LoopCount = 0;
 
-			//flag end of stream if needed
-			buffer->buffer_.Flags = endOfStream ? XAUDIO2_END_OF_STREAM : 0;
-
-			buffer->buffer_.AudioBytes = bufferSize;
+			//flag the stream
+			buffer->buffer_.Flags = type == EndOfStream ? XAUDIO2_END_OF_STREAM : 0;
+			buffer->beginOfStream_ = type == BeginOfStream;
+			
+			buffer->length_ = buffer->buffer_.AudioBytes = bufferSize;
 			memcpy(const_cast<char*>(buffer->buffer_.pAudioData), pcm, bufferSize);
 			source->source_voice_->SubmitSourceBuffer(&buffer->buffer_);
 		}

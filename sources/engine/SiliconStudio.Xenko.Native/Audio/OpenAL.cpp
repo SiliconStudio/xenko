@@ -227,6 +227,9 @@ extern "C" {
 			ALuint source;
 			int sampleRate;
 			bool mono;
+			bool streamed;
+
+			int playedSamples;
 
 			xnAudioListener* listener;
 
@@ -314,13 +317,13 @@ extern "C" {
 		xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener, int sampleRate, int maxNBuffers, npBool mono, npBool spatialized, npBool streamed)
 		{
 			(void)spatialized;
-			(void)streamed;
 			(void)maxNBuffers;
 
 			auto res = new xnAudioSource;
 			res->listener = listener;
 			res->sampleRate = sampleRate;
 			res->mono = mono;
+			res->streamed = streamed;
 
 			ContextState lock(listener->context);
 
@@ -357,9 +360,20 @@ extern "C" {
 		{
 			ContextState lock(source->listener->context);
 
+			//this works fine out of the box for non streamed content
+
+			if (!source->streamed)
+			{
+				ALfloat offset;
+				GetSourceF(source->source, AL_SEC_OFFSET, &offset);
+				return offset;
+			}
+			
+			//in the case of stream
 			ALfloat offset;
 			GetSourceF(source->source, AL_SEC_OFFSET, &offset);
-			return offset;
+			auto elapsed = (double(source->playedSamples) / source->mono ? 1.0f : 2.0f) / double(source->sampleRate);
+			return elapsed + offset;
 		}
 
 		void xnAudioSourceSetPan(xnAudioSource* source, float pan)
@@ -451,9 +465,16 @@ extern "C" {
 			SourceI(source->source, AL_BUFFER, buffer->buffer);
 		}
 
-		void xnAudioSourceQueueBuffer(xnAudioSource* source, xnAudioBuffer* buffer, short* pcm, int bufferSize, bool endOfStream)
+		enum BufferType
 		{
-			(void)endOfStream;
+			None,
+			BeginOfStream,
+			EndOfStream
+		};
+
+		void xnAudioSourceQueueBuffer(xnAudioSource* source, xnAudioBuffer* buffer, short* pcm, int bufferSize, BufferType type)
+		{
+			(void)type;
 
 			ContextState lock(source->listener->context);
 
@@ -472,6 +493,8 @@ extern "C" {
 				ALuint buffer;
 				SourceUnqueueBuffers(source->source, 1, &buffer);
 			}
+
+			source->playedSamples = 0;
 		}
 
 		xnAudioBuffer* xnAudioSourceGetFreeBuffer(xnAudioSource* source)
@@ -491,8 +514,14 @@ extern "C" {
 					return NULL;
 				}
 			}
+
 			auto found = source->listener->buffers.find(buffer);
 			if (found == source->listener->buffers.end()) return NULL;
+			
+			ContextState lock(source->listener->context);
+
+			source->playedSamples += found->second->size / sizeof(short);
+			
 			return found->second;
 		}
 

@@ -491,11 +491,18 @@ extern "C" {
 			source->buffersLock.Unlock();
 		}
 
-		void xnAudioSourceQueueBuffer(xnAudioSource* source, xnAudioBuffer* buffer, short* pcm, int bufferSize, bool endOfStream)
+		enum BufferType
+		{
+			None,
+			BeginOfStream,
+			EndOfStream
+		};
+
+		void xnAudioSourceQueueBuffer(xnAudioSource* source, xnAudioBuffer* buffer, short* pcm, int bufferSize, BufferType type)
 		{
 			if (!source->streamed) return;
 
-			buffer->endOfStream = endOfStream;
+			buffer->endOfStream = type == EndOfStream;
 			buffer->dataLength = bufferSize;
 			memcpy(buffer->dataPtr, pcm, bufferSize);
 
