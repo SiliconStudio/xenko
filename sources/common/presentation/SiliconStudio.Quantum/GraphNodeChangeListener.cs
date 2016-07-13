@@ -18,7 +18,7 @@ namespace SiliconStudio.Quantum
         private readonly IGraphNode rootNode;
         private readonly Func<MemberContent, IGraphNode, bool> shouldRegisterNode;
         protected readonly HashSet<IGraphNode> RegisteredNodes = new HashSet<IGraphNode>();
-        private readonly HashSet<IGraphNode> registeredNodes = new HashSet<IGraphNode>();
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphNodeChangeListener"/> class.
         /// </summary>
@@ -62,7 +62,7 @@ namespace SiliconStudio.Quantum
         protected virtual bool RegisterNode(IGraphNode node)
         {
             // A node can be registered multiple times when it is referenced via multiple paths
-            if (registeredNodes.Add(node))
+            if (RegisteredNodes.Add(node))
             {
                 node.Content.PrepareChange += ContentPrepareChange;
                 node.Content.FinalizeChange += ContentFinalizeChange;
