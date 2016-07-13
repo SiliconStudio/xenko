@@ -30,6 +30,9 @@ namespace SiliconStudio.Xenko.Audio
         private PlayRange playRange;
         private int startPktSampleIndex;
         private int endPktSampleIndex;
+        public bool begin;
+
+        private double startingOffset = 0.0;
 
         private Celt decoder;
 
@@ -104,6 +107,7 @@ restart:
                             source.startPktSampleIndex = 0;
                             source.endPktSampleIndex = 0;
                             source.endPacketIndex = source.numberOfPackets;
+                            source.begin = true;
 
                             //flush buffers, remove any queued buffer
                             if (source.flushAndRestart)
@@ -181,7 +185,8 @@ restart:
                         
                         var finalPtr = new IntPtr(bufferPtr + source.startPktSampleIndex);
                         var finalSize = (offset - source.startPktSampleIndex - source.endPktSampleIndex) * sizeof(short);
-                        source.FillBuffer(finalPtr, finalSize, source.ended);
+                        source.FillBuffer(finalPtr, finalSize, source.ended ? AudioLayer.BufferType.EndOfStream : source.begin ? AudioLayer.BufferType.BeginOfStream : AudioLayer.BufferType.None);
+                        source.begin = false;
                     }
                     else
                     {
@@ -222,6 +227,7 @@ restart:
         public override void Restart()
         {
             flushAndRestart = true;
+            startingOffset = AudioLayer.SourceGetPosition(SoundInstance.Source);
         }
 
         /// <summary>
@@ -237,6 +243,7 @@ restart:
         {
             playRange = range;
             flushAndRestart = true; //flag for restart, flush etc
+            startingOffset = AudioLayer.SourceGetPosition(SoundInstance.Source);
         }
 
         public override TimeSpan Position
@@ -248,7 +255,7 @@ restart:
                 var length = 0.0;
                 if (range.Start == TimeSpan.Zero && range.Length == TimeSpan.Zero)
                 {
-                    length = ((double)channels * (double)numberOfPackets * (double)SamplesPerFrame) / (double)sampleRate;
+                    length = ((double)numberOfPackets * (double)SamplesPerFrame) / (double)sampleRate;
                 }
                 else
                 {
@@ -263,7 +270,7 @@ restart:
                 var position = elapsed / length;
                 var repeats = Math.Floor(position);
                 position = (position - repeats) * length;
-                return TimeSpan.FromSeconds(position);
+                return TimeSpan.FromSeconds(position - startingOffset);
             }
         }
 

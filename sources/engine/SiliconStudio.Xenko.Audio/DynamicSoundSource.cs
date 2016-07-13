@@ -73,11 +73,11 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         /// <param name="pcm">The pointer to PCM data</param>
         /// <param name="bufferSize">The full size in bytes of PCM data</param>
-        /// <param name="endOfStream">If this buffer is the last buffer of the stream set to true, if not false</param>
-        protected void FillBuffer(IntPtr pcm, int bufferSize, bool endOfStream)
+        /// <param name="type">If this buffer is the last buffer of the stream set to true, if not false</param>
+        protected void FillBuffer(IntPtr pcm, int bufferSize, AudioLayer.BufferType type)
         {
             var buffer = freeBuffers.Dequeue();
-            AudioLayer.SourceQueueBuffer(SoundInstance.Source, buffer, pcm, bufferSize, endOfStream);
+            AudioLayer.SourceQueueBuffer(SoundInstance.Source, buffer, pcm, bufferSize, type);
             if (readyToPlay) return;
 
             prebufferedCount++;
@@ -92,12 +92,12 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         /// <param name="pcm">The array containing PCM data</param>
         /// <param name="bufferSize">The full size in bytes of PCM data</param>
-        /// <param name="endOfStream">If this buffer is the last buffer of the stream set to true, if not false</param>
-        protected unsafe void FillBuffer(short[] pcm, int bufferSize, bool endOfStream)
+        /// <param name="type">If this buffer is the last buffer of the stream set to true, if not false</param>
+        protected unsafe void FillBuffer(short[] pcm, int bufferSize, AudioLayer.BufferType type)
         {
             var buffer = freeBuffers.Dequeue();
             fixed(short* pcmBuffer = pcm)
-            AudioLayer.SourceQueueBuffer(SoundInstance.Source, buffer, new IntPtr(pcmBuffer), bufferSize, endOfStream);
+            AudioLayer.SourceQueueBuffer(SoundInstance.Source, buffer, new IntPtr(pcmBuffer), bufferSize, type);
             if (readyToPlay) return;
 
             prebufferedCount++;
