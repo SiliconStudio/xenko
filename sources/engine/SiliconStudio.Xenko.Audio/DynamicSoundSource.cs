@@ -127,7 +127,5 @@ namespace SiliconStudio.Xenko.Audio
         public virtual void SetRange(PlayRange range)
         {          
         }
-
-        public virtual TimeSpan Position => TimeSpan.Zero;
     }
 }

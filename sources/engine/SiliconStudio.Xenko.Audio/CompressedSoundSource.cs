@@ -30,9 +30,7 @@ namespace SiliconStudio.Xenko.Audio
         private PlayRange playRange;
         private int startPktSampleIndex;
         private int endPktSampleIndex;
-        public bool begin;
-
-        private double startingOffset = 0.0;
+        private bool begin;
 
         private Celt decoder;
 
@@ -227,7 +225,6 @@ restart:
         public override void Restart()
         {
             flushAndRestart = true;
-            startingOffset = AudioLayer.SourceGetPosition(SoundInstance.Source);
         }
 
         /// <summary>
@@ -243,35 +240,6 @@ restart:
         {
             playRange = range;
             flushAndRestart = true; //flag for restart, flush etc
-            startingOffset = AudioLayer.SourceGetPosition(SoundInstance.Source);
-        }
-
-        public override TimeSpan Position
-        {
-            get
-            {
-                var elapsed = AudioLayer.SourceGetPosition(SoundInstance.Source);
-                var range = playRange;
-                var length = 0.0;
-                if (range.Start == TimeSpan.Zero && range.Length == TimeSpan.Zero)
-                {
-                    length = ((double)numberOfPackets * (double)SamplesPerFrame) / (double)sampleRate;
-                }
-                else
-                {
-                    length = range.Length.TotalSeconds;
-                }
-
-                if (elapsed < length)
-                {
-                    return TimeSpan.FromSeconds(elapsed);
-                }
-
-                var position = elapsed / length;
-                var repeats = Math.Floor(position);
-                position = (position - repeats) * length;
-                return TimeSpan.FromSeconds(position - startingOffset);
-            }
         }
 
         private void Destroy()

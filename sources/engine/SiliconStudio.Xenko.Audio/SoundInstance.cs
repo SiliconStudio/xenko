@@ -367,15 +367,8 @@ namespace SiliconStudio.Xenko.Audio
         {
             get
             {
-                if (soundSource == null)
-                {
-                    var position = AudioLayer.SourceGetPosition(Source);
-                    return TimeSpan.FromSeconds(position);
-                }
-                else
-                {
-                    return soundSource.Position;
-                }
+                var position = AudioLayer.SourceGetPosition(Source);
+                return TimeSpan.FromSeconds(position);
             }
         }
     }

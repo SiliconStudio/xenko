@@ -107,6 +107,10 @@ namespace SiliconStudio.Xenko.Audio
         /// <exception cref="InvalidOperationException">One or several of the sounds asked for play had invalid data (corrupted or unsupported formats).</exception>
         public void Update()
         {
+            if (State != AudioEngineState.Disposed && State != AudioEngineState.Invalidated)
+            {
+                AudioLayer.Update(AudioDevice);
+            }
         }
 
         /// <summary>
