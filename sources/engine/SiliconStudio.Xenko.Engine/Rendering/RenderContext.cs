@@ -31,11 +31,11 @@ namespace SiliconStudio.Xenko.Rendering
         /// <exception cref="System.ArgumentNullException">services</exception>
         internal RenderContext(IServiceRegistry services)
         {
-            if (services == null) throw new ArgumentNullException("services");
+            if (services == null) throw new ArgumentNullException(nameof(services));
             Services = services;
             Effects = services.GetSafeServiceAs<EffectSystem>();
             GraphicsDevice = services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
-            allocator = services.GetServiceAs<GraphicsResourceAllocator>() ?? new GraphicsResourceAllocator(services).DisposeBy(GraphicsDevice);
+            allocator = services.GetServiceAs<GraphicsContext>().Allocator ?? new GraphicsResourceAllocator(GraphicsDevice).DisposeBy(GraphicsDevice);
         }
 
         /// <summary>

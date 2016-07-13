@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Assets
 
             var graphicsDeviceService = new GraphicsDeviceServiceLocal(Services, GraphicsDevice);
             EffectSystem = new EffectSystem(Services);
-            GraphicsContext = new GraphicsContext(Services, new CommandList(GraphicsDevice));
+            GraphicsContext = new GraphicsContext(GraphicsDevice);
             Services.AddService(typeof(GraphicsContext), GraphicsContext);
 
             SceneSystem = new SceneSystem(Services);

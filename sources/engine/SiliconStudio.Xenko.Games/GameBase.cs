@@ -708,7 +708,7 @@ namespace SiliconStudio.Xenko.Games
             // Setup default command list
             if (GraphicsContext == null)
             {
-                GraphicsContext = new GraphicsContext(Services, new CommandList(GraphicsDevice));
+                GraphicsContext = new GraphicsContext(GraphicsDevice);
                 Services.AddService(typeof(GraphicsContext), GraphicsContext);
             }
             else
