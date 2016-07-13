@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Quantum.Contents;
 
@@ -16,6 +17,7 @@ namespace SiliconStudio.Quantum
     {
         private readonly IGraphNode rootNode;
         private readonly Func<MemberContent, IGraphNode, bool> shouldRegisterNode;
+        protected readonly HashSet<IGraphNode> RegisteredNodes = new HashSet<IGraphNode>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphNodeChangeListener"/> class.
@@ -57,20 +59,30 @@ namespace SiliconStudio.Quantum
             visitor.Visit(rootNode);
         }
 
-        protected virtual void RegisterNode(IGraphNode node)
+        protected virtual bool RegisterNode(IGraphNode node)
         {
-            node.Content.PrepareChange += ContentPrepareChange;
-            node.Content.FinalizeChange += ContentFinalizeChange;
-            node.Content.Changing += ContentChanging;
-            node.Content.Changed += ContentChanged;
+            if (RegisteredNodes.Add(node))
+            {
+                node.Content.PrepareChange += ContentPrepareChange;
+                node.Content.FinalizeChange += ContentFinalizeChange;
+                node.Content.Changing += ContentChanging;
+                node.Content.Changed += ContentChanged;
+                return true;
+            }
+            return false;
         }
 
-        protected virtual void UnregisterNode(IGraphNode node)
+        protected virtual bool UnregisterNode(IGraphNode node)
         {
-            node.Content.PrepareChange -= ContentPrepareChange;
-            node.Content.FinalizeChange -= ContentFinalizeChange;
-            node.Content.Changing -= ContentChanging;
-            node.Content.Changed -= ContentChanged;
+            if (RegisteredNodes.Remove(node))
+            {
+                node.Content.PrepareChange -= ContentPrepareChange;
+                node.Content.FinalizeChange -= ContentFinalizeChange;
+                node.Content.Changing -= ContentChanging;
+                node.Content.Changed -= ContentChanged;
+                return true;
+            }
+            return false;
         }
 
         private void RegisterAllNodes()
