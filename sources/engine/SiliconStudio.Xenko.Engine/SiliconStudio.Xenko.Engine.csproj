@@ -206,7 +206,9 @@
     <Compile Include="Rendering\Materials\CelShading\MaterialCelShadingMapFeature.cs" />
     <None Include="Rendering\Materials\CelShading\MaterialCelShadingCelLightDefault.xksl" />
     <None Include="Rendering\Materials\CelShading\IMaterialCelShadingCelLightFunction.xksl" />
-    <None Include="Rendering\Materials\CelShading\MaterialCelShadingCelLightRamp.xksl" />
+    <None Include="Rendering\Materials\CelShading\MaterialCelShadingCelLightRamp.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+    </None>
     <None Include="Rendering\Materials\CelShading\MaterialSurfaceShadingDiffuseCelShading.xksl" />
     <Compile Include="Rendering\Materials\CelShading\MaterialDiffuseCelShadingModelFeature.cs" />
     <Compile Include="Rendering\ResourceResolver.cs" />

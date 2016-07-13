@@ -57,7 +57,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         /// Gets or sets the cel ramp map.
         /// </summary>
         /// <value>The cel ramp map.</value>
-        [Display("Cel Ramp Map")]
+        [Display("Ramp Map")]
         [NotNull]
         [DataMemberCustomSerializer]
         public IComputeColor CelRampMap { get; set; }

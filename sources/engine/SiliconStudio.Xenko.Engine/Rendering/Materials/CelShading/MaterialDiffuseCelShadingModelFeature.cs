@@ -24,9 +24,12 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             }
         }
 
-
         [DataMemberIgnore]
         internal bool IsEnergyConservative { get; set; }
+
+        [DataMember(5)]
+        [Display("Modify N.L")]
+        public bool FakeNDotL { get; set; } = false;
 
         [DataMember(10)]
         [Display("Ramp Function")]
@@ -36,13 +39,12 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         public override void VisitFeature(MaterialGeneratorContext context)
         {
             var shaderSource = new ShaderMixinSource();
-            shaderSource.Mixins.Add(new ShaderClassSource("MaterialSurfaceShadingDiffuseCelShading", IsEnergyConservative));
+            shaderSource.Mixins.Add(new ShaderClassSource("MaterialSurfaceShadingDiffuseCelShading", IsEnergyConservative, FakeNDotL));
             if (RampFunction != null)
             {
                 shaderSource.AddComposition("celLightFunction", RampFunction.Generate(context));
             }
 
-            //var shaderSource = new ShaderClassSource("MaterialSurfaceShadingDiffuseCelShading", IsEnergyConservative);
             context.AddShading(this, shaderSource);
         }
 

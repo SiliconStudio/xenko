@@ -7,9 +7,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     {
         override float Compute(float lightIn)
         {
-            // lightIn *= 0.5; // Factor
-
-            // Cel Ramp
             if (lightIn > 0.8)
                 return 1;
 

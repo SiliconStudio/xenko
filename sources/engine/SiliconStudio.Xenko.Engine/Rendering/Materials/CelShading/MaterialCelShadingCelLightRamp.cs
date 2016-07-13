@@ -3,7 +3,6 @@
 
 using System.ComponentModel;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Shaders;
@@ -30,12 +29,13 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         public ShaderSource Generate(MaterialGeneratorContext context) // (ShaderGeneratorContext context, MaterialComputeColorKeys baseKeys)
         {
+            // If we haven't specified a texture use the default implementation
             if (RampTexture == null)
                 return new ShaderClassSource("MaterialCelShadingCelLightDefault");
 
-            var textureKey = context.GetTextureKey(RampTexture, MaterialKeys.DiffuseMap, Color.White);
+            context.Material.Parameters.Set(MaterialCelShadingCelLightRampKeys.CelShaderRamp, RampTexture);
 
-            return new ShaderClassSource("MaterialCelShadingCelLightRamp", textureKey);
+            return new ShaderClassSource("MaterialCelShadingCelLightRamp");
         }
 
         public override bool Equals(object obj)
@@ -49,5 +49,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         {
             return typeof(MaterialCelShadingCelLightRamp).GetHashCode();
         }
+    }
+
+    public static partial class MaterialCelShadingCelLightRampKeys
+    {
+        public static readonly ObjectParameterKey<Texture> CelShaderRamp    = ParameterKeys.NewObject<Texture>();
+        public static readonly ValueParameterKey<Color4> CelShaderRampValue = ParameterKeys.NewValue<Color4>();
     }
 }

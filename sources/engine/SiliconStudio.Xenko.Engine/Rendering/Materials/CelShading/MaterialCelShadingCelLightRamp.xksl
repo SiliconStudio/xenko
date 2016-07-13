@@ -3,18 +3,18 @@
 
 namespace SiliconStudio.Xenko.Rendering.Materials
 {
-	// TODO inherit Texturing
-
-    class MaterialCelShadingCelLightRamp<LinkType TTextureName> : 
-												IMaterialCelShadingCelLightFunction,
-												Texturing,
-												DynamicTexture<TTextureName, PerMaterial>
+    class MaterialCelShadingCelLightRamp
+	 :  IMaterialCelShadingCelLightFunction, Texturing
     {
+        rgroup PerMaterial
+        {
+			stage Texture2D CelShaderRamp;
+        }
+
         override float Compute(float lightIn)
         {
             float2 texCoord = float2(clamp(lightIn, 0, 1), 0.5);
-
-			return Texture.Sample(LinearSampler, texCoord);
+			return CelShaderRamp.SampleLevel(LinearSampler, texCoord, 0);
         }
     };
 }

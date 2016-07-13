@@ -5,19 +5,25 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// <summary>
     /// Performs a Cel shading
     /// </summary>
-    class MaterialSurfaceShadingDiffuseCelShading<bool TIsEnergyConservative> : IMaterialSurfaceShading, Math, MaterialPixelShadingStream, LightStream, ShadowGroup
+    class MaterialSurfaceShadingDiffuseCelShading<bool TIsEnergyConservative, bool FakeNDotL> : IMaterialSurfaceShading, Math, MaterialPixelShadingStream, LightStream, ShadowGroup
     {
         compose IMaterialCelShadingCelLightFunction celLightFunction;
-
-        // TODO USE LAMBERT DIRECTLY: Maybe we can expose this when we support different models
-        // MaterialSurfaceShadingDiffuseLambert lambertModel;
 
         override float3 ComputeDirectLightContribution()
         {
             float oldLightColorNdotL = streams.lightColorNdotL;
-            streams.lightColorNdotL = celLightFunction.Compute(streams.lightColorNdotL);
-            //float celNdotL = celLightFunction.Compute(streams.NdotL);
-            //streams.lightColorNdotL = streams.lightColor * streams.shadowColor * celNdotL * streams.lightDirectAmbientOcclusion;
+
+            if (FakeNDotL)
+            {
+                // Fake - this gradient depends on light intensity as well
+                streams.lightColorNdotL = celLightFunction.Compute(streams.lightColorNdotL);
+            }
+            else
+            {
+				// Correct
+				float celNdotL = celLightFunction.Compute(streams.NdotL);
+				streams.lightColorNdotL = streams.lightColor * streams.shadowColor * celNdotL * streams.lightDirectAmbientOcclusion;                
+            }
 
             var diffuseColor = streams.matDiffuseVisible;
             if (TIsEnergyConservative)
