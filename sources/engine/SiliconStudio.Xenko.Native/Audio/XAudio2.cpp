@@ -1348,6 +1348,10 @@ extern "C" {
 			delete device;
 		}
 
+		void xnAudioUpdate(xnAudioDevice* device)
+		{
+		}
+
 		void xnAudioSetMasterVolume(xnAudioDevice* device, float volume)
 		{
 			device->mastering_voice_->SetVolume(volume);
@@ -1628,7 +1632,7 @@ extern "C" {
 				return position;
 			}
 			
-			// the c# side will process this as we don't have enough info here
+			//things work different for streamed sources, but anyway we simply subtract the snapshotted samples at begin of the stream ( could be the begin of the loop )
 			return double(state.SamplesPlayed - source->samplesAtBegin) / double(source->sampleRate_);
 		}
 

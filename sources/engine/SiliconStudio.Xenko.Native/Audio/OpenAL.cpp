@@ -7,8 +7,9 @@
 #include "../../../../deps/NativePath/NativeDynamicLinking.h"
 #include "../../../../deps/NativePath/NativeMemory.h"
 #include "../../../../deps/NativePath/NativeThreading.h"
-#include "../../../../deps/NativePath/TINYSTL/unordered_map.h"
 #include "../../../../deps/NativePath/TINYSTL/unordered_set.h"
+#include "../../../../deps/NativePath/TINYSTL/unordered_map.h"
+#include "../../../../deps/NativePath/TINYSTL/vector.h"
 
 
 #define HAVE_STDINT_H
@@ -212,13 +213,17 @@ extern "C" {
 			short* pcm = NULL;
 			int size;
 			int sampleRate;
+			bool beginOfStream = false;
 			ALuint buffer;
 		};
+
+		struct xnAudioSource;
 
 		struct xnAudioListener
 		{
 			xnAudioDevice* device;
 			ALCcontext* context;
+			tinystl::unordered_set<xnAudioSource*> sources;
 			tinystl::unordered_map<ALuint, xnAudioBuffer*> buffers;
 		};
 
@@ -229,11 +234,15 @@ extern "C" {
 			bool mono;
 			bool streamed;
 
-			int playedSamples;
+			volatile long dequeuedTime = 0.0;
+			long playedSamples = 0;
+			long playedSamplesStarting = 0;
 
 			xnAudioListener* listener;
 
 			xnAudioBuffer* singleBuffer;
+
+			tinystl::vector<xnAudioBuffer*> freeBuffers;
 		};
 
 		xnAudioDevice* xnAudioCreate(const char* deviceName)
@@ -254,6 +263,57 @@ extern "C" {
 			CloseDevice(device->device);
 			ALC_ERROR(device->device);
 			delete device;
+		}
+
+		union AtomicDouble
+		{
+			double d;
+			long l;
+		};
+
+		void xnAudioUpdate(xnAudioDevice* device)
+		{
+			device->deviceLock.Lock();
+
+			for (auto listener : device->listeners)
+			{
+				ContextState lock(listener->context);
+
+				for(auto source : listener->sources)
+				{
+					if (source->streamed)
+					{
+						auto processed = 0;
+						GetSourceI(source->source, AL_BUFFERS_PROCESSED, &processed);
+						while (processed--)
+						{
+							ALfloat preDTime;
+							GetSourceF(source->source, AL_SEC_OFFSET, &preDTime);
+
+							ALuint buffer;
+							SourceUnqueueBuffers(source->source, 1, &buffer);
+							xnAudioBuffer* bufferPtr = source->listener->buffers[buffer];
+
+							ALfloat postDTime;
+							GetSourceF(source->source, AL_SEC_OFFSET, &postDTime);
+
+							AtomicDouble ad;
+							ad.d = preDTime - postDTime;
+
+							__sync_add_and_fetch_8(&source->dequeuedTime, ad.l);
+
+//							if (bufferPtr->beginOfStream)
+//							{
+//								source->playedSamplesStarting = source->playedSamples;
+//							}
+							
+							source->freeBuffers.push_back(bufferPtr);
+						}
+					}
+				}
+			}
+			
+			device->deviceLock.Unlock();
 		}
 
 		xnAudioListener* xnAudioListenerCreate(xnAudioDevice* device)
@@ -342,6 +402,8 @@ extern "C" {
 				//make sure we are able to pan
 				SourceI(res->source, AL_SOURCE_RELATIVE, AL_TRUE);
 			}
+
+			listener->sources.insert(res);
 			
 			return res;
 		}
@@ -353,6 +415,8 @@ extern "C" {
 			DeleteSources(1, &source->source);
 			AL_ERROR;
 
+			source->listener->sources.erase(source);
+
 			delete source;
 		}
 
@@ -362,18 +426,18 @@ extern "C" {
 
 			//this works fine out of the box for non streamed content
 
-			if (!source->streamed)
-			{
-				ALfloat offset;
-				GetSourceF(source->source, AL_SEC_OFFSET, &offset);
-				return offset;
-			}
-			
-			//in the case of stream
 			ALfloat offset;
 			GetSourceF(source->source, AL_SEC_OFFSET, &offset);
-			auto elapsed = (double(source->playedSamples) / source->mono ? 1.0f : 2.0f) / double(source->sampleRate);
-			return elapsed + offset;
+
+			if (!source->streamed)
+			{				
+				return offset;
+			}
+
+			AtomicDouble ad;
+			ad.l = __sync_add_and_fetch_8(&source->dequeuedTime, 0);
+
+			return offset + ad.d;
 		}
 
 		void xnAudioSourceSetPan(xnAudioSource* source, float pan)
@@ -398,20 +462,21 @@ extern "C" {
 
 		void xnAudioSourceSetRange(xnAudioSource* source, double startTime, double stopTime)
 		{
+			if (source->streamed) return;
+
 			ContextState lock(source->listener->context);
+
+			ALint playing;
+			GetSourceI(source->source, AL_SOURCE_STATE, &playing);
+			if (playing == AL_PLAYING) SourceStop(source->source);
+			SourceI(source->source, AL_BUFFER, 0);
 
 			//OpenAL is kinda bad and offers only starting offset...
 			//As result we need to rewrite the buffer
 			if(startTime == 0 && stopTime == 0)
 			{
-				//cancel the offsetting
-				ALint playing;
-				GetSourceI(source->source, AL_SOURCE_STATE, &playing);
-				if (playing == AL_PLAYING) SourceStop(source->source);
-				SourceI(source->source, AL_BUFFER, 0);
-				BufferData(source->singleBuffer->buffer, source->mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, source->singleBuffer->pcm, source->singleBuffer->size, source->singleBuffer->sampleRate);
-				SourceI(source->source, AL_BUFFER, source->singleBuffer->buffer);
-				if (playing == AL_PLAYING) SourcePlay(source->source);
+				//cancel the offsetting							
+				BufferData(source->singleBuffer->buffer, source->mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, source->singleBuffer->pcm, source->singleBuffer->size, source->singleBuffer->sampleRate);						
 			}
 			else
 			{
@@ -433,14 +498,11 @@ extern "C" {
 
 				auto offsettedBuffer = source->singleBuffer->pcm + sampleStart;
 
-				ALint playing;
-				GetSourceI(source->source, AL_SOURCE_STATE, &playing);
-				if (playing == AL_PLAYING) SourceStop(source->source);
-				SourceI(source->source, AL_BUFFER, 0);
 				BufferData(source->singleBuffer->buffer, source->mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, (void*)offsettedBuffer, len * sizeof(short), source->singleBuffer->sampleRate);
-				SourceI(source->source, AL_BUFFER, source->singleBuffer->buffer);
-				if (playing == AL_PLAYING) SourcePlay(source->source);
 			}
+
+			SourceI(source->source, AL_BUFFER, source->singleBuffer->buffer);
+			if (playing == AL_PLAYING) SourcePlay(source->source);
 		}
 
 		void xnAudioSourceSetGain(xnAudioSource* source, float gain)
@@ -474,10 +536,10 @@ extern "C" {
 
 		void xnAudioSourceQueueBuffer(xnAudioSource* source, xnAudioBuffer* buffer, short* pcm, int bufferSize, BufferType type)
 		{
-			(void)type;
-
 			ContextState lock(source->listener->context);
 
+			buffer->beginOfStream = type == BeginOfStream;
+			buffer->size = bufferSize;
 			BufferData(buffer->buffer, source->mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, pcm, bufferSize, source->sampleRate);
 			SourceQueueBuffers(source->source, 1, &buffer->buffer);
 			source->listener->buffers[buffer->buffer] = buffer;
@@ -486,6 +548,7 @@ extern "C" {
 		void xnAudioSourceFlushBuffers(xnAudioSource* source)
 		{
 			ContextState lock(source->listener->context);
+
 			ALint queued = 0;
 			GetSourceI(source->source, AL_BUFFERS_QUEUED, &queued);
 			while (queued--)
@@ -494,35 +557,21 @@ extern "C" {
 				SourceUnqueueBuffers(source->source, 1, &buffer);
 			}
 
-			source->playedSamples = 0;
+//			source->playedSamples = 0;
 		}
 
 		xnAudioBuffer* xnAudioSourceGetFreeBuffer(xnAudioSource* source)
 		{
-			ALuint buffer;
-			//Context Lock
-			{				
-				ContextState lock(source->listener->context);
-				ALint processed = 0;
-				GetSourceI(source->source, AL_BUFFERS_PROCESSED, &processed);
-				if (processed > 0)
-				{				
-					SourceUnqueueBuffers(source->source, 1, &buffer);					
-				}
-				else
-				{
-					return NULL;
-				}
-			}
-
-			auto found = source->listener->buffers.find(buffer);
-			if (found == source->listener->buffers.end()) return NULL;
-			
 			ContextState lock(source->listener->context);
 
-			source->playedSamples += found->second->size / sizeof(short);
-			
-			return found->second;
+			if(source->freeBuffers.size() > 0)
+			{
+				auto buffer = source->freeBuffers.back();
+				source->freeBuffers.pop_back();
+				return buffer;
+			}
+
+			return NULL;
 		}
 
 		void xnAudioSourcePlay(xnAudioSource* source)

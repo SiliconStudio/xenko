@@ -193,6 +193,10 @@ extern "C" {
 			delete device;
 		}
 
+		void xnAudioUpdate(xnAudioDevice* device)
+		{
+		}
+
 		void xnAudioSetMasterVolume(xnAudioDevice* device, float volume)
 		{
 			device->masterVolume = volume;
