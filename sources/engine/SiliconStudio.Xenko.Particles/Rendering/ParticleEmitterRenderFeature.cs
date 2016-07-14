@@ -24,6 +24,11 @@ namespace SiliconStudio.Xenko.Particles.Rendering
         public Vector4 ViewFrustum;
     }
 
+    struct RenderAttributesPerNode
+    {
+        public int VertexBufferOffset;
+    }
+
     /// <summary>
     /// Renders <see cref="RenderParticleEmitter"/>.
     /// </summary>
@@ -34,6 +39,8 @@ namespace SiliconStudio.Xenko.Particles.Rendering
         private EffectDescriptorSetReference perMaterialDescriptorSetSlot;
 
         private ConstantBufferOffsetReference perViewCBufferOffset;
+
+        private RenderPropertyKey<RenderAttributesPerNode> renderParticleNodeKey;
 
         // Material alive during this frame
         private readonly Dictionary<ParticleMaterial, ParticleMaterialInfo> allMaterialInfos = new Dictionary<ParticleMaterial, ParticleMaterialInfo>();
@@ -56,6 +63,8 @@ namespace SiliconStudio.Xenko.Particles.Rendering
         protected override void InitializeCore()
         {
             base.InitializeCore();
+
+            renderParticleNodeKey = RenderData.CreateRenderKey<RenderAttributesPerNode>();
 
             renderEffectKey = RenderEffectKey;
 
@@ -125,37 +134,54 @@ namespace SiliconStudio.Xenko.Particles.Rendering
         /// <inheritdoc/>
         public override unsafe void Prepare(RenderDrawContext context)
         {
-            // Reset pipeline states if necessary
-            for (int renderNodeIndex = 0; renderNodeIndex < RenderNodes.Count; renderNodeIndex++)
-            {
-                var renderNode = RenderNodes[renderNodeIndex];
-                var renderParticleEmitter = (RenderParticleEmitter)renderNode.RenderObject;
-
-                if (renderParticleEmitter.ParticleEmitter.VertexBuilder.IsBufferDirty)
-                {
-                    // Reset pipeline state, so input layout is regenerated
-                    if (renderNode.RenderEffect != null)
-                        renderNode.RenderEffect.PipelineState = null;
-                }
-            }
-
             foreach (var renderObject in RenderObjects)
             {
                 var renderParticleEmitter = (RenderParticleEmitter)renderObject;
-                renderParticleEmitter.ParticleEmitter.PrepareForDraw();
 
-                var materialInfo = (ParticleMaterialInfo)renderParticleEmitter.ParticleMaterialInfo;
+                renderParticleEmitter.ParticleEmitter.PrepareForDraw(out renderParticleEmitter.HasVertexBufferChanged, 
+                    out renderParticleEmitter.VertexSize, out renderParticleEmitter.VertexCount);
 
                 // Handle vertex element changes
-                if (renderParticleEmitter.ParticleEmitter.VertexBuilder.IsBufferDirty)
+                if (renderParticleEmitter.HasVertexBufferChanged)
                 {
+                    // BUG - there should be 1 buffer per RenderNode, not per RenderObject
                     // Create new buffers
                     renderParticleEmitter.ParticleEmitter.VertexBuilder.RecreateBuffers(RenderSystem.GraphicsDevice);
                 }
 
                 // TODO: ParticleMaterial should set this up
+                var materialInfo = (ParticleMaterialInfo)renderParticleEmitter.ParticleMaterialInfo;
                 materialInfo?.Material.Parameters.Set(ParticleBaseKeys.ColorScale, renderParticleEmitter.RenderParticleSystem.ParticleSystemComponent.Color);
             }
+
+            // Calculate the total vertex buffer size required
+            int totalVertexBufferSize = 0;
+            var renderParticleNodeData = RenderData.GetData(renderParticleNodeKey);
+
+            // Reset pipeline states if necessary
+            for (int renderNodeIndex = 0; renderNodeIndex < RenderNodes.Count; renderNodeIndex++)
+            {
+                var renderNode = RenderNodes[renderNodeIndex];
+
+                var renderParticleEmitter = (RenderParticleEmitter)renderNode.RenderObject;
+
+                if (renderParticleEmitter.HasVertexBufferChanged)
+                {
+                    // Reset pipeline state, so input layout is regenerated
+                    if (renderNode.RenderEffect != null)
+                        renderNode.RenderEffect.PipelineState = null;
+                }
+
+                // Write some attributes back which we will need for rendering later
+                renderParticleNodeData[new RenderNodeReference(renderNodeIndex)] = new RenderAttributesPerNode
+                {
+                    VertexBufferOffset = totalVertexBufferSize,
+                };
+
+                totalVertexBufferSize += (renderParticleEmitter.VertexSize * renderParticleEmitter.VertexCount);
+            }
+
+            // TODO Create/reassign vertex buffer based on totalVertexBufferSize
 
             base.Prepare(context);
 
@@ -256,6 +282,8 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
                 // Generate vertices
                 // TODO: Just just unmap/barrier here
+                // TODO Use the offset in RenderData.GetData(renderParticleNodeKey);
+                // TODO Move to Prepare
                 renderParticleEmitter.ParticleEmitter.BuildVertexBuffer(context.CommandList, ref viewInverse);
 
                 // Get effect

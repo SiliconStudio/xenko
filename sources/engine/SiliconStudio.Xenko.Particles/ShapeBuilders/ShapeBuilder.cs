@@ -43,9 +43,8 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         /// <summary>
         /// Check if ParticleVertexElements should be changed and set HasVertexLayoutChanged = true; if they do
         /// </summary>
-        /// <param name="vertexBuilder">Target vertex buffer stream builder which will be used for the current frame</param>
-        /// <param name="sorter">Enumerator which accesses all particles in a sorted manner</param>
-        public virtual void PrepareForDraw(ParticleVertexBuilder vertexBuilder, ParticleSorter sorter)
+        /// <param name="fieldsList">A container for the <see cref="ParticlePool"/> which can poll if a certain field exists as an attribute</param>
+        public virtual void PrepareVertexLayout(ParticlePoolFieldsList fieldsList)
         {
             // Check if ParticleVertexElements should be changed and set HasVertexLayoutChanged = true; if they do
         }

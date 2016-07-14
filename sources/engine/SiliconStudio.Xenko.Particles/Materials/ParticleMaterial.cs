@@ -1,11 +1,7 @@
 ﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
-using System.Collections.Generic;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Collections;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Particles.Sorters;
@@ -44,9 +40,8 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// <summary>
         /// Prepares the material for drawing the current frame with the current <see cref="ParticleVertexBuilder"/> and <see cref="ParticleSorter"/>
         /// </summary>
-        /// <param name="vertexBuilder">Current <see cref="ParticleVertexBuilder"/></param>
-        /// <param name="sorter">Current <see cref="ParticleSorter"/></param>
-        public virtual void PrepareForDraw(ParticleVertexBuilder vertexBuilder, ParticleSorter sorter)
+        /// <param name="fieldsList">A container for the <see cref="ParticlePool"/> which can poll if a certain field exists as an attribute</param>
+        public virtual void PrepareVertexLayout(ParticlePoolFieldsList fieldsList)
         {
         }
 

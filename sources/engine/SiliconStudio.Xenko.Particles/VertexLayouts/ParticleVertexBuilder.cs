@@ -73,6 +73,11 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         public VertexDeclaration VertexDeclaration { get; private set; }
 
         /// <summary>
+        /// The current number of vertices which have to be drawn
+        /// </summary>
+        public int VertexCount => requiredQuads * verticesPerQuad;
+
+        /// <summary>
         /// The default texture coordinates will default to the first texture coordinates element added to the list in case there are two or more sets
         /// </summary>
         public AttributeDescription DefaultTexCoords { get; private set; } = new AttributeDescription(null);

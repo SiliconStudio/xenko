@@ -77,12 +77,12 @@ namespace SiliconStudio.Xenko.Particles.Materials
         protected bool HasColorField { get; private set; }
 
         /// <inheritdoc />
-        public override void PrepareForDraw(ParticleVertexBuilder vertexBuilder, ParticleSorter sorter)
+        public override void PrepareVertexLayout(ParticlePoolFieldsList fieldsList)
         {
-            base.PrepareForDraw(vertexBuilder, sorter);
+            base.PrepareVertexLayout(fieldsList);
 
             // Probe if the particles have a color field and if we need to support it
-            var colorField = sorter.GetField(ParticleFields.Color);
+            var colorField = fieldsList.GetField(ParticleFields.Color);
             if (colorField.IsValid() != HasColorField)
             {
                 HasVertexLayoutChanged = true;

@@ -920,14 +920,20 @@ namespace SiliconStudio.Xenko.Particles
         /// <summary>
         /// <see cref="PrepareForDraw"/> prepares and updates the Material, ShapeBuilder and VertexBuilder if necessary
         /// </summary>
-        public void PrepareForDraw()
+        public void PrepareForDraw(out bool vertexBufferHasChanged, out int vertexSize, out int vertexCount)
         {
-            Material.PrepareForDraw(VertexBuilder, ParticleSorter);
+            var fieldsList = new ParticlePoolFieldsList(pool);
 
-            ShapeBuilder.PrepareForDraw(VertexBuilder, ParticleSorter);
+            // User changes to materials might cause vertex layout change
+            Material.PrepareVertexLayout(fieldsList);
+
+            // User changes to shape builders might cause vertex layout change
+            ShapeBuilder.PrepareVertexLayout(fieldsList);
+
+            vertexBufferHasChanged = (Material.HasVertexLayoutChanged || ShapeBuilder.VertexLayoutHasChanged || VertexBuilder.IsBufferDirty);
 
             // Update the vertex builder and the vertex layout if needed
-            if (Material.HasVertexLayoutChanged || ShapeBuilder.VertexLayoutHasChanged)
+            if (vertexBufferHasChanged)
             {
                 VertexBuilder.ResetVertexElementList();
 
@@ -938,7 +944,10 @@ namespace SiliconStudio.Xenko.Particles
                 VertexBuilder.UpdateVertexLayout();
             }
 
+            // Recalculate the required vertex count and stride
             VertexBuilder.SetRequiredQuads(ShapeBuilder.QuadsPerParticle, pool.LivingParticles, pool.ParticleCapacity);
+            vertexSize = VertexBuilder.VertexDeclaration.CalculateSize();
+            vertexCount = VertexBuilder.VertexCount;
         }
 
         /// <summary>
