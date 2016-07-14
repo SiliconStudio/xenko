@@ -93,6 +93,7 @@ namespace SiliconStudio.Xenko.Graphics
         internal int version; // queried version
         internal int currentVersion; // glGetVersion
         internal Texture WindowProvidedRenderTexture;
+        internal int WindowProvidedFrameBuffer;
 
         internal bool HasVAO;
 
@@ -117,7 +118,6 @@ namespace SiliconStudio.Xenko.Graphics
         internal bool HasTextureRG;
 #endif
 
-        private int windowProvidedFrameBuffer;
         private bool isFramebufferSRGB;
 
         private int contextBeginCounter = 0;
@@ -438,7 +438,7 @@ namespace SiliconStudio.Xenko.Graphics
         internal int FindOrCreateFBO(GraphicsResourceBase graphicsResource, int subresource)
         {
             if (graphicsResource == WindowProvidedRenderTexture)
-                return windowProvidedFrameBuffer;
+                return WindowProvidedFrameBuffer;
 
             var texture = graphicsResource as Texture;
             if (texture != null)
@@ -485,7 +485,7 @@ namespace SiliconStudio.Xenko.Graphics
                 }
                 if (depthStencilBuffer.Texture == null && (isProvidedRenderTarget || fboKey.RenderTargetCount == 0)) // device provided framebuffer
                 {
-                    return windowProvidedFrameBuffer;
+                    return WindowProvidedFrameBuffer;
                 }
 
                 if (existingFBOs.TryGetValue(fboKey, out framebufferId))
@@ -914,7 +914,7 @@ namespace SiliconStudio.Xenko.Graphics
             lock (existingFBOs)
             {
                 existingFBOs.Clear();
-                existingFBOs[new FBOKey(null, new FBOTexture[] { WindowProvidedRenderTexture }, 1)] = windowProvidedFrameBuffer;
+                existingFBOs[new FBOKey(null, new FBOTexture[] { WindowProvidedRenderTexture }, 1)] = WindowProvidedFrameBuffer;
             }
 
             //// Clear bound states
@@ -947,7 +947,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             // TODO: Provide unified ClientSize from GameWindow
 #if SILICONSTUDIO_PLATFORM_IOS
-            windowProvidedFrameBuffer = gameWindow.Framebuffer;
+            WindowProvidedFrameBuffer = gameWindow.Framebuffer;
 
             // Scale for Retina display
             var width = (int)(gameWindow.Size.Width * gameWindow.ContentScaleFactor);
@@ -960,13 +960,13 @@ namespace SiliconStudio.Xenko.Graphics
             var width = gameWindow.Size.Width;
             var height = gameWindow.Size.Height;
 #endif
-            windowProvidedFrameBuffer = 0;
+            WindowProvidedFrameBuffer = 0;
 #endif
 
             // TODO OPENGL detect if created framebuffer is sRGB or not (note: improperly reported by FramebufferParameterName.FramebufferAttachmentColorEncoding)
             isFramebufferSRGB = true;
 
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, windowProvidedFrameBuffer);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, WindowProvidedFrameBuffer);
 
             // TODO: iOS (and possibly other platforms): get real render buffer ID for color/depth?
             WindowProvidedRenderTexture = Texture.New2D(this, width, height, 1,
@@ -975,7 +975,7 @@ namespace SiliconStudio.Xenko.Graphics
             WindowProvidedRenderTexture.Reload = graphicsResource => { };
 
             // Extract FBO render target
-            if (windowProvidedFrameBuffer != 0)
+            if (WindowProvidedFrameBuffer != 0)
             {
                 int framebufferAttachmentType;
                 GL.GetFramebufferAttachmentParameter(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, FramebufferParameterName.FramebufferAttachmentObjectType, out framebufferAttachmentType);
@@ -987,7 +987,7 @@ namespace SiliconStudio.Xenko.Graphics
                 }
             }
 
-            existingFBOs[new FBOKey(null, new FBOTexture[] { WindowProvidedRenderTexture }, 1)] = windowProvidedFrameBuffer;
+            existingFBOs[new FBOKey(null, new FBOTexture[] { WindowProvidedRenderTexture }, 1)] = WindowProvidedFrameBuffer;
         }
 
         private class SwapChainBackend
