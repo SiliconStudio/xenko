@@ -28,15 +28,14 @@ namespace SiliconStudio.Xenko.Rendering
         /// Initializes a new instance of the <see cref="RenderContext" /> class.
         /// </summary>
         /// <param name="services">The services.</param>
-        /// <param name="allocator">The allocator.</param>
         /// <exception cref="System.ArgumentNullException">services</exception>
-        internal RenderContext(IServiceRegistry services, GraphicsResourceAllocator allocator = null)
+        internal RenderContext(IServiceRegistry services)
         {
-            if (services == null) throw new ArgumentNullException("services");
+            if (services == null) throw new ArgumentNullException(nameof(services));
             Services = services;
             Effects = services.GetSafeServiceAs<EffectSystem>();
-            this.allocator = allocator ?? new GraphicsResourceAllocator(Services).DisposeBy(this);
             GraphicsDevice = services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
+            allocator = services.GetServiceAs<GraphicsContext>().Allocator ?? new GraphicsResourceAllocator(GraphicsDevice).DisposeBy(GraphicsDevice);
         }
 
         /// <summary>

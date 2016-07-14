@@ -1059,94 +1059,57 @@ namespace SiliconStudio.Xenko.Graphics
                 }
             }
 
-            if (mapMode == MapMode.WriteDiscard || mapMode == MapMode.WriteNoOverwrite)
+            if (mapMode == MapMode.Read || mapMode == MapMode.ReadWrite || mapMode == MapMode.Write)
             {
-                SharpVulkan.Buffer uploadResource;
-                int uploadOffset;
-                var uploadMemory = GraphicsDevice.AllocateUploadBuffer(lengthInBytes, out uploadResource, out uploadOffset);
-
-                return new MappedResource(resource, subResourceIndex, new DataBox(uploadMemory, 0, 0), offsetInBytes, lengthInBytes)
-                {
-                    UploadResource = uploadResource,
-                    UploadOffset = uploadOffset,
-                };
-            }
-            else if (mapMode == MapMode.Read || mapMode == MapMode.ReadWrite || mapMode == MapMode.Write)
-            {
-                // Is non-staging ever possible?
+                // Is non-staging ever possible for Read/Write?
                 if (usage != GraphicsResourceUsage.Staging)
                     throw new InvalidOperationException();
-
-                if (mapMode != MapMode.WriteNoOverwrite)
-                {
-                    // Need to wait?
-                    if (!GraphicsDevice.IsFenceCompleteInternal(resource.StagingFenceValue))
-                    {
-                        if (doNotWait)
-                        {
-                            return new MappedResource(resource, subResourceIndex, new DataBox(IntPtr.Zero, 0, 0));
-                        }
-
-                        // Need to flush (part of current command list)
-                        if (resource.StagingFenceValue == GraphicsDevice.NextFenceValue)
-                            FlushInternal(false);
-
-                        GraphicsDevice.WaitForFenceInternal(resource.StagingFenceValue);
-                    }
-                }
-
-                if (texture != null)
-                {
-                    var mipLevel = subResourceIndex % texture.MipLevels;
-                    var arraySlice = subResourceIndex / texture.MipLevels;
-
-                    for (int i = 0; i < texture.MipLevels; i++)
-                    {
-                        var slices = i < mipLevel ? arraySlice + 1 : arraySlice;
-                        var mipmap = texture.GetMipMapDescription(i);
-                        offsetInBytes += mipmap.DepthStride * mipmap.Depth * arraySlice;
-                    }
-                }
-
-                var mappedMemory = GraphicsDevice.NativeDevice.MapMemory(resource.NativeMemory, (ulong)offsetInBytes, (ulong)lengthInBytes, MemoryMapFlags.None);
-                return new MappedResource(resource, subResourceIndex, new DataBox(mappedMemory, rowPitch, 0), offsetInBytes, lengthInBytes);
             }
-            else
+
+            if (mapMode == MapMode.WriteDiscard)
             {
-                throw new NotImplementedException();
+                throw new InvalidOperationException("Can't use WriteDiscard on Graphics API that doesn't support renaming");
             }
+
+            if (mapMode != MapMode.WriteNoOverwrite)
+            {
+                // Need to wait?
+                if (!GraphicsDevice.IsFenceCompleteInternal(resource.StagingFenceValue))
+                {
+                    if (doNotWait)
+                    {
+                        return new MappedResource(resource, subResourceIndex, new DataBox(IntPtr.Zero, 0, 0));
+                    }
+
+                    // Need to flush (part of current command list)
+                    if (resource.StagingFenceValue == GraphicsDevice.NextFenceValue)
+                        FlushInternal(false);
+
+                    GraphicsDevice.WaitForFenceInternal(resource.StagingFenceValue);
+                }
+            }
+
+            if (texture != null)
+            {
+                var mipLevel = subResourceIndex % texture.MipLevels;
+                var arraySlice = subResourceIndex / texture.MipLevels;
+
+                for (int i = 0; i < texture.MipLevels; i++)
+                {
+                    var slices = i < mipLevel ? arraySlice + 1 : arraySlice;
+                    var mipmap = texture.GetMipMapDescription(i);
+                    offsetInBytes += mipmap.DepthStride * mipmap.Depth * arraySlice;
+                }
+            }
+
+            var mappedMemory = GraphicsDevice.NativeDevice.MapMemory(resource.NativeMemory, (ulong)offsetInBytes, (ulong)lengthInBytes, MemoryMapFlags.None);
+            return new MappedResource(resource, subResourceIndex, new DataBox(mappedMemory, rowPitch, 0), offsetInBytes, lengthInBytes);
         }
 
         // TODO GRAPHICS REFACTOR what should we do with this?
-        public unsafe void UnmapSubresource(MappedResource unmapped)
+        public void UnmapSubresource(MappedResource unmapped)
         {
-            if (unmapped.UploadResource != SharpVulkan.Buffer.Null)
-            {
-                // Copy back
-                var buffer = unmapped.Resource as Buffer;
-                if (buffer != null)
-                {
-                    CleanupRenderPass();
-
-                    var memoryBarrier = new BufferMemoryBarrier(buffer.NativeBuffer, buffer.NativeAccessMask, AccessFlags.TransferWrite, (ulong)unmapped.OffsetInBytes, (ulong)unmapped.SizeInBytes);
-                    NativeCommandBuffer.PipelineBarrier(buffer.NativePipelineStageMask, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, 1, &memoryBarrier, 0, null);
-
-                    var bufferCopy = new BufferCopy
-                    {
-                        DestinationOffset = (uint)unmapped.OffsetInBytes,
-                        SourceOffset = (uint)unmapped.UploadOffset,
-                        Size = (uint)unmapped.SizeInBytes
-                    };
-                    NativeCommandBuffer.CopyBuffer(unmapped.UploadResource, buffer.NativeBuffer, 1, &bufferCopy);
-
-                    memoryBarrier = new BufferMemoryBarrier(buffer.NativeBuffer, AccessFlags.TransferWrite, buffer.NativeAccessMask, (ulong)unmapped.OffsetInBytes, (ulong)unmapped.SizeInBytes);
-                    NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.Transfer, buffer.NativePipelineStageMask, DependencyFlags.None, 0, null, 1, &memoryBarrier, 0, null);
-                }
-            }
-            else
-            {
-                GraphicsDevice.NativeDevice.UnmapMemory(unmapped.Resource.NativeMemory);
-            }
+            GraphicsDevice.NativeDevice.UnmapMemory(unmapped.Resource.NativeMemory);
         }
 
         /// <inheritdoc/>

@@ -143,10 +143,18 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             // Create buffer
-            var isStaging = bufferDescription.Usage == GraphicsResourceUsage.Staging;
             NativeBuffer = GraphicsDevice.NativeDevice.CreateBuffer(ref createInfo);
 
-            var memoryProperties = isStaging ? MemoryPropertyFlags.HostVisible | MemoryPropertyFlags.HostCoherent : MemoryPropertyFlags.DeviceLocal;
+            // Allocate memory
+            var memoryProperties = MemoryPropertyFlags.DeviceLocal;
+            if (bufferDescription.Usage == GraphicsResourceUsage.Staging)
+            {
+                throw new NotImplementedException();
+            }
+            else if (Usage == GraphicsResourceUsage.Dynamic)
+            {
+                memoryProperties = MemoryPropertyFlags.HostVisible | MemoryPropertyFlags.HostCoherent;
+            }
 
             MemoryRequirements memoryRequirements;
             GraphicsDevice.NativeDevice.GetBufferMemoryRequirements(NativeBuffer, out memoryRequirements);
@@ -158,44 +166,52 @@ namespace SiliconStudio.Xenko.Graphics
                 GraphicsDevice.NativeDevice.BindBufferMemory(NativeBuffer, NativeMemory, 0);
             }
 
-            // Begin copy command buffer
-            //var commandBuffer = GraphicsDevice.NativeCopyCommandBuffer;
-            var commandBufferAllocateInfo = new CommandBufferAllocateInfo
+            if (SizeInBytes > 0)
             {
-                StructureType = StructureType.CommandBufferAllocateInfo,
-                CommandPool = GraphicsDevice.NativeCopyCommandPool,
-                CommandBufferCount = 1,
-                Level = CommandBufferLevel.Primary
-            };
-            CommandBuffer commandBuffer;
-            GraphicsDevice.NativeDevice.AllocateCommandBuffers(ref commandBufferAllocateInfo, &commandBuffer);
-            var beginInfo = new CommandBufferBeginInfo { StructureType = StructureType.CommandBufferBeginInfo, Flags = CommandBufferUsageFlags.OneTimeSubmit };
-            commandBuffer.Begin(ref beginInfo);
+                // Begin copy command buffer
+                var commandBufferAllocateInfo = new CommandBufferAllocateInfo
+                {
+                    StructureType = StructureType.CommandBufferAllocateInfo,
+                    CommandPool = GraphicsDevice.NativeCopyCommandPool,
+                    CommandBufferCount = 1,
+                    Level = CommandBufferLevel.Primary
+                };
+                CommandBuffer commandBuffer;
+                GraphicsDevice.NativeDevice.AllocateCommandBuffers(ref commandBufferAllocateInfo, &commandBuffer);
+                var beginInfo = new CommandBufferBeginInfo { StructureType = StructureType.CommandBufferBeginInfo, Flags = CommandBufferUsageFlags.OneTimeSubmit };
+                commandBuffer.Begin(ref beginInfo);
 
-            if (Description.SizeInBytes > 0)
-            {
                 // Copy to upload buffer
                 if (dataPointer != IntPtr.Zero)
                 {
-                    var sizeInBytes = bufferDescription.SizeInBytes;
-                    SharpVulkan.Buffer uploadResource;
-                    int uploadOffset;
-                    var uploadMemory = GraphicsDevice.AllocateUploadBuffer(sizeInBytes, out uploadResource, out uploadOffset);
-
-                    Utilities.CopyMemory(uploadMemory, dataPointer, sizeInBytes);
-
-                    // Barrier
-                    var memoryBarrier = new BufferMemoryBarrier(uploadResource, AccessFlags.HostWrite, AccessFlags.TransferRead, (ulong)uploadOffset, (ulong)sizeInBytes);
-                    commandBuffer.PipelineBarrier(PipelineStageFlags.Host, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, 1, &memoryBarrier, 0, null);
-
-                    // Copy
-                    var bufferCopy = new BufferCopy
+                    if (Usage == GraphicsResourceUsage.Dynamic)
                     {
-                        SourceOffset = (uint)uploadOffset,
-                        DestinationOffset = 0,
-                        Size = (uint)sizeInBytes
-                    };
-                    commandBuffer.CopyBuffer(uploadResource, NativeBuffer, 1, &bufferCopy);
+                        var uploadMemory = GraphicsDevice.NativeDevice.MapMemory(NativeMemory, 0, (ulong)SizeInBytes, MemoryMapFlags.None);
+                        Utilities.CopyMemory(uploadMemory, dataPointer, SizeInBytes);
+                        GraphicsDevice.NativeDevice.UnmapMemory(NativeMemory);
+                    }
+                    else
+                    {
+                        var sizeInBytes = bufferDescription.SizeInBytes;
+                        SharpVulkan.Buffer uploadResource;
+                        int uploadOffset;
+                        var uploadMemory = GraphicsDevice.AllocateUploadBuffer(sizeInBytes, out uploadResource, out uploadOffset);
+
+                        Utilities.CopyMemory(uploadMemory, dataPointer, sizeInBytes);
+
+                        // Barrier
+                        var memoryBarrier = new BufferMemoryBarrier(uploadResource, AccessFlags.HostWrite, AccessFlags.TransferRead, (ulong)uploadOffset, (ulong)sizeInBytes);
+                        commandBuffer.PipelineBarrier(PipelineStageFlags.Host, PipelineStageFlags.Transfer, DependencyFlags.None, 0, null, 1, &memoryBarrier, 0, null);
+
+                        // Copy
+                        var bufferCopy = new BufferCopy
+                        {
+                            SourceOffset = (uint)uploadOffset,
+                            DestinationOffset = 0,
+                            Size = (uint)sizeInBytes
+                        };
+                        commandBuffer.CopyBuffer(uploadResource, NativeBuffer, 1, &bufferCopy);
+                    }
                 }
                 else
                 {
@@ -221,9 +237,7 @@ namespace SiliconStudio.Xenko.Graphics
                 //commandBuffer.Reset(CommandBufferResetFlags.None);
                 GraphicsDevice.NativeDevice.FreeCommandBuffers(GraphicsDevice.NativeCopyCommandPool, 1, &commandBuffer);
 
-                // Staging resource don't have any views
-                if (!isStaging)
-                    InitializeViews();
+                InitializeViews();
             }
         }
 
@@ -234,7 +248,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             var viewFormat = ViewFormat;
 
-            if (((ViewFlags & BufferFlags.RawBuffer) != 0))
+            if ((ViewFlags & BufferFlags.RawBuffer) != 0)
             {
                 viewFormat = PixelFormat.R32_Typeless;
             }

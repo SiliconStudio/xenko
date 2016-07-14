@@ -6,6 +6,7 @@ namespace SiliconStudio.Xenko.Graphics
     {
         public IntPtr Data;
         public int Size;
+        public int Offset;
 
         public bool Uploaded;
         public Buffer Buffer;

@@ -124,7 +124,7 @@ namespace SiliconStudio.Xenko.Graphics
                         nativeDescription,
                         ResourceStates.GenericRead);
 
-                    GraphicsDevice.TemporaryResources.Enqueue(new KeyValuePair<long, DeviceChild>(GraphicsDevice.NextFenceValue, nativeUploadTexture));
+                    GraphicsDevice.TemporaryResources.Enqueue(new KeyValuePair<long, object>(GraphicsDevice.NextFenceValue, nativeUploadTexture));
 
                     for (int i = 0; i < dataBoxes.Length; ++i)
                     {

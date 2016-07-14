@@ -253,6 +253,11 @@ namespace SiliconStudio.Xenko.Graphics
         internal void OnDestroyed()
         {
         }
+
+        internal void TagResource(GraphicsResourceLink resourceLink)
+        {
+            resourceLink.Resource.DiscardNextMap = true;
+        }
     }
 }
 #endif

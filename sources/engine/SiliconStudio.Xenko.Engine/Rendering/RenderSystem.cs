@@ -242,6 +242,9 @@ namespace SiliconStudio.Xenko.Rendering
                     }
                 }
             }
+
+            // Flush the resources uploaded during Prepare
+            context.ResourceGroupAllocator.Flush();
         }
 
         public void Draw(RenderDrawContext renderDrawContext, RenderView renderView, RenderStage renderStage)

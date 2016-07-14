@@ -12,10 +12,12 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     public struct ResourceGroupBufferUploader
     {
+        private bool hasResourceRenaming;
         private ResourceGroupBinding[] resourceGroupBindings;
 
         public void Compile(GraphicsDevice graphicsDevice, EffectDescriptorSetReflection descriptorSetLayouts, EffectBytecode effectBytecode)
         {
+            hasResourceRenaming = graphicsDevice.Features.HasResourceRenaming;
             resourceGroupBindings = new ResourceGroupBinding[descriptorSetLayouts.Layouts.Count];
             for (int setIndex = 0; setIndex < descriptorSetLayouts.Layouts.Count; setIndex++)
             {
@@ -36,7 +38,7 @@ namespace SiliconStudio.Xenko.Graphics
                     {
                         var constantBuffer = effectBytecode.Reflection.ConstantBuffers.First(x => x.Name == layoutEntry.Key.Name);
                         resourceGroupBinding.ConstantBufferSlot = resourceIndex;
-                        resourceGroupBinding.ConstantBufferPreallocated = Buffer.Constant.New(graphicsDevice, constantBuffer.Size);
+                        resourceGroupBinding.ConstantBufferPreallocated = Buffer.Constant.New(graphicsDevice, constantBuffer.Size, graphicsDevice.Features.HasResourceRenaming ? GraphicsResourceUsage.Dynamic : GraphicsResourceUsage.Default);
                     }
                 }
 
@@ -68,12 +70,19 @@ namespace SiliconStudio.Xenko.Graphics
 
                     if (needUpdate)
                     {
-                        var mappedConstantBuffer = commandList.MapSubresource(preallocatedBuffer, 0, MapMode.WriteDiscard);
-                        Utilities.CopyMemory(mappedConstantBuffer.DataBox.DataPointer, resourceGroup.ConstantBuffer.Data, resourceGroup.ConstantBuffer.Size);
-                        commandList.UnmapSubresource(mappedConstantBuffer);
+                        if (hasResourceRenaming)
+                        {
+                            var mappedConstantBuffer = commandList.MapSubresource(preallocatedBuffer, 0, MapMode.WriteDiscard);
+                            Utilities.CopyMemory(mappedConstantBuffer.DataBox.DataPointer, resourceGroup.ConstantBuffer.Data, resourceGroup.ConstantBuffer.Size);
+                            commandList.UnmapSubresource(mappedConstantBuffer);
+                        }
+                        else
+                        {
+                            commandList.UpdateSubresource(preallocatedBuffer, 0, new DataBox(resourceGroup.ConstantBuffer.Data, resourceGroup.ConstantBuffer.Size, 0));
+                        }
                     }
 
-                    resourceGroup.DescriptorSet.SetConstantBuffer(resourceGroupBinding.ConstantBufferSlot, preallocatedBuffer, 0, resourceGroup.ConstantBuffer.Size);
+                    resourceGroup.DescriptorSet.SetConstantBuffer(resourceGroupBinding.ConstantBufferSlot, preallocatedBuffer, resourceGroup.ConstantBuffer.Offset, resourceGroup.ConstantBuffer.Size);
                 }
             }
         }

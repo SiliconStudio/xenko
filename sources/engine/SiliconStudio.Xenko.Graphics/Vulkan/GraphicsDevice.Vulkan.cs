@@ -25,7 +25,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal CommandPool NativeCopyCommandPool;
         internal CommandBuffer NativeCopyCommandBuffer;
-        private NativeResourceCollector NativeResourceCollector;
+        private NativeResourceCollector nativeResourceCollector;
+        private GraphicsResourceLinkCollector graphicsResourceLinkCollector;
 
         private SharpVulkan.Buffer nativeUploadBuffer;
         private DeviceMemory nativeUploadBufferMemory;
@@ -300,7 +301,8 @@ namespace SiliconStudio.Xenko.Graphics
 
             descriptorPools = new HeapPool(this);
 
-            NativeResourceCollector = new NativeResourceCollector(this);
+            nativeResourceCollector = new NativeResourceCollector(this);
+            graphicsResourceLinkCollector = new GraphicsResourceLinkCollector(this);
 
             EmptyTexelBuffer = Buffer.Typed.New(this, 1, PixelFormat.R32G32B32A32_Float);
         }
@@ -404,15 +406,15 @@ namespace SiliconStudio.Xenko.Graphics
             if (nativeUploadBuffer != SharpVulkan.Buffer.Null)
             {
                 NativeDevice.UnmapMemory(nativeUploadBufferMemory);
-                NativeResourceCollector.Add(lastCompletedFence, nativeUploadBuffer);
-                NativeResourceCollector.Add(lastCompletedFence, nativeUploadBufferMemory);
+                nativeResourceCollector.Add(lastCompletedFence, nativeUploadBuffer);
+                nativeResourceCollector.Add(lastCompletedFence, nativeUploadBufferMemory);
 
                 nativeUploadBuffer = SharpVulkan.Buffer.Null;
                 nativeUploadBufferMemory = DeviceMemory.Null;
             }
 
             // Release fenced resources
-            NativeResourceCollector.Dispose();
+            nativeResourceCollector.Dispose();
             descriptorPools.Dispose();
 
             nativeDevice.DestroyCommandPool(NativeCopyCommandPool);
@@ -456,7 +458,8 @@ namespace SiliconStudio.Xenko.Graphics
             NativeCommandQueue.Submit(1, &submitInfo, fence);
 
             presentSemaphore = Semaphore.Null;
-            NativeResourceCollector.Release();
+            nativeResourceCollector.Release();
+            graphicsResourceLinkCollector.Release();
 
             return NextFenceValue++;
         }
@@ -517,7 +520,26 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal void Collect(NativeResource nativeResource)
         {
-            NativeResourceCollector.Add(NextFenceValue, nativeResource);
+            nativeResourceCollector.Add(NextFenceValue, nativeResource);
+        }
+
+        internal void TagResource(GraphicsResourceLink resourceLink)
+        {
+            var texture = resourceLink.Resource as Texture;
+            if (texture != null && texture.Usage == GraphicsResourceUsage.Dynamic)
+            {
+                // Increase the reference count until GPU is done with the resource
+                resourceLink.ReferenceCount++;
+                graphicsResourceLinkCollector.Add(NextFenceValue, resourceLink);
+            }
+
+            var buffer = resourceLink.Resource as Buffer;
+            if (buffer != null && buffer.Usage == GraphicsResourceUsage.Dynamic)
+            {
+                // Increase the reference count until GPU is done with the resource
+                resourceLink.ReferenceCount++;
+                graphicsResourceLinkCollector.Add(NextFenceValue, resourceLink);
+            }
         }
     }
 
@@ -752,6 +774,18 @@ namespace SiliconStudio.Xenko.Graphics
                     device.NativeDevice.DestroyFence(*(Fence*)&handleCopy);
                     break;
             }
+        }
+    }
+
+    internal class GraphicsResourceLinkCollector : TemporaryResourceCollector<GraphicsResourceLink>
+    {
+        public GraphicsResourceLinkCollector(GraphicsDevice graphicsDevice) : base(graphicsDevice)
+        {
+        }
+
+        protected override void ReleaseObject(GraphicsResourceLink item)
+        {
+            item.ReferenceCount--;
         }
     }
 
