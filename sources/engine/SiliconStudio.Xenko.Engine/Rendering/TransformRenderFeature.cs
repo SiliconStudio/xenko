@@ -168,26 +168,25 @@ namespace SiliconStudio.Xenko.Rendering
 
 
                 // Fill PerDraw
-                perDraw->World = renderModelObjectInfo.World;
+                var perDrawData = new PerDraw
+                {
+                    World = renderModelObjectInfo.World,
+                    WorldView = renderModelViewInfo.WorldView,
+                    WorldViewProjection = renderModelViewInfo.WorldViewProjection
+                };
 
-                Matrix worldInverse;
-                Matrix.Invert(ref renderModelObjectInfo.World, out worldInverse);
-                perDraw->WorldInverse = worldInverse;
+                Matrix.Invert(ref renderModelObjectInfo.World, out perDrawData.WorldInverse);
+                Matrix.Transpose(ref perDrawData.WorldInverse, out perDrawData.WorldInverseTranspose);
+                Matrix.Invert(ref renderModelViewInfo.WorldView, out perDrawData.WorldViewInverse);
 
-                Matrix.Transpose(ref worldInverse, out perDraw->WorldInverseTranspose);
-                perDraw->WorldView = renderModelViewInfo.WorldView;
-
-                Matrix worldViewInverse;
-                Matrix.Invert(ref renderModelViewInfo.WorldView, out worldViewInverse);
-                perDraw->WorldViewInverse = worldViewInverse;
-
-                perDraw->WorldViewProjection = renderModelViewInfo.WorldViewProjection;
-                perDraw->WorldScale = new Vector3(
+                perDrawData.WorldScale = new Vector3(
                     ((Vector3)renderModelObjectInfo.World.Row1).Length(),
                     ((Vector3)renderModelObjectInfo.World.Row2).Length(),
                     ((Vector3)renderModelObjectInfo.World.Row3).Length());
                 
-                perDraw->EyeMS = new Vector4(worldViewInverse.M41, worldViewInverse.M42, worldViewInverse.M43, 1.0f);
+                perDrawData.EyeMS = new Vector4(perDrawData.WorldInverse.M41, perDrawData.WorldInverse.M42, perDrawData.WorldInverse.M43, 1.0f);
+
+                *perDraw = perDrawData;
             }
         }
 
