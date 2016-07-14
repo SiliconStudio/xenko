@@ -34,6 +34,8 @@ namespace SiliconStudio.Xenko.Graphics
         private uint[] allocatedTypeCounts;
         private uint allocatedSetCount;
 
+        private uint? activeStencilReference = 0;
+
         public CommandList(GraphicsDevice device) : base(device)
         {
             Recreate();
@@ -66,6 +68,8 @@ namespace SiliconStudio.Xenko.Graphics
                 Flags = CommandBufferUsageFlags.OneTimeSubmit,
             };
             NativeCommandBuffer.Begin(ref beginInfo);
+
+            activeStencilReference = null;
         }
 
         public void Close()
@@ -106,6 +110,8 @@ namespace SiliconStudio.Xenko.Graphics
                 Flags = CommandBufferUsageFlags.OneTimeSubmit,
             };
             NativeCommandBuffer.Begin(ref beginInfo);
+
+            NativeCommandBuffer.SetStencilReference(StencilFaceFlags.FrontAndBack, activeStencilReference ?? 0);
 
             // Restore states
             if (activePipeline != null)
@@ -193,8 +199,20 @@ namespace SiliconStudio.Xenko.Graphics
         ///     Gets or sets the 1st viewport. See <see cref="Render+states"/> to learn how to use it.
         /// </summary>
         /// <value>The viewport.</value>
-        private void SetViewportImpl()
+        private unsafe void SetViewportImpl()
         {
+            if (!viewportDirty)
+                return;
+
+            //// TODO D3D12 Hardcoded for one viewport
+            var viewportCopy = Viewport;
+            NativeCommandBuffer.SetViewport(0, 1, (SharpVulkan.Viewport*)&viewportCopy);
+
+            var scissor = new Rect2D((int)viewportCopy.X, (int)viewportCopy.Y, (uint)viewportCopy.Width, (uint)viewportCopy.Height);
+            NativeCommandBuffer.SetScissor(0, 1, &scissor);
+
+
+            viewportDirty = false;
         }
 
         /// <summary>
@@ -217,14 +235,13 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.InvalidOperationException">Cannot GraphicsDevice.Draw*() without an effect being previously applied with Effect.Apply() method</exception>
         private unsafe void PrepareDraw()
         {
-            //// TODO D3D12 Hardcoded for one viewport
-            var viewportCopy = Viewport;
-            NativeCommandBuffer.SetViewport(0, 1, (SharpVulkan.Viewport*)&viewportCopy);
+            SetViewportImpl();
 
-            var scissor = new Rect2D((int)viewportCopy.X, (int)viewportCopy.Y, (uint)viewportCopy.Width, (uint)viewportCopy.Height);
-            NativeCommandBuffer.SetScissor(0, 1, &scissor);
-
-            NativeCommandBuffer.SetStencilReference(StencilFaceFlags.FrontAndBack, 0);
+            if (!activeStencilReference.HasValue)
+            {
+                activeStencilReference = 0;
+                NativeCommandBuffer.SetStencilReference(StencilFaceFlags.FrontAndBack, 0);
+            }
 
             // Lazily set the render pass and frame buffer
             EnsureRenderPass();
@@ -351,7 +368,11 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void SetStencilReference(int stencilReference)
         {
-            //NativeCommandBuffer.StencilReference = stencilReference;
+            if (activeStencilReference != stencilReference)
+            {
+                activeStencilReference = (uint)stencilReference;
+                NativeCommandBuffer.SetStencilReference(StencilFaceFlags.FrontAndBack, activeStencilReference.Value);
+            }
         }
 
         public void SetPipelineState(PipelineState pipelineState)
