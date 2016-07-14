@@ -169,18 +169,25 @@ namespace SiliconStudio.Xenko.Rendering
 
                 // Fill PerDraw
                 perDraw->World = renderModelObjectInfo.World;
-                Matrix.Invert(ref renderModelObjectInfo.World, out perDraw->WorldInverse);
-                // TODO GRAPHICS REFACTOR avoid cbuffer read
-                Matrix.Transpose(ref perDraw->WorldInverse, out perDraw->WorldInverseTranspose);
+
+                Matrix worldInverse;
+                Matrix.Invert(ref renderModelObjectInfo.World, out worldInverse);
+                perDraw->WorldInverse = worldInverse;
+
+                Matrix.Transpose(ref worldInverse, out perDraw->WorldInverseTranspose);
                 perDraw->WorldView = renderModelViewInfo.WorldView;
-                Matrix.Invert(ref renderModelViewInfo.WorldView, out perDraw->WorldViewInverse);
+
+                Matrix worldViewInverse;
+                Matrix.Invert(ref renderModelViewInfo.WorldView, out worldViewInverse);
+                perDraw->WorldViewInverse = worldViewInverse;
+
                 perDraw->WorldViewProjection = renderModelViewInfo.WorldViewProjection;
                 perDraw->WorldScale = new Vector3(
                     ((Vector3)renderModelObjectInfo.World.Row1).Length(),
                     ((Vector3)renderModelObjectInfo.World.Row2).Length(),
                     ((Vector3)renderModelObjectInfo.World.Row3).Length());
-                // TODO GRAPHICS REFACTOR avoid cbuffer read
-                perDraw->EyeMS = new Vector4(perDraw->WorldViewInverse.M41, perDraw->WorldViewInverse.M42, perDraw->WorldViewInverse.M43, 1.0f);
+                
+                perDraw->EyeMS = new Vector4(worldViewInverse.M41, worldViewInverse.M42, worldViewInverse.M43, 1.0f);
             }
         }
 
