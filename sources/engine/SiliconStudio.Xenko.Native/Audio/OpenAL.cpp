@@ -214,6 +214,7 @@ extern "C" {
 			int size;
 			int sampleRate;
 			bool beginOfStream = false;
+			bool endOfStreamOrLoop = false;
 			ALuint buffer;
 		};
 
@@ -234,9 +235,9 @@ extern "C" {
 			bool mono;
 			bool streamed;
 
-			volatile long dequeuedTime = 0.0;
-			long playedSamples = 0;
-			long playedSamplesStarting = 0;
+			volatile double dequeuedTime = 0.0;
+
+			volatile bool flushed = false; // we need to flag to allow us to understand when a flushing happened within an Update
 
 			xnAudioListener* listener;
 
@@ -265,12 +266,6 @@ extern "C" {
 			delete device;
 		}
 
-		union AtomicDouble
-		{
-			double d;
-			long l;
-		};
-
 		void xnAudioUpdate(xnAudioDevice* device)
 		{
 			device->deviceLock.Lock();
@@ -297,16 +292,21 @@ extern "C" {
 							ALfloat postDTime;
 							GetSourceF(source->source, AL_SEC_OFFSET, &postDTime);
 
-							AtomicDouble ad;
-							ad.d = preDTime - postDTime;
+							if (processed == 1 && source->flushed)
+							{
+								//after a flush operation we consider the remaining unqueued buffer as a end of stream loop.
+								source->flushed = false;
+								source->dequeuedTime = 0.0;
+							}
+							else if (bufferPtr->endOfStreamOrLoop)
+							{
+								source->dequeuedTime = 0.0;
+							}
+							else
+							{
+								source->dequeuedTime += preDTime - postDTime;
+							}
 
-							__sync_add_and_fetch_8(&source->dequeuedTime, ad.l);
-
-//							if (bufferPtr->beginOfStream)
-//							{
-//								source->playedSamplesStarting = source->playedSamples;
-//							}
-							
 							source->freeBuffers.push_back(bufferPtr);
 						}
 					}
@@ -424,8 +424,6 @@ extern "C" {
 		{
 			ContextState lock(source->listener->context);
 
-			//this works fine out of the box for non streamed content
-
 			ALfloat offset;
 			GetSourceF(source->source, AL_SEC_OFFSET, &offset);
 
@@ -434,10 +432,7 @@ extern "C" {
 				return offset;
 			}
 
-			AtomicDouble ad;
-			ad.l = __sync_add_and_fetch_8(&source->dequeuedTime, 0);
-
-			return offset + ad.d;
+			return offset + source->dequeuedTime;
 		}
 
 		void xnAudioSourceSetPan(xnAudioSource* source, float pan)
@@ -531,7 +526,8 @@ extern "C" {
 		{
 			None,
 			BeginOfStream,
-			EndOfStream
+			EndOfStream,
+			EndOfLoop
 		};
 
 		void xnAudioSourceQueueBuffer(xnAudioSource* source, xnAudioBuffer* buffer, short* pcm, int bufferSize, BufferType type)
@@ -539,6 +535,7 @@ extern "C" {
 			ContextState lock(source->listener->context);
 
 			buffer->beginOfStream = type == BeginOfStream;
+			buffer->endOfStreamOrLoop = type == EndOfStream || type == EndOfLoop;
 			buffer->size = bufferSize;
 			BufferData(buffer->buffer, source->mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, pcm, bufferSize, source->sampleRate);
 			SourceQueueBuffers(source->source, 1, &buffer->buffer);
@@ -549,15 +546,9 @@ extern "C" {
 		{
 			ContextState lock(source->listener->context);
 
-			ALint queued = 0;
-			GetSourceI(source->source, AL_BUFFERS_QUEUED, &queued);
-			while (queued--)
-			{
-				ALuint buffer;
-				SourceUnqueueBuffers(source->source, 1, &buffer);
-			}
+			SourceStop(source->source);
 
-//			source->playedSamples = 0;
+			source->flushed = true;
 		}
 
 		xnAudioBuffer* xnAudioSourceGetFreeBuffer(xnAudioSource* source)

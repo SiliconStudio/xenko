@@ -107,7 +107,8 @@ namespace SiliconStudio.Xenko.Native
         {
             None,
             BeginOfStream,
-            EndOfStream
+            EndOfStream,
+            EndOfLoop
         }
 
         [SuppressUnmanagedCodeSecurity]

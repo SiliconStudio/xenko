@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
@@ -31,6 +32,7 @@ namespace SiliconStudio.Xenko.Audio
         private int startPktSampleIndex;
         private int endPktSampleIndex;
         private bool begin;
+        private readonly object rangeLock = new object();
 
         private Celt decoder;
 
@@ -42,7 +44,7 @@ namespace SiliconStudio.Xenko.Audio
         private readonly int maxCompressedSize;
         private byte[] compressedBuffer;
 
-        private bool dispose;       
+        private bool dispose;
 
         private static Task readFromDiskWorker;
         private static readonly ConcurrentBag<CompressedSoundSource> NewSources = new ConcurrentBag<CompressedSoundSource>();
@@ -115,7 +117,12 @@ restart:
 
                             source.flushAndRestart = false;
 
-                            var range = source.playRange;
+                            PlayRange range;
+                            lock (source.rangeLock)
+                            {
+                                range = source.playRange;
+                            }
+
                             if (range.Start != TimeSpan.Zero || range.Length != TimeSpan.Zero)
                             {
                                 var frameSize = SamplesPerFrame*source.channels;
@@ -183,8 +190,22 @@ restart:
                         
                         var finalPtr = new IntPtr(bufferPtr + source.startPktSampleIndex);
                         var finalSize = (offset - source.startPktSampleIndex - source.endPktSampleIndex) * sizeof(short);
-                        source.FillBuffer(finalPtr, finalSize, source.ended ? AudioLayer.BufferType.EndOfStream : source.begin ? AudioLayer.BufferType.BeginOfStream : AudioLayer.BufferType.None);
-                        source.begin = false;
+
+                        var bufferType = AudioLayer.BufferType.None;
+                        if (source.ended)
+                        {
+                            bufferType = AudioLayer.BufferType.EndOfStream;
+                        }
+                        else if (source.begin)
+                        {
+                            bufferType = AudioLayer.BufferType.BeginOfStream;
+                            source.begin = false;
+                        }
+                        else if (source.looped && source.restart)
+                        {
+                            bufferType = AudioLayer.BufferType.EndOfLoop;
+                        }
+                        source.FillBuffer(finalPtr, finalSize, bufferType);
                     }
                     else
                     {
@@ -224,6 +245,8 @@ restart:
         /// </summary>
         public override void Restart()
         {
+            base.Restart();
+
             flushAndRestart = true;
         }
 
@@ -238,8 +261,11 @@ restart:
 
         public override void SetRange(PlayRange range)
         {
-            playRange = range;
-            flushAndRestart = true; //flag for restart, flush etc
+            lock (rangeLock)
+            {
+                playRange = range;
+                flushAndRestart = true; //flag for restart, flush etc
+            }
         }
 
         private void Destroy()

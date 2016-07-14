@@ -10,11 +10,12 @@ namespace SiliconStudio.Xenko.Audio
     {
         private bool readyToPlay;
         private int prebufferedCount;
+        private int prebufferedTarget;
 
         /// <summary>
         /// This will be fired internally once there are more then 1 buffer in the queue
         /// </summary>
-        public TaskCompletionSource<bool> ReadyToPlay { get; } = new TaskCompletionSource<bool>(false);
+        public TaskCompletionSource<bool> ReadyToPlay { get; private set; } = new TaskCompletionSource<bool>(false);
         
         /// <summary>
         /// This must be filled by sub-classes implementation when there will be no more queueud data
@@ -34,6 +35,8 @@ namespace SiliconStudio.Xenko.Audio
         /// <param name="maxBufferSizeBytes">the maximum size of each buffer</param>
         protected DynamicSoundSource(SoundInstance soundInstance, int numberOfBuffers, int maxBufferSizeBytes)
         {
+            prebufferedTarget = (int)Math.Ceiling(numberOfBuffers/(double)3);
+
             SoundInstance = soundInstance;
             for (var i = 0; i < numberOfBuffers; i++)
             {
@@ -81,8 +84,7 @@ namespace SiliconStudio.Xenko.Audio
             if (readyToPlay) return;
 
             prebufferedCount++;
-            if (prebufferedCount > 1) return;
-
+            if (prebufferedCount < prebufferedTarget) return;
             readyToPlay = true;
             ReadyToPlay.TrySetResult(true);
         }
@@ -101,8 +103,7 @@ namespace SiliconStudio.Xenko.Audio
             if (readyToPlay) return;
 
             prebufferedCount++;
-            if (prebufferedCount > 1) return;
-
+            if (prebufferedCount < prebufferedTarget) return;
             readyToPlay = true;
             ReadyToPlay.TrySetResult(true);
         }
@@ -112,7 +113,12 @@ namespace SiliconStudio.Xenko.Audio
         /// <summary>
         /// Restarts streaming from the beginning.
         /// </summary>
-        public abstract void Restart();
+        public virtual void Restart()
+        {
+            ReadyToPlay = new TaskCompletionSource<bool>();
+            readyToPlay = false;
+            prebufferedCount = 0;
+        }
 
         /// <summary>
         /// Sets if the stream should be played in loop

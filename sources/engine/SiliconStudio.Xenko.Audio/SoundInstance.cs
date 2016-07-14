@@ -353,6 +353,12 @@ namespace SiliconStudio.Xenko.Audio
             if (engine.State == AudioEngineState.Invalidated)
                 return;
 
+            var state = playState;
+            if (state == SoundPlayState.Playing)
+            {
+                Stop();
+            }
+
             if (soundSource == null)
             {
                 AudioLayer.SourceSetRange(Source, range.Start.TotalSeconds, range.End.TotalSeconds);
@@ -360,6 +366,11 @@ namespace SiliconStudio.Xenko.Audio
             else
             {
                 soundSource.SetRange(range);
+            }
+
+            if (state == SoundPlayState.Playing)
+            {
+                Play();
             }
         }
 

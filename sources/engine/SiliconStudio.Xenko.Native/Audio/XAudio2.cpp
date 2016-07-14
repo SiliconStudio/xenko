@@ -1746,7 +1746,8 @@ extern "C" {
 		{
 			None,
 			BeginOfStream,
-			EndOfStream
+			EndOfStream,
+			EndOfLoop
 		};
 
 		void xnAudioSourceQueueBuffer(xnAudioSource* source, xnAudioBuffer* buffer, short* pcm, int bufferSize, BufferType type)
