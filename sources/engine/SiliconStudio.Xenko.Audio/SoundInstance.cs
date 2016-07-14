@@ -252,6 +252,7 @@ namespace SiliconStudio.Xenko.Audio
 
             AudioLayer.SourceStop(Source);
 
+            playingQueued = false; //forget the task anywawy in this case
             soundSource?.Restart();
 
             playState = SoundPlayState.Stopped;
@@ -294,18 +295,19 @@ namespace SiliconStudio.Xenko.Audio
             if (stopSiblingInstances)
                 StopConcurrentInstances();
 
-            if (soundSource != null)
+            if (soundSource != null && !soundSource.ReadyToPlay.Task.IsCompleted)
             {
-                soundSource.StartBuffering();
-
-                playingQueued = true;
-
-                Task.Run(async () =>
+                if (!playingQueued)
                 {
-                    await soundSource.ReadyToPlay.Task;
-                    AudioLayer.SourcePlay(Source);
-                    playingQueued = false;
-                });
+                    playingQueued = true;
+
+                    Task.Run(async () =>
+                    {
+                        await soundSource.ReadyToPlay.Task;
+                        AudioLayer.SourcePlay(Source);
+                        playingQueued = false;
+                    });
+                }
             }
             else
             {

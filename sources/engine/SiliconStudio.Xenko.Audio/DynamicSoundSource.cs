@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Audio
     {
         private bool readyToPlay;
         private int prebufferedCount;
-        private int prebufferedTarget;
+        private readonly int prebufferedTarget;
 
         /// <summary>
         /// This will be fired internally once there are more then 1 buffer in the queue
@@ -107,8 +107,6 @@ namespace SiliconStudio.Xenko.Audio
             readyToPlay = true;
             ReadyToPlay.TrySetResult(true);
         }
-
-        public abstract void StartBuffering();
 
         /// <summary>
         /// Restarts streaming from the beginning.

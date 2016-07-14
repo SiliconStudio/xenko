@@ -2,7 +2,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
@@ -27,6 +26,7 @@ namespace SiliconStudio.Xenko.Audio
         private volatile bool flushAndRestart;
         private readonly int numberOfPackets;
         private int currentPacketIndex;
+        private int startingPacketIndex;
         private int endPacketIndex;
         private PlayRange playRange;
         private int startPktSampleIndex;
@@ -68,6 +68,13 @@ namespace SiliconStudio.Xenko.Audio
             this.sampleRate = sampleRate;
             this.numberOfPackets = numberOfPackets;
             playRange = new PlayRange(TimeSpan.Zero, TimeSpan.Zero);
+
+            if (readFromDiskWorker == null)
+            {
+                readFromDiskWorker = Task.Factory.StartNew(Worker, TaskCreationOptions.LongRunning);
+            }
+
+            NewSources.Add(this);
         }
 
         private static unsafe void Worker()
@@ -101,13 +108,13 @@ restart:
                         if (source.restart || source.flushAndRestart)
                         {
                             source.compressedSoundStream.Position = 0;
+                            source.begin = true;
                             source.ended = false;
                             source.restart = false;                           
                             source.currentPacketIndex = 0;
                             source.startPktSampleIndex = 0;
                             source.endPktSampleIndex = 0;
-                            source.endPacketIndex = source.numberOfPackets;
-                            source.begin = true;
+                            source.endPacketIndex = source.numberOfPackets;                          
 
                             //flush buffers, remove any queued buffer
                             if (source.flushAndRestart)
@@ -128,19 +135,19 @@ restart:
                                 var frameSize = SamplesPerFrame*source.channels;
                                 //ok we need to handle this case properly, this means that the user wants to use a different then full audio stream range...
                                 var sampleStart = source.sampleRate * (double)source.channels * range.Start.TotalSeconds;
-                                source.startPktSampleIndex = (int)sampleStart % (frameSize);
+                                source.startPktSampleIndex = (int)Math.Floor(sampleStart) % (frameSize);
 
                                 var sampleStop = source.sampleRate * (double)source.channels * range.End.TotalSeconds;
-                                source.endPktSampleIndex = frameSize - ((int)sampleStart % frameSize);
+                                source.endPktSampleIndex = frameSize - (int)Math.Floor(sampleStart) % frameSize;
 
-                                var startingPacket = (int)Math.Floor(sampleStart / frameSize);
+                                var skipCounter = source.startingPacketIndex = (int)Math.Floor(sampleStart / frameSize);
                                 source.endPacketIndex = (int)Math.Floor(sampleStop / frameSize);
                                 
                                 // skip to the starting packet
-                                if (startingPacket < source.numberOfPackets && source.endPacketIndex < source.numberOfPackets && startingPacket < source.endPacketIndex)
+                                if (source.startingPacketIndex < source.numberOfPackets && source.endPacketIndex < source.numberOfPackets && source.startingPacketIndex < source.endPacketIndex)
                                 {
                                     //valid offsets.. process it
-                                    while (startingPacket-- > 0)
+                                    while (skipCounter-- > 0)
                                     {
                                         //skip data to reach starting packet
                                         var len = source.reader.ReadInt16();
@@ -156,9 +163,13 @@ restart:
                         const int passes = SamplesPerBuffer / SamplesPerFrame;
                         var offset = 0;
                         var bufferPtr = (short*)utilityBuffer.Pointer;
+                        var startingPacket = source.startingPacketIndex == source.currentPacketIndex;
+                        var endingPacket = false;
                         for (var i = 0; i < passes; i++)
                         {
                             if(source.restart) goto restart; //abort and restart
+
+                            endingPacket = source.endPacketIndex == source.currentPacketIndex;
 
                             //read one packet, size first, then data
                             var len = source.reader.ReadInt16();
@@ -188,8 +199,8 @@ restart:
                             break;
                         }
                         
-                        var finalPtr = new IntPtr(bufferPtr + source.startPktSampleIndex);
-                        var finalSize = (offset - source.startPktSampleIndex - source.endPktSampleIndex) * sizeof(short);
+                        var finalPtr = new IntPtr(bufferPtr + (startingPacket ? source.startPktSampleIndex : 0));
+                        var finalSize = (offset - (startingPacket ? source.startPktSampleIndex : 0) - (endingPacket ? source.endPktSampleIndex : 0)) * sizeof(short);
 
                         var bufferType = AudioLayer.BufferType.None;
                         if (source.ended)
@@ -229,16 +240,6 @@ restart:
         }
 
         public override int MaxNumberOfBuffers => NumberOfBuffers;
-
-        public override void StartBuffering()
-        {
-            if (readFromDiskWorker == null)
-            {
-                readFromDiskWorker = Task.Factory.StartNew(Worker, TaskCreationOptions.LongRunning);
-            }
-
-            NewSources.Add(this);
-        }
 
         /// <summary>
         /// Restarts streaming from the beginning.
