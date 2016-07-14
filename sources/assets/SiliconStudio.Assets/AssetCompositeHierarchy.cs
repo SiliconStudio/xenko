@@ -13,6 +13,7 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Gets or sets the container of the hierarchy of asset parts.
         /// </summary>
+        [DataMember(100)]
         public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> Hierarchy { get; set; } = new AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>();
 
         /// <summary>

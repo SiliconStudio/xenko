@@ -14,23 +14,31 @@ It can convert HLSL code to various GLSL dialect, including Core, ES 2.0, ES 3.0
 
 ### Intrisics
 
-|                         | Status |
+| Feature                 | Status |
 | ----------------------- | ------ |
-| Stages                  | VS & PS only |
-| Standard intrinsics     | :heavy_check_mark: except: noise |
-| SM5 intrinsics          | :heavy_check_mark: except: dst, ddx_coarse, ddx_fine, ddy_coarse, ddy_fine, firstbithigh, firstbitlow, countbits, f16tof32, f32tof16, fma, mad, msad4, rcp, reversebits |
-| Barriers intrinsics     | :heavy_multiplication_x: (no CS) |
-| Interlocked intrinsics  | :heavy_multiplication_x: (no CS) |
-| Integer reinterpret intrinsics | :heavy_multiplication_x: asuint, asint |
-| Flow statements         | :heavy_check_mark: except: errorf, printf, abort |
-| Texture objects         | :heavy_check_mark: |
-| Buffer objects          | :heavy_check_mark: |
-| Class/struct methods    | :heavy_multiplication_x: |
-| Preprocessor            | :heavy_check_mark: |
-| Remap VS projected coordinates | :heavy_check_mark: |
-| Multiple Render Targets | :heavy_check_mark: |
-| Constant Buffers        | :heavy_check_mark: |
-| RW and Structured Buffers | :heavy_multiplication_x: |
+| Vertex & Pixel Shaders  | ✔ |
+| Geometry Shaders        | ✘ |
+| Tessellation Shaders    | ✘ |
+| Compute Shaders         | ✘ |
+| Standard intrinsics     | ✔ except: noise |
+| SM5 intrinsics          | ✘ missing: dst, ddx_coarse, ddx_fine, ddy_coarse, ddy_fine, firstbithigh, firstbitlow, countbits, f16tof32, f32tof16, fma, mad, msad4, rcp, reversebits |
+| Registers               | ✔ simple remapping |
+| Constant Buffer Offsets & Packing | ✘ cbuffer follow GLSL rules |
+| Barriers intrinsics     | ✘ (no Compute Shaders) |
+| Interlocked intrinsics  | ✘ (no Compute Shaders) |
+| Shared variables & memory | ✘ (no Compute Shaders) |
+| Integer reinterpret intrinsics | ✘ asuint, asint |
+| Flow statements         | ✔ except: errorf, printf, abort |
+| Texture objects         | ✔ |
+| Buffer objects          | ✔ |
+| Class/struct methods    | ✘ |
+| Preprocessor            | ✔ |
+| Remap VS projected coordinates | ✔ |
+| Multiple Render Targets | ✔ |
+| Constant Buffers        | ✔ |
+| StructuredBuffer and RWStructuredBuffer | ✘ |
+| RWBuffer and RWTexture  | ✘ |
+| #extension directives   | ✘ not generated |
 
 ### Texture / samplers
 
