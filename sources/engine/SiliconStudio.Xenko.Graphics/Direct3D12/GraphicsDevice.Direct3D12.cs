@@ -11,6 +11,9 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial class GraphicsDevice
     {
+        // D3D12_CONSTANT_BUFFER_DATA_PLACEMENT_ALIGNMENT (not exposed by SharpDX)
+        internal readonly int ConstantBufferDataPlacementAlignment = 256;
+
         private const GraphicsPlatform GraphicPlatform = GraphicsPlatform.Direct3D12;
 
         private bool simulateReset = false;
@@ -22,8 +25,12 @@ namespace SiliconStudio.Xenko.Graphics
         internal GraphicsProfile RequestedProfile;
         internal SharpDX.Direct3D.FeatureLevel CurrentFeatureLevel;
 
+        internal CommandQueue NativeCopyCommandQueue;
         internal CommandAllocator NativeCopyCommandAllocator;
         internal GraphicsCommandList NativeCopyCommandList;
+        private Fence nativeCopyFence;
+        private long nextCopyFenceValue = 1;
+
 
         internal CommandAllocatorPool CommandAllocators;
         internal HeapPool SrvHeaps;
@@ -217,6 +224,8 @@ namespace SiliconStudio.Xenko.Graphics
             // Describe and create the command queue.
             var queueDesc = new SharpDX.Direct3D12.CommandQueueDescription(SharpDX.Direct3D12.CommandListType.Direct);
             NativeCommandQueue = nativeDevice.CreateCommandQueue(queueDesc);
+            //queueDesc.Type = CommandListType.Copy;
+            NativeCopyCommandQueue = nativeDevice.CreateCommandQueue(queueDesc);
 
             SrvHandleIncrementSize = NativeDevice.GetDescriptorHandleIncrementSize(DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView);
             SamplerHandleIncrementSize = NativeDevice.GetDescriptorHandleIncrementSize(DescriptorHeapType.Sampler);
@@ -239,11 +248,17 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Fence for next frame and resource cleaning
             nativeFence = NativeDevice.CreateFence(0, FenceFlags.None);
+            nativeCopyFence = NativeDevice.CreateFence(0, FenceFlags.None);
         }
 
-        internal IntPtr AllocateUploadBuffer(int size, out SharpDX.Direct3D12.Resource resource, out int offset)
+        internal IntPtr AllocateUploadBuffer(int size, out SharpDX.Direct3D12.Resource resource, out int offset, int alignment = 0)
         {
             // TODO D3D12 thread safety, should we simply use locks?
+
+            // Align
+            if (alignment > 0)
+                nativeUploadBufferOffset = (nativeUploadBufferOffset + alignment - 1) / alignment * alignment;
+
             if (nativeUploadBuffer == null || nativeUploadBufferOffset + size > nativeUploadBuffer.Description.Width)
             {
                 if (nativeUploadBuffer != null)
@@ -266,6 +281,14 @@ namespace SiliconStudio.Xenko.Graphics
             offset = nativeUploadBufferOffset;
             nativeUploadBufferOffset += size;
             return nativeUploadBufferStart + offset;
+        }
+
+        internal void WaitCopyQueue()
+        {
+            NativeCommandQueue.ExecuteCommandList(NativeCopyCommandList);
+            NativeCommandQueue.Signal(nativeCopyFence, nextCopyFenceValue);
+            NativeCommandQueue.Wait(nativeCopyFence, nextCopyFenceValue);
+            nextCopyFenceValue++;
         }
 
         internal void ReleaseTemporaryResources()
@@ -308,6 +331,9 @@ namespace SiliconStudio.Xenko.Graphics
             NativeCommandQueue.Dispose();
             NativeCommandQueue = null;
 
+            NativeCopyCommandQueue.Dispose();
+            NativeCopyCommandQueue = null;
+
             NativeCopyCommandAllocator.Dispose();
             NativeCopyCommandList.Dispose();
 
@@ -317,6 +343,8 @@ namespace SiliconStudio.Xenko.Graphics
             ReleaseTemporaryResources();
             nativeFence.Dispose();
             nativeFence = null;
+            nativeCopyFence.Dispose();
+            nativeCopyFence = null;
 
             // Release pools
             CommandAllocators.Dispose();

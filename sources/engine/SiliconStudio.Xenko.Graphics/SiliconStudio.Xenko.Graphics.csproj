@@ -171,6 +171,7 @@
     <Compile Include="Font\SignedDistanceFieldSpriteFontContentSerializer.cs" />
     <Compile Include="OpenGL\MappedResource.OpenGL.cs" />
     <Compile Include="Font\SignedDistanceFieldSpriteFontSerializer.cs" />
+    <Compile Include="PipelineStateDescriptionWithHash.cs" />
     <Compile Include="RenderingSettings.cs" />
     <Compile Include="Data\TextureContentSerializer.cs" />
     <Compile Include="DescriptorPool.cs" />

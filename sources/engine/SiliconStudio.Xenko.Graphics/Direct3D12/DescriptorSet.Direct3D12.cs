@@ -36,8 +36,8 @@ namespace SiliconStudio.Xenko.Graphics
             Description = desc;
 
             // Store start CpuDescriptorHandle
-            SrvStart = desc.SrvCount > 0 ? (pool.SrvHeap.CPUDescriptorHandleForHeapStart + graphicsDevice.SrvHandleIncrementSize * pool.SrvOffset) : new CpuDescriptorHandle();
-            SamplerStart = desc.SamplerCount > 0 ? (pool.SamplerHeap.CPUDescriptorHandleForHeapStart + graphicsDevice.SamplerHandleIncrementSize * pool.SamplerOffset) : new CpuDescriptorHandle();
+            SrvStart = desc.SrvCount > 0 ? (pool.SrvStart + graphicsDevice.SrvHandleIncrementSize * pool.SrvOffset) : new CpuDescriptorHandle();
+            SamplerStart = desc.SamplerCount > 0 ? (pool.SamplerStart + graphicsDevice.SamplerHandleIncrementSize * pool.SamplerOffset) : new CpuDescriptorHandle();
 
             // Allocation is done, bump offsets
             // TODO D3D12 thread safety?
@@ -102,10 +102,11 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="size">The constant buffer view size.</param>
         public void SetConstantBuffer(int slot, Buffer buffer, int offset, int size)
         {
+            var constantBufferDataPlacementAlignment = Device.ConstantBufferDataPlacementAlignment;
             Device.NativeDevice.CreateConstantBufferView(new ConstantBufferViewDescription
             {
-                BufferLocation = buffer.NativeResource.GPUVirtualAddress + offset,
-                SizeInBytes = (size + 255) & ~255, // CB size needs to be 256-byte aligned
+                BufferLocation = buffer.GPUVirtualAddress + offset,
+                SizeInBytes = (size + constantBufferDataPlacementAlignment) / constantBufferDataPlacementAlignment * constantBufferDataPlacementAlignment, // CB size needs to be 256-byte aligned
             }, SrvStart + BindingOffsets[slot]);
         }
 

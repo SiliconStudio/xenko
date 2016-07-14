@@ -5,14 +5,15 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public class BufferPool : IDisposable
     {
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12 || SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
         private const bool useBufferOffsets = true;
-        private const int alignment = 256;
+#elif SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
+        private const bool useBufferOffsets = true;
 #else
         private const bool useBufferOffsets = false;
-        private const int alignment = 16;
 #endif
 
+        private int constantBufferAlignment;
         public int Size;
         public IntPtr Data;
 
@@ -25,8 +26,9 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal BufferPool(GraphicsResourceAllocator allocator, GraphicsDevice graphicsDevice, int size)
         {
-            if (size % alignment != 0)
-                throw new ArgumentException($"size is not a multiple of alignment ({alignment})", nameof(size));
+            constantBufferAlignment = graphicsDevice.ConstantBufferDataPlacementAlignment;
+            if (size % constantBufferAlignment != 0)
+                throw new ArgumentException($"size needs to be a multiple of constant buffer alignment ({constantBufferAlignment})", nameof(size));
 
             this.allocator = allocator;
 
@@ -96,7 +98,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Align next allocation
             // Note: total Size should be a multiple of alignment, so that CanAllocate() and Allocate() Size check matches
-            bufferAllocationOffset = (bufferAllocationOffset + alignment - 1) / alignment * alignment;
+            bufferAllocationOffset = (bufferAllocationOffset + constantBufferAlignment - 1) / constantBufferAlignment * constantBufferAlignment;
 
             if (bufferAllocationOffset > Size)
                 throw new InvalidOperationException();

@@ -16,6 +16,8 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial class GraphicsDevice
     {
+        internal readonly int ConstantBufferDataPlacementAlignment = 16;
+
         private const GraphicsPlatform GraphicPlatform = GraphicsPlatform.Direct3D11;
 
         private bool simulateReset = false;

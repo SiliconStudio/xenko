@@ -454,7 +454,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                 if (ResourceContext.VertexBufferPosition == 0)
                 {
-                    if (ResourceContext.VertexBuffer == null)
+                    if (ResourceContext.VertexBuffer != null)
                         GraphicsContext.Allocator.ReleaseReference(ResourceContext.VertexBuffer);
                     ResourceContext.VertexBuffer = GraphicsContext.Allocator.GetTemporaryBuffer(new BufferDescription(ResourceContext.VertexCount * vertexStructSize, BufferFlags.VertexBuffer, GraphicsResourceUsage.Dynamic));
                     GraphicsContext.CommandList.SetVertexBuffer(0, ResourceContext.VertexBuffer, 0, vertexStructSize);
@@ -462,7 +462,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                 if (ResourceContext.IsIndexBufferDynamic && ResourceContext.IndexBufferPosition == 0)
                 {
-                    if (ResourceContext.IndexBuffer == null)
+                    if (ResourceContext.IndexBuffer != null)
                         GraphicsContext.Allocator.ReleaseReference(ResourceContext.IndexBuffer);
                     ResourceContext.IndexBuffer = GraphicsContext.Allocator.GetTemporaryBuffer(new BufferDescription(ResourceContext.IndexCount * indexStructSize, BufferFlags.IndexBuffer, GraphicsResourceUsage.Dynamic));
                     GraphicsContext.CommandList.SetIndexBuffer(ResourceContext.IndexBuffer, 0, indexStructSize == sizeof(int));

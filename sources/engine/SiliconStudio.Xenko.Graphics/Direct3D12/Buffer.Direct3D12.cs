@@ -13,6 +13,7 @@ namespace SiliconStudio.Xenko.Graphics
     public partial class Buffer
     {
         private SharpDX.Direct3D12.ResourceDescription nativeDescription;
+        internal long GPUVirtualAddress;
         
         /// <summary>
         /// Initializes a new instance of the <see cref="Buffer" /> class.
@@ -33,7 +34,7 @@ namespace SiliconStudio.Xenko.Graphics
         protected Buffer InitializeFromImpl(BufferDescription description, BufferFlags viewFlags, PixelFormat viewFormat, IntPtr dataPointer)
         {
             bufferDescription = description;
-            nativeDescription = ConvertToNativeDescription(Description);
+            nativeDescription = ConvertToNativeDescription(GraphicsDevice, Description);
             ViewFlags = viewFlags;
             InitCountAndViewFormat(out this.elementCount, ref viewFormat);
             ViewFormat = viewFormat;
@@ -124,6 +125,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             // TODO D3D12 move that to a global allocator in bigger committed resources
             NativeDeviceChild = GraphicsDevice.NativeDevice.CreateCommittedResource(new HeapProperties(heapType), HeapFlags.None, nativeDescription, dataPointer != IntPtr.Zero ? ResourceStates.CopyDestination : NativeResourceState);
+            GPUVirtualAddress = NativeResource.GPUVirtualAddress;
 
             if (dataPointer != IntPtr.Zero)
             {
@@ -153,7 +155,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                     commandList.Close();
 
-                    GraphicsDevice.NativeCommandQueue.ExecuteCommandList(commandList);
+                    GraphicsDevice.WaitCopyQueue();
                 }
             }
 
@@ -223,12 +225,12 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        private static SharpDX.Direct3D12.ResourceDescription ConvertToNativeDescription(BufferDescription bufferDescription)
+        private static SharpDX.Direct3D12.ResourceDescription ConvertToNativeDescription(GraphicsDevice graphicsDevice, BufferDescription bufferDescription)
         {
             var size = bufferDescription.SizeInBytes;
 
-            // TODO D3D12 for now, ensure size is multiple of 256 (for cbuffer views)
-            size = (size + 255) & ~255;
+            // TODO D3D12 for now, ensure size is multiple of ConstantBufferDataPlacementAlignment (for cbuffer views)
+            size = (size + graphicsDevice.ConstantBufferDataPlacementAlignment - 1) / graphicsDevice.ConstantBufferDataPlacementAlignment * graphicsDevice.ConstantBufferDataPlacementAlignment;
 
             return SharpDX.Direct3D12.ResourceDescription.Buffer(size);
         }

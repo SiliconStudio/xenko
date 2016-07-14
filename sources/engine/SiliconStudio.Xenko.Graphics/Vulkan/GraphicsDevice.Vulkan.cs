@@ -14,6 +14,9 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial class GraphicsDevice
     {
+        // TODO: Query device
+        internal readonly int ConstantBufferDataPlacementAlignment = 256;
+
         private const GraphicsPlatform GraphicPlatform = GraphicsPlatform.Vulkan;
         internal GraphicsProfile RequestedProfile;
 
