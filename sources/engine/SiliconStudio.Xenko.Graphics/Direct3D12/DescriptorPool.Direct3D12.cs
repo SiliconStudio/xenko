@@ -11,8 +11,10 @@ namespace SiliconStudio.Xenko.Graphics
         internal DescriptorHeap SrvHeap;
         internal DescriptorHeap SamplerHeap;
 
+        internal CpuDescriptorHandle SrvStart;
         internal int SrvOffset;
         internal int SrvCount;
+        internal CpuDescriptorHandle SamplerStart;
         internal int SamplerOffset;
         internal int SamplerCount;
 
@@ -41,6 +43,7 @@ namespace SiliconStudio.Xenko.Graphics
                     Flags = DescriptorHeapFlags.None,
                     Type = DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView,
                 });
+                SrvStart = SrvHeap.CPUDescriptorHandleForHeapStart;
             }
 
             if (SamplerCount > 0)
@@ -51,6 +54,7 @@ namespace SiliconStudio.Xenko.Graphics
                     Flags = DescriptorHeapFlags.None,
                     Type = DescriptorHeapType.Sampler,
                 });
+                SamplerStart = SamplerHeap.CPUDescriptorHandleForHeapStart;
             }
         }
 

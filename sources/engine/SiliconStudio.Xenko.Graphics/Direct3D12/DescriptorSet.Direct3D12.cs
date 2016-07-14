@@ -36,8 +36,8 @@ namespace SiliconStudio.Xenko.Graphics
             Description = desc;
 
             // Store start CpuDescriptorHandle
-            SrvStart = desc.SrvCount > 0 ? (pool.SrvHeap.CPUDescriptorHandleForHeapStart + graphicsDevice.SrvHandleIncrementSize * pool.SrvOffset) : new CpuDescriptorHandle();
-            SamplerStart = desc.SamplerCount > 0 ? (pool.SamplerHeap.CPUDescriptorHandleForHeapStart + graphicsDevice.SamplerHandleIncrementSize * pool.SamplerOffset) : new CpuDescriptorHandle();
+            SrvStart = desc.SrvCount > 0 ? (pool.SrvStart + graphicsDevice.SrvHandleIncrementSize * pool.SrvOffset) : new CpuDescriptorHandle();
+            SamplerStart = desc.SamplerCount > 0 ? (pool.SamplerStart + graphicsDevice.SamplerHandleIncrementSize * pool.SamplerOffset) : new CpuDescriptorHandle();
 
             // Allocation is done, bump offsets
             // TODO D3D12 thread safety?
