@@ -13,6 +13,7 @@ namespace SiliconStudio.Xenko.Graphics
     public partial class Buffer
     {
         private SharpDX.Direct3D12.ResourceDescription nativeDescription;
+        internal long GPUVirtualAddress;
         
         /// <summary>
         /// Initializes a new instance of the <see cref="Buffer" /> class.
@@ -124,6 +125,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             // TODO D3D12 move that to a global allocator in bigger committed resources
             NativeDeviceChild = GraphicsDevice.NativeDevice.CreateCommittedResource(new HeapProperties(heapType), HeapFlags.None, nativeDescription, dataPointer != IntPtr.Zero ? ResourceStates.CopyDestination : NativeResourceState);
+            GPUVirtualAddress = NativeResource.GPUVirtualAddress;
 
             if (dataPointer != IntPtr.Zero)
             {

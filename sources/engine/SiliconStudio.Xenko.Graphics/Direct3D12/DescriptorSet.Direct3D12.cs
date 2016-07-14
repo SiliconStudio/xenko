@@ -104,7 +104,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             Device.NativeDevice.CreateConstantBufferView(new ConstantBufferViewDescription
             {
-                BufferLocation = buffer.NativeResource.GPUVirtualAddress + offset,
+                BufferLocation = buffer.GPUVirtualAddress + offset,
                 SizeInBytes = (size + 255) & ~255, // CB size needs to be 256-byte aligned
             }, SrvStart + BindingOffsets[slot]);
         }

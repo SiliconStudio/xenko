@@ -3,6 +3,7 @@
 
 using System;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.ReferenceCounting;
 using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Graphics
@@ -136,7 +137,25 @@ namespace SiliconStudio.Xenko.Graphics
     {
         public static PipelineState New(GraphicsDevice graphicsDevice, ref PipelineStateDescription pipelineStateDescription)
         {
-            return new PipelineState(graphicsDevice, pipelineStateDescription);
+            // Hash the current state
+            var hashedState = new PipelineStateDescriptionWithHash(pipelineStateDescription);
+
+            // Store SamplerState in a cache (D3D seems to have quite bad concurrency when using CreateSampler while rendering)
+            PipelineState pipelineState;
+            lock (graphicsDevice.CachedPipelineStates)
+            {
+                if (graphicsDevice.CachedPipelineStates.TryGetValue(hashedState, out pipelineState))
+                {
+                    // TODO: Appropriate destroy
+                    pipelineState.AddReferenceInternal();
+                }
+                else
+                {
+                    pipelineState = new PipelineState(graphicsDevice, pipelineStateDescription);
+                    graphicsDevice.CachedPipelineStates.Add(hashedState, pipelineState);
+                }
+            }
+            return pipelineState;
         }
     }
 }
