@@ -63,7 +63,6 @@ namespace SiliconStudio.Xenko.Graphics
 
             ResetSrvHeap(true);
             ResetSamplerHeap(true);
-            NativeCommandList.SetDescriptorHeaps(2, descriptorHeaps);
 
             // Clear descriptor mappings
             srvMapping.Clear();
@@ -72,6 +71,8 @@ namespace SiliconStudio.Xenko.Graphics
             // Get a new allocator
             nativeCommandAllocator = GraphicsDevice.CommandAllocators.GetObject();
             NativeCommandList.Reset(nativeCommandAllocator, null);
+
+            NativeCommandList.SetDescriptorHeaps(2, descriptorHeaps);
         }
 
         public void Close()
