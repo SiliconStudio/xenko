@@ -504,7 +504,7 @@ namespace SiliconStudio.Xenko.Graphics
                     pixelSize = 2; // 8bpp
                     break;
                 default:
-                    throw new InvalidOperationException("Unsupported texture format");
+                    throw new InvalidOperationException("Unsupported texture format: " + inputFormat);
             }
         }
 

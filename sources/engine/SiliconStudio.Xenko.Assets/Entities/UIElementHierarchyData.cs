@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
-using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.UI;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
     /// <summary>
-    /// Associate an <see cref="Entity"/> with design-time data.
+    /// Associate an <see cref="Engine.Entity"/> with design-time data.
     /// </summary>
     [DataContract("UIElementDesign")]
     [NonIdentifiable]

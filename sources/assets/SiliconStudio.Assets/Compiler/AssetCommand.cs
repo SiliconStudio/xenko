@@ -15,10 +15,6 @@ namespace SiliconStudio.Assets.Compiler
     {
         public string Url { get; set; }
 
-        protected AssetCommand()
-        {
-        }
-        
         protected AssetCommand(string url)
         {
             Url = url;
@@ -28,10 +24,6 @@ namespace SiliconStudio.Assets.Compiler
 
     public abstract class AssetCommand<T> : AssetCommand
     {
-
-        protected AssetCommand()
-        {
-        }
 
         protected AssetCommand(string url, T assetParameters)
             : base (url)

@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public TestSpriteBatchToTexture()
         {
-            CurrentVersion = 3;
+            CurrentVersion = 4; // Changes in font type/size
         }
 
         protected override void RegisterTests()
@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             uv = Content.Load<Texture>("uv");
             spheres = Content.Load<SpriteSheet>("SpriteSphere");
 
-            arial = Content.Load<SpriteFont>("StaticFonts/Arial13");
+            arial = Content.Load<SpriteFont>("StaticFonts/Arial18");
 
             width = GraphicsDevice.Presenter.BackBuffer.ViewWidth;
             height = GraphicsDevice.Presenter.BackBuffer.ViewHeight;

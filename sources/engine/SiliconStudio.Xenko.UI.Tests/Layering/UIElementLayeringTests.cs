@@ -19,6 +19,11 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
     [System.ComponentModel.Description("Tests for UIElement layering")]
     public class UIElementLayeringTests : UIElement
     {
+        protected override IEnumerable<IUIElementChildren> EnumerateChildren()
+        {
+            throw new NotImplementedException();
+        }
+
         private Random rand;
 
         /// <summary>

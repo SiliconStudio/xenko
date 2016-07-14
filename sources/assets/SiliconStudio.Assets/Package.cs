@@ -780,7 +780,7 @@ namespace SiliconStudio.Assets
                 // Load assets
                 if (loadParameters.AutoLoadTemporaryAssets)
                 {
-                    LoadTemporaryAssets(log, loadParameters.AssetFiles, loadParameters.CancelToken, loadParameters.AssetFilter);
+                    LoadTemporaryAssets(log, loadParameters.AssetFiles, loadParameters.CancelToken, loadParameters.TemporaryAssetsInMsbuild, loadParameters.TemporaryAssetFilter);
                 }
 
                 // Convert UPath to absolute
@@ -868,12 +868,13 @@ namespace SiliconStudio.Assets
         /// <param name="log">The log.</param>
         /// <param name="assetFiles">The asset files (loaded from <see cref="ListAssetFiles"/> if null).</param>
         /// <param name="cancelToken">The cancel token.</param>
+        /// <param name="listAssetsInMsbuild">Specifies if we need to evaluate MSBuild files for assets.</param>
         /// <param name="filterFunc">A function that will filter assets loading</param>
         /// <returns>A logger that contains error messages while refreshing.</returns>
         /// <exception cref="System.InvalidOperationException">Package RootDirectory is null
         /// or
         /// Package RootDirectory [{0}] does not exist.ToFormat(RootDirectory)</exception>
-        public void LoadTemporaryAssets(ILogger log, IList<PackageLoadingAssetFile> assetFiles = null, CancellationToken? cancelToken = null, Func<PackageLoadingAssetFile, bool> filterFunc = null)
+        public void LoadTemporaryAssets(ILogger log, IList<PackageLoadingAssetFile> assetFiles = null, CancellationToken? cancelToken = null, bool listAssetsInMsbuild = true, Func<PackageLoadingAssetFile, bool> filterFunc = null)
         {
             if (log == null) throw new ArgumentNullException(nameof(log));
 
@@ -889,7 +890,7 @@ namespace SiliconStudio.Assets
 
             // List all package files on disk
             if (assetFiles == null)
-                assetFiles = ListAssetFiles(log, this, cancelToken);
+                assetFiles = ListAssetFiles(log, this, listAssetsInMsbuild, cancelToken);
 
             var progressMessage = $"Loading Assets from Package [{FullPath.GetFileNameWithExtension()}]";
 
@@ -1224,7 +1225,7 @@ namespace SiliconStudio.Assets
             return existingAssetFolders;
         }
 
-        public static List<PackageLoadingAssetFile> ListAssetFiles(ILogger log, Package package, CancellationToken? cancelToken)
+        public static List<PackageLoadingAssetFile> ListAssetFiles(ILogger log, Package package, bool listAssetsInMsbuild, CancellationToken? cancelToken)
         {
             var listFiles = new List<PackageLoadingAssetFile>();
 
@@ -1286,7 +1287,10 @@ namespace SiliconStudio.Assets
             }
 
             //find also assets in the csproj
-            FindCodeAssetsInProject(listFiles, package);
+            if (listAssetsInMsbuild)
+            {
+                FindCodeAssetsInProject(listFiles, package);
+            }
 
             return listFiles;
         }

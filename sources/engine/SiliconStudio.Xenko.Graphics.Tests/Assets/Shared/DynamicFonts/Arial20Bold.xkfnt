@@ -8,4 +8,3 @@ FontSource: !SystemFontProvider
     Style: Bold
 FontType: !RuntimeRasterizedSpriteFontType
     ~Id: 4dfba21a-aeca-463e-aaf8-1af1dba6345a
-    Size: 21.33333
