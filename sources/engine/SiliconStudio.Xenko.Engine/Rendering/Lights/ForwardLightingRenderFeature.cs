@@ -115,6 +115,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         {
             base.InitializeCore();
 
+            // Due to a bug in the OpenGL implementation of macOS and while we find a workaround, we
+            // only enable the cluster list renderer for non-macOS platforms for the time being.
+#if !SILICONSTUDIO_PLATFORM_MACOS
             // TODO: Make this pluggable
             if (Context.GraphicsDevice.Features.RequestedProfile >= GraphicsProfile.Level_10_0)
             {
@@ -125,6 +128,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 RegisterLightGroupRenderer(typeof(LightSpot), new LightSpotGroupRenderer { NonShadowRenderer = clusteredLightRenderer.SpotRenderer });
             }
             else
+#endif
             {
                 RegisterLightGroupRenderer(typeof(LightPoint), new LightPointGroupRenderer());
                 RegisterLightGroupRenderer(typeof(LightSpot), new LightSpotGroupRenderer());
