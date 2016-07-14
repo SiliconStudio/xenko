@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Graphics
         protected Buffer InitializeFromImpl(BufferDescription description, BufferFlags viewFlags, PixelFormat viewFormat, IntPtr dataPointer)
         {
             bufferDescription = description;
-            nativeDescription = ConvertToNativeDescription(Description);
+            nativeDescription = ConvertToNativeDescription(GraphicsDevice, Description);
             ViewFlags = viewFlags;
             InitCountAndViewFormat(out this.elementCount, ref viewFormat);
             ViewFormat = viewFormat;
@@ -155,7 +155,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                     commandList.Close();
 
-                    GraphicsDevice.NativeCommandQueue.ExecuteCommandList(commandList);
+                    GraphicsDevice.WaitCopyQueue();
                 }
             }
 
@@ -225,12 +225,12 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        private static SharpDX.Direct3D12.ResourceDescription ConvertToNativeDescription(BufferDescription bufferDescription)
+        private static SharpDX.Direct3D12.ResourceDescription ConvertToNativeDescription(GraphicsDevice graphicsDevice, BufferDescription bufferDescription)
         {
             var size = bufferDescription.SizeInBytes;
 
-            // TODO D3D12 for now, ensure size is multiple of 256 (for cbuffer views)
-            size = (size + 255) & ~255;
+            // TODO D3D12 for now, ensure size is multiple of ConstantBufferDataPlacementAlignment (for cbuffer views)
+            size = (size + graphicsDevice.ConstantBufferDataPlacementAlignment - 1) / graphicsDevice.ConstantBufferDataPlacementAlignment * graphicsDevice.ConstantBufferDataPlacementAlignment;
 
             return SharpDX.Direct3D12.ResourceDescription.Buffer(size);
         }

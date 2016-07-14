@@ -44,6 +44,8 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     public partial class GraphicsDevice
     {
+        internal readonly int ConstantBufferDataPlacementAlignment = 16;
+
         private static readonly Logger Log = GlobalLogger.GetLogger("GraphicsDevice");
 
         internal int FrameCounter;

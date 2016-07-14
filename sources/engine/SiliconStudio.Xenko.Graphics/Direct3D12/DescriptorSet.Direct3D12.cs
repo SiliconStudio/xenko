@@ -102,10 +102,11 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="size">The constant buffer view size.</param>
         public void SetConstantBuffer(int slot, Buffer buffer, int offset, int size)
         {
+            var constantBufferDataPlacementAlignment = Device.ConstantBufferDataPlacementAlignment;
             Device.NativeDevice.CreateConstantBufferView(new ConstantBufferViewDescription
             {
                 BufferLocation = buffer.GPUVirtualAddress + offset,
-                SizeInBytes = (size + 255) & ~255, // CB size needs to be 256-byte aligned
+                SizeInBytes = (size + constantBufferDataPlacementAlignment) / constantBufferDataPlacementAlignment * constantBufferDataPlacementAlignment, // CB size needs to be 256-byte aligned
             }, SrvStart + BindingOffsets[slot]);
         }
 
