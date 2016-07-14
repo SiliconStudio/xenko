@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interop;
@@ -118,13 +117,6 @@ namespace SiliconStudio.Presentation.Controls
                     break;
                 case NativeHelper.WM_MOUSEMOVE:
                     ++mouseMoveCount;
-                    //task = Dispatcher.InvokeAsync(() =>
-                    //{
-                    //    //RaiseMouseInputReportEvent(lParam);
-                    //    RaiseMouseEvent(Mouse.PreviewMouseMoveEvent);
-                    //    RaiseMouseEvent(Mouse.MouseMoveEvent);
-                    //});
-                    //task.Wait(TimeSpan.FromSeconds(1.0f));
                     break;
                 case NativeHelper.WM_CONTEXTMENU:
                     // TODO: Tracking drag offset would be better, but might be difficult since we replace the mouse to its initial position each time it is moved.
@@ -175,15 +167,6 @@ namespace SiliconStudio.Presentation.Controls
             });
         }
 
-        private void RaiseMouseEvent(RoutedEvent routedEvent)
-        {
-            RaiseEvent(new MouseEventArgs(Mouse.PrimaryDevice, Environment.TickCount)
-            {
-                RoutedEvent = routedEvent,
-                Source = this,
-            });
-        }
-
         private IntPtr ContextMenuWndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             switch (msg)
@@ -207,77 +190,5 @@ namespace SiliconStudio.Presentation.Controls
             }
             return IntPtr.Zero;
         }
-
-        //private void RaiseMouseInputReportEvent(IntPtr lParam)
-        //{
-        //    var localPosition = new Point((short)(lParam.ToInt64() & 0xFFFF), (lParam.ToInt64() & 0xFFFF0000) >> 16);
-        //    var offset = TransformToAncestor(this.FindVisualRoot()).Transform(new Point(0, 0));
-        //    var x = localPosition.X + offset.X;
-        //    var y = localPosition.Y + offset.Y;
-        //    RaiseMouseInputReportEvent(this, Environment.TickCount, (int)x, (int)y, 0);
-        //}
-
-        //private static void RaiseMouseInputReportEvent(Visual eventSource, int timestamp, int pointX, int pointY, int wheel)
-        //{
-        //    var targetAssembly = Assembly.GetAssembly(typeof(InputEventArgs));
-        //    var mouseInputReportType = targetAssembly.GetType("System.Windows.Input.RawMouseInputReport");
-
-        //    var mouseInputReport = mouseInputReportType.GetConstructors()[0].Invoke(new object[]
-        //    {
-        //        InputMode.Foreground,
-        //        timestamp,
-        //        PresentationSource.FromVisual(eventSource),
-        //        RawMouseActions.AbsoluteMove | RawMouseActions.Activate,
-        //        pointX,
-        //        pointY,
-        //        wheel,
-        //        IntPtr.Zero
-        //    });
-
-        //    mouseInputReportType
-        //        .GetField("_isSynchronize", BindingFlags.NonPublic | BindingFlags.Instance)
-        //        .SetValue(mouseInputReport, true);
-
-        //    var inputReportEventArgs = (InputEventArgs)targetAssembly
-        //        .GetType("System.Windows.Input.InputReportEventArgs")
-        //        .GetConstructors()[0]
-        //        .Invoke(new[]
-        //        {
-        //            Mouse.PrimaryDevice,
-        //            mouseInputReport
-        //        });
-
-        //    inputReportEventArgs.RoutedEvent = (RoutedEvent)typeof(InputManager)
-        //        .GetField("PreviewInputReportEvent", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)
-        //        .GetValue(null);
-
-        //    InputManager.Current.ProcessInput((InputEventArgs)inputReportEventArgs);
-        //}
-
-        //[Flags]
-        //internal enum RawMouseActions
-        //{
-        //    None = 0,
-        //    AttributesChanged = 1,
-        //    Activate = 2,
-        //    Deactivate = 4,
-        //    RelativeMove = 8,
-        //    AbsoluteMove = 16,
-        //    VirtualDesktopMove = 32,
-        //    Button1Press = 64,
-        //    Button1Release = 128,
-        //    Button2Press = 256,
-        //    Button2Release = 512,
-        //    Button3Press = 1024,
-        //    Button3Release = 2048,
-        //    Button4Press = 4096,
-        //    Button4Release = 8192,
-        //    Button5Press = 16384,
-        //    Button5Release = 32768,
-        //    VerticalWheelRotate = 65536,
-        //    HorizontalWheelRotate = 131072,
-        //    QueryCursor = 262144,
-        //    CancelCapture = 524288
-        //}
     }
 }
