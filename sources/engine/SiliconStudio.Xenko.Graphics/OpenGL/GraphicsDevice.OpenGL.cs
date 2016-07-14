@@ -346,14 +346,24 @@ namespace SiliconStudio.Xenko.Graphics
         {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             const string shaderVersion = "#version 100\n";
+            const string inAttribute = "attribute";
+            const string outAttribute = "varying";
+            const string fragColorDeclaration = "";
+            const string fragColorVariable = "gl_FragColor";
+            const string textureAPI = "texture2D";
 #else
             const string shaderVersion = "#version 410\n";
+            const string inAttribute = "in";
+            const string outAttribute = "out";
+            const string fragColorDeclaration = "out vec4 gFragColor;\n";
+            const string fragColorVariable = "gFragColor";
+            const string textureAPI = "texture";
 #endif
 
             const string copyVertexShaderSource =
                 shaderVersion +
-                "attribute vec2 aPosition;   \n" +
-                "varying vec2 vTexCoord;     \n" +
+                inAttribute + " vec2 aPosition;   \n" +
+                outAttribute + " vec2 vTexCoord;  \n" +
                 "uniform vec4 uScale;     \n" +
                 "uniform vec4 uOffset;     \n" +
                 "void main()                 \n" +
@@ -366,22 +376,24 @@ namespace SiliconStudio.Xenko.Graphics
             const string copyFragmentShaderSource =
                 shaderVersion +
                 "precision mediump float;                            \n" +
-                "varying vec2 vTexCoord;                             \n" +
+                inAttribute + " vec2 vTexCoord;                     \n" +
+                fragColorDeclaration +
                 "uniform sampler2D s_texture;                        \n" +
                 "void main()                                         \n" +
                 "{                                                   \n" +
-                "    gl_FragColor = texture2D(s_texture, vTexCoord); \n" +
+                "    " + fragColorVariable + " = " + textureAPI + "(s_texture, vTexCoord); \n" +
                 "}                                                   \n";
 
             const string copyFragmentShaderSourceSRgb =
                 shaderVersion +
                 "precision mediump float;                            \n" +
-                "varying vec2 vTexCoord;                             \n" +
+                inAttribute + " vec2 vTexCoord;                     \n" +
+                fragColorDeclaration +
                 "uniform sampler2D s_texture;                        \n" +
                 "void main()                                         \n" +
                 "{                                                   \n" +
-                "    vec4 color = texture2D(s_texture, vTexCoord);   \n" +
-                "    gl_FragColor = vec4(sqrt(color.rgb), color.a); \n" +  // approximation of linear to SRgb
+                "    vec4 color = " + textureAPI + "(s_texture, vTexCoord);   \n" +
+                "    " + fragColorVariable + " = vec4(sqrt(color.rgb), color.a); \n" +  // approximation of linear to SRgb
                 "}                                                   \n";
 
             // First initialization of shader program
