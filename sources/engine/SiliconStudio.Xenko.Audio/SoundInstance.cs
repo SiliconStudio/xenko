@@ -252,8 +252,11 @@ namespace SiliconStudio.Xenko.Audio
 
             AudioLayer.SourceStop(Source);
 
-            playingQueued = false; //forget the task anywawy in this case
-            soundSource?.Restart();
+            if (soundSource != null)
+            {
+                playingQueued = false; //forget the task anywawy in this case
+                soundSource.Restart();
+            }
 
             playState = SoundPlayState.Stopped;
         }
@@ -303,8 +306,8 @@ namespace SiliconStudio.Xenko.Audio
 
                     Task.Run(async () =>
                     {
-                        await soundSource.ReadyToPlay.Task;
-                        AudioLayer.SourcePlay(Source);
+                        var play = await soundSource.ReadyToPlay.Task;
+                        if(play) AudioLayer.SourcePlay(Source);
                         playingQueued = false;
                     });
                 }
@@ -358,11 +361,12 @@ namespace SiliconStudio.Xenko.Audio
             var state = playState;
             if (state == SoundPlayState.Playing)
             {
-                Stop();
+                AudioLayer.SourceStop(Source);
+                playState = SoundPlayState.Stopped;
             }
 
             if (soundSource == null)
-            {
+            {                
                 AudioLayer.SourceSetRange(Source, range.Start.TotalSeconds, range.End.TotalSeconds);
             }
             else

@@ -113,6 +113,7 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         public virtual void Restart()
         {
+            ReadyToPlay.TrySetResult(false);
             ReadyToPlay = new TaskCompletionSource<bool>();
             readyToPlay = false;
             prebufferedCount = 0;

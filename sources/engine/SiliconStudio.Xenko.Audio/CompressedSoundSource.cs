@@ -23,7 +23,6 @@ namespace SiliconStudio.Xenko.Audio
         private bool ended;
         private volatile bool looped;
         private volatile bool restart;
-        private volatile bool flushAndRestart;
         private readonly int numberOfPackets;
         private int currentPacketIndex;
         private int startingPacketIndex;
@@ -105,7 +104,7 @@ namespace SiliconStudio.Xenko.Audio
                     if (!source.dispose)
                     {
 restart:
-                        if (source.restart || source.flushAndRestart)
+                        if (source.restart)
                         {
                             source.compressedSoundStream.Position = 0;
                             source.begin = true;
@@ -115,14 +114,6 @@ restart:
                             source.startPktSampleIndex = 0;
                             source.endPktSampleIndex = 0;
                             source.endPacketIndex = source.numberOfPackets;                          
-
-                            //flush buffers, remove any queued buffer
-                            if (source.flushAndRestart)
-                            {
-                                AudioLayer.SourceFlushBuffers(source.SoundInstance.Source);
-                            }
-
-                            source.flushAndRestart = false;
 
                             PlayRange range;
                             lock (source.rangeLock)
@@ -241,14 +232,10 @@ restart:
 
         public override int MaxNumberOfBuffers => NumberOfBuffers;
 
-        /// <summary>
-        /// Restarts streaming from the beginning.
-        /// </summary>
         public override void Restart()
         {
-            base.Restart();
-
-            flushAndRestart = true;
+            restart = true;
+            base.Restart();           
         }
 
         /// <summary>
@@ -265,7 +252,7 @@ restart:
             lock (rangeLock)
             {
                 playRange = range;
-                flushAndRestart = true; //flag for restart, flush etc
+                Restart();
             }
         }
 
