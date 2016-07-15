@@ -656,7 +656,7 @@ namespace SiliconStudio.Xenko.Graphics
                     if (description.Dimension == TextureDimension.TextureCube)
                     {
                         header->SurfaceFlags |= DDS.SurfaceFlags.Cubemap;
-                        header->CubemapFlags |= DDS.CubemapFlags.AllFaces;
+                        header->CubemapFlags |= DDS.CubemapFlags.CubeMap | DDS.CubemapFlags.AllFaces;
                     }
                     break;
 

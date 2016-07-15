@@ -214,6 +214,10 @@
   <Target Name="SiliconStudioComputeGraphicsPlatformFromGameSettings" Inputs="$(SiliconStudioXenkoGameSettings)" Outputs="$(IntermediateOutputPath)XenkoGraphicsPlatform.cache" Condition="'$(SiliconStudioCurrentPackagePath)' != ''">
     <Error Condition="'$(SiliconStudioBuildProfile)' == ''" Text="The asset compiler is requiring the property (SiliconStudioBuildProfile) to be defined"/>
     <Error Condition="!Exists('$(SiliconStudioCurrentPackagePath)')" Text="Unable to find package decription from path [$(SiliconStudioCurrentPackagePath)]"/>
+
+    <!-- Ensure the output directory exists -->
+    <MakeDir Directories="$(TargetDir)"/>
+    <MakeDir Directories="$(IntermediateOutputPath)"/>
     
     <!-- Get the real graphics platform from .xkpkg -->
     <Exec WorkingDirectory="$(TargetDir)" ConsoleToMSBuild="true"
@@ -259,7 +263,13 @@
       <SiliconStudioXenkoCompileAssetCommandProxy Condition="'$(SiliconStudioBuildEngineLogVerbose)' != ''">$(SiliconStudioXenkoCompileAssetCommandProxy) --verbose</SiliconStudioXenkoCompileAssetCommandProxy>
       <SiliconStudioXenkoCompileAssetCommandProxy Condition="'$(SiliconStudioBuildEngineLogDebug)' != ''">$(SiliconStudioXenkoCompileAssetCommandProxy) --debug</SiliconStudioXenkoCompileAssetCommandProxy>
     </PropertyGroup>
+
+    <!-- Ensure the output directory exists -->
+    <MakeDir Directories="$(TargetDir)"/>
+
+    <!-- Compile assets -->
     <Exec WorkingDirectory="$(TargetDir)" Command="$(SiliconStudioXenkoCompileAssetCommandProxy)" />
+    
     <!-- Android specific: include build output in _AndroidAssetsDest so that APK is regenerated -->
     <ItemGroup Condition="'$(SiliconStudioPlatform)' == 'Android'">
       <_AndroidAssetsDest Include="$(SiliconStudioCompileAssetOutputPath)\**\*.*" />

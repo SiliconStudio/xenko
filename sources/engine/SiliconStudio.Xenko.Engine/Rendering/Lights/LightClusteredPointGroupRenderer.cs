@@ -175,7 +175,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 base.ApplyViewParameters(context, viewIndex, parameters);
 
                 var renderView = renderViews[viewIndex];
+
                 var viewSize = renderView.ViewSize;
+
+                // No screen size set?
+                if (viewSize.X == 0 || viewSize.Y == 0)
+                    return;
+
                 var clusterCountX = ((int)viewSize.X + ClusterSize - 1) / ClusterSize;
                 var clusterCountY = ((int)viewSize.Y + ClusterSize - 1) / ClusterSize;
 

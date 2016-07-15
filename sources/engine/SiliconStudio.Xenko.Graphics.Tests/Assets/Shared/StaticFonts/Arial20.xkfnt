@@ -8,7 +8,6 @@ FontSource: !SystemFontProvider
     Style: Regular
 FontType: !OfflineRasterizedSpriteFontType
     ~Id: d26d2c89-d6d7-4afe-b05b-f36e1ee6077e
-    Size: 21.33333
     CharacterSet: 
     CharacterRegions:
         -   ~Id: 4be21d03-860d-434a-9a9c-eb49957d4553

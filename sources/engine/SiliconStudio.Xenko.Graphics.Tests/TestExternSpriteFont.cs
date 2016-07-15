@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public TestExternSpriteFont()
         {
-            CurrentVersion = 4;
+            CurrentVersion = 5; // Font names & sizes changed slightly
         }
 
         protected override void RegisterTests()

@@ -1,11 +1,7 @@
 !SceneAsset
 Id: b47e4609-0125-41bd-a26e-0fdf9184327e
-SerializedVersion: {Xenko: 1.7.0-beta02}
+SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
-Hierarchy:
-    ~Id: e8d7e08d-c5c0-4168-abf2-d6d2b7493b7f
-    RootEntities: []
-    Entities: []
 SceneSettings:
     ~Id: 59724e54-32c5-4e33-af6e-a628910d90b9
     GraphicsCompositor: !SceneGraphicsCompositorLayers
@@ -24,3 +20,7 @@ SceneSettings:
         Mode: !SceneEditorGraphicsModeLDRSettings
             ~Id: c20bb08f-b220-4d37-8db2-98373c9bb17f
             BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+Hierarchy:
+    ~Id: e8d7e08d-c5c0-4168-abf2-d6d2b7493b7f
+    RootPartIds: []
+    Parts: []

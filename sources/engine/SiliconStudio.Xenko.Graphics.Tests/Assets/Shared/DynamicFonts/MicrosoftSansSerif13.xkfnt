@@ -8,5 +8,5 @@ FontSource: !SystemFontProvider
     Style: Regular
 FontType: !RuntimeRasterizedSpriteFontType
     ~Id: 09d0e55c-30ee-4071-a203-f8ff75d9b692
-    Size: 13.33333
+    Size: 13.0
     AntiAlias: ClearType

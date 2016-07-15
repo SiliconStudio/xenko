@@ -189,7 +189,8 @@ namespace SiliconStudio.Assets.CompilerApp
                 AutoLoadTemporaryAssets = true,
                 LoadAssemblyReferences = false,
                 AutoCompileProjects = false,
-                AssetFilter = (asset) => asset.AssetPath == GameSettingsAsset.GameSettingsLocation
+                TemporaryAssetFilter = (asset) => asset.AssetPath == GameSettingsAsset.GameSettingsLocation,
+                TemporaryAssetsInMsbuild = false,
             });
 
             if (simplePackage == null

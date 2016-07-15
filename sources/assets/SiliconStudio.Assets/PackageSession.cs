@@ -954,7 +954,7 @@ namespace SiliconStudio.Assets
                 package.LoadAssemblies(log, newLoadParameters);
 
                 // Load list of assets
-                newLoadParameters.AssetFiles = Package.ListAssetFiles(log, package, loadParameters.CancelToken);
+                newLoadParameters.AssetFiles = Package.ListAssetFiles(log, package, true, loadParameters.CancelToken);
 
                 if (pendingPackageUpgrades.Count > 0)
                 {
