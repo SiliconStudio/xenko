@@ -36,7 +36,6 @@ xnAudioBufferDestroy
 xnAudioBufferFill
 xnAudioSourceSetBuffer
 xnAudioSourceQueueBuffer
-xnAudioSourceFlushBuffers
 xnAudioSourceGetFreeBuffer
 xnAudioSourcePlay
 xnAudioSourcePause

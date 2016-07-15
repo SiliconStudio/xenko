@@ -1,6 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+#include "Common.h"
+
 #if defined(LINUX) || defined(IOS) || !defined(__clang__)
 
 #include "../../../../deps/NativePath/NativePath.h"
@@ -68,6 +70,7 @@ extern "C" {
 		LPALGETSOURCEF GetSourceF;
 		LPALSOURCEFV SourceFV;
 		LPALLISTENERFV ListenerFV;
+		LPALLISTENERF ListenerF;
 		LPALGETERROR GetErrorAL;
 
 		void* OpenALLibrary = NULL;
@@ -190,6 +193,8 @@ extern "C" {
 			if (!SourceFV) return false;
 			ListenerFV = (LPALLISTENERFV)GetSymbolAddress(OpenALLibrary, "alListenerfv");
 			if (!ListenerFV) return false;
+			ListenerF = (LPALLISTENERF)GetSymbolAddress(OpenALLibrary, "alListenerf");
+			if (!ListenerF) return false;
 			GetErrorAL = (LPALGETERROR)GetSymbolAddress(OpenALLibrary, "alGetError");
 			if (!GetErrorAL) return false;
 
@@ -213,9 +218,8 @@ extern "C" {
 			short* pcm = NULL;
 			int size;
 			int sampleRate;
-			bool beginOfStream = false;
-			bool endOfStreamOrLoop = false;
 			ALuint buffer;
+			BufferType type;
 		};
 
 		struct xnAudioSource;
@@ -298,7 +302,7 @@ extern "C" {
 								source->flushed = false;
 								source->dequeuedTime = 0.0;
 							}
-							else if (bufferPtr->endOfStreamOrLoop)
+							else if (bufferPtr->type == EndOfStream || bufferPtr->type == EndOfLoop)
 							{
 								source->dequeuedTime = 0.0;
 							}
@@ -356,7 +360,7 @@ extern "C" {
 			for(auto listener : device->listeners)
 			{
 				ContextState lock(listener->context);
-				alListenerf(AL_GAIN, volume);
+				ListenerF(AL_GAIN, volume);
 			}
 			device->deviceLock.Unlock();
 		}
@@ -522,33 +526,15 @@ extern "C" {
 			SourceI(source->source, AL_BUFFER, buffer->buffer);
 		}
 
-		enum BufferType
-		{
-			None,
-			BeginOfStream,
-			EndOfStream,
-			EndOfLoop
-		};
-
 		void xnAudioSourceQueueBuffer(xnAudioSource* source, xnAudioBuffer* buffer, short* pcm, int bufferSize, BufferType type)
 		{
 			ContextState lock(source->listener->context);
 
-			buffer->beginOfStream = type == BeginOfStream;
-			buffer->endOfStreamOrLoop = type == EndOfStream || type == EndOfLoop;
+			buffer->type = type;
 			buffer->size = bufferSize;
 			BufferData(buffer->buffer, source->mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, pcm, bufferSize, source->sampleRate);
 			SourceQueueBuffers(source->source, 1, &buffer->buffer);
 			source->listener->buffers[buffer->buffer] = buffer;
-		}
-
-		void xnAudioSourceFlushBuffers(xnAudioSource* source)
-		{
-			ContextState lock(source->listener->context);
-
-			SourceStop(source->source);
-
-			source->flushed = true;
 		}
 
 		xnAudioBuffer* xnAudioSourceGetFreeBuffer(xnAudioSource* source)
@@ -584,6 +570,7 @@ extern "C" {
 			ContextState lock(source->listener->context);
 
 			SourceStop(source->source);
+			source->flushed = true;
 		}
 
 		void xnAudioListenerPush3D(xnAudioListener* listener, float* pos, float* forward, float* up, float* vel)

@@ -1,6 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+#include "Common.h"
+
 #if defined(WINDOWS_DESKTOP) || defined(WINDOWS_UWP) || defined(WINDOWS_STORE) || defined(WINDOWS_PHONE) || !defined(__clang__)
 
 #include "../../../../deps/NativePath/NativePath.h"
@@ -1238,7 +1240,7 @@ extern "C" {
 		{
 			XAUDIO2_BUFFER buffer_;
 			int length_;
-			bool beginOfStream_;
+			BufferType type_;
 			xnAudioSource* source_;
 		};
 
@@ -1398,9 +1400,9 @@ extern "C" {
 			volatile float pitch_ = 1.0f;
 			volatile float doppler_pitch_ = 1.0f;
 
-			SpinLock bufferLock;
-			xnAudioBuffer** freeBuffers;
-			int freeBuffersMax;
+			SpinLock bufferLock_;
+			xnAudioBuffer** freeBuffers_;
+			int freeBuffersMax_;
 
 			volatile int samplesAtBegin = 0;
 
@@ -1454,11 +1456,11 @@ extern "C" {
 			}
 
 			//we could have used a tinystl vector but it did not link properly on ARM windows... so we just use an array
-			res->freeBuffers = new xnAudioBuffer*[maxNBuffers];
-			res->freeBuffersMax = maxNBuffers;
+			res->freeBuffers_ = new xnAudioBuffer*[maxNBuffers];
+			res->freeBuffersMax_ = maxNBuffers;
 			for (auto i = 0; i < maxNBuffers; i++)
 			{
-				res->freeBuffers[i] = NULL;
+				res->freeBuffers_[i] = NULL;
 			}
 
 			//Normal PCM formal 16 bit shorts
@@ -1510,7 +1512,7 @@ extern "C" {
 		{
 			//this function is called only when the audio source is acutally fully cached in memory, so we deal only with the first buffer
 			source->streamed_ = false;
-			source->freeBuffers[0] = buffer;
+			source->freeBuffers_[0] = buffer;
 			buffer->source_ = source;
 		}
 
@@ -1521,38 +1523,38 @@ extern "C" {
 
 			if (streamed_)
 			{
-				bufferLock.Lock();
+				bufferLock_.Lock();
 
-				for (int i = 0; i < buffer->source_->freeBuffersMax; i++)
+				for (int i = 0; i < buffer->source_->freeBuffersMax_; i++)
 				{
-					if(buffer->source_->freeBuffers[i] == NULL)
+					if(buffer->source_->freeBuffers_[i] == NULL)
 					{
-						buffer->source_->freeBuffers[i] = buffer;
+						buffer->source_->freeBuffers_[i] = buffer;
 						break;
 					}
 				}
 				
-				bufferLock.Unlock();
+				bufferLock_.Unlock();
 			}
 		}
 
 		xnAudioBuffer* xnAudioSourceGetFreeBuffer(xnAudioSource* source)
 		{
 			//this is used only when we are streaming audio, to fetch the next free buffer to fill
-			source->bufferLock.Lock();
+			source->bufferLock_.Lock();
 
 			xnAudioBuffer* buffer = NULL;
-			for (int i = 0; i < source->freeBuffersMax; i++)
+			for (int i = 0; i < source->freeBuffersMax_; i++)
 			{
-				if (source->freeBuffers[i] != NULL)
+				if (source->freeBuffers_[i] != NULL)
 				{
-					buffer = source->freeBuffers[i];
-					source->freeBuffers[i] = NULL;
+					buffer = source->freeBuffers_[i];
+					source->freeBuffers_[i] = NULL;
 					break;
 				}
 			}
 			
-			source->bufferLock.Unlock();
+			source->bufferLock_.Unlock();
 			
 			return buffer;
 		}
@@ -1561,7 +1563,7 @@ extern "C" {
 		{
 			if (!source->streamed_)
 			{
-				xnAudioBuffer* singleBuffer = source->freeBuffers[0];
+				xnAudioBuffer* singleBuffer = source->freeBuffers_[0];
 				source->source_voice_->SubmitSourceBuffer(&singleBuffer->buffer_, NULL);
 			}
 
@@ -1624,7 +1626,7 @@ extern "C" {
 			{
 				//note we are ignoring mono/channels because it will be homogeneous
 				auto elapsed = double(state.SamplesPlayed) / double(source->sampleRate_);
-				auto singleBuffer = source->freeBuffers[0];
+				auto singleBuffer = source->freeBuffers_[0];
 				auto length = singleBuffer->buffer_.PlayLength == 0 ? double(singleBuffer->length_) / double(source->sampleRate_) : double(singleBuffer->buffer_.PlayLength) / double(source->sampleRate_);
 				auto position = elapsed / length;
 				auto repeats = floor(position);
@@ -1643,11 +1645,9 @@ extern "C" {
 
 		void xnAudioSourceSetRange(xnAudioSource* source, double startTime, double stopTime)
 		{
-			if (startTime > stopTime) return; //this is most likely a mistake... get out of here ?
-
 			if(!source->streamed_)
 			{
-				auto singleBuffer = source->freeBuffers[0];
+				auto singleBuffer = source->freeBuffers_[0];
 				if(startTime == 0 && stopTime == 0)
 				{
 					singleBuffer->buffer_.PlayBegin = 0;
@@ -1715,7 +1715,7 @@ extern "C" {
 		{
 			auto buffer = static_cast<xnAudioBuffer*>(context);
 
-			if (buffer->beginOfStream_)
+			if (buffer->type_ == BeginOfStream)
 			{
 				//we need this info to compute position of stream
 				XAUDIO2_VOICE_STATE state;
@@ -1742,14 +1742,6 @@ extern "C" {
 			}
 		}
 
-		enum BufferType
-		{
-			None,
-			BeginOfStream,
-			EndOfStream,
-			EndOfLoop
-		};
-
 		void xnAudioSourceQueueBuffer(xnAudioSource* source, xnAudioBuffer* buffer, short* pcm, int bufferSize, BufferType type)
 		{
 			//used only when streaming, to fill a buffer, often..
@@ -1761,16 +1753,11 @@ extern "C" {
 
 			//flag the stream
 			buffer->buffer_.Flags = type == EndOfStream ? XAUDIO2_END_OF_STREAM : 0;
-			buffer->beginOfStream_ = type == BeginOfStream;
+			buffer->type_ = type;
 			
 			buffer->length_ = buffer->buffer_.AudioBytes = bufferSize;
 			memcpy(const_cast<char*>(buffer->buffer_.pAudioData), pcm, bufferSize);
 			source->source_voice_->SubmitSourceBuffer(&buffer->buffer_);
-		}
-
-		void xnAudioSourceFlushBuffers(xnAudioSource* source)
-		{
-			source->source_voice_->FlushSourceBuffers();
 		}
 
 		void xnAudioSourcePause(xnAudioSource* source)

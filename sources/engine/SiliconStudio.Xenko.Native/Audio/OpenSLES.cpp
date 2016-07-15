@@ -1,6 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+#include "Common.h"
+
 #if defined(ANDROID) || !defined(__clang__)
 
 #include "../../../../deps/NativePath/NativePath.h"
@@ -90,8 +92,8 @@ extern "C" {
 		struct xnAudioBuffer
 		{
 			int dataLength;
-			bool endOfStream;
 			char* dataPtr;
+			BufferType type;
 		};
 
 		struct xnAudioListener
@@ -117,6 +119,7 @@ extern "C" {
 			float localizationGain = 1.0f;
 			volatile float pitch = 1.0f;
 			volatile float doppler_pitch = 1.0f;
+			volatile double streamPositionDiff = 0.0f;
 
 			volatile char* subDataPtr;
 			volatile int subLength;
@@ -237,7 +240,7 @@ extern "C" {
 			(void)listener;
 		}
 
-		void PlayerCallback(SLAndroidSimpleBufferQueueItf bq, void *context) 
+		void QueueCallback(SLAndroidSimpleBufferQueueItf bq, void *context) 
 		{
 			(void)bq;
 			auto source = static_cast<xnAudioSource*>(context);
@@ -259,26 +262,42 @@ extern "C" {
 				//release the next buffer
 				if (!source->streamBuffers.empty())
 				{
-					auto nextBuffer = source->streamBuffers.front();
+					auto playedBuffer = source->streamBuffers.front();
 					source->streamBuffers.erase(source->streamBuffers.begin());
 
-					if(nextBuffer->endOfStream && !source->looped)
+					if(playedBuffer->type == EndOfStream)
 					{
-						(*source->player)->SetPlayState(source->player, SL_PLAYSTATE_STOPPED);
-						
-						//flush buffers
-						for(auto buffer : source->streamBuffers)
+						if (!source->looped)
 						{
-							source->freeBuffers.push_back(buffer);
+							(*source->player)->SetPlayState(source->player, SL_PLAYSTATE_STOPPED);
+
+							//flush buffers
+							for (auto buffer : source->streamBuffers)
+							{
+								source->freeBuffers.push_back(buffer);
+							}
+							source->streamBuffers.clear();
 						}
-						source->streamBuffers.clear();
+					}
+					else if(playedBuffer->type == EndOfLoop)
+					{
+						SLmillisecond ms;
+						(*source->player)->GetPosition(source->player, &ms);
+						source->streamPositionDiff = (double)ms / 1000.0;
 					}
 
-					source->freeBuffers.push_back(nextBuffer);
+					source->freeBuffers.push_back(playedBuffer);
 				}
 				
 				source->buffersLock.Unlock();				
 			}
+		}
+
+		void PlayerCallback(SLPlayItf caller, void *pContext, SLuint32 event)
+		{
+			(void)caller;
+			auto source = static_cast<xnAudioSource*>(pContext);
+
 		}
 
 		xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener, int sampleRate, int maxNBuffers, npBool mono, npBool spatialized, npBool streamed)
@@ -381,7 +400,23 @@ extern "C" {
 				return NULL;
 			}
 
-			result = (*res->queue)->RegisterCallback(res->queue, PlayerCallback, res);
+			result = (*res->queue)->RegisterCallback(res->queue, QueueCallback, res);
+			if (result != SL_RESULT_SUCCESS)
+			{
+				DEBUG_BREAK;
+				delete res;
+				return NULL;
+			}
+
+			result = (*res->player)->RegisterCallback(res->player, PlayerCallback, res);
+			if (result != SL_RESULT_SUCCESS)
+			{
+				DEBUG_BREAK;
+				delete res;
+				return NULL;
+			}
+
+			result = (*res->player)->SetCallbackEventsMask(res->player, SL_PLAYEVENT_HEADMOVING);
 			if (result != SL_RESULT_SUCCESS)
 			{
 				DEBUG_BREAK;
@@ -495,19 +530,11 @@ extern "C" {
 			source->buffersLock.Unlock();
 		}
 
-		enum BufferType
-		{
-			None,
-			BeginOfStream,
-			EndOfStream,
-			EndOfLoop
-		};
-
 		void xnAudioSourceQueueBuffer(xnAudioSource* source, xnAudioBuffer* buffer, short* pcm, int bufferSize, BufferType type)
 		{
 			if (!source->streamed) return;
 
-			buffer->endOfStream = type == EndOfStream;
+			buffer->type = type;
 			buffer->dataLength = bufferSize;
 			memcpy(buffer->dataPtr, pcm, bufferSize);
 
@@ -515,23 +542,6 @@ extern "C" {
 
 			source->streamBuffers.push_back(buffer);
 			(*source->queue)->Enqueue(source->queue, buffer->dataPtr, buffer->dataLength);
-
-			source->buffersLock.Unlock();
-		}
-
-		void xnAudioSourceFlushBuffers(xnAudioSource* source)
-		{
-			if (!source->streamed) return;
-
-			(*source->queue)->Clear(source->queue);
-
-			source->buffersLock.Lock();
-
-			for (auto buffer : source->streamBuffers)
-			{
-				source->freeBuffers.push_back(buffer);
-			}
-			source->streamBuffers.clear();
 
 			source->buffersLock.Unlock();
 		}
@@ -569,6 +579,10 @@ extern "C" {
 		{
 			(*source->player)->SetPlayState(source->player, SL_PLAYSTATE_STOPPED);
 
+			//flush
+			(*source->queue)->Clear(source->queue);
+			source->streamPositionDiff = 0.0;
+
 			if(source->streamed)
 			{
 				source->buffersLock.Lock();
@@ -582,6 +596,17 @@ extern "C" {
 
 				source->buffersLock.Unlock();
 			}
+		}
+
+		double xnAudioSourceGetPosition(xnAudioSource* source)
+		{
+			SLmillisecond ms;
+			(*source->player)->GetPosition(source->player, &ms);
+
+			auto time = (double)ms / 1000.0;
+			time *= source->pitch * source->doppler_pitch;
+
+			return time - source->streamPositionDiff;
 		}
 
 		void xnAudioListenerPush3D(xnAudioListener* listener, float* pos, float* forward, float* up, float* vel)
@@ -732,7 +757,7 @@ extern "C" {
 		{
 			(void)sampleRate;
 			(void)mono;
-			buffer->endOfStream = true;
+			buffer->type = EndOfStream;
 			buffer->dataLength = bufferSize;
 			memcpy(buffer->dataPtr, pcm, bufferSize);
 		}
