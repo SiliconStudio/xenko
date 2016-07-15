@@ -4,10 +4,10 @@ using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.UI;
 
-namespace SiliconStudio.Xenko.Assets.Entities
+namespace SiliconStudio.Xenko.Assets.UI
 {
     /// <summary>
-    /// Associate an <see cref="Engine.Entity"/> with design-time data.
+    /// Associate an <see cref="UIElement"/> with design-time data.
     /// </summary>
     [DataContract("UIElementDesign")]
     [NonIdentifiable]
