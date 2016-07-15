@@ -39,6 +39,7 @@ namespace SiliconStudio.Assets
         /// <param name="partDesign">The design part for which to enumerate child parts.</param>
         /// <param name="isRecursive">If true, child design parts will be enumerated recursively.</param>
         /// <returns>A sequence containing the child design parts of the given design part.</returns>
+        /// <remarks>Implementations of this method relies on the <see cref="Hierarchy"/> property to enumerate.</remarks>
         public IEnumerable<TAssetPartDesign> EnumerateChildParts(TAssetPartDesign partDesign, bool isRecursive)
         {
             return EnumerateChildParts(partDesign.Part, isRecursive).Select(e => Hierarchy.Parts[e.Id]);
