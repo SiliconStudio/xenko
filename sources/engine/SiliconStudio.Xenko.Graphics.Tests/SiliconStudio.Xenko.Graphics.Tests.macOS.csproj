@@ -31,36 +31,36 @@
     <IntermediateOutputPath Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(IntermediateOutputPath)-$(SiliconStudioBuildDirExtension)</IntermediateOutputPath>
     <IntermediateOutputPath>$(IntermediateOutputPath)\$(Configuration)</IntermediateOutputPath>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Linux' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|macOS' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_LINUX</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_MACOS;SILICONSTUDIO_PLATFORM_LINUX</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Linux' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|macOS' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_LINUX</DefineConstants>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MACOS;SILICONSTUDIO_PLATFORM_LINUX</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'CoreCLR_Release|Linux' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'CoreCLR_Release|macOS' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_LINUX</DefineConstants>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MACOS;SILICONSTUDIO_PLATFORM_LINUX</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <SiliconStudioRuntime Condition="'$(SiliconStudioProjectType)' == 'Executable'">CoreCLR</SiliconStudioRuntime>
     <SiliconStudioBuildDirExtension Condition="'$(SiliconStudioBuildDirExtension)' == ''">CoreCLR</SiliconStudioBuildDirExtension>
     <DefineConstants>SILICONSTUDIO_RUNTIME_CORECLR;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'CoreCLR_Debug|Linux' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'CoreCLR_Debug|macOS' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_LINUX</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_MACOS;SILICONSTUDIO_PLATFORM_LINUX</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <SiliconStudioRuntime Condition="'$(SiliconStudioProjectType)' == 'Executable'">CoreCLR</SiliconStudioRuntime>
@@ -193,6 +193,7 @@
       <Project>{bb9deeef-f18c-40d8-b016-6434cc71b8c3}</Project>
       <Name>SiliconStudio.Xenko.UI</Name>
     </ProjectReference>
+
   </ItemGroup>
   <Import Condition="'$(SiliconStudioRuntime)' == ''" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="SiliconStudio.Xenko.Graphics.Tests.Shared.targets" />
@@ -210,3 +211,4 @@
   </Target>
   -->
 </Project>
+
