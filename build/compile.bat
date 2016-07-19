@@ -65,6 +65,10 @@ set Project=Xenko.Direct3D.CoreCLR.sln
 call :compile
 if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
+set Project=Xenko.Direct3D12.sln
+call :compile
+if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
+
 set Project=Xenko.Vulkan.sln
 call :compile
 if %ERRORLEVEL% != 0 goto exit
