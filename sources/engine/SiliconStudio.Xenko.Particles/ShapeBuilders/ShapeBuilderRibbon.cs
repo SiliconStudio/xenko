@@ -99,7 +99,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         }
 
         /// <inheritdoc />
-        public unsafe override int BuildVertexBuffer(ref ParticleBufferState bufferState, ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY,
+        public unsafe override int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY,
             ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticleSorter sorter)
         {
             // Get all the required particle fields
@@ -129,7 +129,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                     if ((orderValue >> 16) != (oldOrderValue >> 16)) 
                     {
-                        ribbonizer.Ribbonize(ref bufferState, vtxBuilder, invViewX, invViewY, QuadsPerParticle);
+                        ribbonizer.Ribbonize(ref bufferState, invViewX, invViewY, QuadsPerParticle);
                         ribbonizer.RibbonSplit();
                     }
 
@@ -151,7 +151,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 renderedParticles++;
             }
 
-            ribbonizer.Ribbonize(ref bufferState, vtxBuilder, invViewX, invViewY, QuadsPerParticle);
+            ribbonizer.Ribbonize(ref bufferState, invViewX, invViewY, QuadsPerParticle);
 
             var vtxPerShape = 4 * QuadsPerParticle;
             return renderedParticles * vtxPerShape;
@@ -362,13 +362,13 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             /// <param name="texPolicy">Texture coordinates stretching and stitching policy</param>
             /// <param name="texFactor">Texture coordinates stretching and stitching coefficient</param>
             /// <param name="uvRotate">Texture coordinates rotate and flip policy</param>
-            public unsafe void Ribbonize(ref ParticleBufferState bufferState, ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY, int quadsPerParticle)
+            public unsafe void Ribbonize(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, int quadsPerParticle)
             {
                 if (lastParticle <= 0)
                     return;
 
-                var posAttribute = vtxBuilder.GetAccessor(VertexAttributes.Position);
-                var texAttribute = vtxBuilder.GetAccessor(vtxBuilder.DefaultTexCoords);
+                var posAttribute = bufferState.GetAccessor(VertexAttributes.Position);
+                var texAttribute = bufferState.GetAccessor(bufferState.DefaultTexCoords);
 
                 if (lastParticle <= sections)
                 {
@@ -382,8 +382,8 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                     {
                         for (var vtxIdx = 0; vtxIdx < 4; vtxIdx++)
                         {
-                            vtxBuilder.SetAttribute(ref bufferState, posAttribute, (IntPtr)(&particlePos));
-                            vtxBuilder.SetAttribute(ref bufferState, texAttribute, (IntPtr)(&uvCoord));
+                            bufferState.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                            bufferState.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
                             bufferState.NextVertex();
                         }
                     }
@@ -399,7 +399,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                         ExpandVertices_CatmullRom();
                 }
 
-                vtxBuilder.SetVerticesPerSegment(quadsPerParticle * 6, quadsPerParticle * 4, quadsPerParticle * 2);
+                bufferState.SetVerticesPerSegment(quadsPerParticle * 6, quadsPerParticle * 4, quadsPerParticle * 2);
 
                 // Step 1 - Determine the origin of the ribbon
                 var invViewZ = Vector3.Cross(invViewX, invViewY);
@@ -438,21 +438,21 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                     // Top Left - 0f 0f
                     uvCoord.Y = (TextureCoordinatePolicy == TextureCoordinatePolicy.AsIs) ? 0 : vCoordOld;
-                    vtxBuilder.SetAttribute(ref bufferState, posAttribute, (IntPtr)(&particlePos));
+                    bufferState.SetAttribute(posAttribute, (IntPtr)(&particlePos));
 
                     rotatedCoord = UVRotate.GetCoords(uvCoord);
-                    vtxBuilder.SetAttribute(ref bufferState, texAttribute, (IntPtr)(&rotatedCoord));
+                    bufferState.SetAttribute(texAttribute, (IntPtr)(&rotatedCoord));
 
                     bufferState.NextVertex();
 
 
                     // Top Right - 1f 0f
                     particlePos += oldUnitX * 2;
-                    vtxBuilder.SetAttribute(ref bufferState, posAttribute, (IntPtr)(&particlePos));
+                    bufferState.SetAttribute(posAttribute, (IntPtr)(&particlePos));
 
                     uvCoord.X = 1;
                     rotatedCoord = UVRotate.GetCoords(uvCoord);
-                    vtxBuilder.SetAttribute(ref bufferState, texAttribute, (IntPtr)(&rotatedCoord));
+                    bufferState.SetAttribute(texAttribute, (IntPtr)(&rotatedCoord));
 
                     bufferState.NextVertex();
 
@@ -466,21 +466,21 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                     // Bottom Left - 1f 1f
                     uvCoord.Y = (TextureCoordinatePolicy == TextureCoordinatePolicy.AsIs) ? 1 : vCoordOld;
-                    vtxBuilder.SetAttribute(ref bufferState, posAttribute, (IntPtr)(&particlePos));
+                    bufferState.SetAttribute(posAttribute, (IntPtr)(&particlePos));
 
                     rotatedCoord = UVRotate.GetCoords(uvCoord);
-                    vtxBuilder.SetAttribute(ref bufferState, texAttribute, (IntPtr)(&rotatedCoord));
+                    bufferState.SetAttribute(texAttribute, (IntPtr)(&rotatedCoord));
 
                     bufferState.NextVertex();
 
 
                     // Bottom Right - 0f 1f
                     particlePos -= unitX * 2;
-                    vtxBuilder.SetAttribute(ref bufferState, posAttribute, (IntPtr)(&particlePos));
+                    bufferState.SetAttribute(posAttribute, (IntPtr)(&particlePos));
 
                     uvCoord.X = 0;
                     rotatedCoord = UVRotate.GetCoords(uvCoord);
-                    vtxBuilder.SetAttribute(ref bufferState, texAttribute, (IntPtr)(&rotatedCoord));
+                    bufferState.SetAttribute(texAttribute, (IntPtr)(&rotatedCoord));
 
                     bufferState.NextVertex();
 

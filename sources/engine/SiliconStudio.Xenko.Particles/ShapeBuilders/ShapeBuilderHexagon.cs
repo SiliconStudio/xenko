@@ -32,11 +32,11 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
 
         /// <inheritdoc />
-        public unsafe override int BuildVertexBuffer(ref ParticleBufferState bufferState, ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY, 
+        public unsafe override int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, 
             ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticleSorter sorter)
         {
             // Update the curve samplers if required
-            base.BuildVertexBuffer(ref bufferState, vtxBuilder, invViewX, invViewY, ref spaceTranslation, ref spaceRotation, spaceScale, sorter);
+            base.BuildVertexBuffer(ref bufferState, invViewX, invViewY, ref spaceTranslation, ref spaceRotation, spaceScale, sorter);
 
             SamplerRotation?.UpdateChanges();
 
@@ -58,8 +58,8 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
             var renderedParticles = 0;
 
-            var posAttribute = vtxBuilder.GetAccessor(VertexAttributes.Position);
-            var texAttribute = vtxBuilder.GetAccessor(vtxBuilder.DefaultTexCoords);
+            var posAttribute = bufferState.GetAccessor(VertexAttributes.Position);
+            var texAttribute = bufferState.GetAccessor(bufferState.DefaultTexCoords);
 
             foreach (var particle in sorter)
             {
@@ -102,16 +102,16 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 // Upper half
 
                 // 0f 0f
-                vtxBuilder.SetAttribute(ref bufferState, posAttribute, (IntPtr)(&particlePos));
-                vtxBuilder.SetAttribute(ref bufferState, texAttribute, (IntPtr)(&uvCoord));
+                bufferState.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                bufferState.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
                 bufferState.NextVertex();
 
 
                 // 1f 0f
                 particlePos += unitX;
                 uvCoord.X = 0.75f;
-                vtxBuilder.SetAttribute(ref bufferState, posAttribute, (IntPtr)(&particlePos));
-                vtxBuilder.SetAttribute(ref bufferState, texAttribute, (IntPtr)(&uvCoord));
+                bufferState.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                bufferState.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
                 bufferState.NextVertex();
 
 
@@ -120,31 +120,31 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 particlePos -= unitY;
                 uvCoord.X = 1;
                 uvCoord.Y = 0.5f;
-                vtxBuilder.SetAttribute(ref bufferState, posAttribute, (IntPtr)(&particlePos));
-                vtxBuilder.SetAttribute(ref bufferState, texAttribute, (IntPtr)(&uvCoord));
+                bufferState.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                bufferState.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
                 bufferState.NextVertex();
 
 
                 // 0f 1f
                 particlePos -= unitX * 2;
                 uvCoord.X = 0;
-                vtxBuilder.SetAttribute(ref bufferState, posAttribute, (IntPtr)(&particlePos));
-                vtxBuilder.SetAttribute(ref bufferState, texAttribute, (IntPtr)(&uvCoord));
+                bufferState.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                bufferState.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
                 bufferState.NextVertex();
 
                 // Upper half
 
                 // 0f 0f
-                vtxBuilder.SetAttribute(ref bufferState, posAttribute, (IntPtr)(&particlePos));
-                vtxBuilder.SetAttribute(ref bufferState, texAttribute, (IntPtr)(&uvCoord));
+                bufferState.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                bufferState.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
                 bufferState.NextVertex();
 
 
                 // 1f 0f
                 particlePos += unitX * 2;
                 uvCoord.X = 1;
-                vtxBuilder.SetAttribute(ref bufferState, posAttribute, (IntPtr)(&particlePos));
-                vtxBuilder.SetAttribute(ref bufferState, texAttribute, (IntPtr)(&uvCoord));
+                bufferState.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                bufferState.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
                 bufferState.NextVertex();
 
 
@@ -153,16 +153,16 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 particlePos -= unitY;
                 uvCoord.X = 0.75f;
                 uvCoord.Y = 1;
-                vtxBuilder.SetAttribute(ref bufferState, posAttribute, (IntPtr)(&particlePos));
-                vtxBuilder.SetAttribute(ref bufferState, texAttribute, (IntPtr)(&uvCoord));
+                bufferState.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                bufferState.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
                 bufferState.NextVertex();
 
 
                 // 0f 1f
                 particlePos -= unitX;
                 uvCoord.X = 0.25f;
-                vtxBuilder.SetAttribute(ref bufferState, posAttribute, (IntPtr)(&particlePos));
-                vtxBuilder.SetAttribute(ref bufferState, texAttribute, (IntPtr)(&uvCoord));
+                bufferState.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                bufferState.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
                 bufferState.NextVertex();
 
                 renderedParticles++;

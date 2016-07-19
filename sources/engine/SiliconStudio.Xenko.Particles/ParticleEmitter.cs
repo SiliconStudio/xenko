@@ -981,12 +981,12 @@ namespace SiliconStudio.Xenko.Particles
             // TODO Map the shared buffer and just get a pointer here
             ParticleBufferState bufferState = new ParticleBufferState(VertexBuilder.MapBuffer(commandList), VertexBuilder);
 
-            ShapeBuilder.BuildVertexBuffer(ref bufferState, VertexBuilder, unitX, unitY, ref posIdentity, ref rotIdentity, scaleIdentity, ParticleSorter);
+            ShapeBuilder.BuildVertexBuffer(ref bufferState, unitX, unitY, ref posIdentity, ref rotIdentity, scaleIdentity, ParticleSorter);
 
             bufferState.RestartBuffer();
 
             ShapeBuilder.SetRequiredQuads(ShapeBuilder.QuadsPerParticle, pool.LivingParticles, pool.ParticleCapacity);
-            Material.PatchVertexBuffer(ref bufferState, VertexBuilder, unitX, unitY, ParticleSorter);
+            Material.PatchVertexBuffer(ref bufferState, unitX, unitY, ParticleSorter);
 
             VertexBuilder.UnmapBuffer(commandList);
         }

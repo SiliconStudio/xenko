@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         /// <summary>
         /// Builds the actual vertex buffer for the current frame using the particle data
         /// </summary>
-        /// <param name="vtxBuilder">Target vertex buffer builder</param>
+        /// <param name="bufferState">Target particle buffer state, used to populate the assigned vertex buffer</param>
         /// <param name="invViewX">Unit vector X (right) in camera space, extracted from the inverse view matrix</param>
         /// <param name="invViewY">Unit vector Y (up) in camera space, extracted from the inverse view matrix</param>
         /// <param name="spaceTranslation">Translation of the target draw space in regard to the particle data (world or local)</param>
@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         /// <param name="spaceScale">Uniform scale of the target draw space in regard to the particle data (world or local)</param>
         /// <param name="sorter">Particle enumerator which can be iterated and returns sported particles</param>
         /// <returns></returns>
-        public abstract int BuildVertexBuffer(ref ParticleBufferState bufferState, ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY, 
+        public abstract int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, 
             ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticleSorter sorter);
 
         /// <summary>

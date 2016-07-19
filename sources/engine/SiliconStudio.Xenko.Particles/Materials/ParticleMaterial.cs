@@ -87,11 +87,11 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// Patch the particle's vertex buffer which was already built by the <see cref="ShapeBuilders.ShapeBuilder"/>
         /// This involes animating hte uv coordinates and filling per-particle fields, such as the color field
         /// </summary>
-        /// <param name="vertexBuilder">The target buffer builder to use for patching the vertex data</param>
+        /// <param name="bufferState">The particle buffer state which is used to build the assigned vertex buffer</param>
         /// <param name="invViewX">Unit vector X (right) in camera space, extracted from the inverse view matrix</param>
         /// <param name="invViewY">Unit vector Y (up) in camera space, extracted from the inverse view matrix</param>
         /// <param name="sorter">Particle enumerator which can be iterated and returns sported particles</param>
-        public virtual void PatchVertexBuffer(ref ParticleBufferState bufferState, ParticleVertexBuilder vertexBuilder, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
+        public virtual void PatchVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
         {
         }
 

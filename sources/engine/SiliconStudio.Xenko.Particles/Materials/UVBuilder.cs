@@ -17,9 +17,9 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// Enhances or animates the texture coordinates using already existing base coordinates of (0, 0, 1, 1) or similar
         /// (base texture coordinates may differ depending on the actual shape)
         /// </summary>
-        /// <param name="vertexBuilder">Target vertex buffer builder to use</param>
+        /// <param name="bufferState">The particle buffer state which is used to build the assigned vertex buffer</param>
         /// <param name="sorter"><see cref="ParticleSorter"/> to use to iterate over all particles drawn this frame</param>
         /// <param name="texCoordsDescription">Attribute description of the texture coordinates in the current vertex layout</param>
-        public abstract void BuildUVCoordinates(ref ParticleBufferState bufferState, ParticleVertexBuilder vertexBuilder, ParticleSorter sorter, AttributeDescription texCoordsDescription);
+        public abstract void BuildUVCoordinates(ref ParticleBufferState bufferState, ParticleSorter sorter, AttributeDescription texCoordsDescription);
     }
 }

@@ -166,13 +166,13 @@ namespace SiliconStudio.Xenko.Particles.Materials
         }
 
         /// <inheritdoc />
-        public unsafe override void PatchVertexBuffer(ref ParticleBufferState bufferState, ParticleVertexBuilder vertexBuilder, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
+        public unsafe override void PatchVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
         {
             // If you want, you can implement the base builder here and not call it. It should result in slight speed up
-            base.PatchVertexBuffer(ref bufferState, vertexBuilder, invViewX, invViewY, sorter);
+            base.PatchVertexBuffer(ref bufferState, invViewX, invViewY, sorter);
 
             //  The UV Builder, if present, animates the basic (0, 0, 1, 1) uv coordinates of each billboard
-            UVBuilder?.BuildUVCoordinates(ref bufferState, vertexBuilder, sorter, vertexBuilder.DefaultTexCoords);
+            UVBuilder?.BuildUVCoordinates(ref bufferState, sorter, bufferState.DefaultTexCoords);
             bufferState.RestartBuffer();
 
             // If the particles have color field, the base class should have already passed the information
@@ -180,7 +180,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
                 return;
 
             // If the particles don't have color field but there is no color stream either we don't need to fill anything
-            var colAttribute = vertexBuilder.GetAccessor(VertexAttributes.Color);
+            var colAttribute = bufferState.GetAccessor(VertexAttributes.Color);
             if (colAttribute.Size <= 0)
                 return;
 
@@ -190,7 +190,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
             // TODO: for loop. Remove IEnumerable from sorter
             foreach (var particle in sorter)
             {
-                vertexBuilder.SetAttributePerParticle(ref bufferState, colAttribute, (IntPtr)(&color));
+                bufferState.SetAttributePerParticle(colAttribute, (IntPtr)(&color));
 
                 bufferState.NextParticle();
             }
