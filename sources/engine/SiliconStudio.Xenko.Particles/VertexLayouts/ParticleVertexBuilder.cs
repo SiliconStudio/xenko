@@ -9,6 +9,90 @@ using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Particles.VertexLayouts
 {
+    public struct ParticleBufferState
+    {
+        public IntPtr VertexBuffer;
+        public IntPtr VertexBufferOrigin;
+
+        public int MaxVertices;
+        public int MaxParticles;
+        public int CurrentParticleIndex;
+        public int CurrentVertex;
+        public int VertexStride;
+        public int VerticesPerParticle;
+
+        public int VerticesPerSegFirst;
+        public int VerticesPerSegMiddle;
+        public int VerticesPerSegLast;
+        public int VerticesPerSegCurrent;
+
+        public ParticleBufferState(IntPtr vertexBufferPtr)
+        {
+            VertexBuffer        = vertexBufferPtr;
+            VertexBufferOrigin  = vertexBufferPtr;
+
+            MaxVertices         = 0;
+            MaxParticles        = 0;
+            VertexStride        = 0;
+            CurrentParticleIndex = 0;
+            CurrentVertex       = 0;
+
+            VerticesPerParticle = 4;
+
+            VerticesPerSegCurrent = VerticesPerSegFirst = VerticesPerSegMiddle = VerticesPerSegLast = VerticesPerParticle;
+        }
+
+        /// <summary>
+        /// Advances the pointer to the next vertex in the buffer, so that it can be written
+        /// </summary>
+        public void NextVertex()
+        {
+            if (++CurrentVertex >= MaxVertices)
+                CurrentVertex = MaxVertices - 1;
+
+            VertexBuffer = VertexBufferOrigin + VertexStride * CurrentVertex;
+        }
+
+        /// <summary>
+        /// Advances the pointer to the next particle in the buffer, so that its first vertex can be written
+        /// </summary>
+        public void NextParticle()
+        {
+            if (++CurrentParticleIndex >= MaxParticles)
+                CurrentParticleIndex = MaxParticles - 1;
+
+            VertexBuffer = VertexBufferOrigin + (VertexStride * CurrentParticleIndex * VerticesPerParticle);
+        }
+
+        /// <summary>
+        /// Advances the pointer to the next segment in the buffer, so that its first vertex can be written
+        /// </summary>
+        public void NextSegment()
+        {
+            // The number of segments is tied to the number of particles
+            if (++CurrentParticleIndex >= MaxParticles)
+            {
+                // Already at the last particle
+                CurrentParticleIndex = MaxParticles - 1;
+                return;
+            }
+
+            VertexBuffer += VertexStride * VerticesPerSegCurrent;
+            VerticesPerSegCurrent = (CurrentParticleIndex < MaxParticles - 1) ? VerticesPerSegMiddle : VerticesPerSegLast;
+        }
+
+        /// <summary>
+        /// Moves the index to the beginning of the buffer so that the data can be filled from the first particle again
+        /// </summary>
+        public void RestartBuffer()
+        {
+            VertexBuffer = VertexBufferOrigin;
+            CurrentParticleIndex = 0;
+            CurrentVertex = 0;
+            VerticesPerSegCurrent = VerticesPerSegFirst;
+        }
+    }
+
     /// <summary>
     /// Manager class for the vertex buffer stream which can dynamically change the required vertex layout and rebuild the buffer based on the particle fields
     /// </summary>
@@ -31,13 +115,13 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         private int requiredQuads;
 
         private MappedResource mappedVertices;
-        private IntPtr vertexBuffer = IntPtr.Zero;
-        private IntPtr vertexBufferOrigin = IntPtr.Zero;
+//        private IntPtr vertexBuffer = IntPtr.Zero;
+//        private IntPtr vertexBufferOrigin = IntPtr.Zero;
 
-        private int currentVertex;
-        private int maxVertices;
+//        private int currentVertex;
+//        private int maxVertices;
 
-        private int currentParticleIndex;
+//        private int currentParticleIndex;
         private int maxParticles;
         public int LivingQuads { get; private set; }
 
@@ -150,9 +234,6 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             LivingQuads = minQuads;
             maxParticles = livingParticles;
 
-            currentVertex = 0;
-            maxVertices = livingParticles * verticesPerParticle;
-
             if (requiredQuads == 0 || minQuads > requiredQuads || maxQuads <= requiredQuads / 2)
             {
                 requiredQuads = maxQuads;
@@ -229,6 +310,22 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             commandList.UnmapSubresource(mappedIndices);
         }
 
+        public void BuildBufferState(ref ParticleBufferState bufferState)
+        {
+            bufferState.CurrentParticleIndex = 0;
+            bufferState.CurrentVertex = 0;
+            bufferState.VertexStride = VertexDeclaration.VertexStride;
+
+            bufferState.MaxVertices = maxParticles * verticesPerParticle;
+            bufferState.MaxParticles = maxParticles;
+
+            bufferState.VerticesPerParticle = verticesPerParticle;
+            bufferState.VerticesPerSegFirst = VerticesPerSegFirst;
+            bufferState.VerticesPerSegMiddle = VerticesPerSegMiddle;
+            bufferState.VerticesPerSegLast = VerticesPerSegLast;
+            bufferState.VerticesPerSegCurrent = VerticesPerSegCurrent;
+        }
+
         /// <summary>
         /// Maps a subresource so that particle data can be written to the vertex buffer
         /// </summary>
@@ -242,29 +339,12 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
                 IsBufferDirty = false;
             }
 
-            vertexBuffer = IntPtr.Zero;
-            vertexBufferOrigin = IntPtr.Zero;
-
             if (IsBufferDirty)
                 return IntPtr.Zero;
 
             mappedVertices = commandList.MapSubresource(ResourceContext.VertexBuffer.Buffer, 0, MapMode.WriteDiscard, false, 0, ResourceContext.VertexCount * vertexStructSize);
 
-            vertexBuffer        = mappedVertices.DataBox.DataPointer;
-            vertexBufferOrigin  = mappedVertices.DataBox.DataPointer;
-
             return mappedVertices.DataBox.DataPointer;
-        }
-
-        /// <summary>
-        /// Moves the index to the beginning of the buffer so that the data can be filled from the first particle again
-        /// </summary>
-        public void RestartBuffer()
-        {
-            vertexBuffer = vertexBufferOrigin;
-            currentParticleIndex = 0;
-            currentVertex = 0;
-            VerticesPerSegCurrent = VerticesPerSegFirst;
         }
 
         /// <summary>
@@ -276,51 +356,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             if (IsBufferDirty)
                 return;
 
-            vertexBuffer = IntPtr.Zero;
-            vertexBufferOrigin = IntPtr.Zero;
-            currentParticleIndex = 0;
-            currentVertex = 0;
-
             commandList.UnmapSubresource(mappedVertices);
-        }
-
-        /// <summary>
-        /// Advances the pointer to the next vertex in the buffer, so that it can be written
-        /// </summary>
-        public void NextVertex()
-        {
-            if (++currentVertex >= maxVertices)
-                currentVertex = maxVertices - 1;
-
-            vertexBuffer = vertexBufferOrigin + VertexDeclaration.VertexStride * currentVertex;
-        }
-
-        /// <summary>
-        /// Advances the pointer to the next particle in the buffer, so that its first vertex can be written
-        /// </summary>
-        public void NextParticle()
-        {
-            if (++currentParticleIndex >= maxParticles)
-                currentParticleIndex = maxParticles - 1;
-
-            vertexBuffer = vertexBufferOrigin + (VertexDeclaration.VertexStride * currentParticleIndex * verticesPerParticle);
-        }
-
-        /// <summary>
-        /// Advances the pointer to the next segment in the buffer, so that its first vertex can be written
-        /// </summary>
-        public void NextSegment()
-        {
-            // The number of segments is tied to the number of particles
-            if (++currentParticleIndex >= maxParticles)
-            {
-                // Already at the last particle
-                currentParticleIndex = maxParticles - 1;
-                return;
-            }
-
-            vertexBuffer += VertexDeclaration.VertexStride * VerticesPerSegCurrent;
-            VerticesPerSegCurrent = (currentParticleIndex < maxParticles - 1) ? VerticesPerSegMiddle : VerticesPerSegLast;
         }
 
         public AttributeAccessor GetAccessor(AttributeDescription desc) 
@@ -339,9 +375,9 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         /// </summary>
         /// <param name="accessor">Accessor to the vertex data</param>
         /// <param name="ptrRef">Pointer to the source data</param>
-        public void SetAttribute(AttributeAccessor accessor, IntPtr ptrRef) 
+        public void SetAttribute(ref ParticleBufferState state, AttributeAccessor accessor, IntPtr ptrRef) 
         {
-            Utilities.CopyMemory(vertexBuffer + accessor.Offset, ptrRef, accessor.Size);
+            Utilities.CopyMemory(state.VertexBuffer + accessor.Offset, ptrRef, accessor.Size);
         }
 
         /// <summary>
@@ -349,11 +385,11 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         /// </summary>
         /// <param name="accessor">Accessor to the vertex data</param>
         /// <param name="ptrRef">Pointer to the source data</param>
-        public void SetAttributePerParticle(AttributeAccessor accessor, IntPtr ptrRef)
+        public void SetAttributePerParticle(ref ParticleBufferState state, AttributeAccessor accessor, IntPtr ptrRef)
         {
             for (var i = 0; i < verticesPerParticle; i++)
             {
-                Utilities.CopyMemory(vertexBuffer + accessor.Offset + i * VertexDeclaration.VertexStride, ptrRef, accessor.Size);
+                Utilities.CopyMemory(state.VertexBuffer + accessor.Offset + i * VertexDeclaration.VertexStride, ptrRef, accessor.Size);
             }
         }
 
@@ -362,11 +398,11 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         /// </summary>
         /// <param name="accessor">Accessor to the vertex data</param>
         /// <param name="ptrRef">Pointer to the source data</param>
-        public void SetAttributePerSegment(AttributeAccessor accessor, IntPtr ptrRef)
+        public void SetAttributePerSegment(ref ParticleBufferState state, AttributeAccessor accessor, IntPtr ptrRef)
         {
             for (var i = 0; i < VerticesPerSegCurrent; i++)
             {
-                Utilities.CopyMemory(vertexBuffer + accessor.Offset + i * VertexDeclaration.VertexStride, ptrRef, accessor.Size);
+                Utilities.CopyMemory(state.VertexBuffer + accessor.Offset + i * VertexDeclaration.VertexStride, ptrRef, accessor.Size);
             }
         }
 
@@ -377,15 +413,15 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         /// <param name="accessorTo">Vertex attribute accessor to the destination attribute</param>
         /// <param name="accessorFrom">Vertex attribute accessor to the source attribute</param>
         /// <param name="transformMethod">Transform method for the type data</param>
-        public void TransformAttributePerSegment<T>(AttributeAccessor accessorFrom, AttributeAccessor accessorTo, IAttributeTransformer<T> transformMethod) where T : struct
+        public void TransformAttributePerSegment<T>(ref ParticleBufferState state, AttributeAccessor accessorFrom, AttributeAccessor accessorTo, IAttributeTransformer<T> transformMethod) where T : struct
         {
             for (var i = 0; i < VerticesPerSegCurrent; i++)
             {
-                var temp = Utilities.Read<T>(vertexBuffer + accessorFrom.Offset + i * VertexDeclaration.VertexStride);
+                var temp = Utilities.Read<T>(state.VertexBuffer + accessorFrom.Offset + i * VertexDeclaration.VertexStride);
 
                 transformMethod.Transform(ref temp);
 
-                Utilities.Write(vertexBuffer + accessorTo.Offset + i * VertexDeclaration.VertexStride, ref temp);
+                Utilities.Write(state.VertexBuffer + accessorTo.Offset + i * VertexDeclaration.VertexStride, ref temp);
             }
         }
 
@@ -395,15 +431,15 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         /// <typeparam name="T">Type data</typeparam>
         /// <param name="accessor">Vertex attribute accessor</param>
         /// <param name="transformMethod">Transform method for the type data</param>
-        public void TransformAttributePerParticle<T>(AttributeAccessor accessor, TransformAttributeDelegate<T> transformMethod) where T : struct
+        public void TransformAttributePerParticle<T>(ref ParticleBufferState state, AttributeAccessor accessor, TransformAttributeDelegate<T> transformMethod) where T : struct
         {
             for (var i = 0; i < verticesPerParticle; i++)
             {
-                var temp = Utilities.Read<T>(vertexBuffer + accessor.Offset + i * VertexDeclaration.VertexStride);
+                var temp = Utilities.Read<T>(state.VertexBuffer + accessor.Offset + i * VertexDeclaration.VertexStride);
 
                 transformMethod(ref temp);
 
-                Utilities.Write(vertexBuffer + accessor.Offset + i * VertexDeclaration.VertexStride, ref temp);
+                Utilities.Write(state.VertexBuffer + accessor.Offset + i * VertexDeclaration.VertexStride, ref temp);
             }
         }
 
@@ -414,28 +450,27 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         /// <param name="accessorTo">Vertex attribute accessor to the destination attribute</param>
         /// <param name="accessorFrom">Vertex attribute accessor to the source attribute</param>
         /// <param name="transformMethod">Transform method for the type data</param>
-        public void TransformAttributePerParticle<T>(AttributeAccessor accessorFrom, AttributeAccessor accessorTo, TransformAttributeDelegate<T> transformMethod) where T : struct
+        public void TransformAttributePerParticle<T>(ref ParticleBufferState state, AttributeAccessor accessorFrom, AttributeAccessor accessorTo, TransformAttributeDelegate<T> transformMethod) where T : struct
         {
             for (var i = 0; i < verticesPerParticle; i++)
             {
-                var temp = Utilities.Read<T>(vertexBuffer + accessorFrom.Offset + i * VertexDeclaration.VertexStride);
+                var temp = Utilities.Read<T>(state.VertexBuffer + accessorFrom.Offset + i * VertexDeclaration.VertexStride);
 
                 transformMethod(ref temp);
 
-                Utilities.Write(vertexBuffer + accessorTo.Offset + i * VertexDeclaration.VertexStride, ref temp);
+                Utilities.Write(state.VertexBuffer + accessorTo.Offset + i * VertexDeclaration.VertexStride, ref temp);
             }
         }
 
-
-        public void TransformAttributePerParticle<T>(AttributeAccessor accessorFrom, AttributeAccessor accessorTo, IAttributeTransformer<T> transformMethod) where T : struct
+        public void TransformAttributePerParticle<T>(ref ParticleBufferState state, AttributeAccessor accessorFrom, AttributeAccessor accessorTo, IAttributeTransformer<T> transformMethod) where T : struct
         {
             for (var i = 0; i < verticesPerParticle; i++)
             {
-                var temp = Utilities.Read<T>(vertexBuffer + accessorFrom.Offset + i * VertexDeclaration.VertexStride);
+                var temp = Utilities.Read<T>(state.VertexBuffer + accessorFrom.Offset + i * VertexDeclaration.VertexStride);
 
                 transformMethod.Transform(ref temp);
 
-                Utilities.Write(vertexBuffer + accessorTo.Offset + i * VertexDeclaration.VertexStride, ref temp);
+                Utilities.Write(state.VertexBuffer + accessorTo.Offset + i * VertexDeclaration.VertexStride, ref temp);
             }
         }
 

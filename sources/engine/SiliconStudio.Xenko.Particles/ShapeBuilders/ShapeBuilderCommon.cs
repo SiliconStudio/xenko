@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
     public abstract class ShapeBuilderCommon : ShapeBuilder
     {
         /// <inheritdoc />
-        public override int BuildVertexBuffer(ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY, ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticleSorter sorter)
+        public override int BuildVertexBuffer(ref ParticleBufferState bufferState, ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY, ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticleSorter sorter)
         {
             SamplerPosition?.UpdateChanges();
 

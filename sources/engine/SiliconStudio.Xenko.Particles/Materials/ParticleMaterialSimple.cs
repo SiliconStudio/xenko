@@ -125,10 +125,10 @@ namespace SiliconStudio.Xenko.Particles.Materials
         }
 
         /// <inheritdoc />
-        public override unsafe void PatchVertexBuffer(ParticleVertexBuilder vertexBuilder, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
+        public override unsafe void PatchVertexBuffer(ref ParticleBufferState bufferState, ParticleVertexBuilder vertexBuilder, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
         {
             // If you want, you can integrate the base builder here and not call it. It should result in slight speed up
-            base.PatchVertexBuffer(vertexBuilder, invViewX, invViewY, sorter);
+            base.PatchVertexBuffer(ref bufferState, vertexBuilder, invViewX, invViewY, sorter);
 
             var colorField = sorter.GetField(ParticleFields.Color);
             if (!colorField.IsValid())
@@ -142,12 +142,12 @@ namespace SiliconStudio.Xenko.Particles.Materials
             {
                 // Set the vertex color attribute to the particle's color field
                 var color = (uint)(*(Color4*)particle[colorField]).ToRgba();
-                vertexBuilder.SetAttributePerSegment(colAttribute, (IntPtr)(&color));
+                vertexBuilder.SetAttributePerSegment(ref bufferState, colAttribute, (IntPtr)(&color));
 
-                vertexBuilder.NextSegment();
+                bufferState.NextSegment();
             }
 
-            vertexBuilder.RestartBuffer();
+            bufferState.RestartBuffer();
         }
     }
 }

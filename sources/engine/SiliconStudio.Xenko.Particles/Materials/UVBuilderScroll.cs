@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         public Vector4 EndFrame { get; set; } = new Vector4(0, 1, 1, 2);
 
         /// <inheritdoc />
-        public unsafe override void BuildUVCoordinates(ParticleVertexBuilder vertexBuilder, ParticleSorter sorter, AttributeDescription texCoordsDescription)
+        public unsafe override void BuildUVCoordinates(ref ParticleBufferState bufferState, ParticleVertexBuilder vertexBuilder, ParticleSorter sorter, AttributeDescription texCoordsDescription)
         {
             var lifeField = sorter.GetField(ParticleFields.RemainingLife);
 
@@ -63,13 +63,13 @@ namespace SiliconStudio.Xenko.Particles.Materials
                 uvTransform.Z -= uvTransform.X;
                 uvTransform.W -= uvTransform.Y;
 
-                vertexBuilder.TransformAttributePerSegment(texDefault, texAttribute, this);
+                vertexBuilder.TransformAttributePerSegment(ref bufferState, texDefault, texAttribute, this);
 
-                vertexBuilder.NextSegment();
+                bufferState.NextSegment();
             }
 
 
-            vertexBuilder.RestartBuffer();
+            bufferState.RestartBuffer();
         }
 
         private Vector4 uvTransform = new Vector4(0, 0, 1, 1);

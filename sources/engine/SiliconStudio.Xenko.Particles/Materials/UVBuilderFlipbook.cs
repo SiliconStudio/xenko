@@ -99,7 +99,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         }
 
         /// <inheritdoc />
-        public override unsafe void BuildUVCoordinates(ParticleVertexBuilder vertexBuilder, ParticleSorter sorter, AttributeDescription texCoordsDescription)
+        public override unsafe void BuildUVCoordinates(ref ParticleBufferState bufferState, ParticleVertexBuilder vertexBuilder, ParticleSorter sorter, AttributeDescription texCoordsDescription)
         {
             var lifeField = sorter.GetField(ParticleFields.RemainingLife);
 
@@ -127,13 +127,13 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
                 uvTransform = new Vector4((spriteId%xDivisions)*xStep, (spriteId/xDivisions)*yStep, xStep, yStep);
 
-                vertexBuilder.TransformAttributePerParticle(texDefault, texAttribute, this);
+                vertexBuilder.TransformAttributePerParticle(ref bufferState, texDefault, texAttribute, this);
 
-                vertexBuilder.NextParticle();
+                bufferState.NextParticle();
             }
 
 
-            vertexBuilder.RestartBuffer();
+            bufferState.RestartBuffer();
         }
 
 

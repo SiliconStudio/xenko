@@ -20,6 +20,6 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// <param name="vertexBuilder">Target vertex buffer builder to use</param>
         /// <param name="sorter"><see cref="ParticleSorter"/> to use to iterate over all particles drawn this frame</param>
         /// <param name="texCoordsDescription">Attribute description of the texture coordinates in the current vertex layout</param>
-        public abstract void BuildUVCoordinates(ParticleVertexBuilder vertexBuilder, ParticleSorter sorter, AttributeDescription texCoordsDescription);
+        public abstract void BuildUVCoordinates(ref ParticleBufferState bufferState, ParticleVertexBuilder vertexBuilder, ParticleSorter sorter, AttributeDescription texCoordsDescription);
     }
 }

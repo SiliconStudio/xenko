@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         /// <param name="spaceScale">Uniform scale of the target draw space in regard to the particle data (world or local)</param>
         /// <param name="sorter">Particle enumerator which can be iterated and returns sported particles</param>
         /// <returns></returns>
-        public abstract int BuildVertexBuffer(ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY, 
+        public abstract int BuildVertexBuffer(ref ParticleBufferState bufferState, ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY, 
             ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticleSorter sorter);
 
         /// <summary>

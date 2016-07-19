@@ -166,14 +166,14 @@ namespace SiliconStudio.Xenko.Particles.Materials
         }
 
         /// <inheritdoc />
-        public unsafe override void PatchVertexBuffer(ParticleVertexBuilder vertexBuilder, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
+        public unsafe override void PatchVertexBuffer(ref ParticleBufferState bufferState, ParticleVertexBuilder vertexBuilder, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
         {
             // If you want, you can implement the base builder here and not call it. It should result in slight speed up
-            base.PatchVertexBuffer(vertexBuilder, invViewX, invViewY, sorter);
+            base.PatchVertexBuffer(ref bufferState, vertexBuilder, invViewX, invViewY, sorter);
 
             //  The UV Builder, if present, animates the basic (0, 0, 1, 1) uv coordinates of each billboard
-            UVBuilder?.BuildUVCoordinates(vertexBuilder, sorter, vertexBuilder.DefaultTexCoords);
-            vertexBuilder.RestartBuffer();
+            UVBuilder?.BuildUVCoordinates(ref bufferState, vertexBuilder, sorter, vertexBuilder.DefaultTexCoords);
+            bufferState.RestartBuffer();
 
             // If the particles have color field, the base class should have already passed the information
             if (HasColorField)
@@ -190,12 +190,12 @@ namespace SiliconStudio.Xenko.Particles.Materials
             // TODO: for loop. Remove IEnumerable from sorter
             foreach (var particle in sorter)
             {
-                vertexBuilder.SetAttributePerParticle(colAttribute, (IntPtr)(&color));
+                vertexBuilder.SetAttributePerParticle(ref bufferState, colAttribute, (IntPtr)(&color));
 
-                vertexBuilder.NextParticle();
+                bufferState.NextParticle();
             }
 
-            vertexBuilder.RestartBuffer();
+            bufferState.RestartBuffer();
         }
 
     }

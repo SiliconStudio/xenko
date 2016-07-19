@@ -109,7 +109,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         }
 
         /// <inheritdoc />
-        public unsafe override int BuildVertexBuffer(ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY,
+        public unsafe override int BuildVertexBuffer(ref ParticleBufferState bufferState, ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY,
             ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticleSorter sorter)
         {
             // Get all the required particle fields
@@ -126,7 +126,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
 
             var renderedParticles = 0;
-            vtxBuilder.RestartBuffer();
+            bufferState.RestartBuffer();
 
             uint oldOrderValue = 0;
             var orderField = sorter.GetField(ParticleFields.Order);
@@ -139,7 +139,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                     if ((orderValue >> 16) != (oldOrderValue >> 16))
                     {
-                        ribbonizer.Ribbonize(vtxBuilder, QuadsPerParticle);
+                        ribbonizer.Ribbonize(ref bufferState, vtxBuilder, QuadsPerParticle);
                         ribbonizer.RibbonSplit();
                     }
 
@@ -166,7 +166,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 renderedParticles++;
             }
 
-            ribbonizer.Ribbonize(vtxBuilder, QuadsPerParticle);
+            ribbonizer.Ribbonize(ref bufferState, vtxBuilder, QuadsPerParticle);
 
             var vtxPerShape = 4 * QuadsPerParticle;
             return renderedParticles * vtxPerShape;
@@ -355,7 +355,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             /// </summary>
             /// <param name="vtxBuilder">Target <see cref="ParticleVertexBuilder"/></param> to use
             /// <param name="quadsPerParticle">The required number of quads per each particle</param>
-            public unsafe void Ribbonize(ParticleVertexBuilder vtxBuilder, int quadsPerParticle)
+            public unsafe void Ribbonize(ref ParticleBufferState bufferState, ParticleVertexBuilder vtxBuilder, int quadsPerParticle)
             {
                 if (lastParticle <= 0)
                     return;
@@ -375,9 +375,9 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                     {
                         for (var vtxIdx = 0; vtxIdx < 4; vtxIdx++)
                         {
-                            vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
-                            vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
-                            vtxBuilder.NextVertex();
+                            vtxBuilder.SetAttribute(ref bufferState, posAttribute, (IntPtr)(&particlePos));
+                            vtxBuilder.SetAttribute(ref bufferState, texAttribute, (IntPtr)(&uvCoord));
+                            bufferState.NextVertex();
                         }
                     }
 
@@ -423,23 +423,23 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                     // Top Left - 0f 0f
                     uvCoord.Y = (TextureCoordinatePolicy == TextureCoordinatePolicy.AsIs) ? 0 : vCoordOld;
-                    vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                    vtxBuilder.SetAttribute(ref bufferState, posAttribute, (IntPtr)(&particlePos));
 
                     rotatedCoord = UVRotate.GetCoords(uvCoord);
-                    vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&rotatedCoord));
+                    vtxBuilder.SetAttribute(ref bufferState, texAttribute, (IntPtr)(&rotatedCoord));
 
-                    vtxBuilder.NextVertex();
+                    bufferState.NextVertex();
 
 
                     // Top Right - 1f 0f
                     particlePos += (EdgePolicy == EdgePolicy.Edge) ? oldUnitX * 2 : oldUnitX;
-                    vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                    vtxBuilder.SetAttribute(ref bufferState, posAttribute, (IntPtr)(&particlePos));
 
                     uvCoord.X = 1;
                     rotatedCoord = UVRotate.GetCoords(uvCoord);
-                    vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&rotatedCoord));
+                    vtxBuilder.SetAttribute(ref bufferState, texAttribute, (IntPtr)(&rotatedCoord));
 
-                    vtxBuilder.NextVertex();
+                    bufferState.NextVertex();
 
 
                     // Move the position to the next particle in the ribbon
@@ -451,23 +451,23 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                     // Bottom Left - 1f 1f
                     uvCoord.Y = (TextureCoordinatePolicy == TextureCoordinatePolicy.AsIs) ? 1 : vCoordOld;
-                    vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                    vtxBuilder.SetAttribute(ref bufferState, posAttribute, (IntPtr)(&particlePos));
 
                     rotatedCoord = UVRotate.GetCoords(uvCoord);
-                    vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&rotatedCoord));
+                    vtxBuilder.SetAttribute(ref bufferState, texAttribute, (IntPtr)(&rotatedCoord));
 
-                    vtxBuilder.NextVertex();
+                    bufferState.NextVertex();
 
 
                     // Bottom Right - 0f 1f
                     particlePos -= (EdgePolicy == EdgePolicy.Edge) ? unitX * 2 : unitX;
-                    vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                    vtxBuilder.SetAttribute(ref bufferState, posAttribute, (IntPtr)(&particlePos));
 
                     uvCoord.X = 0;
                     rotatedCoord = UVRotate.GetCoords(uvCoord);
-                    vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&rotatedCoord));
+                    vtxBuilder.SetAttribute(ref bufferState, texAttribute, (IntPtr)(&rotatedCoord));
 
-                    vtxBuilder.NextVertex();
+                    bufferState.NextVertex();
 
 
                     // Preserve the old attributes for the next cycle

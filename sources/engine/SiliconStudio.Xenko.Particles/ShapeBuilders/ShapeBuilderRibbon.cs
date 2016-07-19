@@ -99,7 +99,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         }
 
         /// <inheritdoc />
-        public unsafe override int BuildVertexBuffer(ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY,
+        public unsafe override int BuildVertexBuffer(ref ParticleBufferState bufferState, ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY,
             ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticleSorter sorter)
         {
             // Get all the required particle fields
@@ -117,7 +117,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
 
             var renderedParticles = 0;
-            vtxBuilder.RestartBuffer();
+            bufferState.RestartBuffer();
 
             uint oldOrderValue = 0;
 
@@ -129,7 +129,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                     if ((orderValue >> 16) != (oldOrderValue >> 16)) 
                     {
-                        ribbonizer.Ribbonize(vtxBuilder, invViewX, invViewY, QuadsPerParticle);
+                        ribbonizer.Ribbonize(ref bufferState, vtxBuilder, invViewX, invViewY, QuadsPerParticle);
                         ribbonizer.RibbonSplit();
                     }
 
@@ -151,7 +151,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 renderedParticles++;
             }
 
-            ribbonizer.Ribbonize(vtxBuilder, invViewX, invViewY, QuadsPerParticle);
+            ribbonizer.Ribbonize(ref bufferState, vtxBuilder, invViewX, invViewY, QuadsPerParticle);
 
             var vtxPerShape = 4 * QuadsPerParticle;
             return renderedParticles * vtxPerShape;
@@ -362,7 +362,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             /// <param name="texPolicy">Texture coordinates stretching and stitching policy</param>
             /// <param name="texFactor">Texture coordinates stretching and stitching coefficient</param>
             /// <param name="uvRotate">Texture coordinates rotate and flip policy</param>
-            public unsafe void Ribbonize(ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY, int quadsPerParticle)
+            public unsafe void Ribbonize(ref ParticleBufferState bufferState, ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY, int quadsPerParticle)
             {
                 if (lastParticle <= 0)
                     return;
@@ -382,9 +382,9 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                     {
                         for (var vtxIdx = 0; vtxIdx < 4; vtxIdx++)
                         {
-                            vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
-                            vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
-                            vtxBuilder.NextVertex();
+                            vtxBuilder.SetAttribute(ref bufferState, posAttribute, (IntPtr)(&particlePos));
+                            vtxBuilder.SetAttribute(ref bufferState, texAttribute, (IntPtr)(&uvCoord));
+                            bufferState.NextVertex();
                         }
                     }
 
@@ -438,23 +438,23 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                     // Top Left - 0f 0f
                     uvCoord.Y = (TextureCoordinatePolicy == TextureCoordinatePolicy.AsIs) ? 0 : vCoordOld;
-                    vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                    vtxBuilder.SetAttribute(ref bufferState, posAttribute, (IntPtr)(&particlePos));
 
                     rotatedCoord = UVRotate.GetCoords(uvCoord);
-                    vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&rotatedCoord));
+                    vtxBuilder.SetAttribute(ref bufferState, texAttribute, (IntPtr)(&rotatedCoord));
 
-                    vtxBuilder.NextVertex();
+                    bufferState.NextVertex();
 
 
                     // Top Right - 1f 0f
                     particlePos += oldUnitX * 2;
-                    vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                    vtxBuilder.SetAttribute(ref bufferState, posAttribute, (IntPtr)(&particlePos));
 
                     uvCoord.X = 1;
                     rotatedCoord = UVRotate.GetCoords(uvCoord);
-                    vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&rotatedCoord));
+                    vtxBuilder.SetAttribute(ref bufferState, texAttribute, (IntPtr)(&rotatedCoord));
 
-                    vtxBuilder.NextVertex();
+                    bufferState.NextVertex();
 
 
                     // Move the position to the next particle in the ribbon
@@ -466,23 +466,23 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                     // Bottom Left - 1f 1f
                     uvCoord.Y = (TextureCoordinatePolicy == TextureCoordinatePolicy.AsIs) ? 1 : vCoordOld;
-                    vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                    vtxBuilder.SetAttribute(ref bufferState, posAttribute, (IntPtr)(&particlePos));
 
                     rotatedCoord = UVRotate.GetCoords(uvCoord);
-                    vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&rotatedCoord));
+                    vtxBuilder.SetAttribute(ref bufferState, texAttribute, (IntPtr)(&rotatedCoord));
 
-                    vtxBuilder.NextVertex();
+                    bufferState.NextVertex();
 
 
                     // Bottom Right - 0f 1f
                     particlePos -= unitX * 2;
-                    vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                    vtxBuilder.SetAttribute(ref bufferState, posAttribute, (IntPtr)(&particlePos));
 
                     uvCoord.X = 0;
                     rotatedCoord = UVRotate.GetCoords(uvCoord);
-                    vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&rotatedCoord));
+                    vtxBuilder.SetAttribute(ref bufferState, texAttribute, (IntPtr)(&rotatedCoord));
 
-                    vtxBuilder.NextVertex();
+                    bufferState.NextVertex();
 
 
                     // Preserve the old attributes for the next cycle
