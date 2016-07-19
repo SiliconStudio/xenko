@@ -11,35 +11,28 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
 {
     public struct ParticleBufferState
     {
-        public IntPtr VertexBuffer;
-        public IntPtr VertexBufferOrigin;
+        public readonly IntPtr VertexBufferOrigin;
+        private readonly ParticleVertexBuilder vertexBuilder;
 
-        public int MaxVertices;
-        public int MaxParticles;
+        public IntPtr VertexBuffer;
         public int CurrentParticleIndex;
         public int CurrentVertex;
         public int VertexStride;
-        public int VerticesPerParticle;
 
-        public int VerticesPerSegFirst;
-        public int VerticesPerSegMiddle;
-        public int VerticesPerSegLast;
         public int VerticesPerSegCurrent;
 
-        public ParticleBufferState(IntPtr vertexBufferPtr)
+        public ParticleBufferState(IntPtr vertexBufferPtr, ParticleVertexBuilder builder)
         {
             VertexBuffer        = vertexBufferPtr;
             VertexBufferOrigin  = vertexBufferPtr;
 
-            MaxVertices         = 0;
-            MaxParticles        = 0;
-            VertexStride        = 0;
+            vertexBuilder       = builder;
+
+            VertexStride        = builder.VertexDeclaration.VertexStride;
             CurrentParticleIndex = 0;
             CurrentVertex       = 0;
 
-            VerticesPerParticle = 4;
-
-            VerticesPerSegCurrent = VerticesPerSegFirst = VerticesPerSegMiddle = VerticesPerSegLast = VerticesPerParticle;
+            VerticesPerSegCurrent = vertexBuilder.VerticesPerSegFirst;
         }
 
         /// <summary>
@@ -47,8 +40,8 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         /// </summary>
         public void NextVertex()
         {
-            if (++CurrentVertex >= MaxVertices)
-                CurrentVertex = MaxVertices - 1;
+            if (++CurrentVertex >= (vertexBuilder.MaxParticles * vertexBuilder.VerticesPerParticle))
+                CurrentVertex = (vertexBuilder.MaxParticles * vertexBuilder.VerticesPerParticle) - 1;
 
             VertexBuffer = VertexBufferOrigin + VertexStride * CurrentVertex;
         }
@@ -58,10 +51,10 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         /// </summary>
         public void NextParticle()
         {
-            if (++CurrentParticleIndex >= MaxParticles)
-                CurrentParticleIndex = MaxParticles - 1;
+            if (++CurrentParticleIndex >= vertexBuilder.MaxParticles)
+                CurrentParticleIndex = vertexBuilder.MaxParticles - 1;
 
-            VertexBuffer = VertexBufferOrigin + (VertexStride * CurrentParticleIndex * VerticesPerParticle);
+            VertexBuffer = VertexBufferOrigin + (VertexStride * CurrentParticleIndex * vertexBuilder.VerticesPerParticle);
         }
 
         /// <summary>
@@ -70,15 +63,15 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         public void NextSegment()
         {
             // The number of segments is tied to the number of particles
-            if (++CurrentParticleIndex >= MaxParticles)
+            if (++CurrentParticleIndex >= vertexBuilder.MaxParticles)
             {
                 // Already at the last particle
-                CurrentParticleIndex = MaxParticles - 1;
+                CurrentParticleIndex = vertexBuilder.MaxParticles - 1;
                 return;
             }
 
             VertexBuffer += VertexStride * VerticesPerSegCurrent;
-            VerticesPerSegCurrent = (CurrentParticleIndex < MaxParticles - 1) ? VerticesPerSegMiddle : VerticesPerSegLast;
+            VerticesPerSegCurrent = (CurrentParticleIndex < vertexBuilder.MaxParticles - 1) ? vertexBuilder.VerticesPerSegMiddle : vertexBuilder.VerticesPerSegLast;
         }
 
         /// <summary>
@@ -89,7 +82,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             VertexBuffer = VertexBufferOrigin;
             CurrentParticleIndex = 0;
             CurrentVertex = 0;
-            VerticesPerSegCurrent = VerticesPerSegFirst;
+            VerticesPerSegCurrent = vertexBuilder.VerticesPerSegFirst;
         }
     }
 
@@ -98,7 +91,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
     /// </summary>
     public class ParticleVertexBuilder
     {
-        private int verticesPerParticle = 4;
+        public int VerticesPerParticle { get; private set; } = 4;
         private int verticesPerQuad = 4;
 
         public readonly int IndicesPerQuad = 6;
@@ -122,7 +115,8 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
 //        private int maxVertices;
 
 //        private int currentParticleIndex;
-        private int maxParticles;
+        public int MaxParticles { get; private set; }
+
         public int LivingQuads { get; private set; }
 
         public DeviceResourceContext ResourceContext { get; private set; }
@@ -145,11 +139,11 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             UpdateVertexLayout();
         }
 
-        protected int VerticesPerSegFirst { get; private set; }
-        protected int VerticesPerSegMiddle { get; private set; }
-        protected int VerticesPerSegLast { get; private set; }
+        internal int VerticesPerSegFirst { get; private set; }
+        internal int VerticesPerSegMiddle { get; private set; }
+        internal int VerticesPerSegLast { get; private set; }
 
-        protected int VerticesPerSegCurrent { get; private set; }
+        internal int VerticesPerSegCurrent { get; private set; }
 
         /// <summary>
         /// The current <see cref="Graphics.VertexDeclaration"/> of the contained vertex buffer
@@ -227,12 +221,12 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         /// <param name="totalParticles">Number of total number of possible particles for the parent emitter</param>
         public void SetRequiredQuads(int quadsPerParticle, int livingParticles, int totalParticles)
         {
-            verticesPerParticle = quadsPerParticle * verticesPerQuad;
+            VerticesPerParticle = quadsPerParticle * verticesPerQuad;
             var minQuads = quadsPerParticle * livingParticles;
             var maxQuads = quadsPerParticle * totalParticles;
 
             LivingQuads = minQuads;
-            maxParticles = livingParticles;
+            MaxParticles = livingParticles;
 
             if (requiredQuads == 0 || minQuads > requiredQuads || maxQuads <= requiredQuads / 2)
             {
@@ -265,7 +259,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             }
 
             // The default assumption is that every particle defines a separate segment and no segments are shared
-            SetVerticesPerSegment(verticesPerParticle, verticesPerParticle, verticesPerParticle);
+            SetVerticesPerSegment(VerticesPerParticle, VerticesPerParticle, VerticesPerParticle);
         }
 
         /// <summary>
@@ -308,22 +302,6 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             }
 
             commandList.UnmapSubresource(mappedIndices);
-        }
-
-        public void BuildBufferState(ref ParticleBufferState bufferState)
-        {
-            bufferState.CurrentParticleIndex = 0;
-            bufferState.CurrentVertex = 0;
-            bufferState.VertexStride = VertexDeclaration.VertexStride;
-
-            bufferState.MaxVertices = maxParticles * verticesPerParticle;
-            bufferState.MaxParticles = maxParticles;
-
-            bufferState.VerticesPerParticle = verticesPerParticle;
-            bufferState.VerticesPerSegFirst = VerticesPerSegFirst;
-            bufferState.VerticesPerSegMiddle = VerticesPerSegMiddle;
-            bufferState.VerticesPerSegLast = VerticesPerSegLast;
-            bufferState.VerticesPerSegCurrent = VerticesPerSegCurrent;
         }
 
         /// <summary>
@@ -387,7 +365,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         /// <param name="ptrRef">Pointer to the source data</param>
         public void SetAttributePerParticle(ref ParticleBufferState state, AttributeAccessor accessor, IntPtr ptrRef)
         {
-            for (var i = 0; i < verticesPerParticle; i++)
+            for (var i = 0; i < VerticesPerParticle; i++)
             {
                 Utilities.CopyMemory(state.VertexBuffer + accessor.Offset + i * VertexDeclaration.VertexStride, ptrRef, accessor.Size);
             }
@@ -433,7 +411,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         /// <param name="transformMethod">Transform method for the type data</param>
         public void TransformAttributePerParticle<T>(ref ParticleBufferState state, AttributeAccessor accessor, TransformAttributeDelegate<T> transformMethod) where T : struct
         {
-            for (var i = 0; i < verticesPerParticle; i++)
+            for (var i = 0; i < VerticesPerParticle; i++)
             {
                 var temp = Utilities.Read<T>(state.VertexBuffer + accessor.Offset + i * VertexDeclaration.VertexStride);
 
@@ -452,7 +430,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         /// <param name="transformMethod">Transform method for the type data</param>
         public void TransformAttributePerParticle<T>(ref ParticleBufferState state, AttributeAccessor accessorFrom, AttributeAccessor accessorTo, TransformAttributeDelegate<T> transformMethod) where T : struct
         {
-            for (var i = 0; i < verticesPerParticle; i++)
+            for (var i = 0; i < VerticesPerParticle; i++)
             {
                 var temp = Utilities.Read<T>(state.VertexBuffer + accessorFrom.Offset + i * VertexDeclaration.VertexStride);
 
@@ -464,7 +442,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
 
         public void TransformAttributePerParticle<T>(ref ParticleBufferState state, AttributeAccessor accessorFrom, AttributeAccessor accessorTo, IAttributeTransformer<T> transformMethod) where T : struct
         {
-            for (var i = 0; i < verticesPerParticle; i++)
+            for (var i = 0; i < VerticesPerParticle; i++)
             {
                 var temp = Utilities.Read<T>(state.VertexBuffer + accessorFrom.Offset + i * VertexDeclaration.VertexStride);
 
