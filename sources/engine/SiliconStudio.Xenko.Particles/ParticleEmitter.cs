@@ -957,7 +957,7 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         /// <param name="device">The graphics device, used to rebuild vertex layouts and shaders if needed</param>
         /// <param name="invViewMatrix">The current camera's inverse view matrix</param>
-        public void BuildVertexBuffer(CommandList commandList, ref Matrix invViewMatrix)
+        public void BuildVertexBuffer(CommandList commandList, IntPtr sharedBufferPtr, ref Matrix invViewMatrix)
         {
             // Get camera-space X and Y axes for billboard expansion and sort the particles if needed
             var unitX = new Vector3(invViewMatrix.M11, invViewMatrix.M12, invViewMatrix.M13);
@@ -979,7 +979,7 @@ namespace SiliconStudio.Xenko.Particles
             }
 
             // TODO Map the shared buffer and just get a pointer here
-            ParticleBufferState bufferState = new ParticleBufferState(VertexBuilder.MapBuffer(commandList), VertexBuilder);
+            ParticleBufferState bufferState = new ParticleBufferState(VertexBuilder.MapBuffer(commandList, sharedBufferPtr), VertexBuilder);
 
             ShapeBuilder.BuildVertexBuffer(ref bufferState, unitX, unitY, ref posIdentity, ref rotIdentity, scaleIdentity, ParticleSorter);
 
@@ -988,7 +988,7 @@ namespace SiliconStudio.Xenko.Particles
             ShapeBuilder.SetRequiredQuads(ShapeBuilder.QuadsPerParticle, pool.LivingParticles, pool.ParticleCapacity);
             Material.PatchVertexBuffer(ref bufferState, unitX, unitY, ParticleSorter);
 
-            VertexBuilder.UnmapBuffer(commandList);
+            VertexBuilder.UnmapBuffer(commandList, sharedBufferPtr);
         }
 
         #region Particles

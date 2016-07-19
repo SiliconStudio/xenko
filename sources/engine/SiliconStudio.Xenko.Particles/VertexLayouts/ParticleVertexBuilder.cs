@@ -374,7 +374,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         /// </summary>
         /// <param name="device"></param>
         /// <returns></returns>
-        public IntPtr MapBuffer(CommandList commandList)
+        public IntPtr MapBuffer(CommandList commandList, IntPtr sharedBufferPtr)
         {
             if (IsBufferDirty && requiredQuads > 0)
             {
@@ -385,6 +385,9 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             if (IsBufferDirty)
                 return IntPtr.Zero;
 
+            if (sharedBufferPtr != IntPtr.Zero)
+                return sharedBufferPtr;
+
             mappedVertices = commandList.MapSubresource(ResourceContext.VertexBuffer.Buffer, 0, MapMode.WriteDiscard, false, 0, ResourceContext.VertexCount * vertexStructSize);
 
             return mappedVertices.DataBox.DataPointer;
@@ -394,9 +397,12 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         /// Unmaps the subresource after all the particle data has been updated
         /// </summary>
         /// <param name="device"></param>
-        public void UnmapBuffer(CommandList commandList)
+        public void UnmapBuffer(CommandList commandList, IntPtr sharedBufferPtr)
         {
             if (IsBufferDirty)
+                return;
+
+            if (sharedBufferPtr != IntPtr.Zero)
                 return;
 
             commandList.UnmapSubresource(mappedVertices);

@@ -273,9 +273,11 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                 if (nodeData.IndexCount <= 0)
                     continue;   // Nothing to draw, nothing to build
 
+                var sharedBufferPtr = IntPtr.Zero;
+
                 Matrix viewInverse;
                 Matrix.Invert(ref renderNode.RenderView.View, out viewInverse); // TODO Build this per view, not per node!!!
-                renderParticleEmitter.ParticleEmitter.BuildVertexBuffer(commandList, ref viewInverse);
+                renderParticleEmitter.ParticleEmitter.BuildVertexBuffer(commandList, sharedBufferPtr, ref viewInverse);
             }
 
             // TODO Unmap buffers here
