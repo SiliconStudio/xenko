@@ -8,13 +8,14 @@ using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Particles.Materials;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Materials;
+using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Particles.Rendering
 {
     /// <summary>
     /// Should be identical to the cbuffer PerView in ParticleUtilities.xksl
     /// </summary>
-    struct ParticleUtilitiesPerView
+    internal struct ParticleUtilitiesPerView
     {
         public Matrix ViewMatrix;
         public Matrix ProjectionMatrix;
@@ -24,12 +25,15 @@ namespace SiliconStudio.Xenko.Particles.Rendering
         public Vector4 ViewFrustum;
     }
 
-    struct RenderAttributesPerNode
+    internal struct RenderAttributesPerNode
     {
+        public Buffer VertexBuffer;
+        public Buffer IndexBuffer;
         public int VertexBufferOffset;
+        public int VertexBufferStride;
+        public int VertexCount;
         public int IndexCount;
-        public VertexBufferBinding VertexBuffer;
-        public IndexBufferBinding IndexBuffer;
+        public bool Is32BitIndex;
     }
 
     /// <summary>
@@ -39,11 +43,11 @@ namespace SiliconStudio.Xenko.Particles.Rendering
     {
         private StaticObjectPropertyKey<RenderEffect> renderEffectKey;
 
+        private RenderPropertyKey<RenderAttributesPerNode> renderParticleNodeKey;
+
         private EffectDescriptorSetReference perMaterialDescriptorSetSlot;
 
         private ConstantBufferOffsetReference perViewCBufferOffset;
-
-        private RenderPropertyKey<RenderAttributesPerNode> renderParticleNodeKey;
 
         // Material alive during this frame
         private readonly Dictionary<ParticleMaterial, ParticleMaterialInfo> allMaterialInfos = new Dictionary<ParticleMaterial, ParticleMaterialInfo>();
@@ -67,9 +71,9 @@ namespace SiliconStudio.Xenko.Particles.Rendering
         {
             base.InitializeCore();
 
-            renderParticleNodeKey = RenderData.CreateRenderKey<RenderAttributesPerNode>();
-
             renderEffectKey = RenderEffectKey;
+
+            renderParticleNodeKey = RenderData.CreateRenderKey<RenderAttributesPerNode>();
 
             // The offset starts with the first element in the buffer
             perViewCBufferOffset = CreateViewCBufferOffsetSlot(ParticleUtilitiesKeys.ViewMatrix.Name);
@@ -137,17 +141,16 @@ namespace SiliconStudio.Xenko.Particles.Rendering
         /// <inheritdoc/>
         public override unsafe void Prepare(RenderDrawContext context)
         {
+            // Inspect each RenderObject (= ParticleEmitter) to determine if its required vertex buffer size has changed
             foreach (var renderObject in RenderObjects)
             {
                 var renderParticleEmitter = (RenderParticleEmitter)renderObject;
-
-                renderParticleEmitter.ParticleEmitter.PrepareForDraw(out renderParticleEmitter.HasVertexBufferChanged, 
+                renderParticleEmitter.ParticleEmitter.PrepareForDraw(out renderParticleEmitter.HasVertexBufferChanged,
                     out renderParticleEmitter.VertexSize, out renderParticleEmitter.VertexCount);
 
                 // Handle vertex element changes
                 if (renderParticleEmitter.HasVertexBufferChanged)
                 {
-                    // BUG - there should be 1 buffer per RenderNode, not per RenderObject
                     // Create new buffers
                     renderParticleEmitter.ParticleEmitter.VertexBuilder.RecreateBuffers(RenderSystem.GraphicsDevice);
                 }
@@ -165,7 +168,6 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             for (int renderNodeIndex = 0; renderNodeIndex < RenderNodes.Count; renderNodeIndex++)
             {
                 var renderNode = RenderNodes[renderNodeIndex];
-
                 var renderParticleEmitter = (RenderParticleEmitter)renderNode.RenderObject;
 
                 if (renderParticleEmitter.HasVertexBufferChanged)
@@ -175,18 +177,28 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                         renderNode.RenderEffect.PipelineState = null;
                 }
 
-
                 // Write some attributes back which we will need for rendering later
-                var vertexBuilder = renderParticleEmitter.ParticleEmitter.VertexBuilder; // TODO Change this to a global vertex buffer
-                renderParticleNodeData[new RenderNodeReference(renderNodeIndex)] = new RenderAttributesPerNode
+                var vertexBuilder = renderParticleEmitter.ParticleEmitter.VertexBuilder; 
+                var newNodeData = new RenderAttributesPerNode
                 {
                     VertexBufferOffset = totalVertexBufferSize,
+                    VertexCount = renderParticleEmitter.VertexSize * renderParticleEmitter.VertexCount,
                     IndexCount = vertexBuilder.LivingQuads * vertexBuilder.IndicesPerQuad,
-                    VertexBuffer = vertexBuilder.ResourceContext.VertexBuffer,
-                    IndexBuffer = vertexBuilder.ResourceContext.IndexBuffer,
                 };
 
-                totalVertexBufferSize += (renderParticleEmitter.VertexSize * renderParticleEmitter.VertexCount);
+                // TODO Change this to a global vertex buffer
+                // TODO Assign Buffers and Offset from a shared VertexBuffer
+                if (vertexBuilder.ResourceContext != null)
+                {
+                    newNodeData.VertexBuffer = vertexBuilder.ResourceContext.VertexBuffer.Buffer;
+                    newNodeData.VertexBufferStride = vertexBuilder.ResourceContext.VertexBuffer.Stride;
+                    newNodeData.IndexBuffer  = vertexBuilder.ResourceContext.IndexBuffer.Buffer;
+                    newNodeData.Is32BitIndex = vertexBuilder.ResourceContext.IndexBuffer.Is32Bit;
+                }
+
+                renderParticleNodeData[new RenderNodeReference(renderNodeIndex)] = newNodeData;
+
+                totalVertexBufferSize += newNodeData.VertexCount;
             }
 
             base.Prepare(context);
@@ -247,31 +259,17 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             }
 
 
-
-            // TODO Create/reassign vertex buffer based on totalVertexBufferSize
-            // BUG - there should be 1 buffer per RenderNode, not per RenderObject
-            foreach (var renderObject in RenderObjects)
-            {
-                var renderParticleEmitter = (RenderParticleEmitter)renderObject;
-
-                if (renderParticleEmitter.HasVertexBufferChanged)
-                {
-                    renderParticleEmitter.ParticleEmitter.VertexBuilder.RecreateBuffers(RenderSystem.GraphicsDevice);
-                }
-            }
-
             // Build particle buffers
             var commandList = context.CommandList;
             // TODO Map buffers here and build the particle data
 
             for (int renderNodeIndex = 0; renderNodeIndex < RenderNodes.Count; renderNodeIndex++)
             {
-                var renderNodeReference = new RenderNodeReference(renderNodeIndex);
                 var renderNode = RenderNodes[renderNodeIndex];
                 var renderParticleEmitter = (RenderParticleEmitter)renderNode.RenderObject;
 
+                var renderNodeReference = new RenderNodeReference(renderNodeIndex);
                 var nodeData = renderParticleNodeData[renderNodeReference];
-
                 if (nodeData.IndexCount <= 0)
                     continue;   // Nothing to draw, nothing to build
 
@@ -281,7 +279,6 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             }
 
             // TODO Unmap buffers here
-
         }
 
         protected override void InvalidateEffectPermutation(RenderObject renderObject, RenderEffect renderEffect)
@@ -308,16 +305,18 @@ namespace SiliconStudio.Xenko.Particles.Rendering
         {
             var commandList = context.CommandList;
 
+            // TODO: PerView data
+            Matrix viewInverse;
+            Matrix.Invert(ref renderView.View, out viewInverse);
             var renderParticleNodeData = RenderData.GetData(renderParticleNodeKey);
 
             Array.Resize(ref descriptorSets, EffectDescriptorSetSlotCount);
 
-            // Draw vertex buffers
             for (var index = startIndex; index < endIndex; index++)
             {
                 var renderNodeReference = renderViewStage.SortedRenderNodes[index].RenderNode;
 
-                // Get the effect
+                // Get effect
                 var renderEffect = GetRenderNode(renderNodeReference).RenderEffect;
                 if (renderEffect.Effect == null)
                     continue;
@@ -343,11 +342,11 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                 commandList.SetPipelineState(renderEffect.PipelineState);
                 commandList.SetDescriptorSets(0, descriptorSets);
 
-                // Bind the buffers
-                var vertexBuffer = nodeData.VertexBuffer;
-                var indexBuffer = nodeData.IndexBuffer;
-                commandList.SetVertexBuffer(0, vertexBuffer.Buffer, vertexBuffer.Offset, vertexBuffer.Stride);  // TODO Offset and stride should go to the nodeData
-                commandList.SetIndexBuffer(indexBuffer.Buffer, indexBuffer.Offset, indexBuffer.Is32Bit);        // TODO Offset and stride should go to the nodeData
+                // Bind VB
+                int vertexOffset = 0; // TODO nodeData.VertexBufferOffset;
+                int indexOffset = 0;
+                commandList.SetVertexBuffer(0, nodeData.VertexBuffer, vertexOffset, nodeData.VertexBufferStride);
+                commandList.SetIndexBuffer(nodeData.IndexBuffer, indexOffset, nodeData.Is32BitIndex);
 
                 var indexBufferPosition = 0;
                 commandList.DrawIndexed(nodeData.IndexCount, indexBufferPosition);
