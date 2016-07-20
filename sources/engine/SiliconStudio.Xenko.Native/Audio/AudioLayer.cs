@@ -115,10 +115,6 @@ namespace SiliconStudio.Xenko.Native
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceQueueBuffer", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SourceQueueBuffer(Source source, Buffer buffer, IntPtr pcm, int bufferSize, BufferType streamType);
 
-//        [SuppressUnmanagedCodeSecurity]
-//        [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceFlushBuffers", CallingConvention = CallingConvention.Cdecl)]
-//        public static extern void SourceFlushBuffers(Source source);
-
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceGetFreeBuffer", CallingConvention = CallingConvention.Cdecl)]
         public static extern Buffer SourceGetFreeBuffer(Source source);
