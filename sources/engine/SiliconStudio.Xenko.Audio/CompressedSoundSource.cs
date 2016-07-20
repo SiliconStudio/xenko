@@ -103,6 +103,7 @@ namespace SiliconStudio.Xenko.Audio
                 {
                     if (!source.dispose)
                     {
+restart:
                         if (source.restart)
                         {
                             source.compressedSoundStream.Position = 0;
@@ -146,8 +147,6 @@ namespace SiliconStudio.Xenko.Audio
                                     }
                                 }
                             }
-
-                            source.restartCompletionSource?.TrySetResult(true);
                         }
 
                         if (source.ended || !source.CanFill) continue;
@@ -159,6 +158,8 @@ namespace SiliconStudio.Xenko.Audio
                         var endingPacket = false;
                         for (var i = 0; i < passes; i++)
                         {
+                            if(source.restart) goto restart; //abort and restart
+
                             endingPacket = source.endPacketIndex == source.currentPacketIndex;
 
                             //read one packet, size first, then data
@@ -188,11 +189,9 @@ namespace SiliconStudio.Xenko.Audio
 
                             break;
                         }
-
-                        if (source.restart) continue;
-
+                        
                         var finalPtr = new IntPtr(bufferPtr + (startingPacket ? source.startPktSampleIndex : 0));
-                        var finalSize = (offset - (startingPacket ? source.startPktSampleIndex : 0) - (endingPacket ? source.endPktSampleIndex : 0))*sizeof(short);
+                        var finalSize = (offset - (startingPacket ? source.startPktSampleIndex : 0) - (endingPacket ? source.endPktSampleIndex : 0)) * sizeof(short);
 
                         var bufferType = AudioLayer.BufferType.None;
                         if (source.ended)
@@ -208,7 +207,6 @@ namespace SiliconStudio.Xenko.Audio
                         {
                             bufferType = AudioLayer.BufferType.EndOfLoop;
                         }
-
                         source.FillBuffer(finalPtr, finalSize, bufferType);
                     }
                     else
@@ -234,14 +232,10 @@ namespace SiliconStudio.Xenko.Audio
 
         public override int MaxNumberOfBuffers => NumberOfBuffers;
 
-        private TaskCompletionSource<bool> restartCompletionSource;
-
-        public override async Task Restart()
+        public override void Restart()
         {
-            restartCompletionSource = new TaskCompletionSource<bool>();
             restart = true;
-            await restartCompletionSource.Task;
-            await base.Restart();          
+            base.Restart();           
         }
 
         /// <summary>
@@ -253,10 +247,13 @@ namespace SiliconStudio.Xenko.Audio
             looped = loop;
         }
 
-        public override async Task SetRange(PlayRange range)
+        public override void SetRange(PlayRange range)
         {
-            playRange = range;
-            await Restart();
+            lock (rangeLock)
+            {
+                playRange = range;
+                Restart();
+            }
         }
 
         private void Destroy()

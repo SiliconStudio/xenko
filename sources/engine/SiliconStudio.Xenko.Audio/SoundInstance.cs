@@ -221,16 +221,6 @@ namespace SiliconStudio.Xenko.Audio
             playState = SoundPlayState.Paused;
         }
 
-        public async Task PlayAsync(bool stopSiblingInstances = true)
-        {
-            if (soundSource != null)
-            {
-                await soundSource.ReadyToPlay.Task;
-            }
-
-            Play(stopSiblingInstances);
-        }
-
         /// <summary>
         /// Play or resume the sound effect instance, stopping sibling instances.
         /// </summary>
@@ -363,12 +353,12 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         public DynamicSoundSource DynamicSoundSource => soundSource;
 
-        public async Task SetRange(PlayRange range)
+        public void SetRange(PlayRange range)
         {
             if (engine.State == AudioEngineState.Invalidated)
                 return;
 
-            var state = PlayState;
+            var state = playState;
             if (state == SoundPlayState.Playing)
             {
                 AudioLayer.SourceStop(Source);
@@ -381,7 +371,7 @@ namespace SiliconStudio.Xenko.Audio
             }
             else
             {
-                await soundSource.SetRange(range);
+                soundSource.SetRange(range);
             }
 
             if (state == SoundPlayState.Playing)
