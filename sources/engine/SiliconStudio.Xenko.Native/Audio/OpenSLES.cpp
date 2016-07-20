@@ -248,6 +248,11 @@ extern "C" {
 			{
 				if (source->looped)
 				{
+					SLmillisecond ms;
+					(*source->player)->GetPosition(source->player, &ms);
+					auto time = (double)ms / 1000.0;
+					time *= source->pitch * source->doppler_pitch;
+					source->streamPositionDiff = time;
 					(*source->queue)->Enqueue(source->queue, (void*)source->subDataPtr, source->subLength);
 				}
 				else
@@ -283,7 +288,9 @@ extern "C" {
 					{
 						SLmillisecond ms;
 						(*source->player)->GetPosition(source->player, &ms);
-						source->streamPositionDiff = (double)ms / 1000.0;
+						auto time = (double)ms / 1000.0;
+						time *= source->pitch * source->doppler_pitch;
+						source->streamPositionDiff = time;
 					}
 
 					source->freeBuffers.push_back(playedBuffer);
@@ -296,8 +303,9 @@ extern "C" {
 		void PlayerCallback(SLPlayItf caller, void *pContext, SLuint32 event)
 		{
 			(void)caller;
-			auto source = static_cast<xnAudioSource*>(pContext);
-
+			(void)pContext;
+			(void)event;
+			//auto source = static_cast<xnAudioSource*>(pContext);
 		}
 
 		xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener, int sampleRate, int maxNBuffers, npBool mono, npBool spatialized, npBool streamed)
@@ -488,7 +496,7 @@ extern "C" {
 				}
 
 				source->subLength = (sampleStop - sampleStart) * sizeof(short);
-				source->subDataPtr = source->streamBuffers[0]->dataPtr + sampleStart;
+				source->subDataPtr = source->streamBuffers[0]->dataPtr + sampleStart * sizeof(short);
 
 				(*source->queue)->Clear(source->queue);
 				(*source->queue)->Enqueue(source->queue, (void*)source->subDataPtr, source->subLength);
@@ -524,8 +532,7 @@ extern "C" {
 			source->streamBuffers.clear();
 			source->streamBuffers.push_back(buffer);
 			source->subLength = buffer->dataLength;
-			source->subDataPtr = buffer->dataPtr;
-			(*source->queue)->Enqueue(source->queue, (void*)source->subDataPtr, source->subLength);
+			source->subDataPtr = buffer->dataPtr;		
 
 			source->buffersLock.Unlock();
 		}
@@ -579,8 +586,11 @@ extern "C" {
 		{
 			(*source->player)->SetPlayState(source->player, SL_PLAYSTATE_STOPPED);
 
-			//flush
-			(*source->queue)->Clear(source->queue);
+			if (source->streamed)
+			{
+				//flush
+				(*source->queue)->Clear(source->queue);
+			}
 			source->streamPositionDiff = 0.0;
 
 			if(source->streamed)
