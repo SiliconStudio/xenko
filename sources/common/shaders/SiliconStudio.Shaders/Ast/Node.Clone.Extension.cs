@@ -11,7 +11,7 @@ using SiliconStudio.Shaders.Utility;
 
 namespace SiliconStudio.Shaders.Ast
 {
-    public class CloneContext : Dictionary<object, object>
+    public class CloneContext
     {
         private MemoryStream memoryStream;
         private BinarySerializationWriter writer;
@@ -19,16 +19,8 @@ namespace SiliconStudio.Shaders.Ast
         private Dictionary<object, int> serializeReferences;
         private List<object> deserializeReferences;
 
-        public CloneContext(CloneContext parent = null) : base(MemberSerializer.ObjectReferenceEqualityComparer.Default)
+        public CloneContext(CloneContext parent = null)
         {
-            if (parent != null)
-            {
-                foreach (var item in parent)
-                {
-                    Add(item.Key, item.Value);
-                }
-            }
-
             // Setup
             memoryStream = new MemoryStream(4096);
             writer = new BinarySerializationWriter(memoryStream);
@@ -39,18 +31,31 @@ namespace SiliconStudio.Shaders.Ast
 
             serializeReferences = writer.Context.Tags.Get(MemberSerializer.ObjectSerializeReferences);
             deserializeReferences = reader.Context.Tags.Get(MemberSerializer.ObjectDeserializeReferences);
+
+            if (parent != null)
+            {
+                foreach (var item in parent.serializeReferences)
+                    serializeReferences.Add(item.Key, item.Value);
+                foreach (var item in parent.deserializeReferences)
+                    deserializeReferences.Add(item);
+            }
+        }
+
+        public void Add(object key, object value)
+        {
+            serializeReferences.Add(key, deserializeReferences.Count);
+            deserializeReferences.Add(value);
+        }
+
+        public void Remove(object key)
+        {
+            serializeReferences.Remove(key);
         }
 
         internal void DeepCollect<T>(T obj)
         {
             // Collect
             writer.SerializeExtended(obj, ArchiveMode.Serialize);
-
-            // Register each reference found
-            foreach (var serializeReference in serializeReferences)
-            {
-                this[serializeReference.Key] = serializeReference.Key;
-            }
 
             // Reset stream and references
             memoryStream.Seek(0, SeekOrigin.Begin);
@@ -61,13 +66,6 @@ namespace SiliconStudio.Shaders.Ast
 
         internal T DeepClone<T>(T obj)
         {
-            // Prepare previously collected references
-            foreach (var reference in this)
-            {
-                serializeReferences.Add(reference.Key, deserializeReferences.Count);
-                deserializeReferences.Add(reference.Value);
-            }
-
             // Serialize
             writer.SerializeExtended(obj, ArchiveMode.Serialize);
 
@@ -79,9 +77,6 @@ namespace SiliconStudio.Shaders.Ast
             // Reset stream and references
             memoryStream.Seek(0, SeekOrigin.Begin);
             memoryStream.SetLength(0);
-
-            serializeReferences.Clear();
-            deserializeReferences.Clear();
 
             return obj;
         }

@@ -519,12 +519,7 @@ namespace SiliconStudio.Shaders.Convertor
             public void Initialize(CloneContext previousCloneContext)
             {
                 // Clone original context
-                var cloneContext = new CloneContext();
-
-                foreach (var keyValurPair in previousCloneContext)
-                {
-                    cloneContext.Add(keyValurPair.Key, keyValurPair.Value);
-                }
+                var cloneContext = new CloneContext(previousCloneContext);
 
                 // Removes the method to clone
                 cloneContext.Remove(Method);
