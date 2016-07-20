@@ -241,8 +241,6 @@ extern "C" {
 
 			volatile double dequeuedTime = 0.0;
 
-			volatile bool flushed = false; // we need to flag to allow us to understand when a flushing happened within an Update
-
 			xnAudioListener* listener;
 
 			xnAudioBuffer* singleBuffer;
@@ -296,13 +294,7 @@ extern "C" {
 							ALfloat postDTime;
 							GetSourceF(source->source, AL_SEC_OFFSET, &postDTime);
 
-							if (processed == 1 && source->flushed)
-							{
-								//after a flush operation we consider the remaining unqueued buffer as a end of stream loop.
-								source->flushed = false;
-								source->dequeuedTime = 0.0;
-							}
-							else if (bufferPtr->type == EndOfStream || bufferPtr->type == EndOfLoop)
+							if (bufferPtr->type == EndOfStream || bufferPtr->type == EndOfLoop)
 							{
 								source->dequeuedTime = 0.0;
 							}
@@ -461,7 +453,10 @@ extern "C" {
 
 		void xnAudioSourceSetRange(xnAudioSource* source, double startTime, double stopTime)
 		{
-			if (source->streamed) return;
+			if (source->streamed)
+			{
+				return;
+			}
 
 			ContextState lock(source->listener->context);
 
@@ -570,7 +565,31 @@ extern "C" {
 			ContextState lock(source->listener->context);
 
 			SourceStop(source->source);
-			source->flushed = true;
+
+			if(source->streamed)
+			{
+				//flush all buffers
+				auto processed = 0;
+				GetSourceI(source->source, AL_BUFFERS_PROCESSED, &processed);
+				while (processed--)
+				{
+					ALuint buffer;
+					SourceUnqueueBuffers(source->source, 1, &buffer);
+				}
+
+				//return the source to undetermined mode
+				SourceI(source->source, AL_BUFFER, 0);
+
+				//set all buffers as free
+				source->freeBuffers.clear();
+				for(auto buffer : source->listener->buffers)
+				{
+					source->freeBuffers.push_back(buffer.second);
+				}
+
+				//reset timing info
+				source->dequeuedTime = 0.0;
+			}
 		}
 
 		void xnAudioListenerPush3D(xnAudioListener* listener, float* pos, float* forward, float* up, float* vel)
