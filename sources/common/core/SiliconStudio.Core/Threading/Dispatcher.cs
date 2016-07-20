@@ -31,14 +31,18 @@ namespace SiliconStudio.Core.Threading
 
         public static void For2(int fromInclusive, int toExclusive, PooledAction<int> action)
         {
+            var count = toExclusive - fromInclusive;
+            if (count == 0)
+                return;
+
             if (disableParallelization)
             {
                 ExecuteBatch(fromInclusive, toExclusive, action);
             }
             else
             {
-                int batchCount = Environment.ProcessorCount;
-                int batchSize = (toExclusive - fromInclusive + (batchCount - 1)) / batchCount;
+                int batchCount = Math.Min(Environment.ProcessorCount, count);
+                int batchSize = (count + (batchCount - 1)) / batchCount;
 
                 int batchStartInclusive = fromInclusive;
                 int batchEndExclusive = batchStartInclusive + batchSize;
@@ -86,8 +90,12 @@ namespace SiliconStudio.Core.Threading
         //[MethodImpl(MethodImplOptions.NoInlining)]
         public static void For(int fromInclusive, int toExclusive, PooledAction<int> action)
         {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
+            //var stopwatch = new Stopwatch();
+            //stopwatch.Start();
+
+            var count = toExclusive - fromInclusive;
+            if (count == 0)
+                return;
 
             if (disableParallelization)
             {
@@ -96,8 +104,11 @@ namespace SiliconStudio.Core.Threading
             }
             else
             {
-                int batchCount = Math.Min(Environment.ProcessorCount, toExclusive - fromInclusive);
-                int batchSize = (toExclusive - fromInclusive + (batchCount - 1)) / batchCount;
+                //Parallel.For(fromInclusive, toExclusive, i => action(i));
+                //return;
+
+                int batchCount = Math.Min(Environment.ProcessorCount, count);
+                int batchSize = (count + (batchCount - 1)) / batchCount;
 
                 var finishedLock = new BatchState { Count = batchCount };
 

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Extensions;
@@ -22,7 +23,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         private EffectDescriptorSetReference perMaterialDescriptorSetSlot;
 
-        private List<RenderMesh> renderMeshesToGenerateAEN = new List<RenderMesh>();
+        private ConcurrentCollector<RenderMesh> renderMeshesToGenerateAEN = new ConcurrentCollector<RenderMesh>();
 
         // Material instantiated
         private readonly Dictionary<Material, MaterialInfo> allMaterialInfos = new Dictionary<Material, MaterialInfo>();
@@ -30,6 +31,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         public class MaterialInfoBase
         {
             public int LastFrameUsed;
+            public SpinLock UpdateLock;
 
             // Any matching effect
             public ResourceGroupLayout PerMaterialLayout;
@@ -99,8 +101,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             var tessellationStates = RootRenderFeature.RenderData.GetData(tessellationStateKey);
             int effectSlotCount = ((RootEffectRenderFeature)RootRenderFeature).EffectPermutationSlotCount;
 
-            foreach (var renderObject in RootRenderFeature.RenderObjects)
-            //Dispatcher.ForEach(RootRenderFeature.RenderObjects, renderObject =>
+            //foreach (var renderObject in RootRenderFeature.RenderObjects)
+            Dispatcher.ForEach(RootRenderFeature.RenderObjects, renderObject =>
             {
                 var staticObjectNode = renderObject.StaticObjectNode;
 
@@ -180,10 +182,13 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                     if (materialInfo == null || materialInfo.Material != material)
                     {
                         // First time this material is initialized, let's create associated info
-                        if (!allMaterialInfos.TryGetValue(material, out materialInfo))
+                        lock (allMaterialInfos)
                         {
-                            materialInfo = new MaterialInfo(material);
-                            allMaterialInfos.Add(material, materialInfo);
+                            if (!allMaterialInfos.TryGetValue(material, out materialInfo))
+                            {
+                                materialInfo = new MaterialInfo(material);
+                                allMaterialInfos.Add(material, materialInfo);
+                            }
                         }
                         renderMesh.MaterialInfo = materialInfo;
                     }
@@ -194,25 +199,31 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                         renderEffect.PipelineState = null;
                     }
 
-                    var isMaterialParametersChanged = materialInfo.MaterialParameters != material.Parameters;
-                    if (isMaterialParametersChanged // parameter fast reload?
-                        || materialInfo.PermutationCounter != material.Parameters.PermutationCounter)
+                    if (materialInfo.MaterialParameters != material.Parameters || materialInfo.PermutationCounter != material.Parameters.PermutationCounter)
                     {
-                        materialInfo.VertexStageSurfaceShaders = material.Parameters.Get(MaterialKeys.VertexStageSurfaceShaders);
-                        materialInfo.VertexStageStreamInitializer = material.Parameters.Get(MaterialKeys.VertexStageStreamInitializer);
+                        lock (materialInfo)
+                        {
+                            var isMaterialParametersChanged = materialInfo.MaterialParameters != material.Parameters;
+                            if (isMaterialParametersChanged // parameter fast reload?
+                                || materialInfo.PermutationCounter != material.Parameters.PermutationCounter)
+                            {
+                                materialInfo.VertexStageSurfaceShaders = material.Parameters.Get(MaterialKeys.VertexStageSurfaceShaders);
+                                materialInfo.VertexStageStreamInitializer = material.Parameters.Get(MaterialKeys.VertexStageStreamInitializer);
 
-                        materialInfo.DomainStageSurfaceShaders = material.Parameters.Get(MaterialKeys.DomainStageSurfaceShaders);
-                        materialInfo.DomainStageStreamInitializer = material.Parameters.Get(MaterialKeys.DomainStageStreamInitializer);
+                                materialInfo.DomainStageSurfaceShaders = material.Parameters.Get(MaterialKeys.DomainStageSurfaceShaders);
+                                materialInfo.DomainStageStreamInitializer = material.Parameters.Get(MaterialKeys.DomainStageStreamInitializer);
 
-                        materialInfo.TessellationShader = material.Parameters.Get(MaterialKeys.TessellationShader);
+                                materialInfo.TessellationShader = material.Parameters.Get(MaterialKeys.TessellationShader);
 
-                        materialInfo.PixelStageSurfaceShaders = material.Parameters.Get(MaterialKeys.PixelStageSurfaceShaders);
-                        materialInfo.PixelStageStreamInitializer = material.Parameters.Get(MaterialKeys.PixelStageStreamInitializer);
-                        materialInfo.HasNormalMap = material.Parameters.Get(MaterialKeys.HasNormalMap);
+                                materialInfo.PixelStageSurfaceShaders = material.Parameters.Get(MaterialKeys.PixelStageSurfaceShaders);
+                                materialInfo.PixelStageStreamInitializer = material.Parameters.Get(MaterialKeys.PixelStageStreamInitializer);
+                                materialInfo.HasNormalMap = material.Parameters.Get(MaterialKeys.HasNormalMap);
 
-                        materialInfo.MaterialParameters = material.Parameters;
-                        materialInfo.ParametersChanged = isMaterialParametersChanged;
-                        materialInfo.PermutationCounter = material.Parameters.PermutationCounter;
+                                materialInfo.MaterialParameters = material.Parameters;
+                                materialInfo.ParametersChanged = isMaterialParametersChanged;
+                                materialInfo.PermutationCounter = material.Parameters.PermutationCounter;
+                            }
+                        }
                     }
 
                     // VS
@@ -239,7 +250,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                     if (materialInfo.HasNormalMap)
                         renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasNormalMap, materialInfo.HasNormalMap);
                 }
-            }
+            });
         }
 
         /// <inheritdoc/>
@@ -247,7 +258,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         {
             // Assign descriptor sets to each render node
             var resourceGroupPool = ((RootEffectRenderFeature)RootRenderFeature).ResourceGroupPool;
-            for (int renderNodeIndex = 0; renderNodeIndex < RootRenderFeature.RenderNodes.Count; renderNodeIndex++)
+            //for (int renderNodeIndex = 0; renderNodeIndex < RootRenderFeature.RenderNodes.Count; renderNodeIndex++)
+            Dispatcher.For(0, RootRenderFeature.RenderNodes.Count, renderNodeIndex =>
             {
                 var renderNodeReference = new RenderNodeReference(renderNodeIndex);
                 var renderNode = RootRenderFeature.RenderNodes[renderNodeIndex];
@@ -255,7 +267,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
                 // Ignore fallback effects
                 if (renderNode.RenderEffect.State != RenderEffectState.Normal)
-                    continue;
+                    return;
 
                 // Collect materials and create associated MaterialInfo (includes reflection) first time
                 // TODO: We assume same material will generate same ResourceGroup (i.e. same resources declared in same order)
@@ -265,11 +277,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 var materialParameters = material.Parameters;
 
                 if (!UpdateMaterial(RenderSystem, context, materialInfo, perMaterialDescriptorSetSlot.Index, renderNode.RenderEffect, materialParameters))
-                    continue;
+                    return;
 
                 var descriptorSetPoolOffset = ((RootEffectRenderFeature)RootRenderFeature).ComputeResourceGroupOffset(renderNodeReference);
                 resourceGroupPool[descriptorSetPoolOffset + perMaterialDescriptorSetSlot.Index] = materialInfo.Resources;
-            }
+            });
         }
 
         public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
@@ -292,7 +304,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                     tessellationMeshDraw.DrawCount = 12/3*tessellationMeshDraw.DrawCount;
                 }
 
-                renderMeshesToGenerateAEN.Clear();
+                renderMeshesToGenerateAEN.Clear(false);
             }
         }
 
@@ -302,38 +314,45 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             if (materialInfo.LastFrameUsed == renderSystem.FrameCounter)
                 return true;
 
-            // First time we use the material with a valid effect, let's update layouts
-            if (materialInfo.PerMaterialLayout == null || materialInfo.PerMaterialLayout.Hash != renderEffect.Reflection.ResourceGroupDescriptions[materialSlotIndex].Hash)
+            // TODO: spinlock?
+            lock (materialInfo)
             {
-                var resourceGroupDescription = renderEffect.Reflection.ResourceGroupDescriptions[materialSlotIndex];
-                if (resourceGroupDescription.DescriptorSetLayout == null)
-                    return false;
+                if (materialInfo.LastFrameUsed == renderSystem.FrameCounter)
+                    return true;
 
-                materialInfo.PerMaterialLayout = ResourceGroupLayout.New(renderSystem.GraphicsDevice, resourceGroupDescription, renderEffect.Effect.Bytecode);
-
-                var parameterCollectionLayout = materialInfo.ParameterCollectionLayout = new ParameterCollectionLayout();
-                parameterCollectionLayout.ProcessResources(resourceGroupDescription.DescriptorSetLayout);
-                materialInfo.ResourceCount = parameterCollectionLayout.ResourceCount;
-
-                // Process material cbuffer (if any)
-                if (resourceGroupDescription.ConstantBufferReflection != null)
+                // First time we use the material with a valid effect, let's update layouts
+                if (materialInfo.PerMaterialLayout == null || materialInfo.PerMaterialLayout.Hash != renderEffect.Reflection.ResourceGroupDescriptions[materialSlotIndex].Hash)
                 {
-                    materialInfo.ConstantBufferReflection = resourceGroupDescription.ConstantBufferReflection;
-                    parameterCollectionLayout.ProcessConstantBuffer(resourceGroupDescription.ConstantBufferReflection);
+                    var resourceGroupDescription = renderEffect.Reflection.ResourceGroupDescriptions[materialSlotIndex];
+                    if (resourceGroupDescription.DescriptorSetLayout == null)
+                        return false;
+
+                    materialInfo.PerMaterialLayout = ResourceGroupLayout.New(renderSystem.GraphicsDevice, resourceGroupDescription, renderEffect.Effect.Bytecode);
+
+                    var parameterCollectionLayout = materialInfo.ParameterCollectionLayout = new ParameterCollectionLayout();
+                    parameterCollectionLayout.ProcessResources(resourceGroupDescription.DescriptorSetLayout);
+                    materialInfo.ResourceCount = parameterCollectionLayout.ResourceCount;
+
+                    // Process material cbuffer (if any)
+                    if (resourceGroupDescription.ConstantBufferReflection != null)
+                    {
+                        materialInfo.ConstantBufferReflection = resourceGroupDescription.ConstantBufferReflection;
+                        parameterCollectionLayout.ProcessConstantBuffer(resourceGroupDescription.ConstantBufferReflection);
+                    }
+                    materialInfo.ParametersChanged = true;
                 }
-                materialInfo.ParametersChanged = true;
-            }
 
-            // If the parameters collection instance changed, we need to update it
-            if (materialInfo.ParametersChanged)
-            {
-                materialInfo.ParameterCollection.UpdateLayout(materialInfo.ParameterCollectionLayout);
-                materialInfo.ParameterCollectionCopier = new ParameterCollection.Copier(materialInfo.ParameterCollection, materialParameters);
-                materialInfo.ParametersChanged = false;
-            }
+                // If the parameters collection instance changed, we need to update it
+                if (materialInfo.ParametersChanged)
+                {
+                    materialInfo.ParameterCollection.UpdateLayout(materialInfo.ParameterCollectionLayout);
+                    materialInfo.ParameterCollectionCopier = new ParameterCollection.Copier(materialInfo.ParameterCollection, materialParameters);
+                    materialInfo.ParametersChanged = false;
+                }
 
-            // Mark this material as used during this frame
-            materialInfo.LastFrameUsed = renderSystem.FrameCounter;
+                // Mark this material as used during this frame
+                materialInfo.LastFrameUsed = renderSystem.FrameCounter;
+            }
 
             // Copy back to ParameterCollection
             // TODO GRAPHICS REFACTOR directly copy to resource group?

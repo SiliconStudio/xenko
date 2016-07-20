@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Threading;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Graphics;
 
@@ -14,7 +15,7 @@ namespace SiliconStudio.Xenko.Rendering
     {
         public TrackingCollection<SubRenderFeature> RenderFeatures = new TrackingCollection<SubRenderFeature>();
 
-        private DescriptorSet[] descriptorSets;
+        private readonly ThreadLocal<DescriptorSet[]> descriptorSets = new ThreadLocal<DescriptorSet[]>();
 
         /// <inheritdoc/>
         public override Type SupportedRenderObjectType => typeof(RenderMesh);
@@ -115,8 +116,13 @@ namespace SiliconStudio.Xenko.Rendering
                 renderFeature.Draw(context, renderView, renderViewStage, startIndex, endIndex);
             }
 
-            Array.Resize(ref descriptorSets, EffectDescriptorSetSlotCount);
-
+            // TODO: stackalloc?
+            var descriptorSetsLocal = descriptorSets.Value;
+            if (descriptorSetsLocal == null || descriptorSetsLocal.Length < EffectDescriptorSetSlotCount)
+            {
+                descriptorSetsLocal = descriptorSets.Value = new DescriptorSet[EffectDescriptorSetSlotCount];
+            }
+            
             MeshDraw currentDrawData = null;
             for (int index = startIndex; index < endIndex; index++)
             {
@@ -151,15 +157,15 @@ namespace SiliconStudio.Xenko.Rendering
                 renderEffect.Reflection.BufferUploader.Apply(context.CommandList, ResourceGroupPool, resourceGroupOffset);
 
                 // Bind descriptor sets
-                for (int i = 0; i < descriptorSets.Length; ++i)
+                for (int i = 0; i < descriptorSetsLocal.Length; ++i)
                 {
                     var resourceGroup = ResourceGroupPool[resourceGroupOffset++];
                     if (resourceGroup != null)
-                        descriptorSets[i] = resourceGroup.DescriptorSet;
+                        descriptorSetsLocal[i] = resourceGroup.DescriptorSet;
                 }
 
                 commandList.SetPipelineState(renderEffect.PipelineState);
-                commandList.SetDescriptorSets(0, descriptorSets);
+                commandList.SetDescriptorSets(0, descriptorSetsLocal);
 
                 // Draw
                 if (drawData.IndexBuffer == null)

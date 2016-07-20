@@ -91,7 +91,7 @@ namespace SiliconStudio.Xenko.Rendering
         {
             if (!threadContext.IsValueCreated)
             {
-                var graphicsContext = new GraphicsContext(new CommandList(GraphicsDevice), new ResourceGroupAllocator(GraphicsDevice));
+                var graphicsContext = new GraphicsContext(GraphicsDevice, Allocator);
                 threadContext.Value = new RenderDrawContext(Services, this, graphicsContext);
             }
 
@@ -102,8 +102,15 @@ namespace SiliconStudio.Xenko.Rendering
         {
             foreach (var context in threadContext.Values)
             {
-                context.GraphicsContext.CommandList.Reset();
-                context.GraphicsContext.ResourceGroupAllocator.Reset();
+                context.GraphicsContext.ResourceGroupAllocator.Reset(context.CommandList);
+            }
+        }
+
+        public void Flush()
+        {
+            foreach (var context in threadContext.Values)
+            {
+                context.GraphicsContext.ResourceGroupAllocator.Flush();
             }
         }
 

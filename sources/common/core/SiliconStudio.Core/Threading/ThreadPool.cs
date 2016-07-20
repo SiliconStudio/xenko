@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,11 +17,15 @@ namespace SiliconStudio.Core.Threading
         private readonly Queue<Action> workItems = new Queue<Action>();
         private readonly Semaphore workerThreadNeeded = new Semaphore();
         private int activeThreadCount;
+        private SpinLock spinLock = new SpinLock();
 
         public void QueueWorkItem(Action workItem)
         {
-            lock (workItems)
+            bool lockTaken = false;
+            try
             {
+                spinLock.Enter(ref lockTaken);
+
                 workItems.Enqueue(workItem);
 
                 if (activeThreadCount + 1 >= workers.Count && workers.Count < Environment.ProcessorCount * 2)
@@ -29,8 +34,26 @@ namespace SiliconStudio.Core.Threading
                     workers.Add(worker);
                 }
             }
+            finally
+            {
+                if (lockTaken)
+                    spinLock.Exit(false);
+            }
 
+            //lock (workItems)
+            //{
+            //    workItems.Enqueue(workItem);
+
+            //    if (activeThreadCount + 1 >= workers.Count && workers.Count < Environment.ProcessorCount * 2)
+            //    {
+            //        var worker = Task.Factory.StartNew(ProcessWorkItems, workers.Count, TaskCreationOptions.LongRunning);
+            //        workers.Add(worker);
+            //    }
+            //}
+
+            //Console.WriteLine($"{DateTime.UtcNow.Ticks / 10000.0}: Adding");
             workerThreadNeeded.AddOne();
+            //Console.WriteLine($"{DateTime.UtcNow.Ticks / 10000.0}: Added");
         }
 
         private ThreadPool()
@@ -40,7 +63,7 @@ namespace SiliconStudio.Core.Threading
             //    var worker = Task.Factory.StartNew(ProcessWorkItems, i, TaskCreationOptions.LongRunning);
             //    workers.Add(worker);
             //}
-        }
+        }      
 
         private void ProcessWorkItems(object state)
         {
@@ -50,11 +73,15 @@ namespace SiliconStudio.Core.Threading
             while (true)
             {
                 workerThreadNeeded.WaitOne();
+                //Console.WriteLine($"{DateTime.UtcNow.Ticks / 10000.0}: Finished waiting");
 
                 Action workItem = null;
 
-                lock (workItems)
+                bool lockTaken = false;
+                try
                 {
+                    spinLock.Enter(ref lockTaken);
+
                     if (workItems.Count > 0)
                     {
                         try
@@ -67,6 +94,26 @@ namespace SiliconStudio.Core.Threading
                         }
                     }
                 }
+                finally
+                {
+                    if (lockTaken)
+                        spinLock.Exit(false);
+                }
+
+                //lock (workItems)
+                //{
+                //    if (workItems.Count > 0)
+                //    {
+                //        try
+                //        {
+                //            workItem = workItems.Dequeue();
+                //        }
+                //        catch
+                //        {
+                            
+                //        }
+                //    }
+                //}
 
                 if (workItem != null)
                 {

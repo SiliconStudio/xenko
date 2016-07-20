@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Particles.Materials;
@@ -40,7 +41,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
         public override Type SupportedRenderObjectType => typeof(RenderParticleEmitter);
 
-        private DescriptorSet[] descriptorSets;
+        private readonly ThreadLocal<DescriptorSet[]> descriptorSets = new ThreadLocal<DescriptorSet[]>();
 
         internal class ParticleMaterialInfo : MaterialRenderFeature.MaterialInfoBase
         {
@@ -243,7 +244,12 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             Matrix viewInverse;
             Matrix.Invert(ref renderView.View, out viewInverse);
 
-            Array.Resize(ref descriptorSets, EffectDescriptorSetSlotCount);
+            // TODO: stackalloc?
+            var descriptorSetsLocal = descriptorSets.Value;
+            if (descriptorSetsLocal == null || descriptorSetsLocal.Length < EffectDescriptorSetSlotCount)
+            {
+                descriptorSetsLocal = descriptorSets.Value = new DescriptorSet[EffectDescriptorSetSlotCount];
+            }
 
             for (var index = startIndex; index < endIndex; index++)
             {
@@ -280,15 +286,15 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                 renderEffect.Reflection.BufferUploader.Apply(context.CommandList, ResourceGroupPool, resourceGroupOffset);
 
                 // Bind descriptor sets
-                for (int i = 0; i < descriptorSets.Length; ++i)
+                for (int i = 0; i < descriptorSetsLocal.Length; ++i)
                 {
                     var resourceGroup = ResourceGroupPool[resourceGroupOffset++];
                     if (resourceGroup != null)
-                        descriptorSets[i] = resourceGroup.DescriptorSet;
+                        descriptorSetsLocal[i] = resourceGroup.DescriptorSet;
                 }
 
                 commandList.SetPipelineState(renderEffect.PipelineState);
-                commandList.SetDescriptorSets(0, descriptorSets);
+                commandList.SetDescriptorSets(0, descriptorSetsLocal);
 
                 commandList.DrawIndexed(vertexBuilder.LivingQuads * vertexBuilder.IndicesPerQuad, vertexBuilder.ResourceContext.IndexBufferPosition);
             }

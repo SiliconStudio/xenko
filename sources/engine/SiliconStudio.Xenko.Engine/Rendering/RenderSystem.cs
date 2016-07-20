@@ -230,7 +230,8 @@ namespace SiliconStudio.Xenko.Rendering
                         fixed (SortKey* sortKeysPtr = sortKeys)
                             renderStage.SortMode.GenerateSortKey(view, renderViewStage, sortKeysPtr);
 
-                        Array.Sort(sortKeys, 0, renderNodes.Count);
+                        //Array.Sort(sortKeys, 0, renderNodes.Count);
+                        Dispatcher.Sort(sortKeys, 0, renderNodes.Count, Comparer<SortKey>.Default);
 
                         // Reorder list
                         for (int i = 0; i < renderNodes.Count; ++i)
@@ -251,6 +252,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Flush the resources uploaded during Prepare
             context.ResourceGroupAllocator.Flush();
+            context.RenderContext.Flush();
         }
 
         public void Draw(RenderDrawContext renderDrawContext, RenderView renderView, RenderStage renderStage, bool parallel = false)
@@ -273,38 +275,42 @@ namespace SiliconStudio.Xenko.Rendering
                 throw new InvalidOperationException("Requested RenderView|RenderStage combination doesn't exist. Please add it to RenderView.RenderStages.");
             }
 
-            if (!parallel)
-                return;
-
-            renderDrawContext.CommandList.Close();
-            renderDrawContext.CommandList.Reset();
-
             // Generate and execute draw jobs
             var renderNodes = renderViewStage.SortedRenderNodes;
             var renderNodeCount = renderViewStage.RenderNodes.Count;
-            //int currentStart, currentEnd;
+            
 
-            //for (currentStart = 0; currentStart < renderNodeCount; currentStart = currentEnd)
-            //{
-            //    var currentRenderFeature = renderNodes[currentStart].RootRenderFeature;
-            //    currentEnd = currentStart + 1;
-            //    while (currentEnd < renderNodeCount && renderNodes[currentEnd].RootRenderFeature == currentRenderFeature)
-            //    {
-            //        currentEnd++;
-            //    }
+            if (renderNodeCount == 0)
+                return;
 
-            //    // Divide into task chunks for parallelism
-            //    currentRenderFeature.Draw(renderDrawContext, renderView, renderViewStage, currentStart, currentEnd);
-            //}
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
+            int currentStart, currentEnd;
+            for (currentStart = 0; currentStart < renderNodeCount; currentStart = currentEnd)
+            {
+                var currentRenderFeature = renderNodes[currentStart].RootRenderFeature;
+                currentEnd = currentStart + 1;
+                while (currentEnd < renderNodeCount && renderNodes[currentEnd].RootRenderFeature == currentRenderFeature)
+                {
+                    currentEnd++;
+                }
 
-            int batchCount = 2;//Math.Min(Environment.ProcessorCount, renderNodeCount);
+                // Divide into task chunks for parallelism
+                currentRenderFeature.Draw(renderDrawContext, renderView, renderViewStage, currentStart, currentEnd);
+            }
+#else
+            int batchCount = Math.Min(Environment.ProcessorCount, renderNodeCount);
             int batchSize = (renderNodeCount + (batchCount - 1)) / batchCount;
+
+            var commandLists = new CompiledCommandList[batchCount + 1];
+            commandLists[0] = renderDrawContext.CommandList.Close2();
 
             Dispatcher.For(0, batchCount, batchIndex =>
             {
                 var threadContext = renderDrawContext.RenderContext.GetThreadContext();
                 threadContext.CommandList.Reset();
-                threadContext.CommandList.SetRenderTargetAndViewport(renderDrawContext.CommandList.DepthStencilBuffer, renderDrawContext.CommandList.RenderTarget);
+                threadContext.CommandList.ClearState();
+
+                threadContext.CommandList.SetRenderTarget(renderDrawContext.CommandList.DepthStencilBuffer, renderDrawContext.CommandList.RenderTargetCount > 0 ? renderDrawContext.CommandList.RenderTarget : null);
                 threadContext.CommandList.SetViewport(renderDrawContext.CommandList.Viewport);
 
                 var currentStart = batchSize * batchIndex;
@@ -328,8 +334,14 @@ namespace SiliconStudio.Xenko.Rendering
                     currentRenderFeature.Draw(threadContext, renderView, renderViewStage, currentStart, currentEnd);
                 }
 
-                threadContext.CommandList.Close();
+                commandLists[batchIndex + 1] = threadContext.CommandList.Close2();
             });
+
+            GraphicsDevice.ExecuteCommandLists(commandLists);
+
+            renderDrawContext.CommandList.Reset();
+            renderDrawContext.CommandList.ClearState();
+#endif
         }
 
         /// <summary>

@@ -3,6 +3,7 @@
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using SharpVulkan;
@@ -14,6 +15,12 @@ using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Graphics
 {
+    public struct CompiledCommandList
+    {
+        internal CommandBuffer NativeCommandBuffer;
+        internal long FenceValue;
+    }
+
     public partial class CommandList
     {
         private CommandBufferPool commandBufferPool;
@@ -62,6 +69,8 @@ namespace SiliconStudio.Xenko.Graphics
             framebuffers.Clear();
             framebufferDirty = true;
 
+            fenceValue = GraphicsDevice.PushFence();
+
             NativeCommandBuffer = commandBufferPool.GetObject();
 
             var beginInfo = new CommandBufferBeginInfo
@@ -70,8 +79,6 @@ namespace SiliconStudio.Xenko.Graphics
                 Flags = CommandBufferUsageFlags.OneTimeSubmit,
             };
             NativeCommandBuffer.Begin(ref beginInfo);
-
-            fenceValue = GraphicsDevice.PushFence();
             
             activeStencilReference = null;
         }
@@ -84,6 +91,22 @@ namespace SiliconStudio.Xenko.Graphics
             GraphicsDevice.ExecuteCommandListInternal(NativeCommandBuffer, fenceValue);
 
             activePipeline = null;
+        }
+
+        public CompiledCommandList Close2()
+        {
+            End();
+
+            // Submit
+            //GraphicsDevice.ExecuteCommandListInternal(NativeCommandBuffer, fenceValue);
+
+            activePipeline = null;
+
+            return new CompiledCommandList
+            {
+                NativeCommandBuffer = NativeCommandBuffer,
+                FenceValue = fenceValue,
+            };
         }
 
         private void End()

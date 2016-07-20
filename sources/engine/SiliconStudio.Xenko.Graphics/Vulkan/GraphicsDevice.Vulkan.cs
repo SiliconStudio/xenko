@@ -9,6 +9,7 @@ using System.Threading;
 using SharpVulkan;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 using Semaphore = SharpVulkan.Semaphore;
 
 namespace SiliconStudio.Xenko.Graphics
@@ -167,12 +168,55 @@ namespace SiliconStudio.Xenko.Graphics
         /// Executes a deferred command list.
         /// </summary>
         /// <param name="commandList">The deferred command list.</param>
-        public void ExecuteCommandList(CommandList commandList)
+        public void ExecuteCommandList(CompiledCommandList commandList)
         {
+            ExecuteCommandListInternal(commandList.NativeCommandBuffer, commandList.FenceValue);
+
             //if (commandList == null) throw new ArgumentNullException("commandList");
             //
             //NativeDeviceContext.ExecuteCommandList(((CommandList)commandList).NativeCommandList, false);
             //commandList.Dispose();
+        }
+
+        private FastList<CommandBuffer> commandBuffers = new FastList<CommandBuffer>();
+
+        public unsafe void ExecuteCommandLists(CompiledCommandList[] commandLists)
+        {
+            long fenceValue = long.MaxValue;
+            for (int i = 0; i < commandLists.Length; i++)
+            {
+                commandBuffers.Add(commandLists[i].NativeCommandBuffer);
+                if (commandLists[i].FenceValue < fenceValue)
+                    fenceValue = commandLists[i].FenceValue;
+            }
+
+            var fenceCreateInfo = new FenceCreateInfo { StructureType = StructureType.FenceCreateInfo };
+            var fence = nativeDevice.CreateFence(ref fenceCreateInfo);
+            nativeFences.Enqueue(new KeyValuePair<long, Fence>(fenceValue, fence));
+
+            // Submit commands
+            var pipelineStageFlags = PipelineStageFlags.BottomOfPipe;
+
+            fixed (CommandBuffer* commandBuffersPtr = &commandBuffers.Items[0])
+            {
+                var presentSemaphoreCopy = presentSemaphore;
+                var submitInfo = new SubmitInfo
+                {
+                    StructureType = StructureType.SubmitInfo,
+                    CommandBufferCount = (uint)commandLists.Length,
+                    CommandBuffers = new IntPtr(commandBuffersPtr),
+                    WaitSemaphoreCount = presentSemaphore != Semaphore.Null ? 1U : 0U,
+                    WaitSemaphores = new IntPtr(&presentSemaphoreCopy),
+                    WaitDstStageMask = new IntPtr(&pipelineStageFlags),
+                };
+                NativeCommandQueue.Submit(1, &submitInfo, fence);
+            }
+
+            presentSemaphore = Semaphore.Null;
+            nativeResourceCollector.Release();
+            graphicsResourceLinkCollector.Release();
+
+            commandBuffers.Clear(true);
         }
 
         private void InitializePostFeatures()
@@ -482,17 +526,28 @@ namespace SiliconStudio.Xenko.Graphics
             return fenceValue <= lastCompletedFence;
         }
 
+        private SpinLock spinLock = new SpinLock();
         internal unsafe long GetCompletedValue()
         {
-            // TODO VULKAN: SpinLock this
-            while (nativeFences.Count > 0 && NativeDevice.GetFenceStatus(nativeFences.Peek().Value) == Result.Success)
+            bool lockTaken = false;
+            try
             {
-                var fence = nativeFences.Dequeue();
-                NativeDevice.DestroyFence(fence.Value);
-                lastCompletedFence = Math.Max(lastCompletedFence, fence.Key);
-            }
+                spinLock.Enter(ref lockTaken);
 
-            return lastCompletedFence;
+                while (nativeFences.Count > 0 && NativeDevice.GetFenceStatus(nativeFences.Peek().Value) == Result.Success)
+                {
+                    var fence = nativeFences.Dequeue();
+                    NativeDevice.DestroyFence(fence.Value);
+                    lastCompletedFence = Math.Max(lastCompletedFence, fence.Key);
+                }
+
+                return lastCompletedFence;
+            }
+            finally
+            {
+                if (lockTaken)
+                    spinLock.Exit(false);
+            }
         }
 
         internal unsafe void WaitForFenceInternal(long fenceValue)
