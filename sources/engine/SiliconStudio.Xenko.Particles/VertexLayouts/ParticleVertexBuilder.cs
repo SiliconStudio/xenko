@@ -208,8 +208,6 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
 
         public int LivingQuads { get; private set; }
 
-        public DeviceResourceContext ResourceContext { get; private set; }
-
         public bool IsBufferDirty { get; private set; } = true;
 
         /// <summary>
@@ -323,55 +321,11 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         public void Reset()
         {
             SetRequiredQuads(4, 0, 0);
-            ResourceContext?.Dispose();
-            ResourceContext = null;
         }
 
-        public void RecreateBuffers(GraphicsDevice graphicsDevice)
+        public void SetDirty(bool dirty)
         {
-            if (requiredQuads == 0)
-            {
-                ResourceContext?.Dispose();
-                ResourceContext = null;
-            }
-            else
-            {
-                ResourceContext?.Dispose();
-                ResourceContext = new DeviceResourceContext(graphicsDevice, VertexDeclaration, requiredQuads * verticesPerQuad, indexStructSize, requiredQuads * IndicesPerQuad);
-            }
-        }
-
-
-        /// <summary>
-        /// Initiates a new vertex and index buffers
-        /// </summary>
-        /// <param name="device"><see cref="GraphicsDevice"/> to use</param>
-        /// <param name="vertexCount">Required vertices count. Stride is estimated from the vertex declaration</param>
-        /// <param name="indexCount">Required indices count. Stride is automatically estimated</param>
-        private unsafe void InitializeIndexBuffer(CommandList commandList, int indexCount)
-        {
-            vertexStructSize = VertexDeclaration.VertexStride;
-
-            var mappedIndices = commandList.MapSubresource(ResourceContext.IndexBuffer.Buffer, 0, MapMode.WriteDiscard, false, 0, indexCount * indexStructSize);
-            var indexPointer = mappedIndices.DataBox.DataPointer;
-
-            var k = 0;
-            for (var i = 0; i < indexCount; k += verticesPerQuad)
-            {
-                *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 0);
-                *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 1);
-                *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 2);
-                *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 0);
-                *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 2);
-                *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 3);
-            }
-
-            commandList.UnmapSubresource(mappedIndices);
-        }
-
-        public void MapBuffer()
-        {
-            IsBufferDirty = false;
+            IsBufferDirty = dirty;
         }
 
         internal AttributeAccessor GetAccessor(AttributeDescription desc)
@@ -383,43 +337,6 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             }
 
             return accessor;
-        }
-
-        /// <summary>
-        /// Use a ResourceContext per GraphicsDevice (DeviceContext)
-        /// </summary>
-        public class DeviceResourceContext : ComponentBase
-        {
-            /// <summary>
-            /// Gets the number of vertices.
-            /// </summary>
-            public readonly int VertexCount;
-
-            public VertexBufferBinding VertexBuffer;
-
-            public IndexBufferBinding IndexBuffer;
-
-            public DeviceResourceContext(GraphicsDevice device, VertexDeclaration declaration, int vertexCount, int indexStructSize, int indexCount)
-            {
-                var vertexSize = declaration.CalculateSize();
-
-                VertexCount = vertexCount;
-
-                // Workaround: due to graphics refactor sometimes empty emitters will try to draw 0 particles
-                // TODO Avoid calling this method if LivingParticles == 0
-                {
-                    if (VertexCount <= 0)
-                        VertexCount = 1;
-                    if (indexCount <= 0)
-                        indexCount = 1;
-                }
-
-                var vertexBuffer = Buffer.Vertex.New(device, VertexCount * vertexSize, GraphicsResourceUsage.Dynamic).DisposeBy(this);
-                var indexBuffer = Buffer.Index.New(device, indexCount * indexStructSize, GraphicsResourceUsage.Dynamic).DisposeBy(this);
-
-                IndexBuffer = new IndexBufferBinding(indexBuffer, indexStructSize == sizeof(int), indexCount);
-                VertexBuffer = new VertexBufferBinding(vertexBuffer, declaration, VertexCount, vertexSize);
-            }
         }
     }
 }

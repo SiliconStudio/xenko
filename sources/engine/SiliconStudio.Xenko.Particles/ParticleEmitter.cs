@@ -949,23 +949,22 @@ namespace SiliconStudio.Xenko.Particles
 
             vertexSize = VertexBuilder.VertexDeclaration.CalculateSize();
             vertexCount = VertexBuilder.VertexCount;
-            VertexBuilder.MapBuffer();
+            VertexBuilder.SetDirty(false);
         }
 
         /// <summary>
         /// Build the vertex buffer from particle data
         /// Should come before <see cref="KickVertexBuffer"/>
         /// </summary>
-        /// <param name="device">The graphics device, used to rebuild vertex layouts and shaders if needed</param>
+        /// <param name="sharedBufferPtr">The shared vertex buffer position where the particle data should be output</param>
         /// <param name="invViewMatrix">The current camera's inverse view matrix</param>
-        public void BuildVertexBuffer(CommandList commandList, IntPtr sharedBufferPtr, ref Matrix invViewMatrix)
+        public void BuildVertexBuffer(IntPtr sharedBufferPtr, ref Matrix invViewMatrix)
         {
             // Get camera-space X and Y axes for billboard expansion and sort the particles if needed
             var unitX = new Vector3(invViewMatrix.M11, invViewMatrix.M12, invViewMatrix.M13);
             var unitY = new Vector3(invViewMatrix.M21, invViewMatrix.M22, invViewMatrix.M23);
             depthSortVector = Vector3.Cross(unitX, unitY);
-            ParticleSorter.Sort();
-
+            ParticleSorter.Sort(); // TODO This is not thread-safe if the same emitter is rendered in two different views
 
             // If the particles are in world space they don't need to be fixed as their coordinates are already in world space
             // If the particles are in local space they need to be drawn in world space using the emitter's current location matrix
@@ -979,7 +978,6 @@ namespace SiliconStudio.Xenko.Particles
                 scaleIdentity = drawTransform.WorldScale.X;
             }
 
-            // TODO Map the shared buffer and just get a pointer here
             ParticleBufferState bufferState = new ParticleBufferState(sharedBufferPtr, VertexBuilder);
 
             ShapeBuilder.SetRequiredQuads(ShapeBuilder.QuadsPerParticle, pool.LivingParticles, pool.ParticleCapacity);
