@@ -103,13 +103,13 @@
   <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS'">
     <Reference Include="SharpFont">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(XenkoDependenciesDir)SharpFont\iOS\Release\SharpFont.dll</HintPath>
+      <HintPath>$(XenkoDependenciesDir)SharpFont\iOS\SharpFont.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(SiliconStudioPlatform)' != 'iOS'">
     <Reference Include="SharpFont">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(XenkoDependenciesDir)SharpFont\Portable\Release\SharpFont.dll</HintPath>
+      <HintPath>$(XenkoDependenciesDir)SharpFont\Portable\SharpFont.dll</HintPath>
     </Reference>
   </ItemGroup>
   <!-- Files for Direct3D  -->
