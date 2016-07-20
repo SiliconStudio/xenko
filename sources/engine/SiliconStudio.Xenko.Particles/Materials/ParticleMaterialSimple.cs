@@ -147,7 +147,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
                 bufferState.NextSegment();
             }
 
-            bufferState.RestartBuffer();
+            bufferState.StartOver();
         }
     }
 }

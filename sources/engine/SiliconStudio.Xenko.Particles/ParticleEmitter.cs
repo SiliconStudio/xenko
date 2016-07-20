@@ -949,6 +949,7 @@ namespace SiliconStudio.Xenko.Particles
 
             vertexSize = VertexBuilder.VertexDeclaration.CalculateSize();
             vertexCount = VertexBuilder.VertexCount;
+            VertexBuilder.MapBuffer();
         }
 
         /// <summary>
@@ -979,16 +980,13 @@ namespace SiliconStudio.Xenko.Particles
             }
 
             // TODO Map the shared buffer and just get a pointer here
-            ParticleBufferState bufferState = new ParticleBufferState(VertexBuilder.MapBuffer(commandList, sharedBufferPtr), VertexBuilder);
-
-            ShapeBuilder.BuildVertexBuffer(ref bufferState, unitX, unitY, ref posIdentity, ref rotIdentity, scaleIdentity, ParticleSorter);
-
-            bufferState.RestartBuffer();
+            ParticleBufferState bufferState = new ParticleBufferState(sharedBufferPtr, VertexBuilder);
 
             ShapeBuilder.SetRequiredQuads(ShapeBuilder.QuadsPerParticle, pool.LivingParticles, pool.ParticleCapacity);
-            Material.PatchVertexBuffer(ref bufferState, unitX, unitY, ParticleSorter);
+            ShapeBuilder.BuildVertexBuffer(ref bufferState, unitX, unitY, ref posIdentity, ref rotIdentity, scaleIdentity, ParticleSorter);
 
-            VertexBuilder.UnmapBuffer(commandList, sharedBufferPtr);
+            bufferState.StartOver();
+            Material.PatchVertexBuffer(ref bufferState, unitX, unitY, ParticleSorter);
         }
 
         #region Particles

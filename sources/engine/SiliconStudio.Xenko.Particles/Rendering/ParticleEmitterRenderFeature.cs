@@ -214,65 +214,6 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                     highestIndexCount = newNodeData.IndexCount;
             }
 
-
-            // Build particle buffers
-            var commandList = context.CommandList;
-            // TODO Map buffers here and build the particle data
-
-            // Build the shared vertex buffer
-            if (totalVertexBufferSize > 0)
-            {
-                int newSize = totalVertexBufferSize;
-
-                if (sharedVertexBuffer != null)
-                {
-                    context.GraphicsContext.Allocator.ReleaseReference(sharedVertexBuffer);
-                    sharedVertexBuffer = null;
-                }
-
-                sharedVertexBuffer = context.GraphicsContext.Allocator.GetTemporaryBuffer(new BufferDescription(newSize, BufferFlags.VertexBuffer, GraphicsResourceUsage.Dynamic));
-
-                sharedVertexBufferSize = newSize;
-            }
-
-
-            // Build the shared index buffer
-            int indexCount = highestIndexCount;
-            var indexSize = indexCount * sizeof(short);
-            if (indexSize > 0)
-            {
-                if (sharedIndexBuffer != null)
-                {
-                    context.GraphicsContext.Allocator.ReleaseReference(sharedIndexBuffer);
-                    sharedIndexBuffer = null;
-                }
-
-                sharedIndexBuffer = context.GraphicsContext.Allocator.GetTemporaryBuffer(new BufferDescription(indexSize, BufferFlags.IndexBuffer, GraphicsResourceUsage.Dynamic));
-
-                sharedIndexBufferSize = indexSize;
-
-                {
-                    var mappedIndices = commandList.MapSubresource(sharedIndexBuffer, 0, MapMode.WriteNoOverwrite, false, 0, sharedIndexBufferSize);
-                    var indexPointer = mappedIndices.DataBox.DataPointer;
-
-                    int indexStructSize = sizeof(short);
-                    int verticesPerQuad = 4;
-
-                    var k = 0;
-                    for (var i = 0; i < indexCount; k += verticesPerQuad)
-                    {
-                        *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 0);
-                        *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 1);
-                        *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 2);
-                        *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 0);
-                        *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 2);
-                        *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 3);
-                    }
-
-                    commandList.UnmapSubresource(mappedIndices);
-                }
-            }
-
             base.Prepare(context);
 
             // Assign descriptor sets to each render node
@@ -330,12 +271,67 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                 }
             }
 
+            // Build particle buffers
+            var commandList = context.CommandList;
+
+            // Build the shared vertex buffer
+            if (sharedVertexBuffer != null)
+            {
+                context.GraphicsContext.Allocator.ReleaseReference(sharedVertexBuffer);
+                sharedVertexBuffer = null;
+            }
+
+            if (totalVertexBufferSize > 0)
+            {
+                int newSize = totalVertexBufferSize;
+
+                sharedVertexBuffer = context.GraphicsContext.Allocator.GetTemporaryBuffer(new BufferDescription(newSize, BufferFlags.VertexBuffer, GraphicsResourceUsage.Dynamic));
+
+                sharedVertexBufferSize = newSize;
+            }
+
+            // Build the shared index buffer
+            if (sharedIndexBuffer != null)
+            {
+                context.GraphicsContext.Allocator.ReleaseReference(sharedIndexBuffer);
+                sharedIndexBuffer = null;
+            }
+
+            int indexCount = highestIndexCount;
+            var indexSize = indexCount * sizeof(short);
+            if (indexSize > 0)
+            {
+                sharedIndexBuffer = context.GraphicsContext.Allocator.GetTemporaryBuffer(new BufferDescription(indexSize, BufferFlags.IndexBuffer, GraphicsResourceUsage.Dynamic));
+
+                sharedIndexBufferSize = indexSize;
+
+                {
+                    var mappedIndices = commandList.MapSubresource(sharedIndexBuffer, 0, MapMode.WriteNoOverwrite, false, 0, sharedIndexBufferSize);
+                    var indexPointer = mappedIndices.DataBox.DataPointer;
+
+                    int indexStructSize = sizeof(short);
+                    int verticesPerQuad = 4;
+
+                    var k = 0;
+                    for (var i = 0; i < indexCount; k += verticesPerQuad)
+                    {
+                        *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 0);
+                        *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 1);
+                        *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 2);
+                        *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 0);
+                        *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 2);
+                        *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 3);
+                    }
+
+                    commandList.UnmapSubresource(mappedIndices);
+                }
+            }
+
             if (sharedVertexBuffer == null || sharedVertexBufferSize == 0 || totalVertexBufferSize == 0)
                 return;
 
             var mappedVertices = commandList.MapSubresource(sharedVertexBuffer, 0, MapMode.WriteNoOverwrite, false, 0, sharedVertexBufferSize);
             var sharedBufferPtr = mappedVertices.DataBox.DataPointer;
-            //var sharedBufferPtr = IntPtr.Zero;
 
             for (int renderNodeIndex = 0; renderNodeIndex < RenderNodes.Count; renderNodeIndex++)
             {
@@ -352,7 +348,6 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                 renderParticleEmitter.ParticleEmitter.BuildVertexBuffer(commandList, sharedBufferPtr + nodeData.VertexBufferOffset, ref viewInverse);
             }
 
-            // TODO Unmap buffers here
             commandList.UnmapSubresource(mappedVertices);
         }
 

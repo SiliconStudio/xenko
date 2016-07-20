@@ -117,7 +117,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
 
             var renderedParticles = 0;
-            bufferState.RestartBuffer();
+            bufferState.StartOver();
 
             uint oldOrderValue = 0;
 

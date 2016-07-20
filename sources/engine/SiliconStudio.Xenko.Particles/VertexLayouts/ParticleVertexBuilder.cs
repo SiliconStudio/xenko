@@ -172,7 +172,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         /// <summary>
         /// Moves the index to the beginning of the buffer so that the data can be filled from the first particle again
         /// </summary>
-        public void RestartBuffer()
+        public void StartOver()
         {
             VertexBuffer = VertexBufferOrigin;
             CurrentParticleIndex = 0;
@@ -369,44 +369,9 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             commandList.UnmapSubresource(mappedIndices);
         }
 
-        /// <summary>
-        /// Maps a subresource so that particle data can be written to the vertex buffer
-        /// </summary>
-        /// <param name="device"></param>
-        /// <returns></returns>
-        public IntPtr MapBuffer(CommandList commandList, IntPtr sharedBufferPtr)
+        public void MapBuffer()
         {
-            if (IsBufferDirty && requiredQuads > 0)
-            {
-                if (sharedBufferPtr == IntPtr.Zero)
-                    InitializeIndexBuffer(commandList, requiredQuads * IndicesPerQuad);
-                IsBufferDirty = false;
-            }
-
-            if (IsBufferDirty)
-                return IntPtr.Zero;
-
-            if (sharedBufferPtr != IntPtr.Zero)
-                return sharedBufferPtr;
-
-            mappedVertices = commandList.MapSubresource(ResourceContext.VertexBuffer.Buffer, 0, MapMode.WriteDiscard, false, 0, ResourceContext.VertexCount * vertexStructSize);
-
-            return mappedVertices.DataBox.DataPointer;
-        }
-
-        /// <summary>
-        /// Unmaps the subresource after all the particle data has been updated
-        /// </summary>
-        /// <param name="device"></param>
-        public void UnmapBuffer(CommandList commandList, IntPtr sharedBufferPtr)
-        {
-            if (IsBufferDirty)
-                return;
-
-            if (sharedBufferPtr != IntPtr.Zero)
-                return;
-
-            commandList.UnmapSubresource(mappedVertices);
+            IsBufferDirty = false;
         }
 
         internal AttributeAccessor GetAccessor(AttributeDescription desc)

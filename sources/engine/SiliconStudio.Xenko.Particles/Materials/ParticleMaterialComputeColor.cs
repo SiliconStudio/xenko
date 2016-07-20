@@ -173,7 +173,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
             //  The UV Builder, if present, animates the basic (0, 0, 1, 1) uv coordinates of each billboard
             UVBuilder?.BuildUVCoordinates(ref bufferState, sorter, bufferState.DefaultTexCoords);
-            bufferState.RestartBuffer();
+            bufferState.StartOver();
 
             // If the particles have color field, the base class should have already passed the information
             if (HasColorField)
@@ -195,7 +195,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
                 bufferState.NextParticle();
             }
 
-            bufferState.RestartBuffer();
+            bufferState.StartOver();
         }
 
     }

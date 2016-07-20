@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
             }
 
 
-            bufferState.RestartBuffer();
+            bufferState.StartOver();
         }
 
         private Vector4 uvTransform = new Vector4(0, 0, 1, 1);

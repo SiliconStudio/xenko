@@ -511,21 +511,15 @@ namespace SiliconStudio.Core.Mathematics
         public void Transpose()
         {
             float temp;
+
             temp = M21; M21 = M12; M12 = temp;
             temp = M31; M31 = M13; M13 = temp;
             temp = M41; M41 = M14; M14 = temp;
 
-            temp = M12; M12 = M21; M21 = temp;
             temp = M32; M32 = M23; M23 = temp;
             temp = M42; M42 = M24; M24 = temp;
 
-            temp = M13; M13 = M31; M31 = temp;
-            temp = M23; M23 = M32; M32 = temp;
             temp = M43; M43 = M34; M34 = temp;
-
-            temp = M14; M14 = M41; M41 = temp;
-            temp = M24; M24 = M42; M42 = temp;
-            temp = M34; M34 = M43; M43 = temp;
         }
 
         /// <summary>
