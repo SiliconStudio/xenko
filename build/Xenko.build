@@ -217,7 +217,6 @@ Example of use:
     <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).macOS.CoreCLR.sln" Properties="$(BuildProperties);Platform=macOS"/>
   </Target> 
   
-   
   <Target Name="WritePackageVersionToFile">
     <PackageGetVersionTask File="$(XenkoPackage)" SpecialVersion="$(XenkoPackageSpecialVersion)">
       <Output TaskParameter="Version" PropertyName="XenkoPackageVersion"/>
