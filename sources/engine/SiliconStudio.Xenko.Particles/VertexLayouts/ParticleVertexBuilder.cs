@@ -187,7 +187,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
     public class ParticleVertexBuilder
     {
         public int VerticesPerParticle { get; private set; } = 4;
-        private int verticesPerQuad = 4;
+        private const int verticesPerQuad = 4;
 
         public readonly int IndicesPerQuad = 6;
 
@@ -378,7 +378,8 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         {
             if (IsBufferDirty && requiredQuads > 0)
             {
-                InitializeIndexBuffer(commandList, requiredQuads * IndicesPerQuad);
+                if (sharedBufferPtr == IntPtr.Zero)
+                    InitializeIndexBuffer(commandList, requiredQuads * IndicesPerQuad);
                 IsBufferDirty = false;
             }
 
