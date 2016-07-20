@@ -13,6 +13,7 @@
     <AssemblyName>SiliconStudio.Xenko.Graphics</AssemblyName>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
+    <XenkoProjectPlatformDependentWindows>true</XenkoProjectPlatformDependentWindows>
     <XenkoBuildTags>*</XenkoBuildTags>
     <DefineConstants>$(DefineConstants);SILICONSTUDIO_XENKO_GRAPHICS_NO_DESCRIPTOR_COPIES</DefineConstants>
   </PropertyGroup>
@@ -24,24 +25,7 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Choose>
-    <When Condition="$(SiliconStudioUI.Contains('SDL')) AND ('$(SiliconStudioPlatform)' != 'Linux')">
-      <ItemGroup>
-        <Reference Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoDependenciesDir)\SDL2-CS\SDL2-CS.dll</HintPath>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="$(SiliconStudioUI.Contains('SDL')) AND ('$(SiliconStudioPlatform)' == 'Linux')">
-      <ItemGroup>
-        <Reference Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoDependenciesDir)\SDL2-CS\Linux\SDL2-CS.dll</HintPath>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
+  <Import Condition="$(SiliconStudioUI.Contains('SDL'))" Project="..\..\common\targets\SDL.targets"/> 
   <Choose>
     <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' Or '$(XenkoGraphicsApi)' == 'Direct3D12' ">
       <ItemGroup>
@@ -79,36 +63,6 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition=" '$(XenkoGraphicsApi)' == 'OpenGL' Or '$(XenkoGraphicsApi)' == 'OpenGLES' ">
-      <Choose>
-        <When Condition=" '$(SiliconStudioPlatform)' == 'Linux'">
-          <ItemGroup>
-            <Reference Include="OpenTK">
-              <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(XenkoDependenciesDir)OpenTK\Linux\OpenTK.dll</HintPath>
-              <HintPath Condition="'$(SiliconStudioRuntime)' != ''">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\Linux\OpenTK.dll</HintPath>
-            </Reference>
-          </ItemGroup>
-        </When>
-        <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
-          <ItemGroup>
-            <Reference Include="OpenTK">
-              <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(XenkoDependenciesDir)OpenTK\OpenTK.dll</HintPath>
-              <HintPath Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\Windows\OpenTK.dll</HintPath>
-            </Reference>
-          </ItemGroup>
-        </When>
-        <When Condition=" '$(SiliconStudioPlatform)' == 'Android' Or '$(SiliconStudioPlatform)' == 'iOS' ">
-          <ItemGroup>
-            <Reference Include="OpenTK-1.1">
-              <HintPath Condition="'$(SiliconStudioPlatform)' == 'Android'">$(XenkoDependenciesDir)OpenTK\Android\OpenTK-1.1.dll</HintPath>
-              <HintPath Condition="'$(SiliconStudioPlatform)' == 'iOS'">$(XenkoDependenciesDir)OpenTK\iOS\OpenTK-1.1.dll</HintPath>
-            </Reference>
-          </ItemGroup>
-        </When>
-      </Choose>
-    </When>
-  </Choose>
-  <Choose>
     <When Condition=" '$(XenkoGraphicsApi)' == 'Vulkan' ">
       <Choose>
         <When Condition=" '$(SiliconStudioPlatform)' == 'Windows'">
@@ -133,7 +87,7 @@
   <Choose>
     <When Condition="$(SiliconStudioUI.Contains('SDL'))">
       <ItemGroup>
-        <Content Include="$(XenkoDependenciesDir)\SDL2\$(SiliconStudioPlatform)\**\SDL2.dll">
+        <Content Include="$(XenkoDependenciesDir)\SDL2\$(SiliconStudioPlatform)\**\*SDL2*">
           <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
@@ -141,7 +95,7 @@
     </When>
   </Choose>
   <ItemGroup>
-    <None Include="..\..\..\deps\freetype\$(SiliconStudioPlatform)\$(Configuration)\**\*.*">
+    <None Include="$(XenkoDependenciesDir)\freetype\$(SiliconStudioPlatform)\**\*.*">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

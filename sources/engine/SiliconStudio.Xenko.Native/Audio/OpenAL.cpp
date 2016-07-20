@@ -1,7 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-#if defined(LINUX) || defined(IOS) || !defined(__clang__)
+#if defined(PLATFORM_LINUX) || defined(PLATFORM_MACOS) || defined(IOS) || !defined(__clang__)
 
 #include "../../../../deps/NativePath/NativePath.h"
 #include "../../../../deps/NativePath/NativeDynamicLinking.h"

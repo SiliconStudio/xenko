@@ -2,11 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_XENKO_UI_SDL
 using System;
-using SiliconStudio.Xenko.Graphics.SDL;
-using SDL2;
 
-namespace SiliconStudio.Xenko.Games
+namespace SiliconStudio.Xenko.Graphics.SDL
 {
+        // Using is here otherwise it would conflict with the current namespace that also defines SDL.
+    using SDL2;
 
     /// <summary>
     /// RenderLoop provides a rendering loop infrastructure. See remarks for usage. 

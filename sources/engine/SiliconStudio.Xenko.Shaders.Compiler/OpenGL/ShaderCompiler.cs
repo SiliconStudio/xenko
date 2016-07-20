@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             {
                 case GraphicsPlatform.OpenGL:
                     shaderPlatform = GlslShaderPlatform.OpenGL;
-                    shaderVersion = 420;
+                    shaderVersion = 410;
                     break;
                 case GraphicsPlatform.OpenGLES:
                     shaderPlatform = GlslShaderPlatform.OpenGLES;
