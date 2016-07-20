@@ -269,7 +269,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// <param name="type">the type.</param>
         public override void Visit(ObjectType type)
         {
-            if (type.IsSamplerType())
+            if (type.IsSamplerStateType())
                 Write("SamplerState");
         }
 
