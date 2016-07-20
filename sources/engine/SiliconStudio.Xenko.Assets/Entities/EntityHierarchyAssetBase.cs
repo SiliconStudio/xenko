@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
@@ -55,7 +56,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 entity.Entity.Id = newIdMaps[entity.Entity.Id];
             }
 
-            EntityAnalysis.RemapEntitiesId(newAsset.Hierarchy, newIdMaps);
+            AssetPartsAnalysis.RemapPartsId(newAsset.Hierarchy, newIdMaps);
 
             return newAsset;
         }
@@ -125,7 +126,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
             // Rewrite entity references
             // Should we nullify invalid references?
-            EntityAnalysis.RemapEntitiesId(clonedHierarchy, entityMapping);
+            AssetPartsAnalysis.RemapPartsId(clonedHierarchy, entityMapping);
 
             return clonedHierarchy;
         }
@@ -192,7 +193,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
             // Rewrite entity references
             // Should we nullify invalid references?
-            EntityAnalysis.RemapEntitiesId(clonedHierarchy, entityMapping);
+            AssetPartsAnalysis.RemapPartsId(clonedHierarchy, entityMapping);
 
             return clonedHierarchy;
         }
