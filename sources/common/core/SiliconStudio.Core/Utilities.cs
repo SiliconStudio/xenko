@@ -733,7 +733,7 @@ namespace SiliconStudio.Core
         /// <param name="sleepTime">The duration to sleep.</param>
         public static void Sleep(TimeSpan sleepTime)
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_IOS || SILICONSTUDIO_PLATFORM_ANDROID
+#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
             Thread.Sleep(sleepTime);
 #else
             TaskEx.Delay(sleepTime).Wait();
