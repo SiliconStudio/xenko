@@ -3,8 +3,8 @@
 
 namespace SiliconStudio.Xenko.Rendering.Materials
 {
-    class MaterialCelShadingCelLightRamp
-	 :  IMaterialCelShadingCelLightFunction, Texturing
+    class MaterialCelShadingLightRamp
+	 :  IMaterialCelShadingLightFunction, Texturing
     {
         rgroup PerMaterial
         {

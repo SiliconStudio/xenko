@@ -7,7 +7,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// </summary>
     class MaterialSurfaceShadingSpecularCelShading : IMaterialSurfaceShading, MaterialPixelShadingStream, Math, BRDFMicrofacet, LightStream, ShadowGroup
     {
-        compose IMaterialCelShadingCelLightFunction celLightFunction;
+        compose IMaterialCelShadingLightFunction celLightFunction;
 
         compose IMaterialSpecularMicrofacetFresnelFunction fresnelFunction;
 

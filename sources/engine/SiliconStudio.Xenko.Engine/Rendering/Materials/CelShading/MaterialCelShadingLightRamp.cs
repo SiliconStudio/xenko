@@ -12,9 +12,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// <summary>
     /// Default Cel Shading ramp function applied
     /// </summary>
-    [DataContract("MaterialCelShadingCelLightRamp")]
+    [DataContract("MaterialCelShadingLightRamp")]
     [Display("Ramp")]
-    public class MaterialCelShadingCelLightRamp : IMaterialCelShadingCelLightFunction
+    public class MaterialCelShadingLightRamp : IMaterialCelShadingLightFunction
     {
         /// <summary>
         /// The texture Reference.
@@ -31,29 +31,23 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         {
             // If we haven't specified a texture use the default implementation
             if (RampTexture == null)
-                return new ShaderClassSource("MaterialCelShadingCelLightDefault", false);
+                return new ShaderClassSource("MaterialCelShadingLightDefault", false);
 
-            context.Material.Parameters.Set(MaterialCelShadingCelLightRampKeys.CelShaderRamp, RampTexture);
+            context.Material.Parameters.Set(MaterialCelShadingLightRampKeys.CelShaderRamp, RampTexture);
 
-            return new ShaderClassSource("MaterialCelShadingCelLightRamp");
+            return new ShaderClassSource("MaterialCelShadingLightRamp");
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj is MaterialCelShadingCelLightRamp;
+            return obj is MaterialCelShadingLightRamp;
         }
 
         public override int GetHashCode()
         {
-            return typeof(MaterialCelShadingCelLightRamp).GetHashCode();
+            return typeof(MaterialCelShadingLightRamp).GetHashCode();
         }
-    }
-
-    public static partial class MaterialCelShadingCelLightRampKeys
-    {
-        public static readonly ObjectParameterKey<Texture> CelShaderRamp    = ParameterKeys.NewObject<Texture>();
-        public static readonly ValueParameterKey<Color4> CelShaderRampValue = ParameterKeys.NewValue<Color4>();
     }
 }

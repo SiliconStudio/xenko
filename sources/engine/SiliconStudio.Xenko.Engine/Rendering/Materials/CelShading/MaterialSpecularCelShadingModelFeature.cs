@@ -10,7 +10,7 @@ using SiliconStudio.Xenko.Shaders;
 namespace SiliconStudio.Xenko.Rendering.Materials
 {
     /// <summary>
-    /// The microfacet specular shading model.
+    /// The Cel Shading specular shading model.
     /// </summary>
     [DataContract("MaterialSpecularCelShadingModelFeature")]
     [Display("Cel Shading")]
@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [DataMember(10)]
         [Display("Ramp Function")]
         [NotNull]
-        public IMaterialCelShadingCelLightFunction RampFunction { get; set; } = new MaterialCelShadingCelLightDefault();
+        public IMaterialCelShadingLightFunction RampFunction { get; set; } = new MaterialCelShadingLightDefault();
 
         /// <userdoc>Specify the function to use to calculate the Fresnel component of the micro-facet lighting equation. 
         /// This defines the amount of the incoming light that is reflected.</userdoc>

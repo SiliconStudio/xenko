@@ -9,9 +9,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// <summary>
     /// Default Cel Shading ramp function applied
     /// </summary>
-    [DataContract("MaterialCelShadingCelLightDefault")]
+    [DataContract("MaterialCelShadingLightDefault")]
     [Display("Default")]
-    public class MaterialCelShadingCelLightDefault : IMaterialCelShadingCelLightFunction
+    public class MaterialCelShadingLightDefault : IMaterialCelShadingLightFunction
     {
         [DataMember(5)]
         [Display("Black and White")]
@@ -19,19 +19,19 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         public ShaderSource Generate(MaterialGeneratorContext context)
         {
-            return new ShaderClassSource("MaterialCelShadingCelLightDefault", IsBlackAndWhite);
+            return new ShaderClassSource("MaterialCelShadingLightDefault", IsBlackAndWhite);
         }
 
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            return obj is MaterialCelShadingCelLightDefault;
+            return obj is MaterialCelShadingLightDefault;
         }
 
         public override int GetHashCode()
         {
-            return typeof(MaterialCelShadingCelLightDefault).GetHashCode();
+            return typeof(MaterialCelShadingLightDefault).GetHashCode();
         }
     }
 }

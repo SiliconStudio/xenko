@@ -7,7 +7,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// </summary>
     class MaterialSurfaceShadingDiffuseCelShading<bool TIsEnergyConservative, float FakeNDotL> : IMaterialSurfaceShading, Math, MaterialPixelShadingStream, LightStream, ShadowGroup
     {
-        compose IMaterialCelShadingCelLightFunction celLightFunction;
+        compose IMaterialCelShadingLightFunction celLightFunction;
 
         override float3 ComputeDirectLightContribution()
         {

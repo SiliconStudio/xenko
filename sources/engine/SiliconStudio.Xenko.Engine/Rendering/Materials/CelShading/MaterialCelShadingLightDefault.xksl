@@ -3,7 +3,7 @@
 
 namespace SiliconStudio.Xenko.Rendering.Materials
 {
-    class MaterialCelShadingCelLightDefault<bool IsBlackAndWhite> : IMaterialCelShadingCelLightFunction
+    class MaterialCelShadingLightDefault<bool IsBlackAndWhite> : IMaterialCelShadingLightFunction
     {
         override float3 Compute(float lightIn)
         {

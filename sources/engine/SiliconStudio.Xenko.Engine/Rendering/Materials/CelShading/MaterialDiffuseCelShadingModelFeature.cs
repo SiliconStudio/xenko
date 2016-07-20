@@ -9,7 +9,7 @@ using SiliconStudio.Xenko.Shaders;
 namespace SiliconStudio.Xenko.Rendering.Materials
 {
     /// <summary>
-    /// The diffuse Lambertian for the diffuse material model attribute.
+    /// The diffuse Cel Shading for the diffuse material model attribute.
     /// </summary>
     [DataContract("MaterialDiffuseCelShadingModelFeature")]
     [Display("Cel Shading")]
@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         [DataMember(10)]
         [Display("Ramp Function")]
         [NotNull]
-        public IMaterialCelShadingCelLightFunction RampFunction { get; set; } = new MaterialCelShadingCelLightDefault();
+        public IMaterialCelShadingLightFunction RampFunction { get; set; } = new MaterialCelShadingLightDefault();
 
         public override void VisitFeature(MaterialGeneratorContext context)
         {

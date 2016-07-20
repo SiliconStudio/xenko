@@ -8,7 +8,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// <summary>
     /// Common interface for the Cel Light part of a cel shading model.
     /// </summary>
-    public interface IMaterialCelShadingCelLightFunction
+    public interface IMaterialCelShadingLightFunction
     {
         /// <summary>
         /// Generates the shader class source used for the shader composition.
