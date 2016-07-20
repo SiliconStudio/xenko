@@ -103,7 +103,6 @@ namespace SiliconStudio.Xenko.Audio
                 {
                     if (!source.dispose)
                     {
-restart:
                         if (source.restart)
                         {
                             source.compressedSoundStream.Position = 0;
@@ -147,6 +146,8 @@ restart:
                                     }
                                 }
                             }
+
+                            source.restartCompletionSource?.TrySetResult(true);
                         }
 
                         if (source.ended || !source.CanFill) continue;
@@ -158,8 +159,6 @@ restart:
                         var endingPacket = false;
                         for (var i = 0; i < passes; i++)
                         {
-                            if(source.restart) goto restart; //abort and restart
-
                             endingPacket = source.endPacketIndex == source.currentPacketIndex;
 
                             //read one packet, size first, then data
@@ -189,9 +188,11 @@ restart:
 
                             break;
                         }
-                        
+
+                        if (source.restart) continue;
+
                         var finalPtr = new IntPtr(bufferPtr + (startingPacket ? source.startPktSampleIndex : 0));
-                        var finalSize = (offset - (startingPacket ? source.startPktSampleIndex : 0) - (endingPacket ? source.endPktSampleIndex : 0)) * sizeof(short);
+                        var finalSize = (offset - (startingPacket ? source.startPktSampleIndex : 0) - (endingPacket ? source.endPktSampleIndex : 0))*sizeof(short);
 
                         var bufferType = AudioLayer.BufferType.None;
                         if (source.ended)
@@ -207,6 +208,7 @@ restart:
                         {
                             bufferType = AudioLayer.BufferType.EndOfLoop;
                         }
+
                         source.FillBuffer(finalPtr, finalSize, bufferType);
                     }
                     else
@@ -232,10 +234,14 @@ restart:
 
         public override int MaxNumberOfBuffers => NumberOfBuffers;
 
-        public override void Restart()
+        private TaskCompletionSource<bool> restartCompletionSource;
+
+        public override async Task Restart()
         {
+            restartCompletionSource = new TaskCompletionSource<bool>();
             restart = true;
-            base.Restart();           
+            await restartCompletionSource.Task;
+            await base.Restart();          
         }
 
         /// <summary>
@@ -247,13 +253,10 @@ restart:
             looped = loop;
         }
 
-        public override void SetRange(PlayRange range)
+        public override async Task SetRange(PlayRange range)
         {
-            lock (rangeLock)
-            {
-                playRange = range;
-                Restart();
-            }
+            playRange = range;
+            await Restart();
         }
 
         private void Destroy()

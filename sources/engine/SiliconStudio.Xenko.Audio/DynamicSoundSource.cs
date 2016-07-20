@@ -111,12 +111,13 @@ namespace SiliconStudio.Xenko.Audio
         /// <summary>
         /// Restarts streaming from the beginning.
         /// </summary>
-        public virtual void Restart()
+        public virtual Task Restart()
         {
             ReadyToPlay.TrySetResult(false);
             ReadyToPlay = new TaskCompletionSource<bool>();
             readyToPlay = false;
             prebufferedCount = 0;
+            return Task.FromResult(0);
         }
 
         /// <summary>
@@ -129,8 +130,9 @@ namespace SiliconStudio.Xenko.Audio
         /// Sets the region of time to play from the sample
         /// </summary>
         /// <param name="range"></param>
-        public virtual void SetRange(PlayRange range)
-        {          
+        public virtual Task SetRange(PlayRange range)
+        {
+            return Task.FromResult(0);
         }
     }
 }
