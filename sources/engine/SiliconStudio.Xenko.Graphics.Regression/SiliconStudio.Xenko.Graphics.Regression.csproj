@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>SiliconStudio.Xenko.Graphics.Regression</RootNamespace>
     <AssemblyName>SiliconStudio.Xenko.Graphics.Regression</AssemblyName>
-    <XenkoBuildTags>Windows;WindowsStore;WindowsPhone;Android;iOS;Linux;Windows10</XenkoBuildTags>
+    <XenkoBuildTags>Windows;WindowsStore;WindowsPhone;Android;iOS;Linux;macOS;Windows10</XenkoBuildTags>
     <DefineConstants>$(DefineConstants);XAMCORE_2_0</DefineConstants>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
@@ -20,7 +20,7 @@
     </StartupObject>
   </PropertyGroup>
   <Choose>
-    <When Condition="('$(SiliconStudioRuntime)' == '') and (('$(SiliconStudioPlatform)' == 'Windows') or ('$(SiliconStudioPlatform)' == 'Linux'))">
+    <When Condition="('$(SiliconStudioRuntime)' == '') and (('$(SiliconStudioPlatform)' == 'Windows') or ('$(SiliconStudioPlatform)' == 'Linux') or ('$(SiliconStudioPlatform)' == 'macOS'))">
       <ItemGroup>
         <Reference Include="nunit.core.interfaces">
           <HintPath>$(SiliconStudioDependenciesDir)NUnit\nunit.core.interfaces.dll</HintPath>

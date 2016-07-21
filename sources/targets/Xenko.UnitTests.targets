@@ -57,7 +57,7 @@
         <Reference Include="MonoTouch.NUnitLite"/>
       </ItemGroup>
     </When>
-    <When Condition="('$(SiliconStudioRuntime)' == '') and (('$(SiliconStudioPlatform)' == 'Windows') or ('$(SiliconStudioPlatform)' == 'Linux'))">
+    <When Condition="('$(SiliconStudioRuntime)' == '') and (('$(SiliconStudioPlatform)' == 'Windows') or ('$(SiliconStudioPlatform)' == 'Linux') or ('$(SiliconStudioPlatform)' == 'macOS'))">
       <ItemGroup>
         <Reference Include="nunit.framework">
           <HintPath>$(SiliconStudioDependenciesDir)NUnit\nunit.framework.dll</HintPath>

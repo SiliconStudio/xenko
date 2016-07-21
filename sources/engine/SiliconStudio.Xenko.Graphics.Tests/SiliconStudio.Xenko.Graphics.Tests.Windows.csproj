@@ -72,7 +72,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <SiliconStudioRuntime Condition="'$(SiliconStudioProjectType)' == 'Executable'">CoreCLR</SiliconStudioRuntime>
-    <SiliconStudioBuildDirExtension>$(SiliconStudioRuntime)</SiliconStudioBuildDirExtension>
+    <SiliconStudioBuildDirExtension Condition="'$(SiliconStudioBuildDirExtension)' == ''">CoreCLR</SiliconStudioBuildDirExtension>
     <DefineConstants>SILICONSTUDIO_RUNTIME_CORECLR;$(DefineConstants)</DefineConstants>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
@@ -83,7 +83,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <SiliconStudioRuntime Condition="'$(SiliconStudioProjectType)' == 'Executable'">CoreCLR</SiliconStudioRuntime>
-    <SiliconStudioBuildDirExtension>$(SiliconStudioRuntime)</SiliconStudioBuildDirExtension>
+    <SiliconStudioBuildDirExtension Condition="'$(SiliconStudioBuildDirExtension)' == ''">CoreCLR</SiliconStudioBuildDirExtension>
     <DefineConstants>SILICONSTUDIO_RUNTIME_CORECLR;$(DefineConstants)</DefineConstants>
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>

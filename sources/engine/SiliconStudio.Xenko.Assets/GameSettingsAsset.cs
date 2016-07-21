@@ -136,6 +136,9 @@ namespace SiliconStudio.Xenko.Assets
                 case PlatformType.Linux:
                     configPlatform = ConfigPlatforms.Linux;
                     break;
+                case PlatformType.macOS:
+                    configPlatform = ConfigPlatforms.macOS;
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
             }

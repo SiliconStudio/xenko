@@ -9,7 +9,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.7.0-alpha03
+            Version: 1.7.4-beta
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -45,6 +45,17 @@ Profiles:
         ProjectReferences:
             -   Id: 9de0aa56-0de7-4adc-baac-cd38b7139ebc
                 Location: SiliconStudio.Xenko.Graphics.Tests.Linux.csproj
+                Type: Executable
+    -   Name: macOS
+        Platform: macOS
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: Assets/macOS
+        OutputGroupDirectories: {}
+        Properties: {}
+        ProjectReferences:
+            -   Id: 9de0aa56-0de7-4adc-baac-cd38b7139ebc
+                Location: SiliconStudio.Xenko.Graphics.Tests.macOS.csproj
                 Type: Executable
     -   Name: Android
         Platform: Android
