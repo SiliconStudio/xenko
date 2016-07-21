@@ -2,8 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Particles.Sorters
 {
@@ -81,6 +81,6 @@ namespace SiliconStudio.Xenko.Particles.Sorters
             ParticlePool = pool;
         }
 
-        public abstract IParticleSortedList GetSortedList();        
+        public abstract IParticleSortedList GetSortedList(Vector3 depth);        
     }
 }

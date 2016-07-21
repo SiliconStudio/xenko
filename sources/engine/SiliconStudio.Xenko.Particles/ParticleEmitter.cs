@@ -942,7 +942,6 @@ namespace SiliconStudio.Xenko.Particles
 
         /// <summary>
         /// Build the vertex buffer from particle data
-        /// Should come before <see cref="KickVertexBuffer"/>
         /// </summary>
         /// <param name="sharedBufferPtr">The shared vertex buffer position where the particle data should be output</param>
         /// <param name="invViewMatrix">The current camera's inverse view matrix</param>
@@ -952,20 +951,15 @@ namespace SiliconStudio.Xenko.Particles
             var unitX = new Vector3(invViewMatrix.M11, invViewMatrix.M12, invViewMatrix.M13);
             var unitY = new Vector3(invViewMatrix.M21, invViewMatrix.M22, invViewMatrix.M23);
 
-            if (ParticleSorter is ParticleSorterDepth)
+            // Not the best solution, might want to improve
+            var depthVector = Vector3.Cross(unitX, unitY);
+            if (simulationSpace == EmitterSimulationSpace.Local)
             {
-                // Not the best solution, might want to improve
-                var depthVector = Vector3.Cross(unitX, unitY);
-                if (simulationSpace == EmitterSimulationSpace.Local)
-                {
-                    var inverseRotation = drawTransform.WorldRotation;
-                    inverseRotation.W *= -1;
-                    inverseRotation.Rotate(ref depthVector);
-                }
-                ((ParticleSorterDepth)ParticleSorter).DepthVector = depthVector;
+                var inverseRotation = drawTransform.WorldRotation;
+                inverseRotation.W *= -1;
+                inverseRotation.Rotate(ref depthVector);
             }
-
-            var sortedList = ParticleSorter.GetSortedList();
+            var sortedList = ParticleSorter.GetSortedList(depthVector);
 
             // If the particles are in world space they don't need to be fixed as their coordinates are already in world space
             // If the particles are in local space they need to be drawn in world space using the emitter's current location matrix

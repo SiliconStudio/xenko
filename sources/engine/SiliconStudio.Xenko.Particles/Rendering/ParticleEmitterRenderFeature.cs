@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
@@ -328,7 +329,8 @@ namespace SiliconStudio.Xenko.Particles.Rendering
             var mappedVertices = commandList.MapSubresource(sharedVertexBuffer, 0, MapMode.WriteNoOverwrite, false, 0, sharedVertexBufferSize);
             var sharedBufferPtr = mappedVertices.DataBox.DataPointer;
 
-            for (int renderNodeIndex = 0; renderNodeIndex < RenderNodes.Count; renderNodeIndex++)
+            //for (int renderNodeIndex = 0; renderNodeIndex < RenderNodes.Count; renderNodeIndex++)
+            Parallel.For(0, RenderNodes.Count, (renderNodeIndex) =>
             {
                 var renderNode = RenderNodes[renderNodeIndex];
                 var renderParticleEmitter = (RenderParticleEmitter)renderNode.RenderObject;
@@ -336,7 +338,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                 var renderNodeReference = new RenderNodeReference(renderNodeIndex);
                 var nodeData = renderParticleNodeData[renderNodeReference];
                 if (nodeData.IndexCount <= 0)
-                    continue;   // Nothing to draw, nothing to build
+                    return; // Nothing to draw, nothing to build
 
                 nodeData.VertexBuffer = sharedVertexBuffer;
                 nodeData.IndexBuffer = sharedIndexBuffer;
@@ -344,9 +346,9 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                 renderParticleNodeData[renderNodeReference] = nodeData;
 
                 Matrix viewInverse; // TODO Build this per view, not per node!!!
-                Matrix.Invert(ref renderNode.RenderView.View, out viewInverse); 
+                Matrix.Invert(ref renderNode.RenderView.View, out viewInverse);
                 renderParticleEmitter.ParticleEmitter.BuildVertexBuffer(sharedBufferPtr + nodeData.VertexBufferOffset, ref viewInverse);
-            }
+            });
 
             commandList.UnmapSubresource(mappedVertices);
         }

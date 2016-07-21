@@ -3,6 +3,7 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Particles.Sorters
 {
@@ -30,7 +31,7 @@ namespace SiliconStudio.Xenko.Particles.Sorters
     /// </summary>
     public class ParticleSorterDefault : ParticleSorter 
     {
-        public override IParticleSortedList GetSortedList()
+        public override IParticleSortedList GetSortedList(Vector3 depth)
         {
             return new ParticleSortedListNone(ParticlePool);
         }
