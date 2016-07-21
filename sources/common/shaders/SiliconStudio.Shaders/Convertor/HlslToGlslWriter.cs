@@ -71,6 +71,7 @@ namespace SiliconStudio.Shaders.Convertor
             if (shaderPlatform == GlslShaderPlatform.OpenGLES)
             {
                 WriteLine("precision highp float;");
+                WriteLine("precision highp int;");
 
                 if (shaderVersion >= 300)
                 {
