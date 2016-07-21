@@ -49,7 +49,31 @@ namespace SiliconStudio.Shaders.Ast
 
         public void Remove(object key)
         {
-            serializeReferences.Remove(key);
+            // Swap remove with last one
+            int index;
+            if (serializeReferences.TryGetValue(key, out index))
+            {
+                serializeReferences.Remove(key);
+
+                // Swap remove
+                if (index < deserializeReferences.Count - 1)
+                {
+                    deserializeReferences[index] = deserializeReferences[deserializeReferences.Count - 1];
+                    
+                    // Update new object => index mapping
+                    // Note: quite slow because we have to scan full dictionnary
+                    foreach (var item in serializeReferences)
+                    {
+                        if (item.Value == deserializeReferences.Count - 1)
+                        {
+                            serializeReferences[item.Key] = index;
+                            break;
+                        }
+                    }
+                }
+
+                deserializeReferences.RemoveAt(deserializeReferences.Count - 1);
+            }
         }
 
         internal void DeepCollect<T>(T obj)
