@@ -660,7 +660,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
         [DataMember]
-        [Display(category: LayoutCategory)]
+        [Display(category: AppearanceCategory)]
         [DefaultValue(false)]
         public bool ClipToBounds { get; set; } = false;
 
