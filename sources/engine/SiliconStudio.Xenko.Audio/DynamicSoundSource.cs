@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiliconStudio.Xenko.Native;
@@ -8,6 +9,17 @@ namespace SiliconStudio.Xenko.Audio
 
     public abstract class DynamicSoundSource : IDisposable
     {
+        protected enum AsyncCommand
+        {
+            Play,
+            Pause,
+            Stop,
+            SetRange,
+            Dispose
+        }
+
+        protected ConcurrentQueue<AsyncCommand> Commands = new ConcurrentQueue<AsyncCommand>();
+
         private bool readyToPlay;
         private int prebufferedCount;
         private readonly int prebufferedTarget;
@@ -26,6 +38,10 @@ namespace SiliconStudio.Xenko.Audio
         private readonly Queue<AudioLayer.Buffer> freeBuffers = new Queue<AudioLayer.Buffer>(4);
 
         protected SoundInstance SoundInstance;
+
+        protected bool Disposed = false;
+        protected bool Playing = false;
+        protected bool Paused = false;
 
         /// <summary>
         /// Sub classes can implement their own streaming sources
@@ -47,6 +63,11 @@ namespace SiliconStudio.Xenko.Audio
         }
 
         public virtual void Dispose()
+        {
+            Commands.Enqueue(AsyncCommand.Dispose);
+        }
+
+        protected virtual void Destroy()
         {
             foreach (var deviceBuffer in deviceBuffers)
             {
@@ -108,15 +129,28 @@ namespace SiliconStudio.Xenko.Audio
             ReadyToPlay.TrySetResult(true);
         }
 
-        /// <summary>
-        /// Restarts streaming from the beginning.
-        /// </summary>
-        public virtual void Restart()
+        public void Play()
         {
-            ReadyToPlay.TrySetResult(false);
-            ReadyToPlay = new TaskCompletionSource<bool>();
-            readyToPlay = false;
-            prebufferedCount = 0;
+            Commands.Enqueue(AsyncCommand.Play);
+        }
+
+        public void Pause()
+        {
+            Commands.Enqueue(AsyncCommand.Pause);
+        }
+
+        public void Stop()
+        {
+            Commands.Enqueue(AsyncCommand.Stop);
+        }
+
+        /// <summary>
+        /// Sets the region of time to play from the sample
+        /// </summary>
+        /// <param name="range"></param>
+        public virtual void SetRange(PlayRange range)
+        {
+            Commands.Enqueue(AsyncCommand.SetRange);
         }
 
         /// <summary>
@@ -126,11 +160,14 @@ namespace SiliconStudio.Xenko.Audio
         public abstract void SetLooped(bool looped);
 
         /// <summary>
-        /// Sets the region of time to play from the sample
+        /// Restarts streaming from the beginning.
         /// </summary>
-        /// <param name="range"></param>
-        public virtual void SetRange(PlayRange range)
-        {          
+        protected void Restart()
+        {
+            ReadyToPlay.TrySetResult(false);
+            ReadyToPlay = new TaskCompletionSource<bool>();
+            readyToPlay = false;
+            prebufferedCount = 0;
         }
     }
 }

@@ -20,9 +20,7 @@ namespace SiliconStudio.Xenko.Audio
 
         private Stream compressedSoundStream;
         private BinarySerializationReader reader;
-        private bool ended;
         private volatile bool looped;
-        private volatile bool restart;
         private readonly int numberOfPackets;
         private int currentPacketIndex;
         private int startingPacketIndex;
@@ -42,8 +40,6 @@ namespace SiliconStudio.Xenko.Audio
 
         private readonly int maxCompressedSize;
         private byte[] compressedBuffer;
-
-        private bool dispose;
 
         private static Task readFromDiskWorker;
         private static readonly ConcurrentBag<CompressedSoundSource> NewSources = new ConcurrentBag<CompressedSoundSource>();
@@ -76,6 +72,73 @@ namespace SiliconStudio.Xenko.Audio
             NewSources.Add(this);
         }
 
+        private static void SourcePrepare(CompressedSoundSource source)
+        {
+            source.compressedSoundStream.Position = 0;
+            source.begin = true;
+            source.currentPacketIndex = 0;
+            source.startPktSampleIndex = 0;
+            source.endPktSampleIndex = 0;
+            source.endPacketIndex = source.numberOfPackets;
+
+            PlayRange range;
+            lock (source.rangeLock)
+            {
+                range = source.playRange;
+            }
+
+            if (range.Start != TimeSpan.Zero || range.Length != TimeSpan.Zero)
+            {
+                var frameSize = SamplesPerFrame * source.channels;
+                //ok we need to handle this case properly, this means that the user wants to use a different then full audio stream range...
+                var sampleStart = source.sampleRate * (double)source.channels * range.Start.TotalSeconds;
+                source.startPktSampleIndex = (int)Math.Floor(sampleStart) % (frameSize);
+
+                var sampleStop = source.sampleRate * (double)source.channels * range.End.TotalSeconds;
+                source.endPktSampleIndex = frameSize - (int)Math.Floor(sampleStart) % frameSize;
+
+                var skipCounter = source.startingPacketIndex = (int)Math.Floor(sampleStart / frameSize);
+                source.endPacketIndex = (int)Math.Floor(sampleStop / frameSize);
+
+                // skip to the starting packet
+                if (source.startingPacketIndex < source.numberOfPackets && source.endPacketIndex < source.numberOfPackets && source.startingPacketIndex < source.endPacketIndex)
+                {
+                    //valid offsets.. process it
+                    while (skipCounter-- > 0)
+                    {
+                        //skip data to reach starting packet
+                        var len = source.reader.ReadInt16();
+                        source.compressedSoundStream.Position = source.compressedSoundStream.Position + len;
+                        source.currentPacketIndex++;
+                    }
+                }
+            }
+        }
+
+        private static void SourcePlayAsync(CompressedSoundSource source)
+        {
+            Task.Run(async () =>
+            {
+                var playMe = await source.ReadyToPlay.Task;
+                if(playMe) AudioLayer.SourcePlay(source.SoundInstance.Source);
+            });
+        }
+
+        private static void SourcePlay(CompressedSoundSource source)
+        {
+            AudioLayer.SourcePlay(source.SoundInstance.Source);
+        }
+
+        private static void SourceStop(CompressedSoundSource source)
+        {
+            AudioLayer.SourceStop(source.SoundInstance.Source);
+        }
+
+        private static void SourcePause(CompressedSoundSource source)
+        {
+            AudioLayer.SourcePause(source.SoundInstance.Source);
+        }
+
         private static unsafe void Worker()
         {
             var utilityBuffer = new UnmanagedArray<short>(SamplesPerBuffer * MaxChannels);
@@ -94,72 +157,72 @@ namespace SiliconStudio.Xenko.Audio
                     source.decoder = new Celt(source.sampleRate, SamplesPerFrame, source.channels, true);
                     source.compressedBuffer = new byte[source.maxCompressedSize];
                     source.reader = new BinarySerializationReader(source.compressedSoundStream);
-                    source.restart = true;
 
                     Sources.Add(source);
                 }
 
                 foreach (var source in Sources)
                 {
-                    if (!source.dispose)
+                    if (!source.Disposed)
                     {
-restart:
-                        if (source.restart)
+                        while (!source.Commands.IsEmpty)
                         {
-                            source.compressedSoundStream.Position = 0;
-                            source.begin = true;
-                            source.ended = false;
-                            source.restart = false;                           
-                            source.currentPacketIndex = 0;
-                            source.startPktSampleIndex = 0;
-                            source.endPktSampleIndex = 0;
-                            source.endPacketIndex = source.numberOfPackets;                          
-
-                            PlayRange range;
-                            lock (source.rangeLock)
+                            AsyncCommand command;
+                            if (!source.Commands.TryDequeue(out command)) continue;
+                            switch (command)
                             {
-                                range = source.playRange;
-                            }
-
-                            if (range.Start != TimeSpan.Zero || range.Length != TimeSpan.Zero)
-                            {
-                                var frameSize = SamplesPerFrame*source.channels;
-                                //ok we need to handle this case properly, this means that the user wants to use a different then full audio stream range...
-                                var sampleStart = source.sampleRate * (double)source.channels * range.Start.TotalSeconds;
-                                source.startPktSampleIndex = (int)Math.Floor(sampleStart) % (frameSize);
-
-                                var sampleStop = source.sampleRate * (double)source.channels * range.End.TotalSeconds;
-                                source.endPktSampleIndex = frameSize - (int)Math.Floor(sampleStart) % frameSize;
-
-                                var skipCounter = source.startingPacketIndex = (int)Math.Floor(sampleStart / frameSize);
-                                source.endPacketIndex = (int)Math.Floor(sampleStop / frameSize);
-                                
-                                // skip to the starting packet
-                                if (source.startingPacketIndex < source.numberOfPackets && source.endPacketIndex < source.numberOfPackets && source.startingPacketIndex < source.endPacketIndex)
-                                {
-                                    //valid offsets.. process it
-                                    while (skipCounter-- > 0)
+                                case AsyncCommand.Play:
+                                    if (source.Playing && !source.Paused)
                                     {
-                                        //skip data to reach starting packet
-                                        var len = source.reader.ReadInt16();
-                                        source.compressedSoundStream.Position = source.compressedSoundStream.Position + len;
-                                        source.currentPacketIndex++;
+                                        break;
                                     }
-                                }
+                                    if (!source.Paused)
+                                    {
+                                        source.Restart();
+                                        SourcePrepare(source);
+                                        SourcePlayAsync(source);
+                                    }
+                                    else
+                                    {
+                                        SourcePlay(source);
+                                    }
+                                    source.Playing = true;
+                                    source.Paused = false;                                   
+                                    break;
+                                case AsyncCommand.Pause:
+                                    source.Paused = true;
+                                    SourcePause(source);
+                                    break;
+                                case AsyncCommand.Stop:
+                                    source.Paused = false;
+                                    source.Playing = false;
+                                    SourceStop(source);
+                                    break;
+                                case AsyncCommand.SetRange:
+                                    if(source.Playing) SourceStop(source);
+                                    source.Restart();
+                                    SourcePrepare(source);
+                                    if (source.Playing) SourcePlayAsync(source);
+                                    break;
+                                case AsyncCommand.Dispose:
+                                    source.Destroy();
+                                    source.Disposed = true;
+                                    toRemove.Add(source);
+                                    break;
+                                default:
+                                    throw new ArgumentOutOfRangeException();
                             }
                         }
 
-                        if (source.ended || !source.CanFill) continue;
+                        if (!source.Playing || !source.CanFill) continue;
 
-                        const int passes = SamplesPerBuffer / SamplesPerFrame;
+                        const int passes = SamplesPerBuffer/SamplesPerFrame;
                         var offset = 0;
                         var bufferPtr = (short*)utilityBuffer.Pointer;
                         var startingPacket = source.startingPacketIndex == source.currentPacketIndex;
                         var endingPacket = false;
                         for (var i = 0; i < passes; i++)
                         {
-                            if(source.restart) goto restart; //abort and restart
-
                             endingPacket = source.endPacketIndex == source.currentPacketIndex;
 
                             //read one packet, size first, then data
@@ -173,40 +236,41 @@ restart:
                                 throw new Exception("Celt decoder returned a wrong decoding buffer size.");
                             }
 
-                            offset += SamplesPerFrame * source.channels;
+                            offset += SamplesPerFrame*source.channels;
 
-                            if (source.compressedSoundStream.Position != source.compressedSoundStream.Length && source.currentPacketIndex < source.endPacketIndex) continue;
+                            if (source.compressedSoundStream.Position != source.compressedSoundStream.Length && !endingPacket) continue;
 
                             if (source.looped)
                             {
-                                source.restart = true;
+                                //prepare again to play from begin
+                                SourcePrepare(source);
                             }
                             else
                             {
-                                source.ended = true;
+                                source.Playing = false;
                                 source.Ended.TrySetResult(true);
                             }
 
                             break;
                         }
-                        
+
                         var finalPtr = new IntPtr(bufferPtr + (startingPacket ? source.startPktSampleIndex : 0));
-                        var finalSize = (offset - (startingPacket ? source.startPktSampleIndex : 0) - (endingPacket ? source.endPktSampleIndex : 0)) * sizeof(short);
+                        var finalSize = (offset - (startingPacket ? source.startPktSampleIndex : 0) - (endingPacket ? source.endPktSampleIndex : 0))*sizeof(short);
 
                         var bufferType = AudioLayer.BufferType.None;
-                        if (source.ended)
+                        if (!source.Playing)
                         {
                             bufferType = AudioLayer.BufferType.EndOfStream;
+                        }
+                        else if (source.looped && endingPacket)
+                        {
+                            bufferType = AudioLayer.BufferType.EndOfLoop;
                         }
                         else if (source.begin)
                         {
                             bufferType = AudioLayer.BufferType.BeginOfStream;
                             source.begin = false;
-                        }
-                        else if (source.looped && source.restart)
-                        {
-                            bufferType = AudioLayer.BufferType.EndOfLoop;
-                        }
+                        }                       
                         source.FillBuffer(finalPtr, finalSize, bufferType);
                     }
                     else
@@ -225,18 +289,7 @@ restart:
             }
         }
 
-        public override void Dispose()
-        {
-            dispose = true;
-        }
-
         public override int MaxNumberOfBuffers => NumberOfBuffers;
-
-        public override void Restart()
-        {
-            restart = true;
-            base.Restart();           
-        }
 
         /// <summary>
         /// Sets if the stream should be played in loop
@@ -252,16 +305,15 @@ restart:
             lock (rangeLock)
             {
                 playRange = range;
-                Restart();
             }
+
+            base.SetRange(range);
         }
 
-        private void Destroy()
+        protected override void Destroy()
         {
-            base.Dispose();
-
+            base.Destroy();
             compressedSoundStream.Dispose();
-
             decoder.Dispose();
         }
     }
