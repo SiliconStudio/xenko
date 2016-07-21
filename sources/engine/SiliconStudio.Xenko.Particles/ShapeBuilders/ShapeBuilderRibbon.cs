@@ -17,8 +17,6 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
     [Display("Ribbon")]
     public class ShapeBuilderRibbon : ShapeBuilder
     {
-        private readonly Ribbonizer ribbonizer = new Ribbonizer();
-
         /// <summary>
         /// Smoothing provides the option to additionally smooth the ribbon, enhancing visual quality for sharp angles
         /// </summary>
@@ -29,15 +27,17 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         [Display("Smoothing")]
         public SmoothingPolicy SmoothingPolicy
         {
-            get { return ribbonizer.SmoothingPolicy; }
+            get { return smoothingPolicy; }
             set
             {
-                ribbonizer.SmoothingPolicy = value;
+                smoothingPolicy = value;
 
-                QuadsPerParticle = (ribbonizer.SmoothingPolicy == SmoothingPolicy.None) ?
-                    1 : ribbonizer.Segments;
+                QuadsPerParticle = (smoothingPolicy == SmoothingPolicy.None) ?
+                    1 : segments;
             }
         }
+
+        private SmoothingPolicy smoothingPolicy;
 
         /// <summary>
         /// If the ribbon is smotthed, how many segments should be used between each two particles
@@ -49,15 +49,17 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         [Display("Segments")]
         public int Segments
         {
-            get { return ribbonizer.Segments; }
+            get { return segments; }
             set
             {
-                ribbonizer.Segments = value;
+                segments = value;
 
-                QuadsPerParticle = (ribbonizer.SmoothingPolicy == SmoothingPolicy.None) ?
-                    1 : ribbonizer.Segments;
+                QuadsPerParticle = (smoothingPolicy == SmoothingPolicy.None) ?
+                    1 : segments;
             }
         }
+
+        private int segments;
 
         /// <summary>
         /// Specifies how texture coordinates for the ribbons should be built
@@ -67,7 +69,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         /// </userdoc>
         [DataMember(10)]
         [Display("UV Coords")]
-        public TextureCoordinatePolicy TextureCoordinatePolicy { get { return ribbonizer.TextureCoordinatePolicy; } set { ribbonizer.TextureCoordinatePolicy = value; } }
+        public TextureCoordinatePolicy TextureCoordinatePolicy { get; set; }
 
         /// <summary>
         /// The factor (coefficient) for length to use when building texture coordinates
@@ -77,7 +79,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         /// </userdoc>
         [DataMember(20)]
         [Display("UV Factor")]
-        public float TexCoordsFactor { get { return ribbonizer.TexCoordsFactor; } set { ribbonizer.TexCoordsFactor = value; } }
+        public float TexCoordsFactor { get; set; }
 
         /// <summary>
         /// Texture coordinates flip and rotate policy
@@ -87,7 +89,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         /// </userdoc>
         [DataMember(30)]
         [Display("UV Rotate")]
-        public UVRotate UVRotate { get { return ribbonizer.UVRotate; } set { ribbonizer.UVRotate = value; } }
+        public UVRotate UVRotate { get; set; }
 
         /// <inheritdoc />
         public override int QuadsPerParticle { get; protected set; } = 1;
@@ -95,8 +97,12 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         /// <inheritdoc />
         public override void SetRequiredQuads(int quadsPerParticle, int livingParticles, int totalParticles)
         {
-            ribbonizer.Restart(totalParticles, quadsPerParticle);            
+            currentTotalParticles = totalParticles;
+            currentQuadsPerParticle = quadsPerParticle;
         }
+
+        private int currentTotalParticles;
+        private int currentQuadsPerParticle;
 
         /// <inheritdoc />
         public unsafe override int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY,
@@ -115,6 +121,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             trsIdentity = trsIdentity && (spaceTranslation.Equals(new Vector3(0, 0, 0)));
             trsIdentity = trsIdentity && (spaceRotation.Equals(Quaternion.Identity));
 
+            var ribbonizer = new Ribbonizer(this, currentTotalParticles, currentQuadsPerParticle);
 
             var renderedParticles = 0;
             bufferState.StartOver();
@@ -160,60 +167,35 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         /// <summary>
         /// The <see cref="Ribbonizer"/> takes a list of points and creates a ribbon (connected quads), adjusting its texture coordinates accordingly
         /// </summary>
-        sealed class Ribbonizer
+        struct Ribbonizer
         {
-            private int lastParticle = 0;
-            private Vector3[] positions = new Vector3[1];
-            private float[] sizes = new float[1];
-            private int sections = 1;
+            private int lastParticle;
+            private Vector3[] positions;
+            private float[] sizes;
+            private int sections;
 
-            /// <summary>
-            /// This property is exposed to the ShapeBuilder class
-            /// </summary>
-            [DataMemberIgnore]
-            public TextureCoordinatePolicy TextureCoordinatePolicy { get; set; } = TextureCoordinatePolicy.AsIs;
+            private readonly ShapeBuilderRibbon parentRibbon;
 
-            /// <summary>
-            /// This property is exposed to the ShapeBuilder class
-            /// </summary>
-            [DataMemberIgnore]
-            public SmoothingPolicy SmoothingPolicy { get; set; } = SmoothingPolicy.None;
-
-            /// <summary>
-            /// This property is exposed to the ShapeBuilder class
-            /// </summary>
-            [DataMemberIgnore]
-            public int Segments { get; set; } = 5;
-
-            /// <summary>
-            /// This property is exposed to the ShapeBuilder class
-            /// </summary>
-            [DataMemberIgnore]
-            public float TexCoordsFactor { get; set; } = 1f;
-
-            /// <summary>
-            /// This property is exposed to the ShapeBuilder class
-            /// </summary>
-            [DataMemberIgnore]
-            public UVRotate UVRotate { get; set; }
-
-            /// <summary>
-            /// Restarts the point string, potentially expanding the capacity
-            /// </summary>
-            /// <param name="newCapacity">Required minimum capacity</param>
-            public void Restart(int newCapacity, int sectionsPerParticle)
+            public Ribbonizer(ShapeBuilderRibbon ribbon, int newCapacity, int sectionsPerParticle)
             {
+                parentRibbon = ribbon;
+
                 lastParticle = 0;
                 sections = sectionsPerParticle;
 
                 int requiredCapacity = sectionsPerParticle * newCapacity;
 
-                if (requiredCapacity > positions.Length)
-                {
-                    positions = new Vector3[requiredCapacity];
-                    sizes = new float[requiredCapacity];
-                }                
+                positions = new Vector3[requiredCapacity];
+                sizes = new float[requiredCapacity];
             }
+
+            public TextureCoordinatePolicy TextureCoordinatePolicy => parentRibbon.TextureCoordinatePolicy;
+
+            SmoothingPolicy SmoothingPolicy => parentRibbon.SmoothingPolicy;
+
+            float TexCoordsFactor => parentRibbon.TexCoordsFactor;
+
+            UVRotate UVRotate => parentRibbon.UVRotate;
 
             /// <summary>
             /// Splits (cuts) the ribbon without restarting or rebuilding the vertex buffer
