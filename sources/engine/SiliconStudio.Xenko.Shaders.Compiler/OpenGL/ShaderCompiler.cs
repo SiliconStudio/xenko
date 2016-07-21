@@ -544,6 +544,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             }
         }
 
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+
         private string RunOptimizer(ShaderBytecodeResult shaderBytecodeResult, string baseShader, GlslShaderPlatform shaderPlatform, int shaderVersion, bool vertex)
 	    {
             lock (GlslOptimizerLock)
@@ -607,5 +609,6 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
 
         [DllImport("glsl_optimizer.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void glslopt_cleanup(IntPtr ctx);
+#endif
     }
 }
