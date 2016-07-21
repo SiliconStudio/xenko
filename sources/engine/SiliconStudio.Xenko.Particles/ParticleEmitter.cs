@@ -955,7 +955,14 @@ namespace SiliconStudio.Xenko.Particles
             if (ParticleSorter is ParticleSorterDepth)
             {
                 // Not the best solution, might want to improve
-                ((ParticleSorterDepth)ParticleSorter).DepthVector = Vector3.Cross(unitX, unitY);
+                var depthVector = Vector3.Cross(unitX, unitY);
+                if (simulationSpace == EmitterSimulationSpace.Local)
+                {
+                    var inverseRotation = drawTransform.WorldRotation;
+                    inverseRotation.W *= -1;
+                    inverseRotation.Rotate(ref depthVector);
+                }
+                ((ParticleSorterDepth)ParticleSorter).DepthVector = depthVector;
             }
 
             var sortedList = ParticleSorter.GetSortedList();
