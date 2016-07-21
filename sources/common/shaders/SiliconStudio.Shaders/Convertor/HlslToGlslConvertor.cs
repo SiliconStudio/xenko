@@ -513,6 +513,16 @@ namespace SiliconStudio.Shaders.Convertor
         /// </param>
         public override Node Visit(Variable variable)
         {
+            // All variable arrays are processed later to simplify/unify their bounds
+            var variableType = variable != null ? variable.Type.ResolveType() : null;
+            var arrayType = variableType as ArrayType;
+
+            if (arrayType != null)
+            {
+                if (!this.listOfMultidimensionArrayVariable.Contains(variable))
+                    this.listOfMultidimensionArrayVariable.Add(variable);
+            }
+
             var isInMethod = !shader.Declarations.Contains(variable);
 
             // Static variable are allowed inside HLSL functions 
@@ -2391,9 +2401,6 @@ namespace SiliconStudio.Shaders.Convertor
 
                 if (arrayType != null && arrayType.Dimensions.Count == indices.Count)
                 {
-                    if (!this.listOfMultidimensionArrayVariable.Contains(variable))
-                        this.listOfMultidimensionArrayVariable.Add(variable);
-
                     // Transform multi-dimensionnal array to single dimension
                     // float myarray[s1][s2][s3]...[sn] = {{.{..{...}}};
                     // float value = myarray[i1][i2][i3]...[in]    => float value = myarray[(i1)*(s2)*(s3)*...*(sn) + (i2)*(s3)*...*(sn) + (i#)*(s#+1)*(s#+2)*...*(sn)];
