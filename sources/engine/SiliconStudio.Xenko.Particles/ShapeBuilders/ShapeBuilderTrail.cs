@@ -17,6 +17,14 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
     [Display("Trail")]
     public class ShapeBuilderTrail : ShapeBuilder
     {
+        private SmoothingPolicy smoothingPolicy;
+
+        private int segments;
+
+        private int currentTotalParticles;
+
+        private int currentQuadsPerParticle;
+
         /// <summary>
         /// Smoothing provides the option to additionally smooth the ribbon, enhancing visual quality for sharp angles
         /// </summary>
@@ -37,9 +45,6 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             }
         }
 
-        private SmoothingPolicy smoothingPolicy;
-
-
         /// <summary>
         /// If the ribbon is smotthed, how many segments should be used between each two particles
         /// </summary>
@@ -59,8 +64,6 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                     1 : segments;
             }
         }
-
-        private int segments;
 
         /// <summary>
         /// Should the axis of control point be treated as the trail's edge or the trail's center
@@ -112,11 +115,8 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             currentQuadsPerParticle = quadsPerParticle;
         }
 
-        private int currentTotalParticles;
-        private int currentQuadsPerParticle;
-
         /// <inheritdoc />
-        public unsafe override int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY,
+        public override unsafe int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY,
             ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, IParticleSortedList sorter)
         {
             // Get all the required particle fields

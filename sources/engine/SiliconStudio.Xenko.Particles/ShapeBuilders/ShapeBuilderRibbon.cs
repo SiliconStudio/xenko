@@ -17,6 +17,14 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
     [Display("Ribbon")]
     public class ShapeBuilderRibbon : ShapeBuilder
     {
+        private SmoothingPolicy smoothingPolicy;
+
+        private int segments;
+
+        private int currentTotalParticles;
+
+        private int currentQuadsPerParticle;
+
         /// <summary>
         /// Smoothing provides the option to additionally smooth the ribbon, enhancing visual quality for sharp angles
         /// </summary>
@@ -37,8 +45,6 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             }
         }
 
-        private SmoothingPolicy smoothingPolicy;
-
         /// <summary>
         /// If the ribbon is smotthed, how many segments should be used between each two particles
         /// </summary>
@@ -58,8 +64,6 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                     1 : segments;
             }
         }
-
-        private int segments;
 
         /// <summary>
         /// Specifies how texture coordinates for the ribbons should be built
@@ -101,11 +105,8 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             currentQuadsPerParticle = quadsPerParticle;
         }
 
-        private int currentTotalParticles;
-        private int currentQuadsPerParticle;
-
         /// <inheritdoc />
-        public unsafe override int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY,
+        public override unsafe int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY,
             ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, IParticleSortedList sorter)
         {
             // Get all the required particle fields
@@ -117,6 +118,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             var orderField = sorter.GetField(ParticleFields.Order);
 
             // Check if the draw space is identity - in this case we don't need to transform the position, scale and rotation vectors
+            // ReSharper disable once CompareOfFloatsByEqualityOperator
             var trsIdentity = (spaceScale == 1f);
             trsIdentity = trsIdentity && (spaceTranslation.Equals(new Vector3(0, 0, 0)));
             trsIdentity = trsIdentity && (spaceRotation.Equals(Quaternion.Identity));
