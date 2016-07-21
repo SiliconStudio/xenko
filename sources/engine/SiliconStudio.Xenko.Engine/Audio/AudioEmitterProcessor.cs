@@ -110,6 +110,8 @@ namespace SiliconStudio.Xenko.Audio
             }
 
             data.AudioEmitterComponent.ControllerCollectionChanged += OnSoundControllerListChanged;
+
+            component.AttachToProcessor();
         }
 
         public override void Draw(RenderContext context)
@@ -185,6 +187,8 @@ namespace SiliconStudio.Xenko.Audio
         {
             base.OnEntityComponentRemoved(entity, component, data);
 
+            component.DetachFromProcessor();
+
             // dispose and delete all SoundInstances associated to the EmitterComponent.
             foreach (var soundController in data.AudioEmitterComponent.SoundToController.Values)
                 soundController.DestroyAllSoundInstances();
@@ -220,13 +224,8 @@ namespace SiliconStudio.Xenko.Audio
 
         private void OnSoundControllerListChanged(object o, AudioEmitterComponent.ControllerCollectionChangedEventArgs args)
         {
-            AssociatedData associatedData;
-            if (!ComponentDatas.TryGetValue(args.EmitterComponent, out associatedData))
-                return;
-
             // A new Sound have been associated to the AudioEmitterComponenent or an old Sound have been deleted.
             // We need to create/destroy the corresponding SoundInstances.
-
             var listeners = audioSystem.Listeners.Keys;
             foreach (var listener in listeners)
             {

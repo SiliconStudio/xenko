@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Audio;
 using SiliconStudio.Xenko.Engine.Design;
 
@@ -216,5 +217,50 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         [DataMemberIgnore]
         internal bool ShouldBeProcessed { get; set; }
+        
+        [DataMember(10)]
+        public TrackingDictionary<string, Sound> Sounds = new TrackingDictionary<string, Sound>();
+
+        [DataMemberIgnore]
+        public AudioEmitterSoundController this[string i] => SoundToController[Sounds[i]];
+
+        private void OnSoundsOnCollectionChanged(object sender, TrackingCollectionChangedEventArgs args)
+        {
+            switch (args.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    AttachSound((Sound)args.Item);
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    DetachSound((Sound)args.Item);
+                    break;
+            }
+        }
+
+        internal void AttachToProcessor()
+        {
+            Sounds.CollectionChanged += OnSoundsOnCollectionChanged;
+
+            foreach (var sound in Sounds)
+            {
+                if (sound.Value != null)
+                {
+                    AttachSound(sound.Value);
+                }
+            }
+        }
+
+        internal void DetachFromProcessor()
+        {
+            foreach (var sound in Sounds)
+            {
+                if (sound.Value != null)
+                {
+                    DetachSound(sound.Value);
+                }
+            }
+
+            Sounds.CollectionChanged -= OnSoundsOnCollectionChanged;
+        }
     }
 }
