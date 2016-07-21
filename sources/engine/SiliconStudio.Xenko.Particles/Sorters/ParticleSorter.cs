@@ -66,8 +66,6 @@ namespace SiliconStudio.Xenko.Particles.Sorters
         }
     }
 
-    public delegate float GetSortIndex<T>(T value) where T : struct;
-
     /// <summary>
     /// Base enumerator which accesses all particles in a <see cref="ParticlePool"/> in a sorted manner
     /// </summary>

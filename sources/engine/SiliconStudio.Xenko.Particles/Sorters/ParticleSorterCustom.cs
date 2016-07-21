@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Particles.Sorters
 {
@@ -13,6 +14,10 @@ namespace SiliconStudio.Xenko.Particles.Sorters
         private readonly int currentLivingParticles;
         private readonly SortedParticle[] particleList;
 
+        /// <summary>
+        /// Will construct an unsorted list of the living particles in the specified pool
+        /// </summary>
+        /// <param name="particlePool">The <see cref="ParticlePool"/></param>
         public ParticleSortedListCustom(ParticlePool particlePool)
         {
             pool = particlePool;
@@ -30,7 +35,13 @@ namespace SiliconStudio.Xenko.Particles.Sorters
             }
         }
 
-        public ParticleSortedListCustom(ParticlePool particlePool, ParticleFieldDescription<T> fieldDesc, GetSortIndex<T> getIndex)
+        /// <summary>
+        /// Will construct a sorted list of the living particles in the specified pool
+        /// </summary>
+        /// <param name="particlePool">The <see cref="ParticlePool"/></param>
+        /// <param name="fieldDesc">The particle attribute field to use as a base sorting value</param>
+        /// <param name="sorter">The converter for the particle attribute to a sorting key</param>
+        public ParticleSortedListCustom(ParticlePool particlePool, ParticleFieldDescription<T> fieldDesc, ParticleSorterCustom<T> sorter)
         {
             pool = particlePool;
 
@@ -43,7 +54,7 @@ namespace SiliconStudio.Xenko.Particles.Sorters
 
             foreach (var particle in pool)
             {
-                particleList[i] = new SortedParticle(particle, getIndex(particle.Get(sortField)));
+                particleList[i] = new SortedParticle(particle, sorter.GetSortValue(particle.Get(sortField)));
                 i++;
             }
 
@@ -67,16 +78,16 @@ namespace SiliconStudio.Xenko.Particles.Sorters
     /// <summary>
     /// The custom sorter uses a user-defined method for generating sort index from a user-defined field
     /// </summary>
-    public class ParticleSorterCustom<T> : ParticleSorter where T : struct
+    public abstract class ParticleSorterCustom<T> : ParticleSorter where T : struct
     {
         private readonly ParticleFieldDescription<T> fieldDesc;
-        private readonly GetSortIndex<T> getIndex;
 
-        public ParticleSorterCustom(ParticlePool pool, ParticleFieldDescription<T> fieldDesc, GetSortIndex<T> getIndex) : base(pool)
+        protected ParticleSorterCustom(ParticlePool pool, ParticleFieldDescription<T> fieldDesc) : base(pool)
         {
             this.fieldDesc = fieldDesc;
-            this.getIndex = getIndex;
         }
+
+        public abstract float GetSortValue(T value);
 
         public override IParticleSortedList GetSortedList()
         {
@@ -85,8 +96,40 @@ namespace SiliconStudio.Xenko.Particles.Sorters
             if (!sortField.IsValid())
                 return new ParticleSortedListCustom<T>(ParticlePool);
 
-            return new ParticleSortedListCustom<T>(ParticlePool, fieldDesc, getIndex);
+            return new ParticleSortedListCustom<T>(ParticlePool, fieldDesc, this);
         }
+    }
+
+    /// <summary>
+    /// Sorts the particles by ascending order of their Depth (position on the camera's Z axis)
+    /// </summary>
+    public class ParticleSorterDepth : ParticleSorterCustom<Vector3>
+    {
+        public Vector3 DepthVector { get; set; }
+
+        public ParticleSorterDepth(ParticlePool pool) : base(pool, ParticleFields.Position) { }
+
+        public override float GetSortValue(Vector3 position) => Vector3.Dot(DepthVector, position);
+    }
+
+    /// <summary>
+    /// Sorts the particles by descending order of their remaining Life
+    /// </summary>
+    public class ParticleSorterAge : ParticleSorterCustom<float>
+    {
+        public ParticleSorterAge(ParticlePool pool) : base(pool, ParticleFields.Life) { }
+
+        public override float GetSortValue(float life) => -life;
+    }
+
+    /// <summary>
+    /// Sorts the particles by ascending order of their Order attribute
+    /// </summary>
+    public class ParticleSorterOrder : ParticleSorterCustom<uint>
+    {
+        public ParticleSorterOrder(ParticlePool pool) : base(pool, ParticleFields.Order) { }
+
+        public override float GetSortValue(uint order) => BitConverter.ToSingle(BitConverter.GetBytes(order), 0) * -1f;
     }
 
     public struct Enumerator : IEnumerator<Particle>

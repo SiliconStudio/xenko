@@ -436,31 +436,19 @@ namespace SiliconStudio.Xenko.Particles
 
             if (SortingPolicy == EmitterSortingPolicy.ByDepth)
             {
-                GetSortIndex<Vector3> sortByDepth = value =>
-                {
-                    var depth = Vector3.Dot(depthSortVector, value);
-                    return depth;
-                };
-
-                ParticleSorter = new ParticleSorterCustom<Vector3>(pool, ParticleFields.Position, sortByDepth);
+                ParticleSorter = new ParticleSorterDepth(pool);
                 return;
             }
 
             if (SortingPolicy == EmitterSortingPolicy.ByAge)
             {
-                GetSortIndex<float> sortByAge = value => { return -value; };
-
-                ParticleSorter = new ParticleSorterCustom<float>(pool, ParticleFields.Life, sortByAge);
+                ParticleSorter = new ParticleSorterAge(pool);
                 return;
             }
 
             if (SortingPolicy == EmitterSortingPolicy.ByOrder)
             {
-                // This sorting policy doesn't check if you actually have a Order field.
-                // The ParticleSorterCustom will just skip sorting the particles if the field is invalid
-                GetSortIndex<uint> sortByOrder = value => BitConverter.ToSingle(BitConverter.GetBytes(value), 0) * -1f;
-
-                ParticleSorter = new ParticleSorterCustom<uint>(pool, ParticleFields.Order, sortByOrder);
+                ParticleSorter = new ParticleSorterOrder(pool);
                 return;
             }
 
@@ -963,9 +951,12 @@ namespace SiliconStudio.Xenko.Particles
             // Get camera-space X and Y axes for billboard expansion and sort the particles if needed
             var unitX = new Vector3(invViewMatrix.M11, invViewMatrix.M12, invViewMatrix.M13);
             var unitY = new Vector3(invViewMatrix.M21, invViewMatrix.M22, invViewMatrix.M23);
-            depthSortVector = Vector3.Cross(unitX, unitY);
 
-//            ParticleSorter.Sort(); // TODO This is not thread-safe if the same emitter is rendered in two different views
+            if (ParticleSorter is ParticleSorterDepth)
+            {
+                // Not the best solution, might want to improve
+                ((ParticleSorterDepth)ParticleSorter).DepthVector = Vector3.Cross(unitX, unitY);
+            }
 
             var sortedList = ParticleSorter.GetSortedList();
 
