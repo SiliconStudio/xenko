@@ -99,7 +99,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         }
 
         /// <inheritdoc />
-        public override unsafe void BuildUVCoordinates(ref ParticleBufferState bufferState, ParticleSorter sorter, AttributeDescription texCoordsDescription)
+        public override unsafe void BuildUVCoordinates(ref ParticleBufferState bufferState, IParticleSortedList sorter, AttributeDescription texCoordsDescription)
         {
             var lifeField = sorter.GetField(ParticleFields.RemainingLife);
 

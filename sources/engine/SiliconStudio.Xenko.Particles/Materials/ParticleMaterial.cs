@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
@@ -91,7 +92,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// <param name="invViewX">Unit vector X (right) in camera space, extracted from the inverse view matrix</param>
         /// <param name="invViewY">Unit vector Y (up) in camera space, extracted from the inverse view matrix</param>
         /// <param name="sorter">Particle enumerator which can be iterated and returns sported particles</param>
-        public virtual void PatchVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
+        public virtual void PatchVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, IParticleSortedList sortedList)
         {
         }
 

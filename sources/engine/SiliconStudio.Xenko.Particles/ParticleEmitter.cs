@@ -964,7 +964,10 @@ namespace SiliconStudio.Xenko.Particles
             var unitX = new Vector3(invViewMatrix.M11, invViewMatrix.M12, invViewMatrix.M13);
             var unitY = new Vector3(invViewMatrix.M21, invViewMatrix.M22, invViewMatrix.M23);
             depthSortVector = Vector3.Cross(unitX, unitY);
-            ParticleSorter.Sort(); // TODO This is not thread-safe if the same emitter is rendered in two different views
+
+//            ParticleSorter.Sort(); // TODO This is not thread-safe if the same emitter is rendered in two different views
+
+            var sortedList = ParticleSorter.GetSortedList();
 
             // If the particles are in world space they don't need to be fixed as their coordinates are already in world space
             // If the particles are in local space they need to be drawn in world space using the emitter's current location matrix
@@ -981,10 +984,10 @@ namespace SiliconStudio.Xenko.Particles
             ParticleBufferState bufferState = new ParticleBufferState(sharedBufferPtr, VertexBuilder);
 
             ShapeBuilder.SetRequiredQuads(ShapeBuilder.QuadsPerParticle, pool.LivingParticles, pool.ParticleCapacity);
-            ShapeBuilder.BuildVertexBuffer(ref bufferState, unitX, unitY, ref posIdentity, ref rotIdentity, scaleIdentity, ParticleSorter);
+            ShapeBuilder.BuildVertexBuffer(ref bufferState, unitX, unitY, ref posIdentity, ref rotIdentity, scaleIdentity, sortedList);
 
             bufferState.StartOver();
-            Material.PatchVertexBuffer(ref bufferState, unitX, unitY, ParticleSorter);
+            Material.PatchVertexBuffer(ref bufferState, unitX, unitY, sortedList);
         }
 
         #region Particles

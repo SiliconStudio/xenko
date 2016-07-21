@@ -7,63 +7,86 @@ using System.Collections.Generic;
 
 namespace SiliconStudio.Xenko.Particles.Sorters
 {
-
-    /// <summary>
-    /// The custom sorter uses a user-defined method for generating sort index from a user-defined field
-    /// </summary>
-    public class ParticleSorterCustom<T> : ParticleSorter where T : struct
+    public struct ParticleSortedListCustom<T> : IParticleSortedList where T : struct
     {
-        SortedParticle[] particleList;
-        private int currentLivingParticles;
+        private readonly ParticlePool pool;
+        private readonly int currentLivingParticles;
+        private readonly SortedParticle[] particleList;
 
-        private readonly ParticleFieldDescription<T> fieldDesc;
-        private readonly GetSortIndex<T> getIndex;
-
-        public ParticleSorterCustom(ParticlePool pool, ParticleFieldDescription<T> fieldDesc, GetSortIndex<T> getIndex) : base(pool)
+        public ParticleSortedListCustom(ParticlePool particlePool)
         {
-            particleList = new SortedParticle[pool.ParticleCapacity];
-            currentLivingParticles = 0;
+            pool = particlePool;
 
-            this.fieldDesc = fieldDesc;
-            this.getIndex = getIndex;
-        }
+            currentLivingParticles = pool.LivingParticles;
+            particleList = new SortedParticle[currentLivingParticles];
 
-        public override void Sort() 
-        {
-            currentLivingParticles = ParticlePool.LivingParticles;
             var i = 0;
 
-            var posField = ParticlePool.GetField(fieldDesc);
 
-            if (posField.IsValid())
+            foreach (var particle in pool)
             {
-                unsafe
-                {
-                    foreach (var particle in ParticlePool)
-                    {
-                        particleList[i] = new SortedParticle(particle, getIndex(particle.Get(posField)));
-                        i++;
-                    }
-                }
+                particleList[i] = new SortedParticle(particle, 0);
+                i++;
             }
-            else
+        }
+
+        public ParticleSortedListCustom(ParticlePool particlePool, ParticleFieldDescription<T> fieldDesc, GetSortIndex<T> getIndex)
+        {
+            pool = particlePool;
+
+            currentLivingParticles = pool.LivingParticles;
+            var i = 0;
+
+            particleList = new SortedParticle[currentLivingParticles];
+
+            var sortField = pool.GetField(fieldDesc);
+
+            foreach (var particle in pool)
             {
-                foreach (var particle in ParticlePool)
-                {
-                    particleList[i] = new SortedParticle(particle, 0);
-                    i++;
-                }
+                particleList[i] = new SortedParticle(particle, getIndex(particle.Get(sortField)));
+                i++;
             }
 
             // Sort the list
             Array.Sort(particleList, 0, currentLivingParticles); // GC problem? Switch to another solution if needed
         }
 
-        public override IEnumerator<Particle> GetEnumerator()
+        /// <inheritdoc />
+        public ParticleFieldAccessor<T> GetField<T>(ParticleFieldDescription<T> fieldDesc) where T : struct => pool.GetField<T>(fieldDesc);
+
+        /// <inheritdoc />
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
+
+        /// <inheritdoc />
+        public IEnumerator<Particle> GetEnumerator()
         {
             return new Enumerator(particleList, currentLivingParticles);
         }
+    }
 
+    /// <summary>
+    /// The custom sorter uses a user-defined method for generating sort index from a user-defined field
+    /// </summary>
+    public class ParticleSorterCustom<T> : ParticleSorter where T : struct
+    {
+        private readonly ParticleFieldDescription<T> fieldDesc;
+        private readonly GetSortIndex<T> getIndex;
+
+        public ParticleSorterCustom(ParticlePool pool, ParticleFieldDescription<T> fieldDesc, GetSortIndex<T> getIndex) : base(pool)
+        {
+            this.fieldDesc = fieldDesc;
+            this.getIndex = getIndex;
+        }
+
+        public override IParticleSortedList GetSortedList()
+        {
+            var sortField = ParticlePool.GetField(fieldDesc);
+
+            if (!sortField.IsValid())
+                return new ParticleSortedListCustom<T>(ParticlePool);
+
+            return new ParticleSortedListCustom<T>(ParticlePool, fieldDesc, getIndex);
+        }
     }
 
     public struct Enumerator : IEnumerator<Particle>

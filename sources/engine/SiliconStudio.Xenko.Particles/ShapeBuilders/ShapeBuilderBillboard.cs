@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Animations;
@@ -33,7 +34,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
         /// <inheritdoc />
         public unsafe override int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, 
-            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticleSorter sorter)
+            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, IParticleSortedList sorter)
         {
             // Update the curve samplers if required
             base.BuildVertexBuffer(ref bufferState, invViewX, invViewY, ref spaceTranslation, ref spaceRotation, spaceScale, sorter);

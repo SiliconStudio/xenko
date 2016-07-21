@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Particles.Sorters;
@@ -38,7 +39,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         /// <param name="sorter">Particle enumerator which can be iterated and returns sported particles</param>
         /// <returns></returns>
         public abstract int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, 
-            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticleSorter sorter);
+            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, IParticleSortedList sorter);
 
         /// <summary>
         /// Check if ParticleVertexElements should be changed and set HasVertexLayoutChanged = true; if they do

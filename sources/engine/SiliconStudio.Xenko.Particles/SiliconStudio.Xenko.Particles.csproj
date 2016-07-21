@@ -117,7 +117,6 @@
     <Compile Include="Sorters\ParticleSorter.cs" />
     <Compile Include="Sorters\ParticleSorterCustom.cs" />
     <Compile Include="Sorters\ParticleSorterDefault.cs" />
-    <Compile Include="Sorters\ParticleSorterLiving.cs" />
     <Compile Include="Spawners\ParticleSpawnerTriggerBirth.cs" />
     <Compile Include="Spawners\ParticleSpawnTriggerDeath.cs" />
     <Compile Include="Spawners\ParticleSpawnTriggerDistance.cs" />

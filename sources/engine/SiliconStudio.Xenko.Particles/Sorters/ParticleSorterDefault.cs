@@ -1,77 +1,40 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace SiliconStudio.Xenko.Particles.Sorters
 {
-    struct SortedParticle : IComparable
+    public struct ParticleSortedListNone : IParticleSortedList
     {
-        public readonly Particle Particle;
-        public readonly float SortIndex;         // TODO Maybe use a Int32 key rather than float?
+        private readonly ParticlePool pool;
 
-        public SortedParticle(Particle particle, float sortIndex)
+        public ParticleSortedListNone(ParticlePool particlePool)
         {
-            Particle = particle;
-            SortIndex = sortIndex;
+            pool = particlePool;
         }
 
-        int IComparable.CompareTo(object other)
-        {
-            return CompareTo((SortedParticle)other);
-        }
+        /// <inheritdoc />
+        public ParticleFieldAccessor<T> GetField<T>(ParticleFieldDescription<T> fieldDesc) where T : struct => pool.GetField<T>(fieldDesc);
 
-        int CompareTo(SortedParticle other)
-        {
-            return (this == other) ? 0 : (this < other) ? -1 : 1;
-        }
+        /// <inheritdoc />
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
-        public static bool operator <(SortedParticle left, SortedParticle right) => (left.SortIndex < right.SortIndex);
-
-        public static bool operator >(SortedParticle left, SortedParticle right) => (left.SortIndex > right.SortIndex);
-
-        public static bool operator <=(SortedParticle left, SortedParticle right) => (left.SortIndex <= right.SortIndex);
-
-        public static bool operator >=(SortedParticle left, SortedParticle right) => (left.SortIndex >= right.SortIndex);
-
-        public static bool operator ==(SortedParticle left, SortedParticle right) => (left.SortIndex == right.SortIndex);
-
-        public static bool operator !=(SortedParticle left, SortedParticle right) => (left.SortIndex != right.SortIndex);
-
-        public override bool Equals(object obj)
-        {
-            if (!(obj is SortedParticle))
-                return false;
-
-            var other = (SortedParticle)obj;
-            return (this == other);
-        }
-
-        public override int GetHashCode()
-        {
-            return SortIndex.GetHashCode();
-        }
+        /// <inheritdoc />
+        public IEnumerator<Particle> GetEnumerator() => pool.GetEnumerator();
     }
-
-    public delegate float GetSortIndex<T>(T value) where T : struct;
 
     /// <summary>
     /// The default sorter doesn not sort the particles, but only passes them directly to the renderer
     /// </summary>
     public class ParticleSorterDefault : ParticleSorter 
     {
-        public ParticleSorterDefault(ParticlePool pool) : base(pool) 
-        {           
-        }
-
-        /// <inheritdoc />
-        public override void Sort() { }
-
-        /// <inheritdoc />
-        public override IEnumerator<Particle> GetEnumerator()
+        public override IParticleSortedList GetSortedList()
         {
-            return ParticlePool.GetEnumerator();
+            return new ParticleSortedListNone(ParticlePool);
         }
+
+        public ParticleSorterDefault(ParticlePool pool) : base(pool) { }
     }
 }

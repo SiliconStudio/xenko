@@ -166,7 +166,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         }
 
         /// <inheritdoc />
-        public unsafe override void PatchVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
+        public unsafe override void PatchVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, IParticleSortedList sorter)
         {
             // If you want, you can implement the base builder here and not call it. It should result in slight speed up
             base.PatchVertexBuffer(ref bufferState, invViewX, invViewY, sorter);
