@@ -342,22 +342,22 @@ namespace SiliconStudio.Xenko.Rendering.UI
         /// <param name="worldViewProj"></param>
         /// <param name="intersectionPoint">Intersection point between the ray and the element</param>
         /// <returns>The <see cref="UIElement"/> with which the ray intersects</returns>
-        public static UIElement GetElementAtScreenPosition(UIElement rootElement, Ray clickRay, ref Matrix worldViewProj, ref Vector3 intersectionPoint, bool forceCheck = false)
+        public static UIElement GetElementAtScreenPosition(UIElement rootElement, Ray clickRay, ref Matrix worldViewProj, ref Vector3 intersectionPoint)
         {
             UIElement clickedElement = null;
             var smallestDepth = float.PositiveInfinity;
-            PerformRecursiveHitTest(rootElement, ref clickRay, ref worldViewProj, ref clickedElement, ref intersectionPoint, ref smallestDepth, forceCheck);
+            PerformRecursiveHitTest(rootElement, ref clickRay, ref worldViewProj, ref clickedElement, ref intersectionPoint, ref smallestDepth);
 
             return clickedElement;
         }
 
-        private static void PerformRecursiveHitTest(UIElement element, ref Ray ray, ref Matrix worldViewProj, ref UIElement clickedElement, ref Vector3 intersectionPoint, ref float smallestDepth, bool forceCheck)
+        private static void PerformRecursiveHitTest(UIElement element, ref Ray ray, ref Matrix worldViewProj, ref UIElement clickedElement, ref Vector3 intersectionPoint, ref float smallestDepth)
         {
             // if the element is not visible, we also remove all its children
             if (!element.IsVisible)
                 return;
 
-            var canBeHit = forceCheck || element.CanBeHitByUser;
+            var canBeHit = element.CanBeHitByUser;
             if (canBeHit || element.ClipToBounds)
             {
                 Vector3 intersection;
@@ -384,7 +384,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
             // render the children
             foreach (var child in element.HitableChildren)
-                PerformRecursiveHitTest(child, ref ray, ref worldViewProj, ref clickedElement, ref intersectionPoint, ref smallestDepth, forceCheck);
+                PerformRecursiveHitTest(child, ref ray, ref worldViewProj, ref clickedElement, ref intersectionPoint, ref smallestDepth);
         }
     }
 }
