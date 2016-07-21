@@ -288,6 +288,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             return fileProvider.OpenStream(path, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read);
         }
 
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
         [DllImport("kernel32.dll", EntryPoint = "GetLongPathNameW", SetLastError = true, CharSet = CharSet.Unicode)]
         static extern uint GetLongPathName(string shortPath, StringBuilder sb, int buffer);
 
@@ -325,6 +326,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 
             return null;
         }
+#endif
 
         public struct ShaderSourceWithHash
         {
