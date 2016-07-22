@@ -286,13 +286,19 @@ namespace SiliconStudio.Xenko.Audio
 
             Stop();
 
-            soundSource?.Dispose();
             sound?.UnregisterInstance(this);
 
             if (engine.State == AudioEngineState.Invalidated)
                 return;
 
-            AudioLayer.SourceDestroy(Source);
+            if (soundSource == null)
+            {
+                AudioLayer.SourceDestroy(Source);
+            }
+            else
+            {
+                soundSource.Dispose();
+            }            
         }
 
         protected void PlayExtended(bool stopSiblingInstances)

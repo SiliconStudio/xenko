@@ -139,6 +139,11 @@ namespace SiliconStudio.Xenko.Audio
             AudioLayer.SourcePause(source.SoundInstance.Source);
         }
 
+        private static void SourceDestroy(CompressedSoundSource source)
+        {
+            AudioLayer.SourceDestroy(source.SoundInstance.Source);
+        }
+
         private static unsafe void Worker()
         {
             var utilityBuffer = new UnmanagedArray<short>(SamplesPerBuffer * MaxChannels);
@@ -205,6 +210,7 @@ namespace SiliconStudio.Xenko.Audio
                                     if (source.Playing) SourcePlayAsync(source);
                                     break;
                                 case AsyncCommand.Dispose:
+                                    SourceDestroy(source);
                                     source.Destroy();
                                     source.Disposed = true;
                                     toRemove.Add(source);
@@ -281,7 +287,6 @@ namespace SiliconStudio.Xenko.Audio
 
                 foreach (var source in toRemove)
                 {
-                    source.Destroy();
                     Sources.Remove(source);
                 }
 
