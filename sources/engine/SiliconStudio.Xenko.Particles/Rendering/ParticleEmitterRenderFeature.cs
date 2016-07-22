@@ -3,9 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Threading.Tasks;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Particles.Materials;
@@ -59,13 +57,7 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
         private DescriptorSet[] descriptorSets;
 
-        private Buffer sharedVertexBuffer;
-        private int sharedVertexBufferSize;
-
-        private Buffer sharedIndexBuffer;
-        private int sharedIndexBufferSize;
-        private int requiredIndexBufferSize;
-        private const int sharedIndexStride = sizeof(short);
+        private readonly ParticleBufferContext particleBufferContext = new ParticleBufferContext();
 
         internal class ParticleMaterialInfo : MaterialRenderFeature.MaterialInfoBase
         {
@@ -256,98 +248,27 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                 }
             }
 
+            particleBufferContext.AllocateBuffers(context, totalVertexBufferSize, highestIndexCount);
 
-            sharedVertexBufferSize = totalVertexBufferSize;
-            requiredIndexBufferSize = highestIndexCount * sharedIndexStride;
-
-            BuildBuffers(context);
+            BuildParticleBuffers(context);
         }
 
         /// <summary>
         /// Builds the shared vertex and index buffers used by the particle systems
         /// </summary>
         /// <param name="renderDrawContext"><see cref="RenderDrawContext"/> to access the command list and the graphics context</param>
-        private unsafe void BuildBuffers(RenderDrawContext renderDrawContext)
+        private void BuildParticleBuffers(RenderDrawContext renderDrawContext)
         {
             // Build particle buffers
             var commandList = renderDrawContext.CommandList;
 
-            // Build the shared vertex buffer
-            if (sharedVertexBufferSize > 0)
-            {
-                {
-                    sharedVertexBufferSize--;
-                    sharedVertexBufferSize |= sharedVertexBufferSize >> 1;
-                    sharedVertexBufferSize |= sharedVertexBufferSize >> 2;
-                    sharedVertexBufferSize |= sharedVertexBufferSize >> 3;
-                    sharedVertexBufferSize |= sharedVertexBufferSize >> 8;
-                    sharedVertexBufferSize |= sharedVertexBufferSize >> 16;
-                    sharedVertexBufferSize++;
-                }
-
-                sharedVertexBuffer = renderDrawContext.GraphicsContext.Allocator.GetTemporaryBuffer(
-                    new BufferDescription(sharedVertexBufferSize, BufferFlags.VertexBuffer, GraphicsResourceUsage.Dynamic));
-            }
-
-            // Build the shared index buffer
-            if (requiredIndexBufferSize > sharedIndexBufferSize)
-            {
-                if (sharedIndexBuffer != null)
-                {
-                    renderDrawContext.GraphicsContext.Allocator.ReleaseReference(sharedIndexBuffer);
-                    sharedIndexBuffer = null;
-                }
-
-                //  We start allocating from 64K (allowing 32K indices to be written at once - this is most probably going to be sufficient in all cases)
-                sharedIndexBufferSize = requiredIndexBufferSize;
-                if (sharedIndexBufferSize < 64*1024)
-                    sharedIndexBufferSize = 64*1024;
-
-                {
-                    sharedIndexBufferSize--;
-                    sharedIndexBufferSize |= sharedIndexBufferSize >> 1;
-                    sharedIndexBufferSize |= sharedIndexBufferSize >> 2;
-                    sharedIndexBufferSize |= sharedIndexBufferSize >> 3;
-                    sharedIndexBufferSize |= sharedIndexBufferSize >> 8;
-                    sharedIndexBufferSize |= sharedIndexBufferSize >> 16;
-                    sharedIndexBufferSize++;
-                }
-
-                sharedIndexBuffer = renderDrawContext.GraphicsContext.Allocator.GetTemporaryBuffer(
-                    new BufferDescription(sharedIndexBufferSize, BufferFlags.IndexBuffer, GraphicsResourceUsage.Dynamic));
-
-                var indexCount = sharedIndexBufferSize/sharedIndexStride;
-                indexCount = ((indexCount/6)*6);
-                {
-                    var mappedIndices = commandList.MapSubresource(sharedIndexBuffer, 0, MapMode.WriteNoOverwrite, false, 0, sharedIndexBufferSize);
-                    var indexPointer = mappedIndices.DataBox.DataPointer;
-
-                    int indexStructSize = sizeof(short);
-                    int verticesPerQuad = 4;
-
-                    var k = 0;
-                    for (var i = 0; i < indexCount; k += verticesPerQuad)
-                    {
-                        *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 0);
-                        *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 1);
-                        *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 2);
-                        *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 0);
-                        *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 2);
-                        *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 3);
-                    }
-
-                    commandList.UnmapSubresource(mappedIndices);
-                }
-            }
-
             // Build the vertex buffer with particles data
-
-            if (sharedVertexBuffer == null || sharedVertexBufferSize == 0)
+            if (particleBufferContext.VertexBuffer == null || particleBufferContext.VertexBufferSize == 0)
                 return;
 
             var renderParticleNodeData = RenderData.GetData(renderParticleNodeKey);
 
-            var mappedVertices = commandList.MapSubresource(sharedVertexBuffer, 0, MapMode.WriteNoOverwrite, false, 0, sharedVertexBufferSize);
+            var mappedVertices = commandList.MapSubresource(particleBufferContext.VertexBuffer, 0, MapMode.WriteNoOverwrite, false, 0, particleBufferContext.VertexBufferSize);
             var sharedBufferPtr = mappedVertices.DataBox.DataPointer;
 
             //for (int renderNodeIndex = 0; renderNodeIndex < RenderNodes.Count; renderNodeIndex++)
@@ -361,8 +282,8 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                 if (nodeData.IndexCount <= 0)
                     return; // Nothing to draw, nothing to build
 
-                nodeData.VertexBuffer = sharedVertexBuffer;
-                nodeData.IndexBuffer = sharedIndexBuffer;
+                nodeData.VertexBuffer = particleBufferContext.VertexBuffer;
+                nodeData.IndexBuffer = particleBufferContext.IndexBuffer;
 
                 renderParticleNodeData[renderNodeReference] = nodeData;
 
@@ -434,15 +355,107 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
                 // Bind the buffers and draw
                 commandList.SetVertexBuffer(0, nodeData.VertexBuffer, nodeData.VertexBufferOffset, nodeData.VertexBufferStride);
-                commandList.SetIndexBuffer(nodeData.IndexBuffer, nodeData.IndexBufferOffset, sharedIndexStride != sizeof(short));
+                commandList.SetIndexBuffer(nodeData.IndexBuffer, nodeData.IndexBufferOffset, ParticleBufferContext.IndexStride != sizeof(short));
                 commandList.DrawIndexed(nodeData.IndexCount, 0);
             }
 
             // Release the temporary vertex buffer
-            if (sharedVertexBuffer != null)
+            particleBufferContext.ReleaseBuffers(context);
+        }
+
+        internal class ParticleBufferContext
+        {
+            public Buffer    VertexBuffer;
+            public int       VertexBufferSize;
+
+            public Buffer    IndexBuffer;
+            public int       IndexBufferSize;
+            public const int IndexStride = sizeof(short);
+
+            public unsafe void AllocateBuffers(RenderDrawContext renderDrawContext, int vertexBufferSize, int requiredIndexCount)
             {
-                context.GraphicsContext.Allocator.ReleaseReference(sharedVertexBuffer);
-                sharedVertexBuffer = null;
+                // Build the shared vertex buffer - every frame
+                if (vertexBufferSize > 0)
+                {
+                    {
+                        vertexBufferSize--;
+                        vertexBufferSize |= vertexBufferSize >> 1;
+                        vertexBufferSize |= vertexBufferSize >> 2;
+                        vertexBufferSize |= vertexBufferSize >> 3;
+                        vertexBufferSize |= vertexBufferSize >> 8;
+                        vertexBufferSize |= vertexBufferSize >> 16;
+                        vertexBufferSize++;
+                    }
+
+                    VertexBufferSize = vertexBufferSize;
+
+                    VertexBuffer = renderDrawContext.GraphicsContext.Allocator.GetTemporaryBuffer(
+                        new BufferDescription(VertexBufferSize, BufferFlags.VertexBuffer, GraphicsResourceUsage.Dynamic));
+                }
+
+                // Build the shared index buffer - only when necessary
+                var requiredIndexBufferSize = requiredIndexCount * IndexStride;
+                if (requiredIndexBufferSize > IndexBufferSize)
+                {
+                    if (IndexBuffer != null)
+                    {
+                        renderDrawContext.GraphicsContext.Allocator.ReleaseReference(IndexBuffer);
+                        IndexBuffer = null;
+                    }
+
+                    //  We start allocating from 64K (allowing 32K indices to be written at once - this is most probably going to be sufficient in all cases)
+                    IndexBufferSize = requiredIndexBufferSize;
+                    if (IndexBufferSize < 64 * 1024)
+                        IndexBufferSize = 64 * 1024;
+
+                    {
+                        IndexBufferSize--;
+                        IndexBufferSize |= IndexBufferSize >> 1;
+                        IndexBufferSize |= IndexBufferSize >> 2;
+                        IndexBufferSize |= IndexBufferSize >> 3;
+                        IndexBufferSize |= IndexBufferSize >> 8;
+                        IndexBufferSize |= IndexBufferSize >> 16;
+                        IndexBufferSize++;
+                    }
+
+                    IndexBuffer = renderDrawContext.GraphicsContext.Allocator.GetTemporaryBuffer(
+                        new BufferDescription(IndexBufferSize, BufferFlags.IndexBuffer, GraphicsResourceUsage.Dynamic));
+
+                    var indexCount = IndexBufferSize / IndexStride;
+                    indexCount = ((indexCount / 6) * 6);
+                    {
+                        var commandList = renderDrawContext.CommandList;
+
+                        var mappedIndices = commandList.MapSubresource(IndexBuffer, 0, MapMode.WriteNoOverwrite, false, 0, IndexBufferSize);
+                        var indexPointer = mappedIndices.DataBox.DataPointer;
+
+                        int indexStructSize = sizeof(short);
+                        int verticesPerQuad = 4;
+
+                        var k = 0;
+                        for (var i = 0; i < indexCount; k += verticesPerQuad)
+                        {
+                            *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 0);
+                            *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 1);
+                            *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 2);
+                            *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 0);
+                            *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 2);
+                            *(short*)(indexPointer + indexStructSize * i++) = (short)(k + 3);
+                        }
+
+                        commandList.UnmapSubresource(mappedIndices);
+                    }
+                }
+            }
+
+            public void ReleaseBuffers(RenderDrawContext renderDrawContext)
+            {
+                // Release the temporary vertex buffer
+                if (VertexBuffer != null)
+                {
+                    renderDrawContext.GraphicsContext.Allocator.ReleaseReference(VertexBuffer);
+                    VertexBuffer = null;
+                }
             }
         }
     }
