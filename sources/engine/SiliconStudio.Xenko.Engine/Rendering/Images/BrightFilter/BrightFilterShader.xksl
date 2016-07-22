@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <summary>
     /// A bright filter shader
     /// </summary>
-    internal class BrightFilterShader : ImageEffectShader
+    internal shader BrightFilterShader : ImageEffectShader
     {
         [Color]
         stage float3 ColorModulator;

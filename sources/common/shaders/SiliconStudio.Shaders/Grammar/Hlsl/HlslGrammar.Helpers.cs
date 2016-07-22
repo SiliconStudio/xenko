@@ -32,16 +32,6 @@ namespace SiliconStudio.Shaders.Grammar.Hlsl
             }
         }
 
-        private static T ParseEnumFromNode<T>(ParseTreeNode node) where T : struct, IConvertible
-        {
-            if (node.ChildNodes.Count != 1)
-            {
-                return (T)Enum.ToObject(typeof(T), 0);
-            }
-
-            return (T)Enum.Parse(typeof(T), node.ChildNodes[0].Token.Text, true);
-        }
-
         private NonTerminal CreateScalarTerminal<T>(T scalarType) where T : ScalarType, new()
         {
             return new NonTerminal(

@@ -63,9 +63,8 @@ namespace SiliconStudio.Shaders.Convertor
                 return false;
             return IsUniformReadWrite(variable);
         }
-        
-        [VisitorBase.VisitAttribute]
-        protected void Visit(VariableReferenceExpression variableRef)
+
+        public override Node Visit(VariableReferenceExpression variableRef)
         {
             var variable = GetUniform(variableRef);
 
@@ -74,6 +73,7 @@ namespace SiliconStudio.Shaders.Convertor
             {
                 uniformReadList.Add(variable);
             }
+            return variableRef;
         }
 
         private Variable GetUniform(Expression expression)
@@ -111,11 +111,11 @@ namespace SiliconStudio.Shaders.Convertor
 
         private int countReadBeforeInvoke;
 
-        protected override void Visit(MethodInvocationExpression methodInvocationExpression)
+        public override Node Visit(MethodInvocationExpression methodInvocationExpression)
         {
             // Save the number of variable in read-only mode
             countReadBeforeInvoke = uniformReadList.Count;
-            base.Visit(methodInvocationExpression);
+            return base.Visit(methodInvocationExpression);
         }
 
         protected override void ProcessMethodInvocation(MethodInvocationExpression invoke, MethodDefinition method)
@@ -128,7 +128,7 @@ namespace SiliconStudio.Shaders.Convertor
                 var arg = invoke.Arguments[i];
                 var variable = this.GetUniform(arg);
                 var parameter = method.Parameters[i];
-                if (variable != null && parameter.Qualifiers.Contains(Ast.Hlsl.ParameterQualifier.Out))
+                if (variable != null && parameter.Qualifiers.Contains(ParameterQualifier.Out))
                 {
                     bool isUniformWasAlreadyUsedAsRead = false;
                     for (int j = 0; j < countReadBeforeInvoke; j++)
@@ -154,8 +154,7 @@ namespace SiliconStudio.Shaders.Convertor
             this.VisitDynamic(method);
         }
 
-        [VisitorBase.VisitAttribute]
-        protected void Visit(AssignmentExpression assignmentExpression)
+        public override Node Visit(AssignmentExpression assignmentExpression)
         {
             var variable = GetUniform(assignmentExpression.Target);
             bool isMemberExpression = assignmentExpression.Target is MemberReferenceExpression;
@@ -202,6 +201,8 @@ namespace SiliconStudio.Shaders.Convertor
                         UniformReadWriteList.Add(variable);
                 }
             }
+
+            return assignmentExpression;
         }
     }
 }

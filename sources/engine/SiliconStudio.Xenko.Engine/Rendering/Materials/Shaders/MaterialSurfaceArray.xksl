@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 namespace SiliconStudio.Xenko.Rendering.Materials
 {
-    class MaterialSurfaceArray : IMaterialSurface
+    shader MaterialSurfaceArray : IMaterialSurface
     {
         compose IMaterialSurface layers[];
 

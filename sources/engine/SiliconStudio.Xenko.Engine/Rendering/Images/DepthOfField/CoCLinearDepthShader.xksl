@@ -8,7 +8,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// Expects as input:
     /// - Texture0: the raw depth-buffer used to render the original scene
     /// </summary>
-    class CoCLinearDepthShader : ImageEffectShader, Camera, CircleOfConfusion
+    shader CoCLinearDepthShader : ImageEffectShader, Camera, CircleOfConfusion
     {
 
         stage override float4 Shading()

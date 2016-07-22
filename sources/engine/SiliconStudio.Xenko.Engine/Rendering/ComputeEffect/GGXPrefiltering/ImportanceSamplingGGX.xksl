@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <summary>
     /// Importance sampling for the GGX function.
     /// </summary>
-    class ImportanceSamplingGGX : Math
+    shader ImportanceSamplingGGX : Math
     {    
         float3 GetSample(float2 xi, float roughness, float3 N)
         {

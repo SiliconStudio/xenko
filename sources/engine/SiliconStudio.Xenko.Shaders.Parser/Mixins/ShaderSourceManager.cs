@@ -140,6 +140,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                         }
 
                         // On Windows, Always try to load first from the original URL in order to get the latest version
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
                         if (Platform.IsWindowsDesktop)
                         {
                             // TODO: the "/path" is hardcoded, used in ImportStreamCommand and EffectSystem. Find a place to share this correctly.
@@ -168,6 +169,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                                 }
                             }
                         }
+#endif
 
                         if (shaderSource.Source == null)
                         {
@@ -253,6 +255,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 
         private bool FileExists(string path)
         {
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             if (UseFileSystem)
             {
                 var fileInfo = new FileInfo(path);
@@ -268,6 +271,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 }
             }
             else
+#endif
             {
                 return fileProvider.FileExists(path);
             }
@@ -276,9 +280,15 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 
         private Stream OpenStream(string path)
         {
-            return UseFileSystem ? File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read) : fileProvider.OpenStream(path, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read);
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+            if (UseFileSystem)
+                return File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read);
+#endif
+
+            return fileProvider.OpenStream(path, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read);
         }
 
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
         [DllImport("kernel32.dll", EntryPoint = "GetLongPathNameW", SetLastError = true, CharSet = CharSet.Unicode)]
         static extern uint GetLongPathName(string shortPath, StringBuilder sb, int buffer);
 
@@ -316,6 +326,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 
             return null;
         }
+#endif
 
         public struct ShaderSourceWithHash
         {

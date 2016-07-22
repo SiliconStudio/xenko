@@ -2,8 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 namespace SiliconStudio.Xenko.Rendering.Shadows
 {
-    // Spawn a sub-shader for the shadow map caster pass
-    partial shader ShadowMapCaster
+    // Spawn a sub-effect for the shadow map caster pass
+    partial effect ShadowMapCaster
     {
         mixin ShadowMapCasterBase;
     };

@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 
-using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Shaders.Ast.Xenko;
 using SiliconStudio.Xenko.Shaders.Parser.Utility;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
@@ -12,7 +12,7 @@ using SiliconStudio.Shaders.Visitor;
 
 namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
-    class ShaderDependencyVisitor : ShaderVisitor
+    class ShaderDependencyVisitor : ShaderWalker
     {
         public HashSet<Tuple<IdentifierGeneric, Node>> FoundIdentifiers = new HashSet<Tuple<IdentifierGeneric, Node>>();
 
@@ -41,45 +41,45 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             Visit(shaderClassType);
         }
 
-        [Visit]
-        private void Visit(IdentifierGeneric identifier)
+        public override void Visit(IdentifierGeneric identifier)
         {
-            Visit((Node)identifier);
+            base.Visit(identifier);
 
             FoundIdentifiers.Add(Tuple.Create(identifier, ParentNode));
         }
 
-        [Visit]
-        private void Visit(VariableReferenceExpression variableReferenceExpression)
+        public override void Visit(VariableReferenceExpression variableReferenceExpression)
         {
-            Visit((Node)variableReferenceExpression);
+            base.Visit(variableReferenceExpression);
 
             if (sourceManager.IsClassExists(variableReferenceExpression.Name.Text))
                 FoundClasses.Add(variableReferenceExpression.Name.Text);
         }
 
-        [Visit]
-        private void Visit(MemberReferenceExpression memberReferenceExpression)
+        public override void Visit(MemberReferenceExpression memberReferenceExpression)
         {
-            Visit((Node)memberReferenceExpression);
+            base.Visit(memberReferenceExpression);
 
             if (sourceManager.IsClassExists(memberReferenceExpression.Member.Text))
                 FoundClasses.Add(memberReferenceExpression.Member.Text);
         }
 
-        [Visit]
-        private void Visit(TypeBase typeBase)
+        public override void DefaultVisit(Node node)
         {
-            Visit((Node)typeBase);
+            base.DefaultVisit(node);
 
-            if (sourceManager.IsClassExists(typeBase.Name.Text))
+            var typeBase = node as TypeBase;
+            if (typeBase != null)
             {
-                FoundClasses.Add(typeBase.Name.Text);
-            }
-            else if (typeBase is ShaderTypeName)
-            {
-                // Special case for ShaderTypeName as we must generate an error if it is not found
-                log.Error(XenkoMessageCode.ErrorClassNotFound, typeBase.Span, typeBase.Name.Text);
+                if (sourceManager.IsClassExists(typeBase.Name.Text))
+                {
+                    FoundClasses.Add(typeBase.Name.Text);
+                }
+                else if (typeBase is ShaderTypeName)
+                {
+                    // Special case for ShaderTypeName as we must generate an error if it is not found
+                    log.Error(XenkoMessageCode.ErrorClassNotFound, typeBase.Span, typeBase.Name.Text);
+                }
             }
         }
     }

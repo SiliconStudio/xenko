@@ -3,7 +3,7 @@
 #ifndef FXAA_QUALITY__PRESET
 #define FXAA_QUALITY__PRESET 15
 #endif
-class FXAAShader : ImageEffectShader
+shader FXAAShader : ImageEffectShader
 {
 
 /*============================================================================

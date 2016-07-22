@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     /// <summary>
     /// A technique pass.
     /// </summary>
-    public class Pass : Node, IAttributes
+    public partial class Pass : Node, IAttributes
     {
         #region Constructors and Destructors
 

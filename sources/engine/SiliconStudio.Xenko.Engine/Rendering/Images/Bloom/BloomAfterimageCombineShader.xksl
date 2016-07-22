@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// - Texture0: current brightness
     /// - Texture1: persistence brightness
     /// </summary>
-    internal class BloomAfterimageCombineShader : ImageEffectShader
+    internal shader BloomAfterimageCombineShader : ImageEffectShader
     {
 
         stage override float4 Shading()

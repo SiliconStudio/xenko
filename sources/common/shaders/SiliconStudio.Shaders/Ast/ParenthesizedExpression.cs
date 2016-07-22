@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// An expression surrounded by parenthesis.
     /// </summary>
-    public class ParenthesizedExpression : Expression
+    public partial class ParenthesizedExpression : Expression
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ParenthesizedExpression"/> class.

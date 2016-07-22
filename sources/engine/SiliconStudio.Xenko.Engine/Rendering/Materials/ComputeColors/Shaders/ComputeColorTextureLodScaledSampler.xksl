@@ -9,7 +9,7 @@
 /// TScale: generic float2 - the scaling factor of the texture coordinates.
 /// TSampler: generic SamplerState - the custom sampler.
 /// </remarks>
-class ComputeColorTextureLodScaledSampler<LinkType TTextureName, 
+shader ComputeColorTextureLodScaledSampler<LinkType TTextureName, 
                                        Semantic TStream, 
                                        LinkType TSampler, 
                                        MemberName TRgba, 

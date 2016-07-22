@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// An assigment expression
     /// </summary>
-    public class AssignmentExpression : Expression
+    public partial class AssignmentExpression : Expression
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AssignmentExpression"/> class.
