@@ -295,9 +295,9 @@ namespace SiliconStudio.Core.IO
                 return;
 
 #if SILICONSTUDIO_PLATFORM_ANDROID
-            // Android does not support large file and thus are limited to files
-            // whose sizes are less than 2GB. Substract the offset to not go beyond
-            // the 2GB limit.
+            // Android does not support large file and thus is limited to files
+            // whose sizes are less than 2GB.
+            // We substract the offset to not go beyond the 2GB limit.
             count =  (count + offset > int.MaxValue) ? int.MaxValue - offset: count;
 #endif
 
