@@ -48,6 +48,9 @@
 // This option is useless on Little_Endian CPU (such as x86)
 //#define BIG_ENDIAN_NATIVE_BUT_INCOMPATIBLE 1
 
+#include "../../../../../deps/NativePath/standard/stdlib.h"
+#include "../../../../../deps/NativePath/standard/string.h"
+
 //**************************************
 // CPU Feature Detection
 //**************************************
@@ -124,8 +127,7 @@
 //**************************************
 // Includes
 //**************************************
-#include "../../../../../deps/NativePath/standard/stdlib.h"
-#include "../../../../../deps/NativePath/standard/string.h"
+
 #include "lz4.h"
 
 
