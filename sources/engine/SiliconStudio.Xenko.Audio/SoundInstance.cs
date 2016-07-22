@@ -229,20 +229,19 @@ namespace SiliconStudio.Xenko.Audio
         }
 
         /// <summary>
-        /// Play or resume the sound effect instance, stopping sibling instances.
+        /// Play or resume the sound effect instance.
         /// </summary>
         public void Play()
         {
-            Play(true);
+            Play(false); //this is the same behavior in AudioEmitterProcessor and Controllers
         }
 
         /// <summary>
-        /// Play or resume the sound effect instance, specifying explicitly how to deal with sibling instances.
+        /// Play or resume the sound effect instance, stopping sibling instances.
         /// </summary>
-        /// <param name="stopSiblingInstances">Indicate if sibling instances (instances coming from the same <see cref="Sound"/>) currently playing should be stopped or not.</param>
-        public void Play(bool stopSiblingInstances)
+        public void PlayExclusive()
         {
-            PlayExtended(stopSiblingInstances);
+            Play(true);
         }
 
         /// <summary>
@@ -301,7 +300,7 @@ namespace SiliconStudio.Xenko.Audio
             }            
         }
 
-        protected void PlayExtended(bool stopSiblingInstances)
+        protected void Play(bool stopSiblingInstances)
         {
             if (engine.State == AudioEngineState.Invalidated || engine.State == AudioEngineState.Paused)
                 return;
