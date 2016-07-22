@@ -941,6 +941,11 @@ namespace SiliconStudio.Xenko.Graphics
             //boundProgram = 0;
         }
 
+        internal void TagResource(GraphicsResourceLink resourceLink)
+        {
+            resourceLink.Resource.DiscardNextMap = true;
+        }
+
         internal void InitDefaultRenderTarget(PresentationParameters presentationParameters)
         {
 #if DEBUG

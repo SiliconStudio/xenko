@@ -844,6 +844,11 @@ namespace SiliconStudio.Xenko.Graphics
             GraphicsDevice.EnsureContextActive();
 #endif
 
+            // This resource has just been recycled by the GraphicsResourceAllocator, we force a rename to avoid GPU=>GPU sync point
+            if (resource.DiscardNextMap && mapMode == MapMode.WriteNoOverwrite)
+                mapMode = MapMode.WriteDiscard;
+
+
             var buffer = resource as Buffer;
             if (buffer != null)
             {
