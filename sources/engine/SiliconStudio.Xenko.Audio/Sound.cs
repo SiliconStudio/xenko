@@ -99,6 +99,8 @@ namespace SiliconStudio.Xenko.Audio
             return newInstance;
         }
 
+        public TimeSpan TotalLength => TimeSpan.FromSeconds(((double)NumberOfPackets * (double)CompressedSoundSource.SamplesPerFrame) / (double)SampleRate);
+
         internal void Attach(AudioEngine engine)
         {
             AttachEngine(engine);

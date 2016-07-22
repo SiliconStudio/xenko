@@ -1393,6 +1393,7 @@ extern "C" {
 			X3DAUDIO_DSP_SETTINGS* dsp_settings_;
 			xnAudioListener* listener_;
 			volatile bool playing_;
+			volatile bool pause_;
 			volatile bool looped_;
 			int sampleRate_;
 			bool mono_;
@@ -1470,7 +1471,7 @@ extern "C" {
 			pcmWaveFormat.nSamplesPerSec = sampleRate;
 			pcmWaveFormat.nAvgBytesPerSec = sampleRate * pcmWaveFormat.nChannels * sizeof(short);
 			pcmWaveFormat.wBitsPerSample = 16;
-			pcmWaveFormat.nBlockAlign = pcmWaveFormat.nChannels*pcmWaveFormat.wBitsPerSample / 8;
+			pcmWaveFormat.nBlockAlign = pcmWaveFormat.nChannels * pcmWaveFormat.wBitsPerSample / 8;
 
 			if(xnAudioWindows7Hacks)
 			{
@@ -1561,14 +1562,27 @@ extern "C" {
 
 		void xnAudioSourcePlay(xnAudioSource* source)
 		{
-			if (!source->streamed_)
-			{
-				xnAudioBuffer* singleBuffer = source->freeBuffers_[0];
-				source->source_voice_->SubmitSourceBuffer(&singleBuffer->buffer_, NULL);
-			}
-
 			source->source_voice_->Start();
 			source->playing_ = true;
+
+
+			if(!source->streamed_ && !source->pause_)
+			{
+				XAUDIO2_VOICE_STATE state;
+				if (xnAudioWindows7Hacks)
+				{
+					auto win7Voice = reinterpret_cast<IXAudio2SourceVoice1*>(source->source_voice_);
+					win7Voice->GetState(&state);
+				}
+				else
+				{
+					source->source_voice_->GetState(&state, 0);
+				}
+
+				source->samplesAtBegin = state.SamplesPlayed;
+			}
+
+			source->pause_ = false;
 		}
 
 		void xnAudioSourceSetPan(xnAudioSource* source, float pan)
@@ -1624,10 +1638,11 @@ extern "C" {
 
 			if (!source->streamed_)
 			{
-				//note we are ignoring mono/channels because it will be homogeneous
-				auto elapsed = double(state.SamplesPlayed) / double(source->sampleRate_);
+				auto elapsed = double(state.SamplesPlayed - source->samplesAtBegin) / double(source->sampleRate_);
 				auto singleBuffer = source->freeBuffers_[0];
-				auto length = singleBuffer->buffer_.PlayLength == 0 ? double(singleBuffer->length_) / double(source->sampleRate_) : double(singleBuffer->buffer_.PlayLength) / double(source->sampleRate_);
+				auto length = singleBuffer->buffer_.PlayLength == 0 ? 
+					double(singleBuffer->length_) / double(source->sampleRate_) : 
+					double(singleBuffer->buffer_.PlayLength) / double(source->sampleRate_);
 				auto position = elapsed / length;
 				auto repeats = floor(position);
 				position = (position - repeats) * length;
@@ -1652,13 +1667,13 @@ extern "C" {
 				{
 					singleBuffer->buffer_.PlayBegin = 0;
 					singleBuffer->buffer_.LoopBegin = 0;
-					singleBuffer->buffer_.PlayLength = 0;
-					singleBuffer->buffer_.LoopLength = 0;
+					singleBuffer->buffer_.PlayLength = singleBuffer->length_;
+					singleBuffer->buffer_.LoopLength = singleBuffer->length_;
 				}
 				else
 				{					
-					auto sampleStart = int(double(source->sampleRate_) * (source->mono_ ? 1.0 : 2.0) * startTime);
-					auto sampleStop = int(double(source->sampleRate_) * (source->mono_ ? 1.0 : 2.0) * stopTime);
+					auto sampleStart = int(double(source->sampleRate_) * startTime);
+					auto sampleStop = int(double(source->sampleRate_) * stopTime);
 
 					if (sampleStart > singleBuffer->length_)
 					{
@@ -1679,6 +1694,9 @@ extern "C" {
 						singleBuffer->buffer_.LoopLength = len;
 					}
 				}
+				source->source_voice_->Stop();
+				source->source_voice_->FlushSourceBuffers();
+				source->source_voice_->SubmitSourceBuffer(&singleBuffer->buffer_, NULL);
 			}
 		}
 
@@ -1764,6 +1782,7 @@ extern "C" {
 		{
 			source->source_voice_->Stop();
 			source->playing_ = false;
+			source->pause_ = true;
 		}
 
 		XMFLOAT3::XMFLOAT3(): x(0), y(0), z(0)
@@ -1791,6 +1810,14 @@ extern "C" {
 			source->source_voice_->Stop();
 			source->source_voice_->FlushSourceBuffers();
 			source->playing_ = false;
+			source->pause_ = false;
+
+			//since we flush we also rebuffer in this case
+			if (!source->streamed_)
+			{
+				xnAudioBuffer* singleBuffer = source->freeBuffers_[0];
+				source->source_voice_->SubmitSourceBuffer(&singleBuffer->buffer_, NULL);
+			}
 		}
 
 		void xnAudioListenerPush3D(xnAudioListener* listener, float* pos, float* forward, float* up, float* vel)
@@ -1850,12 +1877,11 @@ extern "C" {
 		void xnAudioBufferFill(xnAudioBuffer* buffer, short* pcm, int bufferSize, int sampleRate, npBool mono)
 		{
 			(void)sampleRate;
-			(void)mono;
 			
 			buffer->buffer_.AudioBytes = bufferSize;
 			
 			buffer->buffer_.LoopBegin = buffer->buffer_.PlayBegin = 0;
-			buffer->buffer_.LoopLength = buffer->buffer_.PlayLength = buffer->length_ = bufferSize / sizeof(short);
+			buffer->buffer_.LoopLength = buffer->buffer_.PlayLength = buffer->length_ = (bufferSize / sizeof(short)) / (mono ? 1 : 2);
 			
 			memcpy(const_cast<char*>(buffer->buffer_.pAudioData), pcm, bufferSize);
 		}

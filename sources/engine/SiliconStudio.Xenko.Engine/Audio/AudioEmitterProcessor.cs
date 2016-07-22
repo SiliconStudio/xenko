@@ -179,7 +179,7 @@ namespace SiliconStudio.Xenko.Audio
                         //Play if stopped
                         if (instanceListener.Key.PlayState != SoundPlayState.Playing && controller.ShouldBePlayed)
                         {
-                            instanceListener.Key.Play(false);
+                            instanceListener.Key.Play();
                             associatedData.IsPlaying = true;
                         }
                     }
@@ -213,7 +213,7 @@ namespace SiliconStudio.Xenko.Audio
 
                             controller.FastInstances.Add(instance);
                             instance.Apply3D(emitter);
-                            instance.Play(false);
+                            instance.Play();
                         }
                         controller.FastInstancePlay = false;
                     }

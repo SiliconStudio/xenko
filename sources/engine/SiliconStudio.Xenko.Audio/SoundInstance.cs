@@ -340,7 +340,7 @@ namespace SiliconStudio.Xenko.Audio
                 if (engine.State == AudioEngineState.Invalidated)
                     return SoundPlayState.Stopped;
 
-                if (playState == SoundPlayState.Playing && soundSource == null ? !AudioLayer.SourceIsPlaying(Source) : !soundSource.IsPlaying)
+                if (playState == SoundPlayState.Playing && (!soundSource?.IsPlaying ?? !AudioLayer.SourceIsPlaying(Source)))
                 {
                     Stop();
                 }
@@ -385,6 +385,7 @@ namespace SiliconStudio.Xenko.Audio
         {
             get
             {
+                //if(PlayState == SoundPlayState.Stopped) return TimeSpan.Zero;
                 var position = AudioLayer.SourceGetPosition(Source);
                 return TimeSpan.FromSeconds(position);
             }
