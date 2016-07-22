@@ -82,6 +82,8 @@ namespace SiliconStudio.Xenko.Rendering.Composers
                     // Reset render context data
                     RenderSystem.Reset();
                 }
+
+                context.RenderContext.Reset();
             }
         }
     }

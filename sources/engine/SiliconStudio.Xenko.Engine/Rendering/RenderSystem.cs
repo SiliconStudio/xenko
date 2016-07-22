@@ -21,6 +21,8 @@ namespace SiliconStudio.Xenko.Rendering
         [Obsolete("This field is provisional and will be replaced by a proper mechanisms in the future")]
         public readonly List<Func<RenderView, RenderObject, bool>> ViewObjectFilters = new List<Func<RenderView, RenderObject, bool>>();
 
+        private readonly ThreadLocal<ExtractThreadContext> extractThreadContext = new ThreadLocal<ExtractThreadContext>(() => new ExtractThreadContext());
+
         private readonly Dictionary<Type, RootRenderFeature> renderFeaturesByType = new Dictionary<Type, RootRenderFeature>();
         private readonly HashSet<Type> renderObjectsDefaultPipelinePlugins = new HashSet<Type>();
         private IServiceRegistry registry;
@@ -122,11 +124,8 @@ namespace SiliconStudio.Xenko.Rendering
                 //view.RenderObjects.Sort(RenderObjectFeatureComparer.Default);
                 Dispatcher.Sort(view.RenderObjects, RenderObjectFeatureComparer.Default);
 
-                //foreach (var renderObject in view.RenderObjects)
-                //Dispatcher.For(0, view.RenderObjects.Count, index =>
-                for (int index = 0; index < view.RenderObjects.Count; index++)
+                Dispatcher.ForEach(view.RenderObjects, () => extractThreadContext.Value, (renderObject, batch) =>
                 {
-                    var renderObject = view.RenderObjects[index];
                     var renderFeature = renderObject.RenderFeature;
                     var viewFeature = view.Features[renderFeature.Index];
 
@@ -135,7 +134,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                     // Let's create the view object node
                     var renderViewNode = renderFeature.CreateViewObjectNode(view, renderObject);
-                    viewFeature.ViewObjectNodes.Add(renderViewNode);
+                    viewFeature.ViewObjectNodes.Add(renderViewNode, batch.ViewFeatureObjectNodeCache);
                     
                     // Collect object
                     // TODO: Check which stage it belongs to (and skip everything if it doesn't belong to any stage)
@@ -151,12 +150,12 @@ namespace SiliconStudio.Xenko.Rendering
                         var renderNode = renderFeature.CreateRenderNode(renderObject, view, renderViewNode, renderViewStage.RenderStage);
 
                         // Note: Used mostly during updating
-                        viewFeature.RenderNodes.Add(renderNode);
+                        viewFeature.RenderNodes.Add(renderNode, batch.ViewFeatureRenderNodeCache);
 
                         // Note: Used mostly during rendering
-                        renderViewStage.RenderNodes.Add(new RenderNodeFeatureReference(renderFeature, renderNode, renderObject));
+                        renderViewStage.RenderNodes.Add(new RenderNodeFeatureReference(renderFeature, renderNode, renderObject), batch.ViewStageRenderNodeCache);
                     }
-                }//);
+                }, batch => batch.Flush());
 
                 // Also sort view|stage per render feature
                 foreach (var renderViewStage in view.RenderStages)
@@ -304,9 +303,8 @@ namespace SiliconStudio.Xenko.Rendering
             var commandLists = new CompiledCommandList[batchCount + 1];
             commandLists[0] = renderDrawContext.CommandList.Close2();
 
-            Dispatcher.For(0, batchCount, batchIndex =>
+            Dispatcher.For(0, batchCount, () => renderDrawContext.RenderContext.GetThreadContext(), (batchIndex, threadContext) =>
             {
-                var threadContext = renderDrawContext.RenderContext.GetThreadContext();
                 threadContext.CommandList.Reset();
                 threadContext.CommandList.ClearState();
 
@@ -525,6 +523,20 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             return false;
+        }
+
+        private class ExtractThreadContext
+        {
+            public readonly ConcurrentCollectorCache<ViewObjectNodeReference> ViewFeatureObjectNodeCache = new ConcurrentCollectorCache<ViewObjectNodeReference>(16);
+            public readonly ConcurrentCollectorCache<RenderNodeReference> ViewFeatureRenderNodeCache = new ConcurrentCollectorCache<RenderNodeReference>(16);
+            public readonly ConcurrentCollectorCache<RenderNodeFeatureReference> ViewStageRenderNodeCache = new ConcurrentCollectorCache<RenderNodeFeatureReference>(16);
+
+            public void Flush()
+            {
+                ViewFeatureObjectNodeCache.Flush();
+                ViewFeatureRenderNodeCache.Flush();
+                ViewStageRenderNodeCache.Flush();
+            }
         }
 
         private class RenderNodeFeatureReferenceComparer : IComparer<RenderNodeFeatureReference>

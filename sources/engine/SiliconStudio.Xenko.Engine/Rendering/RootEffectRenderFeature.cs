@@ -23,7 +23,19 @@ namespace SiliconStudio.Xenko.Rendering
         private static CompilerParameters staticCompilerParameters;
 
         // Helper class to build pipeline state
-        protected ThreadLocal<MutablePipelineState> MutablePipeline;
+        private ThreadLocal<PrepareThreadContext> prepareThreadContext;
+
+        private class PrepareThreadContext
+        {
+            public readonly MutablePipelineState MutablePipelineState;
+            public readonly RenderDrawContext Context;
+
+            public PrepareThreadContext(RenderContext renderContext)
+            {
+                MutablePipelineState = new MutablePipelineState(renderContext.GraphicsDevice);
+                Context = renderContext.GetThreadContext();
+            }
+        }
 
         private readonly List<string> effectDescriptorSetSlots = new List<string>();
         private readonly Dictionary<string, int> effectPermutationSlots = new Dictionary<string, int>();
@@ -89,7 +101,7 @@ namespace SiliconStudio.Xenko.Rendering
         {
             base.InitializeCore();
 
-            MutablePipeline = new ThreadLocal<MutablePipelineState>(() => new MutablePipelineState(Context.GraphicsDevice));
+            prepareThreadContext = new ThreadLocal<PrepareThreadContext>(() => new PrepareThreadContext(Context));
 
             // Create RenderEffectKey
             RenderEffectKey = RenderData.CreateStaticObjectKey<RenderEffect>(null, EffectPermutationSlotCount);
@@ -353,7 +365,6 @@ namespace SiliconStudio.Xenko.Rendering
             foreach (var view in RenderSystem.Views)
             {
                 var viewFeature = view.Features[Index];
-                //foreach (var renderNodeReference in viewFeature.RenderNodes)
                 Dispatcher.ForEach(viewFeature.RenderNodes, renderNodeReference =>
                 {
                     var renderNode = this.GetRenderNode(renderNodeReference);
@@ -386,8 +397,10 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Step2: Compile effects
             //foreach (var renderObject in RenderObjects)
+            //Dispatcher.For(0, RenderObjects.Count, index =>
             Dispatcher.ForEach(RenderObjects, renderObject =>
             {
+                //var renderObject = RenderObjects[index];
                 var staticObjectNode = renderObject.StaticObjectNode;
 
                 for (int i = 0; i < effectSlotCount; ++i)
@@ -595,11 +608,10 @@ namespace SiliconStudio.Xenko.Rendering
             foreach (var view in RenderSystem.Views)
             {
                 var viewFeature = view.Features[Index];
-                foreach (var renderNodeReference in viewFeature.RenderNodes)
-                //Dispatcher.ForEach(viewFeature.RenderNodes, renderNodeReference =>
+                //foreach (var renderNodeReference in viewFeature.RenderNodes)
+                Dispatcher.ForEach(viewFeature.RenderNodes, () => prepareThreadContext.Value, (renderNodeReference, batch) =>
                 {
-                    var threadContext = context;//Context.GetThreadContext();
-
+                    var threadContext = batch.Context;
                     var renderNode = this.GetRenderNode(renderNodeReference);
                     var renderObject = renderNode.RenderObject;
 
@@ -615,7 +627,7 @@ namespace SiliconStudio.Xenko.Rendering
                         renderNode.EffectObjectNode = EffectObjectNodeReference.Invalid;
                         renderNode.Resources = null;
                         RenderNodes[renderNodeReference.Index] = renderNode;
-                        continue;
+                        return;
                     }
 
                     var renderEffectReflection = renderEffect.Reflection;
@@ -675,12 +687,15 @@ namespace SiliconStudio.Xenko.Rendering
                         threadContext.ResourceGroupAllocator.PrepareResourceGroup(renderEffectReflection.PerDrawLayout, BufferPoolAllocationType.UsedOnce, renderNode.Resources);
                     }
 
+                    // Create EffectObjectNode
+                    var effectObjectNodeIndex = EffectObjectNodes.Add(new EffectObjectNode(renderEffect, viewObjectNode.ObjectNode));
+
                     // Link to EffectObjectNode (created right after)
                     // TODO: rewrite this
-                    renderNode.EffectObjectNode = new EffectObjectNodeReference(EffectObjectNodes.Count);
+                    renderNode.EffectObjectNode = new EffectObjectNodeReference(effectObjectNodeIndex);
 
                     renderNode.RenderEffect = renderEffect;
-
+                    
                     // Bind well-known descriptor sets
                     var descriptorSetPoolOffset = ComputeResourceGroupOffset(renderNodeReference);
                     ResourceGroupPool[descriptorSetPoolOffset + perFrameDescriptorSetSlot.Index] = frameLayout?.Entry.Resources;
@@ -709,7 +724,7 @@ namespace SiliconStudio.Xenko.Rendering
                     // TODO GRAPHICS REFACTOR how to invalidate if we want to change some state? (setting to null should be fine)
                     if (renderEffect.PipelineState == null)
                     {
-                        var mutablePipelineState = MutablePipeline.Value;
+                        var mutablePipelineState = batch.MutablePipelineState;
                         var pipelineState = mutablePipelineState.State;
                         pipelineState.SetDefaults();
 
@@ -731,10 +746,7 @@ namespace SiliconStudio.Xenko.Rendering
                     }
 
                     RenderNodes[renderNodeReference.Index] = renderNode;
-
-                    // Create EffectObjectNode
-                    EffectObjectNodes.Add(new EffectObjectNode(renderEffect, viewObjectNode.ObjectNode));
-                }//);
+                });
             }
         }
 

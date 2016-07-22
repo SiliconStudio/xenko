@@ -30,9 +30,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void Reset()
         {
+            Array.Clear(Entries, 0, descriptorAllocationOffset);
             descriptorAllocationOffset = 0;
-
-            Array.Clear(Entries, 0, Entries.Length);
         }
 
         internal int Allocate(int size)

@@ -395,10 +395,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 }
 
                 // PerDraw
-                var drawParameters = renderViewData.DrawParameters.Value;
-
                 //foreach (var renderNodeReference in viewFeature.RenderNodes)
-                Dispatcher.ForEach(viewFeature.RenderNodes, renderNodeReference =>
+                Dispatcher.ForEach(viewFeature.RenderNodes, () => renderViewData.DrawParameters.Value, (renderNodeReference, drawParameters) =>
                 {
                     var renderNode = RootRenderFeature.GetRenderNode(renderNodeReference);
 
