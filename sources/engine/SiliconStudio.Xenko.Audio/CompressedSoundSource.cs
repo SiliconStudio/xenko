@@ -21,6 +21,7 @@ namespace SiliconStudio.Xenko.Audio
         private Stream compressedSoundStream;
         private BinarySerializationReader reader;
         private volatile bool looped;
+        private volatile bool playing;
         private readonly int numberOfPackets;
         private int currentPacketIndex;
         private int startingPacketIndex;
@@ -192,7 +193,8 @@ namespace SiliconStudio.Xenko.Audio
                                         SourcePlay(source);
                                     }
                                     source.Playing = true;
-                                    source.Paused = false;                                   
+                                    source.Paused = false;
+                                    source.PlayingQueued = false;                             
                                     break;
                                 case AsyncCommand.Pause:
                                     source.Paused = true;

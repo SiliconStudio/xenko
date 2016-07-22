@@ -42,6 +42,7 @@ namespace SiliconStudio.Xenko.Audio
         protected bool Disposed = false;
         protected bool Playing = false;
         protected bool Paused = false;
+        protected volatile bool PlayingQueued = false;
 
         /// <summary>
         /// Sub classes can implement their own streaming sources
@@ -131,6 +132,7 @@ namespace SiliconStudio.Xenko.Audio
 
         public void Play()
         {
+            PlayingQueued = true;
             Commands.Enqueue(AsyncCommand.Play);
         }
 
@@ -143,6 +145,8 @@ namespace SiliconStudio.Xenko.Audio
         {
             Commands.Enqueue(AsyncCommand.Stop);
         }
+
+        public bool IsPlaying => PlayingQueued || Playing;
 
         /// <summary>
         /// Sets the region of time to play from the sample
