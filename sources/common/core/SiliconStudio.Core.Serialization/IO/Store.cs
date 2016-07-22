@@ -289,10 +289,17 @@ namespace SiliconStudio.Core.IO
 
         private void LockFile(long offset, long count, bool exclusive)
         {
-#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
+#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
             var fileStream = stream as FileStream;
             if (fileStream == null)
                 return;
+
+#if SILICONSTUDIO_PLATFORM_ANDROID
+            // Android does not support large file and thus are limited to files
+            // whose sizes are less than 2GB. Substract the offset to not go beyond
+            // the 2GB limit.
+            count =  (count + offset > int.MaxValue) ? int.MaxValue - offset: count;
+#endif
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             var countLow = (uint)count;
@@ -333,10 +340,15 @@ namespace SiliconStudio.Core.IO
 
         private void UnlockFile(long offset, long count)
         {
-#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
+#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
             var fileStream = stream as FileStream;
             if (fileStream == null)
                 return;
+
+#if SILICONSTUDIO_PLATFORM_ANDROID
+            // See comment on `LockFile`.
+            count =  (count + offset > int.MaxValue) ? int.MaxValue - offset: count;
+#endif
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             var countLow = (uint)count;
