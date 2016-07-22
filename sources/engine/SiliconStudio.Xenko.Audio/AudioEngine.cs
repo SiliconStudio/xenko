@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Audio
         {
             if (!Native.AudioLayer.Init())
             {
-                throw new Exception("Failed to initialize the OpenAL native layer.");
+                throw new Exception("Failed to initialize the audio native layer.");
             }
         }
 
