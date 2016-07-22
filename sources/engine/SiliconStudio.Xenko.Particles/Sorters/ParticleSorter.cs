@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Particles.Sorters
         ParticleFieldAccessor<T> GetField<T>(ParticleFieldDescription<T> fieldDesc) where T : struct;
     }
 
-    struct SortedParticle : IComparable
+    public struct SortedParticle : IComparable
     {
         public readonly Particle Particle;
         public readonly float SortIndex;         // TODO Maybe use a Int32 key rather than float?
