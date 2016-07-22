@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Engine
     [DataContract("AudioEmitterComponent")]
     [DefaultEntityComponentProcessor(typeof(AudioEmitterProcessor), ExecutionMode = ExecutionMode.Runtime)]
     [ComponentOrder(7000)]
-    public sealed class AudioEmitterComponent : EntityComponent
+    public sealed class AudioEmitterComponent : ActivableEntityComponent
     {
         /// <summary>
         /// Dictionary associating each Sound to a single soundController.
@@ -211,12 +211,6 @@ namespace SiliconStudio.Xenko.Engine
                 DetachSound(sound);
             }
         }
-
-        /// <summary>
-        /// Boolean indicating to the <see cref="AudioEmitterProcessor"/> if the AudioEmitterComponent need to be processed or can be skipped.
-        /// </summary>
-        [DataMemberIgnore]
-        internal bool ShouldBeProcessed { get; set; }
         
         [DataMember(10)]
         public TrackingDictionary<string, Sound> Sounds = new TrackingDictionary<string, Sound>();

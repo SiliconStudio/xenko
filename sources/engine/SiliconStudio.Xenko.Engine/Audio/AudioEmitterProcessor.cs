@@ -1,8 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Threading;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
@@ -46,6 +48,11 @@ namespace SiliconStudio.Xenko.Audio
             /// The <see cref="TransformComponent"/> associated to the entity
             /// </summary>
             public TransformComponent TransformComponent;
+
+            /// <summary>
+            /// If this emitter has some instances playing
+            /// </summary>
+            public bool IsPlaying;
         }
 
         /// <summary>
@@ -105,7 +112,7 @@ namespace SiliconStudio.Xenko.Audio
             {
                 foreach (var soundController in data.AudioEmitterComponent.SoundToController.Values)
                 {
-                    soundController.CreateSoundInstance(listener);
+                    soundController.CreateSoundInstance(listener, false);
                 }
             }
 
@@ -120,16 +127,26 @@ namespace SiliconStudio.Xenko.Audio
 
             foreach (var associatedData in ComponentDatas.Values)
             {
+                if(!associatedData.AudioEmitterComponent.Enabled)
+                {
+                    if (associatedData.IsPlaying)
+                    {
+                        //stop any running instance
+                        associatedData.IsPlaying = false;
+                        foreach (var controller in associatedData.AudioEmitterComponent.SoundToController.Values)
+                        {
+                            foreach (var instanceListener in controller.InstanceToListener)
+                            {
+                                instanceListener.Key.Stop();
+                            }
+                        }
+                    }
+                    continue;
+                }
+
                 var emitter = associatedData.AudioEmitter;
                 var worldMatrix = associatedData.TransformComponent.WorldMatrix;
                 var pos = worldMatrix.TranslationVector;
-
-                if (!associatedData.AudioEmitterComponent.ShouldBeProcessed)
-                {   
-                    // to be sure to have a valid velocity at any time we are forced to affect position even if Component need not to be processed.
-                    emitter.Position = pos;
-                    continue;
-                }
 
                 // First update the emitter data if required.
                 emitter.Velocity = pos - emitter.Position;
@@ -138,48 +155,69 @@ namespace SiliconStudio.Xenko.Audio
                 emitter.Up = Vector3.Normalize((Vector3)worldMatrix.Row2);
 
                 // Then apply 3D localization
-                var performedAtLeastOneApply = false;
                 foreach (var controller in associatedData.AudioEmitterComponent.SoundToController.Values)
                 {
-                    foreach (var listenerComponent in audioSystem.Listeners.Keys)
+                    //deal normal instances
+                    foreach (var instanceListener in controller.InstanceToListener)
                     {
-                        //todo this will be improved when we make Sound behave more like Animations
-                        SoundInstance instance = null;
-                        foreach (var v in controller.InstanceToListener)
+                        if (!instanceListener.Value.Enabled)
                         {
-                            if (v.Value != listenerComponent) continue;
-                            instance = v.Key;
-                            break;
-                        }
-
-                        if(instance == null) continue;
-
-                        if (!listenerComponent.Enabled)
-                        {
-                            instance.Stop();
+                            instanceListener.Key.Stop();
                             continue;
                         }
-                        
+
                         // Apply3D localization
-                        if (instance.PlayState == SoundPlayState.Playing || controller.ShouldBePlayed)
+                        if (instanceListener.Key.PlayState == SoundPlayState.Playing || controller.ShouldBePlayed)
                         {
-                            instance.Apply3D(emitter);
-                            performedAtLeastOneApply = true;
+                            instanceListener.Key.Apply3D(emitter);
                         }
 
                         //Apply parameters
-                        if (instance.Volume != controller.Volume) instance.Volume = controller.Volume; // ensure that instance volume is valid
-                        if (instance.IsLooped != controller.IsLooped) instance.IsLooped = controller.IsLooped;
+                        if (instanceListener.Key.Volume != controller.Volume) instanceListener.Key.Volume = controller.Volume; // ensure that instance volume is valid
+                        if (instanceListener.Key.IsLooped != controller.IsLooped) instanceListener.Key.IsLooped = controller.IsLooped;
 
                         //Play if stopped
-                        if (instance.PlayState != SoundPlayState.Playing && controller.ShouldBePlayed)
+                        if (instanceListener.Key.PlayState != SoundPlayState.Playing && controller.ShouldBePlayed)
                         {
-                            instance.Play(false);
+                            instanceListener.Key.Play(false);
+                            associatedData.IsPlaying = true;
                         }
                     }
-                }
 
-                associatedData.AudioEmitterComponent.ShouldBeProcessed = performedAtLeastOneApply;
+                    //handle Play and forget instances
+                    for (var i = 0; i < controller.FastInstances.Count; i++)
+                    {
+                        var instance = controller.FastInstances[i];
+                        if (instance.PlayState != SoundPlayState.Playing)
+                        {
+                            // Decrement the loop counter to iterate this index again, since later elements will get moved down during the remove operation.
+                            controller.FastInstances.RemoveAt(i--);
+                            controller.DestroySoundInstance(instance);
+                        }
+                        else
+                        {
+                            instance.Apply3D(emitter);
+                        }
+                    }
+
+                    //Create new play and forget instances
+                    if (controller.FastInstancePlay)
+                    {
+                        foreach (var listeners in audioSystem.Listeners)
+                        {
+                            if (!listeners.Key.Enabled) continue;
+
+                            var instance = controller.CreateSoundInstance(listeners.Key, true);
+                            instance.Volume = controller.Volume;
+                            instance.Pitch = controller.Pitch;
+
+                            controller.FastInstances.Add(instance);
+                            instance.Apply3D(emitter);
+                            instance.Play(false);
+                        }
+                        controller.FastInstancePlay = false;
+                    }
+                }
             }
         }
 
@@ -212,7 +250,7 @@ namespace SiliconStudio.Xenko.Audio
                 {
                     if (args.Action == NotifyCollectionChangedAction.Add)   // A new listener have been added
                     {
-                        soundController.CreateSoundInstance((AudioListenerComponent)args.Key);
+                        soundController.CreateSoundInstance((AudioListenerComponent)args.Key, false);
                     }
                     else if (args.Action == NotifyCollectionChangedAction.Remove) // A listener have been removed
                     {
@@ -231,7 +269,7 @@ namespace SiliconStudio.Xenko.Audio
             {
                 if (args.Action == NotifyCollectionChangedAction.Add)
                 {
-                    args.Controller.CreateSoundInstance(listener);
+                    args.Controller.CreateSoundInstance(listener, false);
                 }
                 else if(args.Action == NotifyCollectionChangedAction.Remove )
                 {
