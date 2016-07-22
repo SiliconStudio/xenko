@@ -132,7 +132,7 @@ namespace SiliconStudio.Core.IO
 
                 // Acquire lock on end of file (for appending)
                 // This will prevent another thread from writing at the same time, or reading before it is flushed.
-                LockFile(indexStreamPosition, long.MaxValue, true);
+                LockFile(indexStreamPosition, long.MaxValue - indexStreamPosition, true);
 
                 try
                 {
@@ -160,7 +160,7 @@ namespace SiliconStudio.Core.IO
                 }
                 finally
                 {
-                    UnlockFile(indexStreamPosition, long.MaxValue);
+                    UnlockFile(indexStreamPosition, long.MaxValue - indexStreamPosition);
                 }
             }
         }
@@ -176,7 +176,7 @@ namespace SiliconStudio.Core.IO
 
                 // Acquire lock on end of file (for appending)
                 // This will prevent another thread from writing at the same time, or reading before it is flushed.
-                LockFile(indexStreamPosition, long.MaxValue, true);
+                LockFile(indexStreamPosition, long.MaxValue - indexStreamPosition, true);
 
                 try
                 {
@@ -198,7 +198,7 @@ namespace SiliconStudio.Core.IO
                 }
                 finally
                 {
-                    UnlockFile(indexStreamPosition, long.MaxValue);
+                    UnlockFile(indexStreamPosition, long.MaxValue - indexStreamPosition);
                 }
             }
         }
@@ -269,7 +269,7 @@ namespace SiliconStudio.Core.IO
                 // Note: Maybe we should release the lock quickly so that two threads can read at the same time?
                 // Or if the previously described case doesn't happen, maybe no lock at all is required?
                 // Otherwise, last possibility would be deterministic filesize (with size encoded at the beginning of each block).
-                LockFile(position, long.MaxValue, false);
+                LockFile(position, long.MaxValue - position, false);
 
                 try
                 {
@@ -280,7 +280,7 @@ namespace SiliconStudio.Core.IO
                 finally
                 {
                     // Release the lock
-                    UnlockFile(position, long.MaxValue);
+                    UnlockFile(position, long.MaxValue - position);
                 }
 
                 return true;
