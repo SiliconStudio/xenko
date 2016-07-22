@@ -1344,6 +1344,7 @@ namespace SiliconStudio.Xenko.UI
             switch (HorizontalAlignment)
             {
                 case HorizontalAlignment.Center:
+                case HorizontalAlignment.Stretch:
                     offsets.X += (providedSpace.X - usedSpaceWithThickness.X) / 2;
                     break;
                 case HorizontalAlignment.Right:
@@ -1355,6 +1356,7 @@ namespace SiliconStudio.Xenko.UI
             switch (VerticalAlignment)
             {
                 case VerticalAlignment.Center:
+                case VerticalAlignment.Stretch:
                     offsets.Y += (providedSpace.Y - usedSpaceWithThickness.Y) / 2;
                     break;
                 case VerticalAlignment.Bottom:
@@ -1366,6 +1368,7 @@ namespace SiliconStudio.Xenko.UI
             switch (DepthAlignment)
             {
                 case DepthAlignment.Center:
+                case DepthAlignment.Stretch:
                     offsets.Z += (providedSpace.Z - usedSpaceWithThickness.Z) / 2;
                     break;
                 case DepthAlignment.Back:
