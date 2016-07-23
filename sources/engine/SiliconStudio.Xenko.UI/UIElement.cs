@@ -95,8 +95,9 @@ namespace SiliconStudio.Xenko.UI
         public Guid Id { get; set; }
 
         /// <summary>
-        /// List of the dependency properties attached to the object.
+        /// The list of the dependency properties attached to the UI element.
         /// </summary>
+        /// <userdoc>The list of the dependency properties attached to the UI element.</userdoc>
         [DataMember]
         public PropertyContainer DependencyProperties;
 
@@ -659,6 +660,7 @@ namespace SiliconStudio.Xenko.UI
         /// to fit into the size of the containing element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
+        /// <userdoc>Indicates whether to clip the content of this element (or content coming from the child elements of this element).</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         [DefaultValue(false)]
