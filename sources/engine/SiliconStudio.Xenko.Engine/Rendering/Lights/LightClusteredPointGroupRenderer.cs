@@ -384,30 +384,58 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         fixed (PointLightData* pointLightsPtr = pointLights.Items)
                             context.CommandList.UpdateSubresource(pointGroupRenderer.pointLightsBuffer, 0, new DataBox((IntPtr)pointLightsPtr, 0, 0), new ResourceRegion(0, 0, 0, pointLights.Count * sizeof(PointLightData), 1, 1));
                     }
+#if SILICONSTUDIO_PLATFORM_MACOS
+                    // macOS doesn't like when we provide a null Buffer or if it is not sufficiently allocated.
+                    // It would cause an inifite loop. So for now we just create one with one element but not initializing it.
+                    else if (pointGroupRenderer.pointLightsBuffer == null || pointGroupRenderer.pointLightsBuffer.SizeInBytes < sizeof(PointLightData))
+                    {
+                        pointGroupRenderer.pointLightsBuffer?.Dispose();
+                        pointGroupRenderer.pointLightsBuffer = Buffer.New(context.GraphicsDevice, MathUtil.NextPowerOfTwo(sizeof(PointLightData)), 0, BufferFlags.ShaderResource, PixelFormat.R32G32B32A32_Float);
+                    }
+#endif
 
                     // SpotLights: Ensure size and update
                     if (spotLights.Count > 0)
                     {
-                        if (pointGroupRenderer.spotLightsBuffer == null || pointGroupRenderer.spotLightsBuffer.SizeInBytes < spotLights.Count * sizeof(SpotLightData))
+                        if (pointGroupRenderer.spotLightsBuffer == null || pointGroupRenderer.spotLightsBuffer.SizeInBytes < spotLights.Count*sizeof(SpotLightData))
                         {
                             pointGroupRenderer.spotLightsBuffer?.Dispose();
-                            pointGroupRenderer.spotLightsBuffer = Buffer.New(context.GraphicsDevice, MathUtil.NextPowerOfTwo(spotLights.Count * sizeof(SpotLightData)), 0, BufferFlags.ShaderResource, PixelFormat.R32G32B32A32_Float);
+                            pointGroupRenderer.spotLightsBuffer = Buffer.New(context.GraphicsDevice, MathUtil.NextPowerOfTwo(spotLights.Count*sizeof(SpotLightData)), 0, BufferFlags.ShaderResource,
+                                PixelFormat.R32G32B32A32_Float);
                         }
                         fixed (SpotLightData* spotLightsPtr = spotLights.Items)
-                            context.CommandList.UpdateSubresource(pointGroupRenderer.spotLightsBuffer, 0, new DataBox((IntPtr)spotLightsPtr, 0, 0), new ResourceRegion(0, 0, 0, spotLights.Count * sizeof(SpotLightData), 1, 1));
+                            context.CommandList.UpdateSubresource(pointGroupRenderer.spotLightsBuffer, 0, new DataBox((IntPtr)spotLightsPtr, 0, 0),
+                                new ResourceRegion(0, 0, 0, spotLights.Count*sizeof(SpotLightData), 1, 1));
                     }
-
+#if SILICONSTUDIO_PLATFORM_MACOS
+                    // See previous macOS comment.
+                    else if (pointGroupRenderer.spotLightsBuffer == null || pointGroupRenderer.spotLightsBuffer.SizeInBytes < sizeof(SpotLightData))
+                    {
+                        pointGroupRenderer.spotLightsBuffer?.Dispose();
+                        pointGroupRenderer.spotLightsBuffer = Buffer.New(context.GraphicsDevice, MathUtil.NextPowerOfTwo(sizeof(SpotLightData)), 0, BufferFlags.ShaderResource, PixelFormat.R32G32B32A32_Float);
+                    }
+#endif
                     // LightIndices: Ensure size and update
                     if (lightIndices.Count > 0)
                     {
                         if (pointGroupRenderer.lightIndicesBuffer == null || pointGroupRenderer.lightIndicesBuffer.SizeInBytes < lightIndices.Count*sizeof(int))
                         {
                             pointGroupRenderer.lightIndicesBuffer?.Dispose();
-                            pointGroupRenderer.lightIndicesBuffer = Buffer.New(context.GraphicsDevice, MathUtil.NextPowerOfTwo(lightIndices.Count*sizeof(int)), 0, BufferFlags.ShaderResource, PixelFormat.R32_UInt);
+                            pointGroupRenderer.lightIndicesBuffer = Buffer.New(context.GraphicsDevice, MathUtil.NextPowerOfTwo(lightIndices.Count*sizeof(int)), 0, BufferFlags.ShaderResource,
+                                PixelFormat.R32_UInt);
                         }
                         fixed (int* lightIndicesPtr = lightIndices.Items)
-                            context.CommandList.UpdateSubresource(pointGroupRenderer.lightIndicesBuffer, 0, new DataBox((IntPtr)lightIndicesPtr, 0, 0), new ResourceRegion(0, 0, 0, lightIndices.Count*sizeof(int), 1, 1));
+                            context.CommandList.UpdateSubresource(pointGroupRenderer.lightIndicesBuffer, 0, new DataBox((IntPtr)lightIndicesPtr, 0, 0),
+                                new ResourceRegion(0, 0, 0, lightIndices.Count*sizeof(int), 1, 1));
                     }
+#if SILICONSTUDIO_PLATFORM_MACOS
+                    // See previous macOS comment.
+                    else if (pointGroupRenderer.lightIndicesBuffer == null || pointGroupRenderer.lightIndicesBuffer.SizeInBytes < sizeof(int))
+                    {
+                        pointGroupRenderer.lightIndicesBuffer?.Dispose();
+                        pointGroupRenderer.lightIndicesBuffer = Buffer.New(context.GraphicsDevice, MathUtil.NextPowerOfTwo(sizeof(int)), 0, BufferFlags.ShaderResource, PixelFormat.R32_UInt);
+                    }
+#endif
                 }
 
                 // Clear data

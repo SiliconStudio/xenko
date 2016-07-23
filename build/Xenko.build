@@ -208,7 +208,15 @@ Example of use:
   <Target Name="BuildLinuxCoreCLRVulkan" DependsOnTargets="CopyXenkoKey">
     <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).Linux.Vulkan.CoreCLR.sln" Properties="$(BuildProperties);Platform=Linux"/>
   </Target> 
-    
+
+  <Target Name="BuildmacOS" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).macOS.sln" Properties="$(BuildProperties);Platform=macOS"/>
+  </Target> 
+
+  <Target Name="BuildmacOSCoreCLR" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).macOS.CoreCLR.sln" Properties="$(BuildProperties);Platform=macOS"/>
+  </Target> 
+  
   <Target Name="WritePackageVersionToFile">
     <PackageGetVersionTask File="$(XenkoPackage)" SpecialVersion="$(XenkoPackageSpecialVersion)">
       <Output TaskParameter="Version" PropertyName="XenkoPackageVersion"/>

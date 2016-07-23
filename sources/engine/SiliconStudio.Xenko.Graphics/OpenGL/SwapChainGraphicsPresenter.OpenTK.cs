@@ -12,6 +12,12 @@ using WindowState = OpenTK.WindowState;
 using OpenGLWindow = OpenTK.GameWindow;
 #endif
 
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+using OpenTK.Graphics.ES30;
+#else
+using OpenTK.Graphics.OpenGL;
+#endif
+
 namespace SiliconStudio.Xenko.Graphics
 {
     public class SwapChainGraphicsPresenter : GraphicsPresenter
@@ -57,6 +63,10 @@ namespace SiliconStudio.Xenko.Graphics
                     new Rectangle(0, 0, backBuffer.Width, backBuffer.Height),
                     new Rectangle(0, 0, GraphicsDevice.WindowProvidedRenderTexture.Width, GraphicsDevice.WindowProvidedRenderTexture.Height), true);
 
+                // On macOS, `SwapBuffers` will swap whatever framebuffer is active and in our case it is not the window provided
+                // framebuffer, and in addition if the active framebuffer is single buffered, it won't do anything. Forcing a bind
+                // will ensure the window is updated.
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, GraphicsDevice.WindowProvidedFrameBuffer);
                 OpenTK.Graphics.GraphicsContext.CurrentContext.SwapBuffers();
             }
         }

@@ -8,7 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <XenkoNativePathLibs2 Condition="'$(SiliconStudioPlatform)' == 'iOS'" Include="$(XenkoDependenciesDir)\NativePath\iOS\libCelt.a" />
+    <XenkoNativePathLibs2 Condition="'$(SiliconStudioPlatform)' == 'iOS' or '$(SiliconStudioPlatform)' == 'macOS'" Include="$(XenkoDependenciesDir)\NativePath\iOS\libCelt.a" />
     <XenkoNativePathLibs2 Condition="'$(SiliconStudioPlatform)' == 'Linux' or '$(SiliconStudioPlatform)' == 'Android'" Include="libCelt.a;libCompilerRt.a" />
   </ItemGroup>
 </Project>

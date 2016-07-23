@@ -5,28 +5,38 @@
   <Choose>
     <When Condition="'$(XenkoProjectPlatformDependentWindows)' == 'true'">
       <Choose>
-        <When Condition=" '$(SiliconStudioPlatform)' == 'Linux'">
+        <When Condition=" '$(XenkoGraphicsApi)' == 'OpenGL' Or '$(XenkoGraphicsApi)' == 'OpenGLES' ">
           <Choose>
-            <When Condition="'$(XenkoGraphicsApi)' == 'OpenGL' Or '$(XenkoGraphicsApi)' == 'OpenGLES'">
+            <When Condition="('$(SiliconStudioPlatform)' == 'Linux') or ('$(SiliconStudioPlatform)' == 'macOS')">
               <ItemGroup>
                 <Reference Include="OpenTK">
-                  <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(XenkoDependenciesDir)OpenTK\Linux\OpenTK.dll</HintPath>
-                  <HintPath Condition="'$(SiliconStudioRuntime)' != ''">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\Linux\OpenTK.dll</HintPath>
+                  <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioPlatform)\OpenTK.dll</HintPath>
+                  <HintPath Condition="'$(SiliconStudioRuntime)' != ''">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\$(SiliconStudioPlatform)\OpenTK.dll</HintPath>
+                </Reference>
+              </ItemGroup>
+            </When>
+            <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
+              <ItemGroup>
+                <Reference Include="OpenTK">
+                  <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(XenkoDependenciesDir)OpenTK\OpenTK.dll</HintPath>
+                  <HintPath Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\$(SiliconStudioPlatform)\OpenTK.dll</HintPath>
+                </Reference>
+              </ItemGroup>
+            </When>
+            <When Condition=" '$(SiliconStudioPlatform)' == 'Android' Or '$(SiliconStudioPlatform)' == 'iOS' ">
+              <ItemGroup>
+                <Reference Include="OpenTK-1.1">
+                  <HintPath Condition="'$(SiliconStudioPlatform)' == 'Android'">$(XenkoDependenciesDir)OpenTK\Android\OpenTK-1.1.dll</HintPath>
+                  <HintPath Condition="'$(SiliconStudioPlatform)' == 'iOS'">$(XenkoDependenciesDir)OpenTK\iOS\OpenTK-1.1.dll</HintPath>
                 </Reference>
               </ItemGroup>
             </When>
           </Choose>
         </When>
+      </Choose>
+      <Choose>
         <When  Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
           <Choose>
-            <When Condition="'$(XenkoGraphicsApi)' == 'OpenGL' Or '$(XenkoGraphicsApi)' == 'OpenGLES'">
-              <ItemGroup>
-                <Reference Include="OpenTK">
-                  <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(XenkoDependenciesDir)OpenTK\OpenTK.dll</HintPath>
-                  <HintPath Condition="'$(SiliconStudioRuntime)' != ''">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\Windows\OpenTK.dll</HintPath>
-                </Reference>
-              </ItemGroup>
-            </When>
             <When Condition="'$(XenkoGraphicsApi)' == 'Direct3D11' Or '$(XenkoGraphicsApi)' == 'Direct3D12'">
               <ItemGroup>
                 <Reference Include="SharpDX">
@@ -54,7 +64,7 @@
             </When>
           </Choose>
           <Choose>
-            <When Condition="($(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))) OR ($(SiliconStudioUI.Contains('OPENTK')) AND '$(SiliconStudioRuntime)' == '')">
+            <When Condition="('' == '') OR ($(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))) OR ($(SiliconStudioUI.Contains('OPENTK')) AND ('$(SiliconStudioRuntime)' == ''))">
               <ItemGroup>
                 <Reference Include="System.Drawing" />
               </ItemGroup>
@@ -67,14 +77,6 @@
               </ItemGroup>
             </When>
           </Choose>
-        </When>
-        <When Condition=" '$(SiliconStudioPlatform)' == 'Android' or '$(SiliconStudioPlatform)' == 'iOS'">
-          <ItemGroup>
-            <Reference Include="OpenTK-1.1">
-              <HintPath Condition="'$(SiliconStudioPlatform)' == 'Android'">$(XenkoDependenciesDir)OpenTK\Android\OpenTK-1.1.dll</HintPath>
-              <HintPath Condition="'$(SiliconStudioPlatform)' == 'iOS'">$(XenkoDependenciesDir)OpenTK\iOS\OpenTK-1.1.dll</HintPath>
-            </Reference>
-          </ItemGroup>
         </When>
       </Choose>
     </When>

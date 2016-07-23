@@ -37,7 +37,7 @@
 
   <!-- On Vulkan embed the SPIR-V shader compiler -->
   <Target Name="EmbedShaderCompiler" BeforeTargets="SiliconStudioUpdateGraphicsPlatform" Condition="'$(SiliconStudioXenkoGraphicsApi)' == 'Vulkan'">
-    <Copy SourceFiles="$(SiliconStudioPackageXenkoPlatformBin)\glslangValidator" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
+    <Copy Condition="Exists('$(SiliconStudioPackageXenkoPlatformBin)\glslangValidator')" SourceFiles="$(SiliconStudioPackageXenkoPlatformBin)\glslangValidator" DestinationFolder="$(OutputPath)" SkipUnchangedFiles="true" />
   </Target>  
   
   <UsingTask TaskName="PackageDeployTask" AssemblyFile="$(SiliconStudioPackageXenko)\bin\Windows-Direct3D11\SiliconStudio.Xenko.Assets.dll"/>
@@ -45,9 +45,9 @@
   <Target Name="DeployOnLinux" AfterTargets="SiliconStudioCompileAsset" Condition="('$(SiliconStudioIsExecutable)' == 'true') AND ('$(SiliconStudioUnitTest)' != 'true') AND ('$(SiliconStudioDeploy)' == 'true')">
     <PackageDeployTask
         Directory="$(TargetDir)"
-        Machine="$(SiliconStudioLinuxTarget)"
-        Username="$(SiliconStudioLinuxUsername)"
-        Password="$(SiliconStudioLinuxPassword)"
+        Machine="$(SiliconStudioRemoteTarget)"
+        Username="$(SiliconStudioRemoteUsername)"
+        Password="$(SiliconStudioRemotePassword)"
         Location="local/Projects/$(MSBuildProjectName)" />
   </Target>
 

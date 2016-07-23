@@ -239,8 +239,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             var stageStringBuilder = new StringBuilder();
 #endif
-            // if the shader (non-compute) does not have a pixel shader, we should add it on OpenGL ES.
-            if (effectParameters.Platform == GraphicsPlatform.OpenGLES && !parsingResult.EntryPoints.ContainsKey(ShaderStage.Pixel) && !parsingResult.EntryPoints.ContainsKey(ShaderStage.Compute))
+            // if the shader (non-compute) does not have a pixel shader, we should add it for OpenGL and OpenGL ES.
+            if ((effectParameters.Platform == GraphicsPlatform.OpenGL || effectParameters.Platform == GraphicsPlatform.OpenGLES) && !parsingResult.EntryPoints.ContainsKey(ShaderStage.Pixel) && !parsingResult.EntryPoints.ContainsKey(ShaderStage.Compute))
             {
                 parsingResult.EntryPoints.Add(ShaderStage.Pixel, null);
             }

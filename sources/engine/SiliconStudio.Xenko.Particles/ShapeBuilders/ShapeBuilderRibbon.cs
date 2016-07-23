@@ -162,7 +162,6 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         /// </summary>
         sealed class Ribbonizer
         {
-            private int capacity = 1;
             private int lastParticle = 0;
             private Vector3[] positions = new Vector3[1];
             private float[] sizes = new float[1];
