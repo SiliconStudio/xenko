@@ -55,6 +55,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image to display as Track background.
         /// </summary>
+        /// <userdoc>The image to display as Track background.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         [DefaultValue(null)]
@@ -77,6 +78,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image to display as Track foreground.
         /// </summary>
+        /// <userdoc>The image to display as Track foreground.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         [DefaultValue(null)]
@@ -85,6 +87,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image to display as slider thumb (button).
         /// </summary>
+        /// <userdoc>The image to display as slider thumb (button).</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         [DefaultValue(null)]
@@ -93,6 +96,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image to display as slider thumb (button) when the mouse is over the slider.
         /// </summary>
+        /// <userdoc>The image to display as slider thumb (button) when the mouse is over the slider.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         [DefaultValue(null)]
@@ -101,6 +105,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image to display as tick.
         /// </summary>
+        /// <userdoc>The image to display as tick.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         [DefaultValue(null)]
@@ -109,6 +114,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the smallest possible value of the slider.
         /// </summary>
+        /// <userdoc>The smallest possible value of the slider.</userdoc>
         [DataMember]
         [DataMemberRange(0, float.MaxValue)]
         [DefaultValue(0.0f)]
@@ -129,6 +135,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the greatest possible value of the slider.
         /// </summary>
+        /// <userdoc>The greatest possible value of the slider.</userdoc>
         [DataMember]
         [DataMemberRange(0, float.MaxValue)]
         [DefaultValue(1.0f)]
@@ -149,6 +156,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the step of a <see cref="Value"/> change.
         /// </summary>
+        /// <userdoc>The step of a change of the value.</userdoc>
         [DataMember]
         [DataMemberRange(0, float.MaxValue)]
         [DefaultValue(0.1f)]
@@ -158,6 +166,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the current value of the slider.
         /// </summary>
         /// <remarks>value is truncated between <see cref="Minimum"/> and <see cref="Maximum"/></remarks>
+        /// <userdoc>The current value of the slider.</userdoc>
         [DataMember]
         [DataMemberRange(0, float.MaxValue)]
         [DefaultValue(0.0f)]
@@ -180,7 +189,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the frequency of the ticks on the slider track.
         /// </summary>
-        /// <remarks>Provided value is truncated to be greater or equal the 1</remarks>
+        /// <userdoc>The frequency of the ticks on the slider track.</userdoc>
         [DataMember]
         [DataMemberRange(1, float.MaxValue)]
         [Display(category: AppearanceCategory)]
@@ -201,6 +210,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the offset in virtual pixels between the center of the track and center of the ticks (for an not-stretched slider).
         /// </summary>
+        /// <userdoc>The offset in virtual pixels between the center of the track and center of the ticks (for an not-stretched slider).</userdoc>
         [DataMember]
         [DataMemberRange(0, float.MaxValue)]
         [Display(category: AppearanceCategory)]
@@ -210,6 +220,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the left/right offsets specifying where the track region starts. 
         /// </summary>
+        /// <userdoc>The left/right offsets specifying where the track region starts. </userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         public Vector2 TrackStartingOffsets { get; set; }
@@ -217,6 +228,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the value indicating if the default direction of the slider should reversed or not.
         /// </summary>
+        /// <userdoc>True if the default direction of the slider should reversed, false otherwise.</userdoc>
         [DataMember]
         [Display(category: BehaviorCategory)]
         [DefaultValue(false)]
@@ -225,6 +237,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the value indicating if the ticks should be displayed or not.
         /// </summary>
+        /// <userdoc>True if the ticks should be displayed, false otherwise.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         [DefaultValue(false)]
@@ -233,6 +246,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the value indicating if the slider <see cref="Value"/> should be snapped to the ticks or not.
         /// </summary>
+        /// <userdoc>True if the slider valuye should be snapped to the ticks, false otherwise.</userdoc>
         [DataMember]
         [Display(category: BehaviorCategory)]
         [DefaultValue(false)]
@@ -249,6 +263,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the orientation of the slider.
         /// </summary>
+        /// <userdoc>The orientation of the slider.</userdoc>
         [DataMember]
         [Display(category: LayoutCategory)]
         [DefaultValue(Orientation.Horizontal)]

@@ -181,7 +181,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Gets or sets the pixels per scene unit of the sprite.
         /// </summary>
-        /// <remarks>The value is trunked to a strictly positive value.</remarks>
+        /// <remarks>The value is clamped to a strictly positive value.</remarks>
         public Vector2 PixelsPerUnit
         {
             get { return pixelsPerUnit; }

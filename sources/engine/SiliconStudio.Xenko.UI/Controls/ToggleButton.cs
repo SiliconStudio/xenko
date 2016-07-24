@@ -39,8 +39,9 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the image that the button displays when checked
+        /// Gets or sets the image displayed when the button is checked.
         /// </summary>
+        /// <userdoc>The image displayed when the button is checked.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         [DefaultValue(null)]
@@ -58,8 +59,9 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the image that the button displays when indeterminate
+        /// Gets or sets the image displayed when the button state is undeterminate.
         /// </summary>
+        /// <userdoc>The image displayed when the button state is undeterminate.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         [DefaultValue(null)]
@@ -77,8 +79,9 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the image that the button displays when unchecked
+        /// Gets or sets the image displayed when the button is unchecked.
         /// </summary>
+        /// <userdoc>The image displayed when the button is unchecked.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         [DefaultValue(null)]
@@ -99,6 +102,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the state of the <see cref="ToggleButton"/>
         /// </summary>
         /// <remarks>Setting the state of the toggle button to <see cref="ToggleState.Indeterminate"/> sets <see cref="IsThreeState"/> to true.</remarks>
+        /// <userdoc>The state of the button.</userdoc>
         [DataMember]
         [Display(category: BehaviorCategory)]
         [DefaultValue(ToggleState.UnChecked)]
@@ -134,6 +138,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Determines whether the control supports two or three states.
         /// </summary>
         /// <remarks>Setting <see cref="IsThreeState"/> to false changes the <see cref="State"/> of the toggle button if currently set to <see cref="ToggleState.Indeterminate"/></remarks>
+        /// <userdoc>True if the control support three states, false otherwise.</userdoc>
         [DataMember]
         [Display(category: BehaviorCategory)]
         [DefaultValue(false)]

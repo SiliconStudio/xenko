@@ -964,7 +964,7 @@ namespace SiliconStudio.Xenko.UI
             // removes the size required for the margins in the available size
             var availableSizeWithoutMargins = CalculateSizeWithoutThickness(ref availableSizeWithMargins, ref MarginInternal);
 
-            // trunk the available size for the element between the maximum and minimum width/height of the UIElement
+            // clamp the available size for the element between the maximum and minimum width/height of the UIElement
             availableSizeWithoutMargins = new Vector3(
                 Math.Max(MinimumWidth, Math.Min(MaximumWidth, !float.IsNaN(desiredSize.X) ? desiredSize.X : availableSizeWithoutMargins.X)),
                 Math.Max(MinimumHeight, Math.Min(MaximumHeight, !float.IsNaN(desiredSize.Y) ? desiredSize.Y : availableSizeWithoutMargins.Y)),
@@ -1074,7 +1074,7 @@ namespace SiliconStudio.Xenko.UI
             if (float.IsNaN(elementSize.Z))
                 elementSize.Z = Math.Min(DesiredSize.Z, finalSizeWithoutMargins.Z);
 
-            // trunk the element size between the maximum and minimum width/height of the UIElement
+            // clamp the element size between the maximum and minimum width/height of the UIElement
             elementSize = new Vector3(
                 Math.Max(MinimumWidth, Math.Min(MaximumWidth, elementSize.X)),
                 Math.Max(MinimumHeight, Math.Min(MaximumHeight, elementSize.Y)),

@@ -14,8 +14,9 @@ namespace SiliconStudio.Xenko.UI.Controls
     public class ContentDecorator : ContentControl
     {
         /// <summary>
-        /// Gets or sets the image that the button displays when pressed
+        /// Gets or sets the background image.
         /// </summary>
+        /// <userdoc>The background image.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         [DefaultValue(null)]

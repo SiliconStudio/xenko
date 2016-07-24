@@ -56,9 +56,9 @@ namespace SiliconStudio.Xenko.UI.Controls
             /// <userdoc>No specific input type for the Edit Text.</userdoc>
             None,
             /// <summary>
-            /// A password input type. Password text is hided while editing.
+            /// A password input type. Password text is hidden while editing.
             /// </summary>
-            /// <userdoc>A password input type. Password text is hided while editing.</userdoc>
+            /// <userdoc>A password input type. Password text is hidden while editing.</userdoc>
             Password,
         }
 
@@ -179,10 +179,11 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the value indicating if the text block should generate <see cref="RuntimeRasterizedSpriteFont"/> characters synchronously or asynchronously.
+        /// Gets or sets the value indicating if the text block should generate <see cref="Graphics.Font.RuntimeRasterizedSpriteFont"/> characters synchronously or asynchronously.
         /// </summary>
         /// <remarks>If synchronous generation is activated, the game will be block until all the characters have finished to be generate.
         /// If asynchronous generation is activated, some characters can appears with one or two frames of delay.</remarks>
+        /// <userdoc>True if dynamic characters should be generated synchronously, false otherwise.</userdoc>
         [DataMember]
         [DefaultValue(false)]
         public bool SynchronousCharacterGeneration
@@ -201,13 +202,14 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets a value indicating if the text should be hided when displayed.
+        /// Gets a value indicating if the text should be hidden when displayed.
         /// </summary>
         protected bool ShouldHideText => (inputType & InputTypeFlags.Password) != 0;
 
         /// <summary>
-        /// Gets or sets the padding inside a control.
+        /// Gets or sets whether the control is read-only, or not.
         /// </summary>
+        /// <userdoc>True if the control is read-only, false otherwise.</userdoc>
         [DataMember]
         [Display(category: BehaviorCategory)]
         [DefaultValue(false)]
@@ -225,8 +227,9 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the font of the text block
+        /// Gets or sets the font of the text block.
         /// </summary>
+        /// <userdoc>The font of the text block.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         public SpriteFont Font
@@ -243,22 +246,25 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the color of the text
+        /// Gets or sets the color of the text.
         /// </summary>
+        /// <userdoc>The color of the text.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         public Color TextColor { get; set; } = Color.FromAbgr(0xF0F0F0FF);
 
         /// <summary>
-        /// Gets or sets the color of the selection
+        /// Gets or sets the color of the selection.
         /// </summary>
+        /// <userdoc>The color of the selection.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         public Color SelectionColor { get; set; } = Color.FromAbgr(0xF0F0F0FF);
 
         /// <summary>
-        /// Gets or sets the color of the selection
+        /// Gets or sets the color of the caret.
         /// </summary>
+        /// <userdoc>The color of the caret.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         public Color CaretColor { get; set; } = Color.FromAbgr(0xF0F0F0FF);
@@ -267,6 +273,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the maximum number of characters that can be manually entered into the text box.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The provided value must be strictly positive</exception>
+        /// <userdoc>The maximum number of characters that can be manually entered into the text box.</userdoc>
         [DataMember]
         [DataMemberRange(1, int.MaxValue)]
         [Display(category: BehaviorCategory)]
@@ -288,6 +295,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the maximum number of visible lines.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The provided value must be strictly positive</exception>
+        /// <userdoc>The maximum number of visible lines.</userdoc>
         [DataMember]
         [DataMemberRange(1, int.MaxValue)]
         [Display(category: BehaviorCategory)]
@@ -309,6 +317,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the minimum number of visible lines.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The provided value must be strictly positive</exception>
+        /// <userdoc>The minimum number of visible lines.</userdoc>
         [DataMember]
         [DataMemberRange(1, int.MaxValue)]
         [Display(category: BehaviorCategory)]
@@ -327,24 +336,27 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the image that is displayed in background when the edit is active
+        /// Gets or sets the image that is displayed in background when the edit is active.
         /// </summary>
+        /// <userdoc>The image that is displayed in background when the edit is active.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         [DefaultValue(null)]
         public ISpriteProvider ActiveImage { get; set; }
 
         /// <summary>
-        /// Gets or sets the image that is displayed in background when the edit is inactive
+        /// Gets or sets the image that is displayed in background when the edit is inactive.
         /// </summary>
+        /// <userdoc>The image that is displayed in background when the edit is inactive.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         [DefaultValue(null)]
         public ISpriteProvider InactiveImage { get; set; }
 
         /// <summary>
-        /// Gets or sets the image that the button displays when the mouse is over it
+        /// Gets or sets the image that the button displays when the mouse is over it.
         /// </summary>
+        /// <userdoc>The image that the button displays when the mouse is over it.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         [DefaultValue(null)]
@@ -355,6 +367,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <remarks>When <value>true</value>, the element's text is never snapped. 
         /// When <value>false</value>, it is snapped only if the font is dynamic and the element is rendered by a SceneUIRenderer.</remarks>
+        /// <userdoc>True if the snapping of the Text to the closest screen pixel should be skipped, false otherwise.</userdoc>
         [DataMember]
         [Display(category: BehaviorCategory)]
         [DefaultValue(false)]
@@ -363,6 +376,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the caret position in the <see cref="EditText"/>'s text.
         /// </summary>
+        /// <userdoc>The caret position.</userdoc>
         [DataMemberIgnore]
         public int CaretPosition
         {
@@ -378,7 +392,8 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the width of the edit text's cursor (in virtual pixels).
         /// </summary>
-        /// <remarks>The value is trunked between [0, infinity-1]</remarks>
+        /// <remarks>The value is clamped between [0, infinity-1]</remarks>
+        /// <userdoc>The width of the edit text's cursor (in virtual pixels).</userdoc>
         [DataMember]
         [DataMemberRange(0, float.MaxValue)]
         [Display(category: AppearanceCategory)]
@@ -392,7 +407,8 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the caret blinking frequency.
         /// </summary>
-        /// <remarks>The value is trunked between [0, infinity-1]</remarks>
+        /// <remarks>The value is clamped between [0, infinity-1]</remarks>
+        /// <userdoc>The caret blinking frequency.</userdoc>
         [DataMember]
         [DataMemberRange(0, float.MaxValue)]
         [Display(category: BehaviorCategory)]
@@ -443,6 +459,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the edit text input type by setting a combination of <see cref="InputTypeFlags"/>.
         /// </summary>
+        /// <userdoc>The edit text input type.</userdoc>
         [DataMember]
         [Display(category: BehaviorCategory)]
         [DefaultValue(default(InputTypeFlags))]
@@ -463,8 +480,9 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the size of the text in virtual pixels unit
+        /// Gets or sets the size of the text in virtual pixels unit.
         /// </summary>
+        /// <userdoc>The size of the text in virtual pixels unit.</userdoc>
         [DataMember]
         [DataMemberRange(0, float.MaxValue)]
         [Display(category: AppearanceCategory)]
@@ -497,6 +515,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the alignment of the text to display.
         /// </summary>
+        /// <userdoc>The alignment of the text to display.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         [DefaultValue(default(TextAlignment))]
@@ -584,9 +603,10 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the text contents of the text box.
+        /// Gets or sets the text content of the text box.
         /// </summary>
         /// <remarks>Setting explicitly the text sets the cursor at the end of the new text.</remarks>
+        /// <userdoc>The text content of the text box.</userdoc>
         [DataMember]
         [DefaultValue("")]
         public string Text

@@ -33,6 +33,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets when the Click event occurs.
         /// </summary>
+        /// <userdoc>Indicates when the click event occurs.</userdoc>
         [DataMember]
         [Display(category: BehaviorCategory)]
         [DefaultValue(ClickMode.Release)]

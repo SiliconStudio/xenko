@@ -29,9 +29,10 @@ namespace SiliconStudio.Xenko.UI.Controls
         private Matrix contentWorldMatrix;
 
         /// <summary>
-        /// Gets or sets the content of a ContentControl.
+        /// Gets or sets the content of the ContentControl.
         /// </summary>
         /// <exception cref="InvalidOperationException">The value passed has already a parent.</exception>
+        /// <userdoc>The content of the Content Control.</userdoc>
         [DataMember]
         [DefaultValue(null)]
         public virtual UIElement Content
