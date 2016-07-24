@@ -10,7 +10,7 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Xenko.UI
 {
     /// <summary>
-    /// Represent the definition of a grid strip.
+    /// Represents the definition of a grid strip.
     /// </summary>
     [DataContract(nameof(StripDefinition))]
     public class StripDefinition
@@ -49,6 +49,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The provided value is negative.</exception>
         /// <exception cref="InvalidOperationException">The provided value is smaller than <see cref="MinimumSize"/></exception>
+        /// <userdoc>The maximum size of the strip in virtual pixels.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.PositiveInfinity)]
         [DefaultValue(float.PositiveInfinity)]
@@ -74,6 +75,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The provided value is negative or infinity.</exception>
         /// <exception cref="InvalidOperationException">The provided value is bigger than <see cref="MaximumSize"/></exception>
+        /// <userdoc>The minimum size of the strip in virtual pixels.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
         [DefaultValue(0)]
@@ -97,6 +99,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets or sets the type of the strip.
         /// </summary>
+        /// <userdoc>The type of the strip.</userdoc>
         [DataMember]
         [DefaultValue(StripType.Star)]
         public StripType Type
@@ -118,6 +121,7 @@ namespace SiliconStudio.Xenko.UI
         /// Note that the value is interpreted differently depending on the strip <see cref="Type"/>.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The size must be finite positive value.</exception>
+        /// <userdoc>The size value of the strip.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
         [DefaultValue(1.0f)]

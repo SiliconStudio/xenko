@@ -53,16 +53,16 @@ namespace SiliconStudio.Xenko.UI
             Front = 0;
             Back = 0;
         }
-        
+
         /// <summary>
         /// Initializes a new instance of the Thickness structure that has specific lengths applied to each side of the cuboid.
         /// </summary>
-        /// <param name="bottom">The thickness for the lower side of the rectangle.</param>
-        /// <param name="left">The thickness for the left side of the rectangle.</param>
-        /// <param name="right">The thickness for the right side of the rectangle</param>
-        /// <param name="top">The thickness for the upper side of the rectangle.</param>
-        /// <param name="front">The thickness for the front side of the rectangle.</param>
-        /// <param name="back">The thickness for the Back side of the rectangle.</param>
+        /// <param name="bottom">The thickness for the lower side of the cuboid.</param>
+        /// <param name="left">The thickness for the left side of the cuboid.</param>
+        /// <param name="right">The thickness for the right side of the cuboid</param>
+        /// <param name="top">The thickness for the upper side of the cuboid.</param>
+        /// <param name="front">The thickness for the front side of the cuboid.</param>
+        /// <param name="back">The thickness for the Back side of the cuboid.</param>
         public Thickness(float left, float top, float back, float right, float bottom, float front)
         {
             Bottom = bottom;
@@ -72,50 +72,56 @@ namespace SiliconStudio.Xenko.UI
             Front = front;
             Back = back;
         }
-        
+
         /// <summary>
-        ///  The Back side of the bounding rectangle.
+        /// The Back side of the bounding cuboid.
         /// </summary>
+        /// <userdoc>The Back side of the bounding cuboid.</userdoc>
         [DataMember(5)]
         [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
         public float Back;
 
         /// <summary>
-        ///  The bottom side of the bounding rectangle.
+        /// The bottom side of the bounding rectangle or cuboid.
         /// </summary>
+        /// <userdoc>The bottom side of the bounding rectangle or cuboid.</userdoc>
         [DataMember(4)]
         [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
         public float Bottom;
 
         /// <summary>
-        ///  The front side of the bounding rectangle.
+        /// The front side of the bounding cuboid.
         /// </summary>
+        /// <userdoc>The front side of the bounding cuboid.</userdoc>
         [DataMember(2)]
         [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
         public float Front;
 
         /// <summary>
-        ///  The left side of the bounding rectangle.
+        /// The left side of the bounding rectangle or cuboid.
         /// </summary>
+        /// <userdoc>The left side of the bounding rectangle or cuboid.</userdoc>
         [DataMember(0)]
         [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
         public float Left;
 
         /// <summary>
-        ///  The right side of the bounding rectangle.
+        /// The right side of the bounding rectangle or cuboid.
         /// </summary>
+        /// <userdoc>The right side of the bounding rectangle or cuboid.</userdoc>
         [DataMember(3)]
         [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
         public float Right;
 
         /// <summary>
-        ///  The upper side of the bounding rectangle.
+        /// The upper side of the bounding rectangle or cuboid.
         /// </summary>
+        /// <userdoc>The upper side of the bounding rectangle or cuboid.</userdoc>
         [DataMember(1)]
         [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]

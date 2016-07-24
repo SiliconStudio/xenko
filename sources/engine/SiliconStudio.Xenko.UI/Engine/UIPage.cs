@@ -16,6 +16,10 @@ namespace SiliconStudio.Xenko.Engine
     [DataSerializerGlobal(typeof(ReferenceSerializer<UIPage>), Profile = "Content")]
     public sealed class UIPage : ComponentBase
     {
+        /// <summary>
+        /// Gets or sets the root element of the page.
+        /// </summary>
+        /// <userdoc>The root element of the page.</userdoc>
         [DataMember]
         public UIElement RootElement { get; set; }
     }
