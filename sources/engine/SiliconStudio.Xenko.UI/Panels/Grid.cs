@@ -147,6 +147,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// The definitions of the grid columns.
         /// </summary>
         /// <exception cref="ArgumentNullException">The provided value is null.</exception>
+        /// <userdoc>The definitions of the grid columns.</userdoc>
         [DataMember]
         [Display(category: LayoutCategory)]
         public StripDefinitionCollection ColumnDefinitions => stripDefinitions[0];
@@ -155,6 +156,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// The definitions of the grid rows.
         /// </summary>
         /// <exception cref="ArgumentNullException">The provided value is null.</exception>
+        /// <userdoc>The definitions of the grid rows.</userdoc>
         [DataMember]
         [Display(category: LayoutCategory)]
         public StripDefinitionCollection RowDefinitions => stripDefinitions[1];
@@ -163,6 +165,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// The definitions of the grid layers.
         /// </summary>
         /// <exception cref="ArgumentNullException">The provided value is null.</exception>
+        /// <userdoc>The definitions of the grid layers.</userdoc>
         [DataMember]
         [Display(category: LayoutCategory)]
         public StripDefinitionCollection LayerDefinitions => stripDefinitions[2];

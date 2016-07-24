@@ -75,8 +75,9 @@ namespace SiliconStudio.Xenko.UI.Panels
 
         /// <summary>
         /// Gets or sets the value indicating if the <see cref="StackPanel"/> children must be virtualized or not.
-        /// When children virtualization is activated, hided children's measurement, arrangement and draw are avoided.
+        /// When children virtualization is activated, hidden children's measurement, arrangement and draw are avoided.
         /// </summary>
+        /// <userdoc>True if the Stack Panel's children must be virtualized, false otherwise.</userdoc>
         [DataMember]
         [DefaultValue(false)]
         public bool ItemVirtualizationEnabled
@@ -154,6 +155,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <summary>
         /// Gets or sets a value that indicates the orientation by which child elements are stacked.
         /// </summary>
+        /// <userdoc>The orientation by which children are stacked.</userdoc>
         [DataMember]
         [Display(category: LayoutCategory)]
         [DefaultValue(Orientation.Vertical)]
