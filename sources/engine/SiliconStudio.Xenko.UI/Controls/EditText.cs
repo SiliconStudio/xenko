@@ -51,13 +51,14 @@ namespace SiliconStudio.Xenko.UI.Controls
         public enum InputTypeFlags
         {
             /// <summary>
-            /// No specific input type for the <see cref="EditText"/>
+            /// No specific input type for the <see cref="EditText"/>.
             /// </summary>
+            /// <userdoc>No specific input type for the Edit Text.</userdoc>
             None,
-
             /// <summary>
-            /// An password input type. Password text is hided while editing.
+            /// A password input type. Password text is hided while editing.
             /// </summary>
+            /// <userdoc>A password input type. Password text is hided while editing.</userdoc>
             Password,
         }
 
