@@ -236,7 +236,7 @@ namespace SiliconStudio.Core.Tests
 
 #pragma warning restore 1998
         
-        public object[] GenerateFunctions<T>() where T : new()
+        public static object[] GenerateFunctions<T>() where T : new()
         {
             var result = new List<object[]>();
             foreach (var method in typeof(T).GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly))
@@ -247,17 +247,17 @@ namespace SiliconStudio.Core.Tests
             return result.ToArray();
         }
 
-        public object[] Functions
+        public static object[] Functions
         {
             get { return GenerateFunctions<SimpleTests>(); }
         }
 
-        public object[] FunctionsThrow
+        public static object[] FunctionsThrow
         {
             get { return GenerateFunctions<ThrowTests>(); }
         }
 
-        public object[] FunctionsSync
+        public static object[] FunctionsSync
         {
             get { return GenerateFunctions<SyncTests>(); }
         }
@@ -312,11 +312,14 @@ namespace SiliconStudio.Core.Tests
             Assert.That(microThreads.All(x => x.State == MicroThreadState.Failed && x.Exception != null), Is.EqualTo(true));
         }
 
-        [Test, ExpectedException(typeof(InvalidOperationException)), Sequential, TestCaseSource("FunctionsThrow")]
+        [Test, Sequential, TestCaseSource("FunctionsThrow")]
         public void TestExceptions(string testName, BaseTests baseTests, Func<Action, Task> asyncFunction, int parallelCount)
         {
-            var microThreads = TestBase(testName, baseTests, asyncFunction, parallelCount);
-            Assert.That(microThreads.All(x => x.State == MicroThreadState.Failed && x.Exception != null), Is.EqualTo(true));
+            Assert.Throws(typeof(InvalidOperationException), () =>
+            {
+                var microThreads = TestBase(testName, baseTests, asyncFunction, parallelCount);
+                Assert.That(microThreads.All(x => x.State == MicroThreadState.Failed && x.Exception != null), Is.EqualTo(true));
+            });
         }
 
         [Test, Sequential, TestCaseSource("FunctionsSync")]

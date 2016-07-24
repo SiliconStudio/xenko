@@ -7,6 +7,7 @@ using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Xenko.Assets.Entities;
 
 namespace SiliconStudio.Xenko.Assets.UI
 {
@@ -36,10 +37,26 @@ namespace SiliconStudio.Xenko.Assets.UI
                 var assetManager = new ContentManager();
 
                 var uiLibrary = new Engine.UILibrary();
-                foreach (var kv in AssetParameters.UILibraryAsset.UIElements)
+                foreach (var kv in AssetParameters.UILibraryAsset.PublicUIElements)
                 {
+
+                    if (!AssetParameters.UILibraryAsset.Hierarchy.RootPartIds.Contains(kv.Value))
+                    {
+                        // We might want to allow that in the future.
+                        commandContext.Logger.Warning($"Only root elements can be exposed publicly. Skipping [{kv.Key}].");
+                        continue;
+                    }
+
                     // Copy Key/Value pair
-                    uiLibrary.UIElements.Add(kv.Key, kv.Value);
+                    UIElementDesign element;
+                    if (AssetParameters.UILibraryAsset.Hierarchy.Parts.TryGetValue(kv.Value, out element))
+                    {
+                        uiLibrary.UIElements.Add(kv.Key, element.UIElement);
+                    }
+                    else
+                    {
+                        commandContext.Logger.Error($"Cannot find the element with the id [{kv.Value}] to expose [{kv.Key}].");
+                    }
                 }
 
                 assetManager.Save(Url, uiLibrary);

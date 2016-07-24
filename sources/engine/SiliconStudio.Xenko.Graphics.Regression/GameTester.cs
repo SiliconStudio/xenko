@@ -114,6 +114,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                     });
 #elif SILICONSTUDIO_PLATFORM_ANDROID
                     AndroidGameTestActivity.Destroyed -= gameFinishedCallback;
+                    AndroidGameTestActivity.GameToStart = null;
 #endif
                 }
             }

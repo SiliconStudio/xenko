@@ -44,19 +44,38 @@
     <OutputType Condition=" '$(SiliconStudioPlatform)' == 'Android' ">Library</OutputType>
 
     <SiliconStudioGenerateDoc Condition="'$(SiliconStudioPublicApi)' == 'true'">true</SiliconStudioGenerateDoc>
-
-    <!-- To preserve existing build layout, if no runtime is specified, we drop it from the name of the build directory -->
-    <SiliconStudioCompilerTargets Condition="'$(SiliconStudioRuntime)' == ''">$(MSBuildThisFileDirectory)SiliconStudio.$(SiliconStudioPlatform).$(SiliconStudioProjectType).targets</SiliconStudioCompilerTargets>
-    <SiliconStudioCompilerTargets Condition="'$(SiliconStudioRuntime)' != ''">$(MSBuildThisFileDirectory)SiliconStudio.$(SiliconStudioPlatform).$(SiliconStudioRuntime).$(SiliconStudioProjectType).targets</SiliconStudioCompilerTargets>
-    <SiliconStudioCompilerTargetsEnable Condition="!Exists('$(SiliconStudioCompilerTargets)')">false</SiliconStudioCompilerTargetsEnable>
-    <SiliconStudioCompilerTargetsEnable Condition=" '$(SiliconStudioPlatform)' != 'Windows' and $(SiliconStudioWindowsOnly) == 'true'">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(SiliconStudioGenerateDoc)' == 'true' ">
     <DocumentationFile>$(OutputPath)\$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
 
-  <!-- Import the specific compiler targets for the selected platform/language -->
+  <Choose>
+    <When Condition="'$(SiliconStudioRuntime)' != ''">
+      <!-- When compiling for a specific runtime, we only use the same file regardless of the platform -->
+      <PropertyGroup>
+        <SiliconStudioCompilerTargets>$(MSBuildThisFileDirectory)SiliconStudio.$(SiliconStudioRuntime).$(SiliconStudioProjectType).targets</SiliconStudioCompilerTargets>
+      </PropertyGroup>
+    </When>
+    <When Condition="!Exists('$(MSBuildThisFileDirectory)SiliconStudio.$(SiliconStudioPlatform).$(SiliconStudioProjectType).targets')">
+      <PropertyGroup>
+        <SiliconStudioCompilerTargets>$(MSBuildThisFileDirectory)SiliconStudio.$(SiliconStudioProjectType).targets</SiliconStudioCompilerTargets>
+      </PropertyGroup>
+    </When>
+    <Otherwise>
+      <PropertyGroup>
+        <SiliconStudioCompilerTargets>$(MSBuildThisFileDirectory)SiliconStudio.$(SiliconStudioPlatform).$(SiliconStudioProjectType).targets</SiliconStudioCompilerTargets>
+      </PropertyGroup>
+    </Otherwise>
+  </Choose>
+
+  <PropertyGroup>
+    <SiliconStudioCompilerTargetsEnable Condition="!Exists('$(SiliconStudioCompilerTargets)')">false</SiliconStudioCompilerTargetsEnable>
+    <SiliconStudioCompilerTargetsEnable Condition=" '$(SiliconStudioPlatform)' != 'Windows' and $(SiliconStudioWindowsOnly) == 'true'">false</SiliconStudioCompilerTargetsEnable>
+  </PropertyGroup>
+
+  <!-- Import the specific compiler targets for the selected platform/language if it exists and if `SiliconStudioWindowsOnly` is true, makes sure
+  to do nothing if this is not a Windows platform -->
   <Import Condition="'$(SiliconStudioCompilerTargetsEnable)' != 'false'" Project="$(SiliconStudioCompilerTargets)" />
   
   <UsingTask TaskName="AssemblyProcessorTask" AssemblyFile="$(SolutionDir)\..\deps\AssemblyProcessor\SiliconStudio.AssemblyProcessor.exe"/>
@@ -117,10 +136,4 @@
         $(BuildDependsOn);
     </BuildDependsOn>  
   </PropertyGroup>
-  
-  <!-- Copy the libcore.a and libfreetype.a libraries to the project root directory for future native link.
-       Note: this target is redefined in References.targets for user projects -->
-  <Target Name="CopySiliconStudioNativeLibraries" Condition=" '$(SiliconStudioPlatform)' == 'iOS' and '$(OutputType)' == 'Exe'">
-    <Copy SourceFiles="$(SiliconStudioDependenciesDir)Core.Native\$(SiliconStudioPlatform)\libcore.a" DestinationFolder="$(ProjectDir)"/>
-  </Target>
 </Project>

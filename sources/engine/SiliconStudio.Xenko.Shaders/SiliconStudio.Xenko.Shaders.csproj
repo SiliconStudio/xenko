@@ -30,6 +30,7 @@
     </Compile>
     <Compile Include="Compiler\CompilerResults.cs" />
     <Compile Include="Compiler\CompilerParameters.cs" />
+    <Compile Include="Compiler\EffectBytecodeCacheLoadSource.cs" />
     <Compile Include="Compiler\EffectBytecodeCompilerResult.cs" />
     <Compile Include="Compiler\EffectCompilerParameters.cs" />
     <Compile Include="Compiler\NullEffectCompiler.cs" />
@@ -48,6 +49,7 @@
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="ParameterKeyHashSerializer.cs" />
     <Compile Include="EffectConstantBufferDescription.cs" />
+    <Compile Include="ShaderInputBytecode.cs" />
     <Compile Include="ShaderLevelBytecode.cs" />
     <Compile Include="ShaderMixinDiscardException.cs" />
     <Compile Include="ShaderMixinGeneratorSource.cs" />

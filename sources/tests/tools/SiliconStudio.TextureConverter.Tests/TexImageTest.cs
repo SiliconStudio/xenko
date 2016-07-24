@@ -25,7 +25,7 @@ namespace SiliconStudio.TextureConverter.Tests
             Marshal.FreeHGlobal(image.Data);
         }
 
-        [Test, Ignore]
+        [Test, Ignore("Need check")]
         public void TestEquals()
         {
             TexImage image2 = new TexImage(new IntPtr(), 699104, 512, 512, 1, SiliconStudio.Xenko.Graphics.PixelFormat.BC3_UNorm, 10, 2, TexImage.TextureDimension.Texture2D);
@@ -35,7 +35,7 @@ namespace SiliconStudio.TextureConverter.Tests
             Assert.IsFalse(image.Equals(image2));
         }
 
-        [Test, Ignore]
+        [Test, Ignore("Need check")]
         public void TestClone()
         {
             TexImage clone = (TexImage)image.Clone();

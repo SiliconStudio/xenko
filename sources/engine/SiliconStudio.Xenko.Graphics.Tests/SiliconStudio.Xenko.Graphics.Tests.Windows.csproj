@@ -38,6 +38,7 @@
     <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -45,6 +46,7 @@
     <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Testing|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -52,6 +54,7 @@
     <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -59,6 +62,7 @@
     <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'CoreCLR_Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -68,8 +72,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <SiliconStudioRuntime Condition="'$(SiliconStudioProjectType)' == 'Executable'">CoreCLR</SiliconStudioRuntime>
-    <SiliconStudioBuildDirExtension>$(SiliconStudioRuntime)</SiliconStudioBuildDirExtension>
+    <SiliconStudioBuildDirExtension Condition="'$(SiliconStudioBuildDirExtension)' == ''">CoreCLR</SiliconStudioBuildDirExtension>
     <DefineConstants>SILICONSTUDIO_RUNTIME_CORECLR;$(DefineConstants)</DefineConstants>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'CoreCLR_Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -78,11 +83,12 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <SiliconStudioRuntime Condition="'$(SiliconStudioProjectType)' == 'Executable'">CoreCLR</SiliconStudioRuntime>
-    <SiliconStudioBuildDirExtension>$(SiliconStudioRuntime)</SiliconStudioBuildDirExtension>
+    <SiliconStudioBuildDirExtension Condition="'$(SiliconStudioBuildDirExtension)' == ''">CoreCLR</SiliconStudioBuildDirExtension>
     <DefineConstants>SILICONSTUDIO_RUNTIME_CORECLR;$(DefineConstants)</DefineConstants>
+    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Xenko.Graphics.Tests.TestImageLoad</StartupObject>
+    <StartupObject>SiliconStudio.Xenko.Graphics.Tests.TestDynamicSpriteFont</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <None Include="README.md" />

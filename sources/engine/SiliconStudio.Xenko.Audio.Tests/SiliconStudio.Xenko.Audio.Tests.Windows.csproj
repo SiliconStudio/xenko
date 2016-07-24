@@ -174,13 +174,11 @@
     <Compile Include="TestAudioEmitter.cs" />
     <Compile Include="TestAudioEngine.cs" />
     <Compile Include="TestAudioListener.cs" />
-    <Compile Include="TestAudioUtilities.cs" />
     <Compile Include="TestDynamicSoundEffectInstance.cs" />
     <Compile Include="TestInvalidationAudioContext.cs" />
     <Compile Include="TestSoundEffect.cs" />
     <Compile Include="TestSoundEffectInstance.cs" />
     <Compile Include="TestSoundMusic.cs" />
-    <Compile Include="TestWaveStreamReader.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="AudioAssets\a.xksnd" />

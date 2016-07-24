@@ -48,6 +48,7 @@
     <Compile Include="Analysis\AssetAnalysis.cs" />
     <Compile Include="Analysis\AssetAnalysisParameters.cs" />
     <Compile Include="Analysis\AssetBaseAnalysis.cs" />
+    <Compile Include="Analysis\AssetCompositeAnalysis.cs" />
     <Compile Include="Analysis\AssetLink.cs" />
     <Compile Include="Analysis\AssetDependencyManager.cs" />
     <Compile Include="Analysis\AssetDependencyManagerExtensions.cs" />
@@ -59,6 +60,16 @@
     <Compile Include="Analysis\AssetInheritanceSearchOptions.cs" />
     <Compile Include="Analysis\AssetReferenceAnalysis.cs" />
     <Compile Include="Analysis\AssetReferenceLink.cs" />
+    <Compile Include="Analysis\AssetPartsAnalysis.cs" />
+    <Compile Include="AssetCompositeHierarchy.cs" />
+    <Compile Include="AssetCompositeHierarchyData.cs" />
+    <Compile Include="AssetPartCollection.cs" />
+    <Compile Include="IAssetPartDesign.cs" />
+    <Compile Include="Serializers\AssetCompositeVisitorContext.cs" />
+    <Compile Include="Serializers\AssetPartReferenceAttribute.cs" />
+    <Compile Include="Serializers\AssetCompositeSerializer.cs" />
+    <Compile Include="Serializers\IAssetPartReference.cs" />
+    <Compile Include="Serializers\IdentifiableAssetPartReference.cs" />
     <Compile Include="Tracking\AssetSourceTracker.cs" />
     <Compile Include="Analysis\CommonAnalysis.cs" />
     <Compile Include="Analysis\IContentLink.cs" />

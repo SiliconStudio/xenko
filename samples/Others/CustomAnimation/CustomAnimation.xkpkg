@@ -10,7 +10,7 @@ Meta:
     RootNamespace: CustomAnimation
     Dependencies:
         -   Name: Xenko
-            Version: 1.6.0-beta
+            Version: 1.7.0-alpha03
             RootAssets: []
 LocalDependencies: []
 Profiles:

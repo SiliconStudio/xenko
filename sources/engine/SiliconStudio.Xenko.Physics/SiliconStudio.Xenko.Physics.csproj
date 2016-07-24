@@ -3,10 +3,6 @@
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <DocumentationFile>
-    </DocumentationFile>
-  </PropertyGroup>
   <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
     <ProductVersion>8.0.30703</ProductVersion>
@@ -36,6 +32,9 @@
   <ItemGroup>
     <None Include="..\..\..\deps\BulletPhysics\$(SiliconStudioPlatform)\**\libbulletc.*">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Condition="'$(SiliconStudioPlatform)' == 'Linux'" Include="..\..\..\deps\BulletPhysics\BulletSharp.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
@@ -83,6 +82,7 @@
     <Compile Include="PhysicsConfiguration.cs" />
     <Compile Include="PhysicsProfilingKeys.cs" />
     <Compile Include="PhysicsScriptComponentExtensions.cs" />
+    <Compile Include="Shaders.Bytecode\PhysicsDebugEffect.bytecode.Vulkan.Level_9_1.cs" />
     <Compile Include="XenkoMotionState.cs" />
     <Compile Include="ShapeOrientation.cs" />
     <Compile Include="Shapes\Box2DColliderShape.cs" />

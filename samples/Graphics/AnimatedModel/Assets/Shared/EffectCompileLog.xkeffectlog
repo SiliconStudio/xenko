@@ -1,3 +1,4 @@
+---
 !EffectCompileRequest
 EffectName: XenkoForwardShadingEffect
 UsedParameters:
@@ -6,35 +7,35 @@ UsedParameters:
     Material.HasSkinningTangent: false
     Material.SkinningMaxBones: 56
     Material.PixelStageSurfaceShaders: !ShaderMixinSource
+        Mixins:
+            -   ClassName: MaterialSurfaceArray
         Compositions:
             layers: !ShaderArraySource
                 Values:
                     - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceDiffuse
                         Compositions:
                             diffuseMap: !ShaderClassSource
                                 ClassName: ComputeColorTextureScaledOffsetDynamicSampler
                                 GenericArguments: [Material.DiffuseMap, TEXCOORD0, Material.Sampler.i0, rgba, Material.TextureScale, Material.TextureOffset]
-                        Mixins:
-                            -   ClassName: MaterialSurfaceDiffuse
                     - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceNormalMap
+                                GenericArguments: [false, true]
                         Compositions:
                             normalMap: !ShaderClassSource
                                 ClassName: ComputeColorTextureScaledOffsetDynamicSampler
                                 GenericArguments: [Material.NormalMap, TEXCOORD0, Material.Sampler.i0, rgba, Material.TextureScale.i1, Material.TextureOffset.i1]
-                        Mixins:
-                            -   ClassName: MaterialSurfaceNormalMap
-                                GenericArguments: [false, true]
                     - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceLightingAndShading
                         Compositions:
                             surfaces: !ShaderArraySource
                                 Values:
                                     - !ShaderClassSource
                                         ClassName: MaterialSurfaceShadingDiffuseLambert
                                         GenericArguments: [false]
-                        Mixins:
-                            -   ClassName: MaterialSurfaceLightingAndShading
-        Mixins:
-            -   ClassName: MaterialSurfaceArray
     Material.PixelStageStreamInitializer: !ShaderMixinSource
         Mixins:
             -   ClassName: MaterialStream
@@ -45,6 +46,6 @@ UsedParameters:
             Mixins:
                 -   ClassName: LightDirectionalGroup
                     GenericArguments: [1]
-                -   ClassName: DirectLightGroupFixed
-                    GenericArguments: [1]
-    Lighting.EnvironmentLights: []
+    Lighting.EnvironmentLights:
+        - !ShaderClassSource
+            ClassName: LightSimpleAmbient

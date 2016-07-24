@@ -41,6 +41,14 @@ namespace SiliconStudio.Presentation.Services
         /// <summary>
         /// Executes the given asynchronous function in the dispatcher thread. This method will run asynchronously and return immediately.
         /// </summary>
+        /// <param name="callback">The asynchronous function to execute in the dispatcher thread.</param>
+        /// <returns>A task corresponding to the asynchronous execution of the given function.</returns>
+        /// <remarks>This method uses a low priority to schedule the action on the dispatcher thread.</remarks>
+        Task LowPriorityInvokeAsync(Action callback);
+
+        /// <summary>
+        /// Executes the given asynchronous function in the dispatcher thread. This method will run asynchronously and return immediately.
+        /// </summary>
         /// <typeparam name="TResult">The type of result returned by the task.</typeparam>
         /// <param name="callback">The asynchronous function to execute in the dispatcher thread.</param>
         /// <returns>A task corresponding to the asynchronous execution of the given task.</returns>

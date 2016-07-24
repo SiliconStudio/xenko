@@ -25,16 +25,7 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Choose>
-    <When Condition="$(SiliconStudioUI.Contains('SDL'))">
-      <ItemGroup>
-        <Reference Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoDependenciesDir)\SDL2-CS\SDL2-CS.dll</HintPath>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
+  <Import Condition="$(SiliconStudioUI.Contains('SDL'))" Project="..\..\common\targets\SDL.targets"/> 
   <Choose>
     <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' Or '$(XenkoGraphicsApi)' == 'Direct3D12' ">
       <ItemGroup>
@@ -46,10 +37,22 @@
           <SpecificVersion>False</SpecificVersion>
           <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
         </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
+      <ItemGroup>
         <Reference Include="SharpDX.Direct3D11" Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
           <SpecificVersion>False</SpecificVersion>
           <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
         </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D12' ">
+      <ItemGroup>
         <Reference Include="SharpDX.Direct3D12" Condition=" '$(XenkoGraphicsApi)' == 'Direct3D12' ">
           <SpecificVersion>False</SpecificVersion>
           <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D12.dll</HintPath>
@@ -99,6 +102,7 @@
     <Compile Include="IGame.cs" />
     <Compile Include="IGamePlatform.cs" />
     <Compile Include="IGameSystemBase.cs" />
+    <Compile Include="IGameSystemCollection.cs" />
     <Compile Include="IGraphicsDeviceFactory.cs" />
     <Compile Include="IGraphicsDeviceManager.cs" />
     <Compile Include="iOS\iOSWindow.cs" />

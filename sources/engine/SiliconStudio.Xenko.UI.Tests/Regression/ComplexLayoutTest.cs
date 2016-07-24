@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public ComplexLayoutTest()
         {
-            CurrentVersion = 10;
+            CurrentVersion = 11;
         }
 
         protected override async Task LoadContent()

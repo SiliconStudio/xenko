@@ -1,41 +1,7 @@
 !SceneAsset
 Id: 365136b9-adbe-4c9a-8eeb-563894b4bd08
-SerializedVersion: {Xenko: 1.7.0-beta02}
+SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
-Hierarchy:
-    ~Id: 2e4de7c3-5c42-4d8a-a6e3-77cac52dd05c
-    RootEntities:
-        - 6a89de77-e3d6-40c4-9504-f75c5983d911
-        - 39779b9e-9eaa-4aa2-8cd9-3f3d3a0afd7a
-    Entities:
-        -   Entity:
-                Id: 39779b9e-9eaa-4aa2-8cd9-3f3d3a0afd7a
-                Name: Background
-                Components:
-                    - !TransformComponent
-                        ~Id: dabd31bc-d65e-4adf-a0fb-4595f9099d2d
-                        Position: {X: 0.0, Y: 0.0, Z: -1.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: []
-                    - !BackgroundComponent
-                        ~Id: 3977262e-8b68-48c6-b58d-8886778b12b4
-                        Texture: e472fb82-9b2c-43fb-809f-96a6226725a7/464f4cc7-2978-4c47-ae31-6001c905c896:XenkoBackground
-            Design: {}
-        -   Entity:
-                Id: 6a89de77-e3d6-40c4-9504-f75c5983d911
-                Name: Effect
-                Components:
-                    - !TransformComponent
-                        ~Id: f218808e-5386-453e-b287-1b343cc03ead
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: []
-                    - !CustomEffect.EffectScript,CustomEffect.Game
-                        ~Id: 274a57bf-8017-4ffb-8b3d-04b2ba7cd9bb
-                        Logo: 5ea5ecb7-97e0-4efe-8500-9dd530dc055d/cbf696d1-ec12-4cb6-9518-b4a9b51dfaf6:LogoXenko
-            Design: {}
 SceneSettings:
     ~Id: 40dab724-ad13-437e-8790-a5e98fa9c58a
     GraphicsCompositor: !SceneGraphicsCompositorLayers
@@ -68,3 +34,35 @@ SceneSettings:
         Mode: !SceneEditorGraphicsModeLDRSettings
             ~Id: 104fe299-ff2e-4baa-838e-fdb2eee7e312
             BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+Hierarchy:
+    ~Id: 2e4de7c3-5c42-4d8a-a6e3-77cac52dd05c
+    RootPartIds:
+        - 6a89de77-e3d6-40c4-9504-f75c5983d911
+        - 39779b9e-9eaa-4aa2-8cd9-3f3d3a0afd7a
+    Parts:
+        -   Entity:
+                Id: 39779b9e-9eaa-4aa2-8cd9-3f3d3a0afd7a
+                Name: Background
+                Components:
+                    - !TransformComponent
+                        ~Id: dabd31bc-d65e-4adf-a0fb-4595f9099d2d
+                        Position: {X: 0.0, Y: 0.0, Z: -1.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !BackgroundComponent
+                        ~Id: 3977262e-8b68-48c6-b58d-8886778b12b4
+                        Texture: e472fb82-9b2c-43fb-809f-96a6226725a7/464f4cc7-2978-4c47-ae31-6001c905c896:XenkoBackground
+        -   Entity:
+                Id: 6a89de77-e3d6-40c4-9504-f75c5983d911
+                Name: Effect
+                Components:
+                    - !TransformComponent
+                        ~Id: f218808e-5386-453e-b287-1b343cc03ead
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !CustomEffect.EffectScript,CustomEffect.Game
+                        ~Id: 274a57bf-8017-4ffb-8b3d-04b2ba7cd9bb
+                        Logo: 5ea5ecb7-97e0-4efe-8500-9dd530dc055d/cbf696d1-ec12-4cb6-9518-b4a9b51dfaf6:LogoXenko

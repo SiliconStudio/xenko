@@ -105,6 +105,8 @@ namespace SiliconStudio.Xenko.Graphics
             SamplerStates.Dispose();
             SamplerStates = null;
 
+            DefaultPipelineState.Dispose();
+
             PrimitiveQuad.Dispose();
 
             // Notify listeners

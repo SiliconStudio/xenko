@@ -173,7 +173,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         [Test]
         public void MaterialNormalMapCompressed()
         {
-            RunGameTest(new MaterialTests(game => game.Content.Load<Material>("MaterialTests/Features/MaterialNormalMapCompressed")));
+            RunGameTest(new MaterialTests(game => game.Content.Load<Material>("MaterialTests/Features/MaterialNormalMapCompressed")) { CurrentVersion = CurrentVersion + 1 });
         }
 
         [Test]

@@ -12,7 +12,7 @@ using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Core.Tests.Build
 {
-    [TestFixture, Ignore]
+    [TestFixture, Ignore("Need check")]
     public class TestStorage
     {
         private readonly int[] blobData1 = new[] { 0, 1, 2, 3 };

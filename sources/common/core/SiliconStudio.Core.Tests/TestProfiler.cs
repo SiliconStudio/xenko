@@ -181,24 +181,19 @@ namespace SiliconStudio.Core.Tests
             public void Dispose()
             {
                 GlobalLogger.GlobalMessageLogged -= LogAction;
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-                if (Assert.Counter == 0)
+                var missingMessage = new StringBuilder();
+                for (int i = CurrentMessage; i < ExpectedMessages.Count; i++)
                 {
-                    var missingMessage = new StringBuilder();
-                    for (int i = CurrentMessage; i < ExpectedMessages.Count; i++)
+                    string expectedMessage;
+                    ExpectedMessages[i](string.Empty, out expectedMessage, true);
+                    missingMessage.Append(expectedMessage);
+                    if ((CurrentMessage + 1) < ExpectedMessages.Count)
                     {
-                        string expectedMessage;
-                        ExpectedMessages[i](string.Empty, out expectedMessage, true);
-                        missingMessage.Append(expectedMessage);
-                        if ((CurrentMessage + 1) < ExpectedMessages.Count)
-                        {
-                            missingMessage.AppendLine();
-                        }
+                        missingMessage.AppendLine();
                     }
-
-                    Assert.That(CurrentMessage, Is.EqualTo(ExpectedMessages.Count), "Invalid number of profiler events received [{0}] Expecting [{1}]. Missing messages: [{2}]", CurrentMessage, ExpectedMessages.Count, missingMessage);
                 }
-#endif
+
+                Assert.That(CurrentMessage, Is.EqualTo(ExpectedMessages.Count), "Invalid number of profiler events received [{0}] Expecting [{1}]. Missing messages: [{2}]", CurrentMessage, ExpectedMessages.Count, missingMessage);
             }
         }
 

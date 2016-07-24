@@ -29,11 +29,19 @@ UsedParameters:
             -   ClassName: MaterialStream
             -   ClassName: MaterialPixelShadingStream
     Lighting.DirectLightGroups:
+        - !ShaderClassSource
+            ClassName: LightClusteredPointGroup
+            GenericArguments: [64]
+        - !ShaderClassSource
+            ClassName: LightClusteredSpotGroup
+            GenericArguments: [64]
         - !ShaderMixinSource
             Mixins:
-                -   ClassName: LightPointGroup
+                -   ClassName: LightDirectionalGroup
                     GenericArguments: [8]
-    Lighting.EnvironmentLights: []
+    Lighting.EnvironmentLights:
+        - !ShaderClassSource
+            ClassName: LightSimpleAmbient
 ---
 !EffectCompileRequest
 EffectName: XenkoForwardShadingEffect
@@ -104,15 +112,24 @@ UsedParameters:
             -   ClassName: MaterialPixelShadingStream
     Material.HasNormalMap: true
     Lighting.DirectLightGroups:
+        - !ShaderClassSource
+            ClassName: LightClusteredPointGroup
+            GenericArguments: [64]
+        - !ShaderClassSource
+            ClassName: LightClusteredSpotGroup
+            GenericArguments: [64]
         - !ShaderMixinSource
             Mixins:
-                -   ClassName: LightPointGroup
+                -   ClassName: LightDirectionalGroup
                     GenericArguments: [8]
-    Lighting.EnvironmentLights: []
+    Lighting.EnvironmentLights:
+        - !ShaderClassSource
+            ClassName: LightSimpleAmbient
 ---
 !EffectCompileRequest
 EffectName: ParticleEffect
 UsedParameters:
+    ParticleBase.UsesSoftEdge: 0
     ParticleBase.BaseColor: !ShaderClassSource
         ClassName: ComputeColorTextureScaledOffsetDynamicSampler
         GenericArguments: [ParticleBase.EmissiveMap, TEXCOORD0, Material.Sampler.i0, rgba, Material.TextureScale, Material.TextureOffset]

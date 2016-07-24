@@ -31,5 +31,10 @@ namespace SiliconStudio.Xenko.Graphics
         {
             return Description;
         }
+
+        /// <summary>
+        /// The unique id in the form of string of this device
+        /// </summary>
+        public string AdapterUid { get; internal set; }
     }
 }

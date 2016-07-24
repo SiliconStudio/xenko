@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.UI
     [CategoryOrder(30, LayoutCategory, Expand = ExpandRule.Auto)]
     [CategoryOrder(100, MiscCategory, Expand = ExpandRule.Auto)]
     [DebuggerDisplay("UIElement: {Name}")]
-    public abstract partial class UIElement : IUIElementUpdate, IIdentifiable
+    public abstract partial class UIElement : IUIElementUpdate, IUIElementChildren, IIdentifiable
     {
         // Categories of UI element classes
         protected const string InputCategory = "Input";
@@ -660,7 +660,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
         [DataMember]
-        [Display(category: LayoutCategory)]
+        [Display(category: AppearanceCategory)]
         [DefaultValue(false)]
         public bool ClipToBounds { get; set; } = false;
 
@@ -903,6 +903,16 @@ namespace SiliconStudio.Xenko.UI
         [Display(category: AppearanceCategory)]
         public Color BackgroundColor { get; set; }
 
+        /// <inheritdoc/>
+        IEnumerable<IUIElementChildren> IUIElementChildren.Children => EnumerateChildren();
+
+        /// <summary>
+        /// Enumerates the children of this element. 
+        /// </summary>
+        /// <returns>A sequence containing all the children of this element.</returns>
+        /// <remarks>This method is used by the implementation of the <see cref="IUIElementChildren"/> interface.</remarks>
+        protected abstract IEnumerable<IUIElementChildren> EnumerateChildren();
+
         private unsafe bool Vector3BinaryEqual(ref Vector3 left, ref Vector3 right)
         {
             fixed (Vector3* pVector3Left = &left)
@@ -946,42 +956,38 @@ namespace SiliconStudio.Xenko.UI
             // variable containing the temporary desired size 
             var desiredSize = new Vector3(Width, Height, Depth);
 
-            // override the size if not set by the user
-            if (float.IsNaN(desiredSize.X) || float.IsNaN(desiredSize.Y) || float.IsNaN(desiredSize.Z))
-            {
-                // either the width, height or the depth of the UIElement is not fixed
-                // -> compute the desired size of the children to determine it
+            // width, height or the depth of the UIElement might be undetermined
+            // -> compute the desired size of the children to determine it
 
-                // removes the size required for the margins in the available size
-                var availableSizeWithoutMargins = CalculateSizeWithoutThickness(ref availableSizeWithMargins, ref MarginInternal);
+            // removes the size required for the margins in the available size
+            var availableSizeWithoutMargins = CalculateSizeWithoutThickness(ref availableSizeWithMargins, ref MarginInternal);
 
-                // trunk the available size for the element between the maximum and minimum width/height of the UIElement
-                availableSizeWithoutMargins = new Vector3(
-                Math.Max(MinimumWidth, Math.Min(MaximumWidth, !float.IsNaN(desiredSize.X)? desiredSize.X: availableSizeWithoutMargins.X)),
+            // trunk the available size for the element between the maximum and minimum width/height of the UIElement
+            availableSizeWithoutMargins = new Vector3(
+                Math.Max(MinimumWidth, Math.Min(MaximumWidth, !float.IsNaN(desiredSize.X) ? desiredSize.X : availableSizeWithoutMargins.X)),
                 Math.Max(MinimumHeight, Math.Min(MaximumHeight, !float.IsNaN(desiredSize.Y) ? desiredSize.Y : availableSizeWithoutMargins.Y)),
                 Math.Max(MinimumDepth, Math.Min(MaximumDepth, !float.IsNaN(desiredSize.Z) ? desiredSize.Z : availableSizeWithoutMargins.Z)));
 
-                // compute the desired size for the children
-                var childrenDesiredSize = MeasureOverride(availableSizeWithoutMargins);
+            // compute the desired size for the children
+            var childrenDesiredSize = MeasureOverride(availableSizeWithoutMargins);
 
-                // replace the undetermined size by the desired size for the children
-                if (float.IsNaN(desiredSize.X))
-                    desiredSize.X = childrenDesiredSize.X;
-                if (float.IsNaN(desiredSize.Y))
-                    desiredSize.Y = childrenDesiredSize.Y;
-                if (float.IsNaN(desiredSize.Z))
-                    desiredSize.Z = childrenDesiredSize.Z;
+            // replace the undetermined size by the desired size for the children
+            if (float.IsNaN(desiredSize.X))
+                desiredSize.X = childrenDesiredSize.X;
+            if (float.IsNaN(desiredSize.Y))
+                desiredSize.Y = childrenDesiredSize.Y;
+            if (float.IsNaN(desiredSize.Z))
+                desiredSize.Z = childrenDesiredSize.Z;
 
-                // override the element size by the default size if still unspecified
-                if (float.IsNaN(desiredSize.X))
-                    desiredSize.X = DefaultWidth;
-                if (float.IsNaN(desiredSize.Y))
-                    desiredSize.Y = DefaultHeight;
-                if (float.IsNaN(desiredSize.Z))
-                    desiredSize.Z = DefaultDepth;
-            }
+            // override the element size by the default size if still unspecified
+            if (float.IsNaN(desiredSize.X))
+                desiredSize.X = DefaultWidth;
+            if (float.IsNaN(desiredSize.Y))
+                desiredSize.Y = DefaultHeight;
+            if (float.IsNaN(desiredSize.Z))
+                desiredSize.Z = DefaultDepth;
 
-            // trunk the desired size between the maximum and minimum width/height of the UIElement
+            // clamp the desired size between the maximum and minimum width/height of the UIElement
             desiredSize = new Vector3(
                 Math.Max(MinimumWidth, Math.Min(MaximumWidth, desiredSize.X)),
                 Math.Max(MinimumHeight, Math.Min(MaximumHeight, desiredSize.Y)),
@@ -989,7 +995,7 @@ namespace SiliconStudio.Xenko.UI
 
             // compute the desired size with margin
             var desiredSizeWithMargins = CalculateSizeWithThickness(ref desiredSize, ref MarginInternal);
-            
+
             // update Element state variables
             DesiredSize = desiredSize;
             DesiredSizeWithMargins = desiredSizeWithMargins;
@@ -1338,6 +1344,7 @@ namespace SiliconStudio.Xenko.UI
             switch (HorizontalAlignment)
             {
                 case HorizontalAlignment.Center:
+                case HorizontalAlignment.Stretch:
                     offsets.X += (providedSpace.X - usedSpaceWithThickness.X) / 2;
                     break;
                 case HorizontalAlignment.Right:
@@ -1349,6 +1356,7 @@ namespace SiliconStudio.Xenko.UI
             switch (VerticalAlignment)
             {
                 case VerticalAlignment.Center:
+                case VerticalAlignment.Stretch:
                     offsets.Y += (providedSpace.Y - usedSpaceWithThickness.Y) / 2;
                     break;
                 case VerticalAlignment.Bottom:
@@ -1360,6 +1368,7 @@ namespace SiliconStudio.Xenko.UI
             switch (DepthAlignment)
             {
                 case DepthAlignment.Center:
+                case DepthAlignment.Stretch:
                     offsets.Z += (providedSpace.Z - usedSpaceWithThickness.Z) / 2;
                     break;
                 case DepthAlignment.Back:
@@ -1368,6 +1377,6 @@ namespace SiliconStudio.Xenko.UI
             }
 
             return offsets;
-        }        
+        }
     }
 }

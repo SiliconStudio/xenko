@@ -45,35 +45,38 @@ namespace SiliconStudio.Xenko.Rendering
             var camera = context.Tags.Get(CameraComponentRendererExtensions.Current);
             var sceneCameraRenderer = context.Tags.Get(SceneCameraRenderer.Current);
 
-            if (camera == null || sceneCameraRenderer == null)
+            if (sceneCameraRenderer == null)
                 return;
-
-            // Setup viewport size
-            var currentViewport = sceneCameraRenderer.ComputedViewport;
-            var aspectRatio = currentViewport.AspectRatio;
-
-            // Update the aspect ratio
-            if (camera.UseCustomAspectRatio)
-            {
-                aspectRatio = camera.AspectRatio;
-            }
-
-            // If the aspect ratio is calculated automatically from the current viewport, update matrices here
-            camera.Update(aspectRatio);
-
-            // Copy camera data
-            renderView.View = camera.ViewMatrix;
-            renderView.Projection = camera.ProjectionMatrix;
-            renderView.NearClipPlane = camera.NearClipPlane;
-            renderView.FarClipPlane = camera.FarClipPlane;
-            renderView.Frustum = camera.Frustum;
 
             // Copy scene camera renderer data
             renderView.CullingMask = sceneCameraRenderer.CullingMask;
             renderView.CullingMode = sceneCameraRenderer.CullingMode;
             renderView.ViewSize = new Vector2(sceneCameraRenderer.ComputedViewport.Width, sceneCameraRenderer.ComputedViewport.Height);
 
-            Matrix.Multiply(ref renderView.View, ref renderView.Projection, out renderView.ViewProjection);
+            if (camera != null)
+            {
+                // Setup viewport size
+                var currentViewport = sceneCameraRenderer.ComputedViewport;
+                var aspectRatio = currentViewport.AspectRatio;
+
+                // Update the aspect ratio
+                if (camera.UseCustomAspectRatio)
+                {
+                    aspectRatio = camera.AspectRatio;
+                }
+
+                // If the aspect ratio is calculated automatically from the current viewport, update matrices here
+                camera.Update(aspectRatio);
+
+                // Copy camera data
+                renderView.View = camera.ViewMatrix;
+                renderView.Projection = camera.ProjectionMatrix;
+                renderView.NearClipPlane = camera.NearClipPlane;
+                renderView.FarClipPlane = camera.FarClipPlane;
+                renderView.Frustum = camera.Frustum;
+
+                Matrix.Multiply(ref renderView.View, ref renderView.Projection, out renderView.ViewProjection);
+            }
         }
     }
 }

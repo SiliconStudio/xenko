@@ -26,12 +26,6 @@
       </ItemGroup>
     </When>
   </Choose>
-  <ItemGroup>
-    <None Include="$(SiliconStudioDependenciesDir)Core.Native\$(SiliconStudioPlatform)\**\*.*">
-      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
   <Choose>
     <When Condition=" '$(SiliconStudioPlatform)' == 'Android' ">
       <ItemGroup>
@@ -43,6 +37,18 @@
     <When Condition=" '$(SiliconStudioPlatform)' == 'iOS' ">
       <ItemGroup>
         <Reference Include="Xamarin.iOS" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition=" '$(SiliconStudioRuntime)' == 'CoreCLR' ">
+      <ItemGroup>
+        <None Include="..\..\..\data\Linux\runtimeconfig.json">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Include="..\..\..\data\Linux\CoreCLRSetup.sh">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
       </ItemGroup>
     </When>
   </Choose>

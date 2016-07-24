@@ -1,11 +1,12 @@
 !PrefabAsset
 Id: 802fae9e-3183-4fa2-a971-cb7f97e1bcfc
+SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
 Hierarchy:
     ~Id: e8c342d3-560b-4a8f-890f-6528a64c72c3
-    RootEntities:
+    RootPartIds:
         - 73b67cca-fec1-4630-87d1-113a8ec9036b
-    Entities:
+    Parts:
         -   Entity:
                 Id: 73b67cca-fec1-4630-87d1-113a8ec9036b
                 Name: Swoosh
@@ -31,26 +32,22 @@ Hierarchy:
                             BoundingShape: null
                             Emitters:
                                 -   ~Id: 4a1169c2-4a53-4936-942b-d9a5533391fa
-                                    MaxParticlesOverride: 0
                                     ParticleLifetime: {X: 0.3, Y: 0.3}
-                                    SimulationSpace: World
-                                    RandomSeedMethod: Time
                                     SortingPolicy: ByOrder
                                     ShapeBuilder: !ShapeBuilderTrail
                                         ~Id: 741eb45b-05eb-4459-94d1-3909719f6ffe
                                         SmoothingPolicy: Best
                                         Segments: 15
                                         EdgePolicy: Center
-                                        TexCoordsPolicy: AsIs
+                                        TextureCoordinatePolicy: AsIs
                                         TexCoordsFactor: 1.0
-                                        UvRotate:
+                                        UVRotate:
                                             FlipX: false
                                             FlipY: false
-                                            UvClockwise: Degree0
+                                            UVClockwise: Degree0
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 1737e1ea-7294-40bb-8914-3b74bdd480ae
                                         AlphaAdditive: 1.0
-                                        FaceCulling: CullNone
                                         ComputeColor: !ComputeBinaryColor
                                             Operator: Overlay
                                             LeftChild: !ComputeVertexStreamColor
@@ -179,19 +176,18 @@ Hierarchy:
                                             DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
-                                            SamplerMain: !ComputeCurveSamplerVector4
+                                            SamplerMain: !ComputeCurveSamplerColor4
                                                 ~Id: 684df394-fac8-4038-be40-b2f9222d51cb
-                                                Curve: !ComputeAnimationCurveVector4
+                                                Curve: !ComputeAnimationCurveColor4
                                                     ~Id: cd9ce416-ec6b-42c0-b382-1c17412e53c8
                                                     KeyFrames:
                                                         -   ~Id: d5293a79-bbef-4841-b651-01a385df8bd5
                                                             Key: 0.0
-                                                            Value: {X: 1.0, Y: 1.0, Z: 0.5, W: 1.0}
+                                                            Value: {R: 1.0, G: 1.0, B: 0.5, A: 1.0}
                                                             TangentType: Linear
                                                         -   ~Id: 6c74ffcb-44da-4320-9952-4247a54339f7
                                                             Key: 0.5
-                                                            Value: {X: 1.0, Y: 0.5, Z: 0.0, W: 1.0}
+                                                            Value: {R: 1.0, G: 0.5, B: 0.0, A: 1.0}
                                                             TangentType: Linear
                                             SamplerOptional: null
                                             SeedOffset: 0
-            Design: {}

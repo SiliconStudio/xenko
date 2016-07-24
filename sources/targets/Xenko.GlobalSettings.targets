@@ -47,6 +47,10 @@
     <XenkoGraphicsApiDefines>SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL;SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES</XenkoGraphicsApiDefines>
   </PropertyGroup>
 
+  <PropertyGroup Condition=" '$(XenkoGraphicsApi)' == 'Vulkan' ">
+    <XenkoGraphicsApiDefines>SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN</XenkoGraphicsApiDefines>
+  </PropertyGroup>
+  
   <!-- 
     Settings SiliconStudioPlatform specific
   -->
@@ -72,7 +76,7 @@
     <ProjectLockFile Condition="'$(ProjectLockFile)' == ''">$(MSBuildThisFileDirectory)..\build\project.lock.json</ProjectLockFile>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Linux' ">
+  <PropertyGroup Condition="('$(SiliconStudioPlatform)' == 'Linux') or ('$(SiliconStudioPlatform)' == 'macOS')">
     <FrameworkShaderUseSharpDX>false</FrameworkShaderUseSharpDX>
   </PropertyGroup>
 

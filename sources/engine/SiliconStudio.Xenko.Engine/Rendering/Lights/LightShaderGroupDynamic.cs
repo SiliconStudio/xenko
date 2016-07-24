@@ -2,6 +2,7 @@ using System;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Shadows;
 
 namespace SiliconStudio.Xenko.Rendering.Lights
@@ -11,6 +12,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// </summary>
     public abstract class LightShaderGroupDynamic : LightShaderGroup
     {
+        protected GraphicsProfile GraphicsProfile;
+
         /// <summary>
         /// List of all available lights.
         /// </summary>
@@ -29,8 +32,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         public int LightLastCount { get; private set; }
 
-        protected LightShaderGroupDynamic(ILightShadowMapShaderGroupData shadowGroup)
+        protected LightShaderGroupDynamic(RenderContext renderContext, ILightShadowMapShaderGroupData shadowGroup)
         {
+            GraphicsProfile = renderContext.GraphicsDevice.Features.RequestedProfile;
             ShadowGroup = shadowGroup;
         }
 
@@ -85,7 +89,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             lightCount = MathUtil.NextPowerOfTwo(lightCount);
 
             // Make sure it is at least 8 to avoid unecessary permutations
-            lightCount = Math.Max(lightCount, 8);
+            lightCount = Math.Max(lightCount, GraphicsProfile >= GraphicsProfile.Level_10_0 ? 8 : 0);
 
             return lightCount;
         }

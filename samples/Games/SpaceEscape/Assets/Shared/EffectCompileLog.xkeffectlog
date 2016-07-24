@@ -3,198 +3,131 @@
 EffectName: SpaceEscapeEffectMain
 UsedParameters:
     Material.PixelStageSurfaceShaders: !ShaderMixinSource
+        Mixins:
+            -   ClassName: MaterialSurfaceArray
         Compositions:
             layers: !ShaderArraySource
                 Values:
                     - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceDiffuse
                         Compositions:
                             diffuseMap: !ShaderClassSource
                                 ClassName: ComputeColorTextureScaledOffsetDynamicSampler
-                                GenericArguments:
-                                    - Material.DiffuseMap
-                                    - TEXCOORD0
-                                    - Material.Sampler.i0
-                                    - rgba
-                                    - Material.TextureScale
-                                    - Material.TextureOffset
-                        Macros: []
-                        Mixins:
-                            -   ClassName: MaterialSurfaceDiffuse
+                                GenericArguments: [Material.DiffuseMap, TEXCOORD0, Material.Sampler.i0, rgba, Material.TextureScale, Material.TextureOffset]
                     - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceLightingAndShading
                         Compositions:
                             surfaces: !ShaderArraySource
                                 Values:
                                     - !ShaderClassSource
                                         ClassName: MaterialSurfaceShadingDiffuseLambert
-                                        GenericArguments:
-                                            - false
-                        Macros: []
-                        Mixins:
-                            -   ClassName: MaterialSurfaceLightingAndShading
-        Macros: []
-        Mixins:
-            -   ClassName: MaterialSurfaceArray
+                                        GenericArguments: [false]
     Material.PixelStageStreamInitializer: !ShaderMixinSource
-        Compositions: {}
-        Macros: []
         Mixins:
             -   ClassName: MaterialStream
             -   ClassName: MaterialPixelShadingStream
     Lighting.DirectLightGroups:
         - !ShaderMixinSource
-            Compositions: {}
-            Macros: []
             Mixins:
                 -   ClassName: LightDirectionalGroup
-                    GenericArguments:
-                        - 1
-                -   ClassName: DirectLightGroupFixed
-                    GenericArguments:
-                        - 1
+                    GenericArguments: [1]
     Lighting.EnvironmentLights:
-        - !ShaderMixinSource
-            Compositions: {}
-            Macros: []
-            Mixins:
-                -   ClassName: LightSimpleAmbient
-    GameParameters.EnableBend: true
-    GameParameters.EnableFog: true
-    GameParameters.EnableOnflyTextureUVChange: false
----
-!EffectCompileRequest
-EffectName: SpaceEscapeEffectMain
-UsedParameters:
-    Material.PixelStageSurfaceShaders: !ShaderMixinSource
-        Compositions:
-            layers: !ShaderArraySource
-                Values:
-                    - !ShaderMixinSource
-                        Compositions:
-                            diffuseMap: !ShaderClassSource
-                                ClassName: ComputeColorTextureScaledOffsetDynamicSampler
-                                GenericArguments:
-                                    - Material.DiffuseMap
-                                    - TEXCOORD0
-                                    - Material.Sampler.i0
-                                    - rgba
-                                    - Material.TextureScale
-                                    - Material.TextureOffset
-                        Macros: []
-                        Mixins:
-                            -   ClassName: MaterialSurfaceDiffuse
-                    - !ShaderMixinSource
-                        Compositions:
-                            computeColorSource: !ShaderClassSource
-                                ClassName: ComputeColorConstantFloatLink
-                                GenericArguments:
-                                    - Material.AlphaDiscardValue
-                        Macros: []
-                        Mixins:
-                            -   ClassName: MaterialSurfaceSetStreamFromComputeColor
-                                GenericArguments:
-                                    - matAlphaDiscard
-                                    - r
-                    - !ShaderMixinSource
-                        Compositions:
-                            surfaces: !ShaderArraySource
-                                Values:
-                                    - !ShaderClassSource
-                                        ClassName: MaterialSurfaceShadingDiffuseLambert
-                                        GenericArguments:
-                                            - false
-                        Macros: []
-                        Mixins:
-                            -   ClassName: MaterialSurfaceLightingAndShading
-                    - !ShaderClassSource
-                        ClassName: MaterialSurfaceTransparentAlphaDiscard
-        Macros: []
-        Mixins:
-            -   ClassName: MaterialSurfaceArray
-    Material.PixelStageStreamInitializer: !ShaderMixinSource
-        Compositions: {}
-        Macros: []
-        Mixins:
-            -   ClassName: MaterialStream
-            -   ClassName: MaterialPixelShadingStream
-    Lighting.DirectLightGroups:
-        - !ShaderMixinSource
-            Compositions: {}
-            Macros: []
-            Mixins:
-                -   ClassName: LightDirectionalGroup
-                    GenericArguments:
-                        - 1
-                -   ClassName: DirectLightGroupFixed
-                    GenericArguments:
-                        - 1
-    Lighting.EnvironmentLights:
-        - !ShaderMixinSource
-            Compositions: {}
-            Macros: []
-            Mixins:
-                -   ClassName: LightSimpleAmbient
-    GameParameters.EnableBend: true
-    GameParameters.EnableFog: true
-    GameParameters.EnableOnflyTextureUVChange: false
----
-!EffectCompileRequest
-EffectName: SpaceEscapeEffectMain
-UsedParameters:
-    Material.PixelStageSurfaceShaders: !ShaderMixinSource
-        Compositions:
-            layers: !ShaderArraySource
-                Values:
-                    - !ShaderMixinSource
-                        Compositions:
-                            diffuseMap: !ShaderClassSource
-                                ClassName: ComputeColorTextureScaledOffsetDynamicSampler
-                                GenericArguments:
-                                    - Material.DiffuseMap
-                                    - TEXCOORD0
-                                    - Material.Sampler.i0
-                                    - rgba
-                                    - Material.TextureScale
-                                    - Material.TextureOffset
-                        Macros: []
-                        Mixins:
-                            -   ClassName: MaterialSurfaceDiffuse
-                    - !ShaderMixinSource
-                        Compositions:
-                            surfaces: !ShaderArraySource
-                                Values:
-                                    - !ShaderClassSource
-                                        ClassName: MaterialSurfaceShadingDiffuseLambert
-                                        GenericArguments:
-                                            - false
-                        Macros: []
-                        Mixins:
-                            -   ClassName: MaterialSurfaceLightingAndShading
-        Macros: []
-        Mixins:
-            -   ClassName: MaterialSurfaceArray
-    Material.PixelStageStreamInitializer: !ShaderMixinSource
-        Compositions: {}
-        Macros: []
-        Mixins:
-            -   ClassName: MaterialStream
-            -   ClassName: MaterialPixelShadingStream
-    Lighting.DirectLightGroups:
-        - !ShaderMixinSource
-            Compositions: {}
-            Macros: []
-            Mixins:
-                -   ClassName: LightDirectionalGroup
-                    GenericArguments:
-                        - 1
-                -   ClassName: DirectLightGroupFixed
-                    GenericArguments:
-                        - 1
-    Lighting.EnvironmentLights:
-        - !ShaderMixinSource
-            Compositions: {}
-            Macros: []
-            Mixins:
-                -   ClassName: LightSimpleAmbient
+        - !ShaderClassSource
+            ClassName: LightSimpleAmbient
     GameParameters.EnableBend: false
     GameParameters.EnableFog: true
     GameParameters.EnableOnflyTextureUVChange: true
+---
+!EffectCompileRequest
+EffectName: SpaceEscapeEffectMain
+UsedParameters:
+    Material.PixelStageSurfaceShaders: !ShaderMixinSource
+        Mixins:
+            -   ClassName: MaterialSurfaceArray
+        Compositions:
+            layers: !ShaderArraySource
+                Values:
+                    - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceDiffuse
+                        Compositions:
+                            diffuseMap: !ShaderClassSource
+                                ClassName: ComputeColorTextureScaledOffsetDynamicSampler
+                                GenericArguments: [Material.DiffuseMap, TEXCOORD0, Material.Sampler.i0, rgba, Material.TextureScale, Material.TextureOffset]
+                    - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceSetStreamFromComputeColor
+                                GenericArguments: [matAlphaDiscard, r]
+                        Compositions:
+                            computeColorSource: !ShaderClassSource
+                                ClassName: ComputeColorConstantFloatLink
+                                GenericArguments: [Material.AlphaDiscardValue]
+                    - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceLightingAndShading
+                        Compositions:
+                            surfaces: !ShaderArraySource
+                                Values:
+                                    - !ShaderClassSource
+                                        ClassName: MaterialSurfaceShadingDiffuseLambert
+                                        GenericArguments: [false]
+                    - !ShaderClassSource
+                        ClassName: MaterialSurfaceTransparentAlphaDiscard
+    Material.PixelStageStreamInitializer: !ShaderMixinSource
+        Mixins:
+            -   ClassName: MaterialStream
+            -   ClassName: MaterialPixelShadingStream
+    Lighting.DirectLightGroups:
+        - !ShaderMixinSource
+            Mixins:
+                -   ClassName: LightDirectionalGroup
+                    GenericArguments: [1]
+    Lighting.EnvironmentLights:
+        - !ShaderClassSource
+            ClassName: LightSimpleAmbient
+    GameParameters.EnableBend: true
+    GameParameters.EnableFog: true
+    GameParameters.EnableOnflyTextureUVChange: false
+---
+!EffectCompileRequest
+EffectName: SpaceEscapeEffectMain
+UsedParameters:
+    Material.PixelStageSurfaceShaders: !ShaderMixinSource
+        Mixins:
+            -   ClassName: MaterialSurfaceArray
+        Compositions:
+            layers: !ShaderArraySource
+                Values:
+                    - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceDiffuse
+                        Compositions:
+                            diffuseMap: !ShaderClassSource
+                                ClassName: ComputeColorTextureScaledOffsetDynamicSampler
+                                GenericArguments: [Material.DiffuseMap, TEXCOORD0, Material.Sampler.i0, rgba, Material.TextureScale, Material.TextureOffset]
+                    - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceLightingAndShading
+                        Compositions:
+                            surfaces: !ShaderArraySource
+                                Values:
+                                    - !ShaderClassSource
+                                        ClassName: MaterialSurfaceShadingDiffuseLambert
+                                        GenericArguments: [false]
+    Material.PixelStageStreamInitializer: !ShaderMixinSource
+        Mixins:
+            -   ClassName: MaterialStream
+            -   ClassName: MaterialPixelShadingStream
+    Lighting.DirectLightGroups:
+        - !ShaderMixinSource
+            Mixins:
+                -   ClassName: LightDirectionalGroup
+                    GenericArguments: [1]
+    Lighting.EnvironmentLights:
+        - !ShaderClassSource
+            ClassName: LightSimpleAmbient
+    GameParameters.EnableBend: true
+    GameParameters.EnableFog: true
+    GameParameters.EnableOnflyTextureUVChange: false

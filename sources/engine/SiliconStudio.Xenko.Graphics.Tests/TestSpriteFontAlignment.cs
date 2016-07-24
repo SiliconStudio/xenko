@@ -35,7 +35,7 @@ One blank line below
 
         public TestSpriteFontAlignment()
         {
-            CurrentVersion = 3;
+            CurrentVersion = 4; // Font names & sizes changed slightly
         }
 
         protected override void RegisterTests()
@@ -49,7 +49,7 @@ One blank line below
         {
             await base.LoadContent();
 
-            arial = Content.Load<SpriteFont>(AssetPrefix + "Arial13");
+            arial = Content.Load<SpriteFont>(AssetPrefix + "Arial18");
 
             colorTexture = Texture.New2D(GraphicsDevice, 1, 1, PixelFormat.R8G8B8A8_UNorm, new[] { Color.White });
 

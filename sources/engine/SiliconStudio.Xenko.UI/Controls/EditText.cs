@@ -1,8 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 
 using SiliconStudio.Core;
@@ -609,6 +611,9 @@ namespace SiliconStudio.Xenko.UI.Controls
             }
         }
 
+        /// <inheritdoc/>
+        protected override IEnumerable<IUIElementChildren> EnumerateChildren() => Enumerable.Empty<IUIElementChildren>();
+
         private void SetTextInternal(string newText, bool updateNativeEdit)
         {
             var truncatedText = newText;
@@ -746,6 +751,8 @@ namespace SiliconStudio.Xenko.UI.Controls
             {
                 // take the maximum between the text size and the minimum visible line size as text desired size
                 var fontLineSpacing = Font.GetTotalLineSpacing(TextSize);
+                if (Font.FontType == SpriteFontType.SDF)
+                    fontLineSpacing *= TextSize/Font.Size;
                 var currentTextSize = new Vector3(CalculateTextSize(), 0);
                 desiredSize = new Vector3(currentTextSize.X, Math.Min(Math.Max(currentTextSize.Y, fontLineSpacing * MinLines), fontLineSpacing * MaxLines), currentTextSize.Z);
             }
@@ -806,7 +813,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         {
             base.OnTouchDown(args);
 
-           IsSelectionActive = !IsReadOnly;
+            IsSelectionActive = !IsReadOnly;
 
             OnTouchDownImpl(args);
         }

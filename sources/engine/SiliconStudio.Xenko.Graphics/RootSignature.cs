@@ -22,5 +22,10 @@ namespace SiliconStudio.Xenko.Graphics
         {
             this.EffectDescriptorSetReflection = effectDescriptorSetReflection;
         }
+
+        protected internal override bool OnRecreate()
+        {
+            return true;
+        }
     }
 }

@@ -6,6 +6,7 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Assets.SpriteFont
 {
@@ -15,8 +16,9 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     {
         /// <inheritdoc/>
         [DataMember(30)]
-        [DefaultValue(16.0f)]
-        public override float Size { get; set; } = 16.0f;
+        [DataMemberRange(MathUtil.ZeroTolerance, float.MaxValue)]
+        [DefaultValue(20)]
+        public override float Size { get; set; } = 20;
 
         /// <summary>
         ///  Gets or sets the text file referencing which characters to include when generating the static fonts (eg. "ABCDEF...")

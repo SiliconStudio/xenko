@@ -47,7 +47,9 @@ namespace SiliconStudio.Xenko.Graphics
         private long lastCompletedFence;
         internal long NextFenceValue = 1;
         private AutoResetEvent fenceEvent = new AutoResetEvent(false);
-        internal Queue<KeyValuePair<long, Pageable>> TemporaryResources = new Queue<KeyValuePair<long, Pageable>>();
+
+        // Temporary or destroyed resources kept around until the GPU doesn't need them anymore
+        internal Queue<KeyValuePair<long, DeviceChild>> TemporaryResources = new Queue<KeyValuePair<long, DeviceChild>>();
 
         /// <summary>
         ///     Gets the status of this device.
@@ -247,7 +249,7 @@ namespace SiliconStudio.Xenko.Graphics
                 if (nativeUploadBuffer != null)
                 {
                     nativeUploadBuffer.Unmap(0);
-                    TemporaryResources.Enqueue(new KeyValuePair<long, Pageable>(NextFenceValue, nativeUploadBuffer));
+                    TemporaryResources.Enqueue(new KeyValuePair<long, DeviceChild>(NextFenceValue, nativeUploadBuffer));
                 }
 
                 // Allocate new buffer
@@ -271,8 +273,9 @@ namespace SiliconStudio.Xenko.Graphics
             // Release previous frame resources
             while (TemporaryResources.Count > 0 && IsFenceCompleteInternal(TemporaryResources.Peek().Key))
             {
-                var temporaryResource = TemporaryResources.Dequeue();
-                temporaryResource.Value.Dispose();
+                var temporaryResource = TemporaryResources.Dequeue().Value;
+                //temporaryResource.Value.Dispose();
+                GraphicsResourceBase.ReleaseComObject(ref temporaryResource);
             }
         }
 
@@ -389,6 +392,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             public T GetObject()
             {
+                // TODO D3D12: SpinLock
                 lock (liveObjects)
                 {
                     // Check if first allocator is ready for reuse
@@ -413,6 +417,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             public void RecycleObject(long fenceValue, T obj)
             {
+                // TODO D3D12: SpinLock
                 lock (liveObjects)
                 {
                     liveObjects.Enqueue(new KeyValuePair<long, T>(fenceValue, obj));

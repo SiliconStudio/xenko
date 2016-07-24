@@ -1,10 +1,10 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Runtime.InteropServices;
 
 namespace SiliconStudio.Core
@@ -29,22 +29,6 @@ namespace SiliconStudio.Core
 #endif
 
         /// <summary>
-        /// Defines the location of the core native DLL.
-        /// </summary>
-#if SILICONSTUDIO_PLATFORM_IOS
-        public const string LibraryName = "__Internal";
-#elif SILICONSTUDIO_PLATFORM_LINUX
-        public const string LibraryName = "libcore.so";
-#else
-        public const string LibraryName = "libcore.dll";
-#endif
-
-        /// <summary>
-        /// Defines the calling convention for P/Invoking the native core methods.
-        /// </summary>
-        public const CallingConvention CallConvention = CallingConvention.Cdecl;
-
-        /// <summary>
         /// Try to preload the library.
         /// This is useful when we want to have AnyCPU .NET and CPU-specific native code.
         /// Only available on Windows for now.
@@ -63,10 +47,10 @@ namespace SiliconStudio.Core
                     return;
                 }
 
-                var systemInfo = new SYSTEM_INFO();
+                string cpu;
+                SYSTEM_INFO systemInfo;
                 GetNativeSystemInfo(out systemInfo);
 
-                string cpu;
                 if (systemInfo.processorArchitecture == PROCESSOR_ARCHITECTURE.PROCESSOR_ARCHITECTURE_ARM)
                     cpu = "ARM";
                 else
@@ -79,19 +63,21 @@ namespace SiliconStudio.Core
 
                 if (result == IntPtr.Zero)
                 {
-                    //give a further try by using xenko env dir.. this is specially necessary when dealing with nunit tests
-                    libraryFilename = Path.Combine(Environment.GetEnvironmentVariable("SiliconStudioXenkoDir"), "Bin\\Windows-Direct3D11\\" + cpu, libraryName);
-                    result = LoadLibrary(libraryFilename);
+                    var envSdk = Environment.GetEnvironmentVariable("SiliconStudioXenkoDir");
+                    if (envSdk != null)
+                    {
+                        //give a further try by using xenko env dir.. this is specially necessary when dealing with nunit tests
+                        libraryFilename = Path.Combine(envSdk, "Bin\\Windows-Direct3D11\\" + cpu, libraryName);
+                        result = LoadLibrary(libraryFilename);
+                    }
                 }
 
                 if (result == IntPtr.Zero)
                 {
                     throw new InvalidOperationException(string.Format("Could not load native library {0} from path [{1}] using CPU architecture {2}.", libraryName, libraryFilename, cpu));
                 }
-                else
-                {
-                    LoadedLibraries.Add(libraryName.ToLowerInvariant(), result);
-                }
+
+                LoadedLibraries.Add(libraryName.ToLowerInvariant(), result);
             }
 #endif
         }
@@ -134,11 +120,8 @@ namespace SiliconStudio.Core
 #endif
         }
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
-        private const string SYSINFO_FILE = "API-MS-WIN-CORE-SYSINFO-L1-2-1.DLL";
-#else
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
         private const string SYSINFO_FILE = "kernel32.dll";
-#endif
 
         [DllImport(SYSINFO_FILE)]
         static extern void GetNativeSystemInfo(out SYSTEM_INFO lpSystemInfo);
@@ -167,5 +150,6 @@ namespace SiliconStudio.Core
             PROCESSOR_ARCHITECTURE_INTEL = 0,
             PROCESSOR_ARCHITECTURE_UNKNOWN = 0xffff
         }
+#endif
     }
 }

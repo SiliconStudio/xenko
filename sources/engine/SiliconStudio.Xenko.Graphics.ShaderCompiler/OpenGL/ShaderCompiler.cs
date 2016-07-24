@@ -103,7 +103,7 @@ namespace SiliconStudio.Xenko.Graphics.ShaderCompiler.OpenGL
                 if (!isOpenGLES)
                 {
                     glslShaderCode
-                        .AppendLine("#version 420")
+                        .AppendLine("#version 410")
                         .AppendLine();
 
                     if (stage == PipelineStage.Pixel)

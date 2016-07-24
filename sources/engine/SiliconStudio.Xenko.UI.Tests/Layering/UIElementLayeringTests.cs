@@ -19,6 +19,11 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
     [System.ComponentModel.Description("Tests for UIElement layering")]
     public class UIElementLayeringTests : UIElement
     {
+        protected override IEnumerable<IUIElementChildren> EnumerateChildren()
+        {
+            throw new NotImplementedException();
+        }
+
         private Random rand;
 
         /// <summary>
@@ -253,24 +258,14 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
         {
             ResetElementState();
 
-            // test that  left, top, back value are returned if stretched
-            HorizontalAlignment = HorizontalAlignment.Stretch;
-            VerticalAlignment = VerticalAlignment.Stretch;
-            DepthAlignment = DepthAlignment.Stretch;
-            Margin = rand.NextThickness(10, 20, 30, 40, 50, 60);
-            var expectedOffsets = new Vector3(Margin.Left, Margin.Top, Margin.Front);
-            var randV1 = rand.NextVector3();
-            var randV2 = rand.NextVector3();
-            AssertAreNearlySame(expectedOffsets, CalculateAdjustmentOffsets(ref MarginInternal, ref randV1, ref randV2));
-
             // test that  left, top, back value are returned if aligned to beginning
             HorizontalAlignment = HorizontalAlignment.Left;
             VerticalAlignment = VerticalAlignment.Top;
             DepthAlignment = DepthAlignment.Front;
             Margin = rand.NextThickness(10, 20, 30, 40, 50, 60);
-            expectedOffsets = new Vector3(Margin.Left, Margin.Top, Margin.Front);
-            randV1 = rand.NextVector3();
-            randV2 = rand.NextVector3();
+            var expectedOffsets = new Vector3(Margin.Left, Margin.Top, Margin.Front);
+            var randV1 = rand.NextVector3();
+            var randV2 = rand.NextVector3();
             AssertAreNearlySame(expectedOffsets, CalculateAdjustmentOffsets(ref MarginInternal, ref randV1, ref randV2));
 
             // test that element is correctly centered 
@@ -282,6 +277,12 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             var usedSpace = 100 * rand.NextVector3();
             var usedSpaceWithMargins = CalculateSizeWithThickness(ref usedSpace, ref MarginInternal);
             expectedOffsets = new Vector3(Margin.Left, Margin.Top, Margin.Front) + (givenSpace - usedSpaceWithMargins) / 2;
+            AssertAreNearlySame(expectedOffsets, CalculateAdjustmentOffsets(ref MarginInternal, ref givenSpace, ref usedSpace));
+
+            // test that stretched is equivalent to centered
+            HorizontalAlignment = HorizontalAlignment.Stretch;
+            VerticalAlignment = VerticalAlignment.Stretch;
+            DepthAlignment = DepthAlignment.Stretch;
             AssertAreNearlySame(expectedOffsets, CalculateAdjustmentOffsets(ref MarginInternal, ref givenSpace, ref usedSpace));
 
             // test that the element is correctly right aligned

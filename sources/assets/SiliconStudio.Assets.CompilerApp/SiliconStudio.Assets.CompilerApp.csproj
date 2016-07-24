@@ -86,6 +86,10 @@
       <Name>SiliconStudio.Xenko.Engine</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Games\SiliconStudio.Xenko.Games.csproj">
+      <Project>{42780CBD-3FE7-48E3-BD5B-59945EA20137}</Project>
+      <Name>SiliconStudio.Xenko.Games</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
       <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
       <Name>SiliconStudio.Xenko.Graphics</Name>
@@ -115,6 +119,10 @@
       <Project>{63562b0a-e501-42c2-97bb-13d3ad3a7db4}</Project>
       <Name>SiliconStudio.Xenko.SpriteStudio.Offline</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.UI\SiliconStudio.Xenko.UI.csproj">
+      <Project>{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}</Project>
+      <Name>SiliconStudio.Xenko.UI</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\engine\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
       <Project>{72390339-B2A1-4F61-A800-31ED0975B515}</Project>

@@ -32,6 +32,7 @@
     <Compile Include="Contents\ContentChangeEventArgs.cs" />
     <Compile Include="Contents\GraphContentChangeEventArgs.cs" />
     <Compile Include="DefaultContentFactory.cs" />
+    <Compile Include="DynamicNode.cs" />
     <Compile Include="GraphNodeChangeListener.cs" />
     <Compile Include="GraphNodeLinker.cs" />
     <Compile Include="GraphVisitorBase.cs" />
@@ -83,7 +84,9 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+  </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

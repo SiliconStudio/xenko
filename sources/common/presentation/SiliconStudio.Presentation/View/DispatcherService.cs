@@ -61,6 +61,13 @@ namespace SiliconStudio.Presentation.View
         }
 
         /// <inheritdoc/>
+        public Task LowPriorityInvokeAsync(Action callback)
+        {
+            var operation = dispatcher.InvokeAsync(callback, DispatcherPriority.ApplicationIdle);
+            return operation.Task;
+        }
+
+        /// <inheritdoc/>
         public Task<TResult> InvokeAsync<TResult>(Func<TResult> callback)
         {
             var operation = dispatcher.InvokeAsync(callback);

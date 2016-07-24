@@ -1,8 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 
 using SiliconStudio.Core;
@@ -126,7 +128,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the value indicating if the text block should generate <see cref="RuntimeRasterizedSpriteFont"/> characters synchronously or asynchronously.
+        /// Gets or sets the value indicating if the text block should generate <see cref="Graphics.Font.RuntimeRasterizedSpriteFont"/> characters synchronously or asynchronously.
         /// </summary>
         /// <remarks>
         /// If synchronous generation is activated, the game will be block until all the characters have finished to be generate.
@@ -181,6 +183,9 @@ namespace SiliconStudio.Xenko.UI.Controls
         {
             return CalculateTextSize(TextToDisplay);
         }
+
+        /// <inheritdoc/>
+        protected override IEnumerable<IUIElementChildren> EnumerateChildren() => Enumerable.Empty<IUIElementChildren>();
 
         /// <inheritdoc/>
         protected override Vector3 ArrangeOverride(Vector3 finalSizeWithoutMargins)

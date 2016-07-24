@@ -192,6 +192,9 @@ namespace SiliconStudio.Core.Extensions
 
             foreach (var item in source)
             {
+                if (item == null)
+                    continue;
+
                 foreach (var child in item.DepthFirst(childrenSelector))
                 {
                     yield return child;

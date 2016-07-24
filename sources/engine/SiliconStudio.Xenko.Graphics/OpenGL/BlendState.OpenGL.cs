@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL 
 using System;
+using OpenTK.Graphics;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
 #else
@@ -132,7 +133,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (commandList.NewBlendFactor != commandList.BoundBlendFactor)
             {
                 commandList.BoundBlendFactor = commandList.NewBlendFactor;
-                GL.BlendColor(OpenGLConvertExtensions.ToOpenGL(commandList.NewBlendFactor));
+                GL.BlendColor(commandList.NewBlendFactor.R, commandList.NewBlendFactor.G, commandList.NewBlendFactor.B, commandList.NewBlendFactor.A);
             }
 
             if (ColorWriteChannels != oldBlendState.ColorWriteChannels)

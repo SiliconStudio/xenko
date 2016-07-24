@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
     [TestFixture]
     public class AnimationChannelTest
     {
-        [Test, Ignore]
+        [Test, Ignore("Need check")]
         public void TestFitting()
         {
             // Make a sinus between T = 0s to 10s at 60 FPS

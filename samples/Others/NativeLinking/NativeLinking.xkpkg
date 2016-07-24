@@ -10,7 +10,7 @@ Meta:
     RootNamespace: NativeLinking
     Dependencies:
         -   Name: Xenko
-            Version: 1.7.0-alpha02
+            Version: 1.7.0-alpha03
             RootAssets: []
 LocalDependencies: []
 Profiles:

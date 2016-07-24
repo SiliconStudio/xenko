@@ -1,17 +1,11 @@
 !SpriteFont
 Id: 022190f7-e5e1-4709-97c2-c02470ebb312
-SerializedVersion: {Xenko: 1.5.0-alpha09}
+SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
-Source: null
-FontName: Times New Roman
-Size: 12.0
-Style: Regular
-IsDynamic: true
-DefaultCharacter: ' '
-CharacterSet: null
-CharacterRegions:
-    -   ~Id: 4ddc66ed-b460-4e13-a2b0-52975736578a
-        Start: ' '
-        End: "\x7F"
-AntiAlias: Grayscale
-UseKerning: false
+FontSource: !SystemFontProvider
+    ~Id: 75871eb9-83b2-4b83-b42d-a08b465f28a5
+    FontName: Times New Roman
+    Style: Regular
+FontType: !RuntimeRasterizedSpriteFontType
+    ~Id: 9fe245b9-873b-4fab-bb99-7ad48425b712
+    Size: 16.0

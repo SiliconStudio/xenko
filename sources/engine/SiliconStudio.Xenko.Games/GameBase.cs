@@ -110,7 +110,7 @@ namespace SiliconStudio.Xenko.Games
             Content = new ContentManager(Services);
 
             LaunchParameters = new LaunchParameters();
-            GameSystems = new GameSystemCollection();
+            GameSystems = new GameSystemCollection(Services);
 
             // Create Platform
             gamePlatform = GamePlatform.Create(this);
@@ -323,6 +323,8 @@ namespace SiliconStudio.Xenko.Games
                 return null;
             }
         }
+
+        internal abstract void ConfirmRenderingSettings(bool gameCreation);
 
         /// <summary>
         /// Gets the full name of the device this game is running if available
@@ -763,6 +765,7 @@ namespace SiliconStudio.Xenko.Games
                 // Reset allocator
                 if (GraphicsContext != null)
                 {
+                    GraphicsContext.CommandList.Dispose();
                     GraphicsContext.ResourceGroupAllocator.Dispose();
                     GraphicsContext = null;
                 }

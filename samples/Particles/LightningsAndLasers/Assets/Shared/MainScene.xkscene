@@ -1,10 +1,90 @@
 !SceneAsset
 Id: 8eb3fe28-2a08-441a-a015-a428d2e17bef
-SerializedVersion: {Xenko: 1.7.0-beta02}
+SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
+SceneSettings:
+    ~Id: 2b632eac-33e9-4d59-91cd-410162839997
+    GraphicsCompositor: !SceneGraphicsCompositorLayers
+        ~Id: f432b587-afc7-44af-b40c-7fb51c772124
+        Cameras:
+            -   ~Id: 73c46b86-68f1-4f1b-8223-54878150666b
+                Name: null
+                Camera:
+                    Entity: {Id: a41aa685-3271-4e96-a72c-639c52070011}
+                    Id: 2d3c6f87-3797-4988-95bd-0c6964dd3579
+        Layers: []
+        Master:
+            ~Id: cba63263-aa0d-4b80-9d57-d44b94f4b703
+            Name: SceneGraphicsLayer
+            Output: !MasterRenderFrameProvider {}
+            Renderers:
+                - !ClearRenderFrameRenderer
+                    ~Id: 41044a92-9ac3-4f99-8673-04c9b4b9f43c
+                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
+                    Output: !CurrentRenderFrameProvider {}
+                - !SceneCameraRenderer
+                    ~Id: 836fe639-759b-487f-84cc-8fb7ef1d4f92
+                    Mode: !CameraRendererModeForward
+                        ~Id: c05b9e40-4452-4650-94f2-9ba91e55d129
+                    Camera:
+                        ~Id: 2e95b946-a708-4bc1-a007-2acc1e6524fc
+                        Index: 0
+                    Output: !CurrentRenderFrameProvider {}
+                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
+                    ForceAspectRatio: false
+    EditorSettings:
+        ~Id: 5e3599ac-8469-48ea-a58c-f4336c6e29a0
+        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
+        SceneUnit: 1.0
+        Mode: !SceneEditorGraphicsModeHDRSettings
+            ~Id: 089c307b-b452-46b8-a3ec-9f52d0ecf611
+            BackgroundColor: {R: 0.470588237, G: 0.470588237, B: 0.470588237}
+            PostProcessingEffects:
+                ~Id: 06ffc876-74ac-4702-8035-160f8c67d34b
+                Camera:
+                    ~Id: 66d584c7-b2f0-4f1e-86e5-2a84528cc62e
+                    Index: 0
+                DepthOfField:
+                    ~Id: e5c3fbbf-bc93-4a2d-83f1-d94a41ef9cb7
+                    Enabled: false
+                    DOFAreas: {X: 0.5, Y: 6.0, Z: 50.0, W: 200.0}
+                BrightFilter:
+                    ~Id: 417025ef-7a1e-4334-8cac-2487e3ee701c
+                    Enabled: false
+                    Color: {R: 1.0, G: 1.0, B: 1.0}
+                Bloom:
+                    ~Id: beb74a18-a1d2-43aa-9b8a-72fb1f6971fa
+                    Distortion: {X: 1.0, Y: 1.0}
+                    Afterimage:
+                        ~Id: 6763bd93-cd76-4d5c-894c-ccfa9acb4d04
+                        Enabled: false
+                LightStreak:
+                    ~Id: af2be13c-9e4f-4d59-b37f-6a3eba5b75d1
+                    Enabled: false
+                    Attenuation: 0.7
+                LensFlare:
+                    ~Id: 761ae17b-a549-4251-8faf-93fe7ab9d045
+                    Enabled: false
+                ColorTransforms:
+                    ~Id: 13acc7bc-2cb9-4b7a-ab2a-d90d1f11f868
+                    Transforms:
+                        - !ToneMap
+                            ~Id: 3cfcf527-2628-4949-b58a-7026cec3436d
+                            Enabled: false
+                            Operator: !ToneMapHejl2Operator
+                                ~Id: 49e7b9b1-0d3f-4638-8809-91dc0621842c
+                        - !FilmGrain
+                            ~Id: ea320d9d-38e8-4420-a3ba-c023242e236d
+                            Enabled: false
+                        - !Vignetting
+                            ~Id: 5af57123-9932-4e02-b98a-9241f8ddbbc8
+                            Enabled: false
+                            Color: {R: 0.0, G: 0.0, B: 0.0}
+                Antialiasing: !FXAAEffect
+                    ~Id: 2b0060e7-5e39-4a0a-84b8-7d0f8c0ac37e
 Hierarchy:
     ~Id: aecd4341-53ba-488c-a2ff-8542bb30980d
-    RootEntities:
+    RootPartIds:
         - a41aa685-3271-4e96-a72c-639c52070011
         - 79735979-e91a-4eae-b702-070a873dfa9c
         - 7698999c-4c4d-43e0-ac5d-5e2360bafde7
@@ -29,8 +109,10 @@ Hierarchy:
         - 03161826-c447-4a12-abef-b9d3d4dd3e12
         - 3193f71d-4a03-4ec7-8322-2368df63ab69
         - ec12fc02-8c3b-47c6-83d4-2f8d48629865
-    Entities:
-        -   Entity:
+    Parts:
+        -   BaseId: 577fd387-7fd3-40d7-8780-14695cc57730
+            BasePartInstanceId: ecc6c091-b6a5-4f94-91fa-4707563832ec
+            Entity:
                 Id: 01fab643-422d-4ad5-94c9-114d87c334bb
                 Name: LightningRod
                 Components:
@@ -52,10 +134,9 @@ Hierarchy:
                                 Id: de390457-c420-49b8-99a8-6528b5971e83
                             -   Entity: {Id: c7c16bcf-f4dc-431c-a127-b9f6a2ab08f5}
                                 Id: 0092eadc-6e4f-4295-b138-a52d7b0fc079
-            Design:
-                BaseId: 577fd387-7fd3-40d7-8780-14695cc57730
-                BasePartInstanceId: ecc6c091-b6a5-4f94-91fa-4707563832ec
-        -   Entity:
+        -   BaseId: 11531b59-2e60-415e-82cf-81bdfafeb1d6
+            BasePartInstanceId: b0b5b1c9-e27d-4743-8188-1c656dab9ac3
+            Entity:
                 Id: 028db2e4-fdf0-4900-abd7-86451b2a387f
                 Name: Entity
                 Components:
@@ -67,9 +148,6 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 41d1a74e-4b76-460d-85f1-9f29dac922c7}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design:
-                BaseId: 11531b59-2e60-415e-82cf-81bdfafeb1d6
-                BasePartInstanceId: b0b5b1c9-e27d-4743-8188-1c656dab9ac3
         -   Entity:
                 Id: 03161826-c447-4a12-abef-b9d3d4dd3e12
                 Name: Spinner (2)
@@ -91,8 +169,9 @@ Hierarchy:
                             Id: 0092eadc-6e4f-4295-b138-a52d7b0fc079
                         doNotScale: false
                         scaleOnlyZ: false
-            Design: {}
-        -   Entity:
+        -   BaseId: a3ccc846-034e-409a-ac44-0626a1898680
+            BasePartInstanceId: ffd9cf4b-409a-41b0-8ae0-9c3c4f476389
+            Entity:
                 Id: 035c2e53-e1ae-439a-91bd-b2cadecc12ae
                 Name: RedTube
                 Components:
@@ -107,9 +186,6 @@ Hierarchy:
                         Model: c08ba2eb-f1d2-4ac2-b88b-051dbb6310ba/3a57fc61-9428-47be-b916-1d1a3bd4495d:LaserAssets/RedTube
                         Materials:
                             - null
-            Design:
-                BaseId: a3ccc846-034e-409a-ac44-0626a1898680
-                BasePartInstanceId: ffd9cf4b-409a-41b0-8ae0-9c3c4f476389
         -   Entity:
                 Id: 04cdc8a2-7dac-459c-9f03-2bb75f0ad5dc
                 Name: Laser Beam Orange
@@ -285,8 +361,9 @@ Hierarchy:
                                                             Value: 0.0
                                                             TangentType: Linear
                                             SeedOffset: 0
-            Design: {}
-        -   Entity:
+        -   BaseId: 4d184225-610c-40fd-96a8-1409ca9f8729
+            BasePartInstanceId: dce26dee-f9a8-4597-8f91-ebf132513daa
+            Entity:
                 Id: 0b87ac2a-cbe7-426a-b56f-fb34ce009a50
                 Name: Entity (3)
                 Components:
@@ -298,10 +375,9 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 6057cf74-172d-4718-85a1-9856b54d1566}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design:
-                BaseId: 4d184225-610c-40fd-96a8-1409ca9f8729
-                BasePartInstanceId: dce26dee-f9a8-4597-8f91-ebf132513daa
-        -   Entity:
+        -   BaseId: 1f576934-655a-4878-8388-3ff907555fdb
+            BasePartInstanceId: ecc6c091-b6a5-4f94-91fa-4707563832ec
+            Entity:
                 Id: 0d98021f-5421-4515-a538-bab192369f8d
                 Name: ProceduralModel
                 Components:
@@ -316,10 +392,9 @@ Hierarchy:
                         Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:ProceduralModel
                         Materials:
                             - null
-            Design:
-                BaseId: 1f576934-655a-4878-8388-3ff907555fdb
-                BasePartInstanceId: ecc6c091-b6a5-4f94-91fa-4707563832ec
-        -   Entity:
+        -   BaseId: 4d184225-610c-40fd-96a8-1409ca9f8729
+            BasePartInstanceId: edc8c22a-d8f6-446c-9c55-aa37c302fa40
+            Entity:
                 Id: 198da05e-b43d-4679-8b1c-1d2f82bff93c
                 Name: Entity (3)
                 Components:
@@ -331,10 +406,9 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 93dc527f-80c2-4b7c-bf08-125482dfa8bb}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design:
-                BaseId: 4d184225-610c-40fd-96a8-1409ca9f8729
-                BasePartInstanceId: edc8c22a-d8f6-446c-9c55-aa37c302fa40
-        -   Entity:
+        -   BaseId: 03cfa9c2-5d24-4b93-b97f-e4fa3313762d
+            BasePartInstanceId: ffd9cf4b-409a-41b0-8ae0-9c3c4f476389
+            Entity:
                 Id: 1a1e4389-3dcf-4973-8cd0-9333512d640f
                 Name: CylindricalLaser
                 Components:
@@ -350,10 +424,9 @@ Hierarchy:
                                 Id: 49281aee-efd1-4116-ba45-0cd50d2e2f44
                             -   Entity: {Id: b7ae4eaa-29ed-4242-9d3e-15a3b61debd5}
                                 Id: 77f08bad-d80a-4b9f-8279-5209039a7bf0
-            Design:
-                BaseId: 03cfa9c2-5d24-4b93-b97f-e4fa3313762d
-                BasePartInstanceId: ffd9cf4b-409a-41b0-8ae0-9c3c4f476389
-        -   Entity:
+        -   BaseId: 735bf6ce-0f55-46ee-8a86-44b04c0c814d
+            BasePartInstanceId: 47a1281d-f3c4-4b31-a7c0-9768446de17e
+            Entity:
                 Id: 1ca5eaa2-7a99-458a-9064-62918ca59390
                 Name: MetalRing
                 Components:
@@ -371,9 +444,6 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
-            Design:
-                BaseId: 735bf6ce-0f55-46ee-8a86-44b04c0c814d
-                BasePartInstanceId: 47a1281d-f3c4-4b31-a7c0-9768446de17e
         -   Entity:
                 Id: 2407431b-c342-4631-bc69-f2a5a3fdc6ae
                 Name: Entity
@@ -384,8 +454,9 @@ Hierarchy:
                         Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
-            Design: {}
-        -   Entity:
+        -   BaseId: 735bf6ce-0f55-46ee-8a86-44b04c0c814d
+            BasePartInstanceId: b0b5b1c9-e27d-4743-8188-1c656dab9ac3
+            Entity:
                 Id: 2526039d-6f63-4bc6-9673-5f76e94c550e
                 Name: MetalRing
                 Components:
@@ -403,10 +474,9 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
-            Design:
-                BaseId: 735bf6ce-0f55-46ee-8a86-44b04c0c814d
-                BasePartInstanceId: b0b5b1c9-e27d-4743-8188-1c656dab9ac3
-        -   Entity:
+        -   BaseId: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d
+            BasePartInstanceId: 822caf62-aa52-4248-a052-af2f8f1c630f
+            Entity:
                 Id: 252ff5c4-4f42-4bd5-bda0-ea05f6fb864b
                 Name: MetalRing
                 Components:
@@ -424,9 +494,6 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
-            Design:
-                BaseId: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d
-                BasePartInstanceId: 822caf62-aa52-4248-a052-af2f8f1c630f
         -   Entity:
                 Id: 2571f0bf-c6ea-4cc7-b300-615d83b8d48f
                 Name: ProceduralCylinder
@@ -442,8 +509,9 @@ Hierarchy:
                         Model: 40f061ef-7c24-49da-8559-6468e7668f39/c74f1435-052b-4d42-8245-8c0cae078821:Stand/ProceduralCylinder
                         Materials:
                             - null
-            Design: {}
-        -   Entity:
+        -   BaseId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
+            BasePartInstanceId: edc8c22a-d8f6-446c-9c55-aa37c302fa40
+            Entity:
                 Id: 2995cfaf-ce91-4b68-ac3f-9052c4ddadcc
                 Name: Sphere
                 Components:
@@ -458,9 +526,6 @@ Hierarchy:
                         Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/2da54fd5-e615-4a91-ae7b-91dfb574d66a:Sphere
                         Materials:
                             - null
-            Design:
-                BaseId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
-                BasePartInstanceId: edc8c22a-d8f6-446c-9c55-aa37c302fa40
         -   Entity:
                 Id: 2a699cb7-2468-45e6-be28-2f0c1b11d0a5
                 Name: ProceduralTorus
@@ -476,7 +541,6 @@ Hierarchy:
                         Model: 6d1ebe93-9f1f-4449-a14f-0696552e4d34/c1a1b6ef-5177-4090-b27b-1279280a7e0a:Stand/ProceduralTorus
                         Materials:
                             - null
-            Design: {}
         -   Entity:
                 Id: 2ac9ec66-567f-478f-a6b1-7846d5d95d76
                 Name: ProceduralTorus
@@ -492,7 +556,6 @@ Hierarchy:
                         Model: 6d1ebe93-9f1f-4449-a14f-0696552e4d34/c1a1b6ef-5177-4090-b27b-1279280a7e0a:Stand/ProceduralTorus
                         Materials:
                             - null
-            Design: {}
         -   Entity:
                 Id: 2d712fb9-648d-418a-a5de-54d72c35271b
                 Name: Background
@@ -506,7 +569,6 @@ Hierarchy:
                     - !BackgroundComponent
                         ~Id: 98864749-098e-4590-8cd0-319867a3b541
                         Texture: 57095419-b6d2-4885-9942-fb3c6f9a8be5/7b2edd66-f95a-4923-bcc6-8db162fd014d:XenkoBackground
-            Design: {}
         -   Entity:
                 Id: 2e31eccb-7928-4ccd-ab92-4f8fdfdca490
                 Name: Lightning Trail
@@ -661,8 +723,9 @@ Hierarchy:
                                                             TangentType: Linear
                                             SamplerOptional: null
                                             SeedOffset: 0
-            Design: {}
-        -   Entity:
+        -   BaseId: 577fd387-7fd3-40d7-8780-14695cc57730
+            BasePartInstanceId: dd5f5d39-0933-4d77-99a5-c7ece8fb26bb
+            Entity:
                 Id: 2f4d1b67-6e2e-43e5-8592-2fbe042a9e7f
                 Name: LightningRod
                 Components:
@@ -682,9 +745,6 @@ Hierarchy:
                                 Id: de390457-c420-49b8-99a8-6528b5971e83
                             -   Entity: {Id: e1a54d99-c4d0-4ec0-8e0f-f74f2e594628}
                                 Id: 0092eadc-6e4f-4295-b138-a52d7b0fc079
-            Design:
-                BaseId: 577fd387-7fd3-40d7-8780-14695cc57730
-                BasePartInstanceId: dd5f5d39-0933-4d77-99a5-c7ece8fb26bb
         -   Entity:
                 Id: 3193f71d-4a03-4ec7-8322-2368df63ab69
                 Name: Spinner (3)
@@ -706,8 +766,9 @@ Hierarchy:
                             Id: 0092eadc-6e4f-4295-b138-a52d7b0fc079
                         doNotScale: false
                         scaleOnlyZ: false
-            Design: {}
-        -   Entity:
+        -   BaseId: 4d184225-610c-40fd-96a8-1409ca9f8729
+            BasePartInstanceId: b0b5b1c9-e27d-4743-8188-1c656dab9ac3
+            Entity:
                 Id: 34a9f547-1db9-4411-bf2f-eebf950f900e
                 Name: Entity (3)
                 Components:
@@ -719,9 +780,6 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 2526039d-6f63-4bc6-9673-5f76e94c550e}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design:
-                BaseId: 4d184225-610c-40fd-96a8-1409ca9f8729
-                BasePartInstanceId: b0b5b1c9-e27d-4743-8188-1c656dab9ac3
         -   Entity:
                 Id: 3768424f-3ad1-4d06-a396-6f2d881a9606
                 Name: ProceduralTorus
@@ -737,7 +795,6 @@ Hierarchy:
                         Model: 6d1ebe93-9f1f-4449-a14f-0696552e4d34/c1a1b6ef-5177-4090-b27b-1279280a7e0a:Stand/ProceduralTorus
                         Materials:
                             - null
-            Design: {}
         -   Entity:
                 Id: 37f3d857-c364-4b0b-9f47-203c76b707b0
                 Name: ProceduralCylinder
@@ -753,8 +810,9 @@ Hierarchy:
                         Model: 40f061ef-7c24-49da-8559-6468e7668f39/c74f1435-052b-4d42-8245-8c0cae078821:Stand/ProceduralCylinder
                         Materials:
                             - null
-            Design: {}
-        -   Entity:
+        -   BaseId: 11531b59-2e60-415e-82cf-81bdfafeb1d6
+            BasePartInstanceId: dd5f5d39-0933-4d77-99a5-c7ece8fb26bb
+            Entity:
                 Id: 38736a85-2851-4d07-86a2-2894285daad4
                 Name: Entity
                 Components:
@@ -766,10 +824,9 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 8d735471-ad3f-48be-8e4f-a6b87b524fc1}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design:
-                BaseId: 11531b59-2e60-415e-82cf-81bdfafeb1d6
-                BasePartInstanceId: dd5f5d39-0933-4d77-99a5-c7ece8fb26bb
-        -   Entity:
+        -   BaseId: 771289b2-0bf6-47f1-afef-aab30a29b874
+            BasePartInstanceId: edc8c22a-d8f6-446c-9c55-aa37c302fa40
+            Entity:
                 Id: 39430b69-5140-4a26-89d4-634b84686b8e
                 Name: MetalRing
                 Components:
@@ -787,9 +844,6 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
-            Design:
-                BaseId: 771289b2-0bf6-47f1-afef-aab30a29b874
-                BasePartInstanceId: edc8c22a-d8f6-446c-9c55-aa37c302fa40
         -   Entity:
                 Id: 3cd47523-b870-4072-99cc-1793cacb7fe3
                 Name: Lightning Arc
@@ -950,8 +1004,9 @@ Hierarchy:
                                                             TangentType: Linear
                                             SamplerOptional: null
                                             SeedOffset: 0
-            Design: {}
-        -   Entity:
+        -   BaseId: 771289b2-0bf6-47f1-afef-aab30a29b874
+            BasePartInstanceId: 47a1281d-f3c4-4b31-a7c0-9768446de17e
+            Entity:
                 Id: 3d37e1f1-eb87-46e8-b896-fe7ae539c84f
                 Name: MetalRing
                 Components:
@@ -969,10 +1024,9 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
-            Design:
-                BaseId: 771289b2-0bf6-47f1-afef-aab30a29b874
-                BasePartInstanceId: 47a1281d-f3c4-4b31-a7c0-9768446de17e
-        -   Entity:
+        -   BaseId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
+            BasePartInstanceId: b0b5b1c9-e27d-4743-8188-1c656dab9ac3
+            Entity:
                 Id: 3ff67fb4-5b1d-4f59-814a-366e12ce3146
                 Name: Sphere
                 Components:
@@ -987,10 +1041,9 @@ Hierarchy:
                         Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/2da54fd5-e615-4a91-ae7b-91dfb574d66a:Sphere
                         Materials:
                             - null
-            Design:
-                BaseId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
-                BasePartInstanceId: b0b5b1c9-e27d-4743-8188-1c656dab9ac3
-        -   Entity:
+        -   BaseId: 11531b59-2e60-415e-82cf-81bdfafeb1d6
+            BasePartInstanceId: 3eb0855e-68cb-4f1f-bf22-b417c151603d
+            Entity:
                 Id: 404fd366-02fc-4e24-b570-80f2e910cfc4
                 Name: Entity
                 Components:
@@ -1002,10 +1055,9 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 6d3b521c-554e-436a-b513-fe4367ff3473}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design:
-                BaseId: 11531b59-2e60-415e-82cf-81bdfafeb1d6
-                BasePartInstanceId: 3eb0855e-68cb-4f1f-bf22-b417c151603d
-        -   Entity:
+        -   BaseId: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d
+            BasePartInstanceId: b0b5b1c9-e27d-4743-8188-1c656dab9ac3
+            Entity:
                 Id: 41d1a74e-4b76-460d-85f1-9f29dac922c7
                 Name: MetalRing
                 Components:
@@ -1023,9 +1075,6 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
-            Design:
-                BaseId: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d
-                BasePartInstanceId: b0b5b1c9-e27d-4743-8188-1c656dab9ac3
         -   Entity:
                 Id: 42102787-023a-480b-a3d1-2648b1f533bb
                 Name: Prefab
@@ -1038,8 +1087,9 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 496e77b8-12c4-4a7e-8cd8-a8854667dbbd}
                                 Id: b1c50cb4-224d-4b4c-933e-0e8a376bc8a7
-            Design: {}
-        -   Entity:
+        -   BaseId: 735bf6ce-0f55-46ee-8a86-44b04c0c814d
+            BasePartInstanceId: d5efa760-049d-44ff-a354-46c8f5043385
+            Entity:
                 Id: 428faa37-841e-441d-9fd4-406b5944d696
                 Name: MetalRing
                 Components:
@@ -1057,9 +1107,6 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
-            Design:
-                BaseId: 735bf6ce-0f55-46ee-8a86-44b04c0c814d
-                BasePartInstanceId: d5efa760-049d-44ff-a354-46c8f5043385
         -   Entity:
                 Id: 43a3535e-803a-4037-9940-2f97a65cfe4d
                 Name: Lightning Trail
@@ -1215,8 +1262,9 @@ Hierarchy:
                                                             TangentType: Linear
                                             SamplerOptional: null
                                             SeedOffset: 0
-            Design: {}
-        -   Entity:
+        -   BaseId: 342cd7e6-22a0-4f21-88f0-11e54f7b0bd4
+            BasePartInstanceId: 822caf62-aa52-4248-a052-af2f8f1c630f
+            Entity:
                 Id: 47b4643f-7851-496a-a63e-70497387ea56
                 Name: Entity (2)
                 Components:
@@ -1228,10 +1276,9 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 6446a38e-1150-4ea8-a4aa-182ea1c83fff}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design:
-                BaseId: 342cd7e6-22a0-4f21-88f0-11e54f7b0bd4
-                BasePartInstanceId: 822caf62-aa52-4248-a052-af2f8f1c630f
-        -   Entity:
+        -   BaseId: 577fd387-7fd3-40d7-8780-14695cc57730
+            BasePartInstanceId: d5efa760-049d-44ff-a354-46c8f5043385
+            Entity:
                 Id: 496e77b8-12c4-4a7e-8cd8-a8854667dbbd
                 Name: LightningRod
                 Components:
@@ -1253,10 +1300,9 @@ Hierarchy:
                                 Id: de390457-c420-49b8-99a8-6528b5971e83
                             -   Entity: {Id: 5ca072b4-bde8-4766-a8c2-1117127009cd}
                                 Id: 0092eadc-6e4f-4295-b138-a52d7b0fc079
-            Design:
-                BaseId: 577fd387-7fd3-40d7-8780-14695cc57730
-                BasePartInstanceId: d5efa760-049d-44ff-a354-46c8f5043385
-        -   Entity:
+        -   BaseId: 735bf6ce-0f55-46ee-8a86-44b04c0c814d
+            BasePartInstanceId: dd5f5d39-0933-4d77-99a5-c7ece8fb26bb
+            Entity:
                 Id: 4ce53628-771d-4485-8ac5-d6db91db6ae2
                 Name: MetalRing
                 Components:
@@ -1274,9 +1320,6 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
-            Design:
-                BaseId: 735bf6ce-0f55-46ee-8a86-44b04c0c814d
-                BasePartInstanceId: dd5f5d39-0933-4d77-99a5-c7ece8fb26bb
         -   Entity:
                 Id: 4e6f902c-15ae-4263-99a4-fffb61c3b407
                 Name: ProceduralCylinder
@@ -1292,7 +1335,6 @@ Hierarchy:
                         Model: 40f061ef-7c24-49da-8559-6468e7668f39/c74f1435-052b-4d42-8245-8c0cae078821:Stand/ProceduralCylinder
                         Materials:
                             - null
-            Design: {}
         -   Entity:
                 Id: 4f7a5705-1693-4776-90f8-2956a1ba4cc9
                 Name: Green Smoke
@@ -1459,7 +1501,6 @@ Hierarchy:
                                                             TangentType: Linear
                                             SamplerOptional: null
                                             SeedOffset: 0
-            Design: {}
         -   Entity:
                 Id: 50bbd3e2-78a5-4f2f-bac3-dbde01315dd6
                 Name: ProceduralTorus
@@ -1475,7 +1516,6 @@ Hierarchy:
                         Model: 6d1ebe93-9f1f-4449-a14f-0696552e4d34/c1a1b6ef-5177-4090-b27b-1279280a7e0a:Stand/ProceduralTorus
                         Materials:
                             - null
-            Design: {}
         -   Entity:
                 Id: 52598991-f421-442a-86b4-98a5f7ce0afc
                 Name: Spinning Target
@@ -1491,7 +1531,6 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: e646737c-d02e-4227-8b0f-c70b491e5a59
                         TimeFactor: 0.2
-            Design: {}
         -   Entity:
                 Id: 543ece3a-c804-4a13-b833-bc742e445c57
                 Name: LaserPrefab
@@ -1504,8 +1543,9 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 1a1e4389-3dcf-4973-8cd0-9333512d640f}
                                 Id: dcd3c7b4-90a1-4c7f-abf7-2f4479f19ffe
-            Design: {}
-        -   Entity:
+        -   BaseId: 4d184225-610c-40fd-96a8-1409ca9f8729
+            BasePartInstanceId: ecc6c091-b6a5-4f94-91fa-4707563832ec
+            Entity:
                 Id: 563b9e5b-b362-4482-b75a-4b4d77986652
                 Name: Entity (3)
                 Components:
@@ -1517,10 +1557,9 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: da7f9bf4-d0d4-490d-8126-f63639879377}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design:
-                BaseId: 4d184225-610c-40fd-96a8-1409ca9f8729
-                BasePartInstanceId: ecc6c091-b6a5-4f94-91fa-4707563832ec
-        -   Entity:
+        -   BaseId: 735bf6ce-0f55-46ee-8a86-44b04c0c814d
+            BasePartInstanceId: 3eb0855e-68cb-4f1f-bf22-b417c151603d
+            Entity:
                 Id: 5a819998-963c-48bf-8336-c7c8d7b1a2ca
                 Name: MetalRing
                 Components:
@@ -1538,10 +1577,9 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
-            Design:
-                BaseId: 735bf6ce-0f55-46ee-8a86-44b04c0c814d
-                BasePartInstanceId: 3eb0855e-68cb-4f1f-bf22-b417c151603d
-        -   Entity:
+        -   BaseId: 342cd7e6-22a0-4f21-88f0-11e54f7b0bd4
+            BasePartInstanceId: dd5f5d39-0933-4d77-99a5-c7ece8fb26bb
+            Entity:
                 Id: 5ac873be-fd16-4593-a59e-ed80ab2940a8
                 Name: Entity (2)
                 Components:
@@ -1553,10 +1591,9 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 6635485f-9c5a-4bb9-a89f-0ad96cab6b6d}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design:
-                BaseId: 342cd7e6-22a0-4f21-88f0-11e54f7b0bd4
-                BasePartInstanceId: dd5f5d39-0933-4d77-99a5-c7ece8fb26bb
-        -   Entity:
+        -   BaseId: 04e87e84-9c4f-4b69-85f2-8fbac0028df2
+            BasePartInstanceId: d5efa760-049d-44ff-a354-46c8f5043385
+            Entity:
                 Id: 5ca072b4-bde8-4766-a8c2-1117127009cd
                 Name: ArcTarget
                 Components:
@@ -1566,10 +1603,9 @@ Hierarchy:
                         Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
-            Design:
-                BaseId: 04e87e84-9c4f-4b69-85f2-8fbac0028df2
-                BasePartInstanceId: d5efa760-049d-44ff-a354-46c8f5043385
-        -   Entity:
+        -   BaseId: 735bf6ce-0f55-46ee-8a86-44b04c0c814d
+            BasePartInstanceId: dce26dee-f9a8-4597-8f91-ebf132513daa
+            Entity:
                 Id: 6057cf74-172d-4718-85a1-9856b54d1566
                 Name: MetalRing
                 Components:
@@ -1587,9 +1623,6 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
-            Design:
-                BaseId: 735bf6ce-0f55-46ee-8a86-44b04c0c814d
-                BasePartInstanceId: dce26dee-f9a8-4597-8f91-ebf132513daa
         -   Entity:
                 Id: 6132e01d-b643-48ef-b57f-06cd576dac72
                 Name: Stand
@@ -1604,8 +1637,9 @@ Hierarchy:
                                 Id: dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
                             -   Entity: {Id: 3768424f-3ad1-4d06-a396-6f2d881a9606}
                                 Id: 54550fef-1b7c-4a35-8c9c-acf8f7656118
-            Design: {}
-        -   Entity:
+        -   BaseId: 1fa0ec17-12a1-4c34-ae03-423318c62744
+            BasePartInstanceId: ffd9cf4b-409a-41b0-8ae0-9c3c4f476389
+            Entity:
                 Id: 62cf8c4d-c91e-4ca1-b0ba-7d18d33ae425
                 Name: BlueTube
                 Components:
@@ -1620,9 +1654,6 @@ Hierarchy:
                         Model: fb1191db-ee0d-432e-a7a2-24b750258fc9/e6716a5e-47ef-4eca-a079-45655587b48f:LaserAssets/BlueTube
                         Materials:
                             - null
-            Design:
-                BaseId: 1fa0ec17-12a1-4c34-ae03-423318c62744
-                BasePartInstanceId: ffd9cf4b-409a-41b0-8ae0-9c3c4f476389
         -   Entity:
                 Id: 62ee0db1-63af-4ab2-ad18-605d67297bda
                 Name: Laser Beam
@@ -1741,8 +1772,9 @@ Hierarchy:
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
                                     Updaters: []
-            Design: {}
-        -   Entity:
+        -   BaseId: 4d184225-610c-40fd-96a8-1409ca9f8729
+            BasePartInstanceId: 822caf62-aa52-4248-a052-af2f8f1c630f
+            Entity:
                 Id: 642638ad-316b-4811-8917-f74ed6d1a9b2
                 Name: Entity (3)
                 Components:
@@ -1754,10 +1786,9 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: de098919-1b0f-420f-8fb3-e34e7810b6de}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design:
-                BaseId: 4d184225-610c-40fd-96a8-1409ca9f8729
-                BasePartInstanceId: 822caf62-aa52-4248-a052-af2f8f1c630f
-        -   Entity:
+        -   BaseId: 771289b2-0bf6-47f1-afef-aab30a29b874
+            BasePartInstanceId: 822caf62-aa52-4248-a052-af2f8f1c630f
+            Entity:
                 Id: 6446a38e-1150-4ea8-a4aa-182ea1c83fff
                 Name: MetalRing
                 Components:
@@ -1775,10 +1806,9 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
-            Design:
-                BaseId: 771289b2-0bf6-47f1-afef-aab30a29b874
-                BasePartInstanceId: 822caf62-aa52-4248-a052-af2f8f1c630f
-        -   Entity:
+        -   BaseId: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d
+            BasePartInstanceId: d5efa760-049d-44ff-a354-46c8f5043385
+            Entity:
                 Id: 644c11b7-8980-4d40-a513-8e152aa97410
                 Name: MetalRing
                 Components:
@@ -1796,10 +1826,9 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
-            Design:
-                BaseId: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d
-                BasePartInstanceId: d5efa760-049d-44ff-a354-46c8f5043385
-        -   Entity:
+        -   BaseId: 342cd7e6-22a0-4f21-88f0-11e54f7b0bd4
+            BasePartInstanceId: edc8c22a-d8f6-446c-9c55-aa37c302fa40
+            Entity:
                 Id: 65359c63-b2bc-4dec-a7f3-81f7d4d90a26
                 Name: Entity (2)
                 Components:
@@ -1811,10 +1840,9 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 39430b69-5140-4a26-89d4-634b84686b8e}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design:
-                BaseId: 342cd7e6-22a0-4f21-88f0-11e54f7b0bd4
-                BasePartInstanceId: edc8c22a-d8f6-446c-9c55-aa37c302fa40
-        -   Entity:
+        -   BaseId: 771289b2-0bf6-47f1-afef-aab30a29b874
+            BasePartInstanceId: dd5f5d39-0933-4d77-99a5-c7ece8fb26bb
+            Entity:
                 Id: 6635485f-9c5a-4bb9-a89f-0ad96cab6b6d
                 Name: MetalRing
                 Components:
@@ -1832,10 +1860,9 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
-            Design:
-                BaseId: 771289b2-0bf6-47f1-afef-aab30a29b874
-                BasePartInstanceId: dd5f5d39-0933-4d77-99a5-c7ece8fb26bb
-        -   Entity:
+        -   BaseId: 11531b59-2e60-415e-82cf-81bdfafeb1d6
+            BasePartInstanceId: ecc6c091-b6a5-4f94-91fa-4707563832ec
+            Entity:
                 Id: 69bd096f-60ae-4a37-ab95-a47ae2ebc560
                 Name: Entity
                 Components:
@@ -1847,10 +1874,9 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: fcb252c8-32e5-40e2-97be-96d528440f22}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design:
-                BaseId: 11531b59-2e60-415e-82cf-81bdfafeb1d6
-                BasePartInstanceId: ecc6c091-b6a5-4f94-91fa-4707563832ec
-        -   Entity:
+        -   BaseId: 577fd387-7fd3-40d7-8780-14695cc57730
+            BasePartInstanceId: 3eb0855e-68cb-4f1f-bf22-b417c151603d
+            Entity:
                 Id: 6c1d6247-edd6-4c45-9fa2-0f8a951b2836
                 Name: LightningRod
                 Components:
@@ -1870,10 +1896,9 @@ Hierarchy:
                                 Id: de390457-c420-49b8-99a8-6528b5971e83
                             -   Entity: {Id: 7e68edec-db66-4e4e-9b4b-1609f750e348}
                                 Id: 0092eadc-6e4f-4295-b138-a52d7b0fc079
-            Design:
-                BaseId: 577fd387-7fd3-40d7-8780-14695cc57730
-                BasePartInstanceId: 3eb0855e-68cb-4f1f-bf22-b417c151603d
-        -   Entity:
+        -   BaseId: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d
+            BasePartInstanceId: 3eb0855e-68cb-4f1f-bf22-b417c151603d
+            Entity:
                 Id: 6d3b521c-554e-436a-b513-fe4367ff3473
                 Name: MetalRing
                 Components:
@@ -1891,10 +1916,9 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
-            Design:
-                BaseId: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d
-                BasePartInstanceId: 3eb0855e-68cb-4f1f-bf22-b417c151603d
-        -   Entity:
+        -   BaseId: 342cd7e6-22a0-4f21-88f0-11e54f7b0bd4
+            BasePartInstanceId: 3eb0855e-68cb-4f1f-bf22-b417c151603d
+            Entity:
                 Id: 70609731-acb0-4ca9-868a-be5561d333df
                 Name: Entity (2)
                 Components:
@@ -1906,9 +1930,6 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: fc07e60d-e864-41fb-8b6f-54f35125ce79}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design:
-                BaseId: 342cd7e6-22a0-4f21-88f0-11e54f7b0bd4
-                BasePartInstanceId: 3eb0855e-68cb-4f1f-bf22-b417c151603d
         -   Entity:
                 Id: 73879aea-8457-4189-b2bc-86bfde627556
                 Name: Prefab (5)
@@ -1921,8 +1942,9 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 8121fcd8-552f-49d9-bdb6-39420b5a269e}
                                 Id: b1c50cb4-224d-4b4c-933e-0e8a376bc8a7
-            Design: {}
-        -   Entity:
+        -   BaseId: 342cd7e6-22a0-4f21-88f0-11e54f7b0bd4
+            BasePartInstanceId: 47a1281d-f3c4-4b31-a7c0-9768446de17e
+            Entity:
                 Id: 73d2c2a7-03c7-4bf6-bd38-1188cc286ce2
                 Name: Entity (2)
                 Components:
@@ -1934,9 +1956,6 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 3d37e1f1-eb87-46e8-b896-fe7ae539c84f}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design:
-                BaseId: 342cd7e6-22a0-4f21-88f0-11e54f7b0bd4
-                BasePartInstanceId: 47a1281d-f3c4-4b31-a7c0-9768446de17e
         -   Entity:
                 Id: 7698999c-4c4d-43e0-ac5d-5e2360bafde7
                 Name: AmbientLight
@@ -1955,7 +1974,6 @@ Hierarchy:
                                 ~Id: 534cc5fa-904b-4665-b893-0ee0204094f2
                                 Value: {R: 0.768627465, G: 0.843137264, B: 1.0}
                         Intensity: 0.05
-            Design: {}
         -   Entity:
                 Id: 79133ba3-0fc3-4c37-9c88-497abb280900
                 Name: Stand (2)
@@ -1970,8 +1988,9 @@ Hierarchy:
                                 Id: dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
                             -   Entity: {Id: 50bbd3e2-78a5-4f2f-bac3-dbde01315dd6}
                                 Id: 54550fef-1b7c-4a35-8c9c-acf8f7656118
-            Design: {}
-        -   Entity:
+        -   BaseId: 577fd387-7fd3-40d7-8780-14695cc57730
+            BasePartInstanceId: dce26dee-f9a8-4597-8f91-ebf132513daa
+            Entity:
                 Id: 7962a5a3-95fe-4a09-9c87-3bd2e8cc6c60
                 Name: LightningRod
                 Components:
@@ -1993,9 +2012,6 @@ Hierarchy:
                                 Id: de390457-c420-49b8-99a8-6528b5971e83
                             -   Entity: {Id: dfa51ac7-23f6-486f-8e13-7e8f302607a6}
                                 Id: 0092eadc-6e4f-4295-b138-a52d7b0fc079
-            Design:
-                BaseId: 577fd387-7fd3-40d7-8780-14695cc57730
-                BasePartInstanceId: dce26dee-f9a8-4597-8f91-ebf132513daa
         -   Entity:
                 Id: 79735979-e91a-4eae-b702-070a873dfa9c
                 Name: Directional light
@@ -2027,7 +2043,6 @@ Hierarchy:
                                 BiasParameters:
                                     ~Id: 0f3bf030-229f-4068-8175-ab1f58dc6bb3
                         Intensity: 0.8
-            Design: {}
         -   Entity:
                 Id: 7c54d88e-d96c-496b-923c-896458b82f6f
                 Name: Prefab (2)
@@ -2040,8 +2055,9 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 91c5fca3-4d73-4f7d-9ae7-43170ac321a9}
                                 Id: b1c50cb4-224d-4b4c-933e-0e8a376bc8a7
-            Design: {}
-        -   Entity:
+        -   BaseId: 342cd7e6-22a0-4f21-88f0-11e54f7b0bd4
+            BasePartInstanceId: dce26dee-f9a8-4597-8f91-ebf132513daa
+            Entity:
                 Id: 7d079577-1ea9-4b1b-879c-30c2d0a608da
                 Name: Entity (2)
                 Components:
@@ -2053,10 +2069,9 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: da69e4c0-7bf3-4ea0-a276-bb8b0633ff79}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design:
-                BaseId: 342cd7e6-22a0-4f21-88f0-11e54f7b0bd4
-                BasePartInstanceId: dce26dee-f9a8-4597-8f91-ebf132513daa
-        -   Entity:
+        -   BaseId: 04e87e84-9c4f-4b69-85f2-8fbac0028df2
+            BasePartInstanceId: 3eb0855e-68cb-4f1f-bf22-b417c151603d
+            Entity:
                 Id: 7e68edec-db66-4e4e-9b4b-1609f750e348
                 Name: ArcTarget
                 Components:
@@ -2070,9 +2085,6 @@ Hierarchy:
                                 Id: bf81bf18-d16a-4e1b-b219-ccd78ce54190
                             -   Entity: {Id: a87f287e-f901-4fee-8990-299d59f43fd2}
                                 Id: 5a8c98e9-da25-4692-8920-27c02f3b087a
-            Design:
-                BaseId: 04e87e84-9c4f-4b69-85f2-8fbac0028df2
-                BasePartInstanceId: 3eb0855e-68cb-4f1f-bf22-b417c151603d
         -   Entity:
                 Id: 7f66e691-9ba7-41f0-b422-82eb5d1ca002
                 Name: Smoke Particle System
@@ -2174,7 +2186,6 @@ Hierarchy:
                                             VelocityMin: {X: -1.0, Y: 5.0, Z: -1.0}
                                             VelocityMax: {X: 1.0, Y: 8.0, Z: 1.0}
                                     Updaters: []
-            Design: {}
         -   Entity:
                 Id: 7f777979-e60c-4e8a-b559-feb4faf81362
                 Name: Lightning Arc White
@@ -2300,8 +2311,9 @@ Hierarchy:
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
                                     Updaters: []
-            Design: {}
-        -   Entity:
+        -   BaseId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
+            BasePartInstanceId: dce26dee-f9a8-4597-8f91-ebf132513daa
+            Entity:
                 Id: 809609d0-1bd2-4cb3-934f-feab9cbbda7c
                 Name: Sphere
                 Components:
@@ -2316,10 +2328,9 @@ Hierarchy:
                         Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/2da54fd5-e615-4a91-ae7b-91dfb574d66a:Sphere
                         Materials:
                             - null
-            Design:
-                BaseId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
-                BasePartInstanceId: dce26dee-f9a8-4597-8f91-ebf132513daa
-        -   Entity:
+        -   BaseId: 577fd387-7fd3-40d7-8780-14695cc57730
+            BasePartInstanceId: 822caf62-aa52-4248-a052-af2f8f1c630f
+            Entity:
                 Id: 8121fcd8-552f-49d9-bdb6-39420b5a269e
                 Name: LightningRod
                 Components:
@@ -2341,9 +2352,6 @@ Hierarchy:
                                 Id: de390457-c420-49b8-99a8-6528b5971e83
                             -   Entity: {Id: d8dbcce4-a59e-4352-8608-d6afb0574950}
                                 Id: 0092eadc-6e4f-4295-b138-a52d7b0fc079
-            Design:
-                BaseId: 577fd387-7fd3-40d7-8780-14695cc57730
-                BasePartInstanceId: 822caf62-aa52-4248-a052-af2f8f1c630f
         -   Entity:
                 Id: 85cc27c5-b70a-4419-a0ce-51f11dbc695d
                 Name: ProceduralTorus
@@ -2359,7 +2367,6 @@ Hierarchy:
                         Model: 6d1ebe93-9f1f-4449-a14f-0696552e4d34/c1a1b6ef-5177-4090-b27b-1279280a7e0a:Stand/ProceduralTorus
                         Materials:
                             - null
-            Design: {}
         -   Entity:
                 Id: 8697e719-8369-441f-a1e8-271dc4dd5688
                 Name: Laser Beam
@@ -2535,7 +2542,6 @@ Hierarchy:
                                                             Value: 0.0
                                                             TangentType: Linear
                                             SeedOffset: 0
-            Design: {}
         -   Entity:
                 Id: 87aa4de4-8893-4337-aabe-effb902154d9
                 Name: Spinner
@@ -2555,8 +2561,9 @@ Hierarchy:
                             Id: 0092eadc-6e4f-4295-b138-a52d7b0fc079
                         doNotScale: false
                         scaleOnlyZ: true
-            Design: {}
-        -   Entity:
+        -   BaseId: 04e87e84-9c4f-4b69-85f2-8fbac0028df2
+            BasePartInstanceId: edc8c22a-d8f6-446c-9c55-aa37c302fa40
+            Entity:
                 Id: 87f295c4-4430-4eeb-ae43-b8dd9d40d1ba
                 Name: ArcTarget
                 Components:
@@ -2570,10 +2577,9 @@ Hierarchy:
                                 Id: bf81bf18-d16a-4e1b-b219-ccd78ce54190
                             -   Entity: {Id: ec7d21c4-70b7-4f8c-ba14-8af563224c83}
                                 Id: 5a8c98e9-da25-4692-8920-27c02f3b087a
-            Design:
-                BaseId: 04e87e84-9c4f-4b69-85f2-8fbac0028df2
-                BasePartInstanceId: edc8c22a-d8f6-446c-9c55-aa37c302fa40
-        -   Entity:
+        -   BaseId: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d
+            BasePartInstanceId: dd5f5d39-0933-4d77-99a5-c7ece8fb26bb
+            Entity:
                 Id: 8d735471-ad3f-48be-8e4f-a6b87b524fc1
                 Name: MetalRing
                 Components:
@@ -2591,10 +2597,9 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
-            Design:
-                BaseId: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d
-                BasePartInstanceId: dd5f5d39-0933-4d77-99a5-c7ece8fb26bb
-        -   Entity:
+        -   BaseId: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d
+            BasePartInstanceId: 47a1281d-f3c4-4b31-a7c0-9768446de17e
+            Entity:
                 Id: 8e0f38b9-6953-410b-8e06-07919fc02c9f
                 Name: MetalRing
                 Components:
@@ -2612,10 +2617,9 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
-            Design:
-                BaseId: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d
-                BasePartInstanceId: 47a1281d-f3c4-4b31-a7c0-9768446de17e
-        -   Entity:
+        -   BaseId: 342cd7e6-22a0-4f21-88f0-11e54f7b0bd4
+            BasePartInstanceId: ecc6c091-b6a5-4f94-91fa-4707563832ec
+            Entity:
                 Id: 914164cc-a0e2-441c-9993-78dbff5dcfe1
                 Name: Entity (2)
                 Components:
@@ -2627,10 +2631,9 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: d9c2bf9c-1346-4b0d-93dd-3376c9e84512}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design:
-                BaseId: 342cd7e6-22a0-4f21-88f0-11e54f7b0bd4
-                BasePartInstanceId: ecc6c091-b6a5-4f94-91fa-4707563832ec
-        -   Entity:
+        -   BaseId: 4d184225-610c-40fd-96a8-1409ca9f8729
+            BasePartInstanceId: dd5f5d39-0933-4d77-99a5-c7ece8fb26bb
+            Entity:
                 Id: 9180ff40-09ef-43d9-b38e-c9d3f751ae56
                 Name: Entity (3)
                 Components:
@@ -2642,10 +2645,9 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 4ce53628-771d-4485-8ac5-d6db91db6ae2}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design:
-                BaseId: 4d184225-610c-40fd-96a8-1409ca9f8729
-                BasePartInstanceId: dd5f5d39-0933-4d77-99a5-c7ece8fb26bb
-        -   Entity:
+        -   BaseId: 577fd387-7fd3-40d7-8780-14695cc57730
+            BasePartInstanceId: b0b5b1c9-e27d-4743-8188-1c656dab9ac3
+            Entity:
                 Id: 91c5fca3-4d73-4f7d-9ae7-43170ac321a9
                 Name: LightningRod
                 Components:
@@ -2667,10 +2669,9 @@ Hierarchy:
                                 Id: de390457-c420-49b8-99a8-6528b5971e83
                             -   Entity: {Id: fd0455b0-9843-41fe-9286-60aa2b2b8e96}
                                 Id: 0092eadc-6e4f-4295-b138-a52d7b0fc079
-            Design:
-                BaseId: 577fd387-7fd3-40d7-8780-14695cc57730
-                BasePartInstanceId: b0b5b1c9-e27d-4743-8188-1c656dab9ac3
-        -   Entity:
+        -   BaseId: 735bf6ce-0f55-46ee-8a86-44b04c0c814d
+            BasePartInstanceId: edc8c22a-d8f6-446c-9c55-aa37c302fa40
+            Entity:
                 Id: 93dc527f-80c2-4b7c-bf08-125482dfa8bb
                 Name: MetalRing
                 Components:
@@ -2688,9 +2689,6 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
-            Design:
-                BaseId: 735bf6ce-0f55-46ee-8a86-44b04c0c814d
-                BasePartInstanceId: edc8c22a-d8f6-446c-9c55-aa37c302fa40
         -   Entity:
                 Id: 9705ec6e-d8b1-4a4f-86f9-c70e943ceaa4
                 Name: Spinning Target
@@ -2706,8 +2704,9 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: e646737c-d02e-4227-8b0f-c70b491e5a59
                         TimeFactor: 0.2
-            Design: {}
-        -   Entity:
+        -   BaseId: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d
+            BasePartInstanceId: edc8c22a-d8f6-446c-9c55-aa37c302fa40
+            Entity:
                 Id: 979e9d07-a414-44ca-befb-54587f30d1a5
                 Name: MetalRing
                 Components:
@@ -2725,10 +2724,9 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
-            Design:
-                BaseId: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d
-                BasePartInstanceId: edc8c22a-d8f6-446c-9c55-aa37c302fa40
-        -   Entity:
+        -   BaseId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
+            BasePartInstanceId: 47a1281d-f3c4-4b31-a7c0-9768446de17e
+            Entity:
                 Id: 9d4b5289-9fa2-40e0-8787-5df76764be04
                 Name: Sphere
                 Components:
@@ -2743,10 +2741,9 @@ Hierarchy:
                         Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/2da54fd5-e615-4a91-ae7b-91dfb574d66a:Sphere
                         Materials:
                             - null
-            Design:
-                BaseId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
-                BasePartInstanceId: 47a1281d-f3c4-4b31-a7c0-9768446de17e
-        -   Entity:
+        -   BaseId: 04e87e84-9c4f-4b69-85f2-8fbac0028df2
+            BasePartInstanceId: 47a1281d-f3c4-4b31-a7c0-9768446de17e
+            Entity:
                 Id: 9d4caca8-ad54-4a29-9185-2e76a2fb1e9e
                 Name: ArcTarget
                 Components:
@@ -2758,10 +2755,9 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 43a3535e-803a-4037-9940-2f97a65cfe4d}
                                 Id: 5a8c98e9-da25-4692-8920-27c02f3b087a
-            Design:
-                BaseId: 04e87e84-9c4f-4b69-85f2-8fbac0028df2
-                BasePartInstanceId: 47a1281d-f3c4-4b31-a7c0-9768446de17e
-        -   Entity:
+        -   BaseId: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d
+            BasePartInstanceId: dce26dee-f9a8-4597-8f91-ebf132513daa
+            Entity:
                 Id: 9d77bdfb-b563-48e3-9ed1-ff6ad6bb2930
                 Name: MetalRing
                 Components:
@@ -2779,10 +2775,9 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
-            Design:
-                BaseId: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d
-                BasePartInstanceId: dce26dee-f9a8-4597-8f91-ebf132513daa
-        -   Entity:
+        -   BaseId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
+            BasePartInstanceId: ecc6c091-b6a5-4f94-91fa-4707563832ec
+            Entity:
                 Id: 9ec084d7-f72c-4d7e-b7e1-c971b424fbd6
                 Name: Sphere
                 Components:
@@ -2797,10 +2792,9 @@ Hierarchy:
                         Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/2da54fd5-e615-4a91-ae7b-91dfb574d66a:Sphere
                         Materials:
                             - null
-            Design:
-                BaseId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
-                BasePartInstanceId: ecc6c091-b6a5-4f94-91fa-4707563832ec
-        -   Entity:
+        -   BaseId: 4d184225-610c-40fd-96a8-1409ca9f8729
+            BasePartInstanceId: 3eb0855e-68cb-4f1f-bf22-b417c151603d
+            Entity:
                 Id: 9f559b0c-597d-45f7-80a5-8185c0ac574d
                 Name: Entity (3)
                 Components:
@@ -2812,9 +2806,6 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 5a819998-963c-48bf-8336-c7c8d7b1a2ca}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design:
-                BaseId: 4d184225-610c-40fd-96a8-1409ca9f8729
-                BasePartInstanceId: 3eb0855e-68cb-4f1f-bf22-b417c151603d
         -   Entity:
                 Id: a41aa685-3271-4e96-a72c-639c52070011
                 Name: Camera
@@ -2830,8 +2821,9 @@ Hierarchy:
                         Projection: Perspective
                     - !LightningsAndLasers.CameraOrbitScript,LightningsAndLasers.Game
                         ~Id: 5bc83c29-7826-49d6-a70b-5c6f5b9f20ee
-            Design: {}
-        -   Entity:
+        -   BaseId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
+            BasePartInstanceId: 3eb0855e-68cb-4f1f-bf22-b417c151603d
+            Entity:
                 Id: a4da17e2-9bdc-4193-befc-5d92d165d6d1
                 Name: Sphere
                 Components:
@@ -2846,10 +2838,9 @@ Hierarchy:
                         Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/2da54fd5-e615-4a91-ae7b-91dfb574d66a:Sphere
                         Materials:
                             - null
-            Design:
-                BaseId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
-                BasePartInstanceId: 3eb0855e-68cb-4f1f-bf22-b417c151603d
-        -   Entity:
+        -   BaseId: 342cd7e6-22a0-4f21-88f0-11e54f7b0bd4
+            BasePartInstanceId: b0b5b1c9-e27d-4743-8188-1c656dab9ac3
+            Entity:
                 Id: a5133108-c718-41a0-9e79-e945dca2fcac
                 Name: Entity (2)
                 Components:
@@ -2861,9 +2852,6 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: aed824c1-0314-4c1d-9a55-c8f8250b26c3}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design:
-                BaseId: 342cd7e6-22a0-4f21-88f0-11e54f7b0bd4
-                BasePartInstanceId: b0b5b1c9-e27d-4743-8188-1c656dab9ac3
         -   Entity:
                 Id: a85a5f1b-0311-4216-9b6b-2626c688cdca
                 Name: SpinningArm (2)
@@ -2876,7 +2864,6 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: b6470b60-34e1-44dc-bcc3-534e782570ab}
                                 Id: 49e72bdb-3d7d-4f0a-ae06-9beb813d3f31
-            Design: {}
         -   Entity:
                 Id: a87f287e-f901-4fee-8990-299d59f43fd2
                 Name: Lightning Trail
@@ -3031,8 +3018,9 @@ Hierarchy:
                                                             TangentType: Linear
                                             SamplerOptional: null
                                             SeedOffset: 0
-            Design: {}
-        -   Entity:
+        -   BaseId: 1f576934-655a-4878-8388-3ff907555fdb
+            BasePartInstanceId: dce26dee-f9a8-4597-8f91-ebf132513daa
+            Entity:
                 Id: ab463087-b33c-42bd-b4b4-77e67bb7c985
                 Name: ProceduralModel
                 Components:
@@ -3047,10 +3035,9 @@ Hierarchy:
                         Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:ProceduralModel
                         Materials:
                             - null
-            Design:
-                BaseId: 1f576934-655a-4878-8388-3ff907555fdb
-                BasePartInstanceId: dce26dee-f9a8-4597-8f91-ebf132513daa
-        -   Entity:
+        -   BaseId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
+            BasePartInstanceId: 822caf62-aa52-4248-a052-af2f8f1c630f
+            Entity:
                 Id: ad12f0f5-57fb-4df0-be3e-1f9f6f8018fc
                 Name: Sphere
                 Components:
@@ -3065,10 +3052,9 @@ Hierarchy:
                         Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/2da54fd5-e615-4a91-ae7b-91dfb574d66a:Sphere
                         Materials:
                             - null
-            Design:
-                BaseId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
-                BasePartInstanceId: 822caf62-aa52-4248-a052-af2f8f1c630f
-        -   Entity:
+        -   BaseId: 771289b2-0bf6-47f1-afef-aab30a29b874
+            BasePartInstanceId: b0b5b1c9-e27d-4743-8188-1c656dab9ac3
+            Entity:
                 Id: aed824c1-0314-4c1d-9a55-c8f8250b26c3
                 Name: MetalRing
                 Components:
@@ -3086,10 +3072,9 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
-            Design:
-                BaseId: 771289b2-0bf6-47f1-afef-aab30a29b874
-                BasePartInstanceId: b0b5b1c9-e27d-4743-8188-1c656dab9ac3
-        -   Entity:
+        -   BaseId: 4d184225-610c-40fd-96a8-1409ca9f8729
+            BasePartInstanceId: 47a1281d-f3c4-4b31-a7c0-9768446de17e
+            Entity:
                 Id: afeca1fc-0133-4a12-82a9-929e5d59c909
                 Name: Entity (3)
                 Components:
@@ -3101,10 +3086,9 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 1ca5eaa2-7a99-458a-9064-62918ca59390}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design:
-                BaseId: 4d184225-610c-40fd-96a8-1409ca9f8729
-                BasePartInstanceId: 47a1281d-f3c4-4b31-a7c0-9768446de17e
-        -   Entity:
+        -   BaseId: 771289b2-0bf6-47f1-afef-aab30a29b874
+            BasePartInstanceId: d5efa760-049d-44ff-a354-46c8f5043385
+            Entity:
                 Id: b12a54ff-4622-4e9c-946d-1bb7342f340a
                 Name: MetalRing
                 Components:
@@ -3122,9 +3106,6 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
-            Design:
-                BaseId: 771289b2-0bf6-47f1-afef-aab30a29b874
-                BasePartInstanceId: d5efa760-049d-44ff-a354-46c8f5043385
         -   Entity:
                 Id: b300f706-d568-4c45-9cc2-f2bd162f2c31
                 Name: ProceduralCylinder
@@ -3140,7 +3121,6 @@ Hierarchy:
                         Model: 40f061ef-7c24-49da-8559-6468e7668f39/c74f1435-052b-4d42-8245-8c0cae078821:Stand/ProceduralCylinder
                         Materials:
                             - null
-            Design: {}
         -   Entity:
                 Id: b6470b60-34e1-44dc-bcc3-534e782570ab
                 Name: Spinning Target
@@ -3156,7 +3136,6 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: e646737c-d02e-4227-8b0f-c70b491e5a59
                         TimeFactor: 1.0
-            Design: {}
         -   Entity:
                 Id: b6abb062-9940-44a7-90f5-7dc6f0a6a26e
                 Name: SpinningArm (3)
@@ -3169,8 +3148,9 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 9705ec6e-d8b1-4a4f-86f9-c70e943ceaa4}
                                 Id: 49e72bdb-3d7d-4f0a-ae06-9beb813d3f31
-            Design: {}
-        -   Entity:
+        -   BaseId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
+            BasePartInstanceId: dd5f5d39-0933-4d77-99a5-c7ece8fb26bb
+            Entity:
                 Id: b76fb8ba-820d-4697-9e6b-79273b8d4cbb
                 Name: Sphere
                 Components:
@@ -3185,10 +3165,9 @@ Hierarchy:
                         Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/2da54fd5-e615-4a91-ae7b-91dfb574d66a:Sphere
                         Materials:
                             - null
-            Design:
-                BaseId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
-                BasePartInstanceId: dd5f5d39-0933-4d77-99a5-c7ece8fb26bb
-        -   Entity:
+        -   BaseId: c9ad1043-e5d2-440c-8df2-f7d5a7913c6a
+            BasePartInstanceId: ffd9cf4b-409a-41b0-8ae0-9c3c4f476389
+            Entity:
                 Id: b7ae4eaa-29ed-4242-9d3e-15a3b61debd5
                 Name: GreenTube
                 Components:
@@ -3203,9 +3182,6 @@ Hierarchy:
                         Model: 78810043-4184-4704-9330-eef2df9f7591/0628b61c-a92c-4836-bd45-988da11c6aac:LaserAssets/GreenTube
                         Materials:
                             - null
-            Design:
-                BaseId: c9ad1043-e5d2-440c-8df2-f7d5a7913c6a
-                BasePartInstanceId: ffd9cf4b-409a-41b0-8ae0-9c3c4f476389
         -   Entity:
                 Id: b84c6094-f2ac-4719-b14a-5d557c4170f3
                 Name: Point light
@@ -3229,7 +3205,6 @@ Hierarchy:
                                 Size: Small
                                 BiasParameters:
                                     ~Id: 620b5a90-c458-422b-8365-bd81b5c69bf3
-            Design: {}
         -   Entity:
                 Id: ba79f2d8-8d35-4d79-8abf-b4b11ed0bb10
                 Name: Lightning Arc Red
@@ -3356,8 +3331,9 @@ Hierarchy:
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
                                     Updaters: []
-            Design: {}
-        -   Entity:
+        -   BaseId: 1f576934-655a-4878-8388-3ff907555fdb
+            BasePartInstanceId: 822caf62-aa52-4248-a052-af2f8f1c630f
+            Entity:
                 Id: bf8be57e-4b30-44bc-ab8d-0214495e407e
                 Name: ProceduralModel
                 Components:
@@ -3372,10 +3348,9 @@ Hierarchy:
                         Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:ProceduralModel
                         Materials:
                             - null
-            Design:
-                BaseId: 1f576934-655a-4878-8388-3ff907555fdb
-                BasePartInstanceId: 822caf62-aa52-4248-a052-af2f8f1c630f
-        -   Entity:
+        -   BaseId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
+            BasePartInstanceId: d5efa760-049d-44ff-a354-46c8f5043385
+            Entity:
                 Id: c0676271-27fd-4915-8275-0abc44797330
                 Name: Sphere
                 Components:
@@ -3390,9 +3365,6 @@ Hierarchy:
                         Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/2da54fd5-e615-4a91-ae7b-91dfb574d66a:Sphere
                         Materials:
                             - null
-            Design:
-                BaseId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
-                BasePartInstanceId: d5efa760-049d-44ff-a354-46c8f5043385
         -   Entity:
                 Id: c4271149-6500-4d2b-928b-7eb41b8eb9be
                 Name: Stand (5)
@@ -3407,8 +3379,9 @@ Hierarchy:
                                 Id: dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
                             -   Entity: {Id: 85cc27c5-b70a-4419-a0ce-51f11dbc695d}
                                 Id: 54550fef-1b7c-4a35-8c9c-acf8f7656118
-            Design: {}
-        -   Entity:
+        -   BaseId: 04e87e84-9c4f-4b69-85f2-8fbac0028df2
+            BasePartInstanceId: ecc6c091-b6a5-4f94-91fa-4707563832ec
+            Entity:
                 Id: c7c16bcf-f4dc-431c-a127-b9f6a2ab08f5
                 Name: ArcTarget
                 Components:
@@ -3420,10 +3393,9 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 3cd47523-b870-4072-99cc-1793cacb7fe3}
                                 Id: 5a8c98e9-da25-4692-8920-27c02f3b087a
-            Design:
-                BaseId: 04e87e84-9c4f-4b69-85f2-8fbac0028df2
-                BasePartInstanceId: ecc6c091-b6a5-4f94-91fa-4707563832ec
-        -   Entity:
+        -   BaseId: 11531b59-2e60-415e-82cf-81bdfafeb1d6
+            BasePartInstanceId: dce26dee-f9a8-4597-8f91-ebf132513daa
+            Entity:
                 Id: cb3c41dd-387d-49f9-b1b7-ba4c0a6d4f33
                 Name: Entity
                 Components:
@@ -3435,10 +3407,9 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 9d77bdfb-b563-48e3-9ed1-ff6ad6bb2930}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design:
-                BaseId: 11531b59-2e60-415e-82cf-81bdfafeb1d6
-                BasePartInstanceId: dce26dee-f9a8-4597-8f91-ebf132513daa
-        -   Entity:
+        -   BaseId: 11531b59-2e60-415e-82cf-81bdfafeb1d6
+            BasePartInstanceId: 822caf62-aa52-4248-a052-af2f8f1c630f
+            Entity:
                 Id: cd4aedc4-6615-4388-977b-591f7fc61d55
                 Name: Entity
                 Components:
@@ -3450,9 +3421,6 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 252ff5c4-4f42-4bd5-bda0-ea05f6fb864b}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design:
-                BaseId: 11531b59-2e60-415e-82cf-81bdfafeb1d6
-                BasePartInstanceId: 822caf62-aa52-4248-a052-af2f8f1c630f
         -   Entity:
                 Id: d11eef8e-7f2b-41c6-a63f-df88c3f59b43
                 Name: Spinning Target
@@ -3468,8 +3436,9 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: e646737c-d02e-4227-8b0f-c70b491e5a59
                         TimeFactor: 1.0
-            Design: {}
-        -   Entity:
+        -   BaseId: 1f576934-655a-4878-8388-3ff907555fdb
+            BasePartInstanceId: b0b5b1c9-e27d-4743-8188-1c656dab9ac3
+            Entity:
                 Id: d4ed3dbd-1a81-41e8-b3e8-6e7027951281
                 Name: ProceduralModel
                 Components:
@@ -3484,10 +3453,9 @@ Hierarchy:
                         Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:ProceduralModel
                         Materials:
                             - null
-            Design:
-                BaseId: 1f576934-655a-4878-8388-3ff907555fdb
-                BasePartInstanceId: b0b5b1c9-e27d-4743-8188-1c656dab9ac3
-        -   Entity:
+        -   BaseId: 04e87e84-9c4f-4b69-85f2-8fbac0028df2
+            BasePartInstanceId: 822caf62-aa52-4248-a052-af2f8f1c630f
+            Entity:
                 Id: d8dbcce4-a59e-4352-8608-d6afb0574950
                 Name: ArcTarget
                 Components:
@@ -3503,10 +3471,9 @@ Hierarchy:
                                 Id: 5a8c98e9-da25-4692-8920-27c02f3b087a
                             -   Entity: {Id: eb37c63d-f3a4-4c5d-b5c4-b9a8bd04e17f}
                                 Id: 5a8c98e9-da25-4692-8920-27c02f3b087a
-            Design:
-                BaseId: 04e87e84-9c4f-4b69-85f2-8fbac0028df2
-                BasePartInstanceId: 822caf62-aa52-4248-a052-af2f8f1c630f
-        -   Entity:
+        -   BaseId: 1f576934-655a-4878-8388-3ff907555fdb
+            BasePartInstanceId: d5efa760-049d-44ff-a354-46c8f5043385
+            Entity:
                 Id: d8f56f17-dcc6-419f-bfb3-0bf30679b60f
                 Name: ProceduralModel
                 Components:
@@ -3521,10 +3488,9 @@ Hierarchy:
                         Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:ProceduralModel
                         Materials:
                             - null
-            Design:
-                BaseId: 1f576934-655a-4878-8388-3ff907555fdb
-                BasePartInstanceId: d5efa760-049d-44ff-a354-46c8f5043385
-        -   Entity:
+        -   BaseId: 771289b2-0bf6-47f1-afef-aab30a29b874
+            BasePartInstanceId: ecc6c091-b6a5-4f94-91fa-4707563832ec
+            Entity:
                 Id: d9c2bf9c-1346-4b0d-93dd-3376c9e84512
                 Name: MetalRing
                 Components:
@@ -3542,10 +3508,9 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
-            Design:
-                BaseId: 771289b2-0bf6-47f1-afef-aab30a29b874
-                BasePartInstanceId: ecc6c091-b6a5-4f94-91fa-4707563832ec
-        -   Entity:
+        -   BaseId: 771289b2-0bf6-47f1-afef-aab30a29b874
+            BasePartInstanceId: dce26dee-f9a8-4597-8f91-ebf132513daa
+            Entity:
                 Id: da69e4c0-7bf3-4ea0-a276-bb8b0633ff79
                 Name: MetalRing
                 Components:
@@ -3563,10 +3528,9 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
-            Design:
-                BaseId: 771289b2-0bf6-47f1-afef-aab30a29b874
-                BasePartInstanceId: dce26dee-f9a8-4597-8f91-ebf132513daa
-        -   Entity:
+        -   BaseId: 735bf6ce-0f55-46ee-8a86-44b04c0c814d
+            BasePartInstanceId: ecc6c091-b6a5-4f94-91fa-4707563832ec
+            Entity:
                 Id: da7f9bf4-d0d4-490d-8126-f63639879377
                 Name: MetalRing
                 Components:
@@ -3584,10 +3548,9 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
-            Design:
-                BaseId: 735bf6ce-0f55-46ee-8a86-44b04c0c814d
-                BasePartInstanceId: ecc6c091-b6a5-4f94-91fa-4707563832ec
-        -   Entity:
+        -   BaseId: 342cd7e6-22a0-4f21-88f0-11e54f7b0bd4
+            BasePartInstanceId: d5efa760-049d-44ff-a354-46c8f5043385
+            Entity:
                 Id: dc4e7661-1156-4225-b333-f5b510333c89
                 Name: Entity (2)
                 Components:
@@ -3599,10 +3562,9 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: b12a54ff-4622-4e9c-946d-1bb7342f340a}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design:
-                BaseId: 342cd7e6-22a0-4f21-88f0-11e54f7b0bd4
-                BasePartInstanceId: d5efa760-049d-44ff-a354-46c8f5043385
-        -   Entity:
+        -   BaseId: 735bf6ce-0f55-46ee-8a86-44b04c0c814d
+            BasePartInstanceId: 822caf62-aa52-4248-a052-af2f8f1c630f
+            Entity:
                 Id: de098919-1b0f-420f-8fb3-e34e7810b6de
                 Name: MetalRing
                 Components:
@@ -3620,10 +3582,9 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                         TimeFactor: 1.0
-            Design:
-                BaseId: 735bf6ce-0f55-46ee-8a86-44b04c0c814d
-                BasePartInstanceId: 822caf62-aa52-4248-a052-af2f8f1c630f
-        -   Entity:
+        -   BaseId: 577fd387-7fd3-40d7-8780-14695cc57730
+            BasePartInstanceId: 47a1281d-f3c4-4b31-a7c0-9768446de17e
+            Entity:
                 Id: ded7e3c2-c961-4551-aa38-c3813fe81865
                 Name: LightningRod
                 Components:
@@ -3643,10 +3604,9 @@ Hierarchy:
                                 Id: de390457-c420-49b8-99a8-6528b5971e83
                             -   Entity: {Id: 9d4caca8-ad54-4a29-9185-2e76a2fb1e9e}
                                 Id: 0092eadc-6e4f-4295-b138-a52d7b0fc079
-            Design:
-                BaseId: 577fd387-7fd3-40d7-8780-14695cc57730
-                BasePartInstanceId: 47a1281d-f3c4-4b31-a7c0-9768446de17e
-        -   Entity:
+        -   BaseId: 577fd387-7fd3-40d7-8780-14695cc57730
+            BasePartInstanceId: edc8c22a-d8f6-446c-9c55-aa37c302fa40
+            Entity:
                 Id: dee68d10-538c-49de-880e-735c4d943968
                 Name: LightningRod
                 Components:
@@ -3666,10 +3626,9 @@ Hierarchy:
                                 Id: de390457-c420-49b8-99a8-6528b5971e83
                             -   Entity: {Id: 87f295c4-4430-4eeb-ae43-b8dd9d40d1ba}
                                 Id: 0092eadc-6e4f-4295-b138-a52d7b0fc079
-            Design:
-                BaseId: 577fd387-7fd3-40d7-8780-14695cc57730
-                BasePartInstanceId: edc8c22a-d8f6-446c-9c55-aa37c302fa40
-        -   Entity:
+        -   BaseId: 04e87e84-9c4f-4b69-85f2-8fbac0028df2
+            BasePartInstanceId: dce26dee-f9a8-4597-8f91-ebf132513daa
+            Entity:
                 Id: dfa51ac7-23f6-486f-8e13-7e8f302607a6
                 Name: ArcTarget
                 Components:
@@ -3681,10 +3640,9 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 62ee0db1-63af-4ab2-ad18-605d67297bda}
                                 Id: 5a8c98e9-da25-4692-8920-27c02f3b087a
-            Design:
-                BaseId: 04e87e84-9c4f-4b69-85f2-8fbac0028df2
-                BasePartInstanceId: dce26dee-f9a8-4597-8f91-ebf132513daa
-        -   Entity:
+        -   BaseId: 04e87e84-9c4f-4b69-85f2-8fbac0028df2
+            BasePartInstanceId: dd5f5d39-0933-4d77-99a5-c7ece8fb26bb
+            Entity:
                 Id: e1a54d99-c4d0-4ec0-8e0f-f74f2e594628
                 Name: ArcTarget
                 Components:
@@ -3698,10 +3656,9 @@ Hierarchy:
                                 Id: bf81bf18-d16a-4e1b-b219-ccd78ce54190
                             -   Entity: {Id: 2e31eccb-7928-4ccd-ab92-4f8fdfdca490}
                                 Id: 5a8c98e9-da25-4692-8920-27c02f3b087a
-            Design:
-                BaseId: 04e87e84-9c4f-4b69-85f2-8fbac0028df2
-                BasePartInstanceId: dd5f5d39-0933-4d77-99a5-c7ece8fb26bb
-        -   Entity:
+        -   BaseId: 11531b59-2e60-415e-82cf-81bdfafeb1d6
+            BasePartInstanceId: 47a1281d-f3c4-4b31-a7c0-9768446de17e
+            Entity:
                 Id: ea82ce9f-41ed-40bf-a442-2f21c4bb8dbf
                 Name: Entity
                 Components:
@@ -3713,9 +3670,6 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 8e0f38b9-6953-410b-8e06-07919fc02c9f}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design:
-                BaseId: 11531b59-2e60-415e-82cf-81bdfafeb1d6
-                BasePartInstanceId: 47a1281d-f3c4-4b31-a7c0-9768446de17e
         -   Entity:
                 Id: eb37c63d-f3a4-4c5d-b5c4-b9a8bd04e17f
                 Name: Lightning Arc Blue
@@ -3841,7 +3795,6 @@ Hierarchy:
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
                                     Updaters: []
-            Design: {}
         -   Entity:
                 Id: ec12fc02-8c3b-47c6-83d4-2f8d48629865
                 Name: SpinningArm (4)
@@ -3854,7 +3807,6 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 52598991-f421-442a-86b4-98a5f7ce0afc}
                                 Id: 49e72bdb-3d7d-4f0a-ae06-9beb813d3f31
-            Design: {}
         -   Entity:
                 Id: ec35c281-2510-44b4-b37d-927c58ef95e9
                 Name: Stand (3)
@@ -3869,7 +3821,6 @@ Hierarchy:
                                 Id: dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
                             -   Entity: {Id: 2ac9ec66-567f-478f-a6b1-7846d5d95d76}
                                 Id: 54550fef-1b7c-4a35-8c9c-acf8f7656118
-            Design: {}
         -   Entity:
                 Id: ec7d21c4-70b7-4f8c-ba14-8af563224c83
                 Name: Lightning Trail
@@ -4024,7 +3975,6 @@ Hierarchy:
                                                             TangentType: Linear
                                             SamplerOptional: null
                                             SeedOffset: 0
-            Design: {}
         -   Entity:
                 Id: ed9f0cc7-4aed-46ba-9f15-3b31504c5868
                 Name: Laser Beam Orange
@@ -4222,7 +4172,6 @@ Hierarchy:
                                                             Value: 0.0
                                                             TangentType: Linear
                                             SeedOffset: 0
-            Design: {}
         -   Entity:
                 Id: f09e35cf-5f9d-4520-92ad-9f56310dc6b0
                 Name: SpinningArm
@@ -4235,7 +4184,6 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: d11eef8e-7f2b-41c6-a63f-df88c3f59b43}
                                 Id: 49e72bdb-3d7d-4f0a-ae06-9beb813d3f31
-            Design: {}
         -   Entity:
                 Id: f195ae7e-31de-4754-a8b8-3658ea3629bb
                 Name: Stand (4)
@@ -4250,8 +4198,9 @@ Hierarchy:
                                 Id: dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
                             -   Entity: {Id: 2a699cb7-2468-45e6-be28-2f0c1b11d0a5}
                                 Id: 54550fef-1b7c-4a35-8c9c-acf8f7656118
-            Design: {}
-        -   Entity:
+        -   BaseId: 11531b59-2e60-415e-82cf-81bdfafeb1d6
+            BasePartInstanceId: edc8c22a-d8f6-446c-9c55-aa37c302fa40
+            Entity:
                 Id: f19da5d1-7c1b-4b2b-b35a-005f684f91fb
                 Name: Entity
                 Components:
@@ -4263,9 +4212,6 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 979e9d07-a414-44ca-befb-54587f30d1a5}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design:
-                BaseId: 11531b59-2e60-415e-82cf-81bdfafeb1d6
-                BasePartInstanceId: edc8c22a-d8f6-446c-9c55-aa37c302fa40
         -   Entity:
                 Id: f3c9f97f-ad83-4e0e-b6c7-cce0a4c06198
                 Name: Skybox
@@ -4279,7 +4225,6 @@ Hierarchy:
                     - !SkyboxComponent
                         ~Id: 1c79afe6-8cc2-4b13-9923-7731a8782d98
                         Skybox: 8a1546cd-e42c-4ae0-b61e-1cad16e9b44a/af08cb87-8ca1-4203-b45d-5ea0d68cc6e0:Skybox
-            Design: {}
         -   Entity:
                 Id: f739d26c-29c3-4e13-baf4-119c76899760
                 Name: Prefab (4)
@@ -4292,7 +4237,6 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 7962a5a3-95fe-4a09-9c87-3bd2e8cc6c60}
                                 Id: b1c50cb4-224d-4b4c-933e-0e8a376bc8a7
-            Design: {}
         -   Entity:
                 Id: f9c412c7-9454-483e-a4d4-53fb49e61b17
                 Name: Smoke Particle System
@@ -4394,8 +4338,9 @@ Hierarchy:
                                             VelocityMin: {X: -1.0, Y: 5.0, Z: -1.0}
                                             VelocityMax: {X: 1.0, Y: 8.0, Z: 1.0}
                                     Updaters: []
-            Design: {}
-        -   Entity:
+        -   BaseId: 771289b2-0bf6-47f1-afef-aab30a29b874
+            BasePartInstanceId: 3eb0855e-68cb-4f1f-bf22-b417c151603d
+            Entity:
                 Id: fc07e60d-e864-41fb-8b6f-54f35125ce79
                 Name: MetalRing
                 Components:
@@ -4413,10 +4358,9 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                         TimeFactor: 0.8
-            Design:
-                BaseId: 771289b2-0bf6-47f1-afef-aab30a29b874
-                BasePartInstanceId: 3eb0855e-68cb-4f1f-bf22-b417c151603d
-        -   Entity:
+        -   BaseId: 11531b59-2e60-415e-82cf-81bdfafeb1d6
+            BasePartInstanceId: d5efa760-049d-44ff-a354-46c8f5043385
+            Entity:
                 Id: fc6b7e06-15eb-4f10-b274-a0ac12f1bba5
                 Name: Entity
                 Components:
@@ -4428,9 +4372,6 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 644c11b7-8980-4d40-a513-8e152aa97410}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design:
-                BaseId: 11531b59-2e60-415e-82cf-81bdfafeb1d6
-                BasePartInstanceId: d5efa760-049d-44ff-a354-46c8f5043385
         -   Entity:
                 Id: fc8d67af-0cc5-4c76-b926-9fd081f745ef
                 Name: ProceduralCylinder
@@ -4446,8 +4387,9 @@ Hierarchy:
                         Model: 40f061ef-7c24-49da-8559-6468e7668f39/c74f1435-052b-4d42-8245-8c0cae078821:Stand/ProceduralCylinder
                         Materials:
                             - null
-            Design: {}
-        -   Entity:
+        -   BaseId: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d
+            BasePartInstanceId: ecc6c091-b6a5-4f94-91fa-4707563832ec
+            Entity:
                 Id: fcb252c8-32e5-40e2-97be-96d528440f22
                 Name: MetalRing
                 Components:
@@ -4465,10 +4407,9 @@ Hierarchy:
                     - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                         ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                         TimeFactor: 0.65
-            Design:
-                BaseId: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d
-                BasePartInstanceId: ecc6c091-b6a5-4f94-91fa-4707563832ec
-        -   Entity:
+        -   BaseId: 04e87e84-9c4f-4b69-85f2-8fbac0028df2
+            BasePartInstanceId: b0b5b1c9-e27d-4743-8188-1c656dab9ac3
+            Entity:
                 Id: fd0455b0-9843-41fe-9286-60aa2b2b8e96
                 Name: ArcTarget
                 Components:
@@ -4480,9 +4421,6 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 4f7a5705-1693-4776-90f8-2956a1ba4cc9}
                                 Id: 5a8c98e9-da25-4692-8920-27c02f3b087a
-            Design:
-                BaseId: 04e87e84-9c4f-4b69-85f2-8fbac0028df2
-                BasePartInstanceId: b0b5b1c9-e27d-4743-8188-1c656dab9ac3
         -   Entity:
                 Id: fd406c1e-177f-447a-9a12-51c467000898
                 Name: Prefab (3)
@@ -4495,8 +4433,9 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 01fab643-422d-4ad5-94c9-114d87c334bb}
                                 Id: b1c50cb4-224d-4b4c-933e-0e8a376bc8a7
-            Design: {}
-        -   Entity:
+        -   BaseId: 4d184225-610c-40fd-96a8-1409ca9f8729
+            BasePartInstanceId: d5efa760-049d-44ff-a354-46c8f5043385
+            Entity:
                 Id: fded4faa-08b0-41cb-a852-d0325659bc37
                 Name: Entity (3)
                 Components:
@@ -4508,9 +4447,6 @@ Hierarchy:
                         Children:
                             -   Entity: {Id: 428faa37-841e-441d-9fd4-406b5944d696}
                                 Id: 6788db10-bc20-4345-93b4-832b921c743c
-            Design:
-                BaseId: 4d184225-610c-40fd-96a8-1409ca9f8729
-                BasePartInstanceId: d5efa760-049d-44ff-a354-46c8f5043385
         -   Entity:
                 Id: ff7317ba-8a36-487f-9c99-366b63543ab6
                 Name: Smoke Particle System
@@ -4612,7 +4548,6 @@ Hierarchy:
                                             VelocityMin: {X: -1.0, Y: 5.0, Z: -1.0}
                                             VelocityMax: {X: 1.0, Y: 8.0, Z: 1.0}
                                     Updaters: []
-            Design: {}
         -   Entity:
                 Id: ffb230b5-c726-4eb1-a7e2-b87a8873d541
                 Name: Laser Beam
@@ -4788,96 +4723,17 @@ Hierarchy:
                                                             Value: 0.0
                                                             TangentType: Linear
                                             SeedOffset: 0
-            Design: {}
-SceneSettings:
-    ~Id: 2b632eac-33e9-4d59-91cd-410162839997
-    GraphicsCompositor: !SceneGraphicsCompositorLayers
-        ~Id: f432b587-afc7-44af-b40c-7fb51c772124
-        Cameras:
-            -   ~Id: 73c46b86-68f1-4f1b-8223-54878150666b
-                Name: null
-                Camera:
-                    Entity: {Id: a41aa685-3271-4e96-a72c-639c52070011}
-                    Id: 2d3c6f87-3797-4988-95bd-0c6964dd3579
-        Layers: []
-        Master:
-            ~Id: cba63263-aa0d-4b80-9d57-d44b94f4b703
-            Name: SceneGraphicsLayer
-            Output: !MasterRenderFrameProvider {}
-            Renderers:
-                - !ClearRenderFrameRenderer
-                    ~Id: 41044a92-9ac3-4f99-8673-04c9b4b9f43c
-                    Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
-                    Output: !CurrentRenderFrameProvider {}
-                - !SceneCameraRenderer
-                    ~Id: 836fe639-759b-487f-84cc-8fb7ef1d4f92
-                    Mode: !CameraRendererModeForward
-                        ~Id: c05b9e40-4452-4650-94f2-9ba91e55d129
-                    Camera:
-                        ~Id: 2e95b946-a708-4bc1-a007-2acc1e6524fc
-                        Index: 0
-                    Output: !CurrentRenderFrameProvider {}
-                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-    EditorSettings:
-        ~Id: 5e3599ac-8469-48ea-a58c-f4336c6e29a0
-        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-        SceneUnit: 1.0
-        Mode: !SceneEditorGraphicsModeHDRSettings
-            ~Id: 089c307b-b452-46b8-a3ec-9f52d0ecf611
-            BackgroundColor: {R: 0.470588237, G: 0.470588237, B: 0.470588237}
-            PostProcessingEffects:
-                ~Id: 06ffc876-74ac-4702-8035-160f8c67d34b
-                Camera:
-                    ~Id: 66d584c7-b2f0-4f1e-86e5-2a84528cc62e
-                    Index: 0
-                DepthOfField:
-                    ~Id: e5c3fbbf-bc93-4a2d-83f1-d94a41ef9cb7
-                    Enabled: false
-                    DOFAreas: {X: 0.5, Y: 6.0, Z: 50.0, W: 200.0}
-                BrightFilter:
-                    ~Id: 417025ef-7a1e-4334-8cac-2487e3ee701c
-                    Enabled: false
-                    Color: {R: 1.0, G: 1.0, B: 1.0}
-                Bloom:
-                    ~Id: beb74a18-a1d2-43aa-9b8a-72fb1f6971fa
-                    Distortion: {X: 1.0, Y: 1.0}
-                    Afterimage:
-                        ~Id: 6763bd93-cd76-4d5c-894c-ccfa9acb4d04
-                        Enabled: false
-                LightStreak:
-                    ~Id: af2be13c-9e4f-4d59-b37f-6a3eba5b75d1
-                    Enabled: false
-                    Attenuation: 0.7
-                LensFlare:
-                    ~Id: 761ae17b-a549-4251-8faf-93fe7ab9d045
-                    Enabled: false
-                ColorTransforms:
-                    ~Id: 13acc7bc-2cb9-4b7a-ab2a-d90d1f11f868
-                    Transforms:
-                        - !ToneMap
-                            ~Id: 3cfcf527-2628-4949-b58a-7026cec3436d
-                            Enabled: false
-                            Operator: !ToneMapHejl2Operator
-                                ~Id: 49e7b9b1-0d3f-4638-8809-91dc0621842c
-                        - !FilmGrain
-                            ~Id: ea320d9d-38e8-4420-a3ba-c023242e236d
-                            Enabled: false
-                        - !Vignetting
-                            ~Id: 5af57123-9932-4e02-b98a-9241f8ddbbc8
-                            Enabled: false
-                            Color: {R: 0.0, G: 0.0, B: 0.0}
-                Antialiasing: !FXAAEffect
-                    ~Id: 2b0060e7-5e39-4a0a-84b8-7d0f8c0ac37e
 ~BaseParts:
     -   Location: Prefab
         Asset: !PrefabAsset
             Id: 311ff46f-bf71-4dd0-aa39-230dbf355536
+            SerializedVersion: {Xenko: 1.7.0-beta04}
             Tags: []
             Hierarchy:
                 ~Id: 5a94fb0c-5d2b-4f83-a436-04b5505c6d2a
-                RootEntities:
+                RootPartIds:
                     - 577fd387-7fd3-40d7-8780-14695cc57730
-                Entities:
+                Parts:
                     -   Entity:
                             Id: 04e87e84-9c4f-4b69-85f2-8fbac0028df2
                             Name: ArcTarget
@@ -4888,7 +4744,6 @@ SceneSettings:
                                     Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
                                     Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                     Children: []
-                        Design: {}
                     -   Entity:
                             Id: 11531b59-2e60-415e-82cf-81bdfafeb1d6
                             Name: Entity
@@ -4901,7 +4756,6 @@ SceneSettings:
                                     Children:
                                         -   Entity: {Id: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d}
                                             Id: 6788db10-bc20-4345-93b4-832b921c743c
-                        Design: {}
                     -   Entity:
                             Id: 1f576934-655a-4878-8388-3ff907555fdb
                             Name: ProceduralModel
@@ -4916,7 +4770,6 @@ SceneSettings:
                                     ~Id: 1b0896b3-be6a-4b97-a751-8fad96ed31ae
                                     Model: c5bb05eb-7658-4bdd-852b-4cd49744aabc/476b6aa7-94ee-468a-84df-93877dbdb88e:ProceduralModel
                                     Materials: []
-                        Design: {}
                     -   Entity:
                             Id: 20fa78cf-b09c-4b6f-ba71-ce651aa8180d
                             Name: MetalRing
@@ -4934,7 +4787,6 @@ SceneSettings:
                                 - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                                     ~Id: e01a80e4-3f07-4102-8593-e38382cafa83
                                     TimeFactor: 0.65
-                        Design: {}
                     -   Entity:
                             Id: 342cd7e6-22a0-4f21-88f0-11e54f7b0bd4
                             Name: Entity (2)
@@ -4947,7 +4799,6 @@ SceneSettings:
                                     Children:
                                         -   Entity: {Id: 771289b2-0bf6-47f1-afef-aab30a29b874}
                                             Id: 6788db10-bc20-4345-93b4-832b921c743c
-                        Design: {}
                     -   Entity:
                             Id: 4d184225-610c-40fd-96a8-1409ca9f8729
                             Name: Entity (3)
@@ -4960,7 +4811,6 @@ SceneSettings:
                                     Children:
                                         -   Entity: {Id: 735bf6ce-0f55-46ee-8a86-44b04c0c814d}
                                             Id: 6788db10-bc20-4345-93b4-832b921c743c
-                        Design: {}
                     -   Entity:
                             Id: 577fd387-7fd3-40d7-8780-14695cc57730
                             Name: LightningRod
@@ -4983,7 +4833,6 @@ SceneSettings:
                                             Id: de390457-c420-49b8-99a8-6528b5971e83
                                         -   Entity: {Id: 04e87e84-9c4f-4b69-85f2-8fbac0028df2}
                                             Id: 0092eadc-6e4f-4295-b138-a52d7b0fc079
-                        Design: {}
                     -   Entity:
                             Id: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
                             Name: Sphere
@@ -4998,7 +4847,6 @@ SceneSettings:
                                     ~Id: bb18a562-a78b-4db6-ad17-a646b90e3045
                                     Model: 19d29d9e-3fba-451e-9ba2-9f97834b24c2/2da54fd5-e615-4a91-ae7b-91dfb574d66a:Sphere
                                     Materials: []
-                        Design: {}
                     -   Entity:
                             Id: 735bf6ce-0f55-46ee-8a86-44b04c0c814d
                             Name: MetalRing
@@ -5016,7 +4864,6 @@ SceneSettings:
                                 - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                                     ~Id: 1abb79e4-efee-42ad-b8d6-c82c459c0472
                                     TimeFactor: 1.0
-                        Design: {}
                     -   Entity:
                             Id: 771289b2-0bf6-47f1-afef-aab30a29b874
                             Name: MetalRing
@@ -5034,16 +4881,16 @@ SceneSettings:
                                 - !LightningsAndLasers.RotationScript,LightningsAndLasers.Game
                                     ~Id: fc3c12f8-cc0f-4829-afd1-9f08fadd32c8
                                     TimeFactor: 0.8
-                        Design: {}
     -   Location: LaserAssets/LaserPrefab
         Asset: !PrefabAsset
             Id: 74316bd3-3393-4654-850c-00837f64bac9
+            SerializedVersion: {Xenko: 1.7.0-beta04}
             Tags: []
             Hierarchy:
                 ~Id: 1eff4c0d-9553-4a59-995f-3dadf4c60eb5
-                RootEntities:
+                RootPartIds:
                     - 03cfa9c2-5d24-4b93-b97f-e4fa3313762d
-                Entities:
+                Parts:
                     -   Entity:
                             Id: 03cfa9c2-5d24-4b93-b97f-e4fa3313762d
                             Name: CylindricalLaser
@@ -5060,7 +4907,6 @@ SceneSettings:
                                             Id: 49281aee-efd1-4116-ba45-0cd50d2e2f44
                                         -   Entity: {Id: c9ad1043-e5d2-440c-8df2-f7d5a7913c6a}
                                             Id: 77f08bad-d80a-4b9f-8279-5209039a7bf0
-                        Design: {}
                     -   Entity:
                             Id: 1fa0ec17-12a1-4c34-ae03-423318c62744
                             Name: BlueTube
@@ -5076,7 +4922,6 @@ SceneSettings:
                                     Model: fb1191db-ee0d-432e-a7a2-24b750258fc9/e6716a5e-47ef-4eca-a079-45655587b48f:LaserAssets/BlueTube
                                     Materials:
                                         - null
-                        Design: {}
                     -   Entity:
                             Id: a3ccc846-034e-409a-ac44-0626a1898680
                             Name: RedTube
@@ -5092,7 +4937,6 @@ SceneSettings:
                                     Model: c08ba2eb-f1d2-4ac2-b88b-051dbb6310ba/3a57fc61-9428-47be-b916-1d1a3bd4495d:LaserAssets/RedTube
                                     Materials:
                                         - null
-                        Design: {}
                     -   Entity:
                             Id: c9ad1043-e5d2-440c-8df2-f7d5a7913c6a
                             Name: GreenTube
@@ -5108,4 +4952,3 @@ SceneSettings:
                                     Model: 78810043-4184-4704-9330-eef2df9f7591/0628b61c-a92c-4836-bd45-988da11c6aac:LaserAssets/GreenTube
                                     Materials:
                                         - null
-                        Design: {}

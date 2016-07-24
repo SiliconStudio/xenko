@@ -1,0 +1,11 @@
+!SpriteFont
+Id: 08cf0491-78f1-42ee-93e4-7ad8732c766e
+SerializedVersion: {Xenko: 1.7.0-beta04}
+Tags: []
+FontSource: !FileFontProvider
+    ~Id: e1e3225c-df5d-41bd-b1df-1030f8c03815
+    Source: ../../../data/tests/Fonts/SourceHanSans-Light.otf
+FontType: !RuntimeRasterizedSpriteFontType
+    ~Id: 2aa11d80-bab6-4558-9eba-a958a2cf6d68
+    Size: 13.0
+    AntiAlias: Aliased

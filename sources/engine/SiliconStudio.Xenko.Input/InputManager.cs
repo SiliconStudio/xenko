@@ -870,7 +870,7 @@ namespace SiliconStudio.Xenko.Input
 
                 foreach (var supportedGamePadButton in supportedGamePadButtons)
                 {
-                    if (gamePadStates[i].Buttons.HasFlag(supportedGamePadButton))
+                    if ((gamePadStates[i].Buttons & supportedGamePadButton) != 0)
                     {
                         if (!activeGamePadButtonsSet[i].Contains(supportedGamePadButton))
                         {

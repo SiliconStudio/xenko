@@ -17,8 +17,20 @@ if %ERRORLEVEL% neq 0 (
 )
 
 popd
-
 rem Copying assemblies
 copy ..\..\externals\SDL2-CS\bin\%1\SDL2-CS.dll .
-copy ..\..\externals\SDL2-CS\bin\%1\SDL2-CS.pdb .
+if exist ..\..\externals\SDL2-CS\bin\%1\SDL2-CS.pdb copy ..\..\externals\SDL2-CS\bin\%1\SDL2-CS.pdb .
+
+pushd ..\..\externals\SDL2-CS
+msbuild /p:SiliconStudioRuntime="CoreCLR" /p:Configuration="%1" /p:Platform="Linux" SDL2-CS.sln
+if %ERRORLEVEL% neq 0 (
+	echo Error during Linux compilation
+	popd
+	EXIT /B %ERRORLEVEL%
+)
+
+popd
+rem Copying assemblies
+copy ..\..\externals\SDL2-CS\bin\Linux\%1\SDL2-CS.dll Linux\
+if exist ..\..\externals\SDL2-CS\bin\Linux\%1\SDL2-CS.pdb copy ..\..\externals\SDL2-CS\bin\Linux\%1\SDL2-CS.pdb Linux\
 

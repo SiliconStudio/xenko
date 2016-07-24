@@ -18,7 +18,7 @@ namespace SiliconStudio.Quantum
         private sealed class GraphNodeLinkerVisitor : GraphVisitorBase
         {
             private readonly GraphNodeLinker linker;
-            public readonly Dictionary<IGraphNode, IGraphNode> VisitedLinks = new Dictionary<IGraphNode, IGraphNode>();
+            internal readonly Dictionary<IGraphNode, IGraphNode> VisitedLinks = new Dictionary<IGraphNode, IGraphNode>();
 
             public GraphNodeLinkerVisitor(GraphNodeLinker linker)
             {
@@ -47,7 +47,10 @@ namespace SiliconStudio.Quantum
                 {
                     foreach (var child in node.Children)
                     {
-                        VisitedLinks.Add(child, targetNodeParent?.GetChild(child.Name));
+                        if (ShouldVisitNode(child.Content as MemberContent, child))
+                        {
+                            VisitedLinks.Add(child, targetNodeParent?.GetChild(child.Name));
+                        }
                     }
                 }
                 base.VisitChildren(node, currentPath);
@@ -55,19 +58,26 @@ namespace SiliconStudio.Quantum
 
             protected override void VisitReference(IGraphNode referencer, ObjectReference reference, GraphNodePath targetPath)
             {
-                if (reference.TargetNode != null)
+                if (ShouldVisitNode(referencer.Content as MemberContent, reference.TargetNode))
                 {
-                    IGraphNode targetNode;
-                    if (VisitedLinks.TryGetValue(referencer, out targetNode))
+                    if (reference.TargetNode != null)
                     {
-                        ObjectReference targetReference = null;
-                        if (targetNode != null)
-                            targetReference = linker.FindTargetReference(referencer, targetNode, reference);
+                        // Prevent re-entrancy in the same object
+                        if (VisitedLinks.ContainsKey(reference.TargetNode))
+                            return;
 
-                        VisitedLinks.Add(reference.TargetNode, targetReference?.TargetNode);
+                        IGraphNode targetNode;
+                        if (VisitedLinks.TryGetValue(referencer, out targetNode))
+                        {
+                            ObjectReference targetReference = null;
+                            if (targetNode != null)
+                                targetReference = linker.FindTargetReference(referencer, targetNode, reference);
+
+                            VisitedLinks.Add(reference.TargetNode, targetReference?.TargetNode);
+                        }
                     }
+                    base.VisitReference(referencer, reference, targetPath);
                 }
-                base.VisitReference(referencer, reference, targetPath);
             }
         }
 
@@ -78,7 +88,7 @@ namespace SiliconStudio.Quantum
         /// </summary>
         public GraphNodeLinker()
         {
-            visitor = new GraphNodeLinkerVisitor(this);
+            visitor = new GraphNodeLinkerVisitor(this) { ShouldVisit = ShouldVisitSourceNode };
         }
 
         /// <summary>
@@ -95,6 +105,17 @@ namespace SiliconStudio.Quantum
         {
             visitor.Reset(sourceNode, targetNode);
             visitor.Visit(sourceNode);
+        }
+
+        /// <summary>
+        /// Indicates whether the linker should visit the given source node.
+        /// </summary>
+        /// <param name="memberContent">The member content referencing the source node to evaluate.</param>
+        /// <param name="targetNode">The source node to evaluate. Can be the node holding the <paramref name="memberContent"/>, or one of its target node if this node contains a reference.</param>
+        /// <returns>True if the node should be visited, false otherwise.</returns>
+        protected virtual bool ShouldVisitSourceNode(MemberContent memberContent, IGraphNode targetNode)
+        {
+            return true;
         }
 
         /// <summary>

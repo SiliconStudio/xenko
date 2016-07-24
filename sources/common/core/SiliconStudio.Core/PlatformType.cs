@@ -58,5 +58,10 @@ namespace SiliconStudio.Core
         /// The Linux OS.
         /// </summary>
         Linux,
+
+        /// <summary>
+        /// macOS
+        /// </summary>
+        macOS
     }
 }

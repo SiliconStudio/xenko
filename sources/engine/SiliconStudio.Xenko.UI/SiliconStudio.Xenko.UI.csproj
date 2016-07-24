@@ -46,8 +46,9 @@
     <Compile Include="Controls\EditText.Android.cs" />
     <Compile Include="Controls\EditText.cs" />
     <Compile Include="Controls\EditText.iOS.cs" />
-    <Compile Include="Controls\EditText.Windows.Desktop.cs" />
-    <Compile Include="Controls\EditText.Windows.Mobile.cs" />
+    <Compile Include="Controls\EditText.Direct.Default.cs" />
+    <Compile Include="Controls\EditText.Windows.Store.cs" />
+    <Compile Include="Controls\EditText.Direct.cs" />
     <Compile Include="Controls\ModalElement.cs" />
     <Compile Include="Controls\ScrollBar.cs" />
     <Compile Include="Controls\Slider.cs" />
@@ -62,6 +63,7 @@
     <Compile Include="ImageSizeHelper.cs" />
     <Compile Include="IScrollAnchorInfo.cs" />
     <Compile Include="IScrollInfo.cs" />
+    <Compile Include="IUIElementChildren.cs" />
     <Compile Include="KeyEventArgs.cs" />
     <Compile Include="LayoutingContext.cs" />
     <Compile Include="Module.cs" />
@@ -117,6 +119,7 @@
     <Compile Include="Rendering\UI\RenderUIElement.cs" />
     <Compile Include="Rendering\UI\UIPipelinePlugin.cs" />
     <Compile Include="Rendering\UI\UIRenderFeature.cs" />
+    <Compile Include="Rendering\UI\UIRenderFeature.Picking.cs" />
     <Compile Include="Rendering\UI\UIRenderProcessor.cs" />
     <Compile Include="ResourceDictionary.cs" />
     <Compile Include="ScrollingMode.cs" />

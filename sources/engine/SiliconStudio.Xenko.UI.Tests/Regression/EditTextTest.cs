@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public EditTextTest()
         {
-            CurrentVersion = 11;
+            CurrentVersion = 13; // Font type, names & sizes changed slightly
         }
 
         protected override async Task LoadContent()
@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             edit1 = new EditText()
             {
                 Name = "TestEdit1",
-                Font = Content.Load<SpriteFont>("MSMincho10"),
+                Font = Content.Load<SpriteFont>("HanSans13"),
                 MinimumWidth = 100,
                 Text = "Sample Text1",
                 MaxLength = 35,
@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             edit3 = new EditText()
             {
                 Name = "TestEdit3",
-                Font = Content.Load<SpriteFont>("MSMincho10"),
+                Font = Content.Load<SpriteFont>("HanSans13"),
                 MinimumWidth = 100,
                 Text = "secret",
                 MaxLength = 15,

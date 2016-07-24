@@ -3,6 +3,7 @@
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Font;
 using SiliconStudio.Xenko.UI.Controls;
 
 namespace SiliconStudio.Xenko.UI.Renderers
@@ -40,13 +41,13 @@ namespace SiliconStudio.Xenko.UI.Renderers
             {
                 Color = scrollingText.RenderOpacity * scrollingText.TextColor,
                 DepthBias = context.DepthBias + 1,
-                FontScale = element.LayoutingContext.RealVirtualResolutionRatio,
-                FontSize = scrollingText.ActualTextSize,
+                RealVirtualResolutionRatio = element.LayoutingContext.RealVirtualResolutionRatio,
+                RequestedFontSize = scrollingText.ActualTextSize,
                 Batch = Batch,
                 SnapText = context.ShouldSnapText && !scrollingText.DoNotSnapText,
                 Matrix = textWorldMatrix,
                 Alignment = TextAlignment.Left,
-                Size = new Vector2(scrollingText.ActualWidth, scrollingText.ActualHeight)
+                TextBoxSize = new Vector2(scrollingText.ActualWidth, scrollingText.ActualHeight)
             };
 
             // flush the current content of the UI image batch
@@ -59,6 +60,13 @@ namespace SiliconStudio.Xenko.UI.Renderers
 
             // draw the element it-self with stencil test value of "Context.Value + 1"
             Batch.Begin(context.GraphicsContext, ref context.ViewProjectionMatrix, BlendStates.AlphaBlend, KeepStencilValueState, context.StencilTestReferenceValue + 1);
+            if (scrollingText.Font.FontType == SpriteFontType.SDF)
+            {
+                Batch.End();
+
+                Batch.BeginCustom(context.GraphicsContext, 1);
+            }
+
             Batch.DrawString(scrollingText.Font, scrollingText.TextToDisplay, ref drawCommand);
             Batch.End();
 

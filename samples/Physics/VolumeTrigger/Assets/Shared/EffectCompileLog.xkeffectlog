@@ -3,27 +3,45 @@
 EffectName: XenkoForwardShadingEffect
 UsedParameters:
     Material.PixelStageSurfaceShaders: !ShaderMixinSource
+        Mixins:
+            -   ClassName: MaterialSurfaceArray
         Compositions:
             layers: !ShaderArraySource
                 Values:
                     - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceDiffuse
                         Compositions:
                             diffuseMap: !ShaderClassSource
                                 ClassName: ComputeColorConstantColorLink
                                 GenericArguments: [Material.DiffuseValue]
-                        Mixins:
-                            -   ClassName: MaterialSurfaceDiffuse
                     - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceSetStreamFromComputeColor
+                                GenericArguments: [matDiffuseSpecularAlphaBlend, r]
+                        Compositions:
+                            computeColorSource: !ShaderClassSource
+                                ClassName: ComputeColorConstantFloatLink
+                                GenericArguments: [Material.DiffuseSpecularAlphaBlendValue]
+                    - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceSetStreamFromComputeColor
+                                GenericArguments: [matAlphaBlendColor, rgb]
+                        Compositions:
+                            computeColorSource: !ShaderClassSource
+                                ClassName: ComputeColorConstantColorLink
+                                GenericArguments: [Material.AlphaBlendColorValue]
+                    - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceLightingAndShading
                         Compositions:
                             surfaces: !ShaderArraySource
                                 Values:
                                     - !ShaderClassSource
                                         ClassName: MaterialSurfaceShadingDiffuseLambert
                                         GenericArguments: [false]
-                        Mixins:
-                            -   ClassName: MaterialSurfaceLightingAndShading
-        Mixins:
-            -   ClassName: MaterialSurfaceArray
+                    - !ShaderClassSource
+                        ClassName: MaterialSurfaceDiffuseSpecularAlphaBlendColor
     Material.PixelStageStreamInitializer: !ShaderMixinSource
         Mixins:
             -   ClassName: MaterialStream
@@ -33,53 +51,35 @@ UsedParameters:
             Mixins:
                 -   ClassName: LightDirectionalGroup
                     GenericArguments: [1]
-                -   ClassName: DirectLightGroupFixed
-                    GenericArguments: [1]
-    Lighting.EnvironmentLights: []
+    Lighting.EnvironmentLights:
+        - !ShaderClassSource
+            ClassName: LightSimpleAmbient
 ---
 !EffectCompileRequest
 EffectName: XenkoForwardShadingEffect
 UsedParameters:
     Material.PixelStageSurfaceShaders: !ShaderMixinSource
+        Mixins:
+            -   ClassName: MaterialSurfaceArray
         Compositions:
             layers: !ShaderArraySource
                 Values:
                     - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceDiffuse
                         Compositions:
                             diffuseMap: !ShaderClassSource
                                 ClassName: ComputeColorConstantColorLink
                                 GenericArguments: [Material.DiffuseValue]
-                        Mixins:
-                            -   ClassName: MaterialSurfaceDiffuse
                     - !ShaderMixinSource
-                        Compositions:
-                            computeColorSource: !ShaderClassSource
-                                ClassName: ComputeColorConstantFloatLink
-                                GenericArguments: [Material.DiffuseSpecularAlphaBlendValue]
                         Mixins:
-                            -   ClassName: MaterialSurfaceSetStreamFromComputeColor
-                                GenericArguments: [matDiffuseSpecularAlphaBlend, r]
-                    - !ShaderMixinSource
-                        Compositions:
-                            computeColorSource: !ShaderClassSource
-                                ClassName: ComputeColorConstantColorLink
-                                GenericArguments: [Material.AlphaBlendColorValue]
-                        Mixins:
-                            -   ClassName: MaterialSurfaceSetStreamFromComputeColor
-                                GenericArguments: [matAlphaBlendColor, rgb]
-                    - !ShaderMixinSource
+                            -   ClassName: MaterialSurfaceLightingAndShading
                         Compositions:
                             surfaces: !ShaderArraySource
                                 Values:
                                     - !ShaderClassSource
                                         ClassName: MaterialSurfaceShadingDiffuseLambert
                                         GenericArguments: [false]
-                        Mixins:
-                            -   ClassName: MaterialSurfaceLightingAndShading
-                    - !ShaderClassSource
-                        ClassName: MaterialSurfaceDiffuseSpecularAlphaBlendColor
-        Mixins:
-            -   ClassName: MaterialSurfaceArray
     Material.PixelStageStreamInitializer: !ShaderMixinSource
         Mixins:
             -   ClassName: MaterialStream
@@ -89,6 +89,6 @@ UsedParameters:
             Mixins:
                 -   ClassName: LightDirectionalGroup
                     GenericArguments: [1]
-                -   ClassName: DirectLightGroupFixed
-                    GenericArguments: [1]
-    Lighting.EnvironmentLights: []
+    Lighting.EnvironmentLights:
+        - !ShaderClassSource
+            ClassName: LightSimpleAmbient

@@ -1,13 +1,14 @@
 !PrefabAsset
 Id: 7c2178f1-ca46-4b61-94f0-a52990454502
+SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
 Hierarchy:
     ~Id: e8c342d3-560b-4a8f-890f-6528a64c72c3
-    RootEntities:
+    RootPartIds:
         - 73b67cca-fec1-4630-87d1-113a8ec9036b
         - 7ec2ead0-9009-428f-9f87-c0cb3464e0ab
         - 70784fb7-8085-44bc-9615-8ab8b33df3a1
-    Entities:
+    Parts:
         -   Entity:
                 Id: 70784fb7-8085-44bc-9615-8ab8b33df3a1
                 Name: SwooshBlue
@@ -33,10 +34,7 @@ Hierarchy:
                             BoundingShape: null
                             Emitters:
                                 -   ~Id: 4a1169c2-4a53-4936-942b-d9a5533391fa
-                                    MaxParticlesOverride: 0
                                     ParticleLifetime: {X: 0.3, Y: 0.3}
-                                    SimulationSpace: World
-                                    RandomSeedMethod: Time
                                     SortingPolicy: ByOrder
                                     ShapeBuilder: !ShapeBuilderRibbon
                                         ~Id: 84321c5b-ada9-4bc8-8b92-9c795553cfc0
@@ -47,11 +45,10 @@ Hierarchy:
                                         UVRotate:
                                             FlipX: false
                                             FlipY: false
-                                            UvClockwise: Degree270
+                                            UVClockwise: Degree0
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 1737e1ea-7294-40bb-8914-3b74bdd480ae
                                         AlphaAdditive: 1.0
-                                        FaceCulling: CullNone
                                         ComputeColor: !ComputeTextureColor
                                             Texture: 540a8e5f-c18a-426b-96bc-dd28f14e042d/f8a9d365-cece-45f9-9abc-c59ffb6b03c3:Textures/swoosh
                                             FallbackValue:
@@ -176,7 +173,6 @@ Hierarchy:
                                             DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
-            Design: {}
         -   Entity:
                 Id: 73b67cca-fec1-4630-87d1-113a8ec9036b
                 Name: SwooshRed
@@ -202,10 +198,7 @@ Hierarchy:
                             BoundingShape: null
                             Emitters:
                                 -   ~Id: 4a1169c2-4a53-4936-942b-d9a5533391fa
-                                    MaxParticlesOverride: 0
                                     ParticleLifetime: {X: 0.3, Y: 0.3}
-                                    SimulationSpace: World
-                                    RandomSeedMethod: Time
                                     SortingPolicy: ByOrder
                                     ShapeBuilder: !ShapeBuilderRibbon
                                         ~Id: 84321c5b-ada9-4bc8-8b92-9c795553cfc0
@@ -216,11 +209,10 @@ Hierarchy:
                                         UVRotate:
                                             FlipX: false
                                             FlipY: false
-                                            UvClockwise: Degree270
+                                            UVClockwise: Degree0
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 1737e1ea-7294-40bb-8914-3b74bdd480ae
                                         AlphaAdditive: 1.0
-                                        FaceCulling: CullNone
                                         ComputeColor: !ComputeTextureColor
                                             Texture: 540a8e5f-c18a-426b-96bc-dd28f14e042d/f8a9d365-cece-45f9-9abc-c59ffb6b03c3:Textures/swoosh
                                             FallbackValue:
@@ -345,7 +337,6 @@ Hierarchy:
                                             DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
-            Design: {}
         -   Entity:
                 Id: 7ec2ead0-9009-428f-9f87-c0cb3464e0ab
                 Name: SwooshYellow
@@ -371,10 +362,7 @@ Hierarchy:
                             BoundingShape: null
                             Emitters:
                                 -   ~Id: 4a1169c2-4a53-4936-942b-d9a5533391fa
-                                    MaxParticlesOverride: 0
                                     ParticleLifetime: {X: 0.3, Y: 0.3}
-                                    SimulationSpace: World
-                                    RandomSeedMethod: Time
                                     SortingPolicy: ByOrder
                                     ShapeBuilder: !ShapeBuilderRibbon
                                         ~Id: 84321c5b-ada9-4bc8-8b92-9c795553cfc0
@@ -385,11 +373,10 @@ Hierarchy:
                                         UVRotate:
                                             FlipX: false
                                             FlipY: false
-                                            UvClockwise: Degree270
+                                            UVClockwise: Degree0
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 1737e1ea-7294-40bb-8914-3b74bdd480ae
                                         AlphaAdditive: 1.0
-                                        FaceCulling: CullNone
                                         ComputeColor: !ComputeTextureColor
                                             Texture: 540a8e5f-c18a-426b-96bc-dd28f14e042d/f8a9d365-cece-45f9-9abc-c59ffb6b03c3:Textures/swoosh
                                             FallbackValue:
@@ -514,4 +501,3 @@ Hierarchy:
                                             DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
-            Design: {}

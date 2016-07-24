@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Resources;
 using System.Runtime.CompilerServices;
 
@@ -11,3 +11,7 @@ using System.Runtime.CompilerServices;
 [assembly: NeutralResourcesLanguage("en")]
 
 [assembly: InternalsVisibleTo("SiliconStudio.Xenko.Graphics")]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Engine")]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Audio")]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Engine")]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Assets")]

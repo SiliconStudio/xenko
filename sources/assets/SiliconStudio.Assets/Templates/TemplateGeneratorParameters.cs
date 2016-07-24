@@ -77,6 +77,12 @@ namespace SiliconStudio.Assets.Templates
 
         public List<UFile> SourceFiles { get; }
 
+        /// <summary>
+        /// Indicates whether the session has to be saved after the asset template generator has completed. The default is <c>false</c>.
+        /// </summary>
+        /// <remarks>This is an out parameter that asset template generator should set if needed.</remarks>
+        public bool RequestSessionSave { get; set; } = false;
+
         protected override void ValidateParameters()
         {
             base.ValidateParameters();
@@ -140,6 +146,11 @@ namespace SiliconStudio.Assets.Templates
         /// The actual template description.
         /// </summary>
         public TemplateDescription Description { get; set; }
+
+        /// <summary>
+        /// Specifies if the template generator should run in unattended mode (no UI).
+        /// </summary>
+        public bool Unattended { get; set; }
 
         /// <summary>
         /// Gets or sets the logger.

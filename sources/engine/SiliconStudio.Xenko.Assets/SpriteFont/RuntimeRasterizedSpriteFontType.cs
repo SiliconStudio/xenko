@@ -3,6 +3,8 @@
 
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics.Font;
 
 namespace SiliconStudio.Xenko.Assets.SpriteFont
@@ -13,9 +15,10 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     {
         /// <inheritdoc/>
         [DataMember(30)]
-        [DefaultValue(16.0f)]
+        [DataMemberRange(MathUtil.ZeroTolerance, float.MaxValue)]
+        [DefaultValue(20)]
         [Display("Default Size")]
-        public override float Size { get; set; } = 16.0f;
+        public override float Size { get; set; } = 20;
 
         /// <inheritdoc/>
         [DataMember(110)]

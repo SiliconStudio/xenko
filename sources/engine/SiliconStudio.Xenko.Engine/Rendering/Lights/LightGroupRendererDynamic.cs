@@ -178,7 +178,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 if (compareRenderer != 0)
                     return compareRenderer;
 
-                return x.Key.ShadowType.CompareTo(y.Key.ShadowType);
+                return ((int)x.Key.ShadowType).CompareTo((int)y.Key.ShadowType);
             }
         }
 
@@ -267,7 +267,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 var shadowTypeY = shadowY?.ShadowType ?? 0;
 
                 // Decreasing order so that non shadowed lights are last
-                return shadowTypeY.CompareTo(shadowTypeX);
+                return ((int)shadowTypeY).CompareTo((int)shadowTypeX);
             }
         }
     }

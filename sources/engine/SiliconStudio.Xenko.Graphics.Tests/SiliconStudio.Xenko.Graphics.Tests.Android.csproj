@@ -147,6 +147,7 @@
     <Compile Include="TestDynamicSpriteFontJapanese.cs" />
     <Compile Include="TestDynamicSpriteFontVarious.cs" />
     <Compile Include="TestExternSpriteFont.cs" />
+    <Compile Include="TestFixedSizeUI.cs" />
     <Compile Include="TestFontManager.cs" />
     <Compile Include="TestImageLoad.cs" />
     <Compile Include="TestPrecompiledSpriteFont.cs" />
@@ -203,6 +204,10 @@
       <LastGenOutput>ToGlslShader.cs</LastGenOutput>
     </None>
     <None Include="SiliconStudio.Xenko.Graphics.Tests.xkpkg" />
+    <ProjectReference Include="..\SiliconStudio.Xenko.UI\SiliconStudio.Xenko.UI.csproj">
+      <Project>{bb9deeef-f18c-40d8-b016-6434cc71b8c3}</Project>
+      <Name>SiliconStudio.Xenko.UI</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="SiliconStudio.Xenko.Graphics.Tests.Shared.targets" />

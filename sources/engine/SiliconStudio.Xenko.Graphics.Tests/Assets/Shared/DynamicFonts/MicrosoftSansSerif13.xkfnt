@@ -1,0 +1,12 @@
+!SpriteFont
+Id: 54bf2894-2a2c-477e-be9c-2a88d265e739
+SerializedVersion: {Xenko: 1.7.0-beta04}
+Tags: []
+FontSource: !SystemFontProvider
+    ~Id: 032e6cb0-07db-4fc6-81e6-b5f5b9d7c28d
+    FontName: Microsoft Sans Serif
+    Style: Regular
+FontType: !RuntimeRasterizedSpriteFontType
+    ~Id: 09d0e55c-30ee-4071-a203-f8ff75d9b692
+    Size: 13.0
+    AntiAlias: ClearType

@@ -247,19 +247,28 @@ namespace SiliconStudio.Xenko.Engine
             }
         }
 
-        private void ConfirmRenderingSettings()
+        internal override void ConfirmRenderingSettings(bool gameCreation)
         {
+            if (!AutoLoadDefaultSettings) return;
+
             var renderingSettings = Settings?.Configurations.Get<RenderingSettings>();
             if (renderingSettings == null) return;
 
             var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
 
-            deviceManager.PreferredGraphicsProfile = Context.RequestedGraphicsProfile = new[] { renderingSettings.DefaultGraphicsProfile };
+            if (gameCreation)
+            {
+                //execute the following steps only when the game is still at creation stage
 
-            //if our device height is actually smaller then requested we use the device one
-            deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = Math.Min(renderingSettings.DefaultBackBufferHeight, Window.ClientBounds.Height);
-            //if our device width is actually smaller then requested we use the device one
-            deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = Math.Min(renderingSettings.DefaultBackBufferWidth, Window.ClientBounds.Width);
+                deviceManager.PreferredGraphicsProfile = Context.RequestedGraphicsProfile = new[] { renderingSettings.DefaultGraphicsProfile };
+
+                //if our device height is actually smaller then requested we use the device one
+                deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = Math.Min(renderingSettings.DefaultBackBufferHeight, Window.ClientBounds.Height);
+                //if our device width is actually smaller then requested we use the device one
+                deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = Math.Min(renderingSettings.DefaultBackBufferWidth, Window.ClientBounds.Width);
+            }
+
+            //these might get triggered even during game runtime, resize, orientation change
 
             if (renderingSettings.AdaptBackBufferToScreen)
             {
@@ -279,12 +288,6 @@ namespace SiliconStudio.Xenko.Engine
         protected override void Initialize()
         {
             base.Initialize();
-
-            //now we probably are capable of detecting the gpu/cpu/etc so we confirm rendering settings
-            if (AutoLoadDefaultSettings)
-            {
-                ConfirmRenderingSettings();
-            }
 
             // ---------------------------------------------------------
             // Add common GameSystems - Adding order is important
@@ -326,8 +329,6 @@ namespace SiliconStudio.Xenko.Engine
 
             // TODO: data-driven?
             Content.Serializer.RegisterSerializer(new ImageSerializer());
-            Content.Serializer.RegisterSerializer(new SoundEffectSerializer(Audio.AudioEngine));
-            Content.Serializer.RegisterSerializer(new SoundMusicSerializer(Audio.AudioEngine));
 
             // enable multi-touch by default
             Input.MultiTouchEnabled = true;

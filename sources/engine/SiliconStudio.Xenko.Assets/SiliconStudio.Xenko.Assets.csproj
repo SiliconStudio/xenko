@@ -45,6 +45,10 @@
     <Reference Include="NuGet">
       <HintPath>..\..\..\deps\Nuget\NuGet.core.dll</HintPath>
     </Reference>
+    <Reference Include="Renci.SshNet, Version=2016.0.0.0, Culture=neutral, PublicKeyToken=1cee9f8bde3db106, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\deps\SSH.NET\Renci.SshNet.dll</HintPath>
+    </Reference>
     <Reference Include="SharpYaml, Version=1.0.2.26673, Culture=neutral, PublicKeyToken=1ced8108e942bc02, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\common\deps\SharpYaml\SharpYaml.dll</HintPath>
@@ -111,10 +115,18 @@
       <Name>SiliconStudio.Core.Design</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj">
+      <Project>{1DE01410-22C9-489B-9796-1ADDAB1F64E5}</Project>
+      <Name>SiliconStudio.Core.IO</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\tools\SiliconStudio.TextureConverter\SiliconStudio.TextureConverter.csproj">
       <Project>{7F7BFF79-C400-435F-B359-56A2EF8956E0}</Project>
       <Name>SiliconStudio.TextureConverter</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Audio\SiliconStudio.Xenko.Audio.csproj">
+      <Project>{DE042125-C270-4D1D-9270-0759C167567A}</Project>
+      <Name>SiliconStudio.Xenko.Audio</Name>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj">
       <Project>{C121A566-555E-42B9-9B0A-1696529A9088}</Project>
@@ -125,6 +137,10 @@
       <Project>{42780CBD-3FE7-48E3-BD5B-59945EA20137}</Project>
       <Name>SiliconStudio.Xenko.Games</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj">
+      <Project>{1dbbc150-f085-43ef-b41d-27c72d133770}</Project>
+      <Name>SiliconStudio.Xenko.Native</Name>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Physics\SiliconStudio.Xenko.Physics.csproj">
       <Project>{dd592516-b341-40fe-9100-1b0fa784a060}</Project>
@@ -189,10 +205,10 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AssetCompilerContextExtensions.cs" />
-    <Compile Include="Audio\SoundEffectAsset.cs" />
+    <Compile Include="Audio\SoundFactories.cs" />
     <Compile Include="Audio\RawSoundAssetImporter.cs" />
     <Compile Include="Audio\SoundAsset.cs" />
-    <Compile Include="Audio\RawMusicAssetImporter.cs" />
+    <Compile Include="Effect\CompileDefaultSceneEffectCommand.cs" />
     <Compile Include="Debugging\AssemblyReloader.cs" />
     <Compile Include="DefaultFactories.cs" />
     <Compile Include="EditorSettings.cs" />
@@ -205,22 +221,20 @@
     <Compile Include="Effect\EffectShaderAssetCompiler.cs" />
     <Compile Include="Effect\EffectShaderAsset.cs" />
     <Compile Include="Entities\ConvertedDescriptor.cs" />
-    <Compile Include="Entities\EntityAnalysis.cs" />
+    <Compile Include="Entities\EntityDesign.cs" />
     <Compile Include="Entities\EntityHierarchyAssetBase.Upgraders.cs" />
     <Compile Include="Entities\PrefabAsset.cs" />
     <Compile Include="Entities\EntityHierarchyAssetBase.cs" />
     <Compile Include="Entities\PrefabAssetCompiler.cs" />
     <Compile Include="Entities\PrefabAssetMerge.cs" />
-    <Compile Include="Entities\EntityHierarchyData.cs" />
+    <Compile Include="Entities\EntityHierarchyDataExtensions.cs" />
     <Compile Include="Entities\EntityHierarchyCompilerBase.cs" />
     <Compile Include="Entities\SceneAssetCompiler.cs" />
     <Compile Include="Entities\EntityComponentReference.cs" />
-    <Compile Include="Entities\EntityReference.cs" />
-    <Compile Include="Entities\PrefabAssetSerializer.cs" />
     <Compile Include="Analysis\GamePackageSessionAnalysis.cs" />
-    <Compile Include="Entities\IEntityComponentReference.cs" />
-    <Compile Include="Entities\IEntityScriptReference.cs" />
     <Compile Include="Entities\SceneAsset.Upgraders.cs" />
+    <Compile Include="Entities\SceneAssetFactories.cs" />
+    <Compile Include="UI\UIElementHierarchyData.cs" />
     <Compile Include="GameSettingsAsset.cs" />
     <Compile Include="Entities\SceneAsset.cs" />
     <Compile Include="GameSettingsAssetCompiler.cs" />
@@ -230,10 +244,12 @@
     <Compile Include="GameUserSettings.cs" />
     <Compile Include="IGameSettingsProfile.cs" />
     <Compile Include="Materials\ComputeShaderClassBaseExtensions.cs" />
+    <Compile Include="Materials\MaterialFactories.cs" />
     <Compile Include="Materials\MaterialNodeClassLoader.cs" />
     <Compile Include="Materials\MaterialStreamFactory.cs" />
     <Compile Include="Materials\ShaderGeneratorContextExtensions.cs" />
     <Compile Include="Physics\ColliderShapeFactories.cs" />
+    <Compile Include="SceneRenderer.cs" />
     <Compile Include="Serializers\MaterialNullSerializer.cs" />
     <Compile Include="Skyboxes\SkyboxUsage.cs" />
     <Compile Include="SpriteFont\Compiler\SignedDistanceFieldFontCompiler.cs" />
@@ -243,6 +259,7 @@
     <Compile Include="SpriteFont\FontProviderBase.cs" />
     <Compile Include="SpriteFont\PrecompiledSpriteFontAsset.cs" />
     <Compile Include="SpriteFont\PrecompiledSpriteFontAssetCompiler.cs" />
+    <Compile Include="SpriteFont\SpriteFontAsset.Upgrader.cs" />
     <Compile Include="SpriteFont\SpriteFontAssetExtensions.cs" />
     <Compile Include="SpriteFont\SpriteFontAssetFactories.cs" />
     <Compile Include="SpriteFont\SpriteFontTypeBase.cs" />
@@ -253,8 +270,10 @@
     <Compile Include="Sprite\SpriteSheetFactories.cs" />
     <Compile Include="Tasks\PackageArchive.cs" />
     <Compile Include="Tasks\PackageArchiveTask.cs" />
+    <Compile Include="Tasks\PackageDeployTask.cs" />
     <Compile Include="Tasks\PackageGetVersionTask.cs" />
     <Compile Include="Textures\TextureSettings.cs" />
+    <Compile Include="UI\UIAssetBase.cs" />
     <Compile Include="UI\UIFactories.cs" />
     <Compile Include="UI\UILibraryAsset.cs" />
     <Compile Include="UI\UILibraryAssetCompiler.cs" />
@@ -268,7 +287,6 @@
     <Compile Include="Sprite\SpriteInfo.cs" />
     <Compile Include="Materials\MaterialAsset.cs" />
     <Compile Include="Materials\MaterialAssetCompiler.cs" />
-    <Compile Include="Audio\SoundMusicAsset.cs" />
     <Compile Include="Audio\SoundAssetCompiler.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="XenkoConfig.cs" />
@@ -331,6 +349,16 @@
   <ItemGroup>
     <Analyzer Include="..\..\..\build\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
     <Analyzer Include="..\..\..\build\packages\Microsoft.CodeAnalysis.Analyzers.1.1.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\deps\FFmpeg\ffmpeg.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\..\deps\msdfgen\msdfgen.exe">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

@@ -657,23 +657,29 @@ private:
 		return skeleton;
 	}
 
-	Dictionary<String^, AnimationClip^>^ ProcessAnimation(const aiScene* scene)
+	AnimationInfo^ ProcessAnimation(const aiScene* scene)
 	{
-		auto animationClips = gcnew Dictionary<String^, AnimationClip^>();
+		auto animationData = gcnew AnimationInfo();
 		std::set<std::string> visitedNodeNames;
 
-		for (unsigned int i = 0; i < scene->mNumAnimations; ++i)
+		if (scene->mNumAnimations > 1)
+			Logger->Warning("There is {0} animations in this file, using only the first one.", scene->mNumAnimations,
+				CallerInfo::Get(__FILEW__, __FUNCTIONW__, __LINE__));
+
+		for (unsigned int i = 0; i < min(1, scene->mNumAnimations); ++i)
 		{
 			auto aiAnim = scene->mAnimations[i];
+
+			// animation speed
+			auto ticksPerSec = aiAnim->mTicksPerSecond;
+
+			animationData->Duration = aiTimeToXkTimeSpan(aiAnim->mDuration, ticksPerSec);
 
 			// Assimp animations have two different channels of animations ((1) on Nodes, (2) on Meshes).
 			// Nevertheless the second one do not seems to be usable in assimp 3.0 so it will be ignored here.
 
 			// name of the animation (dropped)
 			auto animName = aiStringToString(aiAnim->mName); // used only be the logger
-
-			// animation speed
-			auto ticksPerSec = aiAnim->mTicksPerSecond;
 
 			// animation using meshes (not supported)
 			for(unsigned int meshAnimId = 0; meshAnimId<aiAnim->mNumMeshChannels; ++meshAnimId)
@@ -691,7 +697,7 @@ private:
 				if (visitedNodeNames.find(nodeName) == visitedNodeNames.end())
 				{
 					visitedNodeNames.insert(nodeName);
-					ProcessNodeAnimation(animationClips, nodeAnim, ticksPerSec);
+					ProcessNodeAnimation(animationData->AnimationClips, nodeAnim, ticksPerSec);
 				}
 				else
 				{
@@ -701,7 +707,7 @@ private:
 				}
 			}
 		}
-		return animationClips;
+		return animationData;
 	}
 
 	ComputeTextureColor^ GetTextureReferenceNode(String^ vfsOutputPath, String^ sourceTextureFile, size_t textureUVSetIndex, Vector2 textureUVscaling, TextureAddressMode addressModeU, TextureAddressMode addressModeV, MaterialAsset^ finalMaterial, SiliconStudio::Core::Diagnostics::Logger^ logger)
@@ -1498,7 +1504,7 @@ public:
 		return ConvertAssimpScene(scene);
 	}
 
-	Dictionary<String^, AnimationClip^>^ ConvertAnimation(String^ inputFilename, String^ outputFilename)
+	AnimationInfo^ ConvertAnimation(String^ inputFilename, String^ outputFilename)
 	{
 		// the importer is kept here since it owns the scene object.
 		Assimp::Importer importer;

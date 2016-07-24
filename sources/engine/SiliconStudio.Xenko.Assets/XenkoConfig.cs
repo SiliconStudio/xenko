@@ -53,13 +53,13 @@ namespace SiliconStudio.Xenko.Assets
             coreClrDebug.Properties.AddRange(new[]
             {
                 "<SiliconStudioRuntime Condition=\"'$(SiliconStudioProjectType)' == 'Executable'\">CoreCLR</SiliconStudioRuntime>",
-                "<SiliconStudioBuildDirExtension>$(SiliconStudioRuntime)</SiliconStudioBuildDirExtension>",
+                "<SiliconStudioBuildDirExtension Condition=\"'$(SiliconStudioBuildDirExtension)' == ''\">CoreCLR</SiliconStudioBuildDirExtension>",
                 "<DefineConstants>SILICONSTUDIO_RUNTIME_CORECLR;$(DefineConstants)</DefineConstants>"
             });
             coreClrRelease.Properties.AddRange(new[]
             {
                 "<SiliconStudioRuntime Condition=\"'$(SiliconStudioProjectType)' == 'Executable'\">CoreCLR</SiliconStudioRuntime>",
-                "<SiliconStudioBuildDirExtension>$(SiliconStudioRuntime)</SiliconStudioBuildDirExtension>",
+                "<SiliconStudioBuildDirExtension Condition=\"'$(SiliconStudioBuildDirExtension)' == ''\">CoreCLR</SiliconStudioBuildDirExtension>",
                 "<DefineConstants>SILICONSTUDIO_RUNTIME_CORECLR;$(DefineConstants)</DefineConstants>"
             });
 
@@ -222,6 +222,20 @@ namespace SiliconStudio.Xenko.Assets
             linuxPlatform.Configurations.Add(coreClrRelease);
             linuxPlatform.Configurations.Add(coreClrDebug);
             solutionPlatforms.Add(linuxPlatform);
+
+            // macOS
+            var macOSPlatform = new SolutionPlatform()
+            {
+                Name = PlatformType.macOS.ToString(),
+                IsAvailable = true,
+                Type = PlatformType.macOS,
+            };
+            macOSPlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_MACOS");
+            // For now most of the Linux code applies for macOS too
+            macOSPlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_LINUX");
+            macOSPlatform.Configurations.Add(coreClrRelease);
+            macOSPlatform.Configurations.Add(coreClrDebug);
+            solutionPlatforms.Add(macOSPlatform);
 
             // Android
             var androidPlatform = new SolutionPlatform()

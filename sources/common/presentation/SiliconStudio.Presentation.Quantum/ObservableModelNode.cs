@@ -30,18 +30,18 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="ownerViewModel">The <see cref="ObservableViewModel"/> that owns the new <see cref="ObservableModelNode"/>.</param>
         /// <param name="baseName">The base name of this node. Can be null if <see cref="index"/> is not. If so a name will be automatically generated from the index.</param>
         /// <param name="isPrimitive">Indicate whether this node should be considered as a primitive node.</param>
-        /// <param name="modelNode">The model node bound to the new <see cref="ObservableModelNode"/>.</param>
-        /// <param name="graphNodePath">The <see cref="GraphNodePath"/> corresponding to the given <see cref="modelNode"/>.</param>
+        /// <param name="sourceNode">The model node bound to the new <see cref="ObservableModelNode"/>.</param>
+        /// <param name="graphNodePath">The <see cref="GraphNodePath"/> corresponding to the given <see cref="sourceNode"/>.</param>
         /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <see cref="Index.Empty"/> must be passed otherwise</param>
-        protected ObservableModelNode(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Index index)
+        protected ObservableModelNode(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode sourceNode, GraphNodePath graphNodePath, Index index)
             : base(ownerViewModel, baseName, index)
         {
-            if (modelNode == null) throw new ArgumentNullException(nameof(modelNode));
+            if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
             if (baseName == null && index == null)
                 throw new ArgumentException("baseName and index can't be both null.");
 
             this.isPrimitive = isPrimitive;
-            SourceNode = modelNode;
+            SourceNode = sourceNode;
             // By default we will always combine items of list of primitive items.
             CombineMode = !index.IsEmpty && isPrimitive ? CombineMode.AlwaysCombine : CombineMode.CombineOnlyForAll;
             SourceNodePath = graphNodePath;
@@ -68,18 +68,18 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="ownerViewModel">The <see cref="ObservableViewModel"/> that owns the new <see cref="ObservableModelNode"/>.</param>
         /// <param name="baseName">The base name of this node. Can be null if <see cref="index"/> is not. If so a name will be automatically generated from the index.</param>
         /// <param name="isPrimitive">Indicate whether this node should be considered as a primitive node.</param>
-        /// <param name="modelNode">The model node bound to the new <see cref="ObservableModelNode"/>.</param>
+        /// <param name="sourceNode">The model node bound to the new <see cref="ObservableModelNode"/>.</param>
         /// <param name="graphNodePath">The <see cref="GraphNodePath"/> corresponding to the given node.</param>
         /// <param name="contentType">The type of content contained by the new <see cref="ObservableModelNode"/>.</param>
         /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <see cref="Index.Empty"/> must be passed otherwise</param>
         /// <returns>A new instance of <see cref="ObservableModelNode{T}"/> instanced with the given content type as generic argument.</returns>
-        internal static ObservableModelNode Create(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Type contentType, Index index)
+        internal static ObservableModelNode Create(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode sourceNode, GraphNodePath graphNodePath, Type contentType, Index index)
         {
-            var node = (ObservableModelNode)Activator.CreateInstance(typeof(ObservableModelNode<>).MakeGenericType(contentType), ownerViewModel, baseName, isPrimitive, modelNode, graphNodePath, index);
+            var node = (ObservableModelNode)Activator.CreateInstance(typeof(ObservableModelNode<>).MakeGenericType(contentType), ownerViewModel, baseName, isPrimitive, sourceNode, graphNodePath, index);
             return node;
         }
 
-        protected internal virtual void Initialize()
+        protected internal void Initialize()
         {
             var targetNode = GetTargetNode(SourceNode, Index);
 
@@ -248,81 +248,83 @@ namespace SiliconStudio.Presentation.Quantum
             return false;
         }
 
-        private void GenerateChildren(IGraphNode modelNode, GraphNodePath graphNodePath)
+        private void GenerateChildren(IGraphNode targetNode, GraphNodePath targetNodePath)
         {
-            if (modelNode.Content.IsReference && modelNode.Content.ShouldProcessReference)
+            // Node representing a member with a reference to another object
+            if (SourceNode != targetNode && SourceNode.Content.IsReference)
             {
-                var referenceEnumerable = modelNode.Content.Reference as ReferenceEnumerable;
+                var objectReference = SourceNode.Content.Reference as ObjectReference;
+                // Discard the children of the referenced object if requested by the property provider
+                if (objectReference != null && !Owner.PropertiesProvider.ShouldExpandReference(SourceNode.Content as MemberContent, objectReference))
+                    return;
+            }
+
+            var dictionary = targetNode.Content.Descriptor as DictionaryDescriptor;
+            var list = targetNode.Content.Descriptor as CollectionDescriptor;
+
+            // Node containing a collection of references to other objects
+            if (targetNode.Content.IsReference)
+            {
+                var referenceEnumerable = targetNode.Content.Reference as ReferenceEnumerable;
                 if (referenceEnumerable != null)
                 {
-                    // If the reference should not be processed, we still need to create an observable node for each entry of the enumerable.
-                    // These observable nodes will have the same source node that their parent so we use this information to prevent
-                    // the infinite recursion that could occur due to the fact that these child nodes will have the same model nodes (like primitive types)
-                    // while holding an enumerable reference.
-                    //if (modelNode.Content.ShouldProcessReference || ModelNodeParent.sourceNode != modelNode)
+                    // We create one node per item of the collection, unless requested by the property provide to not expand the reference.
+                    foreach (var reference in referenceEnumerable)
                     {
-                        // Note: we are making a copy of the reference list because it can be updated from the Initialize method of the
-                        // observable node in the case of scene objects. Doing this is a hack, but parts of this framework will be redesigned later to improve this
-                        foreach (var reference in referenceEnumerable.ToList())
+                        // The type might be a boxed primitive type, such as float, if the collection has object as generic argument.
+                        // In this case, we must set the actual type to have type converter working, since they usually can't convert
+                        // a boxed float to double for example. Otherwise, we don't want to have a node type that is value-dependent.
+                        var type = reference.TargetNode != null && reference.TargetNode.Content.IsPrimitive ? reference.TargetNode.Content.Type : reference.Type;
+                        var actualPath = targetNodePath.PushIndex(reference.Index);
+                        if (Owner.PropertiesProvider.ShouldExpandReference(SourceNode.Content as MemberContent, reference))
                         {
-                            // The type might be a boxed primitive type, such as float, if the collection has object as generic argument.
-                            // In this case, we must set the actual type to have type converter working, since they usually can't convert
-                            // a boxed float to double for example. Otherwise, we don't want to have a node type that is value-dependent.
-                            var type = reference.TargetNode != null && reference.TargetNode.Content.IsPrimitive ? reference.TargetNode.Content.Type : reference.Type;
-                            bool shouldConstruct = Owner.PropertiesProvider.ShouldConstructNode(modelNode, reference.Index);
-                            if (shouldConstruct)
-                            {
-                                var observableNode = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, false, modelNode, graphNodePath, type, reference.Index);
-                                AddChild(observableNode);
-                                observableNode.Initialize();
-                            }
+                            var observableNode = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, false, targetNode, targetNodePath, type, reference.Index);
+                            AddChild(observableNode);
+                            observableNode.Initialize();
                         }
                     }
                 }
             }
+            // Node containing a dictionary of primitive values
+            else if (dictionary != null && targetNode.Content.Value != null)
+            {
+                // TODO: there is no way to discard items of such collections, without discarding the collection itself. Could this be needed at some point?
+                // We create one node per item of the collection.
+                foreach (var key in dictionary.GetKeys(targetNode.Content.Value))
+                {
+                    var index = new Index(key);
+                    var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, targetNode, targetNodePath, dictionary.ValueType, index);
+                    AddChild(observableChild);
+                    observableChild.Initialize();
+                }
+            }
+            // Node containing a list of primitive values
+            else if (list != null && targetNode.Content.Value != null)
+            {
+                // TODO: there is no way to discard items of such collections, without discarding the collection itself. Could this be needed at some point?
+                // We create one node per item of the collection.
+                for (int i = 0; i < list.GetCollectionCount(targetNode.Content.Value); ++i)
+                {
+                    var index = new Index(i);
+                    var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, targetNode, targetNodePath, list.ElementType, index);
+                    AddChild(observableChild);
+                    observableChild.Initialize();
+                }
+            }
+            // Node containing a single non-reference primitive object
             else
             {
-                var dictionary = modelNode.Content.Descriptor as DictionaryDescriptor;
-                var list = modelNode.Content.Descriptor as CollectionDescriptor;
-                if (dictionary != null && modelNode.Content.Value != null)
+                foreach (var child in targetNode.Children)
                 {
-                    // Dictionary of primitive objects
-                    foreach (var key in dictionary.GetKeys(modelNode.Content.Value))
+                    var memberContent = (MemberContent)child.Content;
+                    var descriptor = (MemberDescriptorBase)memberContent.Member;
+                    var displayAttribute = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(descriptor.MemberInfo);
+                    if (displayAttribute == null || displayAttribute.Browsable)
                     {
-                        var index = new Index(key);
-                        bool shouldConstruct = Owner.PropertiesProvider.ShouldConstructNode(modelNode, index);
-                        if (shouldConstruct)
+                        // The path is the source path here - the target path might contain the target resolution that we don't want at that point
+                        if (Owner.PropertiesProvider.ShouldConstructMember(memberContent))
                         {
-                            var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, modelNode, graphNodePath, dictionary.ValueType, index);
-                            AddChild(observableChild);
-                            observableChild.Initialize();
-                        }
-                    }
-                }
-                else if (list != null && modelNode.Content.Value != null)
-                {
-                    // List of primitive objects
-                    for (int i = 0; i < list.GetCollectionCount(modelNode.Content.Value); ++i)
-                    {
-                        var index = new Index(i);
-                        bool shouldConstruct = Owner.PropertiesProvider.ShouldConstructNode(modelNode, index);
-                        if (shouldConstruct)
-                        {
-                            var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, modelNode, graphNodePath, list.ElementType, index);
-                            AddChild(observableChild);
-                            observableChild.Initialize();
-                        }
-                    }
-                }
-                else
-                {
-                    // Single non-reference primitive object
-                    foreach (var child in modelNode.Children)
-                    {
-                        bool shouldConstruct = Owner.PropertiesProvider.ShouldConstructNode(child, Index.Empty);
-                        if (shouldConstruct)
-                        {
-                            var childPath = graphNodePath.PushMember(child.Name);
+                            var childPath = targetNodePath.PushMember(child.Name);
                             var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, child.Name, child.Content.IsPrimitive, child, childPath, child.Content.Type, Index.Empty);
                             AddChild(observableChild);
                             observableChild.Initialize();
@@ -372,19 +374,18 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="index">The index of the target node to retrieve, if the source node contains a sequence of references. <see cref="Index.Empty"/> otherwise.</param>
         /// <returns>The corresponding target node if available, or the source node itself if it does not contain any reference or if its content should not process references.</returns>
         /// <remarks>This method can return null if the target node is null.</remarks>
-        /// <seealso cref="IContent.ShouldProcessReference"/>
         protected static IGraphNode GetTargetNode(IGraphNode sourceNode, Index index)
         {
             if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
 
             var objectReference = sourceNode.Content.Reference as ObjectReference;
-            if (objectReference != null && sourceNode.Content.ShouldProcessReference)
+            if (objectReference != null)
             {
                 return objectReference.TargetNode;
             }
 
             var referenceEnumerable = sourceNode.Content.Reference as ReferenceEnumerable;
-            if (referenceEnumerable != null && sourceNode.Content.ShouldProcessReference && !index.IsEmpty)
+            if (referenceEnumerable != null && !index.IsEmpty)
             {
                 return referenceEnumerable[index].TargetNode;
             }
@@ -400,20 +401,19 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="sourceNodePath">The path to the given <paramref name="sourceNode"/>.</param>
         /// <returns>The path to the corresponding target node if available, or the path to source node itself if it does not contain any reference or if its content should not process references.</returns>
         /// <remarks>This method can return null if the target node is null.</remarks>
-        /// <seealso cref="IContent.ShouldProcessReference"/>
         protected static GraphNodePath GetTargetNodePath(IGraphNode sourceNode, Index index, GraphNodePath sourceNodePath)
         {
             if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
             if (sourceNodePath == null) throw new ArgumentNullException(nameof(sourceNodePath));
 
             var objectReference = sourceNode.Content.Reference as ObjectReference;
-            if (objectReference != null && sourceNode.Content.ShouldProcessReference)
+            if (objectReference != null)
             {
                 return sourceNodePath.PushTarget();
             }
 
             var referenceEnumerable = sourceNode.Content.Reference as ReferenceEnumerable;
-            if (referenceEnumerable != null && sourceNode.Content.ShouldProcessReference && !index.IsEmpty)
+            if (referenceEnumerable != null && !index.IsEmpty)
             {
                 return sourceNodePath.PushIndex(index);
             }

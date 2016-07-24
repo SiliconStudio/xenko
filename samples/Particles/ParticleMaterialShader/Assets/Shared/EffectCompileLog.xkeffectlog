@@ -3,104 +3,68 @@
 EffectName: XenkoForwardShadingEffect
 UsedParameters:
     Material.PixelStageSurfaceShaders: !ShaderMixinSource
+        Mixins:
+            -   ClassName: MaterialSurfaceArray
         Compositions:
             layers: !ShaderArraySource
                 Values:
                     - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceDiffuse
                         Compositions:
                             diffuseMap: !ShaderClassSource
                                 ClassName: ComputeColorTextureScaledOffsetDynamicSampler
-                                GenericArguments:
-                                    - Material.DiffuseMap
-                                    - TEXCOORD0
-                                    - Material.Sampler.i0
-                                    - rgba
-                                    - Material.TextureScale
-                                    - Material.TextureOffset
-                        Macros: []
-                        Mixins:
-                            -   ClassName: MaterialSurfaceDiffuse
+                                GenericArguments: [Material.DiffuseMap, TEXCOORD0, Material.Sampler.i0, rgba, Material.TextureScale, Material.TextureOffset]
                     - !ShaderMixinSource
+                        Mixins:
+                            -   ClassName: MaterialSurfaceLightingAndShading
                         Compositions:
                             surfaces: !ShaderArraySource
                                 Values:
                                     - !ShaderClassSource
                                         ClassName: MaterialSurfaceShadingDiffuseLambert
-                                        GenericArguments:
-                                            - false
-                        Macros: []
-                        Mixins:
-                            -   ClassName: MaterialSurfaceLightingAndShading
-        Macros: []
-        Mixins:
-            -   ClassName: MaterialSurfaceArray
+                                        GenericArguments: [false]
     Material.PixelStageStreamInitializer: !ShaderMixinSource
-        Compositions: {}
-        Macros: []
         Mixins:
             -   ClassName: MaterialStream
             -   ClassName: MaterialPixelShadingStream
     Lighting.DirectLightGroups:
         - !ShaderMixinSource
-            Compositions: {}
-            Macros: []
             Mixins:
                 -   ClassName: LightDirectionalGroup
-                    GenericArguments:
-                        - 1
-                -   ClassName: DirectLightGroupFixed
-                    GenericArguments:
-                        - 1
+                    GenericArguments: [1]
     Lighting.EnvironmentLights:
-        - !ShaderMixinSource
-            Compositions: {}
-            Macros: []
-            Mixins:
-                -   ClassName: LightSimpleAmbient
+        - !ShaderClassSource
+            ClassName: LightSimpleAmbient
 ---
 !EffectCompileRequest
 EffectName: ParticleEffect
 UsedParameters:
+    ParticleBase.UsesSoftEdge: 0
     ParticleBase.BaseColor: !ShaderClassSource
         ClassName: ComputeColorRed
 ---
 !EffectCompileRequest
 EffectName: ParticleEffect
 UsedParameters:
+    ParticleBase.UsesSoftEdge: 0
     ParticleBase.BaseColor: !ShaderMixinSource
+        Mixins:
+            -   ClassName: ComputeColorMultiply
         Compositions:
             color1: !ShaderClassSource
                 ClassName: ComputeColorFromStream
-                GenericArguments:
-                    - COLOR0
-                    - rgba
+                GenericArguments: [COLOR0, rgba]
             color2: !ShaderClassSource
                 ClassName: ComputeColorRadial
-                GenericArguments:
-                    - float4(1.5, 0, 1.5, 1)
-                    - float4(1.5, 1.5, 0, 0)
-        Macros: []
-        Mixins:
-            -   ClassName: ComputeColorMultiply
+                GenericArguments: ['float4(1.5, 0, 1.5, 1)', 'float4(1.5, 1.5, 0, 0)']
 ---
 !EffectCompileRequest
 EffectName: ParticleCustomEffect
 UsedParameters:
     ParticleCustomShader.BaseColor: !ShaderClassSource
         ClassName: ComputeColorTextureScaledOffsetDynamicSampler
-        GenericArguments:
-            - ParticleCustomShader.EmissiveMap
-            - TEXCOORD0
-            - Material.Sampler.i0
-            - rgba
-            - Material.TextureScale
-            - Material.TextureOffset
+        GenericArguments: [ParticleCustomShader.EmissiveMap, TEXCOORD0, Material.Sampler.i0, rgba, Material.TextureScale, Material.TextureOffset]
     ParticleCustomShader.BaseIntensity: !ShaderClassSource
         ClassName: ComputeColorTextureScaledOffsetDynamicSampler
-        GenericArguments:
-            - ParticleCustomShader.IntensityMap
-            - TEXCOORD1
-            - Material.Sampler.i0
-            - r
-            - Material.TextureScale.i1
-            - Material.TextureOffset.i1
+        GenericArguments: [ParticleCustomShader.IntensityMap, TEXCOORD1, Material.Sampler.i0, r, Material.TextureScale.i1, Material.TextureOffset.i1]

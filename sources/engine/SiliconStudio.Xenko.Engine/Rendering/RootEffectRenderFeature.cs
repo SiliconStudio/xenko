@@ -7,7 +7,6 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Shaders;
 using SiliconStudio.Xenko.Shaders.Compiler;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -386,7 +385,7 @@ namespace SiliconStudio.Xenko.Rendering
             if (staticCompilerParameters == null)
                 staticCompilerParameters = new CompilerParameters();
 
-            // Step2: Compile effects and update reflection infos (offset, etc...)
+            // Step2: Compile effects
             foreach (var renderObject in RenderObjects)
             {
                 var staticObjectNode = renderObject.StaticObjectNode;
@@ -397,15 +396,19 @@ namespace SiliconStudio.Xenko.Rendering
                     var renderEffect = renderEffects[staticEffectObjectNode];
 
                     // Skip if not used
-                    if (renderEffect == null || !renderEffect.IsUsedDuringThisFrame(RenderSystem))
+                    if (renderEffect == null)
+                        continue;
+
+                    // Skip reflection update unless a state change requires it
+                    renderEffect.IsReflectionUpdateRequired = false;
+
+                    if (!renderEffect.IsUsedDuringThisFrame(RenderSystem))
                         continue;
 
                     // Skip if nothing changed
-                    Effect effect;
                     if (renderEffect.EffectValidator.ShouldSkip)
                     {
                         // Reset pending effect, as it is now obsolete anyway
-                        effect = null;
                         renderEffect.Effect = null;
                         renderEffect.State = RenderEffectState.Skip;
                     }
@@ -422,12 +425,12 @@ namespace SiliconStudio.Xenko.Rendering
                         if (pendingEffect.IsFaulted)
                         {
                             renderEffect.State = RenderEffectState.Error;
-                            effect = ComputeFallbackEffect?.Invoke(renderObject, renderEffect, RenderEffectState.Error);
+                            renderEffect.Effect = ComputeFallbackEffect?.Invoke(renderObject, renderEffect, RenderEffectState.Error);
                         }
                         else
                         {
                             renderEffect.State = RenderEffectState.Normal;
-                            effect = pendingEffect.Result;
+                            renderEffect.Effect = pendingEffect.Result;
                         }
                         renderEffect.PendingEffect = null;
                     }
@@ -445,24 +448,41 @@ namespace SiliconStudio.Xenko.Rendering
                         var asyncEffect = RenderSystem.EffectSystem.LoadEffect(renderEffect.EffectSelector.EffectName, staticCompilerParameters);
                         staticCompilerParameters.Clear();
 
-                        effect = asyncEffect.Result;
-                        if (effect == null)
+                        renderEffect.Effect = asyncEffect.Result;
+                        if (renderEffect.Effect == null)
                         {
                             // Effect still compiling, let's find if there is a fallback
                             renderEffect.ClearFallbackParameters();
-                            effect = ComputeFallbackEffect?.Invoke(renderObject, renderEffect, RenderEffectState.Compiling);
-                            if (effect != null)
-                            {
-                                // Use the fallback for now
-                                renderEffect.PendingEffect = asyncEffect.Task;
-                                renderEffect.State = RenderEffectState.Compiling;
-                            }
-                            else
-                            {
-                                // No fallback effect, let's block until effect is compiled
-                                effect = asyncEffect.WaitForResult();
-                            }
+                            renderEffect.Effect = ComputeFallbackEffect?.Invoke(renderObject, renderEffect, RenderEffectState.Compiling);
+                            renderEffect.PendingEffect = asyncEffect.Task;
+                            renderEffect.State = RenderEffectState.Compiling;
                         }
+                    }
+
+                    renderEffect.IsReflectionUpdateRequired = true;
+                }
+            }
+
+            // Step3: Uupdate reflection infos (offset, etc...)
+            foreach (var renderObject in RenderObjects)
+            {
+                var staticObjectNode = renderObject.StaticObjectNode;
+
+                for (int i = 0; i < effectSlotCount; ++i)
+                {
+                    var staticEffectObjectNode = staticObjectNode * effectSlotCount + i;
+                    var renderEffect = renderEffects[staticEffectObjectNode];
+
+                    // Skip if not used
+                    if (renderEffect == null || !renderEffect.IsReflectionUpdateRequired)
+                        continue;
+
+                    var effect = renderEffect.Effect;
+                    if (effect == null && renderEffect.State == RenderEffectState.Compiling)
+                    {
+                        // Need to wait for completion
+                        renderEffect.Effect = effect = renderEffect.PendingEffect.Result;
+                        renderEffect.State = RenderEffectState.Normal;
                     }
 
                     var effectHashCode = effect != null ? (uint)effect.GetHashCode() : 0;
@@ -882,6 +902,20 @@ namespace SiliconStudio.Xenko.Rendering
                     // TODO GRAPHICS REFACTOR support removal of render stages
                     throw new NotImplementedException();
             }
+        }
+
+        protected override void Destroy()
+        {
+            foreach (var effect in InstantiatedEffects)
+            {
+                var effectReflection = effect.Value;
+                effectReflection.RootSignature.Dispose();
+                effectReflection.PerDrawLayout?.DescriptorSetLayout.Dispose();
+                effectReflection.PerViewLayout?.DescriptorSetLayout.Dispose();
+                effectReflection.PerFrameLayout?.DescriptorSetLayout.Dispose();
+            }
+
+            base.Destroy();
         }
 
         struct NamedSlotDefinition

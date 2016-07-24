@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public StackPanelTest()
         {
-            CurrentVersion = 9;
+            CurrentVersion = 10;
         }
 
         protected override void RegisterTests()

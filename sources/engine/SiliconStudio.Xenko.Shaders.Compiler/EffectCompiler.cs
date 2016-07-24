@@ -118,6 +118,9 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                     shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL", 1);
                     shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES", 1);
                     break;
+                case GraphicsPlatform.Vulkan:
+                    shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN", 1);
+                    break;
                 default:
                     throw new NotSupportedException();
             }
@@ -197,6 +200,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 #endif
                 case GraphicsPlatform.OpenGL:
                 case GraphicsPlatform.OpenGLES:
+                case GraphicsPlatform.Vulkan:
                     // get the number of render target outputs
                     var rtOutputs = 0;
                     var psOutput = parsingResult.Shader.Declarations.OfType<StructType>().FirstOrDefault(x => x.Name.Text == "PS_OUTPUT");
@@ -235,8 +239,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             var stageStringBuilder = new StringBuilder();
 #endif
-            // if the shader (non-compute) does not have a pixel shader, we should add it on OpenGL ES.
-            if (effectParameters.Platform == GraphicsPlatform.OpenGLES && !parsingResult.EntryPoints.ContainsKey(ShaderStage.Pixel) && !parsingResult.EntryPoints.ContainsKey(ShaderStage.Compute))
+            // if the shader (non-compute) does not have a pixel shader, we should add it for OpenGL and OpenGL ES.
+            if ((effectParameters.Platform == GraphicsPlatform.OpenGL || effectParameters.Platform == GraphicsPlatform.OpenGLES) && !parsingResult.EntryPoints.ContainsKey(ShaderStage.Pixel) && !parsingResult.EntryPoints.ContainsKey(ShaderStage.Compute))
             {
                 parsingResult.EntryPoints.Add(ShaderStage.Pixel, null);
             }

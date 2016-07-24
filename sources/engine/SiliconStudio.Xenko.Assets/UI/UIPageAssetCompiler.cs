@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
@@ -35,7 +36,7 @@ namespace SiliconStudio.Xenko.Assets.UI
             {
                 var assetManager = new ContentManager();
 
-                var uiPage = new Engine.UIPage { RootElement = AssetParameters.UIPageAsset.RootElement };
+                var uiPage = new Engine.UIPage { RootElement = AssetParameters.UIPageAsset.Hierarchy.Parts[AssetParameters.UIPageAsset.Hierarchy.RootPartIds.Single()].UIElement };
                 assetManager.Save(Url, uiPage);
 
                 return Task.FromResult(ResultStatus.Successful);

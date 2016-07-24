@@ -125,67 +125,75 @@ namespace SiliconStudio.Core.Transactions
         {
             lock (lockObject)
             {
-                if (transactionsInProgress.Count == 0)
-                    throw new TransactionException("There is not transaction in progress in the transaction stack.");
-
-                if (transaction != transactionsInProgress.Pop())
-                    throw new TransactionException("The transaction being completed is not that last created transaction.");
-
-                // Check if we're completing the last transaction
-                TransactionInProgress = transactionsInProgress.Count > 0;
-
-                // Ignore the transaction if it is empty
-                if (transaction.IsEmpty)
-                    return;
-
-                // If this transaction has no effect, discard it.
-                if (transaction.Operations.All(x => !x.HasEffect))
-                    return;
-
-                // If we're not the last transaction, consider this transaction as an operation of its parent transaction
-                if (TransactionInProgress)
+                try
                 {
-                    // Avoid useless nested transaction if we have a single operation inside.
-                    PushOperation(transaction.Operations.Count == 1 ? transaction.Operations.Single() : transaction);
-                    return;
-                }
+                    if (transactionsInProgress.Count == 0)
+                        throw new TransactionException("There is not transaction in progress in the transaction stack.");
 
-                // Remove transactions that will be overwritten by this one
-                if (currentPosition < transactions.Count)
-                {
-                    PurgeFromIndex(currentPosition);
-                }
+                    if (transaction != transactionsInProgress.Pop())
+                        throw new TransactionException("The transaction being completed is not that last created transaction.");
 
-                if (currentPosition == Capacity)
-                {
-                    // If the stack has a capacity of 0, immediately freeze the new transaction.
-                    var oldestTransaction = Capacity > 0 ? transactions[0] : transaction;
-                    oldestTransaction.Interface.Freeze();
+                    // Check if we're completing the last transaction
+                    TransactionInProgress = transactionsInProgress.Count > 0;
 
-                    for (var i = 1; i < transactions.Count; ++i)
+                    // Ignore the transaction if it is empty
+                    if (transaction.IsEmpty)
+                        return;
+
+                    // If this transaction has no effect, discard it.
+                    if (transaction.Operations.All(x => !x.HasEffect))
+                        return;
+
+                    // If we're not the last transaction, consider this transaction as an operation of its parent transaction
+                    if (TransactionInProgress)
                     {
-                        transactions[i - 1] = transactions[i];
+                        // Avoid useless nested transaction if we have a single operation inside.
+                        PushOperation(transaction.Operations.Count == 1 ? transaction.Operations.Single() : transaction);
+                        return;
+                    }
+
+                    // Remove transactions that will be overwritten by this one
+                    if (currentPosition < transactions.Count)
+                    {
+                        PurgeFromIndex(currentPosition);
+                    }
+
+                    if (currentPosition == Capacity)
+                    {
+                        // If the stack has a capacity of 0, immediately freeze the new transaction.
+                        var oldestTransaction = Capacity > 0 ? transactions[0] : transaction;
+                        oldestTransaction.Interface.Freeze();
+
+                        for (var i = 1; i < transactions.Count; ++i)
+                        {
+                            transactions[i - 1] = transactions[i];
+                        }
+                        if (Capacity > 0)
+                        {
+                            transactions[--currentPosition] = null;
+                        }
+                        TransactionDiscarded?.Invoke(this, new TransactionsDiscardedEventArgs(oldestTransaction, DiscardReason.StackFull));
                     }
                     if (Capacity > 0)
                     {
-                        transactions[--currentPosition] = null;
+                        if (currentPosition == transactions.Count)
+                        {
+                            transactions.Add(transaction);
+                        }
+                        else
+                        {
+                            transactions[currentPosition] = transaction;
+                        }
+                        ++currentPosition;
                     }
-                    TransactionDiscarded?.Invoke(this, new TransactionsDiscardedEventArgs(oldestTransaction, DiscardReason.StackFull));
                 }
-                if (Capacity > 0)
+                finally
                 {
-                    if (currentPosition == transactions.Count)
+                    if (!TransactionInProgress)
                     {
-                        transactions.Add(transaction);
+                        TransactionCompleted?.Invoke(this, new TransactionEventArgs(transaction));
                     }
-                    else
-                    {
-                        transactions[currentPosition] = transaction;
-                    }
-                    ++currentPosition;
                 }
-
-                TransactionCompleted?.Invoke(this, new TransactionEventArgs(transaction));
             }
         }
 
@@ -203,8 +211,14 @@ namespace SiliconStudio.Core.Transactions
 
                 var lastTransaction = transactions[--currentPosition];
                 RollInProgress = true;
-                lastTransaction.Interface.Rollback();
-                RollInProgress = false;
+                try
+                {
+                    lastTransaction.Interface.Rollback();
+                }
+                finally
+                {
+                    RollInProgress = false;
+                }
                 TransactionRollbacked?.Invoke(this, new TransactionEventArgs(lastTransaction));
             }
         }
@@ -223,8 +237,14 @@ namespace SiliconStudio.Core.Transactions
 
                 var lastTransaction = transactions[currentPosition++];
                 RollInProgress = true;
-                lastTransaction.Interface.Rollforward();
-                RollInProgress = false;
+                try
+                {
+                    lastTransaction.Interface.Rollforward();
+                }
+                finally
+                {
+                    RollInProgress = false;
+                }
                 TransactionRollforwarded?.Invoke(this, new TransactionEventArgs(lastTransaction));
             }
         }

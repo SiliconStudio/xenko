@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                     var image = texTool.ConvertToXenkoImage(texImage);
 
                     Graphics.SpriteFont staticFont = FontDataFactory.NewStatic(
-                        FontHelper.PointsToPixels(AssetParameters.Size),
+                        AssetParameters.Size,
                         AssetParameters.Glyphs,
                         new[] { image },
                         AssetParameters.BaseOffset,

@@ -37,6 +37,17 @@ Overrides:
             ColorSpace: Linear
             DisplayOrientation: Default
             PreferredGraphicsPlatform: OpenGLES
+    -   ~Id: e2616dea-4867-4517-afd1-9ec1432228a8
+        Platforms: None
+        SpecificFilter: 12
+        Configuration: !SiliconStudio.Xenko.Graphics.RenderingSettings,SiliconStudio.Xenko.Graphics
+            ~Id: f492a7ac-8c55-4191-83c6-768b9e5ba8de
+            DefaultBackBufferWidth: 1280
+            DefaultBackBufferHeight: 720
+            DefaultGraphicsProfile: Level_9_3
+            ColorSpace: Linear
+            DisplayOrientation: Default
+            PreferredGraphicsPlatform: Vulkan
 PlatformFilters:
     - PowerVR SGX 54[0-9]
     - Adreno \(TM\) 2[0-9][0-9]
@@ -50,3 +61,4 @@ PlatformFilters:
     - ^Mali\-T7
     - Windows-OpenGL
     - Windows-OpenGLES
+    - Windows-Vulkan

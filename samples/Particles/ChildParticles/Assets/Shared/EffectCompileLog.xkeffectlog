@@ -2,62 +2,7 @@
 !EffectCompileRequest
 EffectName: ParticleEffect
 UsedParameters:
-    ParticleBase.BaseColor: !ShaderMixinSource
-        Mixins:
-            -   ClassName: ComputeColorMultiply
-        Compositions:
-            color1: !ShaderClassSource
-                ClassName: ComputeColorFromStream
-                GenericArguments: [COLOR0, rgba]
-            color2: !ShaderClassSource
-                ClassName: ComputeColorTextureScaledOffsetDynamicSampler
-                GenericArguments: [ParticleBase.EmissiveMap, TEXCOORD0, Material.Sampler.i0, rgba, Material.TextureScale, Material.TextureOffset]
----
-!EffectCompileRequest
-EffectName: ParticleEffect
-UsedParameters:
-    ParticleBase.BaseColor: !ShaderMixinSource
-        Mixins:
-            -   ClassName: ComputeColorMultiply
-        Compositions:
-            color1: !ShaderMixinSource
-                Mixins:
-                    -   ClassName: ComputeColorMultiply
-                Compositions:
-                    color1: !ShaderClassSource
-                        ClassName: ComputeColorFromStream
-                        GenericArguments: [COLOR0, rgba]
-                    color2: !ShaderClassSource
-                        ClassName: ComputeColorConstantColorLink
-                        GenericArguments: [ParticleBase.EmissiveValue]
-            color2: !ShaderClassSource
-                ClassName: ComputeColorTextureScaledOffsetDynamicSampler
-                GenericArguments: [ParticleBase.EmissiveMap, TEXCOORD0, Material.Sampler.i0, rgba, Material.TextureScale, Material.TextureOffset]
----
-!EffectCompileRequest
-EffectName: ParticleEffect
-UsedParameters:
-    ParticleBase.BaseColor: !ShaderClassSource
-        ClassName: ComputeColorTextureScaledOffsetDynamicSampler
-        GenericArguments: [ParticleBase.EmissiveMap, TEXCOORD0, Material.Sampler.i0, rgba, Material.TextureScale, Material.TextureOffset]
----
-!EffectCompileRequest
-EffectName: ParticleEffect
-UsedParameters:
-    ParticleBase.BaseColor: !ShaderMixinSource
-        Mixins:
-            -   ClassName: ComputeColorMultiply
-        Compositions:
-            color1: !ShaderClassSource
-                ClassName: ComputeColorTextureScaledOffsetDynamicSampler
-                GenericArguments: [ParticleBase.EmissiveMap, TEXCOORD0, Material.Sampler.i0, rgba, Material.TextureScale, Material.TextureOffset]
-            color2: !ShaderClassSource
-                ClassName: ComputeColorConstantColorLink
-                GenericArguments: [ParticleBase.EmissiveValue]
----
-!EffectCompileRequest
-EffectName: ParticleEffect
-UsedParameters:
+    ParticleBase.UsesSoftEdge: 0
     ParticleBase.BaseColor: !ShaderMixinSource
         Mixins:
             -   ClassName: ComputeColorMultiply
@@ -72,6 +17,7 @@ UsedParameters:
 !EffectCompileRequest
 EffectName: ParticleEffect
 UsedParameters:
+    ParticleBase.UsesSoftEdge: 0
     ParticleBase.BaseColor: !ShaderMixinSource
         Mixins:
             -   ClassName: ComputeColorMultiply
@@ -89,6 +35,66 @@ UsedParameters:
                     color2: !ShaderClassSource
                         ClassName: ComputeColorConstantColorLink
                         GenericArguments: [ParticleBase.EmissiveValue]
+---
+!EffectCompileRequest
+EffectName: ParticleEffect
+UsedParameters:
+    ParticleBase.UsesSoftEdge: 0
+    ParticleBase.BaseColor: !ShaderMixinSource
+        Mixins:
+            -   ClassName: ComputeColorMultiply
+        Compositions:
+            color1: !ShaderClassSource
+                ClassName: ComputeColorTextureScaledOffsetDynamicSampler
+                GenericArguments: [ParticleBase.EmissiveMap, TEXCOORD0, Material.Sampler.i0, rgba, Material.TextureScale, Material.TextureOffset]
+            color2: !ShaderClassSource
+                ClassName: ComputeColorConstantColorLink
+                GenericArguments: [ParticleBase.EmissiveValue]
+---
+!EffectCompileRequest
+EffectName: ParticleEffect
+UsedParameters:
+    ParticleBase.UsesSoftEdge: 0
+    ParticleBase.BaseColor: !ShaderMixinSource
+        Mixins:
+            -   ClassName: ComputeColorMultiply
+        Compositions:
+            color1: !ShaderClassSource
+                ClassName: ComputeColorFromStream
+                GenericArguments: [COLOR0, rgba]
+            color2: !ShaderClassSource
+                ClassName: ComputeColorTextureScaledOffsetDynamicSampler
+                GenericArguments: [ParticleBase.EmissiveMap, TEXCOORD0, Material.Sampler.i0, rgba, Material.TextureScale, Material.TextureOffset]
+---
+!EffectCompileRequest
+EffectName: ParticleEffect
+UsedParameters:
+    ParticleBase.UsesSoftEdge: 0
+    ParticleBase.BaseColor: !ShaderClassSource
+        ClassName: ComputeColorTextureScaledOffsetDynamicSampler
+        GenericArguments: [ParticleBase.EmissiveMap, TEXCOORD0, Material.Sampler.i0, rgba, Material.TextureScale, Material.TextureOffset]
+---
+!EffectCompileRequest
+EffectName: ParticleEffect
+UsedParameters:
+    ParticleBase.UsesSoftEdge: 0
+    ParticleBase.BaseColor: !ShaderMixinSource
+        Mixins:
+            -   ClassName: ComputeColorMultiply
+        Compositions:
+            color1: !ShaderMixinSource
+                Mixins:
+                    -   ClassName: ComputeColorMultiply
+                Compositions:
+                    color1: !ShaderClassSource
+                        ClassName: ComputeColorFromStream
+                        GenericArguments: [COLOR0, rgba]
+                    color2: !ShaderClassSource
+                        ClassName: ComputeColorConstantColorLink
+                        GenericArguments: [ParticleBase.EmissiveValue]
+            color2: !ShaderClassSource
+                ClassName: ComputeColorTextureScaledOffsetDynamicSampler
+                GenericArguments: [ParticleBase.EmissiveMap, TEXCOORD0, Material.Sampler.i0, rgba, Material.TextureScale, Material.TextureOffset]
 ---
 !EffectCompileRequest
 EffectName: XenkoForwardShadingEffect
@@ -124,9 +130,6 @@ UsedParameters:
             Mixins:
                 -   ClassName: LightDirectionalGroup
                     GenericArguments: [1]
-                -   ClassName: DirectLightGroupFixed
-                    GenericArguments: [1]
     Lighting.EnvironmentLights:
-        - !ShaderMixinSource
-            Mixins:
-                -   ClassName: LightSimpleAmbient
+        - !ShaderClassSource
+            ClassName: LightSimpleAmbient

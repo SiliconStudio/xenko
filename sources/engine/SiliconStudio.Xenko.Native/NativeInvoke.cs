@@ -1,4 +1,4 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -13,10 +13,10 @@ namespace SiliconStudio.Xenko.Native
 #if SILICONSTUDIO_PLATFORM_IOS
         internal const string Library = "__Internal";
 #else
-        internal const string Library = "libxenkonative";
+        internal const string Library = "libxenko";
 #endif
 
-        static NativeInvoke()
+        internal static void PreLoad()
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS
             NativeLibrary.PreloadLibrary(Library + ".dll");
@@ -25,10 +25,17 @@ namespace SiliconStudio.Xenko.Native
 #endif
         }
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
+        static NativeInvoke()
+        {
+            PreLoad();
+        }
+
         [SuppressUnmanagedCodeSecurity]
-#endif
         [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
-        internal static extern void UpdateBufferValuesFromElementInfo(IntPtr drawInfo, IntPtr vertexPtr, IntPtr indexPtr, int vertexOffset);
+        public static extern void UpdateBufferValuesFromElementInfo(IntPtr drawInfo, IntPtr vertexPtr, IntPtr indexPtr, int vertexOffset);
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport(Library, EntryPoint = "xnSleep", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void Sleep(int ms);
     }
 }
