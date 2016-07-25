@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Particles.Sorters
         ParticleFieldAccessor<T> GetField<T>(ParticleFieldDescription<T> fieldDesc) where T : struct;
     }
 
-    public struct SortedParticle : IComparable
+    public struct SortedParticle : IComparable<SortedParticle>
     {
         public readonly Particle Particle;
         public readonly float SortIndex;         // TODO Maybe use a Int32 key rather than float?
@@ -29,14 +29,9 @@ namespace SiliconStudio.Xenko.Particles.Sorters
             SortIndex = sortIndex;
         }
 
-        int IComparable.CompareTo(object other)
+        int IComparable<SortedParticle>.CompareTo(SortedParticle other)
         {
-            return CompareTo((SortedParticle)other);
-        }
-
-        int CompareTo(SortedParticle other)
-        {
-            return (this == other) ? 0 : (this < other) ? -1 : 1;
+            return (SortIndex < other.SortIndex) ? -1 : (SortIndex > other.SortIndex) ? 1 : 0;
         }
 
         public static bool operator <(SortedParticle left, SortedParticle right) => (left.SortIndex < right.SortIndex);
