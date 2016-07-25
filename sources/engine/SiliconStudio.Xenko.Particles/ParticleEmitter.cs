@@ -62,12 +62,6 @@ namespace SiliconStudio.Xenko.Particles
         private EmitterSortingPolicy sortingPolicy = EmitterSortingPolicy.None;
 
         /// <summary>
-        /// Depth vector to use in case of depth policy sorting
-        /// </summary>
-        [DataMemberIgnore]
-        private Vector3 depthSortVector = new Vector3(0, 0, -1);
-
-        /// <summary>
         /// Number of particles waiting to be spawned
         /// </summary>
         [DataMemberIgnore]
@@ -980,6 +974,8 @@ namespace SiliconStudio.Xenko.Particles
 
             bufferState.StartOver();
             Material.PatchVertexBuffer(ref bufferState, unitX, unitY, sortedList);
+
+            sortedList.Free();
         }
 
         #region Particles

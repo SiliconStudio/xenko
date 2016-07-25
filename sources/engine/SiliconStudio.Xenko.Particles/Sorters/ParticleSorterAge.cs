@@ -17,9 +17,9 @@ namespace SiliconStudio.Xenko.Particles.Sorters
             var sortField = ParticlePool.GetField(fieldDesc);
 
             if (!sortField.IsValid())
-                return new ParticleSortedListCustom<float>(ParticlePool);
+                return new ParticleSortedListCustom<float>(ParticlePool, ArrayPool);
 
-            return new ParticleSortedListCustom<float>(ParticlePool, fieldDesc, new AgeCalculator());
+            return new ParticleSortedListCustom<float>(ParticlePool, ArrayPool, fieldDesc, new AgeCalculator());
         }
 
         struct AgeCalculator : ISortValueCalculator<float>

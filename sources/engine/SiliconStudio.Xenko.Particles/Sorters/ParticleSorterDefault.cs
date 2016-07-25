@@ -24,6 +24,8 @@ namespace SiliconStudio.Xenko.Particles.Sorters
 
         /// <inheritdoc />
         public IEnumerator<Particle> GetEnumerator() => pool.GetEnumerator();
+
+        public void Free() { }
     }
 
     /// <summary>

@@ -16,6 +16,11 @@ namespace SiliconStudio.Xenko.Particles.Sorters
         /// <param name="fieldDesc">The field description</param>
         /// <returns></returns>
         ParticleFieldAccessor<T> GetField<T>(ParticleFieldDescription<T> fieldDesc) where T : struct;
+
+        /// <summary>
+        /// Free up temporary resources after calculations for the frame have finished
+        /// </summary>
+        void Free();
     }
 
     public struct SortedParticle : IComparable<SortedParticle>

@@ -18,9 +18,9 @@ namespace SiliconStudio.Xenko.Particles.Sorters
             var sortField = ParticlePool.GetField(fieldDesc);
 
             if (!sortField.IsValid())
-                return new ParticleSortedListCustom<uint>(ParticlePool);
+                return new ParticleSortedListCustom<uint>(ParticlePool, ArrayPool);
 
-            return new ParticleSortedListCustom<uint>(ParticlePool, fieldDesc, new OrderCalculator());
+            return new ParticleSortedListCustom<uint>(ParticlePool, ArrayPool, fieldDesc, new OrderCalculator());
         }
 
         struct OrderCalculator : ISortValueCalculator<uint>

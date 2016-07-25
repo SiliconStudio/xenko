@@ -17,9 +17,9 @@ namespace SiliconStudio.Xenko.Particles.Sorters
             var sortField = ParticlePool.GetField(fieldDesc);
 
             if (!sortField.IsValid())
-                return new ParticleSortedListCustom<Vector3>(ParticlePool);
+                return new ParticleSortedListCustom<Vector3>(ParticlePool, ArrayPool);
 
-            return new ParticleSortedListCustom<Vector3>(ParticlePool, fieldDesc, new DepthCalculator(depth));
+            return new ParticleSortedListCustom<Vector3>(ParticlePool, ArrayPool, fieldDesc, new DepthCalculator(depth));
         }
 
         struct DepthCalculator : ISortValueCalculator<Vector3>

@@ -10,6 +10,7 @@ namespace SiliconStudio.Xenko.Particles.Sorters
     public struct ParticleSortedListCustom<T> : IParticleSortedList where T : struct
     {
         private readonly ParticlePool pool;
+        private readonly ConcurrentArrayPool<SortedParticle> arrayPool;
         private readonly int currentLivingParticles;
         private readonly SortedParticle[] particleList;
 
@@ -17,12 +18,13 @@ namespace SiliconStudio.Xenko.Particles.Sorters
         /// Will construct an unsorted list of the living particles in the specified pool
         /// </summary>
         /// <param name="particlePool">The <see cref="ParticlePool"/></param>
-        public ParticleSortedListCustom(ParticlePool particlePool)
+        public ParticleSortedListCustom(ParticlePool particlePool, ConcurrentArrayPool<SortedParticle> sortedArrayPool)
         {
             pool = particlePool;
+            arrayPool = sortedArrayPool;
 
             currentLivingParticles = pool.LivingParticles;
-            particleList = new SortedParticle[currentLivingParticles];
+            particleList = arrayPool.Allocate(pool.ParticleCapacity);
 
             var i = 0;
 
@@ -33,20 +35,26 @@ namespace SiliconStudio.Xenko.Particles.Sorters
             }
         }
 
+        public void Free()
+        {
+            arrayPool.Free(particleList);
+        }
+
         /// <summary>
         /// Will construct a sorted list of the living particles in the specified pool
         /// </summary>
         /// <param name="particlePool">The <see cref="ParticlePool"/></param>
         /// <param name="fieldDesc">The particle attribute field to use as a base sorting value</param>
         /// <param name="sorter">The converter for the particle attribute to a sorting key</param>
-        public ParticleSortedListCustom(ParticlePool particlePool, ParticleFieldDescription<T> fieldDesc, ISortValueCalculator<T> sorter)
+        public ParticleSortedListCustom(ParticlePool particlePool, ConcurrentArrayPool<SortedParticle> sortedArrayPool, ParticleFieldDescription<T> fieldDesc, ISortValueCalculator<T> sorter)
         {
             pool = particlePool;
+            arrayPool = sortedArrayPool;
 
             currentLivingParticles = pool.LivingParticles;
             var i = 0;
 
-            particleList = new SortedParticle[currentLivingParticles];
+            particleList = arrayPool.Allocate(pool.ParticleCapacity);
 
             var sortField = pool.GetField(fieldDesc);
 
@@ -79,6 +87,8 @@ namespace SiliconStudio.Xenko.Particles.Sorters
     public abstract class ParticleSorterCustom<T> : ParticleSorter where T : struct
     {
         protected readonly ParticleFieldDescription<T> fieldDesc;
+
+        protected readonly ConcurrentArrayPool<SortedParticle> ArrayPool = new ConcurrentArrayPool<SortedParticle>();
 
         protected ParticleSorterCustom(ParticlePool pool, ParticleFieldDescription<T> fieldDesc) : base(pool)
         {
