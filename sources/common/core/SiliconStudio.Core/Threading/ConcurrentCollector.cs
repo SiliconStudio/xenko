@@ -60,23 +60,34 @@ namespace SiliconStudio.Core.Threading
     {
         private const int DefaultCapacity = 4;
 
+        private T[] items = new T[0];
         private int count;
 
-        public T[] Items { get; private set; } = new T[0];
+        public T[] Items => items;
         
         public int Add(T item)
         {
             var index = Interlocked.Increment(ref count) - 1;
+  
+            T[] newItems = null;
+            T[] oldItems;
 
-            if (Items.Length < index + 1)
+            // Try until we wrote to the correct array
+            while ((oldItems = items) != newItems)
             {
-                lock (Items)
-                {
-                    EnsureCapacity(index + 1);
-                }
-            }
+                newItems = oldItems;
 
-            Items[index] = item;
+                if (oldItems.Length < index + 1)
+                {
+                    EnsureCapacity(ref newItems, index + 1);
+                    
+                    // Early exit, if we are late to resize the array
+                    if (Interlocked.CompareExchange(ref items, newItems, oldItems) != oldItems)
+                        continue;
+                }
+
+                newItems[index] = item;
+            }
 
             return index;
         }
@@ -85,18 +96,27 @@ namespace SiliconStudio.Core.Threading
         {
             var newCount = Interlocked.Add(ref count, collection.Count);
 
-            if (Items.Length < newCount)
-            {
-                lock (Items)
-                {
-                    EnsureCapacity(newCount);
-                }
-            }
+            T[] newItems = null;
+            T[] oldItems;
 
-            var index = newCount - collection.Count;
-            foreach (var item in collection)
+            // Try until we wrote to the correct array
+            while ((oldItems = items) != newItems)
             {
-                Items[index++] = item;
+                newItems = oldItems;
+
+                if (oldItems.Length < newCount)
+                {
+                    EnsureCapacity(ref newItems, newCount);
+
+                    // Early exit, if we are late to resize the array
+                    if (Interlocked.CompareExchange(ref items, newItems, oldItems) != oldItems)
+                        continue;
+                }
+
+                for (int sourceIndex = 0, destinationIndex = newCount - collection.Count; sourceIndex < collection.Count; sourceIndex++, destinationIndex++)
+                {
+                    newItems[destinationIndex] = collection[sourceIndex];
+                }
             }
         }
 
@@ -109,22 +129,22 @@ namespace SiliconStudio.Core.Threading
             count = 0;
         }
 
-        private void EnsureCapacity(int min)
+        private static void EnsureCapacity(ref T[] items, int min)
         {
-            if (Items.Length < min)
+            if (items.Length < min)
             {
-                int capacity = (Items.Length == 0) ? DefaultCapacity : (Items.Length * 2);
+                int capacity = (items.Length == 0) ? DefaultCapacity : (items.Length * 2);
                 if (capacity < min)
                 {
                     capacity = min;
                 }
 
                 var destinationArray = new T[capacity];
-                if (Items.Length > 0)
+                if (items.Length > 0)
                 {
-                    Array.Copy(Items, 0, destinationArray, 0, Items.Length);
+                    Array.Copy(items, 0, destinationArray, 0, items.Length);
                 }
-                Items = destinationArray;
+                items = destinationArray;
             }
         }
 
