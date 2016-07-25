@@ -16,6 +16,9 @@ namespace SiliconStudio.Xenko.Audio
     /// </summary>
     public class AudioSystem : GameSystemBase, IAudioEngineProvider
     {
+        private static object AudioEngineStaticLock = new object();
+        private static AudioEngine AudioEngineSingleton = null;
+
         /// <summary>
         /// Create an new instance of AudioSystem
         /// </summary>
@@ -48,7 +51,19 @@ namespace SiliconStudio.Xenko.Audio
         {
             base.Initialize();
 
-            AudioEngine = AudioEngineFactory.NewAudioEngine();
+            lock (AudioEngineStaticLock)
+            {
+                if (AudioEngineSingleton == null || AudioEngineSingleton.IsDisposed)
+                {
+                    AudioEngineSingleton = AudioEngineFactory.NewAudioEngine();
+                }
+                else
+                {
+                    ((IReferencable)AudioEngineSingleton).AddReference();
+                }
+
+                AudioEngine = AudioEngineSingleton;
+            }
 
             Game.Activated += OnActivated;
             Game.Deactivated += OnDeactivated;
@@ -95,8 +110,11 @@ namespace SiliconStudio.Xenko.Audio
 
             base.Destroy();
 
-            AudioEngine.Dispose();
-            AudioEngine = null;
+            lock (AudioEngineStaticLock)
+            {
+                AudioEngine.Dispose();
+                AudioEngine = null;
+            }
         }
 
         private void OnActivated(object sender, EventArgs e)
