@@ -1515,6 +1515,12 @@ extern "C" {
 			source->streamed_ = false;
 			source->freeBuffers_[0] = buffer;
 			buffer->source_ = source;
+
+			if (!source->streamed_)
+			{
+				xnAudioBuffer* singleBuffer = source->freeBuffers_[0];
+				source->source_voice_->SubmitSourceBuffer(&singleBuffer->buffer_, NULL);
+			}
 		}
 
 		void xnAudioSource::OnBufferEnd(void* context)
