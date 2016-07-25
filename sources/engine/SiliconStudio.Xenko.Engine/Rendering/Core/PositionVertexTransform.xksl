@@ -3,7 +3,7 @@
 /// <summary>
 /// Provides a stream with the view space position (vertex or fragment) from the vertex attributes.
 /// </summary>
-class PositionVertexTransform : ShaderBase, Transformation, PositionStream
+shader PositionVertexTransform : ShaderBase, Transformation, PositionStream
 {
     stage override void VSMain()
     {

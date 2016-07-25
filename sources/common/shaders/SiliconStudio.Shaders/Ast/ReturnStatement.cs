@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A return statement.
     /// </summary>
-    public class ReturnStatement : Statement
+    public partial class ReturnStatement : Statement
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ReturnStatement"/> class.

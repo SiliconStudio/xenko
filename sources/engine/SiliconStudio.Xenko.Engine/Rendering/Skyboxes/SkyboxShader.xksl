@@ -4,9 +4,9 @@
 namespace SiliconStudio.Xenko.Rendering.Skyboxes
 {
     /// <summary>
-    /// Base class to perform post effects. Draws the input mesh without transformation.
+    /// Base shader to perform post effects. Draws the input mesh without transformation.
     /// </summary>
-    class SkyboxShader : ImageEffectShader, Transformation, SkyboxStream
+    shader SkyboxShader : ImageEffectShader, Transformation, SkyboxStream
     {
         cbuffer PerLighting
         {

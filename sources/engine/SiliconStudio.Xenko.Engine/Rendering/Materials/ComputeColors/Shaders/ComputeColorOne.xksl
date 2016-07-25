@@ -3,7 +3,7 @@
 /// <summary>
 /// Returns the white opaque color.
 /// </summary>
-class ComputeColorOne : ComputeColor
+shader ComputeColorOne : ComputeColor
 {
     override float4 Compute()
     {

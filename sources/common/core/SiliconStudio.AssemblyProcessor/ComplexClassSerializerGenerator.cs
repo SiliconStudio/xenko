@@ -19,7 +19,7 @@ namespace SiliconStudio.AssemblyProcessor
     /// Class to produce the template output
     /// </summary>
     
-    #line 1 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+    #line 1 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
     [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.TextTemplating", "14.0.0.0")]
     internal partial class ComplexClassSerializerGenerator : ComplexClassSerializerGeneratorBase
     {
@@ -31,7 +31,7 @@ namespace SiliconStudio.AssemblyProcessor
         {
             this.Write("\r\n");
             
-            #line 7 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 7 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
 
     var className = SerializerTypeName(type, true, true);
 	var parentType = hasParentSerializer ? ResolveGenericsVisitor.Process(type, type.BaseType) : null;
@@ -41,63 +41,63 @@ namespace SiliconStudio.AssemblyProcessor
             #line hidden
             this.Write("\r\nnamespace SiliconStudio.DataSerializers\r\n{\r\n\t");
             
-            #line 14 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 14 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
  if (type.HasGenericParameters) {
             
             #line default
             #line hidden
             this.Write("public ");
             
-            #line 14 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 14 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
 }
             
             #line default
             #line hidden
             this.Write("sealed class ");
             
-            #line 14 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 14 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(className));
             
             #line default
             #line hidden
             this.Write(" : ");
             
-            #line 14 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 14 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(type.IsClass && !type.IsValueType && !type.IsAbstract && !type.IsInterface && HasEmptyConstructor(type) ? "Class" : string.Empty));
             
             #line default
             #line hidden
             this.Write("DataSerializer<");
             
-            #line 14 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 14 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(type.ConvertCSharp()));
             
             #line default
             #line hidden
             this.Write(">, IDataSerializerInitializer");
             
-            #line 14 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 14 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(GenerateGenericConstraints(type)));
             
             #line default
             #line hidden
             this.Write("\r\n\t{\r\n");
             
-            #line 16 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 16 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
 if (hasParentSerializer) {
             
             #line default
             #line hidden
             this.Write("\t\tprivate DataSerializer<");
             
-            #line 17 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 17 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(parentType.ConvertCSharp()));
             
             #line default
             #line hidden
             this.Write("> parentSerializer;\r\n");
             
-            #line 18 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 18 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
 }
 var serializableItems = GetSerializableItems(type, true).ToArray();
 
@@ -105,35 +105,35 @@ var serializableItems = GetSerializableItems(type, true).ToArray();
             #line default
             #line hidden
             
-            #line 21 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 21 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
 foreach (var serializableItem in serializableItems) {
             
             #line default
             #line hidden
             this.Write("\t\tprivate DataSerializer<");
             
-            #line 22 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 22 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(serializableItem.Type.ConvertCSharp()));
             
             #line default
             #line hidden
             this.Write("> ");
             
-            #line 22 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 22 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(serializableItem.MemberInfo.Name));
             
             #line default
             #line hidden
             this.Write("Serializer;\r\n");
             
-            #line 23 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 23 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
 }
             
             #line default
             #line hidden
             this.Write("\r\n\t\tpublic void Initialize(SerializerSelector serializerSelector)\r\n\t\t{\r\n");
             
-            #line 27 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 27 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
 if (hasParentSerializer) {
             
             #line default
@@ -141,7 +141,7 @@ if (hasParentSerializer) {
             this.Write("\t\t\t// Get parent serializer\r\n\t\t\tparentSerializer = serializerSelector.GetSerializ" +
                     "er<");
             
-            #line 29 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 29 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(parentType.ConvertCSharp()));
             
             #line default
@@ -149,56 +149,64 @@ if (hasParentSerializer) {
             this.Write(">();\r\n\t\t\tif (parentSerializer == null)\r\n\t\t\t\tthrow new InvalidOperationException(s" +
                     "tring.Format(\"Could not find parent serializer for type {0}\", @\"");
             
-            #line 31 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 31 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(parentType.ConvertCSharp()));
             
             #line default
             #line hidden
             this.Write("\"));\r\n");
             
-            #line 32 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 32 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
 }
             
             #line default
             #line hidden
             this.Write("\t\t\t// Cache member serializers\r\n");
             
-            #line 34 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
-foreach (var serializableItem in serializableItems) {
+            #line 34 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
+var serializerMemberMapping = new Dictionary<string, string>();
+  foreach (var serializableItemGroup in serializableItems.GroupBy(x => x.Type.ConvertCSharp()))
+  {
+    // Share same serializer for members of same type
+    var firstSerializableMemberName = serializableItemGroup.First().MemberInfo.Name;
+  	foreach (var serializableItem in serializableItemGroup)
+	{
+	  serializerMemberMapping[serializableItem.MemberInfo.Name] = firstSerializableMemberName;
+	}
             
             #line default
             #line hidden
             this.Write("\t\t\t");
             
-            #line 35 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(serializableItem.MemberInfo.Name));
+            #line 43 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(firstSerializableMemberName));
             
             #line default
             #line hidden
             this.Write("Serializer = MemberSerializer<");
             
-            #line 35 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(serializableItem.Type.ConvertCSharp()));
+            #line 43 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(serializableItemGroup.Key));
             
             #line default
             #line hidden
             this.Write(">.Create(serializerSelector);\r\n");
             
-            #line 36 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 44 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
 }
             
             #line default
             #line hidden
             this.Write("\t\t}\r\n\r\n\t\tpublic override void Serialize(ref ");
             
-            #line 39 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 47 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(type.ConvertCSharp()));
             
             #line default
             #line hidden
             this.Write(" obj, ArchiveMode mode, SerializationStream stream)\r\n\t\t{\r\n");
             
-            #line 41 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 49 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
 if (hasParentSerializer) {
             
             #line default
@@ -206,7 +214,7 @@ if (hasParentSerializer) {
             this.Write("\t\t\t// Serialize parent (for now we don\'t copy reference back because it shouldn\'t" +
                     " change)\r\n\t\t\t");
             
-            #line 43 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 51 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(parentType.ConvertCSharp()));
             
             #line default
@@ -214,14 +222,14 @@ if (hasParentSerializer) {
             this.Write(" parentObj = obj;\r\n\t\t\tparentSerializer.Serialize(ref parentObj, mode, stream);\r\n\t" +
                     "\t\tobj = (");
             
-            #line 45 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 53 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(type.ConvertCSharp()));
             
             #line default
             #line hidden
             this.Write(")parentObj;\r\n\r\n");
             
-            #line 47 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 55 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
 }
 foreach (var serializableItem in serializableItems) {
 	var memberType = serializableItem.Type;
@@ -239,7 +247,7 @@ foreach (var serializableItem in serializableItems) {
             this.Write("\t\tthrow new NotImplementedException(\"FixedBuffer attribute is not supported.\");\r\n" +
                     "");
             
-            #line 59 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 67 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
 	}
 	else
 	{
@@ -250,105 +258,105 @@ foreach (var serializableItem in serializableItems) {
             #line hidden
             this.Write("            ");
             
-            #line 64 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 72 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(memberTypeName));
             
             #line default
             #line hidden
             this.Write(" ");
             
-            #line 64 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 72 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(memberVariableName));
             
             #line default
             #line hidden
             this.Write(" = ");
             
-            #line 64 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 72 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
  if (memberAssignBack) { 
             
             #line default
             #line hidden
             this.Write("mode == ArchiveMode.Serialize ? obj.");
             
-            #line 64 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 72 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(memberName));
             
             #line default
             #line hidden
             this.Write(" : default(");
             
-            #line 64 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 72 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(memberTypeName));
             
             #line default
             #line hidden
             this.Write(")");
             
-            #line 64 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 72 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
 } else {
             
             #line default
             #line hidden
             this.Write("obj.");
             
-            #line 64 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 72 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(memberName));
             
             #line default
             #line hidden
             
-            #line 64 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 72 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
 }
             
             #line default
             #line hidden
             this.Write(";\r\n");
             
-            #line 65 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 73 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
 }
             
             #line default
             #line hidden
             this.Write("            ");
             
-            #line 66 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
-            this.Write(this.ToStringHelper.ToStringWithCulture(serializableItem.MemberInfo.Name));
+            #line 74 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
+            this.Write(this.ToStringHelper.ToStringWithCulture(serializerMemberMapping[serializableItem.MemberInfo.Name]));
             
             #line default
             #line hidden
             this.Write("Serializer.Serialize(ref ");
             
-            #line 66 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 74 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(memberAccessName));
             
             #line default
             #line hidden
             this.Write(", mode, stream);\r\n");
             
-            #line 67 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 75 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
 if (memberVariableName != null && memberAssignBack)
 		{
             
             #line default
             #line hidden
-            this.Write("            obj.");
+            this.Write("            if (mode == ArchiveMode.Deserialize)\r\n                obj.");
             
-            #line 69 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 78 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(memberName));
             
             #line default
             #line hidden
             this.Write(" = ");
             
-            #line 69 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 78 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(memberVariableName));
             
             #line default
             #line hidden
             this.Write(";\r\n");
             
-            #line 70 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 79 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
 }
 	}
 }
@@ -357,7 +365,7 @@ if (memberVariableName != null && memberAssignBack)
             #line hidden
             this.Write("\t\t}\r\n\r\n\t\tinternal static void ForceGenericInstantiation()\r\n\t\t{\r\n");
             
-            #line 77 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 86 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
 
 foreach (var memberSerializerType in EnumerateSerializerTypes(serializableItems.Select(x => x.Type))){
             
@@ -365,14 +373,14 @@ foreach (var memberSerializerType in EnumerateSerializerTypes(serializableItems.
             #line hidden
             this.Write("\t\t\ttypeof(");
             
-            #line 79 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 88 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(memberSerializerType.ConvertCSharp()));
             
             #line default
             #line hidden
             this.Write(").ToString();\r\n");
             
-            #line 80 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor.Common\ComplexClassSerializerGenerator.tt"
+            #line 89 "C:\DEV\xenko\sources\common\core\SiliconStudio.AssemblyProcessor\ComplexClassSerializerGenerator.tt"
 }
             
             #line default

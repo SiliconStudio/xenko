@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <remarks>
     /// https://d3cw3dd2w32x2b.cloudfront.net/wp-content/uploads/2012/09/an-efficient-and-user-friendly-tone-mapping-operator.pdf
     /// </remarks>
-    internal class ToneMapMikeDayOperatorShader : ToneMapOperatorShader
+    internal shader ToneMapMikeDayOperatorShader : ToneMapOperatorShader
     {
         float4 ToeCoeffs;
         float4 ShoulderCoeffs;

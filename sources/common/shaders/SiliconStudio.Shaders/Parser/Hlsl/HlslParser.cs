@@ -3,6 +3,9 @@
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Grammar.Hlsl;
 
+// Use XenkoGrammar (compatiable with HLSL), in order to avoid initializing both Xenko and HLSL grammar
+using HlslGrammar = SiliconStudio.Shaders.Grammar.Xenko.XenkoGrammar;
+
 namespace SiliconStudio.Shaders.Parser.Hlsl
 {
     /// <summary>

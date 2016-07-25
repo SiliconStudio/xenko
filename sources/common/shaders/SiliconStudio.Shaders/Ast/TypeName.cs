@@ -7,7 +7,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A typeless reference.
     /// </summary>
-    public class TypeName : TypeBase
+    public partial class TypeName : TypeBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TypeName"/> class.

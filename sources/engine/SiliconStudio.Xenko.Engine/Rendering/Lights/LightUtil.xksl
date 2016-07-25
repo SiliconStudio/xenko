@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// <summary>
     /// Defines common function for direct lights
     /// </summary>
-    class LightUtil
+    shader LightUtil
     {
         // Code from "Moving Frostbite to Physically Based Rendering"  Rousiers, Charles De Lagarde, Sébastien p32
         float SmoothDistanceAttenuation(float squaredDistance , float lightInvSquareRadius) 

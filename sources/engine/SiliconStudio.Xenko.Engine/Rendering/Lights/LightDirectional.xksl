@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// <summary>
     /// Defines a directional light
     /// </summary>
-    class LightDirectional
+    shader LightDirectional
     {
         struct DirectionalLightData
         {

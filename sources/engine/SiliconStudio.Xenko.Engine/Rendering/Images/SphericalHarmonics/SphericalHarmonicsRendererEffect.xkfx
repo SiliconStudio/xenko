@@ -3,7 +3,7 @@
 
 namespace SiliconStudio.Xenko.Rendering.Images
 {
-    shader SphericalHarmonicsRendererEffect
+    effect SphericalHarmonicsRendererEffect
     {
         using params SphericalHarmonicsParameters;
 

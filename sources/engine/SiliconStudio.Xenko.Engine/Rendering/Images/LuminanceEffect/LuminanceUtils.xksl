@@ -4,9 +4,9 @@
 namespace SiliconStudio.Xenko.Rendering.Images
 {
     /// <summary>
-    /// A utility class for luminance.
+    /// A utility shader for luminance.
     /// </summary>
-    class LuminanceUtils
+    shader LuminanceUtils
     {
         /// <summary>
         /// Calculate the perceptive luminance (601Y')

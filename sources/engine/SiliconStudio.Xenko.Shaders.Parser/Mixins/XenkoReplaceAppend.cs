@@ -8,7 +8,7 @@ using SiliconStudio.Shaders.Visitor;
 
 namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
-    internal class XenkoReplaceAppend : ShaderVisitor
+    internal class XenkoReplaceAppend : ShaderRewriter
     {
         #region Private members
 
@@ -45,17 +45,16 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 
         public void Run(Node startNode)
         {
-            Visit(startNode);
+            VisitDynamic(startNode);
         }
 
         #endregion
 
         #region Protected method
 
-        [Visit]
-        protected Node Visit(ExpressionStatement expressionStatement)
+        public override Node Visit(ExpressionStatement expressionStatement)
         {
-            Visit((Node)expressionStatement);
+            base.Visit(expressionStatement);
 
             if (appendMethodsList.Contains(expressionStatement.Expression))
             {

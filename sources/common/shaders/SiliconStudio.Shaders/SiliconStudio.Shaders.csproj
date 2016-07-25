@@ -12,19 +12,33 @@
     <RootNamespace>SiliconStudio.Shaders</RootNamespace>
     <AssemblyName>SiliconStudio.Shaders</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <SiliconStudioAssemblyProcessor Condition=" '$(SiliconStudioShaderUseSharpDX)' == 'true' ">true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--serialization</SiliconStudioAssemblyProcessorOptions>
-    <XenkoBuildTags>Windows</XenkoBuildTags>
+    <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="CppNet">
-      <!-- It would be nice for Windows that the path becomes CppNet\Windows\CppNet.dll but for the time
-           being to preseve compatibility, we use the old path. -->
-      <HintPath Condition="'$(SiliconStudioRuntime)' == ''">..\..\deps\CppNet\CppNet.dll</HintPath>
-      <HintPath Condition="'$(SiliconStudioRuntime)' != ''">..\..\deps\CppNet\$(SiliconStudioRuntime)\CppNet.dll</HintPath>
-    </Reference>
-    <Reference Include="Microsoft.CSharp" />
-  </ItemGroup>
+  <Choose>
+    <When Condition="('$(SiliconStudioPlatform)' == 'Windows10') OR ('$(SiliconStudioPlatform)' == 'WindowsPhone') OR ('$(SiliconStudioPlatform)' == 'WindowsStore')">
+      <ItemGroup>
+        <Reference Include="CppNet">
+          <HintPath>..\..\deps\CppNet\Store\CppNet.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <When Condition="'$(SiliconStudioRuntime)' != ''">
+      <ItemGroup>
+        <Reference Include="CppNet">
+          <HintPath>..\..\deps\CppNet\$(SiliconStudioRuntime)\CppNet.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+    <Otherwise>
+      <ItemGroup>
+        <Reference Include="CppNet">
+          <HintPath>..\..\deps\CppNet\CppNet.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </Otherwise>
+  </Choose>
   <Choose>
     <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
       <ItemGroup>
@@ -39,9 +53,38 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Ast\Xenko\ClassIdentifierGeneric.cs" />
+    <Compile Include="Ast\Xenko\EnumType.cs" />
+    <Compile Include="Ast\Xenko\ForEachStatement.cs" />
+    <Compile Include="Ast\Xenko\IGenericStringArgument.cs" />
+    <Compile Include="Ast\Xenko\ImportBlockStatement.cs" />
+    <Compile Include="Ast\Xenko\LinkType.cs" />
+    <Compile Include="Ast\Xenko\LiteralIdentifier.cs" />
+    <Compile Include="Ast\Xenko\MemberName.cs" />
+    <Compile Include="Ast\Xenko\MixinStatement.cs" />
+    <Compile Include="Ast\Xenko\MixinStatementType.cs" />
+    <Compile Include="Ast\Xenko\NamespaceBlock.cs" />
+    <Compile Include="Ast\Xenko\ParametersBlock.cs" />
+    <Compile Include="Ast\Xenko\SemanticType.cs" />
+    <Compile Include="Ast\Xenko\EffectBlock.cs" />
+    <Compile Include="Ast\Xenko\ShaderClassType.cs" />
+    <Compile Include="Ast\Xenko\ShaderRootClassType.cs" />
+    <Compile Include="Ast\Xenko\ShaderTypeName.cs" />
+    <Compile Include="Ast\Xenko\StreamsType.cs" />
+    <Compile Include="Ast\Xenko\TypelIdentifier.cs" />
+    <Compile Include="Ast\Xenko\UsingParametersStatement.cs" />
+    <Compile Include="Ast\Xenko\UsingStatement.cs" />
+    <Compile Include="Ast\Xenko\VarType.cs" />
+    <Compile Include="Ast\Xenko\XenkoAttributes.cs" />
+    <Compile Include="Ast\Xenko\XenkoConstantBufferType.cs" />
+    <Compile Include="Ast\Xenko\XenkoStorageQualifier.cs" />
+    <Compile Include="Ast\Xenko\XenkoTags.cs" />
     <Compile Include="Convertor\BreakContinueVisitor.cs" />
     <Compile Include="Convertor\GlslShaderPlatform.cs" />
     <Compile Include="Convertor\SamplerTextureKey.cs" />
+    <Compile Include="GoldParser\GoldParserException.cs" />
+    <Compile Include="Grammar\Xenko\XenkoGrammar.Ast.cs" />
+    <Compile Include="Grammar\Xenko\XenkoGrammar.cs" />
     <Compile Include="Properties\Resources.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -87,14 +130,12 @@
     <Compile Include="Ast\Glsl\InterfaceType.cs" />
     <Compile Include="Ast\Hlsl\ClassType.Helpers.cs" />
     <Compile Include="Ast\Hlsl\StreamTypeName.cs" />
-    <Compile Include="Ast\LayoutQualifier.cs" />
     <Compile Include="Ast\Node.Clone.Extension.cs" />
     <Compile Include="Ast\ExpressionList.cs" />
     <Compile Include="Ast\GenericDeclaration.cs" />
     <Compile Include="Ast\GenericParameterConstraint.cs" />
     <Compile Include="Ast\GenericParameterType.cs" />
     <Compile Include="Ast\Hlsl\GenericType.Extensions.cs" />
-    <Compile Include="Ast\Hlsl\SamplerStateType.cs" />
     <Compile Include="Ast\Hlsl\IdentifierGeneric.cs" />
     <Compile Include="Ast\Hlsl\IdentifierNs.cs" />
     <Compile Include="Ast\Hlsl\IdentifierDot.cs" />
@@ -108,6 +149,7 @@
     <Compile Include="Ast\ExpressionStatement.cs" />
     <Compile Include="Ast\ForStatement.cs" />
     <Compile Include="Ast\GenericType.cs" />
+    <Compile Include="Ast\GenericBaseType.cs" />
     <Compile Include="Ast\Hlsl\Annotations.cs" />
     <Compile Include="Ast\Hlsl\AsmExpression.cs" />
     <Compile Include="Ast\Hlsl\AttributeDeclaration.cs" />
@@ -219,11 +261,15 @@
     <Compile Include="Visitor\ExpressionEvaluator.cs" />
     <Compile Include="Visitor\ExpressionResult.cs" />
     <Compile Include="Visitor\ScopeDeclaration.cs" />
-    <Compile Include="Ast\Node.Iterator.Extensions.cs" />
     <Compile Include="Visitor\SearchVisitor.cs" />
     <Compile Include="Visitor\ShaderVisitor.cs" />
     <Compile Include="Visitor\VisitorBase.cs" />
     <Compile Include="Convertor\HlslToGlslWriter.cs" />
+    <Compile Include="Visitor\VisitorGenerated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>VisitorGenerated.tt</DependentUpon>
+    </Compile>
     <Compile Include="Writer\Hlsl\HlslWriter.cs" />
     <Compile Include="Writer\ShaderWriter.cs" />
     <Compile Include="Analysis\CastAnalysis.cs" />
@@ -244,6 +290,10 @@
     <None Include="Analysis\Hlsl\HlslDeclarations.h" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
+      <Name>SiliconStudio.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Irony\Irony.csproj">
       <Project>{d81f5c91-d7db-46e5-bc99-49488fb6814c}</Project>
       <Name>Irony</Name>
@@ -251,13 +301,19 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Properties\Resources.tt">
+    <None Include="Properties\Resources.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Resources.cs</LastGenOutput>
-    </Content>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Visitor\VisitorGenerated.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>VisitorGenerated.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -8,7 +8,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         int NbOfSamplings;
     }
     
-    shader RadiancePrefilteringGGXNoComputeEffect
+    effect RadiancePrefilteringGGXNoComputeEffect
     {
         using params RadiancePrefilteringGGXNoComputeParams;
                 

@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// Defines a generic parameter type.
     /// </summary>
-    public class GenericParameterType : TypeBase
+    public partial class GenericParameterType : TypeBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GenericParameterType"/> class.

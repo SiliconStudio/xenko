@@ -3,7 +3,7 @@
 
 namespace SiliconStudio.Xenko.Rendering.Materials
 {
-    class MaterialDisplacementStream : IStreamInitializer
+    shader MaterialDisplacementStream : IStreamInitializer
     {
         // Displacement height attribute
         stage stream float matDisplacement;

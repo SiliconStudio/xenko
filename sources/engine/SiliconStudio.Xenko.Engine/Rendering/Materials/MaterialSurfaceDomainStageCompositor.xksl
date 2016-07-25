@@ -3,7 +3,7 @@
 namespace SiliconStudio.Xenko.Rendering.Materials
 {
     // Temporary code for testing IMaterialSurface
-    class MaterialSurfaceDomainStageCompositor : TessellationBase
+    shader MaterialSurfaceDomainStageCompositor : TessellationBase
     {
         compose IMaterialSurface materialDomainStage;
         compose IStreamInitializer streamInitializerDomainStage;

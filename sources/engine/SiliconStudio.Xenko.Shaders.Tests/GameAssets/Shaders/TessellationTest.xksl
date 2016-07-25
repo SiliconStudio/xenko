@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-class TessellationTest
+shader TessellationTest
 {
     patchstream float tessFactor[3] : SV_TessFactor;
     patchstream float insideTessFactor : SV_InsideTessFactor;

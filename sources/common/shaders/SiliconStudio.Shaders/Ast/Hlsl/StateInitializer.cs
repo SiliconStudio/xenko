@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     /// <summary>
     /// A set of state values.
     /// </summary>
-    public class StateInitializer : Expression
+    public partial class StateInitializer : Expression
     {
         #region Constructors and Destructors
 

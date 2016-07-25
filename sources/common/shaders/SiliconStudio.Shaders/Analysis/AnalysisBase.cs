@@ -11,7 +11,7 @@ namespace SiliconStudio.Shaders.Analysis
     /// <summary>
     /// Base class for analysis.
     /// </summary>
-    public abstract class AnalysisBase : ShaderVisitor
+    public abstract class AnalysisBase : ShaderRewriter
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AnalysisBase"/> class.

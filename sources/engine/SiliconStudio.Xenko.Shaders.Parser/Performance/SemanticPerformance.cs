@@ -2,11 +2,14 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Diagnostics;
+using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Xenko.Shaders.Parser.Performance
 {
     public static class SemanticPerformance
     {
+        internal static Logger Logger = GlobalLogger.GetLogger("XenkoShaderPerformance"); // Global logger for shader profiling
+
         private static Stopwatch TotalTime = new Stopwatch();
 
         private static Stopwatch VisitVariable = new Stopwatch();
@@ -136,19 +139,17 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Performance
 
         public static void PrintResult()
         {
-            Console.WriteLine();
-            Console.WriteLine(@"--------------------------TOTAL SEMANTIC ANALYZER---------------------------");
-            Console.WriteLine(@"{0} shader(s) analyzed in {1} ms, {2} ms per shader", nbShaders, TotalTime.ElapsedMilliseconds, nbShaders == 0 ? 0 : TotalTime.ElapsedMilliseconds / nbShaders);
-            Console.WriteLine(@"VisitVariable {0} ms for {1} calls", VisitVariable.ElapsedMilliseconds, VisitVariableCount);
-            Console.WriteLine(@"CommonVisit took {0} ms for {1} calls", CommonVisit.ElapsedMilliseconds, CommonVisitCount);
-            Console.WriteLine(@"FindDeclarationScope took {0} ms for {1} calls", FindDeclarationScope.ElapsedMilliseconds, FindDeclarationScopeCount);
-            Console.WriteLine(@"FindDeclarationsFromObject took {0} ms for {1} calls", FindDeclarationsFromObject.ElapsedMilliseconds, FindDeclarationsFromObjectCount);
-            Console.WriteLine(@"FindDeclarations took {0} ms for {1} calls", FindDeclarations.ElapsedMilliseconds, FindDeclarationsCount);
-            Console.WriteLine(@"ProcessMethodInvocation took {0} ms for {1} calls", ProcessMethodInvocation.ElapsedMilliseconds, ProcessMethodInvocationCount);
-            Console.WriteLine(@"CheckNameConflict took {0} ms for {1} calls", CheckNameConflict.ElapsedMilliseconds, CheckNameConflictCount);
-            Console.WriteLine(@"HasExternQualifier took {0} ms for {1} calls", HasExternQualifier.ElapsedMilliseconds, HasExternQualifierCount);
-            Console.WriteLine(@"-------------------------------------------------------------------------------");
-            Console.WriteLine();
+            Logger.Info(@"--------------------------TOTAL SEMANTIC ANALYZER---------------------------");
+            Logger.Info(@"{0} shader(s) analyzed in {1} ms, {2} ms per shader", nbShaders, TotalTime.ElapsedMilliseconds, nbShaders == 0 ? 0 : TotalTime.ElapsedMilliseconds / nbShaders);
+            Logger.Info(@"VisitVariable {0} ms for {1} calls", VisitVariable.ElapsedMilliseconds, VisitVariableCount);
+            Logger.Info(@"CommonVisit took {0} ms for {1} calls", CommonVisit.ElapsedMilliseconds, CommonVisitCount);
+            Logger.Info(@"FindDeclarationScope took {0} ms for {1} calls", FindDeclarationScope.ElapsedMilliseconds, FindDeclarationScopeCount);
+            Logger.Info(@"FindDeclarationsFromObject took {0} ms for {1} calls", FindDeclarationsFromObject.ElapsedMilliseconds, FindDeclarationsFromObjectCount);
+            Logger.Info(@"FindDeclarations took {0} ms for {1} calls", FindDeclarations.ElapsedMilliseconds, FindDeclarationsCount);
+            Logger.Info(@"ProcessMethodInvocation took {0} ms for {1} calls", ProcessMethodInvocation.ElapsedMilliseconds, ProcessMethodInvocationCount);
+            Logger.Info(@"CheckNameConflict took {0} ms for {1} calls", CheckNameConflict.ElapsedMilliseconds, CheckNameConflictCount);
+            Logger.Info(@"HasExternQualifier took {0} ms for {1} calls", HasExternQualifier.ElapsedMilliseconds, HasExternQualifierCount);
+            Logger.Info(@"-------------------------------------------------------------------------------");
         }
     }
 

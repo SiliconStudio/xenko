@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A Block of statement.
     /// </summary>
-    public class BlockStatement : Statement, IScopeContainer
+    public partial class BlockStatement : Statement, IScopeContainer
     {
         #region Constructors and Destructors
 

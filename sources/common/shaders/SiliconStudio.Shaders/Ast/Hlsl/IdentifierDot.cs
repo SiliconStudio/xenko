@@ -7,7 +7,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     /// <summary>
     /// C# namespace or class.
     /// </summary>
-    public class IdentifierDot : CompositeIdentifier
+    public partial class IdentifierDot : CompositeIdentifier
     {
         /// <inheritdoc/>
         public override string Separator
