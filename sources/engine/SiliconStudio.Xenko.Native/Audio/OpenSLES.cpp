@@ -534,6 +534,8 @@ extern "C" {
 			source->subLength = buffer->dataLength;
 			source->subDataPtr = buffer->dataPtr;		
 
+			(*source->queue)->Enqueue(source->queue, buffer->dataPtr, buffer->dataLength);
+
 			source->buffersLock.Unlock();
 		}
 
