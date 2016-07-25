@@ -3,6 +3,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Runtime.ExceptionServices;
+using System.Threading;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
@@ -243,13 +244,15 @@ namespace SiliconStudio.Xenko.Rendering
             if (plane.Normal.Z < 0)
                 Utilities.Swap(ref nearCorner.Z, ref farCorner.Z);
 
-            var distance = CollisionHelper.DistancePlanePoint(ref plane, ref nearCorner);
-            if (minDistance > distance)
-                minDistance = distance;
+            float oldDistance;
 
+            // Interlocked exchange if lower
+            var distance = CollisionHelper.DistancePlanePoint(ref plane, ref nearCorner);
+            while ((oldDistance = minDistance) > distance && Interlocked.CompareExchange(ref minDistance, distance, oldDistance) != oldDistance) { }
+
+            // Interlocked exchange if greater
             distance = CollisionHelper.DistancePlanePoint(ref plane, ref farCorner);
-            if (maxDistance < distance)
-                maxDistance = distance;
+            while ((oldDistance = maxDistance) < distance && Interlocked.CompareExchange(ref maxDistance, distance, oldDistance) != oldDistance) { }
         }
         
         internal void AddRenderObject(List<RenderObject> renderObjects, RenderObject renderObject)
