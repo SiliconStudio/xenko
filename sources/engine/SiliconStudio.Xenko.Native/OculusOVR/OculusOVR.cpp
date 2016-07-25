@@ -418,14 +418,52 @@ extern "C" {
 	{
 		ovr_CommitTextureSwapChainFunc(session->Session, session->SwapChain);
 		auto layers = &session->Layer.Header;
-		if(OVR_SUCCESS(ovr_SubmitFrameFunc(session->Session, 0, NULL, &layers, 1)))
+		if(!OVR_SUCCESS(ovr_SubmitFrameFunc(session->Session, 0, NULL, &layers, 1)))
 		{
-			return true;
+			return false;
 		}
 
-		return false;
+		ovrSessionStatus status;
+		if (!OVR_SUCCESS(ovr_GetSessionStatusFunc(session->Session, &status)))
+		{
+			return false;
+		}
+
+		if(status.ShouldRecenter)
+		{
+			ovr_RecenterTrackingOriginFunc(session->Session);
+		}
+
+		return true;
 	}
 
+#pragma pack(push, 4)
+	struct xnOvrSessionStatus
+	{
+		npBool IsVisible;    ///< True if the process has VR focus and thus is visible in the HMD.
+		npBool HmdPresent;   ///< True if an HMD is present.
+		npBool HmdMounted;   ///< True if the HMD is on the user's head.
+		npBool DisplayLost;  ///< True if the session is in a display-lost state. See ovr_SubmitFrame.
+		npBool ShouldQuit;   ///< True if the application should initiate shutdown.    
+		npBool ShouldRecenter;  ///< True if UX has requested re-centering. Must call ovr_ClearShouldRecenterFlag or ovr_RecenterTrackingOrigin. 
+	};
+#pragma pack(pop)
+
+	void xnOvrGetStatus(xnOvrSession* session, xnOvrSessionStatus* statusOut)
+	{
+		ovrSessionStatus status;
+		if (!OVR_SUCCESS(ovr_GetSessionStatusFunc(session->Session, &status)))
+		{
+			return;
+		}
+
+		statusOut->IsVisible = status.IsVisible;
+		statusOut->HmdPresent = status.HmdPresent;
+		statusOut->HmdMounted = status.HmdMounted;
+		statusOut->DisplayLost = status.DisplayLost;
+		statusOut->ShouldQuit = status.ShouldQuit;
+		statusOut->ShouldRecenter = status.ShouldRecenter;
+	}
 }
 
 #else
@@ -495,6 +533,22 @@ extern "C" {
 	bool xnOvrCommitFrame(void* session)
 	{
 		return true;
+	}
+
+#pragma pack(push, 4)
+	struct xnOvrSessionStatus
+	{
+		npBool IsVisible;    ///< True if the process has VR focus and thus is visible in the HMD.
+		npBool HmdPresent;   ///< True if an HMD is present.
+		npBool HmdMounted;   ///< True if the HMD is on the user's head.
+		npBool DisplayLost;  ///< True if the session is in a display-lost state. See ovr_SubmitFrame.
+		npBool ShouldQuit;   ///< True if the application should initiate shutdown.    
+		npBool ShouldRecenter;  ///< True if UX has requested re-centering. Must call ovr_ClearShouldRecenterFlag or ovr_RecenterTrackingOrigin. 
+	};
+#pragma pack(pop)
+
+	void xnOvrGetStatus(xnOvrSession* session, xnOvrSessionStatus* statusOut)
+	{
 	}
 }
 

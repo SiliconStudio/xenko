@@ -12,6 +12,7 @@ xnOvrGetCurrentTargetIndex
 xnOvrCommitFrame
 xnOvrPrepareRender
 xnOvrGetMirrorTextureDx
+xnOvrGetStatus
 xnCeltCreate
 xnCeltDestroy
 xnCeltEncodeFloat

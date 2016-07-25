@@ -74,5 +74,45 @@ namespace SiliconStudio.Xenko.Native
             var errorStr = Marshal.PtrToStringAnsi(errorCStr);
             return $"OculusOVR-Error({error}): {errorStr}";
         }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        private struct SessionStatusInternal
+        {
+            public int IsVisible;
+            public int HmdPresent;
+            public int HmdMounted;
+            public int DisplayLost;
+            public int ShouldQuit;
+            public int ShouldRecenter;
+        }
+
+        public struct SessionStatus
+        {
+            public bool IsVisible;
+            public bool HmdPresent;
+            public bool HmdMounted;
+            public bool DisplayLost;
+            public bool ShouldQuit;
+            public bool ShouldRecenter;
+        }
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrGetStatus", CallingConvention = CallingConvention.Cdecl)]
+        private static extern void GetStatus(IntPtr session, ref SessionStatusInternal status);
+
+        public static SessionStatus GetStatus(IntPtr session)
+        {
+            var statusInternal = new SessionStatusInternal { DisplayLost = 0, IsVisible = 0, ShouldQuit = 0, HmdMounted = 0, HmdPresent = 0, ShouldRecenter = 0 };
+            GetStatus(session, ref statusInternal);
+            return new SessionStatus
+            {
+                DisplayLost = statusInternal.DisplayLost == 1,
+                HmdMounted = statusInternal.HmdMounted == 1,
+                HmdPresent = statusInternal.HmdPresent == 1,
+                IsVisible = statusInternal.IsVisible == 1,
+                ShouldQuit = statusInternal.ShouldQuit == 1,
+                ShouldRecenter = statusInternal.ShouldRecenter == 1
+            };
+        }
     }
 }
