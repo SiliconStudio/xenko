@@ -385,7 +385,7 @@ namespace SiliconStudio.Xenko.Audio
         {
             get
             {
-                //if(PlayState == SoundPlayState.Stopped) return TimeSpan.Zero;
+                if(PlayState == SoundPlayState.Stopped) return TimeSpan.Zero;
                 var position = AudioLayer.SourceGetPosition(Source);
                 return TimeSpan.FromSeconds(position);
             }
