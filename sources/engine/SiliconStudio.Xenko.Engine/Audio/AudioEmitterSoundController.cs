@@ -137,7 +137,7 @@ namespace SiliconStudio.Xenko.Audio
                     return SoundPlayState.Playing;
 
                 return playState = SoundPlayState.Stopped;
-            } 
+            }
         }
 
         private bool isLooped;

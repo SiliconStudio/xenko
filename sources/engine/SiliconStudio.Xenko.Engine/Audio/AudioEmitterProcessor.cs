@@ -209,12 +209,13 @@ namespace SiliconStudio.Xenko.Audio
 
                             var instance = controller.CreateSoundInstance(listeners.Key, true);
                             if (instance == null) continue;
+
                             instance.Volume = controller.Volume;
                             instance.Pitch = controller.Pitch;
-
-                            controller.FastInstances.Add(instance);
                             instance.Apply3D(emitter);
                             instance.Play();
+
+                            controller.FastInstances.Add(instance);
                         }
                         controller.FastInstancePlay = false;
                     }
