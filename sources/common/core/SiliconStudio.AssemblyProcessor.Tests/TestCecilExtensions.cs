@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Mono.Cecil;
 using NUnit.Framework;
 
@@ -13,7 +14,13 @@ namespace SiliconStudio.AssemblyProcessor.Tests
         {
         }
 
-        private BaseAssemblyResolver assemblyResolver = new DefaultAssemblyResolver();
+        private static BaseAssemblyResolver assemblyResolver = new DefaultAssemblyResolver();
+
+        static TestCecilExtensions()
+        {
+            // Add location of current assembly to MonoCecil search path.
+            assemblyResolver.AddSearchDirectory(Path.GetDirectoryName(typeof(TestCecilExtensions).Assembly.Location));
+        }
 
         public string GenerateNameCecil(Type type)
         {
