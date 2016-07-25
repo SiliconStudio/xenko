@@ -208,6 +208,7 @@ namespace SiliconStudio.Xenko.Audio
                             if (!listeners.Key.Enabled) continue;
 
                             var instance = controller.CreateSoundInstance(listeners.Key, true);
+                            if (instance == null) continue;
                             instance.Volume = controller.Volume;
                             instance.Pitch = controller.Pitch;
 

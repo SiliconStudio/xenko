@@ -72,6 +72,8 @@ namespace SiliconStudio.Xenko.Audio
         /// <returns>The new sound effect instance created</returns>
         internal SoundInstance CreateSoundInstance(AudioListenerComponent listener, bool forget)
         {
+            if (sound.Instances.Count > 20) return null;
+
             var newInstance = sound.CreateInstance(listener.Listener);
 
             if (!forget)
@@ -204,7 +206,7 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         public void PlayAndForget()
         {
-            FastInstancePlay = true;
+            FastInstancePlay = true; // tells the EmitterProcessor to create and start playing a temporary instances.
         }
 
         public void Pause()
