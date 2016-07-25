@@ -259,7 +259,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             // Assign descriptor sets to each render node
             var resourceGroupPool = ((RootEffectRenderFeature)RootRenderFeature).ResourceGroupPool;
             //for (int renderNodeIndex = 0; renderNodeIndex < RootRenderFeature.RenderNodes.Count; renderNodeIndex++)
-            Dispatcher.For(0, RootRenderFeature.RenderNodes.Count, renderNodeIndex =>
+            Dispatcher.For(0, RootRenderFeature.RenderNodes.Count, () => context.RenderContext.GetThreadContext(), (renderNodeIndex, threadContext) =>
             {
                 var renderNodeReference = new RenderNodeReference(renderNodeIndex);
                 var renderNode = RootRenderFeature.RenderNodes[renderNodeIndex];
@@ -276,7 +276,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 var materialInfo = renderMesh.MaterialInfo;
                 var materialParameters = material.Parameters;
 
-                if (!UpdateMaterial(RenderSystem, context, materialInfo, perMaterialDescriptorSetSlot.Index, renderNode.RenderEffect, materialParameters))
+                if (!UpdateMaterial(RenderSystem, threadContext, materialInfo, perMaterialDescriptorSetSlot.Index, renderNode.RenderEffect, materialParameters))
                     return;
 
                 var descriptorSetPoolOffset = ((RootEffectRenderFeature)RootRenderFeature).ComputeResourceGroupOffset(renderNodeReference);
