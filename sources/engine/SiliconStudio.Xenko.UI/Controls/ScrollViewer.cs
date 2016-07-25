@@ -66,6 +66,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the value indicating if the element should snap its scrolling to anchors.
         /// </summary>
         /// <remarks>Snapping will work only if <see cref="Content"/> implements interface <see cref="IScrollAnchorInfo"/></remarks>
+        /// <userdoc>True if the element should snap its scrolling to anchors, false otherwise.</userdoc>
         [DataMember]
         [Display(category: BehaviorCategory)]
         [DefaultValue(false)]
@@ -74,6 +75,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the threshold distance over which a touch move starts scrolling.
         /// </summary>
+        /// <userdoc>The threshold distance over which a touch move starts scrolling.</userdoc>
         [DataMember]
         [Display(category: BehaviorCategory)]
         [DefaultValue(10.0f)]
@@ -268,6 +270,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The viewer allowed scrolling mode.
         /// </summary>
+        /// <userdoc>The viewer allowed scrolling mode.</userdoc>
         [DataMember]
         [Display(category: BehaviorCategory)]
         [DefaultValue(ScrollingMode.Horizontal)]
@@ -287,6 +290,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The automatic deceleration of the scroll after the user remove its finger from the screen. The unit is in virtual pixels.
         /// </summary>
+        /// <userdoc>The automatic deceleration of the scroll after the user remove its finger from the screen. The unit is in virtual pixels.</userdoc>
         [DataMember]
         [Display(category: BehaviorCategory)]
         [DefaultValue(1500.0f)]
@@ -305,6 +309,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the scrolling behavior on touches. True to allow the user to scroll by touching, false to forbid it.
         /// </summary>
+        /// <userdoc>True to allow the user to scroll by touching, false to forbid it.</userdoc>
         [DataMember]
         [Display(category: BehaviorCategory)]
         [DefaultValue(true)]
@@ -322,8 +327,9 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the scrolling behavior on touches. True to allow the user to scroll by touching, false to forbid it.
+        /// Gets or sets the color of the scrolling bar.
         /// </summary>
+        /// <userdoc>The color of the scrolling bar.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         public Color ScrollBarColor { get; set; } = new Color(0.1f, 0.1f, 0.1f, 1f);
@@ -331,6 +337,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the scrolling bar thickness in virtual pixels.
         /// </summary>
+        /// <userdoc>The scrolling bar thickness in virtual pixels.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         [DefaultValue(6.0f)]

@@ -26,6 +26,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The color of the bar.
         /// </summary>
+        /// <userdoc>The color of the bar.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         public Color BarColor

@@ -95,8 +95,9 @@ namespace SiliconStudio.Xenko.UI
         public Guid Id { get; set; }
 
         /// <summary>
-        /// List of the dependency properties attached to the object.
+        /// The list of the dependency properties attached to the UI element.
         /// </summary>
+        /// <userdoc>The list of the dependency properties attached to the UI element.</userdoc>
         [DataMember]
         public PropertyContainer DependencyProperties;
 
@@ -659,6 +660,7 @@ namespace SiliconStudio.Xenko.UI
         /// to fit into the size of the containing element.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
+        /// <userdoc>Indicates whether to clip the content of this element (or content coming from the child elements of this element).</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         [DefaultValue(false)]
@@ -962,7 +964,7 @@ namespace SiliconStudio.Xenko.UI
             // removes the size required for the margins in the available size
             var availableSizeWithoutMargins = CalculateSizeWithoutThickness(ref availableSizeWithMargins, ref MarginInternal);
 
-            // trunk the available size for the element between the maximum and minimum width/height of the UIElement
+            // clamp the available size for the element between the maximum and minimum width/height of the UIElement
             availableSizeWithoutMargins = new Vector3(
                 Math.Max(MinimumWidth, Math.Min(MaximumWidth, !float.IsNaN(desiredSize.X) ? desiredSize.X : availableSizeWithoutMargins.X)),
                 Math.Max(MinimumHeight, Math.Min(MaximumHeight, !float.IsNaN(desiredSize.Y) ? desiredSize.Y : availableSizeWithoutMargins.Y)),
@@ -1072,7 +1074,7 @@ namespace SiliconStudio.Xenko.UI
             if (float.IsNaN(elementSize.Z))
                 elementSize.Z = Math.Min(DesiredSize.Z, finalSizeWithoutMargins.Z);
 
-            // trunk the element size between the maximum and minimum width/height of the UIElement
+            // clamp the element size between the maximum and minimum width/height of the UIElement
             elementSize = new Vector3(
                 Math.Max(MinimumWidth, Math.Min(MaximumWidth, elementSize.X)),
                 Math.Max(MinimumHeight, Math.Min(MaximumHeight, elementSize.Y)),

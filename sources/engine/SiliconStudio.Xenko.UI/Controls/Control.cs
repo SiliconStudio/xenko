@@ -17,6 +17,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the padding inside a control.
         /// </summary>
+        /// <userdoc>The padding inside a control.</userdoc>
         [DataMember]
         [Display(category: LayoutCategory)]
         public Thickness Padding

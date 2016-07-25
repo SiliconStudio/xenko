@@ -27,8 +27,9 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets content of the presenter.
+        /// Gets or sets the content of the presenter.
         /// </summary>
+        /// <userdoc>The content of the presenter.</userdoc>
         [DataMember]
         [DefaultValue(null)]
         public UIElement Content

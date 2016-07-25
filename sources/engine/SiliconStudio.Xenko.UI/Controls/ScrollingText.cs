@@ -52,6 +52,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets the scrolling speed of the text. The unit is in virtual pixels.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The provided speed must be positive or null.</exception>
+        /// <userdoc>The scrolling speed of the text. The unit is in virtual pixels.</userdoc>
         [DataMember]
         [Display(category: BehaviorCategory)]
         [DefaultValue(40.0f)]
@@ -70,6 +71,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the desired number of character in average to display at a given time. This value is taken in account during the measurement stage of the element.
         /// </summary>
+        /// <userdoc>The desired number of character in average to display at a given time. This value is taken in account during the measurement stage of the element.</userdoc>
         [DataMember]
         [Display(category: BehaviorCategory)]
         [DefaultValue((uint)10)]
@@ -89,6 +91,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the a value indicating if the text message must be repeated (wrapped) or not.
         /// </summary>
+        /// <userdoc>True if the text message must be repeated (wrapped), false otherwise.</userdoc>
         [DataMember]
         [Display(category: BehaviorCategory)]
         [DefaultValue(true)]

@@ -16,8 +16,9 @@ namespace SiliconStudio.Xenko.UI.Controls
         private Thickness borderThickness = Thickness.UniformCuboid(0);
 
         /// <summary>
-        /// Gets or sets the padding inside a control.
+        /// Gets or sets the thickness of the border.
         /// </summary>
+        /// <userdoc>The thickness of the border.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         public Thickness BorderThickness
@@ -31,8 +32,9 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the color of the borders.
+        /// Gets or sets the color of the border.
         /// </summary>
+        /// <userdoc>The color of the border.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         public Color BorderColor

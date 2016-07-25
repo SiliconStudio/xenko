@@ -27,9 +27,10 @@ namespace SiliconStudio.Xenko.UI.Panels
         private int layers = 1;
 
         /// <summary>
-        /// Gets or sets the number of Columns that the <see cref="UniformGrid"/> has.
+        /// Gets or sets the number of columns that the <see cref="UniformGrid"/> has.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value must be strictly positive</exception>
+        /// <userdoc>The number of columns.</userdoc>
         [DataMember]
         [DataMemberRange(1, int.MaxValue)]
         [Display(category: LayoutCategory)]
@@ -48,9 +49,10 @@ namespace SiliconStudio.Xenko.UI.Panels
         }
 
         /// <summary>
-        /// Gets or sets the number of Rows that the <see cref="UniformGrid"/> has.
+        /// Gets or sets the number of rows that the <see cref="UniformGrid"/> has.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value must be strictly positive</exception>
+        /// <userdoc>The number of rows.</userdoc>
         [DataMember]
         [DataMemberRange(1, int.MaxValue)]
         [Display(category: LayoutCategory)]
@@ -69,9 +71,10 @@ namespace SiliconStudio.Xenko.UI.Panels
         }
 
         /// <summary>
-        /// Gets or sets the number of Layers that the <see cref="UniformGrid"/> has.
+        /// Gets or sets the number of layers that the <see cref="UniformGrid"/> has.
         /// </summary>
         /// <exception cref="ArgumentOutOfRangeException">The value must be strictly positive</exception>
+        /// <userdoc>The number of layers.</userdoc>
         [DataMember]
         [DataMemberRange(1, int.MaxValue)]
         [Display(category: LayoutCategory)]

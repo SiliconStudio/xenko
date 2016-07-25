@@ -49,6 +49,8 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// The color of the overlay drawn upon underneath elements.
         /// </summary>
+        /// <userdoc>he color of the overlay drawn upon underneath elements.</userdoc>
+        /// <userdoc>he color of the overlay drawn upon underneath elements.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         public Color OverlayColor
@@ -60,6 +62,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Determine if the control should block the input of underneath elements or not.
         /// </summary>
+        /// <userdoc>True if the control should block the input of underneath elements, false otherwise.</userdoc>
         [DataMember]
         [Display(category: BehaviorCategory)]
         [DefaultValue(true)]

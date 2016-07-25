@@ -51,6 +51,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets a value that describes how the button image should be stretched to fill the destination rectangle.
         /// </summary>
         /// <remarks>This property has no effect is <see cref="SizeToContent"/> is <c>true</c>.</remarks>
+        /// <userdoc>Describes how the button image should be stretched to fill the destination rectangle.</userdoc>
         [DataMember]
         [Display(category: LayoutCategory)]
         [DefaultValue(StretchType.Uniform)]
@@ -68,6 +69,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Gets or sets a value that indicates how the button image is scaled.
         /// </summary>
         /// <remarks>This property has no effect is <see cref="SizeToContent"/> is <c>true</c>.</remarks>
+        /// <userdoc>Indicates how the button image is scaled.</userdoc>
         [DataMember]
         [Display(category: LayoutCategory)]
         [DefaultValue(StretchDirection.Both)]
@@ -82,8 +84,9 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the image that the button displays when pressed.
+        /// Gets or sets the image displayed when the button is pressed.
         /// </summary>
+        /// <userdoc>Image displayed when the button is pressed.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         [DefaultValue(null)]
@@ -101,8 +104,9 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the image that the button displays when not pressed.
+        /// Gets or sets the image displayed when the button is not pressed.
         /// </summary>
+        /// <userdoc>Image displayed when the button is not pressed.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         [DefaultValue(null)]
@@ -120,8 +124,9 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the image that the button displays when the mouse is over it.
+        /// Gets or sets the image displayed when the mouse hovers over the button.
         /// </summary>
+        /// <userdoc>Image displayed when the mouse hovers over the button.</userdoc>
         [DataMember]
         [Display(category: AppearanceCategory)]
         [DefaultValue(null)]
