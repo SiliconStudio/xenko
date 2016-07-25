@@ -33,6 +33,10 @@
 
 
 #ifndef LZ4_CS_ADAPTER
+
+#include "../../../../../deps/NativePath/standard/stdlib.h"
+#include "../../../../../deps/NativePath/standard/string.h"
+
 //**************************************
 // CPU Feature Detection
 //**************************************
@@ -121,8 +125,6 @@
 //**************************************
 // Includes
 //**************************************
-#include "../../../../../deps/NativePath/standard/stdlib.h"
-#include "../../../../../deps/NativePath/standard/string.h"
 #include "lz4hc.h"
 #include "lz4.h"
 
