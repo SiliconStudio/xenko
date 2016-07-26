@@ -13,6 +13,7 @@ namespace SiliconStudio.Xenko.UI
     /// Represents the definition of a grid strip.
     /// </summary>
     [DataContract(nameof(StripDefinition))]
+    [Display(Expand = ExpandRule.Never)]
     public class StripDefinition
     {
         private float maximumSize = float.PositiveInfinity;
