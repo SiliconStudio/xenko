@@ -138,16 +138,16 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-        private bool isLooped;
+        private bool isLooping;
 
         /// <summary>
         /// Gets or sets whether the sound is automatically looping from beginning when it reaches the end.
         /// </summary>
-        public bool IsLooped
+        public bool IsLooping
         {
             get
             {
-                return isLooped;
+                return isLooping;
             }
             set
             {
@@ -155,8 +155,18 @@ namespace SiliconStudio.Xenko.Audio
                 {
                     instance.Key.IsLooped = value;
                 }
-                isLooped = value;
+                isLooping = value;
             }
+        }
+
+        /// <summary>
+        /// Gets or sets whether the sound is automatically looping from beginning when it reaches the end.
+        /// </summary>
+        [Obsolete("Renamed, please use IsLooping.")]
+        public bool IsLooped
+        {
+            get{ return IsLooping; }
+            set { IsLooping = value; }
         }
 
         private float pitch = 1.0f;

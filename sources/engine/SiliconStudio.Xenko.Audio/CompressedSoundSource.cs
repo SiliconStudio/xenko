@@ -57,7 +57,7 @@ namespace SiliconStudio.Xenko.Audio
         /// <param name="maxCompressedSize">The maximum size of a compressed packet</param>
         public CompressedSoundSource(SoundInstance instance, string soundStreamUrl, int numberOfPackets, int sampleRate, int channels, int maxCompressedSize) : base(instance, NumberOfBuffers, SamplesPerBuffer * MaxChannels * sizeof(short))
         {
-            looped = instance.IsLooped;
+            looped = instance.IsLooping;
             this.channels = channels;
             this.maxCompressedSize = maxCompressedSize;
             this.soundStreamUrl = soundStreamUrl;

@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Audio
         private readonly Sound sound;
         private readonly AudioEngine engine;
 
-        private bool isLooped;
+        private bool isLooping;
         private float pan;
         private float pitch;
         private float volume;
@@ -86,21 +86,31 @@ namespace SiliconStudio.Xenko.Audio
         /// <summary>
         /// Gets or sets whether the sound is automatically looping from beginning when it reaches the end.
         /// </summary>
+        [Obsolete("Renamed, please use IsLooping.")]
         public bool IsLooped
+        {
+            get {  return IsLooping; }
+            set { IsLooping = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets whether the sound is automatically looping from beginning when it reaches the end.
+        /// </summary>
+        public bool IsLooping
         {
             get
             {
-                return isLooped;
+                return isLooping;
             }
             set
             {
-                isLooped = value;
+                isLooping = value;
 
                 if (engine.State == AudioEngineState.Invalidated)
                     return;
 
-                if (soundSource == null) AudioLayer.SourceSetLooping(Source, isLooped);
-                else soundSource.SetLooped(isLooped);
+                if (soundSource == null) AudioLayer.SourceSetLooping(Source, isLooping);
+                else soundSource.SetLooped(isLooping);
             }
         }
 
@@ -272,7 +282,7 @@ namespace SiliconStudio.Xenko.Audio
         {
             Pan = 0;
             Volume = 1;
-            IsLooped = false;
+            IsLooping = false;
             Stop();
         }
 
