@@ -108,6 +108,12 @@ namespace SiliconStudio.Presentation.Extensions
         [DllImport("user32.dll")]
         public static extern IntPtr GetProcessHandleFromHwnd(IntPtr hWnd);
 
+        [DllImport("user32.dll")]
+        public static extern IntPtr GetFocus();
+
+        [DllImport("user32.dll")]
+        public static extern bool IsChild(IntPtr hWndParent, IntPtr hWnd);
+
         #endregion Methods
 
         #region Structures
@@ -293,7 +299,10 @@ namespace SiliconStudio.Presentation.Extensions
         public const uint WS_EX_COMPOSITED = 0x02000000;
         public const uint WS_EX_NOACTIVATE = 0x08000000;
 
-        public const int SW_HIDE = unchecked(0x00000000);
+        public const int SW_HIDE = 0x00000000;
+        public const int SW_SHOWNORMAL = 0x00000001;
+        public const int SW_SHOWNOACTIVATE = 0x00000004;
+        public const int SW_SHOW = 0x00000005;
 
         // Windows messages - http://www.pinvoke.net/default.aspx/Constants/WM.html
         public const int WM_ACTIVATE = 0x0006;
