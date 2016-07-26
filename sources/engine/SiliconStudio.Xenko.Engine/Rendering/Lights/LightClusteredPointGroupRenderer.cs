@@ -368,7 +368,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 }
 
                 // Upload data to texture
-                using (context.LockCommandList())
+                using (new DefaultCommandListLock(context.CommandList))
                 {
                     fixed (Int2* dataPtr = lightClustersValues)
                         context.CommandList.UpdateSubresource(pointGroupRenderer.lightClusters, 0, new DataBox((IntPtr)dataPtr, sizeof(Int2) * clusterCountX, sizeof(Int2) * clusterCountX * clusterCountY));

@@ -57,9 +57,12 @@ namespace SiliconStudio.Xenko.Graphics
         {
             if (useBufferOffsets)
             {
-                this.commandList = commandList;
-                mappedConstantBuffer = commandList.MapSubresource(constantBuffer, 0, MapMode.WriteNoOverwrite);
-                Data = mappedConstantBuffer.DataBox.DataPointer;
+                using (new DefaultCommandListLock(commandList))
+                {
+                    this.commandList = commandList;
+                    mappedConstantBuffer = commandList.MapSubresource(constantBuffer, 0, MapMode.WriteNoOverwrite);
+                    Data = mappedConstantBuffer.DataBox.DataPointer;
+                }
             }
         }
 
@@ -67,8 +70,11 @@ namespace SiliconStudio.Xenko.Graphics
         {
             if (useBufferOffsets && mappedConstantBuffer.Resource != null)
             {
-                commandList.UnmapSubresource(mappedConstantBuffer);
-                mappedConstantBuffer = new MappedResource();
+                using (new DefaultCommandListLock(commandList))
+                {
+                    commandList.UnmapSubresource(mappedConstantBuffer);
+                    mappedConstantBuffer = new MappedResource();
+                }
             }
         }
 
