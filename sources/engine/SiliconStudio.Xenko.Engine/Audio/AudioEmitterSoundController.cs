@@ -72,8 +72,6 @@ namespace SiliconStudio.Xenko.Audio
         /// <returns>The new sound effect instance created</returns>
         internal SoundInstance CreateSoundInstance(AudioListenerComponent listener, bool forget)
         {
-            if (sound.Instances.Count > 20) return null;
-
             var newInstance = sound.CreateInstance(listener.Listener);
 
             if (!forget)
