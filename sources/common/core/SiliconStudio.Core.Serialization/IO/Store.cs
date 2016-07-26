@@ -132,7 +132,7 @@ namespace SiliconStudio.Core.IO
 
                 // Acquire lock on end of file (for appending)
                 // This will prevent another thread from writing at the same time, or reading before it is flushed.
-                LockFile(indexStreamPosition, long.MaxValue, true);
+                LockFile(indexStreamPosition, long.MaxValue - indexStreamPosition, true);
 
                 try
                 {
@@ -160,7 +160,7 @@ namespace SiliconStudio.Core.IO
                 }
                 finally
                 {
-                    UnlockFile(indexStreamPosition, long.MaxValue);
+                    UnlockFile(indexStreamPosition, long.MaxValue - indexStreamPosition);
                 }
             }
         }
@@ -176,7 +176,7 @@ namespace SiliconStudio.Core.IO
 
                 // Acquire lock on end of file (for appending)
                 // This will prevent another thread from writing at the same time, or reading before it is flushed.
-                LockFile(indexStreamPosition, long.MaxValue, true);
+                LockFile(indexStreamPosition, long.MaxValue - indexStreamPosition, true);
 
                 try
                 {
@@ -198,7 +198,7 @@ namespace SiliconStudio.Core.IO
                 }
                 finally
                 {
-                    UnlockFile(indexStreamPosition, long.MaxValue);
+                    UnlockFile(indexStreamPosition, long.MaxValue - indexStreamPosition);
                 }
             }
         }
@@ -269,7 +269,7 @@ namespace SiliconStudio.Core.IO
                 // Note: Maybe we should release the lock quickly so that two threads can read at the same time?
                 // Or if the previously described case doesn't happen, maybe no lock at all is required?
                 // Otherwise, last possibility would be deterministic filesize (with size encoded at the beginning of each block).
-                LockFile(position, long.MaxValue, false);
+                LockFile(position, long.MaxValue - position, false);
 
                 try
                 {
@@ -280,7 +280,7 @@ namespace SiliconStudio.Core.IO
                 finally
                 {
                     // Release the lock
-                    UnlockFile(position, long.MaxValue);
+                    UnlockFile(position, long.MaxValue - position);
                 }
 
                 return true;
@@ -289,10 +289,17 @@ namespace SiliconStudio.Core.IO
 
         private void LockFile(long offset, long count, bool exclusive)
         {
-#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
+#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
             var fileStream = stream as FileStream;
             if (fileStream == null)
                 return;
+
+#if SILICONSTUDIO_PLATFORM_ANDROID
+            // Android does not support large file and thus is limited to files
+            // whose sizes are less than 2GB.
+            // We substract the offset to not go beyond the 2GB limit.
+            count =  (count + offset > int.MaxValue) ? int.MaxValue - offset: count;
+#endif
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             var countLow = (uint)count;
@@ -333,10 +340,15 @@ namespace SiliconStudio.Core.IO
 
         private void UnlockFile(long offset, long count)
         {
-#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
+#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
             var fileStream = stream as FileStream;
             if (fileStream == null)
                 return;
+
+#if SILICONSTUDIO_PLATFORM_ANDROID
+            // See comment on `LockFile`.
+            count =  (count + offset > int.MaxValue) ? int.MaxValue - offset: count;
+#endif
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             var countLow = (uint)count;
