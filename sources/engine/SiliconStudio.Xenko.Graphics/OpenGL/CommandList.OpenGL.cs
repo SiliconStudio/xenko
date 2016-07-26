@@ -1092,9 +1092,6 @@ namespace SiliconStudio.Xenko.Graphics
                 GL.UseProgram(boundProgram);
             }
 
-            // Setup index buffer
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBuffer.Buffer != null ? indexBuffer.Buffer.BufferId : 0);
-
             int vertexBufferSlot = -1;
             var vertexBufferView = default(VertexBufferView);
             Buffer vertexBuffer = null;
@@ -1509,6 +1506,9 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 // Setup index buffer
                 indexBuffer = newIndexBuffer;
+
+                // Setup index buffer
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBuffer.Buffer != null ? indexBuffer.Buffer.BufferId : 0);
             }
         }
 
