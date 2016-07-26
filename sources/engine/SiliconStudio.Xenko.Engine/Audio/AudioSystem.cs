@@ -16,8 +16,8 @@ namespace SiliconStudio.Xenko.Audio
     /// </summary>
     public class AudioSystem : GameSystemBase, IAudioEngineProvider
     {
-        private static object AudioEngineStaticLock = new object();
-        private static AudioEngine AudioEngineSingleton = null;
+        private static readonly object AudioEngineStaticLock = new object();
+        private static AudioEngine audioEngineSingleton;
 
         /// <summary>
         /// Create an new instance of AudioSystem
@@ -53,16 +53,16 @@ namespace SiliconStudio.Xenko.Audio
 
             lock (AudioEngineStaticLock)
             {
-                if (AudioEngineSingleton == null || AudioEngineSingleton.IsDisposed)
+                if (audioEngineSingleton == null)
                 {
-                    AudioEngineSingleton = AudioEngineFactory.NewAudioEngine();
+                    audioEngineSingleton = AudioEngineFactory.NewAudioEngine();
                 }
                 else
                 {
-                    ((IReferencable)AudioEngineSingleton).AddReference();
+                    ((IReferencable)audioEngineSingleton).AddReference();
                 }
 
-                AudioEngine = AudioEngineSingleton;
+                AudioEngine = audioEngineSingleton;
             }
 
             Game.Activated += OnActivated;
@@ -112,8 +112,12 @@ namespace SiliconStudio.Xenko.Audio
 
             lock (AudioEngineStaticLock)
             {
-                AudioEngine.Dispose();
                 AudioEngine = null;
+                var count = ((IReferencable)audioEngineSingleton).Release();
+                if (count == 0)
+                {
+                    audioEngineSingleton = null;
+                }
             }
         }
 
