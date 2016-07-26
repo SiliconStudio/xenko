@@ -176,6 +176,8 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
             ribbonizer.Ribbonize(ref bufferState, QuadsPerParticle);
 
+            ribbonizer.Free();
+
             var vtxPerShape = 4 * QuadsPerParticle;
             return renderedParticles * vtxPerShape;
         }
@@ -186,10 +188,12 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         struct Ribbonizer
         {
             private int lastParticle;
-            private Vector3[] positions;
-            private Vector3[] directions;
             private int sections;
 
+            private readonly IntPtr positionData;
+            private readonly IntPtr directionData;
+
+            private readonly int particleCapacity;
             private readonly ShapeBuilderTrail parentTrail;
 
             public Ribbonizer(ShapeBuilderTrail ribbon, int newCapacity, int sectionsPerParticle)
@@ -201,8 +205,21 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                 int requiredCapacity = sectionsPerParticle * newCapacity;
 
-                positions = new Vector3[requiredCapacity];
-                directions = new Vector3[requiredCapacity];
+                particleCapacity = requiredCapacity;
+
+                int positionDataSize = Utilities.SizeOf<Vector3>() * particleCapacity;
+                positionDataSize = (positionDataSize % 4 == 0) ? positionDataSize : (positionDataSize + 4 - (positionDataSize % 4));
+                positionData = Utilities.AllocateMemory(positionDataSize);
+
+                int directionDataSize = Utilities.SizeOf<Vector3>() * particleCapacity;
+                directionDataSize = (directionDataSize % 4 == 0) ? directionDataSize : (directionDataSize + 4 - (directionDataSize % 4));
+                directionData = Utilities.AllocateMemory(directionDataSize);
+            }
+
+            public void Free()
+            {
+                Utilities.FreeMemory(positionData);
+                Utilities.FreeMemory(directionData);
             }
 
             EdgePolicy EdgePolicy => parentTrail.EdgePolicy;
@@ -228,10 +245,13 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             /// </summary>
             /// <param name="position">Position of the control point</param>
             /// <param name="direction">Direction or offset from the control point</param>
-            public void AddParticle(ref Vector3 position, ref Vector3 direction)
+            public unsafe void AddParticle(ref Vector3 position, ref Vector3 direction)
             {
-                if (lastParticle >= positions.Length)
+                if (lastParticle >= particleCapacity)
                     return;
+
+                var positions = (Vector3*)positionData;
+                var directions = (Vector3*)directionData;
 
                 positions[lastParticle] = position;
                 directions[lastParticle] = direction;
@@ -242,10 +262,13 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             /// <summary>
             /// Advanced interpolation, drawing the vertices in a circular arc between two adjacent control points
             /// </summary>
-            private void ExpandVertices_Circular()
+            private unsafe void ExpandVertices_Circular()
             {
                 if (sections <= 1)
                     return;
+
+                var positions = (Vector3*)positionData;
+                var directions = (Vector3*)directionData;
 
                 var lerpStep = 1f / sections;
 
@@ -300,8 +323,11 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             /// <summary>
             /// Simple interpolation using Catmull-Rom
             /// </summary>
-            private void ExpandVertices_CatmullRom()
+            private unsafe void ExpandVertices_CatmullRom()
             {
+                var positions = (Vector3*)positionData;
+                var directions = (Vector3*)directionData;
+
                 var lerpStep = 1f / sections;
 
                 var Pt0 = positions[0] * 2 - positions[sections];
@@ -370,6 +396,9 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                     else // if (SmoothingPolicy == SmoothingPolicy.Fast)
                         ExpandVertices_CatmullRom();
                 }
+
+                var positions = (Vector3*)positionData;
+                var directions = (Vector3*)directionData;
 
                 bufferState.SetVerticesPerSegment(quadsPerParticle * 6, quadsPerParticle * 4, quadsPerParticle * 2);
 

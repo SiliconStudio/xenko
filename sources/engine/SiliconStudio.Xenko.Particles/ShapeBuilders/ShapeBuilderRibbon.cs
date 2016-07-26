@@ -162,6 +162,8 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
             ribbonizer.Ribbonize(ref bufferState, invViewX, invViewY, QuadsPerParticle);
 
+            ribbonizer.Free();
+
             var vtxPerShape = 4 * QuadsPerParticle;
             return renderedParticles * vtxPerShape;
         }
@@ -172,10 +174,12 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         struct Ribbonizer
         {
             private int lastParticle;
-            private Vector3[] positions;
-            private float[] sizes;
             private int sections;
 
+            private readonly IntPtr positionData;
+            private readonly IntPtr sizeData;
+
+            private readonly int particleCapacity;
             private readonly ShapeBuilderRibbon parentRibbon;
 
             public Ribbonizer(ShapeBuilderRibbon ribbon, int newCapacity, int sectionsPerParticle)
@@ -187,8 +191,21 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                 int requiredCapacity = sectionsPerParticle * newCapacity;
 
-                positions = new Vector3[requiredCapacity];
-                sizes = new float[requiredCapacity];
+                particleCapacity = requiredCapacity;
+
+                int positionDataSize = Utilities.SizeOf<Vector3>() * particleCapacity;
+                positionDataSize = (positionDataSize % 4 == 0) ? positionDataSize : (positionDataSize + 4 - (positionDataSize % 4));
+                positionData = Utilities.AllocateMemory(positionDataSize);
+
+                int sizeDataSize = Utilities.SizeOf<float>() * particleCapacity;
+                sizeDataSize = (sizeDataSize % 4 == 0) ? sizeDataSize : (sizeDataSize + 4 - (sizeDataSize % 4));
+                sizeData = Utilities.AllocateMemory(sizeDataSize);
+            }
+
+            public void Free()
+            {
+                Utilities.FreeMemory(positionData);
+                Utilities.FreeMemory(sizeData);
             }
 
             public TextureCoordinatePolicy TextureCoordinatePolicy => parentRibbon.TextureCoordinatePolicy;
@@ -212,10 +229,13 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             /// </summary>
             /// <param name="position"></param>
             /// <param name="size"></param>
-            public void AddParticle(ref Vector3 position, float size)
+            public unsafe void AddParticle(ref Vector3 position, float size)
             {
-                if (lastParticle >= positions.Length)
+                if (lastParticle >= particleCapacity)
                     return;
+
+                var positions = (Vector3*) positionData;
+                var sizes = (float*)sizeData;
 
                 positions[lastParticle] = position;
                 sizes[lastParticle] = size;
@@ -248,10 +268,13 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             /// <summary>
             /// Advanced interpolation, drawing the vertices in a circular arc between two adjacent control points
             /// </summary>
-            private void ExpandVertices_Circular()
+            private unsafe void ExpandVertices_Circular()
             {
                 if (sections <= 1)
                     return;
+
+                var positions = (Vector3*)positionData;
+                var sizes = (float*)sizeData;
 
                 var lerpStep = 1f/sections;
 
@@ -306,9 +329,12 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             /// <summary>
             /// Simple interpolation using Catmull-Rom
             /// </summary>
-            private void ExpandVertices_CatmullRom()
+            private unsafe void ExpandVertices_CatmullRom()
             {
                 var lerpStep = 1f / sections;
+
+                var positions = (Vector3*)positionData;
+                var sizes = (float*)sizeData;
 
                 var Pt0 = positions[0] * 2 - positions[sections];
                 var Pt1 = positions[0];
@@ -338,13 +364,10 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             /// <summary>
             /// Constructs the ribbon by outputting vertex stream based on the positions and sizes specified previously
             /// </summary>
-            /// <param name="vtxBuilder">Target <see cref="ParticleVertexBuilder"/></param> to use
+            /// <param name="bufferState">Target <see cref="ParticleBufferState"/></param> to use
             /// <param name="invViewX">Unit vector X in clip space as calculated from the inverse view matrix</param>
             /// <param name="invViewY">Unit vector Y in clip space as calculated from the inverse view matrix</param>
             /// <param name="quadsPerParticle">The required number of quads per each particle</param>
-            /// <param name="texPolicy">Texture coordinates stretching and stitching policy</param>
-            /// <param name="texFactor">Texture coordinates stretching and stitching coefficient</param>
-            /// <param name="uvRotate">Texture coordinates rotate and flip policy</param>
             public unsafe void Ribbonize(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, int quadsPerParticle)
             {
                 if (lastParticle <= 0)
@@ -383,6 +406,9 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 }
 
                 bufferState.SetVerticesPerSegment(quadsPerParticle * 6, quadsPerParticle * 4, quadsPerParticle * 2);
+
+                var positions = (Vector3*)positionData;
+                var sizes = (float*)sizeData;
 
                 // Step 1 - Determine the origin of the ribbon
                 var invViewZ = Vector3.Cross(invViewX, invViewY);
