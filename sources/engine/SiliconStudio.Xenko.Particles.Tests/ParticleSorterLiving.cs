@@ -53,6 +53,8 @@ namespace SiliconStudio.Xenko.Particles.Sorters
             currentLivingParticles = i;
         }
 
+        public void Free() { }
+
         /// <inheritdoc />
         public ParticleFieldAccessor<T> GetField<T>(ParticleFieldDescription<T> fieldDesc) where T : struct => pool.GetField<T>(fieldDesc);
 
@@ -106,11 +108,19 @@ namespace SiliconStudio.Xenko.Particles.Sorters
     /// The <see cref="ParticleSorterLiving"/> collects all living particles, rather than sorting them
     /// It is useful for some pool policies, like Ring, which iterate over all particles, not only living ones
     /// </summary>
-    public class ParticleSorterLiving : ParticleSorter 
+    public class ParticleSorterLiving : IParticleSorter
     {
-        public override IParticleSortedList GetSortedList(Vector3 depth) => new ParticleSortedListLiving(ParticlePool);
+        private readonly ParticlePool pool;
 
-        public ParticleSorterLiving(ParticlePool pool) : base(pool) { }
+        public ParticleSorterLiving(ParticlePool pool)
+        {
+            this.pool = pool;
+        }
+
+        IParticleSortedList IParticleSorter.GetSortedList(Vector3 depth) => GetSortedList(depth);
+
+        public ParticleSortedListLiving GetSortedList(Vector3 depth) => new ParticleSortedListLiving(pool);
+
     }
 
 }
