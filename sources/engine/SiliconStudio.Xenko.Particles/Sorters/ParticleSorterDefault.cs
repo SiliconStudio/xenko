@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Particles.Sorters
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         /// <inheritdoc />
-        public IEnumerator<Particle> GetEnumerator() => pool.GetEnumerator();
+        public ParticlePool.Enumerator GetEnumerator() => pool.GetEnumerator();
 
         public void Free() { }
     }

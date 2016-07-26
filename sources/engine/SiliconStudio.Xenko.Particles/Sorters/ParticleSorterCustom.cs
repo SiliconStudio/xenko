@@ -75,7 +75,7 @@ namespace SiliconStudio.Xenko.Particles.Sorters
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         /// <inheritdoc />
-        public IEnumerator<Particle> GetEnumerator()
+        public Enumerator GetEnumerator()
         {
             return new Enumerator(particleList, currentLivingParticles);
         }
