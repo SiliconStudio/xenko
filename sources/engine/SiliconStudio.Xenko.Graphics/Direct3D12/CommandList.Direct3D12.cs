@@ -26,7 +26,12 @@ namespace SiliconStudio.Xenko.Graphics
         private Dictionary<long, GpuDescriptorHandle> srvMapping = new Dictionary<long, GpuDescriptorHandle>();
         private Dictionary<long, GpuDescriptorHandle> samplerMapping = new Dictionary<long, GpuDescriptorHandle>();
 
-        public CommandList(GraphicsDevice device) : base(device)
+        public static CommandList New(GraphicsDevice device)
+        {
+            return new CommandList(device);
+        }
+
+        internal CommandList(GraphicsDevice device) : base(device)
         {
             nativeCommandAllocator = device.CommandAllocators.GetObject();
             NativeCommandList = device.NativeDevice.CreateCommandList(CommandListType.Direct, nativeCommandAllocator, null);

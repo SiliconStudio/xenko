@@ -22,23 +22,9 @@ namespace SiliconStudio.Xenko.Graphics
 
         public GraphicsResourceAllocator Allocator { get; private set; }
 
-        public GraphicsContext(GraphicsDevice graphicsDevice)
+        public GraphicsContext(GraphicsDevice graphicsDevice, GraphicsResourceAllocator allocator = null, CommandList commandList = null)
         {
-            CommandList = new CommandList(graphicsDevice);
-            Allocator = new GraphicsResourceAllocator(graphicsDevice).DisposeBy(graphicsDevice);
-            ResourceGroupAllocator = new ResourceGroupAllocator(Allocator, CommandList);
-        }
-
-        public GraphicsContext(GraphicsDevice graphicsDevice, GraphicsResourceAllocator allocator)
-        {
-            CommandList = new CommandList(graphicsDevice);
-            Allocator = allocator ?? new GraphicsResourceAllocator(graphicsDevice).DisposeBy(graphicsDevice);
-            ResourceGroupAllocator = new ResourceGroupAllocator(Allocator, CommandList);
-        }
-
-        public GraphicsContext(GraphicsDevice graphicsDevice, CommandList commandList, GraphicsResourceAllocator allocator)
-        {
-            CommandList = commandList;
+            CommandList = commandList ?? graphicsDevice.InternalMainCommandList ?? CommandList.New(graphicsDevice);
             Allocator = allocator ?? new GraphicsResourceAllocator(graphicsDevice).DisposeBy(graphicsDevice);
             ResourceGroupAllocator = new ResourceGroupAllocator(Allocator, CommandList);
         }

@@ -45,7 +45,12 @@ namespace SiliconStudio.Xenko.Graphics
         
         private long fenceValue;
 
-        public CommandList(GraphicsDevice device) : base(device)
+        public static CommandList New(GraphicsDevice device)
+        {
+            return new CommandList(device);
+        }
+
+        internal CommandList(GraphicsDevice device) : base(device)
         {
             Recreate();
         }

@@ -880,6 +880,9 @@ namespace SiliconStudio.Xenko.Graphics
                 graphicsContext.MakeCurrent(windowInfo);
             }
 #endif
+
+            // Create the main command list
+            InternalMainCommandList = new CommandList(this);
         }
 
         private void AdjustDefaultPipelineStateDescription(ref PipelineStateDescription pipelineStateDescription)

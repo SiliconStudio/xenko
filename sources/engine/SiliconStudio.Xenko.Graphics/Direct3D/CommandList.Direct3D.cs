@@ -36,7 +36,12 @@ namespace SiliconStudio.Xenko.Graphics
 
         private DescriptorSet[] currentDescriptorSets = new DescriptorSet[32];
 
-        public CommandList(GraphicsDevice device) : base(device)
+        public static CommandList New(GraphicsDevice device)
+        {
+            throw new InvalidOperationException("Can't create multiple command lists with D3D11");
+        }
+
+        internal CommandList(GraphicsDevice device) : base(device)
         {
             nativeDeviceContext = device.NativeDeviceContext;
             nativeDeviceContext1 = new SharpDX.Direct3D11.DeviceContext1(nativeDeviceContext.NativePointer);

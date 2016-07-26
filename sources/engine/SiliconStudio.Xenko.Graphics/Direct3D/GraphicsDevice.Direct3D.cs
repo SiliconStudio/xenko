@@ -147,7 +147,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         private void InitializePostFeatures()
         {
-            
+            // Create the main command list
+            InternalMainCommandList = new CommandList(this);
         }
 
         private string GetRendererName()

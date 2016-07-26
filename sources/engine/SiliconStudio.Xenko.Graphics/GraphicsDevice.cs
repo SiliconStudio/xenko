@@ -38,6 +38,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal PipelineState DefaultPipelineState;
 
+        internal CommandList InternalMainCommandList;
+
         internal PrimitiveQuad PrimitiveQuad;
         private ColorSpace colorSpace;
 
@@ -86,14 +88,14 @@ namespace SiliconStudio.Xenko.Graphics
             // Create a new graphics device
             Features = new GraphicsDeviceFeatures(this);
 
-            InitializePostFeatures();
-
             SamplerStates = new SamplerStateFactory(this);
 
             var defaultPipelineStateDescription = new PipelineStateDescription();
             defaultPipelineStateDescription.SetDefaults();
             AdjustDefaultPipelineStateDescription(ref defaultPipelineStateDescription);
             DefaultPipelineState = PipelineState.New(this, ref defaultPipelineStateDescription);
+
+            InitializePostFeatures();
         }
 
         protected override void Destroy()

@@ -24,6 +24,9 @@ namespace SiliconStudio.Xenko.Rendering
         private const string SharedImageEffectContextKey = "__SharedRenderContext__";
         private readonly ThreadLocal<RenderDrawContext> threadContext = new ThreadLocal<RenderDrawContext>(true);
 
+        // Used for API that don't support multiple command lists
+        internal CommandList SharedCommandList;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContext" /> class.
         /// </summary>

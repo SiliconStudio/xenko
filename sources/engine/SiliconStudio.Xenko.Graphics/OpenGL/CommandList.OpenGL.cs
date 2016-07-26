@@ -73,7 +73,12 @@ namespace SiliconStudio.Xenko.Graphics
         private int[] _currentScissorsSetBuffer = new int[4 * MaxBoundRenderTargets];
 #endif
 
-        public CommandList(GraphicsDevice device) : base(device)
+        public static CommandList New(GraphicsDevice device)
+        {
+            throw new InvalidOperationException("Can't create multiple command lists with OpenGL");
+        }
+
+        internal CommandList(GraphicsDevice device) : base(device)
         {
             device.MainCommandList = this;
 
@@ -314,9 +319,6 @@ namespace SiliconStudio.Xenko.Graphics
             GL.ColorMask(true, true, true, true);
             currentPipelineState.DepthStencilState.Apply(this);
             currentPipelineState.RasterizerState.Apply(this);
-
-            // Set default render targets
-            SetRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE
             GL.Enable(EnableCap.FramebufferSrgb);
