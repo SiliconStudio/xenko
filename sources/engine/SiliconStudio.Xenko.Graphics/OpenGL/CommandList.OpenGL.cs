@@ -1046,7 +1046,10 @@ namespace SiliconStudio.Xenko.Graphics
                         {
                             //UnbindVertexArrayObject();
                             GL.BindBuffer(buffer.BufferTarget, buffer.BufferId);
-                            GL.BufferSubData(buffer.BufferTarget, (IntPtr)unmapped.OffsetInBytes, (IntPtr)unmapped.SizeInBytes, unmapped.DataBox.DataPointer);
+                            if (unmapped.OffsetInBytes == 0 && unmapped.SizeInBytes == buffer.SizeInBytes)
+                                GL.BufferData(buffer.BufferTarget, unmapped.SizeInBytes, unmapped.DataBox.DataPointer, buffer.BufferUsageHint);
+                            else
+                                GL.BufferSubData(buffer.BufferTarget, (IntPtr)unmapped.OffsetInBytes, (IntPtr)unmapped.SizeInBytes, unmapped.DataBox.DataPointer);
                         }
                     }
                     else
