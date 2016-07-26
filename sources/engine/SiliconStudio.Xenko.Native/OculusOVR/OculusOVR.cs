@@ -88,11 +88,29 @@ namespace SiliconStudio.Xenko.Native
 
         public struct SessionStatus
         {
+            /// <summary>
+            /// True if the process has VR focus and thus is visible in the HMD.
+            /// </summary>
             public bool IsVisible;
+            /// <summary>
+            /// True if an HMD is present.
+            /// </summary>
             public bool HmdPresent;
+            /// <summary>
+            /// True if the HMD is on the user's head.
+            /// </summary>
             public bool HmdMounted;
+            /// <summary>
+            /// True if the session is in a display-lost state. See ovr_SubmitFrame.
+            /// </summary>
             public bool DisplayLost;
+            /// <summary>
+            /// True if the application should initiate shutdown.    
+            /// </summary>
             public bool ShouldQuit;
+            /// <summary>
+            /// True if UX has requested re-centering. 
+            /// </summary>
             public bool ShouldRecenter;
         }
 
@@ -114,5 +132,9 @@ namespace SiliconStudio.Xenko.Native
                 ShouldRecenter = statusInternal.ShouldRecenter == 1
             };
         }
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrRecenter", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void Recenter(IntPtr session);
     }
 }

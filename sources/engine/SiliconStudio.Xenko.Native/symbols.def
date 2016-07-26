@@ -13,6 +13,7 @@ xnOvrCommitFrame
 xnOvrPrepareRender
 xnOvrGetMirrorTextureDx
 xnOvrGetStatus
+xnOvrRecenter
 xnCeltCreate
 xnCeltDestroy
 xnCeltEncodeFloat

@@ -464,6 +464,11 @@ extern "C" {
 		statusOut->ShouldQuit = status.ShouldQuit;
 		statusOut->ShouldRecenter = status.ShouldRecenter;
 	}
+
+	void xnOvrRecenter(xnOvrSession* session)
+	{
+		ovr_RecenterTrackingOriginFunc(session->Session);
+	}
 }
 
 #else
@@ -548,6 +553,10 @@ extern "C" {
 #pragma pack(pop)
 
 	void xnOvrGetStatus(xnOvrSession* session, xnOvrSessionStatus* statusOut)
+	{
+	}
+
+	void xnOvrRecenter(xnOvrSession* session)
 	{
 	}
 }
