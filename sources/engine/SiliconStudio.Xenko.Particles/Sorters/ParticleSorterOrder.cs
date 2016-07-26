@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Particles.Sorters
 
         struct OrderCalculator : ISortValueCalculator<uint>
         {
-            public float GetSortValue(uint order) => BitConverter.ToSingle(BitConverter.GetBytes(order), 0) * -1f;
+            public unsafe float GetSortValue(uint order) => *((float*)(&order)) * -1f;
         }
     }
 
