@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.UI
         /// The Back side of the bounding cuboid.
         /// </summary>
         /// <userdoc>The Back side of the bounding cuboid.</userdoc>
-        [DataMember(5)]
+        [DataMember(2)]
         [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
         public float Back;
@@ -95,7 +95,7 @@ namespace SiliconStudio.Xenko.UI
         /// The front side of the bounding cuboid.
         /// </summary>
         /// <userdoc>The front side of the bounding cuboid.</userdoc>
-        [DataMember(2)]
+        [DataMember(5)]
         [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
         public float Front;
