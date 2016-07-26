@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;

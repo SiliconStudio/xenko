@@ -47,10 +47,9 @@ Hierarchy:
                         Children: []
                     - !GameMenu.SplashScript,GameMenu.Game
                         ~Id: e77d2bac-3b55-4bbc-a5bb-d9c3ba319cc1
-                        SplashScreenImages: feefd366-28b9-404c-80e5-a083cd45e7d8/ba4ff50b-212b-47c5-af90-6672a8019b04:SplashScreenImages
-                        WesternFont: fe95c3b6-1014-4c00-8ddf-55902252f1d2/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
                     - !UIComponent
                         ~Id: a8b1b6f6-8ad4-4580-bd94-0370455f3450
-                        Resolution: {X: 640.0, Y: 1136.0, Z: 1000.0}
+                        Page: a540b88f-cd39-4f3c-adf0-9175144229b1/62c493c2-13ea-4fac-bbaf-578afafac104:Splash
+                        Resolution: {X: 1280.0, Y: 740.0, Z: 1000.0}
                         Size: {X: 1.0, Y: 1.0, Z: 1.0}
                         ResolutionStretch: FixedWidthFixedHeight
