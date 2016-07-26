@@ -4,6 +4,7 @@
 using System;
 using System.Threading;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -69,13 +70,14 @@ namespace SiliconStudio.Xenko.Rendering
         public override void PrepareEffectPermutationsImpl(RenderDrawContext context)
         {
             // Setup ActiveMeshDraw
-            foreach (var objectNodeReference in ObjectNodeReferences)
+            //foreach (var objectNodeReference in ObjectNodeReferences)
+            Dispatcher.ForEach(ObjectNodeReferences, objectNodeReference =>
             {
                 var objectNode = GetObjectNode(objectNodeReference);
                 var renderMesh = (RenderMesh)objectNode.RenderObject;
 
                 renderMesh.ActiveMeshDraw = renderMesh.Mesh.Draw;
-            }
+            });
 
             base.PrepareEffectPermutationsImpl(context);
 

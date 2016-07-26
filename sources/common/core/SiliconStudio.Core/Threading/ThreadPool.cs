@@ -13,11 +13,13 @@ namespace SiliconStudio.Core.Threading
     {
         public static readonly ThreadPool Instance = new ThreadPool();
 
+        private readonly int MaxThreadCount = Environment.ProcessorCount * 2;
         private readonly List<Task> workers = new List<Task>();
         private readonly Queue<Action> workItems = new Queue<Action>();
-        private int activeThreadCount;
+        private readonly ManualResetEvent workAvailable = new ManualResetEvent(false);
+
         private SpinLock spinLock = new SpinLock();
-        private AutoResetEvent workAvailable = new AutoResetEvent(false);
+        private int activeThreadCount;
 
         public void QueueWorkItem(Action workItem)
         {
@@ -28,11 +30,11 @@ namespace SiliconStudio.Core.Threading
 
                 workItems.Enqueue(workItem);
 
-                if (activeThreadCount + 1 >= workers.Count && workers.Count < Environment.ProcessorCount * 2)
+                if (activeThreadCount + 1 >= workers.Count && workers.Count < MaxThreadCount)
                 {
                     var worker = Task.Factory.StartNew(ProcessWorkItems, workers.Count, TaskCreationOptions.LongRunning);
                     workers.Add(worker);
-                    Console.WriteLine($"Thread {workers.Count} added");
+                    //Console.WriteLine($"Thread {workers.Count} added");
                 }
 
                 workAvailable.Set();
@@ -57,13 +59,13 @@ namespace SiliconStudio.Core.Threading
                 }
 
                 var preferredWorkerCount = workItems.Count + activeThreadCount + 1;
-                var newWorkerCount = Math.Min(preferredWorkerCount - workers.Count, Environment.ProcessorCount * 2);
+                var newWorkerCount = Math.Min(preferredWorkerCount - workers.Count, MaxThreadCount);
 
                 while (newWorkerCount-- > 0)
                 {
                     var worker = Task.Factory.StartNew(ProcessWorkItems, workers.Count, TaskCreationOptions.LongRunning);
                     workers.Add(worker);
-                    Console.WriteLine($"Thread {workers.Count} added");
+                    //Console.WriteLine($"Thread {workers.Count} added");
                 }
 
                 workAvailable.Set();
@@ -84,54 +86,68 @@ namespace SiliconStudio.Core.Threading
             if (Thread.CurrentThread.Name == null)
                 Thread.CurrentThread.Name = $"Xenko Thread Pool {state}";
 
+            //var spinWait = new SpinWait();
+
             while (true)
             {
                 Action workItem = null;
 
-                bool lockTaken = false;
-                try
+                //while (!spinWait.NextSpinWillYield)
                 {
-                    spinLock.Enter(ref lockTaken);
-
-                    if (workItems.Count > 0)
-                    {
-                        try
-                        {
-                            workItem = workItems.Dequeue();
-                            Interlocked.Increment(ref activeThreadCount);
-                        }
-                        catch
-                        {
-
-                        }
-                    }
-
-                    if (workItems.Count > 0)
-                    {
-                        // If we didn't consume the last work item, kick off another worker
-                        workAvailable.Set();
-                    }
-                }
-                finally
-                {
-                    if (lockTaken)
-                        spinLock.Exit(true);
-                }
-
-                if (workItem != null)
-                {
+                    bool lockTaken = false;
                     try
                     {
-                        //Interlocked.Increment(ref activeThreadCount);
-                        workItem.Invoke();
-                    }
-                    catch (Exception e)
-                    {
+                        spinLock.Enter(ref lockTaken);
 
+                        if (workItems.Count > 0)
+                        {
+                            try
+                            {
+                                workItem = workItems.Dequeue();
+                                //Interlocked.Increment(ref activeThreadCount);
+
+                                if (workItems.Count == 0)
+                                    workAvailable.Reset();
+                            }
+                            catch
+                            {
+
+                            }
+                        }
+
+                        //if (workItems.Count > 0)
+                        //{
+                        //    // If we didn't consume the last work item, kick off another worker
+                        //    workAvailable.Set();
+                        //}
                     }
                     finally
                     {
-                        Interlocked.Decrement(ref activeThreadCount);
+                        if (lockTaken)
+                            spinLock.Exit(true);
+                    }
+
+                    if (workItem != null)
+                    {
+                        try
+                        {
+                            Interlocked.Increment(ref activeThreadCount);
+                            workItem.Invoke();
+
+                            //spinWait.Reset();
+                        }
+                        catch (Exception e)
+                        {
+
+                        }
+                        finally
+                        {
+                            Interlocked.Decrement(ref activeThreadCount);
+                        }
+                    }
+                    else
+                    {
+                        //spinWait.SpinOnce();
                     }
                 }
 

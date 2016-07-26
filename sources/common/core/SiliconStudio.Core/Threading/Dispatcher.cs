@@ -16,10 +16,9 @@ namespace SiliconStudio.Core.Threading
         void Release(object item);
     }
 
-    [AttributeUsage(AttributeTargets.Parameter)]
+    [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Delegate)]
     public class PooledAttribute : Attribute
-    {
-        
+    {  
     }
 
     public class Dispatcher
@@ -31,23 +30,44 @@ namespace SiliconStudio.Core.Threading
             public TimeSpan TotalTime;
         }
 
-        private static ConcurrentDictionary<object, DispatcherNode> nodes = new ConcurrentDictionary<object, DispatcherNode>();
+        private static ConcurrentDictionary<MethodInfo, DispatcherNode> nodes = new ConcurrentDictionary<MethodInfo, DispatcherNode>();
 
-        private const bool disableParallelization = false;
+        private static readonly int MaxDregreeOfParallelism = Environment.ProcessorCount;
 
-        public static void For2(int fromInclusive, int toExclusive, [Pooled] Action<int> action)
+        [Pooled]
+        public delegate void ForAction(int index);
+
+        [Pooled]
+        public delegate void ForAction<in TLocal>(int index, TLocal local);
+
+        [Pooled]
+        public delegate void ForeachAction<in T>(T item);
+
+        [Pooled]
+        public delegate void ForeachAction<in T, in TLocal>(T item, TLocal local);
+
+        [Pooled]
+        public delegate T BatchInitializer<out T>();
+
+        [Pooled]
+        public delegate void BatchFinalizer<in T>(T local);
+
+        public static void For(int fromInclusive, int toExclusive, ForAction action)
         {
+            //var stopwatch = new Stopwatch();
+            //stopwatch.Start();
+
             var count = toExclusive - fromInclusive;
             if (count == 0)
                 return;
 
-            if (disableParallelization)
+            if (MaxDregreeOfParallelism <= 1)
             {
                 ExecuteBatch(fromInclusive, toExclusive, action);
             }
             else
             {
-                int batchCount = Math.Min(Environment.ProcessorCount, count);
+                int batchCount = Math.Min(MaxDregreeOfParallelism, count);
                 int batchSize = (count + (batchCount - 1)) / batchCount;
 
                 int batchStartInclusive = fromInclusive;
@@ -83,19 +103,37 @@ namespace SiliconStudio.Core.Threading
                 }
 
                 ThreadPool.Instance.QueueWorkItems(batches);
-                //foreach (var batch in batches)
-                //{
-                //    ThreadPool.Instance.QueueWorkItem(batch);
-                //}
 
                 finished.WaitOne();
             }
+
+            //stopwatch.Stop();
+            //var elapsed = stopwatch.Elapsed;
+
+            //DispatcherNode node;
+            //if (!nodes.TryGetValue(action.Method, out node))
+            //{
+            //    var caller = new StackFrame(1, true).GetMethod();
+            //    if (caller.Name == "ForEach")
+            //        caller = new StackFrame(2, true).GetMethod();
+
+            //    node = nodes.GetOrAdd(action.Method, key => new DispatcherNode());
+            //    node.Caller = caller;
+            //}
+
+            //node.Count++;
+            //node.TotalTime += elapsed;
+
+            //if (node.Count % 500 == 0)
+            //{
+            //    //Console.WriteLine($"[{node.Count}] {node.Caller.DeclaringType.Name}.{node.Caller.Name}: {node.TotalTime.TotalMilliseconds / node.Count}");
+            //}
         }
 
-        public static void For<TLocal>(int fromInclusive, int toExclusive, [Pooled] Func<TLocal> initializeLocal, Action<int, TLocal> action, [Pooled] Action<TLocal> finalizeLocal = null)
+        public static void For<TLocal>(int fromInclusive, int toExclusive, BatchInitializer<TLocal> initializeLocal, ForAction<TLocal> action, BatchFinalizer<TLocal> finalizeLocal = null)
         {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
+            //var stopwatch = new Stopwatch();
+            //stopwatch.Start();
 
             if (fromInclusive > toExclusive)
             {
@@ -108,7 +146,7 @@ namespace SiliconStudio.Core.Threading
             if (count == 0)
                 return;
 
-            if (disableParallelization)
+            if (MaxDregreeOfParallelism <= 1)
             {
                 ExecuteBatch(fromInclusive, toExclusive, initializeLocal, action, finalizeLocal);
             }
@@ -117,7 +155,7 @@ namespace SiliconStudio.Core.Threading
                 //Parallel.For(fromInclusive, toExclusive, i => action(i));
                 //return;
 
-                int batchCount = Math.Min(Environment.ProcessorCount, count);
+                int batchCount = Math.Min(MaxDregreeOfParallelism, count);
                 int batchSize = (count + (batchCount - 1)) / batchCount;
                 batchCount = (count + (batchSize - 1)) / batchSize;
 
@@ -128,33 +166,33 @@ namespace SiliconStudio.Core.Threading
                 finishedLock.Finished.WaitOne();
             }
 
-            stopwatch.Stop();
-            var elapsed = stopwatch.Elapsed;
+            //stopwatch.Stop();
+            //var elapsed = stopwatch.Elapsed;
 
-            DispatcherNode node;
-            if (!nodes.TryGetValue(action.Method, out node))
-            {
-                var caller = new StackFrame(1, true).GetMethod();
-                //if (caller.Name == "ForEach")
-                //    caller = new StackFrame(2, true).GetMethod();
+            //DispatcherNode node;
+            //if (!nodes.TryGetValue(action.Method, out node))
+            //{
+            //    var caller = new StackFrame(1, true).GetMethod();
+            //    //if (caller.Name == "ForEach")
+            //    //    caller = new StackFrame(2, true).GetMethod();
 
-                node = nodes.GetOrAdd(action.Method, key => new DispatcherNode());
-                node.Caller = caller;
-            }
+            //    node = nodes.GetOrAdd(action.Method, key => new DispatcherNode());
+            //    node.Caller = caller;
+            //}
 
-            node.Count++;
-            node.TotalTime += elapsed;
+            //node.Count++;
+            //node.TotalTime += elapsed;
 
-            if (node.Count % 500 == 0)
-            {
-                //Console.WriteLine($"[{node.Count}] {node.Caller.DeclaringType.Name}.{node.Caller.Name}: {node.TotalTime.TotalMilliseconds / node.Count}");
-            }
+            //if (node.Count % 500 == 0)
+            //{
+            //    Console.WriteLine($"[{node.Count}] {node.Caller.DeclaringType.Name}.{node.Caller.Name}: {node.TotalTime.TotalMilliseconds / node.Count}");
+            //}
         }
 
-        public static void For(int fromInclusive, int toExclusive, [Pooled] Action<int> action)
+        internal static void For2(int fromInclusive, int toExclusive, ForAction action)
         {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
+            //var stopwatch = new Stopwatch();
+            //stopwatch.Start();
 
             if (fromInclusive > toExclusive)
             {
@@ -167,7 +205,7 @@ namespace SiliconStudio.Core.Threading
             if (count == 0)
                 return;
 
-            if (disableParallelization)
+            if (MaxDregreeOfParallelism <= 1)
             {
                 ExecuteBatch(fromInclusive, toExclusive, action);
             }
@@ -176,7 +214,7 @@ namespace SiliconStudio.Core.Threading
                 //Parallel.For(fromInclusive, toExclusive, i => action(i));
                 //return;
 
-                int batchCount = Math.Min(Environment.ProcessorCount, count);
+                int batchCount = Math.Min(MaxDregreeOfParallelism, count);
                 int batchSize = (count + (batchCount - 1)) / batchCount;
                 batchCount = (count + (batchSize - 1)) / batchSize;
 
@@ -187,32 +225,32 @@ namespace SiliconStudio.Core.Threading
                 finishedLock.Finished.WaitOne();
             }
 
-            stopwatch.Stop();
-            var elapsed = stopwatch.Elapsed;
+            //stopwatch.Stop();
+            //var elapsed = stopwatch.Elapsed;
 
-            DispatcherNode node;
-            if (!nodes.TryGetValue(action.Method, out node))
-            {
-                var caller = new StackFrame(1, true).GetMethod();
-                if (caller.Name == "ForEach")
-                    caller = new StackFrame(2, true).GetMethod();
+            //DispatcherNode node;
+            //if (!nodes.TryGetValue(action.Method, out node))
+            //{
+            //    var caller = new StackFrame(1, true).GetMethod();
+            //    if (caller.Name == "ForEach")
+            //        caller = new StackFrame(2, true).GetMethod();
 
-                node = nodes.GetOrAdd(action.Method, key => new DispatcherNode());
-                node.Caller = caller;
-            }
+            //    node = nodes.GetOrAdd(action.Method, key => new DispatcherNode());
+            //    node.Caller = caller;
+            //}
 
-            node.Count++;
-            node.TotalTime += elapsed;
+            //node.Count++;
+            //node.TotalTime += elapsed;
 
-            if (node.Count % 500 == 0)
-            {
-                //Console.WriteLine($"[{node.Count}] {node.Caller.DeclaringType.Name}.{node.Caller.Name}: {node.TotalTime.TotalMilliseconds / node.Count}");
-            }
+            //if (node.Count % 500 == 0)
+            //{
+            //    //Console.WriteLine($"[{node.Count}] {node.Caller.DeclaringType.Name}.{node.Caller.Name}: {node.TotalTime.TotalMilliseconds / node.Count}");
+            //}
         }
 
-        public static void ForEach<T>([Pooled] Action<T> action, MoveNextDelegate<T> tryMoveNext)
+        public static void ForEach<T>(ForeachAction<T> action, MoveNextDelegate<T> tryMoveNext)
         {
-            if (disableParallelization)
+            if (MaxDregreeOfParallelism <= 1)
             {
                 T value;
                 while (tryMoveNext(out value))
@@ -220,7 +258,7 @@ namespace SiliconStudio.Core.Threading
             }
             else
             {
-                int batchCount = Environment.ProcessorCount;
+                int batchCount = MaxDregreeOfParallelism;
 
                 var finishedLock = new BatchState { Count = batchCount };
 
@@ -230,7 +268,7 @@ namespace SiliconStudio.Core.Threading
             }
         }
 
-        private static void Fork<T>(int batchCount, [Pooled] Action<T> action, MoveNextDelegate<T> tryMoveNext, BatchState batchState)
+        private static void Fork<T>(int batchCount, ForeachAction<T> action, MoveNextDelegate<T> tryMoveNext, BatchState batchState)
         {
             if (--batchCount > 0)
             {
@@ -255,7 +293,7 @@ namespace SiliconStudio.Core.Threading
             public ManualResetEvent Finished = new ManualResetEvent(false);
         }
 
-        private static void Fork(int batchSize, int toExclusive, int batchStartInclusive, int batchEndExclusive, [Pooled] Action<int> action, BatchState batchState)
+        private static void Fork(int batchSize, int toExclusive, int batchStartInclusive, int batchEndExclusive, ForAction action, BatchState batchState)
         {
             var start = batchStartInclusive;
             var end = batchEndExclusive;
@@ -279,7 +317,7 @@ namespace SiliconStudio.Core.Threading
             }
         }
 
-        private static void Fork<TLocal>(int batchSize, int toExclusive, int batchStartInclusive, int batchEndExclusive, [Pooled] Func<TLocal> initializeLocal, Action<int, TLocal> action, [Pooled] Action<TLocal> finalizeLocal, BatchState batchState)
+        private static void Fork<TLocal>(int batchSize, int toExclusive, int batchStartInclusive, int batchEndExclusive, BatchInitializer<TLocal> initializeLocal, ForAction<TLocal> action, BatchFinalizer<TLocal> finalizeLocal, BatchState batchState)
         {
             var start = batchStartInclusive;
             var end = batchEndExclusive;
@@ -303,32 +341,32 @@ namespace SiliconStudio.Core.Threading
             }
         }
         
-        public static void ForEach<TItem, TLocal>(IReadOnlyList<TItem> collection, [Pooled] Func<TLocal> initializeLocal, Action<TItem, TLocal> action, [Pooled] Action<TLocal> finalizeLocal = null)
+        public static void ForEach<TItem, TLocal>(IReadOnlyList<TItem> collection, BatchInitializer<TLocal> initializeLocal, ForeachAction<TItem, TLocal> action, BatchFinalizer<TLocal> finalizeLocal = null)
         {
             For(0, collection.Count, initializeLocal, (i, local) => action(collection[i], local), finalizeLocal);
         }
 
-        public static void ForEach<T>(IReadOnlyList<T> collection, [Pooled] Action<T> action)
+        public static void ForEach<T>(IReadOnlyList<T> collection, ForeachAction<T> action)
         {
             For(0, collection.Count, i => action(collection[i]));
         }
 
-        public static void ForEach<T>(List<T> collection, [Pooled] Action<T> action)
+        public static void ForEach<T>(List<T> collection, ForeachAction<T> action)
         {
             For(0, collection.Count, i => action(collection[i]));
         }
 
-        public static void ForEach<T>(FastCollection<T> collection, [Pooled]Action<T> action)
+        public static void ForEach<T>(FastCollection<T> collection, ForeachAction<T> action)
         {
             For(0, collection.Count, i => action(collection[i]));
         }
 
-        public static void ForEach<T>(FastList<T> collection, [Pooled] Action<T> action)
+        public static void ForEach<T>(FastList<T> collection, ForeachAction<T> action)
         {
             For(0, collection.Count, i => action(collection[i]));
         }
 
-        public static void ForEach<TKey, TValue>(Dictionary<TKey, TValue> collection, [Pooled] Action<KeyValuePair<TKey, TValue>> action)
+        public static void ForEach<TKey, TValue>(Dictionary<TKey, TValue> collection, ForeachAction<KeyValuePair<TKey, TValue>> action)
         {
             var enumerator = collection.GetEnumerator();
             var spinLock = new SpinLock();
@@ -359,7 +397,7 @@ namespace SiliconStudio.Core.Threading
 
         public delegate bool MoveNextDelegate<T>(out T currentValue);
 
-        private static void ExecuteBatch(int fromInclusive, int toExclusive, [Pooled] Action<int> action)
+        private static void ExecuteBatch(int fromInclusive, int toExclusive, ForAction action)
         {
             for (int i = fromInclusive; i < toExclusive; i++)
             {
@@ -367,7 +405,7 @@ namespace SiliconStudio.Core.Threading
             }
         }
 
-        private static void ExecuteBatch<TLocal>(int fromInclusive, int toExclusive, [Pooled] Func<TLocal> initializeLocal, Action<int, TLocal> action, [Pooled] Action<TLocal> finalizeLocal)
+        private static void ExecuteBatch<TLocal>(int fromInclusive, int toExclusive, BatchInitializer<TLocal> initializeLocal, ForAction<TLocal> action, BatchFinalizer<TLocal> finalizeLocal)
         {
             TLocal local = default(TLocal);
             try
@@ -401,7 +439,7 @@ namespace SiliconStudio.Core.Threading
         public static void Sort<T>(T[] collection, int index, int length, IComparer<T> comparer)
         {
             int depth = 0;
-            int degreeOfParallelism = Environment.ProcessorCount;
+            int degreeOfParallelism = MaxDregreeOfParallelism;
 
             while ((degreeOfParallelism >>= 1) != 0)
                 depth++;
