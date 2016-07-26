@@ -9,11 +9,13 @@ namespace SiliconStudio.Xenko.Particles.Sorters
     /// <summary>
     /// Sorts the particles by ascending order of their Order attribute
     /// </summary>
-    public class ParticleSorterOrder : ParticleSorterCustom<uint>
+    public class ParticleSorterOrder : ParticleSorterCustom<uint>, IParticleSorter
     {
         public ParticleSorterOrder(ParticlePool pool) : base(pool, ParticleFields.Order) { }
 
-        public override IParticleSortedList GetSortedList(Vector3 depth)
+        IParticleSortedList IParticleSorter.GetSortedList(Vector3 depth) => GetSortedList(depth);
+
+        public ParticleSortedListCustom<uint> GetSortedList(Vector3 depth)
         {
             var sortField = ParticlePool.GetField(fieldDesc);
 

@@ -75,7 +75,7 @@ namespace SiliconStudio.Xenko.Particles.Sorters
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         /// <inheritdoc />
-        public Enumerator GetEnumerator()
+        public IEnumerator<Particle> GetEnumerator()
         {
             return new Enumerator(particleList, currentLivingParticles);
         }
@@ -84,14 +84,17 @@ namespace SiliconStudio.Xenko.Particles.Sorters
     /// <summary>
     /// The custom sorter uses a user-defined method for generating sort index from a user-defined field
     /// </summary>
-    public abstract class ParticleSorterCustom<T> : ParticleSorter where T : struct
+    public abstract class ParticleSorterCustom<T> where T : struct
     {
         protected readonly ParticleFieldDescription<T> fieldDesc;
 
         protected readonly ConcurrentArrayPool<SortedParticle> ArrayPool = new ConcurrentArrayPool<SortedParticle>();
 
-        protected ParticleSorterCustom(ParticlePool pool, ParticleFieldDescription<T> fieldDesc) : base(pool)
+        protected readonly ParticlePool ParticlePool;
+
+        protected ParticleSorterCustom(ParticlePool pool, ParticleFieldDescription<T> fieldDesc)
         {
+            ParticlePool = pool;
             this.fieldDesc = fieldDesc;
         }
     }

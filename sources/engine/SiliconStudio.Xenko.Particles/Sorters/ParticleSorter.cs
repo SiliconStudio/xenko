@@ -2,13 +2,12 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Particles.Sorters
 {
-    public interface IParticleSortedList : IEnumerable
+    public interface IParticleSortedList : IEnumerable<Particle>
     {
         /// <summary>
         /// Returns a particle field accessor for the contained <see cref="ParticlePool"/>
@@ -67,21 +66,8 @@ namespace SiliconStudio.Xenko.Particles.Sorters
         }
     }
 
-    /// <summary>
-    /// Base enumerator which accesses all particles in a <see cref="ParticlePool"/> in a sorted manner
-    /// </summary>
-    public abstract class ParticleSorter
+    public interface IParticleSorter
     {
-        /// <summary>
-        /// Target <see cref="ParticlePool"/> to iterate and sort
-        /// </summary>
-        protected readonly ParticlePool ParticlePool;
-
-        protected ParticleSorter(ParticlePool pool)
-        {
-            ParticlePool = pool;
-        }
-
-        public abstract IParticleSortedList GetSortedList(Vector3 depth);        
+        IParticleSortedList GetSortedList(Vector3 depth);
     }
 }

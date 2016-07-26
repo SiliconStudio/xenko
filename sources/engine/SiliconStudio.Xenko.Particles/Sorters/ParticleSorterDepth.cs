@@ -8,11 +8,13 @@ namespace SiliconStudio.Xenko.Particles.Sorters
     /// <summary>
     /// Sorts the particles by ascending order of their Depth (position on the camera's Z axis)
     /// </summary>
-    public class ParticleSorterDepth : ParticleSorterCustom<Vector3>
+    public class ParticleSorterDepth : ParticleSorterCustom<Vector3>, IParticleSorter
     {
         public ParticleSorterDepth(ParticlePool pool) : base(pool, ParticleFields.Position) { }
 
-        public override IParticleSortedList GetSortedList(Vector3 depth)
+        IParticleSortedList IParticleSorter.GetSortedList(Vector3 depth) => GetSortedList(depth);
+
+        public ParticleSortedListCustom<Vector3> GetSortedList(Vector3 depth)
         {
             var sortField = ParticlePool.GetField(fieldDesc);
 

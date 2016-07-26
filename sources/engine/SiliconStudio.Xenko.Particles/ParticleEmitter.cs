@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.Particles
         /// Enumerator which accesses all relevant particles in a sorted manner
         /// </summary>
         [DataMemberIgnore]
-        internal ParticleSorter ParticleSorter;
+        internal IParticleSorter ParticleSorter;
         
         /// <summary>
         /// The RNG provides an easy seed-based random numbers

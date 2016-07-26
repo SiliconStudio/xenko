@@ -8,11 +8,13 @@ namespace SiliconStudio.Xenko.Particles.Sorters
     /// <summary>
     /// Sorts the particles by descending order of their remaining Life
     /// </summary>
-    public class ParticleSorterAge : ParticleSorterCustom<float>
+    public class ParticleSorterAge : ParticleSorterCustom<float>, IParticleSorter
     {
         public ParticleSorterAge(ParticlePool pool) : base(pool, ParticleFields.Life) { }
 
-        public override IParticleSortedList GetSortedList(Vector3 depth)
+        IParticleSortedList IParticleSorter.GetSortedList(Vector3 depth) => GetSortedList(depth);
+
+        public ParticleSortedListCustom<float> GetSortedList(Vector3 depth)
         {
             var sortField = ParticlePool.GetField(fieldDesc);
 

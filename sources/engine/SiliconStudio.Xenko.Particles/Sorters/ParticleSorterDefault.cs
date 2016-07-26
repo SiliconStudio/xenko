@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Particles.Sorters
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         /// <inheritdoc />
-        public ParticlePool.Enumerator GetEnumerator() => pool.GetEnumerator();
+        public IEnumerator<Particle> GetEnumerator() => pool.GetEnumerator();
 
         public void Free() { }
     }
@@ -31,13 +31,24 @@ namespace SiliconStudio.Xenko.Particles.Sorters
     /// <summary>
     /// The default sorter doesn not sort the particles, but only passes them directly to the renderer
     /// </summary>
-    public class ParticleSorterDefault : ParticleSorter 
+    public class ParticleSorterDefault : IParticleSorter
     {
-        public override IParticleSortedList GetSortedList(Vector3 depth)
+        /// <summary>
+        /// Target <see cref="ParticlePool"/> to iterate and sort
+        /// </summary>
+        protected readonly ParticlePool ParticlePool;
+
+        IParticleSortedList IParticleSorter.GetSortedList(Vector3 depth) => GetSortedList(depth);
+
+        public ParticleSortedListNone GetSortedList(Vector3 depth)
         {
             return new ParticleSortedListNone(ParticlePool);
         }
 
-        public ParticleSorterDefault(ParticlePool pool) : base(pool) { }
+        public ParticleSorterDefault(ParticlePool pool)
+        {
+            ParticlePool = pool;
+        }
+
     }
 }
