@@ -50,6 +50,6 @@ Hierarchy:
                     - !UIComponent
                         ~Id: a8b1b6f6-8ad4-4580-bd94-0370455f3450
                         Page: a540b88f-cd39-4f3c-adf0-9175144229b1/62c493c2-13ea-4fac-bbaf-578afafac104:Splash
-                        Resolution: {X: 1280.0, Y: 740.0, Z: 1000.0}
+                        Resolution: {X: 640.0, Y: 1136.0, Z: 1000.0}
                         Size: {X: 1.0, Y: 1.0, Z: 1.0}
                         ResolutionStretch: FixedWidthFixedHeight

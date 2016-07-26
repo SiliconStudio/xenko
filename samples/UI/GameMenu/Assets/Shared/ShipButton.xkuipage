@@ -1,0 +1,207 @@
+!UIPageAsset
+Id: 077368e4-e3b0-4c85-8911-a3245c4bc4a0
+SerializedVersion: {Xenko: 0.0.0}
+Tags: []
+Design:
+    AdornerBackgroundColor: {R: 10, G: 41, B: 10, A: 51}
+    AdornerBorderColor: {R: 50, G: 205, B: 50, A: 255}
+    AdornerBorderThickness: 2.0
+    AreaBackgroundColor: {R: 122, G: 122, B: 122, A: 127}
+    AreaBorderColor: {R: 245, G: 245, B: 245, A: 255}
+    AreaBorderThickness: 2.0
+    Depth: 1000.0
+    Height: 720.0
+    Width: 1280.0
+Hierarchy:
+    ~Id: 0676baad-3ef3-4a28-9e19-cc643a99219c
+    RootPartIds:
+        - 3f43a337-c8d0-4d80-830f-dd1621f717cd
+    Parts:
+        -   UIElement: !ImageElement
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                Color: {R: 255, G: 255, B: 255, A: 255}
+                DependencyProperties: {}
+                Id: 04d990bf-c229-4e3b-b9a8-79a4e58a8a0c
+                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
+                Margin: {}
+                Name: powerImage
+                Source: !SpriteFromSheet
+                    ~Id: 5bae7c91-b216-4778-88e5-7efc936b46d5
+                    CurrentFrame: 13
+                    Sheet: 28ddd116-ace6-4f34-8438-c8e23d2f2121/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                VerticalAlignment: Center
+        -   UIElement: !UniformGrid
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                Children:
+                    - !TextBlock
+                        Id: a3861d95-b39e-42e4-93ac-a2c26ccbb95f
+                    - !TextBlock
+                        Id: 53b7f194-0ab8-4deb-805a-e44f2e64eaff
+                    - !TextBlock
+                        Id: 84261ef7-397f-47dd-8504-5dfcc0a11fef
+                DependencyProperties: {}
+                Id: 194a62d8-9ddd-497a-b893-521523c283aa
+                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
+                Margin: {Left: 5.0, Top: -6.0}
+                Name: statusTextGrid
+                Rows: 3
+        -   UIElement: !UniformGrid
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                Children:
+                    - !Button
+                        Id: be001fe1-6608-4bfe-b639-702029d9ffa1
+                DependencyProperties: {}
+                Id: 3f43a337-c8d0-4d80-830f-dd1621f717cd
+                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
+                Margin: {}
+                MaximumHeight: 100.0
+                Name: buttonGrid
+        -   UIElement: !TextBlock
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                DependencyProperties:
+                    GridBase.RowPropertyKey: 1
+                Font: 32bf2303-fa3d-42ad-a418-d51187b1c38c/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
+                HorizontalAlignment: Left
+                Id: 53b7f194-0ab8-4deb-805a-e44f2e64eaff
+                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
+                Margin: {}
+                Name: controlText
+                Text: Control
+                TextColor: {R: 0, G: 0, B: 0, A: 255}
+                TextSize: 19.0
+                VerticalAlignment: Center
+        -   UIElement: !ImageElement
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                Color: {R: 255, G: 255, B: 255, A: 255}
+                DependencyProperties:
+                    GridBase.RowPropertyKey: 1
+                Id: 6bdf70ec-8db2-4205-956f-f359f0a6261c
+                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
+                Margin: {}
+                Name: controlImage
+                Source: !SpriteFromSheet
+                    ~Id: 0015844e-d5e0-4e82-98a4-077e6129fb1d
+                    CurrentFrame: 13
+                    Sheet: 28ddd116-ace6-4f34-8438-c8e23d2f2121/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                VerticalAlignment: Center
+        -   UIElement: !ImageElement
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                Color: {R: 255, G: 255, B: 255, A: 255}
+                DependencyProperties:
+                    GridBase.ColumnPropertyKey: 4
+                Id: 726bd73e-ee28-4b91-a4d2-9f4ef1708737
+                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
+                Margin: {}
+                Name: shipImage
+                Source: !SpriteFromSheet
+                    ~Id: 5eb6f9b9-019f-4d1e-b89f-0f84b25eb7ec
+                    CurrentFrame: 2
+                    Sheet: 28ddd116-ace6-4f34-8438-c8e23d2f2121/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+        -   UIElement: !Grid
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                Children:
+                    - !UniformGrid
+                        Id: 194a62d8-9ddd-497a-b893-521523c283aa
+                    - !UniformGrid
+                        Id: 8af7f84b-6c1b-4ce3-b274-f264077682df
+                    - !ImageElement
+                        Id: 726bd73e-ee28-4b91-a4d2-9f4ef1708737
+                ColumnDefinitions:
+                    -   ~Id: a7ad1ce9-1cbb-4a6e-b4ae-16febf75ca0a
+                        Type: Auto
+                    -   ~Id: cd49b5e9-2df6-4eca-a554-893af78e0ea3
+                    -   ~Id: ba2b8e95-fcc8-4594-9d8c-755fa5113267
+                        Type: Auto
+                    -   ~Id: 6d907324-e402-4710-8f3f-2a3e496ef23c
+                    -   ~Id: fa3fa3d0-95ee-4225-a2ec-d19d3abe7219
+                        Type: Auto
+                DependencyProperties: {}
+                Id: 7765f331-7994-4bc8-91d4-58dd12426bbe
+                LayerDefinitions:
+                    -   ~Id: 9755c20c-c379-49be-92a9-07f942d2eaca
+                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
+                Margin: {}
+                Name: shipContent
+                RowDefinitions:
+                    -   ~Id: e2e14dd1-3228-434f-93bb-a19e880696b9
+        -   UIElement: !TextBlock
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                DependencyProperties:
+                    GridBase.RowPropertyKey: 2
+                Font: 32bf2303-fa3d-42ad-a418-d51187b1c38c/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
+                HorizontalAlignment: Left
+                Id: 84261ef7-397f-47dd-8504-5dfcc0a11fef
+                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
+                Margin: {}
+                Name: speedText
+                Text: Speed
+                TextColor: {R: 0, G: 0, B: 0, A: 255}
+                TextSize: 19.0
+                VerticalAlignment: Center
+        -   UIElement: !UniformGrid
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                Children:
+                    - !ImageElement
+                        Id: 04d990bf-c229-4e3b-b9a8-79a4e58a8a0c
+                    - !ImageElement
+                        Id: 6bdf70ec-8db2-4205-956f-f359f0a6261c
+                    - !ImageElement
+                        Id: f91c8c6d-d701-49c9-ae1d-de28fb949b2f
+                DependencyProperties:
+                    GridBase.ColumnPropertyKey: 2
+                Id: 8af7f84b-6c1b-4ce3-b274-f264077682df
+                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
+                Margin: {}
+                Name: starGrid
+                Rows: 3
+        -   UIElement: !TextBlock
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                DependencyProperties: {}
+                Font: 32bf2303-fa3d-42ad-a418-d51187b1c38c/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
+                HorizontalAlignment: Left
+                Id: a3861d95-b39e-42e4-93ac-a2c26ccbb95f
+                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
+                Margin: {}
+                Name: powerText
+                Text: Power
+                TextColor: {R: 0, G: 0, B: 0, A: 255}
+                TextSize: 19.0
+                VerticalAlignment: Center
+        -   UIElement: !Button
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                CanBeHitByUser: true
+                Content: !Grid
+                    Id: 7765f331-7994-4bc8-91d4-58dd12426bbe
+                DependencyProperties: {}
+                DrawLayerNumber: 2
+                Id: be001fe1-6608-4bfe-b639-702029d9ffa1
+                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
+                Margin: {}
+                MouseOverImage: !SpriteFromSheet
+                    ~Id: b7ebed14-cdd7-4aeb-a3b7-062a0eb3fd23
+                    CurrentFrame: 21
+                    Sheet: 28ddd116-ace6-4f34-8438-c8e23d2f2121/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                Name: shipButton
+                NotPressedImage: !SpriteFromSheet
+                    ~Id: 8896fb0d-0bda-4616-a369-08a28f79c3ec
+                    CurrentFrame: 21
+                    Sheet: 28ddd116-ace6-4f34-8438-c8e23d2f2121/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                Padding: {Left: 60.0, Top: 20.0, Right: 20.0, Bottom: 20.0}
+                PressedImage: !SpriteFromSheet
+                    ~Id: e477fd59-a66c-45e0-8f5b-c679c98aa5f7
+                    CurrentFrame: 21
+                    Sheet: 28ddd116-ace6-4f34-8438-c8e23d2f2121/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+        -   UIElement: !ImageElement
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                Color: {R: 255, G: 255, B: 255, A: 255}
+                DependencyProperties:
+                    GridBase.RowPropertyKey: 2
+                Id: f91c8c6d-d701-49c9-ae1d-de28fb949b2f
+                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
+                Margin: {}
+                Name: speedImage
+                Source: !SpriteFromSheet
+                    ~Id: d8089534-e29a-4c5d-ae47-5d794bd9b834
+                    CurrentFrame: 13
+                    Sheet: 28ddd116-ace6-4f34-8438-c8e23d2f2121/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                VerticalAlignment: Center

@@ -179,6 +179,7 @@ namespace GameMenu
 
             Script.AddTask(FillLifeBar);
         }
+        
         private async Task FillLifeBar()
         {
             var gaugePercentage = 0.15f;
