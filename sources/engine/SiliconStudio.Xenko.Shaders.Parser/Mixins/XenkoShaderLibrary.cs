@@ -7,7 +7,7 @@ using System.Text;
 
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Shaders.Ast.Xenko;
 using SiliconStudio.Xenko.Shaders.Parser.Utility;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
@@ -314,9 +314,9 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             if (shaderClass == null)
                 return;
 
-            shaderClass = shaderClass.DeepClone();
+            var shaderType = shaderClass.Type.DeepClone();
 
-            if (shaderClass.ShaderGenerics.Count > 0)
+            if (shaderType.ShaderGenerics.Count > 0)
                 mixinInfo.Instanciated = false;
 
             mixinInfo.HashPreprocessSource = shaderClass.PreprocessedSourceHash;
@@ -326,20 +326,20 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 SourceHashes.Add(classSource.ClassName, shaderClass.SourceHash);
 
             // check if it was a generic class and find out if the instanciation was correct
-            if (shaderClass.GenericParameters.Count > 0)
+            if (shaderType.GenericParameters.Count > 0)
             {
-                if (classSource.GenericArguments == null || classSource.GenericArguments.Length == 0 || shaderClass.GenericParameters.Count > classSource.GenericArguments.Length)
+                if (classSource.GenericArguments == null || classSource.GenericArguments.Length == 0 || shaderType.GenericParameters.Count > classSource.GenericArguments.Length)
                 {
                     mixinInfo.Instanciated = false;
-                    mixinInfo.Log.Error(XenkoMessageCode.ErrorClassSourceNotInstantiated, shaderClass.Span, classSource.ClassName);
+                    mixinInfo.Log.Error(XenkoMessageCode.ErrorClassSourceNotInstantiated, shaderType.Span, classSource.ClassName);
                 }
                 else
                 {
-                    ModuleMixinInfo.CleanIdentifiers(shaderClass.GenericParameters.Select(x => x.Name).ToList());
+                    ModuleMixinInfo.CleanIdentifiers(shaderType.GenericParameters.Select(x => x.Name).ToList());
                 }
             }
 
-            mixinInfo.MixinAst = shaderClass;
+            mixinInfo.MixinAst = shaderType;
             mixinInfo.MixinGenericName = classSource.ClassName;
         }
 

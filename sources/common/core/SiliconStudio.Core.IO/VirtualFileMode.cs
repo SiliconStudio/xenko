@@ -35,5 +35,10 @@ namespace SiliconStudio.Core.IO
         /// The calling process must open the file with the GENERIC_WRITE access right.
         /// </summary>
         Truncate = 5,
+
+        /// <summary>
+        /// Opens a file if it exists and go at the end, otherwise creates a new file.
+        /// </summary>
+        Append = 6,
     }
 }

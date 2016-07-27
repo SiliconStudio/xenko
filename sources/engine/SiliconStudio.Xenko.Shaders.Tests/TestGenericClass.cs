@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             generics[6] = "uint3(0,1,2)";
             generics[7] = "float4(5,4,3,2)";
             generics[8] = "StaticClass.staticFloat";
-            var shaderClass = loader.LoadClassSource(new ShaderClassSource("GenericClass", generics), null, logger, false);
+            var shaderClass = loader.LoadClassSource(new ShaderClassSource("GenericClass", generics), null, logger, false)?.Type;
 
             Assert.IsNotNull(shaderClass);
 

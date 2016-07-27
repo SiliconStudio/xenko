@@ -8,7 +8,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         int NbOfIterations;
     }
 
-    shader ComputeShaderTestEffect
+    effect ComputeShaderTestEffect
     {
         using params ComputeShaderTestParams;
 

@@ -9,12 +9,12 @@ using System.Text.RegularExpressions;
 
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Xenko.Shaders.Parser.Ast;
-using SiliconStudio.Xenko.Shaders.Parser.Grammar;
+using SiliconStudio.Shaders.Ast.Xenko;
 using SiliconStudio.Xenko.Shaders.Parser.Utility;
 using SiliconStudio.Shaders;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
+using SiliconStudio.Shaders.Grammar.Xenko;
 using SiliconStudio.Shaders.Parser;
 using SiliconStudio.Shaders.Utility;
 
@@ -25,15 +25,13 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
     /// </summary>
     public class ShaderLoader
     {
-        private readonly Dictionary<ShaderSourceKey, ShaderClassType> loadedShaders = new Dictionary<ShaderSourceKey, ShaderClassType>();
+        private readonly Dictionary<ShaderSourceKey, LoadedShaderClassType> loadedShaders = new Dictionary<ShaderSourceKey, LoadedShaderClassType>();
 
         /// <summary>
         /// Gets the source manager.
         /// </summary>
         /// <value>The source manager.</value>
         public ShaderSourceManager SourceManager { get; private set; }
-
-        private readonly static Regex MatchHeader = new Regex(@"\{.*}\s*;", RegexOptions.Singleline | RegexOptions.Compiled);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderLoader"/> class.
@@ -72,6 +70,19 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             SourceManager.DeleteObsoleteCache(modifiedShaders);
         }
 
+        public class LoadedShaderClassType
+        {
+            public ShaderClassType Type;
+
+            public string SourcePath;
+
+            public ObjectId SourceHash;
+
+            public ObjectId PreprocessedSourceHash;
+
+            public bool IsInstanciated;
+        }
+
         /// <summary>
         /// Loads the <see cref="ShaderClassType" />.
         /// </summary>
@@ -81,7 +92,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// <param name="autoGenericInstances"></param>
         /// <returns>A ShaderClassType or null if there was some errors.</returns>
         /// <exception cref="System.ArgumentNullException">shaderClassSource</exception>
-        public ShaderClassType LoadClassSource(ShaderClassSource shaderClassSource, SiliconStudio.Shaders.Parser.ShaderMacro[] shaderMacros, LoggerResult log, bool autoGenericInstances)
+        public LoadedShaderClassType LoadClassSource(ShaderClassSource shaderClassSource, SiliconStudio.Shaders.Parser.ShaderMacro[] shaderMacros, LoggerResult log, bool autoGenericInstances)
         {
             if (shaderClassSource == null) throw new ArgumentNullException("shaderClassSource");
 
@@ -98,7 +109,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 return null;
 
             // Instantiate generic class
-            if (shaderClassSource.GenericArguments != null || (shaderClassType.ShaderGenerics.Count > 0 && autoGenericInstances))
+            if (shaderClassSource.GenericArguments != null || (shaderClassType.Type.ShaderGenerics.Count > 0 && autoGenericInstances))
             {
                 if (shaderClassType.IsInstanciated)
                     return shaderClassType;
@@ -106,24 +117,24 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 // If we want to automatically generate a generic instance (in case we just want to parse and verify the generic)
                 if (autoGenericInstances)
                 {
-                    shaderClassSource.GenericArguments = new string[shaderClassType.ShaderGenerics.Count];
+                    shaderClassSource.GenericArguments = new string[shaderClassType.Type.ShaderGenerics.Count];
                     for (int i = 0; i < shaderClassSource.GenericArguments.Length; i++)
                     {
-                        var variableGeneric = shaderClassType.ShaderGenerics[i];
+                        var variableGeneric = shaderClassType.Type.ShaderGenerics[i];
                         shaderClassSource.GenericArguments[i] = GetDefaultConstValue(variableGeneric);
                     }
                 }
 
-                if (shaderClassSource.GenericArguments.Length != shaderClassType.ShaderGenerics.Count)
+                if (shaderClassSource.GenericArguments.Length != shaderClassType.Type.ShaderGenerics.Count)
                 {
-                    log.Error(XenkoMessageCode.WrongGenericNumber, shaderClassType.Span, shaderClassSource.ClassName);
+                    log.Error(XenkoMessageCode.WrongGenericNumber, shaderClassType.Type.Span, shaderClassSource.ClassName);
                     return null;
                 }
 
                 // check the name of the generics
-                foreach (var generic in shaderClassType.ShaderGenerics)
+                foreach (var generic in shaderClassType.Type.ShaderGenerics)
                 {
-                    foreach (var genericCompare in shaderClassType.ShaderGenerics.Where(x => x != generic))
+                    foreach (var genericCompare in shaderClassType.Type.ShaderGenerics.Where(x => x != generic))
                     {
                         if (generic.Name.Text == genericCompare.Name.Text)
                             log.Error(XenkoMessageCode.SameNameGenerics, generic.Span, generic, genericCompare, shaderClassSource.ClassName);
@@ -137,14 +148,14 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 if (!autoGenericInstances)
                 {
                     var className = GenerateGenericClassName(shaderClassSource);
-                    shaderClassType.Name = new Identifier(className);
+                    shaderClassType.Type.Name = new Identifier(className);
                 }
 
-                var genericAssociation = CreateGenericAssociation(shaderClassType.ShaderGenerics, shaderClassSource.GenericArguments);
+                var genericAssociation = CreateGenericAssociation(shaderClassType.Type.ShaderGenerics, shaderClassSource.GenericArguments);
                 var identifierGenerics = GenerateIdentifierFromGenerics(genericAssociation);
-                var expressionGenerics = GenerateGenericsExpressionValues(shaderClassType.ShaderGenerics, shaderClassSource.GenericArguments);
-                XenkoClassInstantiator.Instantiate(shaderClassType, expressionGenerics, identifierGenerics, autoGenericInstances, log);
-                shaderClassType.ShaderGenerics.Clear();
+                var expressionGenerics = GenerateGenericsExpressionValues(shaderClassType.Type.ShaderGenerics, shaderClassSource.GenericArguments);
+                XenkoClassInstantiator.Instantiate(shaderClassType.Type, expressionGenerics, identifierGenerics, autoGenericInstances, log);
+                shaderClassType.Type.ShaderGenerics.Clear();
                 shaderClassType.IsInstanciated = true;
             }
             return shaderClassType;
@@ -264,7 +275,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             return (Expression)result.Root.AstNode;
         }
 
-        private ShaderClassType LoadShaderClass(ShaderClassSource classSource, string generics, LoggerResult log, SiliconStudio.Shaders.Parser.ShaderMacro[] macros = null)
+        private LoadedShaderClassType LoadShaderClass(ShaderClassSource classSource, string generics, LoggerResult log, SiliconStudio.Shaders.Parser.ShaderMacro[] macros = null)
         {
             var type = classSource.ClassName;
             if (type == null) throw new ArgumentNullException("type");
@@ -273,7 +284,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             lock (loadedShaders)
             {
                 // Already instantiated
-                ShaderClassType shaderClass;
+                LoadedShaderClassType shaderClass;
 
                 if (loadedShaders.TryGetValue(shaderSourceKey, out shaderClass))
                 {
@@ -293,7 +304,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                     return null;
                 }
 
-                byte[] byteArray = Encoding.ASCII.GetBytes(preprocessedSource);
+                byte[] byteArray = Encoding.UTF8.GetBytes(preprocessedSource);
                 var hashPreprocessSource = ObjectId.FromBytes(byteArray);
    
                 // Compile
@@ -320,7 +331,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                     return null;
                 }
 
-                shaderClass = shaderClassTypes.First();
+                shaderClass = new LoadedShaderClassType();
+                shaderClass.Type = shaderClassTypes.First();
                 shaderClass.SourcePath = shaderSource.Path;
                 shaderClass.SourceHash = shaderSource.Hash;
                 shaderClass.PreprocessedSourceHash = hashPreprocessSource;
@@ -330,9 +342,9 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 // Console.WriteLine("Loading Shader {0}{1}", type, macros != null && macros.Length > 0 ? String.Format("<{0}>", string.Join(", ", macros)) : string.Empty);
 
                 // If the file name is not matching the class name, provide an error
-                if (shaderClass.Name.Text != type)
+                if (shaderClass.Type.Name.Text != type)
                 {
-                    log.Error(XenkoMessageCode.FileNameNotMatchingClassName, shaderClass.Name.Span, type, shaderClass.Name.Text);
+                    log.Error(XenkoMessageCode.FileNameNotMatchingClassName, shaderClass.Type.Name.Span, type, shaderClass.Type.Name.Text);
                     return null;
                 }
 
@@ -354,10 +366,6 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 
             var shader = parsingResult.Shader;
             var shaderClass = shader.Declarations.OfType<ShaderClassType>().Single();
-            shaderClass.SourcePath = null;// shaderSource.Path;
-            shaderClass.SourceHash = ObjectId.Empty;// shaderSource.Hash;
-            shaderClass.PreprocessedSourceHash = ObjectId.Empty; // hashPreprocessSource;
-            shaderClass.IsInstanciated = false;
 
             return shaderClass;
         }

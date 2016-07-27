@@ -2,13 +2,13 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Generic;
 
-using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Shaders.Ast.Xenko;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Visitor;
 
 namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
-    internal class XenkoVariableUsageVisitor : ShaderVisitor
+    internal class XenkoVariableUsageVisitor : ShaderWalker
     {
         private Dictionary<Variable, bool> VariablesUsages;
 
@@ -26,17 +26,15 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             Visit(shaderClassType);
         }
 
-        [Visit]
-        private void Visit(VariableReferenceExpression variableReferenceExpression)
+        public override void Visit(VariableReferenceExpression variableReferenceExpression)
         {
-            Visit((Node)variableReferenceExpression);
+            base.Visit(variableReferenceExpression);
             CheckUsage(variableReferenceExpression.TypeInference.Declaration as Variable);
         }
 
-        [Visit]
-        private void Visit(MemberReferenceExpression memberReferenceExpression)
+        public override void Visit(MemberReferenceExpression memberReferenceExpression)
         {
-            Visit((Node)memberReferenceExpression);
+            base.Visit(memberReferenceExpression);
             CheckUsage(memberReferenceExpression.TypeInference.Declaration as Variable);
         }
 

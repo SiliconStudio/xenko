@@ -10,7 +10,7 @@
 # define InputControlPointCount 3
 #endif
 
-class TessellationPN : TessellationFlat
+shader TessellationPN : TessellationFlat
 {
     patchstream float3 f3ViewB111;
     stream float3 nextPositionVS1;

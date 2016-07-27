@@ -2,11 +2,14 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Diagnostics;
+using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Xenko.Shaders.Parser.Performance
 {
     public static class GenerateShaderPerformance
     {
+        internal static Logger Logger = GlobalLogger.GetLogger("XenkoShaderPerformance"); // Global logger for shader profiling
+
         private static Stopwatch Global = new Stopwatch();
         private static Stopwatch GroupByConstantBuffer = new Stopwatch();
         private static Stopwatch StreamCreator = new Stopwatch();
@@ -68,15 +71,13 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Performance
 
         public static void PrintResult()
         {
-            Console.WriteLine();
-            Console.WriteLine(@"----------------------------GENERATE SHADER ANALYZER-----------------------------");
-            Console.WriteLine(@"Whole generation took {0} ms", Global.ElapsedMilliseconds);
-            Console.WriteLine(@"GroupByConstantBuffer took {0} ms", GroupByConstantBuffer.ElapsedMilliseconds);
-            Console.WriteLine(@"StreamCreator took {0} ms", StreamCreator.ElapsedMilliseconds);
-            Console.WriteLine(@"ExpandForEachStatements took {0} ms", ExpandForEachStatements.ElapsedMilliseconds);
-            Console.WriteLine(@"RemoveUselessVariables took {0} ms", RemoveUselessVariables.ElapsedMilliseconds);
-            Console.WriteLine(@"-------------------------------------------------------------------------------");
-            Console.WriteLine();
+            Logger.Info(@"----------------------------GENERATE SHADER ANALYZER-----------------------------");
+            Logger.Info(@"Whole generation took {0} ms", Global.ElapsedMilliseconds);
+            Logger.Info(@"GroupByConstantBuffer took {0} ms", GroupByConstantBuffer.ElapsedMilliseconds);
+            Logger.Info(@"StreamCreator took {0} ms", StreamCreator.ElapsedMilliseconds);
+            Logger.Info(@"ExpandForEachStatements took {0} ms", ExpandForEachStatements.ElapsedMilliseconds);
+            Logger.Info(@"RemoveUselessVariables took {0} ms", RemoveUselessVariables.ElapsedMilliseconds);
+            Logger.Info(@"-------------------------------------------------------------------------------");
         }
     }
 

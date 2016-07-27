@@ -4,9 +4,9 @@
 namespace SiliconStudio.Xenko.Rendering.ComputeEffect
 {
     /// <summary>
-    /// The effect for compute shader
+    /// The effect for compute effect
     /// </summary>
-    shader ComputeEffectShader
+    effect ComputeEffectShader
     {
         using params ComputeEffectShaderKeys;
                 
@@ -14,10 +14,10 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect
         mixin macro ThreadNumberY = ComputeEffectShaderKeys.ThreadNumbers.Y;            
         mixin macro ThreadNumberZ = ComputeEffectShaderKeys.ThreadNumbers.Z;
 
-        // base shader for computing
+        // base effect for computing
         mixin ComputeShaderBase;
 
-        // user computing shader
+        // user computing effect
         mixin ComputeEffectShaderKeys.ComputeShaderName;
     };
 }

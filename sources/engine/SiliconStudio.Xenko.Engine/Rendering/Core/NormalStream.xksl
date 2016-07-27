@@ -3,7 +3,7 @@
 /// <summary>
 /// Defines the normal, view space normal and tangent streams.
 /// </summary>
-class NormalStream
+shader NormalStream
 {
     // The normal attribute from the mesh
     stage stream float3 meshNormal : NORMAL;

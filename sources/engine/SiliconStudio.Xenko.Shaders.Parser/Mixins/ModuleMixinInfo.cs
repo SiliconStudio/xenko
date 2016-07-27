@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Linq;
 
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Shaders.Ast.Xenko;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Utility;
 

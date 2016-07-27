@@ -3,7 +3,7 @@
 /// <summary>
 /// Compute the color from a stream
 /// </summary>
-class ComputeColorFromStream<Semantic TStream, MemberName TRgba> : ComputeColor
+shader ComputeColorFromStream<Semantic TStream, MemberName TRgba> : ComputeColor
 {
     stream float4 LocalColor : TStream;
 

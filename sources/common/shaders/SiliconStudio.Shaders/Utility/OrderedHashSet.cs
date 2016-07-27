@@ -3,6 +3,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Serializers;
 
 namespace SiliconStudio.Shaders.Utility
 {
@@ -10,6 +12,7 @@ namespace SiliconStudio.Shaders.Utility
     /// An ordered set
     /// </summary>
     /// <typeparam name="T">Type of the element in the set</typeparam>
+    [DataSerializer(typeof(ListAllSerializer<,>), Mode = DataSerializerGenericMode.TypeAndGenericArguments)]
     public class OrderedSet<T> : ISet<T>, IList<T>
     {
         #region Constants and Fields

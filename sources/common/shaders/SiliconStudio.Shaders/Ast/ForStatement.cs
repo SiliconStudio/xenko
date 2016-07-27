@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// For statement.
     /// </summary>
-    public class ForStatement : Statement, IScopeContainer
+    public partial class ForStatement : Statement, IScopeContainer
     {
         #region Constructors and Destructors
 

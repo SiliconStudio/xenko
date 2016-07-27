@@ -3,13 +3,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using SiliconStudio.Core;
 
 namespace SiliconStudio.Shaders.Ast
 {
     /// <summary>
     /// A literal expression.
     /// </summary>
-    public class LiteralExpression : Expression
+    public partial class LiteralExpression : Expression
     {
         #region Constructors and Destructors
 
@@ -60,6 +61,7 @@ namespace SiliconStudio.Shaders.Ast
         /// <value>
         /// The text.
         /// </value>
+        [DataMemberIgnore]
         public string Text
         {
             get { return Literal != null ? Literal.Text : null; }
@@ -82,6 +84,7 @@ namespace SiliconStudio.Shaders.Ast
         /// <value>
         /// The value.
         /// </value>
+        [DataMemberIgnore]
         public object Value
         {
             get { return Literal != null ? Literal.Value : null; }

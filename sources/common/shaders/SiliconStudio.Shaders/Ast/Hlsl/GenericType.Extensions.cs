@@ -7,7 +7,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     public static class GenericTypeExtensions
     {
          
-        public static TypeBase MakeGenericInstance(this GenericType genericType, TypeBase genericTemplateType)
+        public static TypeBase MakeGenericInstance(this GenericBaseType genericType, TypeBase genericTemplateType)
         {
             // TODO cache generic instance that are using predefined hlsl types
             var newType = genericTemplateType.DeepClone();

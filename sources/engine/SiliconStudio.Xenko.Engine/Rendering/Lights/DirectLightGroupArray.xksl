@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// <summary>
     /// An array of light groups
     /// </summary>
-    class DirectLightGroupArray
+    shader DirectLightGroupArray
     {
         stage compose DirectLightGroup directLightGroups[];
     };

@@ -1,10 +1,13 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using SiliconStudio.Xenko.Shaders.Parser.Ast;
+
+using SiliconStudio.Core;
+using SiliconStudio.Shaders.Ast.Xenko;
 using SiliconStudio.Shaders.Ast;
 
 namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
+    [DataContract]
     internal class VariableShaderCouple
     {
         public Variable Variable;

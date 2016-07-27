@@ -74,7 +74,7 @@ namespace SiliconStudio.Shaders.Grammar.Hlsl
         protected readonly NonTerminal patch_type = T("patch_type", CreateTypeNameFromTokenAst);
         protected readonly NonTerminal point_stream = T("point_stream", CreateGenericTypeAst<ObjectType>);
         protected readonly NonTerminal register = T("register", CreateRegisterLocationAst);
-        protected readonly NonTerminal state_type = T("state_type", CreateTypeFromTokenAst<StateType>);
+        protected readonly NonTerminal state_type = T("state_type", CreateTypeFromTokenAst<ObjectType>);
         protected readonly NonTerminal semantic = T("semantic", CreateSemanticAst);
         protected readonly NonTerminal semantic_list_opt = T("semantic_list_opt", CreateQualifiersAst);
         protected readonly NonTerminal shader_objects = T("shader_objects", CreateTypeNameFromTokenAst);
@@ -255,9 +255,9 @@ namespace SiliconStudio.Shaders.Grammar.Hlsl
                 StateType.BlendState,
                 StateType.DepthStencilState,
                 StateType.RasterizerState,
-                SamplerStateType.SamplerState,
-                SamplerStateType.SamplerStateOld,
-                SamplerStateType.SamplerComparisonState);
+                StateType.SamplerState,
+                StateType.SamplerStateOld,
+                StateType.SamplerComparisonState);
 
             sampler_type.Rule = CreateRuleFromObjectTypes(
                 SamplerType.Sampler, 
@@ -266,7 +266,7 @@ namespace SiliconStudio.Shaders.Grammar.Hlsl
                 SamplerType.Sampler3D, 
                 SamplerType.SamplerCube);
             
-            sampler_type.AstNodeCreator = CreateTypeFromTokenAst<SamplerType>;
+            sampler_type.AstNodeCreator = CreateTypeFromTokenAst<ObjectType>;
 
             // Texture types
             texture_type_profile_4.Rule = CreateRuleFromObjectTypes(

@@ -1,6 +1,6 @@
 ﻿namespace SiliconStudio.Xenko.Rendering.Lights
 {
-    class LightTiling : ComputeShaderBase
+    shader LightTiling : ComputeShaderBase
     {
         struct PointLight
         {

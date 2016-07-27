@@ -48,10 +48,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="LZ4\lz4.c" />
-    <Content Include="LZ4\lz4.h" />
-    <Content Include="LZ4\lz4hc.c" />
-    <Content Include="LZ4\lz4hc.h" />
+    <None Include="LZ4\lz4.c" />
+    <None Include="LZ4\lz4.h" />
+    <None Include="LZ4\lz4hc.c" />
+    <None Include="LZ4\lz4hc.h" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />

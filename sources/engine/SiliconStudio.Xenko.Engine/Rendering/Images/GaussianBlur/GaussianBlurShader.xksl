@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <summary>
     /// A gaussian blur shader
     /// </summary>
-    internal class GaussianBlurShader<int BlurCount, bool IsVertical> : ImageEffectShader
+    internal shader GaussianBlurShader<int BlurCount, bool IsVertical> : ImageEffectShader
     {
         stage float2 OffsetsWeights[BlurCount];
 

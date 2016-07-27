@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <summary>
     /// Vignetting shader. 
     /// </summary>
-    internal class VignettingShader : ColorTransformShader, Texturing
+    internal shader VignettingShader : ColorTransformShader, Texturing
     {
         // Amount
         float Amount;

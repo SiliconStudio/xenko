@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <summary>
     /// Shader performing radiance GGX pre-filtering
     /// </summary>
-    class RadiancePrefilteringGGXShader<int TNbOfSamples> : Math, ComputeShaderBase
+    shader RadiancePrefilteringGGXShader<int TNbOfSamples> : Math, ComputeShaderBase
     {            
         // the input texture containing the radiance
         int RadianceMapSize;

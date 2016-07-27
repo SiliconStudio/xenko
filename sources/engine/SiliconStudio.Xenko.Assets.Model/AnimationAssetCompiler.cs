@@ -108,7 +108,10 @@ namespace SiliconStudio.Xenko.Assets.Model
 
                 // Generate diff animation
                 var animation = SubtractAnimations(baseAnimation, sourceAnimation);
-                
+
+                // Optimize animation
+                animation.Optimize();
+
                 // Save diff animation
                 assetManager.Save(Url, animation);
 

@@ -17,7 +17,7 @@
     <Reference Include="SiliconStudio.Core.MicroThreading">
       <HintPath>$(XenkoSdkBinDir)\SiliconStudio.Core.MicroThreading.dll</HintPath>
     </Reference>
-    <Reference Include="SiliconStudio.Shaders" Condition="$(SiliconStudioPlatform) == 'Windows'">
+    <Reference Include="SiliconStudio.Shaders">
       <HintPath>$(XenkoSdkBinDir)\SiliconStudio.Shaders.dll</HintPath>
     </Reference>
     <Reference Include="SiliconStudio.Xenko">

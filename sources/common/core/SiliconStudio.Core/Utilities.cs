@@ -51,7 +51,7 @@ namespace SiliconStudio.Core
         private const string MemcpyDll = "msvcrt.dll";
 #elif SILICONSTUDIO_PLATFORM_ANDROID
         private const string MemcpyDll = "libc.so";
-#elif SILICONSTUDIO_PLATFORM_LINUX
+#elif SILICONSTUDIO_PLATFORM_UNIX
         // We do not specifiy the .so extension as libc.so on Linux
         // is actually not a .so files but a script. Using just libc
         // will automatically find the corresponding .so.

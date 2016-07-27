@@ -4,6 +4,7 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.Shaders.Compiler;
@@ -72,6 +73,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                 // Note! It doesn't really matter in what order we build the bitmask, the result is not preserved anywhere except in this method
                 var currentBatchState = isPicking ? 0U : sprite.IsTransparent ? (spriteComp.PremultipliedAlpha ? 1U : 2U) : 3U;
                 currentBatchState = (currentBatchState << 1) + (renderSprite.SpriteComponent.IgnoreDepth ? 1U : 0U);
+                currentBatchState = (currentBatchState << 2) + ((uint)renderSprite.SpriteComponent.Sampler);
 
                 if (previousBatchState != currentBatchState)
                 {
@@ -79,11 +81,26 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                     var currentEffect = isPicking ? GetOrCreatePickingSpriteEffect() : null; // TODO remove this code when material are available
                     var depthStencilState = renderSprite.SpriteComponent.IgnoreDepth ? DepthStencilStates.None : DepthStencilStates.Default;
 
+                    var samplerState = context.GraphicsDevice.SamplerStates.LinearClamp;
+                    if (renderSprite.SpriteComponent.Sampler != SpriteComponent.SpriteSampler.LinearClamp)
+                    {
+                        switch (renderSprite.SpriteComponent.Sampler)
+                        {
+                            case SpriteComponent.SpriteSampler.PointClamp:
+                                samplerState = context.GraphicsDevice.SamplerStates.PointClamp;
+                                break;
+                            case SpriteComponent.SpriteSampler.AnisotropicClamp:
+                                samplerState = context.GraphicsDevice.SamplerStates.AnisotropicClamp;
+                                break;
+                        }
+                    }
+
                     if (hasBegin)
                     {
                         sprite3DBatch.End();
                     }
-                    sprite3DBatch.Begin(context.GraphicsContext, renderView.ViewProjection, SpriteSortMode.Deferred, blendState, null, depthStencilState, RasterizerStates.CullNone, currentEffect);
+
+                    sprite3DBatch.Begin(context.GraphicsContext, renderView.ViewProjection, SpriteSortMode.Deferred, blendState, samplerState, depthStencilState, RasterizerStates.CullNone, currentEffect);
                     hasBegin = true;
                 }
                 previousBatchState = currentBatchState;

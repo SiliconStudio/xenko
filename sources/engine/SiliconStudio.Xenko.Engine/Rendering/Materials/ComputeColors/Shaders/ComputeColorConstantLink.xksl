@@ -6,7 +6,7 @@
 /// <remarks>
 /// LinkName: generic LinkType - the name of the key used to set the float4.
 /// </remarks>
-class ComputeColorConstantLink<LinkType LinkName> : ComputeColor
+shader ComputeColorConstantLink<LinkType LinkName> : ComputeColor
 {
     [Link("LinkName")]
     stage float4 constantColor;

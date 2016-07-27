@@ -31,8 +31,16 @@ var serializableItems = GetSerializableItems(type, true).ToArray();
 				throw new InvalidOperationException(string.Format("Could not find parent serializer for type {0}", @"<#=parentType.ConvertCSharp()#>"));
 <#}#>
 			// Cache member serializers
-<#foreach (var serializableItem in serializableItems) {#>
-			<#=serializableItem.MemberInfo.Name#>Serializer = MemberSerializer<<#=serializableItem.Type.ConvertCSharp()#>>.Create(serializerSelector);
+<#var serializerMemberMapping = new Dictionary<string, string>();
+  foreach (var serializableItemGroup in serializableItems.GroupBy(x => x.Type.ConvertCSharp()))
+  {
+    // Share same serializer for members of same type
+    var firstSerializableMemberName = serializableItemGroup.First().MemberInfo.Name;
+  	foreach (var serializableItem in serializableItemGroup)
+	{
+	  serializerMemberMapping[serializableItem.MemberInfo.Name] = firstSerializableMemberName;
+	}#>
+			<#=firstSerializableMemberName#>Serializer = MemberSerializer<<#=serializableItemGroup.Key#>>.Create(serializerSelector);
 <#}#>
 		}
 
@@ -63,10 +71,11 @@ foreach (var serializableItem in serializableItems) {
 		{#>
             <#=memberTypeName#> <#=memberVariableName#> = <# if (memberAssignBack) { #>mode == ArchiveMode.Serialize ? obj.<#=memberName#> : default(<#=memberTypeName#>)<#} else {#>obj.<#=memberName#><#}#>;
 <#}#>
-            <#=serializableItem.MemberInfo.Name#>Serializer.Serialize(ref <#=memberAccessName#>, mode, stream);
+            <#=serializerMemberMapping[serializableItem.MemberInfo.Name]#>Serializer.Serialize(ref <#=memberAccessName#>, mode, stream);
 <#if (memberVariableName != null && memberAssignBack)
 		{#>
-            obj.<#=memberName#> = <#=memberVariableName#>;
+            if (mode == ArchiveMode.Deserialize)
+                obj.<#=memberName#> = <#=memberVariableName#>;
 <#}
 	}
 }#>

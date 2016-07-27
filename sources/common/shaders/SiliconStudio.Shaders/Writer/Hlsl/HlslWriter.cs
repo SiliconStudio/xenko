@@ -31,8 +31,7 @@ namespace SiliconStudio.Shaders.Writer.Hlsl
         /// Visits the specified Annotations.
         /// </summary>
         /// <param name="annotations">The Annotations.</param>
-        [Visit]
-        public virtual void Visit(Annotations annotations)
+        public override void Visit(Annotations annotations)
         {
             if (annotations.Variables.Count == 0) return;
 
@@ -50,8 +49,7 @@ namespace SiliconStudio.Shaders.Writer.Hlsl
         /// Visits the specified class type.
         /// </summary>
         /// <param name="classType">Type of the class.</param>
-        [Visit]
-        public virtual void Visit(ClassType classType)
+        public override void Visit(ClassType classType)
         {
             Write(classType.Attributes, true);
 
@@ -92,7 +90,7 @@ namespace SiliconStudio.Shaders.Writer.Hlsl
 
             OpenBrace();
 
-            VisitDynamicList(classType.Members);
+            VisitList(classType.Members);
 
             CloseBrace(false).Write(";").WriteLine();
         }
@@ -101,14 +99,13 @@ namespace SiliconStudio.Shaders.Writer.Hlsl
         /// Visits the specified interface type.
         /// </summary>
         /// <param name="interfaceType">Type of the interface.</param>
-        [Visit]
-        public virtual void Visit(InterfaceType interfaceType)
+        public override void Visit(InterfaceType interfaceType)
         {
             Write(interfaceType.Attributes, true);
             Write("interface").Write(" ").Write(interfaceType.Name);
             WriteSpace();
             OpenBrace();
-            VisitDynamicList(interfaceType.Methods);
+            VisitList(interfaceType.Methods);
             CloseBrace(false).Write(";").WriteLine(); 
         }
 
@@ -116,8 +113,7 @@ namespace SiliconStudio.Shaders.Writer.Hlsl
         /// Visits the specified asm expression.
         /// </summary>
         /// <param name="asmExpression">The asm expression.</param>
-        [Visit]
-        public virtual void Visit(AsmExpression asmExpression)
+        public override void Visit(AsmExpression asmExpression)
         {
             WriteLine();
             Write("asm");
@@ -130,8 +126,7 @@ namespace SiliconStudio.Shaders.Writer.Hlsl
         /// Visits the specified constant buffer.
         /// </summary>
         /// <param name="constantBuffer">The constant buffer.</param>
-        [Visit]
-        public virtual void Visit(ConstantBuffer constantBuffer)
+        public override void Visit(ConstantBuffer constantBuffer)
         {
             Write(constantBuffer.Attributes, true);
 
@@ -145,7 +140,7 @@ namespace SiliconStudio.Shaders.Writer.Hlsl
             WriteSpace();
             VisitDynamic(constantBuffer.Register);
             OpenBrace();
-            VisitDynamicList(constantBuffer.Members);
+            VisitList(constantBuffer.Members);
             CloseBrace(false).Write(";").WriteLine(); 
         }
 
@@ -153,8 +148,7 @@ namespace SiliconStudio.Shaders.Writer.Hlsl
         /// Visits the specified typedef.
         /// </summary>
         /// <param name="typedef">The typedef.</param>
-        [Visit]
-        public virtual void Visit(Typedef typedef)
+        public override void Visit(Typedef typedef)
         {
             Write("typedef").Write(" ");
             Write(typedef.Qualifiers, true);
@@ -187,8 +181,7 @@ namespace SiliconStudio.Shaders.Writer.Hlsl
         /// Visits the specified attribute declaration.
         /// </summary>
         /// <param name="attributeDeclaration">The attribute declaration.</param>
-        [Visit]
-        public virtual void Visit(AttributeDeclaration attributeDeclaration)
+        public override void Visit(AttributeDeclaration attributeDeclaration)
         {
             Write("[").Write(attributeDeclaration.Name);
             if (attributeDeclaration.Parameters.Count > 0)
@@ -215,8 +208,7 @@ namespace SiliconStudio.Shaders.Writer.Hlsl
         /// Visits the specified cast expression.
         /// </summary>
         /// <param name="castExpression">The cast expression.</param>
-        [Visit]
-        public virtual void Visit(CastExpression castExpression)
+        public override void Visit(CastExpression castExpression)
         {
             Write("(");
             VisitDynamic(castExpression.Target);
@@ -228,8 +220,25 @@ namespace SiliconStudio.Shaders.Writer.Hlsl
         /// Visits the specified composite identifier.
         /// </summary>
         /// <param name="compositeIdentifier">The composite identifier.</param>
-        [Visit]
-        public virtual void Visit(CompositeIdentifier compositeIdentifier)
+        public override void Visit(IdentifierDot compositeIdentifier)
+        {
+            Write((Identifier)compositeIdentifier);
+        }
+
+        /// <summary>
+        /// Visits the specified composite identifier.
+        /// </summary>
+        /// <param name="compositeIdentifier">The composite identifier.</param>
+        public override void Visit(IdentifierNs compositeIdentifier)
+        {
+            Write((Identifier)compositeIdentifier);
+        }
+
+        /// <summary>
+        /// Visits the specified composite identifier.
+        /// </summary>
+        /// <param name="compositeIdentifier">The composite identifier.</param>
+        public override void Visit(IdentifierGeneric compositeIdentifier)
         {
             Write((Identifier)compositeIdentifier);
         }
@@ -238,8 +247,7 @@ namespace SiliconStudio.Shaders.Writer.Hlsl
         /// Visits the specified state expression.
         /// </summary>
         /// <param name="stateExpression">The state expression.</param>
-        [Visit]
-        public virtual void Visit(StateExpression stateExpression)
+        public override void Visit(StateExpression stateExpression)
         {
             VisitDynamic(stateExpression.StateType);
             WriteSpace();
@@ -250,8 +258,7 @@ namespace SiliconStudio.Shaders.Writer.Hlsl
         /// Visits the specified compile expression.
         /// </summary>
         /// <param name="compileExpression">The compile expression.</param>
-        [Visit]
-        public virtual void Visit(CompileExpression compileExpression)
+        public override void Visit(CompileExpression compileExpression)
         {
             Write("compile").Write(" ");
             Write(compileExpression.Profile);
@@ -263,8 +270,7 @@ namespace SiliconStudio.Shaders.Writer.Hlsl
         /// Visits the specified technique.
         /// </summary>
         /// <param name="technique">The technique.</param>
-        [Visit]
-        public virtual void Visit(Technique technique)
+        public override void Visit(Technique technique)
         {
             Write(technique.Attributes, true);
             Write(technique.Type);
@@ -276,7 +282,7 @@ namespace SiliconStudio.Shaders.Writer.Hlsl
             WriteSpace();
             Write(technique.Attributes, false);
             OpenBrace();
-            VisitDynamicList(technique.Passes);
+            VisitList(technique.Passes);
             CloseBrace();
         }
 
@@ -284,8 +290,7 @@ namespace SiliconStudio.Shaders.Writer.Hlsl
         /// Visits the specified pass.
         /// </summary>
         /// <param name="pass">The pass.</param>
-        [Visit]
-        public virtual void Visit(Pass pass)
+        public override void Visit(Pass pass)
         {
             Write(pass.Attributes, true);
             Write("pass");
@@ -307,8 +312,7 @@ namespace SiliconStudio.Shaders.Writer.Hlsl
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(StateInitializer stateInitializer)
+        public override void Visit(StateInitializer stateInitializer)
         {
             OpenBrace();
             for (int i = 0; i < stateInitializer.Items.Count; i++)
@@ -342,16 +346,14 @@ namespace SiliconStudio.Shaders.Writer.Hlsl
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(Semantic semantic)
+        public override void Visit(Semantic semantic)
         {
             Write(":").WriteSpace();
             Write(semantic.Name);
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(PackOffset packOffset)
+        public override void Visit(PackOffset packOffset)
         {
             Write(":").WriteSpace();
             Write("packoffset(");
@@ -360,8 +362,7 @@ namespace SiliconStudio.Shaders.Writer.Hlsl
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(RegisterLocation registerLocation)
+        public override void Visit(RegisterLocation registerLocation)
         {
             Write(":").WriteSpace();
             Write("register(");

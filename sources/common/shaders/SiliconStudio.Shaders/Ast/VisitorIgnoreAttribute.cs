@@ -8,7 +8,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// Instruct a <see cref="ShaderVisitor"/> to ignore a field
     /// </summary>
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
     public class VisitorIgnoreAttribute : Attribute
     {
     }

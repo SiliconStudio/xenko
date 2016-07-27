@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// <summary>
     /// Defines light streams variable.
     /// </summary>
-    class LightStream
+    shader LightStream
     {
         stage stream float3 lightDirectionWS;
         stage stream float3 lightColor;

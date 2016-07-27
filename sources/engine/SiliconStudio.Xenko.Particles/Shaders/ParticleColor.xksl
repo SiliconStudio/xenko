@@ -6,8 +6,8 @@ using System.Threading.Tasks;
 
 namespace SiliconStudio.Xenko.Rendering
 {        
-    // This is a sample class for plugging into the Shader input for ComputeColor computations
-    class ParticleColor : ComputeColor
+    // This is a sample shader for plugging into the Shader input for ComputeColor computations
+    shader ParticleColor : ComputeColor
     {
         override float4 Compute()
         {
