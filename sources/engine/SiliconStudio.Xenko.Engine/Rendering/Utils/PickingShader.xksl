@@ -3,7 +3,7 @@
     /// <summary>
     /// A shader used to output the id of the model component, mesh and material for a particular RenderMesh
     /// </summary>
-    class PickingShader : ShaderBase
+    shader PickingShader : ShaderBase
     {
         cbuffer PerDraw
         {

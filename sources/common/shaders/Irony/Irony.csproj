@@ -15,7 +15,7 @@
     </TargetFrameworkProfile>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <UseVSHostingProcess>false</UseVSHostingProcess>
-    <XenkoBuildTags>Windows</XenkoBuildTags>
+    <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
   <Choose>
     <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
@@ -73,7 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources.resx">
-      <Generator>PublicResXFileCodeGenerator</Generator>
+      <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
@@ -82,7 +82,7 @@
     <None Include="irony.snk" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Parsing\Data\Construction\_about_parser_construction.txt" />
+    <None Include="Parsing\Data\Construction\_about_parser_construction.txt" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="SilverlightOnly\" />

@@ -8,7 +8,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A Storage qualifier.
     /// </summary>
-    public class Qualifier : CompositeEnum
+    public partial class Qualifier : CompositeEnum
     {
         #region Constants and Fields
 
@@ -35,7 +35,7 @@ namespace SiliconStudio.Shaders.Ast
         /// <param name="key">
         /// Name of the enum.
         /// </param>
-        protected Qualifier(object key)
+        public Qualifier(object key)
             : base(key, true)
         {
         }
@@ -111,7 +111,12 @@ namespace SiliconStudio.Shaders.Ast
 
             return string.Empty;
         }
-        
+
+        public override string ToString()
+        {
+            return ToString<Qualifier>(qualifier => true);
+        }
+
         #endregion
     }
 }

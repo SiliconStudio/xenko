@@ -3,7 +3,7 @@
 /// <summary>
 /// Performs skinning on the tangent.
 /// </summary>
-class TangentMeshSkinning : TransformationSkinning, NormalStream
+shader TangentMeshSkinning : TransformationSkinning, NormalStream
 {
     override void PreTransformPosition()
     {

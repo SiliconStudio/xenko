@@ -7,46 +7,19 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     /// <summary>
     /// Value range for a float
     /// </summary>
-    public class FloatQualifier : Qualifier
+    public partial class FloatQualifier
     {
         #region Constants and Fields
 
         /// <summary>
         ///   IEEE 32-bit signed-normalized float in range -1 to 1 inclusive.
         /// </summary>
-        public static readonly Qualifier SNorm = new FloatQualifier("snorm");
+        public static readonly Qualifier SNorm = new Qualifier("snorm");
 
         /// <summary>
         ///   IEEE 32-bit unsigned-normalized float in range 0 to 1 inclusive.
         /// </summary>
-        public static readonly Qualifier UNorm = new FloatQualifier("unorm");
-
-        /// <summary>
-        ///   Internal map used for parsing.
-        /// </summary>
-        private static readonly StringEnumMap Map = PrepareParsing<FloatQualifier>();
-
-        #endregion
-
-        #region Constructors and Destructors
-
-        /// <summary>
-        ///   Initializes a new instance of the <see cref = "FloatQualifier" /> class.
-        /// </summary>
-        public FloatQualifier()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FloatQualifier"/> class.
-        /// </summary>
-        /// <param name="key">
-        /// Name of the enum.
-        /// </param>
-        public FloatQualifier(string key)
-            : base(key)
-        {
-        }
+        public static readonly Qualifier UNorm = new Qualifier("unorm");
 
         #endregion
 
@@ -61,9 +34,14 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
         /// <returns>
         /// A qualifier
         /// </returns>
-        public static FloatQualifier Parse(string enumName)
+        public static Qualifier Parse(string enumName)
         {
-            return Map.ParseEnumFromName<FloatQualifier>(enumName);
+            if (enumName == (string)SNorm.Key)
+                return SNorm;
+            if (enumName == (string)UNorm.Key)
+                return UNorm;
+
+            throw new ArgumentException(string.Format("Unable to convert [{0}] to qualifier", enumName), "key");
         }
 
         #endregion

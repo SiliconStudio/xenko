@@ -2,9 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
 using System.Threading;
-
+using SiliconStudio.Core;
+using SiliconStudio.Shaders.Visitor;
 using SourceSpan = SiliconStudio.Shaders.Ast.SourceSpan;
 
 namespace SiliconStudio.Shaders.Ast
@@ -12,14 +12,14 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// Abstract node.
     /// </summary>
+    [DataContract(Inherited = true)]
     public abstract class Node
     {
         /// <summary>
         /// list of childrens for ast navigation.
         /// </summary>
-        [VisitorIgnore]
         private List<Node> childrenList = null;
-        private Dictionary<object, object> tags;
+        private Dictionary<string, object> tags;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Node"/> class.
@@ -60,6 +60,8 @@ namespace SiliconStudio.Shaders.Ast
         /// <summary>
         /// Gets the childrens.
         /// </summary>
+        [DataMemberIgnore]
+        [VisitorIgnore]
         protected List<Node> ChildrenList
         {
             get
@@ -71,11 +73,20 @@ namespace SiliconStudio.Shaders.Ast
         }
 
         /// <summary>
+        /// Gets or sets tags collection.
+        /// </summary>
+        public Dictionary<string, object> Tags
+        {
+            get { return tags; }
+            set { tags = value; }
+        }
+
+        /// <summary>
         /// Gets a tag value associated to this node..
         /// </summary>
         /// <param name="tagKey">The tag key.</param>
         /// <returns>The tag value</returns>
-        public object GetTag(object tagKey)
+        public object GetTag(string tagKey)
         {
             if (tags == null) return null;
             object result;
@@ -83,13 +94,12 @@ namespace SiliconStudio.Shaders.Ast
             return result;
         }
 
-
         /// <summary>
         /// Gets a tag value associated to this node..
         /// </summary>
         /// <param name="tagKey">The tag key.</param>
         /// <returns>The tag value</returns>
-        public bool RemoveTag(object tagKey)
+        public bool RemoveTag(string tagKey)
         {
             if (tags == null) return true;
             return tags.Remove(tagKey);
@@ -102,7 +112,7 @@ namespace SiliconStudio.Shaders.Ast
         /// <returns>
         ///   <c>true</c> if the specified instance contains this tag; otherwise, <c>false</c>.
         /// </returns>
-        public bool ContainsTag(object tagKey)
+        public bool ContainsTag(string tagKey)
         {
             if (tags == null) return false;
             return tags.ContainsKey(tagKey);
@@ -113,9 +123,9 @@ namespace SiliconStudio.Shaders.Ast
         /// </summary>
         /// <param name="tagKey">The tag key.</param>
         /// <param name="tagValue">The tag value.</param>
-        public void SetTag(object tagKey, object tagValue)
+        public void SetTag(string tagKey, object tagValue)
         {
-            if (tags == null) tags = new Dictionary<object, object>();
+            if (tags == null) tags = new Dictionary<string, object>();
             tags.Remove(tagKey);
             tags.Add(tagKey, tagValue);
         }
@@ -134,5 +144,9 @@ namespace SiliconStudio.Shaders.Ast
         {
             return GetType().Name;
         }
+
+        public abstract void Accept(ShaderVisitor visitor);
+
+        public abstract TResult Accept<TResult>(ShaderVisitor<TResult> visitor);
     }
 }

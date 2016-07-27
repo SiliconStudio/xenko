@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     /// <summary>
     /// A state expresion in the form: sampler {...}.
     /// </summary>
-    public class StateExpression : Expression
+    public partial class StateExpression : Expression
     {
         #region Constructors and Destructors
 

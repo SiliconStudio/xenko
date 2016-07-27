@@ -6,7 +6,7 @@
 /// <remarks>
 /// TEXTURE_KEY: generic LinkType - the name of the ParameterKey that will link to this texture.
 /// </remarks>
-class DynamicTextureCube<LinkType TTexture, MemberName LocalResourceGroup>
+shader DynamicTextureCube<LinkType TTexture, MemberName LocalResourceGroup>
 {
     rgroup LocalResourceGroup
     {

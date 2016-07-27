@@ -29,7 +29,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
         public LuminanceToChannelTransform(string colorTransformShader) : base(colorTransformShader)
         {
             ColorChannel = ColorChannel.A;
-            GenericArguments = new object[] { ColorChannel.A };
         }
 
         /// <summary>
@@ -46,7 +45,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             set
             {
                 colorChannel = value;
-                GenericArguments = new object[] { value.ToString().ToLowerInvariant()};
+                GenericArguments = new object[] { value.ToString().ToLowerInvariant() };
             }
         }
     }

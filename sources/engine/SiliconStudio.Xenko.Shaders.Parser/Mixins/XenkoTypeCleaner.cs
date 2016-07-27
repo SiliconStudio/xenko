@@ -5,7 +5,7 @@ using SiliconStudio.Shaders.Visitor;
 
 namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
-    internal class XenkoTypeCleaner : ShaderVisitor
+    internal class XenkoTypeCleaner : ShaderWalker
     {
         public XenkoTypeCleaner()
             : base(false, false)
@@ -17,22 +17,19 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             Visit(shader);
         }
 
-        [Visit]
-        protected void Visit(Expression expression)
+        public override void DefaultVisit(Node node)
+        {
+            if (node is Expression || node is TypeBase)
+                VisitTypeInferencer((ITypeInferencer)node);
+
+            base.DefaultVisit(node);
+        }
+
+        private void VisitTypeInferencer(ITypeInferencer expression)
         {
             expression.TypeInference.Declaration = null;
             expression.TypeInference.TargetType = null;
             expression.TypeInference.ExpectedType = null;
-            Visit((Node)expression);
-        }
-
-        [Visit]
-        protected void Visit(TypeBase typeBase)
-        {
-            typeBase.TypeInference.Declaration = null;
-            typeBase.TypeInference.TargetType = null;
-            typeBase.TypeInference.ExpectedType = null;
-            Visit((Node)typeBase);
         }
     }
 }

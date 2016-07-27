@@ -3,10 +3,10 @@
 namespace SiliconStudio.Xenko.Rendering.BRDF
 {
     /// <summary>
-    /// Utility class for calculating the various variations of the functions 
+    /// Utility shader for calculating the various variations of the functions 
     /// (Fresnel, NDF and Visibility) involved in a Microfacet shading model.
     /// </summary>
-    class BRDFMicrofacet : Math
+    shader BRDFMicrofacet : Math
     {
         // References:
         // http://graphicrants.blogspot.jp/2013/08/specular-brdf-reference.html

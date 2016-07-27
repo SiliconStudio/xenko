@@ -20,22 +20,18 @@ namespace SiliconStudio.Core.Settings
     /// </summary>
     public class SettingsContainer
     {
+        internal static readonly object SettingsLock = new object();
+        
         /// <summary>
         /// A dictionary containing every existing <see cref="SettingsKey"/>.
         /// </summary>
         private readonly Dictionary<UFile, SettingsKey> settingsKeys = new Dictionary<UFile, SettingsKey>();
 
         /// <summary>
-        /// A <see cref="SettingsProfile"/> that contains the default value of all registered <see cref="SettingsKey"/>.
-        /// </summary>
-        private readonly SettingsProfile rootProfile;
-
-        /// <summary>
         /// A list containing every <see cref="SettingsProfile"/> registered in the <see cref="SettingsContainer"/>.
         /// </summary>
         private readonly List<SettingsProfile> profileList = new List<SettingsProfile>();
 
-        internal static readonly object SettingsLock = new object();
         /// <summary>
         /// The settings profile that is currently active.
         /// </summary>
@@ -43,9 +39,9 @@ namespace SiliconStudio.Core.Settings
 
         public SettingsContainer()
         {
-            rootProfile = new SettingsProfile(this, null);
-            profileList.Add(rootProfile);
-            currentProfile = rootProfile;
+            RootProfile = new SettingsProfile(this, null);
+            profileList.Add(RootProfile);
+            currentProfile = RootProfile;
             Logger = new LoggerResult();
         }
 
@@ -57,7 +53,10 @@ namespace SiliconStudio.Core.Settings
         /// <summary>
         /// Gets the root profile of this settings container.
         /// </summary>
-        public SettingsProfile RootProfile => rootProfile;
+        /// <remarks>
+        /// The root profile is a <see cref="SettingsProfile"/> that contains the default value of all registered <see cref="SettingsKey"/>.
+        /// </remarks>
+        public SettingsProfile RootProfile { get; }
 
         /// <summary>
         /// Gets or sets the <see cref="SettingsProfile"/> that is currently active.
@@ -67,7 +66,7 @@ namespace SiliconStudio.Core.Settings
         /// <summary>
         /// Gets the list of registered profiles.
         /// </summary>
-        public IEnumerable<SettingsProfile> Profiles => profileList;
+        internal IEnumerable<SettingsProfile> Profiles => profileList;
 
         /// <summary>
         /// Raised when a settings file has been loaded.
@@ -88,15 +87,26 @@ namespace SiliconStudio.Core.Settings
         /// </summary>
         /// <param name="setAsCurrent">If <c>true</c>, the created profile will also be set as <see cref="CurrentProfile"/>.</param>
         /// <param name="parent">The parent profile of the settings to create. If <c>null</c>, the default profile will be used.</param>
+        /// <param name="registerInContainer">If true, the profile will be registered in this container. Otherwise it will be disconnected from the container.</param>
         /// <returns>A new instance of the <see cref="SettingsProfile"/> class.</returns>
-        public SettingsProfile CreateSettingsProfile(bool setAsCurrent, SettingsProfile parent = null)
+        /// <remarks>
+        /// If the profile is not registered to the container, it won't be able to receive <see cref="SettingsKey"/> that are registered after its
+        /// creation. If the profile is registered to the container, <see cref="UnloadSettingsProfile"/> must be call in order to unregister it.
+        /// </remarks>
+        public SettingsProfile CreateSettingsProfile(bool setAsCurrent, SettingsProfile parent = null, bool registerInContainer = true)
         {
-            var profile = new SettingsProfile(this, parent ?? rootProfile);
-            lock (SettingsLock)
+            if (setAsCurrent && !registerInContainer) throw new ArgumentException(@"Cannot set the profile as current if it's not registered to the container", nameof(setAsCurrent));
+
+            var profile = new SettingsProfile(this, parent ?? RootProfile);
+
+            if (registerInContainer)
             {
-                profileList.Add(profile);
-                if (setAsCurrent)
-                    CurrentProfile = profile;
+                lock (SettingsLock)
+                {
+                    profileList.Add(profile);
+                    if (setAsCurrent)
+                        CurrentProfile = profile;
+                }
             }
             return profile;
         }
@@ -107,10 +117,17 @@ namespace SiliconStudio.Core.Settings
         /// <param name="filePath">The path of the file from which to load settings.</param>
         /// <param name="setAsCurrent">If <c>true</c>, the loaded profile will also be set as <see cref="CurrentProfile"/>.</param>
         /// <param name="parent">The profile to use as parent for the loaded profile. If <c>null</c>, a default profile will be used.</param>
+        /// <param name="registerInContainer">If true, the profile will be registered in this container. Otherwise it will be disconnected from the container.</param>
         /// <returns><c>true</c> if settings were correctly loaded, <c>false</c> otherwise.</returns>
-        public SettingsProfile LoadSettingsProfile(UFile filePath, bool setAsCurrent, SettingsProfile parent = null)
+        /// <remarks>
+        /// If the profile is not registered to the container, it won't be able to receive <see cref="SettingsKey"/> that are registered after its
+        /// creation. If the profile is registered to the container, <see cref="UnloadSettingsProfile"/> must be call in order to unregister it.
+        /// </remarks>
+        public SettingsProfile LoadSettingsProfile(UFile filePath, bool setAsCurrent, SettingsProfile parent = null, bool registerInContainer = true)
         {
             if (filePath == null) throw new ArgumentNullException(nameof(filePath));
+            if (setAsCurrent && !registerInContainer) throw new ArgumentException(@"Cannot set the profile as current if it's not registered to the container", nameof(setAsCurrent));
+
 
             if (!File.Exists(filePath))
             {
@@ -118,7 +135,7 @@ namespace SiliconStudio.Core.Settings
                 return null;
             }
 
-            var profile = new SettingsProfile(this, parent ?? rootProfile) { FilePath = filePath };
+            var profile = new SettingsProfile(this, parent ?? RootProfile) { FilePath = filePath };
             try
             {
                 var settingsFile = new SettingsFile(profile);
@@ -133,12 +150,15 @@ namespace SiliconStudio.Core.Settings
                 return null;
             }
 
-            lock (SettingsLock)
+            if (registerInContainer)
             {
-                profileList.Add(profile);
-                if (setAsCurrent)
+                lock (SettingsLock)
                 {
-                    CurrentProfile = profile;
+                    profileList.Add(profile);
+                    if (setAsCurrent)
+                    {
+                        CurrentProfile = profile;
+                    }
                 }
             }
             
@@ -184,7 +204,7 @@ namespace SiliconStudio.Core.Settings
         /// <param name="profile">The profile to unload.</param>
         public void UnloadSettingsProfile(SettingsProfile profile)
         {
-            if (profile == rootProfile)
+            if (profile == RootProfile)
                 throw new ArgumentException("The default profile cannot be unloaded");
             if (profile == CurrentProfile)
                 throw new InvalidOperationException("Unable to unload the current profile.");
@@ -297,10 +317,10 @@ namespace SiliconStudio.Core.Settings
         {
             lock (SettingsLock)
             {
-                CurrentProfile = rootProfile;
+                CurrentProfile = RootProfile;
                 CurrentProfile.ValidateSettingsChanges();
                 profileList.Clear();
-                rootProfile.Settings.Clear();
+                RootProfile.Settings.Clear();
                 settingsKeys.Clear();
             }
         }
@@ -310,11 +330,11 @@ namespace SiliconStudio.Core.Settings
             lock (SettingsLock)
             {
                 settingsKeys.Add(name, settingsKey);
-                var entry = SettingsEntry.CreateFromValue(rootProfile, name, defaultValue);
-                rootProfile.RegisterEntry(entry);
+                var entry = SettingsEntry.CreateFromValue(RootProfile, name, defaultValue);
+                RootProfile.RegisterEntry(entry);
 
                 // Ensure that the value is converted to the key type in each loaded profile.
-                foreach (var profile in Profiles.Where(x => x != rootProfile))
+                foreach (var profile in Profiles.Where(x => x != RootProfile))
                 {
                     if (profile.Settings.TryGetValue(name, out entry))
                     {

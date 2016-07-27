@@ -21,6 +21,23 @@ namespace SiliconStudio.Xenko.Engine
     [ComponentOrder(10000)]
     public sealed class SpriteComponent : ActivableEntityComponent
     {
+        public enum SpriteSampler
+        {
+            [Display("Point (Nearest)")]
+            PointClamp,
+
+            [Display("Linear")]
+            LinearClamp,
+
+            [Display("Anisotropic")]
+            AnisotropicClamp,
+
+            // Note These values are left out on purpose, but can be included if needed
+            //PointWrap,
+            //LinearWrap,
+            //AnisotropicWrap,
+        }
+
         /// <summary>
         /// The group of sprites associated to the component.
         /// </summary>
@@ -63,6 +80,18 @@ namespace SiliconStudio.Xenko.Engine
         [DefaultValue(false)]
         [Display("Ignore Depth")]
         public bool IgnoreDepth;
+
+
+        /// <summary>
+        /// Specifies the texture sampling method to be used for this sprite
+        /// </summary>
+        /// <userdoc>
+        /// Specifies the texture sampling method to be used for this sprite
+        /// </userdoc>
+        [DataMember(70)]
+        [DefaultValue(SpriteSampler.LinearClamp)]
+        [Display("Sampler")]
+        public SpriteSampler Sampler { get; set; } = SpriteSampler.LinearClamp;
 
         [DataMemberIgnore]
         internal double ElapsedTime;

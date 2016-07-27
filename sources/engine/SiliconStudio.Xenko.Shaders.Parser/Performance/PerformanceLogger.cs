@@ -5,11 +5,15 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Xenko.Shaders.Parser.Performance
 {
     public static class PerformanceLogger
     {
+        internal static Logger Logger = GlobalLogger.GetLogger("XenkoShaderPerformance"); // Global logger for shader profiling
+
         private static int globalCount;
         private static int loadingCount;
         private static int typeAnalysisCount;
@@ -145,30 +149,29 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Performance
 
         public static void PrintResult()
         {
-            Console.WriteLine();
-            Console.WriteLine(@"--------------------------TOTAL PERFORMANCE ANALYZER---------------------------");
-            Console.WriteLine(@"Loading took {0} ms for {1} shader(s)", LoadingTimes.Aggregate((long)0, (agg, next) => agg + next), loadingCount);
-            Console.WriteLine(@"Type analysis took {0} ms for {1} shader(s)", TypeAnalysisTimes.Aggregate((long)0, (agg, next) => agg + next), typeAnalysisCount);
-            Console.WriteLine(@"Semantic analysis took {0} ms for {1} shader(s)", SemanticAnalysisTimes.Aggregate((long)0, (agg, next) => agg + next), semanticAnalysisCount);
-            Console.WriteLine(@"Mix took {0} ms for {1} shader(s)", MixTimes.Aggregate((long)0, (agg, next) => agg + next), mixCount);
-            Console.WriteLine(@"DeepClone took {0} ms for {1} shader(s)", DeepcloneTimes.Aggregate((long)0, (agg, next) => agg + next), deepCloneCount);
-            Console.WriteLine(@"Ast parsing took {0} ms for {1} shader(s)", AstParsingTimes.Aggregate((long)0, (agg, next) => agg + next), astParsingCount);
-            Console.WriteLine(@"-------------------------------------------------------------------------------");
-            Console.WriteLine();
+            Logger.Info(@"--------------------------TOTAL PERFORMANCE ANALYZER---------------------------");
+            Logger.Info(@"Loading took {0} ms for {1} shader(s)", LoadingTimes.Aggregate((long)0, (agg, next) => agg + next), loadingCount);
+            Logger.Info(@"Type analysis took {0} ms for {1} shader(s)", TypeAnalysisTimes.Aggregate((long)0, (agg, next) => agg + next), typeAnalysisCount);
+            Logger.Info(@"Semantic analysis took {0} ms for {1} shader(s)", SemanticAnalysisTimes.Aggregate((long)0, (agg, next) => agg + next), semanticAnalysisCount);
+            Logger.Info(@"Mix took {0} ms for {1} shader(s)", MixTimes.Aggregate((long)0, (agg, next) => agg + next), mixCount);
+            Logger.Info(@"DeepClone took {0} ms for {1} shader(s)", DeepcloneTimes.Aggregate((long)0, (agg, next) => agg + next), deepCloneCount);
+            Logger.Info(@"Ast parsing took {0} ms for {1} shader(s)", AstParsingTimes.Aggregate((long)0, (agg, next) => agg + next), astParsingCount);
+            Logger.Info(@"-------------------------------------------------------------------------------");
+
         }
         public static void PrintLastResult()
         {
-            Console.WriteLine();
-            Console.WriteLine(@"--------------------------LAST PERFORMANCE ANALYZER---------------------------");
-            Console.WriteLine(@"Process took {0} ms", globalWatch.ElapsedMilliseconds);
-            Console.WriteLine(@"Loading took {0} ms", loadingWatch.ElapsedMilliseconds);
-            Console.WriteLine(@"Type analysis took {0} ms", typeAnalysisWatch.ElapsedMilliseconds);
-            Console.WriteLine(@"Semantic analysis took {0} ms", semanticAnalysisWatch.ElapsedMilliseconds);
-            Console.WriteLine(@"Mix took {0} ms", mixWatch.ElapsedMilliseconds);
-            Console.WriteLine(@"DeepClone took {0} ms", deepCloneWatch.ElapsedMilliseconds);
-            Console.WriteLine(@"Ast parsing took {0} ms", astParsingWatch.ElapsedMilliseconds);
-            Console.WriteLine(@"------------------------------------------------------------------------------");
-            Console.WriteLine();
+
+            Logger.Info(@"--------------------------LAST PERFORMANCE ANALYZER---------------------------");
+            Logger.Info(@"Process took {0} ms", globalWatch.ElapsedMilliseconds);
+            Logger.Info(@"Loading took {0} ms", loadingWatch.ElapsedMilliseconds);
+            Logger.Info(@"Type analysis took {0} ms", typeAnalysisWatch.ElapsedMilliseconds);
+            Logger.Info(@"Semantic analysis took {0} ms", semanticAnalysisWatch.ElapsedMilliseconds);
+            Logger.Info(@"Mix took {0} ms", mixWatch.ElapsedMilliseconds);
+            Logger.Info(@"DeepClone took {0} ms", deepCloneWatch.ElapsedMilliseconds);
+            Logger.Info(@"Ast parsing took {0} ms", astParsingWatch.ElapsedMilliseconds);
+            Logger.Info(@"------------------------------------------------------------------------------");
+
         }
 
 
@@ -177,7 +180,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Performance
             if (globalCount == limit)
             {
                 PrintResult();
-                TextWriter tw = new StreamWriter(File.Open("performance.csv", FileMode.Append));
+                TextWriter tw = new StreamWriter(VirtualFileSystem.ApplicationLocal.OpenStream("performance.csv", VirtualFileMode.Append, VirtualFileAccess.Write));
                 tw.WriteLine("loading,type,semantic,mix,deepclone,global");
 
                 for (var i = 0; i < limit; ++i)

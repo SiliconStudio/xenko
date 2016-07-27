@@ -3,7 +3,7 @@
 /// <summary>
 /// Resets the position to the origin.
 /// </summary>
-class TransformationZero : TransformationBase
+shader TransformationZero : TransformationBase
 {
     stage override void BaseTransformVS()
     {

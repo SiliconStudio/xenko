@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// <summary>
     /// Material glossiness map
     /// </summary>
-    class MaterialSurfaceGlossinessMap<bool TInvert> : IMaterialSurfacePixel
+    shader MaterialSurfaceGlossinessMap<bool TInvert> : IMaterialSurfacePixel
     {
         compose ComputeColor glossinessMap;
 

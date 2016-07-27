@@ -7,14 +7,14 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// An abstract class for attribute definition.
     /// </summary>
-    public abstract class AttributeBase : Node
+    public abstract partial class AttributeBase : Node
     {
     }
 
     /// <summary>
     /// An abstract class for a post attribute definition.
     /// </summary>
-    public abstract class PostAttributeBase : AttributeBase
+    public abstract partial class PostAttributeBase : AttributeBase
     {
     }
 }

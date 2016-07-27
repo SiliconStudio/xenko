@@ -5,7 +5,7 @@ using SiliconStudio.Xenko.Rendering.Materials;
 
 namespace SiliconStudio.Xenko.Rendering
 {
-    partial shader XenkoLighting
+    partial effect XenkoLighting
     {
         using params LightingKeys;
 
@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// <summary>
     /// Forward shading effect
     /// </summary>
-    shader XenkoForwardShadingEffect
+    effect XenkoForwardShadingEffect
     {
         using params MaterialKeys;
 

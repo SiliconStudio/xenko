@@ -7,9 +7,8 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A single parameter declaration.
     /// </summary>
-    public class Parameter : Variable
+    public partial class Parameter : Variable
     {
-        [VisitorIgnore]
         private MethodDeclaration declaringMethod;
 
         /// <summary>
@@ -38,6 +37,7 @@ namespace SiliconStudio.Shaders.Ast
         /// <value>
         ///   The declaring method.
         /// </value>
+        [VisitorIgnore]
         public MethodDeclaration DeclaringMethod
         {
             get

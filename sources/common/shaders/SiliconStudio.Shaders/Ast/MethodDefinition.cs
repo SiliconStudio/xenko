@@ -9,9 +9,8 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A method definition with a body of statements.
     /// </summary>
-    public class MethodDefinition : MethodDeclaration, IScopeContainer
+    public partial class MethodDefinition : MethodDeclaration, IScopeContainer
     {
-        [VisitorIgnore]
         private MethodDeclaration declaration;
 
         #region Constructors and Destructors
@@ -47,6 +46,7 @@ namespace SiliconStudio.Shaders.Ast
         /// <value>
         /// The declaration.
         /// </value>
+        [VisitorIgnore]
         public MethodDeclaration Declaration { get { return declaration; } set { declaration = value; } }
 
         /// <summary>

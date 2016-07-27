@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// While and Do-While statement.
     /// </summary>
-    public class WhileStatement : Statement, IScopeContainer
+    public partial class WhileStatement : Statement, IScopeContainer
     {
         #region Public Properties
 

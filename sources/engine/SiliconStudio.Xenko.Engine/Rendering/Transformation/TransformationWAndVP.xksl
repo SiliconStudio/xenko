@@ -3,7 +3,7 @@
 /// <summary>
 /// Transforms the position of the vertex in world space first then in projection space
 /// </summary>
-class TransformationWAndVP : TransformationBase, PositionStream4, PositionHStream4
+shader TransformationWAndVP : TransformationBase, PositionStream4, PositionHStream4
 {
     stage override void PreTransformPosition()
     {

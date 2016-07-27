@@ -3,7 +3,7 @@
 /// <summary>
 /// Computes shading for all the groups of lights.
 /// </summary>
-class ColorTransformGroupShader : ImageEffectShader
+shader ColorTransformGroupShader : ImageEffectShader
 {
     compose ColorTransformShader Transforms[];
 

@@ -3,7 +3,7 @@
 
 // By inheriting the ParticleBase we inherit Texturing and the VSMain/PSMain methods, enough to draw a uniformly colored quad
 
-class ParticleCustomShader : ParticleBase
+shader ParticleCustomShader : ParticleBase
 {
     // -------------------------------------
     // streams
@@ -15,7 +15,7 @@ class ParticleCustomShader : ParticleBase
     // This shader is settable by the user, and it's a binary tree made up from smaller shaders
     compose ComputeColor  baseIntensity;
 
-    // Shading of the sprite - we override the base class's Shading(), which only returns ColorScale
+    // Shading of the sprite - we override the base shader's Shading(), which only returns ColorScale
     stage override float4 Shading()
     {
         // -----------------------------------------------

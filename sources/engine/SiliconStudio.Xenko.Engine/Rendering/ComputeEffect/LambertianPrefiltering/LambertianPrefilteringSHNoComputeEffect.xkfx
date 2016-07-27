@@ -3,7 +3,7 @@
 
 namespace SiliconStudio.Xenko.Rendering.Images
 {
-    shader LambertianPrefilteringSHNoComputeEffectPass1
+    effect LambertianPrefilteringSHNoComputeEffectPass1
     {
         using params SphericalHarmonicsParameters;
 

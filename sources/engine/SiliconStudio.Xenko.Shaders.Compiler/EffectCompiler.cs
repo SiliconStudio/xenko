@@ -136,6 +136,9 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             shaderMixinSource.AddMacro("GRAPHICS_PROFILE_LEVEL_11_1", (int)GraphicsProfile.Level_11_1);
             shaderMixinSource.AddMacro("GRAPHICS_PROFILE_LEVEL_11_2", (int)GraphicsProfile.Level_11_2);
 
+            // In .xksl, class has been renamed to shader to avoid ambiguities with HLSL
+            shaderMixinSource.AddMacro("class", "shader");
+
             var parsingResult = GetMixinParser().Parse(shaderMixinSource, shaderMixinSource.Macros.ToArray());
 
             // Copy log from parser results to output

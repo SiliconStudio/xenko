@@ -55,12 +55,6 @@
     <Compile Include="..\..\shared\Process\AndroidDeviceEnumerator.cs">
       <Link>AndroidDeviceEnumerator.cs</Link>
     </Compile>
-    <Compile Include="..\..\shared\Process\ProcessOutputs.cs">
-      <Link>ProcessOutputs.cs</Link>
-    </Compile>
-    <Compile Include="..\..\shared\Process\ShellHelper.cs">
-      <Link>ShellHelper.cs</Link>
-    </Compile>
     <Compile Include="ConnectedDevice.cs" />
     <Compile Include="DeviceHelper.cs" />
     <Compile Include="IOSTracker.cs" />
@@ -148,6 +142,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <Import Project="..\..\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems" Label="Shared" />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
