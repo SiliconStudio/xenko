@@ -404,7 +404,12 @@ namespace SiliconStudio.Xenko.UI
         public float Opacity
         {
             get { return opacity; }
-            set { opacity = MathUtil.Clamp(value, 0.0f, 1.0f); }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                opacity = MathUtil.Clamp(value, 0.0f, 1.0f);
+            }
         }
 
         /// <summary>
@@ -441,6 +446,8 @@ namespace SiliconStudio.Xenko.UI
             get { return defaultHeight; }
             set
             {
+                if (float.IsNaN(value))
+                    return;
                 defaultHeight = MathUtil.Clamp(value, 0.0f, float.MaxValue); ;
                 InvalidateMeasure();
             }
@@ -460,6 +467,8 @@ namespace SiliconStudio.Xenko.UI
             get { return defaultWidth; }
             set
             {
+                if (float.IsNaN(value))
+                    return;
                 defaultWidth = MathUtil.Clamp(value, 0.0f, float.MaxValue);
                 InvalidateMeasure();
             }
@@ -479,6 +488,8 @@ namespace SiliconStudio.Xenko.UI
             get { return defaultDepth; }
             set
             {
+                if (float.IsNaN(value))
+                    return;
                 defaultDepth = MathUtil.Clamp(value, 0.0f, float.MaxValue);
                 InvalidateMeasure();
             }
@@ -585,6 +596,8 @@ namespace SiliconStudio.Xenko.UI
             get { return minimumHeight; }
             set
             {
+                if (float.IsNaN(value))
+                    return;
                 minimumHeight = MathUtil.Clamp(value, 0.0f, float.MaxValue);
                 InvalidateMeasure();
             }
@@ -604,6 +617,8 @@ namespace SiliconStudio.Xenko.UI
             get { return minimumWidth; }
             set
             {
+                if (float.IsNaN(value))
+                    return;
                 minimumWidth = MathUtil.Clamp(value, 0.0f, float.MaxValue);
                 InvalidateMeasure();
             }
@@ -623,6 +638,8 @@ namespace SiliconStudio.Xenko.UI
             get { return minimumDepth; }
             set
             {
+                if (float.IsNaN(value))
+                    return;
                 minimumDepth = MathUtil.Clamp(value, 0.0f, float.MaxValue);
                 InvalidateMeasure();
             }
@@ -653,6 +670,8 @@ namespace SiliconStudio.Xenko.UI
             get { return maximumHeight; }
             set
             {
+                if (float.IsNaN(value))
+                    return;
                 maximumHeight = MathUtil.Clamp(value, 0.0f, float.PositiveInfinity);
                 InvalidateMeasure();
             }
@@ -672,6 +691,8 @@ namespace SiliconStudio.Xenko.UI
             get { return maximumWidth; }
             set
             {
+                if (float.IsNaN(value))
+                    return;
                 maximumWidth = MathUtil.Clamp(value, 0.0f, float.PositiveInfinity);
                 InvalidateMeasure();
             }
@@ -691,6 +712,8 @@ namespace SiliconStudio.Xenko.UI
             get { return maximumDepth; }
             set
             {
+                if (float.IsNaN(value))
+                    return;
                 maximumDepth = MathUtil.Clamp(value, 0.0f, float.PositiveInfinity);
                 InvalidateMeasure();
             }

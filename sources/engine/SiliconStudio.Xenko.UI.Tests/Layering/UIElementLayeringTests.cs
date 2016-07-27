@@ -184,21 +184,21 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             Assert.DoesNotThrow(() => DefaultWidth = -1f);
             Assert.AreEqual(0f, DefaultWidth);
             Assert.DoesNotThrow(() => DefaultWidth = float.NaN);
-            //Assert.AreEqual(0f, DefaultWidth); // previous value unchanged
+            Assert.AreEqual(0f, DefaultWidth); // previous value unchanged
             Assert.DoesNotThrow(() => DefaultWidth = float.PositiveInfinity);
             Assert.AreEqual(float.MaxValue, DefaultWidth);
 
             Assert.DoesNotThrow(() => DefaultHeight = -1f);
             Assert.AreEqual(0f, DefaultHeight);
             Assert.DoesNotThrow(() => DefaultHeight = float.NaN);
-            //Assert.AreEqual(0f, DefaultHeight); // previous value unchanged
+            Assert.AreEqual(0f, DefaultHeight); // previous value unchanged
             Assert.DoesNotThrow(() => DefaultHeight = float.PositiveInfinity);
             Assert.AreEqual(float.MaxValue, DefaultHeight);
 
             Assert.DoesNotThrow(() => DefaultDepth = -1f);
             Assert.AreEqual(0f, DefaultDepth);
             Assert.DoesNotThrow(() => DefaultDepth = float.NaN);
-            //Assert.AreEqual(0f, DefaultDepth); // previous value unchanged
+            Assert.AreEqual(0f, DefaultDepth); // previous value unchanged
             Assert.DoesNotThrow(() => DefaultDepth = float.PositiveInfinity);
             Assert.AreEqual(float.MaxValue, DefaultDepth);
 
@@ -222,21 +222,21 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             Assert.DoesNotThrow(() => MinimumWidth = -1f);
             Assert.AreEqual(0f, MinimumWidth);
             Assert.DoesNotThrow(() => MinimumWidth = float.NaN);
-            //Assert.AreEqual(0f, MinimumWidth); // previous value unchanged
+            Assert.AreEqual(0f, MinimumWidth); // previous value unchanged
             Assert.DoesNotThrow(() => MinimumWidth = float.PositiveInfinity);
             Assert.AreEqual(float.MaxValue, MinimumWidth);
 
             Assert.DoesNotThrow(() => MinimumHeight = -1f);
             Assert.AreEqual(0f, MinimumHeight);
             Assert.DoesNotThrow(() => MinimumHeight = float.NaN);
-            //Assert.AreEqual(0f, MinimumHeight); // previous value unchanged
+            Assert.AreEqual(0f, MinimumHeight); // previous value unchanged
             Assert.DoesNotThrow(() => MinimumHeight = float.PositiveInfinity);
             Assert.AreEqual(float.MaxValue, MinimumHeight);
 
             Assert.DoesNotThrow(() => MinimumDepth = -1f);
             Assert.AreEqual(0f, MinimumDepth);
             Assert.DoesNotThrow(() => MinimumDepth = float.NaN);
-            //Assert.AreEqual(0f, MinimumDepth); // previous value unchanged
+            Assert.AreEqual(0f, MinimumDepth); // previous value unchanged
             Assert.DoesNotThrow(() => MinimumDepth = float.PositiveInfinity);
             Assert.AreEqual(float.MaxValue, MinimumDepth);
 
@@ -244,17 +244,17 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             Assert.DoesNotThrow(() => MaximumWidth = -1f);
             Assert.AreEqual(0f, MaximumWidth);
             Assert.DoesNotThrow(() => MaximumWidth = float.NaN);
-            //Assert.AreEqual(0f, MaximumWidth); // previous value unchanged
+            Assert.AreEqual(0f, MaximumWidth); // previous value unchanged
 
             Assert.DoesNotThrow(() => MaximumHeight = -1f);
             Assert.AreEqual(0f, MaximumHeight);
             Assert.DoesNotThrow(() => MaximumHeight = float.NaN);
-            //Assert.AreEqual(0f, MaximumHeight); // previous value unchanged
+            Assert.AreEqual(0f, MaximumHeight); // previous value unchanged
 
             Assert.DoesNotThrow(() => MaximumDepth = -1f);
             Assert.AreEqual(0f, MaximumDepth);
             Assert.DoesNotThrow(() => MaximumDepth = float.NaN);
-            //Assert.AreEqual(0f, MaximumDepth); // previous value unchanged
+            Assert.AreEqual(0f, MaximumDepth); // previous value unchanged
         }
 
         /// <summary>
