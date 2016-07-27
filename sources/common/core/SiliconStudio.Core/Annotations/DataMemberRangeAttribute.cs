@@ -69,6 +69,12 @@ namespace SiliconStudio.Core.Annotations
         }
 
         /// <summary>
+        /// Gets or sets a Boolean value indicating whether <see cref="double.NaN"/> is an allowed value in the range.
+        /// </summary>
+        /// <returns><c>true</c> if <see cref="double.NaN"/> is allowed; otherwise, <c>false</c>. The default is <c>false</c>.</returns>
+        public bool AllowNaN { get; set; }
+
+        /// <summary>
         /// Gets the minimum inclusive.
         /// </summary>
         /// <value>The minimum.</value>
