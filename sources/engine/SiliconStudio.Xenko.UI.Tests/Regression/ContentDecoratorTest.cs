@@ -57,7 +57,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             if (Input.IsKeyPressed(Keys.Right))
                 textBlock.TextSize = 4 * textBlock.ActualTextSize / 3;
             if (Input.IsKeyPressed(Keys.Delete))
-                textBlock.TextSize = null;
+                textBlock.TextSize = float.NaN;
         }
 
         protected override void RegisterTests()

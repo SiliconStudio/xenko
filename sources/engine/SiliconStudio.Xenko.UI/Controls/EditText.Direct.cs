@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.UI.Controls
 
             var textRegionSize = (ActualWidth - Padding.Left - Padding.Right);
             var fontScale = LayoutingContext.RealVirtualResolutionRatio;
-            var fontSize = new Vector2(fontScale.Y * TextSize); // we don't want letters non-uniform ratio
+            var fontSize = new Vector2(fontScale.Y * ActualTextSize); // we don't want letters non-uniform ratio
 
             // calculate the offset of the beginning of the text due to text alignment
             var alignmentOffset = -textRegionSize / 2f;

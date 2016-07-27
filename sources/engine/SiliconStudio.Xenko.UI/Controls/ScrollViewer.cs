@@ -300,8 +300,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             set
             {
                 if (float.IsNaN(value))
-                    throw new ArgumentException("The deceleration must be a valid number.", nameof(Deceleration));
-
+                    return;
                 deceleration = value;
             }
         }
