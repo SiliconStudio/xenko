@@ -21,6 +21,13 @@ namespace SiliconStudio.Core.Annotations
         /// <param name="largeStep">The maximum step.</param>
         public DataMemberRangeAttribute(double minimum, double maximum, double smallStep, double largeStep)
         {
+            if (double.IsNaN(minimum)) throw new ArgumentOutOfRangeException(nameof(minimum));
+            if (double.IsNaN(maximum)) throw new ArgumentOutOfRangeException(nameof(maximum));
+            if (minimum > maximum) throw new ArgumentException("The minimum should be lesser or equal to the maximum.", nameof(minimum));
+            if (double.IsNaN(smallStep)) throw new ArgumentOutOfRangeException(nameof(smallStep));
+            if (double.IsNaN(largeStep)) throw new ArgumentOutOfRangeException(nameof(largeStep));
+            if (smallStep > largeStep) throw new ArgumentException("The smallStep should be lesser or equal to the largeStep.", nameof(smallStep));
+
             Minimum = minimum;
             Maximum = maximum;
             SmallStep = smallStep;
@@ -34,6 +41,9 @@ namespace SiliconStudio.Core.Annotations
         /// <param name="maximum">The maximum.</param>
         public DataMemberRangeAttribute(double minimum, double maximum)
         {
+            if (double.IsNaN(minimum)) throw new ArgumentOutOfRangeException(nameof(minimum));
+            if (double.IsNaN(maximum)) throw new ArgumentOutOfRangeException(nameof(maximum));
+
             Minimum = minimum;
             Maximum = maximum;
         }
@@ -48,6 +58,13 @@ namespace SiliconStudio.Core.Annotations
         /// <param name="decimalPlaces">The decimal places</param>
         public DataMemberRangeAttribute(double minimum, double maximum, double smallStep, double largeStep, int decimalPlaces)
         {
+            if (double.IsNaN(minimum)) throw new ArgumentOutOfRangeException(nameof(minimum));
+            if (double.IsNaN(maximum)) throw new ArgumentOutOfRangeException(nameof(maximum));
+            if (minimum > maximum) throw new ArgumentException("The minimum should be lesser or equal to the maximum.", nameof(minimum));
+            if (double.IsNaN(smallStep)) throw new ArgumentOutOfRangeException(nameof(smallStep));
+            if (double.IsNaN(largeStep)) throw new ArgumentOutOfRangeException(nameof(largeStep));
+            if (smallStep > largeStep) throw new ArgumentException("The smallStep should be lesser or equal to the largeStep.", nameof(smallStep));
+
             Minimum = minimum;
             Maximum = maximum;
             SmallStep = smallStep;
@@ -63,6 +80,10 @@ namespace SiliconStudio.Core.Annotations
         /// <param name="decimalPlaces">The decimal places</param>
         public DataMemberRangeAttribute(double minimum, double maximum, int decimalPlaces)
         {
+            if (double.IsNaN(minimum)) throw new ArgumentOutOfRangeException(nameof(minimum));
+            if (double.IsNaN(maximum)) throw new ArgumentOutOfRangeException(nameof(maximum));
+            if (minimum > maximum) throw new ArgumentException("The minimum should be lesser or equal to the maximum.", nameof(minimum));
+
             Minimum = minimum;
             Maximum = maximum;
             DecimalPlaces = decimalPlaces;
