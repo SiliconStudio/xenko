@@ -1,8 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
@@ -62,9 +64,6 @@ namespace SiliconStudio.Xenko.UI
                 if(value < 0)
                     throw new ArgumentOutOfRangeException(nameof(value));
 
-                if(value < MinimumSize)
-                    throw new InvalidOperationException("The provided maximum value is smaller than the current minimum value");
-
                 maximumSize = value;
 
                 DefinitionChanged?.Invoke(this, EventArgs.Empty);
@@ -87,9 +86,6 @@ namespace SiliconStudio.Xenko.UI
             {
                 if (value < 0 || float.IsPositiveInfinity(value))
                     throw new ArgumentOutOfRangeException(nameof(value));
-                
-                if (value > MaximumSize)
-                    throw new InvalidOperationException("The provided minimum value is bigger than the current maximum value");
 
                 minimumSize = value;
 
@@ -140,6 +136,8 @@ namespace SiliconStudio.Xenko.UI
             }
         }
 
+        internal event EventHandler<EventArgs> DefinitionChanged;
+
         /// <summary>
         /// Clamp the provided size by the definition's minimum and maximum values.
         /// </summary>
@@ -147,22 +145,34 @@ namespace SiliconStudio.Xenko.UI
         /// <returns>The size clamped by the minimum and maximum values of the strip definition</returns>
         public float ClampSizeByMinimumMaximum(float desiredSize)
         {
+            CheckState();
             return Math.Min(MaximumSize, Math.Max(MinimumSize, desiredSize));
+        }
+
+        /// <summary>
+        /// Verifies that <see cref="MinimumSize"/> if smaller than or equal to <see cref="MaximumSize"/>.
+        /// </summary>
+        /// <exception cref="InvalidOperationException"><see cref="MinimumSize"/> is greater than <see cref="MaximumSize"/>.</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        internal void CheckState()
+        {
+            if (MinimumSize > MaximumSize)
+                throw new InvalidOperationException($"The value of {nameof(MinimumSize)} is greater than the value of {nameof(MaximumSize)}.");
         }
 
         internal float ValueRelativeMinimum()
         {
+            CheckState();
             if (sizeValue < MathUtil.ZeroTolerance)
                 return 0;
-
             return MinimumSize / SizeValue;
         }
 
         internal float ValueRelativeMaximum()
         {
+            CheckState();
             if (sizeValue < MathUtil.ZeroTolerance)
                 return 0;
-
             return MaximumSize / SizeValue;
         }
 
@@ -187,7 +197,5 @@ namespace SiliconStudio.Xenko.UI
                 return val1.CompareTo(val2);
             }
         }
-
-        internal event EventHandler<EventArgs> DefinitionChanged;
     }
 }

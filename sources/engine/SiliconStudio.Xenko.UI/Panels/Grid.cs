@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -490,6 +491,10 @@ namespace SiliconStudio.Xenko.UI.Panels
             {
                 starDefinitionsCopy.Clear();
                 starDefinitionsCopy.AddRange(dimToStarDefinitions[dim]);
+
+                // check validity of strip definition
+                foreach (var definition in starDefinitionsCopy)
+                    definition.CheckState();
 
                 // compute the size taken by fixed and auto strips
                 var spaceTakenByFixedAndAutoStrips = SumStripAutoAndFixedSize(stripDefinitions[dim]);
