@@ -16,29 +16,29 @@ namespace SiliconStudio.Xenko.UI.Panels
     public class Canvas : Panel
     {
         /// <summary>
-        /// The key to the RelativeSize dependency property. RelativeSize indicate the ratio of the size of the <see cref="UIElement"/> with respect to the parent size.
+        /// The key to the AbsolutePosition dependency property. AbsolutePosition indicates where the <see cref="UIElement"/> is pinned in the canvas.
+        /// </summary>
+        [Display(category: LayoutCategory)]
+        public static readonly PropertyKey<Vector3> AbsolutePositionPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(AbsolutePositionPropertyKey), typeof(Canvas), Vector3.Zero, InvalidateCanvasMeasure);
+
+        /// <summary>
+        /// The key to the RelativePosition dependency property. RelativePosition indicates where the <see cref="UIElement"/> is pinned in the canvas.
+        /// </summary>
+        [Display(category: LayoutCategory)]
+        public static readonly PropertyKey<Vector3> RelativePositionPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(RelativePositionPropertyKey), typeof(Canvas), Vector3.Zero, InvalidateCanvasMeasure);
+
+        /// <summary>
+        /// The key to the RelativeSize dependency property. RelativeSize indicates the ratio of the size of the <see cref="UIElement"/> with respect to the parent size.
         /// </summary>
         /// <remarks>Relative size must be strictly positive</remarks>
         [Display(category: LayoutCategory)]
-        public static readonly PropertyKey<Vector3> RelativeSizePropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(RelativeSizePropertyKey), typeof(Canvas), new Vector3(float.NaN), ValidateRelativeSize, InvalidateCanvasMeasure);
+        public static readonly PropertyKey<Vector3> RelativeSizePropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(RelativeSizePropertyKey), typeof(Canvas), new Vector3(float.NaN), CoerceRelativeSize, InvalidateCanvasMeasure);
 
         /// <summary>
-        /// The key to the RelativePosition dependency property. RelativePosition indicate where the <see cref="UIElement"/> is pinned in the canvas.
+        /// The key to the UseAbsolutionPosition dependency property. This indicates whether to use the AbsolutePosition or the RelativePosition to place to element.
         /// </summary>
         [Display(category: LayoutCategory)]
-        public static readonly PropertyKey<Vector3> RelativePositionPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(RelativePositionPropertyKey), typeof(Canvas), Vector3.Zero, OnRelativePositionChanged);
-
-        /// <summary>
-        /// The key to the AbsolutePosition dependency property. AbsolutePosition indicate where the <see cref="UIElement"/> is pinned in the canvas.
-        /// </summary>
-        [Display(category: LayoutCategory)]
-        public static readonly PropertyKey<Vector3> AbsolutePositionPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(AbsolutePositionPropertyKey), typeof(Canvas), Vector3.Zero, OnAbsolutePositionChanged);
-
-        /// <summary>
-        /// The key to the useAbsolutionPosition dependency property. This indicates whether to use the AbsolutePosition or the RelativePosition to place to element.
-        /// </summary>
-        [Display(category: LayoutCategory)]
-        private static readonly PropertyKey<bool> UseAbsolutionPositionPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(UseAbsolutionPositionPropertyKey), typeof(Canvas), false);
+        public static readonly PropertyKey<bool> UseAbsolutionPositionPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(UseAbsolutionPositionPropertyKey), typeof(Canvas), false, InvalidateCanvasMeasure);
 
         /// <summary>
         /// The key to the PinOrigin dependency property. The PinOrigin indicate which point of the <see cref="UIElement"/> should be pinned to the canvas. 
@@ -48,43 +48,30 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <see cref="UIElement"/>'s margins are included in the normalization. 
         /// Values beyond [0,1] are clamped.</remarks>
         [Display(category: LayoutCategory)]
-        public static readonly PropertyKey<Vector3> PinOriginPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(PinOriginPropertyKey), typeof(Canvas), Vector3.Zero, PinOriginValueValidator, InvalidateCanvasMeasure);
+        public static readonly PropertyKey<Vector3> PinOriginPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(PinOriginPropertyKey), typeof(Canvas), Vector3.Zero, CoercePinOriginValue, InvalidateCanvasMeasure);
         
-        private static void OnRelativePositionChanged(object propertyOwner, PropertyKey<Vector3> propertyKey, Vector3 propertyOldValue)
+        private static void CoercePinOriginValue(ref Vector3 value)
         {
-            var element = (UIElement)propertyOwner;
-            element.DependencyProperties.Set(UseAbsolutionPositionPropertyKey, false);
-
-            InvalidateCanvasMeasure(propertyOwner, propertyKey, propertyOldValue);
+            // Values must be in the range [0, 1]
+            value.X = MathUtil.Clamp(value.X, 0.0f, 1.0f);
+            value.Y = MathUtil.Clamp(value.Y, 0.0f, 1.0f);
+            value.Z = MathUtil.Clamp(value.Z, 0.0f, 1.0f);
         }
 
-        private static void OnAbsolutePositionChanged(object propertyOwner, PropertyKey<Vector3> propertyKey, Vector3 propertyOldValue)
+        private static void CoerceRelativeSize(ref Vector3 value)
         {
-            var element = (UIElement)propertyOwner;
-            element.DependencyProperties.Set(UseAbsolutionPositionPropertyKey, true);
-
-            InvalidateCanvasMeasure(propertyOwner, propertyKey, propertyOldValue);
+            // All the components of the relative size must be positive
+            value.X = Math.Max(value.X, 0.0f);
+            value.Y = Math.Max(value.Y, 0.0f);
+            value.Z = Math.Max(value.Z, 0.0f);
         }
 
-        protected static void InvalidateCanvasMeasure(object propertyOwner, PropertyKey<Vector3> propertyKey, Vector3 propertyOldValue)
+        private static void InvalidateCanvasMeasure<T>(object propertyOwner, PropertyKey<T> propertyKey, T propertyOldValue)
         {
             var element = (UIElement)propertyOwner;
             var parentCanvas = element.Parent as Canvas;
 
             parentCanvas?.InvalidateMeasure();
-        }
-
-        private static void PinOriginValueValidator(ref Vector3 value)
-        {
-            value.X = Math.Min(1, Math.Max(0, value.X));
-            value.Y = Math.Min(1, Math.Max(0, value.Y));
-            value.Z = Math.Min(1, Math.Max(0, value.Z));
-        }
-
-        private static void ValidateRelativeSize(ref Vector3 value)
-        {
-            if (value.X < 0 || value.Y < 0 || value.Z < 0)
-                throw new InvalidOperationException("All the components of the a relative size must be positive");
         }
 
         protected override Vector3 MeasureOverride(Vector3 availableSizeWithoutMargins)
