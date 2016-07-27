@@ -202,6 +202,7 @@
     <Compile Include="Module.cs" />
     <Compile Include="ParticleForcesTest.cs" />
     <Compile Include="ParticlePoolTest.cs" />
+    <Compile Include="ParticleSorterLiving.cs" />
     <Compile Include="SimpleTest.cs" />
     <Compile Include="VisualTestChildren.cs" />
     <Compile Include="VisualTestCurves.cs" />
