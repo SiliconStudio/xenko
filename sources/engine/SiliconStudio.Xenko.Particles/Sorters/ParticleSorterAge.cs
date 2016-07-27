@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Particles.Sorters
@@ -12,21 +13,39 @@ namespace SiliconStudio.Xenko.Particles.Sorters
     {
         public ParticleSorterAge(ParticlePool pool) : base(pool, ParticleFields.Life) { }
 
-        IParticleSortedList IParticleSorter.GetSortedList(Vector3 depth) => GetSortedList(depth);
-
-        public ParticleSortedListCustom<float> GetSortedList(Vector3 depth)
+        public ParticleList GetSortedList(Vector3 depth)
         {
+            var livingParticles = ParticlePool.LivingParticles;
+
             var sortField = ParticlePool.GetField(fieldDesc);
 
             if (!sortField.IsValid())
-                return new ParticleSortedListCustom<float>(ParticlePool, ArrayPool);
+            {
+                // Field is not valid - return an unsorted list
+                return new ParticleList(ParticlePool, livingParticles);
+            }
 
-            return new ParticleSortedListCustom<float>(ParticlePool, ArrayPool, fieldDesc, new AgeCalculator());
+            SortedParticle[] particleList = ArrayPool.Allocate(ParticlePool.ParticleCapacity);
+
+            var i = 0;
+            foreach (var particle in ParticlePool)
+            {
+                particleList[i] = new SortedParticle(particle, (-1f) * particle.Get(sortField));
+                i++;
+            }
+
+            Array.Sort(particleList, 0, livingParticles);
+
+            return new ParticleList(ParticlePool, livingParticles, particleList);
         }
 
-        struct AgeCalculator : ISortValueCalculator<float>
+        /// <summary>
+        /// In case an array was used it must be freed back to the pool
+        /// </summary>
+        /// <param name="sortedList">Reference to the <see cref="ParticleList"/> to be freed</param>
+        public void FreeSortedList(ref ParticleList sortedList)
         {
-            public float GetSortValue(float life) => -life;
+            sortedList.Free(ArrayPool);
         }
     }
 }

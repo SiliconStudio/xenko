@@ -13,22 +13,40 @@ namespace SiliconStudio.Xenko.Particles.Sorters
     {
         public ParticleSorterOrder(ParticlePool pool) : base(pool, ParticleFields.Order) { }
 
-        IParticleSortedList IParticleSorter.GetSortedList(Vector3 depth) => GetSortedList(depth);
-
-        public ParticleSortedListCustom<uint> GetSortedList(Vector3 depth)
+        public unsafe ParticleList GetSortedList(Vector3 depth)
         {
+            var livingParticles = ParticlePool.LivingParticles;
+
             var sortField = ParticlePool.GetField(fieldDesc);
 
             if (!sortField.IsValid())
-                return new ParticleSortedListCustom<uint>(ParticlePool, ArrayPool);
+            {
+                // Field is not valid - return an unsorted list
+                return new ParticleList(ParticlePool, livingParticles);
+            }
 
-            return new ParticleSortedListCustom<uint>(ParticlePool, ArrayPool, fieldDesc, new OrderCalculator());
+            SortedParticle[] particleList = ArrayPool.Allocate(ParticlePool.ParticleCapacity);
+
+            var i = 0;
+            foreach (var particle in ParticlePool)
+            {
+                uint order = particle.Get(sortField);
+                particleList[i] = new SortedParticle(particle, *((float*)(&order))*-1f);
+                i++;
+            }
+
+            Array.Sort(particleList, 0, livingParticles);
+
+            return new ParticleList(ParticlePool, livingParticles, particleList);
         }
 
-        struct OrderCalculator : ISortValueCalculator<uint>
+        /// <summary>
+        /// In case an array was used it must be freed back to the pool
+        /// </summary>
+        /// <param name="sortedList">Reference to the <see cref="ParticleList"/> to be freed</param>
+        public void FreeSortedList(ref ParticleList sortedList)
         {
-            public unsafe float GetSortValue(uint order) => *((float*)(&order)) * -1f;
+            sortedList.Free(ArrayPool);
         }
     }
-
 }

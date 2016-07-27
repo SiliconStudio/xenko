@@ -7,22 +7,6 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Particles.Sorters
 {
-    public interface IParticleSortedList : IEnumerable<Particle>
-    {
-        /// <summary>
-        /// Returns a particle field accessor for the contained <see cref="ParticlePool"/>
-        /// </summary>
-        /// <typeparam name="T">Type data for the field</typeparam>
-        /// <param name="fieldDesc">The field description</param>
-        /// <returns></returns>
-        ParticleFieldAccessor<T> GetField<T>(ParticleFieldDescription<T> fieldDesc) where T : struct;
-
-        /// <summary>
-        /// Free up temporary resources after calculations for the frame have finished
-        /// </summary>
-        void Free();
-    }
-
     public struct SortedParticle : IComparable<SortedParticle>
     {
         public readonly Particle Particle;
@@ -68,6 +52,8 @@ namespace SiliconStudio.Xenko.Particles.Sorters
 
     public interface IParticleSorter
     {
-        IParticleSortedList GetSortedList(Vector3 depth);
+        ParticleList GetSortedList(Vector3 depth);
+
+        void FreeSortedList(ref ParticleList sortedList);
     }
 }

@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         public Vector4 EndFrame { get; set; } = new Vector4(0, 1, 1, 2);
 
         /// <inheritdoc />
-        public unsafe override void BuildUVCoordinates(ref ParticleBufferState bufferState, IParticleSortedList sorter, AttributeDescription texCoordsDescription)
+        public unsafe override void BuildUVCoordinates(ref ParticleBufferState bufferState, ref ParticleList sorter, AttributeDescription texCoordsDescription)
         {
             var lifeField = sorter.GetField(ParticleFields.RemainingLife);
 

@@ -115,6 +115,7 @@
     <Compile Include="ShapeBuilders\TextureCoordinayePolicy.cs" />
     <Compile Include="ShapeBuilders\UVRotate.cs" />
     <Compile Include="Sorters\ArrayPool.cs" />
+    <Compile Include="Sorters\ParticleList.cs" />
     <Compile Include="Sorters\ParticleSorter.cs" />
     <Compile Include="Sorters\ParticleSorterAge.cs" />
     <Compile Include="Sorters\ParticleSorterCustom.cs" />

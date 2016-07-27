@@ -88,6 +88,8 @@ namespace SiliconStudio.Xenko.Particles.Tests
                     i++;
                 }
 
+                sorter.FreeSortedList(ref sortedList);
+
                 // Assert that the number of living particles is still maxParticles, not maxParticles x2
                 Assert.That(i, Is.EqualTo(maxParticles));
             }
@@ -117,6 +119,8 @@ namespace SiliconStudio.Xenko.Particles.Tests
 
                     i++;
                 }
+
+                sorter.FreeSortedList(ref sortedList);
 
                 // Assert that the number of living particles is still maxParticles /2, not maxParticles x2
                 Assert.That(i, Is.EqualTo(maxParticles / 2));
@@ -243,6 +247,8 @@ namespace SiliconStudio.Xenko.Particles.Tests
                     i++;
                 }
 
+                sorter.FreeSortedList(ref sortedList);
+
                 // Assert that the number of living particles is still maxParticles, not maxParticles x2
                 Assert.That(i, Is.EqualTo(maxParticles));
             }
@@ -272,6 +278,8 @@ namespace SiliconStudio.Xenko.Particles.Tests
 
                     i++;
                 }
+
+                sorter.FreeSortedList(ref sortedList);
 
                 // Assert that the number of living particles is still maxParticles /2, not maxParticles x2
                 Assert.That(i, Is.EqualTo(maxParticles / 2));
@@ -305,6 +313,8 @@ namespace SiliconStudio.Xenko.Particles.Tests
                     i++;
                 }
 
+                sorter.FreeSortedList(ref sortedList);
+
                 // Assert that the number of living particles is still maxParticles /2, not maxParticles x2
                 Assert.That(i, Is.EqualTo(maxParticles / 2));
             }
@@ -334,6 +344,8 @@ namespace SiliconStudio.Xenko.Particles.Tests
                     i++;
                 }
 
+                sorter.FreeSortedList(ref sortedList);
+
                 // Assert that the number of living particles is still maxParticles /2, not maxParticles x2
                 Assert.That(i, Is.EqualTo(maxParticles / 2));
             }
@@ -361,6 +373,8 @@ namespace SiliconStudio.Xenko.Particles.Tests
 
                     i++;
                 }
+
+                sorter.FreeSortedList(ref sortedList);
 
                 // Assert that the number of living particles is still maxParticles /2, not maxParticles x2
                 Assert.That(i, Is.EqualTo(maxParticles / 2));

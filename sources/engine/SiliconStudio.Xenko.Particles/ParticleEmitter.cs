@@ -970,12 +970,12 @@ namespace SiliconStudio.Xenko.Particles
             ParticleBufferState bufferState = new ParticleBufferState(sharedBufferPtr, VertexBuilder);
 
             ShapeBuilder.SetRequiredQuads(ShapeBuilder.QuadsPerParticle, pool.LivingParticles, pool.ParticleCapacity);
-            ShapeBuilder.BuildVertexBuffer(ref bufferState, unitX, unitY, ref posIdentity, ref rotIdentity, scaleIdentity, sortedList);
+            ShapeBuilder.BuildVertexBuffer(ref bufferState, unitX, unitY, ref posIdentity, ref rotIdentity, scaleIdentity, ref sortedList);
 
             bufferState.StartOver();
-            Material.PatchVertexBuffer(ref bufferState, unitX, unitY, sortedList);
+            Material.PatchVertexBuffer(ref bufferState, unitX, unitY, ref sortedList);
 
-            sortedList.Free();
+            ParticleSorter.FreeSortedList(ref sortedList);
         }
 
         #region Particles

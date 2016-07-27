@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Particles.Sorters
             _pool.Clear();
         }
 
-        internal virtual T[] Allocate(int size)
+        public virtual T[] Allocate(int size)
         {
             if (size < 0) throw new ArgumentOutOfRangeException(nameof(size), "Must be positive.");
 
@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Particles.Sorters
             return _pool.TryGetValue(size, out candidates) && candidates.Count > 0 ? candidates.Pop() : new T[size];
         }
 
-        internal virtual void Free(T[] array)
+        public virtual void Free(T[] array)
         {
             if (array == null) throw new ArgumentNullException(nameof(array));
 
@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Particles.Sorters
 
     public class ConcurrentArrayPool<T> : ArrayPool<T> where T : struct
     {
-        internal override T[] Allocate(int size)
+        public override T[] Allocate(int size)
         {
             lock (this)
             {
@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Particles.Sorters
             }
         }
 
-        internal override void Free(T[] array)
+        public override void Free(T[] array)
         {
             lock (this)
             {

@@ -32,11 +32,11 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
 
         /// <inheritdoc />
-        public unsafe override int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, 
-            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, IParticleSortedList sorter)
+        public override unsafe int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, 
+            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ref ParticleList sorter)
         {
             // Update the curve samplers if required
-            base.BuildVertexBuffer(ref bufferState, invViewX, invViewY, ref spaceTranslation, ref spaceRotation, spaceScale, sorter);
+            base.BuildVertexBuffer(ref bufferState, invViewX, invViewY, ref spaceTranslation, ref spaceRotation, spaceScale, ref sorter);
 
             SamplerRotation?.UpdateChanges();
 
