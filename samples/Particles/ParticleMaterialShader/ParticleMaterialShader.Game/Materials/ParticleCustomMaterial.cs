@@ -138,16 +138,16 @@ namespace ParticleMaterialShader.Materials
             vertexBuilder.AddVertexElement(ParticleVertexElements.TexCoord[1]);
         }
 
-        public unsafe override void PatchVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, IParticleSortedList sorter)
+        public unsafe override void PatchVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, ref ParticleList sorter)
         {
             // If you want, you can integrate the base builder here and not call it. It should result in slight speed up
-            base.PatchVertexBuffer(ref bufferState, invViewX, invViewY, sorter);
+            base.PatchVertexBuffer(ref bufferState, invViewX, invViewY, ref sorter);
 
             // Update the non-default coordinates first, because they update off the default ones
-            UVBuilder1?.BuildUVCoordinates(ref bufferState, sorter, texCoord1);
+            UVBuilder1?.BuildUVCoordinates(ref bufferState, ref sorter, texCoord1);
 
             // Update the default coordinates last
-            UVBuilder0?.BuildUVCoordinates(ref bufferState, sorter, texCoord0);
+            UVBuilder0?.BuildUVCoordinates(ref bufferState, ref sorter, texCoord0);
 
             // If the particles have color field, the base class should have already passed the information
             if (HasColorField)
