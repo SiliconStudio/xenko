@@ -60,6 +60,8 @@ namespace SiliconStudio.Xenko.UI
             get { return maximumSize; }
             set
             {
+                if (float.IsNaN(value))
+                    return;
                 CoerceMaximumSize(value);
                 DefinitionChanged?.Invoke(this, EventArgs.Empty);
             }
@@ -78,6 +80,8 @@ namespace SiliconStudio.Xenko.UI
             get { return minimumSize; }
             set
             {
+                if (float.IsNaN(value))
+                    return;
                 minimumSize = MathUtil.Clamp(value, 0.0f, float.MaxValue); ;
                 CoerceMaximumSize(maximumSize);
                 DefinitionChanged?.Invoke(this, EventArgs.Empty);
@@ -118,6 +122,8 @@ namespace SiliconStudio.Xenko.UI
             get { return sizeValue; }
             set
             {
+                if (float.IsNaN(value))
+                    return;
                 sizeValue = MathUtil.Clamp(value, 0.0f, float.MaxValue);
                 DefinitionChanged?.Invoke(this, EventArgs.Empty);
             }

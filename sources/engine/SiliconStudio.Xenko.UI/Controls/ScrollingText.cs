@@ -60,7 +60,11 @@ namespace SiliconStudio.Xenko.UI.Controls
         public float ScrollingSpeed
         {
             get { return scrollingSpeed; }
-            set { scrollingSpeed = MathUtil.Clamp(value, 0.0f, float.MaxValue); }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                scrollingSpeed = MathUtil.Clamp(value, 0.0f, float.MaxValue); }
         }
 
         /// <summary>

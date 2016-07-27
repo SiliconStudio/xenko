@@ -126,6 +126,8 @@ namespace SiliconStudio.Xenko.UI.Controls
             get { return minimum; }
             set
             {
+                if (float.IsNaN(value))
+                    return;
                 minimum = MathUtil.Clamp(value, 0.0f, float.MaxValue);
                 CoerceMaximum(maximum);
             }
@@ -142,7 +144,12 @@ namespace SiliconStudio.Xenko.UI.Controls
         public float Maximum
         {
             get { return maximum; }
-            set { CoerceMaximum(value); }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                CoerceMaximum(value);
+            }
         }
 
         /// <summary>
@@ -156,7 +163,12 @@ namespace SiliconStudio.Xenko.UI.Controls
         public float Step
         {
             get { return step; }
-            set { step = MathUtil.Clamp(value, 0.0f, float.MaxValue); }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                step = MathUtil.Clamp(value, 0.0f, float.MaxValue);
+            }
         }
 
         /// <summary>
@@ -172,6 +184,8 @@ namespace SiliconStudio.Xenko.UI.Controls
             get { return value; }
             set
             {
+                if (float.IsNaN(value))
+                    return;
                 var oldValue = Value;
 
                 this.value = MathUtil.Clamp(value, Minimum, Maximum);
@@ -197,6 +211,8 @@ namespace SiliconStudio.Xenko.UI.Controls
             get { return tickFrequency; }
             set
             {
+                if (float.IsNaN(value))
+                    return;
                 tickFrequency = MathUtil.Clamp(value, 1.0f, float.MaxValue);
                 Value = this.value; // snap to tick if enabled
             }
@@ -214,7 +230,12 @@ namespace SiliconStudio.Xenko.UI.Controls
         public float TickOffset
         {
             get { return tickOffset; }
-            set { tickOffset = MathUtil.Clamp(value, 0.0f, float.MaxValue); }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                tickOffset = MathUtil.Clamp(value, 0.0f, float.MaxValue);
+            }
         }
 
         /// <summary>
