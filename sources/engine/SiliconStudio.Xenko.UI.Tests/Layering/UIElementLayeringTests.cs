@@ -180,43 +180,81 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             Opacity = 0.5f;
             Assert.AreEqual(0.5f, Opacity);
 
-            // default sizes
-            Assert.Throws<ArgumentOutOfRangeException>(() => DefaultWidth = -1f);
-            Assert.Throws<ArgumentOutOfRangeException>(() => DefaultWidth = float.NaN);
-            Assert.Throws<ArgumentOutOfRangeException>(() => DefaultWidth = float.PositiveInfinity);
-            Assert.Throws<ArgumentOutOfRangeException>(() => DefaultHeight = -1f);
-            Assert.Throws<ArgumentOutOfRangeException>(() => DefaultHeight = float.NaN);
-            Assert.Throws<ArgumentOutOfRangeException>(() => DefaultHeight = float.PositiveInfinity);
-            Assert.Throws<ArgumentOutOfRangeException>(() => DefaultDepth = -1f);
-            Assert.Throws<ArgumentOutOfRangeException>(() => DefaultDepth = float.NaN);
-            Assert.Throws<ArgumentOutOfRangeException>(() => DefaultDepth = float.PositiveInfinity);
+            // default sizes (values should remain in range [0, float.MaxValue])
+            Assert.DoesNotThrow(() => DefaultWidth = -1f);
+            Assert.AreEqual(0f, DefaultWidth);
+            Assert.DoesNotThrow(() => DefaultWidth = float.NaN);
+            Assert.AreEqual(0f, DefaultWidth); // previous value unchanged
+            Assert.DoesNotThrow(() => DefaultWidth = float.PositiveInfinity);
+            Assert.AreEqual(float.MaxValue, DefaultWidth);
 
-            // sizes 
-            Assert.Throws<ArgumentOutOfRangeException>(() => Width = -1f);
-            Assert.Throws<ArgumentOutOfRangeException>(() => Width = float.PositiveInfinity);
-            Assert.Throws<ArgumentOutOfRangeException>(() => Height = -1f);
-            Assert.Throws<ArgumentOutOfRangeException>(() => Height = float.PositiveInfinity);
-            Assert.Throws<ArgumentOutOfRangeException>(() => Depth = -1f);
-            Assert.Throws<ArgumentOutOfRangeException>(() => Depth = float.PositiveInfinity);
+            Assert.DoesNotThrow(() => DefaultHeight = -1f);
+            Assert.AreEqual(0f, DefaultHeight);
+            Assert.DoesNotThrow(() => DefaultHeight = float.NaN);
+            Assert.AreEqual(0f, DefaultHeight); // previous value unchanged
+            Assert.DoesNotThrow(() => DefaultHeight = float.PositiveInfinity);
+            Assert.AreEqual(float.MaxValue, DefaultHeight);
 
-            // minimum sizes
-            Assert.Throws<ArgumentOutOfRangeException>(() => MinimumWidth = -1f);
-            Assert.Throws<ArgumentOutOfRangeException>(() => MinimumWidth = float.NaN);
-            Assert.Throws<ArgumentOutOfRangeException>(() => MinimumWidth = float.PositiveInfinity);
-            Assert.Throws<ArgumentOutOfRangeException>(() => MinimumHeight = -1f);
-            Assert.Throws<ArgumentOutOfRangeException>(() => MinimumHeight = float.NaN);
-            Assert.Throws<ArgumentOutOfRangeException>(() => MinimumHeight = float.PositiveInfinity);
-            Assert.Throws<ArgumentOutOfRangeException>(() => MinimumDepth = -1f);
-            Assert.Throws<ArgumentOutOfRangeException>(() => MinimumDepth = float.NaN);
-            Assert.Throws<ArgumentOutOfRangeException>(() => MinimumDepth = float.PositiveInfinity);
+            Assert.DoesNotThrow(() => DefaultDepth = -1f);
+            Assert.AreEqual(0f, DefaultDepth);
+            Assert.DoesNotThrow(() => DefaultDepth = float.NaN);
+            Assert.AreEqual(0f, DefaultDepth); // previous value unchanged
+            Assert.DoesNotThrow(() => DefaultDepth = float.PositiveInfinity);
+            Assert.AreEqual(float.MaxValue, DefaultDepth);
 
-            // maximum sizes
-            Assert.Throws<ArgumentOutOfRangeException>(() => MaximumWidth = -1f);
-            Assert.Throws<ArgumentOutOfRangeException>(() => MaximumWidth = float.NaN);
-            Assert.Throws<ArgumentOutOfRangeException>(() => MaximumHeight = -1f);
-            Assert.Throws<ArgumentOutOfRangeException>(() => MaximumHeight = float.NaN);
-            Assert.Throws<ArgumentOutOfRangeException>(() => MaximumDepth = -1f);
-            Assert.Throws<ArgumentOutOfRangeException>(() => MaximumDepth = float.NaN);
+            // sizes (values should remain in range [0, float.MaxValue])
+            Assert.DoesNotThrow(() => Width = -1f);
+            Assert.AreEqual(0f, Width);
+            Assert.DoesNotThrow(() => Width = float.PositiveInfinity);
+            Assert.AreEqual(float.MaxValue, Width);
+
+            Assert.DoesNotThrow(() => Height = -1f);
+            Assert.AreEqual(0f, Height);
+            Assert.DoesNotThrow(() => Height = float.PositiveInfinity);
+            Assert.AreEqual(float.MaxValue, Height);
+
+            Assert.DoesNotThrow(() => Depth = -1f);
+            Assert.AreEqual(0f, Depth);
+            Assert.DoesNotThrow(() => Depth = float.PositiveInfinity);
+            Assert.AreEqual(float.MaxValue, Depth);
+
+            // minimum sizes (values should remain in range [0, float.MaxValue])
+            Assert.DoesNotThrow(() => MinimumWidth = -1f);
+            Assert.AreEqual(0f, MinimumWidth);
+            Assert.DoesNotThrow(() => MinimumWidth = float.NaN);
+            Assert.AreEqual(0f, MinimumWidth); // previous value unchanged
+            Assert.DoesNotThrow(() => MinimumWidth = float.PositiveInfinity);
+            Assert.AreEqual(float.MaxValue, MinimumWidth);
+
+            Assert.DoesNotThrow(() => MinimumHeight = -1f);
+            Assert.AreEqual(0f, MinimumHeight);
+            Assert.DoesNotThrow(() => MinimumHeight = float.NaN);
+            Assert.AreEqual(0f, MinimumHeight); // previous value unchanged
+            Assert.DoesNotThrow(() => MinimumHeight = float.PositiveInfinity);
+            Assert.AreEqual(float.MaxValue, MinimumHeight);
+
+            Assert.DoesNotThrow(() => MinimumDepth = -1f);
+            Assert.AreEqual(0f, MinimumDepth);
+            Assert.DoesNotThrow(() => MinimumDepth = float.NaN);
+            Assert.AreEqual(0f, MinimumDepth); // previous value unchanged
+            Assert.DoesNotThrow(() => MinimumDepth = float.PositiveInfinity);
+            Assert.AreEqual(float.MaxValue, MinimumDepth);
+
+            // maximum sizes (values should remain in range [0, float.PositiveInfinity])
+            Assert.DoesNotThrow(() => MaximumWidth = -1f);
+            Assert.AreEqual(0f, MaximumWidth);
+            Assert.DoesNotThrow(() => MaximumWidth = float.NaN);
+            Assert.AreEqual(0f, MaximumWidth); // previous value unchanged
+
+            Assert.DoesNotThrow(() => MaximumHeight = -1f);
+            Assert.AreEqual(0f, MaximumHeight);
+            Assert.DoesNotThrow(() => MaximumHeight = float.NaN);
+            Assert.AreEqual(0f, MaximumHeight); // previous value unchanged
+
+            Assert.DoesNotThrow(() => MaximumDepth = -1f);
+            Assert.AreEqual(0f, MaximumDepth);
+            Assert.DoesNotThrow(() => MaximumDepth = float.NaN);
+            Assert.AreEqual(0f, MaximumDepth); // previous value unchanged
         }
 
         /// <summary>

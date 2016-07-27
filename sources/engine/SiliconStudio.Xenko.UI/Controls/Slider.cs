@@ -29,6 +29,8 @@ namespace SiliconStudio.Xenko.UI.Controls
         private float tickFrequency = 10.0f;
         private float minimum;
         private float maximum = 1.0f;
+        private float step = 0.1f;
+        private float tickOffset = 10.0f;
         private ISpriteProvider trackBackgroundImage;
 
         private void OnSizeChanged(object sender, EventArgs e)
@@ -114,6 +116,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the smallest possible value of the slider.
         /// </summary>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>The smallest possible value of the slider.</userdoc>
         [DataMember]
         [DataMemberRange(0, float.MaxValue)]
@@ -123,18 +126,17 @@ namespace SiliconStudio.Xenko.UI.Controls
             get { return minimum; }
             set
             {
-                if (value > Maximum)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), $"{nameof(Minimum)} should be lesser than or equal to {nameof(Maximum)}.");
-                }
-
-                minimum = value;
+                if (float.IsNaN(value))
+                    return;
+                minimum = MathUtil.Clamp(value, 0.0f, float.MaxValue);
+                CoerceMaximum(maximum);
             }
         }
 
         /// <summary>
         /// Gets or sets the greatest possible value of the slider.
         /// </summary>
+        /// <remarks>The value is coerced in the range [<see cref="Minimum"/>, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>The greatest possible value of the slider.</userdoc>
         [DataMember]
         [DataMemberRange(0, float.MaxValue)]
@@ -144,28 +146,35 @@ namespace SiliconStudio.Xenko.UI.Controls
             get { return maximum; }
             set
             {
-                if (value < Minimum)
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value), $"{nameof(Maximum)} should be greater than or equal to {nameof(Minimum)}.");
-                }
-
-                maximum = value;
+                if (float.IsNaN(value))
+                    return;
+                CoerceMaximum(value);
             }
         }
 
         /// <summary>
         /// Gets or sets the step of a <see cref="Value"/> change.
         /// </summary>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>The step of a change of the value.</userdoc>
         [DataMember]
         [DataMemberRange(0, float.MaxValue)]
         [DefaultValue(0.1f)]
-        public float Step { get; set; } = 0.1f;
+        public float Step
+        {
+            get { return step; }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                step = MathUtil.Clamp(value, 0.0f, float.MaxValue);
+            }
+        }
 
         /// <summary>
         /// Gets or sets the current value of the slider.
         /// </summary>
-        /// <remarks>value is truncated between <see cref="Minimum"/> and <see cref="Maximum"/></remarks>
+        /// <remarks>The value is coerced in the range [<see cref="Minimum"/>, <see cref="Maximum"/>].</remarks>
         /// <userdoc>The current value of the slider.</userdoc>
         [DataMember]
         [DataMemberRange(0, float.MaxValue)]
@@ -175,6 +184,8 @@ namespace SiliconStudio.Xenko.UI.Controls
             get { return value; }
             set
             {
+                if (float.IsNaN(value))
+                    return;
                 var oldValue = Value;
 
                 this.value = MathUtil.Clamp(value, Minimum, Maximum);
@@ -189,6 +200,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the frequency of the ticks on the slider track.
         /// </summary>
+        /// <remarks>The value is coerced in the range [1, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>The frequency of the ticks on the slider track.</userdoc>
         [DataMember]
         [DataMemberRange(1, float.MaxValue)]
@@ -199,10 +211,9 @@ namespace SiliconStudio.Xenko.UI.Controls
             get { return tickFrequency; }
             set
             {
-                if (value < 1)
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                tickFrequency = value;
+                if (float.IsNaN(value))
+                    return;
+                tickFrequency = MathUtil.Clamp(value, 1.0f, float.MaxValue);
                 Value = this.value; // snap to tick if enabled
             }
         }
@@ -210,12 +221,22 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the offset in virtual pixels between the center of the track and center of the ticks (for an not-stretched slider).
         /// </summary>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>The offset in virtual pixels between the center of the track and center of the ticks (for an not-stretched slider).</userdoc>
         [DataMember]
         [DataMemberRange(0, float.MaxValue)]
         [Display(category: AppearanceCategory)]
         [DefaultValue(10.0f)]
-        public float TickOffset { get; set; } = 10.0f;
+        public float TickOffset
+        {
+            get { return tickOffset; }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                tickOffset = MathUtil.Clamp(value, 0.0f, float.MaxValue);
+            }
+        }
 
         /// <summary>
         /// Gets or sets the left/right offsets specifying where the track region starts. 
@@ -411,6 +432,11 @@ namespace SiliconStudio.Xenko.UI.Controls
             var touchPosition = touchPostionWorld[axis] - WorldMatrixInternal[12 + axis] + elementSize/2;
             var ratio = (touchPosition - offsets.X) / (elementSize - offsets.X - offsets.Y);
             Value = (Orientation == Orientation.Vertical ^ IsDirectionReversed) ? 1 - ratio : ratio;
+        }
+
+        private void CoerceMaximum(float newValue)
+        {
+            maximum = MathUtil.Clamp(newValue, minimum, float.MaxValue);
         }
     }
 }

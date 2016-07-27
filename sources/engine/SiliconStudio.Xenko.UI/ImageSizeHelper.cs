@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.UI
                 case StretchType.Fill:
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException(nameof(stretchType));
             }
 
             // adjust the scales depending on the stretch directions
@@ -80,7 +80,7 @@ namespace SiliconStudio.Xenko.UI
                     desiredScale.Y = Math.Max(1, desiredScale.Y);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException();
+                    throw new ArgumentOutOfRangeException(nameof(stretchDirection));
             }
 
             // update the desired size based on the desired scales

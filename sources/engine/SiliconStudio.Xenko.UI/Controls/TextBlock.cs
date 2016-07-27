@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 
@@ -22,7 +23,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     {
         private SpriteFont font;
         private string text;
-        private float? textSize;
+        private float textSize = float.NaN;
         private bool wrapText;
         private bool synchronousCharacterGeneration;
 
@@ -31,10 +32,10 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Returns the actual size of the text in virtual pixels unit.
         /// </summary>
-        /// <remarks>If <see cref="TextSize"/> is <c>null</c>, returns the default size of the <see cref="Font"/>.</remarks>
+        /// <remarks>If <see cref="TextSize"/> is <see cref="float.IsNaN"/>, returns the default size of the <see cref="Font"/>.</remarks>
         /// <seealso cref="TextSize"/>
         /// <seealso cref="SpriteFont.Size"/>
-        public float ActualTextSize => TextSize ?? Font?.Size ?? 0;
+        public float ActualTextSize => !float.IsNaN(TextSize) ? TextSize : Font?.Size ?? 0;
 
         /// <summary>
         /// Returns the text to display during the draw call.
@@ -93,15 +94,15 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <seealso cref="SpriteFont.Size"/>
         /// <userdoc>The size of the text in virtual pixels unit.</userdoc>
         [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue, AllowNaN = true)]
         [Display(category: AppearanceCategory)]
-        [DefaultValue(null)]
-        public float? TextSize
+        [DefaultValue(float.NaN)]
+        public float TextSize
         {
             get { return textSize; }
             set
             {
-                if (value.HasValue) value = MathUtil.Clamp(value.Value, 0, float.MaxValue);
-                textSize = value;
+                textSize = MathUtil.Clamp(value, 0.0f, float.MaxValue);
                 InvalidateMeasure();
             }
         }

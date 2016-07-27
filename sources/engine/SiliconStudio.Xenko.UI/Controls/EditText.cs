@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     [Display(category: InputCategory)]
     public partial class EditText : Control
     {
-        private float? textSize;
+        private float textSize = float.NaN;
 
         private InputTypeFlags inputType;
 
@@ -272,7 +272,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the maximum number of characters that can be manually entered into the text box.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The provided value must be strictly positive</exception>
+        /// <remarks>The value is coerced in the range [1, <see cref="int.MaxValue"/>].</remarks>
         /// <userdoc>The maximum number of characters that can be manually entered into the text box.</userdoc>
         [DataMember]
         [DataMemberRange(1, int.MaxValue)]
@@ -283,10 +283,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             get { return maxLength; }
             set
             {
-                if (value < 1)
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                maxLength = value;
+                maxLength = MathUtil.Clamp(value, 1, int.MaxValue);
                 OnMaxLengthChanged();
             }
         }
@@ -294,7 +291,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the maximum number of visible lines.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The provided value must be strictly positive</exception>
+        /// <remarks>The value is coerced in the range [int, <see cref="int.MaxValue"/>].</remarks>
         /// <userdoc>The maximum number of visible lines.</userdoc>
         [DataMember]
         [DataMemberRange(1, int.MaxValue)]
@@ -305,10 +302,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             get { return maxLines; }
             set
             {
-                if (value < 1)
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                maxLines = value;
+                maxLines = MathUtil.Clamp(value, 1, int.MaxValue);
                 OnMaxLinesChanged();
             }
         }
@@ -316,7 +310,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the minimum number of visible lines.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The provided value must be strictly positive</exception>
+        /// <remarks>The value is coerced in the range [1, <see cref="int.MaxValue"/>].</remarks>
         /// <userdoc>The minimum number of visible lines.</userdoc>
         [DataMember]
         [DataMemberRange(1, int.MaxValue)]
@@ -327,10 +321,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             get { return minLines; }
             set
             {
-                if (value < 1)
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                minLines = value;
+                minLines = MathUtil.Clamp(value, 1, int.MaxValue);
                 OnMinLinesChanged();
             }
         }
@@ -392,7 +383,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the width of the edit text's cursor (in virtual pixels).
         /// </summary>
-        /// <remarks>The value is clamped between [0, infinity-1]</remarks>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>The width of the edit text's cursor (in virtual pixels).</userdoc>
         [DataMember]
         [DataMemberRange(0, float.MaxValue)]
@@ -401,13 +392,17 @@ namespace SiliconStudio.Xenko.UI.Controls
         public float CaretWidth
         {
             get { return caretWith; }
-            set { caretWith = MathUtil.Clamp(value, 0, float.MaxValue); }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                caretWith = MathUtil.Clamp(value, 0.0f, float.MaxValue); }
         }
 
         /// <summary>
         /// Gets or sets the caret blinking frequency.
         /// </summary>
-        /// <remarks>The value is clamped between [0, infinity-1]</remarks>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>The caret blinking frequency.</userdoc>
         [DataMember]
         [DataMemberRange(0, float.MaxValue)]
@@ -416,7 +411,11 @@ namespace SiliconStudio.Xenko.UI.Controls
         public float CaretFrequency
         {
             get { return caretFrequency; }
-            set { caretFrequency = MathUtil.Clamp(value, 0, float.MaxValue); }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                caretFrequency = MathUtil.Clamp(value, 0.0f, float.MaxValue); }
         }
 
         /// <summary>
@@ -482,27 +481,18 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the size of the text in virtual pixels unit.
         /// </summary>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>The size of the text in virtual pixels unit.</userdoc>
         [DataMember]
-        [DataMemberRange(0, float.MaxValue)]
+        [DataMemberRange(0, float.MaxValue, AllowNaN = true)]
         [Display(category: AppearanceCategory)]
-        [DefaultValue(null)]
+        [DefaultValue(float.NaN)]
         public float TextSize
         {
-            get
-            {
-                if (textSize.HasValue)
-                    return textSize.Value;
-
-                if (Font != null)
-                    return Font.Size;
-
-                return 0;
-            }
+            get { return textSize; }
             set
             {
-                textSize = MathUtil.Clamp(value, 0, float.MaxValue);
-
+                textSize = MathUtil.Clamp(value, 0.0f, float.MaxValue);
                 InvalidateMeasure();
             }
         }
@@ -666,6 +656,14 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
+        /// Returns the actual size of the text in virtual pixels unit.
+        /// </summary>
+        /// <remarks>If <see cref="TextSize"/> is <see cref="float.IsNaN"/>, returns the default size of the <see cref="Font"/>.</remarks>
+        /// <seealso cref="TextSize"/>
+        /// <seealso cref="SpriteFont.Size"/>
+        public float ActualTextSize => !float.IsNaN(TextSize) ? TextSize : Font?.Size ?? 0;
+
+        /// <summary>
         /// The actual text to show into the edit text.
         /// </summary>
         public string TextToDisplay => textToDisplay;
@@ -741,7 +739,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                 return Vector2.Zero;
 
             var sizeRatio = LayoutingContext.RealVirtualResolutionRatio;
-            var measureFontSize = new Vector2(TextSize * sizeRatio.Y); // we don't want letters non-uniform ratio
+            var measureFontSize = new Vector2(ActualTextSize * sizeRatio.Y); // we don't want letters non-uniform ratio
             var realSize = Font.MeasureString(textToMeasure, measureFontSize);
 
             // force pre-generation if synchronous generation is required
@@ -757,7 +755,7 @@ namespace SiliconStudio.Xenko.UI.Controls
 
             if (Font.FontType == SpriteFontType.SDF)
             {
-                var scaleRatio = TextSize / Font.Size;
+                var scaleRatio = ActualTextSize / Font.Size;
                 realSize.X *= scaleRatio;
                 realSize.Y *= scaleRatio;
             }
@@ -771,9 +769,9 @@ namespace SiliconStudio.Xenko.UI.Controls
             if (Font != null)
             {
                 // take the maximum between the text size and the minimum visible line size as text desired size
-                var fontLineSpacing = Font.GetTotalLineSpacing(TextSize);
+                var fontLineSpacing = Font.GetTotalLineSpacing(ActualTextSize);
                 if (Font.FontType == SpriteFontType.SDF)
-                    fontLineSpacing *= TextSize/Font.Size;
+                    fontLineSpacing *= ActualTextSize / Font.Size;
                 var currentTextSize = new Vector3(CalculateTextSize(), 0);
                 desiredSize = new Vector3(currentTextSize.X, Math.Min(Math.Max(currentTextSize.Y, fontLineSpacing * MinLines), fontLineSpacing * MaxLines), currentTextSize.Z);
             }

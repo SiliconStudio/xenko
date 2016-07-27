@@ -5,9 +5,9 @@ using System.ComponentModel;
 using System.Diagnostics;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
-using SiliconStudio.Xenko.Graphics.Font;
 
 namespace SiliconStudio.Xenko.UI.Controls
 {
@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         private float elementWidth;
 
         /// <summary>
-        /// The index in <see cref="Controls.TextBlock.Text"/> defining the position of the next letter to add to <see cref="TextToDisplay"/>.
+        /// The index in <see cref="TextBlock.Text"/> defining the position of the next letter to add to <see cref="TextToDisplay"/>.
         /// </summary>
         private int nextLetterIndex;
 
@@ -51,9 +51,10 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the scrolling speed of the text. The unit is in virtual pixels.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The provided speed must be positive or null.</exception>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>The scrolling speed of the text. The unit is in virtual pixels.</userdoc>
         [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
         [Display(category: BehaviorCategory)]
         [DefaultValue(40.0f)]
         public float ScrollingSpeed
@@ -61,11 +62,9 @@ namespace SiliconStudio.Xenko.UI.Controls
             get { return scrollingSpeed; }
             set
             {
-                if (value < 0.0f)
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                scrollingSpeed = value;
-            }
+                if (float.IsNaN(value))
+                    return;
+                scrollingSpeed = MathUtil.Clamp(value, 0.0f, float.MaxValue); }
         }
 
         /// <summary>

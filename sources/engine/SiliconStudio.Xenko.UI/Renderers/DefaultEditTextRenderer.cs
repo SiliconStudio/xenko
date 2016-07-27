@@ -55,22 +55,22 @@ namespace SiliconStudio.Xenko.UI.Renderers
             // Draw the selection
             if(editText.IsSelectionActive)
             {
-                var fontSize = new Vector2(fontScale.Y * editText.TextSize);
+                var fontSize = new Vector2(fontScale.Y * editText.ActualTextSize);
                 offsetTextStart = font.MeasureString(editText.TextToDisplay, ref fontSize, editText.SelectionStart).X;
                 selectionSize = font.MeasureString(editText.TextToDisplay, ref fontSize, editText.SelectionStart + editText.SelectionLength).X - offsetTextStart;
-                var lineSpacing = font.GetTotalLineSpacing(editText.TextSize);
+                var lineSpacing = font.GetTotalLineSpacing(editText.ActualTextSize);
                 if (font.FontType == SpriteFontType.Dynamic)
                 {
                     offsetTextStart /= fontScale.X;
                     selectionSize /= fontScale.X;
                 }
 
-                var scaleRatio = editText.TextSize / font.Size;
+                var scaleRatio = editText.ActualTextSize / font.Size;
                 if (font.FontType == SpriteFontType.SDF)
                 {
                     offsetTextStart *= scaleRatio;
                     selectionSize   *= scaleRatio;
-                    lineSpacing *= editText.TextSize / font.Size;
+                    lineSpacing *= editText.ActualTextSize / font.Size;
                 }
 
 
@@ -98,7 +98,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
                 Color = editText.RenderOpacity * editText.TextColor,
                 DepthBias = context.DepthBias + 2,
                 RealVirtualResolutionRatio = fontScale,
-                RequestedFontSize = editText.TextSize,
+                RequestedFontSize = editText.ActualTextSize,
                 Batch = Batch,
                 SnapText = context.ShouldSnapText && !editText.DoNotSnapText,
                 Matrix = editText.WorldMatrixInternal,
@@ -124,9 +124,9 @@ namespace SiliconStudio.Xenko.UI.Renderers
             // Draw the cursor
             if (editText.IsCaretVisible)
             {
-                var lineSpacing = editText.Font.GetTotalLineSpacing(editText.TextSize);
+                var lineSpacing = editText.Font.GetTotalLineSpacing(editText.ActualTextSize);
                 if (editText.Font.FontType == SpriteFontType.SDF)
-                    lineSpacing *= editText.TextSize / font.Size;
+                    lineSpacing *= editText.ActualTextSize / font.Size;
 
                 var sizeCaret = editText.CaretWidth / fontScale.X;
                 var caretWorldMatrix = element.WorldMatrixInternal;
