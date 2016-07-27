@@ -12,7 +12,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <remarks>
     /// This class can be use to expand codes as a replacement in visitors.
     /// </remarks>
-    public class StatementList : Statement, IList<Statement>
+    public partial class StatementList : Statement, IList<Statement>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="StatementList"/> class.

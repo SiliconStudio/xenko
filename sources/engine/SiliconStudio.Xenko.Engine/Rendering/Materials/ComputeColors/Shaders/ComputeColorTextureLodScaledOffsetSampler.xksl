@@ -10,7 +10,7 @@
 /// TOffset: generic float2 - the texture coordinates offset.
 /// TSampler: generic SamplerState - the custom sampler.
 /// </remarks>
-class ComputeColorTextureLodScaledOffsetSampler<LinkType TTextureName, 
+shader ComputeColorTextureLodScaledOffsetSampler<LinkType TTextureName, 
                                              Semantic TStream, 
                                              LinkType TSampler, 
                                              MemberName TRgba, 

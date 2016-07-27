@@ -3,7 +3,7 @@
 /// <summary>
 /// Returns the color attribute of the mesh.
 /// </summary>
-class ComputeColorStream : ComputeColor, ColorBase
+shader ComputeColorStream : ComputeColor, ColorBase
 {
     override float4 Compute() {
         return streams.Color;

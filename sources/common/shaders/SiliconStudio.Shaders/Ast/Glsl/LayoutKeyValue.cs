@@ -5,7 +5,7 @@ namespace SiliconStudio.Shaders.Ast.Glsl
     /// <summary>
     /// LayoutKey value node.
     /// </summary>
-    public class LayoutKeyValue : Node
+    public partial class LayoutKeyValue : Node
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="LayoutKeyValue"/> class.

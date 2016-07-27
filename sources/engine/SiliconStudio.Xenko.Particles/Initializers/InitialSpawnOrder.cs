@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         private uint spawnOrder = 0;
 
         /// <inheritdoc />
-        internal override void ResetSimulation()
+        public override void ResetSimulation()
         {
             spawnOrder = 0;
         }

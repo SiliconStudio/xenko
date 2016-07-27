@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// Expression used to initliaze an array {...expressions,}
     /// </summary>
-    public class ArrayInitializerExpression : Expression
+    public partial class ArrayInitializerExpression : Expression
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ArrayInitializerExpression"/> class.

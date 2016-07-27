@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 // Base stream for a shader
-class ShaderBaseStream
+shader ShaderBaseStream
 {
     // Default SV_POSITION output for VS/GS shaders
     stage stream float4 ShadingPosition : SV_Position;

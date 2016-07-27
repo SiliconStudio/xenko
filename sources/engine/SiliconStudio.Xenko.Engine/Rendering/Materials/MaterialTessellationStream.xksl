@@ -3,7 +3,7 @@
 
 namespace SiliconStudio.Xenko.Rendering.Materials
 {
-    class MaterialTessellationStream : IStreamInitializer
+    shader MaterialTessellationStream : IStreamInitializer
     {
         // Displacement height attribute
         stage stream float matSmoothingIntensity;

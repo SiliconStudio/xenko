@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A structure.
     /// </summary>
-    public class StructType : TypeBase, IDeclaration, IScopeContainer
+    public partial class StructType : TypeBase, IDeclaration, IScopeContainer
     {
         #region Constructors and Destructors
 

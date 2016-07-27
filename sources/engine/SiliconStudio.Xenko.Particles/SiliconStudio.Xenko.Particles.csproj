@@ -40,6 +40,7 @@
     <Compile Include="Initializers\InitialPositionParent.cs" />
     <Compile Include="Initializers\InitialSizeParent.cs" />
     <Compile Include="Initializers\InitialSpawnOrder.cs" />
+    <Compile Include="Initializers\InitialSpawnOrderGroup.cs" />
     <Compile Include="Initializers\InitialVelocityParent.cs" />
     <Compile Include="Initializers\ParticleChildInitializer.cs" />
     <Compile Include="Initializers\ParticleInitializer.cs" />
@@ -47,6 +48,7 @@
     <Compile Include="Initializers\InitialRotationSeed.cs" />
     <Compile Include="Initializers\InitialSizeSeed.cs" />
     <Compile Include="Initializers\InitialVelocitySeed.cs" />
+    <Compile Include="Initializers\SpawnOrderConst.cs" />
     <Compile Include="Materials\ParticleMaterial.cs" />
     <Compile Include="Materials\ParticleMaterialComputeColor.cs" />
     <Compile Include="Materials\ParticleMaterialSimple.cs" />

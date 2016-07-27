@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Shaders.Ast.Xenko;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Visitor;
 
 namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
-    internal class XenkoTagCleaner : ShaderVisitor
+    internal class XenkoTagCleaner : ShaderWalker
     {
         public XenkoTagCleaner()
             : base(false, false)
@@ -18,8 +18,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             Visit(shader);
         }
 
-        [Visit]
-        protected override Node Visit(Node node)
+        public override void DefaultVisit(Node node)
         {
             // Keeping it for ShaderLinker (removed by XenkoShaderCleaner)
             //node.RemoveTag(XenkoTags.ConstantBuffer);
@@ -31,7 +30,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             node.RemoveTag(XenkoTags.VirtualTableReference);
             node.RemoveTag(XenkoTags.BaseDeclarationMixin);
             node.RemoveTag(XenkoTags.ShaderScope);
-            return base.Visit(node);
+            base.DefaultVisit(node);
         }
     }
 }

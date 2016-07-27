@@ -11,3 +11,4 @@ using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("SiliconStudio.Xenko.Shaders.Parser.Serializers" + SiliconStudio.PublicKeys.Default)]
 //[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Shaders.Tests" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Engine" + SiliconStudio.PublicKeys.Default)]

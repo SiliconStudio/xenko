@@ -8,7 +8,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
     /// <summary>
     /// Class to replace a node by another in an AST
     /// </summary>
-    internal class XenkoReplaceVisitor : ShaderVisitor
+    internal class XenkoReplaceVisitor : ShaderRewriter
     {
         #region Private members
 
@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 
         public bool Run(Node startNode)
         {
-            Visit(startNode);
+            VisitDynamic(startNode);
 
             return complete;
         }
@@ -52,8 +52,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 
         #region Protected method
 
-        [Visit]
-        protected override Node Visit(Node node)
+        public override Node DefaultVisit(Node node)
         {
             if (node == nodeToReplace)
             {
@@ -61,7 +60,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 return replacementNode;
             }
             
-            return base.Visit(node);
+            return base.DefaultVisit(node);
         }
 
         #endregion

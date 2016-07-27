@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A list of expression.
     /// </summary>
-    public class ExpressionList : Expression, IList<Expression>
+    public partial class ExpressionList : Expression, IList<Expression>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ExpressionList"/> class.

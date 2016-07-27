@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     ///
     /// <typeparam name="TBlurCount">Number of weights. (And number of taps along one direction from the center.)</typeparam>
 
-    class CoCMapBlurShader<int TBlurCount> : ImageEffectShader
+    shader CoCMapBlurShader<int TBlurCount> : ImageEffectShader
     {
         // Direction to apply the blur. (normalized vector)
         float2 Direction;

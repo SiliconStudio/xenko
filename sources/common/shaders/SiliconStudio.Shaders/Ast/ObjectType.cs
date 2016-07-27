@@ -8,7 +8,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// An Object Type.
     /// </summary>
-    public class ObjectType : TypeBase
+    public partial class ObjectType : TypeBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectType"/> class.

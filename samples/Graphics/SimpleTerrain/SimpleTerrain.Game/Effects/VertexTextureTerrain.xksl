@@ -1,4 +1,4 @@
-class VertexTextureTerrain : ComputeColor, ColorBase, TransformationBase, PositionStream4
+shader VertexTextureTerrain : ComputeColor, ColorBase, TransformationBase, PositionStream4
 {
 	SamplerState MeshTextureSampler
 	{

@@ -7,51 +7,24 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A Storage qualifier.
     /// </summary>
-    public class ParameterQualifier : Qualifier
+    public static class ParameterQualifier
     {
         #region Constants and Fields
 
         /// <summary>
         ///   In modifier, only for method parameters.
         /// </summary>
-        public static readonly ParameterQualifier In = new ParameterQualifier("in");
+        public static readonly Qualifier In = new Qualifier("in");
 
         /// <summary>
         ///   InOut Modifier, only for method parameters.
         /// </summary>
-        public static readonly ParameterQualifier InOut = new ParameterQualifier("inout");
+        public static readonly Qualifier InOut = new Qualifier("inout");
 
         /// <summary>
         ///   Out modifier, only for method parameters.
         /// </summary>
-        public static readonly ParameterQualifier Out = new ParameterQualifier("out");
-
-        /// <summary>
-        ///   Internal map used for parsing.
-        /// </summary>
-        private static readonly StringEnumMap Map = PrepareParsing<ParameterQualifier>();
-
-        #endregion
-
-        #region Constructors and Destructors
-
-        /// <summary>
-        ///   Initializes a new instance of the <see cref = "ParameterQualifier" /> class.
-        /// </summary>
-        public ParameterQualifier()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ParameterQualifier"/> class.
-        /// </summary>
-        /// <param name="key">
-        /// Name of the enum.
-        /// </param>
-        public ParameterQualifier(string key)
-            : base(key)
-        {
-        }
+        public static readonly Qualifier Out = new Qualifier("out");
 
         #endregion
 
@@ -66,9 +39,16 @@ namespace SiliconStudio.Shaders.Ast
         /// <returns>
         /// A parameter qualifier
         /// </returns>
-        public static ParameterQualifier Parse(string enumName)
+        public static Qualifier Parse(string enumName)
         {
-            return Map.ParseEnumFromName<ParameterQualifier>(enumName);
+            if (enumName == (string)In.Key)
+                return In;
+            if (enumName == (string)InOut.Key)
+                return InOut;
+            if (enumName == (string)Out.Key)
+                return Out;
+
+            throw new ArgumentException(string.Format("Unable to convert [{0}] to qualifier", enumName), "key");
         }
 
         #endregion

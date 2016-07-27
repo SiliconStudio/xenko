@@ -7,7 +7,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     /// <summary>
     /// A raw asm expression.
     /// </summary>
-    public class AsmExpression : Expression
+    public partial class AsmExpression : Expression
     {
         #region Public Properties
 

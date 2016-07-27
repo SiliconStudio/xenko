@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// <summary>
     /// Defines a group of point lights
     /// </summary>
-    class LightPointGroup<int TMaxLightCount> : DirectLightGroupPerDraw, LightPoint
+    shader LightPointGroup<int TMaxLightCount> : DirectLightGroupPerDraw, LightPoint
     {
         cbuffer PerDraw.Lighting
         {

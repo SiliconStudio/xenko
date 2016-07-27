@@ -5,7 +5,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A Empty of statement.
     /// </summary>
-    public class EmptyStatement : Statement
+    public partial class EmptyStatement : Statement
     {
         #region Constructors and Destructors
 

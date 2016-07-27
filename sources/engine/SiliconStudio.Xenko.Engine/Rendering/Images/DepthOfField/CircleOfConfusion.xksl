@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <summary>
     /// Computes the Circle of Confusion map.
     /// </summary>
-    class CircleOfConfusion
+    shader CircleOfConfusion
     {
         // TODO Might want to replace this with a real formula from camera lens parameters, 
         // but for now we'll keep these simple parameters for easy debugging. 

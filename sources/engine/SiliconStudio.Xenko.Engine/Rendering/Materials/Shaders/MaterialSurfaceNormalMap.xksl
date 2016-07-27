@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// <summary>
     /// Material normal map
     /// </summary>
-    class MaterialSurfaceNormalMap<bool TIsNormalXY1, bool TScaleAndBias> : IMaterialSurfacePixel
+    shader MaterialSurfaceNormalMap<bool TIsNormalXY1, bool TScaleAndBias> : IMaterialSurfacePixel
     {
         compose ComputeColor normalMap;
 

@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
-    partial shader CustomSubEffect
+    partial effect CustomSubEffect
     {
         using params CustomShaderKeys;
 
@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
     /// <summary>
     /// A gaussian blur effect
     /// </summary>
-    shader CustomEffect
+    effect CustomEffect
     {
         mixin CustomShader;
         mixin child CustomSubEffect;

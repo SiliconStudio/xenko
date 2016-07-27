@@ -13,9 +13,8 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A composite enum.
     /// </summary>
-    public class CompositeEnum : Node, IEnumerable<CompositeEnum>
+    public partial class CompositeEnum : Node, IEnumerable<CompositeEnum>
     {
-        [VisitorIgnore]
         private OrderedSet<CompositeEnum> values;
         
         #region Constructors and Destructors
@@ -76,7 +75,7 @@ namespace SiliconStudio.Shaders.Ast
         /// <value>
         ///   <c>true</c> if this instance is an enum flag; otherwise, <c>false</c>.
         /// </value>
-        public bool IsFlag { get; private set; }
+        public bool IsFlag { get; set; }
 
         /// <summary>
         /// Gets or sets the key.
@@ -93,6 +92,7 @@ namespace SiliconStudio.Shaders.Ast
         /// <value>
         ///   The values.
         /// </value>
+        [VisitorIgnore]
         public OrderedSet<CompositeEnum> Values
         {
             get
@@ -370,44 +370,6 @@ namespace SiliconStudio.Shaders.Ast
             return result;
         }
 
-        /// <summary>
-        /// Prepares the parsing for a specific enum by returning a pre-computed dictionary with all allowed mapping name =&gt; enum.
-        /// </summary>
-        /// <typeparam name="T">
-        /// Type of the enum to compute the dictionary
-        /// </typeparam>
-        /// <returns>
-        /// A pre-computed dictionary with all allowed mapping name =&gt; enum
-        /// </returns>
-        protected static StringEnumMap PrepareParsing<T>() where T : CompositeEnum
-        {
-            var map = new StringEnumMap();
-
-            var type = typeof(T);
-            while (type != typeof(CompositeEnum))
-            {
-                foreach (var field in type.GetFields())
-                {
-                    if (typeof(CompositeEnum).GetTypeInfo().IsAssignableFrom(field.FieldType.GetTypeInfo()) && field.IsStatic)
-                    {
-                        var fieldValue = (CompositeEnum)field.GetValue(null);
-                        if (fieldValue.Values.Count == 1)
-                        {
-                            var key = fieldValue.Values.FirstOrDefault();
-                            if (key != null && key.Key != null && !map.ContainsKey(key.Key))
-                            {
-                                map.Add(key.Key, fieldValue);
-                            }
-                        }
-                    }
-                }
-
-                type = type.GetTypeInfo().BaseType;
-            }
-
-            return map;
-        }
-
         /// <inheritdoc/>
         public override IEnumerable<Node> Childrens()
         {
@@ -456,43 +418,5 @@ namespace SiliconStudio.Shaders.Ast
         }
 
         #endregion
-
-        /// <summary>
-        /// Internal dictionary that provides conversion helper methods.
-        /// </summary>
-        protected class StringEnumMap : Dictionary<object, CompositeEnum>
-        {
-            #region Public Methods
-
-            /// <summary>
-            /// Parses the name of the enum from.
-            /// </summary>
-            /// <typeparam name="T">Type of the enum</typeparam>
-            /// <param name="key">The key.</param>
-            /// <returns>
-            /// The converted enum or null otherwises
-            /// </returns>
-            public T ParseEnumFromName<T>(object key) where T : CompositeEnum, new()
-            {
-                CompositeEnum value;
-                if (!TryGetValue(key, out value))
-                {
-                    throw new ArgumentException(string.Format("Unable to convert [{0}] to qualifier", key), "key");
-                    //var none = new T { Key = string.Empty };
-                    //none.Values.Add(none);
-                    //return none;
-                }
-
-                // If same value, than return it directly
-                if (typeof(T).GetTypeInfo().IsAssignableFrom(value.GetType().GetTypeInfo()))
-                {
-                    return (T)value;
-                }
-
-                return new T { IsFlag = value.IsFlag, Values = value.Values };
-            }
-
-            #endregion
-        }
     }
 }

@@ -10,7 +10,7 @@
 # define ThreadCountZ 2
 #endif
 
-class TestComputeShader
+shader TestComputeShader
 {
     stage stream uint3 GroupId : SV_GroupID;
     stage stream uint3 DispatchThreadId : SV_DispatchThreadID;

@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// <summary>
     /// Emissive shading
     /// </summary>
-    class MaterialSurfaceEmissiveShading<bool TUseAlphaFromEmissive> : IMaterialSurfacePixel, MaterialPixelShadingStream
+    shader MaterialSurfaceEmissiveShading<bool TUseAlphaFromEmissive> : IMaterialSurfacePixel, MaterialPixelShadingStream
     {
         override void Compute()
         {

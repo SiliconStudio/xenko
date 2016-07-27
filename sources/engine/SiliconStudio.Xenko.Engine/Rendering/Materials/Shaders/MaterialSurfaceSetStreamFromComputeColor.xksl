@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 namespace SiliconStudio.Xenko.Rendering.Materials
 {
-    class MaterialSurfaceSetStreamFromComputeColor<MemberName TStream, MemberName TChannel> : IMaterialSurfacePixel, IMaterialSurfaceVertex, IMaterialSurfaceDomain
+    shader MaterialSurfaceSetStreamFromComputeColor<MemberName TStream, MemberName TChannel> : IMaterialSurfacePixel, IMaterialSurfaceVertex, IMaterialSurfaceDomain
     {
         compose ComputeColor computeColorSource;
 

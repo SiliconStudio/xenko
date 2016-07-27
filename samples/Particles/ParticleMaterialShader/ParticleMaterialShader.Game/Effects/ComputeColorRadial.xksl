@@ -1,10 +1,10 @@
 ﻿// This is a little more complex example which you can use
 //  Refer to the Radial Partical System in the Editor
 //  Under Material it uses a Shader for its Emissive color, and the shader's name is ComputeColorRadial
-//  In addition to ComputeColor this class also inherits Texturing so it can use texture coordinates
+//  In addition to ComputeColor this shader also inherits Texturing so it can use texture coordinates
 //  ColorCenter and ColorEdge are design time permutations and appear in the shader dictionary when you choose ComputeColorRadial from the proeprty grid
 
-class ComputeColorRadial<float4 ColorCenter, float4 ColorEdge> : ComputeColor, Texturing
+shader ComputeColorRadial<float4 ColorCenter, float4 ColorEdge> : ComputeColor, Texturing
 {
     override float4 Compute()
     {
