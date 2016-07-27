@@ -148,7 +148,7 @@ namespace SiliconStudio.Xenko.Graphics
         private OpenTK.Graphics.IGraphicsContext graphicsContext;
         private OpenTK.Platform.IWindowInfo windowInfo;
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_UNIX
 #if SILICONSTUDIO_XENKO_UI_SDL
         private SiliconStudio.Xenko.Graphics.SDL.Window gameWindow;
 #else
@@ -744,7 +744,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             renderer = GL.GetString(StringName.Renderer);
 
-#if SILICONSTUDIO_PLATFORM_LINUX || SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+#if SILICONSTUDIO_PLATFORM_UNIX || SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 #if SILICONSTUDIO_XENKO_UI_SDL
             gameWindow = (SiliconStudio.Xenko.Graphics.SDL.Window)windowHandle.NativeWindow;
 #else
@@ -1046,7 +1046,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             get
             {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_UNIX
                 return gameWindow.WindowState == WindowState.Fullscreen;
 #else
                 throw new NotImplementedException();
@@ -1055,7 +1055,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             set
             {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_UNIX
                 if (value ^ (gameWindow.WindowState == WindowState.Fullscreen))
                     gameWindow.WindowState = value ? WindowState.Fullscreen : WindowState.Normal;
 #else

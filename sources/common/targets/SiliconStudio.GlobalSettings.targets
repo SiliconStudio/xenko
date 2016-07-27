@@ -85,7 +85,7 @@
     <TargetFrameworkVersionToolLow>v4.5.1</TargetFrameworkVersionToolLow>
     <TargetFrameworkVersionTool>v4.5.2</TargetFrameworkVersionTool>
     <TargetFrameworkVersion Condition="'$(TargetFrameworkVersion)' == ''">v4.5</TargetFrameworkVersion>
-    <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_LINUX;NET45</SiliconStudioPlatformDefines>
+    <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_LINUX;SILICONSTUDIO_PLATFORM_UNIX;NET45</SiliconStudioPlatformDefines>
     <NUnitLiteBinDir>$(SiliconStudioDependenciesDir)NUnitLite\net-4.0\</NUnitLiteBinDir>
   </PropertyGroup>
 
@@ -94,7 +94,7 @@
     <TargetFrameworkVersionToolLow>v4.5.1</TargetFrameworkVersionToolLow>
     <TargetFrameworkVersionTool>v4.5.2</TargetFrameworkVersionTool>
     <TargetFrameworkVersion Condition="'$(TargetFrameworkVersion)' == ''">v4.5</TargetFrameworkVersion>
-    <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_LINUX;SILICONSTUDIO_PLATFORM_MACOS;NET45</SiliconStudioPlatformDefines>
+    <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_MACOS;SILICONSTUDIO_PLATFORM_UNIX;NET45</SiliconStudioPlatformDefines>
     <NUnitLiteBinDir>$(SiliconStudioDependenciesDir)NUnitLite\net-4.0\</NUnitLiteBinDir>
   </PropertyGroup>
 
