@@ -58,36 +58,83 @@ namespace SiliconStudio.Core.Threading
     /// <typeparam name="T">The element type in the collection.</typeparam>
     public class ConcurrentCollector<T> : IReadOnlyList<T>
     {
-        private const int DefaultCapacity = 4;
+        private const int DefaultCapacity = 16;
 
-        private T[] items = new T[0];
+        private class Segment
+        {
+            public T[] Items;
+            public int Offset;
+            public Segment Previous;
+            public Segment Next;
+        }
+
+        private readonly object resizeLock = new object();
+        private readonly Segment head;
+        private Segment tail;
         private int count;
 
-        public T[] Items => items;
+        public ConcurrentCollector()
+        {
+            tail = head = new Segment { Items = new T[DefaultCapacity] };
+        }
+
+        public T[] Items
+        {
+            get
+            {
+                // If there are multiple segments, consolidate them
+                if (head.Next != null)
+                {
+                    var newItems = new T[tail.Offset + tail.Items.Length];
+
+                    var segment = head;
+                    while (segment != null)
+                    {
+                        Array.Copy(segment.Items, 0, newItems, segment.Offset, segment.Items.Length);
+                        segment = segment.Next;
+                    }
+
+                    head.Items = newItems;
+                    head.Next = null;
+
+                    tail = head;
+                }
+
+                return head.Items;
+            }
+        }
         
         public int Add(T item)
         {
             var index = Interlocked.Increment(ref count) - 1;
-  
-            T[] newItems = null;
-            T[] oldItems;
 
-            // Try until we wrote to the correct array
-            while ((oldItems = items) != newItems)
+            var segment = tail;
+            if (index >= segment.Offset + segment.Items.Length)
             {
-                newItems = oldItems;
-
-                if (oldItems.Length < index + 1)
+                lock (resizeLock)
                 {
-                    EnsureCapacity(ref newItems, index + 1);
-                    
-                    // Early exit, if we are late to resize the array
-                    if (Interlocked.CompareExchange(ref items, newItems, oldItems) != oldItems)
-                        continue;
-                }
+                    if (index >= tail.Offset + tail.Items.Length)
+                    {
+                        tail.Next = new Segment
+                        {
+                            Items = new T[segment.Items.Length * 2],
+                            Offset = segment.Offset + segment.Items.Length,
+                            Previous = tail
+                        };
 
-                newItems[index] = item;
+                        tail = tail.Next;
+                    }
+
+                    segment = tail;
+                }
             }
+
+            while (index < segment.Offset)
+            {
+                segment = segment.Previous;
+            }
+
+            segment.Items[index - segment.Offset] = item;
 
             return index;
         }
@@ -96,27 +143,45 @@ namespace SiliconStudio.Core.Threading
         {
             var newCount = Interlocked.Add(ref count, collection.Count);
 
-            T[] newItems = null;
-            T[] oldItems;
-
-            // Try until we wrote to the correct array
-            while ((oldItems = items) != newItems)
+            var segment = tail;
+            if (newCount >= segment.Offset + segment.Items.Length)
             {
-                newItems = oldItems;
-
-                if (oldItems.Length < newCount)
+                lock (resizeLock)
                 {
-                    EnsureCapacity(ref newItems, newCount);
+                    if (newCount >= tail.Offset + tail.Items.Length)
+                    {
+                        var capacity = tail.Offset + tail.Items.Length;
+                        var size = Math.Max(capacity, newCount - capacity);
 
-                    // Early exit, if we are late to resize the array
-                    if (Interlocked.CompareExchange(ref items, newItems, oldItems) != oldItems)
-                        continue;
+                        tail.Next = new Segment
+                        {
+                            Items = new T[size],
+                            Offset = capacity,
+                            Previous = tail
+                        };
+
+                        tail = tail.Next;
+                    }
+
+                    segment = tail;
+                }
+            }
+
+            // Find the segment containing the last index
+            while (newCount <= segment.Offset)
+                segment = segment.Previous;
+            var destinationIndex = newCount - segment.Offset - 1;
+
+            for (int sourceIndex = collection.Count - 1; sourceIndex >= 0; sourceIndex--)
+            {
+                if (destinationIndex < 0)
+                {
+                    segment = segment.Previous;
+                    destinationIndex = segment.Items.Length - 1;
                 }
 
-                for (int sourceIndex = 0, destinationIndex = newCount - collection.Count; sourceIndex < collection.Count; sourceIndex++, destinationIndex++)
-                {
-                    newItems[destinationIndex] = collection[sourceIndex];
-                }
+                segment.Items[destinationIndex] = collection[sourceIndex];
+                destinationIndex--;
             }
         }
 
