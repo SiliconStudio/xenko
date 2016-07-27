@@ -395,7 +395,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets or sets the opacity factor applied to the entire UIElement when it is rendered in the user interface (UI).
         /// </summary>
-        /// <remarks>Value is clamped between [0,1].</remarks>
+        /// <remarks>The value is coerced in the range [0, 1].</remarks>
         /// <userdoc>Opacity factor applied to this element when rendered in the user interface (UI).</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, 1.0f, 0.01f, 0.1f, 2)]
@@ -430,7 +430,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets or sets the default height of this element.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value has to be a finite positive real number.</exception>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>Default height of this element.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
@@ -441,10 +441,7 @@ namespace SiliconStudio.Xenko.UI
             get { return defaultHeight; }
             set
             {
-                if (value < 0 || float.IsInfinity(value) || float.IsNaN(value))
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                defaultHeight = value;
+                defaultHeight = MathUtil.Clamp(value, 0.0f, float.MaxValue); ;
                 InvalidateMeasure();
             }
         }
@@ -452,7 +449,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets or sets the default width of this element.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value has to be a finite positive real number.</exception>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>Default width of this element.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
@@ -463,10 +460,7 @@ namespace SiliconStudio.Xenko.UI
             get { return defaultWidth; }
             set
             {
-                if (value < 0 || float.IsInfinity(value) || float.IsNaN(value))
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                defaultWidth = value;
+                defaultWidth = MathUtil.Clamp(value, 0.0f, float.MaxValue);
                 InvalidateMeasure();
             }
         }
@@ -474,7 +468,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets or sets the default width of this element.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value has to be a finite positive real number.</exception>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>Default depth of this element.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
@@ -485,10 +479,7 @@ namespace SiliconStudio.Xenko.UI
             get { return defaultDepth; }
             set
             {
-                if (value < 0 || float.IsInfinity(value) || float.IsNaN(value))
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                defaultDepth = value;
+                defaultDepth = MathUtil.Clamp(value, 0.0f, float.MaxValue);
                 InvalidateMeasure();
             }
         }
@@ -496,7 +487,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets or sets the user suggested height of this element.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite or undefined.</exception>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>Height of this element. If NaN, the default height will be used instead.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
@@ -507,10 +498,7 @@ namespace SiliconStudio.Xenko.UI
             get { return height; }
             set
             {
-                if (value < 0 || float.IsInfinity(value))
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                height = value;
+                height = MathUtil.Clamp(value, 0.0f, float.MaxValue);
                 InvalidateMeasure();
             }
         }
@@ -518,7 +506,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets or sets the user suggested width of this element.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite or undefined.</exception>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>Width of this element. If NaN, the default width will be used instead.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
@@ -529,10 +517,7 @@ namespace SiliconStudio.Xenko.UI
             get { return width; }
             set
             {
-                if (value < 0 || float.IsInfinity(value))
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                width = value;
+                width = MathUtil.Clamp(value, 0.0f, float.MaxValue);
                 InvalidateMeasure();
             }
         }
@@ -540,7 +525,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets or sets the user suggested depth of this element.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite or undefined.</exception>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>Depth of this element. If NaN, the default depth will be used instead.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
@@ -551,10 +536,7 @@ namespace SiliconStudio.Xenko.UI
             get { return depth; }
             set
             {
-                if (value < 0 || float.IsInfinity(value))
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                depth = value;
+                depth = MathUtil.Clamp(value, 0.0f, float.MaxValue);
                 InvalidateMeasure();
             }
         }
@@ -592,7 +574,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets or sets the minimum height of this element.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>Minimum height of this element.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
@@ -603,10 +585,7 @@ namespace SiliconStudio.Xenko.UI
             get { return minimumHeight; }
             set
             {
-                if (value < 0 || float.IsNaN(value) || float.IsInfinity(value))
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                minimumHeight = value;
+                minimumHeight = MathUtil.Clamp(value, 0.0f, float.MaxValue);
                 InvalidateMeasure();
             }
         }
@@ -614,7 +593,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets or sets the minimum width of this element.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>Minimum width of this element.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
@@ -625,10 +604,7 @@ namespace SiliconStudio.Xenko.UI
             get { return minimumWidth; }
             set
             {
-                if (value < 0 || float.IsNaN(value) || float.IsInfinity(value))
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                minimumWidth = value;
+                minimumWidth = MathUtil.Clamp(value, 0.0f, float.MaxValue);
                 InvalidateMeasure();
             }
         }
@@ -636,7 +612,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets or sets the minimum height of this element.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>Minimum depth of this element.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
@@ -647,10 +623,7 @@ namespace SiliconStudio.Xenko.UI
             get { return minimumDepth; }
             set
             {
-                if (value < 0 || float.IsNaN(value) || float.IsInfinity(value))
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                minimumDepth = value;
+                minimumDepth = MathUtil.Clamp(value, 0.0f, float.MaxValue);
                 InvalidateMeasure();
             }
         }
@@ -669,7 +642,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets or sets the maximum height of this element.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value has to be positive.</exception>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.PositiveInfinity"/>].</remarks>
         /// <userdoc>Maximum height of this element.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.PositiveInfinity)]
@@ -680,10 +653,7 @@ namespace SiliconStudio.Xenko.UI
             get { return maximumHeight; }
             set
             {
-                if (value < 0 || float.IsNaN(value))
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                maximumHeight = value;
+                maximumHeight = MathUtil.Clamp(value, 0.0f, float.PositiveInfinity);
                 InvalidateMeasure();
             }
         }
@@ -691,7 +661,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets or sets the maximum width of this element.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value has to be positive.</exception>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.PositiveInfinity"/>].</remarks>
         /// <userdoc>Maximum width of this element.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.PositiveInfinity)]
@@ -702,10 +672,7 @@ namespace SiliconStudio.Xenko.UI
             get { return maximumWidth; }
             set
             {
-                if (value < 0 || float.IsNaN(value))
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                maximumWidth = value;
+                maximumWidth = MathUtil.Clamp(value, 0.0f, float.PositiveInfinity);
                 InvalidateMeasure();
             }
         }
@@ -713,7 +680,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets or sets the maximum height of this element.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value has to be positive.</exception>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.PositiveInfinity"/>].</remarks>
         /// <userdoc>Maximum depth of this element.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.PositiveInfinity)]
@@ -724,10 +691,7 @@ namespace SiliconStudio.Xenko.UI
             get { return maximumDepth; }
             set
             {
-                if (value < 0 || float.IsNaN(value))
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                maximumDepth = value;
+                maximumDepth = MathUtil.Clamp(value, 0.0f, float.PositiveInfinity);
                 InvalidateMeasure();
             }
         }

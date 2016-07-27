@@ -492,10 +492,6 @@ namespace SiliconStudio.Xenko.UI.Panels
                 starDefinitionsCopy.Clear();
                 starDefinitionsCopy.AddRange(dimToStarDefinitions[dim]);
 
-                // check validity of strip definition
-                foreach (var definition in starDefinitionsCopy)
-                    definition.CheckState();
-
                 // compute the size taken by fixed and auto strips
                 var spaceTakenByFixedAndAutoStrips = SumStripAutoAndFixedSize(stripDefinitions[dim]);
 

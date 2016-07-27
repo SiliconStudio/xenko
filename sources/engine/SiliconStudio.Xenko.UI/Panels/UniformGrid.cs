@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <summary>
         /// Gets or sets the number of columns that the <see cref="UniformGrid"/> has.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value must be strictly positive</exception>
+        /// <remarks>The value is coerced in the range [1, <see cref="int.MaxValue"/>].</remarks>
         /// <userdoc>The number of columns.</userdoc>
         [DataMember]
         [DataMemberRange(1, int.MaxValue)]
@@ -40,10 +40,7 @@ namespace SiliconStudio.Xenko.UI.Panels
             get { return columns; }
             set
             {
-                if (value < 1 || float.IsPositiveInfinity(value))
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                columns = value;
+                columns = MathUtil.Clamp(value, 1, int.MaxValue);
                 InvalidateMeasure();
             }
         }
@@ -51,7 +48,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <summary>
         /// Gets or sets the number of rows that the <see cref="UniformGrid"/> has.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value must be strictly positive</exception>
+        /// <remarks>The value is coerced in the range [1, <see cref="int.MaxValue"/>].</remarks>
         /// <userdoc>The number of rows.</userdoc>
         [DataMember]
         [DataMemberRange(1, int.MaxValue)]
@@ -62,10 +59,7 @@ namespace SiliconStudio.Xenko.UI.Panels
             get { return rows; }
             set
             {
-                if (value < 1 || float.IsPositiveInfinity(value))
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                rows = value;
+                rows = MathUtil.Clamp(value, 1, int.MaxValue);
                 InvalidateMeasure();
             }
         }
@@ -73,7 +67,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <summary>
         /// Gets or sets the number of layers that the <see cref="UniformGrid"/> has.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value must be strictly positive</exception>
+        /// <remarks>The value is coerced in the range [1, <see cref="int.MaxValue"/>].</remarks>
         /// <userdoc>The number of layers.</userdoc>
         [DataMember]
         [DataMemberRange(1, int.MaxValue)]
@@ -84,10 +78,7 @@ namespace SiliconStudio.Xenko.UI.Panels
             get { return layers; }
             set
             {
-                if (value < 1 || float.IsPositiveInfinity(value))
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                layers = value;
+                layers = MathUtil.Clamp(value, 1, int.MaxValue);
                 InvalidateMeasure();
             }
         }

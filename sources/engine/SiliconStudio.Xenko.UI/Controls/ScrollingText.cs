@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the scrolling speed of the text. The unit is in virtual pixels.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The provided speed must be positive or null.</exception>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>The scrolling speed of the text. The unit is in virtual pixels.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
@@ -60,13 +60,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         public float ScrollingSpeed
         {
             get { return scrollingSpeed; }
-            set
-            {
-                if (value < 0.0f)
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                scrollingSpeed = value;
-            }
+            set { scrollingSpeed = MathUtil.Clamp(value, 0.0f, float.MaxValue); }
         }
 
         /// <summary>

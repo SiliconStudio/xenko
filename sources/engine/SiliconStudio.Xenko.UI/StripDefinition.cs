@@ -50,8 +50,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// The maximum size of the strip in virtual pixels.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The provided value is negative.</exception>
-        /// <exception cref="InvalidOperationException">The provided value is smaller than <see cref="MinimumSize"/></exception>
+        /// <remarks>The value is coerced in the range [<see cref="MinimumSize"/>, <see cref="float.PositiveInfinity"/>].</remarks>
         /// <userdoc>The maximum size of the strip in virtual pixels.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.PositiveInfinity)]
@@ -61,11 +60,7 @@ namespace SiliconStudio.Xenko.UI
             get { return maximumSize; }
             set
             {
-                if(value < 0)
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                maximumSize = value;
-
+                CoerceMaximumSize(value);
                 DefinitionChanged?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -73,8 +68,7 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// The minimum size of the strip in virtual pixels.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The provided value is negative or infinity.</exception>
-        /// <exception cref="InvalidOperationException">The provided value is bigger than <see cref="MaximumSize"/></exception>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>The minimum size of the strip in virtual pixels.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
@@ -84,11 +78,8 @@ namespace SiliconStudio.Xenko.UI
             get { return minimumSize; }
             set
             {
-                if (value < 0 || float.IsPositiveInfinity(value))
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                minimumSize = value;
-
+                minimumSize = MathUtil.Clamp(value, 0.0f, float.MaxValue); ;
+                CoerceMaximumSize(maximumSize);
                 DefinitionChanged?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -117,7 +108,7 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the size value of the strip. 
         /// Note that the value is interpreted differently depending on the strip <see cref="Type"/>.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The size must be finite positive value.</exception>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>The size value of the strip.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
@@ -127,11 +118,7 @@ namespace SiliconStudio.Xenko.UI
             get { return sizeValue; }
             set
             {
-                if (value < 0 || float.IsPositiveInfinity(value))
-                    throw new ArgumentOutOfRangeException(nameof(value));
-
-                sizeValue = value;
-                
+                sizeValue = MathUtil.Clamp(value, 0.0f, float.MaxValue);
                 DefinitionChanged?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -145,24 +132,11 @@ namespace SiliconStudio.Xenko.UI
         /// <returns>The size clamped by the minimum and maximum values of the strip definition</returns>
         public float ClampSizeByMinimumMaximum(float desiredSize)
         {
-            CheckState();
-            return Math.Min(MaximumSize, Math.Max(MinimumSize, desiredSize));
-        }
-
-        /// <summary>
-        /// Verifies that <see cref="MinimumSize"/> if smaller than or equal to <see cref="MaximumSize"/>.
-        /// </summary>
-        /// <exception cref="InvalidOperationException"><see cref="MinimumSize"/> is greater than <see cref="MaximumSize"/>.</exception>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal void CheckState()
-        {
-            if (MinimumSize > MaximumSize)
-                throw new InvalidOperationException($"The value of {nameof(MinimumSize)} is greater than the value of {nameof(MaximumSize)}.");
+            return MathUtil.Clamp(desiredSize, MinimumSize, MaximumSize);
         }
 
         internal float ValueRelativeMinimum()
         {
-            CheckState();
             if (sizeValue < MathUtil.ZeroTolerance)
                 return 0;
             return MinimumSize / SizeValue;
@@ -170,7 +144,6 @@ namespace SiliconStudio.Xenko.UI
 
         internal float ValueRelativeMaximum()
         {
-            CheckState();
             if (sizeValue < MathUtil.ZeroTolerance)
                 return 0;
             return MaximumSize / SizeValue;
@@ -196,6 +169,11 @@ namespace SiliconStudio.Xenko.UI
 
                 return val1.CompareTo(val2);
             }
+        }
+
+        private void CoerceMaximumSize(float newValue)
+        {
+            maximumSize = MathUtil.Clamp(newValue, minimumSize, float.PositiveInfinity);
         }
     }
 }
