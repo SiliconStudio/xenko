@@ -63,7 +63,7 @@ This is the last line.",
             if (Input.IsKeyPressed(Keys.Right))
                 textBlock.TextSize = 4 * textBlock.ActualTextSize / 3;
             if (Input.IsKeyPressed(Keys.Delete))
-                textBlock.TextSize = null;
+                textBlock.TextSize = float.NaN;
 
             if (Input.IsKeyReleased(Keys.NumPad1))
                 textBlock.VerticalAlignment = VerticalAlignment.Top;

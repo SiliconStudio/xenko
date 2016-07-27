@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     [Display(category: InputCategory)]
     public partial class EditText : Control
     {
-        private float? textSize;
+        private float textSize;
 
         private InputTypeFlags inputType;
 
@@ -392,7 +392,11 @@ namespace SiliconStudio.Xenko.UI.Controls
         public float CaretWidth
         {
             get { return caretWith; }
-            set { caretWith = MathUtil.Clamp(value, 0.0f, float.MaxValue); }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                caretWith = MathUtil.Clamp(value, 0.0f, float.MaxValue); }
         }
 
         /// <summary>
@@ -407,7 +411,11 @@ namespace SiliconStudio.Xenko.UI.Controls
         public float CaretFrequency
         {
             get { return caretFrequency; }
-            set { caretFrequency = MathUtil.Clamp(value, 0.0f, float.MaxValue); }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                caretFrequency = MathUtil.Clamp(value, 0.0f, float.MaxValue); }
         }
 
         /// <summary>
@@ -476,25 +484,15 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>The size of the text in virtual pixels unit.</userdoc>
         [DataMember]
-        [DataMemberRange(0, float.MaxValue)]
+        [DataMemberRange(0, float.MaxValue, AllowNaN = true)]
         [Display(category: AppearanceCategory)]
-        [DefaultValue(null)]
+        [DefaultValue(float.NaN)]
         public float TextSize
         {
-            get
-            {
-                if (textSize.HasValue)
-                    return textSize.Value;
-
-                if (Font != null)
-                    return Font.Size;
-
-                return 0;
-            }
+            get { return textSize; }
             set
             {
                 textSize = MathUtil.Clamp(value, 0.0f, float.MaxValue);
-
                 InvalidateMeasure();
             }
         }
@@ -658,6 +656,14 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
+        /// Returns the actual size of the text in virtual pixels unit.
+        /// </summary>
+        /// <remarks>If <see cref="TextSize"/> is <see cref="float.IsNaN"/>, returns the default size of the <see cref="Font"/>.</remarks>
+        /// <seealso cref="TextSize"/>
+        /// <seealso cref="SpriteFont.Size"/>
+        public float ActualTextSize => !float.IsNaN(TextSize) ? TextSize : Font?.Size ?? 0;
+
+        /// <summary>
         /// The actual text to show into the edit text.
         /// </summary>
         public string TextToDisplay => textToDisplay;
@@ -733,7 +739,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                 return Vector2.Zero;
 
             var sizeRatio = LayoutingContext.RealVirtualResolutionRatio;
-            var measureFontSize = new Vector2(TextSize * sizeRatio.Y); // we don't want letters non-uniform ratio
+            var measureFontSize = new Vector2(ActualTextSize * sizeRatio.Y); // we don't want letters non-uniform ratio
             var realSize = Font.MeasureString(textToMeasure, measureFontSize);
 
             // force pre-generation if synchronous generation is required
@@ -749,7 +755,7 @@ namespace SiliconStudio.Xenko.UI.Controls
 
             if (Font.FontType == SpriteFontType.SDF)
             {
-                var scaleRatio = TextSize / Font.Size;
+                var scaleRatio = ActualTextSize / Font.Size;
                 realSize.X *= scaleRatio;
                 realSize.Y *= scaleRatio;
             }
@@ -763,9 +769,9 @@ namespace SiliconStudio.Xenko.UI.Controls
             if (Font != null)
             {
                 // take the maximum between the text size and the minimum visible line size as text desired size
-                var fontLineSpacing = Font.GetTotalLineSpacing(TextSize);
+                var fontLineSpacing = Font.GetTotalLineSpacing(ActualTextSize);
                 if (Font.FontType == SpriteFontType.SDF)
-                    fontLineSpacing *= TextSize/Font.Size;
+                    fontLineSpacing *= ActualTextSize / Font.Size;
                 var currentTextSize = new Vector3(CalculateTextSize(), 0);
                 desiredSize = new Vector3(currentTextSize.X, Math.Min(Math.Max(currentTextSize.Y, fontLineSpacing * MinLines), fontLineSpacing * MaxLines), currentTextSize.Z);
             }
