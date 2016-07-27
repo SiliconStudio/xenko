@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     {
         private SpriteFont font;
         private string text;
-        private float textSize;
+        private float textSize = float.NaN;
         private bool wrapText;
         private bool synchronousCharacterGeneration;
 

@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     [Display(category: InputCategory)]
     public partial class EditText : Control
     {
-        private float textSize;
+        private float textSize = float.NaN;
 
         private InputTypeFlags inputType;
 
