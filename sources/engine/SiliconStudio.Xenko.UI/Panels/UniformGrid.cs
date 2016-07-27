@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.UI.Panels
             get { return columns; }
             set
             {
-                if (value < 1)
+                if (value < 1 || float.IsPositiveInfinity(value))
                     throw new ArgumentOutOfRangeException(nameof(value));
 
                 columns = value;
@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.UI.Panels
             get { return rows; }
             set
             {
-                if (value < 1)
+                if (value < 1 || float.IsPositiveInfinity(value))
                     throw new ArgumentOutOfRangeException(nameof(value));
 
                 rows = value;
@@ -84,7 +84,7 @@ namespace SiliconStudio.Xenko.UI.Panels
             get { return layers; }
             set
             {
-                if (value < 1)
+                if (value < 1 || float.IsPositiveInfinity(value))
                     throw new ArgumentOutOfRangeException(nameof(value));
 
                 layers = value;
