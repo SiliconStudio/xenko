@@ -175,6 +175,8 @@ namespace SiliconStudio.Xenko.Audio
                             instance.Play(false);
                         }
                     }
+
+                    controller.ShouldBePlayed = false;
                 }
 
                 associatedData.AudioEmitterComponent.ShouldBeProcessed = performedAtLeastOneApply;
