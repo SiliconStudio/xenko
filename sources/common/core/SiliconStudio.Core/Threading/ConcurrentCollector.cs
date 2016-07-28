@@ -73,37 +73,45 @@ namespace SiliconStudio.Core.Threading
         private Segment tail;
         private int count;
 
-        public ConcurrentCollector()
+        public ConcurrentCollector(int capacity = DefaultCapacity)
         {
-            tail = head = new Segment { Items = new T[DefaultCapacity] };
+            tail = head = new Segment { Items = new T[capacity] };
         }
 
         public T[] Items
         {
             get
             {
-                // If there are multiple segments, consolidate them
-                if (head.Next != null)
-                {
-                    var newItems = new T[tail.Offset + tail.Items.Length];
-
-                    var segment = head;
-                    while (segment != null)
-                    {
-                        Array.Copy(segment.Items, 0, newItems, segment.Offset, segment.Items.Length);
-                        segment = segment.Next;
-                    }
-
-                    head.Items = newItems;
-                    head.Next = null;
-
-                    tail = head;
-                }
+                if (head != tail)
+                    throw new InvalidOperationException();
 
                 return head.Items;
             }
         }
-        
+
+        /// <summary>
+        /// Consolidates all added items into a single consecutive array. It is an error to access Items after adding elements, but before closing.
+        /// </summary>
+        public void Close()
+        {
+            if (head.Next != null)
+            {
+                var newItems = new T[tail.Offset + tail.Items.Length];
+
+                var segment = head;
+                while (segment != null)
+                {
+                    Array.Copy(segment.Items, 0, newItems, segment.Offset, segment.Items.Length);
+                    segment = segment.Next;
+                }
+
+                head.Items = newItems;
+                head.Next = null;
+
+                tail = head;
+            }
+        }
+
         public int Add(T item)
         {
             var index = Interlocked.Increment(ref count) - 1;
@@ -170,8 +178,8 @@ namespace SiliconStudio.Core.Threading
             // Find the segment containing the last index
             while (newCount <= segment.Offset)
                 segment = segment.Previous;
-            var destinationIndex = newCount - segment.Offset - 1;
 
+            var destinationIndex = newCount - segment.Offset - 1;
             for (int sourceIndex = collection.Count - 1; sourceIndex >= 0; sourceIndex--)
             {
                 if (destinationIndex < 0)
@@ -187,30 +195,12 @@ namespace SiliconStudio.Core.Threading
 
         public void Clear(bool fastClear)
         {
+            Close();
             if (!fastClear && count > 0)
             {
                 Array.Clear(Items, 0, count);
             }
             count = 0;
-        }
-
-        private static void EnsureCapacity(ref T[] items, int min)
-        {
-            if (items.Length < min)
-            {
-                int capacity = (items.Length == 0) ? DefaultCapacity : (items.Length * 2);
-                if (capacity < min)
-                {
-                    capacity = min;
-                }
-
-                var destinationArray = new T[capacity];
-                if (items.Length > 0)
-                {
-                    Array.Copy(items, 0, destinationArray, 0, items.Length);
-                }
-                items = destinationArray;
-            }
         }
 
         public IEnumerator<T> GetEnumerator()

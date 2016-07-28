@@ -95,7 +95,6 @@ namespace SiliconStudio.Xenko.Rendering
                 var viewFeature = view.Features[RootRenderFeature.Index];
 
                 // Compute WorldView and WorldViewProjection
-                // foreach (var renderPerViewNodeReference in viewFeature.ViewObjectNodes)
                 Dispatcher.ForEach(viewFeature.ViewObjectNodes, renderPerViewNodeReference =>
                 {
                     var renderPerViewNode = RootRenderFeature.GetViewObjectNode(renderPerViewNodeReference);
@@ -155,7 +154,6 @@ namespace SiliconStudio.Xenko.Rendering
             // Update PerDraw (World, WorldViewProj, etc...)
             // Copy Entity.World to PerDraw cbuffer
             // TODO: Have a PerObject cbuffer?
-            //foreach (var renderNode in ((RootEffectRenderFeature)RootRenderFeature).RenderNodes)
             Dispatcher.ForEach(((RootEffectRenderFeature)RootRenderFeature).RenderNodes, renderNode =>
             {
                 var perDrawLayout = renderNode.RenderEffect.Reflection.PerDrawLayout;

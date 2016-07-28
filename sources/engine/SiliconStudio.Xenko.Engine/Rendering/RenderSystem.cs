@@ -121,7 +121,6 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 // Sort per render feature (used for later sorting)
                 // We'll be able to process data more efficiently for the next steps
-                //view.RenderObjects.Sort(RenderObjectFeatureComparer.Default);
                 Dispatcher.Sort(view.RenderObjects, RenderObjectFeatureComparer.Default);
 
                 Dispatcher.ForEach(view.RenderObjects, () => extractThreadContext.Value, (renderObject, batch) =>
@@ -157,11 +156,26 @@ namespace SiliconStudio.Xenko.Rendering
                     }
                 }, batch => batch.Flush());
 
+                // Finish collectin of view feature nodes
+                foreach (var viewFeature in view.Features)
+                {
+                    viewFeature.ViewObjectNodes.Close();
+                    viewFeature.RenderNodes.Close();
+                }
+
                 // Also sort view|stage per render feature
                 foreach (var renderViewStage in view.RenderStages)
                 {
+                    renderViewStage.RenderNodes.Close();
+
                     Dispatcher.Sort(renderViewStage.RenderNodes, RenderNodeFeatureReferenceComparer.Default);
                 }
+            }
+
+            // Finish collection of render feature nodes
+            foreach (var renderFeature in RenderFeatures)
+            {
+                renderFeature.CloseNodeCollectors();
             }
 
             // Ensure size of data arrays per objects
@@ -229,7 +243,6 @@ namespace SiliconStudio.Xenko.Rendering
                         fixed (SortKey* sortKeysPtr = sortKeys)
                             renderStage.SortMode.GenerateSortKey(view, renderViewStage, sortKeysPtr);
 
-                        //Array.Sort(sortKeys, 0, renderNodes.Count);
                         Dispatcher.Sort(sortKeys, 0, renderNodes.Count, Comparer<SortKey>.Default);
 
                         // Reorder list

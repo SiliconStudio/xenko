@@ -101,7 +101,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             var tessellationStates = RootRenderFeature.RenderData.GetData(tessellationStateKey);
             int effectSlotCount = ((RootEffectRenderFeature)RootRenderFeature).EffectPermutationSlotCount;
 
-            //foreach (var renderObject in RootRenderFeature.RenderObjects)
             Dispatcher.ForEach(RootRenderFeature.RenderObjects, renderObject =>
             {
                 var staticObjectNode = renderObject.StaticObjectNode;
@@ -251,6 +250,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                         renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasNormalMap, materialInfo.HasNormalMap);
                 }
             });
+
+            renderMeshesToGenerateAEN.Close();
         }
 
         /// <inheritdoc/>
@@ -258,7 +259,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         {
             // Assign descriptor sets to each render node
             var resourceGroupPool = ((RootEffectRenderFeature)RootRenderFeature).ResourceGroupPool;
-            //for (int renderNodeIndex = 0; renderNodeIndex < RootRenderFeature.RenderNodes.Count; renderNodeIndex++)
+
             Dispatcher.For(0, RootRenderFeature.RenderNodes.Count, () => context.RenderContext.GetThreadContext(), (renderNodeIndex, threadContext) =>
             {
                 var renderNodeReference = new RenderNodeReference(renderNodeIndex);

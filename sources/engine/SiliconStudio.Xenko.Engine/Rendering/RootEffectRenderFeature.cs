@@ -66,7 +66,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         public ResourceGroup[] ResourceGroupPool = new ResourceGroup[256];
 
-        public List<FrameResourceGroupLayout> FrameLayouts { get; } = new List<FrameResourceGroupLayout>();
+        public ConcurrentCollector<FrameResourceGroupLayout> FrameLayouts { get; } = new ConcurrentCollector<FrameResourceGroupLayout>();
         public Action<RenderSystem, Effect, RenderEffectReflection> EffectCompiled;
 
         public delegate void ProcessPipelineStateDelegate(RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState);
@@ -396,8 +396,6 @@ namespace SiliconStudio.Xenko.Rendering
             PrepareEffectPermutationsImpl(context);
 
             // Step2: Compile effects
-            //foreach (var renderObject in RenderObjects)
-            //Dispatcher.For(0, RenderObjects.Count, index =>
             Dispatcher.ForEach(RenderObjects, renderObject =>
             {
                 //var renderObject = RenderObjects[index];
@@ -608,7 +606,7 @@ namespace SiliconStudio.Xenko.Rendering
             foreach (var view in RenderSystem.Views)
             {
                 var viewFeature = view.Features[Index];
-                //foreach (var renderNodeReference in viewFeature.RenderNodes)
+
                 Dispatcher.ForEach(viewFeature.RenderNodes, () => prepareThreadContext.Value, (renderNodeReference, batch) =>
                 {
                     var threadContext = batch.Context;
@@ -747,7 +745,13 @@ namespace SiliconStudio.Xenko.Rendering
 
                     RenderNodes[renderNodeReference.Index] = renderNode;
                 });
+
+                viewFeature.RenderNodes.Close();
+                viewFeature.Layouts.Close();
             }
+
+            EffectObjectNodes.Close();
+            FrameLayouts.Close();
         }
 
         protected virtual void ProcessPipelineState(RenderContext context, RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState)
@@ -757,7 +761,7 @@ namespace SiliconStudio.Xenko.Rendering
         public override void Reset()
         {
             base.Reset();
-            FrameLayouts.Clear();
+            FrameLayouts.Clear(false);
         }
 
         public DescriptorSetLayout CreateUniqueDescriptorSetLayout(DescriptorSetLayoutBuilder descriptorSetLayoutBuilder)

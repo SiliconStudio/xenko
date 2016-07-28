@@ -139,6 +139,14 @@ namespace SiliconStudio.Xenko.Rendering
             return renderObject.ObjectNode;
         }
 
+        internal void CloseNodeCollectors()
+        {
+            viewObjectNodes.Close();
+            RenderNodes.Close();
+            objectNodes.Close();
+            ObjectNodeReferences.Close();
+        }
+
         /// <summary>
         /// Called when a render object is added.
         /// </summary>
