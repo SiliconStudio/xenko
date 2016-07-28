@@ -377,16 +377,16 @@ namespace SiliconStudio.Xenko.Audio
             if (engine.State == AudioEngineState.Invalidated)
                 return;
 
-            var state = playState;
+            var state = PlayState;
+
             if (state == SoundPlayState.Playing)
             {
-                AudioLayer.SourceStop(Source);
-                playState = SoundPlayState.Stopped;
+                Stop();
             }
 
             if (soundSource == null)
-            {                
-                AudioLayer.SourceSetRange(Source, range.Start.TotalSeconds, range.End.TotalSeconds);
+            {
+                AudioLayer.SourceSetRange(Source, range.Start.TotalSeconds, range.End.TotalSeconds);               
             }
             else
             {
@@ -406,9 +406,9 @@ namespace SiliconStudio.Xenko.Audio
         {
             get
             {
-                if(PlayState == SoundPlayState.Stopped) return TimeSpan.Zero;
+                if (!AudioLayer.SourceIsPlaying(Source)) return TimeSpan.Zero;
                 var position = AudioLayer.SourceGetPosition(Source);
-                return TimeSpan.FromSeconds(position);
+                return position > sound.TotalLength.TotalSeconds ? TimeSpan.Zero : TimeSpan.FromSeconds(position);
             }
         }
     }
