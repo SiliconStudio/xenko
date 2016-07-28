@@ -133,11 +133,11 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Creates an asset that inherits from this asset.
         /// </summary>
-        /// <param name="location">The location of this asset.</param>
+        /// <param name="baseLocation">The location of this asset.</param>
         /// <returns>An asset that inherits this asset instance</returns>
-        public virtual Asset CreateChildAsset(string location)
+        public virtual Asset CreateChildAsset(string baseLocation)
         {
-            if (location == null) throw new ArgumentNullException(nameof(location));
+            if (baseLocation == null) throw new ArgumentNullException(nameof(baseLocation));
 
             // Clone this asset to make the base
             var assetBase = (Asset)AssetCloner.Clone(this);
@@ -149,7 +149,7 @@ namespace SiliconStudio.Assets
             newAsset.Id = Guid.NewGuid();
 
             // Create the base of this asset
-            newAsset.Base = new AssetBase(location, assetBase);
+            newAsset.Base = new AssetBase(baseLocation, assetBase);
             return newAsset;
         }
 

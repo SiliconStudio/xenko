@@ -41,9 +41,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             return Hierarchy?.DumpTo(writer) ?? false;
         }
 
-        public override Asset CreateChildAsset(string location)
+        public override Asset CreateChildAsset(string baseLocation)
         {
-            var newAsset = (EntityHierarchyAssetBase)base.CreateChildAsset(location);
+            var newAsset = (EntityHierarchyAssetBase)base.CreateChildAsset(baseLocation);
 
             var newIdMaps = Hierarchy.Parts.ToDictionary(x => x.Entity.Id, x => Guid.NewGuid());
             foreach (var entity in newAsset.Hierarchy.Parts)
@@ -291,7 +291,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             return mapBaseToInstanceIds;
         }
 
-        protected override object ResolveReference(object partReference)
+        protected override object ResolvePartReference(object partReference)
         {
             var entityComponentReference = partReference as EntityComponent;
             if (entityComponentReference != null)
@@ -302,7 +302,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     throw new InvalidOperationException("Found a reference to a component which doesn't have any entity");
                 }
 
-                var realEntity = (Entity)base.ResolveReference(containingEntity);
+                var realEntity = (Entity)base.ResolvePartReference(containingEntity);
                 if (realEntity == null)
                     return null;
 
@@ -311,7 +311,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 return realComponent;
             }
 
-            return base.ResolveReference(partReference);
+            return base.ResolvePartReference(partReference);
         }
     }
 }

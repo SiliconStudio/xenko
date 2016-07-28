@@ -92,14 +92,14 @@ namespace SiliconStudio.Assets.Tests
             return Parts.Any(t => t.Id == id);
         }
 
-        public override void FixupPartReferences()
+        protected override object ResolvePartReference(object referencedObject)
         {
             throw new NotImplementedException();
         }
 
-        public override Asset CreateChildAsset(string location)
+        public override Asset CreateChildAsset(string baseLocation)
         {
-            var asset = (TestAssetWithParts)base.CreateChildAsset(location);
+            var asset = (TestAssetWithParts)base.CreateChildAsset(baseLocation);
 
             // Create asset with new base
             for (int i = 0; i < asset.Parts.Count; i++)

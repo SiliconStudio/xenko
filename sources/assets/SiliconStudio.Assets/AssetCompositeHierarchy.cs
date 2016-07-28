@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Assets
@@ -66,12 +65,7 @@ namespace SiliconStudio.Assets
             return Hierarchy.Parts.ContainsKey(id);
         }
 
-        public override void FixupPartReferences()
-        {
-            AssetCompositeAnalysis.FixupAssetPartReferences(this, ResolveReference);
-        }
-
-        protected virtual object ResolveReference(object partReference)
+        protected override object ResolvePartReference(object partReference)
         {
             var reference = partReference as TAssetPart;
             if (reference != null)
