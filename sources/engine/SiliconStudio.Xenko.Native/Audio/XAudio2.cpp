@@ -1228,7 +1228,7 @@ extern "C" {
 				{
 					delete res;
 					return NULL;
-				}				
+				}		
 			}
 
 			//X3DAudio
