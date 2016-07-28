@@ -125,26 +125,6 @@ namespace SiliconStudio.Xenko.Audio
             });
         }
 
-        private static void SourcePlay(CompressedSoundSource source)
-        {
-            AudioLayer.SourcePlay(source.SoundInstance.Source);
-        }
-
-        private static void SourceStop(CompressedSoundSource source)
-        {
-            AudioLayer.SourceStop(source.SoundInstance.Source);
-        }
-
-        private static void SourcePause(CompressedSoundSource source)
-        {
-            AudioLayer.SourcePause(source.SoundInstance.Source);
-        }
-
-        private static void SourceDestroy(CompressedSoundSource source)
-        {
-            AudioLayer.SourceDestroy(source.SoundInstance.Source);
-        }
-
         private static unsafe void Worker()
         {
             var utilityBuffer = new UnmanagedArray<short>(SamplesPerBuffer * MaxChannels);
@@ -190,29 +170,29 @@ namespace SiliconStudio.Xenko.Audio
                                     }
                                     else
                                     {
-                                        SourcePlay(source);
+                                        AudioLayer.SourcePlay(source.SoundInstance.Source);
                                     }
+                                    source.playing = true;
                                     source.Playing = true;
                                     source.Paused = false;
                                     source.PlayingQueued = false;                             
                                     break;
                                 case AsyncCommand.Pause:
                                     source.Paused = true;
-                                    SourcePause(source);
+                                    AudioLayer.SourcePause(source.SoundInstance.Source);
                                     break;
                                 case AsyncCommand.Stop:
                                     source.Paused = false;
                                     source.Playing = false;
-                                    SourceStop(source);
+                                    source.playing = false;
+                                    AudioLayer.SourceStop(source.SoundInstance.Source);
                                     break;
                                 case AsyncCommand.SetRange:
-                                    if(source.Playing) SourceStop(source);
                                     source.Restart();
                                     SourcePrepare(source);
-                                    if (source.Playing) SourcePlayAsync(source);
                                     break;
                                 case AsyncCommand.Dispose:
-                                    SourceDestroy(source);
+                                    AudioLayer.SourceDestroy(source.SoundInstance.Source);
                                     source.Destroy();
                                     source.Disposed = true;
                                     toRemove.Add(source);
@@ -222,7 +202,9 @@ namespace SiliconStudio.Xenko.Audio
                             }
                         }
 
-                        if (!source.Playing || !source.CanFill) continue;
+                        source.PlayingState = (source.Playing && !source.Ended.Task.IsCompleted) || AudioLayer.SourceIsPlaying(source.SoundInstance.Source);
+
+                        if (!source.Playing || !source.CanFill || !source.playing) continue;
 
                         const int passes = SamplesPerBuffer/SamplesPerFrame;
                         var offset = 0;
@@ -255,7 +237,7 @@ namespace SiliconStudio.Xenko.Audio
                             }
                             else
                             {
-                                source.Playing = false;
+                                source.playing = false;
                                 source.Ended.TrySetResult(true);
                             }
 
@@ -266,19 +248,15 @@ namespace SiliconStudio.Xenko.Audio
                         var finalSize = (offset - (startingPacket ? source.startPktSampleIndex : 0) - (endingPacket ? source.endPktSampleIndex : 0))*sizeof(short);
 
                         var bufferType = AudioLayer.BufferType.None;
-                        if (!source.Playing)
+                        if (endingPacket)
                         {
-                            bufferType = AudioLayer.BufferType.EndOfStream;
-                        }
-                        else if (source.looped && endingPacket)
-                        {
-                            bufferType = AudioLayer.BufferType.EndOfLoop;
+                            bufferType = source.looped ? AudioLayer.BufferType.EndOfLoop : AudioLayer.BufferType.EndOfStream;
                         }
                         else if (source.begin)
                         {
                             bufferType = AudioLayer.BufferType.BeginOfStream;
                             source.begin = false;
-                        }                       
+                        }
                         source.FillBuffer(finalPtr, finalSize, bufferType);
                     }
                     else

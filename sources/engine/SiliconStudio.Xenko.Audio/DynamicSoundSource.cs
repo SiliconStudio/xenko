@@ -31,14 +31,14 @@ namespace SiliconStudio.Xenko.Audio
         private readonly int prebufferedTarget;
 
         /// <summary>
-        /// This will be fired internally once there are more then 1 buffer in the queue.
+        /// Gets a task that will be fired once the source is ready to play.
         /// </summary>
         public TaskCompletionSource<bool> ReadyToPlay { get; private set; } = new TaskCompletionSource<bool>(false);
-        
+
         /// <summary>
-        /// This must be filled by sub-classes implementation when there will be no more queueud data.
+        /// Gets a task that will be fired once there will be no more queueud data.
         /// </summary>
-        public TaskCompletionSource<bool> Ended { get; } = new TaskCompletionSource<bool>(false);
+        public TaskCompletionSource<bool> Ended { get; private set; } = new TaskCompletionSource<bool>(false);
 
         private readonly List<AudioLayer.Buffer> deviceBuffers = new List<AudioLayer.Buffer>();
         private readonly Queue<AudioLayer.Buffer> freeBuffers = new Queue<AudioLayer.Buffer>(4);
@@ -50,19 +50,24 @@ namespace SiliconStudio.Xenko.Audio
         /// <summary>
         /// If we are in the disposed state.
         /// </summary>
-        protected bool Disposed = false;
+        protected bool Disposed;
         /// <summary>
         /// If we are in the playing state.
         /// </summary>
-        protected bool Playing = false;
+        protected bool Playing;
         /// <summary>
         /// If we are in the paused state.
         /// </summary>
-        protected bool Paused = false;
+        protected bool Paused;
         /// <summary>
         /// If we are waiting to play.
         /// </summary>
         protected volatile bool PlayingQueued;
+        /// <summary>
+        /// If the source is actually playing sound
+        /// this takes into account multiple factors: Playing, Ended task, and Audio layer playing state
+        /// </summary>
+        protected volatile bool PlayingState = false;
 
         /// <summary>
         /// Sub classes can implement their own streaming sources.
@@ -187,7 +192,7 @@ namespace SiliconStudio.Xenko.Audio
         /// <summary>
         /// Gets if this instance is in the playing state.
         /// </summary>
-        public bool IsPlaying => PlayingQueued || Playing;
+        public bool IsPlaying => PlayingQueued || PlayingState;
 
         /// <summary>
         /// Sets the region of time to play from the audio clip.
@@ -211,6 +216,8 @@ namespace SiliconStudio.Xenko.Audio
         {
             ReadyToPlay.TrySetResult(false);
             ReadyToPlay = new TaskCompletionSource<bool>();
+            Ended.TrySetResult(false);
+            Ended = new TaskCompletionSource<bool>();
             readyToPlay = false;
             prebufferedCount = 0;
         }
