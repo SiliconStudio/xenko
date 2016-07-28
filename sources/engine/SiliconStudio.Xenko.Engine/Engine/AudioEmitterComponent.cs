@@ -226,10 +226,10 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// The sound controllers associated with the sounds this audio emitter can play and use, use this to access and play sounds.
         /// </summary>
-        /// <param name="i">The name of the sound you want to access</param>
-        /// <returns>The sound controller</returns>
+        /// <param name="soundName">The name of the sound you want to access.</param>
+        /// <returns>The sound controller.</returns>
         [DataMemberIgnore]
-        public AudioEmitterSoundController this[string i] => SoundToController[Sounds[i]];
+        public AudioEmitterSoundController this[string soundName] => SoundToController[Sounds[soundName]];
 
         private void OnSoundsOnCollectionChanged(object sender, TrackingCollectionChangedEventArgs args)
         {
