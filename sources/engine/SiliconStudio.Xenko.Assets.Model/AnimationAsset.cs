@@ -7,6 +7,7 @@ using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Xenko.Animations;
 using SiliconStudio.Xenko.Rendering;
@@ -34,6 +35,13 @@ namespace SiliconStudio.Xenko.Assets.Model
         [DataMember(10)]
         [DefaultValue(1.0f)]
         public float ScaleImport { get; set; } = 1.0f;
+
+        /// <summary>
+        /// Gets or sets the pivot position, that will be used as center of object.
+        /// </summary>
+        [DataMember(15)]
+        public Vector3 PivotPosition { get; set; }
+
 
         /// <summary>
         /// Gets or sets the animation repeat mode.
