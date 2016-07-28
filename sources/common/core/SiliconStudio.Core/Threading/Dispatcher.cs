@@ -23,14 +23,8 @@ namespace SiliconStudio.Core.Threading
 
     public class Dispatcher
     {
-        private class DispatcherNode
-        {
-            public MethodBase Caller;
-            public int Count;
-            public TimeSpan TotalTime;
-        }
-
-        private static ConcurrentDictionary<MethodInfo, DispatcherNode> nodes = new ConcurrentDictionary<MethodInfo, DispatcherNode>();
+        private static readonly List<Action> batches = new List<Action>();
+        private static ConcurrentPool<AutoResetEvent> events = new ConcurrentPool<AutoResetEvent>(() => new AutoResetEvent(false));
 
         private static readonly int MaxDregreeOfParallelism = Environment.ProcessorCount;
 
@@ -54,198 +48,170 @@ namespace SiliconStudio.Core.Threading
 
         public static void For(int fromInclusive, int toExclusive, ForAction action)
         {
-            //var stopwatch = new Stopwatch();
-            //stopwatch.Start();
-
-            var count = toExclusive - fromInclusive;
-            if (count == 0)
-                return;
-
-            if (MaxDregreeOfParallelism <= 1)
+            using (Profile(action))
             {
-                ExecuteBatch(fromInclusive, toExclusive, action);
-            }
-            else
-            {
-                int batchCount = Math.Min(MaxDregreeOfParallelism, count);
-                int batchSize = (count + (batchCount - 1)) / batchCount;
-
-                int batchStartInclusive = fromInclusive;
-                int batchEndExclusive = batchStartInclusive + batchSize;
-
-                int batchesProcessed = 0;
-                var finished = new ManualResetEvent(false);
-                var batches = new List<Action>();
-
-                int remainingBatcheCount = 0;
-                while (batchStartInclusive < toExclusive)
+                if (fromInclusive > toExclusive)
                 {
-                    if (batchEndExclusive > toExclusive)
-                        batchEndExclusive = toExclusive;
-
-                    var start = batchStartInclusive;
-                    var end = batchEndExclusive;
-
-                    remainingBatcheCount++;
-                    batches.Add(() =>
-                    {
-                        ExecuteBatch(start, end, action);
-
-                        Interlocked.Decrement(ref remainingBatcheCount);
-                        if (remainingBatcheCount == 0)
-                        {
-                            finished.Set();
-                        }
-                    });
-
-                    batchStartInclusive = batchEndExclusive;
-                    batchEndExclusive += batchSize;
+                    var temp = fromInclusive;
+                    fromInclusive = toExclusive + 1;
+                    toExclusive = temp + 1;
                 }
 
-                ThreadPool.Instance.QueueWorkItems(batches);
+                var count = toExclusive - fromInclusive;
+                if (count == 0)
+                    return;
 
-                finished.WaitOne();
+                if (MaxDregreeOfParallelism <= 1)
+                {
+                    ExecuteBatch(fromInclusive, toExclusive, action);
+                }
+                else
+                {
+                    var finished = events.Acquire();
+                    int remainingBatcheCount = 0;
+
+                    try
+                    {
+                        int batchCount = Math.Min(MaxDregreeOfParallelism, count);
+                        int batchSize = (count + (batchCount - 1)) / batchCount;
+
+                        // If there's more than one batch, kick off worker threads
+                        bool isParallel = batchSize < toExclusive;
+                        if (isParallel)
+                        {
+                            lock (batches)
+                            {
+
+                                int batchStartInclusive = fromInclusive + batchSize;
+                                int batchEndExclusive = batchStartInclusive + batchSize;
+
+                                while (batchStartInclusive < toExclusive)
+                                {
+                                    if (batchEndExclusive > toExclusive)
+                                        batchEndExclusive = toExclusive;
+
+                                    var start = batchStartInclusive;
+                                    var end = batchEndExclusive;
+
+                                    remainingBatcheCount++;
+                                    batches.Add(() =>
+                                    {
+                                        ExecuteBatch(start, end, action);
+
+                                        if (Interlocked.Decrement(ref remainingBatcheCount) == 0)
+                                        {
+                                            finished.Set();
+                                        }
+                                    });
+
+                                    batchStartInclusive = batchEndExclusive;
+                                    batchEndExclusive += batchSize;
+                                }
+
+                                ThreadPool.Instance.QueueWorkItems(batches);
+                                batches.Clear();
+                            }
+                        }
+
+                        // Execute some work synchroneuously
+                        ExecuteBatch(fromInclusive, Math.Min(toExclusive, fromInclusive + batchSize), action);
+
+                        // Wait for all workers to finish
+                        if (isParallel)
+                        {
+                            finished.WaitOne();
+                        }
+                    }
+                    finally
+                    {
+                        events.Release(finished);
+                    }
+                }
             }
-
-            //stopwatch.Stop();
-            //var elapsed = stopwatch.Elapsed;
-
-            //DispatcherNode node;
-            //if (!nodes.TryGetValue(action.Method, out node))
-            //{
-            //    var caller = new StackFrame(1, true).GetMethod();
-            //    if (caller.Name == "ForEach")
-            //        caller = new StackFrame(2, true).GetMethod();
-
-            //    node = nodes.GetOrAdd(action.Method, key => new DispatcherNode());
-            //    node.Caller = caller;
-            //}
-
-            //node.Count++;
-            //node.TotalTime += elapsed;
-
-            //if (node.Count % 500 == 0)
-            //{
-            //    //Console.WriteLine($"[{node.Count}] {node.Caller.DeclaringType.Name}.{node.Caller.Name}: {node.TotalTime.TotalMilliseconds / node.Count}");
-            //}
         }
 
         public static void For<TLocal>(int fromInclusive, int toExclusive, BatchInitializer<TLocal> initializeLocal, ForAction<TLocal> action, BatchFinalizer<TLocal> finalizeLocal = null)
         {
-            //var stopwatch = new Stopwatch();
-            //stopwatch.Start();
-
-            if (fromInclusive > toExclusive)
+            using (Profile(action))
             {
-                var temp = fromInclusive;
-                fromInclusive = toExclusive + 1;
-                toExclusive = temp + 1;
+                if (fromInclusive > toExclusive)
+                {
+                    var temp = fromInclusive;
+                    fromInclusive = toExclusive + 1;
+                    toExclusive = temp + 1;
+                }
+
+                var count = toExclusive - fromInclusive;
+                if (count == 0)
+                    return;
+
+                if (MaxDregreeOfParallelism <= 1)
+                {
+                    ExecuteBatch(fromInclusive, toExclusive, initializeLocal, action, finalizeLocal);
+                }
+                else
+                {
+                    var finished = events.Acquire();
+                    int remainingBatcheCount = 0;
+
+                    try
+                    {
+                        int batchCount = Math.Min(MaxDregreeOfParallelism, count);
+                        int batchSize = (count + (batchCount - 1)) / batchCount;
+
+                        // If there's more than one batch, kick off worker threads
+                        bool isParallel = batchSize < toExclusive;
+                        if (isParallel)
+                        {
+                            lock (batches)
+                            {
+
+                                int batchStartInclusive = fromInclusive + batchSize;
+                                int batchEndExclusive = batchStartInclusive + batchSize;
+
+                                while (batchStartInclusive < toExclusive)
+                                {
+                                    if (batchEndExclusive > toExclusive)
+                                        batchEndExclusive = toExclusive;
+
+                                    var start = batchStartInclusive;
+                                    var end = batchEndExclusive;
+
+                                    remainingBatcheCount++;
+                                    batches.Add(() =>
+                                    {
+                                        ExecuteBatch(start, end, initializeLocal, action, finalizeLocal);
+
+                                        if (Interlocked.Decrement(ref remainingBatcheCount) == 0)
+                                        {
+                                            finished.Set();
+                                        }
+                                    });
+
+                                    batchStartInclusive = batchEndExclusive;
+                                    batchEndExclusive += batchSize;
+                                }
+
+                                ThreadPool.Instance.QueueWorkItems(batches);
+                                batches.Clear();
+                            }
+                        }
+
+                        // Execute some work synchroneuously
+                        ExecuteBatch(fromInclusive, Math.Min(toExclusive, fromInclusive + batchSize), initializeLocal, action, finalizeLocal);
+
+                        // Wait for all workers to finish
+                        if (isParallel)
+                        {
+                            finished.WaitOne();
+                        }
+                    }
+                    finally
+                    {
+                        events.Release(finished);
+                    }
+                }
             }
-
-            var count = toExclusive - fromInclusive;
-            if (count == 0)
-                return;
-
-            if (MaxDregreeOfParallelism <= 1)
-            {
-                ExecuteBatch(fromInclusive, toExclusive, initializeLocal, action, finalizeLocal);
-            }
-            else
-            {
-                //Parallel.For(fromInclusive, toExclusive, i => action(i));
-                //return;
-
-                int batchCount = Math.Min(MaxDregreeOfParallelism, count);
-                int batchSize = (count + (batchCount - 1)) / batchCount;
-                batchCount = (count + (batchSize - 1)) / batchSize;
-
-                var finishedLock = new BatchState { Count = batchCount };
-
-                Fork(batchSize, toExclusive, fromInclusive, fromInclusive + batchSize, initializeLocal, action, finalizeLocal, finishedLock);
-
-                finishedLock.Finished.WaitOne();
-            }
-
-            //stopwatch.Stop();
-            //var elapsed = stopwatch.Elapsed;
-
-            //DispatcherNode node;
-            //if (!nodes.TryGetValue(action.Method, out node))
-            //{
-            //    var caller = new StackFrame(1, true).GetMethod();
-            //    //if (caller.Name == "ForEach")
-            //    //    caller = new StackFrame(2, true).GetMethod();
-
-            //    node = nodes.GetOrAdd(action.Method, key => new DispatcherNode());
-            //    node.Caller = caller;
-            //}
-
-            //node.Count++;
-            //node.TotalTime += elapsed;
-
-            //if (node.Count % 500 == 0)
-            //{
-            //    Console.WriteLine($"[{node.Count}] {node.Caller.DeclaringType.Name}.{node.Caller.Name}: {node.TotalTime.TotalMilliseconds / node.Count}");
-            //}
-        }
-
-        internal static void For2(int fromInclusive, int toExclusive, ForAction action)
-        {
-            //var stopwatch = new Stopwatch();
-            //stopwatch.Start();
-
-            if (fromInclusive > toExclusive)
-            {
-                var temp = fromInclusive;
-                fromInclusive = toExclusive + 1;
-                toExclusive = temp + 1;
-            }
-
-            var count = toExclusive - fromInclusive;
-            if (count == 0)
-                return;
-
-            if (MaxDregreeOfParallelism <= 1)
-            {
-                ExecuteBatch(fromInclusive, toExclusive, action);
-            }
-            else
-            {
-                //Parallel.For(fromInclusive, toExclusive, i => action(i));
-                //return;
-
-                int batchCount = Math.Min(MaxDregreeOfParallelism, count);
-                int batchSize = (count + (batchCount - 1)) / batchCount;
-                batchCount = (count + (batchSize - 1)) / batchSize;
-
-                var finishedLock = new BatchState { Count = batchCount };
-
-                Fork(batchSize, toExclusive, fromInclusive, fromInclusive + batchSize, action, finishedLock);
-
-                finishedLock.Finished.WaitOne();
-            }
-
-            //stopwatch.Stop();
-            //var elapsed = stopwatch.Elapsed;
-
-            //DispatcherNode node;
-            //if (!nodes.TryGetValue(action.Method, out node))
-            //{
-            //    var caller = new StackFrame(1, true).GetMethod();
-            //    if (caller.Name == "ForEach")
-            //        caller = new StackFrame(2, true).GetMethod();
-
-            //    node = nodes.GetOrAdd(action.Method, key => new DispatcherNode());
-            //    node.Caller = caller;
-            //}
-
-            //node.Count++;
-            //node.TotalTime += elapsed;
-
-            //if (node.Count % 500 == 0)
-            //{
-            //    //Console.WriteLine($"[{node.Count}] {node.Caller.DeclaringType.Name}.{node.Caller.Name}: {node.TotalTime.TotalMilliseconds / node.Count}");
-            //}
         }
 
         public static void ForEach<T>(ForeachAction<T> action, MoveNextDelegate<T> tryMoveNext)
@@ -291,54 +257,6 @@ namespace SiliconStudio.Core.Threading
         {
             public int Count;
             public ManualResetEvent Finished = new ManualResetEvent(false);
-        }
-
-        private static void Fork(int batchSize, int toExclusive, int batchStartInclusive, int batchEndExclusive, ForAction action, BatchState batchState)
-        {
-            var start = batchStartInclusive;
-            var end = batchEndExclusive;
-
-            batchStartInclusive = batchEndExclusive;
-            batchEndExclusive += batchSize;
-
-            if (batchEndExclusive > toExclusive)
-                batchEndExclusive = toExclusive;
-
-            if (batchEndExclusive - batchStartInclusive > 0)
-            {
-                ThreadPool.Instance.QueueWorkItem(() => Fork(batchSize, toExclusive, batchStartInclusive, batchEndExclusive, action, batchState));
-            }
-
-            ExecuteBatch(start, end, action);
-
-            if (Interlocked.Decrement(ref batchState.Count) == 0)
-            {
-                batchState.Finished.Set();
-            }
-        }
-
-        private static void Fork<TLocal>(int batchSize, int toExclusive, int batchStartInclusive, int batchEndExclusive, BatchInitializer<TLocal> initializeLocal, ForAction<TLocal> action, BatchFinalizer<TLocal> finalizeLocal, BatchState batchState)
-        {
-            var start = batchStartInclusive;
-            var end = batchEndExclusive;
-
-            batchStartInclusive = batchEndExclusive;
-            batchEndExclusive += batchSize;
-
-            if (batchEndExclusive > toExclusive)
-                batchEndExclusive = toExclusive;
-
-            if (batchEndExclusive - batchStartInclusive > 0)
-            {
-                ThreadPool.Instance.QueueWorkItem(() => Fork(batchSize, toExclusive, batchStartInclusive, batchEndExclusive, initializeLocal, action, finalizeLocal, batchState));
-            }
-
-            ExecuteBatch(start, end, initializeLocal, action, finalizeLocal);
-
-            if (Interlocked.Decrement(ref batchState.Count) == 0)
-            {
-                batchState.Finished.Set();
-            }
         }
         
         public static void ForEach<TItem, TLocal>(IReadOnlyList<TItem> collection, BatchInitializer<TLocal> initializeLocal, ForeachAction<TItem, TLocal> action, BatchFinalizer<TLocal> finalizeLocal = null)
@@ -468,6 +386,7 @@ namespace SiliconStudio.Core.Threading
                             Sort(collection, left, pivot - 1, depth - 1, comparer);
                             finishedEvent.Set();
                         });
+
                         Sort(collection, pivot + 1, right, depth - 1, comparer);
                         finishedEvent.WaitOne();
                     }
@@ -515,6 +434,66 @@ namespace SiliconStudio.Core.Threading
             var temp = collection[i];
             collection[i] = collection[j];
             collection[j] = temp;
+        }
+
+        private class DispatcherNode
+        {
+            public MethodBase Caller;
+            public int Count;
+            public TimeSpan TotalTime;
+        }
+
+        private static ConcurrentDictionary<MethodInfo, DispatcherNode> nodes = new ConcurrentDictionary<MethodInfo, DispatcherNode>();
+
+        private struct ProfilingScope : IDisposable
+        {
+#if false
+            public Stopwatch Stopwatch;
+            public Delegate Action;
+#endif
+            public void Dispose()
+            {
+#if false
+                Stopwatch.Stop();
+                var elapsed = Stopwatch.Elapsed;
+
+                DispatcherNode node;
+                if (!nodes.TryGetValue(Action.Method, out node))
+                {
+                    int skipFrames = 1;
+                    MethodBase caller = null;
+
+                    do
+                    {
+                        caller = new StackFrame(skipFrames++, true).GetMethod();
+                    }
+                    while (caller.DeclaringType == typeof(Dispatcher));
+                    
+                    node = nodes.GetOrAdd(Action.Method, key => new DispatcherNode());
+                    node.Caller = caller;
+                }
+
+                node.Count++;
+                node.TotalTime += elapsed;
+
+                if (node.Count % 500 == 0)
+                {
+                    Console.WriteLine($"[{node.Count}] {node.Caller.DeclaringType.Name}.{node.Caller.Name}: {node.TotalTime.TotalMilliseconds / node.Count}");
+                }
+#endif
+            }
+        }
+
+        private static ProfilingScope Profile(Delegate action)
+        {
+            var result = new ProfilingScope();
+#if false
+            result.Action = action;
+            result.Stopwatch = new Stopwatch();
+            result.Stopwatch.Start();
+#endif
+            return result;
+
         }
     }
 }
