@@ -1136,7 +1136,6 @@ namespace SiliconStudio.Xenko.Graphics
                     }
 
                     // Need to flush (part of current command list)
-                    throw new NotImplementedException(); // Range of fence values
                     if (resource.StagingFenceValue == fenceValue)
                         FlushInternal(false);
 
