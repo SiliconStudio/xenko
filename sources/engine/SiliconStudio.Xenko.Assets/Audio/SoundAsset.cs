@@ -5,6 +5,7 @@ using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Xenko.Assets.Audio
 {
@@ -23,6 +24,7 @@ namespace SiliconStudio.Xenko.Assets.Audio
         public int SampleRate { get; set; } = 44100;
 
         [DefaultValue(10)]
+        [DataMemberRange(1, 40, 1, 5, 0)]
         public int CompressionRatio { get; set; } = 10;
 
         public bool StreamFromDisk { get; set; }

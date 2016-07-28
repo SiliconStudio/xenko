@@ -4,7 +4,6 @@
 using System;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Native;
 
 namespace SiliconStudio.Xenko.Audio
@@ -18,7 +17,7 @@ namespace SiliconStudio.Xenko.Audio
         private readonly Sound sound;
         private readonly AudioEngine engine;
 
-        private bool isLooped;
+        private bool isLooping;
         private float pan;
         private float pitch;
         private float volume;
@@ -74,7 +73,7 @@ namespace SiliconStudio.Xenko.Audio
 
             if (staticSound.StreamFromDisk)
             {
-                soundSource = new CompressedSoundSource(this, staticSound.CompressedDataUrl, staticSound.SampleRate, staticSound.Channels, staticSound.MaxPacketLength);
+                soundSource = new CompressedSoundSource(this, staticSound.CompressedDataUrl, staticSound.NumberOfPackets, staticSound.SampleRate, staticSound.Channels, staticSound.MaxPacketLength);
             }
             else
             {
@@ -87,21 +86,31 @@ namespace SiliconStudio.Xenko.Audio
         /// <summary>
         /// Gets or sets whether the sound is automatically looping from beginning when it reaches the end.
         /// </summary>
+        [Obsolete("Renamed, please use IsLooping.")]
         public bool IsLooped
+        {
+            get {  return IsLooping; }
+            set { IsLooping = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets whether the sound is automatically looping from beginning when it reaches the end.
+        /// </summary>
+        public bool IsLooping
         {
             get
             {
-                return isLooped;
+                return isLooping;
             }
             set
             {
-                isLooped = value;
+                isLooping = value;
 
                 if (engine.State == AudioEngineState.Invalidated)
                     return;
 
-                if (soundSource == null) AudioLayer.SourceSetLooping(Source, isLooped);
-                else soundSource.SetLooped(isLooped);
+                if (soundSource == null) AudioLayer.SourceSetLooping(Source, isLooping);
+                else soundSource.SetLooped(isLooping);
             }
         }
 
@@ -217,26 +226,32 @@ namespace SiliconStudio.Xenko.Audio
             if (PlayState != SoundPlayState.Playing)
                 return;
 
-            AudioLayer.SourcePause(Source);
+            if (soundSource == null)
+            {
+                AudioLayer.SourcePause(Source);
+            }
+            else
+            {
+                soundSource.Pause();   
+            }
 
             playState = SoundPlayState.Paused;
         }
 
         /// <summary>
-        /// Play or resume the sound effect instance, stopping sibling instances.
+        /// Play or resume the sound effect instance.
         /// </summary>
         public void Play()
         {
-            Play(true);
+            Play(false); //this is the same behavior in AudioEmitterProcessor and Controllers
         }
 
         /// <summary>
-        /// Play or resume the sound effect instance, specifying explicitly how to deal with sibling instances.
+        /// Play or resume the sound effect instance, stopping sibling instances.
         /// </summary>
-        /// <param name="stopSiblingInstances">Indicate if sibling instances (instances coming from the same <see cref="Sound"/>) currently playing should be stopped or not.</param>
-        public void Play(bool stopSiblingInstances)
+        public void PlayExclusive()
         {
-            PlayExtended(stopSiblingInstances);
+            Play(true);
         }
 
         /// <summary>
@@ -251,9 +266,14 @@ namespace SiliconStudio.Xenko.Audio
             if (playState == SoundPlayState.Stopped)
                 return;
 
-            AudioLayer.SourceStop(Source);
-
-            soundSource?.Restart();
+            if (soundSource == null)
+            {
+                AudioLayer.SourceStop(Source);
+            }
+            else
+            {
+                soundSource.Stop();
+            }
 
             playState = SoundPlayState.Stopped;
         }
@@ -262,7 +282,7 @@ namespace SiliconStudio.Xenko.Audio
         {
             Pan = 0;
             Volume = 1;
-            IsLooped = false;
+            IsLooping = false;
             Stop();
         }
 
@@ -275,16 +295,22 @@ namespace SiliconStudio.Xenko.Audio
 
             Stop();
 
-            soundSource?.Dispose();
             sound?.UnregisterInstance(this);
 
             if (engine.State == AudioEngineState.Invalidated)
                 return;
 
-            AudioLayer.SourceDestroy(Source);
+            if (soundSource == null)
+            {
+                AudioLayer.SourceDestroy(Source);
+            }
+            else
+            {
+                soundSource.Dispose();
+            }            
         }
 
-        protected void PlayExtended(bool stopSiblingInstances)
+        protected void Play(bool stopSiblingInstances)
         {
             if (engine.State == AudioEngineState.Invalidated || engine.State == AudioEngineState.Paused)
                 return;
@@ -295,19 +321,13 @@ namespace SiliconStudio.Xenko.Audio
             if (stopSiblingInstances)
                 StopConcurrentInstances();
 
-            if (soundSource != null)
+            if (soundSource == null)
             {
-                playingQueued = true;
-                Task.Run(async () =>
-                {
-                    await soundSource.ReadyToPlay.Task;
-                    AudioLayer.SourcePlay(Source);
-                    playingQueued = false;
-                });
+                AudioLayer.SourcePlay(Source);             
             }
             else
             {
-                AudioLayer.SourcePlay(Source);
+                soundSource.Play();
             }
 
             playState = SoundPlayState.Playing;
@@ -317,8 +337,6 @@ namespace SiliconStudio.Xenko.Audio
         {
             sound?.StopConcurrentInstances(this);
         }
-
-        private volatile bool playingQueued;
 
         private SoundPlayState playState = SoundPlayState.Stopped;
 
@@ -332,12 +350,54 @@ namespace SiliconStudio.Xenko.Audio
                 if (engine.State == AudioEngineState.Invalidated)
                     return SoundPlayState.Stopped;
 
-                if (playState == SoundPlayState.Playing && !playingQueued && !AudioLayer.SourceIsPlaying(Source))
+                if (playState == SoundPlayState.Playing && (!soundSource?.IsPlaying ?? !AudioLayer.SourceIsPlaying(Source)))
                 {
                     Stop();
                 }
 
                 return playState;
+            }
+        }
+
+        /// <summary>
+        /// Gets the DynamicSoundSource, might be null if the sound is not using DynamicSoundSource, e.g. not streamed from disk or not using a DynamicSoundSource derived class as backing
+        /// </summary>
+        public DynamicSoundSource DynamicSoundSource => soundSource;
+
+        public void SetRange(PlayRange range)
+        {
+            if (engine.State == AudioEngineState.Invalidated)
+                return;
+
+            var state = playState;
+            if (state == SoundPlayState.Playing)
+            {
+                AudioLayer.SourceStop(Source);
+                playState = SoundPlayState.Stopped;
+            }
+
+            if (soundSource == null)
+            {                
+                AudioLayer.SourceSetRange(Source, range.Start.TotalSeconds, range.End.TotalSeconds);
+            }
+            else
+            {
+                soundSource.SetRange(range);
+            }
+
+            if (state == SoundPlayState.Playing)
+            {
+                Play();
+            }
+        }
+
+        public TimeSpan Position
+        {
+            get
+            {
+                if(PlayState == SoundPlayState.Stopped) return TimeSpan.Zero;
+                var position = AudioLayer.SourceGetPosition(Source);
+                return TimeSpan.FromSeconds(position);
             }
         }
     }

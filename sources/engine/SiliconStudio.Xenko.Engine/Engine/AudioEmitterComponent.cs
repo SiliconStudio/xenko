@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Audio;
 using SiliconStudio.Xenko.Engine.Design;
 
@@ -31,7 +32,7 @@ namespace SiliconStudio.Xenko.Engine
     [DataContract("AudioEmitterComponent")]
     [DefaultEntityComponentProcessor(typeof(AudioEmitterProcessor), ExecutionMode = ExecutionMode.Runtime)]
     [ComponentOrder(7000)]
-    public sealed class AudioEmitterComponent : EntityComponent
+    public sealed class AudioEmitterComponent : ActivableEntityComponent
     {
         /// <summary>
         /// Dictionary associating each Sound to a single soundController.
@@ -43,6 +44,7 @@ namespace SiliconStudio.Xenko.Engine
         /// Create an instance of <see cref="AudioEmitterComponent"/> with a list default <see cref="Sound"/> associated.
         /// </summary>
         /// <param name="soundToAttach">The Sound to attach to the emitter by default.</param>
+        [Obsolete("This constructor won't be exposed in future releases, please add sounds from the game studio or in the Sounds dictionary.")]
         public AudioEmitterComponent(IEnumerable<Sound> soundToAttach)
         {
             AttachSounds(soundToAttach);
@@ -52,7 +54,6 @@ namespace SiliconStudio.Xenko.Engine
         /// Create an instance of <see cref="AudioEmitterComponent"/> with no default <see cref="Sound"/> associated.
         /// </summary>
         public AudioEmitterComponent()
-            : this(new List<Sound>())
         {
         }
 
@@ -93,7 +94,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Event triggered when an <see cref="AudioEmitterSoundController"/> has be attached or detached to the component.
         /// </summary>
-        internal event EventHandler<ControllerCollectionChangedEventArgs> ControllerCollectionChanged; 
+        internal event EventHandler<ControllerCollectionChangedEventArgs> ControllerCollectionChanged;
 
         /// <summary>
         /// Return a <see cref="AudioEmitterSoundController"/> that can be used to control the provided <see cref="Sound"/>.
@@ -106,6 +107,7 @@ namespace SiliconStudio.Xenko.Engine
         /// (1) the associated Sound is attached to the emitter, 
         /// (2) the associated Sound is not disposed and,
         /// (3) the emitter component's entity is present into Entity system.</remarks>
+        [Obsolete("This method won't be exposed in future releases, please add sounds from the game studio or in the Sounds dictionary and access them using array pattern [\"MySound\"].")]
         public AudioEmitterSoundController GetSoundController(Sound sound)
         {
             if (sound == null)
@@ -128,6 +130,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <exception cref="ArgumentNullException">The provided <paramref name="sound"/> is null.</exception>
         /// <exception cref="InvalidOperationException">The provided <paramref name="sound"/> can not be localized (contains more than one channel).</exception>
         /// <remarks>Attaching a Sound already attached has no effects.</remarks>
+        [Obsolete("This method won't be exposed in future releases, please add sounds from the game studio or in the Sounds dictionary.")]
         public void AttachSound(Sound sound)
         {
             if (sound == null)
@@ -155,6 +158,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <exception cref="ArgumentNullException">The provided <paramref name="sounds"/> list is null.</exception>
         /// <exception cref="InvalidOperationException">One or more of the provided Sound can not be localized (contains more than one channel).</exception>
         /// <remarks>Attaching a Sound already attached has no effects.</remarks>
+        [Obsolete("This method won't be exposed in future releases, please add sounds from the game studio or in the Sounds dictionary.")]
         public void AttachSounds(IEnumerable<Sound> sounds)
         {
             if (sounds == null)
@@ -175,6 +179,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="sound">The Sound to detach.</param>
         /// <exception cref="ArgumentNullException">The provided <paramref name="sound"/> is null.</exception>
         /// <exception cref="ArgumentException">The provided <paramref name="sound"/> is not currently attached to the emitter component.</exception>
+        [Obsolete("This method won't be exposed in future releases, remove from the Sounds dictionary if needed.")]
         public void DetachSound(Sound sound)
         {
             if (sound == null)
@@ -198,6 +203,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="sounds">The Sounds to detach.</param>
         /// <exception cref="ArgumentNullException">The provided <paramref name="sounds"/> is null.</exception>
         /// <exception cref="ArgumentException">One or more of the provided Sound is not currently attached to the emitter component.</exception>
+        [Obsolete("This method won't be exposed in future releases, remove from the Sounds dictionary if needed.")]
         public void DetachSounds(IEnumerable<Sound> sounds)
         {
             if (sounds == null)
@@ -210,11 +216,58 @@ namespace SiliconStudio.Xenko.Engine
                 DetachSound(sound);
             }
         }
+        
+        /// <summary>
+        /// The sounds this audio emitter can play and use
+        /// </summary>
+        [DataMember(10)]
+        public TrackingDictionary<string, Sound> Sounds = new TrackingDictionary<string, Sound>();
 
         /// <summary>
-        /// Boolean indicating to the <see cref="AudioEmitterProcessor"/> if the AudioEmitterComponent need to be processed or can be skipped.
+        /// The sound controllers associated with the sounds this audio emitter can play and use, use this to access and play sounds.
         /// </summary>
+        /// <param name="i">The name of the sound you want to access</param>
+        /// <returns>The sound controller</returns>
         [DataMemberIgnore]
-        internal bool ShouldBeProcessed { get; set; }
+        public AudioEmitterSoundController this[string i] => SoundToController[Sounds[i]];
+
+        private void OnSoundsOnCollectionChanged(object sender, TrackingCollectionChangedEventArgs args)
+        {
+            switch (args.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    AttachSound((Sound)args.Item);
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    DetachSound((Sound)args.Item);
+                    break;
+            }
+        }
+
+        internal void AttachToProcessor()
+        {
+            Sounds.CollectionChanged += OnSoundsOnCollectionChanged;
+
+            foreach (var sound in Sounds)
+            {
+                if (sound.Value != null)
+                {
+                    AttachSound(sound.Value);
+                }
+            }
+        }
+
+        internal void DetachFromProcessor()
+        {
+            foreach (var sound in Sounds)
+            {
+                if (sound.Value != null)
+                {
+                    DetachSound(sound.Value);
+                }
+            }
+
+            Sounds.CollectionChanged -= OnSoundsOnCollectionChanged;
+        }
     }
 }

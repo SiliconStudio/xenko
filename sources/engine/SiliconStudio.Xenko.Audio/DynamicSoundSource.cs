@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiliconStudio.Xenko.Native;
@@ -8,13 +9,25 @@ namespace SiliconStudio.Xenko.Audio
 
     public abstract class DynamicSoundSource : IDisposable
     {
+        protected enum AsyncCommand
+        {
+            Play,
+            Pause,
+            Stop,
+            SetRange,
+            Dispose
+        }
+
+        protected ConcurrentQueue<AsyncCommand> Commands = new ConcurrentQueue<AsyncCommand>();
+
         private bool readyToPlay;
         private int prebufferedCount;
+        private readonly int prebufferedTarget;
 
         /// <summary>
         /// This will be fired internally once there are more then 1 buffer in the queue
         /// </summary>
-        public TaskCompletionSource<bool> ReadyToPlay { get; } = new TaskCompletionSource<bool>(false);
+        public TaskCompletionSource<bool> ReadyToPlay { get; private set; } = new TaskCompletionSource<bool>(false);
         
         /// <summary>
         /// This must be filled by sub-classes implementation when there will be no more queueud data
@@ -26,6 +39,11 @@ namespace SiliconStudio.Xenko.Audio
 
         protected SoundInstance SoundInstance;
 
+        protected bool Disposed = false;
+        protected bool Playing = false;
+        protected bool Paused = false;
+        protected volatile bool PlayingQueued = false;
+
         /// <summary>
         /// Sub classes can implement their own streaming sources
         /// </summary>
@@ -34,6 +52,8 @@ namespace SiliconStudio.Xenko.Audio
         /// <param name="maxBufferSizeBytes">the maximum size of each buffer</param>
         protected DynamicSoundSource(SoundInstance soundInstance, int numberOfBuffers, int maxBufferSizeBytes)
         {
+            prebufferedTarget = (int)Math.Ceiling(numberOfBuffers/(double)3);
+
             SoundInstance = soundInstance;
             for (var i = 0; i < numberOfBuffers; i++)
             {
@@ -44,6 +64,11 @@ namespace SiliconStudio.Xenko.Audio
         }
 
         public virtual void Dispose()
+        {
+            Commands.Enqueue(AsyncCommand.Dispose);
+        }
+
+        protected virtual void Destroy()
         {
             foreach (var deviceBuffer in deviceBuffers)
             {
@@ -73,16 +98,15 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         /// <param name="pcm">The pointer to PCM data</param>
         /// <param name="bufferSize">The full size in bytes of PCM data</param>
-        /// <param name="endOfStream">If this buffer is the last buffer of the stream set to true, if not false</param>
-        protected void FillBuffer(IntPtr pcm, int bufferSize, bool endOfStream)
+        /// <param name="type">If this buffer is the last buffer of the stream set to true, if not false</param>
+        protected void FillBuffer(IntPtr pcm, int bufferSize, AudioLayer.BufferType type)
         {
             var buffer = freeBuffers.Dequeue();
-            AudioLayer.SourceQueueBuffer(SoundInstance.Source, buffer, pcm, bufferSize, endOfStream);
+            AudioLayer.SourceQueueBuffer(SoundInstance.Source, buffer, pcm, bufferSize, type);
             if (readyToPlay) return;
 
             prebufferedCount++;
-            if (prebufferedCount > 1) return;
-
+            if (prebufferedCount < prebufferedTarget) return;
             readyToPlay = true;
             ReadyToPlay.TrySetResult(true);
         }
@@ -92,30 +116,62 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         /// <param name="pcm">The array containing PCM data</param>
         /// <param name="bufferSize">The full size in bytes of PCM data</param>
-        /// <param name="endOfStream">If this buffer is the last buffer of the stream set to true, if not false</param>
-        protected unsafe void FillBuffer(short[] pcm, int bufferSize, bool endOfStream)
+        /// <param name="type">If this buffer is the last buffer of the stream set to true, if not false</param>
+        protected unsafe void FillBuffer(short[] pcm, int bufferSize, AudioLayer.BufferType type)
         {
             var buffer = freeBuffers.Dequeue();
             fixed(short* pcmBuffer = pcm)
-            AudioLayer.SourceQueueBuffer(SoundInstance.Source, buffer, new IntPtr(pcmBuffer), bufferSize, endOfStream);
+            AudioLayer.SourceQueueBuffer(SoundInstance.Source, buffer, new IntPtr(pcmBuffer), bufferSize, type);
             if (readyToPlay) return;
 
             prebufferedCount++;
-            if (prebufferedCount > 1) return;
-
+            if (prebufferedCount < prebufferedTarget) return;
             readyToPlay = true;
             ReadyToPlay.TrySetResult(true);
         }
 
+        public void Play()
+        {
+            PlayingQueued = true;
+            Commands.Enqueue(AsyncCommand.Play);
+        }
+
+        public void Pause()
+        {
+            Commands.Enqueue(AsyncCommand.Pause);
+        }
+
+        public void Stop()
+        {
+            Commands.Enqueue(AsyncCommand.Stop);
+        }
+
+        public bool IsPlaying => PlayingQueued || Playing;
+
         /// <summary>
-        /// Restarts streaming from the beginning.
+        /// Sets the region of time to play from the sample
         /// </summary>
-        public abstract void Restart();
+        /// <param name="range"></param>
+        public virtual void SetRange(PlayRange range)
+        {
+            Commands.Enqueue(AsyncCommand.SetRange);
+        }
 
         /// <summary>
         /// Sets if the stream should be played in loop
         /// </summary>
-        /// <param name="loop">if looped or not</param>
+        /// <param name="looped">if looped or not</param>
         public abstract void SetLooped(bool looped);
+
+        /// <summary>
+        /// Restarts streaming from the beginning.
+        /// </summary>
+        protected void Restart()
+        {
+            ReadyToPlay.TrySetResult(false);
+            ReadyToPlay = new TaskCompletionSource<bool>();
+            readyToPlay = false;
+            prebufferedCount = 0;
+        }
     }
 }
