@@ -71,6 +71,8 @@ typedef ovrResult (*ovr_GetMirrorTextureBufferDXPtr)(ovrSession session, ovrMirr
 typedef void (*ovr_CalcEyePosesPtr)(ovrPosef headPose, const ovrVector3f hmdToEyeOffset[2], ovrPosef outEyePoses[2]);
 typedef ovrMatrix4f (*ovrMatrix4f_ProjectionPtr)(ovrFovPort fov, float znear, float zfar, unsigned int projectionModFlags);
 
+typedef ovrResult (*ovr_GetAudioDeviceOutGuidStrPtr)(wchar_t deviceOutStrBuffer[128]);
+
 extern "C" {
 
 	void* __libOvr = NULL;
@@ -124,6 +126,7 @@ extern "C" {
 
 	ovr_CalcEyePosesPtr ovr_CalcEyePosesFunc = NULL;
 	ovrMatrix4f_ProjectionPtr ovrMatrix4f_ProjectionFunc = NULL;
+	ovr_GetAudioDeviceOutGuidStrPtr ovr_GetAudioDeviceOutGuidStrFunc = NULL;
 
 	bool xnOvrStartup()
 	{
@@ -235,6 +238,9 @@ extern "C" {
 			if (!ovr_CalcEyePosesFunc) { printf("Failed to get ovr_CalcEyePoses\n"); return false; }
 			ovrMatrix4f_ProjectionFunc = (ovrMatrix4f_ProjectionPtr)GetSymbolAddress(__libOvr, "ovrMatrix4f_Projection");
 			if (!ovrMatrix4f_ProjectionFunc) { printf("Failed to get ovrMatrix4f_Projection\n"); return false; }
+
+			ovr_GetAudioDeviceOutGuidStrFunc = (ovr_GetAudioDeviceOutGuidStrPtr)GetSymbolAddress(__libOvr, "ovr_GetAudioDeviceOutGuidStr");
+			if (!ovr_GetAudioDeviceOutGuidStrFunc) { printf("Failed to get ovr_GetAudioDeviceOutGuidStr\n"); return false; }
 		}
 
 		ovrResult result = ovr_InitializeFunc(NULL);
@@ -469,9 +475,16 @@ extern "C" {
 	{
 		ovr_RecenterTrackingOriginFunc(session->Session);
 	}
+
+	void xnOvrGetAudioDeviceID(wchar_t* deviceString)
+	{
+		ovr_GetAudioDeviceOutGuidStrFunc(deviceString);
+	}
 }
 
 #else
+
+#include "../../../../deps/NativePath/NativePath.h"
 
 extern "C" {
 	typedef struct _GUID {
@@ -552,11 +565,15 @@ extern "C" {
 	};
 #pragma pack(pop)
 
-	void xnOvrGetStatus(xnOvrSession* session, xnOvrSessionStatus* statusOut)
+	void xnOvrGetStatus(void* session, void* statusOut)
 	{
 	}
 
-	void xnOvrRecenter(xnOvrSession* session)
+	void xnOvrRecenter(void* session)
+	{
+	}
+
+	void xnOvrGetAudioDeviceID(wchar_t* deviceString)
 	{
 	}
 }
