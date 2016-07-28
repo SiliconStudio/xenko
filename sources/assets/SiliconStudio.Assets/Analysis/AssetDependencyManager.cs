@@ -33,6 +33,7 @@ namespace SiliconStudio.Assets.Analysis
         internal readonly Dictionary<Guid, AssetDependencies> AssetsWithMissingReferences;
         internal readonly Dictionary<Guid, HashSet<AssetDependencies>> MissingReferencesToParent;
         private bool isDisposed;
+        private bool isSessionSaving;
         private bool isInitialized;
 
         /// <summary>
@@ -359,6 +360,24 @@ namespace SiliconStudio.Assets.Analysis
         }
 
         /// <summary>
+        /// This methods is called when a session is about to being saved.
+        /// </summary>
+        public void BeginSavingSession()
+        {
+            isSessionSaving = true;
+            SourceTracker.BeginSavingSession();
+        }
+
+        /// <summary>
+        /// This methods is called when a session has been saved.
+        /// </summary>
+        public void EndSavingSession()
+        {
+            SourceTracker.EndSavingSession();
+            isSessionSaving = false;
+        }
+        
+        /// <summary>
         /// Calculate the dependencies for the specified asset either by using the internal cache if the asset is already in the session
         /// or by calculating 
         /// </summary>
@@ -649,7 +668,7 @@ namespace SiliconStudio.Assets.Analysis
         private void Session_AssetDirtyChanged(Asset asset, bool oldValue, bool newValue)
         {
             // Don't update the dependency manager while saving (setting dirty flag to false)
-            if (newValue)
+            if (!isSessionSaving)
             {
                 lock (ThisLock)
                 {
