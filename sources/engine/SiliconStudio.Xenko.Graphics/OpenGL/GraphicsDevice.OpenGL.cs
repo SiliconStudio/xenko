@@ -348,6 +348,7 @@ namespace SiliconStudio.Xenko.Graphics
             const string shaderVersion = "#version 100\n";
             const string inAttribute = "attribute";
             const string outAttribute = "varying";
+            const string varyingFragment = "varying";
             const string fragColorDeclaration = "";
             const string fragColorVariable = "gl_FragColor";
             const string textureAPI = "texture2D";
@@ -355,6 +356,7 @@ namespace SiliconStudio.Xenko.Graphics
             const string shaderVersion = "#version 410\n";
             const string inAttribute = "in";
             const string outAttribute = "out";
+            const string varyingFragment = "in";
             const string fragColorDeclaration = "out vec4 gFragColor;\n";
             const string fragColorVariable = "gFragColor";
             const string textureAPI = "texture";
@@ -376,7 +378,7 @@ namespace SiliconStudio.Xenko.Graphics
             const string copyFragmentShaderSource =
                 shaderVersion +
                 "precision mediump float;                            \n" +
-                inAttribute + " vec2 vTexCoord;                     \n" +
+                varyingFragment + " vec2 vTexCoord;                  \n" +
                 fragColorDeclaration +
                 "uniform sampler2D s_texture;                        \n" +
                 "void main()                                         \n" +
@@ -387,7 +389,7 @@ namespace SiliconStudio.Xenko.Graphics
             const string copyFragmentShaderSourceSRgb =
                 shaderVersion +
                 "precision mediump float;                            \n" +
-                inAttribute + " vec2 vTexCoord;                     \n" +
+                varyingFragment + " vec2 vTexCoord;                  \n" +
                 fragColorDeclaration +
                 "uniform sampler2D s_texture;                        \n" +
                 "void main()                                         \n" +
