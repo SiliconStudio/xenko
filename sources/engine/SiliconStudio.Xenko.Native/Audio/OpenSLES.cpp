@@ -748,7 +748,7 @@ extern "C" {
 		{
 			SLuint32 res;
 			(*source->player)->GetPlayState(source->player, &res);
-			return res == SL_PLAYSTATE_PLAYING;
+			return res == SL_PLAYSTATE_PLAYING || res == SL_PLAYSTATE_PAUSED;
 		}
 
 		xnAudioBuffer* xnAudioBufferCreate(int maxBufferSize)

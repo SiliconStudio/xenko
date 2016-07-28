@@ -668,7 +668,7 @@ extern "C" {
 
 			ALint value;
 			GetSourceI(source->source, AL_SOURCE_STATE, &value);
-			return value == AL_PLAYING;
+			return value == AL_PLAYING || value == AL_PAUSED;
 		}
 
 		xnAudioBuffer* xnAudioBufferCreate(int maxBufferSize)
