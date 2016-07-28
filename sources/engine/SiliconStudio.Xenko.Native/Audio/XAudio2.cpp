@@ -1856,7 +1856,7 @@ extern "C" {
 
 		npBool xnAudioSourceIsPlaying(xnAudioSource* source)
 		{
-			return source->playing_;
+			return source->playing_ || source->pause_;
 		}
 
 		xnAudioBuffer* xnAudioBufferCreate(int maxBufferSize)
