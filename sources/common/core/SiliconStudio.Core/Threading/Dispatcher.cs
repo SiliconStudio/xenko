@@ -35,7 +35,7 @@ namespace SiliconStudio.Core.Threading
         public delegate void ForAction<in TLocal>(int index, TLocal local);
 
         [Pooled]
-        public delegate void ForeachAction<in T>(T item);
+        public delegate void ForEachAction<in T>(T item);
 
         [Pooled]
         public delegate void ForeachAction<in T, in TLocal>(T item, TLocal local);
@@ -213,107 +213,79 @@ namespace SiliconStudio.Core.Threading
                 }
             }
         }
-
-        public static void ForEach<T>(ForeachAction<T> action, MoveNextDelegate<T> tryMoveNext)
-        {
-            if (MaxDregreeOfParallelism <= 1)
-            {
-                T value;
-                while (tryMoveNext(out value))
-                    action(value);
-            }
-            else
-            {
-                int batchCount = MaxDregreeOfParallelism;
-
-                var finishedLock = new BatchState { Count = batchCount };
-
-                Fork(batchCount, action, tryMoveNext, finishedLock);
-
-                finishedLock.Finished.WaitOne();
-            }
-        }
-
-        private static void Fork<T>(int batchCount, ForeachAction<T> action, MoveNextDelegate<T> tryMoveNext, BatchState batchState)
-        {
-            if (--batchCount > 0)
-            {
-                ThreadPool.Instance.QueueWorkItem(() => Fork(batchCount, action, tryMoveNext, batchState));
-            }
-
-            T item;
-            while (tryMoveNext(out item))
-            {
-                action(item);
-            }
-
-            if (Interlocked.Decrement(ref batchState.Count) == 0)
-            {
-                batchState.Finished.Set();
-            }
-        }
-
-        private class BatchState
-        {
-            public int Count;
-            public ManualResetEvent Finished = new ManualResetEvent(false);
-        }
         
         public static void ForEach<TItem, TLocal>(IReadOnlyList<TItem> collection, BatchInitializer<TLocal> initializeLocal, ForeachAction<TItem, TLocal> action, BatchFinalizer<TLocal> finalizeLocal = null)
         {
             For(0, collection.Count, initializeLocal, (i, local) => action(collection[i], local), finalizeLocal);
         }
 
-        public static void ForEach<T>(IReadOnlyList<T> collection, ForeachAction<T> action)
+        public static void ForEach<T>(IReadOnlyList<T> collection, ForEachAction<T> action)
         {
             For(0, collection.Count, i => action(collection[i]));
         }
 
-        public static void ForEach<T>(List<T> collection, ForeachAction<T> action)
+        public static void ForEach<T>(List<T> collection, ForEachAction<T> action)
         {
             For(0, collection.Count, i => action(collection[i]));
         }
 
-        public static void ForEach<T>(FastCollection<T> collection, ForeachAction<T> action)
+        public static void ForEach<T>(FastCollection<T> collection, ForEachAction<T> action)
         {
             For(0, collection.Count, i => action(collection[i]));
         }
 
-        public static void ForEach<T>(FastList<T> collection, ForeachAction<T> action)
+        public static void ForEach<T>(FastList<T> collection, ForEachAction<T> action)
         {
             For(0, collection.Count, i => action(collection[i]));
         }
 
-        public static void ForEach<TKey, TValue>(Dictionary<TKey, TValue> collection, ForeachAction<KeyValuePair<TKey, TValue>> action)
+        public static void ForEach<TKey, TValue>(Dictionary<TKey, TValue> collection, ForEachAction<KeyValuePair<TKey, TValue>> action)
         {
-            var enumerator = collection.GetEnumerator();
-            var spinLock = new SpinLock();
+            int batchCount = Math.Min(MaxDregreeOfParallelism, collection.Count);
+            int batchSize = (collection.Count + (batchCount - 1)) / batchCount;
+            batchCount = (collection.Count + (batchSize - 1)) / batchSize;
 
-            ForEach(action, (out KeyValuePair<TKey, TValue> item) =>
+            var finished = events.Acquire();
+            int remainingBatcheCount = batchCount - 1;
+
+            try
             {
-                bool lockTaken = false;
-                try
+                if (batchCount > 1)
                 {
-                    spinLock.Enter(ref lockTaken);
-
-                    if (enumerator.MoveNext())
+                    lock (batches)
                     {
-                        item = enumerator.Current;
-                        return true;
+                        for (int batchIndex = 1; batchIndex < batchCount; batchIndex++)
+                        {
+                            int offset = batchIndex * batchSize;
+
+                            batches.Add(() =>
+                            {
+                                ExecuteBatch(collection, offset, batchSize, action);
+
+                                if (Interlocked.Decrement(ref remainingBatcheCount) == 0)
+                                {
+                                    finished.Set();
+                                }
+                            });
+                        }
+
+                        ThreadPool.Instance.QueueWorkItems(batches);
+                        batches.Clear();
                     }
                 }
-                finally
+
+                ExecuteBatch(collection, 0, batchSize, action);
+
+                if (batchCount > 1)
                 {
-                    if (lockTaken)
-                        spinLock.Exit(false);
+                    finished.WaitOne();
                 }
-
-                item = new KeyValuePair<TKey, TValue>();
-                return false;
-            });
+            }
+            finally
+            {
+                events.Release(finished);
+            }
         }
-
-        public delegate bool MoveNextDelegate<T>(out T currentValue);
 
         private static void ExecuteBatch(int fromInclusive, int toExclusive, ForAction action)
         {
@@ -341,6 +313,25 @@ namespace SiliconStudio.Core.Threading
             finally
             {
                 finalizeLocal?.Invoke(local);
+            }
+        }
+
+        private static void ExecuteBatch<TKey, TValue>(Dictionary<TKey, TValue> dictionary, int offset, int count, ForEachAction<KeyValuePair<TKey, TValue>> action)
+        {
+            var enumerator = dictionary.GetEnumerator();
+            int index = 0;
+
+            // Skip to offset
+            while (index < offset && enumerator.MoveNext())
+            {
+                index++;
+            }
+
+            // Process batch
+            while (index < offset + count && enumerator.MoveNext())
+            {
+                action(enumerator.Current);
+                index++;
             }
         }
 
