@@ -78,7 +78,6 @@ namespace SiliconStudio.Xenko.UI.Panels
         {
             // Measure all the children
             // Canvas does not take into account possible collisions between children
-            // The available size for a child is thus the size of the canvas available after or before the PinPosition depending on the element PinOrigin. 
             foreach (var child in VisualChildrenCollection)
             {
                 // calculate the available space for the child
@@ -91,57 +90,13 @@ namespace SiliconStudio.Xenko.UI.Panels
                     if (float.IsNaN(childRelativeSize[i])) // relative size is not set
                         continue;
 
-                    childAvailableSizeWithMargin[i] = childRelativeSize[i] > 0? childRelativeSize[i] * availableSizeWithoutMargins[i]: 0f; // avoid NaN due to 0 x Infinity
+                    childAvailableSizeWithMargin[i] = childRelativeSize[i] > 0 ? childRelativeSize[i]*availableSizeWithoutMargins[i] : 0f; // avoid NaN due to 0 x Infinity
                 }
 
                 child.Measure(childAvailableSizeWithMargin);
             }
 
-            // Estimate the size needed so that the biggest child fits
-            var desiredSizeWithoutMargin = Vector3.Zero;
-            foreach (var child in VisualChildrenCollection)
-            {                
-                if(child.IsCollapsed)
-                    continue;
-
-                // determine the position of the right/top/front corner of the child
-                var childExtremityCorner = Vector3.Zero;
-                var pinOrigin = child.DependencyProperties.Get(PinOriginPropertyKey);
-                var childRelativeSize = child.DependencyProperties.Get(RelativeSizePropertyKey);
-                var childUseAbsolutionPosition = child.DependencyProperties.Get(UseAbsolutionPositionPropertyKey);
-                var childAbsolutePosition = child.DependencyProperties.Get(AbsolutePositionPropertyKey);
-                var childRelativePosition = child.DependencyProperties.Get(RelativePositionPropertyKey);
-                for (var i = 0; i < 3; i++)
-                {
-                    if (!float.IsNaN(childRelativeSize[i])) // relative size is set
-                    {
-                        childExtremityCorner[i] = childRelativeSize[i] > 0? child.DesiredSizeWithMargins[i] / childRelativeSize[i]: 0f;
-                    }
-                    else if (childUseAbsolutionPosition && !float.IsNaN(childAbsolutePosition[i])) // prioritize absolute position and absolute position is set.
-                    {
-                        childExtremityCorner[i] = childAbsolutePosition[i] + (1f - pinOrigin[i]) * child.DesiredSizeWithMargins[i];
-                    }
-                    else if (!float.IsNaN(childRelativePosition[i]))
-                    {
-                        if (pinOrigin[i] > 0 && childRelativePosition[i] > 0)
-                            childExtremityCorner[i] = pinOrigin[i] * child.DesiredSizeWithMargins[i] / childRelativePosition[i];
-                        if (pinOrigin[i] < 1 && childRelativePosition[i] < 1)
-                            childExtremityCorner[i] = Math.Max(childExtremityCorner[i], (1 - pinOrigin[i]) * child.DesiredSizeWithMargins[i] / (1 - childRelativePosition[i]));
-                    }
-                    else
-                    {
-                        childExtremityCorner[i] = 0;
-                    }
-                }
-
-                // increase the parent desired size if one of its children get out of it.
-                desiredSizeWithoutMargin = new Vector3(
-                    Math.Max(desiredSizeWithoutMargin.X, childExtremityCorner.X),
-                    Math.Max(desiredSizeWithoutMargin.Y, childExtremityCorner.Y),
-                    Math.Max(desiredSizeWithoutMargin.Z, childExtremityCorner.Z));
-            }
-
-            return desiredSizeWithoutMargin;
+            return Vector3.Zero;
         }
 
         protected override Vector3 ArrangeOverride(Vector3 finalSizeWithoutMargins)
