@@ -28,30 +28,7 @@ namespace SiliconStudio.Xenko.Audio
                 
                 if (!obj.StreamFromDisk && audioEngine != null && audioEngine.State != AudioEngineState.Invalidated && audioEngine.State != AudioEngineState.Disposed) //immediatelly preload all the data and decode
                 {
-                    using (var soundStream = ContentManager.FileProvider.OpenStream(obj.CompressedDataUrl, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read, StreamFlags.Seekable))
-                    using (var decoder = new Celt(obj.SampleRate, CompressedSoundSource.SamplesPerFrame, obj.Channels, true))
-                    {
-                        var reader = new BinarySerializationReader(soundStream);
-                        var samplesPerPacket = CompressedSoundSource.SamplesPerFrame*obj.Channels;
-
-                        obj.PreloadedBuffer = AudioLayer.BufferCreate(samplesPerPacket * obj.NumberOfPackets * sizeof(short));
-
-                        var memory = new UnmanagedArray<short>(samplesPerPacket*obj.NumberOfPackets);
-
-                        var offset = 0;
-                        var outputBuffer = new short[samplesPerPacket];
-                        for (var i = 0; i < obj.NumberOfPackets; i++)
-                        {
-                            var len = reader.ReadInt16();
-                            var compressedBuffer = reader.ReadBytes(len);
-                            var samplesDecoded = decoder.Decode(compressedBuffer, len, outputBuffer);
-                            memory.Write(outputBuffer, offset, 0, samplesDecoded*obj.Channels);
-                            offset += samplesDecoded*obj.Channels*sizeof(short);
-                        }
-
-                        AudioLayer.BufferFill(obj.PreloadedBuffer, memory.Pointer, memory.Length * sizeof(short), obj.SampleRate, obj.Channels == 1);
-                        memory.Dispose();
-                    }
+                    obj.LoadSoundInMemory();
                 }
 
                 if (audioEngine != null)

@@ -55,28 +55,34 @@ namespace SiliconStudio.Xenko.Audio
             ResetStateToDefault();
         }
 
-        internal SoundInstance(Sound staticSound, AudioListener listener)
+        internal SoundInstance(Sound staticSound, AudioListener listener, bool forceLoadInMemory)
         {
             Listener = listener;
             engine = staticSound.AudioEngine;
             sound = staticSound;
             spatialized = staticSound.Spatialized;
 
+            var streamed = staticSound.StreamFromDisk && !forceLoadInMemory;
+
             if (engine.State == AudioEngineState.Invalidated)
                 return;
 
-            Source = AudioLayer.SourceCreate(listener.Listener, staticSound.SampleRate, staticSound.StreamFromDisk ? CompressedSoundSource.NumberOfBuffers : 1, staticSound.Channels == 1, spatialized, staticSound.StreamFromDisk);
+            Source = AudioLayer.SourceCreate(listener.Listener, staticSound.SampleRate, streamed ? CompressedSoundSource.NumberOfBuffers : 1, staticSound.Channels == 1, spatialized, streamed);
             if (Source.Ptr == IntPtr.Zero)
             {
                 throw new Exception("Failed to create an AudioLayer Source");
             }
 
-            if (staticSound.StreamFromDisk)
+            if (streamed)
             {
                 soundSource = new CompressedSoundSource(this, staticSound.CompressedDataUrl, staticSound.NumberOfPackets, staticSound.SampleRate, staticSound.Channels, staticSound.MaxPacketLength);
             }
             else
             {
+                if (sound.PreloadedBuffer.Ptr == IntPtr.Zero)
+                {
+                    staticSound.LoadSoundInMemory(); //this should be already loaded by the serializer, but in the case of forceLoadInMemory might not be the case yet.
+                }
                 AudioLayer.SourceSetBuffer(Source, staticSound.PreloadedBuffer);
             }
 
