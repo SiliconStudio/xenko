@@ -180,7 +180,7 @@ namespace GoldParser
 		{
 			if (FileHeader != ReadString())
 			{
-				throw new FileLoadException(SR.GetString(SR.Grammar_WrongFileHeader));
+				throw new GoldParserException(SR.GetString(SR.Grammar_WrongFileHeader));
 			}
 			while (m_reader.PeekChar() != -1)
 			{
@@ -220,7 +220,7 @@ namespace GoldParser
 						break;
     
 					default:
-						throw new FileLoadException(SR.GetString(SR.Grammar_InvalidRecordType));
+						throw new GoldParserException(SR.GetString(SR.Grammar_InvalidRecordType));
 				}
 			}
 			m_dfaInitialState = m_dfaStateTable[m_dfaInitialStateIndex];
@@ -243,7 +243,7 @@ namespace GoldParser
 					return (RecordType) ReadByteEntry();
 
 				default:
-					throw new FileLoadException(SR.GetString(SR.Grammar_InvalidRecordHeader));
+					throw new GoldParserException(SR.GetString(SR.Grammar_InvalidRecordHeader));
 			}
 		}
 
@@ -421,7 +421,7 @@ namespace GoldParser
 		{
 			if (ReadEntryType() != EntryType.Empty)
 			{
-				throw new FileLoadException(SR.GetString(SR.Grammar_EmptyEntryExpected));
+				throw new GoldParserException(SR.GetString(SR.Grammar_EmptyEntryExpected));
 			}
 			m_entryCount--;
 		}
@@ -434,7 +434,7 @@ namespace GoldParser
 		{
 			if (ReadEntryType() != EntryType.String)
 			{
-				throw new FileLoadException(SR.GetString(SR.Grammar_StringEntryExpected));
+				throw new GoldParserException(SR.GetString(SR.Grammar_StringEntryExpected));
 			}
 			m_entryCount--;
 			return ReadString();
@@ -448,7 +448,7 @@ namespace GoldParser
 		{
 			if (ReadEntryType() != EntryType.Integer)
 			{
-				throw new FileLoadException(SR.GetString(SR.Grammar_IntegerEntryExpected));
+				throw new GoldParserException(SR.GetString(SR.Grammar_IntegerEntryExpected));
 			}
 			m_entryCount--;
 			return ReadInt16();
@@ -462,7 +462,7 @@ namespace GoldParser
 		{
 			if (ReadEntryType() != EntryType.Byte)
 			{
-				throw new FileLoadException(SR.GetString(SR.Grammar_ByteEntryExpected));
+				throw new GoldParserException(SR.GetString(SR.Grammar_ByteEntryExpected));
 			}
 			m_entryCount--;
 			return ReadByte();
@@ -476,7 +476,7 @@ namespace GoldParser
 		{
 			if (ReadEntryType() != EntryType.Boolean)
 			{
-				throw new FileLoadException(SR.GetString(SR.Grammar_BooleanEntryExpected));
+				throw new GoldParserException(SR.GetString(SR.Grammar_BooleanEntryExpected));
 			}
 			m_entryCount--;
 			return ReadBool();
@@ -490,7 +490,7 @@ namespace GoldParser
 		{
 			if (m_entryCount == 0)
 			{
-				throw new FileLoadException(SR.GetString(SR.Grammar_NoEntry));
+				throw new GoldParserException(SR.GetString(SR.Grammar_NoEntry));
 			}  
 			return (EntryType) ReadByte();
 		}

@@ -7,7 +7,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A generic declaration. This is used internally to identify a generic declaration.
     /// </summary>
-    public class GenericDeclaration : Node, IDeclaration
+    public partial class GenericDeclaration : Node, IDeclaration
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="GenericDeclaration"/> class.

@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// Indexer expression.
     /// </summary>
-    public class IndexerExpression : Expression
+    public partial class IndexerExpression : Expression
     {
         #region Constructors and Destructors
 

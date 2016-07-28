@@ -4,7 +4,7 @@
 /// <summary>
 /// Performs Adjacent Edge tessellation on float4 stream.
 /// </summary>
-class TessellationAE4<MemberName TStream> : TessellationBase, MaterialDomainStream
+shader TessellationAE4<MemberName TStream> : TessellationBase, MaterialDomainStream
 {
     stream float4 DomEdgeValue4[2];
     stream float4 DomVertValue4;

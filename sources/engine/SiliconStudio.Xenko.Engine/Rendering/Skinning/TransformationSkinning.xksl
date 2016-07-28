@@ -16,7 +16,7 @@
 # define SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES false
 #endif
 
-class TransformationSkinning : TransformationBase, PositionStream4, Transformation
+shader TransformationSkinning : TransformationBase, PositionStream4, Transformation
 {
     cbuffer PerDraw
     {

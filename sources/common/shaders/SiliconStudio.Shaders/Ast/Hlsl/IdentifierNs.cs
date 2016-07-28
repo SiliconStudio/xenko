@@ -7,7 +7,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     /// <summary>
     /// A C++ identifier with namespaces "::" separator
     /// </summary>
-    public class IdentifierNs : CompositeIdentifier
+    public partial class IdentifierNs : CompositeIdentifier
     {
         /// <inheritdoc/>
         public override string Separator

@@ -3,7 +3,7 @@
 /// <summary>
 /// Various helper functions to convert color between RGB and HSV.
 /// </summary>
-class HSVUtils
+shader HSVUtils
 {
     float GetSaturation(float3 tex)
     {

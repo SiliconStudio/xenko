@@ -7,7 +7,7 @@ using SiliconStudio.Shaders.Visitor;
 
 namespace SiliconStudio.Shaders.Convertor
 {
-    public class CallstackVisitor : ShaderVisitor
+    public class CallstackVisitor : ShaderRewriter
     {
 
         public CallstackVisitor() : base(true, true)
@@ -16,14 +16,13 @@ namespace SiliconStudio.Shaders.Convertor
 
         public virtual void Run(MethodDefinition methodEntry)
         {
-            this.Visit((Node)methodEntry);
+            base.Visit(methodEntry);
         }
 
-        [Visit]
-        protected virtual void Visit(MethodInvocationExpression methodInvocationExpression)
+        public override Node Visit(MethodInvocationExpression methodInvocationExpression)
         {
             // Visit childrens first
-            Visit((Node)methodInvocationExpression);
+            base.Visit(methodInvocationExpression);
 
             var nestedMethodRef = methodInvocationExpression.Target as VariableReferenceExpression;
 
@@ -35,6 +34,8 @@ namespace SiliconStudio.Shaders.Convertor
                     this.ProcessMethodInvocation(methodInvocationExpression, nestedMethod);
                 }
             }
+
+            return methodInvocationExpression;
         }
 
         protected virtual void ProcessMethodInvocation(MethodInvocationExpression invoke, MethodDefinition method)

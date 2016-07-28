@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 namespace SiliconStudio.Xenko.Rendering.Materials
 {
-    class MaterialStream : IStreamInitializer
+    shader MaterialStream : IStreamInitializer
     {
         /// <summary>
         /// The blending applied between the current and previous material attributes

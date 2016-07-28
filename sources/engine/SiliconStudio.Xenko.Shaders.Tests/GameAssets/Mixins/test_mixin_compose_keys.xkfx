@@ -8,7 +8,7 @@ namespace TestABC
         bool UseComputeColorRedirect;
     };
 
-    partial shader ABCSubEffect
+    partial effect ABCSubEffect
     {
         using params TestParameters;
 
@@ -27,7 +27,7 @@ namespace TestABC
         }
     };
 
-    shader test_mixin_compose_keys
+    effect test_mixin_compose_keys
     {
         mixin A;
         mixin compose SubCompute1 = ABCSubEffect;

@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// <summary>
     /// Base interface for a material layer
     /// </summary>
-    class IMaterialSurfacePixel : IMaterialSurface, MaterialPixelStream
+    shader IMaterialSurfacePixel : IMaterialSurface, MaterialPixelStream
     {
     };
 }

@@ -8,7 +8,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// A blur with uniform weights applied along one direction. (depth-aware blur to avoid artifacts)
     /// </summary>
 
-    class DepthAwareDirectionalBlurShader<int TWeightNumber, int TTapNumber> 
+    shader DepthAwareDirectionalBlurShader<int TWeightNumber, int TTapNumber> 
         :  DepthAwareDirectionalBlurUtil<TWeightNumber, TTapNumber>, ImageEffectShader
     {
         stage override float4 Shading()

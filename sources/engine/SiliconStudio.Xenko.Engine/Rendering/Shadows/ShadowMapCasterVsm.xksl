@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// <summary>
     /// Creates shadow map for variance shadow mapping.
     /// </summary>
-    class ShadowMapCasterVsm : ShadowMapCasterBase
+    shader ShadowMapCasterVsm : ShadowMapCasterBase
     {
         /// --------------------------------------------------------------------------------
         /// Pixel Shader

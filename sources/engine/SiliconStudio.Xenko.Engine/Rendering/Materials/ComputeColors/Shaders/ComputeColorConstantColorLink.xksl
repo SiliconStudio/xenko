@@ -6,7 +6,7 @@
 /// <remarks>
 /// LinkName: generic LinkType - the name of the key used to set the color.
 /// </remarks>
-class ComputeColorConstantColorLink<LinkType LinkName> : ComputeColor
+shader ComputeColorConstantColorLink<LinkType LinkName> : ComputeColor
 {
     cbuffer PerMaterial
     {

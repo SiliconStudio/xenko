@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Shaders.Ast.Xenko;
 using SiliconStudio.Shaders.Ast;
 
 namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
@@ -82,7 +82,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         private static IndexerExpression Clone(IndexerExpression expression)
         {
             var ire = new IndexerExpression(Clone(expression.Target), Clone(expression.Index));
-            if (expression.TypeInference.TargetType is StreamsType)
+            if (expression.TypeInference.TargetType != null && expression.TypeInference.TargetType.IsStreamsType())
                 ire.TypeInference.TargetType = expression.TypeInference.TargetType;
             return ire;
         }
@@ -100,7 +100,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         private static MemberReferenceExpression Clone(MemberReferenceExpression expression)
         {
             var mre = new MemberReferenceExpression(Clone(expression.Target), expression.Member);
-            if (expression.TypeInference.TargetType is StreamsType)
+            if (expression.TypeInference.TargetType != null && expression.TypeInference.TargetType.IsStreamsType())
                 mre.TypeInference.TargetType = expression.TypeInference.TargetType;
             return mre;
         }
@@ -131,7 +131,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         private static VariableReferenceExpression Clone(VariableReferenceExpression expression)
         {
             var vre = new VariableReferenceExpression(expression.Name);
-            if (expression.TypeInference.TargetType is StreamsType)
+            if (expression.TypeInference.TargetType != null && expression.TypeInference.TargetType.IsStreamsType())
                 vre.TypeInference.TargetType = expression.TypeInference.TargetType;
             return vre;
         }

@@ -3,7 +3,7 @@
 /// <summary>
 /// Various methods for manipulating normals
 /// </summary>
-class NormalUtil
+shader NormalUtil
 {
     // Blending Normal methods: http://blog.selfshadow.com/publications/blending-in-detail/
 

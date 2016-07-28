@@ -3,7 +3,7 @@
 /// <summary>
 /// Computes normals in view space.
 /// </summary>
-class NormalFromMesh : NormalBase, Transformation
+shader NormalFromMesh : NormalBase, Transformation
 {
     override stage void GenerateNormal_VS()
     {

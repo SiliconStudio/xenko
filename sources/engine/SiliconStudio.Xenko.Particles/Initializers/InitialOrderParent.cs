@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         private uint spawnOrder;
 
         /// <inheritdoc />
-        internal override void ResetSimulation()
+        public override void ResetSimulation()
         {
             spawnOrder = 0;
         }
@@ -97,11 +97,11 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                             particleOrder = (*((uint*)parentParticle[childOrderFieldParent]));
                             (*((uint*)parentParticle[childOrderFieldParent])) = (particleOrder + 1);
 
-                            particleOrder = (particleOrder & 0x0000FFFF) | ((parentParticleOrder << 16) & 0xFFFF0000);
+                            particleOrder = (particleOrder & SpawnOrderConst.AuxiliaryBitMask) | ((parentParticleOrder << SpawnOrderConst.GroupBitOffset) & SpawnOrderConst.GroupBitMask);
                         }
                         else
                         {
-                            particleOrder = (particleOrder & 0x000FFFFF) | ((parentParticleOrder << 20) & 0xFFF00000);
+                            particleOrder = (particleOrder & SpawnOrderConst.LargeAuxiliaryBitMask) | ((parentParticleOrder << SpawnOrderConst.LargeGroupBitOffset) & SpawnOrderConst.LargeGroupBitMask);
                         }
                     }
 
@@ -120,11 +120,11 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                             particleOrder = (*((uint*)parentParticle[childOrderFieldParent]));
                             (*((uint*)parentParticle[childOrderFieldParent])) = (particleOrder + 1);
 
-                            particleOrder = (particleOrder & 0x0000FFFF) | ((parentParticleOrder << 16) & 0xFFFF0000);
+                            particleOrder = (particleOrder & SpawnOrderConst.AuxiliaryBitMask) | ((parentParticleOrder << SpawnOrderConst.GroupBitOffset) & SpawnOrderConst.GroupBitMask);
                         }
                         else
                         {
-                            particleOrder = (particleOrder & 0x000FFFFF) | ((parentParticleOrder << 20) & 0xFFF00000);
+                            particleOrder = (particleOrder & SpawnOrderConst.LargeAuxiliaryBitMask) | ((parentParticleOrder << SpawnOrderConst.LargeGroupBitOffset) & SpawnOrderConst.LargeGroupBitMask);
                         }
                     }
                 }

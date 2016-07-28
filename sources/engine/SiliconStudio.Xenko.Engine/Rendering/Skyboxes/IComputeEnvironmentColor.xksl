@@ -4,9 +4,9 @@
 namespace SiliconStudio.Xenko.Rendering.Skyboxes
 {
     /// <summary>
-    /// Base class to sample an environment
+    /// Base shader to sample an environment
     /// </summary>
-    class IComputeEnvironmentColor
+    shader IComputeEnvironmentColor
     {
         float4 Compute(float3 direction)
         {

@@ -8,7 +8,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A reference to a variable.
     /// </summary>
-    public class TypeReferenceExpression : Expression
+    public partial class TypeReferenceExpression : Expression
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="TypeReferenceExpression"/> class.

@@ -3,7 +3,7 @@
 /// <summary>
 /// Class outputing color from a single ComputeColor and overriding any previous color computations.
 /// </summary>
-class ShadingColor : ShaderBase
+shader ShadingColor : ShaderBase
 {
     compose ComputeColor Color;
 

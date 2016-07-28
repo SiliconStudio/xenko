@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// <summary>
     /// Material displacement map
     /// </summary>
-    class MaterialSurfaceVertexDisplacement<bool TScaleAndBias> : IMaterialSurfaceVertex
+    shader MaterialSurfaceVertexDisplacement<bool TScaleAndBias> : IMaterialSurfaceVertex
     {
         override void Compute()
         {

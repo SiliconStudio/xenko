@@ -1,4 +1,4 @@
-﻿class ComputeColorWaveNormal<float Frequency, float Amplitude, float Speed> : ComputeColor, Texturing
+﻿shader ComputeColorWaveNormal<float Frequency, float Amplitude, float Speed> : ComputeColor, Texturing
 {
     override float4 Compute()
     {

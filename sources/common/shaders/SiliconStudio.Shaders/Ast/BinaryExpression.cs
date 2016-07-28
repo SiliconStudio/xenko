@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// Describes a binary expression.
     /// </summary>
-    public class BinaryExpression : Expression
+    public partial class BinaryExpression : Expression
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="BinaryExpression"/> class.

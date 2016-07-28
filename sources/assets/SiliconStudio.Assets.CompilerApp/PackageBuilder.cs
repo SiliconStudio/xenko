@@ -150,7 +150,7 @@ namespace SiliconStudio.Assets.CompilerApp
 
                 // Add specific steps to generate shaders
                 // TODO: This doesn't really belong here, where should we move it?
-                assetBuildResult.BuildSteps.Add(new WaitBuildStep());
+                //assetBuildResult.BuildSteps.Add(new WaitBuildStep());
                 //assetBuildResult.BuildSteps.Add(new CompileDefaultSceneEffectCommand(context, package, assetBuildResult));
 
                 // Create the builder

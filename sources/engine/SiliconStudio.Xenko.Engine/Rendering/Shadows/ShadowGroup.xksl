@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// <summary>
     /// Defines the methods to compute shadowing and the sampler used on the shadow map.
     /// </summary>
-    class ShadowGroup : ShadowStream
+    shader ShadowGroup : ShadowStream
     {
         void ComputeShadow(int lightIndex)
         {

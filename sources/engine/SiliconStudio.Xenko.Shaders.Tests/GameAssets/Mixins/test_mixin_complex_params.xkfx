@@ -15,7 +15,7 @@ namespace Test1
         SubParameters subParameters[];
     };
 
-    shader DefaultComplexParams
+    effect DefaultComplexParams
     {
         using params TestParameters;
         using params SubParameters;

@@ -1,7 +1,7 @@
 ﻿namespace SiliconStudio.Xenko.Rendering
 {
     // TODO GRAPHICS REFACTOR: Unify passthrough color shaders (picking, highlight, etc.)
-    class HighlightShader : ShaderBase
+    shader HighlightShader : ShaderBase
     {
         cbuffer PerDraw
         {

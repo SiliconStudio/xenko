@@ -9,7 +9,7 @@
 /// TScale: generic float2 - the scaling factor of the texture coordinates.
 /// TOffset: generic float2 - the texture coordinates offset.
 /// </remarks>
-class ComputeColorTextureScaledOffset<Texture2D TTexture, Semantic TStream, float2 TScale, float2 TOffset> : ComputeColor
+shader ComputeColorTextureScaledOffset<Texture2D TTexture, Semantic TStream, float2 TScale, float2 TOffset> : ComputeColor
 {
     stream float2 TexCoord : TStream;
 

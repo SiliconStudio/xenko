@@ -20,7 +20,7 @@ namespace SiliconStudio.Shaders.Convertor
         private HashSet<Variable> textureAccesses;
         private Shader shader;
         private List<TextureSamplerMethodKey> textureSamplerMethods = new List<TextureSamplerMethodKey>();
-        private static readonly object ScopeValueKey = new object();
+        private static readonly string ScopeValueKey = "ScopeValue";
         private CloneContext cloneContext = new CloneContext();
 
         public SamplerMappingVisitor(Shader shader, Dictionary<SamplerTextureKey, Variable> samplerMapping)
@@ -91,13 +91,13 @@ namespace SiliconStudio.Shaders.Convertor
             return null;
         }
 
-        [VisitorBase.VisitAttribute]
-        protected void Visit(VariableReferenceExpression variableRef)
+        public override Node Visit(VariableReferenceExpression variableRef)
         {
             ((ScopeDeclarationWithRef)ScopeStack.Peek()).VariableReferences.Add(variableRef);
+            return variableRef;
         }
 
-        protected override void Visit(MethodInvocationExpression methodInvocationExpression)
+        public override Node Visit(MethodInvocationExpression methodInvocationExpression)
         {
             // Visit first children
             base.Visit(methodInvocationExpression);
@@ -114,7 +114,7 @@ namespace SiliconStudio.Shaders.Convertor
                 {
                     var textureType = textureVariable.Type.ResolveType();
 
-                    if (textureType is TextureType || (textureType.IsBuiltIn && CultureInfo.InvariantCulture.CompareInfo.IsPrefix(textureType.Name.Text, "Texture", CompareOptions.IgnoreCase))
+                    if (textureType is TextureType || (CultureInfo.InvariantCulture.CompareInfo.IsPrefix(textureType.Name.Text, "Texture", CompareOptions.IgnoreCase))
                         || (textureType.IsBuiltIn && textureType.Name.Text.StartsWith("Buffer")))
                     {
                         switch (memberRef.Member)
@@ -213,11 +213,13 @@ namespace SiliconStudio.Shaders.Convertor
                     if (samplerRefExpr != null)
                     {
                         var samplerVariable = samplerRefExpr.TypeInference.Declaration as Variable;
-                        var newSamplerType = texFetchInfo.Item1 < 4 ? new SamplerType("sampler" + texFetchInfo.Item1 + "D") : new SamplerType("samplerCube");
+                        var newSamplerType = texFetchInfo.Item1 < 4 ? new ObjectType("sampler" + texFetchInfo.Item1 + "D") : new ObjectType("samplerCube");
                         this.ChangeVariableType(samplerVariable, newSamplerType);
                     }
                 }
-            }            
+            }
+
+            return methodInvocationExpression;
         }
 
         private void ChangeVariableType(Variable samplerVariable, TypeBase newType)
@@ -249,7 +251,7 @@ namespace SiliconStudio.Shaders.Convertor
             for (int i = 0; i < method.Parameters.Count; i++)
             {
                 var parameter = method.Parameters[i];
-                if (parameter.Type is TextureType || parameter.Type is StateType)
+                if (parameter.Type is TextureType || parameter.Type.IsStateType())
                 {
                     textureParameters.Add(parameter);
 
@@ -266,7 +268,7 @@ namespace SiliconStudio.Shaders.Convertor
                 else if ( i < invoke.Arguments.Count)
                 {
                     parameterValues.Add(invoke.Arguments[i]);
-                    if (parameter.Type is SamplerType)
+                    if (parameter.Type.IsSamplerType())
                     {
                         samplerTypes.Add(i);
                     }
@@ -517,12 +519,7 @@ namespace SiliconStudio.Shaders.Convertor
             public void Initialize(CloneContext previousCloneContext)
             {
                 // Clone original context
-                var cloneContext = new CloneContext();
-
-                foreach (var keyValurPair in previousCloneContext)
-                {
-                    cloneContext.Add(keyValurPair.Key, keyValurPair.Value);
-                }
+                var cloneContext = new CloneContext(previousCloneContext);
 
                 // Removes the method to clone
                 cloneContext.Remove(Method);

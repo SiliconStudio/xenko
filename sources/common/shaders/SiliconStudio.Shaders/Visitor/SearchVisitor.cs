@@ -8,7 +8,7 @@ namespace SiliconStudio.Shaders.Visitor
     /// <summary>
     /// A visitor that takes a filter function to apply to each node.
     /// </summary>
-    public class SearchVisitor : ShaderVisitor
+    public class SearchVisitor : ShaderRewriter
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SearchVisitor"/> class.
@@ -35,11 +35,13 @@ namespace SiliconStudio.Shaders.Visitor
         /// </summary>
         /// <param name="node">The node.</param>
         /// <returns>The filtered node</returns>
-        [Visit]
-        protected override Node Visit(Node node)
+        public override Node DefaultVisit(Node node)
         {
             node = FilterFunction(node);
-            return (node != null) ? base.Visit(node) : null;
+            if (node != null)
+                node = base.DefaultVisit(node);
+
+            return node;
         }
 
         /// <summary>
@@ -52,7 +54,7 @@ namespace SiliconStudio.Shaders.Visitor
         public static void Run(Node node, Func<Node, Node> filter, bool buildScopeDeclaration = false, bool useNodeStack = false)
         {
             var visitor = new SearchVisitor(filter, buildScopeDeclaration, useNodeStack);
-            visitor.Visit(node);
+            visitor.VisitDynamic(node);
         }
     }
 }

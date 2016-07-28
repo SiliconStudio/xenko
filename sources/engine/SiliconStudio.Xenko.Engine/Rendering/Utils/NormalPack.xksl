@@ -3,7 +3,7 @@
 /// <summary>
 /// Packs and stores the normals into the GBuffer. Expected texture output format: float4.
 /// </summary>
-class NormalPack : Texturing
+shader NormalPack : Texturing
 {
     [Link("GBuffer.NormalPack")]
     stage Texture2D NormalPackTexture;

@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <summary>
     /// The second pass of a shader performing Lambertian pre-filtering using Spherical Harmonics
     /// </summary>
-    class LambertianPrefilteringSHPass2<int TSize, int THarmonicsOrder> : SphericalHarmonicsBase<THarmonicsOrder>, ComputeShaderBase, Texturing, Math
+    shader LambertianPrefilteringSHPass2<int TSize, int THarmonicsOrder> : SphericalHarmonicsBase<THarmonicsOrder>, ComputeShaderBase, Texturing, Math
     {    
         // the input buffer containing SH coefficients summed up along rows.
         Buffer<float4> InputBuffer;
