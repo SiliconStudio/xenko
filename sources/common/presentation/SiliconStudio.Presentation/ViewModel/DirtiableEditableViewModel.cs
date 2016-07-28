@@ -24,12 +24,12 @@ namespace SiliconStudio.Presentation.ViewModel
         }
 
         /// <inheritdoc/>
-        public bool IsDirty { get { return isDirty; } private set { var oldValue = isDirty; SetValueUncancellable(ref isDirty, value); OnDirtyFlagSet(oldValue, value); } }
+        public bool IsDirty { get { return isDirty; } private set { var oldValue = isDirty; SetValueUncancellable(ref isDirty, value); OnDirtyFlagSet(); } }
 
         /// <inheritdoc/>
         public override IEnumerable<IDirtiable> Dirtiables => this.Yield();
 
-        protected virtual void OnDirtyFlagSet(bool oldValue, bool newValue)
+        protected virtual void OnDirtyFlagSet()
         {
             // intentionally do nothing
         }
