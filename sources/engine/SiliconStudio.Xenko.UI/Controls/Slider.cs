@@ -209,7 +209,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                 if (float.IsNaN(value))
                     return;
                 tickFrequency = MathUtil.Clamp(value, 1.0f, float.MaxValue);
-                Value = this.value; // snap to tick if enabled
+                Value = Value; // snap if enabled
             }
         }
 
@@ -289,7 +289,6 @@ namespace SiliconStudio.Xenko.UI.Controls
             set
             {
                 orientation = value;
-
                 InvalidateMeasure();
             }
         }
@@ -335,7 +334,7 @@ namespace SiliconStudio.Xenko.UI.Controls
 
         private float CalculateIncreamentValue()
         {
-            return shouldSnapToTicks? Math.Max(Step, (Maximum - Minimum) / TickFrequency): Step;
+            return shouldSnapToTicks ? Math.Max(Step, (Maximum - Minimum)/TickFrequency) : Step;
         }
 
         /// <inheritdoc/>
@@ -369,7 +368,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Identifies the <see cref="ValueChanged"/> routed event.
         /// </summary>
         public static readonly RoutedEvent<RoutedEventArgs> ValueChangedEvent = EventManager.RegisterRoutedEvent<RoutedEventArgs>(
-            "ValueChanged",
+            nameof(ValueChanged),
             RoutingStrategy.Bubble,
             typeof(Slider));
         
@@ -425,7 +424,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             var elementSize = RenderSize[axis];
             var touchPosition = touchPostionWorld[axis] - WorldMatrixInternal[12 + axis] + elementSize/2;
             var ratio = (touchPosition - offsets.X) / (elementSize - offsets.X - offsets.Y);
-            Value = (Orientation == Orientation.Vertical ^ IsDirectionReversed) ? 1 - ratio : ratio;
+            Value = MathUtil.Lerp(Minimum, Maximum, Orientation == Orientation.Vertical ^ IsDirectionReversed ? 1 - ratio : ratio);
         }
 
         protected override void Update(GameTime time)
