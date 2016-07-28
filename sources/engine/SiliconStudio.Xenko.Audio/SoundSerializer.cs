@@ -6,6 +6,9 @@ using SiliconStudio.Xenko.Native;
 
 namespace SiliconStudio.Xenko.Audio
 {
+    /// <summary>
+    /// Used internally to serialize Sound
+    /// </summary>
     public class SoundSerializer : DataSerializer<Sound>
     {
         public override void Serialize(ref Sound obj, ArchiveMode mode, SerializationStream stream)

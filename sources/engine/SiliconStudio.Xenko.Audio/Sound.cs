@@ -24,8 +24,8 @@ namespace SiliconStudio.Xenko.Audio
         /// <summary>
         /// Create the audio engine to the sound base instance.
         /// </summary>
-        /// <param name="engine">A valid AudioEngine</param>
-        /// <exception cref="ArgumentNullException">The engine argument is null</exception>
+        /// <param name="engine">A valid AudioEngine.</param>
+        /// <exception cref="ArgumentNullException">The engine argument is null.</exception>
         internal void AttachEngine(AudioEngine engine)
         {
             if (engine == null)
@@ -99,6 +99,9 @@ namespace SiliconStudio.Xenko.Audio
             return newInstance;
         }
 
+        /// <summary>
+        /// Gets the total length in time of the Sound.
+        /// </summary>
         public TimeSpan TotalLength => TimeSpan.FromSeconds(((double)NumberOfPackets * (double)CompressedSoundSource.SamplesPerFrame) / (double)SampleRate);
 
         internal void Attach(AudioEngine engine)
@@ -158,6 +161,9 @@ namespace SiliconStudio.Xenko.Audio
             Instances.Add(instance);
         }
 
+        /// <summary>
+        /// Destroys the instance.
+        /// </summary>
         protected override void Destroy()
         {
             if (AudioEngine.State == AudioEngineState.Invalidated)

@@ -118,6 +118,9 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         public AudioEngineState State { get; protected set; }
 
+        /// <summary>
+        /// Gets or sets the Global audio volume
+        /// </summary>
         public float MasterVolume
         {
             get
@@ -198,6 +201,9 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
+        /// <summary>
+        /// Destroys the instance.
+        /// </summary>
         protected override void Destroy()
         {
             base.Destroy();

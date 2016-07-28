@@ -296,6 +296,9 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
+        /// <summary>
+        /// Gets the max numbers of buffered buffers
+        /// </summary>
         public override int MaxNumberOfBuffers => NumberOfBuffers;
 
         /// <summary>
@@ -307,6 +310,10 @@ namespace SiliconStudio.Xenko.Audio
             looped = loop;
         }
 
+        /// <summary>
+        /// Sets the range of the sound to play.
+        /// </summary>
+        /// <param name="range">a PlayRange structure that describes the starting offset and ending point of the sound to play in seconds.</param>
         public override void SetRange(PlayRange range)
         {
             lock (rangeLock)
@@ -317,6 +324,9 @@ namespace SiliconStudio.Xenko.Audio
             base.SetRange(range);
         }
 
+        /// <summary>
+        /// Destroys the instance.
+        /// </summary>
         protected override void Destroy()
         {
             base.Destroy();

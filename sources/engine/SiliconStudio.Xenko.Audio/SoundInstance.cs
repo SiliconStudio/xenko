@@ -119,7 +119,7 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         /// <remarks>Panning is ranging from -1.0f (full left) to 1.0f (full right). 0.0f is centered. Values beyond this range are clamped. 
         /// Panning modifies the total energy of the signal (Pan == -1 => Energy = 1 + 0, Pan == 0 => Energy = 1 + 1, Pan == 0.5 => Energy = 1 + 0.5, ...) 
-        /// <para>A call to <see cref="Pan"/> may conflict with Apply3D.</para></remarks>
+        /// </remarks>
         public float Pan
         {
             get
@@ -257,7 +257,7 @@ namespace SiliconStudio.Xenko.Audio
         /// <summary>
         /// Stop playing the sound immediately and reset the sound to the beginning of the track.
         /// </summary>
-        /// <remarks>A call to Stop when the sound is already stopped has no effects</remarks>
+        /// <remarks>A call to Stop when the sound is already stopped has no effects.</remarks>
         public void Stop()
         {
             if (engine.State == AudioEngineState.Invalidated)
@@ -286,6 +286,9 @@ namespace SiliconStudio.Xenko.Audio
             Stop();
         }
 
+        /// <summary>
+        /// Destroys the instance.
+        /// </summary>
         protected override void Destroy()
         {
             base.Destroy();
@@ -310,6 +313,10 @@ namespace SiliconStudio.Xenko.Audio
             }            
         }
 
+        /// <summary>
+        /// Play the sound instance.
+        /// </summary>
+        /// <param name="stopSiblingInstances">if true any other istance of the same Sound will be stopped.</param>
         protected void Play(bool stopSiblingInstances)
         {
             if (engine.State == AudioEngineState.Invalidated || engine.State == AudioEngineState.Paused)
@@ -319,7 +326,9 @@ namespace SiliconStudio.Xenko.Audio
                 return;
 
             if (stopSiblingInstances)
-                StopConcurrentInstances();
+            {
+                sound?.StopConcurrentInstances(this);
+            }
 
             if (soundSource == null)
             {
@@ -333,15 +342,10 @@ namespace SiliconStudio.Xenko.Audio
             playState = SoundPlayState.Playing;
         }
 
-        protected void StopConcurrentInstances()
-        {
-            sound?.StopConcurrentInstances(this);
-        }
-
         private SoundPlayState playState = SoundPlayState.Stopped;
 
         /// <summary>
-        /// Gets the state of the SoundInstance
+        /// Gets the state of the SoundInstance.
         /// </summary>
         public SoundPlayState PlayState
         {
@@ -360,10 +364,14 @@ namespace SiliconStudio.Xenko.Audio
         }
 
         /// <summary>
-        /// Gets the DynamicSoundSource, might be null if the sound is not using DynamicSoundSource, e.g. not streamed from disk or not using a DynamicSoundSource derived class as backing
+        /// Gets the DynamicSoundSource, might be null if the sound is not using DynamicSoundSource, e.g. not streamed from disk or not using a DynamicSoundSource derived class as backing.
         /// </summary>
         public DynamicSoundSource DynamicSoundSource => soundSource;
 
+        /// <summary>
+        /// Sets the range of the sound to play.
+        /// </summary>
+        /// <param name="range">a PlayRange structure that describes the starting offset and ending point of the sound to play in seconds.</param>
         public void SetRange(PlayRange range)
         {
             if (engine.State == AudioEngineState.Invalidated)
@@ -391,6 +399,9 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
+        /// <summary>
+        /// Gets the position in time of this playing instance.
+        /// </summary>
         public TimeSpan Position
         {
             get
