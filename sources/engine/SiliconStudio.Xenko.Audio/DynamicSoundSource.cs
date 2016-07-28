@@ -9,6 +9,9 @@ namespace SiliconStudio.Xenko.Audio
 
     public abstract class DynamicSoundSource : IDisposable
     {
+        /// <summary>
+        /// The possible async commands that can be queued and be handled by subclasses
+        /// </summary>
         protected enum AsyncCommand
         {
             Play,
@@ -18,38 +21,55 @@ namespace SiliconStudio.Xenko.Audio
             Dispose
         }
 
-        protected ConcurrentQueue<AsyncCommand> Commands = new ConcurrentQueue<AsyncCommand>();
+        /// <summary>
+        /// The commands derived classes should execute.
+        /// </summary>
+        protected readonly ConcurrentQueue<AsyncCommand> Commands = new ConcurrentQueue<AsyncCommand>();
 
         private bool readyToPlay;
         private int prebufferedCount;
         private readonly int prebufferedTarget;
 
         /// <summary>
-        /// This will be fired internally once there are more then 1 buffer in the queue
+        /// This will be fired internally once there are more then 1 buffer in the queue.
         /// </summary>
         public TaskCompletionSource<bool> ReadyToPlay { get; private set; } = new TaskCompletionSource<bool>(false);
         
         /// <summary>
-        /// This must be filled by sub-classes implementation when there will be no more queueud data
+        /// This must be filled by sub-classes implementation when there will be no more queueud data.
         /// </summary>
         public TaskCompletionSource<bool> Ended { get; } = new TaskCompletionSource<bool>(false);
 
         private readonly List<AudioLayer.Buffer> deviceBuffers = new List<AudioLayer.Buffer>();
         private readonly Queue<AudioLayer.Buffer> freeBuffers = new Queue<AudioLayer.Buffer>(4);
 
+        /// <summary>
+        /// The sound instance associated.
+        /// </summary>
         protected SoundInstance SoundInstance;
-
+        /// <summary>
+        /// If we are in the disposed state.
+        /// </summary>
         protected bool Disposed = false;
+        /// <summary>
+        /// If we are in the playing state.
+        /// </summary>
         protected bool Playing = false;
+        /// <summary>
+        /// If we are in the paused state.
+        /// </summary>
         protected bool Paused = false;
-        protected volatile bool PlayingQueued = false;
+        /// <summary>
+        /// If we are waiting to play.
+        /// </summary>
+        protected volatile bool PlayingQueued;
 
         /// <summary>
-        /// Sub classes can implement their own streaming sources
+        /// Sub classes can implement their own streaming sources.
         /// </summary>
-        /// <param name="soundInstance">the sound instance associated</param>
-        /// <param name="numberOfBuffers">the size of the streaming ring-buffer</param>
-        /// <param name="maxBufferSizeBytes">the maximum size of each buffer</param>
+        /// <param name="soundInstance">the sound instance associated.</param>
+        /// <param name="numberOfBuffers">the size of the streaming ring-buffer.</param>
+        /// <param name="maxBufferSizeBytes">the maximum size of each buffer.</param>
         protected DynamicSoundSource(SoundInstance soundInstance, int numberOfBuffers, int maxBufferSizeBytes)
         {
             prebufferedTarget = (int)Math.Ceiling(numberOfBuffers/(double)3);
@@ -63,11 +83,17 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
+        /// <summary>
+        /// Enqueues a dispose command, to dispose this instance.
+        /// </summary>
         public virtual void Dispose()
         {
             Commands.Enqueue(AsyncCommand.Dispose);
         }
 
+        /// <summary>
+        /// Destroys the instance.
+        /// </summary>
         protected virtual void Destroy()
         {
             foreach (var deviceBuffer in deviceBuffers)
@@ -77,7 +103,7 @@ namespace SiliconStudio.Xenko.Audio
         }
 
         /// <summary>
-        /// Checks if a buffer can be filled, before calling FillBuffer this should be checked
+        /// Checks if a buffer can be filled, before calling FillBuffer this should be checked.
         /// </summary>
         protected bool CanFill
         {
@@ -91,6 +117,9 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
+        /// <summary>
+        /// Max number of buffers that are going to be queued.
+        /// </summary>
         public abstract int MaxNumberOfBuffers { get; }
 
         /// <summary>
@@ -130,35 +159,47 @@ namespace SiliconStudio.Xenko.Audio
             ReadyToPlay.TrySetResult(true);
         }
 
+        /// <summary>
+        /// Enqueues a Play command, to Play this instance.
+        /// </summary>
         public void Play()
         {
             PlayingQueued = true;
             Commands.Enqueue(AsyncCommand.Play);
         }
 
+        /// <summary>
+        /// Enqueues a Pause command, to Pause this instance.
+        /// </summary>
         public void Pause()
         {
             Commands.Enqueue(AsyncCommand.Pause);
         }
 
+        /// <summary>
+        /// Enqueues a Stop command, to Stop this instance.
+        /// </summary>
         public void Stop()
         {
             Commands.Enqueue(AsyncCommand.Stop);
         }
 
+        /// <summary>
+        /// Gets if this instance is in the playing state.
+        /// </summary>
         public bool IsPlaying => PlayingQueued || Playing;
 
         /// <summary>
-        /// Sets the region of time to play from the sample
+        /// Sets the region of time to play from the audio clip.
         /// </summary>
-        /// <param name="range"></param>
+        /// <param name="range">a PlayRange structure that describes the starting offset and ending point of the sound to play in seconds.</param>
         public virtual void SetRange(PlayRange range)
         {
             Commands.Enqueue(AsyncCommand.SetRange);
         }
 
         /// <summary>
-        /// Sets if the stream should be played in loop
+        /// Sets if the stream should be played in loop.
         /// </summary>
         /// <param name="looped">if looped or not</param>
         public abstract void SetLooped(bool looped);

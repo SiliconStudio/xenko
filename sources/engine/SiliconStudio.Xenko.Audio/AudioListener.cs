@@ -104,6 +104,9 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
+        /// <summary>
+        /// Creates a new AudioListener.
+        /// </summary>
         public AudioListener()
         {
             Forward = new Vector3(0, 0, 1);
@@ -115,6 +118,9 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         internal AudioLayer.Listener Listener;
 
+        /// <summary>
+        /// Disposes the Listener
+        /// </summary>
         public void Dispose()
         {
             if (Listener.Ptr == IntPtr.Zero) return;
@@ -125,7 +131,7 @@ namespace SiliconStudio.Xenko.Audio
 #endif
         }
 
-        public unsafe void Update()
+        internal unsafe void Update()
         {
             if (Listener.Ptr == IntPtr.Zero) return;
             AudioLayer.ListenerPush3D(Listener, (float*)Interop.Fixed(ref Position), (float*)Interop.Fixed(ref forward), (float*)Interop.Fixed(ref up), (float*)Interop.Fixed(ref Velocity));

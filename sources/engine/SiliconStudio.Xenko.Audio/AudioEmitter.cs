@@ -84,6 +84,9 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
+        /// <summary>
+        /// Creates a new AudioEmitter.
+        /// </summary>
         public AudioEmitter()
         {
             Forward = new Vector3(0, 0, 1);
