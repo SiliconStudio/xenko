@@ -18,6 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     [Display("Post-Processing Effects")]
     public sealed class PostProcessingEffects : ImageEffect, IImageEffectRenderer
     {
+        private AmbientOcclusion ambientOcclusion;
         private DepthOfField depthOfField;
         private LuminanceEffect luminanceEffect;
         private BrightFilter brightFilter;
@@ -41,6 +42,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         public PostProcessingEffects()
         {
+            ambientOcclusion = new AmbientOcclusion();
             depthOfField = new DepthOfField();
             luminanceEffect = new LuminanceEffect();
             brightFilter = new BrightFilter();
@@ -68,6 +70,22 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <userdoc>Specifies the camera to use for the sequence of post-effects</userdoc>
         [DataMember(5)]
         public SceneCameraSlotIndex Camera { get; set; } = new SceneCameraSlotIndex(0);
+
+        /// <summary>
+        /// Gets the ambient occlusion effect.
+        /// </summary>
+        /// <userdoc>
+        /// The ambient occlusion post-effect allows you to simulate occlusion for opaque objects which are close to or occluded by other opaque objects.
+        /// </userdoc>
+        [DataMember(8)]
+        [Category]
+        public AmbientOcclusion AmbientOcclusion
+        {
+            get
+            {
+                return ambientOcclusion;
+            }
+        }
 
         /// <summary>
         /// Gets the depth of field effect.
@@ -186,6 +204,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         public void DisableAll()
         {
+            ambientOcclusion.Enabled = false;
             depthOfField.Enabled = false;
             bloom.Enabled = false;
             lightStreak.Enabled = false;
@@ -207,6 +226,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             base.InitializeCore();
 
+            ambientOcclusion = ToLoadAndUnload(ambientOcclusion);
             depthOfField = ToLoadAndUnload(depthOfField);
             luminanceEffect = ToLoadAndUnload(luminanceEffect);
             brightFilter = ToLoadAndUnload(brightFilter);
@@ -252,6 +272,17 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 }
             
                 var currentInput = input;
+
+                if (ambientOcclusion.Enabled && InputCount > 1 && GetInput(1) != null && GetInput(1).IsDepthStencil)
+                {
+                    // Ambient Occlusion
+                    var aoOutput = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
+                    var inputDepthTexture = GetInput(1); // Depth
+                    ambientOcclusion.SetColorDepthInput(input, inputDepthTexture);
+                    ambientOcclusion.SetOutput(aoOutput);
+                    ((RendererBase)ambientOcclusion).Draw(context);
+                    currentInput = aoOutput;
+                }
 
                 if (depthOfField.Enabled && InputCount > 1 && GetInput(1) != null && GetInput(1).IsDepthStencil)
                 {

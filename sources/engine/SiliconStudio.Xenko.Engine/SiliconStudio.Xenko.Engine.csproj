@@ -211,6 +211,13 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Images\DepthOfField\AmbientOcclusion.cs" />
+    <Compile Include="Rendering\Images\DepthOfField\ScreenSpaceAmbientOcclusion.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ScreenSpaceAmbientOcclusion.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\ResourceResolver.cs" />
     <Compile Include="Rendering\DynamicEffectInstance.cs" />
     <Compile Include="Rendering\EffectSelector.cs" />
@@ -414,6 +421,10 @@
     <Compile Include="Rendering\TransformRenderFeature.cs" />
     <Compile Include="Rendering\RenderDrawContext.cs" />
     <Compile Include="Rendering\TransparentRenderStageSelector.cs" />
+    <None Include="Rendering\Images\DepthOfField\ScreenSpaceAmbientOcclusion.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ScreenSpaceAmbientOcclusion.cs</LastGenOutput>
+    </None>
     <None Include="Rendering\Lights\DirectLightGroupPerDraw.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>DirectLightGroupPerDraw.cs</LastGenOutput>
