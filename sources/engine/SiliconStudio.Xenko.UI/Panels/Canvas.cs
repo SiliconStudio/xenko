@@ -80,9 +80,7 @@ namespace SiliconStudio.Xenko.UI.Panels
             // Canvas does not take into account possible collisions between children
             foreach (var child in VisualChildrenCollection)
             {
-                // calculate the available space for the child
-                var childAvailableSizeWithMargin = ComputeAvailableSize(child, availableSizeWithoutMargins, false);
-
+                var childAvailableSizeWithMargin = new Vector3(float.PositiveInfinity);
                 // override the available space if the child size is relative to its parent's.
                 var childRelativeSize = child.DependencyProperties.Get(RelativeSizePropertyKey);
                 for (var i = 0; i < 3; i++)
