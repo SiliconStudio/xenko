@@ -14,7 +14,7 @@ namespace SiliconStudio.Assets.Analysis
         /// </summary>
         /// <param name="hierarchy">The hierarchy of parts.</param>
         /// <param name="idRemapping">The identifier remapping.</param>
-        public static void RemapPartsId<TAssetPartDesign, TAssetPart>(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> hierarchy, Dictionary<Guid, Guid> idRemapping)
+        public static void RemapPartsId<TAssetPartDesign, TAssetPart>(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> hierarchy, IDictionary<Guid, Guid> idRemapping)
             where TAssetPartDesign : IAssetPartDesign<TAssetPart>
             where TAssetPart : IIdentifiable
         {

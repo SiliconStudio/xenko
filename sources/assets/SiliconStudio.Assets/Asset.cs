@@ -134,8 +134,9 @@ namespace SiliconStudio.Assets
         /// Creates an asset that inherits from this asset.
         /// </summary>
         /// <param name="baseLocation">The location of this asset.</param>
+        /// <param name="idRemapping">A dictionary in which will be stored all the <see cref="Guid"/> remapping done for the child asset.</param>
         /// <returns>An asset that inherits this asset instance</returns>
-        public virtual Asset CreateChildAsset(string baseLocation)
+        public virtual Asset CreateChildAsset(string baseLocation, IDictionary<Guid, Guid> idRemapping = null)
         {
             if (baseLocation == null) throw new ArgumentNullException(nameof(baseLocation));
 
@@ -145,8 +146,14 @@ namespace SiliconStudio.Assets
             // Clone it again without the base and without overrides (as we want all parameters to inherit from base)
             var newAsset = (Asset)AssetCloner.Clone(assetBase, AssetClonerFlags.RemoveOverrides);
 
-            // Sets a new identifier for this asset
-            newAsset.Id = Guid.NewGuid();
+            // Create a new identifier for this asset
+            var newId = Guid.NewGuid();
+
+            // Register this new identifier in the remapping dictionary
+            idRemapping?.Add(newAsset.Id, newId);
+            
+            // Write the new id into the new asset.
+            newAsset.Id = newId;
 
             // Create the base of this asset
             newAsset.Base = new AssetBase(baseLocation, assetBase);

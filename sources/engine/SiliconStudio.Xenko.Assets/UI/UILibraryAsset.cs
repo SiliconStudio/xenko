@@ -35,12 +35,13 @@ namespace SiliconStudio.Xenko.Assets.UI
         /// </summary>
         /// <param name="targetContainer">The container in which the instance will be added.</param>
         /// <param name="targetLocation">The location of the <see paramref="targetContainer"/> asset.</param>
+        /// <param name="elementId">The id of the element to instantiate.</param>
         /// <returns>An <see cref="AssetCompositeHierarchyData{UIElementDesign, UIElement}"/> containing the cloned elements of </returns>
         /// <remarks>This method will update the <see cref="Asset.BaseParts"/> property of the <see paramref="targetContainer"/>.</remarks>
-        public AssetCompositeHierarchyData<UIElementDesign, UIElement> CreateElementInstance(UIAssetBase targetContainer, string targetLocation)
+        public AssetCompositeHierarchyData<UIElementDesign, UIElement> CreateElementInstance(UIAssetBase targetContainer, string targetLocation, Guid elementId)
         {
             Guid unused;
-            return CreateElementInstance(targetContainer, targetLocation, out unused);
+            return CreateElementInstance(targetContainer, targetLocation, elementId, out unused);
         }
 
         /// <summary>
@@ -48,12 +49,15 @@ namespace SiliconStudio.Xenko.Assets.UI
         /// </summary>
         /// <param name="targetContainer">The container in which the instance will be added.</param>
         /// <param name="targetLocation">The location of this asset.</param>
+        /// <param name="elementId">The id of the element to instantiate.</param>
         /// <param name="instanceId">The identifier of the created instance.</param>
         /// <returns>An <see cref="AssetCompositeHierarchyData{UIElementDesign, UIElement}"/> containing the cloned elements of </returns>
         /// <remarks>This method will update the <see cref="Asset.BaseParts"/> property of the <see paramref="targetContainer"/>.</remarks>
-        public AssetCompositeHierarchyData<UIElementDesign, UIElement> CreateElementInstance(UIAssetBase targetContainer, string targetLocation, out Guid instanceId)
+        public AssetCompositeHierarchyData<UIElementDesign, UIElement> CreateElementInstance(UIAssetBase targetContainer, string targetLocation, Guid elementId, out Guid instanceId)
         {
-            var instance = (UILibraryAsset)CreateChildAsset(targetLocation);
+            // TODO: make a common base method in AssetCompositeHierarchy - the beginning of the method is similar to CreatePrefabInstance
+            var idRemapping = new Dictionary<Guid, Guid>();
+            var instance = (UILibraryAsset)CreateChildAsset(targetLocation, idRemapping);
 
             targetContainer.AddBasePart(instance.Base);
             instanceId = Guid.NewGuid();
@@ -61,7 +65,17 @@ namespace SiliconStudio.Xenko.Assets.UI
             {
                 elementEntry.BasePartInstanceId = instanceId;
             }
-            return instance.Hierarchy;
+            var result = new AssetCompositeHierarchyData<UIElementDesign, UIElement>();
+
+            if (!instance.Hierarchy.RootPartIds.Contains(elementId))
+                throw new ArgumentException(@"The given id cannot be found in the root parts of this library.", nameof(elementId));
+
+            var rootElementId = idRemapping[elementId];
+            foreach (var element in EnumerateChildParts(instance.Hierarchy.Parts[rootElementId], instance.Hierarchy, true))
+            {
+                result.Parts.Add(element);
+            }
+            return result;
         }
     }
 }

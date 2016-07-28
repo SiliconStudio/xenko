@@ -41,26 +41,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
             return Hierarchy?.DumpTo(writer) ?? false;
         }
 
-        public override Asset CreateChildAsset(string baseLocation)
-        {
-            var newAsset = (EntityHierarchyAssetBase)base.CreateChildAsset(baseLocation);
-
-            var newIdMaps = Hierarchy.Parts.ToDictionary(x => x.Entity.Id, x => Guid.NewGuid());
-            foreach (var entity in newAsset.Hierarchy.Parts)
-            {
-                // Store the baseid of the new version
-                entity.BaseId = entity.Entity.Id;
-                // Make sure that we don't replicate the base part InstanceId
-                entity.BasePartInstanceId = null;
-                // Apply the new Guid
-                entity.Entity.Id = newIdMaps[entity.Entity.Id];
-            }
-
-            AssetPartsAnalysis.RemapPartsId(newAsset.Hierarchy, newIdMaps);
-
-            return newAsset;
-        }
-
         /// <summary>
         /// Clones a sub-hierarchy of this asset.
         /// </summary>
@@ -89,7 +69,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             // we first copy the asset only (without the hierarchy), then the sub-hierarchy to extract.
             var subTreeRoot = Hierarchy.Parts[sourceRootEntity];
             var subTreeHierarchy = new AssetCompositeHierarchyData<EntityDesign, Entity> { Parts = { subTreeRoot }, RootPartIds = { sourceRootEntity } };
-            foreach (var subTreeEntity in EnumerateChildParts(subTreeRoot, true))
+            foreach (var subTreeEntity in EnumerateChildParts(subTreeRoot, Hierarchy, true))
                 subTreeHierarchy.Parts.Add(Hierarchy.Parts[subTreeEntity.Entity.Id]);
 
             // clone the entities of the sub-tree
