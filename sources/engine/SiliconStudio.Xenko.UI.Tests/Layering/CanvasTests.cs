@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             TestArrangeOverrideAbsolute();
         }
 
-        [OneTimeSetUp]
+        [TestFixtureSetUp]
         public void Initialize()
         {
             // create a rand variable changing from a test to the other
@@ -77,9 +77,12 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             Assert.AreEqual(new Vector3(0.5f, 0.5f, 0.5f), newElement.DependencyProperties.Get(RelativeSizePropertyKey));
             newElement.DependencyProperties.Set(RelativeSizePropertyKey, new Vector3(2.5f, 3.5f, 4.5f));
             Assert.AreEqual(new Vector3(2.5f, 3.5f, 4.5f), newElement.DependencyProperties.Get(RelativeSizePropertyKey));
-            Assert.Throws<InvalidOperationException>(() => newElement.DependencyProperties.Set(RelativeSizePropertyKey, new Vector3(-2.5f, 3.5f, 4.5f)));
-            Assert.Throws<InvalidOperationException>(() => newElement.DependencyProperties.Set(RelativeSizePropertyKey, new Vector3(2.5f, -3.5f, 4.5f)));
-            Assert.Throws<InvalidOperationException>(() => newElement.DependencyProperties.Set(RelativeSizePropertyKey, new Vector3(2.5f, 3.5f, -0.1f)));
+            Assert.DoesNotThrow(() => newElement.DependencyProperties.Set(RelativeSizePropertyKey, new Vector3(-2.4f, 3.5f, 4.5f)));
+            Assert.AreEqual(new Vector3(2.4f, 3.5f, 4.5f), newElement.DependencyProperties.Get(RelativeSizePropertyKey));
+            Assert.DoesNotThrow(() => newElement.DependencyProperties.Set(RelativeSizePropertyKey, new Vector3(2.5f, -3.4f, 4.5f)));
+            Assert.AreEqual(new Vector3(2.5f, 3.4f, 4.5f), newElement.DependencyProperties.Get(RelativeSizePropertyKey));
+            Assert.DoesNotThrow(() => newElement.DependencyProperties.Set(RelativeSizePropertyKey, new Vector3(2.5f, 3.5f, -4.4f)));
+            Assert.AreEqual(new Vector3(2.5f, 3.5f, 4.4f), newElement.DependencyProperties.Get(RelativeSizePropertyKey));
         }
 
         /// <summary>
@@ -118,8 +121,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             child.ExpectedMeasureValue = new Vector3(2,3,4);
             child.ReturnedMeasuredValue = new Vector3(4,3,2);
             Measure(10 * Vector3.One);
-
-            Assert.AreEqual(new Vector3(20f, 10f, 5f), DesiredSize);
+            // canvas size does not depend on its children
+            Assert.AreEqual(Vector3.Zero, DesiredSize);
         }
 
         /// <summary>
@@ -384,10 +387,11 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
 
             // check sizes with infinite measure values and absolute position
             child1.SetCanvasAbsolutePosition(new Vector3(1, -1, -3));
-            child1.ExpectedMeasureValue = new Vector3(float.PositiveInfinity, 0, 0);
+            child1.ExpectedMeasureValue = new Vector3(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
             child1.ReturnedMeasuredValue = new Vector3(2);
             canvas.Measure(new Vector3(float.PositiveInfinity));
-            Assert.AreEqual(new Vector3(3, 1, 0), canvas.DesiredSizeWithMargins);
+            // canvas size does not depend on its children
+            Assert.AreEqual(Vector3.Zero, canvas.DesiredSizeWithMargins);
 
             // check sizes with infinite measure values and relative position
             child1.SetCanvasPinOrigin(new Vector3(0, .5f, 1));
@@ -395,27 +399,32 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             child1.ExpectedMeasureValue = new Vector3(0);
             child1.ReturnedMeasuredValue = new Vector3(1);
             canvas.Measure(new Vector3(float.PositiveInfinity));
-            Assert.AreEqual(new Vector3(0.5f, 0.25f, 0), canvas.DesiredSizeWithMargins);
+            // canvas size does not depend on its children
+            Assert.AreEqual(Vector3.Zero, canvas.DesiredSizeWithMargins);
             child1.SetCanvasRelativePosition(new Vector3(0));
             child1.ExpectedMeasureValue = new Vector3(float.PositiveInfinity, 0, 0);
             child1.ReturnedMeasuredValue = new Vector3(1);
             canvas.Measure(new Vector3(float.PositiveInfinity));
-            Assert.AreEqual(new Vector3(1, 0.5f, 0), canvas.DesiredSizeWithMargins);
+            // canvas size does not depend on its children
+            Assert.AreEqual(Vector3.Zero, canvas.DesiredSizeWithMargins);
             child1.SetCanvasRelativePosition(new Vector3(0.5f));
             child1.ExpectedMeasureValue = new Vector3(float.PositiveInfinity);
             child1.ReturnedMeasuredValue = new Vector3(1);
             canvas.Measure(new Vector3(float.PositiveInfinity));
-            Assert.AreEqual(new Vector3(2, 1, 2), canvas.DesiredSizeWithMargins);
+            // canvas size does not depend on its children
+            Assert.AreEqual(Vector3.Zero, canvas.DesiredSizeWithMargins);
             child1.SetCanvasRelativePosition(new Vector3(1f));
             child1.ExpectedMeasureValue = new Vector3(float.PositiveInfinity);
             child1.ReturnedMeasuredValue = new Vector3(1);
             canvas.Measure(new Vector3(float.PositiveInfinity));
-            Assert.AreEqual(new Vector3(0, 0.5f, 1), canvas.DesiredSizeWithMargins);
+            // canvas size does not depend on its children
+            Assert.AreEqual(Vector3.Zero, canvas.DesiredSizeWithMargins);
             child1.SetCanvasRelativePosition(new Vector3(2f));
             child1.ExpectedMeasureValue = new Vector3(float.PositiveInfinity);
             child1.ReturnedMeasuredValue = new Vector3(1);
             canvas.Measure(new Vector3(float.PositiveInfinity));
-            Assert.AreEqual(new Vector3(0, 0.25f, 0.5f), canvas.DesiredSizeWithMargins);
+            // canvas size does not depend on its children
+            Assert.AreEqual(Vector3.Zero, canvas.DesiredSizeWithMargins);
 
             // check that the maximum is correctly taken
             var child2 = new MeasureValidator();
@@ -429,13 +438,14 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             child1.ReturnedMeasuredValue = new Vector3(10);
             child2.SetCanvasPinOrigin(new Vector3(0.5f));
             child2.SetCanvasRelativePosition(new Vector3(-.1f, .5f, 1.2f));
-            child2.ExpectedMeasureValue = new Vector3(0, float.PositiveInfinity, float.PositiveInfinity);
+            child2.ExpectedMeasureValue = new Vector3(float.PositiveInfinity);
             child2.ReturnedMeasuredValue = new Vector3(30.8f, 5, 48);
             child3.SetCanvasRelativeSize(new Vector3(0f, 1f, 2f));
             child3.ExpectedMeasureValue = new Vector3(0, float.PositiveInfinity, float.PositiveInfinity);
             child3.ReturnedMeasuredValue = new Vector3(0, 5, 50);
             canvas.Measure(new Vector3(float.PositiveInfinity));
-            Assert.AreEqual(new Vector3(14f, 10f, 25f), canvas.DesiredSizeWithMargins);
+            // canvas size does not depend on its children
+            Assert.AreEqual(Vector3.Zero, canvas.DesiredSizeWithMargins);
         }
     }
 }
