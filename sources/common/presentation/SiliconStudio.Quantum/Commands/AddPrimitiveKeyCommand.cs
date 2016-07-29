@@ -3,7 +3,6 @@
 
 using System;
 using System.Linq;
-using System.Threading.Tasks;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization.Contents;
@@ -46,8 +45,33 @@ namespace SiliconStudio.Quantum.Commands
             object newItem = null;
             // TODO: Find a better solution that doesn't require to reference Core.Serialization (and unreference this assembly)
             if (!dictionaryDescriptor.ValueType.GetCustomAttributes(typeof(ContentSerializerAttribute), true).Any())
-                newItem = !dictionaryDescriptor.ValueType.IsAbstract ? Activator.CreateInstance(dictionaryDescriptor.ValueType) : null;
+                newItem = CreateInstance(dictionaryDescriptor.ValueType);
             content.Add(newItem, newKey);
+        }
+
+        /// <summary>
+        /// Creates an instance of the specified type using that type's default constructor.
+        /// </summary>
+        /// <param name="type">The type of object to create.</param>
+        /// <returns>A reference to the newly created object.</returns>
+        /// <seealso cref="Activator.CreateInstance(Type)"/>
+        /// <exception cref="ArgumentNullException">type is null.</exception>
+        private static object CreateInstance(Type type)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+
+            // abstract type cannot be instantiated
+            if (type.IsAbstract)
+                return null;
+
+            // string is a special case
+            if (type == typeof(string))
+                return string.Empty;
+
+            // note:
+            //      Type not having a public parameterless constructor will throw a MissingMethodException at this point.
+            //      This is intended as YAML serialization requires this constructor.
+            return Activator.CreateInstance(type);
         }
 
         private static Index GenerateStringKey(object value, ITypeDescriptor descriptor, string baseValue)
