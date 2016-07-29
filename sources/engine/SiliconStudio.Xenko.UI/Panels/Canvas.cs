@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Diagnostics;
 
@@ -74,13 +75,14 @@ namespace SiliconStudio.Xenko.UI.Panels
             parentCanvas?.InvalidateMeasure();
         }
 
+        /// <inheritdoc/>
         protected override Vector3 MeasureOverride(Vector3 availableSizeWithoutMargins)
         {
             // Measure all the children
-            // Canvas does not take into account possible collisions between children
+            // Note: canvas does not take into account possible collisions between children
             foreach (var child in VisualChildrenCollection)
             {
-                var childAvailableSizeWithMargin = new Vector3(float.PositiveInfinity);
+                var childAvailableSizeWithoutMargins = new Vector3(float.PositiveInfinity);
                 // override the available space if the child size is relative to its parent's.
                 var childRelativeSize = child.DependencyProperties.Get(RelativeSizePropertyKey);
                 for (var i = 0; i < 3; i++)
@@ -88,29 +90,23 @@ namespace SiliconStudio.Xenko.UI.Panels
                     if (float.IsNaN(childRelativeSize[i])) // relative size is not set
                         continue;
 
-                    childAvailableSizeWithMargin[i] = childRelativeSize[i] > 0 ? childRelativeSize[i]*availableSizeWithoutMargins[i] : 0f; // avoid NaN due to 0 x Infinity
+                    childAvailableSizeWithoutMargins[i] = childRelativeSize[i] > 0 ? childRelativeSize[i]*availableSizeWithoutMargins[i] : 0f; // avoid NaN due to 0 x Infinity
                 }
 
-                child.Measure(childAvailableSizeWithMargin);
+                child.Measure(CalculateSizeWithThickness(ref childAvailableSizeWithoutMargins, ref child.MarginInternal));
             }
 
             return Vector3.Zero;
         }
 
+        /// <inheritdoc/>
         protected override Vector3 ArrangeOverride(Vector3 finalSizeWithoutMargins)
         {
             // Arrange all the children
             foreach (var child in VisualChildrenCollection)
             {
-                // calculate the size provided to the child
-                var availableSize = ComputeAvailableSize(child, finalSizeWithoutMargins, true); //should we force the element size when element relative size is set ???
-                var childProvidedSize = new Vector3(
-                    Math.Min(availableSize.X, child.DesiredSizeWithMargins.X),
-                    Math.Min(availableSize.Y, child.DesiredSizeWithMargins.Y),
-                    Math.Min(availableSize.Z, child.DesiredSizeWithMargins.Z));
-                
                 // arrange the child
-                child.Arrange(childProvidedSize, IsCollapsed);
+                child.Arrange(child.DesiredSizeWithMargins, IsCollapsed);
 
                 // compute the child offsets wrt parent (left,top,front) corner
                 var pinOrigin = child.DependencyProperties.Get(PinOriginPropertyKey);
@@ -155,6 +151,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <param name="availableSize">The space available to the canvas</param>
         /// <param name="ignoreRelativeSize">Indicate if the child RelativeSize property should be taken in account or nor</param>
         /// <returns></returns>
+        [Obsolete]
         protected Vector3 ComputeAvailableSize(UIElement child, Vector3 availableSize, bool ignoreRelativeSize)
         {
             // calculate the absolute position of the child
