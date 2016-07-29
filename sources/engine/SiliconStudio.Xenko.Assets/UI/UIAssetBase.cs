@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Assets.UI
             // we first copy the asset only (without the hierarchy), then the sub-hierarchy to extract.
             var subTreeRoot = Hierarchy.Parts[sourceRootId];
             var subTreeHierarchy = new AssetCompositeHierarchyData<UIElementDesign, UIElement> { Parts = { subTreeRoot }, RootPartIds = { sourceRootId } };
-            foreach (var subTreeDesign in EnumerateChildParts(subTreeRoot, true))
+            foreach (var subTreeDesign in EnumerateChildParts(subTreeRoot, Hierarchy, true))
                 subTreeHierarchy.Parts.Add(Hierarchy.Parts[subTreeDesign.UIElement.Id]);
 
             // clone the parts of the sub-tree
