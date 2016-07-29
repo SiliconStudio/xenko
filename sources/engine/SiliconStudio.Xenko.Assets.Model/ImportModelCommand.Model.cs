@@ -174,7 +174,7 @@ namespace SiliconStudio.Xenko.Assets.Model
                     // Cancel pivot translation
                     // TODO: Review if that is the correct way to do that...
                     if (skeleton == null)
-                        skinning.Bones[i].LinkToMeshMatrix = Matrix.Multiply(skinning.Bones[i].LinkToMeshMatrix, Matrix.Translation(PivotPosition));
+                        skinning.Bones[i].LinkToMeshMatrix = Matrix.Multiply(skinning.Bones[i].LinkToMeshMatrix, Matrix.Translation(PivotPosition * ScaleImport));
                 }
             }
 
