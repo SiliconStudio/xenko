@@ -69,7 +69,20 @@ namespace SiliconStudio.Xenko.Rendering.Images
             //---------------------------------
             if (camera != null)
             {
+                // Set Near/Far pre-calculated factors to speed up the linear depth reconstruction
                 cszImageEffect.Parameters.Set(CameraKeys.ZProjection, CameraKeys.ZProjectionACalculate(camera.NearClipPlane, camera.FarClipPlane));
+
+                Vector4 ScreenSize = new Vector4(originalColorBuffer.Width, originalColorBuffer.Height, 0, 0);
+                ScreenSize.Z = ScreenSize.X / ScreenSize.Y;
+                cszImageEffect.Parameters.Set(ReconstructCameraSpaceZKeys.ScreenInfo, ScreenSize);
+
+                // Projection infor used to reconstruct the View space position from linear depth
+                var p00 = camera.ProjectionMatrix.M11;
+                var p11 = camera.ProjectionMatrix.M22;
+                var p02 = camera.ProjectionMatrix.M13;
+                var p12 = camera.ProjectionMatrix.M23;
+                Vector4 projInfo = new Vector4(-2.0f / (ScreenSize.X * p00), -2.0f / (ScreenSize.Y * p11), (1.0f - p02) / p00, (1.0f + p12) / p11);
+                cszImageEffect.Parameters.Set(ReconstructCameraSpaceZKeys.ProjInfo, projInfo);
 
                 Matrix projInverse;
                 Matrix.Invert(ref camera.ProjectionMatrix, out projInverse);
@@ -84,16 +97,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 Matrix.Invert(ref viewProj, out viewProjInverse);
                 cszImageEffect.Parameters.Set(ReconstructCameraSpaceZKeys.InverseViewProjection, viewProjInverse);
 
-                // DON'T NEED THIS
-                Vector4 clipInfo = new Vector4(100f, -999.9f, 1000f, 0);
-                cszImageEffect.Parameters.Set(ReconstructCameraSpaceZKeys.ClipInfo, clipInfo);
-
-                var p00 = camera.ProjectionMatrix.M11;
-                var p11 = camera.ProjectionMatrix.M22;
-                var p02 = camera.ProjectionMatrix.M13;
-                var p12 = camera.ProjectionMatrix.M23;
-                Vector4 projInfo = new Vector4(-2.0f / (1024 * p00), -2.0f / (768 * p11), (1.0f - p02) / p00, (1.0f + p12) / p11);
-                cszImageEffect.Parameters.Set(ReconstructCameraSpaceZKeys.ProjInfo, projInfo);
 
             }
             cszImageEffect.SetInput(0, originalColorBuffer);

@@ -14,12 +14,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
         float4x4 InverseProjection;
         float4x4 InverseView;
         float4x4 InverseViewProjection;
-        float4   ClipInfo;    // .x = zN * zF, .y = zN - zF, .z = zF
         float4   ProjInfo;    // .x = zN * zF, .y = zN - zF, .z = zF
+        float4   ScreenInfo;  // .x = Width, .y = Height, .z = Aspect
 
 
         stage float reconstructCSZ(float depth)
         {
+            // ZProjection is defined in Camera.xksl
             return ZProjection.y / (depth - ZProjection.x);
         }
 
@@ -40,7 +41,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             float linearDepth = reconstructCSZ(depth);
 
             // Reconstruct View space position XYZ
-            float3 cameraPosition = reconstructCSPosition(streams.TexCoord.xy * float2(1024, 768) + float2(0.5, 0.5), linearDepth);
+            float3 cameraPosition = reconstructCSPosition(streams.TexCoord.xy * ScreenInfo.xy + float2(0.5, 0.5), linearDepth);
                    cameraPosition.x *= -1;
 
             // Reconstruct View space normal NxNyNz

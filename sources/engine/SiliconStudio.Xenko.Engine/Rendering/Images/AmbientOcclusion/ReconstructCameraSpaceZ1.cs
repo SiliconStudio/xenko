@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         public static readonly ValueParameterKey<Matrix> InverseProjection = ParameterKeys.NewValue<Matrix>();
         public static readonly ValueParameterKey<Matrix> InverseView = ParameterKeys.NewValue<Matrix>();
         public static readonly ValueParameterKey<Matrix> InverseViewProjection = ParameterKeys.NewValue<Matrix>();
-        public static readonly ValueParameterKey<Vector4> ClipInfo = ParameterKeys.NewValue<Vector4>();
         public static readonly ValueParameterKey<Vector4> ProjInfo = ParameterKeys.NewValue<Vector4>();
+        public static readonly ValueParameterKey<Vector4> ScreenInfo = ParameterKeys.NewValue<Vector4>();
     }
 }
