@@ -1,0 +1,75 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
+
+namespace SiliconStudio.Xenko.Rendering.Images
+{
+    shader ReconstructCameraSpaceZ : ImageEffectShader, Camera
+    {
+        // TODO WorldViewProjection matrix
+
+        float4x4 InverseProjection;
+        float4x4 InverseView;
+        float4x4 InverseViewProjection;
+        float4   ClipInfo;    // .x = zN * zF, .y = zN - zF, .z = zF
+        float4   ProjInfo;    // .x = zN * zF, .y = zN - zF, .z = zF
+
+
+        stage float reconstructCSZ(float depth)
+        {
+            return ZProjection.y / (depth - ZProjection.x);
+        }
+
+        stage float3 reconstructCSPosition(float2 S, float z)
+        {
+            return float3((S.xy * ProjInfo.xy + ProjInfo.zw) * z, z);
+        }
+
+        stage float3 reconstructCSNormal(float3 position)
+        {
+            return normalize(cross(ddy(position), ddx(position)));
+        }
+
+        stage override float4 Shading()
+        {
+            // Reconstruct View space linear depth Z from the depth buffer
+            float depth = Texture1.Sample(Sampler, streams.TexCoord).x;
+            float linearDepth = reconstructCSZ(depth);
+
+            // Reconstruct View space position XYZ
+            float3 cameraPosition = reconstructCSPosition(streams.TexCoord.xy * float2(1024, 768) + float2(0.5, 0.5), linearDepth);
+                   cameraPosition.x *= -1;
+
+            // Reconstruct View space normal NxNyNz
+            float3 normalVector = reconstructCSNormal(cameraPosition.xyz);
+                   normalVector.xy *= -1;
+
+
+
+            /************************
+            // Debug - visualize different
+            //************************
+
+            /************************
+            // Visualize depth as color bands
+            //************************
+            float4 color = Texture0.Sample(Sampler, streams.TexCoord);
+            color.r = ((float)(linearDepth % 4)) / 4.0;
+            color.g = ((float)((linearDepth / 4) % 4)) / 4.0;
+            color.b = ((float)((linearDepth / 16) % 4)) / 4.0;
+            return color; //*/
+
+            //************************
+            // Visualize depth as view space position OR view space normal
+            //************************
+            float4 color = Texture0.Sample(Sampler, streams.TexCoord);
+            color.rgb = normalVector.xyz;
+            return color; //*/
+
+        }
+
+    };
+}

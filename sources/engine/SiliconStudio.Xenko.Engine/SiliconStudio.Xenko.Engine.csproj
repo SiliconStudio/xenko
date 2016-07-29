@@ -211,8 +211,18 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
-    <Compile Include="Rendering\Images\DepthOfField\AmbientOcclusion.cs" />
-    <Compile Include="Rendering\Images\DepthOfField\ScreenSpaceAmbientOcclusion.cs">
+    <Compile Include="Rendering\Images\AmbientOcclusion\AmbientOcclusion.cs" />
+    <None Include="Rendering\Images\AmbientOcclusion\ReconstructCameraSpaceZ.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ReconstructCameraSpaceZ1.cs</LastGenOutput>
+    </None>
+    <Compile Include="Rendering\Images\AmbientOcclusion\ReconstructCameraSpaceZ1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ReconstructCameraSpaceZ.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Images\AmbientOcclusion\ScreenSpaceAmbientOcclusion.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -421,7 +431,7 @@
     <Compile Include="Rendering\TransformRenderFeature.cs" />
     <Compile Include="Rendering\RenderDrawContext.cs" />
     <Compile Include="Rendering\TransparentRenderStageSelector.cs" />
-    <None Include="Rendering\Images\DepthOfField\ScreenSpaceAmbientOcclusion.xksl">
+    <None Include="Rendering\Images\AmbientOcclusion\ScreenSpaceAmbientOcclusion.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ScreenSpaceAmbientOcclusion.cs</LastGenOutput>
     </None>
