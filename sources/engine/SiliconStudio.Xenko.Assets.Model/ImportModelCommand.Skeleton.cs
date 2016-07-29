@@ -101,7 +101,7 @@ namespace SiliconStudio.Xenko.Assets.Model
             for (int i = 0; i < skeleton.Nodes.Length; ++i)
             {
                 if (skeleton.Nodes[i].ParentIndex == 0)
-                    skeleton.Nodes[i].Transform.Position -= PivotPosition;
+                    skeleton.Nodes[i].Transform.Position -= PivotPosition * ScaleImport;
             }
         }
     }

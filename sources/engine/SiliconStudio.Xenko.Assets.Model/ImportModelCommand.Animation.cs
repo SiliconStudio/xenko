@@ -208,7 +208,7 @@ namespace SiliconStudio.Xenko.Assets.Model
                                     var keyFrames = ((AnimationCurve<Vector3>)curve).KeyFrames;
                                     for (int i = 0; i < keyFrames.Count; ++i)
                                     {
-                                        keyFrames.Items[i].Value -= PivotPosition;
+                                        keyFrames.Items[i].Value -= PivotPosition * ScaleImport;
                                     }
                                 }
                                 animationClip.AddCurve($"[ModelComponent.Key].Skeleton.NodeTransformations[{skeletonMapping.SourceToTarget[nodeIndex]}]." + channelName, curve);
