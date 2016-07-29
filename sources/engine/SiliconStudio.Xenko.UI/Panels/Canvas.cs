@@ -62,9 +62,9 @@ namespace SiliconStudio.Xenko.UI.Panels
         private static void CoerceRelativeSize(ref Vector3 value)
         {
             // All the components of the relative size must be positive
-            value.X = Math.Max(value.X, 0.0f);
-            value.Y = Math.Max(value.Y, 0.0f);
-            value.Z = Math.Max(value.Z, 0.0f);
+            value.X = Math.Abs(value.X);
+            value.Y = Math.Abs(value.Y);
+            value.Z = Math.Abs(value.Z);
         }
 
         private static void InvalidateCanvasMeasure<T>(object propertyOwner, PropertyKey<T> propertyKey, T propertyOldValue)
