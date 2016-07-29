@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             TestArrangeOverrideAbsolute();
         }
 
-        [TestFixtureSetUp]
+        [OneTimeSetUp]
         public void Initialize()
         {
             // create a rand variable changing from a test to the other
@@ -118,6 +118,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             child.ExpectedMeasureValue = new Vector3(2,3,4);
             child.ReturnedMeasuredValue = new Vector3(4,3,2);
             Measure(10 * Vector3.One);
+
             Assert.AreEqual(new Vector3(20f, 10f, 5f), DesiredSize);
         }
 
@@ -364,54 +365,6 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             parentSize = new Vector3(float.PositiveInfinity);
             child.SetCanvasRelativePosition(new Vector3(-1.5f, 0, 1.5f));
             Utilities.AreExactlyEqual(new Vector3(float.NegativeInfinity, 0f, float.PositiveInfinity), ComputeAbsolutePinPosition(child, ref parentSize));
-        }
-
-        /// <summary>
-        /// Test the function <see cref="Canvas.ComputeAvailableSize"/>.
-        /// </summary>
-        [Test]
-        public void TestComputeAvailableSize()
-        {
-            var child = new Button();
-            child.SetCanvasPinOrigin(new Vector3(0, 0.5f, 1));
-
-            // tests in the cases position is absolute
-            var availableSize = new Vector3(100, 150, 200);
-            child.SetCanvasAbsolutePosition(new Vector3(-1, -2, -3));
-            Utilities.AreExactlyEqual(new Vector3(0), ComputeAvailableSize(child, availableSize, false));
-            child.SetCanvasAbsolutePosition(new Vector3(0, 0, 0));
-            Utilities.AreExactlyEqual(new Vector3(100, 0, 0), ComputeAvailableSize(child, availableSize, false));
-            child.SetCanvasAbsolutePosition(new Vector3(1, 2, 3));
-            Utilities.AreExactlyEqual(new Vector3(99, 4, 3), ComputeAvailableSize(child, availableSize, false));
-            child.SetCanvasAbsolutePosition(availableSize);
-            Utilities.AreExactlyEqual(new Vector3(0, 0, 200), ComputeAvailableSize(child, availableSize, false));
-            child.SetCanvasAbsolutePosition(availableSize + new Vector3(1, 2, 3));
-            Utilities.AreExactlyEqual(new Vector3(0), ComputeAvailableSize(child, availableSize, false));
-
-            // tests in the cases position is relative
-            child.SetCanvasRelativePosition(new Vector3(-1, -2, -3));
-            Utilities.AreExactlyEqual(new Vector3(0), ComputeAvailableSize(child, availableSize, false));
-            child.SetCanvasRelativePosition(new Vector3(0, 0, 0));
-            Utilities.AreExactlyEqual(new Vector3(100, 0, 0), ComputeAvailableSize(child, availableSize, false));
-            child.SetCanvasRelativePosition(new Vector3(0.1f, 0.2f, 0.4f));
-            Utilities.AreExactlyEqual(new Vector3(90, 60, 80), ComputeAvailableSize(child, availableSize, false));
-            child.SetCanvasRelativePosition(new Vector3(1f));
-            Utilities.AreExactlyEqual(new Vector3(0, 0, 200), ComputeAvailableSize(child, availableSize, false));
-            child.SetCanvasRelativePosition(new Vector3(1.1f, 2f, 3f));
-            Utilities.AreExactlyEqual(new Vector3(0), ComputeAvailableSize(child, availableSize, false));
-
-            // tests in the case available size are infinite
-            availableSize = new Vector3(float.PositiveInfinity);
-            child.SetCanvasAbsolutePosition(new Vector3(-1, -2, -3));
-            Utilities.AreExactlyEqual(new Vector3(0), ComputeAvailableSize(child, availableSize, false));
-            child.SetCanvasAbsolutePosition(new Vector3(1, 2, 3));
-            Utilities.AreExactlyEqual(new Vector3(float.PositiveInfinity, 4, 3), ComputeAvailableSize(child, availableSize, false));
-            child.SetCanvasRelativePosition(new Vector3(-1f, -2f, -3f));
-            Utilities.AreExactlyEqual(new Vector3(0), ComputeAvailableSize(child, availableSize, false));
-            child.SetCanvasRelativePosition(new Vector3(1f, 2f, 3f));
-            Utilities.AreExactlyEqual(new Vector3(float.PositiveInfinity), ComputeAvailableSize(child, availableSize, false));
-            child.SetCanvasRelativeSize(new Vector3(0, 0.5f, 1.5f));
-            Utilities.AreExactlyEqual(new Vector3(0, float.PositiveInfinity, float.PositiveInfinity), ComputeAvailableSize(child, availableSize, false));
         }
 
         /// <summary>

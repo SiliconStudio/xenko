@@ -143,48 +143,5 @@ namespace SiliconStudio.Xenko.UI.Panels
 
             return absolutePosition;
         }
-
-        /// <summary>
-        /// Compute the space available to the provided child based on size available to the canvas and the child layout properties.
-        /// </summary>
-        /// <param name="child">The child of the canvas to measure/arrange</param>
-        /// <param name="availableSize">The space available to the canvas</param>
-        /// <param name="ignoreRelativeSize">Indicate if the child RelativeSize property should be taken in account or nor</param>
-        /// <returns></returns>
-        [Obsolete]
-        protected Vector3 ComputeAvailableSize(UIElement child, Vector3 availableSize, bool ignoreRelativeSize)
-        {
-            // calculate the absolute position of the child
-            var pinPosition = ComputeAbsolutePinPosition(child, ref availableSize);
-            var pinOrigin = child.DependencyProperties.Get(PinOriginPropertyKey);
-            var relativeSize = child.DependencyProperties.Get(RelativeSizePropertyKey);
-            var childAvailableSize = Vector3.Zero;
-
-            for (var dim = 0; dim < 3; dim++)
-            {
-                if (!ignoreRelativeSize && !float.IsNaN(relativeSize[dim]))
-                {
-                    childAvailableSize[dim] = relativeSize[dim] > 0? relativeSize[dim] * availableSize[dim]: 0f;
-                }
-                else if (pinPosition[dim] < 0 || pinPosition[dim] > availableSize[dim])
-                {
-                    childAvailableSize[dim] = 0;
-                }
-                else
-                {
-                    var availableBeforeElement = float.PositiveInfinity;
-                    if (pinPosition[dim] >= 0 && pinOrigin[dim] > 0)
-                        availableBeforeElement = pinPosition[dim] / pinOrigin[dim];
-
-                    var availableAfterElement = float.PositiveInfinity;
-                    if (pinPosition[dim] <= availableSize[dim] && !float.IsPositiveInfinity(pinPosition[dim]) && pinOrigin[dim] < 1)
-                        availableAfterElement = (availableSize[dim] - pinPosition[dim]) / (1f - pinOrigin[dim]);
-
-                    childAvailableSize[dim] = Math.Min(availableBeforeElement, availableAfterElement);
-                }
-            }
-
-            return childAvailableSize;
-        }
     }
 }
