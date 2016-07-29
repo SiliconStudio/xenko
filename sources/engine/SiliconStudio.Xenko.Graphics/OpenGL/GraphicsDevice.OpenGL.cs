@@ -344,24 +344,39 @@ namespace SiliconStudio.Xenko.Graphics
 
         private int CreateCopyProgram(bool srgb, out int offsetLocation, out int scaleLocation)
         {
+            string shaderVersion, inAttribute, outAttribute, varyingFragment, fragColorDeclaration, fragColorVariable, textureAPI;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            const string shaderVersion = "#version 100\n";
-            const string inAttribute = "attribute";
-            const string outAttribute = "varying";
-            const string fragColorDeclaration = "";
-            const string fragColorVariable = "gl_FragColor";
-            const string textureAPI = "texture2D";
+            // We aim at OpenGLES 3.0 or greater.
+            shaderVersion = "#version 300 es";
 #else
-            const string shaderVersion = "#version 410\n";
-            const string inAttribute = "in";
-            const string outAttribute = "out";
-            const string fragColorDeclaration = "out vec4 gFragColor;\n";
-            const string fragColorVariable = "gFragColor";
-            const string textureAPI = "texture";
+            shaderVersion = "#version 410";
 #endif
 
-            const string copyVertexShaderSource =
-                shaderVersion +
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+            if (currentVersion < 300)
+            {
+                // Override the version
+                shaderVersion = "#version 100";
+                inAttribute = "attribute";
+                outAttribute = "varying";
+                varyingFragment = "varying";
+                fragColorDeclaration = "";
+                fragColorVariable = "gl_FragColor";
+                textureAPI = "texture2D";
+            }
+            else
+#endif
+            {
+                inAttribute = "in";
+                outAttribute = "out";
+                varyingFragment = "in";
+                fragColorDeclaration = "out vec4 gFragColor;\n";
+                fragColorVariable = "gFragColor";
+                textureAPI = "texture";
+            }
+
+            string copyVertexShaderSource =
+                shaderVersion + "\n" +
                 inAttribute + " vec2 aPosition;   \n" +
                 outAttribute + " vec2 vTexCoord;  \n" +
                 "uniform vec4 uScale;     \n" +
@@ -373,10 +388,10 @@ namespace SiliconStudio.Xenko.Graphics
                 "   vTexCoord = transformedPosition.xy;   \n" +
                 "}                           \n";
 
-            const string copyFragmentShaderSource =
-                shaderVersion +
+            string copyFragmentShaderSource =
+                shaderVersion + "\n" +
                 "precision mediump float;                            \n" +
-                inAttribute + " vec2 vTexCoord;                     \n" +
+                varyingFragment + " vec2 vTexCoord;                  \n" +
                 fragColorDeclaration +
                 "uniform sampler2D s_texture;                        \n" +
                 "void main()                                         \n" +
@@ -384,10 +399,10 @@ namespace SiliconStudio.Xenko.Graphics
                 "    " + fragColorVariable + " = " + textureAPI + "(s_texture, vTexCoord); \n" +
                 "}                                                   \n";
 
-            const string copyFragmentShaderSourceSRgb =
-                shaderVersion +
+            string copyFragmentShaderSourceSRgb =
+                shaderVersion + "\n" +
                 "precision mediump float;                            \n" +
-                inAttribute + " vec2 vTexCoord;                     \n" +
+                varyingFragment + " vec2 vTexCoord;                  \n" +
                 fragColorDeclaration +
                 "uniform sampler2D s_texture;                        \n" +
                 "void main()                                         \n" +
