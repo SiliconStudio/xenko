@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
@@ -39,9 +40,9 @@ namespace SiliconStudio.Xenko.Profiling
         private readonly StringBuilder profilersStringBuilder = new StringBuilder();
         private string profilersString = "";
 
-        readonly object stringLock = new object();
+        private readonly object stringLock = new object();
 
-        struct ProfilingResult : IComparer<ProfilingResult>
+        private struct ProfilingResult : IComparer<ProfilingResult>
         {
             public long AccumulatedTime;
             public long MinTime;
@@ -76,7 +77,7 @@ namespace SiliconStudio.Xenko.Profiling
             gcCollectionsStringBase =   "Collections>   Gen 0: {0} Gen 1: {1} Gen 3: {2}"; 
         }
 
-        readonly Stopwatch dumpTiming = Stopwatch.StartNew();
+        private readonly Stopwatch dumpTiming = Stopwatch.StartNew();
 
         private Task stringBuilderTask;
 
@@ -268,7 +269,7 @@ namespace SiliconStudio.Xenko.Profiling
             profilersStringBuilder.Append("\n");
         }
 
-        public string GetValue(ProfilingCustomValue? value)
+        private static string GetValue(ProfilingCustomValue? value)
         {
             if (!value.HasValue) return "";
 
@@ -326,9 +327,15 @@ namespace SiliconStudio.Xenko.Profiling
                 spriteBatch.DrawString(Font, fpsStatString, new Vector2(10, 30), TextColor);
                 spriteBatch.DrawString(Font, profilersString, new Vector2(10, 40), TextColor);               
             }
+
             spriteBatch.End();
         }
 
+        /// <summary>
+        /// Enables the profiling system drawing.
+        /// </summary>
+        /// <param name="excludeKeys">If true the keys specified after are excluded from rendering, if false they will be exclusively included.</param>
+        /// <param name="keys">The keys to exclude or include.</param>
         public void EnableProfiling(bool excludeKeys = false, params ProfilingKey[] keys)
         {
             Enabled = true;
@@ -360,6 +367,9 @@ namespace SiliconStudio.Xenko.Profiling
             gcProfiler.Enable();
         }
 
+        /// <summary>
+        /// Disables the profiling system drawing.
+        /// </summary>
         public void DisableProfiling()
         {
             Enabled = false;
@@ -369,10 +379,19 @@ namespace SiliconStudio.Xenko.Profiling
             gcProfiler.Disable();
         }
 
+        /// <summary>
+        /// Sets or gets the color to use when drawing the profiling system fonts.
+        /// </summary>
         public Color4 TextColor { get; set; } = Color.LightGreen;
 
+        /// <summary>
+        /// Sets or gets the font to use when drawing the profiling system text.
+        /// </summary>
         public SpriteFont Font { get; set; }
 
-        public GameProfilingSorting SortingMode { get; set; } = GameProfilingSorting.ByTime;
+        /// <summary>
+        /// Sets or gets the way the printed information will be sorted.
+        /// </summary>
+        public GameProfilingSorting SortingMode { get; set; } = GameProfilingSorting.ByTime; 
     }
 }

@@ -45,6 +45,7 @@ namespace SiliconStudio.Xenko.Assets.Model
             sourceBuildStep.AnimationRepeatMode = asset.RepeatMode;
             sourceBuildStep.AnimationRootMotion = asset.RootMotion;
             sourceBuildStep.ScaleImport = asset.ScaleImport;
+            sourceBuildStep.PivotPosition = asset.PivotPosition;
             sourceBuildStep.SkeletonUrl = skeleton?.Location;
 
             var additiveAnimationAsset = asset as AdditiveAnimationAsset;
@@ -71,6 +72,7 @@ namespace SiliconStudio.Xenko.Assets.Model
                 baseBuildStep.AnimationRepeatMode = asset.RepeatMode;
                 baseBuildStep.AnimationRootMotion = asset.RootMotion;
                 baseBuildStep.ScaleImport = asset.ScaleImport;
+                baseBuildStep.PivotPosition = asset.PivotPosition;
                 baseBuildStep.SkeletonUrl = skeleton?.Location;
 
                 // Import base and main animation
