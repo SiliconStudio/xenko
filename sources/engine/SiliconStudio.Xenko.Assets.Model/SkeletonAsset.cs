@@ -6,6 +6,7 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Assets.Model
 {
@@ -40,6 +41,12 @@ namespace SiliconStudio.Xenko.Assets.Model
         [DataMember(10)]
         [DefaultValue(1.0f)]
         public float ScaleImport { get; set; } = 1.0f;
+
+        /// <summary>
+        /// Gets or sets the pivot position, that will be used as center of object.
+        /// </summary>
+        [DataMember(15)]
+        public Vector3 PivotPosition { get; set; }
 
         /// <summary>
         /// List that stores if a node should be preserved
