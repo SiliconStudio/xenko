@@ -21,10 +21,34 @@ namespace SiliconStudio.Xenko.Rendering.Images
         private ImageEffectShader cszImageEffect;
 
         [DataMember(10)]
-        [DefaultValue(15)]
+        [DefaultValue(9)]
         [DataMemberRange(1, 100)]
         [Display("Number of samples")]
-        public int NumberOfSamples { get; set; }
+        public int NumberOfSamples { get; set; } = 9;
+
+
+
+        [DataMember(20)]
+        [DefaultValue(1)]
+        [Display("Projection Scale")]
+        public float ParamProjScale { get; set; } = 1f;
+
+        [DataMember(30)]
+        [DefaultValue(1)]
+        [Display("Occlusion Intensity")]
+        public float ParamIntensity { get; set; } = 1f;
+
+        [DataMember(40)]
+        [DefaultValue(0.01f)]
+        [Display("Bias")]
+        public float ParamBias { get; set; } = 0.01f;
+
+        [DataMember(50)]
+        [DefaultValue(1)]
+        [Display("Tap Radius")]
+        public float ParamRadius { get; set; } = 1f;
+
+
 
         public AmbientOcclusion()
         {
@@ -84,26 +108,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 Vector4 projInfo = new Vector4(-2.0f / (ScreenSize.X * p00), -2.0f / (ScreenSize.Y * p11), (1.0f - p02) / p00, (1.0f + p12) / p11);
                 cszImageEffect.Parameters.Set(ReconstructCameraSpaceZKeys.ProjInfo, projInfo);
 
-                Matrix projInverse;
-                Matrix.Invert(ref camera.ProjectionMatrix, out projInverse);
-                cszImageEffect.Parameters.Set(ReconstructCameraSpaceZKeys.InverseProjection, projInverse);
-
-                Matrix viewInverse;
-                Matrix.Invert(ref camera.ViewMatrix, out viewInverse);
-                cszImageEffect.Parameters.Set(ReconstructCameraSpaceZKeys.InverseView, viewInverse);
-
-                Matrix viewProj = camera.ViewMatrix * camera.ProjectionMatrix;
-                Matrix viewProjInverse;
-                Matrix.Invert(ref viewProj, out viewProjInverse);
-                cszImageEffect.Parameters.Set(ReconstructCameraSpaceZKeys.InverseViewProjection, viewProjInverse);
-
                 //**********************************
                 // User parameters
-                float ParamProjScale = 1;
-                float ParamIntensity = 1;
-                float ParamBias = 0.01f;
-                float ParamRadius = 1;
-
                 cszImageEffect.Parameters.Set(ReconstructCameraSpaceZKeys.ParamProjScale, ParamProjScale);
                 cszImageEffect.Parameters.Set(ReconstructCameraSpaceZKeys.ParamIntensity, ParamIntensity);
                 cszImageEffect.Parameters.Set(ReconstructCameraSpaceZKeys.ParamBias, ParamBias);
