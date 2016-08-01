@@ -19,6 +19,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
     {
         private ImageEffectShader aoImageEffect;
         private ImageEffectShader cszImageEffect;
+        private ImageEffectShader blurH;
+        private ImageEffectShader blurV;
+        private string nameGaussianBlurH;
+        private string nameGaussianBlurV;
+
+        private Vector2[] offsetsWeights;
 
         [DataMember(10)]
         [DefaultValue(9)]
@@ -59,8 +65,17 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             base.InitializeCore();
 
-            aoImageEffect = ToLoadAndUnload(new ImageEffectShader("ScreenSpaceAmbientOcclusion"));
+            aoImageEffect  = ToLoadAndUnload(new ImageEffectShader("ApplyAmbientOcclusionShader"));
             cszImageEffect = ToLoadAndUnload(new ImageEffectShader("ReconstructCameraSpaceZ"));
+
+            blurH = ToLoadAndUnload(new ImageEffectShader("GaussianBlurEffect"));
+            blurV = ToLoadAndUnload(new ImageEffectShader("GaussianBlurEffect"));
+            blurH.Initialize(Context);
+            blurV.Initialize(Context);
+
+            // Setup Horizontal parameters
+            blurH.Parameters.Set(GaussianBlurKeys.VerticalBlur, false);
+            blurV.Parameters.Set(GaussianBlurKeys.VerticalBlur, true);
         }
 
         protected override void Destroy()
@@ -89,8 +104,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var camera = context.RenderContext.GetCurrentCamera();
 
             //---------------------------------
-            // Camera Space Z
+            // Ambient Occlusion
             //---------------------------------
+
+            var aoTexture1 = NewScopedRenderTarget2D(originalColorBuffer.Width, originalColorBuffer.Height, PixelFormat.R8_UNorm, 1);
+            var aoTexture2 = NewScopedRenderTarget2D(originalColorBuffer.Width, originalColorBuffer.Height, PixelFormat.R8_UNorm, 1);
+
             if (camera != null)
             {
                 // Set Near/Far pre-calculated factors to speed up the linear depth reconstruction
@@ -119,22 +138,50 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             cszImageEffect.SetInput(0, originalColorBuffer);
             cszImageEffect.SetInput(1, originalDepthBuffer);
-            cszImageEffect.SetOutput(outputTexture);
-            cszImageEffect.Draw(context, "CameraSpaceZ");
+            cszImageEffect.SetOutput(aoTexture1);
+            cszImageEffect.Draw(context, "CameraSpaceZAO");
 
-            //---------------------------------
-            // Ambient Occlusion
-            //---------------------------------
 
-            //aoImageEffect.Parameters.Set(ThresholdAlphaCoCKeys.CoCReference, previousCoC);
-            //aoImageEffect.Parameters.Set(ThresholdAlphaCoCKeys.CoCCurrent, levelConfig.CoCValue);
+            int Radius = 5;
+            float SigmaRatio = 2.0f;
+            var size = Radius * 2 + 1;
+            if (offsetsWeights == null)
+            {
+                nameGaussianBlurH = string.Format("GaussianBlurH{0}x{0}", size);
+                nameGaussianBlurV = string.Format("GaussianBlurV{0}x{0}", size);
 
-            /*
-                aoImageEffect.SetInput(0, originalColorBuffer);
-                aoImageEffect.SetInput(1, originalDepthBuffer);
-                aoImageEffect.SetOutput(outputTexture);
-                aoImageEffect.Draw(context, "AmbientOcclusion");
-            */
+                // TODO: cache if necessary
+                offsetsWeights = GaussianUtil.Calculate1D(Radius, SigmaRatio);
+            }
+
+            // Update permutation parameters
+            blurH.Parameters.Set(GaussianBlurKeys.Count, offsetsWeights.Length);
+            blurV.Parameters.Set(GaussianBlurKeys.Count, offsetsWeights.Length);
+            blurH.EffectInstance.UpdateEffect(context.GraphicsDevice);
+            blurV.EffectInstance.UpdateEffect(context.GraphicsDevice);
+
+            // Update parameters
+            blurH.Parameters.Set(GaussianBlurShaderKeys.OffsetsWeights, offsetsWeights);
+            blurV.Parameters.Set(GaussianBlurShaderKeys.OffsetsWeights, offsetsWeights);
+
+            // Horizontal pass
+            blurH.SetInput(aoTexture1);
+            blurH.SetOutput(aoTexture2);
+            blurH.Draw(context, nameGaussianBlurH);
+
+            // Vertical pass
+            blurV.SetInput(aoTexture2);
+            blurV.SetOutput(aoTexture1);
+            blurV.Draw(context, nameGaussianBlurV);
+
+
+
+            aoImageEffect.SetInput(0, originalColorBuffer);
+            aoImageEffect.SetInput(1, aoTexture1);
+            aoImageEffect.SetOutput(outputTexture);
+            aoImageEffect.Draw(context, "AmbientOcclusion");
+
+
         }
     }
 }

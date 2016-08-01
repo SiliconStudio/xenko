@@ -212,10 +212,20 @@
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Images\AmbientOcclusion\AmbientOcclusion.cs" />
+    <None Include="Rendering\Images\AmbientOcclusion\ApplyAmbientOcclusionShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ApplyAmbientOcclusionShader.cs</LastGenOutput>
+    </None>
     <None Include="Rendering\Images\AmbientOcclusion\ReconstructCameraSpaceZ.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ReconstructCameraSpaceZ1.cs</LastGenOutput>
     </None>
+    <Compile Include="Rendering\Images\AmbientOcclusion\ApplyAmbientOcclusionShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ApplyAmbientOcclusionShader.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Images\AmbientOcclusion\ReconstructCameraSpaceZ1.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

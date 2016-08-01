@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             return normalize(cross(ddy(position), ddx(position)));
         }
 
-        stage float sampleAODebug(int2 screenPosition, float3 viewPosition, float3 viewNormal, float diskRadius, int i, float randomPatternRotationAngle)
+        stage float sampleAO(int2 screenPosition, float3 viewPosition, float3 viewNormal, float diskRadius, int i, float randomPatternRotationAngle)
         {
             //*****************************
             //  Sample Offset
@@ -118,7 +118,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             float sum = 0.0;
             for (int i = 0; i < NUM_SAMPLES; i++)
             {
-                sum += sampleAODebug(screenPosition, viewPosition, viewNormal, diskRadius, i, randomPatternRotationAngle);
+                sum += sampleAO(screenPosition, viewPosition, viewNormal, diskRadius, i, randomPatternRotationAngle);
             }
 
             float temp = ParamRadiusSquared * ParamRadius;
@@ -163,7 +163,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             float4 color = Texture0.Sample(Sampler, streams.TexCoord);
             //color.rgb = viewNormal.xyz;
 
-            color.rgb *= A;
+            color.rgb = A;
             return color; //*/
         }
     };
