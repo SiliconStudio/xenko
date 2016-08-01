@@ -302,11 +302,11 @@ extern "C" {
 		ovr_DestroyFunc(session->Session);
 	}
 
-	bool xnOvrCreateTexturesDx(xnOvrSession* session, void* dxDevice, int* outTextureCount, int backBufferWidth, int backBufferHeight)
+	bool xnOvrCreateTexturesDx(xnOvrSession* session, void* dxDevice, int* outTextureCount, float pixelPerDisplayPixel, int mirrorBufferWidth, int mirrorBufferHeight)
 	{
 		session->HmdDesc = ovr_GetHmdDescFunc(session->Session);
-		ovrSizei sizel = ovr_GetFovTextureSizeFunc(session->Session, ovrEye_Left, session->HmdDesc.DefaultEyeFov[0], 1.0f);
-		ovrSizei sizer = ovr_GetFovTextureSizeFunc(session->Session, ovrEye_Right, session->HmdDesc.DefaultEyeFov[1], 1.0f);
+		ovrSizei sizel = ovr_GetFovTextureSizeFunc(session->Session, ovrEye_Left, session->HmdDesc.DefaultEyeFov[0], pixelPerDisplayPixel);
+		ovrSizei sizer = ovr_GetFovTextureSizeFunc(session->Session, ovrEye_Right, session->HmdDesc.DefaultEyeFov[1], pixelPerDisplayPixel);
 		ovrSizei bufferSize;
 		bufferSize.w = sizel.w + sizer.w;
 		bufferSize.h = fmax(sizel.h, sizer.h);
@@ -354,13 +354,16 @@ extern "C" {
 		session->Layer.Viewport[1].Size.h = bufferSize.h;
 
 		//create mirror as well
-		ovrMirrorTextureDesc mirrorDesc = {};
-		mirrorDesc.Format = OVR_FORMAT_R8G8B8A8_UNORM_SRGB;
-		mirrorDesc.Width = backBufferWidth;
-		mirrorDesc.Height = backBufferHeight;
-		if (!OVR_SUCCESS(ovr_CreateMirrorTextureDXFunc(session->Session, dxDevice, &mirrorDesc, &session->Mirror)))
+		if (mirrorBufferHeight != 0 && mirrorBufferWidth != 0)
 		{
-			return false;
+			ovrMirrorTextureDesc mirrorDesc = {};
+			mirrorDesc.Format = OVR_FORMAT_R8G8B8A8_UNORM_SRGB;
+			mirrorDesc.Width = mirrorBufferWidth;
+			mirrorDesc.Height = mirrorBufferHeight;
+			if (!OVR_SUCCESS(ovr_CreateMirrorTextureDXFunc(session->Session, dxDevice, &mirrorDesc, &session->Mirror)))
+			{
+				return false;
+			}
 		}
 		
 		return true;

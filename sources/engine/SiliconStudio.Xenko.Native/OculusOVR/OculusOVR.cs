@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Native
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrCreateTexturesDx", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool CreateTexturesDx(IntPtr session, IntPtr dxDevice, out int outTextureCount, int backBufferWidth, int backBufferHeight);
+        public static extern bool CreateTexturesDx(IntPtr session, IntPtr dxDevice, out int outTextureCount, float pixelPerScreenPixel, int mirrorBufferWidth = 0, int mirrorBufferHeight = 0);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrGetTextureAtIndexDx", CallingConvention = CallingConvention.Cdecl)]
