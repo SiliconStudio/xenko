@@ -97,8 +97,20 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 Matrix.Invert(ref viewProj, out viewProjInverse);
                 cszImageEffect.Parameters.Set(ReconstructCameraSpaceZKeys.InverseViewProjection, viewProjInverse);
 
+                //**********************************
+                // User parameters
+                float ParamProjScale = 1;
+                float ParamIntensity = 1;
+                float ParamBias = 0.01f;
+                float ParamRadius = 1;
 
+                cszImageEffect.Parameters.Set(ReconstructCameraSpaceZKeys.ParamProjScale, ParamProjScale);
+                cszImageEffect.Parameters.Set(ReconstructCameraSpaceZKeys.ParamIntensity, ParamIntensity);
+                cszImageEffect.Parameters.Set(ReconstructCameraSpaceZKeys.ParamBias, ParamBias);
+                cszImageEffect.Parameters.Set(ReconstructCameraSpaceZKeys.ParamRadius, ParamRadius);
+                cszImageEffect.Parameters.Set(ReconstructCameraSpaceZKeys.ParamRadiusSquared, ParamRadius * ParamRadius);
             }
+
             cszImageEffect.SetInput(0, originalColorBuffer);
             cszImageEffect.SetInput(1, originalDepthBuffer);
             cszImageEffect.SetOutput(outputTexture);

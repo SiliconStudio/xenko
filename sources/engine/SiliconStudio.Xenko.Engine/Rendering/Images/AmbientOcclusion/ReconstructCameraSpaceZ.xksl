@@ -23,11 +23,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         float4   ProjInfo;    // .x = zN * zF, .y = zN - zF, .z = zF
         float4   ScreenInfo;  // .x = Width, .y = Height, .z = Aspect
 
-//        float    projScale = 500;
-//        float    radius = 1;
-//        float    radiusSquared = 1;
-//        float    bias = 0.01f;
-//        float    intensity = 1;
+        float    ParamProjScale = 1;
+        float    ParamIntensity = 1;
+        float    ParamBias = 0.01f;
+        float    ParamRadius = 1;
+        float    ParamRadiusSquared = 1;
 
         stage float reconstructCSZ(float depth)
         {
@@ -94,7 +94,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             float f = max(1 /*radiusSquared*/ - vv, 0.0);
             return f * f * f * max((vn - 0.01 /*bias*/) / (epsilon + vv), 0.0);
-
         }
 
 
@@ -103,7 +102,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             //*****************************
             //  Sample Offset
-            float alpha = 0.1 * (i + 0.5) * 0.675f / NUM_SAMPLES;
+            float alpha = 1 * (i + 0.5) * 0.675f / NUM_SAMPLES;
             float angle = 2 * 43.9822971503f * alpha + randomPatternRotationAngle;
 
             float2 offset = float2(cos(angle), sin(angle));
@@ -112,28 +111,37 @@ namespace SiliconStudio.Xenko.Rendering.Images
             //*****************************
             //  Depth
             float2 samplePos = streams.TexCoord + offset * ssRadius;
-            float depth = Texture1.SampleLevel(Sampler, samplePos, 0).x;
+
+            int2 samplePosInt = screenPosition + int2(ScreenInfo.xy * offset * ssRadius);
+            if (samplePosInt.x < 0 || samplePosInt.y < 0 || samplePosInt.x >= ScreenInfo.x || samplePosInt.y >= ScreenInfo.y)
+                return 0;
+
+            float depth = Texture1.Load(int3(samplePosInt, 0));
+
             float linearDepth = reconstructCSZ(depth);
+
+//            if (linearDepth >= viewPosition.z)
+//                return 0;
 
             //*****************************
             // View Position
-            float3 position = reconstructCSPosition(samplePos * ScreenInfo.xy + float2(0.5, 0.5), linearDepth);
+            float3 position = reconstructCSPosition(samplePosInt + float2(0.5, 0.5), linearDepth);
                    position.x *= -1;
 
-
+            //*****************************
+            // View Normal
+            float3 v = position - viewPosition;
+            v.z *= -1;
+            
             //*****************************
             // Ambient Occlusion
-            float3 v = position - viewPosition;
-
-           // return position.x;
-
             float distSq = dot(v, v);
-//            float vn = max(0, dot(v, viewNormal));
             float vn = dot(v, viewNormal);
 
             const float epsilon = 0.01;
 
-            //return vn.x;
+
+            return max((vn - 0.01 /*bias*/)/(epsilon + distSq), 0.0);
 
             float maxRadiusSq = 1;  // radiusSquared
             float f = max(maxRadiusSq - distSq, 0.0);
@@ -175,29 +183,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             float temp = 1 /*radiusSquared*/ * 1 /*radius*/;
             sum /= temp * temp;
-	        float A = max(0.0, 1.0 - sum * 0.1 /*intensity*/ * (5.0 / NUM_SAMPLES));
-
-
-            // DEBUG
-            // DEBUG
-            // DEBUG
-            /*
-            sum = 0.0;
-            for (int i = 0; i < 9; i++)
-            {
-                sum += sampleAODebug(screenPosition, viewPosition, viewNormal, diskRadius, i, randomPatternRotationAngle);
-            }
-            sum /= 9;
-            //*/
-            // DEBUG
-            // DEBUG
-            // DEBUG
+	        float A = max(0.0, 1.0 - sum * 0.2f /*intensity*/ * (5.0 / NUM_SAMPLES));
 
 
             // Bilateral box-filter over a quad for free, respecting depth edges
 	        // (the difference that this makes is subtle)
-	
-            //*
             if (abs(ddx(linearDepth)) < 0.02)
             {
 		        A -= ddx(A) * ((screenPosition.x & 1) - 0.5);
@@ -206,7 +196,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
             {
                 A -= ddy(A) * ((screenPosition.y & 1) - 0.5);
 	        }
-            //*/
+
+            //************************
+            // A now contains the light intensity factor (0 to 1) which can be applied to the ambient light illuminating the pixel
+
 
 
             //************************
@@ -223,13 +216,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
             color.b = ((float)((linearDepth / 16) % 4)) / 4.0;
             return color; //*/
 
+
             //************************
             // Visualize depth as view space position OR view space normal
             //************************
             float4 color = Texture0.Sample(Sampler, streams.TexCoord);
             color.rgb = viewNormal.xyz;
 
-            color.rgb = A;
+            color.rgb *= A;
 //            color.g = sum;
 //            color.r = diskRadius;
             return color; //*/
