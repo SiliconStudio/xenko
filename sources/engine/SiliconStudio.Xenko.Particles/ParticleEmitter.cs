@@ -62,12 +62,6 @@ namespace SiliconStudio.Xenko.Particles
         private EmitterSortingPolicy sortingPolicy = EmitterSortingPolicy.None;
 
         /// <summary>
-        /// Depth vector to use in case of depth policy sorting
-        /// </summary>
-        [DataMemberIgnore]
-        private Vector3 depthSortVector = new Vector3(0, 0, -1);
-
-        /// <summary>
         /// Number of particles waiting to be spawned
         /// </summary>
         [DataMemberIgnore]
@@ -83,7 +77,7 @@ namespace SiliconStudio.Xenko.Particles
         /// Enumerator which accesses all relevant particles in a sorted manner
         /// </summary>
         [DataMemberIgnore]
-        internal ParticleSorter ParticleSorter;
+        internal IParticleSorter ParticleSorter;
         
         /// <summary>
         /// The RNG provides an easy seed-based random numbers
@@ -436,31 +430,19 @@ namespace SiliconStudio.Xenko.Particles
 
             if (SortingPolicy == EmitterSortingPolicy.ByDepth)
             {
-                GetSortIndex<Vector3> sortByDepth = value =>
-                {
-                    var depth = Vector3.Dot(depthSortVector, value);
-                    return depth;
-                };
-
-                ParticleSorter = new ParticleSorterCustom<Vector3>(pool, ParticleFields.Position, sortByDepth);
+                ParticleSorter = new ParticleSorterDepth(pool);
                 return;
             }
 
             if (SortingPolicy == EmitterSortingPolicy.ByAge)
             {
-                GetSortIndex<float> sortByAge = value => { return -value; };
-
-                ParticleSorter = new ParticleSorterCustom<float>(pool, ParticleFields.Life, sortByAge);
+                ParticleSorter = new ParticleSorterAge(pool);
                 return;
             }
 
             if (SortingPolicy == EmitterSortingPolicy.ByOrder)
             {
-                // This sorting policy doesn't check if you actually have a Order field.
-                // The ParticleSorterCustom will just skip sorting the particles if the field is invalid
-                GetSortIndex<uint> sortByOrder = value => BitConverter.ToSingle(BitConverter.GetBytes(value), 0) * -1f;
-
-                ParticleSorter = new ParticleSorterCustom<uint>(pool, ParticleFields.Order, sortByOrder);
+                ParticleSorter = new ParticleSorterOrder(pool);
                 return;
             }
 
@@ -920,14 +902,23 @@ namespace SiliconStudio.Xenko.Particles
         /// <summary>
         /// <see cref="PrepareForDraw"/> prepares and updates the Material, ShapeBuilder and VertexBuilder if necessary
         /// </summary>
-        public void PrepareForDraw()
+        public void PrepareForDraw(out bool vertexBufferHasChanged, out int vertexSize, out int vertexCount)
         {
-            Material.PrepareForDraw(VertexBuilder, ParticleSorter);
+            var fieldsList = new ParticlePoolFieldsList(pool);
 
-            ShapeBuilder.PrepareForDraw(VertexBuilder, ParticleSorter);
+            // User changes to materials might cause vertex layout change
+            Material.PrepareVertexLayout(fieldsList);
+
+            // User changes to shape builders might cause vertex layout change
+            ShapeBuilder.PrepareVertexLayout(fieldsList);
+
+            // Recalculate the required vertex count and stride
+            VertexBuilder.SetRequiredQuads(ShapeBuilder.QuadsPerParticle, pool.LivingParticles, pool.ParticleCapacity);
+
+            vertexBufferHasChanged = (Material.HasVertexLayoutChanged || ShapeBuilder.VertexLayoutHasChanged || VertexBuilder.IsBufferDirty);
 
             // Update the vertex builder and the vertex layout if needed
-            if (Material.HasVertexLayoutChanged || ShapeBuilder.VertexLayoutHasChanged)
+            if (vertexBufferHasChanged)
             {
                 VertexBuilder.ResetVertexElementList();
 
@@ -938,23 +929,31 @@ namespace SiliconStudio.Xenko.Particles
                 VertexBuilder.UpdateVertexLayout();
             }
 
-            VertexBuilder.SetRequiredQuads(ShapeBuilder.QuadsPerParticle, pool.LivingParticles, pool.ParticleCapacity);
+            vertexSize = VertexBuilder.VertexDeclaration.CalculateSize();
+            vertexCount = VertexBuilder.VertexCount;
+            VertexBuilder.SetDirty(false);
         }
 
         /// <summary>
         /// Build the vertex buffer from particle data
-        /// Should come before <see cref="KickVertexBuffer"/>
         /// </summary>
-        /// <param name="device">The graphics device, used to rebuild vertex layouts and shaders if needed</param>
+        /// <param name="sharedBufferPtr">The shared vertex buffer position where the particle data should be output</param>
         /// <param name="invViewMatrix">The current camera's inverse view matrix</param>
-        public void BuildVertexBuffer(CommandList commandList, ref Matrix invViewMatrix)
+        public void BuildVertexBuffer(IntPtr sharedBufferPtr, ref Matrix invViewMatrix)
         {
             // Get camera-space X and Y axes for billboard expansion and sort the particles if needed
             var unitX = new Vector3(invViewMatrix.M11, invViewMatrix.M12, invViewMatrix.M13);
             var unitY = new Vector3(invViewMatrix.M21, invViewMatrix.M22, invViewMatrix.M23);
-            depthSortVector = Vector3.Cross(unitX, unitY);
-            ParticleSorter.Sort();
 
+            // Not the best solution, might want to improve
+            var depthVector = Vector3.Cross(unitX, unitY);
+            if (simulationSpace == EmitterSimulationSpace.Local)
+            {
+                var inverseRotation = drawTransform.WorldRotation;
+                inverseRotation.W *= -1;
+                inverseRotation.Rotate(ref depthVector);
+            }
+            var sortedList = ParticleSorter.GetSortedList(depthVector);
 
             // If the particles are in world space they don't need to be fixed as their coordinates are already in world space
             // If the particles are in local space they need to be drawn in world space using the emitter's current location matrix
@@ -968,16 +967,15 @@ namespace SiliconStudio.Xenko.Particles
                 scaleIdentity = drawTransform.WorldScale.X;
             }
 
-            VertexBuilder.MapBuffer(commandList);
-
-            ShapeBuilder.BuildVertexBuffer(VertexBuilder, unitX, unitY, ref posIdentity, ref rotIdentity, scaleIdentity, ParticleSorter);
-
-            VertexBuilder.RestartBuffer();
+            ParticleBufferState bufferState = new ParticleBufferState(sharedBufferPtr, VertexBuilder);
 
             ShapeBuilder.SetRequiredQuads(ShapeBuilder.QuadsPerParticle, pool.LivingParticles, pool.ParticleCapacity);
-            Material.PatchVertexBuffer(VertexBuilder, unitX, unitY, ParticleSorter);
+            ShapeBuilder.BuildVertexBuffer(ref bufferState, unitX, unitY, ref posIdentity, ref rotIdentity, scaleIdentity, ref sortedList);
 
-            VertexBuilder.UnmapBuffer(commandList);
+            bufferState.StartOver();
+            Material.PatchVertexBuffer(ref bufferState, unitX, unitY, ref sortedList);
+
+            ParticleSorter.FreeSortedList(ref sortedList);
         }
 
         #region Particles

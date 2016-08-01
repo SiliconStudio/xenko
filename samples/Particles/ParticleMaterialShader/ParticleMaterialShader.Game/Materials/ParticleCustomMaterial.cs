@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -138,38 +138,38 @@ namespace ParticleMaterialShader.Materials
             vertexBuilder.AddVertexElement(ParticleVertexElements.TexCoord[1]);
         }
 
-        public unsafe override void PatchVertexBuffer(ParticleVertexBuilder vertexBuilder, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
+        public unsafe override void PatchVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, ref ParticleList sorter)
         {
             // If you want, you can integrate the base builder here and not call it. It should result in slight speed up
-            base.PatchVertexBuffer(vertexBuilder, invViewX, invViewY, sorter);
+            base.PatchVertexBuffer(ref bufferState, invViewX, invViewY, ref sorter);
 
             // Update the non-default coordinates first, because they update off the default ones
-            UVBuilder1?.BuildUVCoordinates(vertexBuilder, sorter, texCoord1);
+            UVBuilder1?.BuildUVCoordinates(ref bufferState, ref sorter, texCoord1);
 
             // Update the default coordinates last
-            UVBuilder0?.BuildUVCoordinates(vertexBuilder, sorter, texCoord0);
+            UVBuilder0?.BuildUVCoordinates(ref bufferState, ref sorter, texCoord0);
 
             // If the particles have color field, the base class should have already passed the information
             if (HasColorField)
                 return;
 
             // If there is no color stream we don't need to fill anything
-            var colAttribute = vertexBuilder.GetAccessor(VertexAttributes.Color);
+            var colAttribute = bufferState.GetAccessor(VertexAttributes.Color);
             if (colAttribute.Size <= 0)
                 return;
 
             // Since the particles don't have their own color field, set the default color to white
             var color = 0xFFFFFFFF;
 
-            vertexBuilder.RestartBuffer();
+            bufferState.StartOver();
             foreach (var particle in sorter)
             {
-                vertexBuilder.SetAttributePerParticle(colAttribute, (IntPtr)(&color));
+                bufferState.SetAttributePerParticle(colAttribute, (IntPtr)(&color));
 
-                vertexBuilder.NextParticle();
+                bufferState.NextParticle();
             }
 
-            vertexBuilder.RestartBuffer();
+            bufferState.StartOver();
         }
 
     }

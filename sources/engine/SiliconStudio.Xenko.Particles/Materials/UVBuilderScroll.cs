@@ -36,20 +36,20 @@ namespace SiliconStudio.Xenko.Particles.Materials
         public Vector4 EndFrame { get; set; } = new Vector4(0, 1, 1, 2);
 
         /// <inheritdoc />
-        public unsafe override void BuildUVCoordinates(ParticleVertexBuilder vertexBuilder, ParticleSorter sorter, AttributeDescription texCoordsDescription)
+        public unsafe override void BuildUVCoordinates(ref ParticleBufferState bufferState, ref ParticleList sorter, AttributeDescription texCoordsDescription)
         {
             var lifeField = sorter.GetField(ParticleFields.RemainingLife);
 
             if (!lifeField.IsValid())
                 return;
 
-            var texAttribute = vertexBuilder.GetAccessor(texCoordsDescription);
+            var texAttribute = bufferState.GetAccessor(texCoordsDescription);
             if (texAttribute.Size == 0 && texAttribute.Offset == 0)
             {
                 return;
             }
 
-            var texDefault = vertexBuilder.GetAccessor(vertexBuilder.DefaultTexCoords);
+            var texDefault = bufferState.GetAccessor(bufferState.DefaultTexCoords);
             if (texDefault.Size == 0 && texDefault.Offset == 0)
             {
                 return;
@@ -63,13 +63,13 @@ namespace SiliconStudio.Xenko.Particles.Materials
                 uvTransform.Z -= uvTransform.X;
                 uvTransform.W -= uvTransform.Y;
 
-                vertexBuilder.TransformAttributePerSegment(texDefault, texAttribute, this);
+                bufferState.TransformAttributePerSegment(texDefault, texAttribute, this);
 
-                vertexBuilder.NextSegment();
+                bufferState.NextSegment();
             }
 
 
-            vertexBuilder.RestartBuffer();
+            bufferState.StartOver();
         }
 
         private Vector4 uvTransform = new Vector4(0, 0, 1, 1);

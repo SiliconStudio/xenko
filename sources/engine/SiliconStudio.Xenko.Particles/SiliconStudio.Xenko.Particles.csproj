@@ -116,10 +116,14 @@
     <Compile Include="ShapeBuilders\SmoothingPolicy.cs" />
     <Compile Include="ShapeBuilders\TextureCoordinayePolicy.cs" />
     <Compile Include="ShapeBuilders\UVRotate.cs" />
+    <Compile Include="Sorters\ArrayPool.cs" />
+    <Compile Include="Sorters\ParticleList.cs" />
     <Compile Include="Sorters\ParticleSorter.cs" />
+    <Compile Include="Sorters\ParticleSorterAge.cs" />
     <Compile Include="Sorters\ParticleSorterCustom.cs" />
     <Compile Include="Sorters\ParticleSorterDefault.cs" />
-    <Compile Include="Sorters\ParticleSorterLiving.cs" />
+    <Compile Include="Sorters\ParticleSorterDepth.cs" />
+    <Compile Include="Sorters\ParticleSorterOrder.cs" />
     <Compile Include="Spawners\ParticleSpawnerTriggerBirth.cs" />
     <Compile Include="Spawners\ParticleSpawnTriggerDeath.cs" />
     <Compile Include="Spawners\ParticleSpawnTriggerDistance.cs" />

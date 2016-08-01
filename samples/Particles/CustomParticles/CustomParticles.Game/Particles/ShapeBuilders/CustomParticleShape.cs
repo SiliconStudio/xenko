@@ -22,8 +22,8 @@ namespace CustomParticles.Particles.ShapeBuilders
         public override int QuadsPerParticle { get; protected set; } = 1;
 
         /// <inheritdoc />
-        public unsafe override int BuildVertexBuffer(ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY,
-            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticleSorter sorter)
+        public unsafe override int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY,
+            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ref ParticleList sorter)
         {
             // Step 1 - get all required fields to build the particle shapes. Some fields may not exist if no initializer or updater operates on them
             //  In that case we just decide on a default value for that field and skip the update
@@ -55,8 +55,8 @@ namespace CustomParticles.Particles.ShapeBuilders
 
             var renderedParticles = 0;
 
-            var posAttribute = vtxBuilder.GetAccessor(VertexAttributes.Position);
-            var texAttribute = vtxBuilder.GetAccessor(vtxBuilder.DefaultTexCoords);
+            var posAttribute = bufferState.GetAccessor(VertexAttributes.Position);
+            var texAttribute = bufferState.GetAccessor(bufferState.DefaultTexCoords);
 
             foreach (var particle in sorter)
             {
@@ -96,33 +96,33 @@ namespace CustomParticles.Particles.ShapeBuilders
                 var particlePos = centralPos - unitX + unitY;
                 var uvCoord = new Vector2(0, 0);
                 // 0f 0f
-                vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
-                vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
-                vtxBuilder.NextVertex();
+                bufferState.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                bufferState.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
+                bufferState.NextVertex();
 
 
                 // 1f 0f
                 particlePos += unitX * 2;
                 uvCoord.X = 1;
-                vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
-                vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
-                vtxBuilder.NextVertex();
+                bufferState.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                bufferState.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
+                bufferState.NextVertex();
 
 
                 // 1f 1f
                 particlePos -= unitY * 2;
                 uvCoord.Y = 1;
-                vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
-                vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
-                vtxBuilder.NextVertex();
+                bufferState.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                bufferState.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
+                bufferState.NextVertex();
 
 
                 // 0f 1f
                 particlePos -= unitX * 2;
                 uvCoord.X = 0;
-                vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
-                vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
-                vtxBuilder.NextVertex();
+                bufferState.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                bufferState.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
+                bufferState.NextVertex();
 
                 renderedParticles++;
             }

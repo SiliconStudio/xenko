@@ -99,20 +99,20 @@ namespace SiliconStudio.Xenko.Particles.Materials
         }
 
         /// <inheritdoc />
-        public override unsafe void BuildUVCoordinates(ParticleVertexBuilder vertexBuilder, ParticleSorter sorter, AttributeDescription texCoordsDescription)
+        public override unsafe void BuildUVCoordinates(ref ParticleBufferState bufferState, ref ParticleList sorter, AttributeDescription texCoordsDescription)
         {
             var lifeField = sorter.GetField(ParticleFields.RemainingLife);
 
             if (!lifeField.IsValid())
                 return;
 
-            var texAttribute = vertexBuilder.GetAccessor(texCoordsDescription);
+            var texAttribute = bufferState.GetAccessor(texCoordsDescription);
             if (texAttribute.Size == 0 && texAttribute.Offset == 0)
             {
                 return;
             }
 
-            var texDefault = vertexBuilder.GetAccessor(vertexBuilder.DefaultTexCoords);
+            var texDefault = bufferState.GetAccessor(bufferState.DefaultTexCoords);
             if (texDefault.Size == 0 && texDefault.Offset == 0)
             {
                 return;
@@ -127,13 +127,13 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
                 uvTransform = new Vector4((spriteId%xDivisions)*xStep, (spriteId/xDivisions)*yStep, xStep, yStep);
 
-                vertexBuilder.TransformAttributePerParticle(texDefault, texAttribute, this);
+                bufferState.TransformAttributePerParticle(texDefault, texAttribute, this);
 
-                vertexBuilder.NextParticle();
+                bufferState.NextParticle();
             }
 
 
-            vertexBuilder.RestartBuffer();
+            bufferState.StartOver();
         }
 
 

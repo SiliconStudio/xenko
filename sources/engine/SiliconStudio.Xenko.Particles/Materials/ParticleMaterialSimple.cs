@@ -77,12 +77,12 @@ namespace SiliconStudio.Xenko.Particles.Materials
         protected bool HasColorField { get; private set; }
 
         /// <inheritdoc />
-        public override void PrepareForDraw(ParticleVertexBuilder vertexBuilder, ParticleSorter sorter)
+        public override void PrepareVertexLayout(ParticlePoolFieldsList fieldsList)
         {
-            base.PrepareForDraw(vertexBuilder, sorter);
+            base.PrepareVertexLayout(fieldsList);
 
             // Probe if the particles have a color field and if we need to support it
-            var colorField = sorter.GetField(ParticleFields.Color);
+            var colorField = fieldsList.GetField(ParticleFields.Color);
             if (colorField.IsValid() != HasColorField)
             {
                 HasVertexLayoutChanged = true;
@@ -125,16 +125,16 @@ namespace SiliconStudio.Xenko.Particles.Materials
         }
 
         /// <inheritdoc />
-        public override unsafe void PatchVertexBuffer(ParticleVertexBuilder vertexBuilder, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
+        public override unsafe void PatchVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, ref ParticleList sorter)
         {
             // If you want, you can integrate the base builder here and not call it. It should result in slight speed up
-            base.PatchVertexBuffer(vertexBuilder, invViewX, invViewY, sorter);
+            base.PatchVertexBuffer(ref bufferState, invViewX, invViewY, ref sorter);
 
             var colorField = sorter.GetField(ParticleFields.Color);
             if (!colorField.IsValid())
                 return;
 
-            var colAttribute = vertexBuilder.GetAccessor(VertexAttributes.Color);
+            var colAttribute = bufferState.GetAccessor(VertexAttributes.Color);
             if (colAttribute.Size <= 0)
                 return;
 
@@ -142,12 +142,12 @@ namespace SiliconStudio.Xenko.Particles.Materials
             {
                 // Set the vertex color attribute to the particle's color field
                 var color = (uint)(*(Color4*)particle[colorField]).ToRgba();
-                vertexBuilder.SetAttributePerSegment(colAttribute, (IntPtr)(&color));
+                bufferState.SetAttributePerSegment(colAttribute, (IntPtr)(&color));
 
-                vertexBuilder.NextSegment();
+                bufferState.NextSegment();
             }
 
-            vertexBuilder.RestartBuffer();
+            bufferState.StartOver();
         }
     }
 }

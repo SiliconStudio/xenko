@@ -18,7 +18,13 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
     [Display("Trail")]
     public class ShapeBuilderTrail : ShapeBuilder
     {
-        private readonly Ribbonizer ribbonizer = new Ribbonizer();
+        private SmoothingPolicy smoothingPolicy;
+
+        private int segments;
+
+        private int currentTotalParticles;
+
+        private int currentQuadsPerParticle;
 
         /// <summary>
         /// Smoothing provides the option to additionally smooth the ribbon, enhancing visual quality for sharp angles
@@ -30,13 +36,13 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         [Display("Smoothing")]
         public SmoothingPolicy SmoothingPolicy
         {
-            get { return ribbonizer.SmoothingPolicy; }
+            get { return smoothingPolicy; }
             set
             {
-                ribbonizer.SmoothingPolicy = value;
+                smoothingPolicy = value;
 
-                QuadsPerParticle = (ribbonizer.SmoothingPolicy == SmoothingPolicy.None) ?
-                    1 : ribbonizer.Segments;
+                QuadsPerParticle = (smoothingPolicy == SmoothingPolicy.None) ?
+                    1 : segments;
             }
         }
 
@@ -50,13 +56,13 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         [Display("Segments")]
         public int Segments
         {
-            get { return ribbonizer.Segments; }
+            get { return segments; }
             set
             {
-                ribbonizer.Segments = value;
+                segments = value;
 
-                QuadsPerParticle = (ribbonizer.SmoothingPolicy == SmoothingPolicy.None) ?
-                    1 : ribbonizer.Segments;
+                QuadsPerParticle = (smoothingPolicy == SmoothingPolicy.None) ?
+                    1 : segments;
             }
         }
 
@@ -68,7 +74,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         /// </userdoc>
         [DataMember(8)]
         [Display("Axis")]
-        public EdgePolicy EdgePolicy { get { return ribbonizer.EdgePolicy; } set { ribbonizer.EdgePolicy = value; } }
+        public EdgePolicy EdgePolicy { get; set; }
 
         /// <summary>
         /// Specifies how texture coordinates for the ribbons should be built
@@ -78,7 +84,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         /// </userdoc>
         [DataMember(10)]
         [Display("UV Coords")]
-        public TextureCoordinatePolicy TextureCoordinatePolicy { get { return ribbonizer.TextureCoordinatePolicy; } set { ribbonizer.TextureCoordinatePolicy = value; } }
+        public TextureCoordinatePolicy TextureCoordinatePolicy { get; set; }
 
         /// <summary>
         /// The factor (coefficient) for length to use when building texture coordinates
@@ -88,7 +94,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         /// </userdoc>
         [DataMember(20)]
         [Display("UV Factor")]
-        public float TexCoordsFactor { get { return ribbonizer.TexCoordsFactor; } set { ribbonizer.TexCoordsFactor = value; } }
+        public float TexCoordsFactor { get; set; }
 
         /// <summary>
         /// Texture coordinates flip and rotate policy
@@ -98,7 +104,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         /// </userdoc>
         [DataMember(30)]
         [Display("UV Rotate")]
-        public UVRotate UVRotate { get { return ribbonizer.UVRotate; } set { ribbonizer.UVRotate = value; } }
+        public UVRotate UVRotate { get; set; }
 
         /// <inheritdoc />
         public override int QuadsPerParticle { get; protected set; } = 1;
@@ -106,12 +112,13 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         /// <inheritdoc />
         public override void SetRequiredQuads(int quadsPerParticle, int livingParticles, int totalParticles)
         {
-            ribbonizer.Restart(totalParticles, quadsPerParticle);
+            currentTotalParticles = totalParticles;
+            currentQuadsPerParticle = quadsPerParticle;
         }
 
         /// <inheritdoc />
-        public unsafe override int BuildVertexBuffer(ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY,
-            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticleSorter sorter)
+        public override unsafe int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY,
+            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ref ParticleList sorter)
         {
             // Get all the required particle fields
             var positionField = sorter.GetField(ParticleFields.Position);
@@ -125,9 +132,10 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             trsIdentity = trsIdentity && (spaceTranslation.Equals(new Vector3(0, 0, 0)));
             trsIdentity = trsIdentity && (spaceRotation.Equals(Quaternion.Identity));
 
+            var ribbonizer = new Ribbonizer(this, currentTotalParticles, currentQuadsPerParticle);
 
             var renderedParticles = 0;
-            vtxBuilder.RestartBuffer();
+            bufferState.StartOver();
 
             uint oldOrderValue = 0;
             var orderField = sorter.GetField(ParticleFields.Order);
@@ -140,7 +148,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                     if ((orderValue >> SpawnOrderConst.GroupBitOffset) != (oldOrderValue >> SpawnOrderConst.GroupBitOffset))
                     {
-                        ribbonizer.Ribbonize(vtxBuilder, QuadsPerParticle);
+                        ribbonizer.Ribbonize(ref bufferState, QuadsPerParticle);
                         ribbonizer.RibbonSplit();
                     }
 
@@ -167,7 +175,9 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 renderedParticles++;
             }
 
-            ribbonizer.Ribbonize(vtxBuilder, QuadsPerParticle);
+            ribbonizer.Ribbonize(ref bufferState, QuadsPerParticle);
+
+            ribbonizer.Free();
 
             var vtxPerShape = 4 * QuadsPerParticle;
             return renderedParticles * vtxPerShape;
@@ -176,66 +186,52 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         /// <summary>
         /// The <see cref="Ribbonizer"/> takes a list of points and creates a ribbon (connected quads), adjusting its texture coordinates accordingly
         /// </summary>
-        sealed class Ribbonizer
+        struct Ribbonizer
         {
-            private int lastParticle = 0;
-            private Vector3[] positions = new Vector3[1];
-            private Vector3[] directions = new Vector3[1];
-            private int sections = 1;
+            private int lastParticle;
+            private int sections;
 
-            /// <summary>
-            /// This property is exposed to the ShapeBuilder class
-            /// </summary>
-            [DataMemberIgnore]
-            public EdgePolicy EdgePolicy { get; set; } = EdgePolicy.Edge;
+            private readonly IntPtr positionData;
+            private readonly IntPtr directionData;
 
-            /// <summary>
-            /// This property is exposed to the ShapeBuilder class
-            /// </summary>
-            [DataMemberIgnore]
-            public TextureCoordinatePolicy TextureCoordinatePolicy { get; set; } = TextureCoordinatePolicy.AsIs;
+            private readonly int particleCapacity;
+            private readonly ShapeBuilderTrail parentTrail;
 
-            /// <summary>
-            /// This property is exposed to the ShapeBuilder class
-            /// </summary>
-            [DataMemberIgnore]
-            public SmoothingPolicy SmoothingPolicy { get; set; } = SmoothingPolicy.None;
-
-            /// <summary>
-            /// This property is exposed to the ShapeBuilder class
-            /// </summary>
-            [DataMemberIgnore]
-            public int Segments { get; set; } = 5;
-
-            /// <summary>
-            /// This property is exposed to the ShapeBuilder class
-            /// </summary>
-            [DataMemberIgnore]
-            public float TexCoordsFactor { get; set; } = 1f;
-
-            /// <summary>
-            /// This property is exposed to the ShapeBuilder class
-            /// </summary>
-            [DataMemberIgnore]
-            public UVRotate UVRotate { get; set; } 
-
-            /// <summary>
-            /// Restarts the point string, potentially expanding the capacity
-            /// </summary>
-            /// <param name="newCapacity">Required minimum capacity</param>
-            public void Restart(int newCapacity, int sectionsPerParticle)
+            public Ribbonizer(ShapeBuilderTrail ribbon, int newCapacity, int sectionsPerParticle)
             {
+                parentTrail = ribbon;
+
                 lastParticle = 0;
                 sections = sectionsPerParticle;
 
                 int requiredCapacity = sectionsPerParticle * newCapacity;
 
-                if (requiredCapacity > positions.Length)
-                {
-                    positions = new Vector3[requiredCapacity];
-                    directions = new Vector3[requiredCapacity];
-                }
+                particleCapacity = requiredCapacity;
+
+                int positionDataSize = Utilities.SizeOf<Vector3>() * particleCapacity;
+                positionDataSize = (positionDataSize % 4 == 0) ? positionDataSize : (positionDataSize + 4 - (positionDataSize % 4));
+                positionData = Utilities.AllocateMemory(positionDataSize);
+
+                int directionDataSize = Utilities.SizeOf<Vector3>() * particleCapacity;
+                directionDataSize = (directionDataSize % 4 == 0) ? directionDataSize : (directionDataSize + 4 - (directionDataSize % 4));
+                directionData = Utilities.AllocateMemory(directionDataSize);
             }
+
+            public void Free()
+            {
+                Utilities.FreeMemory(positionData);
+                Utilities.FreeMemory(directionData);
+            }
+
+            EdgePolicy EdgePolicy => parentTrail.EdgePolicy;
+
+            TextureCoordinatePolicy TextureCoordinatePolicy => parentTrail.TextureCoordinatePolicy;
+
+            SmoothingPolicy SmoothingPolicy => parentTrail.SmoothingPolicy;
+
+            float TexCoordsFactor => parentTrail.TexCoordsFactor;
+
+            UVRotate UVRotate => parentTrail.UVRotate;
 
             /// <summary>
             /// Splits (cuts) the trail without restarting or rebuilding the vertex buffer
@@ -250,10 +246,13 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             /// </summary>
             /// <param name="position">Position of the control point</param>
             /// <param name="direction">Direction or offset from the control point</param>
-            public void AddParticle(ref Vector3 position, ref Vector3 direction)
+            public unsafe void AddParticle(ref Vector3 position, ref Vector3 direction)
             {
-                if (lastParticle >= positions.Length)
+                if (lastParticle >= particleCapacity)
                     return;
+
+                var positions = (Vector3*)positionData;
+                var directions = (Vector3*)directionData;
 
                 positions[lastParticle] = position;
                 directions[lastParticle] = direction;
@@ -264,10 +263,13 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             /// <summary>
             /// Advanced interpolation, drawing the vertices in a circular arc between two adjacent control points
             /// </summary>
-            private void ExpandVertices_Circular()
+            private unsafe void ExpandVertices_Circular()
             {
                 if (sections <= 1)
                     return;
+
+                var positions = (Vector3*)positionData;
+                var directions = (Vector3*)directionData;
 
                 var lerpStep = 1f / sections;
 
@@ -322,8 +324,11 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             /// <summary>
             /// Simple interpolation using Catmull-Rom
             /// </summary>
-            private void ExpandVertices_CatmullRom()
+            private unsafe void ExpandVertices_CatmullRom()
             {
+                var positions = (Vector3*)positionData;
+                var directions = (Vector3*)directionData;
+
                 var lerpStep = 1f / sections;
 
                 var Pt0 = positions[0] * 2 - positions[sections];
@@ -356,13 +361,13 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             /// </summary>
             /// <param name="vtxBuilder">Target <see cref="ParticleVertexBuilder"/></param> to use
             /// <param name="quadsPerParticle">The required number of quads per each particle</param>
-            public unsafe void Ribbonize(ParticleVertexBuilder vtxBuilder, int quadsPerParticle)
+            public unsafe void Ribbonize(ref ParticleBufferState bufferState, int quadsPerParticle)
             {
                 if (lastParticle <= 0)
                     return;
 
-                var posAttribute = vtxBuilder.GetAccessor(VertexAttributes.Position);
-                var texAttribute = vtxBuilder.GetAccessor(vtxBuilder.DefaultTexCoords);
+                var posAttribute = bufferState.GetAccessor(VertexAttributes.Position);
+                var texAttribute = bufferState.GetAccessor(bufferState.DefaultTexCoords);
 
                 if (lastParticle <= sections)
                 {
@@ -376,9 +381,9 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                     {
                         for (var vtxIdx = 0; vtxIdx < 4; vtxIdx++)
                         {
-                            vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
-                            vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
-                            vtxBuilder.NextVertex();
+                            bufferState.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                            bufferState.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
+                            bufferState.NextVertex();
                         }
                     }
 
@@ -393,7 +398,10 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                         ExpandVertices_CatmullRom();
                 }
 
-                vtxBuilder.SetVerticesPerSegment(quadsPerParticle * 6, quadsPerParticle * 4, quadsPerParticle * 2);
+                var positions = (Vector3*)positionData;
+                var directions = (Vector3*)directionData;
+
+                bufferState.SetVerticesPerSegment(quadsPerParticle * 6, quadsPerParticle * 4, quadsPerParticle * 2);
 
                 var axis0 = positions[0] - positions[1];
                 axis0.Normalize();
@@ -424,23 +432,23 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                     // Top Left - 0f 0f
                     uvCoord.Y = (TextureCoordinatePolicy == TextureCoordinatePolicy.AsIs) ? 0 : vCoordOld;
-                    vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                    bufferState.SetAttribute(posAttribute, (IntPtr)(&particlePos));
 
                     rotatedCoord = UVRotate.GetCoords(uvCoord);
-                    vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&rotatedCoord));
+                    bufferState.SetAttribute(texAttribute, (IntPtr)(&rotatedCoord));
 
-                    vtxBuilder.NextVertex();
+                    bufferState.NextVertex();
 
 
                     // Top Right - 1f 0f
                     particlePos += (EdgePolicy == EdgePolicy.Edge) ? oldUnitX * 2 : oldUnitX;
-                    vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                    bufferState.SetAttribute(posAttribute, (IntPtr)(&particlePos));
 
                     uvCoord.X = 1;
                     rotatedCoord = UVRotate.GetCoords(uvCoord);
-                    vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&rotatedCoord));
+                    bufferState.SetAttribute(texAttribute, (IntPtr)(&rotatedCoord));
 
-                    vtxBuilder.NextVertex();
+                    bufferState.NextVertex();
 
 
                     // Move the position to the next particle in the ribbon
@@ -452,23 +460,23 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                     // Bottom Left - 1f 1f
                     uvCoord.Y = (TextureCoordinatePolicy == TextureCoordinatePolicy.AsIs) ? 1 : vCoordOld;
-                    vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                    bufferState.SetAttribute(posAttribute, (IntPtr)(&particlePos));
 
                     rotatedCoord = UVRotate.GetCoords(uvCoord);
-                    vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&rotatedCoord));
+                    bufferState.SetAttribute(texAttribute, (IntPtr)(&rotatedCoord));
 
-                    vtxBuilder.NextVertex();
+                    bufferState.NextVertex();
 
 
                     // Bottom Right - 0f 1f
                     particlePos -= (EdgePolicy == EdgePolicy.Edge) ? unitX * 2 : unitX;
-                    vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                    bufferState.SetAttribute(posAttribute, (IntPtr)(&particlePos));
 
                     uvCoord.X = 0;
                     rotatedCoord = UVRotate.GetCoords(uvCoord);
-                    vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&rotatedCoord));
+                    bufferState.SetAttribute(texAttribute, (IntPtr)(&rotatedCoord));
 
-                    vtxBuilder.NextVertex();
+                    bufferState.NextVertex();
 
 
                     // Preserve the old attributes for the next cycle

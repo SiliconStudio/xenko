@@ -764,4 +764,25 @@ namespace SiliconStudio.Xenko.Particles
 
 
     }
+
+    public struct ParticlePoolFieldsList
+    {
+        private readonly ParticlePool particlePool;
+
+        public ParticlePoolFieldsList(ParticlePool pool)
+        {
+            particlePool = pool;
+        }
+
+        /// <summary>
+        /// Returns a particle field accessor for the contained <see cref="ParticlePool"/>
+        /// </summary>
+        /// <typeparam name="T">Type data for the field</typeparam>
+        /// <param name="fieldDesc">The field description</param>
+        /// <returns></returns>
+        public ParticleFieldAccessor<T> GetField<T>(ParticleFieldDescription<T> fieldDesc) where T : struct
+        {
+            return particlePool.GetField<T>(fieldDesc);
+        }
+    }
 }
