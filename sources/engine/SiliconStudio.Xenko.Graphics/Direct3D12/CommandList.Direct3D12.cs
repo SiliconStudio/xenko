@@ -15,9 +15,9 @@ namespace SiliconStudio.Xenko.Graphics
         private CommandAllocator nativeCommandAllocator;
         internal GraphicsCommandList NativeCommandList;
 
-        private DescriptorHeap srvHeap;
+        private DescriptorHeapCache srvHeap;
         private int srvHeapOffset = GraphicsDevice.SrvHeapSize;
-        private DescriptorHeap samplerHeap;
+        private DescriptorHeapCache samplerHeap;
         private int samplerHeapOffset = GraphicsDevice.SamplerHeapSize;
 
         private PipelineState boundPipelineState;
@@ -33,6 +33,8 @@ namespace SiliconStudio.Xenko.Graphics
 
             ResetSrvHeap(true);
             ResetSamplerHeap(true);
+
+            NativeCommandList.SetDescriptorHeaps(2, descriptorHeaps);
         }
 
         /// <inheritdoc/>
@@ -69,6 +71,8 @@ namespace SiliconStudio.Xenko.Graphics
             // Get a new allocator
             nativeCommandAllocator = GraphicsDevice.CommandAllocators.GetObject();
             NativeCommandList.Reset(nativeCommandAllocator, null);
+
+            NativeCommandList.SetDescriptorHeaps(2, descriptorHeaps);
         }
 
         public void Close()
@@ -166,6 +170,13 @@ namespace SiliconStudio.Xenko.Graphics
         /// <value>The viewport.</value>
         private unsafe void SetViewportImpl()
         {
+            if (!viewportDirty)
+                return;
+
+            var viewport = viewports[0];
+            NativeCommandList.SetViewport(new RawViewportF { Width = viewport.Width, Height = viewport.Height, X = viewport.X, Y = viewport.Y, MinDepth = viewport.MinDepth, MaxDepth = viewport.MaxDepth });
+            NativeCommandList.SetScissorRectangles(new RawRectangle { Left = (int)viewport.X, Right = (int)viewport.X + (int)viewport.Width, Top = (int)viewport.Y, Bottom = (int)viewport.Y + (int)viewport.Height });
+            viewportDirty = false;
         }
 
         /// <summary>
@@ -188,10 +199,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.InvalidOperationException">Cannot GraphicsDevice.Draw*() without an effect being previously applied with Effect.Apply() method</exception>
         private void PrepareDraw()
         {
-            // TODO D3D12 Hardcoded for one viewport
-            var viewport = viewports[0];
-            NativeCommandList.SetViewport(new RawViewportF { Width = viewport.Width, Height = viewport.Height, X = viewport.X, Y = viewport.Y, MinDepth = viewport.MinDepth, MaxDepth = viewport.MaxDepth });
-            NativeCommandList.SetScissorRectangles(new RawRectangle { Left = (int)viewport.X, Right = (int)viewport.X + (int)viewport.Width, Top = (int)viewport.Y, Bottom = (int)viewport.Y + (int)viewport.Height });
+            SetViewportImpl();
         }
 
         public void SetStencilReference(int stencilReference)
@@ -206,13 +214,13 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void SetPipelineState(PipelineState pipelineState)
         {
-            boundPipelineState = pipelineState;
-            if (pipelineState.CompiledState != null)
+            if (boundPipelineState != pipelineState && pipelineState.CompiledState != null)
             {
                 NativeCommandList.PipelineState = pipelineState.CompiledState;
                 NativeCommandList.SetGraphicsRootSignature(pipelineState.RootSignature);
+                boundPipelineState = pipelineState;
+                NativeCommandList.PrimitiveTopology = pipelineState.PrimitiveTopology;
             }
-            NativeCommandList.PrimitiveTopology = pipelineState.PrimitiveTopology;
         }
 
         public void SetVertexBuffer(int index, Buffer buffer, int offset, int stride)
@@ -252,7 +260,6 @@ namespace SiliconStudio.Xenko.Graphics
         public void SetDescriptorSets(int index, DescriptorSet[] descriptorSets)
         {
         RestartWithNewHeap:
-            NativeCommandList.SetDescriptorHeaps(2, descriptorHeaps);
             var descriptorTableIndex = 0;
             for (int i = 0; i < descriptorSets.Length; ++i)
             {
@@ -275,6 +282,7 @@ namespace SiliconStudio.Xenko.Graphics
                         if (srvHeapOffset + srvCount > GraphicsDevice.SrvHeapSize)
                         {
                             ResetSrvHeap(true);
+                            NativeCommandList.SetDescriptorHeaps(2, descriptorHeaps);
                             goto RestartWithNewHeap;
                         }
 
@@ -306,6 +314,7 @@ namespace SiliconStudio.Xenko.Graphics
                         if (samplerHeapOffset + samplerCount > GraphicsDevice.SamplerHeapSize)
                         {
                             ResetSamplerHeap(true);
+                            NativeCommandList.SetDescriptorHeaps(2, descriptorHeaps);
                             goto RestartWithNewHeap;
                         }
 
@@ -328,38 +337,38 @@ namespace SiliconStudio.Xenko.Graphics
 
         private void ResetSrvHeap(bool createNewHeap)
         {
-            if (srvHeap != null)
+            if (srvHeap.Heap != null)
             {
-                GraphicsDevice.SrvHeaps.RecycleObject(GraphicsDevice.NextFenceValue, srvHeap);
-                srvHeap = null;
+                GraphicsDevice.SrvHeaps.RecycleObject(GraphicsDevice.NextFenceValue, srvHeap.Heap);
+                srvHeap.Heap = null;
             }
 
             if (createNewHeap)
             {
-                srvHeap = GraphicsDevice.SrvHeaps.GetObject();
+                srvHeap = new DescriptorHeapCache(GraphicsDevice.SrvHeaps.GetObject());
                 srvHeapOffset = 0;
                 srvMapping.Clear();
             }
 
-            descriptorHeaps[0] = srvHeap;
+            descriptorHeaps[0] = srvHeap.Heap;
         }
 
         private void ResetSamplerHeap(bool createNewHeap)
         {
-            if (samplerHeap != null)
+            if (samplerHeap.Heap != null)
             {
-                GraphicsDevice.SamplerHeaps.RecycleObject(GraphicsDevice.NextFenceValue, samplerHeap);
-                samplerHeap = null;
+                GraphicsDevice.SamplerHeaps.RecycleObject(GraphicsDevice.NextFenceValue, samplerHeap.Heap);
+                samplerHeap.Heap = null;
             }
 
             if (createNewHeap)
             {
-                samplerHeap = GraphicsDevice.SamplerHeaps.GetObject();
+                samplerHeap = new DescriptorHeapCache(GraphicsDevice.SamplerHeaps.GetObject());
                 samplerHeapOffset = 0;
                 samplerMapping.Clear();
             }
 
-            descriptorHeaps[1] = samplerHeap;
+            descriptorHeaps[1] = samplerHeap.Heap;
         }
 
         /// <inheritdoc />
@@ -905,6 +914,24 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 unmapped.Resource.NativeResource.Unmap(unmapped.SubResourceIndex);
             }
+        }
+
+        // Contains a DescriptorHeap and cache its GPU and CPU pointers
+        struct DescriptorHeapCache
+        {
+            public DescriptorHeapCache(DescriptorHeap heap) : this()
+            {
+                Heap = heap;
+                if (heap != null)
+                {
+                    CPUDescriptorHandleForHeapStart = heap.CPUDescriptorHandleForHeapStart;
+                    GPUDescriptorHandleForHeapStart = heap.GPUDescriptorHandleForHeapStart;
+                }
+            }
+
+            public DescriptorHeap Heap;
+            public CpuDescriptorHandle CPUDescriptorHandleForHeapStart;
+            public GpuDescriptorHandle GPUDescriptorHandleForHeapStart;
         }
     }
 }
