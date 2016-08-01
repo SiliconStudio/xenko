@@ -32,6 +32,7 @@
     <Compile Include="ModelMaterial.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="NodeInformation.cs" />
+    <Compile Include="PrefabModelAsset.cs" />
     <Compile Include="ProceduralModelAsset.cs" />
     <Compile Include="ProceduralModelAssetCompiler.cs" />
     <Compile Include="ProceduralModelFactories.cs" />
