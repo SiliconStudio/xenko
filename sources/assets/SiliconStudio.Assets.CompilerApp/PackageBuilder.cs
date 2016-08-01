@@ -25,7 +25,6 @@ namespace SiliconStudio.Assets.CompilerApp
     public class PackageBuilder
     {
         private readonly PackageBuilderOptions builderOptions;
-        private RemoteLogForwarder assetLogger;
         private Builder builder;
 
         public PackageBuilder(PackageBuilderOptions packageBuilderOptions)

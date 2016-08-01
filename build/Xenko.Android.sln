@@ -1,6 +1,7 @@
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 14.0.23107.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "10-CoreRuntime", "10-CoreRuntime", "{2E93E2B5-4500-4E47-9B65-E705218AB578}"
 EndProject
@@ -9,16 +10,14 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets.Private", "00-Targets.Private", "{97978864-95DD-43A6-9159-AA1C881BE99F}"
 	ProjectSection(SolutionItems) = preProject
 		..\sources\common\targets\SiliconStudio.Android.CSharp.targets = ..\sources\common\targets\SiliconStudio.Android.CSharp.targets
-		SiliconStudio.GlobalSettings.Local.targets = SiliconStudio.GlobalSettings.Local.targets
+		..\sources\common\targets\SiliconStudio.CoreCLR.Cpp.targets = ..\sources\common\targets\SiliconStudio.CoreCLR.Cpp.targets
+		..\sources\common\targets\SiliconStudio.CoreCLR.CSharp.targets = ..\sources\common\targets\SiliconStudio.CoreCLR.CSharp.targets
+		..\sources\common\targets\SiliconStudio.Cpp.targets = ..\sources\common\targets\SiliconStudio.Cpp.targets
+		..\sources\common\targets\SiliconStudio.CSharp.targets = ..\sources\common\targets\SiliconStudio.CSharp.targets
 		..\sources\common\targets\SiliconStudio.GlobalSettings.targets = ..\sources\common\targets\SiliconStudio.GlobalSettings.targets
-		..\sources\common\core\SiliconStudio.PostSettings.Local.targets = ..\sources\common\core\SiliconStudio.PostSettings.Local.targets
-		SiliconStudio.PostSettings.Local.targets = SiliconStudio.PostSettings.Local.targets
+		..\sources\common\targets\SiliconStudio.iOS.CSharp.targets = ..\sources\common\targets\SiliconStudio.iOS.CSharp.targets
 		..\sources\common\targets\SiliconStudio.PostSettings.targets = ..\sources\common\targets\SiliconStudio.PostSettings.targets
 		..\sources\common\targets\SiliconStudio.PreSettings.targets = ..\sources\common\targets\SiliconStudio.PreSettings.targets
-		..\sources\common\targets\SiliconStudio.Windows.CoreCLR.Cpp.targets = ..\sources\common\targets\SiliconStudio.Windows.CoreCLR.Cpp.targets
-		..\sources\common\targets\SiliconStudio.Windows.CoreCLR.CSharp.targets = ..\sources\common\targets\SiliconStudio.Windows.CoreCLR.CSharp.targets
-		..\sources\common\targets\SiliconStudio.Windows.Cpp.targets = ..\sources\common\targets\SiliconStudio.Windows.Cpp.targets
-		..\sources\common\targets\SiliconStudio.Windows.CSharp.targets = ..\sources\common\targets\SiliconStudio.Windows.CSharp.targets
 		..\sources\common\targets\SiliconStudio.Windows10.Cpp.targets = ..\sources\common\targets\SiliconStudio.Windows10.Cpp.targets
 		..\sources\common\targets\SiliconStudio.Windows10.CSharp.targets = ..\sources\common\targets\SiliconStudio.Windows10.CSharp.targets
 		..\sources\common\targets\SiliconStudio.WindowsPhone.Cpp.targets = ..\sources\common\targets\SiliconStudio.WindowsPhone.Cpp.targets
@@ -26,15 +25,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets.Private", "00-Ta
 		..\sources\common\targets\SiliconStudio.WindowsStore.Cpp.targets = ..\sources\common\targets\SiliconStudio.WindowsStore.Cpp.targets
 		..\sources\common\targets\SiliconStudio.WindowsStore.CSharp.targets = ..\sources\common\targets\SiliconStudio.WindowsStore.CSharp.targets
 		..\store.config = ..\store.config
-		Xenko.Android.PreSettings.Local.targets = Xenko.Android.PreSettings.Local.targets
-		Xenko.build = Xenko.build
-		Xenko.Direct3D.CoreCLR.PreSettings.Local.targets = Xenko.Direct3D.CoreCLR.PreSettings.Local.targets
 		..\sources\targets\Xenko.GlobalSettings.targets = ..\sources\targets\Xenko.GlobalSettings.targets
-		Xenko.iOS.PreSettings.Local.targets = Xenko.iOS.PreSettings.Local.targets
 		..\sources\native\Xenko.Native.targets = ..\sources\native\Xenko.Native.targets
-		Xenko.OpenGL.CoreCLR.PreSettings.Local.targets = Xenko.OpenGL.CoreCLR.PreSettings.Local.targets
-		Xenko.OpenGL.PreSettings.Local.targets = Xenko.OpenGL.PreSettings.Local.targets
-		Xenko.OpenGLES.PreSettings.Local.targets = Xenko.OpenGLES.PreSettings.Local.targets
 		..\sources\targets\Xenko.PostSettings.References.targets = ..\sources\targets\Xenko.PostSettings.References.targets
 		..\sources\targets\Xenko.PostSettings.targets = ..\sources\targets\Xenko.PostSettings.targets
 		..\sources\targets\Xenko.PostSettings.User.targets = ..\sources\targets\Xenko.PostSettings.User.targets
@@ -56,9 +48,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets.User", "00-Targe
 	ProjectSection(SolutionItems) = preProject
 		..\Targets\SiliconStudio.Common.targets = ..\Targets\SiliconStudio.Common.targets
 		..\Targets\Xenko.Android.targets = ..\Targets\Xenko.Android.targets
+		..\Targets\Xenko.CoreCLR.targets = ..\Targets\Xenko.CoreCLR.targets
 		..\Targets\Xenko.iOS.targets = ..\Targets\Xenko.iOS.targets
+		..\Targets\Xenko.Linux.targets = ..\Targets\Xenko.Linux.targets
+		..\Targets\Xenko.macOS.targets = ..\Targets\Xenko.macOS.targets
 		..\Targets\Xenko.targets = ..\Targets\Xenko.targets
-		..\Targets\Xenko.Windows.CoreCLR.targets = ..\Targets\Xenko.Windows.CoreCLR.targets
 		..\Targets\Xenko.Windows.targets = ..\Targets\Xenko.Windows.targets
 		..\Targets\Xenko.Windows10.targets = ..\Targets\Xenko.Windows10.targets
 		..\Targets\Xenko.WindowsPhone.targets = ..\Targets\Xenko.WindowsPhone.targets
@@ -169,10 +163,42 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "11-CoreRuntime.Tests", "11-
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core.Native", "..\sources\common\core\SiliconStudio.Core.Native\SiliconStudio.Core.Native.csproj", "{FCF36D39-BFFE-4719-B245-05640EE34C5F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets.Build", "00-Targets.Build", "{0B81090E-4066-4723-A658-8AEDBEADE619}"
+	ProjectSection(SolutionItems) = preProject
+		SiliconStudio.GlobalSettings.Local.targets = SiliconStudio.GlobalSettings.Local.targets
+		SiliconStudio.PostSettings.Local.targets = SiliconStudio.PostSettings.Local.targets
+		Xenko.Android.PreSettings.Local.targets = Xenko.Android.PreSettings.Local.targets
+		Xenko.build = Xenko.build
+		Xenko.Direct3D.CoreCLR.PreSettings.Local.targets = Xenko.Direct3D.CoreCLR.PreSettings.Local.targets
+		Xenko.Direct3D.PreSettings.Local.targets = Xenko.Direct3D.PreSettings.Local.targets
+		Xenko.Direct3D.SDL.PreSettings.Local.targets = Xenko.Direct3D.SDL.PreSettings.Local.targets
+		Xenko.Direct3D12.PreSettings.Local.targets = Xenko.Direct3D12.PreSettings.Local.targets
+		Xenko.ILMerge.CSharp.targets = Xenko.ILMerge.CSharp.targets
+		Xenko.iOS.PreSettings.Local.targets = Xenko.iOS.PreSettings.Local.targets
+		Xenko.Linux.CoreCLR.PreSettings.Local.targets = Xenko.Linux.CoreCLR.PreSettings.Local.targets
+		Xenko.Linux.PreSettings.Local.targets = Xenko.Linux.PreSettings.Local.targets
+		Xenko.Linux.Vulkan.CoreCLR.PreSettings.Local.targets = Xenko.Linux.Vulkan.CoreCLR.PreSettings.Local.targets
+		Xenko.Linux.Vulkan.PreSettings.Local.targets = Xenko.Linux.Vulkan.PreSettings.Local.targets
+		Xenko.macOS.CoreCLR.PreSettings.Local.targets = Xenko.macOS.CoreCLR.PreSettings.Local.targets
+		Xenko.macOS.PreSettings.Local.targets = Xenko.macOS.PreSettings.Local.targets
+		Xenko.OpenGL.CoreCLR.PreSettings.Local.targets = Xenko.OpenGL.CoreCLR.PreSettings.Local.targets
+		Xenko.OpenGL.PreSettings.Local.targets = Xenko.OpenGL.PreSettings.Local.targets
+		Xenko.OpenGLES.PreSettings.Local.targets = Xenko.OpenGLES.PreSettings.Local.targets
+		Xenko.PreSettings.Local.targets = Xenko.PreSettings.Local.targets
+		Xenko.Vulkan.PreSettings.Local.targets = Xenko.Vulkan.PreSettings.Local.targets
+		Xenko.Vulkan.SDL.PreSettings.Local.targets = Xenko.Vulkan.SDL.PreSettings.Local.targets
+		Xenko.Windows10.GlobalSettings.Local.targets = Xenko.Windows10.GlobalSettings.Local.targets
+		Xenko.Windows10.PreSettings.Local.targets = Xenko.Windows10.PreSettings.Local.targets
+		Xenko.WindowsPhone.PreSettings.Local.targets = Xenko.WindowsPhone.PreSettings.Local.targets
+		Xenko.WindowsStore.PreSettings.Local.targets = Xenko.WindowsStore.PreSettings.Local.targets
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		..\sources\engine\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems*{c121a566-555e-42b9-9b0a-1696529a9088}*SharedItemsImports = 4
+		..\sources\engine\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems*{7af4b563-aad3-42ff-b91e-84b9d34d904a}*SharedItemsImports = 4
 		..\sources\engine\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems*{b33e576f-2279-4bfc-a438-d9b84343b56b}*SharedItemsImports = 13
+		..\sources\engine\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems*{c121a566-555e-42b9-9b0a-1696529a9088}*SharedItemsImports = 4
+		..\sources\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems*{e8b3553f-a79f-4e50-b75b-acee771c320c}*SharedItemsImports = 4
 		..\sources\engine\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems*{fb06c76a-6bb7-40be-9afa-fec13b045fb5}*SharedItemsImports = 4
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

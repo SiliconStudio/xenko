@@ -85,7 +85,16 @@
     <TargetFrameworkVersionToolLow>v4.5.1</TargetFrameworkVersionToolLow>
     <TargetFrameworkVersionTool>v4.5.2</TargetFrameworkVersionTool>
     <TargetFrameworkVersion Condition="'$(TargetFrameworkVersion)' == ''">v4.5</TargetFrameworkVersion>
-    <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_LINUX;NET45</SiliconStudioPlatformDefines>
+    <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_LINUX;SILICONSTUDIO_PLATFORM_UNIX;NET45</SiliconStudioPlatformDefines>
+    <NUnitLiteBinDir>$(SiliconStudioDependenciesDir)NUnitLite\net-4.0\</NUnitLiteBinDir>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'macOS' ">
+    <!-- Limited version used by tools but that doesn't require installation of .NET on most computers (4.5.1 is default of many OS, 4.5.2/4.6 isn't) -->
+    <TargetFrameworkVersionToolLow>v4.5.1</TargetFrameworkVersionToolLow>
+    <TargetFrameworkVersionTool>v4.5.2</TargetFrameworkVersionTool>
+    <TargetFrameworkVersion Condition="'$(TargetFrameworkVersion)' == ''">v4.5</TargetFrameworkVersion>
+    <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_MACOS;SILICONSTUDIO_PLATFORM_UNIX;NET45</SiliconStudioPlatformDefines>
     <NUnitLiteBinDir>$(SiliconStudioDependenciesDir)NUnitLite\net-4.0\</NUnitLiteBinDir>
   </PropertyGroup>
 
@@ -163,7 +172,6 @@
 
   <PropertyGroup>
     <DefineConstants Condition="'$(SiliconStudioRuntimeDefines)' != ''">$(DefineConstants);$(SiliconStudioRuntimeDefines)</DefineConstants>
-    <DefineConstants Condition="'$(SiliconStudioAudio)' == 'SDL'">$(DefineConstants);SILICONSTUDIO_XENKO_SOUND_SDL</DefineConstants>
     <DefineConstants Condition="$(SiliconStudioUI.Contains('SDL'))">$(DefineConstants);SILICONSTUDIO_XENKO_UI_SDL</DefineConstants>
     <DefineConstants Condition="$(SiliconStudioUI.Contains('OPENTK'))">$(DefineConstants);SILICONSTUDIO_XENKO_UI_OPENTK</DefineConstants>
     <DefineConstants Condition="$(SiliconStudioUI.Contains('WINFORMS'))">$(DefineConstants);SILICONSTUDIO_XENKO_UI_WINFORMS</DefineConstants>

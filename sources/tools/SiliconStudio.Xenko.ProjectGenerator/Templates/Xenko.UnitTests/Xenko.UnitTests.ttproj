@@ -2,6 +2,7 @@
 Files:
   - {Source: $ProjectName$.Shared.targets.t4, Target: $ProjectName$.Shared.targets, IsTemplate: true}
   - {Source: $ProjectName$.csproj.t4, Target: $ProjectName$.Linux.csproj, IsTemplate: true, CurrentPlatform: Linux}
+  - {Source: $ProjectName$.csproj.t4, Target: $ProjectName$.macOS.csproj, IsTemplate: true, CurrentPlatform: macOS}
   - {Source: $ProjectName$.csproj.t4, Target: $ProjectName$.Windows.csproj, IsTemplate: true, CurrentPlatform: Windows}
   - {Source: $ProjectName$.csproj.t4, Target: $ProjectName$.WindowsPhone.csproj, IsTemplate: true, CurrentPlatform: WindowsPhone}
   - {Source: $ProjectName$.csproj.t4, Target: $ProjectName$.WindowsStore.csproj, IsTemplate: true, CurrentPlatform: WindowsStore}

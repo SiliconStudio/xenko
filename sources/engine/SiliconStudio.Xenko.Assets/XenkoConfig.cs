@@ -218,10 +218,24 @@ namespace SiliconStudio.Xenko.Assets
                 IsAvailable = true,
                 Type = PlatformType.Linux,
             };
+            linuxPlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_UNIX");
             linuxPlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_LINUX");
             linuxPlatform.Configurations.Add(coreClrRelease);
             linuxPlatform.Configurations.Add(coreClrDebug);
             solutionPlatforms.Add(linuxPlatform);
+
+            // macOS
+            var macOSPlatform = new SolutionPlatform()
+            {
+                Name = PlatformType.macOS.ToString(),
+                IsAvailable = true,
+                Type = PlatformType.macOS,
+            };
+            macOSPlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_UNIX");
+            macOSPlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_MACOS");
+            macOSPlatform.Configurations.Add(coreClrRelease);
+            macOSPlatform.Configurations.Add(coreClrDebug);
+            solutionPlatforms.Add(macOSPlatform);
 
             // Android
             var androidPlatform = new SolutionPlatform()

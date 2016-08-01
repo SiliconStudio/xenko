@@ -20,6 +20,14 @@ echo Processing Windows with Direct3D12
 ..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.ProjectGenerator.exe solution Xenko.sln -o Xenko.Direct3D12.sln -p Windows
 echo.
 
+echo Processing macOS
+..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.ProjectGenerator.exe solution Xenko.sln -o Xenko.macOS.sln -p macOS
+echo.
+
+echo Processing macOS with CoreCLR
+..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.ProjectGenerator.exe solution Xenko.sln -o Xenko.macOS.CoreCLR.sln -p macOS
+echo.
+
 echo Processing Linux
 ..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.ProjectGenerator.exe solution Xenko.sln -o Xenko.Linux.sln -p Linux
 echo.

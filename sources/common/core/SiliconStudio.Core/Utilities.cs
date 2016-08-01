@@ -51,7 +51,7 @@ namespace SiliconStudio.Core
         private const string MemcpyDll = "msvcrt.dll";
 #elif SILICONSTUDIO_PLATFORM_ANDROID
         private const string MemcpyDll = "libc.so";
-#elif SILICONSTUDIO_PLATFORM_LINUX
+#elif SILICONSTUDIO_PLATFORM_UNIX
         // We do not specifiy the .so extension as libc.so on Linux
         // is actually not a .so files but a script. Using just libc
         // will automatically find the corresponding .so.
@@ -733,7 +733,7 @@ namespace SiliconStudio.Core
         /// <param name="sleepTime">The duration to sleep.</param>
         public static void Sleep(TimeSpan sleepTime)
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_IOS || SILICONSTUDIO_PLATFORM_ANDROID
+#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
             Thread.Sleep(sleepTime);
 #else
             TaskEx.Delay(sleepTime).Wait();

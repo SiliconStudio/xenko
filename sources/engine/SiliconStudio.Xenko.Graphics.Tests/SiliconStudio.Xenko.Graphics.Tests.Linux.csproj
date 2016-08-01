@@ -53,7 +53,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <SiliconStudioRuntime Condition="'$(SiliconStudioProjectType)' == 'Executable'">CoreCLR</SiliconStudioRuntime>
-    <SiliconStudioBuildDirExtension>$(SiliconStudioRuntime)</SiliconStudioBuildDirExtension>
+    <SiliconStudioBuildDirExtension Condition="'$(SiliconStudioBuildDirExtension)' == ''">CoreCLR</SiliconStudioBuildDirExtension>
     <DefineConstants>SILICONSTUDIO_RUNTIME_CORECLR;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'CoreCLR_Debug|Linux' ">
@@ -64,7 +64,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <SiliconStudioRuntime Condition="'$(SiliconStudioProjectType)' == 'Executable'">CoreCLR</SiliconStudioRuntime>
-    <SiliconStudioBuildDirExtension>$(SiliconStudioRuntime)</SiliconStudioBuildDirExtension>
+    <SiliconStudioBuildDirExtension Condition="'$(SiliconStudioBuildDirExtension)' == ''">CoreCLR</SiliconStudioBuildDirExtension>
     <DefineConstants>SILICONSTUDIO_RUNTIME_CORECLR;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup>

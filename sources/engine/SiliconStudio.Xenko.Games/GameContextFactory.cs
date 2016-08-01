@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Games
         {
             // Default context is Desktop
             AppContextType type = AppContextType.Desktop;
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_UNIX
     #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
         #if SILICONSTUDIO_XENKO_UI_SDL
             type = AppContextType.DesktopSDL;
@@ -128,7 +128,7 @@ namespace SiliconStudio.Xenko.Games
 
         public static GameContext NewGameContextOpenTK()
         {
-#if (SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX) && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && SILICONSTUDIO_XENKO_UI_OPENTK
+#if (SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_UNIX) && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && SILICONSTUDIO_XENKO_UI_OPENTK
             return new GameContextOpenTK(null);
 #else
             return null;

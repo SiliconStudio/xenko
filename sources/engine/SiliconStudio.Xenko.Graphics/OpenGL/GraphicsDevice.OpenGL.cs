@@ -95,6 +95,7 @@ namespace SiliconStudio.Xenko.Graphics
         internal int version; // queried version
         internal int currentVersion; // glGetVersion
         internal Texture WindowProvidedRenderTexture;
+        internal int WindowProvidedFrameBuffer;
 
         internal bool HasVAO;
 
@@ -119,7 +120,6 @@ namespace SiliconStudio.Xenko.Graphics
         internal bool HasTextureRG;
 #endif
 
-        private int windowProvidedFrameBuffer;
         private bool isFramebufferSRGB;
 
         private int contextBeginCounter = 0;
@@ -150,7 +150,7 @@ namespace SiliconStudio.Xenko.Graphics
         private OpenTK.Graphics.IGraphicsContext graphicsContext;
         private OpenTK.Platform.IWindowInfo windowInfo;
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_UNIX
 #if SILICONSTUDIO_XENKO_UI_SDL
         private SiliconStudio.Xenko.Graphics.SDL.Window gameWindow;
 #else
@@ -346,16 +346,41 @@ namespace SiliconStudio.Xenko.Graphics
 
         private int CreateCopyProgram(bool srgb, out int offsetLocation, out int scaleLocation)
         {
+            string shaderVersion, inAttribute, outAttribute, varyingFragment, fragColorDeclaration, fragColorVariable, textureAPI;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            const string shaderVersion = "#version 100\n";
+            // We aim at OpenGLES 3.0 or greater.
+            shaderVersion = "#version 300 es";
 #else
-            const string shaderVersion = "#version 410\n";
+            shaderVersion = "#version 410";
 #endif
 
-            const string copyVertexShaderSource =
-                shaderVersion +
-                "attribute vec2 aPosition;   \n" +
-                "varying vec2 vTexCoord;     \n" +
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+            if (currentVersion < 300)
+            {
+                // Override the version
+                shaderVersion = "#version 100";
+                inAttribute = "attribute";
+                outAttribute = "varying";
+                varyingFragment = "varying";
+                fragColorDeclaration = "";
+                fragColorVariable = "gl_FragColor";
+                textureAPI = "texture2D";
+            }
+            else
+#endif
+            {
+                inAttribute = "in";
+                outAttribute = "out";
+                varyingFragment = "in";
+                fragColorDeclaration = "out vec4 gFragColor;\n";
+                fragColorVariable = "gFragColor";
+                textureAPI = "texture";
+            }
+
+            string copyVertexShaderSource =
+                shaderVersion + "\n" +
+                inAttribute + " vec2 aPosition;   \n" +
+                outAttribute + " vec2 vTexCoord;  \n" +
                 "uniform vec4 uScale;     \n" +
                 "uniform vec4 uOffset;     \n" +
                 "void main()                 \n" +
@@ -365,25 +390,27 @@ namespace SiliconStudio.Xenko.Graphics
                 "   vTexCoord = transformedPosition.xy;   \n" +
                 "}                           \n";
 
-            const string copyFragmentShaderSource =
-                shaderVersion +
+            string copyFragmentShaderSource =
+                shaderVersion + "\n" +
                 "precision mediump float;                            \n" +
-                "varying vec2 vTexCoord;                             \n" +
+                varyingFragment + " vec2 vTexCoord;                  \n" +
+                fragColorDeclaration +
                 "uniform sampler2D s_texture;                        \n" +
                 "void main()                                         \n" +
                 "{                                                   \n" +
-                "    gl_FragColor = texture2D(s_texture, vTexCoord); \n" +
+                "    " + fragColorVariable + " = " + textureAPI + "(s_texture, vTexCoord); \n" +
                 "}                                                   \n";
 
-            const string copyFragmentShaderSourceSRgb =
-                shaderVersion +
+            string copyFragmentShaderSourceSRgb =
+                shaderVersion + "\n" +
                 "precision mediump float;                            \n" +
-                "varying vec2 vTexCoord;                             \n" +
+                varyingFragment + " vec2 vTexCoord;                  \n" +
+                fragColorDeclaration +
                 "uniform sampler2D s_texture;                        \n" +
                 "void main()                                         \n" +
                 "{                                                   \n" +
-                "    vec4 color = texture2D(s_texture, vTexCoord);   \n" +
-                "    gl_FragColor = vec4(sqrt(color.rgb), color.a); \n" +  // approximation of linear to SRgb
+                "    vec4 color = " + textureAPI + "(s_texture, vTexCoord);   \n" +
+                "    " + fragColorVariable + " = vec4(sqrt(color.rgb), color.a); \n" +  // approximation of linear to SRgb
                 "}                                                   \n";
 
             // First initialization of shader program
@@ -440,7 +467,7 @@ namespace SiliconStudio.Xenko.Graphics
         internal int FindOrCreateFBO(GraphicsResourceBase graphicsResource, int subresource)
         {
             if (graphicsResource == WindowProvidedRenderTexture)
-                return windowProvidedFrameBuffer;
+                return WindowProvidedFrameBuffer;
 
             var texture = graphicsResource as Texture;
             if (texture != null)
@@ -487,7 +514,7 @@ namespace SiliconStudio.Xenko.Graphics
                 }
                 if (depthStencilBuffer.Texture == null && (isProvidedRenderTarget || fboKey.RenderTargetCount == 0)) // device provided framebuffer
                 {
-                    return windowProvidedFrameBuffer;
+                    return WindowProvidedFrameBuffer;
                 }
 
                 if (existingFBOs.TryGetValue(fboKey, out framebufferId))
@@ -734,7 +761,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             renderer = GL.GetString(StringName.Renderer);
 
-#if SILICONSTUDIO_PLATFORM_LINUX || SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+#if SILICONSTUDIO_PLATFORM_UNIX || SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 #if SILICONSTUDIO_XENKO_UI_SDL
             gameWindow = (SiliconStudio.Xenko.Graphics.SDL.Window)windowHandle.NativeWindow;
 #else
@@ -919,7 +946,7 @@ namespace SiliconStudio.Xenko.Graphics
             lock (existingFBOs)
             {
                 existingFBOs.Clear();
-                existingFBOs[new FBOKey(null, new FBOTexture[] { WindowProvidedRenderTexture }, 1)] = windowProvidedFrameBuffer;
+                existingFBOs[new FBOKey(null, new FBOTexture[] { WindowProvidedRenderTexture }, 1)] = WindowProvidedFrameBuffer;
             }
 
             //// Clear bound states
@@ -957,7 +984,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             // TODO: Provide unified ClientSize from GameWindow
 #if SILICONSTUDIO_PLATFORM_IOS
-            windowProvidedFrameBuffer = gameWindow.Framebuffer;
+            WindowProvidedFrameBuffer = gameWindow.Framebuffer;
 
             // Scale for Retina display
             var width = (int)(gameWindow.Size.Width * gameWindow.ContentScaleFactor);
@@ -970,13 +997,13 @@ namespace SiliconStudio.Xenko.Graphics
             var width = gameWindow.Size.Width;
             var height = gameWindow.Size.Height;
 #endif
-            windowProvidedFrameBuffer = 0;
+            WindowProvidedFrameBuffer = 0;
 #endif
 
             // TODO OPENGL detect if created framebuffer is sRGB or not (note: improperly reported by FramebufferParameterName.FramebufferAttachmentColorEncoding)
             isFramebufferSRGB = true;
 
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, windowProvidedFrameBuffer);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, WindowProvidedFrameBuffer);
 
             // TODO: iOS (and possibly other platforms): get real render buffer ID for color/depth?
             WindowProvidedRenderTexture = Texture.New2D(this, width, height, 1,
@@ -985,7 +1012,7 @@ namespace SiliconStudio.Xenko.Graphics
             WindowProvidedRenderTexture.Reload = graphicsResource => { };
 
             // Extract FBO render target
-            if (windowProvidedFrameBuffer != 0)
+            if (WindowProvidedFrameBuffer != 0)
             {
                 int framebufferAttachmentType;
                 GL.GetFramebufferAttachmentParameter(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, FramebufferParameterName.FramebufferAttachmentObjectType, out framebufferAttachmentType);
@@ -997,7 +1024,7 @@ namespace SiliconStudio.Xenko.Graphics
                 }
             }
 
-            existingFBOs[new FBOKey(null, new FBOTexture[] { WindowProvidedRenderTexture }, 1)] = windowProvidedFrameBuffer;
+            existingFBOs[new FBOKey(null, new FBOTexture[] { WindowProvidedRenderTexture }, 1)] = WindowProvidedFrameBuffer;
         }
 
         private class SwapChainBackend
@@ -1044,7 +1071,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             get
             {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_UNIX
                 return gameWindow.WindowState == WindowState.Fullscreen;
 #else
                 throw new NotImplementedException();
@@ -1053,7 +1080,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             set
             {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_UNIX
                 if (value ^ (gameWindow.WindowState == WindowState.Fullscreen))
                     gameWindow.WindowState = value ? WindowState.Fullscreen : WindowState.Normal;
 #else

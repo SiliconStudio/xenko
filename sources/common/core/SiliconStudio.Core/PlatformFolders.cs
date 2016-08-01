@@ -151,7 +151,7 @@ namespace SiliconStudio.Core
 
         private static string GetApplicationExecutablePath()
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_MONO_MOBILE || SILICONSTUDIO_PLATFORM_LINUX
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_MONO_MOBILE || SILICONSTUDIO_PLATFORM_UNIX
             Assembly currentAssembly = Assembly.GetEntryAssembly();
             if (currentAssembly == null)
             {
