@@ -136,8 +136,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 cszImageEffect.Parameters.Set(ReconstructCameraSpaceZKeys.ParamRadiusSquared, ParamRadius * ParamRadius);
             }
 
-            cszImageEffect.SetInput(0, originalColorBuffer);
-            cszImageEffect.SetInput(1, originalDepthBuffer);
+            cszImageEffect.SetInput(0, originalDepthBuffer);
             cszImageEffect.SetOutput(aoTexture1);
             cszImageEffect.Draw(context, "CameraSpaceZAO");
 

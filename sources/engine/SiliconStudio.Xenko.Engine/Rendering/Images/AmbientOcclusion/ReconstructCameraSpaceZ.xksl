@@ -57,7 +57,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             if (samplePosInt.x < 0 || samplePosInt.y < 0 || samplePosInt.x >= ScreenInfo.x || samplePosInt.y >= ScreenInfo.y)
                 return 0;
 
-            float depth = Texture1.Load(int3(samplePosInt, 0));
+            float depth = Texture0.Load(int3(samplePosInt, 0));
 
             float linearDepth = reconstructCSZ(depth);
 
@@ -90,7 +90,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             //*****************************
             // Reconstruct View space linear depth Z from the depth buffer
-            float depth = Texture1.SampleLevel(Sampler, streams.TexCoord, 0).x;
+            float depth = Texture0.SampleLevel(Sampler, streams.TexCoord, 0).x;
             float linearDepth = reconstructCSZ(depth);
 
             //*****************************
@@ -157,14 +157,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
             return color; //*/
 
 
-            //************************
-            // Visualize depth as view space position OR view space normal
-            //************************
-            float4 color = Texture0.Sample(Sampler, streams.TexCoord);
-            //color.rgb = viewNormal.xyz;
 
-            color.rgb = A;
-            return color; //*/
+            return float4(A, A, A, A);
         }
     };
 }
