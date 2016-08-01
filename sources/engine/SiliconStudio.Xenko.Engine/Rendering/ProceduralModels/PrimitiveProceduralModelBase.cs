@@ -8,7 +8,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
-
+using SiliconStudio.Xenko.Graphics.Data;
 using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Rendering.ProceduralModels
@@ -63,12 +63,17 @@ namespace SiliconStudio.Xenko.Rendering.ProceduralModels
 
         public void Generate(IServiceRegistry services, Model model)
         {
-            if (services == null) throw new ArgumentNullException("services");
-            if (model == null) throw new ArgumentNullException("model");
+            if (model == null) throw new ArgumentNullException(nameof(model));
 
-            var graphicsDevice = services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
+            var needsTempDevice = false;
+            var graphicsDevice = services?.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
+            if (graphicsDevice == null)
+            {
+                graphicsDevice = GraphicsDevice.New();
+                needsTempDevice = true;
+            }
 
-            var data = this.CreatePrimitiveMeshData();
+            var data = CreatePrimitiveMeshData();
 
             if (data.Vertices.Length == 0)
             {
@@ -120,6 +125,11 @@ namespace SiliconStudio.Xenko.Rendering.ProceduralModels
                     indicesShort[i] = (ushort)indices[i];
                 }
                 meshDraw.IndexBuffer = new IndexBufferBinding(Buffer.Index.New(graphicsDevice, indicesShort).RecreateWith(indicesShort), false, indices.Length);
+                if (needsTempDevice)
+                {
+                    var indexData = meshDraw.IndexBuffer.Buffer.GetSerializationData();
+                    meshDraw.IndexBuffer = new IndexBufferBinding(indexData.ToSerializableVersion(), false, indices.Length);
+                }
             }
             else
             {
@@ -129,9 +139,19 @@ namespace SiliconStudio.Xenko.Rendering.ProceduralModels
                 }
 
                 meshDraw.IndexBuffer = new IndexBufferBinding(Buffer.Index.New(graphicsDevice, indices).RecreateWith(indices), true, indices.Length);
+                if (needsTempDevice)
+                {
+                    var indexData = meshDraw.IndexBuffer.Buffer.GetSerializationData();
+                    meshDraw.IndexBuffer = new IndexBufferBinding(indexData.ToSerializableVersion(), true, indices.Length);
+                }
             }
 
             meshDraw.VertexBuffers = new[] { new VertexBufferBinding(Buffer.New(graphicsDevice, vertexBuffer, BufferFlags.VertexBuffer).RecreateWith(vertexBuffer), layout, data.Vertices.Length) };
+            if (needsTempDevice)
+            {
+                var vertexData = meshDraw.VertexBuffers[0].Buffer.GetSerializationData();
+                meshDraw.VertexBuffers = new[] { new VertexBufferBinding(vertexData.ToSerializableVersion(), layout, data.Vertices.Length) };
+            }
 
             meshDraw.DrawCount = indices.Length;
             meshDraw.PrimitiveType = PrimitiveType.TriangleList;
@@ -142,9 +162,14 @@ namespace SiliconStudio.Xenko.Rendering.ProceduralModels
             model.BoundingSphere = boundingSphere;
             model.Add(mesh);
 
-            if (MaterialInstance != null && MaterialInstance.Material != null)
+            if (MaterialInstance?.Material != null)
             {
                 model.Materials.Add(MaterialInstance);
+            }
+
+            if (needsTempDevice)
+            {
+                graphicsDevice.Dispose();
             }
         }
 
