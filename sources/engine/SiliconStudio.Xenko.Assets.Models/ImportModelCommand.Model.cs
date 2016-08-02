@@ -82,6 +82,39 @@ namespace SiliconStudio.Xenko.Assets.Models
             // Move meshes in the new nodes
             foreach (var mesh in model.Meshes)
             {
+                var skinning = mesh.Skinning;
+                if (skinning != null)
+                {
+                    // Update node mapping
+                    // Note: we only remap skinning matrices, but we could directly remap skinning bones instead
+                    for (int i = 0; i < skinning.Bones.Length; ++i)
+                    {
+                        var linkNodeIndex = skinning.Bones[i].NodeIndex;
+                        var newLinkNodeIndex = skeletonMapping.SourceToSource[linkNodeIndex];
+
+                        var nodeIndex = mesh.NodeIndex;
+                        var newNodeIndex = skeletonMapping.SourceToSource[mesh.NodeIndex];
+
+                        skinning.Bones[i].NodeIndex = skeletonMapping.SourceToTarget[linkNodeIndex];
+
+                        // If it was remapped, we also need to update matrix
+                        if (nodeIndex != newNodeIndex)
+                        {
+                            // Update mesh part
+                            var transformMatrix = CombineMatricesFromNodeIndices(hierarchyUpdater.NodeTransformations, newNodeIndex, nodeIndex);
+                            transformMatrix.Invert();
+                            skinning.Bones[i].LinkToMeshMatrix = Matrix.Multiply(transformMatrix, skinning.Bones[i].LinkToMeshMatrix);
+                        }
+
+                        if (newLinkNodeIndex != linkNodeIndex)
+                        {
+                            // Update link part
+                            var transformLinkMatrix = CombineMatricesFromNodeIndices(hierarchyUpdater.NodeTransformations, newLinkNodeIndex, linkNodeIndex);
+                            skinning.Bones[i].LinkToMeshMatrix = Matrix.Multiply(skinning.Bones[i].LinkToMeshMatrix, transformLinkMatrix);
+                        }
+                    }
+                }
+
                 // Check if there was a remap using model skeleton
                 if (skeletonMapping.SourceToSource[mesh.NodeIndex] != mesh.NodeIndex)
                 {
@@ -148,32 +181,6 @@ namespace SiliconStudio.Xenko.Assets.Models
                             Skinning = baseMesh.Skinning,
                         });
                     }
-                }
-            }
-
-            // Remap skinning
-            foreach (var skinning in model.Meshes.Select(x => x.Skinning).Where(x => x != null).Distinct())
-            {
-                // Update node mapping
-                // Note: we only remap skinning matrices, but we could directly remap skinning bones instead
-                for (int i = 0; i < skinning.Bones.Length; ++i)
-                {
-                    var nodeIndex = skinning.Bones[i].NodeIndex;
-                    var newNodeIndex = skeletonMapping.SourceToSource[nodeIndex];
-
-                    skinning.Bones[i].NodeIndex = skeletonMapping.SourceToTarget[nodeIndex];
-
-                    // If it was remapped, we also need to update matrix
-                    if (newNodeIndex != nodeIndex)
-                    {
-                        var transformationMatrix = CombineMatricesFromNodeIndices(hierarchyUpdater.NodeTransformations, newNodeIndex, nodeIndex);
-                        skinning.Bones[i].LinkToMeshMatrix = Matrix.Multiply(skinning.Bones[i].LinkToMeshMatrix, transformationMatrix);
-                    }
-
-                    // Cancel pivot translation
-                    // TODO: Review if that is the correct way to do that...
-                    if (skeleton == null)
-                        skinning.Bones[i].LinkToMeshMatrix = Matrix.Multiply(skinning.Bones[i].LinkToMeshMatrix, Matrix.Translation(PivotPosition * ScaleImport));
                 }
             }
 
