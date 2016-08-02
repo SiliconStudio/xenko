@@ -312,6 +312,7 @@ namespace SiliconStudio.Xenko.Rendering
 #else
             int batchCount = Math.Min(Environment.ProcessorCount, renderNodeCount);
             int batchSize = (renderNodeCount + (batchCount - 1)) / batchCount;
+            batchCount = (renderNodeCount + (batchSize - 1)) / batchSize;
 
             var commandLists = new CompiledCommandList[batchCount + 1];
             commandLists[0] = renderDrawContext.CommandList.Close2();
