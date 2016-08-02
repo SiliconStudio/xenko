@@ -351,9 +351,12 @@ namespace SiliconStudio.Xenko.Graphics
                 CommandBuffers = new IntPtr(&commandBuffer),
             };
 
-            GraphicsDevice.NativeCommandQueue.Submit(1, &submitInfo, Fence.Null);
-            GraphicsDevice.NativeCommandQueue.WaitIdle();
-            commandBuffer.Reset(CommandBufferResetFlags.None);
+            lock (GraphicsDevice.QueueLock)
+            {
+                GraphicsDevice.NativeCommandQueue.Submit(1, &submitInfo, Fence.Null);
+                GraphicsDevice.NativeCommandQueue.WaitIdle();
+                commandBuffer.Reset(CommandBufferResetFlags.None);
+            }
         }
 
         /// <inheritdoc/>
