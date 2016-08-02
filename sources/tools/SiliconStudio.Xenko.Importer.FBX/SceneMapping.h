@@ -35,7 +35,7 @@ namespace SiliconStudio {
 					/// Initializes a new instance of the <see cref="NodeMapping"/> class.
 					/// </summary>
 					/// <param name="sceneArg">The scene argument.</param>
-					SceneMapping(FbxScene* scene, float scaleImport) : scene(scene)
+					SceneMapping(FbxScene* scene) : scene(scene)
 					{
 						if (scene == nullptr)
 						{
@@ -54,7 +54,7 @@ namespace SiliconStudio {
 
 						// Setup the convertion
 						FbxGlobalSettings& settings = scene->GetGlobalSettings();
-						InitializeMatrix(settings.GetAxisSystem(), settings.GetSystemUnit(), scaleImport);
+						InitializeMatrix(settings.GetAxisSystem(), settings.GetSystemUnit());
 					}
 
 					/// <summary>
@@ -86,6 +86,10 @@ namespace SiliconStudio {
 							return convertMatrix;
 						}
 					}
+
+					property float ScaleToMeters;
+
+					property Matrix AxisSystemRotationMatrix;
 
 					/// <summary>
 					/// Finds the index of the FBX node in the <see cref="ModelNodeDefinition"/> from a FBX node.
@@ -122,26 +126,17 @@ namespace SiliconStudio {
 
 					Matrix ConvertMatrixFromFbx(FbxAMatrix& _m) 
 					{
-						auto m = FBXMatrixToMatrix(_m);
-						return ConvertMatrix(m);
-					}
-
-					Matrix ConvertMatrix(Matrix& m) 
-					{
-						return inverseConvertMatrix * m * convertMatrix;
+						return FBXMatrixToMatrix(_m);
 					}
 
 					Vector3 ConvertPointFromFbx(const FbxVector4& _p)
 					{
-						auto position = FbxDouble4ToVector4(_p);
-						position.W = 1.0f;
-						return (Vector3)Vector4::Transform(position, convertMatrix);
+						return (Vector3)FbxDouble4ToVector4(_p);
 					}
 
 					Vector3 ConvertNormalFromFbx(const FbxVector4& _p)
 					{
-						auto normal = (Vector3)FbxDouble4ToVector4(_p);
-						return Vector3::TransformNormal(normal, normalConvertMatrix);
+						return (Vector3)FbxDouble4ToVector4(_p);
 					}
 				private:
 					static void GetNodes(FbxNode* pNode, std::vector<FbxNode*>& nodes)
@@ -216,24 +211,17 @@ namespace SiliconStudio {
 						}
 					}
 
-					void InitializeMatrix(const FbxAxisSystem& axisSystem, const FbxSystemUnit& unitSystem, float scaleImport)
+					void InitializeMatrix(const FbxAxisSystem& axisSystem, const FbxSystemUnit& unitSystem)
 					{
 						auto fromMatrix = BuildAxisSystemMatrix(axisSystem);
 						fromMatrix.Invert();
-
-						// We make sure scaleImport is never zero
-						if (scaleImport == 0.0f)
-						{
-							scaleImport = 1.0f;
-						}
+						//auto fromMatrix = Matrix::Identity;
 
 						// Finds unit conversion ratio to ScaleImport (usually 0.01 so 1 meter). GetScaleFactor() is in cm.
-						auto scaleToMeters = (float)unitSystem.GetScaleFactor() * scaleImport * 0.01f;
+						ScaleToMeters = (float)unitSystem.GetScaleFactor() * 0.01f;
 
 						// Builds conversion matrices.
-						convertMatrix = Matrix::Scaling(scaleToMeters) * fromMatrix;
-						inverseConvertMatrix = Matrix::Invert(convertMatrix);
-						normalConvertMatrix = Matrix::Transpose(Matrix::Invert(fromMatrix));
+						AxisSystemRotationMatrix = fromMatrix;
 					}
 
 					static Matrix BuildAxisSystemMatrix(const FbxAxisSystem& axisSystem) {
