@@ -127,7 +127,7 @@ namespace SiliconStudio.Xenko.Rendering.ProceduralModels
                 meshDraw.IndexBuffer = new IndexBufferBinding(Buffer.Index.New(graphicsDevice, indicesShort).RecreateWith(indicesShort), false, indices.Length);
                 if (needsTempDevice)
                 {
-                    var indexData = meshDraw.IndexBuffer.Buffer.GetSerializationData();
+                    var indexData = BufferData.New(BufferFlags.IndexBuffer, indices);
                     meshDraw.IndexBuffer = new IndexBufferBinding(indexData.ToSerializableVersion(), false, indices.Length);
                 }
             }
@@ -141,7 +141,7 @@ namespace SiliconStudio.Xenko.Rendering.ProceduralModels
                 meshDraw.IndexBuffer = new IndexBufferBinding(Buffer.Index.New(graphicsDevice, indices).RecreateWith(indices), true, indices.Length);
                 if (needsTempDevice)
                 {
-                    var indexData = meshDraw.IndexBuffer.Buffer.GetSerializationData();
+                    var indexData = BufferData.New(BufferFlags.IndexBuffer, indices);
                     meshDraw.IndexBuffer = new IndexBufferBinding(indexData.ToSerializableVersion(), true, indices.Length);
                 }
             }
@@ -149,7 +149,7 @@ namespace SiliconStudio.Xenko.Rendering.ProceduralModels
             meshDraw.VertexBuffers = new[] { new VertexBufferBinding(Buffer.New(graphicsDevice, vertexBuffer, BufferFlags.VertexBuffer).RecreateWith(vertexBuffer), layout, data.Vertices.Length) };
             if (needsTempDevice)
             {
-                var vertexData = meshDraw.VertexBuffers[0].Buffer.GetSerializationData();
+                var vertexData = BufferData.New(BufferFlags.VertexBuffer, vertexBuffer);
                 meshDraw.VertexBuffers = new[] { new VertexBufferBinding(vertexData.ToSerializableVersion(), layout, data.Vertices.Length) };
             }
 
