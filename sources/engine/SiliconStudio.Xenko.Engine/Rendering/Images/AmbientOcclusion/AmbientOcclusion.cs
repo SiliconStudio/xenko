@@ -59,6 +59,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         [Display("Enable Blur")]
         public bool EnableBlur { get; set; } = true;
 
+        [DataMember(70)]
+        [DefaultValue(1)]
+        [Display("Bounces")]
+        public int NumberOfBounces { get; set; } = 1;
+
 
         public AmbientOcclusion()
         {
@@ -145,6 +150,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             cszImageEffect.Draw(context, "CameraSpaceZAO");
 
             if (EnableBlur)
+            for(int bounces = 0; bounces < NumberOfBounces; bounces++)
             {
                 int Radius = 5;
                 float SigmaRatio = 2.0f;
@@ -161,6 +167,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
                         //	{ 0.111220f, 0.107798f, 0.098151f, 0.083953f, 0.067458f, 0.050920f, 0.036108f }; // stddev = 3.0
                 }
 
+                if (camera != null)
+                {
+                    // Set Near/Far pre-calculated factors to speed up the linear depth reconstruction
+                    blurH.Parameters.Set(CameraKeys.ZProjection, CameraKeys.ZProjectionACalculate(camera.NearClipPlane, camera.FarClipPlane));
+                    blurV.Parameters.Set(CameraKeys.ZProjection, CameraKeys.ZProjectionACalculate(camera.NearClipPlane, camera.FarClipPlane));
+                }
+
                 // Update permutation parameters
                 blurH.Parameters.Set(AmbientOcclusionBlurKeys.Count, offsetsWeights.Length);
                 blurV.Parameters.Set(AmbientOcclusionBlurKeys.Count, offsetsWeights.Length);
@@ -172,12 +185,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 blurV.Parameters.Set(AmbientOcclusionBlurShaderKeys.Weights, offsetsWeights);
 
                 // Horizontal pass
-                blurH.SetInput(aoTexture1);
+                blurH.SetInput(0, aoTexture1);
+                blurH.SetInput(1, originalDepthBuffer);
                 blurH.SetOutput(aoTexture2);
                 blurH.Draw(context, nameGaussianBlurH);
 
                 // Vertical pass
-                blurV.SetInput(aoTexture2);
+                blurV.SetInput(0, aoTexture2);
+                blurV.SetInput(1, originalDepthBuffer);
                 blurV.SetOutput(aoTexture1);
                 blurV.Draw(context, nameGaussianBlurV);
             }

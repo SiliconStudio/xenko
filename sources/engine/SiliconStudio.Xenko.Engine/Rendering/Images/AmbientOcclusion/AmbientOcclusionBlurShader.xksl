@@ -4,17 +4,28 @@
 namespace SiliconStudio.Xenko.Rendering.Images
 {
 
-#define     SCALE       (2.1f)
+// TODO Need to blur once against neighbors in the first AO pass
+#define     SCALE           (2)
+
+/** Increase to make edges crisper. Decrease to reduce temporal flicker. */
+#define     EDGE_SHARPNESS  (1.0)
 
     /// <summary>
     /// A gaussian blur shader
     /// </summary>
-    internal shader AmbientOcclusionBlurShader<int BlurCount, bool IsVertical> : ImageEffectShader
+    internal shader AmbientOcclusionBlurShader<int BlurCount, bool IsVertical> : ImageEffectShader, Camera
     {
         stage float  Weights[BlurCount];
 
+        stage float reconstructCSZ(float depth)
+        {
+            return ZProjection.y / (depth - ZProjection.x);
+        }
+
         stage override float4 Shading()
         {
+            const float epsilon = 0.0001;
+
             // Direction in texel size: (float2(1,0) or float2(0,1)) * texel size
             float2 direction = (IsVertical ? float2(0, 1) : float2(1, 0)) * Texture0TexelSize;
 
@@ -22,8 +33,16 @@ namespace SiliconStudio.Xenko.Rendering.Images
             float totalWeight = Weights[0];
             float3 sum = Texture0.Sample(LinearSampler, streams.TexCoord).rgb * totalWeight;
 
-            // mirrored samples using bilinear filtering
-            [unroll]
+            float linearDepth = reconstructCSZ(Texture1.Sample(LinearSampler, streams.TexCoord).x);
+            if (linearDepth >= 300)
+            {
+                sum /= (totalWeight + epsilon);
+                return float4(sum, 1);
+            }
+
+                // mirrored samples using bilinear filtering
+            [
+            unroll]
             for(int i = 1; i < BlurCount; i++)
             {
                 // Handle both directions
@@ -34,13 +53,15 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
                     float value = Texture0.Sample(LinearSampler, streams.TexCoord + direction * j * i * SCALE).rgb;
 
+                    float linearDepthOther = reconstructCSZ(Texture1.Sample(LinearSampler, streams.TexCoord + direction * j * i * SCALE).x);
+                    weight *= max(0.0, 1.0 - (1.0 * EDGE_SHARPNESS) * abs(linearDepth - linearDepthOther));
+
                     sum += value * weight;
 
                     totalWeight += weight;
                 }
             }
 
-            const float epsilon = 0.0001;
             sum /= (totalWeight + epsilon);
             return float4(sum, 1);
         }

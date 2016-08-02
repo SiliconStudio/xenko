@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             //*****************************
             //  Sample Offset
             float alpha = 1 * (i + 0.5) * 0.675f / NUM_SAMPLES;
-            float angle = 1 * 83.9822971503f * alpha + randomPatternRotationAngle;
+            float angle = 1 * 43.9822971503f * alpha + randomPatternRotationAngle;
 
             float2 offset = float2(cos(angle), sin(angle));
             float ssRadius = alpha * diskRadius;
@@ -107,7 +107,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
             //*****************************
             // Hash function used in the HPG12 AlchemyAO paper
             int linearDepthInt = (int)linearDepth;
-            float randomPatternRotationAngle = (95 * linearDepthInt ^ 137 + 3 * screenPosition.x ^ screenPosition.y + screenPosition.x * screenPosition.y) * 10;
+            //float randomPatternRotationAngle = (3 * screenPosition.x ^ screenPosition.y + screenPosition.x * screenPosition.y) * 10;
+            float randomPatternRotationAngle = (15 * linearDepthInt + 3 * screenPosition.x ^ 2 * screenPosition.y + screenPosition.x * screenPosition.y) * 10;
 
             //*****************************
             // Choose a sample radius proportional to the projected area of the half-sphere
