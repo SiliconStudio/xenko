@@ -241,6 +241,9 @@ namespace SiliconStudio.Core.Threading
 
         public static void ForEach<TKey, TValue>(Dictionary<TKey, TValue> collection, ForEachAction<KeyValuePair<TKey, TValue>> action)
         {
+            if (collection.Count == 0)
+                return;
+
             int batchCount = Math.Min(MaxDregreeOfParallelism, collection.Count);
             int batchSize = (collection.Count + (batchCount - 1)) / batchCount;
             batchCount = (collection.Count + (batchSize - 1)) / batchSize;
