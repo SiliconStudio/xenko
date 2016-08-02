@@ -212,6 +212,10 @@
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Images\AmbientOcclusion\AmbientOcclusion.cs" />
+    <None Include="Rendering\Images\AmbientOcclusion\AmbientOcclusionBlurShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>AmbientOcclusionBlurShader.cs</LastGenOutput>
+    </None>
     <None Include="Rendering\Images\AmbientOcclusion\ApplyAmbientOcclusionShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ApplyAmbientOcclusionShader.cs</LastGenOutput>
@@ -220,6 +224,23 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ReconstructCameraSpaceZ1.cs</LastGenOutput>
     </None>
+    <None Include="Rendering\Images\AmbientOcclusion\AmbientOcclusionBlurEffect.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>AmbientOcclusionBlurEffect1.cs</LastGenOutput>
+    </None>
+    <Compile Include="Rendering\Images\AmbientOcclusion\AmbientOcclusionBlurEffect1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>AmbientOcclusionBlurEffect.xkfx</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Images\AmbientOcclusion\AmbientOcclusionBlurKeys.cs" />
+    <Compile Include="Rendering\Images\AmbientOcclusion\AmbientOcclusionBlurShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>AmbientOcclusionBlurShader.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Images\AmbientOcclusion\ApplyAmbientOcclusionShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

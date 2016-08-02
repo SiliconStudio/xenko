@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         private string nameGaussianBlurH;
         private string nameGaussianBlurV;
 
-        private Vector2[] offsetsWeights;
+        private float[] offsetsWeights;
 
         [DataMember(10)]
         [DefaultValue(9)]
@@ -54,6 +54,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
         [Display("Tap Radius")]
         public float ParamRadius { get; set; } = 1f;
 
+        [DataMember(60)]
+        [DefaultValue(true)]
+        [Display("Enable Blur")]
+        public bool EnableBlur { get; set; } = true;
 
 
         public AmbientOcclusion()
@@ -68,14 +72,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
             aoImageEffect  = ToLoadAndUnload(new ImageEffectShader("ApplyAmbientOcclusionShader"));
             cszImageEffect = ToLoadAndUnload(new ImageEffectShader("ReconstructCameraSpaceZ"));
 
-            blurH = ToLoadAndUnload(new ImageEffectShader("GaussianBlurEffect"));
-            blurV = ToLoadAndUnload(new ImageEffectShader("GaussianBlurEffect"));
+            blurH = ToLoadAndUnload(new ImageEffectShader("AmbientOcclusionBlurEffect"));
+            blurV = ToLoadAndUnload(new ImageEffectShader("AmbientOcclusionBlurEffect"));
             blurH.Initialize(Context);
             blurV.Initialize(Context);
 
             // Setup Horizontal parameters
-            blurH.Parameters.Set(GaussianBlurKeys.VerticalBlur, false);
-            blurV.Parameters.Set(GaussianBlurKeys.VerticalBlur, true);
+            blurH.Parameters.Set(AmbientOcclusionBlurKeys.VerticalBlur, false);
+            blurV.Parameters.Set(AmbientOcclusionBlurKeys.VerticalBlur, true);
         }
 
         protected override void Destroy()
@@ -140,39 +144,43 @@ namespace SiliconStudio.Xenko.Rendering.Images
             cszImageEffect.SetOutput(aoTexture1);
             cszImageEffect.Draw(context, "CameraSpaceZAO");
 
-
-            int Radius = 5;
-            float SigmaRatio = 2.0f;
-            var size = Radius * 2 + 1;
-            if (offsetsWeights == null)
+            if (EnableBlur)
             {
-                nameGaussianBlurH = string.Format("GaussianBlurH{0}x{0}", size);
-                nameGaussianBlurV = string.Format("GaussianBlurV{0}x{0}", size);
+                int Radius = 5;
+                float SigmaRatio = 2.0f;
+                var size = Radius*2 + 1;
+                if (offsetsWeights == null)
+                {
+                    nameGaussianBlurH = string.Format("AmbientOcclusionBlurH{0}x{0}", size);
+                    nameGaussianBlurV = string.Format("AmbientOcclusionBlurV{0}x{0}", size);
 
-                // TODO: cache if necessary
-                offsetsWeights = GaussianUtil.Calculate1D(Radius, SigmaRatio);
+                    offsetsWeights = new []
+                        //	{ 0.356642f, 0.239400f, 0.072410f, 0.009869f };
+                        //	{ 0.398943f, 0.241971f, 0.053991f, 0.004432f, 0.000134f };  // stddev = 1.0
+                            { 0.153170f, 0.144893f, 0.122649f, 0.092902f, 0.062970f };  // stddev = 2.0
+                        //	{ 0.111220f, 0.107798f, 0.098151f, 0.083953f, 0.067458f, 0.050920f, 0.036108f }; // stddev = 3.0
+                }
+
+                // Update permutation parameters
+                blurH.Parameters.Set(AmbientOcclusionBlurKeys.Count, offsetsWeights.Length);
+                blurV.Parameters.Set(AmbientOcclusionBlurKeys.Count, offsetsWeights.Length);
+                blurH.EffectInstance.UpdateEffect(context.GraphicsDevice);
+                blurV.EffectInstance.UpdateEffect(context.GraphicsDevice);
+
+                // Update parameters
+                blurH.Parameters.Set(AmbientOcclusionBlurShaderKeys.Weights, offsetsWeights);
+                blurV.Parameters.Set(AmbientOcclusionBlurShaderKeys.Weights, offsetsWeights);
+
+                // Horizontal pass
+                blurH.SetInput(aoTexture1);
+                blurH.SetOutput(aoTexture2);
+                blurH.Draw(context, nameGaussianBlurH);
+
+                // Vertical pass
+                blurV.SetInput(aoTexture2);
+                blurV.SetOutput(aoTexture1);
+                blurV.Draw(context, nameGaussianBlurV);
             }
-
-            // Update permutation parameters
-            blurH.Parameters.Set(GaussianBlurKeys.Count, offsetsWeights.Length);
-            blurV.Parameters.Set(GaussianBlurKeys.Count, offsetsWeights.Length);
-            blurH.EffectInstance.UpdateEffect(context.GraphicsDevice);
-            blurV.EffectInstance.UpdateEffect(context.GraphicsDevice);
-
-            // Update parameters
-            blurH.Parameters.Set(GaussianBlurShaderKeys.OffsetsWeights, offsetsWeights);
-            blurV.Parameters.Set(GaussianBlurShaderKeys.OffsetsWeights, offsetsWeights);
-
-            // Horizontal pass
-            blurH.SetInput(aoTexture1);
-            blurH.SetOutput(aoTexture2);
-            blurH.Draw(context, nameGaussianBlurH);
-
-            // Vertical pass
-            blurV.SetInput(aoTexture2);
-            blurV.SetOutput(aoTexture1);
-            blurV.Draw(context, nameGaussianBlurV);
-
 
 
             aoImageEffect.SetInput(0, originalColorBuffer);
