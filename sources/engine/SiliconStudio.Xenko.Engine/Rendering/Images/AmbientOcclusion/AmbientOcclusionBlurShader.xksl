@@ -3,17 +3,10 @@
 
 namespace SiliconStudio.Xenko.Rendering.Images
 {
-
-// TODO Need to blur once against neighbors in the first AO pass
-#define     SCALE           (2)
-
-/** Increase to make edges crisper. Decrease to reduce temporal flicker. */
-#define     EDGE_SHARPNESS  (1.0)
-
     /// <summary>
     /// A gaussian blur shader
     /// </summary>
-    internal shader AmbientOcclusionBlurShader<int BlurCount, bool IsVertical> : ImageEffectShader, Camera
+    internal shader AmbientOcclusionBlurShader<int BlurCount, bool IsVertical, float BlurScale, float EdgeSharpness> : ImageEffectShader, Camera
     {
         stage float  Weights[BlurCount];
 
@@ -51,10 +44,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 {
                     float weight = 0.3 + Weights[i];
 
-                    float value = Texture0.Sample(LinearSampler, streams.TexCoord + direction * j * i * SCALE).rgb;
+                    float value = Texture0.Sample(LinearSampler, streams.TexCoord + direction * j * i * BlurScale).rgb;
 
-                    float linearDepthOther = reconstructCSZ(Texture1.Sample(LinearSampler, streams.TexCoord + direction * j * i * SCALE).x);
-                    weight *= max(0.0, 1.0 - (1.0 * EDGE_SHARPNESS) * abs(linearDepth - linearDepthOther));
+                    float linearDepthOther = reconstructCSZ(Texture1.Sample(LinearSampler, streams.TexCoord + direction * j * i * BlurScale).x);
+                    weight *= max(0.0, 1.0 - EdgeSharpness * abs(linearDepth - linearDepthOther));
 
                     sum += value * weight;
 

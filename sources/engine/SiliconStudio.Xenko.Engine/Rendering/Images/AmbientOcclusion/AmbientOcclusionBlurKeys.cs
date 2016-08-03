@@ -10,8 +10,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// </summary>
     internal static class AmbientOcclusionBlurKeys
     {
-        public static readonly PermutationParameterKey<int> Count = ParameterKeys.NewPermutation<int>();
+        public static readonly PermutationParameterKey<int> Count = ParameterKeys.NewPermutation<int>(9);
 
         public static readonly PermutationParameterKey<bool> VerticalBlur = ParameterKeys.NewPermutation<bool>();
+
+        public static readonly PermutationParameterKey<float> BlurScale = ParameterKeys.NewPermutation<float>(2f);
+
+        public static readonly PermutationParameterKey<float> EdgeSharpness = ParameterKeys.NewPermutation<float>(4f);
     }
 }

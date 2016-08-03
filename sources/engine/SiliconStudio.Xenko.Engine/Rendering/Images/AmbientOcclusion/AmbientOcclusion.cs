@@ -64,6 +64,16 @@ namespace SiliconStudio.Xenko.Rendering.Images
         [Display("Blur Count")]
         public int NumberOfBounces { get; set; } = 1;
 
+        [DataMember(74)]
+        [DefaultValue(2f)]
+        [Display("Blur Scale")]
+        public float BlurScale { get; set; } = 2f;
+
+        [DataMember(78)]
+        [DefaultValue(4f)]
+        [Display("Edge Sharpness")]
+        public float EdgeSharpness { get; set; } = 4f;
+
 
         public AmbientOcclusion()
         {
@@ -181,8 +191,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
                 // Update permutation parameters
                 blurH.Parameters.Set(AmbientOcclusionBlurKeys.Count, offsetsWeights.Length);
-                blurV.Parameters.Set(AmbientOcclusionBlurKeys.Count, offsetsWeights.Length);
+                blurH.Parameters.Set(AmbientOcclusionBlurKeys.BlurScale, BlurScale);
+                blurH.Parameters.Set(AmbientOcclusionBlurKeys.EdgeSharpness, EdgeSharpness);
                 blurH.EffectInstance.UpdateEffect(context.GraphicsDevice);
+
+                blurV.Parameters.Set(AmbientOcclusionBlurKeys.Count, offsetsWeights.Length);
+                blurV.Parameters.Set(AmbientOcclusionBlurKeys.BlurScale, BlurScale);
+                blurV.Parameters.Set(AmbientOcclusionBlurKeys.EdgeSharpness, EdgeSharpness);
                 blurV.EffectInstance.UpdateEffect(context.GraphicsDevice);
 
                 // Update parameters

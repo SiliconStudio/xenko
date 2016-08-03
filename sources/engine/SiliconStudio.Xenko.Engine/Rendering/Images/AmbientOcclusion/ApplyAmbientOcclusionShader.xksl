@@ -16,7 +16,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
             float4 color     = Texture0.SampleLevel(Sampler, streams.TexCoord, 0);
             float  occlusion = Texture1.SampleLevel(Sampler, streams.TexCoord, 0).x;
 
-            color.rgba = occlusion;
+            if (streams.TexCoord.x >= 0.666)
+                color.rgba = occlusion;
+            else if (streams.TexCoord.x >= 0.333)
+                color.rgba *= occlusion;
             return color;
         }
     };
