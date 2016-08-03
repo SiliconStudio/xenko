@@ -42,13 +42,14 @@ namespace SiliconStudio.Xenko.Assets.Model
             {
                 public readonly List<byte> VertexData = new List<byte>();
                 public int VertexStride;
+
                 public readonly List<byte> IndexData = new List<byte>();
+                public int IndexOffset;
             }
 
             private struct EntityChunk
             {
                 public Entity Entity;
-                public ModelComponent ModelComponent;
                 public Rendering.Model Model;
                 public int MaterialIndex;
             }
@@ -63,7 +64,7 @@ namespace SiliconStudio.Xenko.Assets.Model
                 ComputeCompileTimeDependenciesHash(package, writer, AssetParameters);
             }
 
-            private static void ProcessMaterial(ContentManager manager, GraphicsDevice device, ICollection<EntityChunk> chunks, MaterialInstance material, Rendering.Model prefabModel)
+            private static void ProcessMaterial(ContentManager manager, ICollection<EntityChunk> chunks, MaterialInstance material, Rendering.Model prefabModel)
             {
                 //we need to futher group by VertexDeclaration
                 var meshes = new Dictionary<VertexDeclaration, MeshData>();
@@ -100,9 +101,18 @@ namespace SiliconStudio.Xenko.Assets.Model
                                 throw new Exception($"Failed to get Vertex BufferData for entity {chunk.Entity.Name}'s model.");
                             }
 
-                            //todo need to actually transform the vertexes
+                            //transform the vertexes according to the entity
+                            var vertexDataCopy = vertexData.ToArray();
+                            chunk.Entity.Transform.UpdateWorldMatrix(); //make sure matrix is computed
+                            modelMesh.Draw.VertexBuffers[0].TransformBuffer(vertexDataCopy, ref chunk.Entity.Transform.WorldMatrix);
+                            
+                            //add to the big single array
+                            var vertexes = vertexDataCopy
+                                .Skip(modelMesh.Draw.VertexBuffers[0].Offset)
+                                .Take(modelMesh.Draw.VertexBuffers[0].Count*modelMesh.Draw.VertexBuffers[0].Stride)
+                                .ToArray();
 
-                            mesh.VertexData.AddRange(vertexData.Skip(modelMesh.Draw.VertexBuffers[0].Offset * modelMesh.Draw.VertexBuffers[0].Stride).Take(modelMesh.Draw.VertexBuffers[0].Count * modelMesh.Draw.VertexBuffers[0].Stride));
+                            mesh.VertexData.AddRange(vertexes);
 
                             //indices
                             var indexBufferRef = AttachedReferenceManager.GetAttachedReference(modelMesh.Draw.IndexBuffer.Buffer);
@@ -121,9 +131,45 @@ namespace SiliconStudio.Xenko.Assets.Model
                                 throw new Exception("Failed to get Indices BufferData for entity {chunk.Entity.Name}'s model.");
                             }
 
-                            //todo handle 32 bit 16 bit?
-                            //its actually acting weird
-                            mesh.IndexData.AddRange(indexData.Skip(modelMesh.Draw.IndexBuffer.Offset * 4).Take(modelMesh.Draw.IndexBuffer.Count * 4));
+                            var indexSize = modelMesh.Draw.IndexBuffer.Is32Bit ? sizeof(uint) : sizeof(ushort);
+
+                            var indices = indexData
+                                .Skip(modelMesh.Draw.IndexBuffer.Offset)
+                                .Take(modelMesh.Draw.IndexBuffer.Count * indexSize)
+                                .ToArray();
+
+                            //todo this code is not optimal, use unsafe
+
+                            //must convert to 32bits
+                            if (indexSize == sizeof(ushort))
+                            {
+                                var uintIndex = new List<byte>();
+                                for (var i = 0; i < indices.Length; i += sizeof(ushort))
+                                {
+                                    var index = BitConverter.ToUInt16(indices, i);
+                                    var bi = BitConverter.GetBytes((uint)index);
+                                    uintIndex.Add(bi[0]);
+                                    uintIndex.Add(bi[1]);
+                                    uintIndex.Add(bi[2]);
+                                    uintIndex.Add(bi[3]);
+                                }
+                                indices = uintIndex.ToArray();
+                            }
+
+                            //need to offset the indices
+                            for (var i = 0; i < indices.Length; i += sizeof(uint))
+                            {
+                                var index = BitConverter.ToUInt32(indices, i) + mesh.IndexOffset;
+                                var bi = BitConverter.GetBytes(index);
+                                indices[i + 0] = bi[0];
+                                indices[i + 1] = bi[1];
+                                indices[i + 2] = bi[2];
+                                indices[i + 3] = bi[3];
+                            }
+
+                            mesh.IndexOffset += modelMesh.Draw.VertexBuffers[0].Count;
+
+                            mesh.IndexData.AddRange(indices);
                         }
                     }
                 }
@@ -138,9 +184,12 @@ namespace SiliconStudio.Xenko.Assets.Model
                     var vertexArray = meshData.Value.VertexData.ToArray();
                     var indexArray = meshData.Value.IndexData.ToArray();
 
+                    var vertexCount = vertexArray.Length/meshData.Value.VertexStride;
+                    var indexCount = indexArray.Length/4;
+
                     var gpuMesh = new Mesh
                     {
-                        Draw = new MeshDraw(),
+                        Draw = new MeshDraw { PrimitiveType = PrimitiveType.TriangleList, DrawCount = indexCount, StartLocation = 0 },
                         MaterialIndex = matIndex
                     };
 
@@ -154,8 +203,8 @@ namespace SiliconStudio.Xenko.Assets.Model
                     Array.Copy(indexArray, indexBuffer.Content, indexArray.Length);
 
                     gpuMesh.Draw.VertexBuffers = new VertexBufferBinding[1];                   
-                    gpuMesh.Draw.VertexBuffers[0] = new VertexBufferBinding(vertexBufferSerializable, meshData.Key, vertexArray.Length / meshData.Value.VertexStride);
-                    gpuMesh.Draw.IndexBuffer = new IndexBufferBinding(indexBufferSerializable, true, indexArray.Length / 4);
+                    gpuMesh.Draw.VertexBuffers[0] = new VertexBufferBinding(vertexBufferSerializable, meshData.Key, vertexCount);
+                    gpuMesh.Draw.IndexBuffer = new IndexBufferBinding(indexBufferSerializable, true, indexCount);
 
                     prefabModel.Meshes.Add(gpuMesh);
                 }
@@ -179,6 +228,18 @@ namespace SiliconStudio.Xenko.Assets.Model
                 return instance;
             }
 
+            private static IEnumerable<T> IterateTree<T>(T root, Func<T, IEnumerable<T>> childrenF)
+            {
+                var q = new List<T>() { root };
+                while (q.Any())
+                {
+                    var c = q[0];
+                    q.RemoveAt(0);
+                    q.AddRange(childrenF(c) ?? Enumerable.Empty<T>());
+                    yield return c;
+                }
+            }
+
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 var contentManager = new ContentManager();
@@ -193,7 +254,12 @@ namespace SiliconStudio.Xenko.Assets.Model
                     }
                 });
 
-                var prefab = contentManager.Load<Prefab>(AssetParameters.Prefab.Location);
+                var loadSettings = new AssetManagerLoaderSettings
+                {
+                    ContentFilter = AssetManagerLoaderSettings.NewContentFilterByType(typeof(Mesh), typeof(Skeleton), typeof(Material))
+                };
+
+                var prefab = contentManager.Load<Prefab>(AssetParameters.Prefab.Location, loadSettings);
                 if (prefab == null) throw new Exception("Failed to load prefab.");
 
                 var prefabModel = new Rendering.Model();
@@ -204,24 +270,44 @@ namespace SiliconStudio.Xenko.Assets.Model
 
                 var materials = new Dictionary<MaterialInstance, List<EntityChunk>>();
 
-                foreach (var entity in prefab.Entities)
-                {
-                    //Hard coded for now to entities that have 2 components , transform + model and only Root node
-                    var modelComponent = entity.Get<ModelComponent>();
-                    if (entity.Components.Count == 2 && modelComponent != null && modelComponent.Skeleton.Nodes.Length == 1)
-                    {
-                        //add asset materials
-                        var modelAsset = contentManager.Load<Rendering.Model>(AttachedReferenceManager.GetUrl(modelComponent.Model));
-                        if (modelAsset == null || 
-                            modelAsset.Meshes.Any(x => x.Draw.PrimitiveType != PrimitiveType.TriangleList || x.Draw.VertexBuffers.Length > 1)) //For now we limit only to TriangleList types and interleaved vertex buffers
-                            goto Ignore;
+                var validEntities = new List<Entity>();
 
+                foreach (var rootEntity in prefab.Entities)
+                {
+                    //collect sub entities as well
+                    var collected = IterateTree(rootEntity, subEntity => subEntity.GetChildren() ).ToArray();
+
+                    validEntities.Clear();
+
+                    //first pass, check if compatible with prefabmodel
+                    foreach (var subEntity in collected)
+                    {
+                        //todo for now we collect everything with a model component
+                        var modelComponent = subEntity.Get<ModelComponent>();
+                        
+                        if (modelComponent == null || modelComponent.Skeleton.Nodes.Length != 1) continue;
+                        //if (subEntity.Components.Count != 2 || modelComponent == null || modelComponent.Skeleton.Nodes.Length != 1) goto Ignore;
+
+                        var modelAsset = contentManager.Load<Rendering.Model>(AttachedReferenceManager.GetUrl(modelComponent.Model), loadSettings);
+                        if (modelAsset == null ||
+                            modelAsset.Meshes.Any(x => x.Draw.PrimitiveType != PrimitiveType.TriangleList || x.Draw.VertexBuffers.Length > 1)) //For now we limit only to TriangleList types and interleaved vertex buffers
+                            continue;
+
+                        validEntities.Add(subEntity);
+                    }
+
+                    //second pass, add to simplification process
+                    foreach (var subEntity in validEntities)
+                    {
+                        var modelComponent = subEntity.Get<ModelComponent>();
+                        var modelAsset = contentManager.Load<Rendering.Model>(AttachedReferenceManager.GetUrl(modelComponent.Model), loadSettings);
                         for (var index = 0; index < modelAsset.Materials.Count; index++)
                         {
                             var material = modelAsset.Materials[index];
                             var mat = ExtractMaterialInstance(material, index, modelComponent, fallbackMaterial);
-                            var chunk = new EntityChunk { Entity = entity, ModelComponent = modelComponent, Model = modelAsset, MaterialIndex = index };
-
+                        
+                            var chunk = new EntityChunk { Entity = subEntity, Model = modelAsset, MaterialIndex = index };
+                        
                             List<EntityChunk> entities;
                             if (materials.TryGetValue(mat, out entities))
                             {
@@ -232,19 +318,15 @@ namespace SiliconStudio.Xenko.Assets.Model
                                 materials.Add(mat, new List<EntityChunk> { chunk });
                             }
                         }
-
-                        continue;
                     }
-
-                    Ignore:
-                    commandContext.Logger.Info($"Ignoring entity {entity.Name} since it is not compatible with PrefabModel.");
                 }
 
                 foreach (var material in materials)
                 {
-                    ProcessMaterial(contentManager, device, material.Value, material.Key, prefabModel);
+                    ProcessMaterial(contentManager, material.Value, material.Key, prefabModel);
                 }
 
+                //handle boundng box/sphere
                 var modelBoundingBox = prefabModel.BoundingBox;
                 var modelBoundingSphere = prefabModel.BoundingSphere;
                 foreach (var mesh in prefabModel.Meshes)
@@ -253,7 +335,7 @@ namespace SiliconStudio.Xenko.Assets.Model
                     if (vertexBuffers.Length > 0)
                     {
                         // Compute local mesh bounding box (no node transformation)
-                        Matrix matrix = Matrix.Identity;
+                        var matrix = Matrix.Identity;
                         mesh.BoundingBox = vertexBuffers[0].ComputeBounds(ref matrix, out mesh.BoundingSphere);
 
                         // Compute model bounding box (includes node transformation)
@@ -263,12 +345,12 @@ namespace SiliconStudio.Xenko.Assets.Model
                         BoundingSphere.Merge(ref modelBoundingSphere, ref meshBoundingSphere, out modelBoundingSphere);
                     }
 
-                    // TODO: temporary Always try to compact
                     mesh.Draw.CompactIndexBuffer();
                 }
                 prefabModel.BoundingBox = modelBoundingBox;
                 prefabModel.BoundingSphere = modelBoundingSphere;
 
+                //save
                 contentManager.Save(Url, prefabModel);
 
                 device.Dispose();
