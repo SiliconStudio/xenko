@@ -27,7 +27,20 @@ namespace SiliconStudio.Presentation.Commands
 
         private static void OpenHyperlink(string url)
         {
-            Process.Start(url);
+            // see https://support.microsoft.com/en-us/kb/305703
+            try
+            {
+                Process.Start(url);
+            }
+            catch (System.ComponentModel.Win32Exception e)
+            {
+                if (e.ErrorCode == -2147467259)
+                    MessageBox.Show(e.Message);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show(e.Message);
+            }
         }
     }
 }
