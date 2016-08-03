@@ -17,7 +17,7 @@ namespace SiliconStudio.Presentation.ValueConverters
 
             var fallbackValue = parameter is bool && (bool)parameter;
             var first = values[0];
-            return values.All(x => x == DependencyProperty.UnsetValue ? fallbackValue : x.Equals(first));
+            return values.All(x => x == DependencyProperty.UnsetValue ? fallbackValue : Equals(x, first));
         }
     }
 }
