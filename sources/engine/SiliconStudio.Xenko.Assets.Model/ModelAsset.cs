@@ -9,6 +9,7 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Rendering;
@@ -50,6 +51,12 @@ namespace SiliconStudio.Xenko.Assets.Model
         [DataMember(10)]
         [DefaultValue(1.0f)]
         public float ScaleImport { get; set; } = 1.0f;
+
+        /// <summary>
+        /// Gets or sets the pivot position, that will be used as center of object.
+        /// </summary>
+        [DataMember(15)]
+        public Vector3 PivotPosition { get; set; }
 
         /// <inheritdoc/>
         [DataMember(40)]

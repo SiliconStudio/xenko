@@ -140,6 +140,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             using (GraphicsDevice.UseOpenGLCreationContext())
             {
+                GL.DeleteTextures(1, ref TextureId);
                 GL.DeleteBuffers(1, ref BufferId);
             }
 
