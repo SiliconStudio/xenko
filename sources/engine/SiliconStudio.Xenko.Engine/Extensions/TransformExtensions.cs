@@ -15,9 +15,12 @@ namespace SiliconStudio.Xenko.Extensions
     {
         /// <summary>
         /// Transform a vertex buffer positions, normals, tangents and bitangents using the given matrix.
+        /// Using as source/destination data the provided bufferData byte array.
         /// </summary>
-        /// <param name="meshData">The mesh data.</param>
-        public unsafe static void TransformBuffer(this VertexBufferBinding vertexBufferBinding, ref Matrix matrix)
+        /// <param name="vertexBufferBinding"></param>
+        /// <param name="bufferData"></param>
+        /// <param name="matrix"></param>
+        public static unsafe void TransformBuffer(this VertexBufferBinding vertexBufferBinding, byte[] bufferData, ref Matrix matrix)
         {
             // List of items that need to be transformed by the matrix
             var vertexElementsToTransform1 = vertexBufferBinding.Declaration
@@ -49,7 +52,6 @@ namespace SiliconStudio.Xenko.Extensions
             }
 
             // Transform buffer data
-            var bufferData = vertexBufferBinding.Buffer.GetSerializationData().Content;
             var vertexStride = vertexBufferBinding.Declaration.VertexStride;
             var vertexCount = vertexBufferBinding.Count;
             fixed (byte* bufferPointerStart = &bufferData[vertexBufferBinding.Offset])
@@ -82,6 +84,17 @@ namespace SiliconStudio.Xenko.Extensions
                     bufferPointer += vertexStride;
                 }
             }
+        }
+
+        /// <summary>
+        /// Transform a vertex buffer positions, normals, tangents and bitangents using the given matrix.
+        /// </summary>
+        /// <param name="vertexBufferBinding"></param>
+        /// <param name="matrix"></param>
+        public static void TransformBuffer(this VertexBufferBinding vertexBufferBinding, ref Matrix matrix)
+        {
+            var bufferData = vertexBufferBinding.Buffer.GetSerializationData().Content;
+            vertexBufferBinding.TransformBuffer(bufferData, ref matrix);
         }
     }
 }
