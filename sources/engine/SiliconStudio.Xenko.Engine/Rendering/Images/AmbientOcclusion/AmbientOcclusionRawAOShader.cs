@@ -23,7 +23,7 @@ using System.Windows;
 using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 namespace SiliconStudio.Xenko.Rendering.Images
 {
-    public static partial class ReconstructCameraSpaceZKeys
+    public static partial class AmbientOcclusionRawAOShaderKeys
     {
         public static readonly ValueParameterKey<Vector4> ProjInfo = ParameterKeys.NewValue<Vector4>();
         public static readonly ValueParameterKey<Vector4> ScreenInfo = ParameterKeys.NewValue<Vector4>();

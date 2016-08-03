@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-                context.Mixin(mixin, "ReconstructCameraSpaceZ", context.GetParam(AmbientOcclusionRawAOKeys.Count));
+                context.Mixin(mixin, "AmbientOcclusionRawAOShader", context.GetParam(AmbientOcclusionRawAOKeys.Count));
             }
 
             [ModuleInitializer]

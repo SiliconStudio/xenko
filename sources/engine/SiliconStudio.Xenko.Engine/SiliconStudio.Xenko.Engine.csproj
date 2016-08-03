@@ -224,9 +224,9 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ApplyAmbientOcclusionShader.cs</LastGenOutput>
     </None>
-    <None Include="Rendering\Images\AmbientOcclusion\ReconstructCameraSpaceZ.xksl">
+    <None Include="Rendering\Images\AmbientOcclusion\AmbientOcclusionRawAOShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>ReconstructCameraSpaceZ1.cs</LastGenOutput>
+      <LastGenOutput>AmbientOcclusionRawAOShader.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Images\AmbientOcclusion\AmbientOcclusionBlurEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
@@ -258,11 +258,11 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ApplyAmbientOcclusionShader.xksl</DependentUpon>
     </Compile>
-    <Compile Include="Rendering\Images\AmbientOcclusion\ReconstructCameraSpaceZ1.cs">
+    <Compile Include="Rendering\Images\AmbientOcclusion\AmbientOcclusionRawAOShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ReconstructCameraSpaceZ.xksl</DependentUpon>
+      <DependentUpon>AmbientOcclusionRawAOShader.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Images\AmbientOcclusion\ScreenSpaceAmbientOcclusion.cs">
       <AutoGen>True</AutoGen>

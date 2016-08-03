@@ -10,6 +10,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
         using params AmbientOcclusionRawAOKeys;
 
         // Mixin 
-        mixin ReconstructCameraSpaceZ<AmbientOcclusionRawAOKeys.Count>;
+        mixin AmbientOcclusionRawAOShader<AmbientOcclusionRawAOKeys.Count>;
     };
 }

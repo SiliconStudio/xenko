@@ -6,14 +6,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 
-//#define NUM_SAMPLES         9   // DONE
-#define NUM_SPIRAL_TURNS    7
-#define MAX_MIP_LEVEL       5
-#define LOG_MAX_OFFSET      3
-
 namespace SiliconStudio.Xenko.Rendering.Images
 {
-    shader ReconstructCameraSpaceZ <int SamplesCount>  : ImageEffectShader, Camera
+    shader AmbientOcclusionRawAOShader <int SamplesCount>  : ImageEffectShader, Camera
     {
         float4   ProjInfo;    // .x = zN * zF, .y = zN - zF, .z = zF
         float4   ScreenInfo;  // .x = Width, .y = Height, .z = Aspect

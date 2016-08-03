@@ -26,6 +26,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         private ImageEffectShader aoApplyImageEffect;
 
+        public AmbientOcclusion()
+        {
+            //Enabled = false;
+        }
 
         [DataMember(10)]
         [DefaultValue(9)]
@@ -53,14 +57,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
         [Display("Sample Radius")]
         public float ParamRadius { get; set; } = 1f;
 
-        [DataMember(60)]
-        [DefaultValue(true)]
-        [Display("Enable Blur")]
-        public bool EnableBlur { get; set; } = true;
-
         [DataMember(70)]
         [DefaultValue(1)]
-        [DataMemberRange(1, 3)]
+        [DataMemberRange(0, 3)]
         [Display("Blur Count")]
         public int NumberOfBounces { get; set; } = 1;
 
@@ -74,11 +73,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
         [Display("Edge Sharpness")]
         public float EdgeSharpness { get; set; } = 4f;
 
-
-        public AmbientOcclusion()
-        {
-            //Enabled = false;
-        }
+        [DataMember(100)]
+        [DefaultValue(TemporaryBufferSize.SizeFull)]
+        [Display("Buffer Size")]
+        public TemporaryBufferSize TempSize { get; set; } = TemporaryBufferSize.SizeFull;
 
         protected override void InitializeCore()
         {
@@ -129,8 +127,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
             // Ambient Occlusion
             //---------------------------------
 
-            var aoTexture1 = NewScopedRenderTarget2D(originalColorBuffer.Width, originalColorBuffer.Height, PixelFormat.R8_UNorm, 1);
-            var aoTexture2 = NewScopedRenderTarget2D(originalColorBuffer.Width, originalColorBuffer.Height, PixelFormat.R8_UNorm, 1);
+            var tempWidth  = (originalColorBuffer.Width  * (int)TempSize) / (int)TemporaryBufferSize.SizeFull;
+            var tempHeight = (originalColorBuffer.Height * (int)TempSize) / (int)TemporaryBufferSize.SizeFull;
+            var aoTexture1 = NewScopedRenderTarget2D(tempWidth, tempHeight, PixelFormat.R8_UNorm, 1);
+            var aoTexture2 = NewScopedRenderTarget2D(tempWidth, tempHeight, PixelFormat.R8_UNorm, 1);
 
             cszImageEffect.Parameters.Set(AmbientOcclusionRawAOKeys.Count, NumberOfSamples > 0 ? NumberOfSamples : 9);
 
@@ -141,7 +141,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
                 Vector4 ScreenSize = new Vector4(originalColorBuffer.Width, originalColorBuffer.Height, 0, 0);
                 ScreenSize.Z = ScreenSize.X / ScreenSize.Y;
-                cszImageEffect.Parameters.Set(ReconstructCameraSpaceZKeys.ScreenInfo, ScreenSize);
+                cszImageEffect.Parameters.Set(AmbientOcclusionRawAOShaderKeys.ScreenInfo, ScreenSize);
 
                 // Projection infor used to reconstruct the View space position from linear depth
                 var p00 = camera.ProjectionMatrix.M11;
@@ -149,37 +149,33 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 var p02 = camera.ProjectionMatrix.M13;
                 var p12 = camera.ProjectionMatrix.M23;
                 Vector4 projInfo = new Vector4(-2.0f / (ScreenSize.X * p00), -2.0f / (ScreenSize.Y * p11), (1.0f - p02) / p00, (1.0f + p12) / p11);
-                cszImageEffect.Parameters.Set(ReconstructCameraSpaceZKeys.ProjInfo, projInfo);
+                cszImageEffect.Parameters.Set(AmbientOcclusionRawAOShaderKeys.ProjInfo, projInfo);
 
                 //**********************************
                 // User parameters
-                cszImageEffect.Parameters.Set(ReconstructCameraSpaceZKeys.ParamProjScale, ParamProjScale);
-                cszImageEffect.Parameters.Set(ReconstructCameraSpaceZKeys.ParamIntensity, ParamIntensity);
-                cszImageEffect.Parameters.Set(ReconstructCameraSpaceZKeys.ParamBias, ParamBias);
-                cszImageEffect.Parameters.Set(ReconstructCameraSpaceZKeys.ParamRadius, ParamRadius);
-                cszImageEffect.Parameters.Set(ReconstructCameraSpaceZKeys.ParamRadiusSquared, ParamRadius * ParamRadius);
+                cszImageEffect.Parameters.Set(AmbientOcclusionRawAOShaderKeys.ParamProjScale, ParamProjScale);
+                cszImageEffect.Parameters.Set(AmbientOcclusionRawAOShaderKeys.ParamIntensity, ParamIntensity);
+                cszImageEffect.Parameters.Set(AmbientOcclusionRawAOShaderKeys.ParamBias, ParamBias);
+                cszImageEffect.Parameters.Set(AmbientOcclusionRawAOShaderKeys.ParamRadius, ParamRadius);
+                cszImageEffect.Parameters.Set(AmbientOcclusionRawAOShaderKeys.ParamRadiusSquared, ParamRadius * ParamRadius);
             }
 
             cszImageEffect.SetInput(0, originalDepthBuffer);
             cszImageEffect.SetOutput(aoTexture1);
-            cszImageEffect.Draw(context, "CameraSpaceZAO");
+            cszImageEffect.Draw(context, "AmbientOcclusionRawAO");
 
-            if (EnableBlur)
-            for(int bounces = 0; bounces < NumberOfBounces; bounces++)
+            for (int bounces = 0; bounces < NumberOfBounces; bounces++)
             {
-                int Radius = 5;
-                float SigmaRatio = 2.0f;
-                var size = Radius*2 + 1;
                 if (offsetsWeights == null)
                 {
-                    nameGaussianBlurH = string.Format("AmbientOcclusionBlurH{0}x{0}", size);
-                    nameGaussianBlurV = string.Format("AmbientOcclusionBlurV{0}x{0}", size);
-
                     offsetsWeights = new []
                         //	{ 0.356642f, 0.239400f, 0.072410f, 0.009869f };
                         //	{ 0.398943f, 0.241971f, 0.053991f, 0.004432f, 0.000134f };  // stddev = 1.0
                             { 0.153170f, 0.144893f, 0.122649f, 0.092902f, 0.062970f };  // stddev = 2.0
                         //	{ 0.111220f, 0.107798f, 0.098151f, 0.083953f, 0.067458f, 0.050920f, 0.036108f }; // stddev = 3.0
+
+                    nameGaussianBlurH = string.Format("AmbientOcclusionBlurH{0}x{0}", offsetsWeights.Length);
+                    nameGaussianBlurV = string.Format("AmbientOcclusionBlurV{0}x{0}", offsetsWeights.Length);
                 }
 
                 if (camera != null)
@@ -217,13 +213,28 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 blurV.Draw(context, nameGaussianBlurV);
             }
 
-
             aoApplyImageEffect.SetInput(0, originalColorBuffer);
             aoApplyImageEffect.SetInput(1, aoTexture1);
             aoApplyImageEffect.SetOutput(outputTexture);
-            aoApplyImageEffect.Draw(context, "AmbientOcclusion");
+            aoApplyImageEffect.Draw(context, "AmbientOcclusionApply");
+        }
 
+        public enum TemporaryBufferSize
+        {
+            [Display("Full size")]
+            SizeFull = 12,
 
+            [Display("5/6 size")]
+            Size1012 = 10,
+
+            [Display("3/4 size")]
+            Size0912 = 9,
+
+            [Display("2/3 size")]
+            Size0812 = 8,
+
+            [Display("1/2 size")]
+            Size0612 = 6,
         }
     }
 }
