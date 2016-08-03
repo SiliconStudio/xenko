@@ -100,8 +100,20 @@ namespace SiliconStudio.Xenko.Engine.Processors
 
                 // Recurse
                 if (transformation.Children.Count > 0)
-                    UpdateTransformations(transformation.Children);
+                    UpdateTransformationsRecursive(transformation.Children);
             });
+        }
+
+        private static void UpdateTransformationsRecursive(FastCollection<TransformComponent> transformationComponents)
+        {
+            foreach (var transformation in transformationComponents)
+            {
+                UpdateTransformation(transformation);
+
+                // Recurse
+                if (transformation.Children.Count > 0)
+                    UpdateTransformationsRecursive(transformation.Children);
+            }
         }
 
         private static void UpdateTransformation(TransformComponent transform)

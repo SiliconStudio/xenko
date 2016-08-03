@@ -58,8 +58,7 @@ namespace SiliconStudio.Core.Threading
                     this.workItems.Enqueue(workItem);
                 }
 
-                var preferredWorkerCount = workItems.Count + activeThreadCount + 1;
-                var newWorkerCount = Math.Min(preferredWorkerCount - workers.Count, MaxThreadCount);
+                var newWorkerCount = Math.Min(activeThreadCount + workItems.Count, MaxThreadCount - workers.Count);
 
                 while (newWorkerCount-- > 0)
                 {
