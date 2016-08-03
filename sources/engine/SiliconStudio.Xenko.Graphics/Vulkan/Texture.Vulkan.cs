@@ -31,9 +31,10 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial class Texture
     {
+        private int TexturePixelSize => Format.SizeInBytes();
+
         internal const int TextureSubresourceAlignment = 4;
         internal const int TextureRowPitchAlignment = 1;
-        internal int TexturePixelSize;
 
         internal SharpVulkan.Image NativeImage;
         internal SharpVulkan.Buffer NativeBuffer;
@@ -83,8 +84,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         private void InitializeFromImpl(DataBox[] dataBoxes = null)
         {
-            bool isCompressed;
-            VulkanConvertExtensions.ConvertPixelFormat(ViewFormat, out NativeFormat, out TexturePixelSize, out isCompressed);
+            NativeFormat = VulkanConvertExtensions.ConvertPixelFormat(ViewFormat);
             HasStencil = IsStencilFormat(ViewFormat);
             
             NativeImageAspect = IsDepthStencil ? ImageAspectFlags.Depth : ImageAspectFlags.Color;
