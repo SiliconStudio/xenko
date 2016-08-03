@@ -216,6 +216,10 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>AmbientOcclusionBlurShader.cs</LastGenOutput>
     </None>
+    <None Include="Rendering\Images\AmbientOcclusion\AmbientOcclusionRawAOEffect.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>AmbientOcclusionRawAOEffect.cs</LastGenOutput>
+    </None>
     <None Include="Rendering\Images\AmbientOcclusion\ApplyAmbientOcclusionShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ApplyAmbientOcclusionShader.cs</LastGenOutput>
@@ -241,6 +245,13 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>AmbientOcclusionBlurShader.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Images\AmbientOcclusion\AmbientOcclusionRawAOEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>AmbientOcclusionRawAOEffect.xkfx</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Images\AmbientOcclusion\AmbientOcclusionRawAOKeys.cs" />
     <Compile Include="Rendering\Images\AmbientOcclusion\ApplyAmbientOcclusionShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

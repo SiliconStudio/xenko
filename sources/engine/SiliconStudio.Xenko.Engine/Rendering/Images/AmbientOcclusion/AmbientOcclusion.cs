@@ -17,22 +17,21 @@ namespace SiliconStudio.Xenko.Rendering.Images
     [DataContract("AmbientOcclusion")]
     public class AmbientOcclusion : ImageEffect
     {
-        private ImageEffectShader aoImageEffect;
         private ImageEffectShader cszImageEffect;
         private ImageEffectShader blurH;
         private ImageEffectShader blurV;
         private string nameGaussianBlurH;
         private string nameGaussianBlurV;
-
         private float[] offsetsWeights;
+
+        private ImageEffectShader aoApplyImageEffect;
+
 
         [DataMember(10)]
         [DefaultValue(9)]
-        [DataMemberRange(1, 100)]
+        [DataMemberRange(1, 50)]
         [Display("Number of samples")]
         public int NumberOfSamples { get; set; } = 9;
-
-
 
         [DataMember(20)]
         [DefaultValue(1)]
@@ -46,12 +45,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         [DataMember(40)]
         [DefaultValue(0.01f)]
-        [Display("Bias")]
+        [Display("Sample Bias")]
         public float ParamBias { get; set; } = 0.01f;
 
         [DataMember(50)]
         [DefaultValue(1)]
-        [Display("Tap Radius")]
+        [Display("Sample Radius")]
         public float ParamRadius { get; set; } = 1f;
 
         [DataMember(60)]
@@ -61,7 +60,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         [DataMember(70)]
         [DefaultValue(1)]
-        [Display("Bounces")]
+        [DataMemberRange(1, 3)]
+        [Display("Blur Count")]
         public int NumberOfBounces { get; set; } = 1;
 
 
@@ -74,8 +74,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             base.InitializeCore();
 
-            aoImageEffect  = ToLoadAndUnload(new ImageEffectShader("ApplyAmbientOcclusionShader"));
-            cszImageEffect = ToLoadAndUnload(new ImageEffectShader("ReconstructCameraSpaceZ"));
+            aoApplyImageEffect = ToLoadAndUnload(new ImageEffectShader("ApplyAmbientOcclusionShader"));
+
+            //cszImageEffect = ToLoadAndUnload(new ImageEffectShader("ReconstructCameraSpaceZ"));
+            cszImageEffect = ToLoadAndUnload(new ImageEffectShader("AmbientOcclusionRawAOEffect"));
+            cszImageEffect.Initialize(Context);
 
             blurH = ToLoadAndUnload(new ImageEffectShader("AmbientOcclusionBlurEffect"));
             blurV = ToLoadAndUnload(new ImageEffectShader("AmbientOcclusionBlurEffect"));
@@ -118,6 +121,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             var aoTexture1 = NewScopedRenderTarget2D(originalColorBuffer.Width, originalColorBuffer.Height, PixelFormat.R8_UNorm, 1);
             var aoTexture2 = NewScopedRenderTarget2D(originalColorBuffer.Width, originalColorBuffer.Height, PixelFormat.R8_UNorm, 1);
+
+            cszImageEffect.Parameters.Set(AmbientOcclusionRawAOKeys.Count, NumberOfSamples > 0 ? NumberOfSamples : 9);
 
             if (camera != null)
             {
@@ -198,10 +203,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
 
 
-            aoImageEffect.SetInput(0, originalColorBuffer);
-            aoImageEffect.SetInput(1, aoTexture1);
-            aoImageEffect.SetOutput(outputTexture);
-            aoImageEffect.Draw(context, "AmbientOcclusion");
+            aoApplyImageEffect.SetInput(0, originalColorBuffer);
+            aoApplyImageEffect.SetInput(1, aoTexture1);
+            aoApplyImageEffect.SetOutput(outputTexture);
+            aoApplyImageEffect.Draw(context, "AmbientOcclusion");
 
 
         }
