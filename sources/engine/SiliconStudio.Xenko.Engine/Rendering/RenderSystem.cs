@@ -134,7 +134,7 @@ namespace SiliconStudio.Xenko.Rendering
                     // Let's create the view object node
                     var renderViewNode = renderFeature.CreateViewObjectNode(view, renderObject);
                     viewFeature.ViewObjectNodes.Add(renderViewNode, batch.ViewFeatureObjectNodeCache);
-                    
+
                     // Collect object
                     // TODO: Check which stage it belongs to (and skip everything if it doesn't belong to any stage)
                     // TODO: For now, we build list and then copy. Another way would be to count and then fill (might be worse, need to check)
@@ -302,7 +302,7 @@ namespace SiliconStudio.Xenko.Rendering
             // Generate and execute draw jobs
             var renderNodes = renderViewStage.SortedRenderNodes;
             var renderNodeCount = renderViewStage.RenderNodes.Count;
-            
+
 
             if (renderNodeCount == 0)
                 return;
@@ -326,6 +326,11 @@ namespace SiliconStudio.Xenko.Rendering
             int batchSize = (renderNodeCount + (batchCount - 1)) / batchCount;
             batchCount = (renderNodeCount + (batchSize - 1)) / batchSize;
 
+            // Remember state
+            var depthStencilBuffer = renderDrawContext.CommandList.DepthStencilBuffer;
+            var renderTargetView = renderDrawContext.CommandList.RenderTargetCount > 0 ? renderDrawContext.CommandList.RenderTarget : null;
+            var viewport = renderDrawContext.CommandList.Viewport;
+
             var commandLists = new CompiledCommandList[batchCount + 1];
             commandLists[0] = renderDrawContext.CommandList.Close2();
 
@@ -334,8 +339,9 @@ namespace SiliconStudio.Xenko.Rendering
                 threadContext.CommandList.Reset();
                 threadContext.CommandList.ClearState();
 
-                threadContext.CommandList.SetRenderTarget(renderDrawContext.CommandList.DepthStencilBuffer, renderDrawContext.CommandList.RenderTargetCount > 0 ? renderDrawContext.CommandList.RenderTarget : null);
-                threadContext.CommandList.SetViewport(renderDrawContext.CommandList.Viewport);
+                // Transfer state to all command lists
+                threadContext.CommandList.SetRenderTarget(depthStencilBuffer, renderTargetView);
+                threadContext.CommandList.SetViewport(viewport);
 
                 var currentStart = batchSize * batchIndex;
                 int currentEnd;
@@ -365,6 +371,10 @@ namespace SiliconStudio.Xenko.Rendering
 
             renderDrawContext.CommandList.Reset();
             renderDrawContext.CommandList.ClearState();
+
+            // Reapply previous state
+            renderDrawContext.CommandList.SetRenderTarget(depthStencilBuffer, renderTargetView);
+            renderDrawContext.CommandList.SetViewport(viewport);
 #endif
         }
 
