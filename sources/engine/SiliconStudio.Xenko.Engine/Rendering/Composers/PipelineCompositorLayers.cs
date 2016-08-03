@@ -76,6 +76,9 @@ namespace SiliconStudio.Xenko.Rendering.Composers
 
                     // Draw the master track
                     Master.Draw(context);
+
+                    // Flush
+                    RenderSystem.Flush(context);
                 }
                 finally
                 {

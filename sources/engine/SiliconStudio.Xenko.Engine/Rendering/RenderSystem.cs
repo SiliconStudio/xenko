@@ -194,6 +194,18 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <summary>
+        /// Finalizes the render features work and releases temporary resources if necessary.
+        /// </summary>
+        /// <param name="context"></param>
+        public void Flush(RenderDrawContext context)
+        {
+            foreach (var renderFeature in RenderFeatures)
+            {
+                renderFeature.Flush(context);
+            }
+        }
+
+        /// <summary>
         /// Performs most of the work (computation and resource preparation). Later game simulation might be running during that step.
         /// </summary>
         /// <param name="context"></param>

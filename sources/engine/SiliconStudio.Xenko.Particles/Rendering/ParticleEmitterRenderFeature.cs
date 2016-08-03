@@ -364,7 +364,11 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                 commandList.SetIndexBuffer(nodeData.IndexBuffer, nodeData.IndexBufferOffset, ParticleBufferContext.IndexStride != sizeof(short));
                 commandList.DrawIndexed(nodeData.IndexCount, 0);
             }
+        }
 
+        /// <inheritdoc/>
+        public override void Flush(RenderDrawContext context)
+        {
             // Release the temporary vertex buffer
             particleBufferContext.ReleaseBuffers(context);
         }
