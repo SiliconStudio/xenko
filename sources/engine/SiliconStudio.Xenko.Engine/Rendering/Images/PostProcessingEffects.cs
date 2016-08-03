@@ -278,7 +278,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     // Ambient Occlusion
                     var aoOutput = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
                     var inputDepthTexture = GetInput(1); // Depth
-                    ambientOcclusion.SetColorDepthInput(input, inputDepthTexture);
+                    ambientOcclusion.SetColorDepthInput(currentInput, inputDepthTexture);
                     ambientOcclusion.SetOutput(aoOutput);
                     ((RendererBase)ambientOcclusion).Draw(context);
                     currentInput = aoOutput;
@@ -289,7 +289,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     // DoF
                     var dofOutput = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
                     var inputDepthTexture = GetInput(1); // Depth
-                    depthOfField.SetColorDepthInput(input, inputDepthTexture);
+                    depthOfField.SetColorDepthInput(currentInput, inputDepthTexture);
                     depthOfField.SetOutput(dofOutput);
                     ((RendererBase)depthOfField).Draw(context);
                     currentInput = dofOutput;
