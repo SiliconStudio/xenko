@@ -127,7 +127,7 @@ namespace SiliconStudio.Xenko.Rendering.ProceduralModels
                 meshDraw.IndexBuffer = new IndexBufferBinding(Buffer.Index.New(graphicsDevice, indicesShort).RecreateWith(indicesShort), false, indices.Length);
                 if (needsTempDevice)
                 {
-                    var indexData = BufferData.New(BufferFlags.IndexBuffer, indices);
+                    var indexData = BufferData.New(BufferFlags.IndexBuffer, indicesShort);
                     meshDraw.IndexBuffer = new IndexBufferBinding(indexData.ToSerializableVersion(), false, indices.Length);
                 }
             }
