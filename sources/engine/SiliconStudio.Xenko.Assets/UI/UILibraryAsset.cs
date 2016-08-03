@@ -4,7 +4,6 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
-using SiliconStudio.Xenko.Assets.Entities;
 using SiliconStudio.Xenko.UI;
 
 namespace SiliconStudio.Xenko.Assets.UI
@@ -59,18 +58,20 @@ namespace SiliconStudio.Xenko.Assets.UI
             var idRemapping = new Dictionary<Guid, Guid>();
             var instance = (UILibraryAsset)CreateChildAsset(targetLocation, idRemapping);
 
+            var rootElementId = idRemapping[elementId];
+            if (!instance.Hierarchy.RootPartIds.Contains(rootElementId))
+                throw new ArgumentException(@"The given id cannot be found in the root parts of this library.", nameof(elementId));
+
             targetContainer.AddBasePart(instance.Base);
             instanceId = Guid.NewGuid();
             foreach (var elementEntry in instance.Hierarchy.Parts)
             {
                 elementEntry.BasePartInstanceId = instanceId;
             }
+
             var result = new AssetCompositeHierarchyData<UIElementDesign, UIElement>();
-
-            if (!instance.Hierarchy.RootPartIds.Contains(elementId))
-                throw new ArgumentException(@"The given id cannot be found in the root parts of this library.", nameof(elementId));
-
-            var rootElementId = idRemapping[elementId];
+            result.RootPartIds.Add(rootElementId);
+            result.Parts.Add(instance.Hierarchy.Parts[rootElementId]);
             foreach (var element in EnumerateChildParts(instance.Hierarchy.Parts[rootElementId], instance.Hierarchy, true))
             {
                 result.Parts.Add(element);
