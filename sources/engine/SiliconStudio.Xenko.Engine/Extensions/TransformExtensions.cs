@@ -17,9 +17,9 @@ namespace SiliconStudio.Xenko.Extensions
         /// Transform a vertex buffer positions, normals, tangents and bitangents using the given matrix.
         /// Using as source/destination data the provided bufferData byte array.
         /// </summary>
-        /// <param name="vertexBufferBinding"></param>
-        /// <param name="bufferData"></param>
-        /// <param name="matrix"></param>
+        /// <param name="vertexBufferBinding">The vertex container to transform</param>
+        /// <param name="bufferData">The source/destination data array to transform</param>
+        /// <param name="matrix">The matrix to use for the transform</param>
         public static unsafe void TransformBuffer(this VertexBufferBinding vertexBufferBinding, byte[] bufferData, ref Matrix matrix)
         {
             // List of items that need to be transformed by the matrix
@@ -89,8 +89,8 @@ namespace SiliconStudio.Xenko.Extensions
         /// <summary>
         /// Transform a vertex buffer positions, normals, tangents and bitangents using the given matrix.
         /// </summary>
-        /// <param name="vertexBufferBinding"></param>
-        /// <param name="matrix"></param>
+        /// <param name="vertexBufferBinding">The vertex container to transform</param>
+        /// <param name="matrix">The matrix to use for the transform</param>
         public static void TransformBuffer(this VertexBufferBinding vertexBufferBinding, ref Matrix matrix)
         {
             var bufferData = vertexBufferBinding.Buffer.GetSerializationData().Content;
