@@ -970,6 +970,8 @@ namespace SiliconStudio.Assets
 
                 // Load list of assets
                 newLoadParameters.AssetFiles = Package.ListAssetFiles(log, package, true, loadParameters.CancelToken);
+                // Sort them by size (to improve concurrency during load)
+                newLoadParameters.AssetFiles.Sort(PackageLoadingAssetFile.FileSizeComparer.Default);
 
                 if (pendingPackageUpgrades.Count > 0)
                 {

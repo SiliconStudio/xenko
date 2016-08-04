@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using SharpYaml;
@@ -17,6 +18,8 @@ namespace SiliconStudio.Assets
         public readonly UFile FilePath;
         public readonly UDirectory SourceFolder;
         public readonly UFile ProjectFile;
+
+        public long CachedFileSize;
 
         // If asset has been created or upgraded in place during package upgrade phase, it will be stored here
         public byte[] AssetContent { get; set; }
@@ -125,6 +128,16 @@ namespace SiliconStudio.Assets
             {
                 if (packageLoadingAssetFile == null) throw new ArgumentNullException(nameof(packageLoadingAssetFile));
                 return packageLoadingAssetFile.OpenStream();
+            }
+        }
+
+        public class FileSizeComparer : Comparer<PackageLoadingAssetFile>
+        {
+            public static readonly FileSizeComparer Default = new FileSizeComparer();
+
+            public override int Compare(PackageLoadingAssetFile x, PackageLoadingAssetFile y)
+            {
+                return y.CachedFileSize.CompareTo(x.CachedFileSize);
             }
         }
     }
