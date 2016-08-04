@@ -214,7 +214,7 @@ namespace SiliconStudio.Xenko.Assets.Model
             {
                 var instance = new MaterialInstance
                 {
-                    Material = modelComponent.Materials[index] ?? baseInstance.Material ?? fallbackMaterial,
+                    Material = modelComponent.Materials.GetItemOrNull(index) ?? baseInstance.Material ?? fallbackMaterial,
                     IsShadowCaster = modelComponent.IsShadowCaster,
                     IsShadowReceiver = modelComponent.IsShadowReceiver
                 };
@@ -277,8 +277,6 @@ namespace SiliconStudio.Xenko.Assets.Model
                     //collect sub entities as well
                     var collected = IterateTree(rootEntity, subEntity => subEntity.GetChildren() ).ToArray();
 
-                    validEntities.Clear();
-
                     //first pass, check if compatible with prefabmodel
                     foreach (var subEntity in collected)
                     {
@@ -291,33 +289,37 @@ namespace SiliconStudio.Xenko.Assets.Model
                         var modelAsset = contentManager.Load<Rendering.Model>(AttachedReferenceManager.GetUrl(modelComponent.Model), loadSettings);
                         if (modelAsset == null ||
                             modelAsset.Meshes.Any(x => x.Draw.PrimitiveType != PrimitiveType.TriangleList || x.Draw.VertexBuffers.Length > 1) ||
-                            modelAsset.Materials.Any(x => x.Material.HasTransparency)) //For now we limit only to TriangleList types and interleaved vertex buffers, also we skip transparent
+                            modelAsset.Materials.Any(x => x.Material != null && x.Material.HasTransparency) ||
+                            modelComponent.Materials.Any(x => x != null && x.HasTransparency)) //For now we limit only to TriangleList types and interleaved vertex buffers, also we skip transparent
+
+                        {
+                            commandContext.Logger.Info($"Skipped entity {subEntity.Name} since it's not compatible with PrefabModel.");
                             continue;
+                        }
 
                         validEntities.Add(subEntity);
-                    }
+                    }                    
+                }
 
-                    //second pass, add to simplification process
-                    foreach (var subEntity in validEntities)
+                foreach (var subEntity in validEntities)
+                {
+                    var modelComponent = subEntity.Get<ModelComponent>();
+                    var modelAsset = contentManager.Load<Rendering.Model>(AttachedReferenceManager.GetUrl(modelComponent.Model), loadSettings);
+                    for (var index = 0; index < modelAsset.Materials.Count; index++)
                     {
-                        var modelComponent = subEntity.Get<ModelComponent>();
-                        var modelAsset = contentManager.Load<Rendering.Model>(AttachedReferenceManager.GetUrl(modelComponent.Model), loadSettings);
-                        for (var index = 0; index < modelAsset.Materials.Count; index++)
+                        var material = modelAsset.Materials[index];
+                        var mat = ExtractMaterialInstance(material, index, modelComponent, fallbackMaterial);
+
+                        var chunk = new EntityChunk { Entity = subEntity, Model = modelAsset, MaterialIndex = index };
+
+                        List<EntityChunk> entities;
+                        if (materials.TryGetValue(mat, out entities))
                         {
-                            var material = modelAsset.Materials[index];
-                            var mat = ExtractMaterialInstance(material, index, modelComponent, fallbackMaterial);
-                        
-                            var chunk = new EntityChunk { Entity = subEntity, Model = modelAsset, MaterialIndex = index };
-                        
-                            List<EntityChunk> entities;
-                            if (materials.TryGetValue(mat, out entities))
-                            {
-                                entities.Add(chunk);
-                            }
-                            else
-                            {
-                                materials.Add(mat, new List<EntityChunk> { chunk });
-                            }
+                            entities.Add(chunk);
+                        }
+                        else
+                        {
+                            materials.Add(mat, new List<EntityChunk> { chunk });
                         }
                     }
                 }
