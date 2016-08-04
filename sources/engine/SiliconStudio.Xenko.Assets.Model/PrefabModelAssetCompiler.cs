@@ -284,11 +284,10 @@ namespace SiliconStudio.Xenko.Assets.Model
                         var modelComponent = subEntity.Get<ModelComponent>();
                         
                         if (modelComponent == null || modelComponent.Skeleton.Nodes.Length != 1) continue;
-                        //if (subEntity.Components.Count != 2 || modelComponent == null || modelComponent.Skeleton.Nodes.Length != 1) goto Ignore;
-
+                        
                         var modelAsset = contentManager.Load<Rendering.Model>(AttachedReferenceManager.GetUrl(modelComponent.Model), loadSettings);
                         if (modelAsset == null ||
-                            modelAsset.Meshes.Any(x => x.Draw.PrimitiveType != PrimitiveType.TriangleList || x.Draw.VertexBuffers.Length > 1) ||
+                            modelAsset.Meshes.Any(x => x.Draw.PrimitiveType != PrimitiveType.TriangleList || x.Draw.VertexBuffers == null || x.Draw.VertexBuffers.Length != 1) ||
                             modelAsset.Materials.Any(x => x.Material != null && x.Material.HasTransparency) ||
                             modelComponent.Materials.Any(x => x != null && x.HasTransparency)) //For now we limit only to TriangleList types and interleaved vertex buffers, also we skip transparent
 
