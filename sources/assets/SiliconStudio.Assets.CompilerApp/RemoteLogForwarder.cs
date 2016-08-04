@@ -14,6 +14,7 @@ namespace SiliconStudio.Assets.CompilerApp
     {
         private readonly ILogger mainLogger;
         private readonly List<IForwardSerializableLogRemote> remoteLogs = new List<IForwardSerializableLogRemote>();
+        private bool activeRemoteLogs = true;
         
         public RemoteLogForwarder(ILogger mainLogger, IEnumerable<string> logPipeNames)
         {
@@ -25,28 +26,39 @@ namespace SiliconStudio.Assets.CompilerApp
                 var remoteLog = ChannelFactory<IForwardSerializableLogRemote>.CreateChannel(namedPipeBinding, new EndpointAddress(logPipeName));
                 remoteLogs.Add(remoteLog);
             }
+
+            activeRemoteLogs = remoteLogs.Count > 0;
         }
 
         public override void Dispose()
         {
             foreach (var remoteLog in remoteLogs)
             {
-                try
-                {
-                    // ReSharper disable SuspiciousTypeConversion.Global
-                    var channel = remoteLog as ICommunicationObject;
-                    // ReSharper restore SuspiciousTypeConversion.Global
-                    if (channel != null) 
-                        channel.Close();
-                }
-                // ReSharper disable EmptyGeneralCatchClause
-                catch { }
-                // ReSharper restore EmptyGeneralCatchClause
+                if (remoteLog != null)
+                    TryCloseChannel(remoteLog);
             }
+        }
+
+        private static void TryCloseChannel(IForwardSerializableLogRemote remoteLog)
+        {
+            try
+            {
+                // ReSharper disable SuspiciousTypeConversion.Global
+                var channel = remoteLog as ICommunicationObject;
+                // ReSharper restore SuspiciousTypeConversion.Global
+                if (channel != null && channel.State == CommunicationState.Opened)
+                    channel.Close();
+            }
+            // ReSharper disable EmptyGeneralCatchClause
+            catch { }
+            // ReSharper restore EmptyGeneralCatchClause
         }
 
         protected override void OnLog(ILogMessage message)
         {
+            if (!activeRemoteLogs)
+                return;
+
             var serializableMessage = message as SerializableLogMessage;
             if (serializableMessage == null)
             {
@@ -68,14 +80,33 @@ namespace SiliconStudio.Assets.CompilerApp
                 throw new ArgumentException(@"Unable to process the given log message.", "message");
             }
 
-            foreach (var remoteLog in remoteLogs)
+            for (int i = 0; i < remoteLogs.Count; i++)
             {
+                var remoteLog = remoteLogs[i];
                 try
                 {
-                    remoteLog.ForwardSerializableLog(serializableMessage);
+                    remoteLog?.ForwardSerializableLog(serializableMessage);
                 }
-                // ReSharper disable EmptyGeneralCatchClause
-                catch { }
+                    // ReSharper disable EmptyGeneralCatchClause
+                catch
+                {
+                    // Communication failed, let's null it out so that we don't try again
+                    remoteLogs[i] = null;
+                    TryCloseChannel(remoteLog);
+
+                    // Check if we still need to log anything
+                    var newActiveRemoteLogs = false;
+                    for (int j = 0; j < remoteLogs.Count; j++)
+                    {
+                        if (remoteLogs[j] != null)
+                        {
+                            newActiveRemoteLogs = true;
+                            break;
+                        }
+                    }
+
+                    activeRemoteLogs = newActiveRemoteLogs;
+                }
                 // ReSharper restore EmptyGeneralCatchClause
             }
         }
