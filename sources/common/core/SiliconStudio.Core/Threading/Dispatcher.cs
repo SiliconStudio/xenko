@@ -3,17 +3,16 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.ConstrainedExecution;
 using System.Threading;
-using System.Threading.Tasks;
 using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Core.Threading
 {
-    public interface IRecycle
+    public interface IPooledClosure
     {
-        void Release(object item);
+        void AddReference();
+
+        void Release();
     }
 
     [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Delegate)]
@@ -21,10 +20,48 @@ namespace SiliconStudio.Core.Threading
     {  
     }
 
+    internal static class PooledDelegateHelper
+    {
+        public static void AddReference(Delegate pooledDelegate)
+        {
+            var closure = pooledDelegate.Target as IPooledClosure;
+            //closure?.AddReference();
+        }
+
+        public static void Release(Delegate pooledDelegate)
+        {
+            var closure = pooledDelegate.Target as IPooledClosure;
+            //closure?.Release();
+        }
+
+        public static PooledDelegateScope AddScropedReference(Delegate pooledDelegate)
+        {
+            AddReference(pooledDelegate);
+            return new PooledDelegateScope(pooledDelegate);
+        }
+
+        public struct PooledDelegateScope : IDisposable
+        {
+            private readonly Delegate pooledDelegate;
+
+            public PooledDelegateScope(Delegate pooledDelegate)
+            {
+                this.pooledDelegate = pooledDelegate;
+            }
+
+            public void Dispose()
+            {
+                Release(pooledDelegate);
+            }
+        }
+    }
+
     public class Dispatcher
     {
         private static readonly List<Action> batches = new List<Action>();
-        private static ConcurrentPool<AutoResetEvent> events = new ConcurrentPool<AutoResetEvent>(() => new AutoResetEvent(false));
+        private static readonly ConcurrentPool<AutoResetEvent> eventPool = new ConcurrentPool<AutoResetEvent>(() => new AutoResetEvent(false));
+        private static readonly ConcurrentPool<BatchState> statePool = new ConcurrentPool<BatchState>(() => new BatchState());
+        private static readonly ConcurrentPool<SortState> sortStatePool = new ConcurrentPool<SortState>(() => new SortState());
 
         private static readonly int MaxDregreeOfParallelism = Environment.ProcessorCount;
 
@@ -46,8 +83,18 @@ namespace SiliconStudio.Core.Threading
         [Pooled]
         public delegate void BatchFinalizer<in T>(T local);
 
+        private class BatchState
+        {
+            public readonly AutoResetEvent Finished = new AutoResetEvent(false);
+
+            public int StartInclusive;
+
+            public int ActiveWorkerCount;
+        }
+
         public static void For(int fromInclusive, int toExclusive, ForAction action)
         {
+            using (PooledDelegateHelper.AddScropedReference(action))
             using (Profile(action))
             {
                 if (fromInclusive > toExclusive)
@@ -61,70 +108,30 @@ namespace SiliconStudio.Core.Threading
                 if (count == 0)
                     return;
 
-                if (MaxDregreeOfParallelism <= 1)
+                if (MaxDregreeOfParallelism <= 1 || count == 1)
                 {
                     ExecuteBatch(fromInclusive, toExclusive, action);
                 }
                 else
                 {
-                    var finished = events.Acquire();
-                    int remainingBatcheCount = 0;
+                    var state = statePool.Acquire();
+                    state.ActiveWorkerCount = 1;
+                    state.StartInclusive = fromInclusive;
 
                     try
                     {
                         int batchCount = Math.Min(MaxDregreeOfParallelism, count);
                         int batchSize = (count + (batchCount - 1)) / batchCount;
 
-                        // If there's more than one batch, kick off worker threads
-                        bool isParallel = batchSize < toExclusive;
-                        if (isParallel)
-                        {
-                            lock (batches)
-                            {
-
-                                int batchStartInclusive = fromInclusive + batchSize;
-                                int batchEndExclusive = batchStartInclusive + batchSize;
-
-                                while (batchStartInclusive < toExclusive)
-                                {
-                                    if (batchEndExclusive > toExclusive)
-                                        batchEndExclusive = toExclusive;
-
-                                    var start = batchStartInclusive;
-                                    var end = batchEndExclusive;
-
-                                    remainingBatcheCount++;
-                                    batches.Add(() =>
-                                    {
-                                        ExecuteBatch(start, end, action);
-
-                                        if (Interlocked.Decrement(ref remainingBatcheCount) == 0)
-                                        {
-                                            finished.Set();
-                                        }
-                                    });
-
-                                    batchStartInclusive = batchEndExclusive;
-                                    batchEndExclusive += batchSize;
-                                }
-
-                                ThreadPool.Instance.QueueWorkItems(batches);
-                                batches.Clear();
-                            }
-                        }
-
-                        // Execute some work synchroneuously
-                        ExecuteBatch(fromInclusive, Math.Min(toExclusive, fromInclusive + batchSize), action);
+                        // Kick off a worker, then perform work synchronously
+                        Fork(toExclusive, batchSize, MaxDregreeOfParallelism, action, state);
 
                         // Wait for all workers to finish
-                        if (isParallel)
-                        {
-                            finished.WaitOne();
-                        }
+                        state.Finished.WaitOne();
                     }
                     finally
                     {
-                        events.Release(finished);
+                        statePool.Release(state);
                     }
                 }
             }
@@ -132,6 +139,7 @@ namespace SiliconStudio.Core.Threading
 
         public static void For<TLocal>(int fromInclusive, int toExclusive, BatchInitializer<TLocal> initializeLocal, ForAction<TLocal> action, BatchFinalizer<TLocal> finalizeLocal = null)
         {
+            using (PooledDelegateHelper.AddScropedReference(action))
             using (Profile(action))
             {
                 if (fromInclusive > toExclusive)
@@ -145,70 +153,30 @@ namespace SiliconStudio.Core.Threading
                 if (count == 0)
                     return;
 
-                if (MaxDregreeOfParallelism <= 1)
+                if (MaxDregreeOfParallelism <= 1 || count == 1)
                 {
                     ExecuteBatch(fromInclusive, toExclusive, initializeLocal, action, finalizeLocal);
                 }
                 else
                 {
-                    var finished = events.Acquire();
-                    int remainingBatcheCount = 0;
+                    var state = statePool.Acquire();
+                    state.ActiveWorkerCount = 1;
+                    state.StartInclusive = fromInclusive;
 
                     try
                     {
                         int batchCount = Math.Min(MaxDregreeOfParallelism, count);
                         int batchSize = (count + (batchCount - 1)) / batchCount;
 
-                        // If there's more than one batch, kick off worker threads
-                        bool isParallel = batchSize < toExclusive;
-                        if (isParallel)
-                        {
-                            lock (batches)
-                            {
-
-                                int batchStartInclusive = fromInclusive + batchSize;
-                                int batchEndExclusive = batchStartInclusive + batchSize;
-
-                                while (batchStartInclusive < toExclusive)
-                                {
-                                    if (batchEndExclusive > toExclusive)
-                                        batchEndExclusive = toExclusive;
-
-                                    var start = batchStartInclusive;
-                                    var end = batchEndExclusive;
-
-                                    remainingBatcheCount++;
-                                    batches.Add(() =>
-                                    {
-                                        ExecuteBatch(start, end, initializeLocal, action, finalizeLocal);
-
-                                        if (Interlocked.Decrement(ref remainingBatcheCount) == 0)
-                                        {
-                                            finished.Set();
-                                        }
-                                    });
-
-                                    batchStartInclusive = batchEndExclusive;
-                                    batchEndExclusive += batchSize;
-                                }
-
-                                ThreadPool.Instance.QueueWorkItems(batches);
-                                batches.Clear();
-                            }
-                        }
-
-                        // Execute some work synchroneuously
-                        ExecuteBatch(fromInclusive, Math.Min(toExclusive, fromInclusive + batchSize), initializeLocal, action, finalizeLocal);
+                        // Kick off a worker, then perform work synchronously
+                        Fork(toExclusive, batchSize, MaxDregreeOfParallelism, initializeLocal, action, finalizeLocal, state);
 
                         // Wait for all workers to finish
-                        if (isParallel)
-                        {
-                            finished.WaitOne();
-                        }
+                        state.Finished.WaitOne();
                     }
                     finally
                     {
-                        events.Release(finished);
+                        statePool.Release(state);
                     }
                 }
             }
@@ -239,54 +207,60 @@ namespace SiliconStudio.Core.Threading
             For(0, collection.Count, i => action(collection[i]));
         }
 
+        private static void Fork<TKey, TValue>(Dictionary<TKey, TValue> collection, int batchSize, int maxDegreeOfParallelism, ForEachAction<KeyValuePair<TKey, TValue>> action, BatchState state)
+        {
+            // Kick off another worker if there's any work left
+            if (maxDegreeOfParallelism > 1 && state.StartInclusive + batchSize < collection.Count)
+            {
+                Interlocked.Increment(ref state.ActiveWorkerCount);
+                ThreadPool.Instance.QueueWorkItem(() => Fork(collection, batchSize, maxDegreeOfParallelism - 1, action, state));
+            }
+
+            // Process batches synchronously as long as there are any
+            int newStart;
+            while ((newStart = Interlocked.Add(ref state.StartInclusive, batchSize)) - batchSize < collection.Count)
+            {
+                // TODO: Reuse enumerator when processing multiple batches synchronously
+                ExecuteBatch(collection, newStart - batchSize, Math.Min(collection.Count, newStart), action);
+            }
+
+            // If this was the last batch, signal
+            if (Interlocked.Decrement(ref state.ActiveWorkerCount) == 0)
+            {
+                state.Finished.Set();
+            }
+        }
+
         public static void ForEach<TKey, TValue>(Dictionary<TKey, TValue> collection, ForEachAction<KeyValuePair<TKey, TValue>> action)
         {
-            if (collection.Count == 0)
-                return;
-
-            int batchCount = Math.Min(MaxDregreeOfParallelism, collection.Count);
-            int batchSize = (collection.Count + (batchCount - 1)) / batchCount;
-            batchCount = (collection.Count + (batchSize - 1)) / batchSize;
-
-            var finished = events.Acquire();
-            int remainingBatcheCount = batchCount - 1;
-
-            try
+            using (PooledDelegateHelper.AddScropedReference(action))
             {
-                if (batchCount > 1)
+                if (MaxDregreeOfParallelism <= 1 || collection.Count <= 1)
                 {
-                    lock (batches)
+                    ExecuteBatch(collection, 0, collection.Count, action);
+                }
+                else
+                {
+                    var state = statePool.Acquire();
+                    state.ActiveWorkerCount = 1;
+                    state.StartInclusive = 0;
+
+                    try
                     {
-                        for (int batchIndex = 1; batchIndex < batchCount; batchIndex++)
-                        {
-                            int offset = batchIndex * batchSize;
+                        int batchCount = Math.Min(MaxDregreeOfParallelism, collection.Count);
+                        int batchSize = (collection.Count + (batchCount - 1)) / batchCount;
 
-                            batches.Add(() =>
-                            {
-                                ExecuteBatch(collection, offset, batchSize, action);
+                        // Wait for all workers to finish
+                        Fork(collection, batchSize, MaxDregreeOfParallelism, action, state);
 
-                                if (Interlocked.Decrement(ref remainingBatcheCount) == 0)
-                                {
-                                    finished.Set();
-                                }
-                            });
-                        }
-
-                        ThreadPool.Instance.QueueWorkItems(batches);
-                        batches.Clear();
+                        // Kick off a worker, then perform work synchronously
+                        state.Finished.WaitOne();
+                    }
+                    finally
+                    {
+                        statePool.Release(state);
                     }
                 }
-
-                ExecuteBatch(collection, 0, batchSize, action);
-
-                if (batchCount > 1)
-                {
-                    finished.WaitOne();
-                }
-            }
-            finally
-            {
-                events.Release(finished);
             }
         }
 
@@ -316,6 +290,52 @@ namespace SiliconStudio.Core.Threading
             finally
             {
                 finalizeLocal?.Invoke(local);
+            }
+        }
+
+        private static void Fork(int endExclusive, int batchSize, int maxDegreeOfParallelism, ForAction action, BatchState state)
+        {
+            // Kick off another worker if there's any work left
+            if (maxDegreeOfParallelism > 1 && state.StartInclusive + batchSize < endExclusive)
+            {
+                Interlocked.Increment(ref state.ActiveWorkerCount);
+                ThreadPool.Instance.QueueWorkItem(() => Fork(endExclusive, batchSize, maxDegreeOfParallelism - 1, action, state));
+            }
+
+            // Process batches synchronously as long as there are any
+            int newStart;
+            while ((newStart = Interlocked.Add(ref state.StartInclusive, batchSize)) - batchSize < endExclusive)
+            {
+                ExecuteBatch(newStart - batchSize, Math.Min(endExclusive, newStart), action);
+            }
+
+            // If this was the last batch, signal
+            if (Interlocked.Decrement(ref state.ActiveWorkerCount) == 0)
+            {
+                state.Finished.Set();
+            }
+        }
+
+        private static void Fork<TLocal>(int endExclusive, int batchSize, int maxDegreeOfParallelism, BatchInitializer<TLocal> initializeLocal, ForAction<TLocal> action, BatchFinalizer<TLocal> finalizeLocal, BatchState state)
+        {
+            // Kick off another worker if there's any work left
+            if (maxDegreeOfParallelism > 1 && state.StartInclusive + batchSize < endExclusive)
+            {
+                Interlocked.Increment(ref state.ActiveWorkerCount);
+                ThreadPool.Instance.QueueWorkItem(() => Fork(endExclusive, batchSize, maxDegreeOfParallelism - 1, initializeLocal, action, finalizeLocal, state));
+            }
+
+            // Process batches synchronously as long as there are any
+            int newStart;
+            while ((newStart = Interlocked.Add(ref state.StartInclusive, batchSize)) - batchSize < endExclusive)
+            {
+                ExecuteBatch(newStart - batchSize, Math.Min(endExclusive, newStart), initializeLocal, action, finalizeLocal);
+            }
+
+            // If this was the last batch, signal
+            if (Interlocked.Decrement(ref state.ActiveWorkerCount) == 0)
+            {
+                state.Finished.Set();
             }
         }
 
@@ -350,41 +370,95 @@ namespace SiliconStudio.Core.Threading
 
         public static void Sort<T>(T[] collection, int index, int length, IComparer<T> comparer)
         {
+            if (length <= 0)
+                return;
+
             int depth = 0;
             int degreeOfParallelism = MaxDregreeOfParallelism;
 
-            while ((degreeOfParallelism >>= 1) != 0)
-                depth++;
+            //while ((degreeOfParallelism >>= 1) != 0)
+            //    depth++;
 
-            Sort(collection, index, length - 1, depth, comparer);
+            var state = sortStatePool.Acquire();
+            state.ActiveWorkerCount = 1;
+
+            try
+            {
+                // Initial partition
+                state.Partitions.Enqueue(new SortRange(index, length - 1));
+
+                // Sort recursively
+                Sort(collection, MaxDregreeOfParallelism, comparer, state);
+
+                // Wait for all work to finish
+                state.Finished.WaitOne();
+            }
+            finally
+            {
+                sortStatePool.Release(state);
+            }
         }
 
-        private static void Sort<T>(T[] collection, int left, int right, int depth, IComparer<T> comparer)
+        private struct SortRange
+        {
+            public int Left;
+
+            public int Right;
+
+            public SortRange(int left, int right)
+            {
+                Left = left;
+                Right = right;
+            }
+        }
+
+        private class SortState
+        {
+            public readonly AutoResetEvent Finished = new AutoResetEvent(false);
+
+            public readonly ConcurrentQueue<SortRange> Partitions = new ConcurrentQueue<SortRange>();
+
+            public int ActiveWorkerCount;
+        }
+
+        private static void Sort<T>(T[] collection, int maxDegreeOfParallelism, IComparer<T> comparer, SortState state)
         {
             const int sequentialThreshold = 2048;
 
-            if (right > left)
+            bool hasChild = false;
+
+            SortRange range;
+            while (state.Partitions.TryDequeue(out range))
             {
-                if (depth == 0 || right - left < sequentialThreshold)
+                if (range.Right - range.Left < sequentialThreshold)
                 {
-                    Array.Sort(collection, left, right - left + 1, comparer);
+                    // Sort small collections sequentially
+                    Array.Sort(collection, range.Left, range.Right - range.Left + 1, comparer);
                 }
                 else
                 {
-                    int pivot = Partition(collection, left, right, comparer);
+                    int pivot = Partition(collection, range.Left, range.Right, comparer);
 
-                    using (var finishedEvent = new ManualResetEvent(false))
+                    // Add work items
+                    if (pivot - 1 > range.Left)
+                        state.Partitions.Enqueue(new SortRange(range.Left, pivot - 1));
+
+                    if (range.Right > pivot + 1)
+                        state.Partitions.Enqueue(new SortRange(pivot + 1, range.Right));
+
+                    // Add a new worker if necessary
+                    if (maxDegreeOfParallelism > 1 && !hasChild)
                     {
-                        ThreadPool.Instance.QueueWorkItem(() =>
-                        {
-                            Sort(collection, left, pivot - 1, depth - 1, comparer);
-                            finishedEvent.Set();
-                        });
-
-                        Sort(collection, pivot + 1, right, depth - 1, comparer);
-                        finishedEvent.WaitOne();
+                        Interlocked.Increment(ref state.ActiveWorkerCount);
+                        ThreadPool.Instance.QueueWorkItem(() => Sort(collection, maxDegreeOfParallelism - 1, comparer, state));
+                        hasChild = true;
                     }
                 }
+            }
+
+            if (Interlocked.Decrement(ref state.ActiveWorkerCount) == 0)
+            {
+                state.Finished.Set();
             }
         }
 

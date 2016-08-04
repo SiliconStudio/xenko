@@ -93,27 +93,14 @@ namespace SiliconStudio.Xenko.Engine.Processors
 
         internal static void UpdateTransformations(FastCollection<TransformComponent> transformationComponents)
         {
-            //foreach (var transformation in transformationComponents)
             Dispatcher.ForEach(transformationComponents, transformation =>
             {
                 UpdateTransformation(transformation);
 
                 // Recurse
                 if (transformation.Children.Count > 0)
-                    UpdateTransformationsRecursive(transformation.Children);
+                    UpdateTransformations(transformation.Children);
             });
-        }
-
-        private static void UpdateTransformationsRecursive(FastCollection<TransformComponent> transformationComponents)
-        {
-            foreach (var transformation in transformationComponents)
-            {
-                UpdateTransformation(transformation);
-
-                // Recurse
-                if (transformation.Children.Count > 0)
-                    UpdateTransformationsRecursive(transformation.Children);
-            }
         }
 
         private static void UpdateTransformation(TransformComponent transform)
