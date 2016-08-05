@@ -21,13 +21,13 @@ namespace SiliconStudio.Xenko.Rendering
         [Obsolete("This field is provisional and will be replaced by a proper mechanisms in the future")]
         public readonly List<Func<RenderView, RenderObject, bool>> ViewObjectFilters = new List<Func<RenderView, RenderObject, bool>>();
 
-        private readonly ThreadLocal<ExtractThreadContext> extractThreadContext = new ThreadLocal<ExtractThreadContext>(() => new ExtractThreadContext());
+        private readonly ThreadLocal<ExtractThreadLocals> extractThreadLocals = new ThreadLocal<ExtractThreadLocals>(() => new ExtractThreadLocals());
+        private readonly ConcurrentPool<PrepareThreadLocals> prepareThreadLocals = new ConcurrentPool<PrepareThreadLocals>(() => new PrepareThreadLocals());
 
         private readonly Dictionary<Type, RootRenderFeature> renderFeaturesByType = new Dictionary<Type, RootRenderFeature>();
         private readonly HashSet<Type> renderObjectsDefaultPipelinePlugins = new HashSet<Type>();
         private IServiceRegistry registry;
-
-        private SortKey[] sortKeys;
+        
 
         // TODO GRAPHICS REFACTOR should probably be controlled by graphics compositor?
         /// <summary>
@@ -123,7 +123,7 @@ namespace SiliconStudio.Xenko.Rendering
                 // We'll be able to process data more efficiently for the next steps
                 Dispatcher.Sort(view.RenderObjects, RenderObjectFeatureComparer.Default);
 
-                Dispatcher.ForEach(view.RenderObjects, () => extractThreadContext.Value, (renderObject, batch) =>
+                Dispatcher.ForEach(view.RenderObjects, () => extractThreadLocals.Value, (renderObject, batch) =>
                 {
                     var renderFeature = renderObject.RenderFeature;
                     var viewFeature = view.Features[renderFeature.Index];
@@ -230,13 +230,15 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             // Sort
-            foreach (var view in Views)
+            Dispatcher.ForEach(Views, view =>
             {
-                foreach (var renderViewStage in view.RenderStages)
+                Dispatcher.For(0, view.RenderStages.Count, () => prepareThreadLocals.Acquire(), (index, local) =>
                 {
+                    var renderViewStage = view.RenderStages[index];
+
                     var renderNodes = renderViewStage.RenderNodes;
                     if (renderNodes.Count == 0)
-                        continue;
+                        return;
 
                     var renderStage = renderViewStage.RenderStage;
 
@@ -248,19 +250,19 @@ namespace SiliconStudio.Xenko.Rendering
                     if (renderStage.SortMode != null)
                     {
                         // Make sure sortKeys is big enough
-                        if (sortKeys == null || sortKeys.Length < renderNodes.Count)
-                            Array.Resize(ref sortKeys, renderNodes.Count);
+                        if (local.SortKeys == null || local.SortKeys.Length < renderNodes.Count)
+                            Array.Resize(ref local.SortKeys, renderNodes.Count);
 
                         // renderNodes[start..end] belongs to the same render feature
-                        fixed (SortKey* sortKeysPtr = sortKeys)
+                        fixed (SortKey* sortKeysPtr = local.SortKeys)
                             renderStage.SortMode.GenerateSortKey(view, renderViewStage, sortKeysPtr);
 
-                        Dispatcher.Sort(sortKeys, 0, renderNodes.Count, Comparer<SortKey>.Default);
+                        Dispatcher.Sort(local.SortKeys, 0, renderNodes.Count, Comparer<SortKey>.Default);
 
                         // Reorder list
                         for (int i = 0; i < renderNodes.Count; ++i)
                         {
-                            sortedRenderNodes[i] = renderNodes[sortKeys[i].Index];
+                            sortedRenderNodes[i] = renderNodes[local.SortKeys[i].Index];
                         }
                     }
                     else
@@ -271,9 +273,9 @@ namespace SiliconStudio.Xenko.Rendering
                             sortedRenderNodes[i] = renderNodes[i];
                         }
                     }
-                }
-            }
-
+                }, state => prepareThreadLocals.Release(state));
+            });
+            
             // Flush the resources uploaded during Prepare
             context.ResourceGroupAllocator.Flush();
             context.RenderContext.Flush();
@@ -302,7 +304,6 @@ namespace SiliconStudio.Xenko.Rendering
             // Generate and execute draw jobs
             var renderNodes = renderViewStage.SortedRenderNodes;
             var renderNodeCount = renderViewStage.RenderNodes.Count;
-
 
             if (renderNodeCount == 0)
                 return;
@@ -561,7 +562,7 @@ namespace SiliconStudio.Xenko.Rendering
             return false;
         }
 
-        private class ExtractThreadContext
+        private class ExtractThreadLocals
         {
             public readonly ConcurrentCollectorCache<ViewObjectNodeReference> ViewFeatureObjectNodeCache = new ConcurrentCollectorCache<ViewObjectNodeReference>(16);
             public readonly ConcurrentCollectorCache<RenderNodeReference> ViewFeatureRenderNodeCache = new ConcurrentCollectorCache<RenderNodeReference>(16);
@@ -573,6 +574,11 @@ namespace SiliconStudio.Xenko.Rendering
                 ViewFeatureRenderNodeCache.Flush();
                 ViewStageRenderNodeCache.Flush();
             }
+        }
+
+        private class PrepareThreadLocals
+        {
+            public SortKey[] SortKeys;
         }
 
         private class RenderNodeFeatureReferenceComparer : IComparer<RenderNodeFeatureReference>

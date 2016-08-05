@@ -362,7 +362,7 @@ namespace SiliconStudio.Xenko.Rendering
             var renderEffects = RenderData.GetData(RenderEffectKey);
             int effectSlotCount = EffectPermutationSlotCount;
 
-            foreach (var view in RenderSystem.Views)
+            Dispatcher.ForEach(RenderSystem.Views, view =>
             {
                 var viewFeature = view.Features[Index];
                 Dispatcher.ForEach(viewFeature.RenderNodes, renderNodeReference =>
@@ -390,7 +390,7 @@ namespace SiliconStudio.Xenko.Rendering
                         renderEffect.EffectValidator.BeginEffectValidation();
                     }
                 });
-            }
+            });
 
             // Step1: Perform permutations
             PrepareEffectPermutationsImpl(context);
