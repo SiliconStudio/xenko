@@ -13,7 +13,7 @@ namespace SiliconStudio.Core.Threading
     {
         public static readonly ThreadPool Instance = new ThreadPool();
 
-        private readonly int MaxThreadCount = Environment.ProcessorCount * 2;
+        private readonly int MaxThreadCount = Environment.ProcessorCount + 2;// * 2;
         private readonly List<Task> workers = new List<Task>();
         private readonly Queue<Action> workItems = new Queue<Action>();
         private readonly ManualResetEvent workAvailable = new ManualResetEvent(false);
