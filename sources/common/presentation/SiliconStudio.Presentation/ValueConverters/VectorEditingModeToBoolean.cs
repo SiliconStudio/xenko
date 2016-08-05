@@ -32,7 +32,7 @@ namespace SiliconStudio.Presentation.ValueConverters
             if (value == null)
                 return VectorEditingMode.Length;
             
-            return System.Convert.ToBoolean(value) ? VectorEditingMode.AllComponents : VectorEditingMode.Normal;
+            return ConverterHelper.ConvertToBoolean(value, culture) ? VectorEditingMode.AllComponents : VectorEditingMode.Normal;
         }
     }
 }

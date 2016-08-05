@@ -13,10 +13,10 @@ namespace SiliconStudio.Presentation.ValueConverters
             if (values.Length < 2)
                 throw new InvalidOperationException("This multi converter must be invoked with at least two elements");
 
-            double result = 1.0;
+            var result = 1.0;
             try
             {
-                result = values.Select(x => System.Convert.ToDouble((object)x, culture)).Aggregate(result, (current, next) => current * next);
+                result = values.Select(x => ConverterHelper.ConvertToDouble(x, culture)).Aggregate(result, (current, next) => current * next);
             }
             catch (Exception exception)
             {

@@ -20,7 +20,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <inheritdoc/>
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            double seconds = System.Convert.ToDouble(value);
+            var seconds = ConverterHelper.ConvertToDouble(value, culture);
             return TimeSpan.FromSeconds(seconds);
         }
     }
