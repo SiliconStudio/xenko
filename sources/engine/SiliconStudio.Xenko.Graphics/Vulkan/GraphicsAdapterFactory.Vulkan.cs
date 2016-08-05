@@ -170,8 +170,8 @@ namespace SiliconStudio.Xenko.Graphics
                     throw new InvalidOperationException("None of the supported surface extensions VK_KHR_xcb_surface or VK_KHR_xlib_surface is available");
                 }
 #endif
-
-            if (enableValidation && availableExtensionNames.Contains("VK_EXT_debug_report"))
+            bool enableDebugReport = enableValidation && availableExtensionNames.Contains("VK_EXT_debug_report");
+            if (enableDebugReport)
                 desiredExtensionNames.Add("VK_EXT_debug_report");
 
             var enabledExtensionNames = desiredExtensionNames.Select(Marshal.StringToHGlobalAnsi).ToArray();
@@ -195,7 +195,7 @@ namespace SiliconStudio.Xenko.Graphics
                     NativeInstance = Vulkan.CreateInstance(ref insatanceCreateInfo);
                 }
 
-                if (enableValidation)
+                if (enableDebugReport)
                 {
                     var createDebugReportCallback = (CreateDebugReportCallbackDelegate)Marshal.GetDelegateForFunctionPointer(NativeInstance.GetProcAddress((byte*)createDebugReportCallbackName), typeof(CreateDebugReportCallbackDelegate));
 
@@ -209,15 +209,19 @@ namespace SiliconStudio.Xenko.Graphics
                     createDebugReportCallback(NativeInstance, ref createInfo, null, out debugReportCallback);
                 }
 
-                var beginDebugMarkerName = System.Text.Encoding.ASCII.GetBytes("vkCmdDebugMarkerBeginEXT");
-                var ptr = NativeInstance.GetProcAddress((byte*)Interop.Fixed(beginDebugMarkerName));
-                if (ptr != IntPtr.Zero)
-                    BeginDebugMarker = (BeginDebugMarkerDelegate)Marshal.GetDelegateForFunctionPointer(ptr, typeof(BeginDebugMarkerDelegate));
+                if (availableExtensionNames.Contains("VK_EXT_debug_marker"))
+                {
+                    var beginDebugMarkerName = System.Text.Encoding.ASCII.GetBytes("vkCmdDebugMarkerBeginEXT");
 
-                var endDebugMarkerName = System.Text.Encoding.ASCII.GetBytes("vkCmdDebugMarkerEndEXT");
-                ptr = NativeInstance.GetProcAddress((byte*)Interop.Fixed(endDebugMarkerName));
-                if (ptr != IntPtr.Zero)
-                    EndDebugMarker = (EndDebugMarkerDelegate)Marshal.GetDelegateForFunctionPointer(ptr, typeof(EndDebugMarkerDelegate));
+                    var ptr = NativeInstance.GetProcAddress((byte*)Interop.Fixed(beginDebugMarkerName));
+                    if (ptr != IntPtr.Zero)
+                        BeginDebugMarker = (BeginDebugMarkerDelegate)Marshal.GetDelegateForFunctionPointer(ptr, typeof(BeginDebugMarkerDelegate));
+
+                    var endDebugMarkerName = System.Text.Encoding.ASCII.GetBytes("vkCmdDebugMarkerEndEXT");
+                    ptr = NativeInstance.GetProcAddress((byte*)Interop.Fixed(endDebugMarkerName));
+                    if (ptr != IntPtr.Zero)
+                        EndDebugMarker = (EndDebugMarkerDelegate)Marshal.GetDelegateForFunctionPointer(ptr, typeof(EndDebugMarkerDelegate));
+                }
             }
             finally
             {
