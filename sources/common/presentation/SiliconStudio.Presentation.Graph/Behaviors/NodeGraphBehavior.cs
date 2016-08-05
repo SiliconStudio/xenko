@@ -26,11 +26,6 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
     /// <summary>
     /// 
     /// </summary>
-    public class OutgoingConnectionWrapper : ConnectionWrapper { }
-
-    /// <summary>
-    /// 
-    /// </summary>
     [ContentProperty("ConnectionWrappers")]
     public class NodeGraphBehavior : Behavior<GraphArea<NodeVertex, NodeEdge, BidirectionalGraph<NodeVertex, NodeEdge>>>
     {
@@ -54,39 +49,28 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         #endregion
 
         #region Dependency Properties
-        public static readonly DependencyProperty RootNodesProperty = DependencyProperty.Register("RootNodes", typeof(IEnumerable), typeof(NodeGraphBehavior), new PropertyMetadata(null, OnRootNodesChanged));
-        private static readonly DependencyProperty OutgoingsProperty = DependencyProperty.RegisterAttached("Outgoings", typeof(IEnumerable), typeof(NodeGraphBehavior), new PropertyMetadata(null, OnOutgoingsChanged));
+        public static readonly DependencyProperty VerticesProperty = DependencyProperty.Register("Vertices", typeof(IEnumerable), typeof(NodeGraphBehavior), new PropertyMetadata(null, OnVerticesChanged));
+        public static readonly DependencyProperty EdgesProperty = DependencyProperty.Register("Edges", typeof(IEnumerable), typeof(NodeGraphBehavior), new PropertyMetadata(null, OnEdgesChanged));
         #endregion
 
-        // TODO: This dictionary is never cleaned
-        private static readonly Dictionary<DependencyObject, ConnectionWrapperData> ConnectionWrapperDats = new Dictionary<DependencyObject, ConnectionWrapperData>();
-        
         #region Static Dependency Property Event Handler
         /// <summary>
         /// 
         /// </summary>
         /// <param name="d"></param>
         /// <param name="e"></param>
-        private static void OnRootNodesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnVerticesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var behavior = (NodeGraphBehavior)d;
 
             var oldList = e.OldValue as INotifyCollectionChanged;
-            if (oldList != null) { oldList.CollectionChanged -= behavior.OnRootNodesCollectionChanged; }
-
-            behavior.graph.Clear();
+            if (oldList != null) { oldList.CollectionChanged -= behavior.OnVerticesCollectionChanged; }
 
             var newList = e.NewValue as INotifyCollectionChanged;
-            if (newList != null) { newList.CollectionChanged += behavior.OnRootNodesCollectionChanged; }
+            if (newList != null) { newList.CollectionChanged += behavior.OnVerticesCollectionChanged; }
 
-            // Loop through all the root nodes and add them
-            var enumerable = (IEnumerable)e.NewValue;
-            foreach (var item in enumerable)
-            {
-                behavior.AddNode(item as NodeVertex);
-            }
-
-            behavior.RootNodes = e.NewValue as IEnumerable;            
+            behavior.Vertices = e.NewValue as IEnumerable;
+            behavior.RecreateGraph(behavior);
             behavior.RelayoutGraph();
         }
 
@@ -95,18 +79,21 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         /// </summary>
         /// <param name="d"></param>
         /// <param name="e"></param>
-        private static void OnOutgoingsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnEdgesChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            // OutgoingsProperty is a property that gets bound to a vertex control dynamically during runtime. 
-            
-            // TODO When outgoings is changed, we need to redirect that call elsewhere
-            // Current approach is to register these to a static dictionary of connection wrappers
-            /*ConnectionWrapperData data;
-            if (ConnectionWrapperDats.TryGetValue(d, out data))
-            {
-                //
-            }*/
+            var behavior = (NodeGraphBehavior)d;
+
+            var oldList = e.OldValue as INotifyCollectionChanged;
+            if (oldList != null) { oldList.CollectionChanged -= behavior.OnEdgesCollectionChanged; }
+
+            var newList = e.NewValue as INotifyCollectionChanged;
+            if (newList != null) { newList.CollectionChanged += behavior.OnEdgesCollectionChanged; }
+
+            behavior.Edges = e.NewValue as IEnumerable;
+            behavior.RecreateGraph(behavior);
+            behavior.RelayoutGraph();
         }
+       
         #endregion
 
         #region Members
@@ -127,21 +114,21 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
 
             // This property sets layout algorithm that will be used to calculate vertice positions
             // Different algorithms uses different values and some of them uses edge Weight property.
-            LogicCore.DefaultLayoutAlgorithm = GraphX.LayoutAlgorithmTypeEnum.Tree;
+            LogicCore.DefaultLayoutAlgorithm = GraphX.LayoutAlgorithmTypeEnum.Custom;
 
             // Now we can set parameters for selected algorithm using AlgorithmFactory property. This property provides methods for
             // creating all available algorithms and algo parameters.
-            LogicCore.DefaultLayoutAlgorithmParams = LogicCore.AlgorithmFactory.CreateLayoutParameters(GraphX.LayoutAlgorithmTypeEnum.Tree);
-            ((SimpleTreeLayoutParameters)LogicCore.DefaultLayoutAlgorithmParams).Direction = LayoutDirection.LeftToRight;
-            ((SimpleTreeLayoutParameters)LogicCore.DefaultLayoutAlgorithmParams).VertexGap = 50;
-            ((SimpleTreeLayoutParameters)LogicCore.DefaultLayoutAlgorithmParams).LayerGap = 100;
+            //LogicCore.DefaultLayoutAlgorithmParams = LogicCore.AlgorithmFactory.CreateLayoutParameters(GraphX.LayoutAlgorithmTypeEnum.Tree);
+            //((SimpleTreeLayoutParameters)LogicCore.DefaultLayoutAlgorithmParams).Direction = LayoutDirection.LeftToRight;
+            //((SimpleTreeLayoutParameters)LogicCore.DefaultLayoutAlgorithmParams).VertexGap = 50;
+            //((SimpleTreeLayoutParameters)LogicCore.DefaultLayoutAlgorithmParams).LayerGap = 100;
 
             // This property sets vertex overlap removal algorithm.
             // Such algorithms help to arrange vertices in the layout so no one overlaps each other.
-            LogicCore.DefaultOverlapRemovalAlgorithm = GraphX.OverlapRemovalAlgorithmTypeEnum.FSA;
-            LogicCore.DefaultOverlapRemovalAlgorithmParams = LogicCore.AlgorithmFactory.CreateOverlapRemovalParameters(GraphX.OverlapRemovalAlgorithmTypeEnum.FSA);
-            ((OverlapRemovalParameters)LogicCore.DefaultOverlapRemovalAlgorithmParams).HorizontalGap = 50;
-            ((OverlapRemovalParameters)LogicCore.DefaultOverlapRemovalAlgorithmParams).VerticalGap = 50;
+            LogicCore.DefaultOverlapRemovalAlgorithm = GraphX.OverlapRemovalAlgorithmTypeEnum.None;
+            //LogicCore.DefaultOverlapRemovalAlgorithmParams = LogicCore.AlgorithmFactory.CreateOverlapRemovalParameters(GraphX.OverlapRemovalAlgorithmTypeEnum.FSA);
+            //((OverlapRemovalParameters)LogicCore.DefaultOverlapRemovalAlgorithmParams).HorizontalGap = 50;
+            //((OverlapRemovalParameters)LogicCore.DefaultOverlapRemovalAlgorithmParams).VerticalGap = 50;
 
             // This property sets edge routing algorithm that is used to build route paths according to algorithm logic.
             // For ex., SimpleER algorithm will try to set edge paths around vertices so no edge will intersect any vertex.
@@ -183,7 +170,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OnRootNodesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void OnVerticesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {
@@ -209,15 +196,15 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void OnOutgoingsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void OnEdgesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    foreach (NodeEdge newItem in e.NewItems) { AddEdge(newItem); }
+                    foreach (var newItem in e.NewItems) { AddEdge(newItem as NodeEdge); }
                     break;
-                case NotifyCollectionChangedAction.Remove:                        
-                    foreach (NodeEdge oldItem in e.OldItems) { RemoveEdge(oldItem); }
+                case NotifyCollectionChangedAction.Remove:
+                    foreach (var oldItem in e.OldItems) { RemoveEdge(oldItem as NodeEdge); }
                     break;
                 case NotifyCollectionChangedAction.Replace:
                     break;
@@ -228,7 +215,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-        }        
+        }
         #endregion
 
         #region Graph Operation Methods
@@ -244,6 +231,37 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
             {
                 edge.Value.Visibility = Visibility.Visible;
             }*/
+        }
+
+        private void RecreateGraph(NodeGraphBehavior behavior)
+        {
+            // Disconnect all controls
+            foreach (NodeVertex node in behavior.Vertices)
+            {
+                // Disconnect control
+                VertexControl vertexControl;
+                if (AssociatedObject.VertexList.TryGetValue(node, out vertexControl))
+                    node.DisconnectControl(vertexControl);
+            }
+
+            // Loop through all the root nodes and add them
+            behavior.graph.Clear();
+            AssociatedObject.RemoveAllEdges();
+            AssociatedObject.RemoveAllVertices();
+            if (behavior.Vertices != null)
+            {
+                foreach (var item in behavior.Vertices)
+                {
+                    AddNode(item as NodeVertex);
+                }
+            }
+            if (behavior.Edges != null)
+            {
+                foreach (var item in behavior.Edges)
+                {
+                    AddEdge(item as NodeEdge);
+                }
+            }
         }
 
         /// <summary>
@@ -280,45 +298,10 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
             
             // Add vertex and control to the graph area
             AssociatedObject.AddVertex(node, control);
-
-            // Loop through all the connection wrappers and process them
-            foreach (var wrapper in connection_wrappers_)
-            {
-                // TODO: throw proper exceptions when the wrapper binding cannot be exploited (has RelativeSource, has ElementName, etc.)
-                if (wrapper is OutgoingConnectionWrapper)
-                {
-                    // Create a new binding between the node and the connection wrapper
-                    // This will allow the node to access the outgoing property 
-                    binding = new Binding();
-                    binding.Path = (wrapper as OutgoingConnectionWrapper).Binding.Path;
-                    binding.Mode = (wrapper as OutgoingConnectionWrapper).Binding.Mode;
-                    binding.Source = node;
-
-                    var dummyObj = new DependencyObject();
-                    BindingOperations.SetBinding(dummyObj, OutgoingsProperty, binding);
-                    var outgoings = dummyObj.GetValue(OutgoingsProperty) as IEnumerable;
-
-                    var collection = outgoings as INotifyCollectionChanged;
-                    if (collection != null)
-                    {
-                        collection.CollectionChanged += OnOutgoingsCollectionChanged;
-                    }
-
-                    // Loop through all outgoing connections
-                    foreach (NodeEdge entry in outgoings) {                        
-                        NodeEdge edge = entry;
-                        NodeVertex target = edge.Target as NodeVertex;
-
-                        if (!graph.ContainsVertex(target)) { AddNode(target); }
-                        if (!graph.ContainsEdge(edge)) { AddEdge(edge); }
-                    }
-                    
-                    // TODO
-                    //ConnectionWrapperData.Add(dummyObj, new ConnectionWrapperData(this, wrapper, node));
-                }
-            }
-
             AssociatedObject.RelayoutGraph();
+
+            // Connect control
+            node.ConnectControl(control);
         }
 
         /// <summary>
@@ -329,13 +312,6 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         {
             if (graph.ContainsVertex(node))
             {
-                // Remove outgoing edges first
-                foreach (NodeEdge outgoing in node.Outgoings)
-                {
-                    graph.RemoveEdge(outgoing);
-                    AssociatedObject.RemoveEdge(outgoing);
-                }
-
                 // TODO Need a better way to removing incoming edges
                 IEnumerable<EdgeControl> controls = AssociatedObject.GetAllEdgeControls().Where(x => (x.Edge as NodeEdge).Target == node);
                 foreach (var control in controls)
@@ -344,11 +320,14 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
                     graph.RemoveEdge(edge);
                     AssociatedObject.RemoveEdge(edge);
                 }
-                
+
+                // Disconnect control
+                VertexControl vertexControl;
+                if (AssociatedObject.VertexList.TryGetValue(node, out vertexControl))
+                    node.DisconnectControl(vertexControl);
+
                 // Then remove the vertex
                 graph.RemoveVertex(node);
-                AssociatedObject.RemoveVertex(node);
-
             }
         }
 
@@ -371,11 +350,18 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
 
             // Create data binding for input slots and output slots
             var binding = new Binding();
-            binding.Path = new PropertyPath("Links");
+            binding.Path = new PropertyPath("SourceSlot");
             binding.Mode = BindingMode.TwoWay;
             binding.Source = edge;
             binding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
-            BindingOperations.SetBinding(control, NodeEdgeControl.LinksProperty, binding);
+            BindingOperations.SetBinding(control, NodeEdgeControl.SourceSlotProperty, binding);
+
+            binding = new Binding();
+            binding.Path = new PropertyPath("TargetSlot");
+            binding.Mode = BindingMode.TwoWay;
+            binding.Source = edge;
+            binding.UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged;
+            BindingOperations.SetBinding(control, NodeEdgeControl.TargetSlotProperty, binding);
 
             // Add vertex and control to the graph area
             AssociatedObject.AddEdge(edge, control);
@@ -411,7 +397,8 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         #endregion
         
         #region Properties
-        public IEnumerable RootNodes { get { return (IEnumerable)GetValue(RootNodesProperty); } set { SetValue(RootNodesProperty, value); } }
+        public IEnumerable Vertices { get { return (IEnumerable)GetValue(VerticesProperty); } set { SetValue(VerticesProperty, value); } }
+        public IEnumerable Edges { get { return (IEnumerable)GetValue(EdgesProperty); } set { SetValue(EdgesProperty, value); } }
         public IList ConnectionWrappers { get { return connection_wrappers_; } }
         #endregion
     }

@@ -165,7 +165,8 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
 
             // Travel up the visual tree and get the zoom control
             // If the zoom control doesn't exist, then we can't use this behavior
-            zoom_control_ = graph_area_.FindVisualParentOfType<ZoomControl>();
+            // TODO: Done on logical tree for now because visual tree is not valid during behavior OnAttachAndLoaded()
+            zoom_control_ = graph_area_.FindLogicalParentOfType<ZoomControl>();
             if (zoom_control_ == null)
             {
                 // TODO throw exception!

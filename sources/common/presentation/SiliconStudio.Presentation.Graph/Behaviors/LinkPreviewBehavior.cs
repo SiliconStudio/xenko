@@ -99,7 +99,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         {
             graph_area_ = AssociatedObject;            
 
-            Register();
+            Dispatcher.InvokeAsync(Register);
         }
 
         protected override void OnDetachingAndUnloaded()

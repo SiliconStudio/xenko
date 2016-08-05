@@ -3,6 +3,7 @@
 using System;
 using System.Collections.ObjectModel;
 using GraphX;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Presentation.Graph.ViewModel
 {
@@ -17,13 +18,17 @@ namespace SiliconStudio.Presentation.Graph.ViewModel
         /// </summary>
         public NodeVertex() { /* nothing */ }
 
-        public virtual void AddOutgoing(NodeVertex target, object from, object to) { /* nothing */ }
+        public virtual void AddOutgoing(NodeVertex target, object from, object to)
+        {
+        }
 
-        /// <summary>
-        /// Collection of outgoing connections
-        /// </summary>
-        //public virtual ObservableCollection<NodeVertex> Outgoings { get; set; }
-        public virtual ObservableCollection<NodeEdge> Outgoings { get; set; }
+        public virtual void ConnectControl(VertexControl vertexControl)
+        {
+        }
+
+        public virtual void DisconnectControl(VertexControl vertexControl)
+        {
+        }
 
         /// <summary>
         /// Collection of input slots

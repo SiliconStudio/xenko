@@ -38,7 +38,7 @@
                         </Grid.RowDefinitions>
 
                         <Border Grid.Row="0" x:Name="PART_vertexTitle" Background="{TemplateBinding TitleBackground}" BorderBrush="{TemplateBinding TitleBorderBrush}" CornerRadius="{TemplateBinding TitleBorderCornerRadius}" Padding="{TemplateBinding TitlePadding}">
-                            <TextBlock x:Name="PART_vertexName" Text="{Binding Vertex, RelativeSource={RelativeSource TemplatedParent}}" HorizontalAlignment="Center" FontWeight="Bold" Padding="10,0,10,0" />
+                            <TextBlock x:Name="PART_vertexName" Text="{Binding Vertex.Title, RelativeSource={RelativeSource TemplatedParent}}" HorizontalAlignment="Center" FontWeight="Bold" Padding="10,0,10,0" />
                         </Border>
 
                         <Border Grid.Row="1" x:Name="PART_vertexContent" Background="{TemplateBinding ContentBackground}" BorderBrush="{TemplateBinding ContentBorderBrush}" CornerRadius="{TemplateBinding ContentBorderCornerRadius}" Padding="{TemplateBinding ContentPadding}">
@@ -65,7 +65,7 @@
                                                         <behavior:ConnectorDropBehavior DropHandler="{Binding RelativeSource={RelativeSource AncestorType={x:Type ctrl:NodeVertexControl}}}" />
                                                     </i:Interaction.Behaviors>
                                                 </Ellipse>
-                                                <TextBlock Grid.Column="1" Text="{Binding}" Padding="2,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                                <ContentPresenter Grid.Column="1" Content="{Binding}" Margin="2,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                                             </Grid>
                                             <DataTemplate.Triggers>
                                                 <Trigger SourceName="PART_inputConnector" Property="IsMouseOver" Value="True">
@@ -85,7 +85,7 @@
                                                     <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
 
-                                                <TextBlock Grid.Column="0" Text="{Binding}" TextAlignment="Right" Padding="10,0,2,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                                                <ContentPresenter Grid.Column="0" Content="{Binding}" Margin="10,0,2,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                                                 <Ellipse Grid.Column="1" x:Name="PART_outputConnector" DataContext="{Binding}" AllowDrop="True" 
                                                              Stroke="{Binding ConnectorStroke, RelativeSource={RelativeSource AncestorType={x:Type ctrl:NodeVertexControl}}}" 
                                                              Fill="{Binding ConnectorFill, RelativeSource={RelativeSource AncestorType={x:Type ctrl:NodeVertexControl}}}"
@@ -133,10 +133,10 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ctrl:NodeEdgeControl}">
                     <Grid>
-                        <Path x:Name="PART_edgePath" Stroke="Transparent" Visibility="Collapsed" StrokeThickness="{TemplateBinding LinkStrokeThickness}" MinWidth="1" MinHeight="1" ToolTip="{TemplateBinding ToolTip}" />
-                        <Path x:Name="PART_edgeArrowPath" Stroke="Transparent" Visibility="Collapsed" StrokeThickness="{TemplateBinding LinkStrokeThickness}" MinWidth="1" MinHeight="1" />
+                        <Path x:Name="PART_edgePath" Stroke="{TemplateBinding LinkStroke}" Visibility="Visible" StrokeThickness="{TemplateBinding LinkStrokeThickness}" MinWidth="1" MinHeight="1" ToolTip="{TemplateBinding ToolTip}"  />
+                        <Path x:Name="PART_edgeArrowPath" Stroke="{TemplateBinding LinkStroke}" Visibility="Visible" StrokeThickness="{TemplateBinding LinkStrokeThickness}" MinWidth="1" MinHeight="1" />
 
-                        <ItemsControl ItemsSource="{TemplateBinding Links}" x:Name="PART_linkItemsControl">
+                        <!--<ItemsControl ItemsSource="{TemplateBinding Links}" x:Name="PART_linkItemsControl">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <Grid />
@@ -158,8 +158,16 @@
                                     </DataTemplate.Triggers>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
-                        </ItemsControl>
+                        </ItemsControl>-->
                     </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger SourceName="PART_edgePath" Property="Selector.IsSelected" Value="True">
+                            <Setter TargetName="PART_edgePath" Property="Stroke" Value="{Binding SelectedLinkStroke, RelativeSource={RelativeSource AncestorType={x:Type ctrl:NodeEdgeControl}}}" />
+                        </Trigger>
+                        <Trigger SourceName="PART_edgePath" Property="IsMouseOver" Value="True">
+                            <Setter TargetName="PART_edgePath" Property="Stroke" Value="{Binding MouseOverLinkStroke, RelativeSource={RelativeSource AncestorType={x:Type ctrl:NodeEdgeControl}}}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

@@ -236,23 +236,20 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
                 ClearLinkSelection();
             }
 
-            foreach (EdgeControl control in graph_area_.GetAllEdgeControls())
+            foreach (NodeEdgeControl control in graph_area_.GetAllEdgeControls())
             {
-                
-                foreach (var linkpath in (control as NodeEdgeControl).LinkPaths)
+                if (VisualTreeHelper.HitTest(control.Path, point) != null)
                 {
-                    if (VisualTreeHelper.HitTest(linkpath.Value, point) != null)
-                    {
-                        LinkInfo info = selected_links_.FirstOrDefault(x => (x.Link == linkpath.Key) && (x.Edge == control.Edge));
-                        if (info == null)
-                        {
-                            info = new LinkInfo() { Edge = control.Edge as NodeEdge, Link = linkpath.Key };                                
-                        }
-
-                        SelectLink(control as NodeEdgeControl, info, toggle);
-                        break;
-                    }                        
-                }
+                    // TODO
+                    //LinkInfo info = selected_links_.FirstOrDefault(x => (x.Link == control.Key) && (x.Edge == control.Edge));
+                    //if (info == null)
+                    //{
+                    //    info = new LinkInfo() { Edge = control.Edge as NodeEdge, Link = linkpath.Key };                                
+                    //}
+                    //
+                    //SelectLink(control as NodeEdgeControl, info, toggle);
+                    break;
+                }                        
             }
         }
         #endregion
@@ -272,7 +269,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
             {
                 if (toggle)
                 {
-                    control.LinkPaths[info.Link].SetValue(Selector.IsSelectedProperty, false);
+                    control.Path.SetValue(Selector.IsSelectedProperty, false);
 
                     selected_links_.Remove(info);
                     link_controls_.Remove(info);
@@ -280,10 +277,10 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
             }
             else
             {
-                control.LinkPaths[info.Link].SetValue(Selector.IsSelectedProperty, true);
+                control.Path.SetValue(Selector.IsSelectedProperty, true);
 
                 selected_links_.Add(info);
-                link_controls_.Add(info, control.LinkPaths[info.Link]);
+                link_controls_.Add(info, control.Path);
             }
         }
 
@@ -296,7 +293,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
             if (control == null) { return; }
 
             object edge = (object)control.Edge;
-            control.LinkPaths[info.Link].SetValue(Selector.IsSelectedProperty, false);
+            control.Path.SetValue(Selector.IsSelectedProperty, false);
 
             selected_links_.Remove(info);
             link_controls_.Remove(info);

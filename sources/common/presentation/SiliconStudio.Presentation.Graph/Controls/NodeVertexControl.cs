@@ -85,7 +85,7 @@ namespace SiliconStudio.Presentation.Graph.Controls
 
         /// <summary>
         /// 
-        /// </summary>
+        /// </summary>o
         /// <param name="obj"></param>
         /// <param name="e"></param>
         private static void OnOutputSlotsChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
@@ -122,7 +122,7 @@ namespace SiliconStudio.Presentation.Graph.Controls
             this.Loaded += OnLoaded;
         }
         #endregion
-        
+
         #region Event Handlers
         /// <summary>
         /// 

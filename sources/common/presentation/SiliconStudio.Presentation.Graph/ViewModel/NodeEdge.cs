@@ -24,9 +24,8 @@ namespace SiliconStudio.Presentation.Graph.ViewModel
             // nothing
         }
 
-        /// <summary>
-        /// Collection of slot-to-slot connections
-        /// </summary>
-        public virtual ObservableCollection<Tuple<object, object>> Links { get; set; }
+        public object SourceSlot { get; set; }
+
+        public object TargetSlot { get; set; }
     }
 }
