@@ -10,6 +10,7 @@ namespace SiliconStudio.Core.Serialization
         /// <summary>
         /// Initializes the specified serializer.
         /// </summary>
+        /// <remarks>This method should be thread-safe and OK to call multiple times.</remarks>
         /// <param name="serializerSelector">The serializer.</param>
         void Initialize(SerializerSelector serializerSelector);
     }

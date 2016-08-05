@@ -702,7 +702,7 @@ namespace SiliconStudio.Assets
             try
             {
                 bool aliasOccurred;
-                var packageFile = new PackageLoadingAssetFile(filePath, Path.GetDirectoryName(filePath));
+                var packageFile = new PackageLoadingAssetFile(filePath, Path.GetDirectoryName(filePath)) { CachedFileSize = filePath.Length };
                 var context = new AssetMigrationContext(null, log);
                 AssetMigration.MigrateAssetIfNeeded(context, packageFile, "Assets");
 
@@ -874,7 +874,7 @@ namespace SiliconStudio.Assets
         /// <exception cref="System.InvalidOperationException">Package RootDirectory is null
         /// or
         /// Package RootDirectory [{0}] does not exist.ToFormat(RootDirectory)</exception>
-        public void LoadTemporaryAssets(ILogger log, IList<PackageLoadingAssetFile> assetFiles = null, CancellationToken? cancelToken = null, bool listAssetsInMsbuild = true, Func<PackageLoadingAssetFile, bool> filterFunc = null)
+        public void LoadTemporaryAssets(ILogger log, List<PackageLoadingAssetFile> assetFiles = null, CancellationToken? cancelToken = null, bool listAssetsInMsbuild = true, Func<PackageLoadingAssetFile, bool> filterFunc = null)
         {
             if (log == null) throw new ArgumentNullException(nameof(log));
 
@@ -890,7 +890,11 @@ namespace SiliconStudio.Assets
 
             // List all package files on disk
             if (assetFiles == null)
+            {
                 assetFiles = ListAssetFiles(log, this, listAssetsInMsbuild, cancelToken);
+                // Sort them by size (to improve concurrency during load)
+                assetFiles.Sort(PackageLoadingAssetFile.FileSizeComparer.Default);
+            }
 
             var progressMessage = $"Loading Assets from Package [{FullPath.GetFileNameWithExtension()}]";
 
@@ -1272,7 +1276,7 @@ namespace SiliconStudio.Assets
                         //make sure to add default shaders in this case, since we don't have a csproj for them
                         if (AssetRegistry.IsProjectCodeGeneratorAssetFileExtension(ext) && !hasProject)
                         {
-                            listFiles.Add(new PackageLoadingAssetFile(fileUPath, sourceFolder));
+                            listFiles.Add(new PackageLoadingAssetFile(fileUPath, sourceFolder) { CachedFileSize = filePath.Length });
                             continue;
                         }
 
@@ -1281,7 +1285,7 @@ namespace SiliconStudio.Assets
                             continue;
                         }
 
-                        listFiles.Add(new PackageLoadingAssetFile(fileUPath, sourceFolder));
+                        listFiles.Add(new PackageLoadingAssetFile(fileUPath, sourceFolder) { CachedFileSize = filePath.Length });
                     }
                 }
             }

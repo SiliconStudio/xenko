@@ -109,25 +109,6 @@ namespace SiliconStudio.Core.Extensions
         }
 
         /// <summary>
-        /// Visits a tree (or sub-tree) in breadth-first order.
-        /// </summary>
-        /// <typeparam name="T">Type of the tree's node.</typeparam>
-        /// <param name="root">The root node of the tree (or sub-tree)</param>
-        /// <param name="childrenSelector">A function that returns an enumeration of a node's direct children.</param>
-        /// <returns>An enumeration of the tree's (or sub-tree's) node in breadth-first order.</returns>
-        public static IEnumerable<T> BreadthFirst<T>(this T root, Func<T, IEnumerable<T>> childrenSelector)
-        {
-            if (root == null) throw new ArgumentNullException(nameof(root));
-            if (childrenSelector == null) throw new ArgumentNullException(nameof(childrenSelector));
-
-            yield return root;
-            foreach (var child in BreadthFirst(childrenSelector(root), childrenSelector))
-            {
-                yield return child;
-            }
-        }
-
-        /// <summary>
         /// Iterates over all elements of source and their children in breadth-first order.
         /// </summary>
         /// <typeparam name="T">Type of the elements.</typeparam>
@@ -156,29 +137,6 @@ namespace SiliconStudio.Core.Extensions
         }
 
         /// <summary>
-        /// Visits a tree (or sub-tree) in depth-first order (root node first a.k.a. pre-order).
-        /// </summary>
-        /// <typeparam name="T">Type of the tree's node.</typeparam>
-        /// <param name="root">The root node of the tree (or sub-tree)</param>
-        /// <param name="childrenSelector">A function that returns an enumeration of a node's direct children.</param>
-        /// <returns>An enumeration of the tree's (or sub-tree's) node in depth-first order.</returns>
-        public static IEnumerable<T> DepthFirst<T>(this T root, Func<T, IEnumerable<T>> childrenSelector)
-        {
-            if (root == null) throw new ArgumentNullException(nameof(root));
-            if (childrenSelector == null) throw new ArgumentNullException(nameof(childrenSelector));
-
-            var nodes = new Stack<T>();
-            nodes.Push(root);
-
-            while (nodes.Count > 0)
-            {
-                var node = nodes.Pop();
-                yield return node;
-                foreach (var n in childrenSelector(node).Reverse()) nodes.Push(n);
-            }
-        }
-
-        /// <summary>
         /// Iterates over all elements of source and their children in depth-first order.
         /// </summary>
         /// <typeparam name="T">Type of the elements.</typeparam>
@@ -190,11 +148,15 @@ namespace SiliconStudio.Core.Extensions
             if (source == null) throw new ArgumentNullException(nameof(source));
             if (childrenSelector == null) throw new ArgumentNullException(nameof(childrenSelector));
 
+            var nodes = new Stack<T>();
             foreach (var item in source)
             {
-                foreach (var child in item.DepthFirst(childrenSelector))
+                nodes.Push(item);
+                while (nodes.Count > 0)
                 {
-                    yield return child;
+                    var node = nodes.Pop();
+                    yield return node;
+                    foreach (var n in childrenSelector(node).Reverse()) nodes.Push(n);
                 }
             }
         }

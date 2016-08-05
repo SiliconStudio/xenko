@@ -73,6 +73,8 @@ namespace SiliconStudio.Xenko.Graphics
             NativeCommandList.Reset(nativeCommandAllocator, null);
 
             NativeCommandList.SetDescriptorHeaps(2, descriptorHeaps);
+
+            boundPipelineState = null;
         }
 
         public void Close()

@@ -35,7 +35,10 @@ namespace SiliconStudio.Core.Diagnostics
         protected override void LogRaw(ILogMessage logMessage)
         {
             TimeSpan timestamp = DateTime.Now - startTime;
-            Messages.Add(new Message(timestamp.Ticks, logMessage));
+            lock (Messages)
+            {
+                Messages.Add(new Message(timestamp.Ticks, logMessage));
+            }
         }
 
         /// <summary>
