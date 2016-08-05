@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Core.Serialization
@@ -21,7 +22,8 @@ namespace SiliconStudio.Core.Serialization
         /// <summary>
         /// Used internally to know if the serializer has been initialized.
         /// </summary>
-        internal bool Initialized = false;
+        internal bool Initialized;
+        internal SpinLock InitializeLock = new SpinLock(true);
 
         /// <inheritdoc/>
         public abstract Type SerializationType { get; }
