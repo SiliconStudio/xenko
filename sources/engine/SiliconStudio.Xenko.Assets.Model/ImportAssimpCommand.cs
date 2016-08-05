@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Assets.Model
             return new Xenko.Importer.AssimpNET.MeshConverter(commandContext.Logger)
             {
                 AllowUnsignedBlendIndices = this.AllowUnsignedBlendIndices,
-                ScaleImport = ScaleImport
+                ScaleImport = ScaleImport,
             };
         }
 

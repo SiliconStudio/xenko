@@ -6,6 +6,7 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Assets.Model
 {
@@ -13,6 +14,8 @@ namespace SiliconStudio.Xenko.Assets.Model
     [AssetDescription(FileExtension, AllowArchetype = false)]
     [AssetCompiler(typeof(SkeletonAssetCompiler))]
     [Display(180, "Skeleton", "A skeleton (node hierarchy)")]
+    [AssetFormatVersion(XenkoConfig.PackageName, "1.7.8-beta")]
+    [AssetUpgrader(XenkoConfig.PackageName, "0", "1.7.8-beta", typeof(EnsureScaleNotZero))]
     public class SkeletonAsset : Asset
     {
         /// <summary>
@@ -40,6 +43,12 @@ namespace SiliconStudio.Xenko.Assets.Model
         [DataMember(10)]
         [DefaultValue(1.0f)]
         public float ScaleImport { get; set; } = 1.0f;
+
+        /// <summary>
+        /// Gets or sets the pivot position, that will be used as center of object.
+        /// </summary>
+        [DataMember(15)]
+        public Vector3 PivotPosition { get; set; }
 
         /// <summary>
         /// List that stores if a node should be preserved
@@ -126,6 +135,17 @@ namespace SiliconStudio.Xenko.Assets.Model
         {
             foreach (var node in Nodes)
                 node.Preserve = !node.Preserve;
+        }
+
+        class EnsureScaleNotZero : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                if (asset.ScaleImport != null && (float)asset.ScaleImport == 0.0f)
+                {
+                    asset.RemoveChild("ScaleImport");
+                }
+            }
         }
     }
 }
