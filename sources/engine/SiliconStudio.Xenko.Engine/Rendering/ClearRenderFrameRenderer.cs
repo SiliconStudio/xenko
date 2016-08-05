@@ -89,8 +89,11 @@ namespace SiliconStudio.Xenko.Rendering
             // clear the targets
             if (output.DepthStencil != null && (ClearFlags == ClearRenderFrameFlags.ColorAndDepth || ClearFlags == ClearRenderFrameFlags.DepthOnly))
             {
-                const DepthStencilClearOptions ClearOptions = DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil;
-                commandList.Clear(output.DepthStencil, ClearOptions, Depth, Stencil);
+                var clearOptions = DepthStencilClearOptions.DepthBuffer;
+                if (output.DepthStencil.HasStencil)
+                    clearOptions |= DepthStencilClearOptions.Stencil;
+
+                commandList.Clear(output.DepthStencil, clearOptions, Depth, Stencil);
             }
 
             if (ClearFlags == ClearRenderFrameFlags.ColorAndDepth || ClearFlags == ClearRenderFrameFlags.ColorOnly)
