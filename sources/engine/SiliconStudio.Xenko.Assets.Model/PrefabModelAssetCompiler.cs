@@ -249,8 +249,6 @@ namespace SiliconStudio.Xenko.Assets.Model
             {
                 var contentManager = new ContentManager();
 
-                //var gameSettings = contentManager.Load<GameSettings>(GameSettings.AssetUrl);
-
                 var device = GraphicsDevice.New();
 
                 var fallbackMaterial = Material.New(device, new MaterialDescriptor
@@ -267,8 +265,16 @@ namespace SiliconStudio.Xenko.Assets.Model
                     ContentFilter = AssetManagerLoaderSettings.NewContentFilterByType(typeof(Mesh), typeof(Skeleton), typeof(Material), typeof(Prefab))
                 };
 
-                var prefab = contentManager.Load<Prefab>(AssetParameters.Prefab.Location, loadSettings);
-                if (prefab == null) throw new Exception("Failed to load prefab.");
+                Prefab prefab;
+                if (AssetParameters.Prefab == null)
+                {
+                    prefab = new Prefab();
+                }
+                else
+                {
+                    prefab = contentManager.Load<Prefab>(AssetParameters.Prefab.Location, loadSettings);
+                    if (prefab == null) throw new Exception("Failed to load prefab.");
+                }
 
                 var prefabModel = new Rendering.Model();
 
