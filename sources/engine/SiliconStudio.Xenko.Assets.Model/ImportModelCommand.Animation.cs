@@ -25,6 +25,7 @@ namespace SiliconStudio.Xenko.Assets.Model
         {
             // Read from model file
             var modelSkeleton = LoadSkeleton(commandContext, contentManager); // we get model skeleton to compare it to real skeleton we need to map to
+            AdjustSkeleton(modelSkeleton);
 
             TimeSpan duration;
             var animationClips = LoadAnimation(commandContext, contentManager, out duration);
@@ -199,8 +200,17 @@ namespace SiliconStudio.Xenko.Assets.Model
 
                             // TODO: Root motion
                             var channelName = channel.Key;
-                            if (channelName.StartsWith("Transform."))
+                            if (channelName.StartsWith($"{nameof(ModelNodeTransformation.Transform)}."))
                             {
+                                if (parentNodeIndex == 0 && channelName == $"{nameof(ModelNodeTransformation.Transform)}.{nameof(TransformTRS.Position)}")
+                                {
+                                    // Translate node with parent 0 using PivotPosition
+                                    var keyFrames = ((AnimationCurve<Vector3>)curve).KeyFrames;
+                                    for (int i = 0; i < keyFrames.Count; ++i)
+                                    {
+                                        keyFrames.Items[i].Value -= PivotPosition * ScaleImport;
+                                    }
+                                }
                                 animationClip.AddCurve($"[ModelComponent.Key].Skeleton.NodeTransformations[{skeletonMapping.SourceToTarget[nodeIndex]}]." + channelName, curve);
                             }
                         }

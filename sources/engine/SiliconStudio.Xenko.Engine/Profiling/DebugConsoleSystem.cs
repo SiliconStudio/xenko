@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -6,7 +7,7 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Profiling
 {
-    public class DebugDrawingSystem : GameSystemBase
+    public class DebugConsoleSystem : GameSystemBase
     {
         internal struct DebugOverlayMessage
         {
@@ -19,11 +20,10 @@ namespace SiliconStudio.Xenko.Profiling
         private SpriteBatch spriteBatch;
         private readonly Queue<DebugOverlayMessage> overlayMessages = new Queue<DebugOverlayMessage>();
 
-        public DebugDrawingSystem(IServiceRegistry registry) : base(registry)
+        public DebugConsoleSystem(IServiceRegistry registry) : base(registry)
         {
-            registry.AddService(typeof(DebugDrawingSystem), this);
+            registry.AddService(typeof(DebugConsoleSystem), this);
 
-            Enabled = true;
             Visible = true;
 
             DrawOrder = 0xffffff;
@@ -89,7 +89,15 @@ namespace SiliconStudio.Xenko.Profiling
             //TODO, this is not so nice
             if (Font == null)
             {
-                Font = Asset.Load<SpriteFont>("XenkoDefaultFont");
+                try
+                {
+                    Font = Asset.Load<SpriteFont>("XenkoDefaultFont");
+                }
+                catch (Exception)
+                {
+                    Visible = false;
+                    return;
+                }
             }
 
             // TODO GRAPHICS REFACTOR where to get command list from?

@@ -50,10 +50,10 @@ namespace SiliconStudio.Xenko.Assets.Model
         private Importer.FBX.MeshConverter CreateMeshConverter(ICommandContext commandContext)
         {
             return new Importer.FBX.MeshConverter(commandContext.Logger)
-                {
-                    AllowUnsignedBlendIndices = AllowUnsignedBlendIndices,
-                    ScaleImport = ScaleImport
-                };
+            {
+                AllowUnsignedBlendIndices = AllowUnsignedBlendIndices,
+                ScaleImport = ScaleImport,
+            };
         }
 
         public override bool ShouldSpawnNewProcess()

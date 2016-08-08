@@ -1663,6 +1663,10 @@ private:
 				{
 					materialIndex = materialIndices->GetAt(i);
 				}
+				else if (materialMappingMode == FbxGeometryElement::eAllSame)
+				{
+					materialIndex = materialIndices->GetAt(0);
+				}
 
 				// Equivalent to std::vector::resize()
 				while (materialIndex >= buildMeshes->Count)
@@ -1715,9 +1719,10 @@ private:
 				}
 
 				FbxGeometryElementMaterial* lMaterialElement = pMesh->GetElementMaterial();
-				if (lMaterialElement != NULL)
+				FbxSurfaceMaterial* lMaterial = pNode->GetMaterial(i);
+				if ((materialMappingMode == FbxGeometryElement::eByPolygon || materialMappingMode == FbxGeometryElement::eAllSame)
+					&& lMaterialElement != NULL && lMaterial != NULL)
 				{
-					FbxSurfaceMaterial* lMaterial = pNode->GetMaterial(i);
 					std::map<std::string, size_t> uvElements;
 					auto uvNames = gcnew List<String^>();
 					for (int j = 0; j < pMesh->GetElementUVCount(); ++j)

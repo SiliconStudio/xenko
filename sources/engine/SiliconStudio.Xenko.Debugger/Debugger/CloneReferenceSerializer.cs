@@ -7,8 +7,10 @@ using SharpYaml.Serialization;
 using SharpYaml.Serialization.Serializers;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Engine;
+using SerializerContext = SharpYaml.Serialization.SerializerContext;
 
 namespace SiliconStudio.Xenko.Debugger.Target
 {
@@ -39,7 +41,7 @@ namespace SiliconStudio.Xenko.Debugger.Target
         private bool CanVisit(Type type)
         {
             // Also handles Entity, EntityComponent and Script
-            return ContentReferenceSerializer.IsReferenceType(type)
+            return ReferenceSerializer.IsReferenceType(type)
                    || type == typeof(Entity) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type);
         }
 

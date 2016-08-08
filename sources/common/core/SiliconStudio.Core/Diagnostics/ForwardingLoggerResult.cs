@@ -20,13 +20,7 @@ namespace SiliconStudio.Core.Diagnostics
         protected override void LogRaw(ILogMessage logMessage)
         {
             base.LogRaw(logMessage);
-            if (loggerToForward != null)
-            {
-                lock (loggerToForward)
-                {
-                    loggerToForward.Log(logMessage);
-                }
-            }
+            loggerToForward?.Log(logMessage);
         }
     }
 }

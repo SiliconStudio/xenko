@@ -207,6 +207,8 @@ namespace SiliconStudio.Xenko.Physics
 
         public override void Draw(RenderContext context)
         {
+            if (Simulation.DisableSimulation) return;
+
             foreach (var element in boneElements)
             {
                 element.UpdateDraw();

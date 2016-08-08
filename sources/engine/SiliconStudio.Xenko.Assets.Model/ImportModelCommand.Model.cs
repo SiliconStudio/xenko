@@ -19,6 +19,9 @@ namespace SiliconStudio.Xenko.Assets.Model
     public partial class ImportModelCommand
     {
         public float ScaleImport { get; set; }
+
+        public Vector3 PivotPosition { get; set; }
+
         public bool Allow32BitIndex { get; set; }
         public bool AllowUnsignedBlendIndices { get; set; }
         public List<ModelMaterial> Materials { get; set; }
@@ -29,6 +32,7 @@ namespace SiliconStudio.Xenko.Assets.Model
         {
             // Read from model file
             var modelSkeleton = LoadSkeleton(commandContext, contentManager); // we get model skeleton to compare it to real skeleton we need to map to
+            AdjustSkeleton(modelSkeleton);
             var model = LoadModel(commandContext, contentManager);
 
             // Apply materials
@@ -166,6 +170,11 @@ namespace SiliconStudio.Xenko.Assets.Model
                         var transformationMatrix = CombineMatricesFromNodeIndices(hierarchyUpdater.NodeTransformations, newNodeIndex, nodeIndex);
                         skinning.Bones[i].LinkToMeshMatrix = Matrix.Multiply(skinning.Bones[i].LinkToMeshMatrix, transformationMatrix);
                     }
+
+                    // Cancel pivot translation
+                    // TODO: Review if that is the correct way to do that...
+                    if (skeleton == null)
+                        skinning.Bones[i].LinkToMeshMatrix = Matrix.Multiply(skinning.Bones[i].LinkToMeshMatrix, Matrix.Translation(PivotPosition * ScaleImport));
                 }
             }
 

@@ -51,6 +51,7 @@ namespace SiliconStudio.Xenko.Assets.Model
             importModelCommand.AllowUnsignedBlendIndices = allowUnsignedBlendIndices;
             importModelCommand.Materials = asset.Materials;
             importModelCommand.ScaleImport = asset.ScaleImport;
+            importModelCommand.PivotPosition = asset.PivotPosition;
             importModelCommand.SkeletonUrl = skeleton?.Location;
 
             result.BuildSteps = new AssetBuildStep(AssetItem) { importModelCommand };

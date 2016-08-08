@@ -29,6 +29,7 @@ namespace SiliconStudio.Xenko.Assets.Model
             importModelCommand.Location = urlInStorage;
             importModelCommand.Mode = ImportModelCommand.ExportMode.Skeleton;
             importModelCommand.ScaleImport = asset.ScaleImport;
+            importModelCommand.PivotPosition = asset.PivotPosition;
             importModelCommand.SkeletonNodesWithPreserveInfo = asset.NodesWithPreserveInfo;
 
             buildStep.Add(importModelCommand);

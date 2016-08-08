@@ -19,6 +19,7 @@ namespace SiliconStudio.Xenko.Assets.Model
         private object ExportSkeleton(ICommandContext commandContext, ContentManager contentManager)
         {
             var skeleton = LoadSkeleton(commandContext, contentManager);
+            AdjustSkeleton(skeleton);
 
             var modelNodes = new HashSet<string>(skeleton.Nodes.Select(x => x.Name));
             var skeletonNodes = new HashSet<string>(SkeletonNodesWithPreserveInfo.Select(x => x.Key));
@@ -92,6 +93,16 @@ namespace SiliconStudio.Xenko.Assets.Model
             }
 
             return filteredSkeleton;
+        }
+
+        private void AdjustSkeleton(Skeleton skeleton)
+        {
+            // Translate node with parent 0 using PivotPosition
+            for (int i = 0; i < skeleton.Nodes.Length; ++i)
+            {
+                if (skeleton.Nodes[i].ParentIndex == 0)
+                    skeleton.Nodes[i].Transform.Position -= PivotPosition * ScaleImport;
+            }
         }
     }
 }

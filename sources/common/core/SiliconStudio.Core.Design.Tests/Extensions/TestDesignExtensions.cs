@@ -61,20 +61,14 @@ namespace SiliconStudio.Core.Design.Tests.Extensions
         [Test]
         public void TestBreadthFirst()
         {
-            var result = tree.BreadthFirst(n => n.Children).Aggregate(string.Empty, (s, n) => string.Concat(s, n.Value));
-            Assert.AreEqual("ABCDEFGH", result);
-
-            result = tree.Children.BreadthFirst(n => n.Children).Aggregate(string.Empty, (s, n) => string.Concat(s, n.Value));
+            var result = tree.Children.BreadthFirst(n => n.Children).Aggregate(string.Empty, (s, n) => string.Concat(s, n.Value));
             Assert.AreEqual("BCDEFGH", result);
         }
         
         [Test]
         public void TestDepthFirst()
         {
-            var result = tree.DepthFirst(n => n.Children).Aggregate(string.Empty, (s, n) => string.Concat(s, n.Value));
-            Assert.AreEqual("ABDEHCFG", result);
-
-            result = tree.Children.DepthFirst(n => n.Children).Aggregate(string.Empty, (s, n) => string.Concat(s, n.Value));
+            var result = tree.Children.DepthFirst(n => n.Children).Aggregate(string.Empty, (s, n) => string.Concat(s, n.Value));
             Assert.AreEqual("BDEHCFG", result);
         }
 
