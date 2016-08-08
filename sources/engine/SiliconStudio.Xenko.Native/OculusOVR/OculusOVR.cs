@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Native
 {
@@ -54,14 +55,22 @@ namespace SiliconStudio.Xenko.Native
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrCommitFrame", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool CommitFrame(IntPtr session);
 
+        [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        public struct FrameProperties
+        {
+            public float Near;
+            public float Far;
+            public Matrix ProjLeft;
+            public Matrix ProjRight;
+            public Vector3 PosLeft;
+            public Vector3 PosRight;
+            public Quaternion RotLeft;
+            public Quaternion RotRight;
+        }
+
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrPrepareRender", CallingConvention = CallingConvention.Cdecl)]
-        public static extern unsafe void PrepareRender(IntPtr session,
-            float near, float far,
-            float* projLeft, float* projRight,
-            float* positionLeft, float* positionRight,
-            float* rotationLeft, float* rotationRight
-            );
+        public static extern unsafe void PrepareRender(IntPtr session, FrameProperties* properties);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrGetError", CallingConvention = CallingConvention.Cdecl)]

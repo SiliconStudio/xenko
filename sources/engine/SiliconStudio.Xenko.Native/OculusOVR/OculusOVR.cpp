@@ -396,11 +396,24 @@ extern "C" {
 		return index;
 	}
 
-	void xnOvrPrepareRender(xnOvrSession* session, 
-		float near, float far, 
-		float* projLeft, float* projRight, 
-		float* positionLeft, float* positionRight, 
-		float* rotationLeft, float* rotationRight)
+#pragma pack(push, 4)
+	struct FrameProperties
+	{
+		//Camera properties
+		float Near;
+		float Far;
+		float ProjLeft[16];
+		float ProjRight[16];
+		float PosLeft[3];
+		float PosRight[3];
+		float RotLeft[4];
+		float RotRight[4];
+
+		//Todo add Touch Controllers properties
+	};
+#pragma pack(pop)
+
+	void xnOvrPrepareRender(xnOvrSession* session, FrameProperties* properties)
 	{
 		session->EyeRenderDesc[0] = ovr_GetRenderDescFunc(session->Session, ovrEye_Left, session->HmdDesc.DefaultEyeFov[0]);
 		session->EyeRenderDesc[1] = ovr_GetRenderDescFunc(session->Session, ovrEye_Right, session->HmdDesc.DefaultEyeFov[1]);
@@ -411,16 +424,16 @@ extern "C" {
 		auto hmdState = ovr_GetTrackingStateFunc(session->Session, session->Layer.SensorSampleTime, ovrTrue);
 		ovr_CalcEyePosesFunc(hmdState.HeadPose.ThePose, session->HmdToEyeViewOffset, session->Layer.RenderPose);
 
-		auto leftProj = ovrMatrix4f_ProjectionFunc(session->Layer.Fov[0], near, far, 0);
-		auto rightProj = ovrMatrix4f_ProjectionFunc(session->Layer.Fov[1], near, far, 0);
+		auto leftProj = ovrMatrix4f_ProjectionFunc(session->Layer.Fov[0], properties->Near, properties->Far, 0);
+		auto rightProj = ovrMatrix4f_ProjectionFunc(session->Layer.Fov[1], properties->Near, properties->Far, 0);
 
-		memcpy(projLeft, &leftProj, sizeof(float) * 16);
-		memcpy(positionLeft, &session->Layer.RenderPose[0].Position, sizeof(float) * 3);
-		memcpy(rotationLeft, &session->Layer.RenderPose[0].Orientation, sizeof(float) * 4);
+		memcpy(properties->ProjLeft, &leftProj, sizeof(float) * 16);
+		memcpy(properties->PosLeft, &session->Layer.RenderPose[0].Position, sizeof(float) * 3);
+		memcpy(properties->RotLeft, &session->Layer.RenderPose[0].Orientation, sizeof(float) * 4);
 		
-		memcpy(projRight, &rightProj, sizeof(float) * 16);
-		memcpy(positionRight, &session->Layer.RenderPose[1].Position, sizeof(float) * 3);
-		memcpy(rotationRight, &session->Layer.RenderPose[1].Orientation, sizeof(float) * 4);
+		memcpy(properties->ProjRight, &rightProj, sizeof(float) * 16);
+		memcpy(properties->PosRight, &session->Layer.RenderPose[1].Position, sizeof(float) * 3);
+		memcpy(properties->RotRight, &session->Layer.RenderPose[1].Orientation, sizeof(float) * 4);
 	}
 
 	bool xnOvrCommitFrame(xnOvrSession* session)
