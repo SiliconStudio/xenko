@@ -959,6 +959,46 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
+        /// Computes a quaternion corresponding to the rotation transforming the vector <paramref name="source"/> to the vector <paramref name="target"/>.
+        /// </summary>
+        /// <param name="source">The source vector of the transformation.</param>
+        /// <param name="target">The target vector of the transformation.</param>
+        /// <returns>The resulting quaternion corresponding to the transformation of the source vector to the target vector.</returns>
+        public static Quaternion FromTwoVectors(Vector3 source, Vector3 target)
+        {
+            Quaternion result;
+            FromTwoVectors(ref source, ref target, out result);
+            return result;
+        }
+
+        /// <summary>
+        /// Computes a quaternion corresponding to the rotation transforming the vector <paramref name="source"/> to the vector <paramref name="target"/>.
+        /// </summary>
+        /// <param name="source">The source vector of the transformation.</param>
+        /// <param name="target">The target vector of the transformation.</param>
+        /// <param name="result">The resulting quaternion corresponding to the transformation of the source vector to the target vector.</param>
+        public static void FromTwoVectors(ref Vector3 source, ref Vector3 target, out Quaternion result)
+        {
+            var norms = (float)Math.Sqrt(source.LengthSquared() * target.LengthSquared());
+            var real = norms + Vector3.Dot(source, target);
+            if (real < MathUtil.ZeroTolerance * norms)
+            {
+                // If source and target are exactly opposite, rotate 180 degrees around an arbitrary orthogonal axis.
+                // Axis normalisation can happen later, when we normalise the quaternion.
+                result = Math.Abs(source.X) > Math.Abs(source.Z)
+                    ? new Quaternion(-source.Y, source.X, 0.0f, 0.0f)
+                    : new Quaternion(0.0f, -source.Z, source.Y, 0.0f);
+            }
+            else
+            {
+                // Otherwise, build quaternion the standard way.
+                var axis = Vector3.Cross(source, target);
+                result = new Quaternion(axis, real);
+            }
+            result.Normalize();
+        }
+
+        /// <summary>
         /// Interpolates between two quaternions, using spherical linear interpolation.
         /// </summary>
         /// <param name="start">Start quaternion.</param>
