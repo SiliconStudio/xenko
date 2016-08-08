@@ -11,7 +11,6 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Extensions;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Data;
@@ -25,20 +24,21 @@ namespace SiliconStudio.Xenko.Assets.Model
     {
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, PrefabModelAsset asset, AssetCompilerResult result)
         {
-            result.BuildSteps = new ListBuildStep { new PrefabModelAssetCompileCommand(urlInStorage, asset, AssetItem) };
+            var renderingSettings = context.GetGameSettingsAsset().Get<RenderingSettings>();
+            result.BuildSteps = new ListBuildStep { new PrefabModelAssetCompileCommand(urlInStorage, asset, AssetItem, renderingSettings) };
             result.ShouldWaitForPreviousBuilds = true;
         }
 
         private class PrefabModelAssetCompileCommand : AssetCommand<PrefabModelAsset>
         {
             private readonly Package package;
-            private readonly GameSettingsAsset settings;
+            private readonly RenderingSettings renderingSettings;
 
-            public PrefabModelAssetCompileCommand(string url, PrefabModelAsset assetParameters, AssetItem assetItem) 
+            public PrefabModelAssetCompileCommand(string url, PrefabModelAsset assetParameters, AssetItem assetItem, RenderingSettings renderingSettings) 
                 : base(url, assetParameters)
             {
                 package = assetItem.Package;
-                settings = assetItem.GetGameSettingsAssetOrDefault();
+                this.renderingSettings = renderingSettings;
             }
 
             private class MeshData
@@ -337,7 +337,6 @@ namespace SiliconStudio.Xenko.Assets.Model
                 }
 
                 // split the meshes if necessary
-                var renderingSettings = settings.Get<RenderingSettings>();
                 prefabModel.Meshes = SplitExtensions.SplitMeshes(prefabModel.Meshes, renderingSettings.DefaultGraphicsProfile > GraphicsProfile.Level_9_3);
 
                 //handle boundng box/sphere
