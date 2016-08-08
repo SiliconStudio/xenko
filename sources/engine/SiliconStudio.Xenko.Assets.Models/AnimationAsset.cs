@@ -12,7 +12,7 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Xenko.Animations;
 using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Xenko.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Models
 {
     [DataContract("Animation")]
     [AssetDescription(FileExtension)]

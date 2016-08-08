@@ -4,7 +4,7 @@ using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Xenko.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Models
 {
     /// <summary>
     /// Represents a <see cref="MaterialInstance"/> in a 

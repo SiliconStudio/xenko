@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace SiliconStudio.Xenko.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Models
 {
     /// <summary>
     /// This interface represents an asset containing a model.

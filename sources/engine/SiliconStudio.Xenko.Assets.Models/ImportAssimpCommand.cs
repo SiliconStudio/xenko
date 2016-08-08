@@ -12,7 +12,7 @@ using SiliconStudio.Xenko.Importer.Common;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Data;
 
-namespace SiliconStudio.Xenko.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Models
 {
     [CommandDependsOn(typeof(Xenko.Importer.AssimpNET.MeshConverter))]
     [Description("Import Assimp")]

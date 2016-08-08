@@ -15,7 +15,7 @@ using SiliconStudio.Xenko.Animations;
 using SiliconStudio.Xenko.Shaders;
 using System.Linq;
 
-namespace SiliconStudio.Xenko.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Models
 {
     public abstract partial class ImportModelCommand : SingleFileImportCommand
     {

@@ -14,7 +14,7 @@ using SiliconStudio.Xenko.Animations;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Xenko.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Models
 {
     public partial class ImportModelCommand
     {

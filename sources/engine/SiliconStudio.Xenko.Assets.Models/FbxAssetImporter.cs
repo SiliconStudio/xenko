@@ -7,26 +7,26 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Importer.Common;
 
-namespace SiliconStudio.Xenko.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Models
 {
-    public class AssimpAssetImporter : ModelAssetImporter
+    public class FbxAssetImporter : ModelAssetImporter
     {
         // Supported file extensions for this importer
-        private const string FileExtensions = ".dae;.3ds;.obj;.blend;.x;.md2;.md3;.dxf";
+        private const string FileExtensions = ".fbx";
 
-        private static readonly Guid Uid = new Guid("30243FC0-CEC7-4433-977E-95DCA29D846E");
+        private static readonly Guid Uid = new Guid("a15ae42d-42c5-4a3b-9f7e-f8cd91eda595");
 
         public override Guid Id => Uid;
 
-        public override string Description => "Assimp importer used for creating entities, 3D Models or animations assets";
+        public override string Description => "FBX importer used for creating entities, 3D Models or animations assets";
 
         public override string SupportedFileExtensions => FileExtensions;
 
         /// <inheritdoc/>
         public override EntityInfo GetEntityInfo(UFile localPath, Logger logger, AssetImporterParameters importParameters)
         {
-            var meshConverter = new Importer.AssimpNET.MeshConverter(logger);
-            var entityInfo = meshConverter.ExtractEntity(localPath.FullPath, null, importParameters.IsTypeSelectedForOutput(typeof(TextureAsset)));
+            var meshConverter = new Importer.FBX.MeshConverter(logger);
+            var entityInfo = meshConverter.ExtractEntity(localPath.FullPath, importParameters.IsTypeSelectedForOutput(typeof(TextureAsset)));
             return entityInfo;
         }
     }

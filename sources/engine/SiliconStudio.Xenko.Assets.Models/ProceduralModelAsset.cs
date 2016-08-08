@@ -13,7 +13,7 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Rendering.ProceduralModels;
 
-namespace SiliconStudio.Xenko.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Models
 {
     /// <summary>
     /// The geometric primitive asset.

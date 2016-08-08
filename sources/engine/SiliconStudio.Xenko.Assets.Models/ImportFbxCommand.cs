@@ -10,7 +10,7 @@ using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Xenko.Animations;
 using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Xenko.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Models
 {
     [CommandDependsOn(typeof(Importer.FBX.MeshConverter))]
     [Description("Import FBX")]

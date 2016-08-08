@@ -8,7 +8,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Xenko.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Models
 {
     [DataContract("Skeleton")]
     [AssetDescription(FileExtension, AllowArchetype = false)]
