@@ -11,6 +11,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Extensions;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Data;
@@ -31,11 +32,13 @@ namespace SiliconStudio.Xenko.Assets.Model
         private class PrefabModelAssetCompileCommand : AssetCommand<PrefabModelAsset>
         {
             private readonly Package package;
+            private readonly GameSettingsAsset settings;
 
             public PrefabModelAssetCompileCommand(string url, PrefabModelAsset assetParameters, AssetItem assetItem) 
                 : base(url, assetParameters)
             {
                 package = assetItem.Package;
+                settings = assetItem.GetGameSettingsAssetOrDefault();
             }
 
             private class MeshData
@@ -57,6 +60,8 @@ namespace SiliconStudio.Xenko.Assets.Model
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
             {
                 base.ComputeParameterHash(writer);
+
+                if (AssetParameters.Prefab == null) return;
 
                 // We also want to serialize recursively the compile-time dependent assets
                 // (since they are not added as reference but actually embedded as part of the current asset)
@@ -243,6 +248,9 @@ namespace SiliconStudio.Xenko.Assets.Model
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 var contentManager = new ContentManager();
+
+                //var gameSettings = contentManager.Load<GameSettings>(GameSettings.AssetUrl);
+
                 var device = GraphicsDevice.New();
 
                 var fallbackMaterial = Material.New(device, new MaterialDescriptor
@@ -256,7 +264,7 @@ namespace SiliconStudio.Xenko.Assets.Model
 
                 var loadSettings = new AssetManagerLoaderSettings
                 {
-                    ContentFilter = AssetManagerLoaderSettings.NewContentFilterByType(typeof(Mesh), typeof(Skeleton), typeof(Material))
+                    ContentFilter = AssetManagerLoaderSettings.NewContentFilterByType(typeof(Mesh), typeof(Skeleton), typeof(Material), typeof(Prefab))
                 };
 
                 var prefab = contentManager.Load<Prefab>(AssetParameters.Prefab.Location, loadSettings);
@@ -327,6 +335,10 @@ namespace SiliconStudio.Xenko.Assets.Model
                 {
                     ProcessMaterial(contentManager, material.Value, material.Key, prefabModel);
                 }
+
+                // split the meshes if necessary
+                var renderingSettings = settings.Get<RenderingSettings>();
+                prefabModel.Meshes = SplitExtensions.SplitMeshes(prefabModel.Meshes, renderingSettings.DefaultGraphicsProfile > GraphicsProfile.Level_9_3);
 
                 //handle boundng box/sphere
                 var modelBoundingBox = prefabModel.BoundingBox;
