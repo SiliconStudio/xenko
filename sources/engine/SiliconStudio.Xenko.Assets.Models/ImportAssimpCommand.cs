@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             };
         }
 
-        protected override Rendering.Model LoadModel(ICommandContext commandContext, ContentManager contentManager)
+        protected override Model LoadModel(ICommandContext commandContext, ContentManager contentManager)
         {
             var converter = CreateMeshConverter(commandContext);
 

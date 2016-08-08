@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             return !String.IsNullOrEmpty(ext) && ext.ToLower().Equals(".fbx");
         }
 
-        protected override Rendering.Model LoadModel(ICommandContext commandContext, ContentManager contentManager)
+        protected override Model LoadModel(ICommandContext commandContext, ContentManager contentManager)
         {
             var meshConverter = CreateMeshConverter(commandContext);
             var materialMapping = Materials.Select((s, i) => new { Value = s, Index = i }).ToDictionary(x => x.Value.Name, x => x.Index);

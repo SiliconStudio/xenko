@@ -119,7 +119,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             return result;
         }
         
-        protected abstract Rendering.Model LoadModel(ICommandContext commandContext, ContentManager contentManager);
+        protected abstract Model LoadModel(ICommandContext commandContext, ContentManager contentManager);
 
         protected abstract Dictionary<string, AnimationClip> LoadAnimation(ICommandContext commandContext, ContentManager contentManager, out TimeSpan duration);
 
@@ -148,7 +148,7 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// <param name="newMesh">The mesh to compare.</param>
         /// <param name="extra">Unused parameter.</param>
         /// <returns>True if all the parameters are the same, false otherwise.</returns>
-        private static bool CompareParameters(Rendering.Model model, Mesh baseMesh, Mesh newMesh)
+        private static bool CompareParameters(Model model, Mesh baseMesh, Mesh newMesh)
         {
             var localParams = baseMesh.Parameters;
             if (localParams == null && newMesh.Parameters == null)
@@ -165,7 +165,7 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// <param name="newMesh">The mesh to compare.</param>
         /// <param name="extra">Unused parameter.</param>
         /// <returns>True if the options are the same, false otherwise.</returns>
-        private static bool CompareShadowOptions(Rendering.Model model, Mesh baseMesh, Mesh newMesh)
+        private static bool CompareShadowOptions(Model model, Mesh baseMesh, Mesh newMesh)
         {
             // TODO: Check is Model the same for the two mesh?
             var material1 = model.Materials.GetItemOrNull(baseMesh.MaterialIndex);

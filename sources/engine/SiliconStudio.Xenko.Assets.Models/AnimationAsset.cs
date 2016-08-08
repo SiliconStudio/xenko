@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.Assets.Models
         /// Choose a model to preview with.
         /// </userdoc>
         [DataMember(100)]
-        public Rendering.Model PreviewModel { get; set; }
+        public Model PreviewModel { get; set; }
 
         /// <inheritdoc/>
         public IEnumerable<IReference> EnumerateCompileTimeDependencies()
