@@ -111,31 +111,7 @@ namespace SiliconStudio.Xenko.Assets.UI
         public sealed class UIDesign
         {
             [DataMember]
-            public float Depth { get; set; } = UIComponent.DefaultDepth;
-
-            [DataMember]
-            public float Height { get; set; } = UIComponent.DefaultHeight;
-
-            [DataMember]
-            public float Width { get; set; } = UIComponent.DefaultWidth;
-
-            [DataMember]
-            public Color AreaBackgroundColor { get; set; } = Color.WhiteSmoke * 0.5f;
-
-            [DataMember]
-            public Color AreaBorderColor { get; set; } = Color.WhiteSmoke;
-
-            [DataMember]
-            public float AreaBorderThickness { get; set; } = 2.0f;
-
-            [DataMember]
-            public Color AdornerBackgroundColor { get; set; } = Color.LimeGreen * 0.2f;
-
-            [DataMember]
-            public Color AdornerBorderColor { get; set; } = Color.LimeGreen;
-
-            [DataMember]
-            public float AdornerBorderThickness { get; set; } = 2.0f;
+            public Vector3 Resolution { get; set; } = new Vector3(UIComponent.DefaultWidth, UIComponent.DefaultHeight, UIComponent.DefaultDepth);
         }
     }
 }
