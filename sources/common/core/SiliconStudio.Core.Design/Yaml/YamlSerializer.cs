@@ -272,23 +272,26 @@ namespace SiliconStudio.Core.Yaml
         {
             Serializer localSerializer;
             // Cache serializer to improve performance
-            lock (Lock)
-            {
-                if (generateIds)
-                    localSerializer = CreateSerializer(ref globalSerializer, true);
-                else
-                    localSerializer = CreateSerializer(ref globalSerializerWithoutId, false);
-            }
+            if (generateIds)
+                localSerializer = CreateSerializer(ref globalSerializer, true);
+            else
+                localSerializer = CreateSerializer(ref globalSerializerWithoutId, false);
             return localSerializer;
         }
 
         private static Serializer CreateSerializer(ref Serializer localSerializer, bool generateIds)
         {
-            if (localSerializer == null)
-            {
-                // var clock = Stopwatch.StartNew();
+            // Early exit if already initialized
+            if (localSerializer != null)
+                return localSerializer;
 
-                var config = new SerializerSettings()
+            lock (Lock)
+            {
+                if (localSerializer == null)
+                {
+                    // var clock = Stopwatch.StartNew();
+
+                    var config = new SerializerSettings()
                     {
                         EmitAlias = false,
                         LimitPrimitiveFlowSequence = 0,
@@ -297,19 +300,21 @@ namespace SiliconStudio.Core.Yaml
                         EmitShortTypeName = true,
                     };
 
-                if (generateIds)
-                    config.Attributes.PrepareMembersCallback += PrepareMembersCallback;
+                    if (generateIds)
+                        config.Attributes.PrepareMembersCallback += PrepareMembersCallback;
 
-                for (int index = RegisteredAssemblies.Count - 1; index >= 0; index--)
-                {
-                    var registeredAssembly = RegisteredAssemblies[index];
-                    config.RegisterAssembly(registeredAssembly);
+                    for (int index = RegisteredAssemblies.Count - 1; index >= 0; index--)
+                    {
+                        var registeredAssembly = RegisteredAssemblies[index];
+                        config.RegisterAssembly(registeredAssembly);
+                    }
+
+                    var newSerializer = new Serializer(config);
+                    newSerializer.Settings.ObjectSerializerBackend = new CustomObjectSerializerBackend(TypeDescriptorFactory.Default);
+
+                    // Log.Info("New YAML serializer created in {0}ms", clock.ElapsedMilliseconds);
+                    localSerializer = newSerializer;
                 }
-
-                localSerializer = new Serializer(config);
-                localSerializer.Settings.ObjectSerializerBackend = new CustomObjectSerializerBackend(TypeDescriptorFactory.Default);
-
-                // Log.Info("New YAML serializer created in {0}ms", clock.ElapsedMilliseconds);
             }
 
             return localSerializer;
