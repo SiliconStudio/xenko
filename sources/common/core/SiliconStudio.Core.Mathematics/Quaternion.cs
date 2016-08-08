@@ -964,10 +964,10 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="source">The source vector of the transformation.</param>
         /// <param name="target">The target vector of the transformation.</param>
         /// <returns>The resulting quaternion corresponding to the transformation of the source vector to the target vector.</returns>
-        public static Quaternion FromTwoVectors(Vector3 source, Vector3 target)
+        public static Quaternion BetweenDirections(Vector3 source, Vector3 target)
         {
             Quaternion result;
-            FromTwoVectors(ref source, ref target, out result);
+            BetweenDirections(ref source, ref target, out result);
             return result;
         }
 
@@ -977,7 +977,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="source">The source vector of the transformation.</param>
         /// <param name="target">The target vector of the transformation.</param>
         /// <param name="result">The resulting quaternion corresponding to the transformation of the source vector to the target vector.</param>
-        public static void FromTwoVectors(ref Vector3 source, ref Vector3 target, out Quaternion result)
+        public static void BetweenDirections(ref Vector3 source, ref Vector3 target, out Quaternion result)
         {
             var norms = (float)Math.Sqrt(source.LengthSquared() * target.LengthSquared());
             var real = norms + Vector3.Dot(source, target);
