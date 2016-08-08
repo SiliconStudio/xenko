@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Audio
         internal AudioListener Listener;
 
         /// <summary>
-        /// Creates a new SoundInstance using a dynamic sound source
+        /// Initializes a new instance of the <see cref="SoundInstance"/> class using a dynamic sound source.
         /// </summary>
         /// <param name="engine">The audio engine that will be used to play this instance</param>
         /// <param name="listener">The listener of this instance</param>

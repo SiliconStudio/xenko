@@ -105,7 +105,7 @@ namespace SiliconStudio.Xenko.Audio
         }
 
         /// <summary>
-        /// Creates a new AudioListener.
+        /// Initializes a new instance of the <see cref="AudioListener"/> class.
         /// </summary>
         public AudioListener()
         {

@@ -85,7 +85,7 @@ namespace SiliconStudio.Xenko.Audio
         }
 
         /// <summary>
-        /// Creates a new AudioEmitter.
+        /// Initializes a new instance of the <see cref="AudioEmitter"/> class.
         /// </summary>
         public AudioEmitter()
         {
