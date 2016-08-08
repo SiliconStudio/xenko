@@ -171,13 +171,13 @@ namespace SiliconStudio.Xenko.Physics
         private bool overrideGravity;
 
         /// <summary>
-        /// Gets or sets the angular damping of this rigidbody
+        /// Gets or sets if this Rigidbody overrides world gravity
         /// </summary>
         /// <value>
         /// true, false
         /// </value>
         /// <userdoc>
-        /// The angular damping of this Rigidbody
+        /// If this Rigidbody overrides world gravity
         /// </userdoc>
         [DataMember(95)]
         public bool OverrideGravity
