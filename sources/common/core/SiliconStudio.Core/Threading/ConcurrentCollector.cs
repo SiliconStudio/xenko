@@ -203,17 +203,19 @@ namespace SiliconStudio.Core.Threading
             count = 0;
         }
 
-        public IEnumerator<T> GetEnumerator()
-        {
-            for (int i = 0; i < count; i++)
-            {
-                yield return Items[i];
-            }
-        }
-
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
+        }
+
+        IEnumerator<T> IEnumerable<T>.GetEnumerator()
+        {
+            return new Enumerator(this);
+        }
+
+        public Enumerator GetEnumerator()
+        {
+            return new Enumerator(this);
         }
 
         public int Count => count;
@@ -227,6 +229,53 @@ namespace SiliconStudio.Core.Threading
             set
             {
                 Items[index] = value;
+            }
+        }
+
+        public struct Enumerator : IEnumerator<T>, IDisposable, IEnumerator
+        {
+            private readonly ConcurrentCollector<T> list;
+            private int index;
+            private T current;
+
+            internal Enumerator(ConcurrentCollector<T> list)
+            {
+                this.list = list;
+                index = 0;
+                current = default(T);
+            }
+
+            public void Dispose()
+            {
+            }
+
+            public bool MoveNext()
+            {
+                ConcurrentCollector<T> list = this.list;
+                if (index < list.count)
+                {
+                    current = list.Items[index];
+                    index++;
+                    return true;
+                }
+                return MoveNextRare();
+            }
+
+            private bool MoveNextRare()
+            {
+                index = list.count + 1;
+                current = default(T);
+                return false;
+            }
+
+            public T Current => current;
+
+            object IEnumerator.Current => Current;
+
+            void IEnumerator.Reset()
+            {
+                index = 0;
+                current = default(T);
             }
         }
     }
