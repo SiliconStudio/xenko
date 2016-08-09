@@ -9,7 +9,7 @@ namespace SiliconStudio.Core.Threading
     /// <remarks>
     /// Base on Stephen Toub's ManagedThreadPool
     /// </remarks>
-    public class ThreadPool
+    internal class ThreadPool
     {
         public static readonly ThreadPool Instance = new ThreadPool();
 
@@ -21,13 +21,14 @@ namespace SiliconStudio.Core.Threading
         private SpinLock spinLock = new SpinLock();
         private int activeThreadCount;
 
-        public void QueueWorkItem(Action workItem)
+        public void QueueWorkItem([Pooled] Action workItem)
         {
             bool lockTaken = false;
             try
             {
                 spinLock.Enter(ref lockTaken);
 
+                PooledDelegateHelper.AddReference(workItem);
                 workItems.Enqueue(workItem);
 
                 if (activeThreadCount + 1 >= workers.Count && workers.Count < MaxThreadCount)
@@ -45,40 +46,6 @@ namespace SiliconStudio.Core.Threading
                     spinLock.Exit(true);
             }
         }
-
-        public void QueueWorkItems(IReadOnlyCollection<Action> workItems)
-        {
-            bool lockTaken = false;
-            try
-            {
-                spinLock.Enter(ref lockTaken);
-
-                foreach (var workItem in workItems)
-                {
-                    this.workItems.Enqueue(workItem);
-                }
-
-                var newWorkerCount = Math.Min(activeThreadCount + workItems.Count, MaxThreadCount - workers.Count);
-
-                while (newWorkerCount-- > 0)
-                {
-                    var worker = Task.Factory.StartNew(ProcessWorkItems, workers.Count, TaskCreationOptions.LongRunning);
-                    workers.Add(worker);
-                    //Console.WriteLine($"Thread {workers.Count} added");
-                }
-
-                workAvailable.Set();
-            }
-            finally
-            {
-                if (lockTaken)
-                    spinLock.Exit(true);
-            }
-        }
-
-        private ThreadPool()
-        {
-        }      
 
         private void ProcessWorkItems(object state)
         {
@@ -141,6 +108,7 @@ namespace SiliconStudio.Core.Threading
                         }
                         finally
                         {
+                            PooledDelegateHelper.Release(workItem);
                             Interlocked.Decrement(ref activeThreadCount);
                         }
                     }

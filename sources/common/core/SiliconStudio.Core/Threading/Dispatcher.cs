@@ -8,80 +8,12 @@ using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Core.Threading
 {
-    public interface IPooledClosure
-    {
-        void AddReference();
-
-        void Release();
-    }
-
-    [AttributeUsage(AttributeTargets.Parameter | AttributeTargets.Delegate)]
-    public class PooledAttribute : Attribute
-    {  
-    }
-
-    internal static class PooledDelegateHelper
-    {
-        public static void AddReference(Delegate pooledDelegate)
-        {
-            var closure = pooledDelegate.Target as IPooledClosure;
-            //closure?.AddReference();
-        }
-
-        public static void Release(Delegate pooledDelegate)
-        {
-            var closure = pooledDelegate.Target as IPooledClosure;
-            //closure?.Release();
-        }
-
-        public static PooledDelegateScope AddScropedReference(Delegate pooledDelegate)
-        {
-            AddReference(pooledDelegate);
-            return new PooledDelegateScope(pooledDelegate);
-        }
-
-        public struct PooledDelegateScope : IDisposable
-        {
-            private readonly Delegate pooledDelegate;
-
-            public PooledDelegateScope(Delegate pooledDelegate)
-            {
-                this.pooledDelegate = pooledDelegate;
-            }
-
-            public void Dispose()
-            {
-                Release(pooledDelegate);
-            }
-        }
-    }
-
     public class Dispatcher
     {
-        private static readonly List<Action> batches = new List<Action>();
-        private static readonly ConcurrentPool<AutoResetEvent> eventPool = new ConcurrentPool<AutoResetEvent>(() => new AutoResetEvent(false));
-        private static readonly ConcurrentPool<BatchState> statePool = new ConcurrentPool<BatchState>(() => new BatchState());
+        private static readonly ConcurrentPool<BatchState> loopStatePool = new ConcurrentPool<BatchState>(() => new BatchState());
         private static readonly ConcurrentPool<SortState> sortStatePool = new ConcurrentPool<SortState>(() => new SortState());
 
         private static readonly int MaxDregreeOfParallelism = Environment.ProcessorCount;
-
-        [Pooled]
-        public delegate void ForAction(int index);
-
-        [Pooled]
-        public delegate void ForAction<in TLocal>(int index, TLocal local);
-
-        [Pooled]
-        public delegate void ForEachAction<in T>(T item);
-
-        [Pooled]
-        public delegate void ForeachAction<in T, in TLocal>(T item, TLocal local);
-
-        [Pooled]
-        public delegate T BatchInitializer<out T>();
-
-        [Pooled]
-        public delegate void BatchFinalizer<in T>(T local);
 
         private class BatchState
         {
@@ -92,9 +24,8 @@ namespace SiliconStudio.Core.Threading
             public int ActiveWorkerCount;
         }
 
-        public static void For(int fromInclusive, int toExclusive, ForAction action)
+        public static void For(int fromInclusive, int toExclusive, [Pooled] Action<int> action)
         {
-            using (PooledDelegateHelper.AddScropedReference(action))
             using (Profile(action))
             {
                 if (fromInclusive > toExclusive)
@@ -114,7 +45,7 @@ namespace SiliconStudio.Core.Threading
                 }
                 else
                 {
-                    var state = statePool.Acquire();
+                    var state = loopStatePool.Acquire();
                     state.ActiveWorkerCount = 1;
                     state.StartInclusive = fromInclusive;
 
@@ -131,15 +62,14 @@ namespace SiliconStudio.Core.Threading
                     }
                     finally
                     {
-                        statePool.Release(state);
+                        loopStatePool.Release(state);
                     }
                 }
             }
         }
 
-        public static void For<TLocal>(int fromInclusive, int toExclusive, BatchInitializer<TLocal> initializeLocal, ForAction<TLocal> action, BatchFinalizer<TLocal> finalizeLocal = null)
+        public static void For<TLocal>(int fromInclusive, int toExclusive, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<int, TLocal> action, [Pooled] Action<TLocal> finalizeLocal = null)
         {
-            using (PooledDelegateHelper.AddScropedReference(action))
             using (Profile(action))
             {
                 if (fromInclusive > toExclusive)
@@ -159,7 +89,7 @@ namespace SiliconStudio.Core.Threading
                 }
                 else
                 {
-                    var state = statePool.Acquire();
+                    var state = loopStatePool.Acquire();
                     state.ActiveWorkerCount = 1;
                     state.StartInclusive = fromInclusive;
 
@@ -176,38 +106,39 @@ namespace SiliconStudio.Core.Threading
                     }
                     finally
                     {
-                        statePool.Release(state);
+                        loopStatePool.Release(state);
                     }
                 }
             }
         }
         
-        public static void ForEach<TItem, TLocal>(IReadOnlyList<TItem> collection, BatchInitializer<TLocal> initializeLocal, ForeachAction<TItem, TLocal> action, BatchFinalizer<TLocal> finalizeLocal = null)
+        public static void ForEach<TItem, TLocal>(IReadOnlyList<TItem> collection, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<TItem, TLocal> action, [Pooled] Action<TLocal> finalizeLocal = null)
         {
             For(0, collection.Count, initializeLocal, (i, local) => action(collection[i], local), finalizeLocal);
         }
 
-        public static void ForEach<T>(IReadOnlyList<T> collection, ForEachAction<T> action)
+        public static void ForEach<T>(IReadOnlyList<T> collection, [Pooled] Action<T> action)
         {
             For(0, collection.Count, i => action(collection[i]));
         }
 
-        public static void ForEach<T>(List<T> collection, ForEachAction<T> action)
+
+        public static void ForEach<T>(List<T> collection, [Pooled] Action<T> action)
         {
             For(0, collection.Count, i => action(collection[i]));
         }
 
-        public static void ForEach<T>(FastCollection<T> collection, ForEachAction<T> action)
+        public static void ForEach<T>(FastCollection<T> collection, [Pooled] Action<T> action)
         {
             For(0, collection.Count, i => action(collection[i]));
         }
 
-        public static void ForEach<T>(FastList<T> collection, ForEachAction<T> action)
+        public static void ForEach<T>(FastList<T> collection, [Pooled] Action<T> action)
         {
             For(0, collection.Count, i => action(collection[i]));
         }
 
-        private static void Fork<TKey, TValue>(Dictionary<TKey, TValue> collection, int batchSize, int maxDegreeOfParallelism, ForEachAction<KeyValuePair<TKey, TValue>> action, BatchState state)
+        private static void Fork<TKey, TValue>(Dictionary<TKey, TValue> collection, int batchSize, int maxDegreeOfParallelism, [Pooled] Action<KeyValuePair<TKey, TValue>> action, BatchState state)
         {
             // Kick off another worker if there's any work left
             if (maxDegreeOfParallelism > 1 && state.StartInclusive + batchSize < collection.Count)
@@ -231,40 +162,37 @@ namespace SiliconStudio.Core.Threading
             }
         }
 
-        public static void ForEach<TKey, TValue>(Dictionary<TKey, TValue> collection, ForEachAction<KeyValuePair<TKey, TValue>> action)
+        public static void ForEach<TKey, TValue>(Dictionary<TKey, TValue> collection, [Pooled] Action<KeyValuePair<TKey, TValue>> action)
         {
-            using (PooledDelegateHelper.AddScropedReference(action))
+            if (MaxDregreeOfParallelism <= 1 || collection.Count <= 1)
             {
-                if (MaxDregreeOfParallelism <= 1 || collection.Count <= 1)
+                ExecuteBatch(collection, 0, collection.Count, action);
+            }
+            else
+            {
+                var state = loopStatePool.Acquire();
+                state.ActiveWorkerCount = 1;
+                state.StartInclusive = 0;
+
+                try
                 {
-                    ExecuteBatch(collection, 0, collection.Count, action);
+                    int batchCount = Math.Min(MaxDregreeOfParallelism, collection.Count);
+                    int batchSize = (collection.Count + (batchCount - 1)) / batchCount;
+
+                    // Wait for all workers to finish
+                    Fork(collection, batchSize, MaxDregreeOfParallelism, action, state);
+
+                    // Kick off a worker, then perform work synchronously
+                    state.Finished.WaitOne();
                 }
-                else
+                finally
                 {
-                    var state = statePool.Acquire();
-                    state.ActiveWorkerCount = 1;
-                    state.StartInclusive = 0;
-
-                    try
-                    {
-                        int batchCount = Math.Min(MaxDregreeOfParallelism, collection.Count);
-                        int batchSize = (collection.Count + (batchCount - 1)) / batchCount;
-
-                        // Wait for all workers to finish
-                        Fork(collection, batchSize, MaxDregreeOfParallelism, action, state);
-
-                        // Kick off a worker, then perform work synchronously
-                        state.Finished.WaitOne();
-                    }
-                    finally
-                    {
-                        statePool.Release(state);
-                    }
+                    loopStatePool.Release(state);
                 }
             }
         }
 
-        private static void ExecuteBatch(int fromInclusive, int toExclusive, ForAction action)
+        private static void ExecuteBatch(int fromInclusive, int toExclusive, [Pooled] Action<int> action)
         {
             for (int i = fromInclusive; i < toExclusive; i++)
             {
@@ -272,7 +200,7 @@ namespace SiliconStudio.Core.Threading
             }
         }
 
-        private static void ExecuteBatch<TLocal>(int fromInclusive, int toExclusive, BatchInitializer<TLocal> initializeLocal, ForAction<TLocal> action, BatchFinalizer<TLocal> finalizeLocal)
+        private static void ExecuteBatch<TLocal>(int fromInclusive, int toExclusive, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<int, TLocal> action, [Pooled] Action<TLocal> finalizeLocal)
         {
             TLocal local = default(TLocal);
             try
@@ -293,7 +221,7 @@ namespace SiliconStudio.Core.Threading
             }
         }
 
-        private static void Fork(int endExclusive, int batchSize, int maxDegreeOfParallelism, ForAction action, BatchState state)
+        private static void Fork(int endExclusive, int batchSize, int maxDegreeOfParallelism, [Pooled] Action<int> action, BatchState state)
         {
             // Kick off another worker if there's any work left
             if (maxDegreeOfParallelism > 1 && state.StartInclusive + batchSize < endExclusive)
@@ -316,7 +244,7 @@ namespace SiliconStudio.Core.Threading
             }
         }
 
-        private static void Fork<TLocal>(int endExclusive, int batchSize, int maxDegreeOfParallelism, BatchInitializer<TLocal> initializeLocal, ForAction<TLocal> action, BatchFinalizer<TLocal> finalizeLocal, BatchState state)
+        private static void Fork<TLocal>(int endExclusive, int batchSize, int maxDegreeOfParallelism, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<int, TLocal> action, [Pooled] Action<TLocal> finalizeLocal, BatchState state)
         {
             // Kick off another worker if there's any work left
             if (maxDegreeOfParallelism > 1 && state.StartInclusive + batchSize < endExclusive)
@@ -339,7 +267,7 @@ namespace SiliconStudio.Core.Threading
             }
         }
 
-        private static void ExecuteBatch<TKey, TValue>(Dictionary<TKey, TValue> dictionary, int offset, int count, ForEachAction<KeyValuePair<TKey, TValue>> action)
+        private static void ExecuteBatch<TKey, TValue>(Dictionary<TKey, TValue> dictionary, int offset, int count, [Pooled] Action<KeyValuePair<TKey, TValue>> action)
         {
             var enumerator = dictionary.GetEnumerator();
             int index = 0;
@@ -401,9 +329,9 @@ namespace SiliconStudio.Core.Threading
 
         private struct SortRange
         {
-            public int Left;
+            public readonly int Left;
 
-            public int Right;
+            public readonly int Right;
 
             public SortRange(int left, int right)
             {
@@ -450,7 +378,7 @@ namespace SiliconStudio.Core.Threading
                     if (maxDegreeOfParallelism > 1 && !hasChild)
                     {
                         Interlocked.Increment(ref state.ActiveWorkerCount);
-                        ThreadPool.Instance.QueueWorkItem(() => Sort(collection, maxDegreeOfParallelism - 1, comparer, state));
+                        Fork(collection, maxDegreeOfParallelism, comparer, state);
                         hasChild = true;
                     }
                 }
@@ -460,6 +388,11 @@ namespace SiliconStudio.Core.Threading
             {
                 state.Finished.Set();
             }
+        }
+
+        private static void Fork<T>(T[] collection, int maxDegreeOfParallelism, IComparer<T> comparer, SortState state)
+        {
+            ThreadPool.Instance.QueueWorkItem(() => Sort(collection, maxDegreeOfParallelism - 1, comparer, state));
         }
 
         private static int Partition<T>(T[] collection, int left, int right, IComparer<T> comparer)
