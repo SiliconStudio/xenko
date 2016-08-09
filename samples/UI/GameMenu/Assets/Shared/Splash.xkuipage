@@ -3,15 +3,7 @@ Id: 62c493c2-13ea-4fac-bbaf-578afafac104
 SerializedVersion: {Xenko: 0.0.0}
 Tags: []
 Design:
-    AdornerBackgroundColor: {R: 10, G: 41, B: 10, A: 51}
-    AdornerBorderColor: {R: 50, G: 205, B: 50, A: 255}
-    AdornerBorderThickness: 2.0
-    AreaBackgroundColor: {R: 122, G: 122, B: 122, A: 127}
-    AreaBorderColor: {R: 245, G: 245, B: 245, A: 255}
-    AreaBorderThickness: 2.0
-    Depth: 1000.0
-    Height: 720.0
-    Width: 1280.0
+    Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
 Hierarchy:
     ~Id: 6dd9a8f9-4fe8-4250-9860-e89f5d82d71e
     RootPartIds:
