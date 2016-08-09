@@ -23,6 +23,7 @@ namespace SiliconStudio.Core.Threading
 
             public int ActiveWorkerCount;
         }
+        public delegate void ValueAction<T>(ref T obj);
 
         public static void For(int fromInclusive, int toExclusive, [Pooled] Action<int> action)
         {
@@ -135,7 +136,22 @@ namespace SiliconStudio.Core.Threading
 
         public static void ForEach<T>(FastList<T> collection, [Pooled] Action<T> action)
         {
-            For(0, collection.Count, i => action(collection[i]));
+            For(0, collection.Count, i => action(collection.Items[i]));
+        }
+
+        public static void ForEach<T>(ConcurrentCollector<T> collection, [Pooled] Action<T> action)
+        {
+            For(0, collection.Count, i => action(collection.Items[i]));
+        }
+
+        public static void ForEach<T>(FastList<T> collection, [Pooled] ValueAction<T> action)
+        {
+            For(0, collection.Count, i => action(ref collection.Items[i]));
+        }
+
+        public static void ForEach<T>(ConcurrentCollector<T> collection, [Pooled] ValueAction<T> action)
+        {
+            For(0, collection.Count, i => action(ref collection.Items[i]));
         }
 
         private static void Fork<TKey, TValue>(Dictionary<TKey, TValue> collection, int batchSize, int maxDegreeOfParallelism, [Pooled] Action<KeyValuePair<TKey, TValue>> action, BatchState state)

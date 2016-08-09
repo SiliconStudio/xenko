@@ -154,7 +154,7 @@ namespace SiliconStudio.Xenko.Rendering
             // Update PerDraw (World, WorldViewProj, etc...)
             // Copy Entity.World to PerDraw cbuffer
             // TODO: Have a PerObject cbuffer?
-            Dispatcher.ForEach(((RootEffectRenderFeature)RootRenderFeature).RenderNodes, renderNode =>
+            Dispatcher.ForEach(((RootEffectRenderFeature)RootRenderFeature).RenderNodes, (ref RenderNode renderNode) =>
             {
                 var perDrawLayout = renderNode.RenderEffect.Reflection.PerDrawLayout;
                 if (perDrawLayout == null)

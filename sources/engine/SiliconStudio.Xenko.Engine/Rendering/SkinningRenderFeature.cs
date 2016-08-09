@@ -181,8 +181,7 @@ namespace SiliconStudio.Xenko.Rendering
         {
             var renderModelObjectInfoData = RootRenderFeature.RenderData.GetData(renderModelObjectInfoKey);
 
-            //foreach (var renderNode in ((RootEffectRenderFeature)RootRenderFeature).RenderNodes)
-            Dispatcher.ForEach(((RootEffectRenderFeature)RootRenderFeature).RenderNodes, renderNode =>
+            Dispatcher.ForEach(((RootEffectRenderFeature)RootRenderFeature).RenderNodes, (ref RenderNode renderNode) =>
             {
                 var perDrawLayout = renderNode.RenderEffect.Reflection.PerDrawLayout;
                 if (perDrawLayout == null)
