@@ -8,7 +8,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A unary expression.
     /// </summary>
-    public class UnaryExpression : Expression
+    public partial class UnaryExpression : Expression
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="UnaryExpression"/> class.

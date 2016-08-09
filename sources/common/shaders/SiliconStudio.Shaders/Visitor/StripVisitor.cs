@@ -12,7 +12,7 @@ namespace SiliconStudio.Shaders.Visitor
     /// The strip visitor collects all function and declaration used by a set of entrypoints
     /// and remove any unreferenced/unused declaration.
     /// </summary>
-    public class StripVisitor : ShaderVisitor
+    public class StripVisitor : ShaderWalker
     {
         private Dictionary<Node, HashSet<Node>> indirectReferences;
         private readonly string[] entryPoints;
@@ -32,27 +32,24 @@ namespace SiliconStudio.Shaders.Visitor
 
         public bool KeepConstantBuffers { get; set; }
 
-        [Visit]
-        public void Visit(MethodInvocationExpression methodInvocationExpression)
+        public override void Visit(MethodInvocationExpression methodInvocationExpression)
         {
-            Visit((Node)methodInvocationExpression);
+            base.Visit(methodInvocationExpression);
             AddReference(GetDeclarationContainer(), (Node)methodInvocationExpression.TypeInference.Declaration);
         }
 
-        [Visit]
-        public void Visit(VariableReferenceExpression variableReferenceExpression)
+        public override void Visit(VariableReferenceExpression variableReferenceExpression)
         {
-            Visit((Node)variableReferenceExpression);
+            base.Visit(variableReferenceExpression);
             AddReference(GetDeclarationContainer(), (Node)variableReferenceExpression.TypeInference.Declaration);
         }
 
         private ConstantBuffer currentConstantBuffer = null;
 
-        [Visit]
-        public void Visit(ConstantBuffer constantBuffer)
+        public override void Visit(ConstantBuffer constantBuffer)
         {
             currentConstantBuffer = constantBuffer;
-            Visit((Node)constantBuffer);
+            base.Visit(constantBuffer);
             currentConstantBuffer = null;
         }
 
@@ -71,26 +68,26 @@ namespace SiliconStudio.Shaders.Visitor
 
         }
 
-        [Visit]
-        public void Visit(Parameter parameter)
+        public override void Visit(Parameter parameter)
         {
-            Visit((Node)parameter);
+            base.Visit(parameter);
             var containers = GetDeclarationContainers();
             var container = containers[containers.Count - 2];
             AddReference((Node)container, parameter);
         }
 
-        [Visit]
-        public void Visit(TypeBase typeReference)
+        public override void DefaultVisit(Node node)
         {
-            Visit((Node)typeReference);
-            AddReference(GetDeclarationContainer(), (Node)typeReference.TypeInference.Declaration);
+            base.DefaultVisit(node);
+
+            var typeBase = node as TypeBase;
+            if (typeBase != null)
+                AddReference(GetDeclarationContainer(), (Node)typeBase.TypeInference.Declaration);
         }
 
-        [Visit]
-        public void Visit(MethodDefinition methodDefinition)
+        public override void Visit(MethodDefinition methodDefinition)
         {
-            Visit((Node)methodDefinition);
+            base.Visit(methodDefinition);
 
             // If a method definition has a method declaration, we must link them together
             if (!ReferenceEquals(methodDefinition.Declaration, methodDefinition))
@@ -99,10 +96,9 @@ namespace SiliconStudio.Shaders.Visitor
             }
         }
 
-        [Visit]
-        public void Visit(Variable variable)
+        public override void Visit(Variable variable)
         {
-            Visit((Node)variable);
+            base.Visit(variable);
             var containers = GetDeclarationContainers();
             if (containers.Count > 1)
             {
@@ -111,13 +107,12 @@ namespace SiliconStudio.Shaders.Visitor
             }
         }
         
-        [Visit]
-        public void Visit(Shader shader)
+        public override void Visit(Shader shader)
         {
             indirectReferences = new Dictionary<Node, HashSet<Node>>();
 
             // Visit AST.
-            Visit((Node) shader);
+            base.Visit( shader);
 
             // Get list of function referenced (directly or indirectly) by entry point.
             // Using hashset and recursion to avoid cycle.

@@ -84,24 +84,36 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
         {
             var slider = new Slider();
 
+            // test Minimum
             Assert.DoesNotThrow(() => slider.Minimum = 0.5f);
             Assert.AreEqual(0.5f, slider.Minimum);
             Assert.DoesNotThrow(() => slider.Minimum = -1f);
             Assert.AreEqual(-1f, slider.Minimum);
-            Assert.Throws<ArgumentOutOfRangeException>(() => slider.Minimum = 5f);
-            Assert.AreEqual(-1f, slider.Minimum);
+            Assert.DoesNotThrow(() => slider.Minimum = 5f);
+            Assert.AreEqual(5f, slider.Minimum);
+            Assert.AreEqual(5f, slider.Maximum); // value updated to Minimum
 
+            // Restore values
+            slider.Minimum = -1.0f;
+            slider.Maximum = 1.0f;
+
+            // test Maximum
             Assert.DoesNotThrow(() => slider.Maximum = 5f);
             Assert.AreEqual(5f, slider.Maximum);
             Assert.DoesNotThrow(() => slider.Maximum = -0.5f);
             Assert.AreEqual(-0.5f, slider.Maximum);
-            Assert.Throws<ArgumentOutOfRangeException>(() => slider.Maximum = -5f);
-            Assert.AreEqual(-0.5f, slider.Maximum);
+            Assert.DoesNotThrow(() => slider.Maximum = -5f);
+            Assert.AreEqual(-1f, slider.Maximum); // value clamped to Minimum
+            
+            // Restore values
+            slider.Minimum = -1.0f;
+            slider.Maximum = 1.0f;
 
+            // test Value
             Assert.DoesNotThrow(() => slider.Value = -10f);
-            Assert.AreEqual(-1f, slider.Value);
+            Assert.AreEqual(-1.0f, slider.Value);
             Assert.DoesNotThrow(() => slider.Value = 10);
-            Assert.AreEqual(-0.5f, slider.Value);
+            Assert.AreEqual(1.0f, slider.Value);
         }
         
         /// <summary>

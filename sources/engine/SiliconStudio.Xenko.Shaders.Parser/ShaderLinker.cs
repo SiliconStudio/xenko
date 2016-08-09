@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Shaders.Ast.Xenko;
 using SiliconStudio.Xenko.Shaders.Parser.Mixins;
 using SiliconStudio.Xenko.Shaders.Parser.Utility;
 using SiliconStudio.Shaders.Ast;
@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
     /// <summary>
     /// This AST Visitor will look for any "Link" annotation in order to bind EffectVariable to their associated HLSL variables.
     /// </summary>
-    internal class ShaderLinker : ShaderVisitor
+    internal class ShaderLinker : ShaderWalker
     {
         private readonly Dictionary<string, SamplerStateDescription> samplers = new Dictionary<string, SamplerStateDescription>();
         private readonly EffectReflection effectReflection;
@@ -94,8 +94,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
         /// </summary>
         /// <param name="variable">The variable.</param>
         /// <returns>The variable visited</returns>
-        [Visit]
-        protected void Visit(Variable variable)
+        public override void Visit(Variable variable)
         {
             var parameterKey = GetLinkParameterKey(variable);
             if (parameterKey == null) return;
@@ -108,7 +107,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                 slotCount = (int)((LiteralExpression)((ArrayType)resolvedType).Dimensions[0]).Literal.Value;
                 resolvedType = ((ArrayType)resolvedType).Type;
             }
-            if (resolvedType is StateType)
+            if (resolvedType.IsStateType())
             {
                 var samplerState = SamplerStateDescription.Default;
 
@@ -230,7 +229,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
 
                 LinkVariable(effectReflection, variable.Name, parameterKey, slotCount);
             }
-            else if (variable.Type is TextureType || variable.Type is GenericType)
+            else if (variable.Type is TextureType || variable.Type is GenericBaseType)
             {
                 LinkVariable(effectReflection, variable.Name, parameterKey, slotCount);
             }
@@ -245,8 +244,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
         /// </summary>
         /// <param name="constantBuffer">The constant buffer.</param>
         /// <returns></returns>
-        [Visit]
-        protected void Visit(ConstantBuffer constantBuffer)
+        public override void Visit(ConstantBuffer constantBuffer)
         {
             foreach (var variable in constantBuffer.Members.OfType<Variable>().SelectMany(x => x.Instances()))
             {
@@ -254,8 +252,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
             }
         }
 
-        [Visit]
-        protected void Visit(MethodDefinition method)
+        public override void Visit(MethodDefinition method)
         {
             // Parse stream output declarations (if any)
             // TODO: Currently done twice, one time in ShaderMixer, one time in ShaderLinker
@@ -281,8 +278,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
         }
 
         /// <inheritdoc/>
-        [Visit]
-        protected override Node Visit(Node node)
+        public override void VisitNode(Node node)
         {
             if (node is IDeclaration)
             {
@@ -291,13 +287,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                     LinkVariable(effectReflection, ((IDeclaration)node).Name, parameterKey, parameterKey.Type.Elements);
             }
 
-            node.Childrens(OnProcessor);
-            return node;
-        }
-
-        private Node OnProcessor(Node nodeArg, ref NodeProcessorContext explorer)
-        {
-            return VisitDynamic(nodeArg);
+            base.VisitNode(node);
         }
 
         private LocalParameterKey GetLinkParameterKey(Node node)
@@ -361,7 +351,80 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                     variableType = variableType.TypeInference.TargetType;
             }
 
-            if (variableType.IsBuiltIn)
+            if (variableType is ScalarType)
+            {
+                // Uint and int are collapsed to int
+                if (variableType == ScalarType.Int || variableType == ScalarType.UInt)
+                {
+                    parameterTypeInfo.Class = EffectParameterClass.Scalar;
+                    parameterTypeInfo.Type = variableType == ScalarType.Int ? EffectParameterType.Int : EffectParameterType.UInt;
+                }
+                else if (variableType == ScalarType.Float)
+                {
+                    parameterTypeInfo.Class = EffectParameterClass.Scalar;
+                    parameterTypeInfo.Type = EffectParameterType.Float;
+                }
+                else if (variableType == ScalarType.Bool)
+                {
+                    parameterTypeInfo.Class = EffectParameterClass.Scalar;
+                    parameterTypeInfo.Type = EffectParameterType.Bool;
+                }
+
+                parameterTypeInfo.RowCount = 1;
+                parameterTypeInfo.ColumnCount = 1;
+            }
+            else if (variableType is VectorType)
+            {
+                if (variableType == VectorType.Float2 || variableType == VectorType.Float3 || variableType == VectorType.Float4)
+                {
+                    bool isColor = attributes.OfType<AttributeDeclaration>().Any(x => x.Name == "Color");
+                    parameterTypeInfo.Class = isColor ? EffectParameterClass.Color : EffectParameterClass.Vector;
+                    parameterTypeInfo.Type = EffectParameterType.Float;
+                }
+                else if (variableType == VectorType.Int2 || variableType == VectorType.Int3 || variableType == VectorType.Int4)
+                {
+                    parameterTypeInfo.Class = EffectParameterClass.Vector;
+                    parameterTypeInfo.Type = EffectParameterType.Int;
+                }
+                else if (variableType == VectorType.UInt2 || variableType == VectorType.UInt3 || variableType == VectorType.UInt4)
+                {
+                    parameterTypeInfo.Class = EffectParameterClass.Vector;
+                    parameterTypeInfo.Type = EffectParameterType.UInt;
+                }
+
+                parameterTypeInfo.RowCount = 1;
+                parameterTypeInfo.ColumnCount = ((VectorType)variableType).Dimension;
+            }
+            else if (variableType is MatrixType)
+            {
+                parameterTypeInfo.Class = EffectParameterClass.MatrixColumns;
+                parameterTypeInfo.Type = EffectParameterType.Float;
+                parameterTypeInfo.RowCount = ((MatrixType)variableType).RowCount;
+                parameterTypeInfo.ColumnCount = ((MatrixType)variableType).ColumnCount;
+            }
+            else if (variableType is StructType)
+            {
+                var structType = (StructType)variableType;
+
+                parameterTypeInfo.Class = EffectParameterClass.Struct;
+                parameterTypeInfo.RowCount = 1;
+                parameterTypeInfo.ColumnCount = 1;
+                parameterTypeInfo.Name = structType.Name.Text;
+
+                var members = new List<EffectTypeMemberDescription>();
+                foreach (var field in structType.Fields)
+                {
+                    var memberInfo = new EffectTypeMemberDescription
+                    {
+                        Name = field.Name.Text,
+                        Type = CreateTypeInfo(field.Type, field.Attributes),
+                    };
+                    members.Add(memberInfo);
+                }
+
+                parameterTypeInfo.Members = members.ToArray();
+            }
+            else
             {
                 var variableTypeName = variableType.Name.Text.ToLower();
 
@@ -476,79 +539,6 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                         parameterTypeInfo.Type = EffectParameterType.Sampler;
                         break;
                 }
-            }
-            else if (variableType is ScalarType)
-            {
-                // Uint and int are collapsed to int
-                if (variableType == ScalarType.Int || variableType == ScalarType.UInt)
-                {
-                    parameterTypeInfo.Class = EffectParameterClass.Scalar;
-                    parameterTypeInfo.Type = variableType == ScalarType.Int ? EffectParameterType.Int : EffectParameterType.UInt;
-                }
-                else if (variableType == ScalarType.Float)
-                {
-                    parameterTypeInfo.Class = EffectParameterClass.Scalar;
-                    parameterTypeInfo.Type = EffectParameterType.Float;
-                }
-                else if (variableType == ScalarType.Bool)
-                {
-                    parameterTypeInfo.Class = EffectParameterClass.Scalar;
-                    parameterTypeInfo.Type = EffectParameterType.Bool;
-                }
-
-                parameterTypeInfo.RowCount = 1;
-                parameterTypeInfo.ColumnCount = 1;
-            }
-            else if (variableType is VectorType)
-            {
-                if (variableType == VectorType.Float2 || variableType == VectorType.Float3 || variableType == VectorType.Float4)
-                {
-                    bool isColor = attributes.OfType<AttributeDeclaration>().Any(x => x.Name == "Color");
-                    parameterTypeInfo.Class = isColor ? EffectParameterClass.Color : EffectParameterClass.Vector;
-                    parameterTypeInfo.Type = EffectParameterType.Float;
-                }
-                else if (variableType == VectorType.Int2 || variableType == VectorType.Int3 || variableType == VectorType.Int4)
-                {
-                    parameterTypeInfo.Class = EffectParameterClass.Vector;
-                    parameterTypeInfo.Type = EffectParameterType.Int;
-                }
-                else if (variableType == VectorType.UInt2 || variableType == VectorType.UInt3 || variableType == VectorType.UInt4)
-                {
-                    parameterTypeInfo.Class = EffectParameterClass.Vector;
-                    parameterTypeInfo.Type = EffectParameterType.UInt;
-                }
-
-                parameterTypeInfo.RowCount = 1;
-                parameterTypeInfo.ColumnCount = ((VectorType)variableType).Dimension;
-            }
-            else if (variableType is MatrixType)
-            {
-                parameterTypeInfo.Class = EffectParameterClass.MatrixColumns;
-                parameterTypeInfo.Type = EffectParameterType.Float;
-                parameterTypeInfo.RowCount = ((MatrixType)variableType).RowCount;
-                parameterTypeInfo.ColumnCount = ((MatrixType)variableType).ColumnCount;
-            }
-            else if (variableType is StructType)
-            {
-                var structType = (StructType)variableType;
-
-                parameterTypeInfo.Class = EffectParameterClass.Struct;
-                parameterTypeInfo.RowCount = 1;
-                parameterTypeInfo.ColumnCount = 1;
-                parameterTypeInfo.Name = structType.Name.Text;
-
-                var members = new List<EffectTypeMemberDescription>();
-                foreach (var field in structType.Fields)
-                {
-                    var memberInfo = new EffectTypeMemberDescription
-                    {
-                        Name = field.Name.Text,
-                        Type = CreateTypeInfo(field.Type, field.Attributes),
-                    };
-                    members.Add(memberInfo);
-                }
-
-                parameterTypeInfo.Members = members.ToArray();
             }
 
             return parameterTypeInfo;

@@ -12,6 +12,8 @@ namespace SiliconStudio.Xenko.UI.Events
     /// </summary>
     public static class EventManager
     {
+        private static readonly object SyncRoot = new object();
+
         /// <summary>
         /// Finds the routed event identified by its name and owner.
         /// </summary>
@@ -75,10 +77,13 @@ namespace SiliconStudio.Xenko.UI.Events
             if (routedEvent == null) throw new ArgumentNullException(nameof(routedEvent));
             if (handler == null) throw new ArgumentNullException(nameof(handler));
 
-            if(!ClassesToClassHandlers.ContainsKey(classType))
-                ClassesToClassHandlers[classType] = new Dictionary<RoutedEvent, RoutedEventHandlerInfo>();
+            lock(SyncRoot)
+            {
+                if (!ClassesToClassHandlers.ContainsKey(classType))
+                    ClassesToClassHandlers[classType] = new Dictionary<RoutedEvent, RoutedEventHandlerInfo>();
 
-            ClassesToClassHandlers[classType][routedEvent] = new RoutedEventHandlerInfo<T>(handler, handledEventsToo);
+                ClassesToClassHandlers[classType][routedEvent] = new RoutedEventHandlerInfo<T>(handler, handledEventsToo); 
+            }
         }
 
         /// <summary>
@@ -128,12 +133,15 @@ namespace SiliconStudio.Xenko.UI.Events
                 throw new InvalidOperationException("A routed event named '" + name + "' already exists in provided owner type '" + ownerType + "' or base classes.");
 
             var newRoutedEvent = new RoutedEvent<T> {  Name = name, OwnerType = ownerType, RoutingStrategy = routingStrategy, };
-            RoutedEvents.Add(newRoutedEvent);
-            
-            if(!OwnerToEvents.ContainsKey(ownerType))
-                OwnerToEvents[ownerType] = new Dictionary<string, RoutedEvent>();
+            lock(SyncRoot)
+            {
+                RoutedEvents.Add(newRoutedEvent);
 
-            OwnerToEvents[ownerType][name] = newRoutedEvent;
+                if (!OwnerToEvents.ContainsKey(ownerType))
+                    OwnerToEvents[ownerType] = new Dictionary<string, RoutedEvent>();
+
+                OwnerToEvents[ownerType][name] = newRoutedEvent; 
+            }
 
             return newRoutedEvent;
         }
@@ -147,9 +155,12 @@ namespace SiliconStudio.Xenko.UI.Events
         /// </summary>
         internal static void ResetRegisters()
         {
-            RoutedEvents.Clear();
-            OwnerToEvents.Clear();
-            ClassesToClassHandlers.Clear();
+            lock(SyncRoot)
+            {
+                RoutedEvents.Clear();
+                OwnerToEvents.Clear();
+                ClassesToClassHandlers.Clear(); 
+            }
         }
     }
 }

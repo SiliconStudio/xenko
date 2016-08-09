@@ -2,13 +2,14 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Shaders.Visitor;
 
 namespace SiliconStudio.Shaders.Ast.Hlsl
 {
     /// <summary>
     /// An Annotations.
     /// </summary>
-    public class Annotations : PostAttributeBase
+    public partial class Annotations : PostAttributeBase
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Annotations"/> class.

@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// <summary>
     /// Defines a point light
     /// </summary>
-    class LightPoint : LightUtil, LightStream, PositionStream4
+    shader LightPoint : LightUtil, LightStream, PositionStream4
     {
         struct PointLightData
         {

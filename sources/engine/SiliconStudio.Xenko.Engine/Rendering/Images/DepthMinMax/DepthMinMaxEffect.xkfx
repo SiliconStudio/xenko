@@ -3,7 +3,7 @@
 
 namespace SiliconStudio.Xenko.Rendering.Images
 {
-    shader DepthMinMaxEffect
+    effect DepthMinMaxEffect
     {
         using params DepthMinMax;
 

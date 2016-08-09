@@ -7,23 +7,17 @@ namespace SiliconStudio.Shaders.Ast.Glsl
     /// <summary>
     /// Specialized ParameterQualifier for Hlsl.
     /// </summary>
-    public class ParameterQualifier : Ast.ParameterQualifier
+    public static class ParameterQualifier
     {
-
         /// <summary>
         ///   Varying modifier, only for OpenGL ES 2.0.
         /// </summary>
-        public static readonly Ast.ParameterQualifier Varying = new Ast.ParameterQualifier("varying");
+        public static readonly Qualifier Varying = new Qualifier("varying");
 
         /// <summary>
         ///   Attribute modifier, only for OpenGL ES 2.0.
         /// </summary>
-        public static readonly Ast.ParameterQualifier Attribute = new Ast.ParameterQualifier("attribute");
-
-        /// <summary>
-        ///   Internal map used for parsing.
-        /// </summary>
-        private static readonly StringEnumMap Map = PrepareParsing<ParameterQualifier>();
+        public static readonly Qualifier Attribute = new Qualifier("attribute");
 
         /// <summary>
         /// Parses the specified enum name.
@@ -34,10 +28,15 @@ namespace SiliconStudio.Shaders.Ast.Glsl
         /// <returns>
         /// A parameter qualifier
         /// </returns>
-        public static new Ast.ParameterQualifier Parse(string enumName)
+        public static Qualifier Parse(string enumName)
         {
-            return Map.ParseEnumFromName<Ast.ParameterQualifier>(enumName);
-        }
+            if (enumName == (string)Varying.Key)
+                return Varying;
+            if (enumName == (string)Attribute.Key)
+                return Attribute;
 
+            // Fallback to shared parameter qualifiers
+            return Ast.ParameterQualifier.Parse(enumName);
+        }
     }
 }

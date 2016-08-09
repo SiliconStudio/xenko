@@ -16,7 +16,7 @@
 # define OutputControlPointCount 3
 #endif
 
-class TessellationBase : ShaderBase, TransformationBase, MaterialDomainStream, Camera, Transformation, NormalBase
+shader TessellationBase : ShaderBase, TransformationBase, MaterialDomainStream, Camera, Transformation, NormalBase
 {
     cbuffer PerMaterial
     {

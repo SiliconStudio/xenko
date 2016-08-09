@@ -251,12 +251,12 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <inheritdoc/>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            object output = value;
-            bool conversionEnded = false;
+            var output = value;
+            var conversionEnded = false;
 
-            for (int i = 0; i < MaxConverterCount; ++i)
+            for (var i = 0; i < MaxConverterCount; ++i)
             {
-                object input = output;
+                var input = output;
                 if (converters[i] == null)
                 {
                     conversionEnded = true;
@@ -264,7 +264,7 @@ namespace SiliconStudio.Presentation.ValueConverters
                 }
 
                 if (conversionEnded)
-                    throw new InvalidOperationException(string.Format("Converter{0} is not null but previous Converter{1} was null", i, i - 1));
+                    throw new InvalidOperationException($"Converter{i} is not null but previous Converter{i - 1} was null");
 
                 output = converters[i].Convert(input, converterTargetType[i] ?? typeof(object), converterParameters[i], culture);
             }
@@ -274,18 +274,18 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <inheritdoc/>
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            object output = value;
+            var output = value;
 
-            bool conversionStarted = false;
+            var conversionStarted = false;
 
-            for (int i = MaxConverterCount - 1; i >= 0; --i)
+            for (var i = MaxConverterCount - 1; i >= 0; --i)
             {
-                object input = output;
+                var input = output;
                 if (converters[i] == null)
                 {
                     if (!conversionStarted)
                         continue;
-                    throw new InvalidOperationException(string.Format("Converter{0} is null but following Converter{1} is not null", i, i + 1));
+                    throw new InvalidOperationException($"Converter{i} is null but following Converter{i + 1} is not null");
                 }
 
                 conversionStarted = true;

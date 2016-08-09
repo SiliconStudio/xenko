@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// Optimized version of the McIntosh blur.
     /// Does the 2 final blur and keep the minimum in a single pass. 
     /// </summary>
-    partial shader McIntoshOptimizedEffect
+    partial effect McIntoshOptimizedEffect
     {
         using params DepthAwareDirectionalBlurKeys;
 

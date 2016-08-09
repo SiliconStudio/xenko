@@ -8,7 +8,7 @@ namespace SpaceEscape.Effects
         bool EnableOnflyTextureUVChange = false;
     }
 
-    shader SpaceEscapeEffectMain
+    effect SpaceEscapeEffectMain
     {
         using params GameParameters;
         

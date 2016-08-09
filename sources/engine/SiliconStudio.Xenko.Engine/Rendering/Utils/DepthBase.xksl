@@ -4,7 +4,7 @@
 /// Defines a depth texture.
 /// Various helper functions to extract information from a depth buffer.
 /// </summary>
-class DepthBase : Camera, Texturing
+shader DepthBase : Camera, Texturing
 {
     // -------------------------------------
     // Resources

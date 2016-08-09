@@ -8,7 +8,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A variable declaration.
     /// </summary>
-    public class Variable : Node, IAttributes, IDeclaration, IQualifiers
+    public partial class Variable : Node, IAttributes, IDeclaration, IQualifiers
     {
         #region Constructors and Destructors
 

@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// <summary>
     /// Base interface for a material layer shading.
     /// </summary>
-    class IMaterialSurfaceShading : MaterialPixelStream, LightStream
+    shader IMaterialSurfaceShading : MaterialPixelStream, LightStream
     {
         float3 ComputeDirectLightContribution()
         {

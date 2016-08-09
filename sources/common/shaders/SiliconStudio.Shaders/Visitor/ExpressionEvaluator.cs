@@ -12,7 +12,7 @@ namespace SiliconStudio.Shaders.Visitor
     /// <summary>
     /// An expression evaluator.
     /// </summary>
-    public class ExpressionEvaluator : ShaderVisitor
+    public class ExpressionEvaluator : ShaderWalker
     {
         private static readonly List<string> hlslScalarTypeNames =
             new List<string>
@@ -73,18 +73,20 @@ namespace SiliconStudio.Shaders.Visitor
             return result;
         }
 
-        /// <inheritdoc/>
-        [Visit]
-        protected virtual void Visit(Expression expression)
+        public override void DefaultVisit(Node node)
         {
-            result.Error("Expression evaluation [{0}] is not supported", expression.Span, expression);
+            var expression = node as Expression;
+            if (expression != null)
+            {
+                if (!(expression is BinaryExpression || expression is MethodInvocationExpression || expression is VariableReferenceExpression || expression is LiteralExpression || expression is ParenthesizedExpression || expression is UnaryExpression))
+                    result.Error("Expression evaluation [{0}] is not supported", expression.Span, expression);
+            }
         }
 
         /// <inheritdoc/>
-        [Visit]
-        protected virtual void Visit(BinaryExpression binaryExpression)
+        public override void Visit(BinaryExpression binaryExpression)
         {
-            Visit((Node) binaryExpression);
+            base.Visit( binaryExpression);
 
             if (values.Count < 2)
             {
@@ -161,8 +163,7 @@ namespace SiliconStudio.Shaders.Visitor
         }
 
         /// <inheritdoc/>
-        [Visit]
-        protected virtual void Visit(MethodInvocationExpression methodInvocationExpression)
+        public override void Visit(MethodInvocationExpression methodInvocationExpression)
         {
             if (methodInvocationExpression.Target is TypeReferenceExpression)
             {
@@ -180,10 +181,9 @@ namespace SiliconStudio.Shaders.Visitor
         }
 
         /// <inheritdoc/>
-        [Visit]
-        protected virtual void Visit(VariableReferenceExpression variableReferenceExpression)
+        public override void Visit(VariableReferenceExpression variableReferenceExpression)
         {
-            Visit((Node)variableReferenceExpression);
+            base.Visit(variableReferenceExpression);
 
             var variableDeclaration = variableReferenceExpression.TypeInference.Declaration as Variable;
             if (variableDeclaration == null)
@@ -212,8 +212,7 @@ namespace SiliconStudio.Shaders.Visitor
         }
 
         /// <inheritdoc/>
-        [Visit]
-        protected virtual void Visit(LiteralExpression literalExpression)
+        public override void Visit(LiteralExpression literalExpression)
         {
             try
             {
@@ -227,18 +226,9 @@ namespace SiliconStudio.Shaders.Visitor
         }
 
         /// <inheritdoc/>
-        [Visit]
-        protected virtual void Visit(ParenthesizedExpression parenthesizedExpression)
+        public override void Visit(UnaryExpression unaryExpression)
         {
-            // value stack is unchanged
-            Visit((Node)parenthesizedExpression);
-        }
-
-        /// <inheritdoc/>
-        [Visit]
-        protected virtual void Visit(UnaryExpression unaryExpression)
-        {
-            Visit((Node)unaryExpression);
+            base.Visit(unaryExpression);
 
             if (values.Count == 0)
             {

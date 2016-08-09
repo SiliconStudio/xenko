@@ -3,7 +3,7 @@
 #ifndef MACRO_TEST
 # define MACRO_TEST float
 #endif
-class MacroTest
+shader MacroTest
 {
     MACRO_TEST u;
 };

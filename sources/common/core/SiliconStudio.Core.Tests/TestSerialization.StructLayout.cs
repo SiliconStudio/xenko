@@ -43,7 +43,7 @@ namespace SiliconStudio.Core.Tests
         [Description("Test struct layouting")]
         public void TestStructLayout(TestSerialization.SerializationBackend serializationBackend)
         {
-            var binaryAuto = SerializeBinary(new StructLayoutAuto { A = 1, B = 2, C = 3 });
+            var binaryAuto = SerializeBinary(new StructLayoutAuto { C = 1, B = 2, A = 3 });
             var binaryExplicit = SerializeBinary(new StructLayoutExplicit { C = 1, A = 2, B = 3 });
             var binarySequential = SerializeBinary(new StructLayoutSequential { C = 1, B = 2, A = 3 });
 

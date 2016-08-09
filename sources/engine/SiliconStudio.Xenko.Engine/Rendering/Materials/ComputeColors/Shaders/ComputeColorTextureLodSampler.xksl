@@ -8,7 +8,7 @@
 /// TStream: generic Semantic - the texcoord index semantic used to sample the texture.
 /// TSampler: generic SamplerState - the sampler.
 /// </remarks>
-class ComputeColorTextureLodSampler<LinkType TTextureName, 
+shader ComputeColorTextureLodSampler<LinkType TTextureName, 
                                  Semantic TStream, 
                                  LinkType TSampler, 
                                  MemberName TRgba,

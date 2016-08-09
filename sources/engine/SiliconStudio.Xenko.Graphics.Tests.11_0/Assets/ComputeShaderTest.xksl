@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
     /// <summary>
     /// A shader performing Lambertian pre-filtering.
     /// </summary>
-    internal class ComputeShaderTest<int TNbOfIterations>: ComputeShaderBase
+    internal shader ComputeShaderTest<int TNbOfIterations>: ComputeShaderBase
     {    
         stage Texture2D<float4> input;
         stage RWTexture2D<float4> output;

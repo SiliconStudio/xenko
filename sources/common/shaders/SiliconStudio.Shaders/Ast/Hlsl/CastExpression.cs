@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     /// <summary>
     /// A cast expression.
     /// </summary>
-    public class CastExpression : Expression
+    public partial class CastExpression : Expression
     {
         #region Public Properties
 

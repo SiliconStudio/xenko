@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A member reference in the form {this}.{Name}
     /// </summary>
-    public class MemberReferenceExpression : Expression
+    public partial class MemberReferenceExpression : Expression
     {
         #region Constructors and Destructors
 

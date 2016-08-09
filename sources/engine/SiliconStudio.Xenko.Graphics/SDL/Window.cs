@@ -70,6 +70,8 @@ namespace SiliconStudio.Xenko.Graphics.SDL
 #elif SILICONSTUDIO_PLATFORM_LINUX
                     Handle = info.info.x11.window;
                     Display = info.info.x11.display;
+#elif SILICONSTUDIO_PLATFORM_MACOS
+                    Handle = info.info.cocoa.window;
 #endif
                 }
                 Application.RegisterWindow(this);

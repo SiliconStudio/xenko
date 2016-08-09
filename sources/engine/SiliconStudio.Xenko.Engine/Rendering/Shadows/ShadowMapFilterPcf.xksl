@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// <summary>
     /// Performs percentage closure filtering.
     /// </summary>
-    class ShadowMapFilterPcf<MemberName PerLighting, int TFilterSize> : ShadowMapFilterBase<PerLighting>
+    shader ShadowMapFilterPcf<MemberName PerLighting, int TFilterSize> : ShadowMapFilterBase<PerLighting>
     {
         cbuffer PerLighting
         {

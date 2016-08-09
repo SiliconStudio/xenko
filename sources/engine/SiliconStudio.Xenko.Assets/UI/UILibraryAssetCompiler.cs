@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Assets.UI
                 foreach (var kv in AssetParameters.UILibraryAsset.PublicUIElements)
                 {
 
-                    if (!AssetParameters.UILibraryAsset.Hierarchy.RootPartIds.Contains(kv.Value))
+                    if (!AssetParameters.UILibraryAsset.Hierarchy.RootPartIds.Contains(kv.Key))
                     {
                         // We might want to allow that in the future.
                         commandContext.Logger.Warning($"Only root elements can be exposed publicly. Skipping [{kv.Key}].");
@@ -49,9 +49,9 @@ namespace SiliconStudio.Xenko.Assets.UI
 
                     // Copy Key/Value pair
                     UIElementDesign element;
-                    if (AssetParameters.UILibraryAsset.Hierarchy.Parts.TryGetValue(kv.Value, out element))
+                    if (AssetParameters.UILibraryAsset.Hierarchy.Parts.TryGetValue(kv.Key, out element))
                     {
-                        uiLibrary.UIElements.Add(kv.Key, element.UIElement);
+                        uiLibrary.UIElements.Add(kv.Value, element.UIElement);
                     }
                     else
                     {

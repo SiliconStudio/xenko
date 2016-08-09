@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A declaration inside a statement.
     /// </summary>
-    public class DeclarationStatement : Statement
+    public partial class DeclarationStatement : Statement
     {
         #region Constructors and Destructors
 

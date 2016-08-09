@@ -14,7 +14,7 @@ namespace SiliconStudio.Presentation.ValueConverters
             var result = 1.0;
             try
             {
-                result = values.Select(x => System.Convert.ToDouble(x, culture)).Aggregate(result, (current, next) => current + next);
+                result = values.Select(x => ConverterHelper.ConvertToDouble(x, culture)).Aggregate(result, (current, next) => current + next);
             }
             catch (Exception exception)
             {

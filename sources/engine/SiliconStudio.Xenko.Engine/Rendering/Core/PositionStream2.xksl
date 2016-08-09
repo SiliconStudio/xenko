@@ -3,7 +3,7 @@
 /// <summary>
 /// Defines streams for object space position when the corresponding attribute is a float2. Sets its value in a float4.
 /// </summary>
-class PositionStream2 : ShaderBase
+shader PositionStream2 : ShaderBase
 {
     // The position attribute
     stage stream float2 Position2 : POSITION;

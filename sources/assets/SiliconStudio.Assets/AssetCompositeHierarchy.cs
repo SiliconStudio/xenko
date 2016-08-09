@@ -7,7 +7,7 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Assets
 {
     public abstract class AssetCompositeHierarchy<TAssetPartDesign, TAssetPart> : AssetComposite
-        where TAssetPartDesign : IAssetPartDesign<TAssetPart>
+        where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>
         where TAssetPart : class, IIdentifiable
     {
         /// <summary>
@@ -37,12 +37,12 @@ namespace SiliconStudio.Assets
         /// Enumerates design parts that are children of the given design part.
         /// </summary>
         /// <param name="partDesign">The design part for which to enumerate child parts.</param>
+        /// <param name="hierarchyData">The hierarchy data object in which the design parts can be retrieved.</param>
         /// <param name="isRecursive">If true, child design parts will be enumerated recursively.</param>
         /// <returns>A sequence containing the child design parts of the given design part.</returns>
-        /// <remarks>Implementations of this method relies on the <see cref="Hierarchy"/> property to enumerate.</remarks>
-        public IEnumerable<TAssetPartDesign> EnumerateChildParts(TAssetPartDesign partDesign, bool isRecursive)
+        public IEnumerable<TAssetPartDesign> EnumerateChildParts(TAssetPartDesign partDesign, AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> hierarchyData, bool isRecursive)
         {
-            return EnumerateChildParts(partDesign.Part, isRecursive).Select(e => Hierarchy.Parts[e.Id]);
+            return EnumerateChildParts(partDesign.Part, isRecursive).Select(e => hierarchyData.Parts[e.Id]);
         }
 
         public override IEnumerable<AssetPart> CollectParts()
@@ -66,12 +66,31 @@ namespace SiliconStudio.Assets
             return Hierarchy.Parts.ContainsKey(id);
         }
 
-        public override void FixupPartReferences()
+        public override Asset CreateChildAsset(string baseLocation, IDictionary<Guid, Guid> idRemapping = null)
         {
-            AssetCompositeAnalysis.FixupAssetPartReferences(this, ResolveReference);
+            var newAsset = (AssetCompositeHierarchy<TAssetPartDesign, TAssetPart>)base.CreateChildAsset(baseLocation);
+
+            var remappingDictionary = idRemapping ?? new Dictionary<Guid, Guid>();
+
+            foreach (var part in newAsset.Hierarchy.Parts)
+            {
+                // Store the baseid of the new version
+                part.BaseId = part.Part.Id;
+                // Make sure that we don't replicate the base part InstanceId
+                part.BasePartInstanceId = null;
+                // Create and register a new id for this part
+                var newId = Guid.NewGuid();
+                remappingDictionary.Add(part.Part.Id, newId);
+                // Apply the new Guid
+                part.Part.Id = newId;
+            }
+
+            AssetPartsAnalysis.RemapPartsId(newAsset.Hierarchy, remappingDictionary);
+
+            return newAsset;
         }
 
-        protected virtual object ResolveReference(object partReference)
+        protected override object ResolvePartReference(object partReference)
         {
             var reference = partReference as TAssetPart;
             if (reference != null)

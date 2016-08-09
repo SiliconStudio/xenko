@@ -8,7 +8,7 @@ namespace SiliconStudio.Shaders.Ast.Glsl
     /// <summary>
     /// Describe a register location
     /// </summary>
-    public class LayoutQualifier : Qualifier
+    public partial class LayoutQualifier : Qualifier
     {
         #region Constructors and Destructors
 

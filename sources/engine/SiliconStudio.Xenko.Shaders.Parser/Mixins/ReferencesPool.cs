@@ -3,13 +3,14 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-
+using SiliconStudio.Core;
 using SiliconStudio.Xenko.Shaders.Parser.Analysis;
 using SiliconStudio.Shaders.Ast;
 
 namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
     [DebuggerDisplay("Variables[{VariablesReferences.Count}] Methods[{MethodsReferences.Count}]")]
+    [DataContract]
     internal class ReferencesPool
     {
         /// <summary>

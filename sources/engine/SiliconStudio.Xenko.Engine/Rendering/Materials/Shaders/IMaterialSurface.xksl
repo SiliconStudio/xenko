@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// <summary>
     /// Base interface for a material layer
     /// </summary>
-    class IMaterialSurface : MaterialStream     // TODO: provide a way to extend MaterialStream easily
+    shader IMaterialSurface : MaterialStream     // TODO: provide a way to extend MaterialStream easily
     {
         void Compute()
         {

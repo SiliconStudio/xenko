@@ -5,7 +5,7 @@ using SiliconStudio.Shaders.Visitor;
 
 namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
-    internal class XenkoReplaceExtern : ShaderVisitor
+    internal class XenkoReplaceExtern : ShaderRewriter
     {
         #region Private members
 
@@ -32,25 +32,23 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 
         public void Run(Node initialNode)
         {
-            Visit(initialNode);
+            VisitDynamic(initialNode);
         }
 
         #endregion
 
-        [Visit]
-        protected Node Visit(MemberReferenceExpression expression)
+        public override Node Visit(MemberReferenceExpression expression)
         {
-            Visit((Node)expression);
+            base.Visit(expression);
             if (expression.Member.Text == VariableToReplace.Name.Text)
                 return new IndexerExpression(new MemberReferenceExpression(expression.Target, (IndexerReplacement.Target as VariableReferenceExpression).Name.Text), IndexerReplacement.Index);
 
             return expression;
         }
 
-        [Visit]
-        protected Node Visit(VariableReferenceExpression expression)
+        public override Node Visit(VariableReferenceExpression expression)
         {
-            Visit((Node)expression);
+            base.Visit(expression);
             if (expression.Name.Text == VariableToReplace.Name.Text)
                 return IndexerReplacement;
 

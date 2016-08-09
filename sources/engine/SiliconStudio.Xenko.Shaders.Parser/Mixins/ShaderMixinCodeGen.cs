@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Shaders.Ast.Xenko;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Utility;
@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         private const string BlockContextTag = "BlockContextTag";
         private readonly LoggerResult logging;
         private readonly Shader shader;
-        private ShaderBlock currentBlock;
+        private EffectBlock currentBlock;
         private int localVariableCount;
         private readonly HashSet<string> parameterKeysReferenced = new HashSet<string>();
         private readonly HashSet<string> mixinsReferenced = new HashSet<string>();
@@ -58,8 +58,14 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// <exception cref="System.InvalidOperationException"></exception>
         public static string GenerateCsharp(string xkfxShaderCode, string filePath)
         {
+            // In .xkfx, shader has been renamed to effect, in order to avoid ambiguities with HLSL and .xksl
+            var macros = new []
+            {
+                new SiliconStudio.Shaders.Parser.ShaderMacro("shader", "effect")
+            };
+
             // Compile
-            var shader = XenkoShaderParser.PreProcessAndParse(xkfxShaderCode, filePath);
+            var shader = XenkoShaderParser.PreProcessAndParse(xkfxShaderCode, filePath, macros);
 
             // Try to generate a mixin code.
             var loggerResult = new LoggerResult();
@@ -177,8 +183,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// Visits the specified enum type.
         /// </summary>
         /// <param name="enumType">Type of the enum.</param>
-        [Visit]
-        protected virtual void Visit(EnumType enumType)
+        public override void Visit(EnumType enumType)
         {
             Write("[DataContract]");
             WriteLinkLine(enumType);
@@ -202,8 +207,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// Visits the specified params block.
         /// </summary>
         /// <param name="paramsBlock">The params block.</param>
-        [Visit]
-        protected virtual void Visit(ParametersBlock paramsBlock)
+        public override void Visit(ParametersBlock paramsBlock)
         {
             Write("[DataContract]");
             WriteLinkLine(paramsBlock);
@@ -233,8 +237,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// Visits the specified keyword expression.
         /// </summary>
         /// <param name="keywordExpression">The keyword expression.</param>
-        [Visit]
-        protected virtual void Visit(KeywordExpression keywordExpression)
+        public override void Visit(KeywordExpression keywordExpression)
         {
             // A discard will be transformed to 'return'
             if (keywordExpression.Name.Text == "discard")
@@ -248,8 +251,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             }
         }
 
-        [Visit]
-        protected virtual void Visit(ShaderClassType shader)
+        public override void Visit(ShaderClassType shader)
         {
             Write(shader.Qualifiers.Any(qualifier => qualifier == XenkoStorageQualifier.Internal) ? "internal " : "public ");
             Write("static partial class ");
@@ -275,8 +277,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             }
         }
 
-        [Visit]
-        protected virtual void Visit(GenericType<ObjectType> type)
+        public override void Visit(GenericType type)
         {
             if (IsTextureType(type))
             {
@@ -288,7 +289,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             }
             else
             {
-                Visit((GenericType)type);
+                base.Visit(type);
             }
             ProcessInitialValueStatus = false;
         }
@@ -297,8 +298,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// Visits the specified for each statement.
         /// </summary>
         /// <param name="forEachStatement">For each statement.</param>
-        [Visit]
-        protected virtual void Visit(ForEachStatement forEachStatement)
+        public override void Visit(ForEachStatement forEachStatement)
         {
             WriteLinkLine(forEachStatement);
 
@@ -350,12 +350,11 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// <summary>
         /// Visits the specified shader block.
         /// </summary>
-        /// <param name="shaderBlock">The shader block.</param>
-        [Visit]
-        protected virtual void Visit(ShaderBlock shaderBlock)
+        /// <param name="effectBlock">The shader block.</param>
+        public override void Visit(EffectBlock effectBlock)
         {
-            WriteLinkLine(shaderBlock);
-            currentBlock = shaderBlock;
+            WriteLinkLine(effectBlock);
+            currentBlock = effectBlock;
 
             VariableAsParameterKey = false;
 
@@ -369,7 +368,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 OpenBrace();
                 Write("internal partial class");
                 Write(" ");
-                Write(shaderBlock.Name);
+                Write(effectBlock.Name);
                 WriteSpace();
                 Write(" : IShaderMixinBuilder");
                 {
@@ -379,7 +378,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                     {
                         OpenBrace();
                         // Create a context associated with ShaderBlock
-                        foreach (Statement statement in shaderBlock.Body.Statements)
+                        foreach (Statement statement in effectBlock.Body.Statements)
                         {
                             VisitDynamic(statement);
                         }
@@ -391,7 +390,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                     WriteLine("internal static void __Initialize__()");
                     {
                         OpenBrace();
-                        Write("ShaderMixinManager.Register(\"").Write(shaderBlock.Name).Write("\", new ").Write(shaderBlock.Name).WriteLine("());");
+                        Write("ShaderMixinManager.Register(\"").Write(effectBlock.Name).Write("\", new ").Write(effectBlock.Name).WriteLine("());");
                         CloseBrace();
                     }
                     CloseBrace();
@@ -407,8 +406,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// Visits the specified mixin statement.
         /// </summary>
         /// <param name="mixinStatement">The mixin statement.</param>
-        [Visit]
-        protected virtual void Visit(MixinStatement mixinStatement)
+        public override void Visit(MixinStatement mixinStatement)
         {
             Expression mixinName;
             AssignmentExpression assignExpression;
@@ -558,8 +556,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// Visits the specified using statement.
         /// </summary>
         /// <param name="usingStatement">The using statement.</param>
-        [Visit]
-        protected virtual void Visit(UsingStatement usingStatement)
+        public override void Visit(UsingStatement usingStatement)
         {
             WriteLinkLine(usingStatement);
             Write("using ").Write(usingStatement.Name).WriteLine(";");
@@ -569,8 +566,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// Visits the specified using parameters statement.
         /// </summary>
         /// <param name="usingParametersStatement">The using parameters statement.</param>
-        [Visit]
-        protected virtual void Visit(UsingParametersStatement usingParametersStatement)
+        public override void Visit(UsingParametersStatement usingParametersStatement)
         {
             if (usingParametersStatement.Body == null)
                 return;
@@ -744,7 +740,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// <summary>
         /// Internal visitor to precalculate all available Parameters in the context
         /// </summary>
-        private sealed class ShaderBlockVisitor : ShaderVisitor
+        private sealed class ShaderBlockVisitor : ShaderWalker
         {
             private readonly LoggerResult logging;
             private ShaderBlockContext currentContext;
@@ -767,14 +763,12 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 VisitDynamic(shader);
             }
 
-            [Visit]
-            private void Visit(ParametersBlock paramsBlock)
+            public override void Visit(ParametersBlock paramsBlock)
             {
                 HasMixin = true;
             }
 
-            [Visit]
-            private void Visit(ShaderClassType shaderClassType)
+            public override void Visit(ShaderClassType shaderClassType)
             {
                 // Check if there are any parameter keys in ShaderClassType and ConstantBuffer
                 CheckParameterKeys(shaderClassType.Members.OfType<Variable>());
@@ -796,24 +790,22 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             }
 
 
-            [Visit]
-            private void Visit(ShaderBlock shaderBlock)
+            public override void Visit(EffectBlock effectBlock)
             {
                 HasMixin = true;
 
                 // Create a context associated with ShaderBlock
                 currentContext = new ShaderBlockContext();
-                shaderBlock.SetTag(BlockContextTag, currentContext);
+                effectBlock.SetTag(BlockContextTag, currentContext);
 
-                foreach (Statement statement in shaderBlock.Body.Statements)
+                foreach (Statement statement in effectBlock.Body.Statements)
                 {
                     VisitDynamic(statement);
                 }
                 currentContext = null;
             }
 
-            [Visit]
-            private void Visit(UsingParametersStatement usingParametersStatement)
+            public override void Visit(UsingParametersStatement usingParametersStatement)
             {
                 if (currentContext == null)
                 {

@@ -255,6 +255,7 @@ namespace SiliconStudio.Xenko.Input
                         KeyboardInputEvents.Add(new KeyboardInputEvent { Key = key.Value, Type = InputEventType.Down, OutOfFocus = true });
                 }
             }
+            LostFocus = false;
         }
 
         private void OnUiControlLostFocus()

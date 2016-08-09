@@ -3,7 +3,7 @@
 /// <summary>
 /// Computes the transformation matrix from tangent to view space when skinning occured.
 /// </summary>
-class NormalVSSkinningNormalMapping : NormalFromNormalMapping
+shader NormalVSSkinningNormalMapping : NormalFromNormalMapping
 {
     override float3x3 GetTangentWorldTransform()
     {

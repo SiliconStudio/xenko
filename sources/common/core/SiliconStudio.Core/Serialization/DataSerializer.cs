@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Core.Serialization
@@ -14,14 +15,15 @@ namespace SiliconStudio.Core.Serialization
     {
         // Binary format version, needs to be bumped in case of big changes in serialization formats (i.e. primitive types).
         // Format: major version * 10000 + minor version * 1000 + patch version * 100 + bump ID
-        public const int BinaryFormatVersion = 17400;
+        public const int BinaryFormatVersion = 17700;
 
         public ObjectId SerializationTypeId;
 
         /// <summary>
         /// Used internally to know if the serializer has been initialized.
         /// </summary>
-        internal bool Initialized = false;
+        internal bool Initialized;
+        internal SpinLock InitializeLock = new SpinLock(true);
 
         /// <inheritdoc/>
         public abstract Type SerializationType { get; }

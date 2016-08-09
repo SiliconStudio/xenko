@@ -2,13 +2,13 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 namespace Test5
 {
-    shader ChildClone
+    effect ChildClone
     {
         mixin C1;
         mixin C2;
     };
 
-    shader DefaultSimpleClone
+    effect DefaultSimpleClone
     {
         mixin A;
         mixin B;

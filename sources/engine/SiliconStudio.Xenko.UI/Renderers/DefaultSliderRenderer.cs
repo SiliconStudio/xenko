@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
             var axisPrime = (axis + 1) % 2;
             var color = slider.RenderOpacity * Color.White;
             var isGaugeReverted = axis == 1 ? !slider.IsDirectionReversed : slider.IsDirectionReversed; // we want the track going up from the bottom in vertical mode by default
-            var sliderRatio = slider.Value / (slider.Maximum - slider.Minimum);
+            var sliderRatio = MathUtil.InverseLerp(slider.Minimum, slider.Maximum, slider.Value);
             var trackOffsets = new Vector2(slider.TrackStartingOffsets[axis], slider.TrackStartingOffsets[axisPrime]);
             var fullGaugeSize = slider.RenderSizeInternal[axis] - trackOffsets.X - trackOffsets.Y;
 

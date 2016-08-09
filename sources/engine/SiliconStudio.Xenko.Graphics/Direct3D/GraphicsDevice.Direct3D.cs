@@ -241,9 +241,12 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (IsDebugMode)
             {
-                var deviceDebug = new SharpDX.Direct3D11.DeviceDebug(NativeDevice);
-                deviceDebug.ReportLiveDeviceObjects(SharpDX.Direct3D11.ReportingLevel.Detail);
-                deviceDebug.Dispose();
+                var debugDevice = NativeDevice.QueryInterfaceOrNull<SharpDX.Direct3D11.DeviceDebug>();
+                if (debugDevice != null)
+                {
+                    debugDevice.ReportLiveDeviceObjects(SharpDX.Direct3D11.ReportingLevel.Detail);
+                    debugDevice.Dispose();
+                }
             }
 
             nativeDevice.Dispose();

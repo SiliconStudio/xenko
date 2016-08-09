@@ -1,13 +1,15 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
+using SiliconStudio.Core;
 
 namespace SiliconStudio.Shaders.Ast
 {
     /// <summary>
     /// Matrix type.
     /// </summary>
-    public class MatrixType : GenericType<TypeBase, Literal, Literal>
+    public partial class MatrixType : GenericBaseType
     {
         #region Constructors and Destructors
 
@@ -15,8 +17,11 @@ namespace SiliconStudio.Shaders.Ast
         ///   Initializes a new instance of the <see cref = "MatrixType" /> class.
         /// </summary>
         public MatrixType()
-            : base("matrix")
+            : base("matrix", 3)
         {
+            ParameterTypes.Add(typeof(TypeBase));
+            ParameterTypes.Add(typeof(Literal));
+            ParameterTypes.Add(typeof(Literal));
         }
 
         /// <summary>
@@ -171,6 +176,7 @@ namespace SiliconStudio.Shaders.Ast
         /// <summary>
         /// Index information.
         /// </summary>
+        [DataContract]
         public struct Indexer
         {
             /// <summary>

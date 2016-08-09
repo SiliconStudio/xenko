@@ -18,7 +18,7 @@ namespace SiliconStudio.Assets.Compiler
         public CompilerContext()
         {
             Properties = new PropertyCollection();
-            PackageProperties = PackageProfile.SettingsContainer.CreateSettingsProfile(false);
+            PackageProperties = PackageProfile.SettingsContainer.CreateSettingsProfile(false, null, false);
         }
 
         /// <summary>
@@ -42,7 +42,6 @@ namespace SiliconStudio.Assets.Compiler
 
         public void Dispose()
         {
-            PackageProfile.SettingsContainer.UnloadSettingsProfile(PackageProperties);
             PackageProperties.Dispose();
         }
     }

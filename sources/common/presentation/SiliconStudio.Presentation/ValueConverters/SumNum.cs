@@ -14,8 +14,8 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <inheritdoc/>
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var doubleValue = (double)System.Convert.ChangeType(value ?? 0, typeof(double));
-            var doubleParameter = (double)System.Convert.ChangeType(parameter ?? 0, typeof(double));
+            var doubleValue = ConverterHelper.ConvertToDouble(value, culture);
+            var doubleParameter = ConverterHelper.ConvertToDouble(parameter, culture);
             var result = doubleValue + doubleParameter;
             return System.Convert.ChangeType(result, value?.GetType() ?? targetType);
         }
@@ -23,8 +23,8 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <inheritdoc/>
         public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var doubleValue = (double)System.Convert.ChangeType(value ?? 0, typeof(double));
-            var doubleParameter = (double)System.Convert.ChangeType(parameter ?? 0, typeof(double));
+            var doubleValue = ConverterHelper.ConvertToDouble(value, culture);
+            var doubleParameter = ConverterHelper.ConvertToDouble(parameter, culture);
             var result = doubleValue - doubleParameter;
             return System.Convert.ChangeType(result, targetType);
         }

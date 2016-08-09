@@ -9,6 +9,8 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.UI.Events;
 
@@ -31,12 +33,8 @@ namespace SiliconStudio.Xenko.UI.Controls
         private float maximum = 1.0f;
         private float step = 0.1f;
         private float tickOffset = 10.0f;
-        private ISpriteProvider trackBackgroundImage;
-
-        private void OnSizeChanged(object sender, EventArgs e)
-        {
-            InvalidateMeasure();
-        }
+        private ISpriteProvider trackBackgroundImageSource;
+        private Sprite trackBackgroundSprite;
 
         static Slider()
         {
@@ -63,17 +61,14 @@ namespace SiliconStudio.Xenko.UI.Controls
         [DefaultValue(null)]
         public ISpriteProvider TrackBackgroundImage
         {
-            get { return trackBackgroundImage; }
+            get { return trackBackgroundImageSource; }
             set
             {
-                if (trackBackgroundImage != null)
-                    trackBackgroundImage.GetSprite().SizeChanged -= OnSizeChanged;
+                if (trackBackgroundImageSource == value)
+                    return;
 
-                trackBackgroundImage = value;
-                InvalidateMeasure();
-
-                if (trackBackgroundImage != null)
-                    trackBackgroundImage.GetSprite().SizeChanged += OnSizeChanged;
+                trackBackgroundImageSource = value;
+                OnTrackBackgroundSpriteChanged(trackBackgroundImageSource?.GetSprite());
             }
         }
 
@@ -116,10 +111,10 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the smallest possible value of the slider.
         /// </summary>
-        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
+        /// <remarks>The value is coerced in the range [<see cref="float.MinValue"/>, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>The smallest possible value of the slider.</userdoc>
         [DataMember]
-        [DataMemberRange(0, float.MaxValue)]
+        [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
         public float Minimum
         {
@@ -128,7 +123,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             {
                 if (float.IsNaN(value))
                     return;
-                minimum = MathUtil.Clamp(value, 0.0f, float.MaxValue);
+                minimum = MathUtil.Clamp(value, float.MinValue, float.MaxValue);
                 CoerceMaximum(maximum);
             }
         }
@@ -139,7 +134,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <remarks>The value is coerced in the range [<see cref="Minimum"/>, <see cref="float.MaxValue"/>].</remarks>
         /// <userdoc>The greatest possible value of the slider.</userdoc>
         [DataMember]
-        [DataMemberRange(0, float.MaxValue)]
+        [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(1.0f)]
         public float Maximum
         {
@@ -177,7 +172,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <remarks>The value is coerced in the range [<see cref="Minimum"/>, <see cref="Maximum"/>].</remarks>
         /// <userdoc>The current value of the slider.</userdoc>
         [DataMember]
-        [DataMemberRange(0, float.MaxValue)]
+        [DataMemberRange(float.MinValue, float.MaxValue)]
         [DefaultValue(0.0f)]
         public float Value
         {
@@ -214,7 +209,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                 if (float.IsNaN(value))
                     return;
                 tickFrequency = MathUtil.Clamp(value, 1.0f, float.MaxValue);
-                Value = this.value; // snap to tick if enabled
+                Value = Value; // snap if enabled
             }
         }
 
@@ -294,7 +289,6 @@ namespace SiliconStudio.Xenko.UI.Controls
             set
             {
                 orientation = value;
-
                 InvalidateMeasure();
             }
         }
@@ -340,7 +334,7 @@ namespace SiliconStudio.Xenko.UI.Controls
 
         private float CalculateIncreamentValue()
         {
-            return shouldSnapToTicks? Math.Max(Step, (Maximum - Minimum) / TickFrequency): Step;
+            return shouldSnapToTicks ? Math.Max(Step, (Maximum - Minimum)/TickFrequency) : Step;
         }
 
         /// <inheritdoc/>
@@ -348,11 +342,10 @@ namespace SiliconStudio.Xenko.UI.Controls
 
         protected override Vector3 MeasureOverride(Vector3 availableSizeWithoutMargins)
         {
-            var image = TrackBackgroundImage;
-            if (image == null)
+            if (trackBackgroundSprite == null)
                 return base.MeasureOverride(availableSizeWithoutMargins);
 
-            var idealSize = image.GetSprite().SizeInPixels.Y;
+            var idealSize = trackBackgroundSprite.SizeInPixels.Y;
             var desiredSize = new Vector3(idealSize, idealSize, 0)
             {
                 [(int)Orientation] = availableSizeWithoutMargins[(int)Orientation]
@@ -375,7 +368,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Identifies the <see cref="ValueChanged"/> routed event.
         /// </summary>
         public static readonly RoutedEvent<RoutedEventArgs> ValueChangedEvent = EventManager.RegisterRoutedEvent<RoutedEventArgs>(
-            "ValueChanged",
+            nameof(ValueChanged),
             RoutingStrategy.Bubble,
             typeof(Slider));
         
@@ -431,12 +424,42 @@ namespace SiliconStudio.Xenko.UI.Controls
             var elementSize = RenderSize[axis];
             var touchPosition = touchPostionWorld[axis] - WorldMatrixInternal[12 + axis] + elementSize/2;
             var ratio = (touchPosition - offsets.X) / (elementSize - offsets.X - offsets.Y);
-            Value = (Orientation == Orientation.Vertical ^ IsDirectionReversed) ? 1 - ratio : ratio;
+            Value = MathUtil.Lerp(Minimum, Maximum, Orientation == Orientation.Vertical ^ IsDirectionReversed ? 1 - ratio : ratio);
+        }
+
+        protected override void Update(GameTime time)
+        {
+            var currentSprite = trackBackgroundImageSource?.GetSprite();
+            if (trackBackgroundSprite != currentSprite)
+            {
+                OnTrackBackgroundSpriteChanged(currentSprite);
+            }
         }
 
         private void CoerceMaximum(float newValue)
         {
             maximum = MathUtil.Clamp(newValue, minimum, float.MaxValue);
+        }
+
+        private void InvalidateMeasure(object sender, EventArgs eventArgs)
+        {
+            InvalidateMeasure();
+        }
+
+        private void OnTrackBackgroundSpriteChanged(Sprite currentSprite)
+        {
+            if (trackBackgroundSprite != null)
+            {
+                trackBackgroundSprite.SizeChanged -= InvalidateMeasure;
+                trackBackgroundSprite.BorderChanged -= InvalidateMeasure;
+            }
+            trackBackgroundSprite = currentSprite;
+            InvalidateMeasure();
+            if (trackBackgroundSprite != null)
+            {
+                trackBackgroundSprite.SizeChanged += InvalidateMeasure;
+                trackBackgroundSprite.BorderChanged += InvalidateMeasure;
+            }
         }
     }
 }

@@ -3,7 +3,7 @@
 
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
-    class MultipleRenderTargetsEffectShader: ShadingBase
+    shader MultipleRenderTargetsEffectShader: ShadingBase
     {    
         stage override void PSMain()
         {

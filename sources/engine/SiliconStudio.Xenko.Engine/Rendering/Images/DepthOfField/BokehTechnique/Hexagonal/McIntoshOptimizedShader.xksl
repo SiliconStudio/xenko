@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     ///  - Texture0: a color buffer with a first directional blur
     ///  - Texture1: the corresponding depth buffer
     /// </summary>
-    class McIntoshOptimizedShader : ImageEffectShader
+    shader McIntoshOptimizedShader : ImageEffectShader
     {
         compose ComputeColor directionalBlurA;
         compose ComputeColor directionalBlurB;

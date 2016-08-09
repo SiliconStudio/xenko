@@ -7,7 +7,7 @@
 /// TTexture: generic Texture2D - the texture to sample.
 /// TStream: generic Semantic - the texcoord index semantic used to sample the texture.
 /// </remarks>
-class ComputeColorTexture<Texture2D TTexture, Semantic TStream> : ComputeColor
+shader ComputeColorTexture<Texture2D TTexture, Semantic TStream> : ComputeColor
 {
     stage stream float2 TexCoord : TStream;
 
