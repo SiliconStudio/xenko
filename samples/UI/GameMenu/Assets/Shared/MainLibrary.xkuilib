@@ -1,11 +1,13 @@
-!UIPageAsset
-Id: 077368e4-e3b0-4c85-8911-a3245c4bc4a0
+!UILibraryAsset
+Id: 44a9ed4d-847f-4577-8cb1-eabf455799a7
 SerializedVersion: {Xenko: 0.0.0}
 Tags: []
 Design:
     Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
+PublicUIElements:
+    3f43a337-c8d0-4d80-830f-dd1621f717cd: ShipButton
 Hierarchy:
-    ~Id: 0676baad-3ef3-4a28-9e19-cc643a99219c
+    ~Id: f67153d5-a74e-4414-8f65-220252b45da1
     RootPartIds:
         - 3f43a337-c8d0-4d80-830f-dd1621f717cd
     Parts:
@@ -47,7 +49,7 @@ Hierarchy:
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
                 Margin: {}
                 MaximumHeight: 100.0
-                Name: buttonGrid
+                Name: ShipButton
         -   UIElement: !TextBlock
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DependencyProperties:
