@@ -15,14 +15,6 @@ namespace SiliconStudio.Core.Threading
 
         private static readonly int MaxDregreeOfParallelism = Environment.ProcessorCount;
 
-        private class BatchState
-        {
-            public readonly AutoResetEvent Finished = new AutoResetEvent(false);
-
-            public int StartInclusive;
-
-            public int ActiveWorkerCount;
-        }
         public delegate void ValueAction<T>(ref T obj);
 
         public static void For(int fromInclusive, int toExclusive, [Pooled] Action<int> action)
@@ -343,28 +335,6 @@ namespace SiliconStudio.Core.Threading
             }
         }
 
-        private struct SortRange
-        {
-            public readonly int Left;
-
-            public readonly int Right;
-
-            public SortRange(int left, int right)
-            {
-                Left = left;
-                Right = right;
-            }
-        }
-
-        private class SortState
-        {
-            public readonly AutoResetEvent Finished = new AutoResetEvent(false);
-
-            public readonly ConcurrentQueue<SortRange> Partitions = new ConcurrentQueue<SortRange>();
-
-            public int ActiveWorkerCount;
-        }
-
         private static void Sort<T>(T[] collection, int maxDegreeOfParallelism, IComparer<T> comparer, SortState state)
         {
             const int sequentialThreshold = 2048;
@@ -451,6 +421,37 @@ namespace SiliconStudio.Core.Threading
             var temp = collection[i];
             collection[i] = collection[j];
             collection[j] = temp;
+        }
+
+        private class BatchState
+        {
+            public readonly AutoResetEvent Finished = new AutoResetEvent(false);
+
+            public int StartInclusive;
+
+            public int ActiveWorkerCount;
+        }
+
+        private struct SortRange
+        {
+            public readonly int Left;
+
+            public readonly int Right;
+
+            public SortRange(int left, int right)
+            {
+                Left = left;
+                Right = right;
+            }
+        }
+
+        private class SortState
+        {
+            public readonly AutoResetEvent Finished = new AutoResetEvent(false);
+
+            public readonly ConcurrentQueue<SortRange> Partitions = new ConcurrentQueue<SortRange>();
+
+            public int ActiveWorkerCount;
         }
 
         private class DispatcherNode

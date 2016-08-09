@@ -2,39 +2,29 @@ using System;
 
 namespace SiliconStudio.Core.Threading
 {
+    /// <summary>
+    /// Helper class to add and remove references to pooled delegates, passed as parameters with <see cref="PooledAttribute"/>>.
+    /// </summary>
     internal static class PooledDelegateHelper
     {
+        /// <summary>
+        /// Adds a reference to a delegate, keeping it from being recycled. Does nothing if the delegate is not drawn from a pool.
+        /// </summary>
+        /// <param name="pooledDelegate">The pooled delegate</param>
         public static void AddReference(Delegate pooledDelegate)
         {
             var closure = pooledDelegate.Target as IPooledClosure;
             closure?.AddReference();
         }
 
+        /// <summary>
+        /// Removes a reference from a delegate, allowing it to be recycled. Does nothing if the delegate is not drawn from a pool.
+        /// </summary>
+        /// <param name="pooledDelegate">The pooled delegate</param>
         public static void Release(Delegate pooledDelegate)
         {
             var closure = pooledDelegate.Target as IPooledClosure;
             closure?.Release();
-        }
-
-        public static PooledDelegateScope AddScropedReference(Delegate pooledDelegate)
-        {
-            AddReference(pooledDelegate);
-            return new PooledDelegateScope(pooledDelegate);
-        }
-
-        public struct PooledDelegateScope : IDisposable
-        {
-            private readonly Delegate pooledDelegate;
-
-            public PooledDelegateScope(Delegate pooledDelegate)
-            {
-                this.pooledDelegate = pooledDelegate;
-            }
-
-            public void Dispose()
-            {
-                Release(pooledDelegate);
-            }
         }
     }
 }
