@@ -281,7 +281,7 @@ namespace SiliconStudio.Xenko.Rendering
             context.RenderContext.Flush();
         }
 
-        public void Draw(RenderDrawContext renderDrawContext, RenderView renderView, RenderStage renderStage, bool parallel = false)
+        public void Draw(RenderDrawContext renderDrawContext, RenderView renderView, RenderStage renderStage)
         {
             // Sync point: draw (from now, we should execute with a graphics device context to perform rendering)
 
