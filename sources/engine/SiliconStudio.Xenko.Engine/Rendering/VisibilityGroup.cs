@@ -20,6 +20,7 @@ namespace SiliconStudio.Xenko.Rendering
     public class VisibilityGroup : IDisposable
     {
         private readonly List<RenderObject> renderObjectsWithoutFeatures = new List<RenderObject>();
+        private readonly ThreadLocal<ConcurrentCollectorCache<RenderObject>> collectorCache = new ThreadLocal<ConcurrentCollectorCache<RenderObject>>(() => new ConcurrentCollectorCache<RenderObject>(32));
 
         [Obsolete("This field is provisional and will be replaced by a proper mechanisms in the future")]
         public static readonly List<Func<RenderView, RenderObject, bool>> ViewObjectFilters = new List<Func<RenderView, RenderObject, bool>>();
@@ -119,8 +120,11 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 // Process objects
                 //foreach (var renderObject in RenderObjects)
-                Dispatcher.ForEach(RenderObjects, renderObject =>
+                //Dispatcher.ForEach(RenderObjects, renderObject =>
+                Dispatcher.For(0, RenderObjects.Count, () => collectorCache.Value, (index, cache) =>
                 {
+                    var renderObject = RenderObjects[index];
+
                     // Skip not enabled objects
                     if (!renderObject.Enabled || ((EntityGroupMask)(1U << (int)renderObject.RenderGroup) & cullingMask) == 0)
                         return;
@@ -192,14 +196,14 @@ namespace SiliconStudio.Xenko.Rendering
 
                     // Add object to list of visible objects
                     // TODO GRAPHICS REFACTOR we should be able to push multiple elements with future VisibilityObject
-                    view.RenderObjects.Add(renderObject);
+                    view.RenderObjects.Add(renderObject, cache);
 
                     // Calculate bounding box of all render objects in the view
                     if (renderObject.BoundingBox.Extent != Vector3.Zero)
                     {
                         CalculateMinMaxDistance(ref plane, ref renderObject.BoundingBox, ref view.MinimumDistance, ref view.MaximumDistance);
                     }
-                });
+                }, cache => cache.Flush());
             }
 
             view.RenderObjects.Close();
