@@ -7,6 +7,7 @@ using System.Linq;
 
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.References
 {
@@ -15,15 +16,16 @@ namespace SiliconStudio.Quantum.References
     /// </summary>
     public sealed class ReferenceEnumerable : IReference, IEnumerable<ObjectReference>
     {
-        private readonly List<ObjectReference> references = new List<ObjectReference>();
-        private readonly List<Index> indices = new List<Index>();
         private readonly Type elementType;
+        private List<ObjectReference> references;
+        private List<Index> indices;
 
         internal ReferenceEnumerable(IEnumerable enumerable, Type enumerableType, Index index)
         {
             Reference.CheckReferenceCreationSafeGuard();
             Type = enumerableType;
             Index = index;
+            ObjectValue = enumerable;
 
             if (enumerableType.HasInterface(typeof(IDictionary<,>)))
                 elementType = enumerableType.GetInterface(typeof(IDictionary<,>)).GetGenericArguments()[1];
@@ -54,12 +56,12 @@ namespace SiliconStudio.Quantum.References
         public bool IsDictionary => ObjectValue is IDictionary || ObjectValue.GetType().HasInterface(typeof(IDictionary<,>));
 
         /// <inheritdoc/>
-        public int Count => references.Count;
+        public int Count => references?.Count ?? 0;
 
         /// <summary>
         /// Gets the indices of each reference in this instance.
         /// </summary>
-        public IReadOnlyCollection<Index> Indices => indices;
+        public IReadOnlyList<Index> Indices => indices;
 
         /// <inheritdoc/>
         public ObjectReference this[Index index] { get { return references.Single(x => Equals(x.Index, index)); } }
@@ -67,13 +69,7 @@ namespace SiliconStudio.Quantum.References
         /// <inheritdoc/>
         public bool HasIndex(Index index)
         {
-            return indices.Any(x => x.Equals(index));
-        }
-
-        /// <inheritdoc/>
-        public void Clear()
-        {
-            references.Clear();
+            return indices?.Any(x => x.Equals(index)) ?? false;
         }
 
         /// <summary>
@@ -83,32 +79,53 @@ namespace SiliconStudio.Quantum.References
         /// <returns><c>true</c> if an object with the given index exists in this instance, <c>false</c> otherwise.</returns>
         public bool ContainsIndex(object index)
         {
-            return references.Any(x => Equals(x.Index, index));
+            return references != null && references.Any(x => Equals(x.Index, index));
         }
 
-        /// <inheritdoc/>
-        public void Refresh(object newObjectValue)
+        public void Refresh(IGraphNode ownerNode, NodeContainer nodeContainer, NodeFactoryDelegate nodeFactory)
         {
+            var newObjectValue = ownerNode.Content.Value;
             if (!(newObjectValue is IEnumerable)) throw new ArgumentException(@"The object is not an IEnumerable", nameof(newObjectValue));
 
             ObjectValue = newObjectValue;
 
-            references.Clear();
-            references.AddRange(
-                IsDictionary
-                    ? ((IEnumerable)ObjectValue).Cast<object>().Select(x => (ObjectReference)Reference.CreateReference(GetValue(x), elementType, GetKey(x)))
-                    : ((IEnumerable)ObjectValue).Cast<object>().Select((x, i) => (ObjectReference)Reference.CreateReference(x, elementType, new Index(i))));
-            indices.Clear();
-            foreach (var reference in references)
+            // First, let's build a new list of uninitialized references
+            var newReferences = new List<ObjectReference>(IsDictionary
+                ? ((IEnumerable)ObjectValue).Cast<object>().Select(x => (ObjectReference)Reference.CreateReference(GetValue(x), elementType, GetKey(x)))
+                : ((IEnumerable)ObjectValue).Cast<object>().Select((x, i) => (ObjectReference)Reference.CreateReference(x, elementType, new Index(i))));
+
+            // The reference need to be updated if it has never been initialized, if the number of items is different, or if any index or any value is different.
+            var needUpdate = references == null || newReferences.Count != references.Count || newReferences.Zip(references).Any(x => !x.Item1.Index.Equals(x.Item2.Index) || !Equals(x.Item1.ObjectValue, x.Item2.ObjectValue));
+            if (needUpdate)
             {
-                indices.Add(reference.Index);
+                // We create a dictionary that maps values of the old list of references to their corresponding target node.
+                var dictionary = references?.Where(x => x.ObjectValue != null && !(x.TargetNode?.Content is BoxedContent)).ToDictionary(x => x.ObjectValue) ?? new Dictionary<object, ObjectReference>();
+                foreach (var newReference in newReferences)
+                {
+                    if (newReference.ObjectValue != null)
+                    {
+                        ObjectReference oldReference;
+                        if (dictionary.TryGetValue(newReference.ObjectValue, out oldReference))
+                        {
+                            // If this value was already present in the old list of reference, just use the same target node in the new list.
+                            newReference.SetTarget(oldReference.TargetNode);
+                        }
+                        else
+                        {
+                            // Otherwise, do a full update that will properly initialize the new reference.
+                            newReference.Refresh(ownerNode, nodeContainer, nodeFactory, newReference.Index);
+                        }
+                    }
+                }
+                references = newReferences;
+                indices = newReferences.Select(x => x.Index).ToList();
             }
         }
 
         /// <inheritdoc/>
         public IEnumerable<ObjectReference> Enumerate()
         {
-            return references;
+            return this;
         }
 
         /// <inheritdoc/>

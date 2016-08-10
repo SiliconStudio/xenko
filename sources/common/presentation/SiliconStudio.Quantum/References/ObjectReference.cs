@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
+using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.References
 {
@@ -59,19 +61,27 @@ namespace SiliconStudio.Quantum.References
             return index.IsEmpty;
         }
 
-        /// <inheritdoc/>
-        public void Clear()
+        public void Refresh(IGraphNode ownerNode, NodeContainer nodeContainer, NodeFactoryDelegate nodeFactory)
         {
-            TargetNode = null;
-            TargetGuid = Guid.Empty;
-            orphanObject = null;
+            Refresh(ownerNode, nodeContainer, nodeFactory, Index.Empty);
         }
 
-        /// <inheritdoc/>
-        public void Refresh(object newObjectValue)
+        internal void Refresh(IGraphNode ownerNode, NodeContainer nodeContainer, NodeFactoryDelegate nodeFactory, Index index)
         {
-            Clear();
-            orphanObject = newObjectValue;
+            var objectValue = ownerNode.Content.Retrieve(index);
+            if (TargetNode?.Content.Value != objectValue)
+            {
+                // This call will recursively update the references.
+                var target = SetTarget(objectValue, nodeContainer, nodeFactory);
+                if (target != null)
+                {
+                    var ownerContent = (ContentBase)ownerNode.Content;
+                    var boxedContent = target.Content as BoxedContent;
+                    boxedContent?.SetOwnerContent(ownerContent, index);
+                }
+            }
+            // This reference is not orphan anymore.
+            orphanObject = null;
         }
 
         /// <inheritdoc/>
@@ -93,25 +103,29 @@ namespace SiliconStudio.Quantum.References
         /// <inheritdoc/>
         public override string ToString()
         {
-            string result = "";
-            if (TargetNode != null)
-                result += "[HasNode] ";
-            else if (TargetGuid != Guid.Empty)
-                result += "[HasGuid] ";
-
-            result += TargetGuid + " " + (ObjectValue?.ToString() ?? "null");
-            return result;
+            return $"{{{(Index != Index.Empty? $"[{Index.Value}]" : "")} -> {TargetNode}}}";
         }
 
         /// <summary>
         /// Set the <see cref="TargetNode"/> and <see cref="TargetGuid"/> of the targeted object by retrieving it from or creating it to the given <see cref="NodeContainer"/>.
         /// </summary>
+        /// <param name="objectValue">The value for which to set the target node.</param>
         /// <param name="nodeContainer">The <see cref="NodeContainer"/> used to retrieve or create the target node.</param>
         /// <param name="nodeFactory">The factory to use to create nodes.</param>
-        internal IGraphNode SetTarget(NodeContainer nodeContainer, NodeFactoryDelegate nodeFactory)
+        internal IGraphNode SetTarget(object objectValue, NodeContainer nodeContainer, NodeFactoryDelegate nodeFactory)
         {
             if (nodeContainer == null) throw new ArgumentNullException(nameof(nodeContainer));
-            IGraphNode targetNode = nodeContainer.GetOrCreateNodeInternal(ObjectValue, nodeFactory);
+            IGraphNode targetNode = nodeContainer.GetOrCreateNodeInternal(objectValue, nodeFactory);
+            SetTarget(targetNode);
+            return targetNode;
+        }
+
+        /// <summary>
+        /// Set the <see cref="TargetNode"/> and <see cref="TargetGuid"/> of the targeted object by retrieving it from or creating it to the given <see cref="NodeContainer"/>.
+        /// </summary>
+        /// <param name="targetNode">The <see cref="NodeContainer"/> used to retrieve or create the target node.</param>
+        internal IGraphNode SetTarget(IGraphNode targetNode)
+        {
             if (targetNode != null)
             {
                 if (targetNode.Content.Value != null && !Type.IsInstanceOfType(targetNode.Content.Value))
@@ -127,6 +141,12 @@ namespace SiliconStudio.Quantum.References
                 TargetNode = targetNode;
                 TargetGuid = targetNode.Guid;
             }
+            else
+            {
+                TargetNode = null;
+                TargetGuid = Guid.Empty;
+            }
+
             return targetNode;
         }
     }
