@@ -15,8 +15,8 @@ namespace SiliconStudio.AssemblyProcessor
 {
     internal class DispatcherProcessor : IAssemblyDefinitionProcessor
     {
-        private readonly HashSet<MethodDefinition> factoryMethods = new HashSet<MethodDefinition>();
         private readonly Dictionary<TypeDefinition, ClosureInfo> closures = new Dictionary<TypeDefinition, ClosureInfo>();
+        private bool isInitialized;
 
         private AssemblyDefinition mscorlibAssembly;
         private AssemblyDefinition siliconStudioCoreAssembly;
@@ -26,12 +26,16 @@ namespace SiliconStudio.AssemblyProcessor
         private TypeDefinition funcType;
         private MethodReference funcConstructor;
 
-        private TypeDefinition poolType;
+        private TypeDefinition poolTypeDefinition;
         private MethodReference poolConstructor;
 
         private TypeDefinition interlockedType;
         private MethodReference interlockedIncrementMethod;
         private MethodReference interlockedDecrementMethod;
+
+        private TypeReference poolType;
+        private MethodReference poolAcquireMethod;
+        private MethodReference poolReleaseMethod;
 
         private class ClosureInfo
         {
@@ -44,8 +48,11 @@ namespace SiliconStudio.AssemblyProcessor
             public FieldDefinition PoolField;
         }
 
-        public bool Process(AssemblyProcessorContext context)
+        private void EnsureInitialized(AssemblyProcessorContext context)
         {
+            if (isInitialized)
+                return;
+
             mscorlibAssembly = CecilExtensions.FindCorlibAssembly(context.Assembly);
 
             siliconStudioCoreAssembly = context.Assembly.Name.Name == "SiliconStudio.Core" ? context.Assembly :
@@ -58,13 +65,21 @@ namespace SiliconStudio.AssemblyProcessor
             funcConstructor = context.Assembly.MainModule.ImportReference(funcType.Methods.FirstOrDefault(x => x.Name == ".ctor"));
 
             // Pool type and it's constructor
-            poolType = siliconStudioCoreAssembly.MainModule.GetType("SiliconStudio.Core.Threading.ConcurrentPool`1");
-            poolConstructor = context.Assembly.MainModule.ImportReference(poolType.Methods.FirstOrDefault(x => x.Name == ".ctor"));
+            poolTypeDefinition = siliconStudioCoreAssembly.MainModule.GetType("SiliconStudio.Core.Threading.ConcurrentPool`1");
+            poolType = context.Assembly.MainModule.ImportReference(poolTypeDefinition);
+            poolConstructor = context.Assembly.MainModule.ImportReference(poolTypeDefinition.Methods.FirstOrDefault(x => x.Name == ".ctor"));
+            poolAcquireMethod = context.Assembly.MainModule.ImportReference(poolTypeDefinition.Methods.FirstOrDefault(x => x.Name == "Acquire"));
+            poolReleaseMethod = context.Assembly.MainModule.ImportReference(poolTypeDefinition.Methods.FirstOrDefault(x => x.Name == "Release"));
 
             // Interlocked
             interlockedType = mscorlibAssembly.MainModule.GetTypeResolved("System.Threading.Interlocked");
-            interlockedIncrementMethod = context.Assembly.MainModule.ImportReference(interlockedType.Methods.FirstOrDefault(x => x.Name == "Increment" && x.ReturnType.FullName == "System.Int32"));
-            interlockedDecrementMethod = context.Assembly.MainModule.ImportReference(interlockedType.Methods.FirstOrDefault(x => x.Name == "Decrement" && x.ReturnType.FullName == "System.Int32"));
+            interlockedIncrementMethod = context.Assembly.MainModule.ImportReference(interlockedType.Methods.FirstOrDefault(x => x.Name == "Increment" && x.ReturnType.MetadataType == MetadataType.Int32));
+            interlockedDecrementMethod = context.Assembly.MainModule.ImportReference(interlockedType.Methods.FirstOrDefault(x => x.Name == "Decrement" && x.ReturnType.MetadataType == MetadataType.Int32));
+        }
+
+        public bool Process(AssemblyProcessorContext context)
+        {
+            isInitialized = false;
 
             bool changed = false;
 
@@ -77,43 +92,37 @@ namespace SiliconStudio.AssemblyProcessor
 
                     foreach (var instruction in method.Body.Instructions.ToArray())
                     {
-                        if (instruction.OpCode == OpCodes.Call || instruction.OpCode == OpCodes.Callvirt)
+                        if (instruction.OpCode != OpCodes.Call && instruction.OpCode != OpCodes.Callvirt)
+                            continue;
+
+                        var calledMethod = ((MethodReference)instruction.Operand).Resolve();
+                        if (calledMethod == null)
+                            continue;
+
+                        for (int parameterIndex = 0; parameterIndex < calledMethod.Parameters.Count; parameterIndex++)
                         {
-                            var calledMethod = ((MethodReference)instruction.Operand).Resolve();
-                            if (calledMethod == null)
+                            var parameter = calledMethod.Parameters[parameterIndex];
+
+                            // Parameter must be decorated with PooledAttribute
+                            if (parameter.CustomAttributes.All(x => x.AttributeType.FullName != "SiliconStudio.Core.Threading.PooledAttribute"))
                                 continue;
 
-                            for (int parameterIndex = 0; parameterIndex < calledMethod.Parameters.Count; parameterIndex++)
+                            // Parameter must be a delegate
+                            if (parameter.ParameterType.Resolve().BaseType.FullName != typeof(MulticastDelegate).FullName)
+                                continue;
+
+                            // Find the instruction that pushes the parameter on the stack
+                            // Non-trivial control flow is not supported
+                            var pushParameterInstruction = WalkStack(instruction, calledMethod.Parameters.Count - parameterIndex);
+
+                            // Try to replace delegate and closure allocations
                             {
-                                var parameter = calledMethod.Parameters[parameterIndex];
+                                EnsureInitialized(context);
 
-                                // Parameter must be decorated with PooledAttribute
-                                if (parameter.CustomAttributes.All(x => x.AttributeType.FullName != "SiliconStudio.Core.Threading.PooledAttribute"))
-                                    continue;
-
-                                // Parameter must be a delegate
-                                if (parameter.ParameterType.Resolve().BaseType.FullName != typeof(MulticastDelegate).FullName)
-                                    continue;
-
-                                // Find the instruction that pushes the parameter on the stack
-                                // Non-trivial control flow is not supported
-                                var pushParameterInstruction = WalkStack(instruction, calledMethod.Parameters.Count - parameterIndex);
-
-                                // Try to replace delegate and closure allocations
-                                if (pushParameterInstruction?.OpCode == OpCodes.Newobj)
-                                    changed |= ProcessDelegateAllocation(context, method, pushParameterInstruction);
+                                changed |= ProcessDelegateAllocation(context, method, pushParameterInstruction);
                             }
                         }
                     }
-
-                    //// Don't process delegate allocations in factory methods
-                    //if (factoryMethods.Contains(method))
-                    //    continue;
-
-                    //var isPooled = delegateInstanceType2.Resolve().CustomAttributes.Any(x => x.AttributeType.FullName == "SiliconStudio.Core.Threading.PooledAttribute");
-
-                    //if (!isPooled)
-                    //    return false;
                 }
             }
 
@@ -129,8 +138,7 @@ namespace SiliconStudio.AssemblyProcessor
 
             var delegateInstanceConstructor = (MethodReference)delegateAllocationInstruction.Operand;
             var delegateInstanceType = delegateInstanceConstructor.DeclaringType;
-            var delegateGenericType = delegateInstanceType.Resolve();
-            
+
             // The previous instruction pushes the delegate method onto the stack
             var functionPointerInstruction = delegateAllocationInstruction.Previous;
             if (functionPointerInstruction.OpCode != OpCodes.Ldftn)
@@ -196,79 +204,7 @@ namespace SiliconStudio.AssemblyProcessor
             var genericParameters = closureType.GenericParameters.Cast<TypeReference>().ToArray();
 
             // Patch closure
-            ClosureInfo closure;
-            if (!closures.TryGetValue(closureType, out closure))
-            {
-                // Create method initializing new pool items
-                var closureTypeConstructor = closureType.Methods.FirstOrDefault(x => x.Name == ".ctor");
-                var closureGenericType = closureType.MakeGenericType(genericParameters);
-                var factoryMethod = new MethodDefinition("<Factory>", MethodAttributes.HideBySig | MethodAttributes.Private | MethodAttributes.Static, closureGenericType);
-                closureType.Methods.Add(factoryMethod);
-                factoryMethods.Add(factoryMethod);
-
-                factoryMethod.Body.Variables.Add(new VariableDefinition(closureGenericType));
-                var factoryMethodProcessor = factoryMethod.Body.GetILProcessor();
-                // Create and store closure
-                factoryMethodProcessor.Emit(OpCodes.Newobj, closureTypeConstructor.MakeGeneric(genericParameters));
-                factoryMethodProcessor.Emit(OpCodes.Stloc_0);
-                //// Return closure
-                factoryMethodProcessor.Emit(OpCodes.Ldloc_0);
-                factoryMethodProcessor.Emit(OpCodes.Ret);
-
-                // Create pool field
-                var poolField = new FieldDefinition("<pool>", FieldAttributes.Public | FieldAttributes.Static, context.Assembly.MainModule.ImportReference(poolType).MakeGenericType(closureGenericType));
-                closureType.Fields.Add(poolField);
-                var localFieldReference = poolField.MakeGeneric(genericParameters);
-
-                // Initialize pool
-                var cctor = GetOrCreateClassConstructor(closureType);
-                var ilProcessor2 = cctor.Body.GetILProcessor();
-                var retInstruction = cctor.Body.Instructions.FirstOrDefault(x => x.OpCode == OpCodes.Ret);
-                ilProcessor2.InsertBefore(retInstruction, ilProcessor2.Create(OpCodes.Ldnull));
-                ilProcessor2.InsertBefore(retInstruction, ilProcessor2.Create(OpCodes.Ldftn, factoryMethod.MakeGeneric(genericParameters)));
-                ilProcessor2.InsertBefore(retInstruction, ilProcessor2.Create(OpCodes.Newobj, funcConstructor.MakeGeneric(closureGenericType)));
-                ilProcessor2.InsertBefore(retInstruction, ilProcessor2.Create(OpCodes.Newobj, poolConstructor.MakeGeneric(closureGenericType)));
-                ilProcessor2.InsertBefore(retInstruction, ilProcessor2.Create(OpCodes.Stsfld, localFieldReference));
-
-                // Implement IPooledClosure
-                closureType.Interfaces.Add(pooledClosureType);
-
-                var referenceCountField = new FieldDefinition("<referenceCount>", FieldAttributes.Public, context.Assembly.MainModule.TypeSystem.Int32);
-                closureType.Fields.Add(referenceCountField);
-                var addReferenceMethod = new MethodDefinition("AddReference", MethodAttributes.HideBySig | MethodAttributes.Public | MethodAttributes.Final | MethodAttributes.Virtual | MethodAttributes.NewSlot, context.Assembly.MainModule.TypeSystem.Void);
-                var ilProcessor4 = addReferenceMethod.Body.GetILProcessor();
-                ilProcessor4.Emit(OpCodes.Ldarg_0);
-                ilProcessor4.Emit(OpCodes.Ldflda, referenceCountField);
-                ilProcessor4.Emit(OpCodes.Call, interlockedIncrementMethod);
-                ilProcessor4.Emit(OpCodes.Pop);
-                ilProcessor4.Emit(OpCodes.Ret);
-                closureType.Methods.Add(addReferenceMethod);
-
-                var releaseMethod = new MethodDefinition("Release", MethodAttributes.HideBySig | MethodAttributes.Public | MethodAttributes.Final | MethodAttributes.Virtual | MethodAttributes.NewSlot, context.Assembly.MainModule.TypeSystem.Void);
-                ilProcessor4 = releaseMethod.Body.GetILProcessor();
-                retInstruction = ilProcessor4.Create(OpCodes.Ret);
-                // Check decremented reference count
-                ilProcessor4.Emit(OpCodes.Ldarg_0);
-                ilProcessor4.Emit(OpCodes.Ldflda, referenceCountField);
-                ilProcessor4.Emit(OpCodes.Call, interlockedDecrementMethod);
-                ilProcessor4.Emit(OpCodes.Ldc_I4_0);
-                ilProcessor4.Emit(OpCodes.Ceq);
-                ilProcessor4.Emit(OpCodes.Brfalse_S, retInstruction);
-                // Release this to pool
-                ilProcessor4.Emit(OpCodes.Ldsfld, localFieldReference);
-                ilProcessor4.Emit(OpCodes.Ldarg_0);
-                ilProcessor4.Emit(OpCodes.Callvirt, context.Assembly.MainModule.ImportReference(poolType.Methods.FirstOrDefault(x => x.Name == "Release")).MakeGeneric(closureGenericType));
-                ilProcessor4.Append(retInstruction);
-                closureType.Methods.Add(releaseMethod);
-
-                closures.Add(closureType, closure = new ClosureInfo
-                {
-                    FactoryMethod = factoryMethod,
-                    AddReferenceMethod = addReferenceMethod,
-                    ReleaseMethod = releaseMethod,
-                    PoolField = poolField
-                });
-            }
+            var closure = ProcessClosure(context, closureType, genericParameters);
 
             // Create delegate field
             var delegateFieldType = ChangeGenericArguments(context, delegateInstanceType, closureInstanceType);
@@ -303,7 +239,7 @@ namespace SiliconStudio.AssemblyProcessor
             if (closureAllocation.OpCode == OpCodes.Newobj)
             {
                 // Retrieve closure from pool, instead of allocating
-                var acquireClosure = ilProcessor.Create(OpCodes.Callvirt, context.Assembly.MainModule.ImportReference(poolType.Methods.FirstOrDefault(x => x.Name == "Acquire")).MakeGeneric(closureInstanceType));
+                var acquireClosure = ilProcessor.Create(OpCodes.Callvirt, poolAcquireMethod.MakeGeneric(closureInstanceType));
                 ilProcessor.InsertAfter(closureAllocation, acquireClosure);
                 ilProcessor.InsertAfter(closureAllocation, ilProcessor.Create(OpCodes.Ldsfld, closure.PoolField.MakeGeneric(closureGenericArguments)));
                 closureAllocation.OpCode = OpCodes.Nop; // Change to Nop instead of removing it, as this instruction might be reference somewhere?
@@ -336,6 +272,88 @@ namespace SiliconStudio.AssemblyProcessor
             ilProcessor.Replace(delegateAllocationInstruction, ilProcessor.Create(OpCodes.Ldfld, delegateField.MakeGeneric(closureGenericArguments))); // Closure object is already on the stack
 
             return true;
+        }
+
+        private ClosureInfo ProcessClosure(AssemblyProcessorContext context, TypeDefinition closureType, TypeReference[] genericParameters)
+        {
+            ClosureInfo closure;
+            if (closures.TryGetValue(closureType, out closure))
+                return closure;
+
+            var closureTypeConstructor = closureType.Methods.FirstOrDefault(x => x.Name == ".ctor");
+            var closureGenericType = closureType.MakeGenericType(genericParameters);
+
+            // Create factory method for pool items
+            var factoryMethod = new MethodDefinition("<Factory>", MethodAttributes.HideBySig | MethodAttributes.Private | MethodAttributes.Static, closureGenericType);
+            closureType.Methods.Add(factoryMethod);
+            factoryMethod.Body.Variables.Add(new VariableDefinition(closureGenericType));
+            var factoryMethodProcessor = factoryMethod.Body.GetILProcessor();
+            // Create and store closure
+            factoryMethodProcessor.Emit(OpCodes.Newobj, closureTypeConstructor.MakeGeneric(genericParameters));
+            factoryMethodProcessor.Emit(OpCodes.Stloc_0);
+            //// Return closure
+            factoryMethodProcessor.Emit(OpCodes.Ldloc_0);
+            factoryMethodProcessor.Emit(OpCodes.Ret);
+
+            // Create pool field
+            var poolField = new FieldDefinition("<pool>", FieldAttributes.Public | FieldAttributes.Static, poolType.MakeGenericType(closureGenericType));
+            closureType.Fields.Add(poolField);
+            var localFieldReference = poolField.MakeGeneric(genericParameters);
+
+            // Initialize pool
+            var cctor = GetOrCreateClassConstructor(closureType);
+            var ilProcessor2 = cctor.Body.GetILProcessor();
+            var retInstruction = cctor.Body.Instructions.FirstOrDefault(x => x.OpCode == OpCodes.Ret);
+            ilProcessor2.InsertBefore(retInstruction, ilProcessor2.Create(OpCodes.Ldnull));
+            ilProcessor2.InsertBefore(retInstruction, ilProcessor2.Create(OpCodes.Ldftn, factoryMethod.MakeGeneric(genericParameters)));
+            ilProcessor2.InsertBefore(retInstruction, ilProcessor2.Create(OpCodes.Newobj, funcConstructor.MakeGeneric(closureGenericType)));
+            ilProcessor2.InsertBefore(retInstruction, ilProcessor2.Create(OpCodes.Newobj, poolConstructor.MakeGeneric(closureGenericType)));
+            ilProcessor2.InsertBefore(retInstruction, ilProcessor2.Create(OpCodes.Stsfld, localFieldReference));
+
+            // Implement IPooledClosure
+            closureType.Interfaces.Add(pooledClosureType);
+
+            // Create reference count field
+            var referenceCountField = new FieldDefinition("<referenceCount>", FieldAttributes.Public, context.Assembly.MainModule.TypeSystem.Int32);
+            closureType.Fields.Add(referenceCountField);
+
+            // Create AddReference method
+            var addReferenceMethod = new MethodDefinition("AddReference", MethodAttributes.HideBySig | MethodAttributes.Public | MethodAttributes.Final | MethodAttributes.Virtual | MethodAttributes.NewSlot, context.Assembly.MainModule.TypeSystem.Void);
+            var ilProcessor4 = addReferenceMethod.Body.GetILProcessor();
+            ilProcessor4.Emit(OpCodes.Ldarg_0);
+            ilProcessor4.Emit(OpCodes.Ldflda, referenceCountField);
+            ilProcessor4.Emit(OpCodes.Call, interlockedIncrementMethod);
+            ilProcessor4.Emit(OpCodes.Pop);
+            ilProcessor4.Emit(OpCodes.Ret);
+            closureType.Methods.Add(addReferenceMethod);
+
+            // Create Release method
+            var releaseMethod = new MethodDefinition("Release", MethodAttributes.HideBySig | MethodAttributes.Public | MethodAttributes.Final | MethodAttributes.Virtual | MethodAttributes.NewSlot, context.Assembly.MainModule.TypeSystem.Void);
+            ilProcessor4 = releaseMethod.Body.GetILProcessor();
+            retInstruction = ilProcessor4.Create(OpCodes.Ret);
+            // Check decremented reference count
+            ilProcessor4.Emit(OpCodes.Ldarg_0);
+            ilProcessor4.Emit(OpCodes.Ldflda, referenceCountField);
+            ilProcessor4.Emit(OpCodes.Call, interlockedDecrementMethod);
+            ilProcessor4.Emit(OpCodes.Ldc_I4_0);
+            ilProcessor4.Emit(OpCodes.Ceq);
+            ilProcessor4.Emit(OpCodes.Brfalse_S, retInstruction);
+            // Release this to pool
+            ilProcessor4.Emit(OpCodes.Ldsfld, localFieldReference);
+            ilProcessor4.Emit(OpCodes.Ldarg_0);
+            ilProcessor4.Emit(OpCodes.Callvirt, poolReleaseMethod.MakeGeneric(closureGenericType));
+            ilProcessor4.Append(retInstruction);
+            closureType.Methods.Add(releaseMethod);
+
+            closures.Add(closureType, closure = new ClosureInfo
+            {
+                FactoryMethod = factoryMethod,
+                AddReferenceMethod = addReferenceMethod,
+                ReleaseMethod = releaseMethod,
+                PoolField = poolField
+            });
+
+            return closure;
         }
 
         private Instruction WalkStack(Instruction instruction, int stackOffset)
