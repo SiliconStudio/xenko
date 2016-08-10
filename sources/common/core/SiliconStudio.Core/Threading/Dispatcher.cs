@@ -192,7 +192,8 @@ namespace SiliconStudio.Core.Threading
                 while ((newStart = Interlocked.Add(ref state.StartInclusive, batchSize)) - batchSize < collection.Count)
                 {
                     // TODO: Reuse enumerator when processing multiple batches synchronously
-                    ExecuteBatch(collection, newStart - batchSize, Math.Min(collection.Count, newStart), action);
+                    var start = newStart - batchSize;
+                    ExecuteBatch(collection, newStart - batchSize, Math.Min(collection.Count, newStart) - start, action);
                 }
             }
             finally
