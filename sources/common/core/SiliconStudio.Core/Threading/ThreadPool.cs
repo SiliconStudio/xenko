@@ -49,9 +49,6 @@ namespace SiliconStudio.Core.Threading
 
         private void ProcessWorkItems(object state)
         {
-            if (Thread.CurrentThread.Name == null)
-                Thread.CurrentThread.Name = $"Xenko Thread Pool {state}";
-
             //var spinWait = new SpinWait();
 
             while (true)
