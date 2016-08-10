@@ -121,6 +121,36 @@ namespace SiliconStudio.Core.Threading
             For(0, collection.Count, i => action(collection[i]));
         }
 
+        public static void ForEach<TKey, TValue>(Dictionary<TKey, TValue> collection, [Pooled] Action<KeyValuePair<TKey, TValue>> action)
+        {
+            if (MaxDregreeOfParallelism <= 1 || collection.Count <= 1)
+            {
+                ExecuteBatch(collection, 0, collection.Count, action);
+            }
+            else
+            {
+                var state = loopStatePool.Acquire();
+                state.ActiveWorkerCount = 1;
+                state.StartInclusive = 0;
+
+                try
+                {
+                    int batchCount = Math.Min(MaxDregreeOfParallelism, collection.Count);
+                    int batchSize = (collection.Count + (batchCount - 1)) / batchCount;
+
+                    // Wait for all workers to finish
+                    Fork(collection, batchSize, MaxDregreeOfParallelism, action, state);
+
+                    // Kick off a worker, then perform work synchronously
+                    state.Finished.WaitOne();
+                }
+                finally
+                {
+                    loopStatePool.Release(state);
+                }
+            }
+        }
+
         public static void ForEach<T>(FastCollection<T> collection, [Pooled] Action<T> action)
         {
             For(0, collection.Count, i => action(collection[i]));
@@ -155,47 +185,22 @@ namespace SiliconStudio.Core.Threading
                 ThreadPool.Instance.QueueWorkItem(() => Fork(collection, batchSize, maxDegreeOfParallelism - 1, action, state));
             }
 
-            // Process batches synchronously as long as there are any
-            int newStart;
-            while ((newStart = Interlocked.Add(ref state.StartInclusive, batchSize)) - batchSize < collection.Count)
+            try
             {
-                // TODO: Reuse enumerator when processing multiple batches synchronously
-                ExecuteBatch(collection, newStart - batchSize, Math.Min(collection.Count, newStart), action);
-            }
-
-            // If this was the last batch, signal
-            if (Interlocked.Decrement(ref state.ActiveWorkerCount) == 0)
-            {
-                state.Finished.Set();
-            }
-        }
-
-        public static void ForEach<TKey, TValue>(Dictionary<TKey, TValue> collection, [Pooled] Action<KeyValuePair<TKey, TValue>> action)
-        {
-            if (MaxDregreeOfParallelism <= 1 || collection.Count <= 1)
-            {
-                ExecuteBatch(collection, 0, collection.Count, action);
-            }
-            else
-            {
-                var state = loopStatePool.Acquire();
-                state.ActiveWorkerCount = 1;
-                state.StartInclusive = 0;
-
-                try
+                // Process batches synchronously as long as there are any
+                int newStart;
+                while ((newStart = Interlocked.Add(ref state.StartInclusive, batchSize)) - batchSize < collection.Count)
                 {
-                    int batchCount = Math.Min(MaxDregreeOfParallelism, collection.Count);
-                    int batchSize = (collection.Count + (batchCount - 1)) / batchCount;
-
-                    // Wait for all workers to finish
-                    Fork(collection, batchSize, MaxDregreeOfParallelism, action, state);
-
-                    // Kick off a worker, then perform work synchronously
-                    state.Finished.WaitOne();
+                    // TODO: Reuse enumerator when processing multiple batches synchronously
+                    ExecuteBatch(collection, newStart - batchSize, Math.Min(collection.Count, newStart), action);
                 }
-                finally
+            }
+            finally
+            {
+                // If this was the last batch, signal
+                if (Interlocked.Decrement(ref state.ActiveWorkerCount) == 0)
                 {
-                    loopStatePool.Release(state);
+                    state.Finished.Set();
                 }
             }
         }
@@ -238,17 +243,22 @@ namespace SiliconStudio.Core.Threading
                 ThreadPool.Instance.QueueWorkItem(() => Fork(endExclusive, batchSize, maxDegreeOfParallelism - 1, action, state));
             }
 
-            // Process batches synchronously as long as there are any
-            int newStart;
-            while ((newStart = Interlocked.Add(ref state.StartInclusive, batchSize)) - batchSize < endExclusive)
+            try
             {
-                ExecuteBatch(newStart - batchSize, Math.Min(endExclusive, newStart), action);
+                // Process batches synchronously as long as there are any
+                int newStart;
+                while ((newStart = Interlocked.Add(ref state.StartInclusive, batchSize)) - batchSize < endExclusive)
+                {
+                    ExecuteBatch(newStart - batchSize, Math.Min(endExclusive, newStart), action);
+                }
             }
-
-            // If this was the last batch, signal
-            if (Interlocked.Decrement(ref state.ActiveWorkerCount) == 0)
+            finally
             {
-                state.Finished.Set();
+                // If this was the last batch, signal
+                if (Interlocked.Decrement(ref state.ActiveWorkerCount) == 0)
+                {
+                    state.Finished.Set();
+                }
             }
         }
 
@@ -261,17 +271,22 @@ namespace SiliconStudio.Core.Threading
                 ThreadPool.Instance.QueueWorkItem(() => Fork(endExclusive, batchSize, maxDegreeOfParallelism - 1, initializeLocal, action, finalizeLocal, state));
             }
 
-            // Process batches synchronously as long as there are any
-            int newStart;
-            while ((newStart = Interlocked.Add(ref state.StartInclusive, batchSize)) - batchSize < endExclusive)
+            try
             {
-                ExecuteBatch(newStart - batchSize, Math.Min(endExclusive, newStart), initializeLocal, action, finalizeLocal);
+                // Process batches synchronously as long as there are any
+                int newStart;
+                while ((newStart = Interlocked.Add(ref state.StartInclusive, batchSize)) - batchSize < endExclusive)
+                {
+                    ExecuteBatch(newStart - batchSize, Math.Min(endExclusive, newStart), initializeLocal, action, finalizeLocal);
+                }
             }
-
-            // If this was the last batch, signal
-            if (Interlocked.Decrement(ref state.ActiveWorkerCount) == 0)
+            finally
             {
-                state.Finished.Set();
+                // If this was the last batch, signal
+                if (Interlocked.Decrement(ref state.ActiveWorkerCount) == 0)
+                {
+                    state.Finished.Set();
+                }
             }
         }
 
@@ -341,38 +356,43 @@ namespace SiliconStudio.Core.Threading
 
             bool hasChild = false;
 
-            SortRange range;
-            while (state.Partitions.TryDequeue(out range))
+            try
             {
-                if (range.Right - range.Left < sequentialThreshold)
+                SortRange range;
+                while (state.Partitions.TryDequeue(out range))
                 {
-                    // Sort small collections sequentially
-                    Array.Sort(collection, range.Left, range.Right - range.Left + 1, comparer);
-                }
-                else
-                {
-                    int pivot = Partition(collection, range.Left, range.Right, comparer);
-
-                    // Add work items
-                    if (pivot - 1 > range.Left)
-                        state.Partitions.Enqueue(new SortRange(range.Left, pivot - 1));
-
-                    if (range.Right > pivot + 1)
-                        state.Partitions.Enqueue(new SortRange(pivot + 1, range.Right));
-
-                    // Add a new worker if necessary
-                    if (maxDegreeOfParallelism > 1 && !hasChild)
+                    if (range.Right - range.Left < sequentialThreshold)
                     {
-                        Interlocked.Increment(ref state.ActiveWorkerCount);
-                        Fork(collection, maxDegreeOfParallelism, comparer, state);
-                        hasChild = true;
+                        // Sort small collections sequentially
+                        Array.Sort(collection, range.Left, range.Right - range.Left + 1, comparer);
+                    }
+                    else
+                    {
+                        int pivot = Partition(collection, range.Left, range.Right, comparer);
+
+                        // Add work items
+                        if (pivot - 1 > range.Left)
+                            state.Partitions.Enqueue(new SortRange(range.Left, pivot - 1));
+
+                        if (range.Right > pivot + 1)
+                            state.Partitions.Enqueue(new SortRange(pivot + 1, range.Right));
+
+                        // Add a new worker if necessary
+                        if (maxDegreeOfParallelism > 1 && !hasChild)
+                        {
+                            Interlocked.Increment(ref state.ActiveWorkerCount);
+                            Fork(collection, maxDegreeOfParallelism, comparer, state);
+                            hasChild = true;
+                        }
                     }
                 }
             }
-
-            if (Interlocked.Decrement(ref state.ActiveWorkerCount) == 0)
+            finally
             {
-                state.Finished.Set();
+                if (Interlocked.Decrement(ref state.ActiveWorkerCount) == 0)
+                {
+                    state.Finished.Set();
+                }
             }
         }
 
