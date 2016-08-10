@@ -104,6 +104,7 @@ namespace SiliconStudio.Assets.Analysis
         internal static void UpdateAssetReferences(AssetItem assetItem, IEnumerable<AssetReferenceLink> assetReferences, ILogger log, AssetAnalysisParameters parameters)
         {
             var package = assetItem.Package;
+            bool shouldSetDirtyFlag = false;
 
             // Update reference
             foreach (var assetReferenceLink in assetReferences.Where(link => link.Reference is IReference))
@@ -149,8 +150,14 @@ namespace SiliconStudio.Assets.Analysis
                 if (newLocationWithoutExtension != contentReference.Location || newItemReference.Id != contentReference.Id)
                 {
                     assetReferenceLink.UpdateReference(newItemReference.Id, newLocationWithoutExtension);
-                    assetItem.IsDirty = true;
+                    shouldSetDirtyFlag = true;
                 }
+            }
+
+            // Setting the dirty flag is an heavy operation, we want to do it only once
+            if (shouldSetDirtyFlag)
+            {
+                assetItem.IsDirty = true;
             }
         }
     }
