@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Assets.UI
         /// Clones a sub-hierarchy of this asset.
         /// </summary>
         /// <param name="sourceRootId">The id of the root of the sub-hierarchy to clone</param>
-        /// <param name="cleanReference">If true, any reference to an part external to the cloned hierarchy will be set to null.</param>
+        /// <param name="cleanReference">If true, any reference to a part external to the cloned hierarchy will be set to null.</param>
         /// <param name="idRemapping">A dictionary containing the mapping of ids from the source parts to the new parts.</param>
         /// <returns>A <see cref="AssetCompositeHierarchyData{UIElementDesign, UIElement}"/> corresponding to the cloned parts.</returns>
         public AssetCompositeHierarchyData<UIElementDesign, UIElement> CloneSubHierarchy(Guid sourceRootId, bool cleanReference, out Dictionary<Guid, Guid> idRemapping)
@@ -86,6 +86,73 @@ namespace SiliconStudio.Xenko.Assets.UI
             }
 
             // Rewrite part references
+            // Should we nullify invalid references?
+            AssetPartsAnalysis.RemapPartsId(clonedHierarchy, idRemapping);
+
+            return clonedHierarchy;
+        }
+
+        /// <summary>
+        /// Clones a sub-hierarchy of this asset.
+        /// </summary>
+        /// <param name="sourceRootIds">The ids that are the roots of the sub-hierarchies to clone</param>
+        /// <param name="cleanReference">If true, any reference to a part external to the cloned hierarchy will be set to null.</param>
+        /// <param name="idRemapping">A dictionary containing the mapping of ids from the source parts to the new parts.</param>
+        /// <returns>A <see cref="AssetCompositeHierarchyData{UIElementDesign, UIElement}"/> corresponding to the cloned parts.</returns>
+        /// <remarks>The root ids passed to this methods must be independent in the hierarchy.</remarks>
+        public AssetCompositeHierarchyData<UIElementDesign, UIElement> CloneSubHierarchies(IEnumerable<Guid> sourceRootIds, bool cleanReference, out Dictionary<Guid, Guid> idRemapping)
+        {
+            // Note: Instead of copying the whole asset (with its potentially big hierarchy),
+            // we first copy the asset only (without the hierarchy), then the sub-hierarchy to extract.
+            var subTreeHierarchy = new AssetCompositeHierarchyData<UIElementDesign, UIElement>();
+            foreach (var sourceRootEntity in sourceRootIds)
+            {
+                if (!Hierarchy.Parts.ContainsKey(sourceRootEntity))
+                    throw new ArgumentException(@"The source root parts must be parts of this asset.", nameof(sourceRootIds));
+
+                var subTreeRoot = Hierarchy.Parts[sourceRootEntity].UIElement;
+                subTreeHierarchy.Parts.Add(new UIElementDesign(subTreeRoot));
+                subTreeHierarchy.RootPartIds.Add(sourceRootEntity);
+                foreach (var subTreeEntity in EnumerateChildParts(subTreeRoot, true))
+                    subTreeHierarchy.Parts.Add(Hierarchy.Parts[subTreeEntity.Id]);
+            }
+
+            // clone the entities of the sub-tree
+            var clonedHierarchy = (AssetCompositeHierarchyData<UIElementDesign, UIElement>)AssetCloner.Clone(subTreeHierarchy);
+            //foreach (var rootEntity in clonedHierarchy.RootPartIds)
+            //{
+            //    clonedHierarchy.Parts[rootEntity].UIElement.Parent = null;
+            //}
+
+            //if (cleanReference)
+            //{
+            //    // set to null reference outside of the sub-tree
+            //    var tempAsset = new PrefabAsset { Hierarchy = clonedHierarchy };
+            //    tempAsset.FixupPartReferences();
+            //}
+
+            // temporary nullify the hierarchy to avoid to clone it
+            var sourceHierarchy = Hierarchy;
+            Hierarchy = null;
+
+            // revert the source hierarchy
+            Hierarchy = sourceHierarchy;
+
+            // Generate entity mapping
+            idRemapping = new Dictionary<Guid, Guid>();
+            foreach (var entityDesign in clonedHierarchy.Parts)
+            {
+                // Generate new Id
+                var newEntityId = Guid.NewGuid();
+
+                // Update mappings
+                idRemapping.Add(entityDesign.UIElement.Id, newEntityId);
+
+                // Update entity with new id
+                entityDesign.UIElement.Id = newEntityId;
+            }
+
+            // Rewrite entity references
             // Should we nullify invalid references?
             AssetPartsAnalysis.RemapPartsId(clonedHierarchy, idRemapping);
 
