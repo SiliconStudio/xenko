@@ -106,6 +106,12 @@ namespace SiliconStudio.Quantum.References
         }
 
         /// <inheritdoc/>
+        public IEnumerable<ObjectReference> Enumerate()
+        {
+            return references;
+        }
+
+        /// <inheritdoc/>
         public IEnumerator<ObjectReference> GetEnumerator()
         {
             return references.GetEnumerator();

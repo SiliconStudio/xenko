@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 
 namespace SiliconStudio.Quantum.References
 {
@@ -44,9 +45,8 @@ namespace SiliconStudio.Quantum.References
         /// </summary>
         void Clear();
 
-        /// <summary>
-        /// Refresh this reference and its nested references.
-        /// </summary>
-        void Refresh(object newObjectValue);
+        bool Refresh(object newObjectValue);
+
+        IEnumerable<ObjectReference> Enumerate();
     }
 }

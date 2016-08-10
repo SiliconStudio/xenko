@@ -75,6 +75,12 @@ namespace SiliconStudio.Quantum.References
         }
 
         /// <inheritdoc/>
+        public IEnumerable<ObjectReference> Enumerate()
+        {
+            yield return this;
+        }
+
+        /// <inheritdoc/>
         public bool Equals(IReference other)
         {
             var otherReference = other as ObjectReference;
