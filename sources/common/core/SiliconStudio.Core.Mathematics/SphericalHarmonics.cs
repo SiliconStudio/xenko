@@ -112,7 +112,7 @@ namespace SiliconStudio.Core.Mathematics
 
         private const float Pi4 = 4 * MathUtil.Pi;
         private const float Pi16 = 16 * MathUtil.Pi;
-        private const float Pi64 = 44 * MathUtil.Pi;
+        private const float Pi64 = 64 * MathUtil.Pi;
         private readonly float sqrtPi = (float)Math.Sqrt(MathUtil.Pi);
 
         internal SphericalHarmonics()
@@ -169,9 +169,9 @@ namespace SiliconStudio.Core.Mathematics
                 
             if (Order > 3)
             {
-                baseValues[ 9] = -(float)Math.Sqrt(  7/Pi64)*y*(3*x2-y2);
+                baseValues[ 9] = -(float)Math.Sqrt( 70/Pi64)*y*(3*x2-y2);
                 baseValues[10] =  (float)Math.Sqrt(105/ Pi4)*y*x*z;
-                baseValues[11] = -(float)Math.Sqrt( 21/Pi16)*y*(-1+5*z2);
+                baseValues[11] = -(float)Math.Sqrt( 42/Pi64)*y*(-1+5*z2);
                 baseValues[12] =  (float)Math.Sqrt(  7/Pi16)*(5*z3-3*z);
                 baseValues[13] = -(float)Math.Sqrt( 42/Pi64)*x*(-1+5*z2);
                 baseValues[14] =  (float)Math.Sqrt(105/Pi16)*(x2-y2)*z;

@@ -47,8 +47,12 @@ namespace SiliconStudio.Xenko.Physics
             var inverseRotation = LocalRotation;
             inverseRotation.Invert();
 
-            PositiveCenterMatrix = Matrix.RotationQuaternion(LocalRotation)*Matrix.Translation(LocalOffset * CachedScaling);
-            NegativeCenterMatrix = Matrix.RotationQuaternion(inverseRotation)*Matrix.Translation(-LocalOffset * CachedScaling);
+            //cache matrices used to translate the position from and to physics engine / gfx engine
+            Matrix positiveMatrix;
+            TransformComponent.CreateMatrixTRS(ref LocalOffset, ref LocalRotation, ref CachedScaling, out positiveMatrix);
+            PositiveCenterMatrix = positiveMatrix;
+            positiveMatrix.Invert();
+            NegativeCenterMatrix = positiveMatrix;
 
             //if we are part of a compund we should update the transformation properly
             if (Parent == null) return;
