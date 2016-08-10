@@ -1,8 +1,10 @@
+// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
-using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.UI;
 
@@ -10,10 +12,9 @@ namespace SiliconStudio.Xenko.Assets.UI
 {
     [DataContract("UILibraryAsset")]
     [AssetDescription(FileExtension)]
-    [AssetCompiler(typeof(UIPageAssetCompiler))]
+    [AssetCompiler(typeof(UILibraryAssetCompiler))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [Display("UI")]
-    [AssetPartReference(typeof(UIElement))]
     public class UILibraryAsset : UIAssetBase
     {
         private const string CurrentVersion = "0.0.0";

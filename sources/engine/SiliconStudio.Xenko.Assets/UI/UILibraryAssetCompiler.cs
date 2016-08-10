@@ -7,7 +7,6 @@ using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Xenko.Assets.Entities;
 
 namespace SiliconStudio.Xenko.Assets.UI
 {

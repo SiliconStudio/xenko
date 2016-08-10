@@ -1,8 +1,12 @@
+// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Analysis;
+using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
@@ -15,6 +19,7 @@ namespace SiliconStudio.Xenko.Assets.UI
     /// <summary>
     /// Base class for assets containing a hierarchy of <see cref="UIElement"/>.
     /// </summary>
+    [AssetPartReference(typeof(UIElement))]
     public abstract class UIAssetBase : AssetCompositeHierarchy<UIElementDesign, UIElement>
     {
         [DataMember(10)]

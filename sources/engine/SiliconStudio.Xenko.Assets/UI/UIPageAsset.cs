@@ -3,12 +3,7 @@
 
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
-using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.UI;
 
 namespace SiliconStudio.Xenko.Assets.UI
 {
@@ -20,7 +15,6 @@ namespace SiliconStudio.Xenko.Assets.UI
     [AssetCompiler(typeof(UIPageAssetCompiler))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [Display("UI Page")]
-    [AssetPartReference(typeof(UIElement))]
     public sealed class UIPageAsset : UIAssetBase
     {
         private const string CurrentVersion = "0.0.0";
