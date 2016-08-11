@@ -16,11 +16,15 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <typeparam name="T">Type of child to find.</typeparam>
         /// <param name="source">Base node from where to start looking for child.</param>
+        /// <param name="name">(Optional) name of the element</param>
         /// <returns>Returns the retrieved child, or null otherwise.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static T FindVisualChildOfType<T>(this UIElement source) where T : UIElement
+        public static T FindVisualChildOfType<T>(this UIElement source, string name = null) where T : UIElement
         {
-            return FindVisualChildrenOfType<T>(source).FirstOrDefault();
+            var visualChildren = FindVisualChildrenOfType<T>(source);
+            return name != null
+                ? visualChildren.FirstOrDefault(e => string.Equals(e.Name, name, StringComparison.Ordinal))
+                : visualChildren.FirstOrDefault();
         }
 
         /// <summary>
