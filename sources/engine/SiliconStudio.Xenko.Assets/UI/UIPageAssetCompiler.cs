@@ -2,57 +2,29 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Linq;
-using System.Threading.Tasks;
-using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
-using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization.Assets;
 
 namespace SiliconStudio.Xenko.Assets.UI
 {
-    public class UIPageAssetCompiler : AssetCompilerBase<UIPageAsset>
+    public sealed class UIPageAssetCompiler : UIAssetCompilerBase<UIPageAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, UIPageAsset asset, AssetCompilerResult result)
+        protected override UIConvertCommand Create(string url, UIPageAsset parameters)
         {
-            if (!EnsureSourcesExist(result, asset, assetAbsolutePath))
-                return;
-
-            var parameters = new UIConvertParameters(asset);
-            result.BuildSteps = new AssetBuildStep(AssetItem) { new UIConvertCommand(urlInStorage, parameters) };
+            return new UIPageCommand(url, parameters);
         }
-
-        /// <summary>
-        /// Command used to convert the texture in the storage
-        /// </summary>
-        public class UIConvertCommand : AssetCommand<UIConvertParameters>
+        
+        private sealed class UIPageCommand : UIConvertCommand
         {
-            public UIConvertCommand(string url, UIConvertParameters parameters)
+            public UIPageCommand(string url, UIPageAsset parameters)
                 : base(url, parameters)
             {
             }
 
-            protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
+            protected override ComponentBase Create(ICommandContext commandContext)
             {
-                var assetManager = new ContentManager();
-
-                var uiPage = new Engine.UIPage { RootElement = AssetParameters.UIPageAsset.Hierarchy.Parts[AssetParameters.UIPageAsset.Hierarchy.RootPartIds.Single()].UIElement };
-                assetManager.Save(Url, uiPage);
-
-                return Task.FromResult(ResultStatus.Successful);
+                return new Engine.UIPage { RootElement = AssetParameters.Hierarchy.Parts[AssetParameters.Hierarchy.RootPartIds.Single()].UIElement };
             }
-        }
-
-        [DataContract]
-        public class UIConvertParameters
-        {
-            public UIConvertParameters(UIPageAsset uiPageAsset)
-            {
-                UIPageAsset = uiPageAsset;
-            }
-
-            [DataMember]
-            public UIPageAsset UIPageAsset { get; set; }
         }
     }
 }

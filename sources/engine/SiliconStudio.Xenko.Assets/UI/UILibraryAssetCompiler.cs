@@ -1,45 +1,32 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Threading.Tasks;
-using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
-using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization.Assets;
 
 namespace SiliconStudio.Xenko.Assets.UI
 {
-    public class UILibraryAssetCompiler : AssetCompilerBase<UILibraryAsset>
+    public sealed class UILibraryAssetCompiler : UIAssetCompilerBase<UILibraryAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, UILibraryAsset asset, AssetCompilerResult result)
+        protected override UIConvertCommand Create(string url, UILibraryAsset parameters)
         {
-            if (!EnsureSourcesExist(result, asset, assetAbsolutePath))
-                return;
-
-            var parameters = new UILibraryConvertParameters(asset);
-            result.BuildSteps = new AssetBuildStep(AssetItem) { new UIConvertCommand(urlInStorage, parameters) };
+            return new UILibraryCommand(url, parameters);
         }
 
-        /// <summary>
-        /// Command used to convert the texture in the storage
-        /// </summary>
-        public class UIConvertCommand : AssetCommand<UILibraryConvertParameters>
+        private sealed class UILibraryCommand : UIConvertCommand
         {
-            public UIConvertCommand(string url, UILibraryConvertParameters parameters)
+            public UILibraryCommand(string url, UILibraryAsset parameters)
                 : base(url, parameters)
             {
             }
 
-            protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
+            protected override ComponentBase Create(ICommandContext commandContext)
             {
-                var assetManager = new ContentManager();
-
                 var uiLibrary = new Engine.UILibrary();
-                foreach (var kv in AssetParameters.UILibraryAsset.PublicUIElements)
+                foreach (var kv in AssetParameters.PublicUIElements)
                 {
 
-                    if (!AssetParameters.UILibraryAsset.Hierarchy.RootPartIds.Contains(kv.Key))
+                    if (!AssetParameters.Hierarchy.RootPartIds.Contains(kv.Key))
                     {
                         // We might want to allow that in the future.
                         commandContext.Logger.Warning($"Only root elements can be exposed publicly. Skipping [{kv.Key}].");
@@ -48,7 +35,7 @@ namespace SiliconStudio.Xenko.Assets.UI
 
                     // Copy Key/Value pair
                     UIElementDesign element;
-                    if (AssetParameters.UILibraryAsset.Hierarchy.Parts.TryGetValue(kv.Key, out element))
+                    if (AssetParameters.Hierarchy.Parts.TryGetValue(kv.Key, out element))
                     {
                         uiLibrary.UIElements.Add(kv.Value, element.UIElement);
                     }
@@ -57,22 +44,8 @@ namespace SiliconStudio.Xenko.Assets.UI
                         commandContext.Logger.Error($"Cannot find the element with the id [{kv.Value}] to expose [{kv.Key}].");
                     }
                 }
-
-                assetManager.Save(Url, uiLibrary);
-                return Task.FromResult(ResultStatus.Successful);
+                return uiLibrary;
             }
-        }
-
-        [DataContract]
-        public class UILibraryConvertParameters
-        {
-            public UILibraryConvertParameters(UILibraryAsset uiLibraryAsset)
-            {
-                UILibraryAsset = uiLibraryAsset;
-            }
-
-            [DataMember]
-            public UILibraryAsset UILibraryAsset { get; set; }
         }
     }
 }

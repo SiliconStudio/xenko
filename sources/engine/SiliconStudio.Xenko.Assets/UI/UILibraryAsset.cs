@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Assets.UI
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(UILibraryAssetCompiler))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
-    [Display("UI")]
+    [Display("UI Library")]
     public class UILibraryAsset : UIAssetBase
     {
         private const string CurrentVersion = "0.0.0";
