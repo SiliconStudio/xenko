@@ -17,7 +17,7 @@ using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Importer.Common;
 
-namespace SiliconStudio.Xenko.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Models
 {
     public abstract class ModelAssetImporter : AssetImporterBase
     {

@@ -4,7 +4,7 @@ using System.ComponentModel;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Xenko.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Models
 {
     [DataContract("NodeInformation")]
     [DataStyle(DataStyle.Compact)]

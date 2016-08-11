@@ -5,7 +5,7 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 
-namespace SiliconStudio.Xenko.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Models
 {
     public class SkeletonAssetCompiler : AssetCompilerBase<SkeletonAsset>
     {

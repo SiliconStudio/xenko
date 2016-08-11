@@ -5,8 +5,8 @@
     <ProjectGuid>{C904D2C6-5A15-4E0B-8432-33967E1735AA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SiliconStudio.Xenko.Assets.Model</RootNamespace>
-    <AssemblyName>SiliconStudio.Xenko.Assets.Model</AssemblyName>
+    <RootNamespace>SiliconStudio.Xenko.Assets.Models</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.Assets.Models</AssemblyName>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions)</SiliconStudioAssemblyProcessorOptions>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>

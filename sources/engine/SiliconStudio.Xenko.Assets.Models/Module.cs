@@ -3,7 +3,7 @@
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 
-namespace SiliconStudio.Xenko.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Models
 {
     internal class Module
     {
