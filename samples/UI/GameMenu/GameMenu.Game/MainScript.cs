@@ -11,8 +11,14 @@ using SiliconStudio.Xenko.UI.Panels;
 
 namespace GameMenu
 {
+    /// <summary>
+    /// Script controller for the main scene.
+    /// </summary>
     public class MainScript : UISceneBase
     {
+        /// <summary>
+        /// Default player name.
+        /// </summary>
         private const string DefaultName = "John Doe";
         private const int MaximumStar = 3;
 
@@ -20,11 +26,6 @@ namespace GameMenu
         {
             "red_ship", "green_ship", "blue_ship", "blue_ship", "yellow_ship", "yellow_ship", "cyan_ship"
         };
-
-        public SpriteFont WesternFont;
-        public SpriteSheet MainSceneImages;
-        public SpriteFont JapaneseFont;
-        public UILibrary UILibrary;
 
         private UIPage page;
 
@@ -39,8 +40,7 @@ namespace GameMenu
 
         private ModalElement shipSelectPopup; // Root of SpaceShip select popup
         private ModalElement welcomePopup; // Root of welcome popup
-
-        private ISpriteProvider popupWindowImage; // Window frame for popup which is shared between SpaceShip select and welcome popups
+        
         private TextBlock nameTextBlock; // Name of the character
         private ImageElement currentShipImage; // Current SpaceShip of the character
         private int activeShipIndex;
@@ -50,21 +50,35 @@ namespace GameMenu
 
         // Life gauge
         private RectangleF gaugeBarRegion;
-        private Grid lifeBarGrid;
-        private Sprite lifeBarGaugeImage;
+        private Grid lifebarGrid;
+        private Sprite lifebarGaugeImage;
 
         private TextBlock moneyCounter;
-        private int Money
-        {
-            set
-            {
-                money = value;
-                moneyCounter.Text = CreateMoneyCountText();
-            }
-            get { return money; }
-        }
 
         private TextBlock bonusCounter;
+
+        private TextBlock lifeCounter;
+
+
+        private readonly ImageElement powerStatusStar = new ImageElement();
+
+        private readonly ImageElement controlStatusStar = new ImageElement();
+
+        private readonly ImageElement speedStatusStar = new ImageElement();
+
+        [Obsolete]
+        public SpriteFont WesternFont { get; set; }
+
+        /// <summary>
+        /// Spritesheet containing the sprites of the main scene.
+        /// </summary>
+        public SpriteSheet MainSceneImages { get; set; }
+
+        /// <summary>
+        /// UI library containing the modal popups and the ship button template.
+        /// </summary>
+        public UILibrary UILibrary { get; set; }
+
         private int Bonus
         {
             set
@@ -75,32 +89,6 @@ namespace GameMenu
             get { return bonus; }
         }
 
-        private TextBlock lifeCounter;
-        private int LifeStatus
-        {
-            set
-            {
-                lifeStatus = value;
-                lifeCounter.Text = CreateLifeCountText();
-            }
-            get { return lifeStatus; }
-        }
-
-
-        private readonly ImageElement powerStatusStar = new ImageElement();
-        private int PowerStatus
-        {
-            set
-            {
-                if (value > MaximumStar) return;
-                powerStatus = value;
-                powerStatusStar.Source = (SpriteFromTexture)starSprites[powerStatus];
-                shipList[activeShipIndex].Power = powerStatus;
-            }
-            get { return powerStatus; }
-        }
-
-        private readonly ImageElement controlStatusStar = new ImageElement();
         private int ControlStatus
         {
             set
@@ -113,7 +101,27 @@ namespace GameMenu
             get { return controlStatus; }
         }
 
-        private readonly ImageElement speedStatusStar = new ImageElement();
+        private int LifeStatus
+        {
+            set
+            {
+                lifeStatus = value;
+                lifeCounter.Text = CreateLifeCountText();
+            }
+            get { return lifeStatus; }
+        }
+
+        private int PowerStatus
+        {
+            set
+            {
+                if (value > MaximumStar) return;
+                powerStatus = value;
+                powerStatusStar.Source = (SpriteFromTexture)starSprites[powerStatus];
+                shipList[activeShipIndex].Power = powerStatus;
+            }
+            get { return powerStatus; }
+        }
 
         private int SpeedStatus
         {
@@ -127,6 +135,16 @@ namespace GameMenu
             get { return speedStatus; }
         }
 
+        private int Money
+        {
+            set
+            {
+                money = value;
+                moneyCounter.Text = CreateMoneyCountText();
+            }
+            get { return money; }
+        }
+
         public override void Start()
         {
             base.Start();
@@ -135,19 +153,6 @@ namespace GameMenu
 
         protected override void LoadScene()
         {
-            page = Entity.Get<UIComponent>().Page;
-
-            nameTextBlock = page.RootElement.FindVisualChildOfType<TextBlock>("nameTextBlock");
-
-            // FIXME: UI asset should support multiline text
-            var explanationText = page.RootElement.FindVisualChildOfType<TextBlock>("explanationText");
-            explanationText.Text = "Pictogram-based alphabets are easily supported.\n日本語も簡単に入れることが出来ます。";
-
-            var quitButton = page.RootElement.FindVisualChildOfType<Button>("quitButton");
-            quitButton.Click += delegate { UIGame.Exit(); };
-
-            popupWindowImage = SpriteFromSheet.Create(MainSceneImages, "popup_window");
-
             // Preload stars
             starSprites.Add(MainSceneImages["star0"]);
             starSprites.Add(MainSceneImages["star1"]);
@@ -172,16 +177,36 @@ namespace GameMenu
                 });
             }
 
+            // Initialize UI
+            page = Entity.Get<UIComponent>().Page;
+
+            bonusCounter = page.RootElement.FindVisualChildOfType<TextBlock>("bonusCounter");
+            lifeCounter = page.RootElement.FindVisualChildOfType<TextBlock>("lifeCounter");
+            moneyCounter = page.RootElement.FindVisualChildOfType<TextBlock>("moneyCounter");
+
+            lifebarGaugeImage = MainSceneImages["life_bar"];
+            lifebarGrid = page.RootElement.FindVisualChildOfType<Grid>("lifebarGrid");
+            gaugeBarRegion = lifebarGaugeImage.Region;
+
+            nameTextBlock = page.RootElement.FindVisualChildOfType<TextBlock>("nameTextBlock");
+
+            // FIXME: UI asset should support multiline text
+            var explanationText = page.RootElement.FindVisualChildOfType<TextBlock>("explanationText");
+            explanationText.Text = "Pictogram-based alphabets are easily supported.\n日本語も簡単に入れることが出来ます。";
+
+            var quitButton = page.RootElement.FindVisualChildOfType<Button>("quitButton");
+            quitButton.Click += delegate { UIGame.Exit(); };
+
             InitializeUpgradeButtons();
             InitializeWelcomePopup();
             CreateShipSelectionPopup();
 
-            // Overlay pop-ups and the main screen
+            // Add pop-ups to the overlay
             var overlay = (UniformGrid) page.RootElement;
             overlay.Children.Add(welcomePopup);
             overlay.Children.Add(shipSelectPopup);
 
-            //Script.AddTask(FillLifeBar);
+            Script.AddTask(FillLifeBar);
         }
 
         private async Task FillLifeBar()
@@ -194,12 +219,12 @@ namespace GameMenu
 
                 gaugePercentage = Math.Min(1f, gaugePercentage + (float)Game.UpdateTime.Elapsed.TotalSeconds * 0.02f);
 
-                var gaugeCurrentRegion = lifeBarGaugeImage.Region;
+                var gaugeCurrentRegion = lifebarGaugeImage.Region;
                 gaugeCurrentRegion.Width = gaugePercentage * gaugeBarRegion.Width;
-                lifeBarGaugeImage.Region = gaugeCurrentRegion;
+                lifebarGaugeImage.Region = gaugeCurrentRegion;
 
-                lifeBarGrid.ColumnDefinitions[1].SizeValue = gaugeCurrentRegion.Width / gaugeBarRegion.Width;
-                lifeBarGrid.ColumnDefinitions[2].SizeValue = 1 - lifeBarGrid.ColumnDefinitions[1].SizeValue;
+                lifebarGrid.ColumnDefinitions[1].SizeValue = gaugeCurrentRegion.Width / gaugeBarRegion.Width;
+                lifebarGrid.ColumnDefinitions[2].SizeValue = 1 - lifebarGrid.ColumnDefinitions[1].SizeValue;
             }
         }
 
@@ -211,6 +236,88 @@ namespace GameMenu
         private void CloseShipSelectPopup()
         {
             shipSelectPopup.Visibility = Visibility.Collapsed;
+        }
+
+        private string CreateBonusCountText()
+        {
+            return bonus.ToString("D3");
+        }
+
+        private string CreateLifeCountText()
+        {
+            return "x" + lifeStatus;
+        }
+
+        private string CreateMoneyCountText()
+        {
+            return money.ToString("D3");
+        }
+
+        private void InitializeUpgradeButtons()
+        {
+            var statusUpgradePanel = page.RootElement.FindVisualChildOfType<UniformGrid>("statusUpgradePanel");
+            SetupStatusButton((ButtonBase) statusUpgradePanel.VisualChildren[0], 2, 0, () => PowerStatus, () => PowerStatus++);
+            SetupStatusButton((ButtonBase) statusUpgradePanel.VisualChildren[1], 2, 0, () => ControlStatus, () => ControlStatus++);
+            SetupStatusButton((ButtonBase) statusUpgradePanel.VisualChildren[2], 2, 0, () => SpeedStatus, () => SpeedStatus++);
+            SetupStatusButton((ButtonBase) statusUpgradePanel.VisualChildren[3], 1, 1, () => 0, () => LifeStatus++);
+        }
+
+        private void InitializeWelcomePopup()
+        {
+            welcomePopup = UILibrary.UIElements["WelcomePopup"] as ModalElement;
+            welcomePopup.SetPanelZIndex(1);
+
+            // FIXME: UI asset should support multiline text
+            var welcomeText = welcomePopup.FindVisualChildOfType<TextBlock>("welcomeText");
+            welcomeText.Text = "Welcome to xenko UI sample.\nPlease name your character";
+            
+            var cancelButton = welcomePopup.FindVisualChildOfType<Button>("cancelButton");
+            cancelButton.Click += delegate
+            {
+                nameTextBlock.Text = DefaultName;
+                welcomePopup.Visibility = Visibility.Collapsed;
+            };
+
+            var nameEditText = welcomePopup.FindVisualChildOfType<EditText>("nameEditText");
+            var validateButton = welcomePopup.FindVisualChildOfType<Button>("validateButton");
+            validateButton.Click += delegate
+            {
+                nameTextBlock.Text = nameEditText.Text.Trim();
+                welcomePopup.Visibility = Visibility.Collapsed;
+            };
+        }
+
+        private void PurchaseWithMoney(int requireMoney)
+        {
+            Money -= requireMoney;
+        }
+
+        private void PurchaseWithBonus(int requireBonus)
+        {
+            Bonus -= requireBonus;
+        }
+
+        private void SetupStatusButton(ButtonBase button, int moneyCost, int bonuscost, Func<int> getProperty, Action setProperty)
+        {
+            button.Click += delegate
+            {
+                if (!CanPurchase(moneyCost, bonuscost) || getProperty() >= MaximumStar)
+                    return;
+
+                setProperty();
+                PurchaseWithBonus(bonuscost);
+                PurchaseWithMoney(moneyCost);
+            };
+        }
+
+        private void ShowShipSelectionPopup()
+        {
+            shipSelectPopup.Visibility = Visibility.Visible;
+        }
+
+        public void ShowWelcomePopup()
+        {
+            welcomePopup.Visibility = Visibility.Visible;
         }
 
         private void CreateShipSelectionPopup()
@@ -268,7 +375,7 @@ namespace GameMenu
 
             var shipSelectPopupContent = new ContentDecorator
             {
-                BackgroundImage = popupWindowImage,
+                //BackgroundImage = popupWindowImage,
                 Content = layoutGrid,
                 Padding = new Thickness(110, 120, 100, 140)
             };
@@ -292,6 +399,8 @@ namespace GameMenu
                 ship.SpeedImageElement.Source = (SpriteFromTexture)borderStarImages[ship.Speed];
             }
         }
+
+        // TODO:
 
         private UniformGrid CreateShipButtonElement(SpaceShip spaceShip)
         {
@@ -395,88 +504,6 @@ namespace GameMenu
             starImage.SetGridRow(elementIndex);
 
             return starImage;
-        }
-
-        private void InitializeUpgradeButtons()
-        {
-            var statusUpgradePanel = page.RootElement.FindVisualChildOfType<UniformGrid>("statusUpgradePanel");
-            SetupStatusButton((ButtonBase) statusUpgradePanel.VisualChildren[0], 2, 0, () => PowerStatus, () => PowerStatus++);
-            SetupStatusButton((ButtonBase) statusUpgradePanel.VisualChildren[1], 2, 0, () => ControlStatus, () => ControlStatus++);
-            SetupStatusButton((ButtonBase) statusUpgradePanel.VisualChildren[2], 2, 0, () => SpeedStatus, () => SpeedStatus++);
-            SetupStatusButton((ButtonBase) statusUpgradePanel.VisualChildren[3], 1, 1, () => 0, () => LifeStatus++);
-        }
-
-        private void InitializeWelcomePopup()
-        {
-            welcomePopup = UILibrary.UIElements["WelcomePopup"] as ModalElement;
-            welcomePopup.SetPanelZIndex(1);
-
-            // FIXME: UI asset should support multiline text
-            var welcomeText = welcomePopup.FindVisualChildOfType<TextBlock>("welcomeText");
-            welcomeText.Text = "Welcome to xenko UI sample.\nPlease name your character";
-            
-            var cancelButton = welcomePopup.FindVisualChildOfType<Button>("cancelButton");
-            cancelButton.Click += delegate
-            {
-                nameTextBlock.Text = DefaultName;
-                welcomePopup.Visibility = Visibility.Collapsed;
-            };
-
-            var nameEditText = welcomePopup.FindVisualChildOfType<EditText>("nameEditText");
-            var validateButton = welcomePopup.FindVisualChildOfType<Button>("validateButton");
-            validateButton.Click += delegate
-            {
-                nameTextBlock.Text = nameEditText.Text.Trim();
-                welcomePopup.Visibility = Visibility.Collapsed;
-            };
-        }
-
-        private void SetupStatusButton(ButtonBase button, int moneyCost, int bonuscost, Func<int> getProperty, Action setProperty)
-        {
-            button.Click += delegate
-            {
-                if (!CanPurchase(moneyCost, bonuscost) || getProperty() >= MaximumStar)
-                    return;
-
-                setProperty();
-                PurchaseWithBonus(bonuscost);
-                PurchaseWithMoney(moneyCost);
-            };
-        }
-
-        private void PurchaseWithMoney(int requireMoney)
-        {
-            Money -= requireMoney;
-        }
-
-        private void PurchaseWithBonus(int requireBonus)
-        {
-            Bonus -= requireBonus;
-        }
-
-        private void ShowShipSelectionPopup()
-        {
-            shipSelectPopup.Visibility = Visibility.Visible;
-        }
-
-        public void ShowWelcomePopup()
-        {
-            welcomePopup.Visibility = Visibility.Visible;
-        }
-
-        private string CreateMoneyCountText()
-        {
-            return money.ToString("D3");
-        }
-
-        private string CreateBonusCountText()
-        {
-            return bonus.ToString("D3");
-        }
-
-        private string CreateLifeCountText()
-        {
-            return "x" + lifeStatus;
         }
 
         private class SpaceShip
