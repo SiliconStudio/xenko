@@ -24,6 +24,9 @@ namespace GameMenu
         public SpriteFont WesternFont;
         public SpriteSheet MainSceneImages;
         public SpriteFont JapaneseFont;
+        public UILibrary UILibrary;
+
+        private UIPage page;
 
         private readonly List<SpaceShip> shipList = new List<SpaceShip>();
         private int money = 30;
@@ -132,6 +135,17 @@ namespace GameMenu
 
         protected override void LoadScene()
         {
+            page = Entity.Get<UIComponent>().Page;
+
+            nameTextBlock = page.RootElement.FindVisualChildOfType<TextBlock>("nameTextBlock");
+
+            // FIXME: UI asset should support multiline text
+            var explanationText = page.RootElement.FindVisualChildOfType<TextBlock>("explanationText");
+            explanationText.Text = "Pictogram-based alphabets are easily supported.\n日本語も簡単に入れることが出来ます。";
+
+            var quitButton = page.RootElement.FindVisualChildOfType<Button>("quitButton");
+            quitButton.Click += delegate { UIGame.Exit(); };
+
             popupWindowImage = SpriteFromSheet.Create(MainSceneImages, "popup_window");
 
             // Preload stars
@@ -158,28 +172,18 @@ namespace GameMenu
                 });
             }
 
-            var mainStackPanel = CreateMainScene();
-            CreateWelcomePopup();
+            InitializeUpgradeButtons();
+            InitializeWelcomePopup();
             CreateShipSelectionPopup();
 
-            // Create the background
-            var background = new ImageElement { Source = SpriteFromSheet.Create(MainSceneImages, "background_uiimage"), StretchType = StretchType.Fill };
-            background.SetPanelZIndex(-1);
-
             // Overlay pop-ups and the main screen
-            var overlay = new UniformGrid();
-            overlay.Children.Add(background);
-            overlay.Children.Add(mainStackPanel);
+            var overlay = (UniformGrid) page.RootElement;
             overlay.Children.Add(welcomePopup);
             overlay.Children.Add(shipSelectPopup);
 
-            // Set the root element to the overall overlay
-            var uiComponent = Entity.Get<UIComponent>();
-            uiComponent.Page = new UIPage { RootElement = overlay };
-
-            Script.AddTask(FillLifeBar);
+            //Script.AddTask(FillLifeBar);
         }
-        
+
         private async Task FillLifeBar()
         {
             var gaugePercentage = 0.15f;
@@ -197,6 +201,16 @@ namespace GameMenu
                 lifeBarGrid.ColumnDefinitions[1].SizeValue = gaugeCurrentRegion.Width / gaugeBarRegion.Width;
                 lifeBarGrid.ColumnDefinitions[2].SizeValue = 1 - lifeBarGrid.ColumnDefinitions[1].SizeValue;
             }
+        }
+
+        private bool CanPurchase(int requireMoney, int requireBonus)
+        {
+            return Money >= requireMoney && Bonus >= requireBonus;
+        }
+
+        private void CloseShipSelectPopup()
+        {
+            shipSelectPopup.Visibility = Visibility.Collapsed;
         }
 
         private void CreateShipSelectionPopup()
@@ -383,458 +397,42 @@ namespace GameMenu
             return starImage;
         }
 
-        private void CreateWelcomePopup()
+        private void InitializeUpgradeButtons()
         {
-            // Create welcome text
-            var welcomeText = new TextBlock
-            {
-                Font = WesternFont,
-                TextSize = 42,
-                TextColor = Color.White,
-                Text = "Welcome to xenko UI sample.\n" + "Please name your character",
-                TextAlignment = TextAlignment.Center,
-                WrapText = true,
-                Margin = new Thickness(20, 0, 20, 0),
-                HorizontalAlignment = HorizontalAlignment.Center
-            };
+            var statusUpgradePanel = page.RootElement.FindVisualChildOfType<UniformGrid>("statusUpgradePanel");
+            SetupStatusButton((ButtonBase) statusUpgradePanel.VisualChildren[0], 2, 0, () => PowerStatus, () => PowerStatus++);
+            SetupStatusButton((ButtonBase) statusUpgradePanel.VisualChildren[1], 2, 0, () => ControlStatus, () => ControlStatus++);
+            SetupStatusButton((ButtonBase) statusUpgradePanel.VisualChildren[2], 2, 0, () => SpeedStatus, () => SpeedStatus++);
+            SetupStatusButton((ButtonBase) statusUpgradePanel.VisualChildren[3], 1, 1, () => 0, () => LifeStatus++);
+        }
 
-            // Create Edit text
-            var nameEditText = new EditText()
-            {
-                Font = WesternFont,
-                TextSize = 32,
-                TextColor = Color.White,
-                Text = DefaultName,
-                MaxLength = 15,
-                TextAlignment = TextAlignment.Center,
-                ActiveImage = SpriteFromSheet.Create(MainSceneImages, "tex_edit_activated_background"),
-                InactiveImage = SpriteFromSheet.Create(MainSceneImages, "tex_edit_inactivated_background"),
-                MouseOverImage = SpriteFromSheet.Create(MainSceneImages, "tex_edit_inactivated_background"),
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                MinimumWidth = 340,
-                Padding = new Thickness(30, 30, 30, 40), // Pad text (Content inside),
-                Margin = new Thickness(0, 80, 0, 80), // Space around the edit
-            };
-            nameEditText.SetGridRow(1);
+        private void InitializeWelcomePopup()
+        {
+            welcomePopup = UILibrary.UIElements["WelcomePopup"] as ModalElement;
+            welcomePopup.SetPanelZIndex(1);
 
-            // Create cancel and validate button
-            var cancelButton = CreateTextButton("Cancel");
-            cancelButton.SetGridColumn(1);
-
+            // FIXME: UI asset should support multiline text
+            var welcomeText = welcomePopup.FindVisualChildOfType<TextBlock>("welcomeText");
+            welcomeText.Text = "Welcome to xenko UI sample.\nPlease name your character";
+            
+            var cancelButton = welcomePopup.FindVisualChildOfType<Button>("cancelButton");
             cancelButton.Click += delegate
             {
                 nameTextBlock.Text = DefaultName;
                 welcomePopup.Visibility = Visibility.Collapsed;
             };
 
-            var validateButton = CreateTextButton("Validate");
-            validateButton.SetGridColumn(3);
-
+            var nameEditText = welcomePopup.FindVisualChildOfType<EditText>("nameEditText");
+            var validateButton = welcomePopup.FindVisualChildOfType<Button>("validateButton");
             validateButton.Click += delegate
             {
                 nameTextBlock.Text = nameEditText.Text.Trim();
                 welcomePopup.Visibility = Visibility.Collapsed;
             };
-
-            // Put cancel and validate buttons in stack panel (Left-right orientation placement)
-            var buttonPanel = new Grid();
-            buttonPanel.ColumnDefinitions.Add(new StripDefinition(StripType.Star));
-            buttonPanel.ColumnDefinitions.Add(new StripDefinition(StripType.Auto));
-            buttonPanel.ColumnDefinitions.Add(new StripDefinition(StripType.Star));
-            buttonPanel.ColumnDefinitions.Add(new StripDefinition(StripType.Auto));
-            buttonPanel.ColumnDefinitions.Add(new StripDefinition(StripType.Star));
-            buttonPanel.RowDefinitions.Add(new StripDefinition());
-            buttonPanel.LayerDefinitions.Add(new StripDefinition());
-
-            buttonPanel.Children.Add(cancelButton);
-            buttonPanel.Children.Add(validateButton);
-            buttonPanel.SetGridRow(2);
-
-            // Create a stack panel to store items (Top-down orientation placement)
-            var popupContentPanel = new Grid
-            {
-                MaximumWidth = 580,
-                MaximumHeight = 900,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-            };
-
-            popupContentPanel.ColumnDefinitions.Add(new StripDefinition());
-            popupContentPanel.RowDefinitions.Add(new StripDefinition(StripType.Auto));
-            popupContentPanel.RowDefinitions.Add(new StripDefinition(StripType.Star));
-            popupContentPanel.RowDefinitions.Add(new StripDefinition(StripType.Auto));
-            popupContentPanel.LayerDefinitions.Add(new StripDefinition());
-
-            popupContentPanel.Children.Add(welcomeText);
-            popupContentPanel.Children.Add(nameEditText);
-            popupContentPanel.Children.Add(buttonPanel);
-
-            var welcomePopupContent = new ContentDecorator
-            {
-                BackgroundImage = popupWindowImage,
-                Content = popupContentPanel,
-                Padding = new Thickness(85, 130, 85, 110)
-            };
-			
-            welcomePopup = new ModalElement
-            {
-                Visibility = Visibility.Collapsed,
-                Content = welcomePopupContent,
-            };
-            welcomePopup.SetPanelZIndex(1);
-			
         }
 
-        private UIElement CreateMainScreneTopBar()
+        private void SetupStatusButton(ButtonBase button, int moneyCost, int bonuscost, Func<int> getProperty, Action setProperty)
         {
-            // Create Life bar
-            lifeBarGaugeImage = MainSceneImages["life_bar"];
-            gaugeBarRegion = lifeBarGaugeImage.Region;
-
-            var lifebarGauge = new ImageElement
-            {
-                Name = "LifeBarBackground",
-                Source = (SpriteFromTexture)lifeBarGaugeImage,
-                StretchType = StretchType.Fill,
-            };
-            lifebarGauge.SetGridColumn(1);
-
-            lifeBarGrid = new Grid();
-            lifeBarGrid.Children.Add(lifebarGauge);
-            lifeBarGrid.ColumnDefinitions.Add(new StripDefinition(StripType.Fixed, 128));
-            lifeBarGrid.ColumnDefinitions.Add(new StripDefinition(StripType.Star, 0));
-            lifeBarGrid.ColumnDefinitions.Add(new StripDefinition(StripType.Star, 100));
-            lifeBarGrid.ColumnDefinitions.Add(new StripDefinition(StripType.Fixed, 85));
-            lifeBarGrid.RowDefinitions.Add(new StripDefinition());
-            lifeBarGrid.LayerDefinitions.Add(new StripDefinition());
-            lifeBarGrid.SetCanvasRelativePosition(new Vector3(0f, 0.185f, 0f));
-            lifeBarGrid.SetCanvasRelativeSize(new Vector3(1f, 0.25f, 1f));
-            lifeBarGrid.SetPanelZIndex(-1);
-
-            var lifebarForeground = new ImageElement
-            {
-                Name = "LifeBarForeGround",
-                Source = SpriteFromSheet.Create(MainSceneImages, "character_frame"),
-                StretchType = StretchType.Fill,
-            };
-            lifebarForeground.SetGridColumnSpan(3);
-            lifebarForeground.SetGridRowSpan(3);
-            lifebarForeground.SetCanvasRelativeSize(new Vector3(1f, 1f, 1f));
-
-            // Life count
-            lifeCounter = new TextBlock
-            {
-                Text = CreateLifeCountText(),
-                TextColor = Color.Gold,
-                Font = WesternFont,
-                TextSize = 32,
-                HorizontalAlignment = HorizontalAlignment.Left
-            };
-            lifeCounter.SetCanvasAbsolutePosition(new Vector3(128, float.NaN, float.NaN));
-            lifeCounter.SetCanvasRelativePosition(new Vector3(float.NaN, 0.44f, 0f));
-            lifeCounter.SetPanelZIndex(1);
-            LifeStatus = 3;
-
-            // Bonus items
-            var bonusIcon = new ImageElement
-            {
-                Source = SpriteFromSheet.Create(MainSceneImages, "gold_icon"),
-                Name = "bonus Icon",
-                VerticalAlignment = VerticalAlignment.Center
-            };
-            bonusCounter = new TextBlock
-            {
-                Text = CreateBonusCountText(),
-                TextColor = Color.White,
-                TextSize = 27,
-                Font = WesternFont,
-                VerticalAlignment = VerticalAlignment.Center,
-                Margin = new Thickness(10, 0, 0, 0)
-            };
-
-            // Money 
-            var moneyIcon = new ImageElement
-            {
-                Source = SpriteFromSheet.Create(MainSceneImages, "money_icon"),
-                Name = "money Icon",
-                Margin = new Thickness(20, 0, 0, 0),
-                VerticalAlignment = VerticalAlignment.Center
-            };
-            moneyCounter = new TextBlock
-            {
-                Text = CreateMoneyCountText(),
-                TextColor = Color.White,
-                TextSize = 27,
-                Font = WesternFont,
-                VerticalAlignment = VerticalAlignment.Center,
-                Margin = new Thickness(10, 0, 0, 0)
-            };
-
-            // Stack panel containing the bonus and money counters
-            var moneyBonusStackPanel = new StackPanel
-            {
-                Name = "MoneyBonusStackPanel",
-                Orientation = Orientation.Horizontal,
-            };
-            moneyBonusStackPanel.Children.Add(bonusIcon);
-            moneyBonusStackPanel.Children.Add(bonusCounter);
-            moneyBonusStackPanel.Children.Add(moneyIcon);
-            moneyBonusStackPanel.Children.Add(moneyCounter);
-            moneyBonusStackPanel.SetCanvasRelativePosition(new Vector3(0.93f, 0.44f, 0f));
-            moneyBonusStackPanel.SetCanvasRelativeSize(new Vector3(float.NaN, 0.4f, 1f));
-            moneyBonusStackPanel.SetCanvasPinOrigin(new Vector3(1f, 0f, 0f));
-            moneyBonusStackPanel.SetPanelZIndex(1);
-
-            // the main grid of the top bar
-            var mainLayer = new Canvas
-            {
-                VerticalAlignment = VerticalAlignment.Top,
-                MaximumHeight = 150
-            };
-
-            mainLayer.Children.Add(lifeBarGrid);
-            mainLayer.Children.Add(lifebarForeground);
-            mainLayer.Children.Add(lifeCounter);
-            mainLayer.Children.Add(moneyBonusStackPanel);
-
-            return mainLayer;
-        }
-
-        private Button CreateTextButton(string text)
-        {
-            var buttonImage = SpriteFromSheet.Create(MainSceneImages, "button0");
-
-            return new Button
-            {
-                NotPressedImage = buttonImage,
-                PressedImage = buttonImage,
-                MouseOverImage = buttonImage,
-                Content = new TextBlock
-                {
-                    Font = WesternFont,
-                    TextColor = Color.White,
-                    Text = text,
-                },
-                Padding = new Thickness(90, 30, 25, 35),
-            };
-        }
-
-        private UIElement CreateMainScene()
-        {
-            // the top life bar
-            var topBar = CreateMainScreneTopBar();
-
-            // Create Name label
-            nameTextBlock = new TextBlock
-            {
-                Font = WesternFont,
-                TextSize = 52,
-                TextColor = Color.LightGreen,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                Margin = new Thickness(50, 0, 50, 0)
-            };
-            var nameLabel = new ContentDecorator
-            {
-                BackgroundImage = SpriteFromSheet.Create(MainSceneImages, "tex_edit_inactivated_background"),
-                Content = nameTextBlock,
-                Padding = new Thickness(20, 15, 20, 20),
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center
-            };
-            nameLabel.SetGridRow(1);
-
-            // Create Character image
-            var characterImage = new ImageElement
-            {
-                Name = "HeroImage",
-                Source = SpriteFromSheet.Create(MainSceneImages, "character"),
-                HorizontalAlignment = HorizontalAlignment.Center,
-            };
-            characterImage.SetGridRow(2);
-
-            // Create Explanation TextBlock
-            var explanationLabel = new ContentDecorator
-            {
-                BackgroundImage = SpriteFromSheet.Create(MainSceneImages, "description_frame"),
-                HorizontalAlignment = HorizontalAlignment.Center,
-                Content = new TextBlock
-                {
-                    Font = JapaneseFont,
-                    TextSize = 28,
-                    TextColor = Color.White,
-                    Text = "Pictogram-based alphabets are easily supported.\n日本語も簡単に入れることが出来ます。",
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    WrapText = true
-                },
-                Padding = new Thickness(50, 30, 50, 40),
-            };
-            explanationLabel.SetGridRow(3);
-
-            // The ship status panel
-            var shipStatusPanel = CreateMainSceneShipStatusPanel();
-            shipStatusPanel.SetGridRow(4);
-
-            // Create quit button (Last element)
-            var quitButton = CreateTextButton("Quit Sample");
-            quitButton.HorizontalAlignment = HorizontalAlignment.Center;
-            quitButton.VerticalAlignment = VerticalAlignment.Center;
-            quitButton.Click += delegate { UIGame.Exit(); };
-            quitButton.SetGridRow(5);
-
-            // Put region together in the main grid
-            var mainLayout = new Grid();
-            mainLayout.ColumnDefinitions.Add(new StripDefinition());
-            mainLayout.RowDefinitions.Add(new StripDefinition(StripType.Star, 15));
-            mainLayout.RowDefinitions.Add(new StripDefinition(StripType.Star, 10));
-            mainLayout.RowDefinitions.Add(new StripDefinition(StripType.Star, 20));
-            mainLayout.RowDefinitions.Add(new StripDefinition(StripType.Star, 20));
-            mainLayout.RowDefinitions.Add(new StripDefinition(StripType.Star, 25));
-            mainLayout.RowDefinitions.Add(new StripDefinition(StripType.Star, 10));
-            mainLayout.LayerDefinitions.Add(new StripDefinition());
-
-            // set minimal and maximal size of rows
-            mainLayout.RowDefinitions[0].MaximumSize = topBar.MaximumHeight;
-            mainLayout.RowDefinitions[1].MinimumSize = 100;
-            mainLayout.RowDefinitions[3].MinimumSize = 120;
-            mainLayout.RowDefinitions[5].MinimumSize = 90;
-
-            mainLayout.Children.Add(topBar);
-            mainLayout.Children.Add(nameLabel);
-            mainLayout.Children.Add(characterImage);
-            mainLayout.Children.Add(explanationLabel);
-            mainLayout.Children.Add(shipStatusPanel);
-            mainLayout.Children.Add(quitButton);
-
-
-            return mainLayout;
-        }
-
-        private UIElement CreateMainSceneShipStatusStars(string imageName, UIElement content, int rowIndex)
-        {
-            var item = new ContentDecorator
-            {
-                Content = content,
-                BackgroundImage = SpriteFromSheet.Create(MainSceneImages, imageName),
-                HorizontalAlignment = HorizontalAlignment.Center
-            };
-            item.SetGridRow(rowIndex);
-
-            return item;
-        }
-
-        private UIElement CreateMainSceneShipStatusPanel()
-        {
-            // Status star bars {Power, Life, Speed}
-            var powerStatusDecorator = CreateMainSceneShipStatusStars("power", powerStatusStar, 0);
-            var controlStatusDecorator = CreateMainSceneShipStatusStars("control", controlStatusStar, 1);
-            var speedStatusDecorator = CreateMainSceneShipStatusStars("speed", speedStatusStar, 2);
-            PowerStatus = shipList[activeShipIndex].Power;
-            ControlStatus = shipList[activeShipIndex].Control;
-            SpeedStatus = shipList[activeShipIndex].Speed;
-
-            // Put the stats (Stars) in 3x1 uniform grid
-            var statusPanel = new UniformGrid { Rows = 3 };
-            statusPanel.Children.Add(powerStatusDecorator);
-            statusPanel.Children.Add(controlStatusDecorator);
-            statusPanel.Children.Add(speedStatusDecorator);
-            statusPanel.SetGridColumn(1);
-
-            // SpaceShip Button
-            currentShipImage = new ImageElement { Source = SpriteFromSheet.Create(MainSceneImages, shipList[activeShipIndex].Name) };
-            currentShipImage.SetGridRow(1);
-
-            var shipImageSpacerGrid = new Grid { HorizontalAlignment = HorizontalAlignment.Center };
-            shipImageSpacerGrid.Children.Add(currentShipImage);
-            shipImageSpacerGrid.RowDefinitions.Add(new StripDefinition(StripType.Star, 2));
-            shipImageSpacerGrid.RowDefinitions.Add(new StripDefinition(StripType.Star, 6));
-            shipImageSpacerGrid.RowDefinitions.Add(new StripDefinition(StripType.Star, 2));
-            shipImageSpacerGrid.ColumnDefinitions.Add(new StripDefinition());
-            shipImageSpacerGrid.LayerDefinitions.Add(new StripDefinition());
-
-            var shipButtonDesign = SpriteFromSheet.Create(MainSceneImages, "display_element");
-            var currentShipButton = new Button
-            {
-                NotPressedImage = shipButtonDesign,
-                PressedImage = shipButtonDesign,
-                MouseOverImage = shipButtonDesign,
-                Content = shipImageSpacerGrid,
-                Padding = new Thickness(45, 20, 10, 25),
-                VerticalAlignment = VerticalAlignment.Center
-            };
-            currentShipButton.Click += delegate
-            {
-                // Once click, update the SpaceShip status pop-up and show it.
-                UpdateShipStatus();
-                ShowShipSelectionPopup();
-            };
-            currentShipButton.SetGridColumn(3);
-
-            // Status upgrade buttons
-            var powerUpgradeButton = CreateIncreaseStatusButton("P", 0, 0, 2, 0, () => PowerStatus, () => PowerStatus++);
-            var controlUpgradeButton = CreateIncreaseStatusButton("C", 0, 1, 2, 0, () => ControlStatus, () => ControlStatus++);
-            var speedUpgradeButton = CreateIncreaseStatusButton("S", 1, 0, 2, 0, () => SpeedStatus, () => SpeedStatus++);
-            var lifeUpgradeButton = CreateIncreaseStatusButton("L", 1, 1, 1, 1, () => 0, () => LifeStatus++);
-
-            // Arrange the status up buttons in a 2x2 Uniform grid.
-            var statusUpgradeGridPanel = new UniformGrid
-            {
-                Rows = 2,
-                Columns = 2,
-                VerticalAlignment = VerticalAlignment.Center,
-                HorizontalAlignment = HorizontalAlignment.Center
-            };
-            statusUpgradeGridPanel.Children.Add(powerUpgradeButton);
-            statusUpgradeGridPanel.Children.Add(controlUpgradeButton);
-            statusUpgradeGridPanel.Children.Add(speedUpgradeButton);
-            statusUpgradeGridPanel.Children.Add(lifeUpgradeButton);
-            statusUpgradeGridPanel.SetGridColumn(5);
-
-            // Put together bottom region in horizontal Stack panel, arranging it from left to right
-            var mainPanel = new Grid();
-            mainPanel.RowDefinitions.Add(new StripDefinition());
-            mainPanel.ColumnDefinitions.Add(new StripDefinition(StripType.Fixed, 10)); // space
-            mainPanel.ColumnDefinitions.Add(new StripDefinition(StripType.Star, 4));
-            mainPanel.ColumnDefinitions.Add(new StripDefinition(StripType.Fixed, 25)); // space
-            mainPanel.ColumnDefinitions.Add(new StripDefinition(StripType.Star, 4));
-            mainPanel.ColumnDefinitions.Add(new StripDefinition(StripType.Fixed, 25)); // space
-            mainPanel.ColumnDefinitions.Add(new StripDefinition(StripType.Star, 3));
-            mainPanel.ColumnDefinitions.Add(new StripDefinition(StripType.Fixed, 10)); // space
-            mainPanel.LayerDefinitions.Add(new StripDefinition());
-
-            mainPanel.Children.Add(statusPanel);
-            mainPanel.Children.Add(currentShipButton);
-            mainPanel.Children.Add(statusUpgradeGridPanel);
-
-            return mainPanel;
-        }
-
-        private Button CreateIncreaseStatusButton(string text, int rowIndex, int columnIndex, int moneyCost, int bonuscost, Func<int> getProperty, Action setProperty)
-        {
-            var button = new Button
-            {
-                NotPressedImage = SpriteFromSheet.Create(MainSceneImages, "small_display_element"),
-                MouseOverImage = SpriteFromSheet.Create(MainSceneImages, "small_display_element"),
-                PressedImage = SpriteFromSheet.Create(MainSceneImages, "small_display_element_pressed"),
-                MinimumWidth = 80,
-                Name = text,
-                Content = new TextBlock
-                {
-                    Font = WesternFont,
-                    TextColor = Color.Black,
-                    Text = text,
-                    TextSize = 54,
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Center
-                },
-                Padding = new Thickness(22, 11, 22, 15)
-            };
-
-            button.SetGridColumn(columnIndex);
-            button.SetGridRow(rowIndex);
-
             button.Click += delegate
             {
                 if (!CanPurchase(moneyCost, bonuscost) || getProperty() >= MaximumStar)
@@ -844,13 +442,6 @@ namespace GameMenu
                 PurchaseWithBonus(bonuscost);
                 PurchaseWithMoney(moneyCost);
             };
-
-            return button;
-        }
-
-        private bool CanPurchase(int requireMoney, int requireBonus)
-        {
-            return Money >= requireMoney && Bonus >= requireBonus;
         }
 
         private void PurchaseWithMoney(int requireMoney)
@@ -863,19 +454,14 @@ namespace GameMenu
             Bonus -= requireBonus;
         }
 
-        public void ShowWelcomePopup()
-        {
-            welcomePopup.Visibility = Visibility.Visible;
-        }
-
         private void ShowShipSelectionPopup()
         {
             shipSelectPopup.Visibility = Visibility.Visible;
         }
 
-        private void CloseShipSelectPopup()
+        public void ShowWelcomePopup()
         {
-            shipSelectPopup.Visibility = Visibility.Collapsed;
+            welcomePopup.Visibility = Visibility.Visible;
         }
 
         private string CreateMoneyCountText()
