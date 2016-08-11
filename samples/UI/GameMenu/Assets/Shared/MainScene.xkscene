@@ -47,6 +47,10 @@ Hierarchy:
                         Children: []
                     - !GameMenu.MainScript,GameMenu.Game
                         ~Id: 22b8232d-2333-4478-8565-0a003fa813fe
+                        JapaneseFont: ded017c3-b90d-4439-a7df-f6ab1e1a8fbd/cb333065-ba29-41a4-b07c-eeb5d39b5cc6:JapaneseFont
+                        MainSceneImages: 6c5b350e-abe9-47dd-9f0b-b2cf064e5384/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                        UILibrary: 33029349-ef1e-4a63-a23f-4302a2687521/44a9ed4d-847f-4577-8cb1-eabf455799a7:MainLibrary
+                        WesternFont: f0194c86-ccef-4194-ac3c-d5f5ed48db7d/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
                     - !UIComponent
                         ~Id: 55e6243c-8b03-4f7a-8aba-c6fc8959c49a
                         Page: 2d79b970-5e5a-410d-86af-e7c2ee6e0f09/709b49cf-aa5f-4647-a3fe-3456c7560736:Main

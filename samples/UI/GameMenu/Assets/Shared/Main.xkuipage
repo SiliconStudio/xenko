@@ -9,14 +9,6 @@ Hierarchy:
     RootPartIds:
         - 738595eb-2075-4262-a286-307ad6019676
     Parts:
-        -   UIElement: !StackPanel
-                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
-                Children: []
-                DependencyProperties: {}
-                Id: 0134bf31-5088-4ddf-a93f-5cdede312ee1
-                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
-                Margin: {}
-                Name: contentStackpanel
         -   UIElement: !UniformGrid
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Children:
@@ -33,22 +25,6 @@ Hierarchy:
                 Margin: {}
                 Name: statusPanel
                 Rows: 3
-        -   UIElement: !ModalElement
-                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
-                CanBeHitByUser: true
-                Content: !ContentDecorator
-                    Id: 8d12f570-aef0-47a5-8018-31b90364c6ed
-                DependencyProperties:
-                    Panel.ZIndexPropertyKey: 1
-                DrawLayerNumber: 2
-                HorizontalAlignment: Center
-                Id: 101cb875-b0cb-4a64-bf77-9972be50cdf0
-                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
-                Margin: {}
-                Name: shipSelectPopup
-                OverlayColor: {R: 0, G: 0, B: 0, A: 153}
-                Padding: {}
-                VerticalAlignment: Center
         -   UIElement: !Button
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 CanBeHitByUser: true
@@ -65,7 +41,7 @@ Hierarchy:
                     ~Id: b29eaca0-3d25-4f2c-945a-bc488b397c69
                     CurrentFrame: 10
                     Sheet: 28ddd116-ace6-4f34-8438-c8e23d2f2121/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
-                Name: C
+                Name: CButton
                 NotPressedImage: !SpriteFromSheet
                     ~Id: 89fb0001-a5cc-42bc-8879-fa24a957c3a2
                     CurrentFrame: 10
@@ -92,7 +68,7 @@ Hierarchy:
                     ~Id: b29eaca0-3d25-4f2c-945a-bc488b397c69
                     CurrentFrame: 10
                     Sheet: 28ddd116-ace6-4f34-8438-c8e23d2f2121/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
-                Name: S
+                Name: SButton
                 NotPressedImage: !SpriteFromSheet
                     ~Id: 89fb0001-a5cc-42bc-8879-fa24a957c3a2
                     CurrentFrame: 10
@@ -140,29 +116,6 @@ Hierarchy:
                     ~Id: 3ca99352-5437-45e5-9e55-aabae64659b5
                     CurrentFrame: 8
                     Sheet: 28ddd116-ace6-4f34-8438-c8e23d2f2121/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
-        -   UIElement: !Grid
-                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
-                Children:
-                    - !TextBlock
-                        Id: 6a583ef7-1a7c-4e31-b82f-fbf901281221
-                    - !ContentDecorator
-                        Id: 3e799c3f-b51e-4690-ab26-c37f000780d4
-                ColumnDefinitions:
-                    -   ~Id: 6856bcd3-31d8-4a1e-89a2-0131e5643935
-                DependencyProperties: {}
-                Id: 28fcb47a-6812-4bca-8f1d-7cbc3c9881b5
-                LayerDefinitions:
-                    -   ~Id: d453c92e-4893-4553-95d5-cca95ba2cd7a
-                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
-                Margin: {}
-                Name: layoutGrid
-                RowDefinitions:
-                    -   ~Id: 5fadd1ec-f55f-442e-8c9d-a213ed919518
-                        Type: Auto
-                    -   ~Id: 358f1de9-c91f-4c93-b2fc-d434ba13febe
-                        SizeValue: 10.0
-                        Type: Fixed
-                    -   ~Id: 842d5ea0-3ac5-48f0-969f-5f711ff4ab59
         -   UIElement: !TextBlock
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DependencyProperties: {}
@@ -170,25 +123,12 @@ Hierarchy:
                 HorizontalAlignment: Center
                 Id: 320cf4c1-bdb2-4fe0-805b-ef7575d9b6ef
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
-                Margin: {Left: 50.0, Front: 50.0}
+                Margin: {Left: 50.0, Right: 50.0}
                 Name: nameTextBlock
+                Text: 
                 TextColor: {R: 144, G: 238, B: 144, A: 255}
                 TextSize: 52.0
                 VerticalAlignment: Center
-        -   UIElement: !TextBlock
-                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
-                DependencyProperties:
-                    GridBase.RowSpanPropertyKey: 1
-                Font: b42bd602-698b-4eeb-81bb-656590597935/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
-                Id: 3700d389-531b-403b-b9dd-c5cae8932918
-                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
-                Margin: {Left: 20.0, Right: 20.0}
-                Name: welcomeText
-                Text: Welcome to xenko UI sample.\nPlease name your character
-                TextAlignment: Center
-                TextColor: {R: 255, G: 255, B: 255, A: 255}
-                TextSize: 42.0
-                WrapText: true
         -   UIElement: !TextBlock
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DependencyProperties: {}
@@ -197,6 +137,7 @@ Hierarchy:
                 Id: 385fcafb-7754-4dcb-a7ff-5d257eb45cfb
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
                 Margin: {}
+                Name: LText
                 Text: L
                 TextColor: {R: 0, G: 0, B: 0, A: 255}
                 TextSize: 54.0
@@ -219,22 +160,6 @@ Hierarchy:
                 Name: nameLabel
                 Padding: {Left: 20.0, Top: 15.0, Right: 20.0, Bottom: 20.0}
                 VerticalAlignment: Center
-        -   UIElement: !ContentDecorator
-                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
-                BackgroundImage: !SpriteFromSheet
-                    ~Id: 3883698d-dbc1-4299-9dc7-bcb53462a058
-                    CurrentFrame: 9
-                    Sheet: 65505a90-2592-436e-b16b-0050a0165bec/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
-                Content: !ScrollViewer
-                    Id: cde1c2b8-905b-4b72-90e4-912e841a5e02
-                DependencyProperties:
-                    GridBase.RowPropertyKey: 2
-                DrawLayerNumber: 2
-                Id: 3e799c3f-b51e-4690-ab26-c37f000780d4
-                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
-                Margin: {}
-                Name: scrollViewerDecorator
-                Padding: {}
         -   UIElement: !TextBlock
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DependencyProperties: {}
@@ -243,6 +168,7 @@ Hierarchy:
                 Id: 46cec5c1-4213-4454-9339-a90ef65f1e3a
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
                 Margin: {}
+                Name: CText
                 Text: C
                 TextColor: {R: 0, G: 0, B: 0, A: 255}
                 TextSize: 54.0
@@ -259,9 +185,6 @@ Hierarchy:
                     - !TextBlock
                         Id: 9e4d8544-f658-4809-92d0-d572b8cf0504
                 DependencyProperties:
-                    #Canvas.RelativePositionPropertyKey: {X: 0.93, Y: 0.44, Z: 0}
-                    #Canvas.RelativeSizePropertyKey: {X: NaN, Y: 0.4, Z: 1.0}
-                    #Canvas.PinOriginPropertyKey: {X: 1.0, Y: 0.0, Z: 0.0}
                     Panel.ZIndexPropertyKey: 1
                 Id: 5053fa40-46ac-43be-8dde-a82569860dfc
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
@@ -283,33 +206,10 @@ Hierarchy:
                 Id: 521630c1-5c60-43ad-bc93-b7cde89d4ae6
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
                 Margin: {}
+                Name: PText
                 Text: P
                 TextColor: {R: 0, G: 0, B: 0, A: 255}
                 TextSize: 54.0
-                VerticalAlignment: Center
-        -   UIElement: !EditText
-                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
-                CanBeHitByUser: true
-                CaretColor: {R: 240, G: 240, B: 240, A: 255}
-                CaretFrequency: 1.0
-                CaretWidth: 1.0
-                DependencyProperties:
-                    GridBase.RowPropertyKey: 1
-                DrawLayerNumber: 5
-                Font: b42bd602-698b-4eeb-81bb-656590597935/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
-                HorizontalAlignment: Center
-                Id: 5dfeb286-8262-4bd3-ad84-f1518b05ffff
-                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
-                Margin: {Top: 80.0, Bottom: 80.0}
-                MaxLength: 15
-                MinimumWidth: 340.0
-                Name: nameEditText
-                Padding: {Left: 30.0, Top: 30.0, Right: 30.0, Bottom: 40.0}
-                SelectionColor: {R: 255, G: 255, B: 255, A: 255}
-                Text: John Doe
-                TextAlignment: Center
-                TextColor: {R: 240, G: 240, B: 240, A: 255}
-                TextSize: 32.0
                 VerticalAlignment: Center
         -   UIElement: !Button
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
@@ -326,7 +226,7 @@ Hierarchy:
                     ~Id: b29eaca0-3d25-4f2c-945a-bc488b397c69
                     CurrentFrame: 10
                     Sheet: 28ddd116-ace6-4f34-8438-c8e23d2f2121/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
-                Name: P
+                Name: PButton
                 NotPressedImage: !SpriteFromSheet
                     ~Id: 89fb0001-a5cc-42bc-8879-fa24a957c3a2
                     CurrentFrame: 10
@@ -340,8 +240,6 @@ Hierarchy:
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DependencyProperties:
                     Panel.ZIndexPropertyKey: 1
-                    #Canvas.AbsolutePositionPropertyKey: {X: 128.0, Y: NaN, Z: NaN}
-                    #Canvas.RelativePositionPropertyKey: {X: NaN, Y: 0.44, Z: 0.0}
                 Font: 32bf2303-fa3d-42ad-a418-d51187b1c38c/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
                 HorizontalAlignment: Left
                 Id: 5f18baaa-8fae-4bad-a0c1-37071cbad445
@@ -350,35 +248,6 @@ Hierarchy:
                 Name: lifeCounter
                 TextColor: {R: 255, G: 215, B: 0, A: 255}
                 TextSize: 32.0
-        -   UIElement: !TextBlock
-                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
-                DependencyProperties: {}
-                Font: b42bd602-698b-4eeb-81bb-656590597935/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
-                Id: 6a583ef7-1a7c-4e31-b82f-fbf901281221
-                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
-                Margin: {}
-                Name: pleaseSelectText
-                Text: Please select your ship
-                TextAlignment: Center
-                TextColor: {R: 255, G: 255, B: 255, A: 255}
-                TextSize: 48.0
-                WrapText: true
-        -   UIElement: !ModalElement
-                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
-                CanBeHitByUser: true
-                Content: !ContentDecorator
-                    Id: c6dd3cef-584e-4877-a4db-7f6d6ac008c5
-                DependencyProperties:
-                    Panel.ZIndexPropertyKey: 1
-                DrawLayerNumber: 2
-                HorizontalAlignment: Center
-                Id: 6bb75efe-7c92-4065-b048-50c1b0976e9e
-                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
-                Margin: {}
-                Name: welcomePopup
-                OverlayColor: {R: 0, G: 0, B: 0, A: 153}
-                Padding: {}
-                VerticalAlignment: Center
         -   UIElement: !ImageElement
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Color: {R: 255, G: 255, B: 255, A: 255}
@@ -415,7 +284,7 @@ Hierarchy:
                 Id: 728590d5-280b-49b5-bf42-b71a289cc7dc
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
                 Margin: {}
-                Name: HeroImage
+                Name: heroImage
                 Source: !SpriteFromSheet
                     ~Id: de17bb1a-20e6-47fd-b96d-44b001cc3ad5
                     CurrentFrame: 30
@@ -453,10 +322,6 @@ Hierarchy:
                         Id: 6d909606-12fa-46e5-9149-583da81b17dc
                     - !Grid
                         Id: 80c7047a-4853-4183-b1be-16291dd66db9
-                    - !ModalElement
-                        Id: 6bb75efe-7c92-4065-b048-50c1b0976e9e
-                    - !ModalElement
-                        Id: 101cb875-b0cb-4a64-bf77-9972be50cdf0
                 DependencyProperties: {}
                 Id: 738595eb-2075-4262-a286-307ad6019676
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
@@ -532,6 +397,7 @@ Hierarchy:
                 Id: 8478ac2f-5f4d-47ac-947d-c988252bc88b
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
                 Margin: {}
+                Name: SText
                 Text: S
                 TextColor: {R: 0, G: 0, B: 0, A: 255}
                 TextSize: 54.0
@@ -543,7 +409,7 @@ Hierarchy:
                 Id: 8743b51e-008a-4d31-a7c7-68ba706fba9e
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
                 Margin: {}
-                Name: LifeBarForeGround
+                Name: lifebarForeGround
                 Source: !SpriteFromSheet
                     ~Id: c2ccd540-faa0-473d-b5ba-cd03e845df49
                     CurrentFrame: 31
@@ -557,21 +423,6 @@ Hierarchy:
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
                 Margin: {}
                 Name: bonusIcon
-        -   UIElement: !ContentDecorator
-                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
-                BackgroundImage: !SpriteFromSheet
-                    ~Id: f438f332-f318-44f4-a14c-323923816f6f
-                    CurrentFrame: 6
-                    Sheet: 65505a90-2592-436e-b16b-0050a0165bec/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
-                Content: !Grid
-                    Id: 28fcb47a-6812-4bca-8f1d-7cbc3c9881b5
-                DependencyProperties: {}
-                DrawLayerNumber: 2
-                Id: 8d12f570-aef0-47a5-8018-31b90364c6ed
-                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
-                Margin: {Left: 110.0, Top: 120.0, Right: 100.0, Bottom: 140.0}
-                Name: shipSelectPopupContent
-                Padding: {}
         -   UIElement: !TextBlock
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DependencyProperties: {}
@@ -634,6 +485,7 @@ Hierarchy:
                 Id: b1f4bd45-d914-4488-b56c-e6ddd23103b7
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
                 Margin: {}
+                Name: quitText
                 Text: Quit Sample
                 TextColor: {R: 255, G: 255, B: 255, A: 255}
         -   UIElement: !Button
@@ -653,7 +505,7 @@ Hierarchy:
                     ~Id: b29eaca0-3d25-4f2c-945a-bc488b397c69
                     CurrentFrame: 10
                     Sheet: 28ddd116-ace6-4f34-8438-c8e23d2f2121/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
-                Name: L
+                Name: LButton
                 NotPressedImage: !SpriteFromSheet
                     ~Id: 89fb0001-a5cc-42bc-8879-fa24a957c3a2
                     CurrentFrame: 10
@@ -701,47 +553,6 @@ Hierarchy:
                 Name: shipStatusPanel
                 RowDefinitions:
                     -   ~Id: 953b09f3-fe02-46a4-9496-aee3d21e6dc9
-        -   UIElement: !ContentDecorator
-                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
-                BackgroundImage: !SpriteFromSheet
-                    ~Id: b48424c8-1347-43bc-84c0-792df8e85dc2
-                    CurrentFrame: 9
-                    Sheet: 65505a90-2592-436e-b16b-0050a0165bec/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
-                Content: !Grid
-                    Id: c89d5217-1b06-4f02-93a1-b4ce78e769d4
-                DependencyProperties: {}
-                DrawLayerNumber: 2
-                Id: c6dd3cef-584e-4877-a4db-7f6d6ac008c5
-                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
-                Margin: {}
-                Name: welcomePopupContent
-                Padding: {Left: 85.0, Top: 130.0, Right: 85.0, Bottom: 110.0}
-        -   UIElement: !Grid
-                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
-                Children:
-                    - !TextBlock
-                        Id: 3700d389-531b-403b-b9dd-c5cae8932918
-                    - !EditText
-                        Id: 5dfeb286-8262-4bd3-ad84-f1518b05ffff
-                ColumnDefinitions:
-                    -   ~Id: d0f9d0a6-3d4a-47e3-ab4f-d29f3e493511
-                DependencyProperties: {}
-                HorizontalAlignment: Center
-                Id: c89d5217-1b06-4f02-93a1-b4ce78e769d4
-                LayerDefinitions:
-                    -   ~Id: cc8c1659-7851-4d67-b547-d16372d006f4
-                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
-                Margin: {}
-                MaximumHeight: 900.0
-                MaximumWidth: 580.0
-                Name: popupContentPanel
-                RowDefinitions:
-                    -   ~Id: fd7de2d1-aae3-4ea8-8443-ad00d3d689da
-                        Type: Auto
-                    -   ~Id: 70dfc3f1-9527-4d21-93ee-c25822e72273
-                    -   ~Id: d698a08f-fa8c-46c4-8ea2-d826d82ce51e
-                        Type: Auto
-                VerticalAlignment: Center
         -   UIElement: !Grid
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Children:
@@ -759,15 +570,13 @@ Hierarchy:
                         SizeValue: 85.0
                         Type: Fixed
                 DependencyProperties:
-                    #Canvas.RelativePositionPropertyKey: {X: 0.0, Y: 0.185, Z: 0.0}
-                    #Canvas.RelativeSizePropertyKey: {X: 1.0, Y: 0.25, Z: 1.0}
                     Panel.ZIndexPropertyKey: -1
                 Id: ca8d46e5-c9cc-4340-89c8-f1f0518d2c78
                 LayerDefinitions:
                     -   ~Id: 22e685a4-8a9f-4701-a3c7-9d0bf4ae5721
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
                 Margin: {}
-                Name: lifeBarGrid
+                Name: lifebarGrid
                 RowDefinitions:
                     -   ~Id: ca2d7165-52b1-47cb-996b-e9ae702d4ebb
         -   UIElement: !ImageElement
@@ -782,21 +591,6 @@ Hierarchy:
                     ~Id: 6457dab8-cf03-4ecf-8446-c013d9259f15
                     CurrentFrame: 13
                     Sheet: 28ddd116-ace6-4f34-8438-c8e23d2f2121/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
-        -   UIElement: !ScrollViewer
-                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
-                CanBeHitByUser: true
-                ClipToBounds: true
-                Content: !StackPanel
-                    Id: 0134bf31-5088-4ddf-a93f-5cdede312ee1
-                DependencyProperties: {}
-                Id: cde1c2b8-905b-4b72-90e4-912e841a5e02
-                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
-                Margin: {Left: 12.0, Top: 10.0, Right: 7.0, Bottom: 10.0}
-                MaximumHeight: 425.0
-                Name: contentScrollView
-                Padding: {Right: 6.0}
-                ScrollBarColor: {R: 255, G: 165, B: 0, A: 255}
-                ScrollMode: Vertical
         -   UIElement: !Button
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 CanBeHitByUser: true
@@ -849,7 +643,8 @@ Hierarchy:
                 Id: f388d14a-fa2b-4015-b18a-feb03845ff9e
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
                 Margin: {}
-                Text: "Pictogram-based alphabets are easily supported.\\n日本語も簡単に入れることが出来ます。"
+                Name: explanationText
+                Text: "Pictogram-based alphabets are easily supported. 日本語も簡単に入れることが出来ます。"
                 TextColor: {R: 255, G: 255, B: 255, A: 255}
                 TextSize: 28.0
                 VerticalAlignment: Center
