@@ -32,21 +32,9 @@ namespace SiliconStudio.Xenko.Assets.UI
         /// </summary>
         /// <param name="sourceRootId">The id of the root of the sub-hierarchy to clone</param>
         /// <param name="cleanReference">If true, any reference to a part external to the cloned hierarchy will be set to null.</param>
-        /// <returns>A <see cref="AssetCompositeHierarchyData{UIElementDesign, UIElement}"/> corresponding to the cloned parts.</returns>
-        public AssetCompositeHierarchyData<UIElementDesign, UIElement> CloneSubHierarchy(Guid sourceRootId, bool cleanReference)
-        {
-            Dictionary<Guid, Guid> idRemapping;
-            return CloneSubHierarchy(sourceRootId, cleanReference, out idRemapping);
-        }
-
-        /// <summary>
-        /// Clones a sub-hierarchy of this asset.
-        /// </summary>
-        /// <param name="sourceRootId">The id of the root of the sub-hierarchy to clone</param>
-        /// <param name="cleanReference">If true, any reference to a part external to the cloned hierarchy will be set to null.</param>
         /// <param name="idRemapping">A dictionary containing the mapping of ids from the source parts to the new parts.</param>
         /// <returns>A <see cref="AssetCompositeHierarchyData{UIElementDesign, UIElement}"/> corresponding to the cloned parts.</returns>
-        public AssetCompositeHierarchyData<UIElementDesign, UIElement> CloneSubHierarchy(Guid sourceRootId, bool cleanReference, out Dictionary<Guid, Guid> idRemapping)
+        public override AssetCompositeHierarchyData<UIElementDesign, UIElement> CloneSubHierarchy(Guid sourceRootId, bool cleanReference, out Dictionary<Guid, Guid> idRemapping)
         {
             if (!Hierarchy.Parts.ContainsKey(sourceRootId))
                 throw new ArgumentException(@"The source root part must be an part of this asset.", nameof(sourceRootId));
@@ -167,7 +155,30 @@ namespace SiliconStudio.Xenko.Assets.UI
         /// <inheritdoc/>
         public override UIElement GetParent(UIElement part)
         {
+            if (part == null) throw new ArgumentNullException(nameof(part));
             return part.Parent;
+        }
+
+        /// <inheritdoc/>
+        public override int IndexOf(UIElement part)
+        {
+            if (part == null) throw new ArgumentNullException(nameof(part));
+            var parent = GetParent(part);
+            return parent?.VisualChildren.IndexOf(x => x == part) ?? Hierarchy.RootPartIds.IndexOf(part.Id);
+        }
+
+        /// <inheritdoc/>
+        public override UIElement GetChild(UIElement part, int index)
+        {
+            if (part == null) throw new ArgumentNullException(nameof(part));
+            return part.VisualChildren[index];
+        }
+
+        /// <inheritdoc/>
+        public override int GetChildCount(UIElement part)
+        {
+            if (part == null) throw new ArgumentNullException(nameof(part));
+            return part.VisualChildren.Count;
         }
 
         /// <inheritdoc/>

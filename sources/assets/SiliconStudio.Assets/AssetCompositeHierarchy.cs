@@ -22,7 +22,34 @@ namespace SiliconStudio.Assets
         /// <param name="part"></param>
         /// <returns>The part that is the parent of the given part, or null if the given part is at the root level.</returns>
         /// <remarks>Implementations of this method should not rely on the <see cref="Hierarchy"/> property to determine the parent.</remarks>
+        /// <exception cref="ArgumentNullException">The given part is null.</exception>
         public abstract TAssetPart GetParent(TAssetPart part);
+
+        /// <summary>
+        /// Gets the index of the given part in the child list of its parent, or in the list of root if this part is a root part.
+        /// </summary>
+        /// <param name="part">The part for which to retrieve the index.</param>
+        /// <returns>The index of the part, or a negative value if the part is an orphan part that is not a member of this asset.</returns>
+        /// <exception cref="ArgumentNullException">The given part is null.</exception>
+        public abstract int IndexOf(TAssetPart part);
+
+        /// <summary>
+        /// Gets the child of the given part that matches the given index.
+        /// </summary>
+        /// <param name="part">The part for which to retrieve a child.</param>
+        /// <param name="index">The index of the child to retrieve.</param>
+        /// <returns>The the child of the given part that matches the given index.</returns>
+        /// <exception cref="ArgumentNullException">The given part is null.</exception>
+        /// <exception cref="IndexOutOfRangeException">The given index is out of range.</exception>
+        public abstract TAssetPart GetChild(TAssetPart part, int index);
+
+        /// <summary>
+        /// Gets the number of children in the given part.
+        /// </summary>
+        /// <param name="part">The part for which to retrieve the number of children.</param>
+        /// <returns>The number of children in the given part.</returns>
+        /// <exception cref="ArgumentNullException">The given part is null.</exception>
+        public abstract int GetChildCount(TAssetPart part);
 
         /// <summary>
         /// Enumerates parts that are children of the given part.
@@ -89,6 +116,28 @@ namespace SiliconStudio.Assets
 
             return newAsset;
         }
+
+        /// <summary>
+        /// Clones a sub-hierarchy of this asset.
+        /// </summary>
+        /// <param name="sourceRootId">The id of the root of the sub-hierarchy to clone</param>
+        /// <param name="cleanReference">If true, any reference to a part external to the cloned hierarchy will be set to null.</param>
+        /// <returns>A <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}"/> corresponding to the cloned parts.</returns>
+        public AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchy(Guid sourceRootId, bool cleanReference)
+        {
+            Dictionary<Guid, Guid> idRemapping;
+            return CloneSubHierarchy(sourceRootId, cleanReference, out idRemapping);
+        }
+
+        /// <summary>
+        /// Clones a sub-hierarchy of this asset.
+        /// </summary>
+        /// <param name="sourceRootId">The id of the root of the sub-hierarchy to clone</param>
+        /// <param name="cleanReference">If true, any reference to a part external to the cloned hierarchy will be set to null.</param>
+        /// <param name="idRemapping">A dictionary containing the mapping of ids from the source parts to the new parts.</param>
+        /// <returns>A <see cref="AssetCompositeHierarchyData{TAssetPartDesign, TAssetPart}"/> corresponding to the cloned parts.</returns>
+        // TODO: check if this can be factorized in a non-virtal method here
+        public abstract AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> CloneSubHierarchy(Guid sourceRootId, bool cleanReference, out Dictionary<Guid, Guid> idRemapping);
 
         protected override object ResolvePartReference(object partReference)
         {
