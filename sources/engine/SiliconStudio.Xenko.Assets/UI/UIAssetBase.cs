@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Analysis;
@@ -24,7 +25,6 @@ namespace SiliconStudio.Xenko.Assets.UI
     {
         [DataMember(10)]
         [NotNull]
-        [Display("Design")]
         public UIDesign Design { get; set; } = new UIDesign();
 
         /// <summary>
@@ -183,6 +183,7 @@ namespace SiliconStudio.Xenko.Assets.UI
         public sealed class UIDesign
         {
             [DataMember]
+            [Display(category: "Design")]
             public Vector3 Resolution { get; set; } = new Vector3(UIComponent.DefaultWidth, UIComponent.DefaultHeight, UIComponent.DefaultDepth);
         }
     }
