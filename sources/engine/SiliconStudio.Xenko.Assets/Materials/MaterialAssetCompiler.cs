@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
             protected override System.Collections.Generic.IEnumerable<ObjectUrl> GetInputFilesImpl()
             {
                 // TODO: Add textures when we will bake them
-                foreach (var compileTimeDependency in ((MaterialAsset)assetItem.Asset).EnumerateCompileTimeDependencies())
+                foreach (var compileTimeDependency in ((MaterialAsset)assetItem.Asset).EnumerateCompileTimeDependencies(package.Session))
                 {
                     yield return new ObjectUrl(UrlType.ContentLink, compileTimeDependency.Location);
                 }
