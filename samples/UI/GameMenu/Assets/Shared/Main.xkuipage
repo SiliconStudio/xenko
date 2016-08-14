@@ -3,7 +3,7 @@ Id: 709b49cf-aa5f-4647-a3fe-3456c7560736
 SerializedVersion: {Xenko: 0.0.0}
 Tags: []
 Design:
-    Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
+    Resolution: {X: 640.0, Y: 1136.0, Z: 1000.0}
 Hierarchy:
     ~Id: 28e153c0-536e-4cae-82a1-fcd9c1b599fd
     RootPartIds:
