@@ -1,8 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
@@ -14,9 +12,6 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
         public Vector3 ExpectedMeasureValue;
         public Vector3 ExpectedArrangeValue;
         public Vector3 ReturnedMeasuredValue;
-
-        /// <inheritdoc/>
-        protected override IEnumerable<IUIElementChildren> EnumerateChildren() => Enumerable.Empty<IUIElementChildren>();
 
         protected override Vector3 MeasureOverride(Vector3 availableSizeWithoutMargins)
         {

@@ -2,9 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
@@ -336,9 +334,6 @@ namespace SiliconStudio.Xenko.UI.Controls
         {
             return shouldSnapToTicks ? Math.Max(Step, (Maximum - Minimum)/TickFrequency) : Step;
         }
-
-        /// <inheritdoc/>
-        protected override IEnumerable<IUIElementChildren> EnumerateChildren() => Enumerable.Empty<IUIElementChildren>();
 
         protected override Vector3 MeasureOverride(Vector3 availableSizeWithoutMargins)
         {

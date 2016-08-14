@@ -622,9 +622,6 @@ namespace SiliconStudio.Xenko.UI.Controls
             }
         }
 
-        /// <inheritdoc/>
-        protected override IEnumerable<IUIElementChildren> EnumerateChildren() => Enumerable.Empty<IUIElementChildren>();
-
         private void SetTextInternal(string newText, bool updateNativeEdit)
         {
             var truncatedText = newText;

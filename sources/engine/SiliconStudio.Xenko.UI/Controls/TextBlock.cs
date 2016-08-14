@@ -186,9 +186,6 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <inheritdoc/>
-        protected override IEnumerable<IUIElementChildren> EnumerateChildren() => Enumerable.Empty<IUIElementChildren>();
-
-        /// <inheritdoc/>
         protected override Vector3 ArrangeOverride(Vector3 finalSizeWithoutMargins)
         {
             if (WrapText)

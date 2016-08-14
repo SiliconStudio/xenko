@@ -1,10 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
@@ -87,9 +85,6 @@ namespace SiliconStudio.Xenko.UI.Controls
         [DataMember]
         [Display(category: AppearanceCategory)]
         public Color Color { get; set; } = Color.White;
-
-        /// <inheritdoc/>
-        protected override IEnumerable<IUIElementChildren> EnumerateChildren() => Enumerable.Empty<IUIElementChildren>();
 
         protected override Vector3 ArrangeOverride(Vector3 finalSizeWithoutMargins)
         {

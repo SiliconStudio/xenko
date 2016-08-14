@@ -900,7 +900,11 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <returns>A sequence containing all the children of this element.</returns>
         /// <remarks>This method is used by the implementation of the <see cref="IUIElementChildren"/> interface.</remarks>
-        protected abstract IEnumerable<IUIElementChildren> EnumerateChildren();
+        protected virtual IEnumerable<IUIElementChildren> EnumerateChildren()
+        {
+            // Empty by default
+            yield break;
+        }
 
         private unsafe bool Vector3BinaryEqual(ref Vector3 left, ref Vector3 right)
         {

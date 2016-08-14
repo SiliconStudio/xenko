@@ -80,7 +80,8 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <inheritdoc/>
         protected override IEnumerable<IUIElementChildren> EnumerateChildren()
         {
-            yield return Content;
+            if (Content != null)
+                yield return Content;
         }
 
         protected override Vector3 MeasureOverride(Vector3 availableSizeWithoutMargins)
