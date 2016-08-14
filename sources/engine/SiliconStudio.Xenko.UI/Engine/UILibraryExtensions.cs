@@ -3,6 +3,7 @@
 
 using System;
 using SiliconStudio.Xenko.UI;
+using SiliconStudio.Xenko.UI.Engine;
 
 namespace SiliconStudio.Xenko.Engine
 {
@@ -23,8 +24,7 @@ namespace SiliconStudio.Xenko.Engine
             UIElement source;
             if (library.UIElements.TryGetValue(name, out source))
             {
-                // FIXME: implement UI cloning
-                return source as TElement;
+                return UICloner.Clone(source) as TElement;
             }
             return null;
         }
