@@ -7,6 +7,8 @@ Design:
 PublicUIElements:
     0b37bd5e-d5ef-4cfe-b41e-0aad87c4df72: ShipSelectPopup
     3f43a337-c8d0-4d80-830f-dd1621f717cd: ShipButton
+    4a091c2c-0978-404f-99b3-dbf13f6468f5: StatusStar
+    dab3aa68-8d2a-4ca6-98d1-2d105b28679f: StatusButton
     efdc3200-c774-4cea-a94d-e0e706bd7c4d: WelcomePopup
 Hierarchy:
     ~Id: f67153d5-a74e-4414-8f65-220252b45da1
@@ -14,6 +16,8 @@ Hierarchy:
         - 0b37bd5e-d5ef-4cfe-b41e-0aad87c4df72
         - 3f43a337-c8d0-4d80-830f-dd1621f717cd
         - efdc3200-c774-4cea-a94d-e0e706bd7c4d
+        - dab3aa68-8d2a-4ca6-98d1-2d105b28679f
+        - 4a091c2c-0978-404f-99b3-dbf13f6468f5
     Parts:
         -   UIElement: !ImageElement
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
@@ -197,6 +201,23 @@ Hierarchy:
                 Margin: {}
                 MaximumHeight: 100.0
                 Name: ShipButton
+        -   UIElement: !ContentDecorator
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                BackgroundImage: !SpriteFromSheet
+                    ~Id: 4a71f299-4e0f-443b-ae7f-4fdaed3418c0
+                    CurrentFrame: 7
+                    Sheet: 5c96e514-0bb4-4db9-b34c-6afdfb740c4d/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                Content: !ImageElement
+                    Id: bb0e5ff1-a42a-4aba-aae0-c000d6098595
+                DependencyProperties: {}
+                DrawLayerNumber: 2
+                HorizontalAlignment: Center
+                Id: 4a091c2c-0978-404f-99b3-dbf13f6468f5
+                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
+                Margin: {}
+                Name: StatusStar
+                Padding: {}
+                VerticalAlignment: Center
         -   UIElement: !TextBlock
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DependencyProperties:
@@ -476,6 +497,19 @@ Hierarchy:
                 Padding: {Right: 6.0}
                 ScrollBarColor: {R: 255, G: 165, B: 0, A: 255}
                 ScrollMode: Vertical
+        -   UIElement: !ImageElement
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                Color: {R: 255, G: 255, B: 255, A: 255}
+                DependencyProperties: {}
+                Id: bb0e5ff1-a42a-4aba-aae0-c000d6098595
+                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
+                Margin: {}
+                Name: statusStar
+                Source: !SpriteFromSheet
+                    ~Id: 7466246a-149c-42b9-acdc-3053b7c5947f
+                    CurrentFrame: 13
+                    Sheet: 5c96e514-0bb4-4db9-b34c-6afdfb740c4d/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                StretchDirection: DownOnly
         -   UIElement: !Button
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 CanBeHitByUser: true
@@ -501,6 +535,33 @@ Hierarchy:
                     ~Id: e477fd59-a66c-45e0-8f5b-c679c98aa5f7
                     CurrentFrame: 21
                     Sheet: 28ddd116-ace6-4f34-8438-c8e23d2f2121/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+        -   UIElement: !Button
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                CanBeHitByUser: true
+                Content: !TextBlock
+                    Id: ff603298-54a0-4d64-9efa-3a855e759809
+                DependencyProperties: {}
+                DrawLayerNumber: 2
+                HorizontalAlignment: Center
+                Id: dab3aa68-8d2a-4ca6-98d1-2d105b28679f
+                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
+                Margin: {}
+                MinimumWidth: 80.0
+                MouseOverImage: !SpriteFromSheet
+                    ~Id: 1cb2d11c-7b49-4565-b418-bdb034bec506
+                    CurrentFrame: 10
+                    Sheet: 5c96e514-0bb4-4db9-b34c-6afdfb740c4d/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                Name: StatusButton
+                NotPressedImage: !SpriteFromSheet
+                    ~Id: 6d7c67d7-ee15-4c9e-b86b-4082945f56fd
+                    CurrentFrame: 10
+                    Sheet: 5c96e514-0bb4-4db9-b34c-6afdfb740c4d/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                Padding: {Left: 22.0, Top: 11.0, Right: 22.0, Bottom: 15.0}
+                PressedImage: !SpriteFromSheet
+                    ~Id: fc73ab3c-dbc9-4b02-9f2b-3c8ad0116ff2
+                    CurrentFrame: 11
+                    Sheet: 5c96e514-0bb4-4db9-b34c-6afdfb740c4d/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                VerticalAlignment: Center
         -   UIElement: !ModalElement
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 CanBeHitByUser: true
@@ -531,4 +592,17 @@ Hierarchy:
                     ~Id: d8089534-e29a-4c5d-ae47-5d794bd9b834
                     CurrentFrame: 13
                     Sheet: 28ddd116-ace6-4f34-8438-c8e23d2f2121/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                VerticalAlignment: Center
+        -   UIElement: !TextBlock
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                DependencyProperties: {}
+                Font: 7dcf8509-6946-4d47-8dce-c67f49425a9d/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
+                HorizontalAlignment: Center
+                Id: ff603298-54a0-4d64-9efa-3a855e759809
+                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
+                Margin: {}
+                Name: statusText
+                Text: A
+                TextColor: {R: 0, G: 0, B: 0, A: 255}
+                TextSize: 54.0
                 VerticalAlignment: Center
