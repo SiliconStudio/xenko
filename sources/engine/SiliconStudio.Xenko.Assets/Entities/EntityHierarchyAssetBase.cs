@@ -46,21 +46,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </summary>
         /// <param name="sourceRootEntity">The entity that is the root of the sub-hierarchy to clone</param>
         /// <param name="cleanReference">If true, any reference to an entity external to the cloned hierarchy will be set to null.</param>
-        /// <returns>A <see cref="AssetCompositeHierarchyData{EntityDesign, Entity}"/> corresponding to the cloned entities.</returns>
-        public AssetCompositeHierarchyData<EntityDesign, Entity> CloneSubHierarchy(Guid sourceRootEntity, bool cleanReference)
-        {
-            Dictionary<Guid, Guid> entityMapping;
-            return CloneSubHierarchy(sourceRootEntity, cleanReference, out entityMapping);
-        }
-
-        /// <summary>
-        /// Clones a sub-hierarchy of this asset.
-        /// </summary>
-        /// <param name="sourceRootEntity">The entity that is the root of the sub-hierarchy to clone</param>
-        /// <param name="cleanReference">If true, any reference to an entity external to the cloned hierarchy will be set to null.</param>
         /// <param name="entityMapping">A dictionary containing the mapping of ids from the source entites to the new entities.</param>
         /// <returns>A <see cref="AssetCompositeHierarchyData{EntityDesign, Entity}"/> corresponding to the cloned entities.</returns>
-        public AssetCompositeHierarchyData<EntityDesign, Entity> CloneSubHierarchy(Guid sourceRootEntity, bool cleanReference, out Dictionary<Guid, Guid> entityMapping)
+        public override AssetCompositeHierarchyData<EntityDesign, Entity> CloneSubHierarchy(Guid sourceRootEntity, bool cleanReference, out Dictionary<Guid, Guid> entityMapping)
         {
             if (!Hierarchy.Parts.ContainsKey(sourceRootEntity))
                 throw new ArgumentException(@"The source root entity must be an entity of this asset.", nameof(sourceRootEntity));
@@ -184,11 +172,36 @@ namespace SiliconStudio.Xenko.Assets.Entities
             return entityMerge.Merge();
         }
 
+        /// <inheritdoc/>
         public override Entity GetParent(Entity entity)
         {
+            if (entity == null) throw new ArgumentNullException(nameof(entity));
             return entity.Transform.Parent?.Entity;
         }
 
+        /// <inheritdoc/>
+        public override int IndexOf(Entity part)
+        {
+            if (part == null) throw new ArgumentNullException(nameof(part));
+            var parent = GetParent(part);
+            return parent?.Transform.Children.IndexOf(part.Transform) ?? Hierarchy.RootPartIds.IndexOf(part.Id);
+        }
+
+        /// <inheritdoc/>
+        public override Entity GetChild(Entity part, int index)
+        {
+            if (part == null) throw new ArgumentNullException(nameof(part));
+            return part.Transform.Children[index].Entity;
+        }
+
+        /// <inheritdoc/>
+        public override int GetChildCount(Entity part)
+        {
+            if (part == null) throw new ArgumentNullException(nameof(part));
+            return part.Transform.Children.Count;
+        }
+
+        /// <inheritdoc/>
         public override IEnumerable<Entity> EnumerateChildParts(Entity entity, bool isRecursive)
         {
             if (entity.Transform == null)
