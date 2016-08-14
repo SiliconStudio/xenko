@@ -41,7 +41,7 @@ Hierarchy:
                     ~Id: b29eaca0-3d25-4f2c-945a-bc488b397c69
                     CurrentFrame: 10
                     Sheet: 28ddd116-ace6-4f34-8438-c8e23d2f2121/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
-                Name: CButton
+                Name: controlStatusButton
                 NotPressedImage: !SpriteFromSheet
                     ~Id: 89fb0001-a5cc-42bc-8879-fa24a957c3a2
                     CurrentFrame: 10
@@ -68,7 +68,7 @@ Hierarchy:
                     ~Id: b29eaca0-3d25-4f2c-945a-bc488b397c69
                     CurrentFrame: 10
                     Sheet: 28ddd116-ace6-4f34-8438-c8e23d2f2121/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
-                Name: SButton
+                Name: speedStatusButton
                 NotPressedImage: !SpriteFromSheet
                     ~Id: 89fb0001-a5cc-42bc-8879-fa24a957c3a2
                     CurrentFrame: 10
@@ -81,11 +81,15 @@ Hierarchy:
         -   UIElement: !TextBlock
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DependencyProperties: {}
+                Font: 5cb9f53b-04b7-454f-ae2c-f77a822ca53b/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
                 Id: 1b0aa127-f9e0-4edf-86c5-503f3be322b6
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
-                Margin: {}
+                Margin: {Left: 10.0}
                 Name: bonusCounter
-                TextColor: {R: 240, G: 240, B: 240, A: 255}
+                Text: 000
+                TextColor: {R: 255, G: 255, B: 255, A: 255}
+                TextSize: 27.0
+                VerticalAlignment: Center
         -   UIElement: !ContentDecorator
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 BackgroundImage: !SpriteFromSheet
@@ -137,7 +141,7 @@ Hierarchy:
                 Id: 385fcafb-7754-4dcb-a7ff-5d257eb45cfb
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
                 Margin: {}
-                Name: LText
+                Name: lifeStatusText
                 Text: L
                 TextColor: {R: 0, G: 0, B: 0, A: 255}
                 TextSize: 54.0
@@ -168,7 +172,7 @@ Hierarchy:
                 Id: 46cec5c1-4213-4454-9339-a90ef65f1e3a
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
                 Margin: {}
-                Name: CText
+                Name: controlStatusText
                 Text: C
                 TextColor: {R: 0, G: 0, B: 0, A: 255}
                 TextSize: 54.0
@@ -186,18 +190,26 @@ Hierarchy:
                         Id: 9e4d8544-f658-4809-92d0-d572b8cf0504
                 DependencyProperties:
                     Panel.ZIndexPropertyKey: 1
+                    Canvas.PinOriginPropertyKey: {X: 1.0, Y: 0.0, Z: 0.0}
+                    Canvas.RelativePositionPropertyKey: {X: 0.93, Y: 0.44, Z: 0.0}
+                    Canvas.RelativeSizePropertyKey: {X: NaN, Y: 0.4, Z: 1.0}
                 Id: 5053fa40-46ac-43be-8dde-a82569860dfc
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
                 Margin: {}
                 Name: moneyBonusStackPanel
+                Orientation: Horizontal
         -   UIElement: !ImageElement
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Color: {R: 255, G: 255, B: 255, A: 255}
                 DependencyProperties: {}
                 Id: 50d35ad8-51f0-478e-bb95-e18913172d32
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
-                Margin: {}
+                Margin: {Left: 20.0}
                 Name: moneyIcon
+                Source: !SpriteFromSheet
+                    ~Id: 7b9994cc-80be-40d0-80c6-bcaff9e44b4e
+                    CurrentFrame: 5
+                    Sheet: 2d40d5ad-492c-492f-a449-384a2016de63/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
         -   UIElement: !TextBlock
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DependencyProperties: {}
@@ -206,7 +218,7 @@ Hierarchy:
                 Id: 521630c1-5c60-43ad-bc93-b7cde89d4ae6
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
                 Margin: {}
-                Name: PText
+                Name: powerStatusText
                 Text: P
                 TextColor: {R: 0, G: 0, B: 0, A: 255}
                 TextSize: 54.0
@@ -226,7 +238,7 @@ Hierarchy:
                     ~Id: b29eaca0-3d25-4f2c-945a-bc488b397c69
                     CurrentFrame: 10
                     Sheet: 28ddd116-ace6-4f34-8438-c8e23d2f2121/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
-                Name: PButton
+                Name: powerStatusButton
                 NotPressedImage: !SpriteFromSheet
                     ~Id: 89fb0001-a5cc-42bc-8879-fa24a957c3a2
                     CurrentFrame: 10
@@ -240,12 +252,16 @@ Hierarchy:
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DependencyProperties:
                     Panel.ZIndexPropertyKey: 1
+                    Canvas.AbsolutePositionPropertyKey: {X: 128.0, Y: NaN, Z: NaN}
+                    Canvas.UseAbsolutionPositionPropertyKey: true
+                    Canvas.RelativePositionPropertyKey: {X: NaN, Y: 0.44, Z: 0.0}
                 Font: 32bf2303-fa3d-42ad-a418-d51187b1c38c/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
                 HorizontalAlignment: Left
                 Id: 5f18baaa-8fae-4bad-a0c1-37071cbad445
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
                 Margin: {}
                 Name: lifeCounter
+                Text: x0
                 TextColor: {R: 255, G: 215, B: 0, A: 255}
                 TextSize: 32.0
         -   UIElement: !ImageElement
@@ -257,10 +273,10 @@ Hierarchy:
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
                 Margin: {}
                 Name: lifebarGauge
-                Source: !SpriteFromTexture
-                    ~Id: 737ecaab-c64c-4dcb-8a88-9ad3afe59269
-                    Texture: null
-                    Center: {X: 0.0, Y: 0.0}
+                Source: !SpriteFromSheet
+                    ~Id: 0c21c1fe-9b4b-4e64-a20d-8898a5c6ba4c
+                    CurrentFrame: 3
+                    Sheet: 2d40d5ad-492c-492f-a449-384a2016de63/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
                 StretchType: Fill
         -   UIElement: !ImageElement
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
@@ -382,12 +398,12 @@ Hierarchy:
                     -   ~Id: 7970af93-4a22-40fd-9dd3-8067a65f2906
                         SizeValue: 20.0
                     -   ~Id: 620b6874-3dc6-4d74-a111-8d0baddeb306
-                        MaximumSize: 120.0
+                        MinimumSize: 120.0
                         SizeValue: 20.0
                     -   ~Id: a4e77ec0-38ad-458c-bb92-6e7ffd8f3b89
                         SizeValue: 25.0
                     -   ~Id: aa2e5be2-461c-4583-b2d5-8a4279845ffd
-                        MaximumSize: 90.0
+                        MinimumSize: 90.0
                         SizeValue: 10.0
         -   UIElement: !TextBlock
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
@@ -397,7 +413,7 @@ Hierarchy:
                 Id: 8478ac2f-5f4d-47ac-947d-c988252bc88b
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
                 Margin: {}
-                Name: SText
+                Name: speedStatusText
                 Text: S
                 TextColor: {R: 0, G: 0, B: 0, A: 255}
                 TextSize: 54.0
@@ -423,14 +439,23 @@ Hierarchy:
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
                 Margin: {}
                 Name: bonusIcon
+                Source: !SpriteFromSheet
+                    ~Id: d5f80dcf-bd72-46ef-94db-4689bbfd10d2
+                    CurrentFrame: 1
+                    Sheet: 2d40d5ad-492c-492f-a449-384a2016de63/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                VerticalAlignment: Center
         -   UIElement: !TextBlock
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DependencyProperties: {}
+                Font: 5cb9f53b-04b7-454f-ae2c-f77a822ca53b/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
                 Id: 9e4d8544-f658-4809-92d0-d572b8cf0504
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
-                Margin: {}
+                Margin: {Left: 10.0}
                 Name: moneyCounter
-                TextColor: {R: 240, G: 240, B: 240, A: 255}
+                Text: 000
+                TextColor: {R: 255, G: 255, B: 255, A: 255}
+                TextSize: 27.0
+                VerticalAlignment: Center
         -   UIElement: !ContentDecorator
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 BackgroundImage: !SpriteFromSheet
@@ -460,10 +485,10 @@ Hierarchy:
                     - !StackPanel
                         Id: 5053fa40-46ac-43be-8dde-a82569860dfc
                 DependencyProperties: {}
+                Height: 135.0
                 Id: a5c4acd9-a0c1-4573-8761-be377dd39eaf
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
                 Margin: {}
-                MaximumHeight: 150.0
                 Name: topBar
                 VerticalAlignment: Top
         -   UIElement: !ImageElement
@@ -505,7 +530,7 @@ Hierarchy:
                     ~Id: b29eaca0-3d25-4f2c-945a-bc488b397c69
                     CurrentFrame: 10
                     Sheet: 28ddd116-ace6-4f34-8438-c8e23d2f2121/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
-                Name: LButton
+                Name: lifeStatusButton
                 NotPressedImage: !SpriteFromSheet
                     ~Id: 89fb0001-a5cc-42bc-8879-fa24a957c3a2
                     CurrentFrame: 10
@@ -571,6 +596,12 @@ Hierarchy:
                         Type: Fixed
                 DependencyProperties:
                     Panel.ZIndexPropertyKey: -1
+                    Canvas.RelativePositionPropertyKey: {X: 0.0, Y: 0.0, Z: 0.0}
+                    Canvas.RelativeSizePropertyKey: {X: 1.0, Y: 0.25, Z: 1.0}
+                    Canvas.UseAbsolutionPositionPropertyKey: true
+                    Canvas.PinOriginPropertyKey: {X: 0.0, Y: 0.0, Z: 0.0}
+                    Canvas.AbsolutePositionPropertyKey: {X: 0.0, Y: 30.0, Z: 0.0}
+                HorizontalAlignment: Left
                 Id: ca8d46e5-c9cc-4340-89c8-f1f0518d2c78
                 LayerDefinitions:
                     -   ~Id: 22e685a4-8a9f-4701-a3c7-9d0bf4ae5721
@@ -578,7 +609,8 @@ Hierarchy:
                 Margin: {}
                 Name: lifebarGrid
                 RowDefinitions:
-                    -   ~Id: ca2d7165-52b1-47cb-996b-e9ae702d4ebb
+                    -   ~Id: ab9b2b55-909d-4dec-a89a-fa83d85cfef1
+                VerticalAlignment: Top
         -   UIElement: !ImageElement
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Color: {R: 255, G: 255, B: 255, A: 255}

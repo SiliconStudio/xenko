@@ -27,47 +27,44 @@ namespace GameMenu
             "red_ship", "green_ship", "blue_ship", "blue_ship", "yellow_ship", "yellow_ship", "cyan_ship"
         };
 
-        private UIPage page;
 
         private readonly List<SpaceShip> shipList = new List<SpaceShip>();
-        private int money = 30;
-        private int bonus = 30;
-
+        private int money;
+        private int bonus;
         private int lifeStatus;
         private int powerStatus;
         private int controlStatus;
         private int speedStatus;
+        
+        private int activeShipIndex; // Current SpaceShip of the character
+
+        private readonly List<int> starSpriteIndices = new List<int>();
+        private readonly List<int> borderStarSpriteIndices = new List<int>();
+
+        #region Visuals
+
+        private UIPage page;
 
         private ModalElement shipSelectPopup; // Root of SpaceShip select popup
         private ModalElement welcomePopup; // Root of welcome popup
-        
-        private TextBlock nameTextBlock; // Name of the character
-        private ImageElement currentShipImage; // Current SpaceShip of the character
-        private int activeShipIndex;
-
-        private readonly List<Sprite> starSprites = new List<Sprite>();
-        private readonly List<Sprite> borderStarImages = new List<Sprite>();
 
         // Life gauge
         private RectangleF gaugeBarRegion;
         private Grid lifebarGrid;
         private Sprite lifebarGaugeImage;
-
-        private TextBlock moneyCounter;
-
+        // Counters
         private TextBlock bonusCounter;
-
         private TextBlock lifeCounter;
+        private TextBlock moneyCounter;
+        // Name of the character
+        private TextBlock nameTextBlock;
+        private ImageElement currentShipImage;
+        // Status stars
+        private ImageElement controlStatusStar;
+        private ImageElement powerStatusStar;
+        private ImageElement speedStatusStar;
 
-
-        private readonly ImageElement powerStatusStar = new ImageElement();
-
-        private readonly ImageElement controlStatusStar = new ImageElement();
-
-        private readonly ImageElement speedStatusStar = new ImageElement();
-
-        [Obsolete]
-        public SpriteFont WesternFont { get; set; }
+        #endregion // Visuals
 
         /// <summary>
         /// Spritesheet containing the sprites of the main scene.
@@ -91,58 +88,58 @@ namespace GameMenu
 
         private int ControlStatus
         {
+            get { return controlStatus; }
             set
             {
                 if (value > MaximumStar) return;
                 controlStatus = value;
-                controlStatusStar.Source = (SpriteFromTexture)starSprites[controlStatus];
+                ((SpriteFromSheet)controlStatusStar.Source).CurrentFrame = starSpriteIndices[controlStatus];
                 shipList[activeShipIndex].Control = controlStatus;
             }
-            get { return controlStatus; }
         }
 
         private int LifeStatus
         {
+            get { return lifeStatus; }
             set
             {
                 lifeStatus = value;
                 lifeCounter.Text = CreateLifeCountText();
             }
-            get { return lifeStatus; }
         }
 
         private int PowerStatus
         {
+            get { return powerStatus; }
             set
             {
                 if (value > MaximumStar) return;
                 powerStatus = value;
-                powerStatusStar.Source = (SpriteFromTexture)starSprites[powerStatus];
+                ((SpriteFromSheet)powerStatusStar.Source).CurrentFrame = starSpriteIndices[powerStatus];
                 shipList[activeShipIndex].Power = powerStatus;
             }
-            get { return powerStatus; }
         }
 
         private int SpeedStatus
         {
+            get { return speedStatus; }
             set
             {
                 if (value > MaximumStar) return;
                 speedStatus = value;
-                speedStatusStar.Source = (SpriteFromTexture)starSprites[speedStatus];
+                ((SpriteFromSheet)speedStatusStar.Source).CurrentFrame = starSpriteIndices[speedStatus];
                 shipList[activeShipIndex].Speed = speedStatus;
             }
-            get { return speedStatus; }
         }
 
         private int Money
         {
+            get { return money; }
             set
             {
                 money = value;
                 moneyCounter.Text = CreateMoneyCountText();
             }
-            get { return money; }
         }
 
         public override void Start()
@@ -154,14 +151,14 @@ namespace GameMenu
         protected override void LoadScene()
         {
             // Preload stars
-            starSprites.Add(MainSceneImages["star0"]);
-            starSprites.Add(MainSceneImages["star1"]);
-            starSprites.Add(MainSceneImages["star2"]);
-            starSprites.Add(MainSceneImages["star3"]);
-            borderStarImages.Add(MainSceneImages["bstar0"]);
-            borderStarImages.Add(MainSceneImages["bstar1"]);
-            borderStarImages.Add(MainSceneImages["bstar2"]);
-            borderStarImages.Add(MainSceneImages["bstar3"]);
+            starSpriteIndices.Add(MainSceneImages.FindImageIndex("star0"));
+            starSpriteIndices.Add(MainSceneImages.FindImageIndex("star1"));
+            starSpriteIndices.Add(MainSceneImages.FindImageIndex("star2"));
+            starSpriteIndices.Add(MainSceneImages.FindImageIndex("star3"));
+            borderStarSpriteIndices.Add(MainSceneImages.FindImageIndex("bstar0"));
+            borderStarSpriteIndices.Add(MainSceneImages.FindImageIndex("bstar1"));
+            borderStarSpriteIndices.Add(MainSceneImages.FindImageIndex("bstar2"));
+            borderStarSpriteIndices.Add(MainSceneImages.FindImageIndex("bstar3"));
 
             // Create space ships
             var random = new Random();
@@ -170,41 +167,23 @@ namespace GameMenu
                 shipList.Add(new SpaceShip
                 {
                     Name = ShipNameList[i],
-                    Power = random.Next(4),
-                    Control = random.Next(4),
-                    Speed = random.Next(4),
+                    Power = random.Next(MaximumStar + 1),
+                    Control = random.Next(MaximumStar + 1),
+                    Speed = random.Next(MaximumStar + 1),
                     IsLocked = (i % 3) == 2,
                 });
             }
 
             // Initialize UI
             page = Entity.Get<UIComponent>().Page;
-
-            bonusCounter = page.RootElement.FindVisualChildOfType<TextBlock>("bonusCounter");
-            lifeCounter = page.RootElement.FindVisualChildOfType<TextBlock>("lifeCounter");
-            moneyCounter = page.RootElement.FindVisualChildOfType<TextBlock>("moneyCounter");
-
-            lifebarGaugeImage = MainSceneImages["life_bar"];
-            lifebarGrid = page.RootElement.FindVisualChildOfType<Grid>("lifebarGrid");
-            gaugeBarRegion = lifebarGaugeImage.Region;
-
-            nameTextBlock = page.RootElement.FindVisualChildOfType<TextBlock>("nameTextBlock");
-
-            // FIXME: UI asset should support multiline text
-            var explanationText = page.RootElement.FindVisualChildOfType<TextBlock>("explanationText");
-            explanationText.Text = "Pictogram-based alphabets are easily supported.\n日本語も簡単に入れることが出来ます。";
-
-            var quitButton = page.RootElement.FindVisualChildOfType<Button>("quitButton");
-            quitButton.Click += delegate { UIGame.Exit(); };
-
-            InitializeUpgradeButtons();
+            InitializeMainPage();
+            InitializeShipSelectionPopup();
             InitializeWelcomePopup();
-            CreateShipSelectionPopup();
 
             // Add pop-ups to the overlay
             var overlay = (UniformGrid) page.RootElement;
-            overlay.Children.Add(welcomePopup);
             overlay.Children.Add(shipSelectPopup);
+            overlay.Children.Add(welcomePopup);
 
             Script.AddTask(FillLifeBar);
         }
@@ -238,6 +217,11 @@ namespace GameMenu
             shipSelectPopup.Visibility = Visibility.Collapsed;
         }
 
+        private void CloseWelcomePopup()
+        {
+            welcomePopup.Visibility = Visibility.Collapsed;
+        }
+
         private string CreateBonusCountText()
         {
             return bonus.ToString("D3");
@@ -253,18 +237,126 @@ namespace GameMenu
             return money.ToString("D3");
         }
 
-        private void InitializeUpgradeButtons()
+        private UIElement CreateShipSelectionItem(SpaceShip spaceShip)
         {
-            var statusUpgradePanel = page.RootElement.FindVisualChildOfType<UniformGrid>("statusUpgradePanel");
-            SetupStatusButton((ButtonBase) statusUpgradePanel.VisualChildren[0], 2, 0, () => PowerStatus, () => PowerStatus++);
-            SetupStatusButton((ButtonBase) statusUpgradePanel.VisualChildren[1], 2, 0, () => ControlStatus, () => ControlStatus++);
-            SetupStatusButton((ButtonBase) statusUpgradePanel.VisualChildren[2], 2, 0, () => SpeedStatus, () => SpeedStatus++);
-            SetupStatusButton((ButtonBase) statusUpgradePanel.VisualChildren[3], 1, 1, () => 0, () => LifeStatus++);
+            var shipPanel = UILibrary.InstantiateElement<Panel>("ShipButton");
+            var shipButton = shipPanel.FindVisualChildOfType<ButtonBase>("shipButton");
+            var shipImage = shipButton.FindVisualChildOfType<ImageElement>("shipImage");
+
+            // Update spaceship
+            spaceShip.PowerImageElement = shipButton.FindVisualChildOfType<ImageElement>("powerImage");
+            spaceShip.ControlImageElement = shipButton.FindVisualChildOfType<ImageElement>("controlImage");
+            spaceShip.SpeedImageElement = shipButton.FindVisualChildOfType<ImageElement>("speedImage");
+
+            var shipIndex = MainSceneImages.FindImageIndex(spaceShip.Name);
+            ((SpriteFromSheet) shipImage.Source).CurrentFrame = shipIndex;
+
+            shipButton.Click += delegate
+            {
+                activeShipIndex = shipList.FindIndex(w => w.Name == spaceShip.Name);
+                ((SpriteFromSheet)currentShipImage.Source).CurrentFrame = shipIndex;
+
+                PowerStatus = spaceShip.Power;
+                ControlStatus = spaceShip.Control;
+                SpeedStatus = spaceShip.Speed;
+
+                CloseShipSelectPopup();
+            };
+            shipButton.IsEnabled = !spaceShip.IsLocked;
+
+            if (spaceShip.IsLocked)
+            {
+                var lockIconElement = shipPanel.FindVisualChildOfType<ImageElement>("lockIcon");
+                lockIconElement.Visibility = Visibility.Visible;
+            }
+
+            return shipPanel;
+        }
+
+        private void InitializeMainPage()
+        {
+            var rootElement = page.RootElement;
+
+            // counters
+            bonusCounter = rootElement.FindVisualChildOfType<TextBlock>("bonusCounter");
+            lifeCounter = rootElement.FindVisualChildOfType<TextBlock>("lifeCounter");
+            moneyCounter = rootElement.FindVisualChildOfType<TextBlock>("moneyCounter");
+            Bonus = 30;
+            LifeStatus = 3;
+            Money = 30;
+
+            // lifebar
+            lifebarGaugeImage = MainSceneImages["life_bar"];
+            lifebarGrid = rootElement.FindVisualChildOfType<Grid>("lifebarGrid");
+            gaugeBarRegion = lifebarGaugeImage.Region;
+
+            // character name
+            nameTextBlock = rootElement.FindVisualChildOfType<TextBlock>("nameTextBlock");
+
+            // explanation
+            // FIXME: UI asset should support multiline text
+            var explanationText = rootElement.FindVisualChildOfType<TextBlock>("explanationText");
+            explanationText.Text = "Pictogram-based alphabets are easily supported.\n日本語も簡単に入れることが出来ます。";
+
+            // status stars
+            var statusPanel = rootElement.FindVisualChildOfType<UniformGrid>("statusPanel");
+            powerStatusStar = statusPanel.FindVisualChildOfType<ImageElement>("powerStatusStar");
+            controlStatusStar = statusPanel.FindVisualChildOfType<ImageElement>("controlStatusStar");
+            speedStatusStar = statusPanel.FindVisualChildOfType<ImageElement>("speedStatusStar");
+            PowerStatus = shipList[activeShipIndex].Power;
+            ControlStatus = shipList[activeShipIndex].Control;
+            SpeedStatus = shipList[activeShipIndex].Speed;
+
+            // ship selection
+            var currentShipButton = rootElement.FindVisualChildOfType<Button>("currentShipButton");
+            currentShipButton.Click += delegate
+            {
+                // Once click, update the SpaceShip status pop-up and show it.
+                UpdateShipStatus();
+                ShowShipSelectionPopup();
+            };
+            currentShipImage = currentShipButton.FindVisualChildOfType<ImageElement>("currentShipImage");
+
+            // upgrade buttons
+            var statusUpgradePanel = rootElement.FindVisualChildOfType<UniformGrid>("statusUpgradePanel");
+            SetupStatusButton(statusUpgradePanel.FindVisualChildOfType<ButtonBase>("powerStatusButton"), 2, 0, () => PowerStatus, () => PowerStatus++);
+            SetupStatusButton(statusUpgradePanel.FindVisualChildOfType<ButtonBase>("controlStatusButton"), 2, 0, () => ControlStatus, () => ControlStatus++);
+            SetupStatusButton(statusUpgradePanel.FindVisualChildOfType<ButtonBase>("speedStatusButton"), 2, 0, () => SpeedStatus, () => SpeedStatus++);
+            SetupStatusButton(statusUpgradePanel.FindVisualChildOfType<ButtonBase>("lifeStatusButton"), 1, 1, () => 0, () => LifeStatus++);
+
+            // quit button
+            var quitButton = rootElement.FindVisualChildOfType<Button>("quitButton");
+            quitButton.Click += delegate { UIGame.Exit(); };
+        }
+
+        private void InitializeShipSelectionPopup()
+        {
+            shipSelectPopup = UILibrary.InstantiateElement<ModalElement>("ShipSelectPopup");
+            shipSelectPopup.SetPanelZIndex(1);
+
+            // Layout elements in vertical StackPanel
+            var contentStackpanel = shipSelectPopup.FindVisualChildOfType<StackPanel>("contentStackPanel");
+
+            // Create and Add SpaceShip to the stack layout
+            foreach (var ship in shipList)
+                contentStackpanel.Children.Add(CreateShipSelectionItem(ship));
+
+            // Uncomment those lines to have an example of stack panel item virtualization
+            //var shipInitialCount = shipList.Count;
+            //contentStackpanel.ItemVirtualizationEnabled = true;
+            //for (var i = 0; i < 200; i++)
+            //{
+            //    shipList.Add(new SpaceShip { Name = shipList[i % shipInitialCount].Name });
+            //    contentStackpanel.Children.Add(CreateShipSelectionItem(shipList[shipList.Count - 1]));
+            //}
+
+            UpdateShipStatus();
+            CloseShipSelectPopup();
         }
 
         private void InitializeWelcomePopup()
         {
-            welcomePopup = UILibrary.UIElements["WelcomePopup"] as ModalElement;
+            welcomePopup = UILibrary.InstantiateElement<ModalElement>("WelcomePopup");
             welcomePopup.SetPanelZIndex(1);
 
             // FIXME: UI asset should support multiline text
@@ -275,7 +367,7 @@ namespace GameMenu
             cancelButton.Click += delegate
             {
                 nameTextBlock.Text = DefaultName;
-                welcomePopup.Visibility = Visibility.Collapsed;
+                CloseWelcomePopup();
             };
 
             var nameEditText = welcomePopup.FindVisualChildOfType<EditText>("nameEditText");
@@ -283,7 +375,7 @@ namespace GameMenu
             validateButton.Click += delegate
             {
                 nameTextBlock.Text = nameEditText.Text.Trim();
-                welcomePopup.Visibility = Visibility.Collapsed;
+                CloseWelcomePopup();
             };
         }
 
@@ -320,190 +412,14 @@ namespace GameMenu
             welcomePopup.Visibility = Visibility.Visible;
         }
 
-        private void CreateShipSelectionPopup()
-        {
-            // Create "Please select your SpaceShip" text
-            var pleaseSelectText = new TextBlock
-            {
-                Font = WesternFont,
-                TextSize = 48,
-                TextColor = Color.White,
-                Text = "Please select your ship",
-                TextAlignment = TextAlignment.Center,
-                WrapText = true
-            };
-
-            // Layout elements in vertical StackPanel
-            var contentStackpanel = new StackPanel { Orientation = Orientation.Vertical };
-
-            // Create and Add SpaceShip to the stack layout
-            foreach (var ship in shipList)
-                contentStackpanel.Children.Add(CreateShipButtonElement(ship));
-
-            // Uncomment those lines to have an example of stack panel item virtualization
-            //var shipInitialCount = shipList.Count;
-            //contentStackpanel.ItemVirtualizationEnabled = true;
-            //for (int i = 0; i < 200; i++)
-            //{
-            //    shipList.Add(new SpaceShip { Name = shipList[i % shipInitialCount].Name });
-            //    contentStackpanel.Children.Add(CreateShipButtonElement(shipList[shipList.Count - 1]));
-            //}
-
-            UpdateShipStatus();
-
-            var contentScrollView = new ScrollViewer
-            {
-                MaximumHeight = 425,
-                Content = contentStackpanel,
-                ScrollMode = ScrollingMode.Vertical,
-                Margin = new Thickness(12, 10, 7, 10),
-                Padding = new Thickness(0, 0, 6, 0),
-                ScrollBarColor = Color.Orange
-            };
-
-            var scrollViewerDecorator = new ContentDecorator { BackgroundImage = SpriteFromSheet.Create(MainSceneImages, "scroll_background"), Content = contentScrollView, };
-            scrollViewerDecorator.SetGridRow(2);
-
-            var layoutGrid = new Grid();
-            layoutGrid.ColumnDefinitions.Add(new StripDefinition());
-            layoutGrid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
-            layoutGrid.RowDefinitions.Add(new StripDefinition(StripType.Fixed, 10)); // white space
-            layoutGrid.RowDefinitions.Add(new StripDefinition(StripType.Star));
-            layoutGrid.LayerDefinitions.Add(new StripDefinition());
-            layoutGrid.Children.Add(pleaseSelectText);
-            layoutGrid.Children.Add(scrollViewerDecorator);
-
-            var shipSelectPopupContent = new ContentDecorator
-            {
-                //BackgroundImage = popupWindowImage,
-                Content = layoutGrid,
-                Padding = new Thickness(110, 120, 100, 140)
-            };
-
-            // Create SpaceShip selection popup
-            shipSelectPopup = new ModalElement
-            {
-                Visibility = Visibility.Collapsed,
-                Content = shipSelectPopupContent
-            };
-
-            shipSelectPopup.SetPanelZIndex(1);
-        }
-
         private void UpdateShipStatus()
         {
             foreach (var ship in shipList)
             {
-                ship.PowerImageElement.Source = (SpriteFromTexture)borderStarImages[ship.Power];
-                ship.ControlImageElement.Source = (SpriteFromTexture)borderStarImages[ship.Control];
-                ship.SpeedImageElement.Source = (SpriteFromTexture)borderStarImages[ship.Speed];
+                ((SpriteFromSheet)ship.PowerImageElement.Source).CurrentFrame = borderStarSpriteIndices[ship.Power];
+                ((SpriteFromSheet)ship.ControlImageElement.Source).CurrentFrame = borderStarSpriteIndices[ship.Control];
+                ((SpriteFromSheet)ship.SpeedImageElement.Source).CurrentFrame = borderStarSpriteIndices[ship.Speed];
             }
-        }
-
-        // TODO:
-
-        private UniformGrid CreateShipButtonElement(SpaceShip spaceShip)
-        {
-            // Put the stat text block in a vertical uniform grid
-            var statusTextGrid = new UniformGrid { Rows = 3, Margin = new Thickness(5f, -6f, 0, 0)};
-            statusTextGrid.Children.Add(CreateShipStatusTextBlock("Power", 0));
-            statusTextGrid.Children.Add(CreateShipStatusTextBlock("Control", 1));
-            statusTextGrid.Children.Add(CreateShipStatusTextBlock("Speed", 2));
-
-            // Put the stat stars in a vertical uniform grid
-            spaceShip.PowerImageElement = CreateShipStatusStar(0);
-            spaceShip.ControlImageElement = CreateShipStatusStar(1);
-            spaceShip.SpeedImageElement = CreateShipStatusStar(2);
-
-            var starGrid = new UniformGrid { Rows = 3 };
-            starGrid.Children.Add(spaceShip.PowerImageElement);
-            starGrid.Children.Add(spaceShip.ControlImageElement);
-            starGrid.Children.Add(spaceShip.SpeedImageElement);
-            starGrid.SetGridColumn(2);
-
-            // Ship image
-            var shipSprite = SpriteFromSheet.Create(MainSceneImages, spaceShip.Name);
-            var shipImageElement = new ImageElement { Source = shipSprite };
-            shipImageElement.SetGridColumn(4);
-
-            // Create the horizontal grid with two blank stretchable columns and add the text blocks, the starts and the ship image
-            var shipContent = new Grid();
-            shipContent.ColumnDefinitions.Add(new StripDefinition(StripType.Auto));
-            shipContent.ColumnDefinitions.Add(new StripDefinition(StripType.Star));
-            shipContent.ColumnDefinitions.Add(new StripDefinition(StripType.Auto));
-            shipContent.ColumnDefinitions.Add(new StripDefinition(StripType.Star));
-            shipContent.ColumnDefinitions.Add(new StripDefinition(StripType.Auto));
-            shipContent.RowDefinitions.Add(new StripDefinition());
-            shipContent.LayerDefinitions.Add(new StripDefinition());
-
-            shipContent.Children.Add(statusTextGrid);
-            shipContent.Children.Add(starGrid);
-            shipContent.Children.Add(shipImageElement);
-
-            //
-            var shipSelectFrameSprite = SpriteFromSheet.Create(MainSceneImages, "weapon_select_frame");
-
-            var shipButton = new Button
-            {
-                Name = spaceShip.Name,
-                Content = shipContent,
-                PressedImage = shipSelectFrameSprite,
-                NotPressedImage = shipSelectFrameSprite,
-                MouseOverImage = shipSelectFrameSprite,
-                Padding = new Thickness(60, 20, 20, 20)
-            };
-
-            shipButton.Click += delegate
-            {
-                currentShipImage.Source = shipSprite;
-
-                activeShipIndex = shipList.FindIndex(w => w.Name == spaceShip.Name);
-
-                PowerStatus = spaceShip.Power;
-                ControlStatus = spaceShip.Control;
-                SpeedStatus = spaceShip.Speed;
-
-                CloseShipSelectPopup();
-            };
-
-            shipButton.IsEnabled = !spaceShip.IsLocked;
-            shipButton.SetCanvasRelativeSize(new Vector3(1f, 1f, 1f));
-
-            var buttonGrid = new UniformGrid { MaximumHeight = 100 };
-            buttonGrid.Children.Add(shipButton);
-
-            if (spaceShip.IsLocked)
-            {
-                var lockIconElement = new ImageElement { Source = SpriteFromSheet.Create(MainSceneImages, "lock_icon"), StretchType = StretchType.Fill, };
-                lockIconElement.SetPanelZIndex(1);
-                buttonGrid.Children.Add(lockIconElement);
-            }
-
-            return buttonGrid;
-        }
-
-        private UIElement CreateShipStatusTextBlock(string statusName, int elementIndex)
-        {
-            var textBlock = new TextBlock
-            {
-                TextSize = 19,
-                Font = WesternFont,
-                Text = statusName,
-                TextColor = Color.Black,
-                HorizontalAlignment = HorizontalAlignment.Left,
-                VerticalAlignment = VerticalAlignment.Center,
-            };
-            textBlock.SetGridRow(elementIndex);
-
-            return textBlock;
-        }
-
-        private ImageElement CreateShipStatusStar(int elementIndex)
-        {
-            var starImage = new ImageElement { VerticalAlignment = VerticalAlignment.Center };
-            starImage.SetGridRow(elementIndex);
-
-            return starImage;
         }
 
         private class SpaceShip
