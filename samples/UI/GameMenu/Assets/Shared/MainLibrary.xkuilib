@@ -3,7 +3,7 @@ Id: 44a9ed4d-847f-4577-8cb1-eabf455799a7
 SerializedVersion: {Xenko: 0.0.0}
 Tags: []
 Design:
-    Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
+    Resolution: {X: 640.0, Y: 1136.0, Z: 1000.0}
 PublicUIElements:
     0b37bd5e-d5ef-4cfe-b41e-0aad87c4df72: ShipSelectPopup
     3f43a337-c8d0-4d80-830f-dd1621f717cd: ShipButton
@@ -169,11 +169,28 @@ Hierarchy:
                         SizeValue: 10.0
                         Type: Fixed
                     -   ~Id: 842d5ea0-3ac5-48f0-969f-5f711ff4ab59
+        -   UIElement: !ImageElement
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                Color: {R: 255, G: 255, B: 255, A: 255}
+                DependencyProperties:
+                    Panel.ZIndexPropertyKey: 1
+                Id: 3df05212-2ebb-4b80-b63d-82c8c5181fc0
+                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
+                Margin: {}
+                Name: lockIcon
+                Source: !SpriteFromSheet
+                    ~Id: a15c1b6c-94a7-4490-ab2a-1c68723cb425
+                    CurrentFrame: 4
+                    Sheet: f914aa94-46ab-418b-bae0-77ba35744f07/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
+                StretchType: Fill
+                Visibility: Hidden
         -   UIElement: !UniformGrid
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Children:
                     - !Button
                         Id: be001fe1-6608-4bfe-b639-702029d9ffa1
+                    - !ImageElement
+                        Id: 3df05212-2ebb-4b80-b63d-82c8c5181fc0
                 DependencyProperties: {}
                 Id: 3f43a337-c8d0-4d80-830f-dd1621f717cd
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
@@ -431,9 +448,9 @@ Hierarchy:
                 DrawLayerNumber: 2
                 Id: a407797f-2bb7-4d43-be29-bd8682e09164
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
-                Margin: {Left: 110.0, Top: 120.0, Right: 100.0, Bottom: 140.0}
+                Margin: {}
                 Name: shipSelectPopupContent
-                Padding: {}
+                Padding: {Left: 110.0, Top: 120.0, Right: 100.0, Bottom: 140.0}
         -   UIElement: !TextBlock
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DependencyProperties: {}
@@ -464,7 +481,8 @@ Hierarchy:
                 CanBeHitByUser: true
                 Content: !Grid
                     Id: 7765f331-7994-4bc8-91d4-58dd12426bbe
-                DependencyProperties: {}
+                DependencyProperties:
+                    Panel.ZIndexPropertyKey: 0
                 DrawLayerNumber: 2
                 Id: be001fe1-6608-4bfe-b639-702029d9ffa1
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
