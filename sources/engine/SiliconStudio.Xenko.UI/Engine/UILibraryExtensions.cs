@@ -3,7 +3,6 @@
 
 using System;
 using SiliconStudio.Xenko.UI;
-using SiliconStudio.Xenko.UI.Engine;
 
 namespace SiliconStudio.Xenko.Engine
 {

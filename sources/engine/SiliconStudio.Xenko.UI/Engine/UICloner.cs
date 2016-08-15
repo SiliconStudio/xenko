@@ -6,8 +6,9 @@ using System.Collections.Generic;
 using System.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Xenko.Engine.Design;
+using SiliconStudio.Xenko.UI;
 
-namespace SiliconStudio.Xenko.UI.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     public class UICloner
     {
@@ -25,7 +26,6 @@ namespace SiliconStudio.Xenko.UI.Engine
             var clonedObjects = ClonedElements;
             try
             {
-                //CollectTreeHelper(element, clonedObjects);
                 clonedObjects.Add(element);
                 var clone = Clone(clonedObjects, element);
                 return clone;
@@ -33,31 +33,6 @@ namespace SiliconStudio.Xenko.UI.Engine
             finally
             {
                 clonedObjects.Clear();
-            }
-        }
-
-        
-        private static void CollectTreeHelper(UIElement element, HashSet<object> clonedObjects)
-        {
-            if (element == null) throw new ArgumentNullException(nameof(element));
-            if (clonedObjects == null) throw new ArgumentNullException(nameof(clonedObjects));
-
-            clonedObjects.Add(element);
-
-            var queue = new Queue<IEnumerable<UIElement>>();
-            queue.Enqueue(element.VisualChildren);
-
-            while (queue.Count > 0)
-            {
-                var current = queue.Dequeue();
-                if (current == null)
-                    continue;
-
-                foreach (var item in current)
-                {
-                    clonedObjects.Add(item);
-                    queue.Enqueue(item.VisualChildren);
-                }
             }
         }
 
