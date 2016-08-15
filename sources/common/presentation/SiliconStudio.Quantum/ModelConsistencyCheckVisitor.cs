@@ -206,17 +206,9 @@ namespace SiliconStudio.Quantum
 
         private void AddReference(IGraphNode referencer, IReference reference)
         {
-            var enumerableReference = reference as ReferenceEnumerable;
-            if (enumerableReference != null)
+            foreach (var itemReference in reference.Enumerate())
             {
-                foreach (var itemReference in enumerableReference)
-                {
-                    AddObjectReference(referencer, itemReference);
-                }
-            }
-            else
-            {
-                AddObjectReference(referencer, (ObjectReference)reference);
+                AddObjectReference(referencer, itemReference);
             }
         }
 
