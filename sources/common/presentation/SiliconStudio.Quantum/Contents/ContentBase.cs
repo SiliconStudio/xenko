@@ -114,27 +114,19 @@ namespace SiliconStudio.Quantum.Contents
         /// <summary>
         /// Raises the <see cref="Changing"/> event with the given parameters.
         /// </summary>
-        /// <param name="index">The index where the change occurred, if applicable. <c>null</c> otherwise.</param>
-        /// <param name="changeType">The type of change that occurred.</param>
-        /// <param name="oldValue">The old value of this content.</param>
-        /// <param name="newValue">The new value of this content.</param>
-        protected void NotifyContentChanging(Index index, ContentChangeType changeType, object oldValue, object newValue)
+        /// <param name="args">The arguments of the event.</param>
+        protected void NotifyContentChanging(ContentChangeEventArgs args)
         {
-            var args = new ContentChangeEventArgs(this, index, changeType, oldValue, newValue);
             PrepareChange?.Invoke(this, args);
             Changing?.Invoke(this, args);
         }
 
         /// <summary>
-        /// Raises the <see cref="Changed"/> event with the given parameters.
+        /// Raises the <see cref="Changed"/> event with the given arguments.
         /// </summary>
-        /// <param name="index">The index where the change occurred, if applicable. <c>null</c> otherwise.</param>
-        /// <param name="changeType">The type of change that occurred.</param>
-        /// <param name="oldValue">The old value of this content.</param>
-        /// <param name="newValue">The new value of this content.</param>
-        protected void NotifyContentChanged(Index index, ContentChangeType changeType, object oldValue, object newValue)
+        /// <param name="args">The arguments of the event.</param>
+        protected void NotifyContentChanged(ContentChangeEventArgs args)
         {
-            var args = new ContentChangeEventArgs(this, index, changeType, oldValue, newValue);
             Changed?.Invoke(this, args);
             FinalizeChange?.Invoke(this, args);
         }
