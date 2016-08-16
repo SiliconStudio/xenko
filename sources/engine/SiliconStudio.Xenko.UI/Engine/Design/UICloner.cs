@@ -5,10 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.UI;
 
-namespace SiliconStudio.Xenko.Engine
+namespace SiliconStudio.Xenko.Engine.Design
 {
     public class UICloner
     {

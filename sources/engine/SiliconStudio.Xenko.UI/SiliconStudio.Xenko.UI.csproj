@@ -55,7 +55,7 @@
     <Compile Include="DependencyPropertyFactory.cs" />
     <Compile Include="DependencyPropertyKeyMetadata.cs" />
     <Compile Include="Engine\Processors\UIElementLinkProcessor.cs" />
-    <Compile Include="Engine\UICloner.cs" />
+    <Compile Include="Engine\Design\UICloner.cs" />
     <Compile Include="Engine\UIComponent.cs" />
     <Compile Include="Engine\UIElementLinkComponent.cs" />
     <Compile Include="Engine\UIElementTransformLink.cs" />
