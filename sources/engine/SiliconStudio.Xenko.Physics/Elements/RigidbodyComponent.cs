@@ -303,6 +303,9 @@ namespace SiliconStudio.Xenko.Physics
 
         protected override void OnAttach()
         {
+            GetWorldTransformCallback = (out Matrix transform) => RigidBodyGetWorldTransform(out transform);
+            SetWorldTransformCallback = transform => RigidBodySetWorldTransform(ref transform);
+
             InternalRigidBody = new BulletSharp.RigidBody(0.0f, MotionState, ColliderShape.InternalShape, Vector3.Zero)
             {
                 UserObject = this
@@ -335,11 +338,6 @@ namespace SiliconStudio.Xenko.Physics
             OverrideGravity = overrideGravity;
             Gravity = gravity;
             RigidBodyType = IsKinematic ? RigidBodyTypes.Kinematic : RigidBodyTypes.Dynamic;
-
-            GetWorldTransformCallback = (out Matrix transform) => RigidBodyGetWorldTransform(out transform);
-            SetWorldTransformCallback = transform => RigidBodySetWorldTransform(ref transform);
-
-            UpdatePhysicsTransformation(); //this will set position and rotation of the collider
 
             Simulation.AddRigidBody(this, (CollisionFilterGroupFlags)CollisionGroup, CanCollideWith);
         }
