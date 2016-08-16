@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Animations
 {
     public class AnimationProcessor : EntityProcessor<AnimationComponent, AnimationProcessor.AssociatedData>
     {
-        private readonly ConcurrentBag<FastList<AnimationOperation>> animationOperationCollections = new ConcurrentBag<FastList<AnimationOperation>>();
+        private readonly ConcurrentPool<FastList<AnimationOperation>> animationOperationPool = new ConcurrentPool<FastList<AnimationOperation>>(() => new FastList<AnimationOperation>());
 
         public AnimationProcessor()
         {
@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.Animations
             var time = context.Time;
 
             //foreach (var entity in ComponentDatas.Values)
-            Dispatcher.ForEach(ComponentDatas, entity =>
+            Dispatcher.ForEach(ComponentDatas, () => animationOperationPool.Acquire(), (entity, animationOperations) =>
             {
                 var associatedData = entity.Value;
 
@@ -99,12 +99,6 @@ namespace SiliconStudio.Xenko.Animations
                 }
 
                 // Regenerate animation operations
-                FastList<AnimationOperation> animationOperations;
-                if (!animationOperationCollections.TryTake(out animationOperations))
-                {
-                    animationOperations = new FastList<AnimationOperation>();
-                }
-
                 float totalWeight = 0.0f;
 
                 for (int index = 0; index < animationComponent.PlayingAnimations.Count; index++)
@@ -191,8 +185,8 @@ namespace SiliconStudio.Xenko.Animations
                 }
 
                 animationOperations.Clear();
-                animationOperationCollections.Add(animationOperations);
-            });
+                
+            }, animationOperations => animationOperationPool.Release(animationOperations));
         }
 
         private AnimationOperation CreatePushOperation(PlayingAnimation playingAnimation)

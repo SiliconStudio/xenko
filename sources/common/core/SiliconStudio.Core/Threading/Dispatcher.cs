@@ -151,6 +151,36 @@ namespace SiliconStudio.Core.Threading
             }
         }
 
+        public static void ForEach<TKey, TValue, TLocal>(Dictionary<TKey, TValue> collection, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<KeyValuePair<TKey, TValue>, TLocal> action, [Pooled] Action<TLocal> finalizeLocal = null)
+        {
+            if (MaxDregreeOfParallelism <= 1 || collection.Count <= 1)
+            {
+                ExecuteBatch(collection, 0, collection.Count, initializeLocal, action, finalizeLocal);
+            }
+            else
+            {
+                var state = loopStatePool.Acquire();
+                state.ActiveWorkerCount = 1;
+                state.StartInclusive = 0;
+
+                try
+                {
+                    int batchCount = Math.Min(MaxDregreeOfParallelism, collection.Count);
+                    int batchSize = (collection.Count + (batchCount - 1)) / batchCount;
+
+                    // Wait for all workers to finish
+                    Fork(collection, batchSize, MaxDregreeOfParallelism, initializeLocal, action, finalizeLocal, state);
+
+                    // Kick off a worker, then perform work synchronously
+                    state.Finished.WaitOne();
+                }
+                finally
+                {
+                    loopStatePool.Release(state);
+                }
+            }
+        }
+
         public static void ForEach<T>(FastCollection<T> collection, [Pooled] Action<T> action)
         {
             For(0, collection.Count, i => action(collection[i]));
@@ -194,6 +224,36 @@ namespace SiliconStudio.Core.Threading
                     // TODO: Reuse enumerator when processing multiple batches synchronously
                     var start = newStart - batchSize;
                     ExecuteBatch(collection, newStart - batchSize, Math.Min(collection.Count, newStart) - start, action);
+                }
+            }
+            finally
+            {
+                // If this was the last batch, signal
+                if (Interlocked.Decrement(ref state.ActiveWorkerCount) == 0)
+                {
+                    state.Finished.Set();
+                }
+            }
+        }
+
+        private static void Fork<TKey, TValue, TLocal>(Dictionary<TKey, TValue> collection, int batchSize, int maxDegreeOfParallelism, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<KeyValuePair<TKey, TValue>, TLocal> action, [Pooled] Action<TLocal> finalizeLocal, BatchState state)
+        {
+            // Kick off another worker if there's any work left
+            if (maxDegreeOfParallelism > 1 && state.StartInclusive + batchSize < collection.Count)
+            {
+                Interlocked.Increment(ref state.ActiveWorkerCount);
+                ThreadPool.Instance.QueueWorkItem(() => Fork(collection, batchSize, maxDegreeOfParallelism - 1, initializeLocal, action, finalizeLocal, state));
+            }
+
+            try
+            {
+                // Process batches synchronously as long as there are any
+                int newStart;
+                while ((newStart = Interlocked.Add(ref state.StartInclusive, batchSize)) - batchSize < collection.Count)
+                {
+                    // TODO: Reuse enumerator when processing multiple batches synchronously
+                    var start = newStart - batchSize;
+                    ExecuteBatch(collection, newStart - batchSize, Math.Min(collection.Count, newStart) - start, initializeLocal, action, finalizeLocal);
                 }
             }
             finally
@@ -307,6 +367,38 @@ namespace SiliconStudio.Core.Threading
             {
                 action(enumerator.Current);
                 index++;
+            }
+        }
+
+        private static void ExecuteBatch<TKey, TValue, TLocal>(Dictionary<TKey, TValue> dictionary, int offset, int count, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<KeyValuePair<TKey, TValue>, TLocal> action, [Pooled] Action<TLocal> finalizeLocal)
+        {
+            TLocal local = default(TLocal);
+            try
+            {
+                if (initializeLocal != null)
+                {
+                    local = initializeLocal();
+                }
+
+                var enumerator = dictionary.GetEnumerator();
+                int index = 0;
+
+                // Skip to offset
+                while (index < offset && enumerator.MoveNext())
+                {
+                    index++;
+                }
+
+                // Process batch
+                while (index < offset + count && enumerator.MoveNext())
+                {
+                    action(enumerator.Current, local);
+                    index++;
+                }
+            }
+            finally
+            {
+                finalizeLocal?.Invoke(local);
             }
         }
 
