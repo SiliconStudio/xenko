@@ -49,6 +49,7 @@
     <Compile Include="Behaviors\LinkPreviewBehavior.cs" />
     <Compile Include="Behaviors\NodeGraphBehavior.cs" />
     <Compile Include="Behaviors\NodeGraphSelectionBehavior.cs" />
+    <Compile Include="Behaviors\GraphContextMenuOpenedBehavior.cs" />
     <Compile Include="Controls\NodeEdgeControl.cs" />
     <Compile Include="Controls\NodeGraphArea.cs" />
     <Compile Include="Controls\NodeVertexControl.cs" />

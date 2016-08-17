@@ -8,7 +8,7 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Assets.Rendering
 {
-    [DataContract]
+    [DataContract(Inherited = true)]
     public abstract class Block : IIdentifiable, IAssetPartDesign<Block>
     {
         protected Block()
@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         /// Gets or sets the position of the block.
         /// </summary>
         [DataMember(-50), Display(Browsable = false)]
-        public Vector2 Position { get; set; }
+        public Int2 Position { get; set; }
 
         /// <summary>
         /// Gets the title of that node, as it will be displayed in the editor.
