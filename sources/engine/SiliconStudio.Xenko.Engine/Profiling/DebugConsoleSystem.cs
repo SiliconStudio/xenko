@@ -61,6 +61,11 @@ namespace SiliconStudio.Xenko.Profiling
         {
             var msg = new DebugOverlayMessage { Message = message, Position = position, TextColor = color, TextFont = font };
             overlayMessages.Enqueue(msg);
+            //drop one old message if the tail size has been reached
+            if (overlayMessages.Count > TailSize)
+            {
+                overlayMessages.Dequeue();
+            }
         }
 
         /// <summary>
@@ -72,6 +77,12 @@ namespace SiliconStudio.Xenko.Profiling
         /// Sets or gets the font to use when drawing the profiling system text.
         /// </summary>
         public SpriteFont Font { get; set; }
+
+
+        /// <summary>
+        /// Sets or gets the size of the messages queue, older messages will be discarded if the size is greater.
+        /// </summary>
+        public int TailSize { get; set; } = 100;
 
         public override void Draw(GameTime gameTime)
         {
