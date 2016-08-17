@@ -43,5 +43,10 @@ namespace SiliconStudio.Assets.Serializers
         /// The default value is <see cref="IdentifiableAssetPartReference"/>.
         /// </remarks>
         public Type ReferenceType { get; set; } = typeof(IdentifiableAssetPartReference);
+
+        /// <summary>
+        /// Gets or sets a boolean that specifies if type info should be saved. If not, it won't be available during <see cref="IAssetPartReference.GenerateProxyPart"/>
+        /// </summary>
+        public bool KeepTypeInfo { get; set; } = true;
     }
 }

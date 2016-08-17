@@ -137,6 +137,8 @@ namespace SiliconStudio.Assets.Serializers
                 {
                     // Serialization: properly fill the reference with information from the real object
                     reference.FillFromPart(objectContext.Instance);
+                    if (!attribute.KeepTypeInfo)
+                        objectContext.Tag = null;
                 }
                 else
                 {

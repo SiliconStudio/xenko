@@ -26,9 +26,19 @@ namespace SiliconStudio.Xenko.Assets.Rendering
 
         public object GenerateProxyPart(Type partType)
         {
-            var block = (Block)Activator.CreateInstance(partType);
+            var block = new FakeBlock();
             IdentifiableHelper.SetId(block, Id);
             return block;
+        }
+
+        /// <summary>
+        /// Used temporarily during deserialization when creating references.
+        /// </summary>
+        class FakeBlock : Block
+        {
+            public override void RegenerateSlots()
+            {
+            }
         }
     }
 }

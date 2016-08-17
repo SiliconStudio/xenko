@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Assets.Rendering
     [DataContract("GraphicsCompositorAsset")]
     [Display(85, "Graphics Compositor")]
     [AssetDescription(FileExtension)]
-    [AssetPartReference(typeof(Block))]
+    [AssetPartReference(typeof(Block), ReferenceType = typeof(BlockReference), KeepTypeInfo = false)]
     [AssetPartReference(typeof(Link))]
     public class GraphicsCompositorAsset : AssetComposite
     {
