@@ -90,10 +90,20 @@ namespace SiliconStudio.Xenko.Physics
                     physicsScene.Simulation.Simulate((float)gameTime.Elapsed.TotalSeconds);
                     //update character bound entity's transforms from physics engine simulation
                     physicsScene.Processor.UpdateCharacters();
+
+                    physicsScene.Simulation.BeginContactTesting();
+
+                    //finally process any needed cleanup
+                    physicsScene.Processor.UpdateRemovals();
+
+                    
                     //handle frame contacts
                     physicsScene.Processor.UpdateContacts();
+
+                    physicsScene.Simulation.EndContactTesting();
+
                     //send contact events
-                    physicsScene.Simulation.SendEvents();
+                    physicsScene.Simulation.SendEvents();                   
                 }
             }
         }

@@ -5,6 +5,7 @@ using SiliconStudio.Core.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Engine;
@@ -858,6 +859,42 @@ namespace SiliconStudio.Xenko.Physics
         private readonly FastList<ContactPoint> updatedContacts = new FastList<ContactPoint>();
         private readonly FastList<ContactPoint> removedContacts = new FastList<ContactPoint>();
 
+        private void ContactRemoval(ContactPoint contact, PhysicsComponent component0, PhysicsComponent component1)
+        {
+            var existingPair = component0.Collisions.FirstOrDefault(x => x.InternalEquals(component0, component1));
+            if (existingPair == null)
+            {
+#if DEBUG
+                //should not happen?
+                throw new Exception("Pair not present.");
+#else
+                return;
+#endif
+            }
+
+            if (existingPair.Contacts.Contains(contact))
+            {
+                existingPair.Contacts.Remove(contact);
+                removedContactsCache.Add(contact);
+
+                contactToCollision.Remove(contact);
+
+                if (existingPair.Contacts.Count == 0)
+                {
+                    component0.Collisions.Remove(existingPair);
+                    component1.Collisions.Remove(existingPair);
+                    removedCollisionsCache.Add(existingPair);
+                }
+            }
+            else
+            {
+#if DEBUG
+                //should not happen?
+                throw new Exception("Contact not in pair.");
+#endif
+            }
+        }
+
         internal void EndContactTesting()
         {
             newContacts.Clear(true);
@@ -884,75 +921,6 @@ namespace SiliconStudio.Xenko.Physics
                 }
             }
 
-            foreach (var contact in removedContacts)
-            {
-                var obj0 = BulletSharp.CollisionObject.GetManaged(contact.ColliderA);
-                var obj1 = BulletSharp.CollisionObject.GetManaged(contact.ColliderB);
-                var component0 = (PhysicsComponent)obj0.UserObject;
-                var component1 = (PhysicsComponent)obj1.UserObject;
-
-                if (((int)component0.CanCollideWith & (int)component1.CollisionGroup) == 0 && ((int)component1.CanCollideWith & (int)component0.CollisionGroup) == 0) continue;
-
-                var existingPair = component0.Collisions.FirstOrDefault(x => x.InternalEquals(component0, component1));
-                if (existingPair == null)
-                {
-                    //should not happen?
-                    throw new Exception("Pair not present.");
-                }
-
-                if (existingPair.Contacts.Contains(contact))
-                {
-                    existingPair.Contacts.Remove(contact);
-                    removedContactsCache.Add(contact);
-
-                    contactToCollision.Remove(contact);
-
-                    if (existingPair.Contacts.Count == 0)
-                    {
-                        component0.Collisions.Remove(existingPair);
-                        component1.Collisions.Remove(existingPair);
-                        removedCollisionsCache.Add(existingPair);
-                    }
-                }
-                else
-                {
-                    //should not happen?
-                    throw new Exception("Contact not in pair.");
-                }
-            }
-
-            foreach (var contact in updatedContacts)
-            {
-                var obj0 = BulletSharp.CollisionObject.GetManaged(contact.ColliderA);
-                var obj1 = BulletSharp.CollisionObject.GetManaged(contact.ColliderB);
-                var component0 = (PhysicsComponent)obj0.UserObject;
-                var component1 = (PhysicsComponent)obj1.UserObject;
-
-                if (((int)component0.CanCollideWith & (int)component1.CollisionGroup) == 0 && ((int)component1.CanCollideWith & (int)component0.CollisionGroup) == 0) continue;
-
-                var existingPair = component0.Collisions.FirstOrDefault(x => x.InternalEquals(component0, component1));
-                if (existingPair != null)
-                {
-                    if (existingPair.Contacts.Contains(contact))
-                    {
-                        //update data values (since comparison is only at pointer level internally)
-                        existingPair.Contacts.Remove(contact);
-                        existingPair.Contacts.Add(contact);
-                        updatedContactsCache.Add(contact);
-                    }
-                    else
-                    {
-                        //should not happen?
-                        throw new Exception("Contact not in pair.");
-                    }
-                }
-                else
-                {
-                    //should not happen?
-                    throw new Exception("Pair not present.");
-                }
-            }
-
             foreach (var contact in newContacts)
             {
                 var obj0 = BulletSharp.CollisionObject.GetManaged(contact.ColliderA);
@@ -960,15 +928,17 @@ namespace SiliconStudio.Xenko.Physics
                 var component0 = (PhysicsComponent)obj0.UserObject;
                 var component1 = (PhysicsComponent)obj1.UserObject;
 
-                if (((int)component0.CanCollideWith & (int)component1.CollisionGroup) == 0 && ((int)component1.CanCollideWith & (int)component0.CollisionGroup) == 0) continue;
-
                 var existingPair = component0.Collisions.FirstOrDefault(x => x.InternalEquals(component0, component1));
                 if (existingPair != null)
                 {
                     if (existingPair.Contacts.Contains(contact))
                     {
+#if DEBUG
                         //should not happen?
                         throw new Exception("Contact already added.");
+#else
+                        continue;
+#endif
                     }
 
                     existingPair.Contacts.Add(contact);
@@ -985,7 +955,51 @@ namespace SiliconStudio.Xenko.Physics
                     newCollisionsCache.Add(newPair);
                     newContactsFastCache.Add(contact);
                 }
-            }            
+            }
+
+            foreach (var contact in updatedContacts)
+            {
+                var obj0 = BulletSharp.CollisionObject.GetManaged(contact.ColliderA);
+                var obj1 = BulletSharp.CollisionObject.GetManaged(contact.ColliderB);
+                var component0 = (PhysicsComponent)obj0.UserObject;
+                var component1 = (PhysicsComponent)obj1.UserObject;
+
+                var existingPair = component0.Collisions.FirstOrDefault(x => x.InternalEquals(component0, component1));
+                if (existingPair != null)
+                {
+                    if (existingPair.Contacts.Contains(contact))
+                    {
+                        //update data values (since comparison is only at pointer level internally)
+                        existingPair.Contacts.Remove(contact);
+                        existingPair.Contacts.Add(contact);
+                        updatedContactsCache.Add(contact);
+                    }
+                    else
+                    {
+#if DEBUG
+                        //should not happen?
+                        throw new Exception("Contact not in pair.");
+#endif
+                    }
+                }
+                else
+                {
+#if DEBUG
+                    //should not happen?
+                    throw new Exception("Pair not present.");
+#endif
+                }
+            }
+
+            foreach (var contact in removedContacts)
+            {
+                var obj0 = BulletSharp.CollisionObject.GetManaged(contact.ColliderA);
+                var obj1 = BulletSharp.CollisionObject.GetManaged(contact.ColliderB);
+                var component0 = (PhysicsComponent)obj0.UserObject;
+                var component1 = (PhysicsComponent)obj1.UserObject;
+
+                ContactRemoval(contact, component0, component1);
+            }     
         }
 
         private HashSet<ContactPoint> currentFrameContacts = new HashSet<ContactPoint>(ContactPointEqualityComparer.Default);
@@ -1001,6 +1015,31 @@ namespace SiliconStudio.Xenko.Physics
             {
                 var contact = contacts[i];
                 currentFrameContacts.Add(contact);
+            }
+        }
+
+        private readonly FastList<ContactPoint> previousToRemove = new FastList<ContactPoint>();
+
+        internal void CleanContacts(PhysicsComponent component)
+        {
+            previousToRemove.Clear(true);
+
+            foreach (var previousFrameContact in previousFrameContacts)
+            {
+                var obj0 = BulletSharp.CollisionObject.GetManaged(previousFrameContact.ColliderA);
+                var obj1 = BulletSharp.CollisionObject.GetManaged(previousFrameContact.ColliderB);
+                var component0 = (PhysicsComponent)obj0.UserObject;
+                var component1 = (PhysicsComponent)obj1.UserObject;
+                if (component == component0 || component == component1)
+                {
+                    previousToRemove.Add(previousFrameContact);
+                    ContactRemoval(previousFrameContact, component0, component1);
+                }
+            }
+
+            foreach (var contactPoint in previousToRemove)
+            {
+                previousFrameContacts.Remove(contactPoint);
             }
         }
     }
