@@ -34,7 +34,9 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
 
             public LinkPreviewAdorner(UIElement parent)
                 : base(parent)
-            {   //
+            {
+                // Start disabled
+                IsEnabled = false;
 
                 Brush brush = new SolidColorBrush(Colors.White);
                 brush.Opacity = 0.5;
@@ -91,7 +93,8 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         #endregion
 
         #region Members
-        private GraphAreaBase graph_area_;        
+        private GraphAreaBase graph_area_;
+        private AdornerLayer adornLayer;
         #endregion
 
         #region
@@ -112,10 +115,10 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
             // Create it!
             if (LinkPreview == null)
             {
-                var adornLayer = AdornerLayer.GetAdornerLayer(graph_area_);
-                if (adornLayer == null) 
+                adornLayer = AdornerLayer.GetAdornerLayer(graph_area_);
+                if (adornLayer == null)
                 {
-                    Debug.Write("Bad");
+                    throw new InvalidOperationException("Could not find the adorner layer");
                 }                
                 LinkPreview = new LinkPreviewAdorner(graph_area_);
                 LinkPreview.IsHitTestVisible = false;
@@ -126,15 +129,10 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         private void Unregister()
         {
             // Destroy it!
-            if (LinkPreview == null)
+            if (LinkPreview != null)
             {
-                var adornLayer = AdornerLayer.GetAdornerLayer(graph_area_);
-                if (adornLayer == null) 
-                {
-                    Debug.Write("Bad");
-                }
-
                 adornLayer.Remove(LinkPreview);
+                adornLayer = null;
                 LinkPreview = null;
             }
         }
