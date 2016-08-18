@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Xenko.Engine;
 

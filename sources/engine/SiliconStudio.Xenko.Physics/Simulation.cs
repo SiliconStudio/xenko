@@ -5,7 +5,6 @@ using SiliconStudio.Core.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Engine;
