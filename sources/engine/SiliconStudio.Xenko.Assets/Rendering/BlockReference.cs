@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Assets.Rendering
 
         public object GenerateProxyPart(Type partType)
         {
-            var block = new FakeBlock();
+            var block = FakeBlock.Create();
             IdentifiableHelper.SetId(block, Id);
             return block;
         }
@@ -34,8 +34,20 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         /// <summary>
         /// Used temporarily during deserialization when creating references.
         /// </summary>
+        /// <remarks>
+        /// We don't expose a public ctor so that is not listed in list of available blocks to create.
+        /// </remarks>
         class FakeBlock : Block
         {
+            private FakeBlock()
+            {
+            }
+
+            internal static FakeBlock Create()
+            {
+                return new FakeBlock();
+            }
+
             public override void RegenerateSlots()
             {
             }
