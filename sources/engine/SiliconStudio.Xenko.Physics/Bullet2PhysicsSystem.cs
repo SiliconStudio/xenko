@@ -75,18 +75,6 @@ namespace SiliconStudio.Xenko.Physics
             }
         }
 
-        private void Simulate(float deltaTime)
-        {
-            foreach (var simulation in scenes)
-            {                
-                simulation.Simulation.Simulate(deltaTime);
-                
-                simulation.Simulation.CacheContacts();
-                simulation.Simulation.ProcessContacts();
-                simulation.Simulation.SendEvents();
-            }
-        }
-
         public override void Update(GameTime gameTime)
         {
             if (Simulation.DisableSimulation) return;
@@ -96,17 +84,16 @@ namespace SiliconStudio.Xenko.Physics
                 //read skinned meshes bone positions
                 foreach (var physicsScene in scenes)
                 {
+                    //read skinned meshes bone positions and write them to the physics engine
                     physicsScene.Processor.UpdateBones();
-                    physicsScene.Processor.UpdateContacts();
-                }
-
-                //simulate, might spawn tasks for multiple simulations
-                Simulate((float)gameTime.Elapsed.TotalSeconds);
-
-                //update character bound entity's transforms
-                foreach (var physicsScene in scenes)
-                {
+                    //simulate physics
+                    physicsScene.Simulation.Simulate((float)gameTime.Elapsed.TotalSeconds);
+                    //update character bound entity's transforms from physics engine simulation
                     physicsScene.Processor.UpdateCharacters();
+                    //handle frame contacts
+                    physicsScene.Processor.UpdateContacts();
+                    //send contact events
+                    physicsScene.Simulation.SendEvents();
                 }
             }
         }
