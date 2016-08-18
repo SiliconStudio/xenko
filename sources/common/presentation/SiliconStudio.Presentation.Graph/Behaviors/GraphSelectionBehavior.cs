@@ -20,6 +20,8 @@ using System.Collections;
 using GraphX.Models;
 using System.Collections.Specialized;
 using System.Collections.ObjectModel;
+using SiliconStudio.Core.Extensions;
+using SiliconStudio.Presentation.Graph.ViewModel;
 
 namespace SiliconStudio.Presentation.Graph.Behaviors
 {
@@ -52,20 +54,14 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
             if (e.NewValue != null)
             {
                 var notifyChanged = e.NewValue as INotifyCollectionChanged;
-                var newList = e.NewValue as IList<VertexBase>;
+                var newList = e.NewValue as IEnumerable<VertexBase>;
                 if ((notifyChanged != null) && (newList != null))
                 {
                     notifyChanged.CollectionChanged += behavior.OnSelectedVertexItemsCollectionChanged;
                     if (behavior.AssociatedObject != null)
                     {
-                        // Mirror dependency property collection to internal collection
-                        VertexBase[] currentlySelectedItems = behavior.selected_vertices_.Cast<VertexBase>().ToArray();
-
                         // Remove any items not in new list
-                        foreach (var currentlySelectedItem in currentlySelectedItems.Where(x => !newList.Contains(x)))
-                        {
-                            behavior.selected_vertices_.Remove(currentlySelectedItem);
-                        }
+                        behavior.selected_vertices_.RemoveWhere(x => !newList.Contains(x));
 
                         // Add any items that's in the new list
                         foreach (var newlySelectedItem in newList.Where(x => !behavior.selected_vertices_.Contains(x)))
@@ -95,23 +91,17 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
             if (e.NewValue != null)
             {
                 var notifyChanged = e.NewValue as INotifyCollectionChanged;
-                var newList = e.NewValue as IList<object>;
+                var newList = e.NewValue as IEnumerable<NodeEdge>;
                 if ((notifyChanged != null) && (newList != null))
                 {
                     notifyChanged.CollectionChanged += behavior.OnSelectedEdgeItemsCollectionChanged;
                     if (behavior.AssociatedObject != null)
                     {
-                        // Mirror dependency property collection to internal collection
-                        object[] currentlySelectedItems = behavior.selected_edges_.ToArray();
-
                         // Remove any items not in new list
-                        foreach (var currentlySelectedItem in currentlySelectedItems.Where(x => !newList.Contains(x)))
-                        {
-                            behavior.selected_edges_.Remove(currentlySelectedItem);
-                        }
+                        behavior.selected_edges_.RemoveWhere(x => !newList.Contains(x));
 
                         // Add any items that's in the new list
-                        foreach (var newlySelectedItem in newList.Where(x => !behavior.selected_vertices_.Contains(x)))
+                        foreach (var newlySelectedItem in newList.Where(x => !behavior.selected_edges_.Contains(x)))
                         {
                             behavior.selected_edges_.Add(newlySelectedItem);
                         }
@@ -378,12 +368,11 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         protected void OnVertexSelected(object sender, VertexSelectedEventArgs args)
         {
             // Toggle and append selection occurs in area selection only. No need to worry about it here
-            VertexControl control = args.VertexControl;
-            VertexBase vertex = args.VertexControl.Vertex as VertexBase;            
+            var control = args.VertexControl;
+            var vertex = args.VertexControl.Vertex as VertexBase;            
                         
             if (args.MouseArgs.LeftButton == MouseButtonState.Pressed)
             {
-
                 // Is this a new selection and/or a toggle selection?
                 if (!selected_vertices_.Contains(vertex))
                 {
@@ -410,16 +399,17 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         protected void OnEdgeSelected(object sender, EdgeSelectedEventArgs args)
         {
             // Toggle and append selection occurs in area selection only. No need to worry about it here
-            EdgeControl control = args.EdgeControl;
-            object edge = args.EdgeControl.Edge;
+            var control = args.EdgeControl;
+            var edge = args.EdgeControl.Edge;
 
             // Is this a new selection and/or a toggle selection?
             if (!selected_edges_.Contains(edge))
             {
+                ClearSelection();
+
                 // User is only selecting one vertex
                 SelectEdge(control, false);
             }
-
         }
 
         /// <summary>

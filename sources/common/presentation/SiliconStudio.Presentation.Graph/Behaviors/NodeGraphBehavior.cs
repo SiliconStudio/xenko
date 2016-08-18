@@ -26,7 +26,6 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
     /// <summary>
     /// 
     /// </summary>
-    [ContentProperty("ConnectionWrappers")]
     public class NodeGraphBehavior : Behavior<GraphArea<NodeVertex, NodeEdge, BidirectionalGraph<NodeVertex, NodeEdge>>>
     {
         #region ConnectionWrapperData Struct
@@ -98,7 +97,6 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
 
         #region Members
         private BidirectionalGraph<NodeVertex, NodeEdge> graph;
-        private readonly List<ConnectionWrapper> connection_wrappers_ = new List<ConnectionWrapper>();        
         #endregion
 
         #region Attach & Detach Methods
@@ -328,6 +326,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
 
                 // Then remove the vertex
                 graph.RemoveVertex(node);
+                AssociatedObject.RemoveVertex(node);
             }
         }
 
@@ -399,7 +398,6 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         #region Properties
         public IEnumerable Vertices { get { return (IEnumerable)GetValue(VerticesProperty); } set { SetValue(VerticesProperty, value); } }
         public IEnumerable Edges { get { return (IEnumerable)GetValue(EdgesProperty); } set { SetValue(EdgesProperty, value); } }
-        public IList ConnectionWrappers { get { return connection_wrappers_; } }
         #endregion
     }
 }
