@@ -439,8 +439,8 @@ extern "C" {
 	bool xnOvrCommitFrame(xnOvrSession* session)
 	{
 		ovr_CommitTextureSwapChainFunc(session->Session, session->SwapChain);
-		auto layers = &session->Layer.Header;
-		if(!OVR_SUCCESS(ovr_SubmitFrameFunc(session->Session, 0, NULL, &layers, 1)))
+		ovrLayerHeader* layers[1] = { &session->Layer.Header };
+		if(!OVR_SUCCESS(ovr_SubmitFrameFunc(session->Session, 0, NULL, layers, 1)))
 		{
 			return false;
 		}
