@@ -11,7 +11,7 @@ using SiliconStudio.Xenko.Engine;
 namespace SiliconStudio.Xenko.Assets.Model
 {
     /// <summary>
-    /// The geometric primitive asset.
+    /// A model asset that is generated from a prefab, combining and merging meshes by materials and layout.
     /// </summary>
     [DataContract("PrefabModelAsset")]
     [AssetDescription(FileExtension)]
