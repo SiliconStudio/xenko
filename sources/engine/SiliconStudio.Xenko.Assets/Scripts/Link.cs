@@ -3,7 +3,7 @@ using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Xenko.Assets.Rendering
+namespace SiliconStudio.Xenko.Assets.Scripts
 {
     [DataContract]
     public class Link : IIdentifiable, IAssetPartDesign<Link>
@@ -11,6 +11,15 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         public Link()
         {
             Id = Guid.NewGuid();
+        }
+
+        public Link(Block source, string sourceSlot, Block target, string targetSlot)
+             : this()
+        {
+            Source = source;
+            SourceSlot = sourceSlot;
+            Target = target;
+            TargetSlot = targetSlot;
         }
 
         [DataMember(-100), Display(Browsable = false)]

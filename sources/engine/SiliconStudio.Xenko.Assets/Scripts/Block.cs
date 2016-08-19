@@ -1,12 +1,13 @@
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Xenko.Assets.Rendering
+namespace SiliconStudio.Xenko.Assets.Scripts
 {
     [DataContract(Inherited = true)]
     public abstract class Block : IIdentifiable, IAssetPartDesign<Block>
@@ -57,8 +58,23 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         Block IAssetPartDesign<Block>.Part => this;
     }
 
-    public class FunctionStartBlock : Block
+    public abstract class ExecutionBlock : Block
     {
+        public abstract void GenerateCode(VisualScriptCompilerContext context);
+    }
+
+    public abstract class ExpressionBlock : Block
+    {
+        public abstract ExpressionSyntax GenerateExpression();
+    }
+
+    public class FunctionStartBlock : ExecutionBlock
+    {
+        public const string StartSlotName = "Start";
+
+        [DataMemberIgnore]
+        public Slot StartSlot { get; private set; }
+
         public override string Title => $"{FunctionName} Start";
 
         public string FunctionName { get; set; }
@@ -67,22 +83,12 @@ namespace SiliconStudio.Xenko.Assets.Rendering
 
         {
             Slots.Clear();
-            Slots.Add(new Slot { Type = SlotType.Execution, Direction = SlotDirection.Output, Name = "Start" });
+            Slots.Add(StartSlot = new Slot { Type = SlotType.Execution, Direction = SlotDirection.Output, Name = StartSlotName, Flags = SlotFlags.AutoflowExecution });
         }
-    }
 
-    public class ConditionalBranch : Block
-    {
-        public override string Title => "Condition";
-
-        public override void RegenerateSlots()
-
+        public override void GenerateCode(VisualScriptCompilerContext context)
         {
-            Slots.Clear();
-            Slots.Add(new Slot { Type = SlotType.Execution, Direction = SlotDirection.Input });
-            Slots.Add(new Slot { Type = SlotType.Value, Direction = SlotDirection.Input, Name = "Condition" });
-            Slots.Add(new Slot { Type = SlotType.Execution, Direction = SlotDirection.Output, Name = "True" });
-            Slots.Add(new Slot { Type = SlotType.Execution, Direction = SlotDirection.Output, Name = "False" });
+            // Nothing to do (since we have autoflow on Start slot)
         }
     }
 
@@ -98,6 +104,13 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         Output = 1,
     }
 
+    [Flags]
+    public enum SlotFlags
+    {
+        None = 0,
+        AutoflowExecution = 1,
+    }
+
     public class Slot
     {
         public string Name { get; set; }
@@ -105,5 +118,7 @@ namespace SiliconStudio.Xenko.Assets.Rendering
         public SlotType Type { get; set; }
 
         public SlotDirection Direction { get; set; }
+
+        public SlotFlags Flags { get; set; }
     }
 }

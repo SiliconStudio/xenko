@@ -3,7 +3,7 @@ using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 
-namespace SiliconStudio.Xenko.Assets.Rendering
+namespace SiliconStudio.Xenko.Assets.Scripts
 {
     [DataContract]
     [DataStyle(DataStyle.Compact)]
