@@ -64,6 +64,9 @@
     <Compile Include="AssetCompositeHierarchyData.cs" />
     <Compile Include="AssetPartCollection.cs" />
     <Compile Include="IAssetPartDesign.cs" />
+    <Compile Include="IAssetWithLocation.cs" />
+    <Compile Include="IProjectAsset.cs" />
+    <Compile Include="IProjectFileGeneratorAsset.cs" />
     <Compile Include="Serializers\AssetCompositeVisitorContext.cs" />
     <Compile Include="Serializers\AssetPartReferenceAttribute.cs" />
     <Compile Include="Serializers\AssetCompositeSerializer.cs" />
@@ -180,7 +183,7 @@
     <Compile Include="AssetBase.cs" />
     <Compile Include="PackageSessionProfilingKeys.cs" />
     <Compile Include="PackageSessionResult.cs" />
-    <Compile Include="ProjectCodeGeneratorAsset.cs" />
+    <Compile Include="ProjectFileGeneratorAsset.cs" />
     <Compile Include="ProjectSourceCodeAsset.cs" />
     <Compile Include="RawAsset.cs" />
     <Compile Include="PackageSaveParameters.cs" />

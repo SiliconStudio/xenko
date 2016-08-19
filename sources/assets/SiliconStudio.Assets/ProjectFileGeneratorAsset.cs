@@ -2,22 +2,25 @@
 
 namespace SiliconStudio.Assets
 {
-    [DataContract("ProjectSourceCodeAsset")]
-    public abstract class ProjectSourceCodeAsset : SourceCodeAsset, IProjectAsset
+    [DataContract("ProjectSourceCodeWithFileGeneratorAsset")]
+    public abstract class ProjectSourceCodeWithFileGeneratorAsset : ProjectSourceCodeAsset, IProjectFileGeneratorAsset
     {
         /// <inheritdoc/>
         [DataMember(Mask = DataMemberAttribute.IgnoreMask)]
         [Display(Browsable = false)]
-        public string AbsoluteProjectLocation { get; set; }
+        public abstract string Generator { get; set; }
 
         /// <inheritdoc/>
         [DataMember(Mask = DataMemberAttribute.IgnoreMask)]
         [Display(Browsable = false)]
-        public string ProjectInclude { get; set; }
+        public string GeneratedAbsolutePath { get; set; }
 
         /// <inheritdoc/>
         [DataMember(Mask = DataMemberAttribute.IgnoreMask)]
         [Display(Browsable = false)]
-        public string ProjectName { get; set; }
+        public string GeneratedInclude { get; set; }
+
+        /// <inheritdoc/>
+        public abstract void SaveGeneratedAsset();
     }
 }

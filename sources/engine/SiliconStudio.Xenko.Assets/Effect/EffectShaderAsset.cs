@@ -21,26 +21,28 @@ namespace SiliconStudio.Xenko.Assets.Effect
     [AssetDescription(FileExtension, AlwaysMarkAsRoot = true, AllowArchetype = false)]
     [AssetCompiler(typeof(EffectShaderAssetCompiler))]
     [Display(90, "Effect Shader")]
-    public sealed class EffectShaderAsset : ProjectCodeGeneratorAsset
+    public sealed class EffectShaderAsset : ProjectSourceCodeWithFileGeneratorAsset
     {
         /// <summary>
         /// The default file extension used by the <see cref="EffectShaderAsset"/>.
         /// </summary>
         public const string FileExtension = ".xksl;.pdxsl";
 
-        public static Regex Regex = new Regex("class\\s+\\w+");
+        public static Regex Regex = new Regex("shader\\s+\\w+");
 
         public override string Generator { get; set; } = "XenkoShaderKeyGenerator";
 
         public override void Save(Stream stream)
         {
-            //regex the class name if it has changed
+            //regex the shader name if it has changed
             var className = new UFile(AbsoluteSourceLocation).GetFileName();
-            Text = Regex.Replace(Text, $"class {className}");
+            Text = Regex.Replace(Text, $"shader {className}");
 
-            var buffer = Encoding.UTF8.GetBytes(Text);
-            stream.Write(buffer, 0, buffer.Length);
+            base.Save(stream);
+        }
 
+        public override void SaveGeneratedAsset()
+        {
             //generate the .cs files
             // Always output a result into the file
             string result;
