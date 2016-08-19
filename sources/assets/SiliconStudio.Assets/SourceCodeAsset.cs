@@ -15,14 +15,12 @@ namespace SiliconStudio.Assets
     /// Class SourceCodeAsset.
     /// </summary>
     [DataContract("SourceCodeAsset")]
-    public abstract class SourceCodeAsset : Asset
+    public abstract class SourceCodeAsset : Asset, IAssetWithLocation
     {
         private string text;
 
-        /// <summary>
-        /// Gets or sets the absolute source location of this asset on the disk.
-        /// </summary>
-        /// <value>The absolute source location.</value>
+        /// <inheritdoc/>
+        [DataMember(Mask = DataMemberAttribute.IgnoreMask)]
         [Display(Browsable = false)]
         public string AbsoluteSourceLocation { get; set; }
 
@@ -30,6 +28,7 @@ namespace SiliconStudio.Assets
         /// Gets the sourcecode text.
         /// </summary>
         /// <value>The sourcecode text.</value>
+        [DataMember(Mask = DataMemberAttribute.IgnoreMask)]
         [Display(Browsable = false)]
         public string Text
         {

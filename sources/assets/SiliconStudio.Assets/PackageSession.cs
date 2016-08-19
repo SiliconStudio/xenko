@@ -557,7 +557,7 @@ namespace SiliconStudio.Assets
                                 //If we are within a csproj we need to remove the file from there as well
                                 if (assetItem?.SourceProject != null)
                                 {
-                                    var projectAsset = assetItem.Asset as ProjectSourceCodeAsset;
+                                    var projectAsset = assetItem.Asset as IProjectAsset;
                                     if (projectAsset != null)
                                     {
                                         Project project;
@@ -574,7 +574,7 @@ namespace SiliconStudio.Assets
                                         }
                                     }
                                     //delete any generated file as well
-                                    var generatorAsset = assetItem.Asset as ProjectCodeGeneratorAsset;
+                                    var generatorAsset = assetItem.Asset as IProjectFileGeneratorAsset;
                                     if (generatorAsset?.GeneratedAbsolutePath != null)
                                     {
                                         File.Delete((new UFile(generatorAsset.GeneratedAbsolutePath)).ToWindowsPath());
