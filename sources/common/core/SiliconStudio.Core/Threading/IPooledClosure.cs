@@ -4,7 +4,7 @@ namespace SiliconStudio.Core.Threading
     /// Interface implemented by pooled closure types through the AssemblyProcessor.
     /// Enables <see cref="PooledDelegateHelper"/> to keep closures and delegates alive.
     /// </summary>
-    internal interface IPooledClosure
+    public interface IPooledClosure
     {
         void AddReference();
 
