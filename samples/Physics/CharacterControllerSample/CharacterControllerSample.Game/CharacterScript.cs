@@ -71,11 +71,15 @@ namespace CharacterControllerSample
                     while (Game.IsRunning)
                     {
                         var collision = await playerController.NewCollision();
-                        // Stop if we collide from sides
-                        if (collision.Contacts[0].Normal.X < -0.5f || collision.Contacts[0].Normal.X > 0.5f)
-                        {
-                            movingToTarget = false;
-                        }
+                        // Stop if we collide from side
+                        foreach(var contact in collision.Contacts)
+						{
+							if (contact.Normal.X < -0.5f || contact.Normal.X > 0.5f)
+							{
+								movingToTarget = false;
+								break;
+							}
+						}                        
                     }
                 });
                 PlayIdle();

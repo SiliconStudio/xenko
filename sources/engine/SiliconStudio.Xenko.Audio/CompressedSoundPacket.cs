@@ -8,8 +8,14 @@ namespace SiliconStudio.Xenko.Audio
     [DataContract("CompressedSoundPacket")]
     public class CompressedSoundPacket
     {
+        /// <summary>
+        /// The length of the Data.
+        /// </summary>
         public int Length;
 
+        /// <summary>
+        /// The Data.
+        /// </summary>
         public byte[] Data;
     }
 }

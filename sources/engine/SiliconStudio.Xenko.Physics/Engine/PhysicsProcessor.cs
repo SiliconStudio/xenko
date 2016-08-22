@@ -136,15 +136,43 @@ namespace SiliconStudio.Xenko.Physics
             }
 
             elements.Add(component);
+
             if (component.BoneIndex != -1)
             {
                 boneElements.Add((PhysicsSkinnedComponentBase)component);
             }
         }
 
+        private void ComponentRemoval(PhysicsComponent component)
+        {
+            Simulation.CleanContacts(component);
+
+            if (component.BoneIndex != -1)
+            {
+                boneElements.Remove((PhysicsSkinnedComponentBase)component);
+            }
+
+            elements.Remove(component);
+
+            if (colliderShapesRendering)
+            {
+                component.RemoveDebugEntity(debugScene);
+            }
+
+            var character = component as CharacterComponent;
+            if (character != null)
+            {
+                characters.Remove(character);
+            }
+
+            component.Detach();
+        }
+
+        private readonly List<PhysicsComponent> currentFrameRemovals = new List<PhysicsComponent>();
+
         protected override void OnEntityComponentRemoved(Entity entity, PhysicsComponent component, AssociatedData data)
         {
-            component.Detach();
+            currentFrameRemovals.Add(component);
         }
 
         protected override void OnSystemAdd()
@@ -225,8 +253,6 @@ namespace SiliconStudio.Xenko.Physics
 
         public void UpdateContacts()
         {
-            Simulation.BeginContactTesting();
-
             foreach (var dataPair in ComponentDatas)
             {
                 var data = dataPair.Value;
@@ -235,8 +261,16 @@ namespace SiliconStudio.Xenko.Physics
                     Simulation.ContactTest(data.PhysicsComponent);
                 }
             }
+        }
 
-            Simulation.EndContactTesting();
+        public void UpdateRemovals()
+        {
+            foreach (var currentFrameRemoval in currentFrameRemovals)
+            {
+                ComponentRemoval(currentFrameRemoval);
+            }
+
+            currentFrameRemovals.Clear();
         }
     }
 }

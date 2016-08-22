@@ -73,11 +73,11 @@ if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.Vulkan.sln
 call :compile
-if %ERRORLEVEL% != 0 goto exit
+if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.Vulkan.SDL.sln
 call :compile
-if %ERRORLEVEL% != 0 goto exit
+if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.OpenGL.sln
 call :compile
@@ -94,7 +94,7 @@ if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.Linux.Vulkan.sln
 call :compile
-if %ERRORLEVEL% != 0 goto exit
+if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.Linux.CoreCLR.sln
 call :compile
@@ -102,7 +102,7 @@ if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.Linux.Vulkan.CoreCLR.sln
 call :compile
-if %ERRORLEVEL% != 0 goto exit
+if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.macOS.sln
 set _platform_target=macOS
@@ -145,7 +145,8 @@ rem "Project" is the solution name
 rem "_platform_target" is the platform being targeted
 :compile
 set _option=/nologo /nr:false /m /verbosity:%__BuildVerbosity% /p:Configuration=%__BuildType% /p:Platform="%_platform_target%" /p:SiliconStudioPackageBuild=%__SkipTestBuild% %Project%
-if "%__BuildDoc%" EQ "1" set _option=%_option% /p:SiliconStudioGenerateDoc=true
+
+if "%__BuildDoc%" == "1" set _option=%_option% /p:SiliconStudioGenerateDoc=true
 
 rem Skip Compilation if __SelectedProject was set and does not match what was requested
 if "%__SelectedProject%" NEQ "" (

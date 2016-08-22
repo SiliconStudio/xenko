@@ -48,6 +48,10 @@ namespace SiliconStudio.Xenko.Native
         public static extern void Destroy(Device device);
 
         [SuppressUnmanagedCodeSecurity]
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioUpdate", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void Update(Device device);
+
+        [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSetMasterVolume", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SetMasterVolume(Device device, float volume);
 
@@ -76,6 +80,10 @@ namespace SiliconStudio.Xenko.Native
         public static extern void SourceDestroy(Source source);
 
         [SuppressUnmanagedCodeSecurity]
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceGetPosition", CallingConvention = CallingConvention.Cdecl)]
+        public static extern double SourceGetPosition(Source source);
+
+        [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceSetPan", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SourceSetPan(Source source, float pan);
 
@@ -95,9 +103,17 @@ namespace SiliconStudio.Xenko.Native
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceSetBuffer", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SourceSetBuffer(Source source, Buffer buffer);
 
+        public enum BufferType
+        {
+            None,
+            BeginOfStream,
+            EndOfStream,
+            EndOfLoop
+        }
+
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceQueueBuffer", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void SourceQueueBuffer(Source source, Buffer buffer, IntPtr pcm, int bufferSize, bool endOfStream);
+        public static extern void SourceQueueBuffer(Source source, Buffer buffer, IntPtr pcm, int bufferSize, BufferType streamType);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceGetFreeBuffer", CallingConvention = CallingConvention.Cdecl)]
@@ -118,6 +134,10 @@ namespace SiliconStudio.Xenko.Native
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceSetLooping", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SourceSetLooping(Source source, bool looped);
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceSetRange", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SourceSetRange(Source source, double startTime, double stopTime);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnAudioSourceSetGain", CallingConvention = CallingConvention.Cdecl)]
