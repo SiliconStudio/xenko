@@ -10,10 +10,16 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 {
     [AssetPartReference(typeof(Block), ReferenceType = typeof(BlockReference), KeepTypeInfo = false)]
     [AssetPartReference(typeof(Link))]
+    [AssetPartReference(typeof(Variable), ReferenceType = typeof(VariableReference))]
     public class VisualScriptAsset : AssetComposite, IProjectFileGeneratorAsset
     {
+        [DataMember(0)]
+        public AssetPartCollection<Variable> Variables { get; } = new AssetPartCollection<Variable>();
+
+        [DataMember(10)]
         public AssetPartCollection<Block> Blocks { get; } = new AssetPartCollection<Block>();
 
+        [DataMember(20)]
         public AssetPartCollection<Link> Links { get; } = new AssetPartCollection<Link>();
 
         #region IProjectFileGeneratorAsset implementation
@@ -50,6 +56,8 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         public override IEnumerable<AssetPart> CollectParts()
         {
+            foreach (var variable in Variables)
+                yield return new AssetPart(variable.Id, variable.BaseId, variable.BasePartInstanceId);
             foreach (var block in Blocks)
                 yield return new AssetPart(block.Id, block.BaseId, block.BasePartInstanceId);
             foreach (var link in Links)
@@ -68,6 +76,13 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         public override void SetPart(Guid id, Guid baseId, Guid basePartInstanceId)
         {
+            Variable variable;
+            if (Variables.TryGetValue(id, out variable))
+            {
+                variable.BaseId = baseId;
+                variable.BasePartInstanceId = basePartInstanceId;
+            }
+
             Block block;
             if (Blocks.TryGetValue(id, out block))
             {
@@ -85,6 +100,14 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         protected virtual object ResolveReference(object partReference)
         {
+            var variableReference = partReference as Variable;
+            if (variableReference != null)
+            {
+                Variable realPart;
+                Variables.TryGetValue(variableReference.Id, out realPart);
+                return realPart;
+            }
+
             var blockReference = partReference as Block;
             if (blockReference != null)
             {
