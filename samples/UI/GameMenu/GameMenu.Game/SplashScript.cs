@@ -1,4 +1,6 @@
-﻿using SiliconStudio.Xenko.Engine;
+﻿using System.Linq;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Input;
 
 namespace GameMenu
 {
@@ -12,7 +14,7 @@ namespace GameMenu
 
         protected override void UpdateScene()
         {
-            if (Input.PointerEvents.Count > 0)
+            if (Input.PointerEvents.Any(e => e.State == PointerState.Down))
             {
                 // Next scene
                 SceneSystem.SceneInstance.Scene = Content.Load<Scene>("MainScene");

@@ -290,6 +290,12 @@ namespace SiliconStudio.Xenko.UI.Controls
                 InvalidateMeasure();
             }
         }
+        
+        /// <summary>
+        /// Gets a value that indicates whether the is currently touched down.
+        /// </summary>
+        [DataMemberIgnore]
+        protected virtual bool IsTouchedDown { get; set; }
 
         /// <summary>
         /// Snap the current <see cref="Value"/> to the closest tick.
@@ -387,15 +393,33 @@ namespace SiliconStudio.Xenko.UI.Controls
         protected override void OnTouchDown(TouchEventArgs args)
         {
             base.OnTouchDown(args);
-
+            
             SetValueFromTouchPosition(args.WorldPosition);
+            IsTouchedDown = true;
+        }
+
+        protected override void OnTouchUp(TouchEventArgs args)
+        {
+            base.OnTouchUp(args);
+
+            IsTouchedDown = false;
+        }
+
+        protected override void OnTouchLeave(TouchEventArgs args)
+        {
+            base.OnTouchLeave(args);
+
+            IsTouchedDown = false;
         }
 
         protected override void OnTouchMove(TouchEventArgs args)
         {
             base.OnTouchMove(args);
 
-            SetValueFromTouchPosition(args.WorldPosition);
+            if (IsTouchedDown)
+            {
+                SetValueFromTouchPosition(args.WorldPosition);
+            }
         }
 
         internal override void OnKeyDown(KeyEventArgs args)

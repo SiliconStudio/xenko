@@ -622,6 +622,12 @@ namespace SiliconStudio.Xenko.UI.Controls
             }
         }
 
+        /// <summary>
+        /// Gets a value that indicates whether the is currently touched down.
+        /// </summary>
+        [DataMemberIgnore]
+        protected virtual bool IsTouchedDown { get; set; }
+
         private void SetTextInternal(string newText, bool updateNativeEdit)
         {
             var truncatedText = newText;
@@ -830,15 +836,33 @@ namespace SiliconStudio.Xenko.UI.Controls
             base.OnTouchDown(args);
 
             IsSelectionActive = !IsReadOnly;
+            IsTouchedDown = true;
 
             OnTouchDownImpl(args);
+        }
+
+        protected override void OnTouchUp(TouchEventArgs args)
+        {
+            base.OnTouchUp(args);
+
+            IsTouchedDown = false;
+        }
+
+        protected override void OnTouchLeave(TouchEventArgs args)
+        {
+            base.OnTouchLeave(args);
+
+            IsTouchedDown = false;
         }
 
         protected override void OnTouchMove(TouchEventArgs args)
         {
             base.OnTouchMove(args);
 
-            OnTouchMoveImpl(args);
+            if (IsTouchedDown)
+            {
+                OnTouchMoveImpl(args);
+            }
         }
     }
 }

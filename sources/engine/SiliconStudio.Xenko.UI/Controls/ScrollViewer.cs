@@ -342,6 +342,12 @@ namespace SiliconStudio.Xenko.UI.Controls
         [DefaultValue(6.0f)]
         public float ScrollBarThickness { get; set; } = 6.0f;
 
+        /// <summary>
+        /// Gets a value that indicates whether the is currently touched down.
+        /// </summary>
+        [DataMemberIgnore]
+        protected virtual bool IsTouchedDown { get; set; }
+
         protected override void Update(GameTime time)
         {
             base.Update(time);
@@ -784,6 +790,21 @@ namespace SiliconStudio.Xenko.UI.Controls
 
             StopCurrentScrolling();
             accumulatedTranslation = Vector3.Zero;
+            IsTouchedDown = true;
+        }
+
+        protected override void OnPreviewTouchUp(TouchEventArgs args)
+        {
+            base.OnPreviewTouchUp(args);
+
+            if (IsUserScrollingViewer)
+            {
+                args.Handled = true;
+                RaiseLeaveTouchEventToHierarchyChildren(this, args);
+            }
+
+            IsUserScrollingViewer = false;
+            IsTouchedDown = false;
         }
 
         protected override void OnTouchEnter(TouchEventArgs args)
@@ -799,13 +820,14 @@ namespace SiliconStudio.Xenko.UI.Controls
             base.OnTouchLeave(args);
 
             IsUserScrollingViewer = false;
+            IsTouchedDown = false;
         }
 
         protected override void OnPreviewTouchMove(TouchEventArgs args)
         {
             base.OnPreviewTouchMove(args);
 
-            if (ScrollMode == ScrollingMode.None || !TouchScrollingEnabled)
+            if (ScrollMode == ScrollingMode.None || !TouchScrollingEnabled || !IsTouchedDown)
                 return;
 
             // accumulate all the touch moves of the frame
@@ -824,7 +846,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                 args.Handled = true;
         }
 
-        private static void RaiseLeaveTouchEventTohierarchyChildren(UIElement parent, TouchEventArgs args)
+        private static void RaiseLeaveTouchEventToHierarchyChildren(UIElement parent, TouchEventArgs args)
         {
             if (parent == null)
                 return;
@@ -842,22 +864,9 @@ namespace SiliconStudio.Xenko.UI.Controls
                 if (child.IsTouched)
                 {
                     child.RaiseTouchLeaveEvent(argsCopy);
-                    RaiseLeaveTouchEventTohierarchyChildren(child, args);
+                    RaiseLeaveTouchEventToHierarchyChildren(child, args);
                 }
             }
-        }
-
-        protected override void OnPreviewTouchUp(TouchEventArgs args)
-        {
-            base.OnPreviewTouchUp(args);
-
-            if (IsUserScrollingViewer)
-            {
-                args.Handled = true;
-                RaiseLeaveTouchEventTohierarchyChildren(this, args);
-            }
-
-            IsUserScrollingViewer = false;
         }
 
         /// <summary>
