@@ -48,12 +48,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
         public int NumberOfSamples { get; set; } = 9;
 
         [DataMember(20)]
-        [DefaultValue(1)]
+        [DefaultValue(1f)]
         [Display("Projection Scale")]
         public float ParamProjScale { get; set; } = 1f;
 
         [DataMember(30)]
-        [DefaultValue(1)]
+        [DefaultValue(1f)]
         [Display("Occlusion Intensity")]
         public float ParamIntensity { get; set; } = 1f;
 
