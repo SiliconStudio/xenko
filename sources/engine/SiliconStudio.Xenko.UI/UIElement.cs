@@ -141,7 +141,8 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// The final depth bias value of the element resulting from the parent/children z order update.
         /// </summary>
-        internal int DepthBias { get; private set; }
+        [DataMemberIgnore]
+        public int DepthBias { get; private set; }
 
         /// <summary>
         /// The maximum depth bias value among the children of the element resulting from the parent/children z order update.
