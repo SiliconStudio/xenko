@@ -12,7 +12,7 @@ using SiliconStudio.Xenko.Importer.Common;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Data;
 
-namespace SiliconStudio.Xenko.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Models
 {
     [CommandDependsOn(typeof(Xenko.Importer.AssimpNET.MeshConverter))]
     [Description("Import Assimp")]
@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Assets.Model
             };
         }
 
-        protected override Rendering.Model LoadModel(ICommandContext commandContext, ContentManager contentManager)
+        protected override Model LoadModel(ICommandContext commandContext, ContentManager contentManager)
         {
             var converter = CreateMeshConverter(commandContext);
 

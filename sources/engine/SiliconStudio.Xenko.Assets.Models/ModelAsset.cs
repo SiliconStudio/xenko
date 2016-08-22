@@ -14,7 +14,7 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Xenko.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Models
 {
     [DataContract("Model")]
     [AssetDescription(FileExtension, AllowArchetype = false)]

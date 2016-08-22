@@ -136,6 +136,7 @@ namespace SiliconStudio.Xenko.Physics
             }
 
             elements.Add(component);
+
             if (component.BoneIndex != -1)
             {
                 boneElements.Add((PhysicsSkinnedComponentBase)component);
@@ -144,6 +145,24 @@ namespace SiliconStudio.Xenko.Physics
 
         protected override void OnEntityComponentRemoved(Entity entity, PhysicsComponent component, AssociatedData data)
         {
+            if (component.BoneIndex != -1)
+            {
+                boneElements.Remove((PhysicsSkinnedComponentBase)component);
+            }
+
+            elements.Remove(component);
+
+            if (colliderShapesRendering)
+            {
+                component.RemoveDebugEntity(debugScene);
+            }
+
+            var character = component as CharacterComponent;
+            if (character != null)
+            {
+                characters.Remove(character);
+            }
+
             component.Detach();
         }
 
@@ -207,6 +226,8 @@ namespace SiliconStudio.Xenko.Physics
 
         public override void Draw(RenderContext context)
         {
+            if (Simulation.DisableSimulation) return;
+
             foreach (var element in boneElements)
             {
                 element.UpdateDraw();

@@ -1,6 +1,6 @@
 ﻿using SiliconStudio.Assets;
 
-namespace SiliconStudio.Xenko.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Models
 {
     public class DefaultAdditiveAnimationFactory : DefaultAssetFactory<AdditiveAnimationAsset>
     {

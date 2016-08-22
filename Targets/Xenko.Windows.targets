@@ -7,15 +7,59 @@
   
   <!-- Embed native libraries -->
   <ItemGroup>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\freetype.dll" />
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\libcore.dll"/>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\libbulletc.dll"/>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\d3dcompiler_47.dll"/>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\glsl_optimizer.dll"/>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\libxenko.dll"/>
-    <SiliconStudioEmbeddedNativeLibrary Condition="$(SiliconStudioUI.Contains('SDL'))" Include="$(SiliconStudioPackageXenkoPlatformBin)\**\SDL2.dll"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\freetype.dll">
+	  <SiliconStudioNativeCPU>x86</SiliconStudioNativeCPU>
+	</SiliconStudioEmbeddedNativeLibrary>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x64\freetype.dll">
+	  <SiliconStudioNativeCPU>x64</SiliconStudioNativeCPU>
+	</SiliconStudioEmbeddedNativeLibrary>
+    
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\libcore.dll">
+	  <SiliconStudioNativeCPU>x86</SiliconStudioNativeCPU>
+	</SiliconStudioEmbeddedNativeLibrary>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x64\libcore.dll">
+	  <SiliconStudioNativeCPU>x64</SiliconStudioNativeCPU>
+	</SiliconStudioEmbeddedNativeLibrary>
+    
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\libbulletc.dll">
+	  <SiliconStudioNativeCPU>x86</SiliconStudioNativeCPU>
+	</SiliconStudioEmbeddedNativeLibrary>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x64\libbulletc.dll">
+	  <SiliconStudioNativeCPU>x64</SiliconStudioNativeCPU>
+	</SiliconStudioEmbeddedNativeLibrary>
+    
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\d3dcompiler_47.dll">
+	  <SiliconStudioNativeCPU>x86</SiliconStudioNativeCPU>
+	</SiliconStudioEmbeddedNativeLibrary>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x64\d3dcompiler_47.dll">
+	  <SiliconStudioNativeCPU>x64</SiliconStudioNativeCPU>
+	</SiliconStudioEmbeddedNativeLibrary>
+    
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\glsl_optimizer.dll">
+	  <SiliconStudioNativeCPU>x86</SiliconStudioNativeCPU>
+	</SiliconStudioEmbeddedNativeLibrary>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x64\glsl_optimizer.dll">
+	  <SiliconStudioNativeCPU>x64</SiliconStudioNativeCPU>
+	</SiliconStudioEmbeddedNativeLibrary>
+    
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\libxenko.dll">
+	  <SiliconStudioNativeCPU>x86</SiliconStudioNativeCPU>
+	</SiliconStudioEmbeddedNativeLibrary>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x64\libxenko.dll">
+	  <SiliconStudioNativeCPU>x64</SiliconStudioNativeCPU>
+	</SiliconStudioEmbeddedNativeLibrary>
+    
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\SDL2.dll">
+	  <SiliconStudioNativeCPU>x86</SiliconStudioNativeCPU>
+	</SiliconStudioEmbeddedNativeLibrary>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x64\SDL2.dll">
+	  <SiliconStudioNativeCPU>x64</SiliconStudioNativeCPU>
+	</SiliconStudioEmbeddedNativeLibrary>
+    
     <!-- Users custom native libraries -->
-    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\**\*.dll" />
+    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\**\*.dll">
+      <SiliconStudioNativeCPU>%(SiliconStudioEmbeddedNativeLibrary.RecursiveDir)</SiliconStudioNativeCPU>
+    </SiliconStudioEmbeddedNativeLibrary>
   </ItemGroup>
 
   <!-- On Windows platform automatically add the following references -->
@@ -28,7 +72,7 @@
         </Reference>
 
         <Content Condition="'$(SiliconStudioUnitTest)' != 'true'" Include="@(SiliconStudioEmbeddedNativeLibrary)">
-          <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+          <Link>%(SiliconStudioNativeCPU)\%(Filename)%(Extension)</Link>
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
           <Visible>False</Visible>
         </Content>

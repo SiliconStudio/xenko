@@ -9,7 +9,7 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Xenko.Rendering.ProceduralModels;
 
-namespace SiliconStudio.Xenko.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Models
 {
     internal class ProceduralModelAssetCompiler : AssetCompilerBase<ProceduralModelAsset>
     {

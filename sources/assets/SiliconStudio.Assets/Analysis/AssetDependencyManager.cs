@@ -57,16 +57,12 @@ namespace SiliconStudio.Assets.Analysis
             MissingReferencesToParent = new Dictionary<Guid, HashSet<AssetDependencies>>();
             Packages = new HashSet<Package>();
             Dependencies = new Dictionary<Guid, AssetDependencies>();
-            SourceTracker = new AssetSourceTracker(session);
             // If the session has already a root package, then initialize the dependency manager directly
             if (session.LocalPackages.Any())
             {
                 Initialize();
             }
         }
-
-        // TODO: this could be moved directly in PackageSession since it is quite independent - need to find when to initialize it, tho
-        public AssetSourceTracker SourceTracker { get; }
 
         /// <summary>
         /// Gets a value indicating whether this instance is initialized. See remarks.
@@ -365,7 +361,6 @@ namespace SiliconStudio.Assets.Analysis
         public void BeginSavingSession()
         {
             isSessionSaving = true;
-            SourceTracker.BeginSavingSession();
         }
 
         /// <summary>
@@ -373,7 +368,6 @@ namespace SiliconStudio.Assets.Analysis
         /// </summary>
         public void EndSavingSession()
         {
-            SourceTracker.EndSavingSession();
             isSessionSaving = false;
         }
         

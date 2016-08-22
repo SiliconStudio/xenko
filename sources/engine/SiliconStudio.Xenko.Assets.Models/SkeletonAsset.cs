@@ -8,12 +8,14 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Xenko.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Models
 {
     [DataContract("Skeleton")]
     [AssetDescription(FileExtension, AllowArchetype = false)]
     [AssetCompiler(typeof(SkeletonAssetCompiler))]
     [Display(180, "Skeleton", "A skeleton (node hierarchy)")]
+    [AssetFormatVersion(XenkoConfig.PackageName, "1.7.8-beta")]
+    [AssetUpgrader(XenkoConfig.PackageName, "0", "1.7.8-beta", typeof(EnsureScaleNotZero))]
     public class SkeletonAsset : Asset
     {
         /// <summary>
@@ -133,6 +135,17 @@ namespace SiliconStudio.Xenko.Assets.Model
         {
             foreach (var node in Nodes)
                 node.Preserve = !node.Preserve;
+        }
+
+        class EnsureScaleNotZero : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                if (asset.ScaleImport != null && (float)asset.ScaleImport == 0.0f)
+                {
+                    asset.RemoveChild("ScaleImport");
+                }
+            }
         }
     }
 }

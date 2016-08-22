@@ -544,6 +544,8 @@ namespace SiliconStudio.Xenko.Engine
             scale.Z = (float)Math.Sqrt((BoneWorldMatrix.M31 * BoneWorldMatrix.M31) + (BoneWorldMatrix.M32 * BoneWorldMatrix.M32) + (BoneWorldMatrix.M33 * BoneWorldMatrix.M33));
 
             TransformComponent.CreateMatrixTRS(ref translation, ref rotation, ref scale, out BoneWorldMatrixOut);
+
+            //todo propagate to other bones? need to review this.
         }
 
         /// <summary>

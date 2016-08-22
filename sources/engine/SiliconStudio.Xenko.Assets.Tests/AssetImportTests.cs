@@ -11,7 +11,7 @@ using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Rendering.Materials.Processor.Visitors;
-using SiliconStudio.Xenko.Assets.Model;
+using SiliconStudio.Xenko.Assets.Models;
 using SiliconStudio.Xenko.Assets.Textures;
 
 namespace SiliconStudio.Xenko.Assets.Tests
