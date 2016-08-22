@@ -165,7 +165,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
                 if (pointerEvent.State == PointerState.Down || pointerEvent.State == PointerState.Up)
                     state.LastIntersectionPoint = intersectionPoint;
-
+                
                 var touchEvent = new TouchEventArgs
                 {
                     Action = TouchAction.Down,
@@ -346,7 +346,8 @@ namespace SiliconStudio.Xenko.Rendering.UI
         {
             UIElement clickedElement = null;
             var smallestDepth = float.PositiveInfinity;
-            PerformRecursiveHitTest(rootElement, ref clickRay, ref worldViewProj, ref clickedElement, ref intersectionPoint, ref smallestDepth);
+            var highestDepthBias = -1.0f;
+            PerformRecursiveHitTest(rootElement, ref clickRay, ref worldViewProj, ref clickedElement, ref intersectionPoint, ref smallestDepth, ref highestDepthBias);
 
             return clickedElement;
         }
@@ -358,14 +359,14 @@ namespace SiliconStudio.Xenko.Rendering.UI
         /// <param name="ray"><see cref="Ray"/> from the click in object space of the ui component in (-Resolution.X/2 .. Resolution.X/2, -Resolution.Y/2 .. Resolution.Y/2) range</param>
         /// <param name="worldViewProj"></param>
         /// <returns>A collection of all elements hit by this ray, or an empty collection if no hit.</returns>
-        public static ICollection<HitTestResult> GetElementsAtScreenPosition(UIElement rootElement, Ray ray, ref Matrix worldViewProj)
+        public static ICollection<HitTestResult> GetElementsAtPosition(UIElement rootElement, Ray ray, ref Matrix worldViewProj)
         {
             var results = new List<HitTestResult>();
             PerformRecursiveHitTest(rootElement, ref ray, ref worldViewProj, results);
             return results;
         }
         
-        private static void PerformRecursiveHitTest(UIElement element, ref Ray ray, ref Matrix worldViewProj, ref UIElement hitElement, ref Vector3 intersectionPoint, ref float smallestDepth)
+        private static void PerformRecursiveHitTest(UIElement element, ref Ray ray, ref Matrix worldViewProj, ref UIElement hitElement, ref Vector3 intersectionPoint, ref float smallestDepth, ref float highestDepthBias)
         {
             // if the element is not visible, we also remove all its children
             if (!element.IsVisible)
@@ -385,20 +386,24 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 Vector4 projectedIntersection;
                 var intersection4 = new Vector4(intersection, 1);
                 Vector4.Transform(ref intersection4, ref worldViewProj, out projectedIntersection);
-                var depthWithBias = projectedIntersection.Z / projectedIntersection.W - element.DepthBias * BatchBase<int>.DepthBiasShiftOneUnit;
+                var depth = projectedIntersection.Z/projectedIntersection.W;
 
                 // update the closest element hit
-                if (canBeHit && intersect && depthWithBias < smallestDepth)
+                if (canBeHit && intersect)
                 {
-                    smallestDepth = depthWithBias;
-                    intersectionPoint = intersection;
-                    hitElement = element;
+                    if (depth < smallestDepth || (depth == smallestDepth && element.DepthBias > highestDepthBias))
+                    {
+                        smallestDepth = depth;
+                        highestDepthBias = element.DepthBias;
+                        intersectionPoint = intersection;
+                        hitElement = element;
+                    }
                 }
             }
 
             // test the children
             foreach (var child in element.HitableChildren)
-                PerformRecursiveHitTest(child, ref ray, ref worldViewProj, ref hitElement, ref intersectionPoint, ref smallestDepth);
+                PerformRecursiveHitTest(child, ref ray, ref worldViewProj, ref hitElement, ref intersectionPoint, ref smallestDepth, ref highestDepthBias);
         }
 
         private static void PerformRecursiveHitTest(UIElement element, ref Ray ray, ref Matrix worldViewProj, ICollection<HitTestResult> results)
@@ -421,12 +426,11 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 Vector4 projectedIntersection;
                 var intersection4 = new Vector4(intersection, 1);
                 Vector4.Transform(ref intersection4, ref worldViewProj, out projectedIntersection);
-                var depthWithBias = projectedIntersection.Z / projectedIntersection.W - element.DepthBias * BatchBase<int>.DepthBiasShiftOneUnit;
 
                 // update the hit results
                 if (canBeHit && intersect)
                 {
-                    results.Add(new HitTestResult(depthWithBias, element, intersection));
+                    results.Add(new HitTestResult(element.DepthBias, element, intersection));
                 }
             }
 
@@ -440,14 +444,14 @@ namespace SiliconStudio.Xenko.Rendering.UI
         /// </summary>
         public class HitTestResult
         {
-            public HitTestResult(float depthWithBias, UIElement element, Vector3 intersection)
+            public HitTestResult(float depthBias, UIElement element, Vector3 intersection)
             {
-                DepthWithBias = depthWithBias;
+                DepthBias = depthBias;
                 Element = element;
                 IntersectionPoint = intersection;
             }
 
-            public float DepthWithBias { get; }
+            public float DepthBias { get; }
 
             /// <summary>
             /// Element that was hit.
