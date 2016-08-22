@@ -224,6 +224,9 @@ namespace SiliconStudio.Xenko.Input
                     HandlePointerEvents(buttonId, CurrentMousePosition, PointerState.Move, PointerType.Mouse);
             }
 
+            // TODO: have a proper distinction between Touch and Mouse
+            HandlePointerEvents(-1, CurrentMousePosition, PointerState.Move, PointerType.Mouse);
+
             if (IsMousePositionLocked)
             {
                 Cursor.Position = capturedPosition;

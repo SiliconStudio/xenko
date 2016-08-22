@@ -165,7 +165,8 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
                 if (pointerEvent.State == PointerState.Down || pointerEvent.State == PointerState.Up)
                     state.LastIntersectionPoint = intersectionPoint;
-                
+
+                // TODO: add the pointer type to the event args?
                 var touchEvent = new TouchEventArgs
                 {
                     Action = TouchAction.Down,
