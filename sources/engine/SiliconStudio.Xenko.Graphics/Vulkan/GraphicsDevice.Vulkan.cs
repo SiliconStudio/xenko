@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Graphics
         private long lastCompletedFence;
         private long NextFenceValue = 1;
 
-        internal HeapPool descriptorPools;
+        internal HeapPool DescriptorPools;
         internal const uint MaxDescriptorSetCount = 256;
         internal readonly uint[] MaxDescriptorTypeCounts = new uint[DescriptorSetLayout.DescriptorTypeCount]
         {
@@ -171,53 +171,43 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="commandList">The deferred command list.</param>
         public void ExecuteCommandList(CompiledCommandList commandList)
         {
-            ExecuteCommandListInternal(commandList.NativeCommandBuffer, commandList.FenceValue);
-
-            //if (commandList == null) throw new ArgumentNullException("commandList");
-            //
-            //NativeDeviceContext.ExecuteCommandList(((CommandList)commandList).NativeCommandList, false);
-            //commandList.Dispose();
+            ExecuteCommandListInternal(commandList);
         }
-
-        private FastList<CommandBuffer> commandBuffers = new FastList<CommandBuffer>();
 
         public unsafe void ExecuteCommandLists(CompiledCommandList[] commandLists)
         {
-            long fenceValue = long.MaxValue;
-            for (int i = 0; i < commandLists.Length; i++)
-            {
-                commandBuffers.Add(commandLists[i].NativeCommandBuffer);
-                if (commandLists[i].FenceValue < fenceValue)
-                    fenceValue = commandLists[i].FenceValue;
-            }
+            var fenceValue = PushFence();
 
+            // Create a fence
             var fenceCreateInfo = new FenceCreateInfo { StructureType = StructureType.FenceCreateInfo };
             var fence = nativeDevice.CreateFence(ref fenceCreateInfo);
             nativeFences.Enqueue(new KeyValuePair<long, Fence>(fenceValue, fence));
 
+            // Collect resources
+            var commandBuffers = stackalloc CommandBuffer[commandLists.Length];
+            for (int i = 0; i < commandLists.Length; i++)
+            {
+                commandBuffers[i] = commandLists[i].NativeCommandBuffer;
+                PrepareExecute(commandLists[i], fenceValue);
+            }
+
             // Submit commands
             var pipelineStageFlags = PipelineStageFlags.BottomOfPipe;
-
-            fixed (CommandBuffer* commandBuffersPtr = &commandBuffers.Items[0])
+            var presentSemaphoreCopy = presentSemaphore;
+            var submitInfo = new SubmitInfo
             {
-                var presentSemaphoreCopy = presentSemaphore;
-                var submitInfo = new SubmitInfo
-                {
-                    StructureType = StructureType.SubmitInfo,
-                    CommandBufferCount = (uint)commandLists.Length,
-                    CommandBuffers = new IntPtr(commandBuffersPtr),
-                    WaitSemaphoreCount = presentSemaphore != Semaphore.Null ? 1U : 0U,
-                    WaitSemaphores = new IntPtr(&presentSemaphoreCopy),
-                    WaitDstStageMask = new IntPtr(&pipelineStageFlags),
-                };
-                NativeCommandQueue.Submit(1, &submitInfo, fence);
-            }
+                StructureType = StructureType.SubmitInfo,
+                CommandBufferCount = (uint)commandLists.Length,
+                CommandBuffers = new IntPtr(commandBuffers),
+                WaitSemaphoreCount = presentSemaphore != Semaphore.Null ? 1U : 0U,
+                WaitSemaphores = new IntPtr(&presentSemaphoreCopy),
+                WaitDstStageMask = new IntPtr(&pipelineStageFlags),
+            };
+            NativeCommandQueue.Submit(1, &submitInfo, fence);
 
             presentSemaphore = Semaphore.Null;
             nativeResourceCollector.Release();
             graphicsResourceLinkCollector.Release();
-
-            commandBuffers.Clear(true);
         }
 
         private void InitializePostFeatures()
@@ -348,7 +338,7 @@ namespace SiliconStudio.Xenko.Graphics
             NativeDevice.AllocateCommandBuffers(ref commandBufferAllocationInfo, &nativeCommandBuffer);
             NativeCopyCommandBuffer = nativeCommandBuffer;
 
-            descriptorPools = new HeapPool(this);
+            DescriptorPools = new HeapPool(this);
 
             nativeResourceCollector = new NativeResourceCollector(this);
             graphicsResourceLinkCollector = new GraphicsResourceLinkCollector(this);
@@ -464,7 +454,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Release fenced resources
             nativeResourceCollector.Dispose();
-            descriptorPools.Dispose();
+            DescriptorPools.Dispose();
 
             nativeDevice.DestroyCommandPool(NativeCopyCommandPool);
             nativeDevice.Destroy();
@@ -479,7 +469,7 @@ namespace SiliconStudio.Xenko.Graphics
             return Interlocked.Increment(ref NextFenceValue) - 1;
         }
 
-        internal unsafe void ExecuteCommandListInternal(CommandBuffer nativeCommandBuffer, long fenceValue)
+        internal unsafe long ExecuteCommandListInternal(CompiledCommandList commandList)
         {
             //if (nativeUploadBuffer != SharpVulkan.Buffer.Null)
             //{
@@ -490,13 +480,18 @@ namespace SiliconStudio.Xenko.Graphics
             //    nativeUploadBufferMemory = DeviceMemory.Null;
             //}
 
+            var fenceValue = PushFence();
+
             // Create new fence
             var fenceCreateInfo = new FenceCreateInfo { StructureType = StructureType.FenceCreateInfo };
             var fence = nativeDevice.CreateFence(ref fenceCreateInfo);
             nativeFences.Enqueue(new KeyValuePair<long, Fence>(fenceValue, fence));
 
+            // Collect resources
+            PrepareExecute(commandList, fenceValue);
+
             // Submit commands
-            var nativeCommandBufferCopy = nativeCommandBuffer;
+            var nativeCommandBufferCopy = commandList.NativeCommandBuffer;
             var pipelineStageFlags = PipelineStageFlags.BottomOfPipe;
 
             var presentSemaphoreCopy = presentSemaphore;
@@ -514,6 +509,30 @@ namespace SiliconStudio.Xenko.Graphics
             presentSemaphore = Semaphore.Null;
             nativeResourceCollector.Release();
             graphicsResourceLinkCollector.Release();
+
+            return fenceValue;
+        }
+
+        private void PrepareExecute(CompiledCommandList commandList, long fenceValue)
+        {
+            // Set fence on staging textures
+            foreach (var stagingResource in commandList.StagingResources)
+            {
+                stagingResource.StagingFence = fenceValue;
+            }
+
+            commandList.Builder.StagingResourceLists.Release(commandList.StagingResources);
+            commandList.StagingResources.Clear();
+
+            // Recycle all resources
+            foreach (var descriptorPool in commandList.DescriptorPools)
+            {
+                DescriptorPools.RecycleObject(fenceValue, descriptorPool);
+            }
+
+            commandList.Builder.CommandBufferPool.RecycleObject(fenceValue, commandList.NativeCommandBuffer);
+            commandList.Builder.DescriptorPoolLists.Release(commandList.DescriptorPools);
+            commandList.DescriptorPools.Clear();
         }
 
         internal bool IsFenceCompleteInternal(long fenceValue)

@@ -12,7 +12,8 @@ namespace SiliconStudio.Xenko.Graphics
     public abstract partial class GraphicsResource
     {
         internal DeviceMemory NativeMemory;
-        internal long StagingFenceValue;
+        internal long? StagingFence;
+        internal CommandList StagingBuilder;
         internal PipelineStageFlags NativePipelineStageMask;
 
         protected bool IsDebugMode
