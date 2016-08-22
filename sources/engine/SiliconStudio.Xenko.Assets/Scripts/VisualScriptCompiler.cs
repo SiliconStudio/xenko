@@ -58,14 +58,29 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                 var nextExecutionLink = asset.Links.FirstOrDefault(x => x.Source == CurrentBlock && x.SourceSlot == nextExecutionSlot.Name && x.Target is ExecutionBlock);
                 if (nextExecutionLink != null)
                 {
-                    return GetOrCreateBasicBlock(nextExecutionLink.Target);
+                    return GetOrCreateBasicBlock((ExecutionBlock)nextExecutionLink.Target);
                 }
             }
 
             return null;
         }
 
-        public BasicBlock GetOrCreateBasicBlock(Block block)
+        public ExpressionSyntax GenerateExpression(Slot conditionSlot)
+        {
+            // Automatically flow to next execution slot (if it has a null name => default behavior)
+            if (conditionSlot != null)
+            {
+                var nextExecutionLink = asset.Links.FirstOrDefault(x => x.Target == CurrentBlock && x.TargetSlot == conditionSlot.Name && x.Source is ExpressionBlock);
+                if (nextExecutionLink != null)
+                {
+                    return ((ExpressionBlock)nextExecutionLink.Source).GenerateExpression();
+                }
+            }
+
+            return null;
+        }
+
+        public BasicBlock GetOrCreateBasicBlock(ExecutionBlock block)
         {
             BasicBlock newBasicBlock;
             if (!BlockMapping.TryGetValue(block, out newBasicBlock))
@@ -171,7 +186,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                             goto GenerateReturn;
                         }
 
-                        var nextBasicBlock = context.GetOrCreateBasicBlock(nextExecutionLink.Target);
+                        var nextBasicBlock = context.GetOrCreateBasicBlock((ExecutionBlock)nextExecutionLink.Target);
                         context.CurrentBasicBlock.NextBlock = nextBasicBlock;
                     }
 

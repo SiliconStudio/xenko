@@ -7,6 +7,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
     {
         private Slot trueSlot;
         private Slot falseSlot;
+        private Slot conditionSlot;
 
         public const string TrueSlotName = "True";
         public const string FalseSlotName = "False";
@@ -17,7 +18,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         {
             Slots.Clear();
             Slots.Add(new Slot { Type = SlotType.Execution, Direction = SlotDirection.Input });
-            Slots.Add(new Slot { Type = SlotType.Value, Direction = SlotDirection.Input, Name = "Condition" });
+            Slots.Add(conditionSlot = new Slot { Type = SlotType.Value, Direction = SlotDirection.Input, Name = "Condition" });
             Slots.Add(trueSlot = new Slot { Type = SlotType.Execution, Direction = SlotDirection.Output, Name = TrueSlotName });
             Slots.Add(falseSlot = new Slot { Type = SlotType.Execution, Direction = SlotDirection.Output, Name = FalseSlotName, Flags = SlotFlags.AutoflowExecution });
         }
@@ -28,8 +29,11 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             var falseBlock = context.GetOrCreateBasicBlockFromSlot(falseSlot);
             var trueBlock = context.GetOrCreateBasicBlockFromSlot(trueSlot);
 
+            // Generate condition
+            var condition = context.GenerateExpression(conditionSlot) ?? LiteralExpression(SyntaxKind.TrueLiteralExpression);
+
             // if (condition) goto trueBlock;
-            context.AddStatement(IfStatement(LiteralExpression(SyntaxKind.TrueLiteralExpression), context.CreateGotoStatement(trueBlock)));
+            context.AddStatement(IfStatement(condition, context.CreateGotoStatement(trueBlock)));
 
             // Execution continue in false block
             context.CurrentBasicBlock.NextBlock = falseBlock;
