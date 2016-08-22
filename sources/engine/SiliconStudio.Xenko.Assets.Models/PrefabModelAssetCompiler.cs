@@ -18,7 +18,7 @@ using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 
-namespace SiliconStudio.Xenko.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Models
 {
     internal class PrefabModelAssetCompiler : AssetCompilerBase<PrefabModelAsset>
     {
