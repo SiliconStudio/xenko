@@ -160,7 +160,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                     if (!GetTouchPosition(state.UIComponent, ref viewport, ref worldViewProj, currentTouchPosition, out uiRay))
                         continue;
 
-                    currentTouchedElement = GetElementAtScreenPosition(rootElement, uiRay, ref worldViewProj, ref intersectionPoint);
+                    currentTouchedElement = GetElementAtScreenPosition(rootElement, ref uiRay, ref worldViewProj, ref intersectionPoint);
                 }
 
                 if (pointerEvent.State == PointerState.Down || pointerEvent.State == PointerState.Up)
@@ -251,7 +251,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 if (!GetTouchPosition(state.UIComponent, ref viewport, ref worldViewProj, mousePosition, out uiRay))
                     return;
 
-                mouseOverElement = GetElementAtScreenPosition(rootElement, uiRay, ref worldViewProj, ref intersectionPoint);
+                mouseOverElement = GetElementAtScreenPosition(rootElement, ref uiRay, ref worldViewProj, ref intersectionPoint);
             }
 
             // find the common parent between current and last overred elements
@@ -343,7 +343,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
         /// <param name="worldViewProj"></param>
         /// <param name="intersectionPoint">Intersection point between the ray and the element</param>
         /// <returns>The <see cref="UIElement"/> with which the ray intersects</returns>
-        public static UIElement GetElementAtScreenPosition(UIElement rootElement, Ray clickRay, ref Matrix worldViewProj, ref Vector3 intersectionPoint)
+        public static UIElement GetElementAtScreenPosition(UIElement rootElement, ref Ray clickRay, ref Matrix worldViewProj, ref Vector3 intersectionPoint)
         {
             UIElement clickedElement = null;
             var smallestDepth = float.PositiveInfinity;
@@ -360,7 +360,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
         /// <param name="ray"><see cref="Ray"/> from the click in object space of the ui component in (-Resolution.X/2 .. Resolution.X/2, -Resolution.Y/2 .. Resolution.Y/2) range</param>
         /// <param name="worldViewProj"></param>
         /// <returns>A collection of all elements hit by this ray, or an empty collection if no hit.</returns>
-        public static ICollection<HitTestResult> GetElementsAtPosition(UIElement rootElement, Ray ray, ref Matrix worldViewProj)
+        public static ICollection<HitTestResult> GetElementsAtPosition(UIElement rootElement, ref Ray ray, ref Matrix worldViewProj)
         {
             var results = new List<HitTestResult>();
             PerformRecursiveHitTest(rootElement, ref ray, ref worldViewProj, results);
