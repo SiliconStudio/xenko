@@ -41,8 +41,8 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         public override void RegenerateSlots()
         {
             Slots.Clear();
-            Slots.Add(new Slot { Type = SlotType.Execution, Direction = SlotDirection.Input });
-            Slots.Add(new Slot { Type = SlotType.Execution, Direction = SlotDirection.Output });
+            Slots.Add(new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Input });
+            Slots.Add(new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Output });
         }
     }
 }

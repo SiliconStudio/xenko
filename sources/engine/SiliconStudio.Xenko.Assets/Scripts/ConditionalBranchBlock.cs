@@ -17,10 +17,10 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         public override void RegenerateSlots()
         {
             Slots.Clear();
-            Slots.Add(new Slot { Type = SlotType.Execution, Direction = SlotDirection.Input });
-            Slots.Add(conditionSlot = new Slot { Type = SlotType.Value, Direction = SlotDirection.Input, Name = "Condition" });
-            Slots.Add(trueSlot = new Slot { Type = SlotType.Execution, Direction = SlotDirection.Output, Name = TrueSlotName });
-            Slots.Add(falseSlot = new Slot { Type = SlotType.Execution, Direction = SlotDirection.Output, Name = FalseSlotName, Flags = SlotFlags.AutoflowExecution });
+            Slots.Add(new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Input });
+            Slots.Add(conditionSlot = new Slot { Kind = SlotKind.Value, Direction = SlotDirection.Input, Name = "Condition" });
+            Slots.Add(trueSlot = new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Output, Name = TrueSlotName });
+            Slots.Add(falseSlot = new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Output, Name = FalseSlotName, Flags = SlotFlags.AutoflowExecution });
         }
 
         public override void GenerateCode(VisualScriptCompilerContext context)

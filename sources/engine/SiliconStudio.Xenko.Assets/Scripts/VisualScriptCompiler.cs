@@ -176,7 +176,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                     currentBlock.GenerateCode(context);
 
                     // Automatically flow to next execution slot (if it has a null name => default behavior)
-                    var nextExecutionSlot = currentBlock.Slots.FirstOrDefault(x => x.Type == SlotType.Execution && x.Direction == SlotDirection.Output && x.Flags == SlotFlags.AutoflowExecution);
+                    var nextExecutionSlot = currentBlock.Slots.FirstOrDefault(x => x.Kind == SlotKind.Execution && x.Direction == SlotDirection.Output && x.Flags == SlotFlags.AutoflowExecution);
                     if (nextExecutionSlot != null)
                     {
                         var nextExecutionLink = visualScriptAsset.Links.FirstOrDefault(x => x.Source == currentBlock && x.SourceSlot == nextExecutionSlot.Name && x.Target != null);

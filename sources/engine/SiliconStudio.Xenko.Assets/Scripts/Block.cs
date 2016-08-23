@@ -80,10 +80,9 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         public string FunctionName { get; set; }
 
         public override void RegenerateSlots()
-
         {
             Slots.Clear();
-            Slots.Add(StartSlot = new Slot { Type = SlotType.Execution, Direction = SlotDirection.Output, Name = StartSlotName, Flags = SlotFlags.AutoflowExecution });
+            Slots.Add(StartSlot = new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Output, Name = StartSlotName, Flags = SlotFlags.AutoflowExecution });
         }
 
         public override void GenerateCode(VisualScriptCompilerContext context)
@@ -92,7 +91,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         }
     }
 
-    public enum SlotType
+    public enum SlotKind
     {
         Execution = 0,
         Value = 1,
@@ -115,7 +114,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
     {
         public string Name { get; set; }
 
-        public SlotType Type { get; set; }
+        public SlotKind Kind { get; set; }
 
         public SlotDirection Direction { get; set; }
 
