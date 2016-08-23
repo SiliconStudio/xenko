@@ -55,10 +55,10 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             // Automatically flow to next execution slot (if it has a null name => default behavior)
             if (nextExecutionSlot != null)
             {
-                var nextExecutionLink = asset.Links.FirstOrDefault(x => x.Source == CurrentBlock && x.SourceSlot == nextExecutionSlot.Name && x.Target is ExecutionBlock);
+                var nextExecutionLink = asset.Links.FirstOrDefault(x => x.Source == nextExecutionSlot && x.Target != null);
                 if (nextExecutionLink != null)
                 {
-                    return GetOrCreateBasicBlock((ExecutionBlock)nextExecutionLink.Target);
+                    return GetOrCreateBasicBlock((ExecutionBlock)nextExecutionLink.Target.Owner);
                 }
             }
 
@@ -70,10 +70,10 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             // Automatically flow to next execution slot (if it has a null name => default behavior)
             if (conditionSlot != null)
             {
-                var nextExecutionLink = asset.Links.FirstOrDefault(x => x.Target == CurrentBlock && x.TargetSlot == conditionSlot.Name && x.Source is ExpressionBlock);
+                var nextExecutionLink = asset.Links.FirstOrDefault(x => x.Target == conditionSlot);
                 if (nextExecutionLink != null)
                 {
-                    return ((ExpressionBlock)nextExecutionLink.Source).GenerateExpression();
+                    return ((ExpressionBlock)nextExecutionLink.Source.Owner).GenerateExpression();
                 }
             }
 
@@ -179,14 +179,14 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                     var nextExecutionSlot = currentBlock.Slots.FirstOrDefault(x => x.Kind == SlotKind.Execution && x.Direction == SlotDirection.Output && x.Flags == SlotFlags.AutoflowExecution);
                     if (nextExecutionSlot != null)
                     {
-                        var nextExecutionLink = visualScriptAsset.Links.FirstOrDefault(x => x.Source == currentBlock && x.SourceSlot == nextExecutionSlot.Name && x.Target != null);
+                        var nextExecutionLink = visualScriptAsset.Links.FirstOrDefault(x => x.Source == nextExecutionSlot && x.Target != null);
                         if (nextExecutionLink == null)
                         {
                             // Nothing connected, no need to generate a goto to an empty return
                             goto GenerateReturn;
                         }
 
-                        var nextBasicBlock = context.GetOrCreateBasicBlock((ExecutionBlock)nextExecutionLink.Target);
+                        var nextBasicBlock = context.GetOrCreateBasicBlock((ExecutionBlock)nextExecutionLink.Target.Owner);
                         context.CurrentBasicBlock.NextBlock = nextBasicBlock;
                     }
 

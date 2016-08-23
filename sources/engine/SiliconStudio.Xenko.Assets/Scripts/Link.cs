@@ -13,13 +13,11 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             Id = Guid.NewGuid();
         }
 
-        public Link(Block source, string sourceSlot, Block target, string targetSlot)
+        public Link(Slot source, Slot target)
              : this()
         {
             Source = source;
-            SourceSlot = sourceSlot;
             Target = target;
-            TargetSlot = targetSlot;
         }
 
         [DataMember(-100), Display(Browsable = false)]
@@ -39,13 +37,9 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         [DefaultValue(null)]
         public Guid? BasePartInstanceId { get; set; }
 
-        public Block Source { get; set; }
+        public Slot Source { get; set; }
 
-        public string SourceSlot { get; set; }
-
-        public Block Target { get; set; }
-
-        public string TargetSlot { get; set; }
+        public Slot Target { get; set; }
 
         /// <inheritdoc/>
         Link IAssetPartDesign<Link>.Part => this;

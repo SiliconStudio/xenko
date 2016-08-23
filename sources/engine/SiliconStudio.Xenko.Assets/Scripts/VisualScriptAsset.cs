@@ -8,9 +8,10 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Assets.Scripts
 {
-    [AssetPartReference(typeof(Block), ReferenceType = typeof(BlockReference), KeepTypeInfo = false)]
+    [AssetPartReference(typeof(Block), typeof(Slot), ReferenceType = typeof(BlockReference), KeepTypeInfo = false)]
     [AssetPartReference(typeof(Link))]
-    [AssetPartReference(typeof(Variable), ReferenceType = typeof(VariableReference))]
+    [AssetPartReference(typeof(Variable))]
+    [AssetPartReference(typeof(Slot))]
     public class VisualScriptAsset : AssetComposite, IProjectFileGeneratorAsset
     {
         [DataMember(0)]

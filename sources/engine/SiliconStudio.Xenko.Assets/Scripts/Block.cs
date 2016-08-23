@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SiliconStudio.Assets;
@@ -15,6 +17,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         protected Block()
         {
             Id = Guid.NewGuid();
+            Slots.CollectionChanged += Slots_CollectionChanged;
         }
 
         [DataMember(-100), Display(Browsable = false)]
@@ -49,13 +52,40 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         /// <summary>
         /// Gets the list of slots this block has.
         /// </summary>
-        [DataMemberIgnore]
+        [DataMember(10000), Display(Browsable = false)]
         public ObservableCollection<Slot> Slots { get; } = new ObservableCollection<Slot>();
 
         public abstract void RegenerateSlots();
 
         /// <inheritdoc/>
         Block IAssetPartDesign<Block>.Part => this;
+
+        private void Slots_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    foreach (Slot slot in e.NewItems)
+                    {
+                        slot.Owner = this;
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                    foreach (Slot slot in e.OldItems)
+                    {
+                        slot.Owner = null;
+                    }
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    foreach (var slot in (IEnumerable<Slot>)sender)
+                    {
+                        slot.Owner = this;
+                    }
+                    break;
+                default:
+                    throw new NotSupportedException();
+            }
+        }
     }
 
     public abstract class ExecutionBlock : Block
@@ -93,8 +123,8 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
     public enum SlotKind
     {
-        Execution = 0,
-        Value = 1,
+        Value = 0,
+        Execution = 1,
     }
 
     public enum SlotDirection
@@ -108,16 +138,5 @@ namespace SiliconStudio.Xenko.Assets.Scripts
     {
         None = 0,
         AutoflowExecution = 1,
-    }
-
-    public class Slot
-    {
-        public string Name { get; set; }
-
-        public SlotKind Kind { get; set; }
-
-        public SlotDirection Direction { get; set; }
-
-        public SlotFlags Flags { get; set; }
     }
 }

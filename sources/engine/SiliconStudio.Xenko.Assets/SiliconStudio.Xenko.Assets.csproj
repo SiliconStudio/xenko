@@ -255,9 +255,9 @@
     <Compile Include="Scripts\CustomCodeBlock.cs" />
     <Compile Include="Rendering\GraphicsCompositorAsset.cs" />
     <Compile Include="Scripts\Link.cs" />
+    <Compile Include="Scripts\Slot.cs" />
     <Compile Include="Scripts\Variable.cs" />
     <Compile Include="Scripts\VariableGet.cs" />
-    <Compile Include="Scripts\VariableReference.cs" />
     <Compile Include="Scripts\VisualScriptAsset.cs" />
     <Compile Include="Scripts\VisualScriptCompiler.cs" />
     <Compile Include="SceneRenderer.cs" />
