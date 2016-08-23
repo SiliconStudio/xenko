@@ -33,7 +33,8 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             var condition = context.GenerateExpression(conditionSlot) ?? LiteralExpression(SyntaxKind.TrueLiteralExpression);
 
             // if (condition) goto trueBlock;
-            context.AddStatement(IfStatement(condition, context.CreateGotoStatement(trueBlock)));
+            if (trueBlock != null)
+                context.AddStatement(IfStatement(condition, context.CreateGotoStatement(trueBlock)));
 
             // Execution continue in false block
             context.CurrentBasicBlock.NextBlock = falseBlock;
