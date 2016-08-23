@@ -13,6 +13,13 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             Id = Guid.NewGuid();
         }
 
+        public Variable(string name, Type type)
+            : this()
+        {
+            Name = name;
+            Type = type;
+        }
+
         [DataMember(-100), Display(Browsable = false)]
         public Guid Id { get; set; }
 
@@ -34,13 +41,13 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         /// Gets or sets the name of that variable.
         /// </summary>
         [DataMember(-50)]
-        public virtual string Name { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the type of that variable.
         /// </summary>
         [DataMember(-40)]
-        public virtual string Type { get; set; }
+        public Type Type { get; set; }
 
         Variable IAssetPartDesign<Variable>.Part => this;
     }

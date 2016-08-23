@@ -258,6 +258,7 @@
     <Compile Include="Scripts\Slot.cs" />
     <Compile Include="Scripts\Variable.cs" />
     <Compile Include="Scripts\VariableGet.cs" />
+    <Compile Include="Scripts\VariableSet.cs" />
     <Compile Include="Scripts\VisualScriptAsset.cs" />
     <Compile Include="Scripts\VisualScriptCompiler.cs" />
     <Compile Include="SceneRenderer.cs" />

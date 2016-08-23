@@ -156,6 +156,24 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             var members = new List<MemberDeclarationSyntax>();
             var className = options.Class;
 
+            // Generate variables
+            foreach (var variable in visualScriptAsset.Variables)
+            {
+                var field =
+                    FieldDeclaration(
+                        VariableDeclaration(
+                            ParseTypeName(variable.Type.FullName))
+                        .WithVariables(
+                            SingletonSeparatedList(
+                                VariableDeclarator(
+                                    Identifier(variable.Name)))))
+                    .WithModifiers(
+                        TokenList(
+                            Token(SyntaxKind.PublicKeyword)));
+
+                members.Add(field);
+            }
+
             // Process each function
             foreach (var functionStartBlock in visualScriptAsset.Blocks.OfType<FunctionStartBlock>())
             {

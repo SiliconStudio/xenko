@@ -3,7 +3,9 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Reflection;
+using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using NUnit.Framework;
@@ -34,7 +36,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             visualScript.Links.Add(new Link(functionStart.StartSlot, writeTrue.ExecutionInput));
 
             // Test
-            TestAndCompareOutput(visualScript, "True");
+            TestAndCompareOutput(visualScript, "True", testInstance => testInstance.Test());
         }
 
         [Test]
@@ -62,10 +64,107 @@ namespace SiliconStudio.Xenko.Assets.Tests
             visualScript.Links.Add(new Link(conditionalBranch.FalseSlot, writeFalse.ExecutionInput));
 
             // Test
-            TestAndCompareOutput(visualScript, "True");
+            conditionalBranch.ConditionSlot.Value = true;
+            TestAndCompareOutput(visualScript, "True", testInstance => testInstance.Test());
+
+            conditionalBranch.ConditionSlot.Value = false;
+            TestAndCompareOutput(visualScript, "False", testInstance => testInstance.Test());
         }
 
-        private static void TestAndCompareOutput(VisualScriptAsset visualScriptAsset, string expectedOutput)
+        [Test]
+        public void TestVariableGet()
+        {
+            var visualScript = new VisualScriptAsset();
+
+            var condition = new Variable("Condition", typeof(bool));
+            visualScript.Variables.Add(condition);
+
+            // Build blocks
+            // TODO: Switch to a simple Write(variable) later, so that we don't depend on ConditionalBranchBlock for this test?
+            var functionStart = new FunctionStartBlock { FunctionName = "Test" };
+            var conditionGet = new VariableGet { Variable = condition };
+            var conditionalBranch = new ConditionalBranchBlock();
+            var writeTrue = new CustomCodeBlock { Code = "System.Console.Write(true);" };
+            var writeFalse = new CustomCodeBlock { Code = "System.Console.Write(false);" };
+            visualScript.Blocks.Add(functionStart);
+            visualScript.Blocks.Add(conditionGet);
+            visualScript.Blocks.Add(conditionalBranch);
+            visualScript.Blocks.Add(writeTrue);
+            visualScript.Blocks.Add(writeFalse);
+
+            // Generate slots
+            foreach (var block in visualScript.Blocks)
+                block.RegenerateSlots();
+
+            // Build links
+            visualScript.Links.Add(new Link(functionStart.StartSlot, conditionalBranch.ExecutionInput));
+            visualScript.Links.Add(new Link(conditionGet.ValueSlot, conditionalBranch.ConditionSlot));
+            visualScript.Links.Add(new Link(conditionalBranch.TrueSlot, writeTrue.ExecutionInput));
+            visualScript.Links.Add(new Link(conditionalBranch.FalseSlot, writeFalse.ExecutionInput));
+
+            // Test
+            TestAndCompareOutput(visualScript, "True", testInstance =>
+            {
+                testInstance.Condition = true;
+                testInstance.Test();
+            });
+
+            TestAndCompareOutput(visualScript, "False", testInstance =>
+            {
+                testInstance.Condition = false;
+                testInstance.Test();
+            });
+        }
+
+        [Test]
+        public void TestVariableSet()
+        {
+            var visualScript = new VisualScriptAsset();
+
+            var condition = new Variable("Condition", typeof(bool));
+            visualScript.Variables.Add(condition);
+
+            // Build blocks
+            // TODO: Switch to a simple Write(variable) later, so that we don't depend on ConditionalBranchBlock for this test?
+            var functionStart = new FunctionStartBlock { FunctionName = "Test" };
+            var conditionGet = new VariableGet { Variable = condition };
+            var conditionSet = new VariableSet { Variable = condition };
+            var conditionalBranch = new ConditionalBranchBlock();
+            var writeTrue = new CustomCodeBlock { Code = "System.Console.Write(true);" };
+            var writeFalse = new CustomCodeBlock { Code = "System.Console.Write(false);" };
+            visualScript.Blocks.Add(functionStart);
+            visualScript.Blocks.Add(conditionGet);
+            visualScript.Blocks.Add(conditionSet);
+            visualScript.Blocks.Add(conditionalBranch);
+            visualScript.Blocks.Add(writeTrue);
+            visualScript.Blocks.Add(writeFalse);
+
+            // Generate slots
+            foreach (var block in visualScript.Blocks)
+                block.RegenerateSlots();
+
+            // Build links
+            visualScript.Links.Add(new Link(functionStart.StartSlot, conditionSet.ExecutionInput));
+            visualScript.Links.Add(new Link(conditionSet.ExecutionOutput, conditionalBranch.ExecutionInput));
+            visualScript.Links.Add(new Link(conditionGet.ValueSlot, conditionalBranch.ConditionSlot));
+            visualScript.Links.Add(new Link(conditionalBranch.TrueSlot, writeTrue.ExecutionInput));
+            visualScript.Links.Add(new Link(conditionalBranch.FalseSlot, writeFalse.ExecutionInput));
+
+            // Test
+            conditionSet.InputSlot.Value = true;
+            TestAndCompareOutput(visualScript, "True", testInstance =>
+            {
+                testInstance.Test();
+            });
+
+            conditionSet.InputSlot.Value = false;
+            TestAndCompareOutput(visualScript, "False", testInstance =>
+            {
+                testInstance.Test();
+            });
+        }
+
+        private static void TestAndCompareOutput(VisualScriptAsset visualScriptAsset, string expectedOutput, Action<dynamic> testCode)
         {
             // Compile
             var compilerResult = VisualScriptCompiler.Generate(visualScriptAsset, new VisualScriptCompilerOptions
@@ -80,7 +179,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 // Create class
                 var testInstance = CreateInstance(new[] { compilerResult.SyntaxTree });
                 // Execute method
-                testInstance.Test();
+                testCode(testInstance);
 
                 // Check output
                 textWriter.Flush();
@@ -104,7 +203,17 @@ namespace SiliconStudio.Xenko.Assets.Tests
             {
                 var emitResult = compilation.Emit(peStream, pdbStream);
 
-                Assert.That(emitResult.Success);
+                if (!emitResult.Success)
+                {
+                    var sb = new StringBuilder();
+                    sb.AppendLine("Compilation errors:");
+                    foreach (var diagnostic in emitResult.Diagnostics.Where(x => x.Severity >= DiagnosticSeverity.Error))
+                    {
+                        sb.AppendLine(diagnostic.ToString());
+                    }
+
+                    throw new InvalidOperationException(sb.ToString());
+                }
 
                 peStream.Position = 0;
                 pdbStream.Position = 0;
