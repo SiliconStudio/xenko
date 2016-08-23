@@ -1,13 +1,19 @@
 using Microsoft.CodeAnalysis.CSharp;
+using SiliconStudio.Core;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SiliconStudio.Xenko.Assets.Scripts
 {
     public class ConditionalBranchBlock : ExecutionBlock
     {
-        private Slot trueSlot;
-        private Slot falseSlot;
-        private Slot conditionSlot;
+        [DataMemberIgnore]
+        public Slot TrueSlot { get; private set; }
+
+        [DataMemberIgnore]
+        public Slot FalseSlot { get; private set; }
+
+        [DataMemberIgnore]
+        public Slot ConditionSlot { get; private set; }
 
         public const string TrueSlotName = "True";
         public const string FalseSlotName = "False";
@@ -18,19 +24,19 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         {
             Slots.Clear();
             Slots.Add(new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Input });
-            Slots.Add(conditionSlot = new Slot { Kind = SlotKind.Value, Direction = SlotDirection.Input, Name = "Condition" });
-            Slots.Add(trueSlot = new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Output, Name = TrueSlotName });
-            Slots.Add(falseSlot = new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Output, Name = FalseSlotName, Flags = SlotFlags.AutoflowExecution });
+            Slots.Add(ConditionSlot = new Slot { Kind = SlotKind.Value, Direction = SlotDirection.Input, Name = "Condition" });
+            Slots.Add(TrueSlot = new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Output, Name = TrueSlotName });
+            Slots.Add(FalseSlot = new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Output, Name = FalseSlotName, Flags = SlotFlags.AutoflowExecution });
         }
 
         public override void GenerateCode(VisualScriptCompilerContext context)
         {
             // Generate false then true block (false block will be reached if the previous condition failed), then true block (reached by goto)
-            var falseBlock = context.GetOrCreateBasicBlockFromSlot(falseSlot);
-            var trueBlock = context.GetOrCreateBasicBlockFromSlot(trueSlot);
+            var falseBlock = context.GetOrCreateBasicBlockFromSlot(FalseSlot);
+            var trueBlock = context.GetOrCreateBasicBlockFromSlot(TrueSlot);
 
             // Generate condition
-            var condition = context.GenerateExpression(conditionSlot) ?? LiteralExpression(SyntaxKind.TrueLiteralExpression);
+            var condition = context.GenerateExpression(ConditionSlot) ?? LiteralExpression(SyntaxKind.TrueLiteralExpression);
 
             // if (condition) goto trueBlock;
             if (trueBlock != null)

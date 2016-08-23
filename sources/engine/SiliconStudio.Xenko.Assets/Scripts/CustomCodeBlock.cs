@@ -1,6 +1,7 @@
 using System;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Xenko.Assets.Scripts

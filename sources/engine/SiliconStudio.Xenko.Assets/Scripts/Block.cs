@@ -60,6 +60,16 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         /// <inheritdoc/>
         Block IAssetPartDesign<Block>.Part => this;
 
+        protected virtual void OnSlotAdd(Slot slot)
+        {
+            slot.Owner = this;
+        }
+
+        protected virtual void OnSlotRemove(Slot slot)
+        {
+            slot.Owner = null;
+        }
+
         private void Slots_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             switch (e.Action)
@@ -67,19 +77,20 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                 case NotifyCollectionChangedAction.Add:
                     foreach (Slot slot in e.NewItems)
                     {
-                        slot.Owner = this;
+                        OnSlotAdd(slot);
                     }
                     break;
                 case NotifyCollectionChangedAction.Remove:
                     foreach (Slot slot in e.OldItems)
                     {
-                        slot.Owner = null;
+                        OnSlotRemove(slot);
                     }
                     break;
                 case NotifyCollectionChangedAction.Reset:
+                    // Note: we should properly disconnect removed slots, but the event doesn't give us this info...
                     foreach (var slot in (IEnumerable<Slot>)sender)
                     {
-                        slot.Owner = this;
+                        OnSlotAdd(slot);
                     }
                     break;
                 default:
@@ -90,7 +101,39 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
     public abstract class ExecutionBlock : Block
     {
+        [DataMemberIgnore]
+        public Slot ExecutionInput { get; private set; }
+
+        [DataMemberIgnore]
+        public Slot ExecutionOutput { get; private set; }
+
         public abstract void GenerateCode(VisualScriptCompilerContext context);
+
+        protected override void OnSlotAdd(Slot slot)
+        {
+            base.OnSlotAdd(slot);
+
+            if (slot.Kind == SlotKind.Execution)
+            {
+                // Detect default input slot with its null name (should we have a default flag instead?)
+                if (slot.Direction == SlotDirection.Input && slot.Name == null)
+                    ExecutionInput = slot;
+
+                // Detect default output slot with its null name or auto flow flag (should we have a default flag instead?)
+                if (slot.Direction == SlotDirection.Output && (slot.Name == null || (slot.Flags & SlotFlags.AutoflowExecution) != 0))
+                    ExecutionOutput = slot;
+            }
+        }
+
+        protected override void OnSlotRemove(Slot slot)
+        {
+            if (slot == ExecutionInput)
+                ExecutionInput = null;
+            if (slot == ExecutionOutput)
+                ExecutionOutput = null;
+
+            base.OnSlotRemove(slot);
+        }
     }
 
     public abstract class ExpressionBlock : Block

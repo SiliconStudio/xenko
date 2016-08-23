@@ -26,8 +26,12 @@ namespace SiliconStudio.Xenko.Assets.Tests
             visualScript.Blocks.Add(functionStart);
             visualScript.Blocks.Add(writeTrue);
 
+            // Generate slots
+            foreach (var block in visualScript.Blocks)
+                block.RegenerateSlots();
+
             // Build links
-            visualScript.Links.Add(new Link(functionStart, FunctionStartBlock.StartSlotName, writeTrue, null));
+            visualScript.Links.Add(new Link(functionStart.StartSlot, writeTrue.ExecutionInput));
 
             // Test
             TestAndCompareOutput(visualScript, "True");
@@ -48,23 +52,23 @@ namespace SiliconStudio.Xenko.Assets.Tests
             visualScript.Blocks.Add(writeTrue);
             visualScript.Blocks.Add(writeFalse);
 
+            // Generate slots
+            foreach (var block in visualScript.Blocks)
+                block.RegenerateSlots();
+
             // Build links
-            visualScript.Links.Add(new Link(functionStart, FunctionStartBlock.StartSlotName, conditionalBranch, null));
-            visualScript.Links.Add(new Link(conditionalBranch, ConditionalBranchBlock.TrueSlotName, writeTrue, null));
-            visualScript.Links.Add(new Link(conditionalBranch, ConditionalBranchBlock.FalseSlotName, writeFalse, null));
+            visualScript.Links.Add(new Link(functionStart.StartSlot, conditionalBranch.ExecutionInput));
+            visualScript.Links.Add(new Link(conditionalBranch.TrueSlot, writeTrue.ExecutionInput));
+            visualScript.Links.Add(new Link(conditionalBranch.FalseSlot, writeFalse.ExecutionInput));
 
             // Test
             TestAndCompareOutput(visualScript, "True");
         }
 
-        private static void TestAndCompareOutput(VisualScriptAsset graphicsCompositorAsset, string expectedOutput)
+        private static void TestAndCompareOutput(VisualScriptAsset visualScriptAsset, string expectedOutput)
         {
-            // Generate slots
-            foreach (var block in graphicsCompositorAsset.Blocks)
-                block.RegenerateSlots();
-
             // Compile
-            var compilerResult = VisualScriptCompiler.Generate(graphicsCompositorAsset, new VisualScriptCompilerOptions
+            var compilerResult = VisualScriptCompiler.Generate(visualScriptAsset, new VisualScriptCompilerOptions
             {
                 Class = "TestClass",
             });
