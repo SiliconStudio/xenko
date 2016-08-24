@@ -113,6 +113,12 @@ namespace SiliconStudio.Xenko.Graphics
         {
             currentCommandList.NativeCommandList.Close();
 
+            // Staging resources not updated anymore
+            foreach (var stagingResource in currentCommandList.StagingResources)
+            {
+                stagingResource.StagingBuilder = null;
+            }
+
             // Recycle heaps
             ResetSrvHeap(false);
             ResetSamplerHeap(false);
@@ -132,8 +138,6 @@ namespace SiliconStudio.Xenko.Graphics
 
         private void FlushInternal(bool wait)
         {
-            currentCommandList.NativeCommandList.Close();
-
             var fenceValue = GraphicsDevice.ExecuteCommandListInternal(Close());
 
             if (wait)
@@ -906,7 +910,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (mapMode != MapMode.WriteNoOverwrite)
             {
                 // Need to wait?
-                if (!resource.StagingFenceValue.HasValue || GraphicsDevice.IsFenceCompleteInternal(resource.StagingFenceValue.Value))
+                if (!resource.StagingFenceValue.HasValue || !GraphicsDevice.IsFenceCompleteInternal(resource.StagingFenceValue.Value))
                 {
                     if (doNotWait)
                     {

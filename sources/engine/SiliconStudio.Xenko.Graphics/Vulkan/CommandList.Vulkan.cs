@@ -87,7 +87,18 @@ namespace SiliconStudio.Xenko.Graphics
         /// <returns>The executable command list.</returns>
         public CompiledCommandList Close()
         {
-            End();
+            // End active render pass
+            CleanupRenderPass();
+
+            // Close
+            currentCommandList.NativeCommandBuffer.End();
+
+            // Staging resources not updated anymore
+            foreach (var stagingResource in currentCommandList.StagingResources)
+            {
+                stagingResource.StagingBuilder = null;
+            }
+
             activePipeline = null;
 
             var result = currentCommandList;
@@ -103,25 +114,8 @@ namespace SiliconStudio.Xenko.Graphics
             GraphicsDevice.ExecuteCommandList(Close());
         }
 
-        private void End()
-        {
-            // End active render pass
-            CleanupRenderPass();
-
-            // Close
-            currentCommandList.NativeCommandBuffer.End();
-
-            // Staging resources not updated anymore
-            foreach (var stagingResource in currentCommandList.StagingResources)
-            {
-                stagingResource.StagingBuilder = null;
-            }
-        }
-
         private unsafe void FlushInternal(bool wait)
         {
-            End();
-
             var fenceValue = GraphicsDevice.ExecuteCommandListInternal(Close());
 
             if (wait)
@@ -129,16 +123,9 @@ namespace SiliconStudio.Xenko.Graphics
 
             Reset();
 
-            var beginInfo = new CommandBufferBeginInfo
-            {
-                StructureType = StructureType.CommandBufferBeginInfo,
-                Flags = CommandBufferUsageFlags.OneTimeSubmit,
-            };
-            currentCommandList.NativeCommandBuffer.Begin(ref beginInfo);
-
+            // Restore states
             currentCommandList.NativeCommandBuffer.SetStencilReference(StencilFaceFlags.FrontAndBack, activeStencilReference ?? 0);
 
-            // Restore states
             if (activePipeline != null)
             {
                 currentCommandList.NativeCommandBuffer.BindPipeline(PipelineBindPoint.Graphics, activePipeline.NativePipeline);
@@ -1119,7 +1106,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (mapMode != MapMode.WriteNoOverwrite)
             {
                 // Need to wait?
-                if (!resource.StagingFenceValue.HasValue || GraphicsDevice.IsFenceCompleteInternal(resource.StagingFenceValue.Value))
+                if (!resource.StagingFenceValue.HasValue || !GraphicsDevice.IsFenceCompleteInternal(resource.StagingFenceValue.Value))
                 {
                     if (doNotWait)
                     {
