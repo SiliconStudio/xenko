@@ -162,6 +162,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 Effect = new PostProcessingEffects
                 {
                     // Disable DoF and setup default tone mapping
+                    AmbientOcclusion = { Enabled = false },
                     DepthOfField = { Enabled = false },
                     ColorTransforms =
                         {
