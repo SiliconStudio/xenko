@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Extensions
 {
     public static class BoundingExtensions
     {
-        public unsafe static BoundingBox ComputeBounds(this VertexBufferBinding vertexBufferBinding, ref Matrix matrix, out BoundingSphere boundingSphere)
+        public static unsafe BoundingBox ComputeBounds(this VertexBufferBinding vertexBufferBinding, ref Matrix matrix, out BoundingSphere boundingSphere)
         {
             var positionOffset = vertexBufferBinding.Declaration
                 .EnumerateWithOffsets()

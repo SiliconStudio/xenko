@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Audio
         public static readonly Logger Logger = GlobalLogger.GetLogger("AudioEngine");
 
         /// <summary>
-        /// Create an Audio Engine on the default audio device
+        /// Initializes a new instance of the <see cref="AudioEngine"/> class with the default audio device.
         /// </summary>
         /// <param name="sampleRate">The desired sample rate of the audio graph. 0 let the engine choose the best value depending on the hardware.</param>
         /// <exception cref="AudioInitializationException">Initialization of the audio engine failed. May be due to memory problems or missing audio hardware.</exception>
@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Audio
         }
 
         /// <summary>
-        /// Create the Audio Engine on the specified device.
+        /// Initializes a new instance of the <see cref="AudioEngine"/> class with the default audio device.
         /// </summary>
         /// <param name="device">Device on which to create the audio engine.</param>
         /// <param name="sampleRate">The desired sample rate of the audio graph. 0 let the engine choose the best value depending on the hardware.</param>
@@ -107,6 +107,10 @@ namespace SiliconStudio.Xenko.Audio
         /// <exception cref="InvalidOperationException">One or several of the sounds asked for play had invalid data (corrupted or unsupported formats).</exception>
         public void Update()
         {
+            if (State != AudioEngineState.Disposed && State != AudioEngineState.Invalidated)
+            {
+                AudioLayer.Update(AudioDevice);
+            }
         }
 
         /// <summary>
@@ -114,6 +118,9 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         public AudioEngineState State { get; protected set; }
 
+        /// <summary>
+        /// Gets or sets the Global audio volume
+        /// </summary>
         public float MasterVolume
         {
             get
@@ -194,6 +201,9 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
+        /// <summary>
+        /// Destroys the instance.
+        /// </summary>
         protected override void Destroy()
         {
             base.Destroy();

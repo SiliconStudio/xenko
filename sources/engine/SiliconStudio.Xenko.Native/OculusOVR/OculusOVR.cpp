@@ -71,6 +71,8 @@ typedef ovrResult (*ovr_GetMirrorTextureBufferDXPtr)(ovrSession session, ovrMirr
 typedef void (*ovr_CalcEyePosesPtr)(ovrPosef headPose, const ovrVector3f hmdToEyeOffset[2], ovrPosef outEyePoses[2]);
 typedef ovrMatrix4f (*ovrMatrix4f_ProjectionPtr)(ovrFovPort fov, float znear, float zfar, unsigned int projectionModFlags);
 
+typedef ovrResult (*ovr_GetAudioDeviceOutGuidStrPtr)(wchar_t deviceOutStrBuffer[128]);
+
 extern "C" {
 
 	void* __libOvr = NULL;
@@ -124,6 +126,7 @@ extern "C" {
 
 	ovr_CalcEyePosesPtr ovr_CalcEyePosesFunc = NULL;
 	ovrMatrix4f_ProjectionPtr ovrMatrix4f_ProjectionFunc = NULL;
+	ovr_GetAudioDeviceOutGuidStrPtr ovr_GetAudioDeviceOutGuidStrFunc = NULL;
 
 	bool xnOvrStartup()
 	{
@@ -235,6 +238,9 @@ extern "C" {
 			if (!ovr_CalcEyePosesFunc) { printf("Failed to get ovr_CalcEyePoses\n"); return false; }
 			ovrMatrix4f_ProjectionFunc = (ovrMatrix4f_ProjectionPtr)GetSymbolAddress(__libOvr, "ovrMatrix4f_Projection");
 			if (!ovrMatrix4f_ProjectionFunc) { printf("Failed to get ovrMatrix4f_Projection\n"); return false; }
+
+			ovr_GetAudioDeviceOutGuidStrFunc = (ovr_GetAudioDeviceOutGuidStrPtr)GetSymbolAddress(__libOvr, "ovr_GetAudioDeviceOutGuidStr");
+			if (!ovr_GetAudioDeviceOutGuidStrFunc) { printf("Failed to get ovr_GetAudioDeviceOutGuidStr\n"); return false; }
 		}
 
 		ovrResult result = ovr_InitializeFunc(NULL);
@@ -296,11 +302,11 @@ extern "C" {
 		ovr_DestroyFunc(session->Session);
 	}
 
-	bool xnOvrCreateTexturesDx(xnOvrSession* session, void* dxDevice, int* outTextureCount, int backBufferWidth, int backBufferHeight)
+	bool xnOvrCreateTexturesDx(xnOvrSession* session, void* dxDevice, int* outTextureCount, float pixelPerDisplayPixel, int mirrorBufferWidth, int mirrorBufferHeight)
 	{
 		session->HmdDesc = ovr_GetHmdDescFunc(session->Session);
-		ovrSizei sizel = ovr_GetFovTextureSizeFunc(session->Session, ovrEye_Left, session->HmdDesc.DefaultEyeFov[0], 1.0f);
-		ovrSizei sizer = ovr_GetFovTextureSizeFunc(session->Session, ovrEye_Right, session->HmdDesc.DefaultEyeFov[1], 1.0f);
+		ovrSizei sizel = ovr_GetFovTextureSizeFunc(session->Session, ovrEye_Left, session->HmdDesc.DefaultEyeFov[0], pixelPerDisplayPixel);
+		ovrSizei sizer = ovr_GetFovTextureSizeFunc(session->Session, ovrEye_Right, session->HmdDesc.DefaultEyeFov[1], pixelPerDisplayPixel);
 		ovrSizei bufferSize;
 		bufferSize.w = sizel.w + sizer.w;
 		bufferSize.h = fmax(sizel.h, sizer.h);
@@ -348,13 +354,16 @@ extern "C" {
 		session->Layer.Viewport[1].Size.h = bufferSize.h;
 
 		//create mirror as well
-		ovrMirrorTextureDesc mirrorDesc = {};
-		mirrorDesc.Format = OVR_FORMAT_R8G8B8A8_UNORM_SRGB;
-		mirrorDesc.Width = backBufferWidth;
-		mirrorDesc.Height = backBufferHeight;
-		if (!OVR_SUCCESS(ovr_CreateMirrorTextureDXFunc(session->Session, dxDevice, &mirrorDesc, &session->Mirror)))
+		if (mirrorBufferHeight != 0 && mirrorBufferWidth != 0)
 		{
-			return false;
+			ovrMirrorTextureDesc mirrorDesc = {};
+			mirrorDesc.Format = OVR_FORMAT_R8G8B8A8_UNORM_SRGB;
+			mirrorDesc.Width = mirrorBufferWidth;
+			mirrorDesc.Height = mirrorBufferHeight;
+			if (!OVR_SUCCESS(ovr_CreateMirrorTextureDXFunc(session->Session, dxDevice, &mirrorDesc, &session->Mirror)))
+			{
+				return false;
+			}
 		}
 		
 		return true;
@@ -387,11 +396,24 @@ extern "C" {
 		return index;
 	}
 
-	void xnOvrPrepareRender(xnOvrSession* session, 
-		float near, float far, 
-		float* projLeft, float* projRight, 
-		float* positionLeft, float* positionRight, 
-		float* rotationLeft, float* rotationRight)
+#pragma pack(push, 4)
+	struct FrameProperties
+	{
+		//Camera properties
+		float Near;
+		float Far;
+		float ProjLeft[16];
+		float ProjRight[16];
+		float PosLeft[3];
+		float PosRight[3];
+		float RotLeft[4];
+		float RotRight[4];
+
+		//Todo add Touch Controllers properties
+	};
+#pragma pack(pop)
+
+	void xnOvrPrepareRender(xnOvrSession* session, FrameProperties* properties)
 	{
 		session->EyeRenderDesc[0] = ovr_GetRenderDescFunc(session->Session, ovrEye_Left, session->HmdDesc.DefaultEyeFov[0]);
 		session->EyeRenderDesc[1] = ovr_GetRenderDescFunc(session->Session, ovrEye_Right, session->HmdDesc.DefaultEyeFov[1]);
@@ -402,33 +424,83 @@ extern "C" {
 		auto hmdState = ovr_GetTrackingStateFunc(session->Session, session->Layer.SensorSampleTime, ovrTrue);
 		ovr_CalcEyePosesFunc(hmdState.HeadPose.ThePose, session->HmdToEyeViewOffset, session->Layer.RenderPose);
 
-		auto leftProj = ovrMatrix4f_ProjectionFunc(session->Layer.Fov[0], near, far, 0);
-		auto rightProj = ovrMatrix4f_ProjectionFunc(session->Layer.Fov[1], near, far, 0);
+		auto leftProj = ovrMatrix4f_ProjectionFunc(session->Layer.Fov[0], properties->Near, properties->Far, 0);
+		auto rightProj = ovrMatrix4f_ProjectionFunc(session->Layer.Fov[1], properties->Near, properties->Far, 0);
 
-		memcpy(projLeft, &leftProj, sizeof(float) * 16);
-		memcpy(positionLeft, &session->Layer.RenderPose[0].Position, sizeof(float) * 3);
-		memcpy(rotationLeft, &session->Layer.RenderPose[0].Orientation, sizeof(float) * 4);
+		memcpy(properties->ProjLeft, &leftProj, sizeof(float) * 16);
+		memcpy(properties->PosLeft, &session->Layer.RenderPose[0].Position, sizeof(float) * 3);
+		memcpy(properties->RotLeft, &session->Layer.RenderPose[0].Orientation, sizeof(float) * 4);
 		
-		memcpy(projRight, &rightProj, sizeof(float) * 16);
-		memcpy(positionRight, &session->Layer.RenderPose[1].Position, sizeof(float) * 3);
-		memcpy(rotationRight, &session->Layer.RenderPose[1].Orientation, sizeof(float) * 4);
+		memcpy(properties->ProjRight, &rightProj, sizeof(float) * 16);
+		memcpy(properties->PosRight, &session->Layer.RenderPose[1].Position, sizeof(float) * 3);
+		memcpy(properties->RotRight, &session->Layer.RenderPose[1].Orientation, sizeof(float) * 4);
 	}
 
 	bool xnOvrCommitFrame(xnOvrSession* session)
 	{
 		ovr_CommitTextureSwapChainFunc(session->Session, session->SwapChain);
-		auto layers = &session->Layer.Header;
-		if(OVR_SUCCESS(ovr_SubmitFrameFunc(session->Session, 0, NULL, &layers, 1)))
+		ovrLayerHeader* layers[1] = { &session->Layer.Header };
+		if(!OVR_SUCCESS(ovr_SubmitFrameFunc(session->Session, 0, NULL, layers, 1)))
 		{
-			return true;
+			return false;
 		}
 
-		return false;
+		ovrSessionStatus status;
+		if (!OVR_SUCCESS(ovr_GetSessionStatusFunc(session->Session, &status)))
+		{
+			return false;
+		}
+
+		if(status.ShouldRecenter)
+		{
+			ovr_RecenterTrackingOriginFunc(session->Session);
+		}
+
+		return true;
 	}
 
+#pragma pack(push, 4)
+	struct xnOvrSessionStatus
+	{
+		npBool IsVisible;    ///< True if the process has VR focus and thus is visible in the HMD.
+		npBool HmdPresent;   ///< True if an HMD is present.
+		npBool HmdMounted;   ///< True if the HMD is on the user's head.
+		npBool DisplayLost;  ///< True if the session is in a display-lost state. See ovr_SubmitFrame.
+		npBool ShouldQuit;   ///< True if the application should initiate shutdown.    
+		npBool ShouldRecenter;  ///< True if UX has requested re-centering. Must call ovr_ClearShouldRecenterFlag or ovr_RecenterTrackingOrigin. 
+	};
+#pragma pack(pop)
+
+	void xnOvrGetStatus(xnOvrSession* session, xnOvrSessionStatus* statusOut)
+	{
+		ovrSessionStatus status;
+		if (!OVR_SUCCESS(ovr_GetSessionStatusFunc(session->Session, &status)))
+		{
+			return;
+		}
+
+		statusOut->IsVisible = status.IsVisible;
+		statusOut->HmdPresent = status.HmdPresent;
+		statusOut->HmdMounted = status.HmdMounted;
+		statusOut->DisplayLost = status.DisplayLost;
+		statusOut->ShouldQuit = status.ShouldQuit;
+		statusOut->ShouldRecenter = status.ShouldRecenter;
+	}
+
+	void xnOvrRecenter(xnOvrSession* session)
+	{
+		ovr_RecenterTrackingOriginFunc(session->Session);
+	}
+
+	void xnOvrGetAudioDeviceID(wchar_t* deviceString)
+	{
+		ovr_GetAudioDeviceOutGuidStrFunc(deviceString);
+	}
 }
 
 #else
+
+#include "../../../../deps/NativePath/NativePath.h"
 
 extern "C" {
 	typedef struct _GUID {
@@ -495,6 +567,30 @@ extern "C" {
 	bool xnOvrCommitFrame(void* session)
 	{
 		return true;
+	}
+
+#pragma pack(push, 4)
+	struct xnOvrSessionStatus
+	{
+		npBool IsVisible;    ///< True if the process has VR focus and thus is visible in the HMD.
+		npBool HmdPresent;   ///< True if an HMD is present.
+		npBool HmdMounted;   ///< True if the HMD is on the user's head.
+		npBool DisplayLost;  ///< True if the session is in a display-lost state. See ovr_SubmitFrame.
+		npBool ShouldQuit;   ///< True if the application should initiate shutdown.    
+		npBool ShouldRecenter;  ///< True if UX has requested re-centering. Must call ovr_ClearShouldRecenterFlag or ovr_RecenterTrackingOrigin. 
+	};
+#pragma pack(pop)
+
+	void xnOvrGetStatus(void* session, void* statusOut)
+	{
+	}
+
+	void xnOvrRecenter(void* session)
+	{
+	}
+
+	void xnOvrGetAudioDeviceID(wchar_t* deviceString)
+	{
 	}
 }
 

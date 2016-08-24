@@ -224,18 +224,22 @@ namespace SiliconStudio.Xenko.Assets
             linuxPlatform.Configurations.Add(coreClrDebug);
             solutionPlatforms.Add(linuxPlatform);
 
-            // macOS
-            var macOSPlatform = new SolutionPlatform()
+            // Disabling macOS for time being
+            if (false)
             {
-                Name = PlatformType.macOS.ToString(),
-                IsAvailable = true,
-                Type = PlatformType.macOS,
-            };
-            macOSPlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_UNIX");
-            macOSPlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_MACOS");
-            macOSPlatform.Configurations.Add(coreClrRelease);
-            macOSPlatform.Configurations.Add(coreClrDebug);
-            solutionPlatforms.Add(macOSPlatform);
+                // macOS
+                var macOSPlatform = new SolutionPlatform()
+                {
+                    Name = PlatformType.macOS.ToString(),
+                    IsAvailable = true,
+                    Type = PlatformType.macOS,
+                };
+                macOSPlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_UNIX");
+                macOSPlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_MACOS");
+                macOSPlatform.Configurations.Add(coreClrRelease);
+                macOSPlatform.Configurations.Add(coreClrDebug);
+                solutionPlatforms.Add(macOSPlatform);
+            }
 
             // Android
             var androidPlatform = new SolutionPlatform()

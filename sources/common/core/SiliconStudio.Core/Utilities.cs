@@ -788,5 +788,25 @@ namespace SiliconStudio.Core
         {
             return Interop.SizeOf<T>();
         }
+
+        /// <summary>
+        /// Linq assisted full tree iteration and collection in a single line.
+        /// Warning, could be slow.
+        /// </summary>
+        /// <typeparam name="T">The type to iterate.</typeparam>
+        /// <param name="root">The root item</param>
+        /// <param name="childrenF">The function to retreive childs</param>
+        /// <returns></returns>
+        public static IEnumerable<T> IterateTree<T>(T root, Func<T, IEnumerable<T>> childrenF)
+        {
+            var q = new List<T> { root };
+            while (q.Any())
+            {
+                var c = q[0];
+                q.RemoveAt(0);
+                q.AddRange(childrenF(c) ?? Enumerable.Empty<T>());
+                yield return c;
+            }
+        }
     }
 }

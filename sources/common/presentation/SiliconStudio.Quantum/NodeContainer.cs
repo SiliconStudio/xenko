@@ -2,11 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Quantum.Contents;
-using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
 {
@@ -149,13 +146,7 @@ namespace SiliconStudio.Quantum
                     return null;
 
                 IGraphNode node;
-                if (nodesByGuid.TryGetValue(guid, out node))
-                {
-                    if (node != null && !processedNodes.Value.Contains(node))
-                    {
-                        UpdateReferencesInternal(node);
-                    }
-                }
+                nodesByGuid.TryGetValue(guid, out node);
                 return node;
             }
         }
@@ -203,6 +194,8 @@ namespace SiliconStudio.Quantum
         /// <param name="node">The node to update</param>
         private void UpdateReferencesInternal(IGraphNode node)
         {
+            if (node == null) throw new ArgumentNullException(nameof(node));
+
             lock (lockObject)
             {
                 if (processedNodes.Value.Contains(node))
@@ -213,52 +206,14 @@ namespace SiliconStudio.Quantum
                 // If the node was holding a reference, refresh the reference
                 if (node.Content.IsReference)
                 {
-                    node.Content.Reference.Refresh(node.Content.Value);
-                    UpdateOrCreateReferenceTarget(node.Content.Reference, node, Index.Empty);
+                    node.Content.Reference.Refresh(node, this, defaultNodeFactory);
                 }
                 else
                 {
                     // Otherwise refresh potential references in its children.
-                    foreach (var child in node.Children.SelectDeep(x => x.Children).Where(x => x.Content.IsReference))
+                    foreach (var child in node.Children)
                     {
-                        child.Content.Reference.Refresh(child.Content.Value);
-                        UpdateOrCreateReferenceTarget(child.Content.Reference, child, Index.Empty);
-                    }
-                }
-            }
-        }
-
-        private void UpdateOrCreateReferenceTarget(IReference reference, IGraphNode node, Index index)
-        {
-            if (reference == null) throw new ArgumentNullException(nameof(reference));
-            if (node == null) throw new ArgumentNullException(nameof(node));
-
-            var content = (ContentBase)node.Content;
-
-            var referenceEnumerable = reference as ReferenceEnumerable;
-            var singleReference = reference as ObjectReference;
-            if (referenceEnumerable != null)
-            {
-                foreach (var itemReference in referenceEnumerable)
-                {
-                    UpdateOrCreateReferenceTarget(itemReference, node, itemReference.Index);
-                }
-            }
-            else if (singleReference != null)
-            {
-                if (singleReference.TargetNode != null && singleReference.TargetNode.Content.Value != reference.ObjectValue)
-                {
-                    singleReference.Clear();
-                }
-
-                if (singleReference.TargetNode == null && reference.ObjectValue != null)
-                {
-                    // This call will recursively update the references.
-                    var target = singleReference.SetTarget(this, defaultNodeFactory);
-                    if (target != null)
-                    {
-                        var boxedContent = target.Content as BoxedContent;
-                        boxedContent?.SetOwnerContent(content, index);
+                        UpdateReferencesInternal(child);
                     }
                 }
             }

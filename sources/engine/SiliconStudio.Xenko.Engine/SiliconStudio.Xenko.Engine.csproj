@@ -229,6 +229,60 @@
     </Compile>
     <Compile Include="Rendering\Materials\CelShading\MaterialDiffuseCelShadingModelFeature.cs" />
     <Compile Include="Rendering\Materials\CelShading\MaterialSpecularCelShadingModelFeature.cs" />
+    <Compile Include="Rendering\Images\AmbientOcclusion\AmbientOcclusion.cs" />
+    <None Include="Rendering\Images\AmbientOcclusion\AmbientOcclusionBlurShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>AmbientOcclusionBlurShader.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\AmbientOcclusion\AmbientOcclusionRawAOEffect.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>AmbientOcclusionRawAOEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\AmbientOcclusion\ApplyAmbientOcclusionShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ApplyAmbientOcclusionShader.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\AmbientOcclusion\AmbientOcclusionRawAOShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>AmbientOcclusionRawAOShader.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Images\AmbientOcclusion\AmbientOcclusionBlurEffect.xkfx">
+
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>AmbientOcclusionBlurEffect1.cs</LastGenOutput>
+    </None>
+    <Compile Include="Rendering\Images\AmbientOcclusion\AmbientOcclusionBlurEffect1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>AmbientOcclusionBlurEffect.xkfx</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Images\AmbientOcclusion\AmbientOcclusionBlurKeys.cs" />
+    <Compile Include="Rendering\Images\AmbientOcclusion\AmbientOcclusionBlurShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>AmbientOcclusionBlurShader.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Images\AmbientOcclusion\AmbientOcclusionRawAOEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>AmbientOcclusionRawAOEffect.xkfx</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Images\AmbientOcclusion\AmbientOcclusionRawAOKeys.cs" />
+    <Compile Include="Rendering\Images\AmbientOcclusion\ApplyAmbientOcclusionShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ApplyAmbientOcclusionShader.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\Images\AmbientOcclusion\AmbientOcclusionRawAOShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>AmbientOcclusionRawAOShader.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\ResourceResolver.cs" />
     <Compile Include="Rendering\DynamicEffectInstance.cs" />
     <Compile Include="Rendering\EffectSelector.cs" />
