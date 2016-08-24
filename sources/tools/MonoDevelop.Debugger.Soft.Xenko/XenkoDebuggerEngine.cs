@@ -1,38 +1,41 @@
-using System;
 using System.Net;
 using Mono.Debugging.Soft;
-using MonoDevelop.Debugger;
 using MonoDevelop.Core.Execution;
-using MonoDevelop.Debugger.Soft;
 using Mono.Debugging.Client;
 
 namespace MonoDevelop.Debugger.Soft.Xenko
 {
-	public class XenkoDebuggerEngine : IDebuggerEngine
+	public class XenkoDebuggerEngine : DebuggerEngineBackend
 	{
 		public XenkoDebuggerEngine ()
 		{
 		}
-		
-	    public bool CanDebugCommand(ExecutionCommand cmd)
-		{
-			return cmd.CommandString.StartsWith("XenkoDebug");
-		}
-	    public DebuggerStartInfo CreateDebuggerStartInfo(ExecutionCommand cmd)
+
+        public override bool CanDebugCommand(ExecutionCommand cmd)
 	    {
+	        var processCmd = cmd as ProcessExecutionCommand;
+	        if (processCmd == null)
+	            return false;
+
+            return processCmd.Command.StartsWith("XenkoDebug");
+		}
+
+        public override DebuggerStartInfo CreateDebuggerStartInfo(ExecutionCommand cmd)
+	    {
+	        var processCmd = cmd as ProcessExecutionCommand;
+	        if (processCmd == null)
+	            return null;
+
 	        var dsi =
-	            cmd.CommandString.EndsWith("Client")
+	            processCmd.Command.EndsWith("Client")
 	                ? new SoftDebuggerStartInfo(new SoftDebuggerConnectArgs("TestApp", IPAddress.Loopback, 13332))
 	                : new SoftDebuggerStartInfo(new SoftDebuggerListenArgs("TestApp", IPAddress.Any, 13332));
 			return dsi;
 		}
-	    public DebuggerSession CreateSession()
-		{
+
+        public override DebuggerSession CreateSession()
+        {
 			return new XenkoRemoteSoftDebuggerSession();
-		}
-	    public ProcessInfo[] GetAttachableProcesses()
-		{
-			return new ProcessInfo[0];
 		}
 	}
 }
