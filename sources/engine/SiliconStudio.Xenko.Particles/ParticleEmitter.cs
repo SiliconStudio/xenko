@@ -507,6 +507,25 @@ namespace SiliconStudio.Xenko.Particles
         }
 
         /// <summary>
+        /// Updates all data changes before the emitter is updated this frame.
+        /// This method is not thread-safe!
+        /// </summary>
+        public void PreUpdate()
+        {
+            ShapeBuilder.PreUpdate();
+
+            foreach (var updater in Updaters)
+            {
+                updater.PreUpdate();
+            }
+
+            foreach (var initializer in Initializers)
+            {
+                initializer.PreUpdate();
+            }
+        }
+
+        /// <summary>
         /// Updates the emitter and all its particles, and applies all updaters and spawners.
         /// </summary>
         /// <param name="dt">Delta time, elapsed time since the last call, in seconds</param>

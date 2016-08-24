@@ -30,6 +30,13 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         [Display("Additive Rotation Animation")]
         public ComputeCurveSampler<Quaternion> SamplerRotation { get; set; }
 
+        /// <inheritdoc />
+        public override void PreUpdate()
+        {
+            base.PreUpdate();
+
+            SamplerRotation?.UpdateChanges();
+        }
 
         /// <inheritdoc />
         public unsafe override int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, 
@@ -37,8 +44,6 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         {
             // Update the curve samplers if required
             base.BuildVertexBuffer(ref bufferState, invViewX, invViewY, ref spaceTranslation, ref spaceRotation, spaceScale, ref sorter);
-
-            SamplerRotation?.UpdateChanges();
 
             // Get all required particle fields
             var positionField = sorter.GetField(ParticleFields.Position);

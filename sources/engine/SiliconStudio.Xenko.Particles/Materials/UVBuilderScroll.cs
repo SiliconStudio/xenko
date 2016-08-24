@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
     /// </summary>
     [DataContract("UVBuilderScroll")]
     [Display("Scrolling")]
-    public class UVBuilderScroll : UVBuilder, IAttributeTransformer<Vector2>
+    public class UVBuilderScroll : UVBuilder, IAttributeTransformer<Vector2, Vector4>
     {
         /// <summary>
         /// Starting sub-region (rectangle) for the scroll
@@ -59,11 +59,11 @@ namespace SiliconStudio.Xenko.Particles.Materials
             {
                 var normalizedTimeline = 1f - *(float*)(particle[lifeField]); ;
 
-                uvTransform = Vector4.Lerp(StartFrame, EndFrame, normalizedTimeline);
+                Vector4 uvTransform = Vector4.Lerp(StartFrame, EndFrame, normalizedTimeline);
                 uvTransform.Z -= uvTransform.X;
                 uvTransform.W -= uvTransform.Y;
 
-                bufferState.TransformAttributePerSegment(texDefault, texAttribute, this);
+                bufferState.TransformAttributePerSegment(texDefault, texAttribute, this, ref uvTransform);
 
                 bufferState.NextSegment();
             }
@@ -72,9 +72,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
             bufferState.StartOver();
         }
 
-        private Vector4 uvTransform = new Vector4(0, 0, 1, 1);
-
-        public void Transform(ref Vector2 attribute)
+        public void Transform(ref Vector2 attribute, ref Vector4 uvTransform)
         {
             attribute.X = uvTransform.X + uvTransform.Z * attribute.X;
             attribute.Y = uvTransform.Y + uvTransform.W * attribute.Y;

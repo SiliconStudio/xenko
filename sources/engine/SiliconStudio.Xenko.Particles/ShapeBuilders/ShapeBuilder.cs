@@ -27,6 +27,8 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         [DataMemberIgnore]
         public bool VertexLayoutHasChanged { get; protected set; } = true;
 
+        public virtual void PreUpdate() { }
+
         /// <summary>
         /// Builds the actual vertex buffer for the current frame using the particle data
         /// </summary>

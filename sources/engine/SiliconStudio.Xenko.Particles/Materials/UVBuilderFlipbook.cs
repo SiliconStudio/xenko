@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
     /// </summary>
     [DataContract("UVBuilderFlipbook")]
     [Display("Flipbook")]
-    public class UVBuilderFlipbook : UVBuilder, IAttributeTransformer<Vector2>
+    public class UVBuilderFlipbook : UVBuilder, IAttributeTransformer<Vector2, Vector4>
     {
         private uint xDivisions = 4;
         private uint yDivisions = 4;
@@ -125,9 +125,9 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
                 var spriteId = startingFrame + (int)(normalizedTimeline*animationSpeedOverLife);
 
-                uvTransform = new Vector4((spriteId%xDivisions)*xStep, (spriteId/xDivisions)*yStep, xStep, yStep);
+                Vector4 uvTransform = new Vector4((spriteId%xDivisions)*xStep, (spriteId/xDivisions)*yStep, xStep, yStep);
 
-                bufferState.TransformAttributePerParticle(texDefault, texAttribute, this);
+                bufferState.TransformAttributePerParticle(texDefault, texAttribute, this, ref uvTransform);
 
                 bufferState.NextParticle();
             }
@@ -136,10 +136,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
             bufferState.StartOver();
         }
 
-
-        private Vector4 uvTransform = new Vector4(0, 0, 1, 1);
-
-        public void Transform(ref Vector2 attribute) 
+        public void Transform(ref Vector2 attribute, ref Vector4 uvTransform) 
         {
             attribute.X = uvTransform.X + uvTransform.Z * attribute.X;
             attribute.Y = uvTransform.Y + uvTransform.W * attribute.Y;
