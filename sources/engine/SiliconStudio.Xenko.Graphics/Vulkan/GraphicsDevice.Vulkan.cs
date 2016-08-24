@@ -9,7 +9,7 @@ using System.Threading;
 using SharpVulkan;
 
 using SiliconStudio.Core;
-using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Threading;
 using Semaphore = SharpVulkan.Semaphore;
 
 namespace SiliconStudio.Xenko.Graphics
@@ -18,6 +18,9 @@ namespace SiliconStudio.Xenko.Graphics
     {
         // TODO: Query device
         internal readonly int ConstantBufferDataPlacementAlignment = 256;
+
+        internal readonly ConcurrentPool<List<SharpVulkan.DescriptorPool>> DescriptorPoolLists = new ConcurrentPool<List<SharpVulkan.DescriptorPool>>(() => new List<SharpVulkan.DescriptorPool>());
+        internal readonly ConcurrentPool<List<Texture>> StagingResourceLists = new ConcurrentPool<List<Texture>>(() => new List<Texture>());
 
         private const GraphicsPlatform GraphicPlatform = GraphicsPlatform.Vulkan;
         internal GraphicsProfile RequestedProfile;
@@ -42,7 +45,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         private Queue<KeyValuePair<long, Fence>> nativeFences = new Queue<KeyValuePair<long, Fence>>();
         private long lastCompletedFence;
-        private long NextFenceValue = 1;
+        internal long NextFenceValue = 1;
 
         internal HeapPool DescriptorPools;
         internal const uint MaxDescriptorSetCount = 256;
@@ -174,9 +177,13 @@ namespace SiliconStudio.Xenko.Graphics
             ExecuteCommandListInternal(commandList);
         }
 
+        /// <summary>
+        /// Executes multiple deferred command lists.
+        /// </summary>
+        /// <param name="commandLists">The deferred command lists.</param>
         public unsafe void ExecuteCommandLists(CompiledCommandList[] commandLists)
         {
-            var fenceValue = PushFence();
+            var fenceValue = NextFenceValue++;
 
             // Create a fence
             var fenceCreateInfo = new FenceCreateInfo { StructureType = StructureType.FenceCreateInfo };
@@ -188,7 +195,7 @@ namespace SiliconStudio.Xenko.Graphics
             for (int i = 0; i < commandLists.Length; i++)
             {
                 commandBuffers[i] = commandLists[i].NativeCommandBuffer;
-                PrepareExecute(commandLists[i], fenceValue);
+                RecycleCommandListResources(commandLists[i], fenceValue);
             }
 
             // Submit commands
@@ -464,11 +471,6 @@ namespace SiliconStudio.Xenko.Graphics
         {
         }
 
-        internal long PushFence()
-        {
-            return Interlocked.Increment(ref NextFenceValue) - 1;
-        }
-
         internal unsafe long ExecuteCommandListInternal(CompiledCommandList commandList)
         {
             //if (nativeUploadBuffer != SharpVulkan.Buffer.Null)
@@ -480,7 +482,7 @@ namespace SiliconStudio.Xenko.Graphics
             //    nativeUploadBufferMemory = DeviceMemory.Null;
             //}
 
-            var fenceValue = PushFence();
+            var fenceValue = NextFenceValue++;
 
             // Create new fence
             var fenceCreateInfo = new FenceCreateInfo { StructureType = StructureType.FenceCreateInfo };
@@ -488,7 +490,7 @@ namespace SiliconStudio.Xenko.Graphics
             nativeFences.Enqueue(new KeyValuePair<long, Fence>(fenceValue, fence));
 
             // Collect resources
-            PrepareExecute(commandList, fenceValue);
+            RecycleCommandListResources(commandList, fenceValue);
 
             // Submit commands
             var nativeCommandBufferCopy = commandList.NativeCommandBuffer;
@@ -513,15 +515,15 @@ namespace SiliconStudio.Xenko.Graphics
             return fenceValue;
         }
 
-        private void PrepareExecute(CompiledCommandList commandList, long fenceValue)
+        private void RecycleCommandListResources(CompiledCommandList commandList, long fenceValue)
         {
             // Set fence on staging textures
             foreach (var stagingResource in commandList.StagingResources)
             {
-                stagingResource.StagingFence = fenceValue;
+                stagingResource.StagingFenceValue = fenceValue;
             }
 
-            commandList.Builder.StagingResourceLists.Release(commandList.StagingResources);
+            StagingResourceLists.Release(commandList.StagingResources);
             commandList.StagingResources.Clear();
 
             // Recycle all resources
@@ -529,10 +531,10 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 DescriptorPools.RecycleObject(fenceValue, descriptorPool);
             }
+            DescriptorPoolLists.Release(commandList.DescriptorPools);
+            commandList.DescriptorPools.Clear();
 
             commandList.Builder.CommandBufferPool.RecycleObject(fenceValue, commandList.NativeCommandBuffer);
-            commandList.Builder.DescriptorPoolLists.Release(commandList.DescriptorPools);
-            commandList.DescriptorPools.Clear();
         }
 
         internal bool IsFenceCompleteInternal(long fenceValue)
@@ -547,6 +549,7 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         private SpinLock spinLock = new SpinLock();
+
         internal unsafe long GetCompletedValue()
         {
             bool lockTaken = false;

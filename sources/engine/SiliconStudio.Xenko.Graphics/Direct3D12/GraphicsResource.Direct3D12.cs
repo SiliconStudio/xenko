@@ -13,7 +13,8 @@ namespace SiliconStudio.Xenko.Graphics
     {
         internal GraphicsResource ParentResource;
 
-        internal long StagingFenceValue;
+        internal long? StagingFenceValue;
+        internal CommandList StagingBuilder;
         internal CpuDescriptorHandle NativeShaderResourceView;
         internal ResourceStates NativeResourceState;
 

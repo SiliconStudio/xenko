@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Graphics
     public abstract partial class GraphicsResource
     {
         internal DeviceMemory NativeMemory;
-        internal long? StagingFence;
+        internal long? StagingFenceValue;
         internal CommandList StagingBuilder;
         internal PipelineStageFlags NativePipelineStageMask;
 
@@ -84,5 +84,5 @@ namespace SiliconStudio.Xenko.Graphics
         }
     }
 }
- 
+
 #endif

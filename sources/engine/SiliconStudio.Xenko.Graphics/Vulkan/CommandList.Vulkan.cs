@@ -3,16 +3,11 @@
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Threading;
 using SharpVulkan;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Threading;
-using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -44,9 +39,7 @@ namespace SiliconStudio.Xenko.Graphics
         private uint allocatedSetCount;
 
         private uint? activeStencilReference = 0;
-        
-        internal readonly ConcurrentPool<List<SharpVulkan.DescriptorPool>> DescriptorPoolLists = new ConcurrentPool<List<SharpVulkan.DescriptorPool>>(() => new List<SharpVulkan.DescriptorPool>());
-        internal readonly ConcurrentPool<List<Texture>> StagingResourceLists = new ConcurrentPool<List<Texture>>(() => new List<Texture>());
+
         private CompiledCommandList currentCommandList;
 
         public static CommandList New(GraphicsDevice device)
@@ -72,6 +65,9 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void Reset()
         {
+            if (currentCommandList.Builder != null)
+                return;
+
             CleanupRenderPass();
             boundDescriptorSets.Clear();
 
@@ -80,8 +76,8 @@ namespace SiliconStudio.Xenko.Graphics
 
             currentCommandList.Builder = this;
             currentCommandList.NativeCommandBuffer = CommandBufferPool.GetObject();
-            currentCommandList.DescriptorPools = DescriptorPoolLists.Acquire();
-            currentCommandList.StagingResources = StagingResourceLists.Acquire();
+            currentCommandList.DescriptorPools = GraphicsDevice.DescriptorPoolLists.Acquire();
+            currentCommandList.StagingResources = GraphicsDevice.StagingResourceLists.Acquire();
 
             var beginInfo = new CommandBufferBeginInfo
             {
@@ -89,27 +85,23 @@ namespace SiliconStudio.Xenko.Graphics
                 Flags = CommandBufferUsageFlags.OneTimeSubmit,
             };
             currentCommandList.NativeCommandBuffer.Begin(ref beginInfo);
-            
+
             activeStencilReference = null;
         }
 
         public void Close()
         {
-            End();
-
-            // Submit
-            GraphicsDevice.ExecuteCommandList(currentCommandList);
-
-            activePipeline = null;
+            GraphicsDevice.ExecuteCommandList(Close2());
         }
 
         public CompiledCommandList Close2()
         {
             End();
-
             activePipeline = null;
 
-            return currentCommandList;
+            var result = currentCommandList;
+            currentCommandList = default(CompiledCommandList);
+            return result;
         }
 
         private void End()
@@ -127,17 +119,16 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        private unsafe long FlushInternal(bool wait)
+        private unsafe void FlushInternal(bool wait)
         {
             End();
 
-            var fenceValue = GraphicsDevice.ExecuteCommandListInternal(currentCommandList);
+            var fenceValue = GraphicsDevice.ExecuteCommandListInternal(Close2());
 
             if (wait)
                 GraphicsDevice.WaitForFenceInternal(fenceValue);
 
-            currentCommandList.NativeCommandBuffer = CommandBufferPool.GetObject();
-            currentCommandList.DescriptorPools = DescriptorPoolLists.Acquire();
+            Reset();
 
             var beginInfo = new CommandBufferBeginInfo
             {
@@ -145,7 +136,6 @@ namespace SiliconStudio.Xenko.Graphics
                 Flags = CommandBufferUsageFlags.OneTimeSubmit,
             };
             currentCommandList.NativeCommandBuffer.Begin(ref beginInfo);
-            fenceValue = GraphicsDevice.PushFence();
 
             currentCommandList.NativeCommandBuffer.SetStencilReference(StencilFaceFlags.FrontAndBack, activeStencilReference ?? 0);
 
@@ -157,8 +147,6 @@ namespace SiliconStudio.Xenko.Graphics
                 currentCommandList.NativeCommandBuffer.BindDescriptorSets(PipelineBindPoint.Graphics, activePipeline.NativeLayout, 0, 1, &descriptorSetCopy, 0, null);
             }
             SetRenderTargetsImpl(depthStencilBuffer, renderTargetCount, renderTargets);
-
-            return fenceValue;
         }
 
         private void ClearStateImpl()
@@ -190,7 +178,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                 framebufferAttachments[i] = renderTargets[i].NativeColorAttachmentView;
             }
-            
+
             if (depthStencilBuffer != null)
             {
                 if (depthStencilBuffer.NativeDepthStencilView != framebufferAttachments[renderTargetCount])
@@ -715,7 +703,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             if ((options & DepthStencilClearOptions.Stencil) != 0)
                 clearRange.AspectMask |= ImageAspectFlags.Stencil & depthStencilBuffer.NativeImageAspect;
-            
+
             var memoryBarrier = new ImageMemoryBarrier(depthStencilBuffer.NativeImage, depthStencilBuffer.NativeLayout, ImageLayout.TransferDestinationOptimal, depthStencilBuffer.NativeAccessMask, AccessFlags.TransferWrite, barrierRange);
             currentCommandList.NativeCommandBuffer.PipelineBarrier(PipelineStageFlags.TopOfPipe, PipelineStageFlags.TopOfPipe, DependencyFlags.None, 0, null, 0, null, 1, &memoryBarrier);
 
@@ -889,7 +877,7 @@ namespace SiliconStudio.Xenko.Graphics
                     }
 
                     // Fence for host access
-                    destinationParent.StagingFence = null;
+                    destinationParent.StagingFenceValue = null;
                     destinationParent.StagingBuilder = this;
                     currentCommandList.StagingResources.Add(destinationParent);
                 }
@@ -1023,9 +1011,9 @@ namespace SiliconStudio.Xenko.Graphics
             Utilities.CopyMemory(uploadMemory + alignment, databox.DataPointer, lengthInBytes);
 
             var uploadBufferMemoryBarrier = new BufferMemoryBarrier(uploadResource, AccessFlags.HostWrite, AccessFlags.TransferRead, (ulong)(uploadOffset + alignment), (ulong)lengthInBytes);
-            
+
             if (texture != null)
-            {               
+            {
                 var mipSlice = subResourceIndex % texture.MipLevels;
                 var arraySlice = subResourceIndex / texture.MipLevels;
                 var subresourceRange = new ImageSubresourceRange(ImageAspectFlags.Color, (uint)arraySlice, 1, (uint)mipSlice, 1);
@@ -1132,7 +1120,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (mapMode != MapMode.WriteNoOverwrite)
             {
                 // Need to wait?
-                if (!resource.StagingFence.HasValue || GraphicsDevice.IsFenceCompleteInternal(resource.StagingFence.Value))
+                if (!resource.StagingFenceValue.HasValue || GraphicsDevice.IsFenceCompleteInternal(resource.StagingFenceValue.Value))
                 {
                     if (doNotWait)
                     {
@@ -1143,10 +1131,10 @@ namespace SiliconStudio.Xenko.Graphics
                     if (resource.StagingBuilder == this)
                         FlushInternal(false);
 
-                    if (!resource.StagingFence.HasValue)
+                    if (!resource.StagingFenceValue.HasValue)
                         throw new InvalidOperationException("CommandList updating the staging resource has not been submitted");
 
-                    GraphicsDevice.WaitForFenceInternal(resource.StagingFence.Value);
+                    GraphicsDevice.WaitForFenceInternal(resource.StagingFenceValue.Value);
                 }
             }
 
@@ -1187,7 +1175,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (descriptorPool != SharpVulkan.DescriptorPool.Null)
             {
-                GraphicsDevice.DescriptorPools.RecycleObject(GraphicsDevice.PushFence(), descriptorPool);
+                GraphicsDevice.DescriptorPools.RecycleObject(GraphicsDevice.NextFenceValue - 1, descriptorPool);
                 descriptorPool = SharpVulkan.DescriptorPool.Null;
             }
 
@@ -1273,7 +1261,7 @@ namespace SiliconStudio.Xenko.Graphics
                 previousRenderPass = activeRenderPass = pipelineRenderPass;
             }
         }
-        
+
         private unsafe void CleanupRenderPass()
         {
             if (activeRenderPass != RenderPass.Null)
@@ -1364,5 +1352,5 @@ namespace SiliconStudio.Xenko.Graphics
         }
     }
 }
- 
+
 #endif

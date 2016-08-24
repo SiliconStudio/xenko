@@ -308,7 +308,7 @@ namespace SiliconStudio.Xenko.Rendering
             if (renderNodeCount == 0)
                 return;
 
-#if !SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN && !SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
             int currentStart, currentEnd;
             for (currentStart = 0; currentStart < renderNodeCount; currentStart = currentEnd)
             {

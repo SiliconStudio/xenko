@@ -3,9 +3,12 @@
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading;
 using SharpDX.Direct3D12;
+using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Threading;
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -15,6 +18,9 @@ namespace SiliconStudio.Xenko.Graphics
         internal readonly int ConstantBufferDataPlacementAlignment = 256;
 
         private const GraphicsPlatform GraphicPlatform = GraphicsPlatform.Direct3D12;
+
+        internal readonly ConcurrentPool<List<Texture>> StagingResourceLists = new ConcurrentPool<List<Texture>>(() => new List<Texture>());
+        internal readonly ConcurrentPool<List<DescriptorHeap>> DescriptorHeapLists = new ConcurrentPool<List<DescriptorHeap>>(() => new List<DescriptorHeap>());
 
         private bool simulateReset = false;
         private string rendererName;
@@ -30,7 +36,6 @@ namespace SiliconStudio.Xenko.Graphics
         internal GraphicsCommandList NativeCopyCommandList;
         private Fence nativeCopyFence;
         private long nextCopyFenceValue = 1;
-
 
         internal CommandAllocatorPool CommandAllocators;
         internal HeapPool SrvHeaps;
@@ -57,6 +62,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         // Temporary or destroyed resources kept around until the GPU doesn't need them anymore
         internal Queue<KeyValuePair<long, object>> TemporaryResources = new Queue<KeyValuePair<long, object>>();
+
+        private readonly FastList<SharpDX.Direct3D12.CommandList> nativeCommandLists = new FastList<SharpDX.Direct3D12.CommandList>();
 
         /// <summary>
         ///     Gets the status of this device.
@@ -147,12 +154,35 @@ namespace SiliconStudio.Xenko.Graphics
         /// Executes a deferred command list.
         /// </summary>
         /// <param name="commandList">The deferred command list.</param>
-        public void ExecuteCommandList(CommandList commandList)
+        public void ExecuteCommandList(CompiledCommandList commandList)
         {
-            //if (commandList == null) throw new ArgumentNullException("commandList");
-            //
-            //NativeDeviceContext.ExecuteCommandList(((CommandList)commandList).NativeCommandList, false);
-            //commandList.Dispose();
+            ExecuteCommandListInternal(commandList);
+        }
+
+        /// <summary>
+        /// Execute multiple deferred command list.s
+        /// </summary>
+        /// <param name="commandLists">The deferred command lists.</param>
+        public void ExecuteCommandLists(CompiledCommandList[] commandLists)
+        {
+            if (commandLists == null) throw new ArgumentNullException(nameof(commandLists));
+
+            var fenceValue = NextFenceValue++;
+
+            // Recycle resources
+            foreach (var commandList in commandLists)
+            {
+                nativeCommandLists.Add(commandList.NativeCommandList);
+                RecycleCommandListResources(commandList, fenceValue);
+            }
+
+            // Submit and signal fence
+            NativeCommandQueue.ExecuteCommandLists(commandLists.Length, nativeCommandLists.Items);
+            NativeCommandQueue.Signal(nativeFence, fenceValue);
+
+            ReleaseTemporaryResources();
+
+            nativeCommandLists.Clear();
         }
 
         public void SimulateReset()
@@ -293,20 +323,23 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal void ReleaseTemporaryResources()
         {
-            // Release previous frame resources
-            while (TemporaryResources.Count > 0 && IsFenceCompleteInternal(TemporaryResources.Peek().Key))
+            lock (TemporaryResources)
             {
-                var temporaryResource = TemporaryResources.Dequeue().Value;
-                //temporaryResource.Value.Dispose();
-                var comObject = temporaryResource as SharpDX.ComObject;
-                if (comObject != null)
-                    ((SharpDX.IUnknown)comObject).Release();
-                else
+                // Release previous frame resources
+                while (TemporaryResources.Count > 0 && IsFenceCompleteInternal(TemporaryResources.Peek().Key))
                 {
-                    var referenceLink = temporaryResource as GraphicsResourceLink;
-                    if (referenceLink != null)
+                    var temporaryResource = TemporaryResources.Dequeue().Value;
+                    //temporaryResource.Value.Dispose();
+                    var comObject = temporaryResource as SharpDX.ComObject;
+                    if (comObject != null)
+                        ((SharpDX.IUnknown)comObject).Release();
+                    else
                     {
-                        referenceLink.ReferenceCount--;
+                        var referenceLink = temporaryResource as GraphicsResourceLink;
+                        if (referenceLink != null)
+                        {
+                            referenceLink.ReferenceCount--;
+                        }
                     }
                 }
             }
@@ -375,12 +408,48 @@ namespace SiliconStudio.Xenko.Graphics
         {
         }
 
-        internal long ExecuteCommandListInternal(GraphicsCommandList nativeCommandList)
+        internal long ExecuteCommandListInternal(CompiledCommandList commandList)
         {
-            NativeCommandQueue.ExecuteCommandList(nativeCommandList);
-            NativeCommandQueue.Signal(nativeFence, NextFenceValue);
+            var fenceValue = NextFenceValue++;
 
-            return NextFenceValue++;
+            // Submit and signal fence
+            NativeCommandQueue.ExecuteCommandList(commandList.NativeCommandList);
+            NativeCommandQueue.Signal(nativeFence, fenceValue);
+
+            // Recycle resources
+            RecycleCommandListResources(commandList, fenceValue);
+
+            return fenceValue;
+        }
+
+        private void RecycleCommandListResources(CompiledCommandList commandList, long fenceValue)
+        {
+            // Set fence on staging textures
+            foreach (var stagingResource in commandList.StagingResources)
+            {
+                stagingResource.StagingFenceValue = fenceValue;
+            }
+
+            StagingResourceLists.Release(commandList.StagingResources);
+            commandList.StagingResources.Clear();
+
+            // Recycle resources
+            foreach (var heap in commandList.SrvHeaps)
+            {
+                SrvHeaps.RecycleObject(fenceValue, heap);
+            }
+            commandList.SrvHeaps.Clear();
+            DescriptorHeapLists.Release(commandList.SrvHeaps);
+
+            foreach (var heap in commandList.SamplerHeaps)
+            {
+                SamplerHeaps.RecycleObject(fenceValue, heap);
+            }
+            commandList.SamplerHeaps.Clear();
+            DescriptorHeapLists.Release(commandList.SamplerHeaps);
+
+            commandList.Builder.NativeCommandLists.Enqueue(commandList.NativeCommandList);
+            CommandAllocators.RecycleObject(fenceValue, commandList.NativeCommandAllocator);
         }
 
         internal bool IsFenceCompleteInternal(long fenceValue)
@@ -460,6 +529,12 @@ namespace SiliconStudio.Xenko.Graphics
                         {
                             liveObjects.Dequeue();
                             ResetObject(firstAllocator.Value);
+
+                            if (firstAllocator.Value == null)
+                            {
+                                
+                            }
+
                             return firstAllocator.Value;
                         }
                     }
@@ -491,7 +566,7 @@ namespace SiliconStudio.Xenko.Graphics
             protected override CommandAllocator CreateObject()
             {
                 // No allocator ready to be used, let's create a new one
-                return GraphicsDevice.NativeDevice.CreateCommandAllocator(CommandListType.Direct);
+               return GraphicsDevice.NativeDevice.CreateCommandAllocator(CommandListType.Direct);
             }
 
             protected override void ResetObject(CommandAllocator obj)
