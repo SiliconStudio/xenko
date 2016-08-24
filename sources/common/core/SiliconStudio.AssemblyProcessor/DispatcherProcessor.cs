@@ -253,18 +253,20 @@ namespace SiliconStudio.AssemblyProcessor
                 // Release reference
                 var retInstructions = method.Body.Instructions.Where(x => x.OpCode == OpCodes.Ret).ToArray();
 
-                Instruction beforeReturn;
-                ilProcessor.Append(beforeReturn = (closureVarible == null ? ilProcessor.Create(loadClosureInstruction.OpCode) : ilProcessor.Create(loadClosureInstruction.OpCode, closureVarible.Resolve())));
+                Instruction beforeReturn = closureVarible == null ? ilProcessor.Create(loadClosureInstruction.OpCode) : ilProcessor.Create(loadClosureInstruction.OpCode, closureVarible.Resolve());
+                Instruction newReturnInstruction = ilProcessor.Create(OpCodes.Ret);
+                ilProcessor.Append(beforeReturn);
+                ilProcessor.Append(ilProcessor.Create(OpCodes.Ldnull));
+                ilProcessor.Append(ilProcessor.Create(OpCodes.Beq, newReturnInstruction));
+                ilProcessor.Append(closureVarible == null ? ilProcessor.Create(loadClosureInstruction.OpCode) : ilProcessor.Create(loadClosureInstruction.OpCode, closureVarible.Resolve()));
                 ilProcessor.Append(ilProcessor.Create(OpCodes.Callvirt, closure.ReleaseMethod.MakeGeneric(closureGenericArguments)));
-                ilProcessor.Append(ilProcessor.Create(OpCodes.Ret));
+                ilProcessor.Append(newReturnInstruction);
 
                 foreach (var retInstruction2 in retInstructions)
                 {
                     retInstruction2.OpCode = OpCodes.Br;
                     retInstruction2.Operand = beforeReturn;
                 }
-
-
             }
 
             // Get delegate from closure, instead of allocating
