@@ -23,11 +23,12 @@ namespace SiliconStudio.Xenko.Rendering
 
         private readonly ThreadLocal<ExtractThreadLocals> extractThreadLocals = new ThreadLocal<ExtractThreadLocals>(() => new ExtractThreadLocals());
         private readonly ConcurrentPool<PrepareThreadLocals> prepareThreadLocals = new ConcurrentPool<PrepareThreadLocals>(() => new PrepareThreadLocals());
+        private CompiledCommandList[] commandLists;
 
         private readonly Dictionary<Type, RootRenderFeature> renderFeaturesByType = new Dictionary<Type, RootRenderFeature>();
         private readonly HashSet<Type> renderObjectsDefaultPipelinePlugins = new HashSet<Type>();
         private IServiceRegistry registry;
-        
+
 
         // TODO GRAPHICS REFACTOR should probably be controlled by graphics compositor?
         /// <summary>
@@ -275,7 +276,7 @@ namespace SiliconStudio.Xenko.Rendering
                     }
                 }, state => prepareThreadLocals.Release(state));
             });
-            
+
             // Flush the resources uploaded during Prepare
             context.ResourceGroupAllocator.Flush();
             context.RenderContext.Flush();
@@ -308,75 +309,83 @@ namespace SiliconStudio.Xenko.Rendering
             if (renderNodeCount == 0)
                 return;
 
-#if !SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN && !SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
-            int currentStart, currentEnd;
-            for (currentStart = 0; currentStart < renderNodeCount; currentStart = currentEnd)
+            if (!GraphicsDevice.IsDeferred)
             {
-                var currentRenderFeature = renderNodes[currentStart].RootRenderFeature;
-                currentEnd = currentStart + 1;
-                while (currentEnd < renderNodeCount && renderNodes[currentEnd].RootRenderFeature == currentRenderFeature)
-                {
-                    currentEnd++;
-                }
-
-                // Divide into task chunks for parallelism
-                currentRenderFeature.Draw(renderDrawContext, renderView, renderViewStage, currentStart, currentEnd);
-            }
-#else
-            int batchCount = Math.Min(Environment.ProcessorCount, renderNodeCount);
-            int batchSize = (renderNodeCount + (batchCount - 1)) / batchCount;
-            batchCount = (renderNodeCount + (batchSize - 1)) / batchSize;
-
-            // Remember state
-            var depthStencilBuffer = renderDrawContext.CommandList.DepthStencilBuffer;
-            var renderTargetView = renderDrawContext.CommandList.RenderTargetCount > 0 ? renderDrawContext.CommandList.RenderTarget : null;
-            var viewport = renderDrawContext.CommandList.Viewport;
-
-            var commandLists = new CompiledCommandList[batchCount + 1];
-            commandLists[0] = renderDrawContext.CommandList.Close2();
-
-            Dispatcher.For(0, batchCount, () => renderDrawContext.RenderContext.GetThreadContext(), (batchIndex, threadContext) =>
-            {
-                threadContext.CommandList.Reset();
-                threadContext.CommandList.ClearState();
-
-                // Transfer state to all command lists
-                threadContext.CommandList.SetRenderTarget(depthStencilBuffer, renderTargetView);
-                threadContext.CommandList.SetViewport(viewport);
-
-                var currentStart = batchSize * batchIndex;
-                int currentEnd;
-
-                var endExclusive = Math.Min(renderNodeCount, currentStart + batchSize);
-
-                if (endExclusive <= currentStart)
-                    return;
-
-                for (; currentStart < endExclusive; currentStart = currentEnd)
+                int currentStart, currentEnd;
+                for (currentStart = 0; currentStart < renderNodeCount; currentStart = currentEnd)
                 {
                     var currentRenderFeature = renderNodes[currentStart].RootRenderFeature;
                     currentEnd = currentStart + 1;
-                    while (currentEnd < endExclusive && renderNodes[currentEnd].RootRenderFeature == currentRenderFeature)
+                    while (currentEnd < renderNodeCount && renderNodes[currentEnd].RootRenderFeature == currentRenderFeature)
                     {
                         currentEnd++;
                     }
 
                     // Divide into task chunks for parallelism
-                    currentRenderFeature.Draw(threadContext, renderView, renderViewStage, currentStart, currentEnd);
+                    currentRenderFeature.Draw(renderDrawContext, renderView, renderViewStage, currentStart, currentEnd);
                 }
+            }
+            else
+            {
+                // Create at most one batch per processor
+                int batchCount = Math.Min(Environment.ProcessorCount, renderNodeCount);
+                int batchSize = (renderNodeCount + (batchCount - 1)) / batchCount;
+                batchCount = (renderNodeCount + (batchSize - 1)) / batchSize;
 
-                commandLists[batchIndex + 1] = threadContext.CommandList.Close2();
-            });
+                // Remember state
+                var depthStencilBuffer = renderDrawContext.CommandList.DepthStencilBuffer;
+                var renderTargetView = renderDrawContext.CommandList.RenderTargetCount > 0 ? renderDrawContext.CommandList.RenderTarget : null;
+                var viewport = renderDrawContext.CommandList.Viewport;
 
-            GraphicsDevice.ExecuteCommandLists(commandLists);
+                // Collect one command list per batch and the main one up to this point
+                if (commandLists == null || commandLists.Length < batchCount + 1)
+                {
+                    Array.Resize(ref commandLists, batchCount + 1);
+                }
+                commandLists[0] = renderDrawContext.CommandList.Close();
 
-            renderDrawContext.CommandList.Reset();
-            renderDrawContext.CommandList.ClearState();
+                Dispatcher.For(0, batchCount, () => renderDrawContext.RenderContext.GetThreadContext(), (batchIndex, threadContext) =>
+                {
+                    threadContext.CommandList.Reset();
+                    threadContext.CommandList.ClearState();
 
-            // Reapply previous state
-            renderDrawContext.CommandList.SetRenderTarget(depthStencilBuffer, renderTargetView);
-            renderDrawContext.CommandList.SetViewport(viewport);
-#endif
+                    // Transfer state to all command lists
+                    threadContext.CommandList.SetRenderTarget(depthStencilBuffer, renderTargetView);
+                    threadContext.CommandList.SetViewport(viewport);
+
+                    var currentStart = batchSize * batchIndex;
+                    int currentEnd;
+
+                    var endExclusive = Math.Min(renderNodeCount, currentStart + batchSize);
+
+                    if (endExclusive <= currentStart)
+                        return;
+
+                    for (; currentStart < endExclusive; currentStart = currentEnd)
+                    {
+                        var currentRenderFeature = renderNodes[currentStart].RootRenderFeature;
+                        currentEnd = currentStart + 1;
+                        while (currentEnd < endExclusive && renderNodes[currentEnd].RootRenderFeature == currentRenderFeature)
+                        {
+                            currentEnd++;
+                        }
+
+                        // Divide into task chunks for parallelism
+                        currentRenderFeature.Draw(threadContext, renderView, renderViewStage, currentStart, currentEnd);
+                    }
+
+                    commandLists[batchIndex + 1] = threadContext.CommandList.Close();
+                });
+
+                GraphicsDevice.ExecuteCommandLists(batchCount + 1, commandLists);
+
+                renderDrawContext.CommandList.Reset();
+                renderDrawContext.CommandList.ClearState();
+
+                // Reapply previous state
+                renderDrawContext.CommandList.SetRenderTarget(depthStencilBuffer, renderTargetView);
+                renderDrawContext.CommandList.SetViewport(viewport);
+            }
         }
 
         /// <summary>

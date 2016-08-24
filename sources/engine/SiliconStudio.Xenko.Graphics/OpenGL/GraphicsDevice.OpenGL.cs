@@ -455,7 +455,16 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
         }
 
-        public void ExecuteCommandList(CommandList commandList)
+        public void ExecuteCommandList(CompiledCommandList commandList)
+        {
+#if DEBUG
+            EnsureContextActive();
+#endif
+
+            throw new NotImplementedException();
+        }
+
+        public void ExecuteCommandLists(int count, CompiledCommandList[] commandList)
         {
 #if DEBUG
             EnsureContextActive();

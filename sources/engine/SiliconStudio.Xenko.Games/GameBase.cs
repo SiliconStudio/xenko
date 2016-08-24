@@ -823,7 +823,7 @@ namespace SiliconStudio.Xenko.Games
                 GraphicsContext.ResourceGroupAllocator.Flush();
 
                 // Close command list
-                GraphicsContext.CommandList.Close();
+                GraphicsContext.CommandList.Flush();
 
                 // Present (if necessary)
                 graphicsDeviceManager.EndDraw(present);

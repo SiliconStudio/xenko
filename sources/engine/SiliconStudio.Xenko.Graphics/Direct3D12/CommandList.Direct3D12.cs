@@ -10,16 +10,6 @@ using Utilities = SiliconStudio.Core.Utilities;
 
 namespace SiliconStudio.Xenko.Graphics
 {
-    public partial struct CompiledCommandList
-    {
-        internal CommandList Builder;
-        internal GraphicsCommandList NativeCommandList;
-        internal CommandAllocator NativeCommandAllocator;
-        internal List<DescriptorHeap> SrvHeaps;
-        internal List<DescriptorHeap> SamplerHeaps;
-        internal List<Texture> StagingResources;
-    }
-
     public partial class CommandList
     {
         private DescriptorHeapCache srvHeap;
@@ -115,12 +105,11 @@ namespace SiliconStudio.Xenko.Graphics
             boundPipelineState = null;
         }
 
-        public void Close()
-        {
-            GraphicsDevice.ExecuteCommandList(Close2());
-        }
-
-        public CompiledCommandList Close2()
+        /// <summary>
+        /// Closes the command list for recording and returns an executable token.
+        /// </summary>
+        /// <returns>The executable command list.</returns>
+        public CompiledCommandList Close()
         {
             currentCommandList.NativeCommandList.Close();
 
@@ -133,11 +122,19 @@ namespace SiliconStudio.Xenko.Graphics
             return result;
         }
 
+        /// <summary>
+        /// Closes and executes the command list.
+        /// </summary>
+        public void Flush()
+        {
+            GraphicsDevice.ExecuteCommandList(Close());
+        }
+
         private void FlushInternal(bool wait)
         {
             currentCommandList.NativeCommandList.Close();
 
-            var fenceValue = GraphicsDevice.ExecuteCommandListInternal(Close2());
+            var fenceValue = GraphicsDevice.ExecuteCommandListInternal(Close());
 
             if (wait)
                 GraphicsDevice.WaitForFenceInternal(fenceValue);

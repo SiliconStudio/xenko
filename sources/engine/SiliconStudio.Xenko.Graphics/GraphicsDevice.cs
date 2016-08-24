@@ -29,7 +29,6 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal readonly bool NeedWorkAroundForUpdateSubResource;
         internal Effect CurrentEffect;
-        private readonly bool isDeferred;
 
         private readonly List<IDisposable> sharedDataToDispose = new List<IDisposable>();
         private readonly Dictionary<object, IDisposable> sharedDataPerDevice;
@@ -52,7 +51,7 @@ namespace SiliconStudio.Xenko.Graphics
         public static GraphicsPlatform Platform => GraphicPlatform;
 
         public string RendererName => GetRendererName();
-
+        
         /// <summary>
         ///     Initializes a new instance of the <see cref="GraphicsDevice" /> class.
         /// </summary>
@@ -62,9 +61,6 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="windowHandle">The window handle.</param>
         protected GraphicsDevice(GraphicsAdapter adapter, GraphicsProfile[] profile, DeviceCreationFlags deviceCreationFlags, WindowHandle windowHandle)
         {
-            // Setup IsDeferred to false for the main device
-            isDeferred = false;
-
             // Create shared data
             sharedDataPerDevice = new Dictionary<object, IDisposable>();
 
@@ -169,18 +165,12 @@ namespace SiliconStudio.Xenko.Graphics
         public bool IsDebugMode { get; private set; }
 
         /// <summary>
-        ///     Gets a value indicating whether this instance is a deferred graphics device context.
+        ///     Indicates wether this device allows for concurrent building and deferred submission of CommandLists
         /// </summary>
         /// <value>
         ///     <c>true</c> if this instance is deferred; otherwise, <c>false</c>.
         /// </value>
-        public bool IsDeferred
-        {
-            get
-            {
-                return isDeferred;
-            }
-        }
+        public bool IsDeferred { get; private set; }
 
         /// <summary>
         ///     Gets a value indicating whether this instance supports GPU markers and profiling.

@@ -160,24 +160,27 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <summary>
-        /// Execute multiple deferred command list.s
+        /// Executes multiple deferred command lists.
         /// </summary>
+        /// <param name="count">Number of command lists to execute.</param>
         /// <param name="commandLists">The deferred command lists.</param>
-        public void ExecuteCommandLists(CompiledCommandList[] commandLists)
+        public void ExecuteCommandLists(int count, CompiledCommandList[] commandLists)
         {
             if (commandLists == null) throw new ArgumentNullException(nameof(commandLists));
+            if (count > commandLists.Length) throw new ArgumentOutOfRangeException(nameof(count));
 
             var fenceValue = NextFenceValue++;
 
             // Recycle resources
-            foreach (var commandList in commandLists)
+            for (int index = 0; index < count; index++)
             {
+                var commandList = commandLists[index];
                 nativeCommandLists.Add(commandList.NativeCommandList);
                 RecycleCommandListResources(commandList, fenceValue);
             }
 
             // Submit and signal fence
-            NativeCommandQueue.ExecuteCommandLists(commandLists.Length, nativeCommandLists.Items);
+            NativeCommandQueue.ExecuteCommandLists(count, nativeCommandLists.Items);
             NativeCommandQueue.Signal(nativeFence, fenceValue);
 
             ReleaseTemporaryResources();
@@ -217,6 +220,9 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Profiling is supported through pix markers
             IsProfilingSupported = true;
+
+            // Command lists are thread-safe and execute deferred
+            IsDeferred = true;
 
             if ((deviceCreationFlags & DeviceCreationFlags.Debug) != 0)
             {

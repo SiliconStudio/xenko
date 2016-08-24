@@ -25,7 +25,7 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Import Condition="$(SiliconStudioUI.Contains('SDL'))" Project="..\..\common\targets\SDL.targets"/> 
+  <Import Condition="$(SiliconStudioUI.Contains('SDL'))" Project="..\..\common\targets\SDL.targets" />
   <Choose>
     <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' Or '$(XenkoGraphicsApi)' == 'Direct3D12' ">
       <ItemGroup>
@@ -119,7 +119,9 @@
     <Compile Include="BufferPool.cs" />
     <Compile Include="BufferPoolAllocationResult.cs" />
     <Compile Include="CommandList.cs" />
+    <Compile Include="CompiledCommandList.cs" />
     <Compile Include="DefaultCommandListLock.cs" />
+    <Compile Include="Direct3D12\CompiledCommandList.Direct3D12.cs" />
     <Compile Include="Direct3D\SharpDXInterop.cs" />
     <Compile Include="Font\SignedDistanceFieldSpriteFont.cs" />
     <Compile Include="OpenGL\GraphicsResource.OpenGL.cs" />
@@ -423,6 +425,7 @@
     <Compile Include="Vulkan\Buffer.Vulkan.cs" />
     <Compile Include="Vulkan\ColorHelper.cs" />
     <Compile Include="Vulkan\CommandList.Vulkan.cs" />
+    <Compile Include="Vulkan\CompiledCommandList.Vulkan.cs" />
     <Compile Include="Vulkan\DescriptorPool.Vulkan.cs" />
     <Compile Include="Vulkan\DescriptorSet.Vulkan.cs" />
     <Compile Include="Vulkan\DescriptorSetLayout.Vulkan.cs" />

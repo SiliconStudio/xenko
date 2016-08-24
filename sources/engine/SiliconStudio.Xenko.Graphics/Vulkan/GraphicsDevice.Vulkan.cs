@@ -180,9 +180,13 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Executes multiple deferred command lists.
         /// </summary>
+        /// <param name="count">Number of command lists to execute.</param>
         /// <param name="commandLists">The deferred command lists.</param>
-        public unsafe void ExecuteCommandLists(CompiledCommandList[] commandLists)
+        public unsafe void ExecuteCommandLists(int count, CompiledCommandList[] commandLists)
         {
+            if (commandLists == null) throw new ArgumentNullException(nameof(commandLists));
+            if (count > commandLists.Length) throw new ArgumentOutOfRangeException(nameof(count));
+
             var fenceValue = NextFenceValue++;
 
             // Create a fence
@@ -191,8 +195,8 @@ namespace SiliconStudio.Xenko.Graphics
             nativeFences.Enqueue(new KeyValuePair<long, Fence>(fenceValue, fence));
 
             // Collect resources
-            var commandBuffers = stackalloc CommandBuffer[commandLists.Length];
-            for (int i = 0; i < commandLists.Length; i++)
+            var commandBuffers = stackalloc CommandBuffer[count];
+            for (int i = 0; i < count; i++)
             {
                 commandBuffers[i] = commandLists[i].NativeCommandBuffer;
                 RecycleCommandListResources(commandLists[i], fenceValue);
@@ -204,7 +208,7 @@ namespace SiliconStudio.Xenko.Graphics
             var submitInfo = new SubmitInfo
             {
                 StructureType = StructureType.SubmitInfo,
-                CommandBufferCount = (uint)commandLists.Length,
+                CommandBufferCount = (uint)count,
                 CommandBuffers = new IntPtr(commandBuffers),
                 WaitSemaphoreCount = presentSemaphore != Semaphore.Null ? 1U : 0U,
                 WaitSemaphores = new IntPtr(&presentSemaphoreCopy),
@@ -255,6 +259,9 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             var queueProperties = NativePhysicalDevice.QueueFamilyProperties;
+
+            // Command lists are thread-safe and execute deferred
+            IsDeferred = true;
 
             // TODO VULKAN
             // Create Vulkan device based on profile

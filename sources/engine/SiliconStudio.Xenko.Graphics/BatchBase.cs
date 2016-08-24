@@ -241,12 +241,6 @@ namespace SiliconStudio.Xenko.Graphics
                 GraphicsContext.CommandList.SetVertexBuffer(0, ResourceContext.VertexBuffer, 0, vertexStructSize);
             if (ResourceContext.IndexBuffer != null)
                 GraphicsContext.CommandList.SetIndexBuffer(ResourceContext.IndexBuffer, 0, indexStructSize == sizeof(int));
-
-            // If this is a deferred D3D context, reset position so the first Map call will use D3D11_MAP_WRITE_DISCARD.
-            if (GraphicsDevice.IsDeferred)
-            {
-                ResourceContext.VertexBufferPosition = 0;
-            }
         }
 
         protected void CheckBeginHasBeenCalled(string functionName)

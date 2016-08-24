@@ -11,14 +11,6 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Graphics
 {
-    public struct CompiledCommandList
-    {
-        internal CommandList Builder;
-        internal CommandBuffer NativeCommandBuffer;
-        internal List<SharpVulkan.DescriptorPool> DescriptorPools;
-        internal List<Texture> StagingResources;
-    }
-
     public partial class CommandList
     {
         internal CommandBufferPool CommandBufferPool;
@@ -89,12 +81,11 @@ namespace SiliconStudio.Xenko.Graphics
             activeStencilReference = null;
         }
 
-        public void Close()
-        {
-            GraphicsDevice.ExecuteCommandList(Close2());
-        }
-
-        public CompiledCommandList Close2()
+        /// <summary>
+        /// Closes the command list for recording and returns an executable token.
+        /// </summary>
+        /// <returns>The executable command list.</returns>
+        public CompiledCommandList Close()
         {
             End();
             activePipeline = null;
@@ -102,6 +93,14 @@ namespace SiliconStudio.Xenko.Graphics
             var result = currentCommandList;
             currentCommandList = default(CompiledCommandList);
             return result;
+        }
+
+        /// <summary>
+        /// Closes and executes the command list.
+        /// </summary>
+        public void Flush()
+        {
+            GraphicsDevice.ExecuteCommandList(Close());
         }
 
         private void End()
@@ -123,7 +122,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             End();
 
-            var fenceValue = GraphicsDevice.ExecuteCommandListInternal(Close2());
+            var fenceValue = GraphicsDevice.ExecuteCommandListInternal(Close());
 
             if (wait)
                 GraphicsDevice.WaitForFenceInternal(fenceValue);

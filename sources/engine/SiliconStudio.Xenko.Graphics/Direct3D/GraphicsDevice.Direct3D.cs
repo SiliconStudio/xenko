@@ -132,12 +132,18 @@ namespace SiliconStudio.Xenko.Graphics
         /// Executes a deferred command list.
         /// </summary>
         /// <param name="commandList">The deferred command list.</param>
-        public void ExecuteCommandList(CommandList commandList)
+        public void ExecuteCommandList(CompiledCommandList commandList)
         {
-            //if (commandList == null) throw new ArgumentNullException("commandList");
-            //
-            //NativeDeviceContext.ExecuteCommandList(((CommandList)commandList).NativeCommandList, false);
-            //commandList.Dispose();
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Executes multiple deferred command lists.
+        /// </summary>
+        /// <param name="commandLists">The deferred command lists.</param>
+        public void ExecuteCommandLists(int count, CompiledCommandList[] commandLists)
+        {
+            throw new NotImplementedException();
         }
 
         public void SimulateReset()

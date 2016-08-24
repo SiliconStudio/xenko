@@ -69,8 +69,14 @@ namespace SiliconStudio.Xenko.Graphics
         {
         }
 
-        public void Close()
+        public void Flush()
         {
+
+        }
+
+        public CompiledCommandList Close()
+        {
+            return default(CompiledCommandList);
         }
 
         private void ClearStateImpl()

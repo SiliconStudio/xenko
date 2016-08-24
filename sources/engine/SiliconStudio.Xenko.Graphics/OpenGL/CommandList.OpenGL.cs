@@ -97,8 +97,14 @@ namespace SiliconStudio.Xenko.Graphics
         {
         }
 
-        public void Close()
+        public void Flush()
         {
+            
+        }
+
+        public CompiledCommandList Close()
+        {
+            return default(CompiledCommandList);
         }
 
         public void Clear(Texture depthStencilBuffer, DepthStencilClearOptions options, float depth = 1, byte stencil = 0)
