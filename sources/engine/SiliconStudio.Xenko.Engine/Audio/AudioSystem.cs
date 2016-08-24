@@ -38,6 +38,8 @@ namespace SiliconStudio.Xenko.Audio
         /// <value>The audio engine.</value>
         public AudioEngine AudioEngine { get; private set; }
 
+        public AudioDevice RequestedAudioDevice { get; set; } = new AudioDevice();
+
         /// <summary>
         /// A collection containing the <see cref="AudioListenerComponent"/>-<see cref="AudioListener"/> associations.
         /// The AudioListenerComponent keys are added/removed by the user by calls to <see cref="AddListener"/>/<see cref="RemoveListener"/>.
@@ -55,7 +57,7 @@ namespace SiliconStudio.Xenko.Audio
             {
                 if (audioEngineSingleton == null)
                 {
-                    audioEngineSingleton = AudioEngineFactory.NewAudioEngine();
+                    audioEngineSingleton = AudioEngineFactory.NewAudioEngine(RequestedAudioDevice);
                 }
                 else
                 {

@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Extensions
         /// </summary>
         /// <param name="meshDrawDatas">The mesh draw datas.</param>
         /// <param name="can32BitIndex">A flag stating if 32 bit index buffers.</param>
-        public unsafe static MeshDraw MergeDrawData(IList<MeshDraw> meshDrawDatas, bool can32BitIndex)
+        public static unsafe MeshDraw MergeDrawData(IList<MeshDraw> meshDrawDatas, bool can32BitIndex)
         {
             if (meshDrawDatas.Count == 0)
                 throw new ArgumentException("Need at least 1 MeshDrawData.", "meshDrawDatas");

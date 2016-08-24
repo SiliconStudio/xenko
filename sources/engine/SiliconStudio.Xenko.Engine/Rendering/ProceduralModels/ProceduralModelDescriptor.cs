@@ -52,8 +52,7 @@ namespace SiliconStudio.Xenko.Rendering.ProceduralModels
 
         public void GenerateModel(IServiceRegistry services, Model model)
         {
-            if (services == null) throw new ArgumentNullException("services");
-            if (model == null) throw new ArgumentNullException("model");
+            if (model == null) throw new ArgumentNullException(nameof(model));
 
             if (Type == null)
             {

@@ -71,5 +71,23 @@ namespace SiliconStudio.Xenko.Rendering
         {
             return material == null ? null : new MaterialInstance(material);
         }
+
+        public override bool Equals(object obj)
+        {
+            var instance = (MaterialInstance)obj;
+            return Material == instance.Material && IsShadowCaster == instance.IsShadowCaster && IsShadowReceiver == instance.IsShadowReceiver;
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hash = 17;
+                hash = hash * 23 + Material.GetHashCode();
+                hash = hash * 23 + IsShadowCaster.GetHashCode();
+                hash = hash * 23 + IsShadowReceiver.GetHashCode();
+                return hash;
+            }
+        }
     }
 }

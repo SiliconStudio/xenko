@@ -318,7 +318,7 @@ namespace SiliconStudio.Xenko.Engine
         #region Ignore or Private/Internal
 
         [DataMemberIgnore]
-        public TrackingCollection<Collision> Collisions { get; } = new TrackingCollection<Collision>();
+        public TrackingHashSet<Collision> Collisions { get; } = new TrackingHashSet<Collision>();
 
         [DataMemberIgnore]
         internal Channel<Collision> NewPairChannel;
