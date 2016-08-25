@@ -17,14 +17,14 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         public Slot ConditionSlot => FindSlot(ConditionSlotDefinition);
 
         public static readonly SlotDefinition<bool> ConditionSlotDefinition = SlotDefinition.NewValueInput("Condition", true);
-        public static readonly SlotDefinition TrueSlotDefinition = SlotDefinition.NewExecutionOutput("True", SlotFlags.None);
-        public static readonly SlotDefinition FalseSlotDefinition = SlotDefinition.NewExecutionOutput("False");
+        public static readonly SlotDefinition TrueSlotDefinition = SlotDefinition.NewExecutionOutput("True");
+        public static readonly SlotDefinition FalseSlotDefinition = SlotDefinition.NewExecutionOutput("False", SlotFlags.AutoflowExecution);
 
         public override string Title => "Condition";
 
         public override void RegenerateSlots(IList<Slot> newSlots)
         {
-            newSlots.Add(new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Input });
+            newSlots.Add(InputExecutionSlotDefinition);
             newSlots.Add(ConditionSlotDefinition);
             newSlots.Add(TrueSlotDefinition);
             newSlots.Add(FalseSlotDefinition);

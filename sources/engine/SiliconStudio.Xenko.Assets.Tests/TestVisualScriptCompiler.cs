@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 block.RegenerateSlots(block.Slots);
 
             // Build links
-            visualScript.Links.Add(new Link(functionStart.ExecutionOutput, writeTrue.ExecutionInput));
+            visualScript.Links.Add(new Link(functionStart, writeTrue));
 
             // Test
             TestAndCompareOutput(visualScript, "True", testInstance => testInstance.Test());
@@ -59,9 +59,9 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 block.RegenerateSlots(block.Slots);
 
             // Build links
-            visualScript.Links.Add(new Link(functionStart.ExecutionOutput, conditionalBranch.ExecutionInput));
-            visualScript.Links.Add(new Link(conditionalBranch.TrueSlot, writeTrue.ExecutionInput));
-            visualScript.Links.Add(new Link(conditionalBranch.FalseSlot, writeFalse.ExecutionInput));
+            visualScript.Links.Add(new Link(functionStart, conditionalBranch));
+            visualScript.Links.Add(new Link(conditionalBranch.TrueSlot, writeTrue));
+            visualScript.Links.Add(new Link(conditionalBranch.FalseSlot, writeFalse));
 
             // Test
             conditionalBranch.ConditionSlot.Value = true;
@@ -76,7 +76,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
         {
             var visualScript = new VisualScriptAsset();
 
-            var condition = new Variable("Condition", typeof(bool));
+            var condition = new Variable("bool", "Condition");
             visualScript.Variables.Add(condition);
 
             // Build blocks
@@ -97,10 +97,10 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 block.RegenerateSlots(block.Slots);
 
             // Build links
-            visualScript.Links.Add(new Link(functionStart.ExecutionOutput, conditionalBranch.ExecutionInput));
+            visualScript.Links.Add(new Link(functionStart, conditionalBranch));
             visualScript.Links.Add(new Link(conditionGet.ValueSlot, conditionalBranch.ConditionSlot));
-            visualScript.Links.Add(new Link(conditionalBranch.TrueSlot, writeTrue.ExecutionInput));
-            visualScript.Links.Add(new Link(conditionalBranch.FalseSlot, writeFalse.ExecutionInput));
+            visualScript.Links.Add(new Link(conditionalBranch.TrueSlot, writeTrue));
+            visualScript.Links.Add(new Link(conditionalBranch.FalseSlot, writeFalse));
 
             // Test
             TestAndCompareOutput(visualScript, "True", testInstance =>
@@ -121,7 +121,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
         {
             var visualScript = new VisualScriptAsset();
 
-            var condition = new Variable("Condition", typeof(bool));
+            var condition = new Variable("bool", "Condition");
             visualScript.Variables.Add(condition);
 
             // Build blocks
@@ -144,11 +144,11 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 block.RegenerateSlots(block.Slots);
 
             // Build links
-            visualScript.Links.Add(new Link(functionStart.ExecutionOutput, conditionSet.ExecutionInput));
-            visualScript.Links.Add(new Link(conditionSet.ExecutionOutput, conditionalBranch.ExecutionInput));
+            visualScript.Links.Add(new Link(functionStart, conditionSet));
+            visualScript.Links.Add(new Link(conditionSet, conditionalBranch));
             visualScript.Links.Add(new Link(conditionGet.ValueSlot, conditionalBranch.ConditionSlot));
-            visualScript.Links.Add(new Link(conditionalBranch.TrueSlot, writeTrue.ExecutionInput));
-            visualScript.Links.Add(new Link(conditionalBranch.FalseSlot, writeFalse.ExecutionInput));
+            visualScript.Links.Add(new Link(conditionalBranch.TrueSlot, writeTrue));
+            visualScript.Links.Add(new Link(conditionalBranch.FalseSlot, writeFalse));
 
             // Test
             conditionSet.InputSlot.Value = true;

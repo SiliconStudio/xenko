@@ -31,8 +31,8 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         public override void RegenerateSlots(IList<Slot> newSlots)
         {
-            newSlots.Add(new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Input });
-            newSlots.Add(new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Output, Flags = SlotFlags.AutoflowExecution });
+            newSlots.Add(InputExecutionSlotDefinition);
+            newSlots.Add(OutputExecutionSlotDefinition);
 
             if (Variable != null)
             {
@@ -41,9 +41,9 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             }
         }
 
-        private LiteralExpressionSyntax ConvertLiteralExpression(Type type, object value)
+        private LiteralExpressionSyntax ConvertLiteralExpression(string type, object value)
         {
-            if (type == typeof(bool))
+            if (type == "bool")
             {
                 return LiteralExpression(value is bool && (bool)value ? SyntaxKind.TrueLiteralExpression : SyntaxKind.FalseLiteralExpression);
             }

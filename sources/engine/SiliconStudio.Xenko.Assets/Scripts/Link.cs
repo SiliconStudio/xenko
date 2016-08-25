@@ -20,6 +20,27 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             Target = target;
         }
 
+        public Link(ExecutionBlock source, Slot target)
+             : this()
+        {
+            Source = source.OutputExecution;
+            Target = target;
+        }
+
+        public Link(Slot source, ExecutionBlock target)
+     : this()
+        {
+            Source = source;
+            Target = target.InputExecution;
+        }
+
+        public Link(ExecutionBlock source, ExecutionBlock target)
+             : this()
+        {
+            Source = source.OutputExecution;
+            Target = target.InputExecution;
+        }
+
         [DataMember(-100), Display(Browsable = false)]
         public Guid Id { get; set; }
 

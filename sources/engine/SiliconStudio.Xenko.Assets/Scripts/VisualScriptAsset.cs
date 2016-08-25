@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
     public class VisualScriptAsset : AssetComposite, IProjectFileGeneratorAsset
     {
         [DataMember(0)]
-        public AssetPartCollection<Variable> Variables { get; } = new AssetPartCollection<Variable>();
+        public List<Variable> Variables { get; } = new List<Variable>();
 
         [DataMember(10)]
         public AssetPartCollection<Block> Blocks { get; } = new AssetPartCollection<Block>();
@@ -77,11 +77,14 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         public override void SetPart(Guid id, Guid baseId, Guid basePartInstanceId)
         {
-            Variable variable;
-            if (Variables.TryGetValue(id, out variable))
+            foreach (var variable in Variables)
             {
-                variable.BaseId = baseId;
-                variable.BasePartInstanceId = basePartInstanceId;
+                if (variable.Id == id)
+                {
+                    variable.BaseId = baseId;
+                    variable.BasePartInstanceId = basePartInstanceId;
+                    break;
+                }
             }
 
             Block block;
@@ -104,9 +107,14 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             var variableReference = partReference as Variable;
             if (variableReference != null)
             {
-                Variable realPart;
-                Variables.TryGetValue(variableReference.Id, out realPart);
-                return realPart;
+                foreach (var variable in Variables)
+                {
+                    if (variable.Id == variableReference.Id)
+                    {
+                        return variable;
+                    }
+                }
+                return null;
             }
 
             var blockReference = partReference as Block;

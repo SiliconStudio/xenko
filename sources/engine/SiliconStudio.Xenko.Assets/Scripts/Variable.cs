@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             Id = Guid.NewGuid();
         }
 
-        public Variable(string name, Type type)
+        public Variable(string type, string name)
             : this()
         {
             Name = name;
@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         /// Gets or sets the type of that variable.
         /// </summary>
         [DataMember(-40)]
-        public Type Type { get; set; }
+        public string Type { get; set; }
 
         Variable IAssetPartDesign<Variable>.Part => this;
     }

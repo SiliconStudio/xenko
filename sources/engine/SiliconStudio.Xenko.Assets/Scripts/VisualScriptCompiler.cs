@@ -159,12 +159,8 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             // Generate variables
             foreach (var variable in visualScriptAsset.Variables)
             {
-                string variableType;
-                if (variable.Type != null)
-                {
-                    variableType = variable.Type.FullName;
-                }
-                else
+                var variableType = variable.Type;
+                if (variableType == null)
                 {
                     result.Error($"Variable {variable.Name} has no type, using \"object\" instead.");
                     variableType = "object";

@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         [DataMember(30)]
         [DefaultValue(null)]
-        public Type Type { get; set; }
+        public string Type { get; set; }
 
         [DataMember(40)]
         [DefaultValue(null)]

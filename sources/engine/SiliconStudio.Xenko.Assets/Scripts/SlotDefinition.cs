@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         public string Name { get; }
 
-        public virtual Type Type => null;
+        public virtual string Type => null;
 
         public virtual object ObjectValue => null;
 
@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             return new SlotDefinition(SlotDirection.Input, SlotKind.Execution, name, flags);
         }
 
-        public static SlotDefinition NewExecutionOutput(string name, SlotFlags flags = SlotFlags.AutoflowExecution)
+        public static SlotDefinition NewExecutionOutput(string name, SlotFlags flags = SlotFlags.None)
         {
             return new SlotDefinition(SlotDirection.Output, SlotKind.Execution, name, flags);
         }
@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
     public class SlotDefinition<T> : SlotDefinition
     {
-        public override Type Type => typeof(T);
+        public override string Type => typeof(T).FullName;
 
         public override object ObjectValue => Value;
 

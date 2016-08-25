@@ -42,8 +42,8 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         public override void RegenerateSlots(IList<Slot> newSlots)
         {
-            newSlots.Add(new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Input });
-            newSlots.Add(new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Output });
+            newSlots.Add(InputExecutionSlotDefinition);
+            newSlots.Add(OutputExecutionSlotDefinition);
         }
     }
 }

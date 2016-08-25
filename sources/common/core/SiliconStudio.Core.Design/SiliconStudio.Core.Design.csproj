@@ -164,7 +164,6 @@
     <Compile Include="Yaml\GuidSerializer.cs" />
     <Compile Include="Yaml\ObjectIdSerializer.cs" />
     <Compile Include="Yaml\CustomObjectSerializerBackend.cs" />
-    <Compile Include="Yaml\TypeSerializer.cs" />
     <Compile Include="Yaml\UDirectorySerializer.cs" />
     <Compile Include="Yaml\UFileSerializer.cs" />
     <Compile Include="Yaml\YamlSerializer.cs" />

@@ -122,10 +122,13 @@ namespace SiliconStudio.Xenko.Assets.Scripts
     public abstract class ExecutionBlock : Block
     {
         [DataMemberIgnore]
-        public Slot ExecutionInput => FindSlot(SlotDirection.Input, SlotKind.Execution, null);
+        public virtual Slot InputExecution => FindSlot(InputExecutionSlotDefinition);
 
         [DataMemberIgnore]
-        public Slot ExecutionOutput => FindSlot(SlotDirection.Output, SlotKind.Execution, null) ?? FindSlot(SlotDirection.Output, SlotKind.Execution, SlotFlags.AutoflowExecution);
+        public virtual Slot OutputExecution => FindSlot(OutputExecutionSlotDefinition);
+
+        public static readonly SlotDefinition InputExecutionSlotDefinition = SlotDefinition.NewExecutionInput(null);
+        public static readonly SlotDefinition OutputExecutionSlotDefinition = SlotDefinition.NewExecutionOutput(null, SlotFlags.AutoflowExecution);
 
         public abstract void GenerateCode(VisualScriptCompilerContext context);
     }
@@ -142,6 +145,8 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         public override string Title => $"{FunctionName} Start";
 
         public string FunctionName { get; set; }
+
+        public override Slot OutputExecution => FindSlot(SlotDirection.Output, SlotKind.Execution, SlotFlags.AutoflowExecution);
 
         public override void RegenerateSlots(IList<Slot> newSlots)
         {
