@@ -39,9 +39,16 @@ namespace SiliconStudio.Xenko.Native
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrCreateTexturesDx", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool CreateTexturesDx(IntPtr session, IntPtr dxDevice, out int outTextureCount, float pixelPerScreenPixel, int mirrorBufferWidth = 0, int mirrorBufferHeight = 0);
 
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrCreateQuadLayerTexturesDx", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr CreateQuadLayerTexturesDx(IntPtr session, IntPtr dxDevice, out int outTextureCount, int width, int height);
+
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrGetTextureAtIndexDx", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr GetTextureDx(IntPtr session, Guid textureGuid, int index);
+
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrGetQuadLayerTextureAtIndexDx", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr GetQuadLayerTextureDx(IntPtr session, IntPtr layer, Guid textureGuid, int index);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrGetMirrorTextureDx", CallingConvention = CallingConvention.Cdecl)]
@@ -52,8 +59,12 @@ namespace SiliconStudio.Xenko.Native
         public static extern int GetCurrentTargetIndex(IntPtr session);
 
         [SuppressUnmanagedCodeSecurity]
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrGetCurrentQuadLayerTargetIndex", CallingConvention = CallingConvention.Cdecl)]
+        public static extern int GetCurrentQuadLayerTargetIndex(IntPtr session, IntPtr layer);
+
+        [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnOvrCommitFrame", CallingConvention = CallingConvention.Cdecl)]
-        public static extern bool CommitFrame(IntPtr session);
+        public static extern bool CommitFrame(IntPtr session, IntPtr[] extraLayers, int numberOfExtraLayers);
 
         [StructLayout(LayoutKind.Sequential, Pack = 4)]
         public struct FrameProperties

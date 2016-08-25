@@ -269,12 +269,13 @@ extern "C" {
 	struct xnOvrSession
 	{
 		ovrSession Session;
-		ovrTextureSwapChain SwapChain;
 		ovrMirrorTexture Mirror;
+		ovrHmdDesc HmdDesc;
 		ovrEyeRenderDesc EyeRenderDesc[2];
 		ovrVector3f HmdToEyeViewOffset[2];
+
+		ovrTextureSwapChain SwapChain;
 		ovrLayerEyeFov Layer;
-		ovrHmdDesc HmdDesc;
 	};
 
 	xnOvrSession* xnOvrCreateSessionDx(int64_t* luidOut)
@@ -369,10 +370,70 @@ extern "C" {
 		return true;
 	}
 
+	struct xnOvrQuadLayer
+	{
+		ovrTextureSwapChain SwapChain;
+		ovrLayerQuad Layer;
+	};
+
+	xnOvrQuadLayer* xnOvrCreateQuadLayerTexturesDx(xnOvrSession* session, void* dxDevice, int* outTextureCount, int width, int height)
+	{
+		auto layer = new xnOvrQuadLayer;
+
+		ovrTextureSwapChainDesc texDesc = {};
+		texDesc.Type = ovrTexture_2D;
+		texDesc.Format = OVR_FORMAT_R8G8B8A8_UNORM_SRGB;
+		texDesc.ArraySize = 1;
+		texDesc.Width = width;
+		texDesc.Height = height;
+		texDesc.MipLevels = 1;
+		texDesc.SampleCount = 1;
+		texDesc.StaticImage = ovrFalse;
+		texDesc.MiscFlags = ovrTextureMisc_None;
+		texDesc.BindFlags = ovrTextureBind_DX_RenderTarget;
+
+		if (!OVR_SUCCESS(ovr_CreateTextureSwapChainDXFunc(session->Session, dxDevice, &texDesc, &layer->SwapChain)))
+		{
+			delete layer;
+			return NULL;
+		}
+
+		auto count = 0;
+		ovr_GetTextureSwapChainLengthFunc(session->Session, layer->SwapChain, &count);
+		*outTextureCount = count;
+
+		layer->Layer.ColorTexture = layer->SwapChain;
+		layer->Layer.Viewport.Pos.x = 0;
+		layer->Layer.Viewport.Pos.y = 0;
+		layer->Layer.Viewport.Size.w = width;
+		layer->Layer.Viewport.Size.h = height;
+		layer->Layer.QuadPoseCenter.Orientation.x = 0;
+		layer->Layer.QuadPoseCenter.Orientation.y = 0;
+		layer->Layer.QuadPoseCenter.Orientation.z = 0;
+		layer->Layer.QuadPoseCenter.Orientation.w = 1;
+		layer->Layer.QuadPoseCenter.Position.x = 0;
+		layer->Layer.QuadPoseCenter.Position.y = 0;
+		layer->Layer.QuadPoseCenter.Position.z = 0;
+		layer->Layer.QuadSize.x = 1;
+		layer->Layer.QuadSize.y = 1;
+
+		return layer;
+	}
+
 	void* xnOvrGetTextureAtIndexDx(xnOvrSession* session, GUID textureGuid, int index)
 	{
 		void* texture = NULL;
 		if (!OVR_SUCCESS(ovr_GetTextureSwapChainBufferDXFunc(session->Session, session->SwapChain, index, textureGuid, &texture)))
+		{
+			return NULL;
+		}
+		return texture;
+	}
+
+	void* xnOvrGetQuadLayerTextureAtIndexDx(xnOvrSession* session, xnOvrQuadLayer* layer, GUID textureGuid, int index)
+	{
+		void* texture = NULL;
+		if (!OVR_SUCCESS(ovr_GetTextureSwapChainBufferDXFunc(session->Session, layer->SwapChain, index, textureGuid, &texture)))
 		{
 			return NULL;
 		}
@@ -393,6 +454,13 @@ extern "C" {
 	{
 		int index;
 		ovr_GetTextureSwapChainCurrentIndexFunc(session->Session, session->SwapChain, &index);
+		return index;
+	}
+
+	int xnOvrGetCurrentQuadLayerTargetIndex(xnOvrSession* session, xnOvrQuadLayer* layer)
+	{
+		int index;
+		ovr_GetTextureSwapChainCurrentIndexFunc(session->Session, layer->SwapChain, &index);
 		return index;
 	}
 
@@ -436,11 +504,22 @@ extern "C" {
 		memcpy(properties->RotRight, &session->Layer.RenderPose[1].Orientation, sizeof(float) * 4);
 	}
 
-	bool xnOvrCommitFrame(xnOvrSession* session)
+	bool xnOvrCommitFrame(xnOvrSession* session, xnOvrQuadLayer** extraLayers, int numberOfExtraLayers)
 	{
+		ovrLayerHeader* layers[1 + numberOfExtraLayers];
+		//add the default layer first
+		layers[0] = &session->Layer.Header;
+		//commit the default fov layer
 		ovr_CommitTextureSwapChainFunc(session->Session, session->SwapChain);
-		ovrLayerHeader* layers[1] = { &session->Layer.Header };
-		if(!OVR_SUCCESS(ovr_SubmitFrameFunc(session->Session, 0, NULL, layers, 1)))
+		for (auto i = 1; i < numberOfExtraLayers; i++)
+		{
+			//add further quad layers
+			layers[i] = &extraLayers[i - 1]->Layer.Header;
+			//also commit the quad layer
+			ovr_CommitTextureSwapChainFunc(session->Session, extraLayers[i - 1]->SwapChain);
+		}
+
+		if(!OVR_SUCCESS(ovr_SubmitFrameFunc(session->Session, 0, NULL, layers, 1 + numberOfExtraLayers)))
 		{
 			return false;
 		}
