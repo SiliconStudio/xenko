@@ -502,7 +502,12 @@ namespace SiliconStudio.Xenko.Physics
         /// </summary>
         public void ClearForces()
         {
+            if (InternalRigidBody == null) return;
             InternalRigidBody?.ClearForces();
+            InternalRigidBody.InterpolationAngularVelocity = Vector3.Zero;
+            InternalRigidBody.LinearVelocity = Vector3.Zero;
+            InternalRigidBody.InterpolationAngularVelocity = Vector3.Zero;
+            InternalRigidBody.AngularVelocity = Vector3.Zero;
         }
 
         /// <summary>

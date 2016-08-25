@@ -15,26 +15,26 @@
     <XenkoBuildTags>WindowsTools</XenkoBuildTags>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Mono.Debugger.Soft">
-      <HintPath>$(ProgramFiles)\MonoDevelop\AddIns\MonoDevelop.Debugger.Soft\Mono.Debugger.Soft.dll</HintPath>
+      <Reference Include="Mono.Debugger.Soft">
+      <HintPath>$(ProgramFiles)\Xamarin Studio\AddIns\MonoDevelop.Debugger.Soft\Mono.Debugger.Soft.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Debugging">
-      <HintPath>$(ProgramFiles)\MonoDevelop\bin\Mono.Debugging.dll</HintPath>
+      <HintPath>$(ProgramFiles)\Xamarin Studio\bin\Mono.Debugging.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Debugging.Soft">
-      <HintPath>$(ProgramFiles)\MonoDevelop\AddIns\MonoDevelop.Debugger.Soft\Mono.Debugging.Soft.dll</HintPath>
+      <HintPath>$(ProgramFiles)\Xamarin Studio\AddIns\MonoDevelop.Debugger.Soft\Mono.Debugging.Soft.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.Core">
-      <HintPath>$(ProgramFiles)\MonoDevelop\bin\MonoDevelop.Core.dll</HintPath>
+      <HintPath>$(ProgramFiles)\Xamarin Studio\bin\MonoDevelop.Core.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.Debugger">
-      <HintPath>$(ProgramFiles)\MonoDevelop\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.dll</HintPath>
+      <HintPath>$(ProgramFiles)\Xamarin Studio\AddIns\MonoDevelop.Debugger\MonoDevelop.Debugger.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.Debugger.Soft">
-      <HintPath>$(ProgramFiles)\MonoDevelop\AddIns\MonoDevelop.Debugger.Soft\MonoDevelop.Debugger.Soft.dll</HintPath>
+      <HintPath>$(ProgramFiles)\Xamarin Studio\AddIns\MonoDevelop.Debugger.Soft\MonoDevelop.Debugger.Soft.dll</HintPath>
     </Reference>
     <Reference Include="MonoDevelop.Ide">
-      <HintPath>$(ProgramFiles)\MonoDevelop\bin\MonoDevelop.Ide.dll</HintPath>
+      <HintPath>$(ProgramFiles)\Xamarin Studio\bin\MonoDevelop.Ide.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
