@@ -18,24 +18,19 @@ namespace SiliconStudio.AssemblyProcessor
         private readonly Dictionary<TypeDefinition, ClosureInfo> closures = new Dictionary<TypeDefinition, ClosureInfo>();
         private bool isInitialized;
 
-        private AssemblyDefinition mscorlibAssembly;
         private AssemblyDefinition siliconStudioCoreAssembly;
-
-        private TypeReference pooledClosureType;
-
-        private TypeDefinition funcType;
         private MethodReference funcConstructor;
-
-        private TypeDefinition poolTypeDefinition;
-        private MethodReference poolConstructor;
 
         private TypeDefinition interlockedType;
         private MethodReference interlockedIncrementMethod;
         private MethodReference interlockedDecrementMethod;
 
         private TypeReference poolType;
+        private MethodReference poolConstructor;
         private MethodReference poolAcquireMethod;
         private MethodReference poolReleaseMethod;
+
+        private TypeReference pooledClosureType;
 
         private class ClosureInfo
         {
@@ -53,7 +48,7 @@ namespace SiliconStudio.AssemblyProcessor
             if (isInitialized)
                 return;
 
-            mscorlibAssembly = CecilExtensions.FindCorlibAssembly(context.Assembly);
+            var mscorlibAssembly = CecilExtensions.FindCorlibAssembly(context.Assembly);
 
             siliconStudioCoreAssembly = context.Assembly.Name.Name == "SiliconStudio.Core" ? context.Assembly :
                 context.AssemblyResolver.Resolve("SiliconStudio.Core");
@@ -61,20 +56,27 @@ namespace SiliconStudio.AssemblyProcessor
             pooledClosureType = context.Assembly.MainModule.ImportReference(siliconStudioCoreAssembly.MainModule.GetType("SiliconStudio.Core.Threading.IPooledClosure"));
 
             // Func type and it's contructor
-            funcType = mscorlibAssembly.MainModule.GetTypeResolved("System.Func`1");
+            var funcType = mscorlibAssembly.MainModule.GetTypeResolved("System.Func`1");
             funcConstructor = context.Assembly.MainModule.ImportReference(funcType.Methods.FirstOrDefault(x => x.Name == ".ctor"));
 
             // Pool type and it's constructor
-            poolTypeDefinition = siliconStudioCoreAssembly.MainModule.GetType("SiliconStudio.Core.Threading.ConcurrentPool`1");
+            var poolTypeDefinition = siliconStudioCoreAssembly.MainModule.GetType("SiliconStudio.Core.Threading.ConcurrentPool`1");
             poolType = context.Assembly.MainModule.ImportReference(poolTypeDefinition);
             poolConstructor = context.Assembly.MainModule.ImportReference(poolTypeDefinition.Methods.FirstOrDefault(x => x.Name == ".ctor"));
             poolAcquireMethod = context.Assembly.MainModule.ImportReference(poolTypeDefinition.Methods.FirstOrDefault(x => x.Name == "Acquire"));
             poolReleaseMethod = context.Assembly.MainModule.ImportReference(poolTypeDefinition.Methods.FirstOrDefault(x => x.Name == "Release"));
 
-            // Interlocked
+            // Interlocked (either from mscorlib.dll or System.Threading.dll)
             interlockedType = mscorlibAssembly.MainModule.GetTypeResolved("System.Threading.Interlocked");
+            if (interlockedType == null)
+            {
+                var threadingAssembly = context.AssemblyResolver.Resolve("System.Threading");
+                interlockedType = threadingAssembly.MainModule.GetTypeResolved("System.Threading.Interlocked");
+            }
             interlockedIncrementMethod = context.Assembly.MainModule.ImportReference(interlockedType.Methods.FirstOrDefault(x => x.Name == "Increment" && x.ReturnType.MetadataType == MetadataType.Int32));
             interlockedDecrementMethod = context.Assembly.MainModule.ImportReference(interlockedType.Methods.FirstOrDefault(x => x.Name == "Decrement" && x.ReturnType.MetadataType == MetadataType.Int32));
+
+            isInitialized = true;
         }
 
         public bool Process(AssemblyProcessorContext context)
