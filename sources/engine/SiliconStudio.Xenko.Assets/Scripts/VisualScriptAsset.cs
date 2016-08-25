@@ -125,6 +125,22 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                 return realPart;
             }
 
+            var slotReference = partReference as Slot;
+            if (slotReference != null)
+            {
+                // TODO: store slot reference as Block Id + Slot Id for faster lookup
+                foreach (var block in Blocks)
+                {
+                    foreach (var slot in block.Slots)
+                    {
+                        if (slot.Id == slotReference.Id)
+                            return slot;
+                    }
+                }
+
+                return null;
+            }
+
             return null;
         }
 
