@@ -272,7 +272,6 @@
     <Compile Include="Threading\IPooledClosure.cs" />
     <Compile Include="Threading\PooledAttribute.cs" />
     <Compile Include="Threading\PooledDelegateHelper.cs" />
-    <Compile Include="Threading\TaskList.cs" />
     <Compile Include="Threading\ThreadPool.cs" />
     <Compile Include="UnmanagedArray.cs" />
     <Compile Include="Utilities.cs" />
