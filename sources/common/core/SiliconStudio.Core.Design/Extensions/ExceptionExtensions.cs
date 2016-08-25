@@ -100,6 +100,9 @@ namespace SiliconStudio.Core.Extensions
 
         private static void ExtractStackTrace(StringBuilder sb, Exception exception, int indent, int maxLines)
         {
+            if (exception.StackTrace == null)
+                return;
+            
             var indentString = "".PadLeft(indent);
             var stackTraceArray = exception.StackTrace.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
             foreach (var line in maxLines > 0 ? stackTraceArray.Take(maxLines) : stackTraceArray)
