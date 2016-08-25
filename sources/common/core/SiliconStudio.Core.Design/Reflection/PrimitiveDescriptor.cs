@@ -18,7 +18,7 @@ namespace SiliconStudio.Core.Reflection
         /// <param name="factory">The factory.</param>
         /// <param name="type">The type.</param>
         /// <exception cref="System.ArgumentException">Type [{0}] is not a primitive</exception>
-        public PrimitiveDescriptor(ITypeDescriptorFactory factory, Type type) : base(factory, type)
+        public PrimitiveDescriptor(ITypeDescriptorFactory factory, Type type) : base(factory, ConvertType(type))
         {
             if (!IsPrimitive(type))
                 throw new ArgumentException("Type [{0}] is not a primitive");
@@ -37,7 +37,7 @@ namespace SiliconStudio.Core.Reflection
             {
                 case TypeCode.Object:
                 case TypeCode.Empty:
-                    return type == typeof(string) || type == typeof(TimeSpan) || type == typeof(DateTime);
+                    return type == typeof(string) || typeof(Type).IsAssignableFrom(type) || type == typeof(TimeSpan) || type == typeof(DateTime);
             }
             return true;
         }
@@ -45,6 +45,15 @@ namespace SiliconStudio.Core.Reflection
         protected override System.Collections.Generic.List<IMemberDescriptor> PrepareMembers()
         {
             return EmptyMembers;
+        }
+
+        private static Type ConvertType(Type type)
+        {
+            // Even if it's a type inheriting from Type, we use directly Type to hide CLR implementation details
+            if (typeof(Type).IsAssignableFrom(type))
+                return typeof(Type);
+
+            return type;
         }
     }
 }

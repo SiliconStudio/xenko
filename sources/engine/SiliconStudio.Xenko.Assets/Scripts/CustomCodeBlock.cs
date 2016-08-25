@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using SiliconStudio.Core;
@@ -39,11 +40,10 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             context.AddStatement(syntaxTree);
         }
 
-        public override void RegenerateSlots()
+        public override void RegenerateSlots(IList<Slot> newSlots)
         {
-            Slots.Clear();
-            Slots.Add(new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Input });
-            Slots.Add(new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Output });
+            newSlots.Add(new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Input });
+            newSlots.Add(new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Output });
         }
     }
 }

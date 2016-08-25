@@ -256,6 +256,7 @@
     <Compile Include="Rendering\GraphicsCompositorAsset.cs" />
     <Compile Include="Scripts\Link.cs" />
     <Compile Include="Scripts\Slot.cs" />
+    <Compile Include="Scripts\SlotDefinition.cs" />
     <Compile Include="Scripts\Variable.cs" />
     <Compile Include="Scripts\VariableGet.cs" />
     <Compile Include="Scripts\VariableSet.cs" />

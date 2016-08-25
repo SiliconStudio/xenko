@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SiliconStudio.Core;
@@ -11,10 +12,10 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         public Variable Variable { get; set; }
 
         [DataMemberIgnore]
-        public Slot InputSlot { get; set; }
+        public Slot InputSlot => FindSlot(SlotDirection.Input, SlotKind.Value, null);
 
         //[DataMemberIgnore]
-        //public Slot OutputSlot { get; set; }
+        //public Slot OutputSlot => FindSlot(SlotDirection.Output, SlotKind.Value, null);
 
         public override void GenerateCode(VisualScriptCompilerContext context)
         {
@@ -28,15 +29,16 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             context.AddStatement(ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, IdentifierName(Variable.Name), newValue)));
         }
 
-        public override void RegenerateSlots()
+        public override void RegenerateSlots(IList<Slot> newSlots)
         {
-            Slots.Clear();
-            Slots.Add(new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Input });
-            Slots.Add(new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Output, Flags = SlotFlags.AutoflowExecution });
-            
-            // TODO: InputSlot should expose variable type
-            Slots.Add(InputSlot = new Slot { Kind = SlotKind.Value, Direction = SlotDirection.Input });
-            //Slots.Add(OutputSlot = new Slot { Kind = SlotKind.Value, Direction = SlotDirection.Output });
+            newSlots.Add(new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Input });
+            newSlots.Add(new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Output, Flags = SlotFlags.AutoflowExecution });
+
+            if (Variable != null)
+            {
+                newSlots.Add(new Slot { Kind = SlotKind.Value, Direction = SlotDirection.Input, Type = Variable.Type });
+                //newSlots.Add(new Slot { Kind = SlotKind.Value, Direction = SlotDirection.Output, Type = Variable.Type });
+            }
         }
 
         private LiteralExpressionSyntax ConvertLiteralExpression(Type type, object value)

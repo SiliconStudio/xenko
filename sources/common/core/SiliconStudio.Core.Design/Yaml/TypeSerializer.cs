@@ -8,7 +8,7 @@ using SharpYaml.Serialization;
 namespace SiliconStudio.Core.Yaml
 {
     /// <summary>
-    /// A Yaml serializer for <see cref="UDirectory"/>
+    /// A Yaml serializer for <see cref="Type"/>
     /// </summary>
     [YamlSerializerFactory]
     internal class TypeSerializer : AssetScalarSerializerBase
@@ -26,6 +26,9 @@ namespace SiliconStudio.Core.Yaml
 
         public override string ConvertTo(ref ObjectContext context)
         {
+            // Remove tag info (i.e. RuntimeType inherits from Type)
+            // TODO: We don't support properly the case where it is stored in an object (we do want the !System.Type tag in this case)
+            // this seems to require some changes on SharpYaml side
             return context.SerializerContext.TagFromType((Type)context.Instance);
         }
     }

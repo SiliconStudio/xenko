@@ -30,10 +30,10 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             // Generate slots
             foreach (var block in visualScript.Blocks)
-                block.RegenerateSlots();
+                block.RegenerateSlots(block.Slots);
 
             // Build links
-            visualScript.Links.Add(new Link(functionStart.StartSlot, writeTrue.ExecutionInput));
+            visualScript.Links.Add(new Link(functionStart.ExecutionOutput, writeTrue.ExecutionInput));
 
             // Test
             TestAndCompareOutput(visualScript, "True", testInstance => testInstance.Test());
@@ -56,10 +56,10 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             // Generate slots
             foreach (var block in visualScript.Blocks)
-                block.RegenerateSlots();
+                block.RegenerateSlots(block.Slots);
 
             // Build links
-            visualScript.Links.Add(new Link(functionStart.StartSlot, conditionalBranch.ExecutionInput));
+            visualScript.Links.Add(new Link(functionStart.ExecutionOutput, conditionalBranch.ExecutionInput));
             visualScript.Links.Add(new Link(conditionalBranch.TrueSlot, writeTrue.ExecutionInput));
             visualScript.Links.Add(new Link(conditionalBranch.FalseSlot, writeFalse.ExecutionInput));
 
@@ -94,10 +94,10 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             // Generate slots
             foreach (var block in visualScript.Blocks)
-                block.RegenerateSlots();
+                block.RegenerateSlots(block.Slots);
 
             // Build links
-            visualScript.Links.Add(new Link(functionStart.StartSlot, conditionalBranch.ExecutionInput));
+            visualScript.Links.Add(new Link(functionStart.ExecutionOutput, conditionalBranch.ExecutionInput));
             visualScript.Links.Add(new Link(conditionGet.ValueSlot, conditionalBranch.ConditionSlot));
             visualScript.Links.Add(new Link(conditionalBranch.TrueSlot, writeTrue.ExecutionInput));
             visualScript.Links.Add(new Link(conditionalBranch.FalseSlot, writeFalse.ExecutionInput));
@@ -141,10 +141,10 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             // Generate slots
             foreach (var block in visualScript.Blocks)
-                block.RegenerateSlots();
+                block.RegenerateSlots(block.Slots);
 
             // Build links
-            visualScript.Links.Add(new Link(functionStart.StartSlot, conditionSet.ExecutionInput));
+            visualScript.Links.Add(new Link(functionStart.ExecutionOutput, conditionSet.ExecutionInput));
             visualScript.Links.Add(new Link(conditionSet.ExecutionOutput, conditionalBranch.ExecutionInput));
             visualScript.Links.Add(new Link(conditionGet.ValueSlot, conditionalBranch.ConditionSlot));
             visualScript.Links.Add(new Link(conditionalBranch.TrueSlot, writeTrue.ExecutionInput));

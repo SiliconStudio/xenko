@@ -159,10 +159,21 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             // Generate variables
             foreach (var variable in visualScriptAsset.Variables)
             {
+                string variableType;
+                if (variable.Type != null)
+                {
+                    variableType = variable.Type.FullName;
+                }
+                else
+                {
+                    result.Error($"Variable {variable.Name} has no type, using \"object\" instead.");
+                    variableType = "object";
+                }
+
                 var field =
                     FieldDeclaration(
                         VariableDeclaration(
-                            ParseTypeName(variable.Type.FullName))
+                            ParseTypeName(variableType))
                         .WithVariables(
                             SingletonSeparatedList(
                                 VariableDeclarator(

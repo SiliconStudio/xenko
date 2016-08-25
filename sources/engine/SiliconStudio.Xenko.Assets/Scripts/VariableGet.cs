@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SiliconStudio.Core;
@@ -11,7 +12,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         public Variable Variable { get; set; }
 
         [DataMemberIgnore]
-        public Slot ValueSlot { get; set; }
+        public Slot ValueSlot => FindSlot(SlotDirection.Output, SlotKind.Value, null);
 
         public override ExpressionSyntax GenerateExpression()
         {
@@ -21,10 +22,10 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             return IdentifierName(Variable.Name);
         }
 
-        public override void RegenerateSlots()
+        public override void RegenerateSlots(IList<Slot> newSlots)
         {
-            Slots.Clear();
-            Slots.Add(ValueSlot = new Slot { Kind = SlotKind.Value, Direction = SlotDirection.Output });
+            if (Variable != null)
+                newSlots.Add(new Slot { Kind = SlotKind.Value, Direction = SlotDirection.Output, Type = Variable.Type });
         }
     }
 }

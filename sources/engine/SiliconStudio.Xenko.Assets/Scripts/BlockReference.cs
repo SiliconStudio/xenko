@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
@@ -48,7 +49,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                 return new FakeBlock();
             }
 
-            public override void RegenerateSlots()
+            public override void RegenerateSlots(IList<Slot> newSlots)
             {
             }
         }

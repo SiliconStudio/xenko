@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.CodeAnalysis.CSharp;
 using SiliconStudio.Core;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -7,26 +8,26 @@ namespace SiliconStudio.Xenko.Assets.Scripts
     public class ConditionalBranchBlock : ExecutionBlock
     {
         [DataMemberIgnore]
-        public Slot TrueSlot { get; private set; }
+        public Slot TrueSlot => FindSlot(TrueSlotDefinition);
 
         [DataMemberIgnore]
-        public Slot FalseSlot { get; private set; }
+        public Slot FalseSlot => FindSlot(FalseSlotDefinition);
 
         [DataMemberIgnore]
-        public Slot ConditionSlot { get; private set; }
+        public Slot ConditionSlot => FindSlot(ConditionSlotDefinition);
 
-        public const string TrueSlotName = "True";
-        public const string FalseSlotName = "False";
+        public static readonly SlotDefinition<bool> ConditionSlotDefinition = SlotDefinition.NewValueInput("Condition", true);
+        public static readonly SlotDefinition TrueSlotDefinition = SlotDefinition.NewExecutionOutput("True", SlotFlags.None);
+        public static readonly SlotDefinition FalseSlotDefinition = SlotDefinition.NewExecutionOutput("False");
 
         public override string Title => "Condition";
 
-        public override void RegenerateSlots()
+        public override void RegenerateSlots(IList<Slot> newSlots)
         {
-            Slots.Clear();
-            Slots.Add(new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Input });
-            Slots.Add(ConditionSlot = new Slot { Kind = SlotKind.Value, Direction = SlotDirection.Input, Name = "Condition", Value = true });
-            Slots.Add(TrueSlot = new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Output, Name = TrueSlotName });
-            Slots.Add(FalseSlot = new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Output, Name = FalseSlotName, Flags = SlotFlags.AutoflowExecution });
+            newSlots.Add(new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Input });
+            newSlots.Add(ConditionSlotDefinition);
+            newSlots.Add(TrueSlotDefinition);
+            newSlots.Add(FalseSlotDefinition);
         }
 
         public override void GenerateCode(VisualScriptCompilerContext context)

@@ -53,9 +53,42 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         /// Gets the list of slots this block has.
         /// </summary>
         [DataMember(10000), Display(Browsable = false)]
-        public ObservableCollection<Slot> Slots { get; } = new ObservableCollection<Slot>();
+        public TrackingCollection<Slot> Slots { get; } = new TrackingCollection<Slot>();
 
-        public abstract void RegenerateSlots();
+        public abstract void RegenerateSlots(IList<Slot> newSlots);
+
+        protected Slot FindSlot(SlotDirection direction, SlotKind kind, string name)
+        {
+            foreach (var slot in Slots)
+            {
+                if (slot.Direction == direction && slot.Kind == kind && slot.Name == name)
+                    return slot;
+            }
+
+            return null;
+        }
+
+        protected Slot FindSlot(SlotDirection direction, SlotKind kind, SlotFlags flags)
+        {
+            foreach (var slot in Slots)
+            {
+                if (slot.Direction == direction && slot.Kind == kind && (slot.Flags & flags) == flags)
+                    return slot;
+            }
+
+            return null;
+        }
+
+        protected Slot FindSlot(SlotDefinition definition)
+        {
+            foreach (var slot in Slots)
+            {
+                if (slot.Direction == definition.Direction && slot.Kind == definition.Kind && slot.Name == definition.Name && slot.Flags == definition.Flags)
+                    return slot;
+            }
+
+            return null;
+        }
 
         /// <inheritdoc/>
         Block IAssetPartDesign<Block>.Part => this;
@@ -70,28 +103,15 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             slot.Owner = null;
         }
 
-        private void Slots_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void Slots_CollectionChanged(object sender, TrackingCollectionChangedEventArgs e)
         {
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    foreach (Slot slot in e.NewItems)
-                    {
-                        OnSlotAdd(slot);
-                    }
+                    OnSlotAdd((Slot)e.Item);
                     break;
                 case NotifyCollectionChangedAction.Remove:
-                    foreach (Slot slot in e.OldItems)
-                    {
-                        OnSlotRemove(slot);
-                    }
-                    break;
-                case NotifyCollectionChangedAction.Reset:
-                    // Note: we should properly disconnect removed slots, but the event doesn't give us this info...
-                    foreach (var slot in (IEnumerable<Slot>)sender)
-                    {
-                        OnSlotAdd(slot);
-                    }
+                    OnSlotRemove((Slot)e.Item);
                     break;
                 default:
                     throw new NotSupportedException();
@@ -102,38 +122,12 @@ namespace SiliconStudio.Xenko.Assets.Scripts
     public abstract class ExecutionBlock : Block
     {
         [DataMemberIgnore]
-        public Slot ExecutionInput { get; private set; }
+        public Slot ExecutionInput => FindSlot(SlotDirection.Input, SlotKind.Execution, null);
 
         [DataMemberIgnore]
-        public Slot ExecutionOutput { get; private set; }
+        public Slot ExecutionOutput => FindSlot(SlotDirection.Output, SlotKind.Execution, null) ?? FindSlot(SlotDirection.Output, SlotKind.Execution, SlotFlags.AutoflowExecution);
 
         public abstract void GenerateCode(VisualScriptCompilerContext context);
-
-        protected override void OnSlotAdd(Slot slot)
-        {
-            base.OnSlotAdd(slot);
-
-            if (slot.Kind == SlotKind.Execution)
-            {
-                // Detect default input slot with its null name (should we have a default flag instead?)
-                if (slot.Direction == SlotDirection.Input && slot.Name == null)
-                    ExecutionInput = slot;
-
-                // Detect default output slot with its null name or auto flow flag (should we have a default flag instead?)
-                if (slot.Direction == SlotDirection.Output && (slot.Name == null || (slot.Flags & SlotFlags.AutoflowExecution) != 0))
-                    ExecutionOutput = slot;
-            }
-        }
-
-        protected override void OnSlotRemove(Slot slot)
-        {
-            if (slot == ExecutionInput)
-                ExecutionInput = null;
-            if (slot == ExecutionOutput)
-                ExecutionOutput = null;
-
-            base.OnSlotRemove(slot);
-        }
     }
 
     public abstract class ExpressionBlock : Block
@@ -145,17 +139,13 @@ namespace SiliconStudio.Xenko.Assets.Scripts
     {
         public const string StartSlotName = "Start";
 
-        [DataMemberIgnore]
-        public Slot StartSlot { get; private set; }
-
         public override string Title => $"{FunctionName} Start";
 
         public string FunctionName { get; set; }
 
-        public override void RegenerateSlots()
+        public override void RegenerateSlots(IList<Slot> newSlots)
         {
-            Slots.Clear();
-            Slots.Add(StartSlot = new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Output, Name = StartSlotName, Flags = SlotFlags.AutoflowExecution });
+            newSlots.Add(new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Output, Name = StartSlotName, Flags = SlotFlags.AutoflowExecution });
         }
 
         public override void GenerateCode(VisualScriptCompilerContext context)
