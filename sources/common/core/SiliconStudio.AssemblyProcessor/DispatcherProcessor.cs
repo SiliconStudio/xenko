@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
@@ -21,7 +22,6 @@ namespace SiliconStudio.AssemblyProcessor
         private AssemblyDefinition siliconStudioCoreAssembly;
         private MethodReference funcConstructor;
 
-        private TypeDefinition interlockedType;
         private MethodReference interlockedIncrementMethod;
         private MethodReference interlockedDecrementMethod;
 
@@ -67,14 +67,22 @@ namespace SiliconStudio.AssemblyProcessor
             poolReleaseMethod = context.Assembly.MainModule.ImportReference(poolTypeDefinition.Methods.FirstOrDefault(x => x.Name == "Release"));
 
             // Interlocked (either from mscorlib.dll or System.Threading.dll)
-            interlockedType = mscorlibAssembly.MainModule.GetTypeResolved("System.Threading.Interlocked");
-            if (interlockedType == null)
+            var interlockedTypeDefinition = mscorlibAssembly.MainModule.GetTypeResolved("System.Threading.Interlocked");
+            if (interlockedTypeDefinition == null)
             {
                 var threadingAssembly = context.AssemblyResolver.Resolve("System.Threading");
-                interlockedType = threadingAssembly.MainModule.GetTypeResolved("System.Threading.Interlocked");
+                interlockedTypeDefinition = threadingAssembly.MainModule.GetTypeResolved("System.Threading.Interlocked");
             }
-            interlockedIncrementMethod = context.Assembly.MainModule.ImportReference(interlockedType.Methods.FirstOrDefault(x => x.Name == "Increment" && x.ReturnType.MetadataType == MetadataType.Int32));
-            interlockedDecrementMethod = context.Assembly.MainModule.ImportReference(interlockedType.Methods.FirstOrDefault(x => x.Name == "Decrement" && x.ReturnType.MetadataType == MetadataType.Int32));
+            var interlockedType = context.Assembly.MainModule.ImportReference(interlockedTypeDefinition);
+
+            // NOTE: We create method references manually, because ImportReference imports a different version of the runtime, causing  
+            interlockedIncrementMethod = new MethodReference("Increment", context.Assembly.MainModule.TypeSystem.Int32, interlockedType);
+            interlockedIncrementMethod.Parameters.Add(new ParameterDefinition("", ParameterAttributes.None, context.Assembly.MainModule.TypeSystem.Int32.MakeByReferenceType()));
+            //interlockedIncrementMethod = context.Assembly.MainModule.ImportReference(interlockedType.Methods.FirstOrDefault(x => x.Name == "Increment" && x.ReturnType.MetadataType == MetadataType.Int32));
+
+            interlockedDecrementMethod = new MethodReference("Decrement", context.Assembly.MainModule.TypeSystem.Int32, interlockedType);
+            interlockedDecrementMethod.Parameters.Add(new ParameterDefinition("", ParameterAttributes.None, context.Assembly.MainModule.TypeSystem.Int32.MakeByReferenceType()));
+            //interlockedDecrementMethod = context.Assembly.MainModule.ImportReference(interlockedType.Methods.FirstOrDefault(x => x.Name == "Decrement" && x.ReturnType.MetadataType == MetadataType.Int32));
 
             isInitialized = true;
         }
@@ -290,6 +298,7 @@ namespace SiliconStudio.AssemblyProcessor
             // Create factory method for pool items
             var factoryMethod = new MethodDefinition("<Factory>", MethodAttributes.HideBySig | MethodAttributes.Private | MethodAttributes.Static, closureGenericType);
             closureType.Methods.Add(factoryMethod);
+            factoryMethod.Body.InitLocals = true;
             factoryMethod.Body.Variables.Add(new VariableDefinition(closureGenericType));
             var factoryMethodProcessor = factoryMethod.Body.GetILProcessor();
             // Create and store closure
