@@ -10,17 +10,18 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         public string Name { get; }
 
-        public virtual string Type => null;
+        public object Value { get; }
 
         public virtual object ObjectValue => null;
 
         public SlotFlags Flags { get; }
 
-        protected SlotDefinition(SlotDirection direction, SlotKind kind, string name, SlotFlags flags)
+        protected SlotDefinition(SlotDirection direction, SlotKind kind, string name, object value, SlotFlags flags)
         {
             Direction = direction;
             Kind = kind;
             Name = name;
+            Value = value;
             Flags = flags;
         }
 
@@ -31,7 +32,6 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                 Direction = definition.Direction,
                 Kind = definition.Kind,
                 Name = definition.Name,
-                Type = definition.Type,
                 Value = definition.ObjectValue,
                 Flags = definition.Flags,
             };
@@ -39,36 +39,22 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         public static SlotDefinition NewExecutionInput(string name, SlotFlags flags = SlotFlags.None)
         {
-            return new SlotDefinition(SlotDirection.Input, SlotKind.Execution, name, flags);
+            return new SlotDefinition(SlotDirection.Input, SlotKind.Execution, name, null, flags);
         }
 
         public static SlotDefinition NewExecutionOutput(string name, SlotFlags flags = SlotFlags.None)
         {
-            return new SlotDefinition(SlotDirection.Output, SlotKind.Execution, name, flags);
+            return new SlotDefinition(SlotDirection.Output, SlotKind.Execution, name, null, flags);
         }
 
-        public static SlotDefinition<T> NewValueInput<T>(string name, T value, SlotFlags flags = SlotFlags.None)
+        public static SlotDefinition NewValueInput(string name, object value, SlotFlags flags = SlotFlags.None)
         {
-            return new SlotDefinition<T>(SlotDirection.Input, SlotKind.Value, name, value, flags);
+            return new SlotDefinition(SlotDirection.Input, SlotKind.Value, name, value, flags);
         }
 
-        public static SlotDefinition<T> NewValueOutput<T>(string name, T value, SlotFlags flags = SlotFlags.None)
+        public static SlotDefinition NewValueOutput(string name, object value, SlotFlags flags = SlotFlags.None)
         {
-            return new SlotDefinition<T>(SlotDirection.Output, SlotKind.Value, name, value, flags);
-        }
-    }
-
-    public class SlotDefinition<T> : SlotDefinition
-    {
-        public override string Type => typeof(T).FullName;
-
-        public override object ObjectValue => Value;
-
-        public T Value { get; }
-
-        internal SlotDefinition(SlotDirection direction, SlotKind kind, string name, T value, SlotFlags flags) : base(direction, kind, name, flags)
-        {
-            Value = value;
+            return new SlotDefinition(SlotDirection.Output, SlotKind.Value, name, value, flags);
         }
     }
 }

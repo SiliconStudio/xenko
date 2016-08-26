@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         [DataMemberIgnore]
         public Slot ConditionSlot => FindSlot(ConditionSlotDefinition);
 
-        public static readonly SlotDefinition<bool> ConditionSlotDefinition = SlotDefinition.NewValueInput("Condition", true);
+        public static readonly SlotDefinition ConditionSlotDefinition = SlotDefinition.NewValueInput("Condition", true);
         public static readonly SlotDefinition TrueSlotDefinition = SlotDefinition.NewExecutionOutput("True");
         public static readonly SlotDefinition FalseSlotDefinition = SlotDefinition.NewExecutionOutput("False", SlotFlags.AutoflowExecution);
 

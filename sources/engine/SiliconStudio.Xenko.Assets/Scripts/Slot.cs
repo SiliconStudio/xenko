@@ -30,10 +30,6 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         [DefaultValue(null)]
         public string Name { get; set; }
 
-        [DataMember(30)]
-        [DefaultValue(null)]
-        public string Type { get; set; }
-
         [DataMember(40)]
         [DefaultValue(null)]
         public object Value { get; set; }

@@ -36,8 +36,8 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
             if (Variable != null)
             {
-                newSlots.Add(new Slot { Kind = SlotKind.Value, Direction = SlotDirection.Input, Type = Variable.Type });
-                //newSlots.Add(new Slot { Kind = SlotKind.Value, Direction = SlotDirection.Output, Type = Variable.Type });
+                newSlots.Add(new Slot { Kind = SlotKind.Value, Direction = SlotDirection.Input });
+                //newSlots.Add(new Slot { Kind = SlotKind.Value, Direction = SlotDirection.Output });
             }
         }
 
