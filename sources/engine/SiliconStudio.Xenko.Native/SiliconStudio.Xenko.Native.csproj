@@ -79,7 +79,7 @@
     <None Include="LinuxAllocator.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Audio\Common.h" />
+    <None Include="Audio\Common.h" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
