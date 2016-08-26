@@ -15,6 +15,10 @@ xnOvrGetMirrorTextureDx
 xnOvrGetStatus
 xnOvrRecenter
 xnOvrGetAudioDeviceID
+xnOvrCreateQuadLayerTexturesDx
+xnOvrGetQuadLayerTextureAtIndexDx
+xnOvrGetCurrentQuadLayerTargetIndex
+xnOvrSetQuadLayerParams
 xnCeltCreate
 xnCeltDestroy
 xnCeltEncodeFloat

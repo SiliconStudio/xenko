@@ -376,7 +376,7 @@ extern "C" {
 		ovrLayerQuad Layer;
 	};
 
-	xnOvrQuadLayer* xnOvrCreateQuadLayerTexturesDx(xnOvrSession* session, void* dxDevice, int* outTextureCount, int width, int height)
+	xnOvrQuadLayer* xnOvrCreateQuadLayerTexturesDx(xnOvrSession* session, void* dxDevice, int* outTextureCount, int width, int height, bool headLocked)
 	{
 		auto layer = new xnOvrQuadLayer;
 
@@ -402,6 +402,8 @@ extern "C" {
 		ovr_GetTextureSwapChainLengthFunc(session->Session, layer->SwapChain, &count);
 		*outTextureCount = count;
 
+		layer->Layer.Header.Type = ovrLayerType_Quad;
+		layer->Layer.Header.Flags = headLocked ? ovrLayerFlag_HeadLocked | ovrLayerFlag_HighQuality : ovrLayerFlag_HighQuality;
 		layer->Layer.ColorTexture = layer->SwapChain;
 		layer->Layer.Viewport.Pos.x = 0;
 		layer->Layer.Viewport.Pos.y = 0;
@@ -413,11 +415,18 @@ extern "C" {
 		layer->Layer.QuadPoseCenter.Orientation.w = 1;
 		layer->Layer.QuadPoseCenter.Position.x = 0;
 		layer->Layer.QuadPoseCenter.Position.y = 0;
-		layer->Layer.QuadPoseCenter.Position.z = 0;
-		layer->Layer.QuadSize.x = 1;
-		layer->Layer.QuadSize.y = 1;
+		layer->Layer.QuadPoseCenter.Position.z = -1;
+		layer->Layer.QuadSize.x = 2;
+		layer->Layer.QuadSize.y = 2;
 
 		return layer;
+	}
+
+	void xnOvrSetQuadLayerParams(xnOvrQuadLayer* layer, float* position, float* orientation, float* size)
+	{
+		memcpy(&layer->Layer.QuadPoseCenter.Orientation, orientation, sizeof(float) * 4);
+		memcpy(&layer->Layer.QuadPoseCenter.Position, position, sizeof(float) * 3);
+		memcpy(&layer->Layer.QuadSize, size, sizeof(float) * 2);
 	}
 
 	void* xnOvrGetTextureAtIndexDx(xnOvrSession* session, GUID textureGuid, int index)
@@ -511,12 +520,12 @@ extern "C" {
 		layers[0] = &session->Layer.Header;
 		//commit the default fov layer
 		ovr_CommitTextureSwapChainFunc(session->Session, session->SwapChain);
-		for (auto i = 1; i < numberOfExtraLayers; i++)
+		for (auto i = 0; i < numberOfExtraLayers; i++)
 		{
 			//add further quad layers
-			layers[i] = &extraLayers[i - 1]->Layer.Header;
+			layers[i + 1] = &extraLayers[i]->Layer.Header;
 			//also commit the quad layer
-			ovr_CommitTextureSwapChainFunc(session->Session, extraLayers[i - 1]->SwapChain);
+			ovr_CommitTextureSwapChainFunc(session->Session, extraLayers[i]->SwapChain);
 		}
 
 		if(!OVR_SUCCESS(ovr_SubmitFrameFunc(session->Session, 0, NULL, layers, 1 + numberOfExtraLayers)))
