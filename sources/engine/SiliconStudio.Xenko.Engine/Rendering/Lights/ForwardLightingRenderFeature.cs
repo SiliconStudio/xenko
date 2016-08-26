@@ -43,10 +43,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             internal ParameterCollectionLayout ViewParameterLayout;
             internal ParameterCollection ViewParameters = new ParameterCollection();
 
-            internal ThreadLocal<ObjectId> DrawLayoutHash = new ThreadLocal<ObjectId>();
-            internal ThreadLocal<ParameterCollectionLayout> DrawParameterLayout;
-            internal ThreadLocal<ParameterCollection> DrawParameters = new ThreadLocal<ParameterCollection>(() => new ParameterCollection());
-
             public RenderViewLightData()
             {
                 ActiveLightGroups = new Dictionary<Type, LightComponentCollectionGroup>(16);
@@ -57,6 +53,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 LightComponentsWithShadows = new Dictionary<LightComponent, LightShadowMapTexture>(16);
             }
         }
+
+        private readonly ThreadLocal<PrepareThreadLocals> prepareThreadLocals = new ThreadLocal<PrepareThreadLocals>(() => new PrepareThreadLocals());
 
         private StaticObjectPropertyKey<RenderEffect> renderEffectKey;
 
@@ -395,8 +393,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 }
 
                 // PerDraw
-                //foreach (var renderNodeReference in viewFeature.RenderNodes)
-                Dispatcher.ForEach(viewFeature.RenderNodes, () => renderViewData.DrawParameters.Value, (renderNodeReference, drawParameters) =>
+                Dispatcher.ForEach(viewFeature.RenderNodes, () => prepareThreadLocals.Value, (renderNodeReference, locals) =>
                 {
                     var renderNode = RootRenderFeature.GetRenderNode(renderNodeReference);
 
@@ -413,32 +410,32 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         return;
 
                     // First time, let's build layout
-                    if (drawLighting.Hash != renderViewData.DrawLayoutHash.Value)
+                    if (drawLighting.Hash != locals.DrawLayoutHash)
                     {
-                        renderViewData.DrawLayoutHash.Value = drawLighting.Hash;
+                        locals.DrawLayoutHash = drawLighting.Hash;
 
                         // Generate layout
                         var drawParameterLayout = new ParameterCollectionLayout();
                         drawParameterLayout.ProcessLogicalGroup(drawLayout, ref drawLighting);
 
-                        drawParameters.UpdateLayout(drawParameterLayout);
+                        locals.DrawParameters.UpdateLayout(drawParameterLayout);
                     }
 
                     // TODO: Does this ever fail?
-                    Debug.Assert(drawLighting.Hash == renderViewData.DrawLayoutHash.Value, "PerDraw Lighting layout differs between different RenderObject in the same RenderView");
+                    Debug.Assert(drawLighting.Hash == locals.DrawLayoutHash, "PerDraw Lighting layout differs between different RenderObject in the same RenderView");
 
                     // Compute PerDraw lighting
                     foreach (var directLightGroup in ShaderPermutation.DirectLightGroups)
                     {
-                        directLightGroup.ApplyDrawParameters(context, renderViewData.ViewIndex, drawParameters, ref renderNode.RenderObject.BoundingBox);
+                        directLightGroup.ApplyDrawParameters(context, renderViewData.ViewIndex, locals.DrawParameters, ref renderNode.RenderObject.BoundingBox);
                     }
                     foreach (var environmentLight in ShaderPermutation.EnvironmentLights)
                     {
-                        environmentLight.ApplyDrawParameters(context, renderViewData.ViewIndex, drawParameters, ref renderNode.RenderObject.BoundingBox);
+                        environmentLight.ApplyDrawParameters(context, renderViewData.ViewIndex, locals.DrawParameters, ref renderNode.RenderObject.BoundingBox);
                     }
 
                     // Update resources
-                    renderNode.Resources.UpdateLogicalGroup(ref drawLighting, drawParameters);
+                    renderNode.Resources.UpdateLogicalGroup(ref drawLighting, locals.DrawParameters);
                 });
             }
         }
@@ -658,6 +655,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             public readonly LightGroupRendererBase LightRenderer;
 
             public readonly LightComponentCollectionGroup LightGroup;
+        }
+
+        private class PrepareThreadLocals
+        {
+            public ObjectId DrawLayoutHash;
+
+            public readonly ParameterCollection DrawParameters = new ParameterCollection();
         }
     }
 }
