@@ -2,10 +2,13 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-
+using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.UI.Events;
 
@@ -14,109 +17,22 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// Represents a slider element.
     /// </summary>
+    [DataContract(nameof(Slider))]
+    [Display(category: InputCategory)]
     public class Slider : UIElement
     {
         private float value;
 
         private bool shouldSnapToTicks;
 
-        private Orientation orientation;
-
-        /// <summary>
-        /// The key to the TrackBackgroundImage dependency property.
-        /// </summary>
-        public static readonly PropertyKey<ISpriteProvider> TrackBackgroundImagePropertyKey = new PropertyKey<ISpriteProvider>("TrackBackgroundImageKey", typeof(Slider), DefaultValueMetadata.Static<ISpriteProvider>(null), ObjectInvalidationMetadata.New<ISpriteProvider>(InvalidateTrackBackground));
-
-        /// <summary>
-        /// The key to the TrackForegroundImage dependency property.
-        /// </summary>
-        public static readonly PropertyKey<ISpriteProvider> TrackForegroundImagePropertyKey = new PropertyKey<ISpriteProvider>("TrackForegroundImageKey", typeof(Slider), DefaultValueMetadata.Static<ISpriteProvider>(null));
-
-        /// <summary>
-        /// The key to the ThumbImage dependency property.
-        /// </summary>
-        public static readonly PropertyKey<ISpriteProvider> ThumbImagePropertyKey = new PropertyKey<ISpriteProvider>("ThumbImageKey", typeof(Slider), DefaultValueMetadata.Static<ISpriteProvider>(null));
-
-        /// <summary>
-        /// The key to the TickImage dependency property.
-        /// </summary>
-        public static readonly PropertyKey<ISpriteProvider> TickImagePropertyKey = new PropertyKey<ISpriteProvider>("ThickImageKey", typeof(Slider), DefaultValueMetadata.Static<ISpriteProvider>(null));
-
-        /// <summary>
-        /// The key to the MouseOverThumbImage dependency property.
-        /// </summary>
-        public static readonly PropertyKey<ISpriteProvider> MouseOverThumbImagePropertyKey = new PropertyKey<ISpriteProvider>("MouseOverThumbImageKey", typeof(Slider), DefaultValueMetadata.Static<ISpriteProvider>(null));
-
-        /// <summary>
-        /// The key to the Minimum dependency property.
-        /// </summary>
-        public static readonly PropertyKey<float> MinimumPropertyKey = new PropertyKey<float>("MinimumKey", typeof(Slider), DefaultValueMetadata.Static<float>(0), ObjectInvalidationMetadata.New<float>(ValidateExtremum));
-
-        /// <summary>
-        /// The key to the Maximum dependency property.
-        /// </summary>
-        public static readonly PropertyKey<float> MaximumPropertyKey = new PropertyKey<float>("MaximumKey", typeof(Slider), DefaultValueMetadata.Static<float>(1), ObjectInvalidationMetadata.New<float>(ValidateExtremum));
-
-        /// <summary>
-        /// The key to the Step dependency property.
-        /// </summary>
-        public static readonly PropertyKey<float> StepPropertyKey = new PropertyKey<float>("StepKey", typeof(Slider), DefaultValueMetadata.Static(0.1f));
-
-        /// <summary>
-        /// The key to the TickFrequency dependency property.
-        /// </summary>
-        public static readonly PropertyKey<float> TickFrequencyPropertyKey = new PropertyKey<float>("TickFrequencyKey", typeof(Slider), DefaultValueMetadata.Static(10f), ObjectInvalidationMetadata.New<float>(TickFrequencyInvalidated));
-
-        /// <summary>
-        /// The key to the TickFrequency dependency property.
-        /// </summary>
-        public static readonly PropertyKey<float> TickOffsetPropertyKey = new PropertyKey<float>("TickOffsetKey", typeof(Slider), DefaultValueMetadata.Static(10f));
-
-        /// <summary>
-        /// The key to the TrackStartingOffsets dependency property.
-        /// </summary>
-        public static readonly PropertyKey<Vector2> TrackStartingOffsetsrPropertyKey = new PropertyKey<Vector2>("TrackStartingOffsetKey", typeof(Slider), DefaultValueMetadata.Static(new Vector2()));
-
-        private static void InvalidateTrackBackground(object propertyowner, PropertyKey<ISpriteProvider> propertykey, ISpriteProvider propertyoldvalue)
-        {
-            var slider = (Slider)propertyowner;
-
-            slider.InvalidateMeasure();
-
-            if (propertyoldvalue != null)
-                propertyoldvalue.GetSprite().SizeChanged -= slider.OnSizeChanged;
-
-            if(slider.TrackBackgroundImage != null)
-                slider.TrackBackgroundImage.GetSprite().SizeChanged += slider.OnSizeChanged;
-        }
-
-        private void OnSizeChanged(object sender, EventArgs e)
-        {
-            InvalidateMeasure();
-        }
-
-        private static void ValidateExtremum(object propertyowner, PropertyKey<float> propertykey, float propertyoldvalue)
-        {
-            var slider = (Slider)propertyowner;
-
-            if (slider.Maximum < slider.Minimum)
-            {
-                slider.DependencyProperties.Set(propertykey, propertyoldvalue);
-
-                // ReSharper disable once NotResolvedInText
-                throw new ArgumentOutOfRangeException("Maximum should be greater or equal than Minimum.");
-            }
-        }
-
-        private static void TickFrequencyInvalidated(object propertyowner, PropertyKey<float> propertykey, float propertyoldvalue)
-        {
-            var slider = (Slider)propertyowner;
-
-            if (slider.TickFrequency < 1)
-                slider.TickFrequency = 1;
-
-            slider.Value = slider.value; // snap to tick if enabled
-        }
+        private Orientation orientation = Orientation.Horizontal;
+        private float tickFrequency = 10.0f;
+        private float minimum;
+        private float maximum = 1.0f;
+        private float step = 0.1f;
+        private float tickOffset = 10.0f;
+        private ISpriteProvider trackBackgroundImageSource;
+        private Sprite trackBackgroundSprite;
 
         static Slider()
         {
@@ -137,87 +53,135 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the image to display as Track background.
         /// </summary>
+        /// <userdoc>The image to display as Track background.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(null)]
         public ISpriteProvider TrackBackgroundImage
         {
-            get { return DependencyProperties.Get(TrackBackgroundImagePropertyKey); }
-            set { DependencyProperties.Set(TrackBackgroundImagePropertyKey, value); }
+            get { return trackBackgroundImageSource; }
+            set
+            {
+                if (trackBackgroundImageSource == value)
+                    return;
+
+                trackBackgroundImageSource = value;
+                OnTrackBackgroundSpriteChanged(trackBackgroundImageSource?.GetSprite());
+            }
         }
 
         /// <summary>
         /// Gets or sets the image to display as Track foreground.
         /// </summary>
-        public ISpriteProvider TrackForegroundImage
-        {
-            get { return DependencyProperties.Get(TrackForegroundImagePropertyKey); }
-            set { DependencyProperties.Set(TrackForegroundImagePropertyKey, value); }
-        }
+        /// <userdoc>The image to display as Track foreground.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(null)]
+        public ISpriteProvider TrackForegroundImage { get; set; }
 
         /// <summary>
         /// Gets or sets the image to display as slider thumb (button).
         /// </summary>
-        public ISpriteProvider ThumbImage
-        {
-            get { return DependencyProperties.Get(ThumbImagePropertyKey); }
-            set { DependencyProperties.Set(ThumbImagePropertyKey, value); }
-        }
+        /// <userdoc>The image to display as slider thumb (button).</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(null)]
+        public ISpriteProvider ThumbImage { get; set; }
 
         /// <summary>
         /// Gets or sets the image to display as slider thumb (button) when the mouse is over the slider.
         /// </summary>
-        public ISpriteProvider MouseOverThumbImage
-        {
-            get { return DependencyProperties.Get(MouseOverThumbImagePropertyKey); }
-            set { DependencyProperties.Set(MouseOverThumbImagePropertyKey, value); }
-        }
-        
+        /// <userdoc>The image to display as slider thumb (button) when the mouse is over the slider.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(null)]
+        public ISpriteProvider MouseOverThumbImage { get; set; }
+
         /// <summary>
         /// Gets or sets the image to display as tick.
         /// </summary>
-        public ISpriteProvider TickImage
-        {
-            get { return DependencyProperties.Get(TickImagePropertyKey); }
-            set { DependencyProperties.Set(TickImagePropertyKey, value); }
-        }
+        /// <userdoc>The image to display as tick.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(null)]
+        public ISpriteProvider TickImage { get; set; }
 
         /// <summary>
         /// Gets or sets the smallest possible value of the slider.
         /// </summary>
+        /// <remarks>The value is coerced in the range [<see cref="float.MinValue"/>, <see cref="float.MaxValue"/>].</remarks>
+        /// <userdoc>The smallest possible value of the slider.</userdoc>
+        [DataMember]
+        [DataMemberRange(float.MinValue, float.MaxValue)]
+        [DefaultValue(0.0f)]
         public float Minimum
         {
-            get { return DependencyProperties.Get(MinimumPropertyKey); }
-            set { DependencyProperties.Set(MinimumPropertyKey, value); }
+            get { return minimum; }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                minimum = MathUtil.Clamp(value, float.MinValue, float.MaxValue);
+                CoerceMaximum(maximum);
+            }
         }
 
         /// <summary>
         /// Gets or sets the greatest possible value of the slider.
         /// </summary>
+        /// <remarks>The value is coerced in the range [<see cref="Minimum"/>, <see cref="float.MaxValue"/>].</remarks>
+        /// <userdoc>The greatest possible value of the slider.</userdoc>
+        [DataMember]
+        [DataMemberRange(float.MinValue, float.MaxValue)]
+        [DefaultValue(1.0f)]
         public float Maximum
         {
-            get { return DependencyProperties.Get(MaximumPropertyKey); }
-            set { DependencyProperties.Set(MaximumPropertyKey, value); }
+            get { return maximum; }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                CoerceMaximum(value);
+            }
         }
 
         /// <summary>
         /// Gets or sets the step of a <see cref="Value"/> change.
         /// </summary>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
+        /// <userdoc>The step of a change of the value.</userdoc>
+        [DataMember]
+        [DataMemberRange(0, float.MaxValue)]
+        [DefaultValue(0.1f)]
         public float Step
         {
-            get { return DependencyProperties.Get(StepPropertyKey); }
-            set { DependencyProperties.Set(StepPropertyKey, value); }
+            get { return step; }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                step = MathUtil.Clamp(value, 0.0f, float.MaxValue);
+            }
         }
 
         /// <summary>
         /// Gets or sets the current value of the slider.
         /// </summary>
-        /// <remarks>value is truncated between <see cref="Minimum"/> and <see cref="Maximum"/></remarks>
+        /// <remarks>The value is coerced in the range [<see cref="Minimum"/>, <see cref="Maximum"/>].</remarks>
+        /// <userdoc>The current value of the slider.</userdoc>
+        [DataMember]
+        [DataMemberRange(float.MinValue, float.MaxValue)]
+        [DefaultValue(0.0f)]
         public float Value
         {
             get { return value; }
             set
             {
+                if (float.IsNaN(value))
+                    return;
                 var oldValue = Value;
 
-                this.value = Math.Min(Maximum, Math.Max(Minimum, value));
+                this.value = MathUtil.Clamp(value, Minimum, Maximum);
                 if(ShouldSnapToTicks)
                     this.value = CalculateClosestTick(this.value);
 
@@ -229,44 +193,77 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the frequency of the ticks on the slider track.
         /// </summary>
-        /// <remarks>Provided value is truncated to be greater or equal the 1</remarks>
+        /// <remarks>The value is coerced in the range [1, <see cref="float.MaxValue"/>].</remarks>
+        /// <userdoc>The frequency of the ticks on the slider track.</userdoc>
+        [DataMember]
+        [DataMemberRange(1, float.MaxValue)]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(10.0f)]
         public float TickFrequency
         {
-            get { return DependencyProperties.Get(TickFrequencyPropertyKey); }
-            set { DependencyProperties.Set(TickFrequencyPropertyKey, value); }
+            get { return tickFrequency; }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                tickFrequency = MathUtil.Clamp(value, 1.0f, float.MaxValue);
+                Value = Value; // snap if enabled
+            }
         }
 
         /// <summary>
         /// Gets or sets the offset in virtual pixels between the center of the track and center of the ticks (for an not-stretched slider).
         /// </summary>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
+        /// <userdoc>The offset in virtual pixels between the center of the track and center of the ticks (for an not-stretched slider).</userdoc>
+        [DataMember]
+        [DataMemberRange(0, float.MaxValue)]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(10.0f)]
         public float TickOffset
         {
-            get { return DependencyProperties.Get(TickOffsetPropertyKey); }
-            set { DependencyProperties.Set(TickOffsetPropertyKey, value); }
+            get { return tickOffset; }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                tickOffset = MathUtil.Clamp(value, 0.0f, float.MaxValue);
+            }
         }
 
         /// <summary>
         /// Gets or sets the left/right offsets specifying where the track region starts. 
         /// </summary>
-        public Vector2 TrackStartingOffsets
-        {
-            get { return DependencyProperties.Get(TrackStartingOffsetsrPropertyKey); }
-            set { DependencyProperties.Set(TrackStartingOffsetsrPropertyKey, value); }
-        }
+        /// <userdoc>The left/right offsets specifying where the track region starts. </userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        public Vector2 TrackStartingOffsets { get; set; }
 
         /// <summary>
         /// Gets or sets the value indicating if the default direction of the slider should reversed or not.
         /// </summary>
-        public bool IsDirectionReversed { get; set; }
+        /// <userdoc>True if the default direction of the slider should reversed, false otherwise.</userdoc>
+        [DataMember]
+        [Display(category: BehaviorCategory)]
+        [DefaultValue(false)]
+        public bool IsDirectionReversed { get; set; } = false;
 
         /// <summary>
         /// Gets or sets the value indicating if the ticks should be displayed or not.
         /// </summary>
-        public bool AreTicksDisplayed { get; set; }
+        /// <userdoc>True if the ticks should be displayed, false otherwise.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(false)]
+        public bool AreTicksDisplayed { get; set; } = false;
 
         /// <summary>
         /// Gets or sets the value indicating if the slider <see cref="Value"/> should be snapped to the ticks or not.
         /// </summary>
+        /// <userdoc>True if the slider valuye should be snapped to the ticks, false otherwise.</userdoc>
+        [DataMember]
+        [Display(category: BehaviorCategory)]
+        [DefaultValue(false)]
         public bool ShouldSnapToTicks
         {
             get { return shouldSnapToTicks; }
@@ -280,16 +277,25 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the orientation of the slider.
         /// </summary>
+        /// <userdoc>The orientation of the slider.</userdoc>
+        [DataMember]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(Orientation.Horizontal)]
         public Orientation Orientation
         {
             get { return orientation; }
             set
             {
                 orientation = value;
-
                 InvalidateMeasure();
             }
         }
+        
+        /// <summary>
+        /// Gets a value that indicates whether the is currently touched down.
+        /// </summary>
+        [DataMemberIgnore]
+        protected virtual bool IsTouchedDown { get; set; }
 
         /// <summary>
         /// Snap the current <see cref="Value"/> to the closest tick.
@@ -332,18 +338,19 @@ namespace SiliconStudio.Xenko.UI.Controls
 
         private float CalculateIncreamentValue()
         {
-            return shouldSnapToTicks? Math.Max(Step, (Maximum - Minimum) / TickFrequency): Step;
+            return shouldSnapToTicks ? Math.Max(Step, (Maximum - Minimum)/TickFrequency) : Step;
         }
-        
+
         protected override Vector3 MeasureOverride(Vector3 availableSizeWithoutMargins)
         {
-            var image = TrackBackgroundImage;
-            if (image == null)
+            if (trackBackgroundSprite == null)
                 return base.MeasureOverride(availableSizeWithoutMargins);
 
-            var idealSize = image.GetSprite().SizeInPixels.Y;
-            var desiredSize = new Vector3(idealSize, idealSize, 0);
-            desiredSize[(int)Orientation] = availableSizeWithoutMargins[(int)Orientation];
+            var idealSize = trackBackgroundSprite.SizeInPixels.Y;
+            var desiredSize = new Vector3(idealSize, idealSize, 0)
+            {
+                [(int)Orientation] = availableSizeWithoutMargins[(int)Orientation]
+            };
 
             return desiredSize;
         }
@@ -362,7 +369,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// Identifies the <see cref="ValueChanged"/> routed event.
         /// </summary>
         public static readonly RoutedEvent<RoutedEventArgs> ValueChangedEvent = EventManager.RegisterRoutedEvent<RoutedEventArgs>(
-            "ValueChanged",
+            nameof(ValueChanged),
             RoutingStrategy.Bubble,
             typeof(Slider));
         
@@ -386,15 +393,33 @@ namespace SiliconStudio.Xenko.UI.Controls
         protected override void OnTouchDown(TouchEventArgs args)
         {
             base.OnTouchDown(args);
-
+            
             SetValueFromTouchPosition(args.WorldPosition);
+            IsTouchedDown = true;
+        }
+
+        protected override void OnTouchUp(TouchEventArgs args)
+        {
+            base.OnTouchUp(args);
+
+            IsTouchedDown = false;
+        }
+
+        protected override void OnTouchLeave(TouchEventArgs args)
+        {
+            base.OnTouchLeave(args);
+
+            IsTouchedDown = false;
         }
 
         protected override void OnTouchMove(TouchEventArgs args)
         {
             base.OnTouchMove(args);
 
-            SetValueFromTouchPosition(args.WorldPosition);
+            if (IsTouchedDown)
+            {
+                SetValueFromTouchPosition(args.WorldPosition);
+            }
         }
 
         internal override void OnKeyDown(KeyEventArgs args)
@@ -418,7 +443,42 @@ namespace SiliconStudio.Xenko.UI.Controls
             var elementSize = RenderSize[axis];
             var touchPosition = touchPostionWorld[axis] - WorldMatrixInternal[12 + axis] + elementSize/2;
             var ratio = (touchPosition - offsets.X) / (elementSize - offsets.X - offsets.Y);
-            Value = (Orientation == Orientation.Vertical ^ IsDirectionReversed) ? 1 - ratio : ratio;
+            Value = MathUtil.Lerp(Minimum, Maximum, Orientation == Orientation.Vertical ^ IsDirectionReversed ? 1 - ratio : ratio);
+        }
+
+        protected override void Update(GameTime time)
+        {
+            var currentSprite = trackBackgroundImageSource?.GetSprite();
+            if (trackBackgroundSprite != currentSprite)
+            {
+                OnTrackBackgroundSpriteChanged(currentSprite);
+            }
+        }
+
+        private void CoerceMaximum(float newValue)
+        {
+            maximum = MathUtil.Clamp(newValue, minimum, float.MaxValue);
+        }
+
+        private void InvalidateMeasure(object sender, EventArgs eventArgs)
+        {
+            InvalidateMeasure();
+        }
+
+        private void OnTrackBackgroundSpriteChanged(Sprite currentSprite)
+        {
+            if (trackBackgroundSprite != null)
+            {
+                trackBackgroundSprite.SizeChanged -= InvalidateMeasure;
+                trackBackgroundSprite.BorderChanged -= InvalidateMeasure;
+            }
+            trackBackgroundSprite = currentSprite;
+            InvalidateMeasure();
+            if (trackBackgroundSprite != null)
+            {
+                trackBackgroundSprite.SizeChanged += InvalidateMeasure;
+                trackBackgroundSprite.BorderChanged += InvalidateMeasure;
+            }
         }
     }
 }

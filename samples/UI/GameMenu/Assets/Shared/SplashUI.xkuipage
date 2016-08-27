@@ -1,0 +1,175 @@
+!UIPageAsset
+Id: 62c493c2-13ea-4fac-bbaf-578afafac104
+SerializedVersion: {Xenko: 0.0.0}
+Tags: []
+Design:
+    Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
+Hierarchy:
+    ~Id: 6dd9a8f9-4fe8-4250-9860-e89f5d82d71e
+    RootPartIds:
+        - 93334aeb-cfe0-44a2-ab96-b95caab78745
+    Parts:
+        -   UIElement: !ContentDecorator
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                BackgroundImage: !SpriteFromSheet
+                    ~Id: eea808f0-6167-40f9-b3e8-48c09e0a4d2a
+                    CurrentFrame: 1
+                    Sheet: 9bb70ebc-6511-4695-9bb7-549d17b2ae5e/ba4ff50b-212b-47c5-af90-6672a8019b04:SplashScreenImages
+                Content: !TextBlock
+                    Id: 9fa422f6-c6a0-414e-9c68-5e34fbbf6fe2
+                DependencyProperties:
+                    Panel.ZIndexPropertyKey: 1
+                DrawLayerNumber: 2
+                HorizontalAlignment: Center
+                Id: 0a85da82-3399-4f86-8e7c-cccae6c6e799
+                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
+                Margin: {}
+                Padding: {Left: 35.0, Top: 15.0, Right: 35.0, Bottom: 25.0}
+        -   UIElement: !TextBlock
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                DependencyProperties: {}
+                Font: b42bd602-698b-4eeb-81bb-656590597935/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
+                HorizontalAlignment: Center
+                Id: 2ad3e2d4-7cd1-4577-aa93-7f1c0005cde8
+                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
+                Margin: {}
+                Name: UI
+                Text: UI
+                TextColor: {R: 255, G: 255, B: 255, A: 255}
+                TextSize: 60.0
+        -   UIElement: !TextBlock
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                DependencyProperties: {}
+                Font: b42bd602-698b-4eeb-81bb-656590597935/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
+                Id: 3d15fe1b-2814-43de-95b4-67dc1d49ceef
+                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
+                Margin: {}
+                Name: TouchStart
+                Text: Touch Screen to Start
+                TextColor: {R: 255, G: 255, B: 255, A: 255}
+                TextSize: 42.0
+        -   UIElement: !Grid
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                Children:
+                    - !ContentDecorator
+                        Id: 0a85da82-3399-4f86-8e7c-cccae6c6e799
+                    - !ContentDecorator
+                        Id: 48d6ea9a-399c-4df7-a625-43db690bf6d2
+                    - !ImageElement
+                        Id: 65999106-6f97-4836-9160-c7d0fd2192c8
+                    - !ContentDecorator
+                        Id: d7b366d4-7efc-44bc-8df9-a0e938b7febc
+                ColumnDefinitions:
+                    -   ~Id: 682a3ffd-b8ea-40ac-b1df-e0d691269fb9
+                DependencyProperties: {}
+                HorizontalAlignment: Center
+                Id: 46a89767-4ec1-41c7-b7c0-a12cd0fac7a1
+                LayerDefinitions:
+                    -   ~Id: 20e9dc78-3821-419a-a4f1-b271dad259f0
+                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
+                Margin: {}
+                MaximumHeight: 900.0
+                MaximumWidth: 600.0
+                RowDefinitions:
+                    -   ~Id: cbddc9c6-8cd9-4c1e-868d-9f0de7dad89a
+                        Type: Auto
+                    -   ~Id: 98f710b1-44e9-4035-9f1a-93d6cb28ef1f
+                        Type: Auto
+                    -   ~Id: ecbb7755-5343-443e-9ec0-24beec9884d7
+                        SizeValue: 2.0
+                    -   ~Id: 7537d31a-d091-42ae-8a0a-b36c2b76251c
+                        SizeValue: 2.0
+                    -   ~Id: 0388eee2-8b37-49b9-a197-b9ac3c885e2f
+                        SizeValue: 2.0
+                    -   ~Id: 266ef1b4-f554-4573-9287-c799290c3d7a
+                        Type: Auto
+                VerticalAlignment: Center
+        -   UIElement: !ContentDecorator
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                BackgroundImage: !SpriteFromSheet
+                    ~Id: 61b7b7e3-751b-4333-9641-d1d124ba62ca
+                    CurrentFrame: 2
+                    Sheet: 9bb70ebc-6511-4695-9bb7-549d17b2ae5e/ba4ff50b-212b-47c5-af90-6672a8019b04:SplashScreenImages
+                Content: !TextBlock
+                    Id: 2ad3e2d4-7cd1-4577-aa93-7f1c0005cde8
+                DependencyProperties:
+                    GridBase.RowPropertyKey: 1
+                    Panel.ZIndexPropertyKey: 1
+                DrawLayerNumber: 2
+                HorizontalAlignment: Center
+                Id: 48d6ea9a-399c-4df7-a625-43db690bf6d2
+                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
+                Margin: {}
+                Padding: {Left: 15.0, Top: 4.0, Right: 15.0, Bottom: 7.0}
+        -   UIElement: !ImageElement
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                Color: {R: 255, G: 255, B: 255, A: 255}
+                DependencyProperties:
+                    Panel.ZIndexPropertyKey: -1
+                    GridBase.ColumnSpanPropertyKey: 1
+                    GridBase.LayerPropertyKey: 0
+                    GridBase.LayerSpanPropertyKey: 1
+                Id: 6315d86e-f687-4d51-ab90-19a73d34dd7e
+                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
+                Margin: {}
+                Name: Wallpaper
+                Source: !SpriteFromSheet
+                    ~Id: 21a510a4-f995-440c-a0eb-37e8edebcbd2
+                    Sheet: 9bb70ebc-6511-4695-9bb7-549d17b2ae5e/ba4ff50b-212b-47c5-af90-6672a8019b04:SplashScreenImages
+                StretchType: Fill
+        -   UIElement: !ImageElement
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                Color: {R: 255, G: 255, B: 255, A: 255}
+                DependencyProperties:
+                    Panel.ZIndexPropertyKey: 1
+                    GridBase.RowPropertyKey: 3
+                HorizontalAlignment: Center
+                Id: 65999106-6f97-4836-9160-c7d0fd2192c8
+                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
+                Margin: {}
+                Name: Space Escape
+                Source: !SpriteFromSheet
+                    ~Id: 1065de3a-6290-4e4c-b28b-cd197164d416
+                    CurrentFrame: 3
+                    Sheet: 9bb70ebc-6511-4695-9bb7-549d17b2ae5e/ba4ff50b-212b-47c5-af90-6672a8019b04:SplashScreenImages
+                VerticalAlignment: Center
+        -   UIElement: !UniformGrid
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                Children:
+                    - !ImageElement
+                        Id: 6315d86e-f687-4d51-ab90-19a73d34dd7e
+                    - !Grid
+                        Id: 46a89767-4ec1-41c7-b7c0-a12cd0fac7a1
+                DependencyProperties: {}
+                Id: 93334aeb-cfe0-44a2-ab96-b95caab78745
+                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
+                Margin: {}
+        -   UIElement: !TextBlock
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                DependencyProperties: {}
+                Font: 95e02c0f-de8b-496c-b9a0-b39589a52af6/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
+                HorizontalAlignment: Center
+                Id: 9fa422f6-c6a0-414e-9c68-5e34fbbf6fe2
+                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
+                Margin: {}
+                Name: XenkoSamples
+                Text: Xenko Samples
+                TextColor: {R: 255, G: 255, B: 255, A: 255}
+                TextSize: 60.0
+        -   UIElement: !ContentDecorator
+                BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
+                BackgroundImage: !SpriteFromSheet
+                    ~Id: 34b73d3e-3b21-43c9-8011-4164849062c8
+                    CurrentFrame: 4
+                    Sheet: 9bb70ebc-6511-4695-9bb7-549d17b2ae5e/ba4ff50b-212b-47c5-af90-6672a8019b04:SplashScreenImages
+                Content: !TextBlock
+                    Id: 3d15fe1b-2814-43de-95b4-67dc1d49ceef
+                DependencyProperties:
+                    Panel.ZIndexPropertyKey: 1
+                    GridBase.RowPropertyKey: 5
+                DrawLayerNumber: 2
+                HorizontalAlignment: Center
+                Id: d7b366d4-7efc-44bc-8df9-a0e938b7febc
+                LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
+                Margin: {}
+                Padding: {Left: 30.0, Top: 20.0, Right: 30.0, Bottom: 25.0}

@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 14.0.23107.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SimpleSprite", "SimpleSprite", "{5C3B20C3-522A-4637-A7B2-661CAC6C7724}"
 	ProjectSection(SiliconStudioPackage) = preProject
@@ -296,14 +296,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIParticles.Windows", "UI\U
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIParticles.Game", "UI\UIParticles\UIParticles.Game\UIParticles.Game.csproj", "{85DA6EC0-B144-46FA-8F30-878BC95B377C}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UIElementLink", "UIElementLink", "{04E7CA99-891F-452C-AD7A-EFA28E88E91F}"
-	ProjectSection(SiliconStudioPackage) = preProject
-		UI/UIElementLink/UIElementLink.xkpkg = UI/UIElementLink/UIElementLink.xkpkg
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIElementLink.Game", "UI\UIElementLink\UIElementLink.Game\UIElementLink.Game.csproj", "{88396FD1-9DDA-4338-B6E3-EECA9ECCBE43}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UIElementLink.Windows", "UI\UIElementLink\UIElementLink.Windows\UIElementLink.Windows.csproj", "{31828B12-B551-4253-B797-5A8CFBA0E977}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UIElementLink", "UIElementLink", "{6244D6F9-F6AC-4B64-B8F6-C895036B53C0}"
+	ProjectSection(SiliconStudioPackage) = preProject
+		UI/UIElementLink/UIElementLink.xkpkg = UI/UIElementLink/UIElementLink.xkpkg
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -2981,10 +2981,13 @@ Global
 		{88396FD1-9DDA-4338-B6E3-EECA9ECCBE43}.Testing|Windows.Build.0 = Testing|Any CPU
 		{31828B12-B551-4253-B797-5A8CFBA0E977}.AppStore|Any CPU.ActiveCfg = AppStore|Any CPU
 		{31828B12-B551-4253-B797-5A8CFBA0E977}.AppStore|Any CPU.Build.0 = AppStore|Any CPU
+		{31828B12-B551-4253-B797-5A8CFBA0E977}.AppStore|Any CPU.Deploy.0 = AppStore|Any CPU
 		{31828B12-B551-4253-B797-5A8CFBA0E977}.AppStore|Mixed Platforms.ActiveCfg = AppStore|Any CPU
 		{31828B12-B551-4253-B797-5A8CFBA0E977}.AppStore|Mixed Platforms.Build.0 = AppStore|Any CPU
+		{31828B12-B551-4253-B797-5A8CFBA0E977}.AppStore|Mixed Platforms.Deploy.0 = AppStore|Any CPU
 		{31828B12-B551-4253-B797-5A8CFBA0E977}.AppStore|Windows.ActiveCfg = AppStore|Any CPU
 		{31828B12-B551-4253-B797-5A8CFBA0E977}.AppStore|Windows.Build.0 = AppStore|Any CPU
+		{31828B12-B551-4253-B797-5A8CFBA0E977}.AppStore|Windows.Deploy.0 = AppStore|Any CPU
 		{31828B12-B551-4253-B797-5A8CFBA0E977}.CoreCLR_Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{31828B12-B551-4253-B797-5A8CFBA0E977}.CoreCLR_Debug|Any CPU.Build.0 = Debug|Any CPU
 		{31828B12-B551-4253-B797-5A8CFBA0E977}.CoreCLR_Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -2999,22 +3002,31 @@ Global
 		{31828B12-B551-4253-B797-5A8CFBA0E977}.CoreCLR_Release|Windows.Build.0 = Release|Any CPU
 		{31828B12-B551-4253-B797-5A8CFBA0E977}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{31828B12-B551-4253-B797-5A8CFBA0E977}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{31828B12-B551-4253-B797-5A8CFBA0E977}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{31828B12-B551-4253-B797-5A8CFBA0E977}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
 		{31828B12-B551-4253-B797-5A8CFBA0E977}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{31828B12-B551-4253-B797-5A8CFBA0E977}.Debug|Mixed Platforms.Deploy.0 = Debug|Any CPU
 		{31828B12-B551-4253-B797-5A8CFBA0E977}.Debug|Windows.ActiveCfg = Debug|Any CPU
 		{31828B12-B551-4253-B797-5A8CFBA0E977}.Debug|Windows.Build.0 = Debug|Any CPU
+		{31828B12-B551-4253-B797-5A8CFBA0E977}.Debug|Windows.Deploy.0 = Debug|Any CPU
 		{31828B12-B551-4253-B797-5A8CFBA0E977}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{31828B12-B551-4253-B797-5A8CFBA0E977}.Release|Any CPU.Build.0 = Release|Any CPU
+		{31828B12-B551-4253-B797-5A8CFBA0E977}.Release|Any CPU.Deploy.0 = Release|Any CPU
 		{31828B12-B551-4253-B797-5A8CFBA0E977}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{31828B12-B551-4253-B797-5A8CFBA0E977}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{31828B12-B551-4253-B797-5A8CFBA0E977}.Release|Mixed Platforms.Deploy.0 = Release|Any CPU
 		{31828B12-B551-4253-B797-5A8CFBA0E977}.Release|Windows.ActiveCfg = Release|Any CPU
 		{31828B12-B551-4253-B797-5A8CFBA0E977}.Release|Windows.Build.0 = Release|Any CPU
+		{31828B12-B551-4253-B797-5A8CFBA0E977}.Release|Windows.Deploy.0 = Release|Any CPU
 		{31828B12-B551-4253-B797-5A8CFBA0E977}.Testing|Any CPU.ActiveCfg = Testing|Any CPU
 		{31828B12-B551-4253-B797-5A8CFBA0E977}.Testing|Any CPU.Build.0 = Testing|Any CPU
+		{31828B12-B551-4253-B797-5A8CFBA0E977}.Testing|Any CPU.Deploy.0 = Testing|Any CPU
 		{31828B12-B551-4253-B797-5A8CFBA0E977}.Testing|Mixed Platforms.ActiveCfg = Testing|Any CPU
 		{31828B12-B551-4253-B797-5A8CFBA0E977}.Testing|Mixed Platforms.Build.0 = Testing|Any CPU
+		{31828B12-B551-4253-B797-5A8CFBA0E977}.Testing|Mixed Platforms.Deploy.0 = Testing|Any CPU
 		{31828B12-B551-4253-B797-5A8CFBA0E977}.Testing|Windows.ActiveCfg = Testing|Any CPU
 		{31828B12-B551-4253-B797-5A8CFBA0E977}.Testing|Windows.Build.0 = Testing|Any CPU
+		{31828B12-B551-4253-B797-5A8CFBA0E977}.Testing|Windows.Deploy.0 = Testing|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -3114,8 +3126,7 @@ Global
 		{9F892E18-E9CD-4C4F-BD2F-7837E10265BF} = {4D586031-C41C-4293-A1A2-482F7DBFB816}
 		{20504AB5-3696-4381-B61D-4928BB6369E4} = {9F892E18-E9CD-4C4F-BD2F-7837E10265BF}
 		{85DA6EC0-B144-46FA-8F30-878BC95B377C} = {9F892E18-E9CD-4C4F-BD2F-7837E10265BF}
-		{04E7CA99-891F-452C-AD7A-EFA28E88E91F} = {4D586031-C41C-4293-A1A2-482F7DBFB816}
-		{88396FD1-9DDA-4338-B6E3-EECA9ECCBE43} = {04E7CA99-891F-452C-AD7A-EFA28E88E91F}
-		{31828B12-B551-4253-B797-5A8CFBA0E977} = {04E7CA99-891F-452C-AD7A-EFA28E88E91F}
+		{88396FD1-9DDA-4338-B6E3-EECA9ECCBE43} = {6244D6F9-F6AC-4B64-B8F6-C895036B53C0}
+		{31828B12-B551-4253-B797-5A8CFBA0E977} = {6244D6F9-F6AC-4B64-B8F6-C895036B53C0}
 	EndGlobalSection
 EndGlobal

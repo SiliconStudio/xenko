@@ -48,7 +48,7 @@
     <Compile Include="Analysis\AssetAnalysis.cs" />
     <Compile Include="Analysis\AssetAnalysisParameters.cs" />
     <Compile Include="Analysis\AssetBaseAnalysis.cs" />
-    <Compile Include="Analysis\AssetCompositeAnalysis.cs" />
+    <Compile Include="Analysis\AssetCompositePartReferenceCollector.cs" />
     <Compile Include="Analysis\AssetLink.cs" />
     <Compile Include="Analysis\AssetDependencyManager.cs" />
     <Compile Include="Analysis\AssetDependencyManagerExtensions.cs" />
@@ -60,6 +60,7 @@
     <Compile Include="Analysis\AssetInheritanceSearchOptions.cs" />
     <Compile Include="Analysis\AssetReferenceAnalysis.cs" />
     <Compile Include="Analysis\AssetReferenceLink.cs" />
+    <Compile Include="Analysis\AssetPartsAnalysis.cs" />
     <Compile Include="AssetCompositeHierarchy.cs" />
     <Compile Include="AssetCompositeHierarchyData.cs" />
     <Compile Include="AssetPartCollection.cs" />

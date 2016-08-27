@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             await base.LoadContent();
 
             imageElement = new ImageElement { Source = (SpriteFromTexture)new Sprite(Content.Load<Texture>("uv"))};
-            UIComponent.RootElement = imageElement;
+            UIComponent.Page = new Engine.UIPage { RootElement = imageElement };
         }
 
         protected override void RegisterTests()

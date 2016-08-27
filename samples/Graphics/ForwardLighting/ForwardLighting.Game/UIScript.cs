@@ -80,13 +80,13 @@ namespace ForwardLighting
                 }
             };
 
-            Entity.Get<UIComponent>().RootElement = stackPanel;
+            Entity.Get<UIComponent>().Page = new UIPage { RootElement = stackPanel };
         }
 
         public override void Cancel()
         {
             // Cleanup when script is removed
-            Entity.Get<UIComponent>().RootElement = null;
+            Entity.Get<UIComponent>().Page = null;
 
             base.Cancel();
         }

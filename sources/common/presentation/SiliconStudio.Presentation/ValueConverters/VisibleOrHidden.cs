@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Windows.Data;
 using System.Globalization;
 using System.Windows;
 
@@ -18,7 +17,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <inheritdoc/>
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            bool result = System.Convert.ToBoolean(value);
+            var result = ConverterHelper.ConvertToBoolean(value, culture);
             if (parameter is bool && (bool)parameter == false)
             {
                 result = !result;
