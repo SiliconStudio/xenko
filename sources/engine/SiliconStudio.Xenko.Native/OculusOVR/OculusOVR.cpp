@@ -680,6 +680,25 @@ extern "C" {
 	void xnOvrGetAudioDeviceID(wchar_t* deviceString)
 	{
 	}
+
+	xnOvrQuadLayer* xnOvrCreateQuadLayerTexturesDx(void* session, void* dxDevice, int* outTextureCount, int width, int height, bool headLocked)
+	{
+		return NULL;
+	}
+
+	int xnOvrGetCurrentQuadLayerTargetIndex(void* session, void* layer)
+	{
+		return 0;
+	}
+
+	void* xnOvrGetQuadLayerTextureAtIndexDx(void* session, void* layer, GUID textureGuid, int index)
+	{
+		return NULL;
+	}
+
+	void xnOvrSetQuadLayerParams(void* layer, float* position, float* orientation, float* size)
+	{
+	}
 }
 
 #endif
