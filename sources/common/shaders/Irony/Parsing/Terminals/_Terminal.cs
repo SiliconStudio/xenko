@@ -75,8 +75,8 @@ namespace Irony.Parsing {
     #region Events: ValidateToken
     public event EventHandler<ParsingEventArgs> ValidateToken;
     protected internal virtual void InvokeValidateToken(ParsingContext context) {
-            ValidateToken?.Invoke(this, context.SharedParsingEventArgs);
-        }
+      ValidateToken?.Invoke(this, context.SharedParsingEventArgs);
+    }
     #endregion
 
     #region static comparison methods
