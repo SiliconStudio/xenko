@@ -1,4 +1,4 @@
-﻿class TransformationTextureUV : ShaderBase, Texturing
+﻿shader TransformationTextureUV : ShaderBase, Texturing
 {
     override void VSMain()
     {

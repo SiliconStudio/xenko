@@ -12,7 +12,7 @@ using SiliconStudio.Shaders.Visitor;
 
 namespace SiliconStudio.Shaders.Convertor
 {
-    internal class BreakContinueVisitor : ShaderVisitor
+    internal class BreakContinueVisitor : ShaderWalker
     {
         /// <summary>
         /// the logger
@@ -44,7 +44,7 @@ namespace SiliconStudio.Shaders.Convertor
         {
             keyword = keywordName;
 
-            Visit(forStatement.Body);
+            VisitDynamic(forStatement.Body);
 
             if (logger != null)
                 parserResult.CopyTo(logger);
@@ -57,8 +57,7 @@ namespace SiliconStudio.Shaders.Convertor
             return scopeList.Count > 0;
         }
         
-        [Visit]
-        protected void Visit(KeywordExpression expression)
+        public override void Visit(KeywordExpression expression)
         {
             if (expression.Name.Text == keyword)
             {
@@ -73,33 +72,28 @@ namespace SiliconStudio.Shaders.Convertor
             }
         }
 
-        [Visit]
-        protected void Visit(BlockStatement blockStatement)
+        public override void Visit(BlockStatement blockStatement)
         {
             containerStack.Push(blockStatement);
-            Visit((Node)blockStatement);
+            base.Visit(blockStatement);
             containerStack.Pop();
         }
 
-        [Visit]
-        protected void Visit(WhileStatement whileStatement) { }
+        public override void Visit(WhileStatement whileStatement) { }
         
-        [Visit]
-        protected void Visit(ForStatement forStatement) { }
+        public override void Visit(ForStatement forStatement) { }
 
-        [Visit]
-        protected void Visit(StatementList statementList)
+        public override void Visit(StatementList statementList)
         {
             containerStack.Push(statementList);
-            Visit((Node)statementList);
+            base.Visit(statementList);
             containerStack.Pop();
         }
 
-        [Visit]
-        protected void Visit(IfStatement ifStatement)
+        public override void Visit(IfStatement ifStatement)
         {
             containerStack.Push(ifStatement);
-            Visit((Node)ifStatement);
+            base.Visit(ifStatement);
             containerStack.Pop();
         }
 

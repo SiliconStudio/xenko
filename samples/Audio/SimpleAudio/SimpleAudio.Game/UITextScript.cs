@@ -27,7 +27,7 @@ namespace SimpleAudio
             textBlock.SetCanvasPinOrigin(new Vector3(1, 0, 0));
             textBlock.SetCanvasRelativePosition(new Vector3(0.63f, 0.8f, 0f));
 
-            Entity.Get<UIComponent>().RootElement = new Canvas { Children = { textBlock } };
+            Entity.Get<UIComponent>().Page = new UIPage { RootElement = new Canvas { Children = { textBlock } } };
         }
     }
 }

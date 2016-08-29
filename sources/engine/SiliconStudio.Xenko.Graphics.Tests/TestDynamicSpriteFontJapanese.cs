@@ -12,8 +12,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
     [Description("Check Dynamic Font Japanese characters")]
     public class TestDynamicSpriteFontJapanese : GraphicTestGameBase
     {
-        private SpriteFont msMincho10;
-        private SpriteFont arialMS;
+        private SpriteFont hanSans13;
+        private SpriteFont hanSans18;
 
         private SpriteBatch spriteBatch;
 
@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public TestDynamicSpriteFontJapanese()
         {
-            CurrentVersion = 3;
+            CurrentVersion = 4; // Font names & sizes changed slightly
         }
 
         protected override void RegisterTests()
@@ -53,8 +53,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             await base.LoadContent();
 
-            msMincho10 = Content.Load<SpriteFont>(AssetPrefix + "MSMincho10");
-            arialMS = Content.Load<SpriteFont>(AssetPrefix + "Meiryo14");
+            hanSans13 = Content.Load<SpriteFont>(AssetPrefix + "HanSans13");
+            hanSans18 = Content.Load<SpriteFont>(AssetPrefix + "HanSans18");
 
             // Instantiate a SpriteBatch
             spriteBatch = new SpriteBatch(GraphicsDevice);
@@ -79,19 +79,19 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             var x = 20;
             var y = 10;
-            var title = "Ms Mincho 10 aliased:";
-            msMincho10.PreGenerateGlyphs(title, msMincho10.Size * Vector2.One);
-            msMincho10.PreGenerateGlyphs(Text, msMincho10.Size * Vector2.One);
-            spriteBatch.DrawString(msMincho10, title, new Vector2(x, y), Color.LawnGreen);
-            spriteBatch.DrawString(msMincho10, Text, new Vector2(x, y + 10), Color.White);
+            var title = "Han-Sans 13 aliased:";
+            hanSans13.PreGenerateGlyphs(title, hanSans13.Size * Vector2.One);
+            hanSans13.PreGenerateGlyphs(Text, hanSans13.Size * Vector2.One);
+            spriteBatch.DrawString(hanSans13, title, new Vector2(x, y), Color.LawnGreen);
+            spriteBatch.DrawString(hanSans13, Text, new Vector2(x, y + 10), Color.White);
 
             x = 320;
             y = 0;
-            title = "Meiryo 14 anti-aliased:";
-            arialMS.PreGenerateGlyphs(title, arialMS.Size * Vector2.One);
-            arialMS.PreGenerateGlyphs(Text, arialMS.Size * Vector2.One);
-            spriteBatch.DrawString(arialMS, title, new Vector2(x, y), Color.Red);
-            spriteBatch.DrawString(arialMS, Text, new Vector2(x, y + 5), Color.White);
+            title = "Han-Sans 18 anti-aliased:";
+            hanSans18.PreGenerateGlyphs(title, hanSans18.Size * Vector2.One);
+            hanSans18.PreGenerateGlyphs(Text, hanSans18.Size * Vector2.One);
+            spriteBatch.DrawString(hanSans18, title, new Vector2(x, y), Color.Red);
+            spriteBatch.DrawString(hanSans18, Text, new Vector2(x, y + 5), Color.White);
 
             spriteBatch.End();
         }

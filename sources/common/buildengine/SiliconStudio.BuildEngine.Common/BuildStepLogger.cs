@@ -27,17 +27,8 @@ namespace SiliconStudio.BuildEngine
         {
             buildStep.Logger.Log(logMessage);
 
-            if (mainLogger != null)
-            {
-                mainLogger.Log(logMessage);
-            }
-            if (StepLogger != null)
-            {
-                lock (StepLogger)
-                {
-                    StepLogger.Log(logMessage);
-                }
-            }
+            mainLogger?.Log(logMessage);
+            StepLogger?.Log(logMessage);
         }
     }
 }

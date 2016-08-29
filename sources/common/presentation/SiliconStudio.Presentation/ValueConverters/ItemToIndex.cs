@@ -12,7 +12,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var collection = (IList)parameter;
-            return collection != null ? collection.IndexOf(value) : -1;
+            return collection?.IndexOf(value) ?? -1;
         }
 
         /// <inheritdoc/>
@@ -22,7 +22,7 @@ namespace SiliconStudio.Presentation.ValueConverters
             if (collection == null)
                 return null;
 
-            var index = (int)System.Convert.ChangeType(value ?? -1, typeof(int));
+            var index = ConverterHelper.ConvertToInt32(value ?? -1, culture);
             if (index < 0 || index >= collection.Count)
                 return null;
 

@@ -25,7 +25,6 @@ namespace SiliconStudio.Assets.CompilerApp
     public class PackageBuilder
     {
         private readonly PackageBuilderOptions builderOptions;
-        private RemoteLogForwarder assetLogger;
         private Builder builder;
 
         public PackageBuilder(PackageBuilderOptions packageBuilderOptions)
@@ -151,7 +150,7 @@ namespace SiliconStudio.Assets.CompilerApp
 
                 // Add specific steps to generate shaders
                 // TODO: This doesn't really belong here, where should we move it?
-                assetBuildResult.BuildSteps.Add(new WaitBuildStep());
+                //assetBuildResult.BuildSteps.Add(new WaitBuildStep());
                 //assetBuildResult.BuildSteps.Add(new CompileDefaultSceneEffectCommand(context, package, assetBuildResult));
 
                 // Create the builder
@@ -189,7 +188,8 @@ namespace SiliconStudio.Assets.CompilerApp
                 AutoLoadTemporaryAssets = true,
                 LoadAssemblyReferences = false,
                 AutoCompileProjects = false,
-                AssetFilter = (asset) => asset.AssetPath == GameSettingsAsset.GameSettingsLocation
+                TemporaryAssetFilter = (asset) => asset.AssetPath == GameSettingsAsset.GameSettingsLocation,
+                TemporaryAssetsInMsbuild = false,
             });
 
             if (simplePackage == null

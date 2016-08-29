@@ -6,7 +6,7 @@
 /// <remarks>
 /// LinkName: generic LinkType - the name of the key used to set the float value.
 /// </remarks>
-class ComputeColorConstantFloatLink<LinkType LinkName> : ComputeColor
+shader ComputeColorConstantFloatLink<LinkType LinkName> : ComputeColor
 {
     cbuffer PerMaterial
     {

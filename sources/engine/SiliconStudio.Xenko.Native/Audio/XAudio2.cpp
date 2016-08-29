@@ -1,6 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+#include "Common.h"
+
 #if defined(WINDOWS_DESKTOP) || defined(WINDOWS_UWP) || defined(WINDOWS_STORE) || defined(WINDOWS_PHONE) || !defined(__clang__)
 
 #include "../../../../deps/NativePath/NativePath.h"
@@ -657,6 +659,94 @@ extern "C" {
 			STDMETHOD(SetSourceSampleRate) (THIS_ UINT32 NewSourceSampleRate) PURE;
 		};
 
+		struct IXAudio2SourceVoice1 : IXAudio2Voice
+		{
+			// NAME: IXAudio2SourceVoice::Start
+			// DESCRIPTION: Makes this voice start consuming and processing audio.
+			//
+			// ARGUMENTS:
+			//  Flags - Flags controlling how the voice should be started.
+			//  OperationSet - Used to identify this call as part of a deferred batch.
+			//
+			STDMETHOD(Start) (THIS_ UINT32 Flags X2DEFAULT(0), UINT32 OperationSet X2DEFAULT(XAUDIO2_COMMIT_NOW)) PURE;
+
+			// NAME: IXAudio2SourceVoice::Stop
+			// DESCRIPTION: Makes this voice stop consuming audio.
+			//
+			// ARGUMENTS:
+			//  Flags - Flags controlling how the voice should be stopped.
+			//  OperationSet - Used to identify this call as part of a deferred batch.
+			//
+			STDMETHOD(Stop) (THIS_ UINT32 Flags X2DEFAULT(0), UINT32 OperationSet X2DEFAULT(XAUDIO2_COMMIT_NOW)) PURE;
+
+			// NAME: IXAudio2SourceVoice::SubmitSourceBuffer
+			// DESCRIPTION: Adds a new audio buffer to this voice's input queue.
+			//
+			// ARGUMENTS:
+			//  pBuffer - Pointer to the buffer structure to be queued.
+			//  pBufferWMA - Additional structure used only when submitting XWMA data.
+			//
+			STDMETHOD(SubmitSourceBuffer) (THIS_ const XAUDIO2_BUFFER* pBuffer, const XAUDIO2_BUFFER_WMA* pBufferWMA X2DEFAULT(NULL)) PURE;
+
+			// NAME: IXAudio2SourceVoice::FlushSourceBuffers
+			// DESCRIPTION: Removes all pending audio buffers from this voice's queue.
+			//
+			STDMETHOD(FlushSourceBuffers) (THIS) PURE;
+
+			// NAME: IXAudio2SourceVoice::Discontinuity
+			// DESCRIPTION: Notifies the voice of an intentional break in the stream of
+			//              audio buffers (e.g. the end of a sound), to prevent XAudio2
+			//              from interpreting an empty buffer queue as a glitch.
+			//
+			STDMETHOD(Discontinuity) (THIS) PURE;
+
+			// NAME: IXAudio2SourceVoice::ExitLoop
+			// DESCRIPTION: Breaks out of the current loop when its end is reached.
+			//
+			// ARGUMENTS:
+			//  OperationSet - Used to identify this call as part of a deferred batch.
+			//
+			STDMETHOD(ExitLoop) (THIS_ UINT32 OperationSet X2DEFAULT(XAUDIO2_COMMIT_NOW)) PURE;
+
+			// NAME: IXAudio2SourceVoice::GetState
+			// DESCRIPTION: Returns the number of buffers currently queued on this voice,
+			//              the pContext value associated with the currently processing
+			//              buffer (if any), and other voice state information.
+			//
+			// ARGUMENTS:
+			//  pVoiceState - Returns the state information.
+			//
+			STDMETHOD_(void, GetState) (THIS_ XAUDIO2_VOICE_STATE* pVoiceState) PURE;
+
+			// NAME: IXAudio2SourceVoice::SetFrequencyRatio
+			// DESCRIPTION: Sets this voice's frequency adjustment, i.e. its pitch.
+			//
+			// ARGUMENTS:
+			//  Ratio - Frequency change, expressed as source frequency / target frequency.
+			//  OperationSet - Used to identify this call as part of a deferred batch.
+			//
+			STDMETHOD(SetFrequencyRatio) (THIS_ float Ratio,
+				UINT32 OperationSet X2DEFAULT(XAUDIO2_COMMIT_NOW)) PURE;
+
+			// NAME: IXAudio2SourceVoice::GetFrequencyRatio
+			// DESCRIPTION: Returns this voice's current frequency adjustment ratio.
+			//
+			// ARGUMENTS:
+			//  pRatio - Returns the frequency adjustment.
+			//
+			STDMETHOD_(void, GetFrequencyRatio) (THIS_ float* pRatio) PURE;
+
+			// NAME: IXAudio2SourceVoice::SetSourceSampleRate
+			// DESCRIPTION: Reconfigures this voice to treat its source data as being
+			//              at a different sample rate than the original one specified
+			//              in CreateSourceVoice's pSourceFormat argument.
+			//
+			// ARGUMENTS:
+			//  UINT32 - The intended sample rate of further submitted source data.
+			//
+			STDMETHOD(SetSourceSampleRate) (THIS_ UINT32 NewSourceSampleRate) PURE;
+		};
+
 		typedef struct tWAVEFORMATEX
 		{
 			WORD        wFormatTag;         /* format type */
@@ -1027,16 +1117,14 @@ extern "C" {
 			//  InputChannels - Number of channels in this voice's input audio data.
 			//  InputSampleRate - Sample rate of this voice's input audio data.
 			//  Flags - XAUDIO2_VOICE flags specifying the mastering voice's behavior.
-			//  szDeviceId - Identifier of the device to receive the output audio.
+			//  DeviceIndex - Identifier of the device to receive the output audio.
 			//  pEffectChain - Optional list of effects to apply to the audio data.
-			//  StreamCategory - The audio stream category to use for this mastering voice
 			//
-			STDMETHOD(CreateMasteringVoice) (THIS_ _Outptr_ IXAudio2MasteringVoice** ppMasteringVoice,
+			STDMETHOD(CreateMasteringVoice) (THIS_ IXAudio2MasteringVoice** ppMasteringVoice,
 				UINT32 InputChannels X2DEFAULT(XAUDIO2_DEFAULT_CHANNELS),
 				UINT32 InputSampleRate X2DEFAULT(XAUDIO2_DEFAULT_SAMPLERATE),
-				UINT32 Flags X2DEFAULT(0), _In_opt_z_ void* szDeviceId X2DEFAULT(NULL),
-				_In_opt_ const XAUDIO2_EFFECT_CHAIN* pEffectChain X2DEFAULT(NULL),
-				_In_ AUDIO_STREAM_CATEGORY StreamCategory X2DEFAULT(AudioCategory_GameEffects)) PURE;
+				UINT32 Flags X2DEFAULT(0), UINT32 DeviceIndex X2DEFAULT(0),
+				const XAUDIO2_EFFECT_CHAIN* pEffectChain X2DEFAULT(NULL)) PURE;
 
 			// NAME: IXAudio2::StartEngine
 			// DESCRIPTION: Creates and starts the audio processing thread.
@@ -1151,6 +1239,8 @@ extern "C" {
 		struct xnAudioBuffer
 		{
 			XAUDIO2_BUFFER buffer_;
+			int length_;
+			BufferType type_;
 			xnAudioSource* source_;
 		};
 
@@ -1230,7 +1320,7 @@ extern "C" {
 				{
 					delete res;
 					return NULL;
-				}				
+				}		
 			}
 
 			//X3DAudio
@@ -1258,6 +1348,10 @@ extern "C" {
 			device->mastering_voice_->DestroyVoice();
 			
 			delete device;
+		}
+
+		void xnAudioUpdate(xnAudioDevice* device)
+		{
 		}
 
 		void xnAudioSetMasterVolume(xnAudioDevice* device, float volume)
@@ -1299,6 +1393,7 @@ extern "C" {
 			X3DAUDIO_DSP_SETTINGS* dsp_settings_;
 			xnAudioListener* listener_;
 			volatile bool playing_;
+			volatile bool pause_;
 			volatile bool looped_;
 			int sampleRate_;
 			bool mono_;
@@ -1306,9 +1401,11 @@ extern "C" {
 			volatile float pitch_ = 1.0f;
 			volatile float doppler_pitch_ = 1.0f;
 
-			SpinLock bufferLock;
-			xnAudioBuffer** freeBuffers;
-			int freeBuffersMax;
+			SpinLock bufferLock_;
+			xnAudioBuffer** freeBuffers_;
+			int freeBuffersMax_;
+
+			volatile int samplesAtBegin = 0;
 
 			void __stdcall OnVoiceProcessingPassStart(UINT32 BytesRequired) override;
 
@@ -1334,7 +1431,7 @@ extern "C" {
 			res->playing_ = false;
 			res->sampleRate_ = sampleRate;
 			res->mono_ = mono;
-			res->streamed_ = false;
+			res->streamed_ = streamed;
 			res->looped_ = false;
 			res->mastering_voice_ = listener->device_->mastering_voice_;
 			if(spatialized)
@@ -1360,11 +1457,11 @@ extern "C" {
 			}
 
 			//we could have used a tinystl vector but it did not link properly on ARM windows... so we just use an array
-			res->freeBuffers = new xnAudioBuffer*[maxNBuffers];
-			res->freeBuffersMax = maxNBuffers;
+			res->freeBuffers_ = new xnAudioBuffer*[maxNBuffers];
+			res->freeBuffersMax_ = maxNBuffers;
 			for (auto i = 0; i < maxNBuffers; i++)
 			{
-				res->freeBuffers[i] = NULL;
+				res->freeBuffers_[i] = NULL;
 			}
 
 			//Normal PCM formal 16 bit shorts
@@ -1374,7 +1471,7 @@ extern "C" {
 			pcmWaveFormat.nSamplesPerSec = sampleRate;
 			pcmWaveFormat.nAvgBytesPerSec = sampleRate * pcmWaveFormat.nChannels * sizeof(short);
 			pcmWaveFormat.wBitsPerSample = 16;
-			pcmWaveFormat.nBlockAlign = pcmWaveFormat.nChannels*pcmWaveFormat.wBitsPerSample / 8;
+			pcmWaveFormat.nBlockAlign = pcmWaveFormat.nChannels * pcmWaveFormat.wBitsPerSample / 8;
 
 			if(xnAudioWindows7Hacks)
 			{
@@ -1416,8 +1513,14 @@ extern "C" {
 		{
 			//this function is called only when the audio source is acutally fully cached in memory, so we deal only with the first buffer
 			source->streamed_ = false;
-			source->freeBuffers[0] = buffer;
+			source->freeBuffers_[0] = buffer;
 			buffer->source_ = source;
+
+			if (!source->streamed_)
+			{
+				xnAudioBuffer* singleBuffer = source->freeBuffers_[0];
+				source->source_voice_->SubmitSourceBuffer(&singleBuffer->buffer_, NULL);
+			}
 		}
 
 		void xnAudioSource::OnBufferEnd(void* context)
@@ -1427,52 +1530,65 @@ extern "C" {
 
 			if (streamed_)
 			{
-				bufferLock.Lock();
+				bufferLock_.Lock();
 
-				for (int i = 0; i < buffer->source_->freeBuffersMax; i++)
+				for (int i = 0; i < buffer->source_->freeBuffersMax_; i++)
 				{
-					if(buffer->source_->freeBuffers[i] == NULL)
+					if(buffer->source_->freeBuffers_[i] == NULL)
 					{
-						buffer->source_->freeBuffers[i] = buffer;
+						buffer->source_->freeBuffers_[i] = buffer;
 						break;
 					}
 				}
 				
-				bufferLock.Unlock();
+				bufferLock_.Unlock();
 			}
 		}
 
 		xnAudioBuffer* xnAudioSourceGetFreeBuffer(xnAudioSource* source)
 		{
 			//this is used only when we are streaming audio, to fetch the next free buffer to fill
-			source->bufferLock.Lock();
+			source->bufferLock_.Lock();
 
 			xnAudioBuffer* buffer = NULL;
-			for (int i = 0; i < source->freeBuffersMax; i++)
+			for (int i = 0; i < source->freeBuffersMax_; i++)
 			{
-				if (source->freeBuffers[i] != NULL)
+				if (source->freeBuffers_[i] != NULL)
 				{
-					buffer = source->freeBuffers[i];
-					source->freeBuffers[i] = NULL;
+					buffer = source->freeBuffers_[i];
+					source->freeBuffers_[i] = NULL;
 					break;
 				}
 			}
 			
-			source->bufferLock.Unlock();
+			source->bufferLock_.Unlock();
 			
 			return buffer;
 		}
 
 		void xnAudioSourcePlay(xnAudioSource* source)
 		{
-			if (!source->streamed_)
-			{
-				xnAudioBuffer* singleBuffer = source->freeBuffers[0];
-				source->source_voice_->SubmitSourceBuffer(&singleBuffer->buffer_, NULL);
-			}
-
 			source->source_voice_->Start();
 			source->playing_ = true;
+
+
+			if(!source->streamed_ && !source->pause_)
+			{
+				XAUDIO2_VOICE_STATE state;
+				if (xnAudioWindows7Hacks)
+				{
+					auto win7Voice = reinterpret_cast<IXAudio2SourceVoice1*>(source->source_voice_);
+					win7Voice->GetState(&state);
+				}
+				else
+				{
+					source->source_voice_->GetState(&state, 0);
+				}
+
+				source->samplesAtBegin = state.SamplesPlayed;
+			}
+
+			source->pause_ = false;
 		}
 
 		void xnAudioSourceSetPan(xnAudioSource* source, float pan)
@@ -1513,9 +1629,81 @@ extern "C" {
 			}
 		}
 
+		double xnAudioSourceGetPosition(xnAudioSource* source)
+		{
+			XAUDIO2_VOICE_STATE state;
+			if(xnAudioWindows7Hacks)
+			{
+				auto win7Voice = reinterpret_cast<IXAudio2SourceVoice1*>(source->source_voice_);
+				win7Voice->GetState(&state);
+			}
+			else
+			{
+				source->source_voice_->GetState(&state, 0);
+			}
+
+			if (!source->streamed_)
+			{
+				auto elapsed = double(state.SamplesPlayed - source->samplesAtBegin) / double(source->sampleRate_);
+				auto singleBuffer = source->freeBuffers_[0];
+				auto length = singleBuffer->buffer_.PlayLength == 0 ? 
+					double(singleBuffer->length_) / double(source->sampleRate_) : 
+					double(singleBuffer->buffer_.PlayLength) / double(source->sampleRate_);
+				auto position = elapsed / length;
+				auto repeats = floor(position);
+				position = (position - repeats) * length;
+				return position;
+			}
+			
+			//things work different for streamed sources, but anyway we simply subtract the snapshotted samples at begin of the stream ( could be the begin of the loop )
+			return double(state.SamplesPlayed - source->samplesAtBegin) / double(source->sampleRate_);
+		}
+
 		void xnAudioSourceSetLooping(xnAudioSource* source, npBool looping)
 		{
 			source->looped_ = looping;
+		}
+
+		void xnAudioSourceSetRange(xnAudioSource* source, double startTime, double stopTime)
+		{
+			if(!source->streamed_)
+			{
+				auto singleBuffer = source->freeBuffers_[0];
+				if(startTime == 0 && stopTime == 0)
+				{
+					singleBuffer->buffer_.PlayBegin = 0;
+					singleBuffer->buffer_.LoopBegin = 0;
+					singleBuffer->buffer_.PlayLength = singleBuffer->length_;
+					singleBuffer->buffer_.LoopLength = singleBuffer->length_;
+				}
+				else
+				{					
+					auto sampleStart = int(double(source->sampleRate_) * startTime);
+					auto sampleStop = int(double(source->sampleRate_) * stopTime);
+
+					if (sampleStart > singleBuffer->length_)
+					{
+						return; //the starting position must be less then the total length of the buffer
+					}
+
+					if (sampleStop > singleBuffer->length_) //if the end point is more then the length of the buffer fix the value
+					{
+						sampleStop = singleBuffer->length_;
+					}
+
+					auto len = sampleStop - sampleStart;
+					if (len > 0)
+					{
+						singleBuffer->buffer_.PlayBegin = sampleStart;
+						singleBuffer->buffer_.LoopBegin = sampleStart;
+						singleBuffer->buffer_.PlayLength = len;
+						singleBuffer->buffer_.LoopLength = len;
+					}
+				}
+				source->source_voice_->Stop();
+				source->source_voice_->FlushSourceBuffers();
+				source->source_voice_->SubmitSourceBuffer(&singleBuffer->buffer_, NULL);
+			}
 		}
 
 		void xnAudioSourceSetGain(xnAudioSource* source, float gain)
@@ -1542,12 +1730,31 @@ extern "C" {
 			if (streamed_ && playing_)
 			{
 				//buffer was flagged as end of stream
+				//looping is handled by the streamer, in the top level layer
 				xnAudioSourceStop(this);
 			}
 		}
 
 		void xnAudioSource::OnBufferStart(void* context)
 		{
+			auto buffer = static_cast<xnAudioBuffer*>(context);
+
+			if (buffer->type_ == BeginOfStream)
+			{
+				//we need this info to compute position of stream
+				XAUDIO2_VOICE_STATE state;
+				if (xnAudioWindows7Hacks)
+				{
+					auto win7Voice = reinterpret_cast<IXAudio2SourceVoice1*>(buffer->source_->source_voice_);
+					win7Voice->GetState(&state);
+				}
+				else
+				{
+					buffer->source_->source_voice_->GetState(&state, 0);
+				}
+
+				buffer->source_->samplesAtBegin = state.SamplesPlayed;
+			}
 		}
 
 		void xnAudioSource::OnLoopEnd(void* context)
@@ -1559,7 +1766,7 @@ extern "C" {
 			}
 		}
 
-		void xnAudioSourceQueueBuffer(xnAudioSource* source, xnAudioBuffer* buffer, short* pcm, int bufferSize, npBool endOfStream)
+		void xnAudioSourceQueueBuffer(xnAudioSource* source, xnAudioBuffer* buffer, short* pcm, int bufferSize, BufferType type)
 		{
 			//used only when streaming, to fill a buffer, often..
 			source->streamed_ = true;
@@ -1568,20 +1775,20 @@ extern "C" {
 			//we also have to avoid looping single buffers
 			buffer->buffer_.LoopCount = 0;
 
-			//flag end of stream if needed
-			buffer->buffer_.Flags = endOfStream ? XAUDIO2_END_OF_STREAM : 0;
-
-			buffer->buffer_.AudioBytes = bufferSize;
+			//flag the stream
+			buffer->buffer_.Flags = type == EndOfStream ? XAUDIO2_END_OF_STREAM : 0;
+			buffer->type_ = type;
+			
+			buffer->length_ = buffer->buffer_.AudioBytes = bufferSize;
 			memcpy(const_cast<char*>(buffer->buffer_.pAudioData), pcm, bufferSize);
 			source->source_voice_->SubmitSourceBuffer(&buffer->buffer_);
 		}
-
-		
 
 		void xnAudioSourcePause(xnAudioSource* source)
 		{
 			source->source_voice_->Stop();
 			source->playing_ = false;
+			source->pause_ = true;
 		}
 
 		XMFLOAT3::XMFLOAT3(): x(0), y(0), z(0)
@@ -1609,6 +1816,14 @@ extern "C" {
 			source->source_voice_->Stop();
 			source->source_voice_->FlushSourceBuffers();
 			source->playing_ = false;
+			source->pause_ = false;
+
+			//since we flush we also rebuffer in this case
+			if (!source->streamed_)
+			{
+				xnAudioBuffer* singleBuffer = source->freeBuffers_[0];
+				source->source_voice_->SubmitSourceBuffer(&singleBuffer->buffer_, NULL);
+			}
 		}
 
 		void xnAudioListenerPush3D(xnAudioListener* listener, float* pos, float* forward, float* up, float* vel)
@@ -1641,12 +1856,13 @@ extern "C" {
 
 		npBool xnAudioSourceIsPlaying(xnAudioSource* source)
 		{
-			return source->playing_;;
+			return source->playing_ || source->pause_;
 		}
 
 		xnAudioBuffer* xnAudioBufferCreate(int maxBufferSize)
 		{
 			auto buffer = new xnAudioBuffer;
+			buffer->length_ = 0;
 			buffer->buffer_ = {};
 			buffer->buffer_.pContext = buffer;
 			buffer->buffer_.PlayBegin = 0;
@@ -1667,8 +1883,12 @@ extern "C" {
 		void xnAudioBufferFill(xnAudioBuffer* buffer, short* pcm, int bufferSize, int sampleRate, npBool mono)
 		{
 			(void)sampleRate;
-			(void)mono;
+			
 			buffer->buffer_.AudioBytes = bufferSize;
+			
+			buffer->buffer_.LoopBegin = buffer->buffer_.PlayBegin = 0;
+			buffer->buffer_.LoopLength = buffer->buffer_.PlayLength = buffer->length_ = (bufferSize / sizeof(short)) / (mono ? 1 : 2);
+			
 			memcpy(const_cast<char*>(buffer->buffer_.pAudioData), pcm, bufferSize);
 		}
 
@@ -1681,7 +1901,6 @@ extern "C" {
 		{
 		}
 	}
-
 }
 
 SpinLock::SpinLock()

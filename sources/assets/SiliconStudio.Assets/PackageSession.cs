@@ -13,7 +13,7 @@ using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.Core.Reflection;
 using ILogger = SiliconStudio.Core.Diagnostics.ILogger;
 using Microsoft.Build.Evaluation;
-
+using SiliconStudio.Assets.Tracking;
 using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Assets
@@ -28,6 +28,7 @@ namespace SiliconStudio.Assets
         private readonly object dependenciesLock = new object();
         private Package currentPackage;
         private AssetDependencyManager dependencies;
+        private AssetSourceTracker sourceTracker;
 
         public event DirtyFlagChangedDelegate<Asset> AssetDirtyChanged;
 
@@ -84,6 +85,7 @@ namespace SiliconStudio.Assets
         public void Dispose()
         {
             dependencies?.Dispose();
+            sourceTracker?.Dispose();
 
             var loadedAssemblies = Packages.SelectMany(x => x.LoadedAssemblies).ToList();
             for (int index = loadedAssemblies.Count - 1; index >= 0; index--)
@@ -187,6 +189,17 @@ namespace SiliconStudio.Assets
                 lock (dependenciesLock)
                 {
                     return dependencies ?? (dependencies = new AssetDependencyManager(this));
+                }
+            }
+        }
+
+        public AssetSourceTracker SourceTracker
+        {
+            get
+            {
+                lock (dependenciesLock)
+                {
+                    return sourceTracker ?? (sourceTracker = new AssetSourceTracker(this));
                 }
             }
         }
@@ -519,7 +532,8 @@ namespace SiliconStudio.Assets
 
                     // Suspend tracking when saving as we don't want to receive
                     // all notification events
-                    dependencies?.SourceTracker.BeginSavingSession();
+                    dependencies?.BeginSavingSession();
+                    sourceTracker?.BeginSavingSession();
 
                     // Return immediately if there is any error
                     if (log.HasErrors)
@@ -543,7 +557,7 @@ namespace SiliconStudio.Assets
                                 //If we are within a csproj we need to remove the file from there as well
                                 if (assetItem?.SourceProject != null)
                                 {
-                                    var projectAsset = assetItem.Asset as ProjectSourceCodeAsset;
+                                    var projectAsset = assetItem.Asset as IProjectAsset;
                                     if (projectAsset != null)
                                     {
                                         Project project;
@@ -560,7 +574,7 @@ namespace SiliconStudio.Assets
                                         }
                                     }
                                     //delete any generated file as well
-                                    var generatorAsset = assetItem.Asset as ProjectCodeGeneratorAsset;
+                                    var generatorAsset = assetItem.Asset as IProjectFileGeneratorAsset;
                                     if (generatorAsset?.GeneratedAbsolutePath != null)
                                     {
                                         File.Delete((new UFile(generatorAsset.GeneratedAbsolutePath)).ToWindowsPath());
@@ -624,7 +638,8 @@ namespace SiliconStudio.Assets
                 }
                 finally
                 {
-                    dependencies?.SourceTracker.EndSavingSession();
+                    sourceTracker?.EndSavingSession();
+                    dependencies?.EndSavingSession();
 
                     // Once all packages and assets have been saved, we can save the solution (as we need to have fullpath to
                     // be setup for the packages)
@@ -954,7 +969,9 @@ namespace SiliconStudio.Assets
                 package.LoadAssemblies(log, newLoadParameters);
 
                 // Load list of assets
-                newLoadParameters.AssetFiles = Package.ListAssetFiles(log, package, loadParameters.CancelToken);
+                newLoadParameters.AssetFiles = Package.ListAssetFiles(log, package, true, loadParameters.CancelToken);
+                // Sort them by size (to improve concurrency during load)
+                newLoadParameters.AssetFiles.Sort(PackageLoadingAssetFile.FileSizeComparer.Default);
 
                 if (pendingPackageUpgrades.Count > 0)
                 {

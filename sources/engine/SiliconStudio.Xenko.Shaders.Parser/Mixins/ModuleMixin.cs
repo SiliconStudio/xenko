@@ -4,14 +4,15 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-
+using SiliconStudio.Core;
 using SiliconStudio.Xenko.Shaders.Parser.Analysis;
-using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Shaders.Ast.Xenko;
 using SiliconStudio.Shaders.Ast;
 
 namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
     [DebuggerDisplay("ModuleMixin {MixinName}")]
+    [DataContract]
     internal class ModuleMixin
     {
         #region Public members

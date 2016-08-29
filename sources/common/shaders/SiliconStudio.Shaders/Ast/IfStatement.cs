@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// If statement.
     /// </summary>
-    public class IfStatement : Statement
+    public partial class IfStatement : Statement
     {
         #region Public Properties
 

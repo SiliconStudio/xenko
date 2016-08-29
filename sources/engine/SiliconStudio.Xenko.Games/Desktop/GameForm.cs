@@ -48,11 +48,9 @@
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D || SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN) && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
 using System.Runtime.InteropServices;
 using System;
-using System.Linq;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-using System.Reflection;
 
 namespace SiliconStudio.Xenko.Games
 {
@@ -74,9 +72,8 @@ namespace SiliconStudio.Xenko.Games
         private const int SC_SCREENSAVE = 0xF140;
         private const int MNC_CLOSE = 1;
         private const byte VK_RETURN = 0x0D;
-        private System.Drawing.Size cachedSize;
+        private Size cachedSize;
         private FormWindowState previousWindowState;
-        //private DisplayMonitor monitor;
         private bool isUserResizing;
         private bool isBackgroundFirstDraw;
         private bool isSizeChangedWithoutResizeBegin;
@@ -86,8 +83,8 @@ namespace SiliconStudio.Xenko.Games
         /// <param name="text">The text.</param>
         public GameForm()
         {
-            BackColor = System.Drawing.Color.Black;
-            ClientSize = new System.Drawing.Size(800, 600);
+            BackColor = Color.Black;
+            ClientSize = new Size(800, 600);
 
             ResizeRedraw = true;
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
@@ -118,11 +115,6 @@ namespace SiliconStudio.Xenko.Games
         /// Occurs when [app deactivated].
         /// </summary>
         public event EventHandler<EventArgs> AppDeactivated;
-
-        /// <summary>
-        /// Occurs when [monitor changed].
-        /// </summary>
-        public event EventHandler<EventArgs> MonitorChanged;
 
         /// <summary>
         /// Occurs when [pause rendering].
@@ -193,21 +185,10 @@ namespace SiliconStudio.Xenko.Games
             if (isUserResizing && cachedSize != Size)
             {
                 OnUserResized(e);
-                // UpdateScreen();
             }
 
             isUserResizing = false;
             OnResumeRendering(e);
-        }
-
-        /// <summary>
-        /// Raises the <see cref="E:System.Windows.Forms.Form.Load"/> event.
-        /// </summary>
-        /// <param name="e">An <see cref="T:System.EventArgs"/> that contains the event data.</param>
-        protected override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);
-            // UpdateScreen();
         }
 
         /// <summary>
@@ -248,11 +229,6 @@ namespace SiliconStudio.Xenko.Games
         private void OnUserResized(EventArgs e)
         {
             UserResized?.Invoke(this, e);
-        }
-
-        private void OnMonitorChanged(EventArgs e)
-        {
-            MonitorChanged?.Invoke(this, e);
         }
 
         /// <summary>
@@ -317,7 +293,6 @@ namespace SiliconStudio.Xenko.Games
                 isSizeChangedWithoutResizeBegin = false;
                 cachedSize = Size;
                 OnUserResized(EventArgs.Empty);
-                //UpdateScreen();
             }
         }
 
@@ -357,7 +332,6 @@ namespace SiliconStudio.Xenko.Games
                             previousWindowState = FormWindowState.Maximized;
 
                             OnUserResized(EventArgs.Empty);
-                            //UpdateScreen();
                             cachedSize = Size;
                         }
                         else if (wparam == SIZE_RESTORED)
@@ -397,7 +371,7 @@ namespace SiliconStudio.Xenko.Games
                         m.Result = new IntPtr(1);
                         return;
                     }
-                    else if (wparam == PBT_APMRESUMESUSPEND)
+                    if (wparam == PBT_APMRESUMESUSPEND)
                     {
                         OnSystemResume(EventArgs.Empty);
                         m.Result = new IntPtr(1);

@@ -43,6 +43,11 @@ namespace SiliconStudio.Core
         /// The current running <see cref="PlatformType"/>.
         /// </summary>
         public static readonly PlatformType Type = PlatformType.iOS;
+#elif SILICONSTUDIO_PLATFORM_MACOS
+        /// <summary>
+        /// The current running <see cref="PlatformType"/>.
+        /// </summary>
+        public static readonly PlatformType Type = PlatformType.macOS;
 #elif SILICONSTUDIO_PLATFORM_LINUX
         /// <summary>
         /// The current running <see cref="PlatformType"/>.

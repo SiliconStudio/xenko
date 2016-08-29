@@ -4,6 +4,7 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Particles.Initializers;
 using SiliconStudio.Xenko.Particles.Sorters;
 using SiliconStudio.Xenko.Particles.VertexLayouts;
 using SiliconStudio.Xenko.Particles.ShapeBuilders.Tools;
@@ -127,7 +128,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 {
                     var orderValue = (*((uint*)particle[orderField]));
 
-                    if ((orderValue >> 16) != (oldOrderValue >> 16)) 
+                    if ((orderValue >> SpawnOrderConst.GroupBitOffset) != (oldOrderValue >> SpawnOrderConst.GroupBitOffset)) 
                     {
                         ribbonizer.Ribbonize(vtxBuilder, invViewX, invViewY, QuadsPerParticle);
                         ribbonizer.RibbonSplit();
@@ -162,7 +163,6 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         /// </summary>
         sealed class Ribbonizer
         {
-            private int capacity = 1;
             private int lastParticle = 0;
             private Vector3[] positions = new Vector3[1];
             private float[] sizes = new float[1];

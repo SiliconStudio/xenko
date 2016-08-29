@@ -1,0 +1,11 @@
+!SpriteFont
+Id: 2615a072-845e-4d15-a19b-aebf612e432c
+SerializedVersion: {Xenko: 1.7.0-beta04}
+Tags: []
+FontSource: !SystemFontProvider
+    ~Id: cc249143-2ef4-4596-ad54-68ad07ea251d
+    FontName: Arial
+    Style: Regular
+FontType: !RuntimeRasterizedSpriteFontType
+    ~Id: 15189f11-21df-42b9-bc59-8446067c6617
+    AntiAlias: ClearType

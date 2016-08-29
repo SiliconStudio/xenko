@@ -6,7 +6,7 @@
 /// <remarks>
 /// TStream: generic Semantic - Texcoord semantic.
 /// </remarks>
-class SwapUV<Semantic TStream> : ShaderBase, Texturing
+shader SwapUV<Semantic TStream> : ShaderBase, Texturing
 {
     stream float2 Texcoord : TStream;
 

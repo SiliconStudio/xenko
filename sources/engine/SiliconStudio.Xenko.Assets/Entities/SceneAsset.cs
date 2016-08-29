@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// <summary>
         /// Gets the scene settings for this instance.
         /// </summary>
-        [DataMember(30)]
+        [DataMember(10)]
         public SceneSettings SceneSettings { get; private set; }
     }
 }

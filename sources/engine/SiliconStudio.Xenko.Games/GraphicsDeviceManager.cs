@@ -1001,6 +1001,8 @@ namespace SiliconStudio.Xenko.Games
             {
                 using (Profiler.Begin(GraphicsDeviceManagerProfilingKeys.CreateDevice))
                 {
+                    game.ConfirmRenderingSettings(GraphicsDevice == null); //if Device is null we assume we are still at game creation phase
+
                     isChangingDevice = true;
                     var width = game.Window.ClientBounds.Width;
                     var height = game.Window.ClientBounds.Height;

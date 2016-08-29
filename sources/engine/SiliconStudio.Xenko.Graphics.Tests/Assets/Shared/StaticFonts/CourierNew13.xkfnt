@@ -1,0 +1,17 @@
+!SpriteFont
+Id: 90b99454-a7b4-4b88-8d42-638acc73e34b
+SerializedVersion: {Xenko: 1.7.0-beta04}
+Tags: []
+FontSource: !SystemFontProvider
+    ~Id: bd7c2d04-3e1e-4208-b984-ec725be7fbbe
+    FontName: Courier New
+    Style: Regular
+FontType: !OfflineRasterizedSpriteFontType
+    ~Id: acd997cb-3149-4b36-b751-dd2373c86ca0
+    Size: 13.0
+    CharacterSet: 
+    CharacterRegions:
+        -   ~Id: 5e580dc4-e084-4d50-9f98-c0643c394343
+            Start: ' '
+            End: "\x7F"
+    AntiAlias: Aliased

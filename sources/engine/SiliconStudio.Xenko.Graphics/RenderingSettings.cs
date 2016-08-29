@@ -141,6 +141,7 @@ namespace SiliconStudio.Xenko.Graphics
                 case PlatformType.iOS:
                     return GraphicsPlatform.OpenGLES;
                 case PlatformType.Linux:
+                case PlatformType.macOS:
                     return GraphicsPlatform.OpenGL;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -168,6 +169,8 @@ namespace SiliconStudio.Xenko.Graphics
                         || preferredGraphicsPlatform == PreferredGraphicsPlatform.Vulkan;
                 case PlatformType.iOS:
                     return preferredGraphicsPlatform == PreferredGraphicsPlatform.OpenGLES;
+                case PlatformType.macOS:
+                    return preferredGraphicsPlatform == PreferredGraphicsPlatform.OpenGL;
                 case PlatformType.Linux:
                     return preferredGraphicsPlatform == PreferredGraphicsPlatform.OpenGL
                         || preferredGraphicsPlatform == PreferredGraphicsPlatform.Vulkan;

@@ -17,7 +17,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <inheritdoc/>
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            bool result = System.Convert.ToBoolean(value);
+            var result = ConverterHelper.ConvertToBoolean(value, culture);
             if (parameter is bool && (bool)parameter == false)
             {
                 result = !result;

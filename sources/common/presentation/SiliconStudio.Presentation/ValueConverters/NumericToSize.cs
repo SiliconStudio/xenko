@@ -5,13 +5,11 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-using SiliconStudio.Presentation.MarkupExtensions;
-
 namespace SiliconStudio.Presentation.ValueConverters
 {
     /// <summary>
     /// This converter will convert a double value to a <see cref="Size"/> structure.
-    /// A <see cref="Size"/> must be passed as a parameter of this converter. You can use the <see cref="SizeExtension"/>
+    /// A <see cref="Size"/> must be passed as a parameter of this converter. You can use the <see cref="MarkupExtensions.SizeExtension"/>
     /// markup extension to easily pass one, with the following syntax: {sskk:Size (arguments)}. The resulting size will
     /// be the parameter size multiplied bu the scalar double value.
     /// </summary>
@@ -24,7 +22,7 @@ namespace SiliconStudio.Presentation.ValueConverters
             double scalar;
             try
             {
-                scalar = System.Convert.ToDouble(value);
+                scalar = ConverterHelper.ConvertToDouble(value, culture);
             }
             catch (Exception exception)
             {
@@ -55,7 +53,7 @@ namespace SiliconStudio.Presentation.ValueConverters
             var sizeValue = (Size)value;
             var sizeParameter = (Size)parameter;
 
-            double scalar = 0.0;
+            var scalar = 0.0;
             if (Math.Abs(sizeParameter.Width) > double.Epsilon)
             {
                 scalar = sizeValue.Width / sizeParameter.Width;

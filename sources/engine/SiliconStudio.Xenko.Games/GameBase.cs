@@ -324,6 +324,8 @@ namespace SiliconStudio.Xenko.Games
             }
         }
 
+        internal abstract void ConfirmRenderingSettings(bool gameCreation);
+
         /// <summary>
         /// Gets the full name of the device this game is running if available
         /// </summary>

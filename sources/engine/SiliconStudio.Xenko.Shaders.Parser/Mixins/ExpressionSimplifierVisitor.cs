@@ -1,13 +1,13 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Shaders.Ast.Xenko;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Visitor;
 
 namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
-    internal class ExpressionSimplifierVisitor : ShaderVisitor
+    internal class ExpressionSimplifierVisitor : ShaderWalker
     {
         private readonly ExpressionEvaluator evaluator;
 
@@ -22,8 +22,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             Visit(shader);
         }
 
-        [Visit]
-        protected void Visit(StatementList statementList)
+        public override void Visit(StatementList statementList)
         {
             for (int i = 0; i < statementList.Count; i++)
             {
@@ -45,7 +44,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 }
             }
 
-            Visit((Node)statementList);
+            base.Visit(statementList);
         }
     }
 }

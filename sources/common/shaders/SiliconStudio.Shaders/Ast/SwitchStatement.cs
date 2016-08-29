@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// Switch statement.
     /// </summary>
-    public class SwitchStatement : Statement
+    public partial class SwitchStatement : Statement
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SwitchStatement"/> class.

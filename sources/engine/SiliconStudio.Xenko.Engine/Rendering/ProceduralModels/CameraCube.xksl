@@ -3,7 +3,7 @@
 /// <summary>
 /// Renders the geometry in the correct view for a cube map.
 /// </summary>
-class CameraCube : PositionStream4, ShaderBase
+shader CameraCube : PositionStream4, ShaderBase
 {
     float3 CameraWorldPosition;
 

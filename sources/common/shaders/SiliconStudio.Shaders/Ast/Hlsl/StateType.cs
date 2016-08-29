@@ -8,99 +8,61 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     /// <summary>
     /// A State type.
     /// </summary>
-    public class StateType : ObjectType
+    public static class StateType
     {
         #region Constants and Fields
 
         /// <summary>
         /// A BlendState.
         /// </summary>
-        public static readonly StateType BlendState = new StateType("BlendState");
+        public static readonly ObjectType BlendState = new ObjectType("BlendState");
 
         /// <summary>
         /// A DepthStencilState.
         /// </summary>
-        public static readonly StateType DepthStencilState = new StateType("DepthStencilState");
+        public static readonly ObjectType DepthStencilState = new ObjectType("DepthStencilState");
 
         /// <summary>
         /// A RasterizerState
         /// </summary>
-        public static readonly StateType RasterizerState = new StateType("RasterizerState");
+        public static readonly ObjectType RasterizerState = new ObjectType("RasterizerState");
 
-        private static readonly StateType[] StateTypes = new[] { BlendState, DepthStencilState, RasterizerState };
+        /// <summary>
+        /// A SamplerState.
+        /// </summary>
+        public static readonly ObjectType SamplerState = new ObjectType("SamplerState");
+
+        /// <summary>
+        /// An old sampler_state declaration.
+        /// </summary>
+        public static readonly ObjectType SamplerStateOld = new ObjectType("sampler_state");
+
+        /// <summary>
+        /// A SamplerComparisonState.
+        /// </summary>
+        public static readonly ObjectType SamplerComparisonState = new ObjectType("SamplerComparisonState");
+
+        private static readonly ObjectType[] ObjectTypes = new[] { BlendState, DepthStencilState, RasterizerState, SamplerState, SamplerStateOld, SamplerComparisonState };
+        private static readonly ObjectType[] SamplerStateTypes = new[] { SamplerState, SamplerStateOld, SamplerComparisonState };
 
         #endregion
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StateType"/> class.
-        /// </summary>
-        public StateType()
+        public static bool IsStateType(this TypeBase type)
         {
-            IsBuiltIn = true;
+            return type != null && Parse(type.Name) != null;
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StateType"/> class.
-        /// </summary>
-        /// <param name="name">
-        /// The name.
-        /// </param>
-        public StateType(string name)
-            : base(name)
+        public static bool IsSamplerStateType(this TypeBase type)
         {
-            IsBuiltIn = true;
-        }
-
-        /// <inheritdoc/>
-        public bool Equals(StateType other)
-        {
-            return base.Equals(other);
-        }
-
-        /// <inheritdoc/>
-        public override bool Equals(object obj)
-        {
-            if (ReferenceEquals(null, obj))
-            {
+            if (type == null)
                 return false;
-            }
-            if (ReferenceEquals(this, obj))
+
+            foreach (var objectType in SamplerStateTypes)
             {
-                return true;
+                if (string.Compare(type.Name.Text, objectType.Name.Text, StringComparison.OrdinalIgnoreCase) == 0)
+                    return true;
             }
-            return Equals(obj as StateType);
-        }
-
-        /// <inheritdoc/>
-        public override int GetHashCode()
-        {
-            return base.GetHashCode();
-        }
-
-        /// <summary>
-        /// Implements the operator ==.
-        /// </summary>
-        /// <param name="left">The left.</param>
-        /// <param name="right">The right.</param>
-        /// <returns>
-        /// The result of the operator.
-        /// </returns>
-        public static bool operator ==(StateType left, StateType right)
-        {
-            return Equals(left, right);
-        }
-
-        /// <summary>
-        /// Implements the operator !=.
-        /// </summary>
-        /// <param name="left">The left.</param>
-        /// <param name="right">The right.</param>
-        /// <returns>
-        /// The result of the operator.
-        /// </returns>
-        public static bool operator !=(StateType left, StateType right)
-        {
-            return !Equals(left, right);
+            return false;
         }
 
         /// <summary>
@@ -108,9 +70,14 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns></returns>
-        public static StateType Parse(string name)
+        public static ObjectType Parse(string name)
         {
-            return StateTypes.FirstOrDefault(stateType => string.Compare(name, stateType.Name.Text, true) == 0);
+            foreach (var objectType in ObjectTypes)
+            {
+                if (string.Compare(name, objectType.Name.Text, StringComparison.OrdinalIgnoreCase) == 0)
+                    return objectType;
+            }
+            return null;
         }
     }
 }

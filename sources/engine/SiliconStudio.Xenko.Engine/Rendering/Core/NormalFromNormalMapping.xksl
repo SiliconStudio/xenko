@@ -3,7 +3,7 @@
 /// <summary>
 /// Calculates the normal  the normals from a normal map.
 /// </summary>
-class NormalFromNormalMapping : Transformation, NormalBase, NormalStream
+shader NormalFromNormalMapping : Transformation, NormalBase, NormalStream
 {
     override stage void GenerateNormal_PS()
     {

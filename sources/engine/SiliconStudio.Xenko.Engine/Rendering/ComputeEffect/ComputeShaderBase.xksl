@@ -17,7 +17,7 @@
 #ifndef ThreadNumberZ
 # define ThreadNumberZ 1
 #endif
-class ComputeShaderBase
+shader ComputeShaderBase
 {
     stage stream uint3 GroupId : SV_GroupID;
     stage stream uint3 DispatchThreadId : SV_DispatchThreadID;

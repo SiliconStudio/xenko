@@ -4,19 +4,15 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing.Text;
 using System.IO;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Xenko.Graphics.Font;
 
 namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 {
     using System.Drawing;
     using System.Drawing.Imaging;
     using SharpDX.DirectWrite;
-    using SharpDX.Mathematics.Interop;
     using Factory = SharpDX.DirectWrite.Factory;
 
     // This code was originally taken from DirectXTk but rewritten with DirectWrite
@@ -46,18 +42,24 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
         private Bitmap LoadSDFBitmap(char c, int width, int height, int offsetx, int offsety)
         {
             var characterCode = "0x" + Convert.ToUInt32(c).ToString("x4");
-            var outputFile = $"{tempDir}{characterCode}.bmp";
+#if DEBUG
+            var outputFile = $"{tempDir}{characterCode}_{Guid.NewGuid()}.bmp";
+#else
+            var outputFile = Path.GetTempFileName();
+#endif
             var exportSize = $" -size {width} {height} ";
-            var translate  = $" -translate {offsetx} {offsety} ";
+            var translate = $" -translate {offsetx} {offsety} ";
 
-            var startInfo = new ProcessStartInfo();
-            startInfo.FileName = msdfgenExe;
-            startInfo.Arguments = $"msdf -font \"{fontSource}\"  {characterCode} -o \"{outputFile}\" {exportSize} {translate} -autoframe";
-            startInfo.CreateNoWindow = true;
-            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
-            startInfo.RedirectStandardError = true;
-            startInfo.RedirectStandardOutput = true;
-            startInfo.UseShellExecute = false;
+            var startInfo = new ProcessStartInfo
+            {
+                FileName = msdfgenExe,
+                Arguments = $"msdf -font \"{fontSource}\" {characterCode} -o \"{outputFile}\" -format bmp {exportSize} {translate} -autoframe",
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden,
+                RedirectStandardError = true,
+                RedirectStandardOutput = true,
+                UseShellExecute = false
+            };
             var msdfgenProcess = Process.Start(startInfo);
 
             if (msdfgenProcess == null)
@@ -67,7 +69,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 
             if (File.Exists(outputFile))
             {
-                var bitmap = (Bitmap)Bitmap.FromFile(outputFile);
+                var bitmap = (Bitmap)Image.FromFile(outputFile);
 
                 Normalize(bitmap);
 
@@ -108,16 +110,16 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
                     bitmap.SetPixel(i, j, invertedPixel);
                 }
         }
-        
+
         /// <inheritdoc/>
         public void Import(SpriteFontAsset options, List<char> characters)
         {
             fontSource = options.FontSource.GetFontPath();
             if (string.IsNullOrEmpty(fontSource))
-              return;
+                return;
 
             // Get the msdfgen.exe location
-            var installationDir = DirectoryHelper.GetInstallationDirectory("Xenko");
+            var installationDir = DirectoryHelper.GetPackageDirectory("Xenko");
             var binDir = UPath.Combine(installationDir, new UDirectory("Bin"));
             binDir = UPath.Combine(binDir, new UDirectory("Windows-Direct3D11"));
             var msdfgen = UPath.Combine(binDir, new UFile("msdfgen.exe"));
@@ -166,7 +168,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 
             Glyphs = glyphList;
 
-            factory.Dispose();            
+            factory.Dispose();
         }
 
         /// <summary>

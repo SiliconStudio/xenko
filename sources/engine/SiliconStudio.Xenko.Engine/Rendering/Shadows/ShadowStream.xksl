@@ -4,7 +4,7 @@
 /// <summary>
 /// Defines shadow stream variables.
 /// </summary>
-class ShadowStream
+shader ShadowStream
 {
     stage stream float3 shadowColor;
 };

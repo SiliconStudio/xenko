@@ -3,7 +3,7 @@
 
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
-    shader MultipleRenderTargetsEffect
+    effect MultipleRenderTargetsEffect
     {
         mixin XenkoForwardShadingEffect;
         mixin MultipleRenderTargetsEffectShader;

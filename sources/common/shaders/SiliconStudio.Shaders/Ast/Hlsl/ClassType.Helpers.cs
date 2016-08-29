@@ -12,9 +12,9 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
         /// </summary>
         /// <param name="targetType">Type of the target.</param>
         /// <returns><c>true</c> if [the specified target type] [is stream type] ; otherwise, <c>false</c>.</returns>
-        public static bool IsStreamType(TypeBase targetType)
+        public static bool IsStreamOutputType(TypeBase targetType)
         {
-            return targetType is ClassType && ((ClassType)targetType).GenericArguments.Count > 0 && StreamTypeName.Parse(targetType.Name) != null;
+            return targetType is ClassType && ((ClassType)targetType).GenericArguments.Count > 0 && targetType.IsStreamTypeName();
         }
     }
 }

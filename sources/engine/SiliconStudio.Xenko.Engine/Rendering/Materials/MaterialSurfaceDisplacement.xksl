@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// <summary>
     /// Material displacement map
     /// </summary>
-    class MaterialSurfaceDisplacement<MemberName TPosition, MemberName TNormal, bool TScaleNormal> : IMaterialSurface, MaterialDisplacementStream, PositionStream, NormalStream, Transformation
+    shader MaterialSurfaceDisplacement<MemberName TPosition, MemberName TNormal, bool TScaleNormal> : IMaterialSurface, MaterialDisplacementStream, PositionStream, NormalStream, Transformation
     {
         override void Compute()
         {

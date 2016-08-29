@@ -2,11 +2,14 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Diagnostics;
+using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Xenko.Shaders.Parser.Performance
 {
     public static class MixPerformance
     {
+        internal static Logger Logger = GlobalLogger.GetLogger("XenkoShaderPerformance"); // Global logger for shader profiling
+
         private static Stopwatch Global = new Stopwatch();
         private static Stopwatch AddDefaultCompositions = new Stopwatch();
         private static Stopwatch CreateReferencesStructures = new Stopwatch();
@@ -140,24 +143,22 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Performance
 
         public static void PrintResult()
         {
-            Console.WriteLine();
-            Console.WriteLine(@"---------------------------------MIX ANALYZER-----------------------------------");
-            Console.WriteLine(@"Whole mix took {0} ms", Global.ElapsedMilliseconds);
-            Console.WriteLine(@"AddDefaultCompositions took {0} ms", AddDefaultCompositions.ElapsedMilliseconds);
-            Console.WriteLine(@"CreateReferencesStructures took {0} ms", CreateReferencesStructures.ElapsedMilliseconds);
-            Console.WriteLine(@"RegenKeys took {0} ms", RegenKeys.ElapsedMilliseconds);
-            Console.WriteLine(@"BuildMixinInheritance took {0} ms", BuildMixinInheritance.ElapsedMilliseconds);
-            Console.WriteLine(@"ComputeMixinOccurrence took {0} ms", ComputeMixinOccurrence.ElapsedMilliseconds);
-            Console.WriteLine(@"BuildStageInheritance took {0} ms", BuildStageInheritance.ElapsedMilliseconds);
-            Console.WriteLine(@"LinkVariables took {0} ms", LinkVariables.ElapsedMilliseconds);
-            Console.WriteLine(@"ProcessExterns took {0} ms", ProcessExterns.ElapsedMilliseconds);
-            Console.WriteLine(@"PatchAllMethodInferences took {0} ms", PatchAllMethodInferences.ElapsedMilliseconds);
-            Console.WriteLine(@"MergeReferences took {0} ms", MergeReferences.ElapsedMilliseconds);
-            Console.WriteLine(@"RenameAllVariables took {0} ms", RenameAllVariables.ElapsedMilliseconds);
-            Console.WriteLine(@"RenameAllMethods took {0} ms", RenameAllMethods.ElapsedMilliseconds);
-            Console.WriteLine(@"GenerateShader took {0} ms", GenerateShader.ElapsedMilliseconds);
-            Console.WriteLine(@"-------------------------------------------------------------------------------");
-            Console.WriteLine();
+            Logger.Info(@"---------------------------------MIX ANALYZER-----------------------------------");
+            Logger.Info(@"Whole mix took {0} ms", Global.ElapsedMilliseconds);
+            Logger.Info(@"AddDefaultCompositions took {0} ms", AddDefaultCompositions.ElapsedMilliseconds);
+            Logger.Info(@"CreateReferencesStructures took {0} ms", CreateReferencesStructures.ElapsedMilliseconds);
+            Logger.Info(@"RegenKeys took {0} ms", RegenKeys.ElapsedMilliseconds);
+            Logger.Info(@"BuildMixinInheritance took {0} ms", BuildMixinInheritance.ElapsedMilliseconds);
+            Logger.Info(@"ComputeMixinOccurrence took {0} ms", ComputeMixinOccurrence.ElapsedMilliseconds);
+            Logger.Info(@"BuildStageInheritance took {0} ms", BuildStageInheritance.ElapsedMilliseconds);
+            Logger.Info(@"LinkVariables took {0} ms", LinkVariables.ElapsedMilliseconds);
+            Logger.Info(@"ProcessExterns took {0} ms", ProcessExterns.ElapsedMilliseconds);
+            Logger.Info(@"PatchAllMethodInferences took {0} ms", PatchAllMethodInferences.ElapsedMilliseconds);
+            Logger.Info(@"MergeReferences took {0} ms", MergeReferences.ElapsedMilliseconds);
+            Logger.Info(@"RenameAllVariables took {0} ms", RenameAllVariables.ElapsedMilliseconds);
+            Logger.Info(@"RenameAllMethods took {0} ms", RenameAllMethods.ElapsedMilliseconds);
+            Logger.Info(@"GenerateShader took {0} ms", GenerateShader.ElapsedMilliseconds);
+            Logger.Info(@"-------------------------------------------------------------------------------");
         }
     }
 

@@ -9,12 +9,12 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// An expression.
     /// </summary>
-    public class Expression : Node, ITypeInferencer
+    public abstract partial class Expression : Node, ITypeInferencer
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Expression"/> class.
         /// </summary>
-        public Expression()
+        protected Expression()
         {
             TypeInference = new TypeInference();
         }

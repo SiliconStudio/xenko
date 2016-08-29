@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// <summary>
     /// Performs variance filtering.
     /// </summary>
-    class ShadowMapFilterVsm<MemberName PerLighting> : ShadowMapFilterBase<PerLighting>
+    shader ShadowMapFilterVsm<MemberName PerLighting> : ShadowMapFilterBase<PerLighting>
     {
         cbuffer PerLighting
         {

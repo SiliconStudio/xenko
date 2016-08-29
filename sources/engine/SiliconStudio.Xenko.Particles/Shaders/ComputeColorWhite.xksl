@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SiliconStudio.Xenko.Particles.Shaders
 {
-    class ComputeColorWhite : ComputeColor
+    shader ComputeColorWhite : ComputeColor
     {
         override float4 Compute()
         {

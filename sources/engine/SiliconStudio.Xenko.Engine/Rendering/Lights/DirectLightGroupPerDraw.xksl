@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// <summary>
     /// Defines a group of similar lights (directional, spot...etc.)
     /// </summary>
-    class DirectLightGroupPerDraw : DirectLightGroup
+    shader DirectLightGroupPerDraw : DirectLightGroup
     {
         cbuffer PerDraw.Lighting
         {

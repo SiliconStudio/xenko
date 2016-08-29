@@ -7,7 +7,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     /// <summary>
     /// A generic identifier in the form Typename&lt;identifier1,..., identifiern&gt;
     /// </summary>
-    public class IdentifierGeneric : CompositeIdentifier
+    public partial class IdentifierGeneric : CompositeIdentifier
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="IdentifierGeneric"/> class.

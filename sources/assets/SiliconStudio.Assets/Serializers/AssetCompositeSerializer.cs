@@ -29,13 +29,16 @@ namespace SiliconStudio.Assets.Serializers
             {
                 return this;
             }
-
+            // Accepts any part of an AssetComposite, they might be serialized out of a parent asset.
+            if (localContext.Value == null && AssetRegistry.IsAssetPartType(typeDescriptor.Type))
+            {
+                return this;
+            }
             // Accepts any type known as asset part type for the current asset type.
             if (localContext.Value != null && localContext.Value.References.Any(x => x.ReferenceableType.IsAssignableFrom(typeDescriptor.Type)))
             {
                 return this;
             }
-
             return null;
         }
 
@@ -43,11 +46,20 @@ namespace SiliconStudio.Assets.Serializers
         public override void WriteYaml(ref ObjectContext objectContext)
         {
             var type = objectContext.Descriptor.Type;
+            bool clearLocalContext = false;
             // Entering the asset root node, create the local context.
             if (typeof(AssetComposite).IsAssignableFrom(type))
             {
                 localContext.Value = new AssetCompositeVisitorContext(type);
+                clearLocalContext = true;
             }
+            else if (localContext.Value == null && AssetRegistry.IsAssetPartType(type))
+            {
+                var attributes = AssetRegistry.GetPartReferenceAttributes(type);
+                localContext.Value = new AssetCompositeVisitorContext(attributes);
+                clearLocalContext = true;
+            }
+
             var removeLastEnteredType = localContext.Value?.EnterNode(type) ?? false;
 
             try
@@ -58,8 +70,7 @@ namespace SiliconStudio.Assets.Serializers
             {
                 localContext.Value?.LeaveNode(type, removeLastEnteredType);
 
-                // Exiting the asset root node, clear the local context.
-                if (typeof(AssetComposite).IsAssignableFrom(type))
+                if (clearLocalContext)
                 {
                     localContext.Value = null;
                 }
@@ -71,11 +82,19 @@ namespace SiliconStudio.Assets.Serializers
         {
             var type = objectContext.Descriptor.Type;
             var oldContext = localContext.Value;
+            bool clearLocalContext = false;
 
             if (typeof(AssetComposite).IsAssignableFrom(type))
             {
                 // Entering the asset root node, create the local context.
                 localContext.Value = new AssetCompositeVisitorContext(type);
+                clearLocalContext = true;
+            }
+            else if (localContext.Value == null && AssetRegistry.IsAssetPartType(type))
+            {
+                var attributes = AssetRegistry.GetPartReferenceAttributes(type);
+                localContext.Value = new AssetCompositeVisitorContext(attributes);
+                clearLocalContext = true;
             }
 
             var removeLastEnteredType = localContext.Value?.EnterNode(type) ?? false;
@@ -97,7 +116,7 @@ namespace SiliconStudio.Assets.Serializers
             {
                 localContext.Value?.LeaveNode(type, removeLastEnteredType);
 
-                if (typeof(AssetComposite).IsAssignableFrom(type))
+                if (clearLocalContext)
                 {
                     // Exiting the asset root node, clear the local context.
                     localContext.Value = oldContext;

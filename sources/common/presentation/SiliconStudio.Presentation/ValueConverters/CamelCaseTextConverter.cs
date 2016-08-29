@@ -18,7 +18,7 @@ namespace SiliconStudio.Presentation.ValueConverters
             if (value == null)
                 return null;
 
-            string strVal = value.ToString();
+            var strVal = value.ToString();
             return Utils.SplitCamelCase(strVal);
         }
     }

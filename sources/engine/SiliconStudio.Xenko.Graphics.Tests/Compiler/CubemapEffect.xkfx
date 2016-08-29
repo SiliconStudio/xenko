@@ -5,7 +5,7 @@ using SiliconStudio.Xenko.Effects;
 
 namespace Test
 {
-    shader CubemapDisplayEffect
+    effect CubemapDisplayEffect
     {
         using params MaterialParameters;
 
@@ -15,7 +15,7 @@ namespace Test
         mixin compose albedoDiffuse = ComputeColorTextureCubeBasic<TexturingKeys.TextureCube0>;
     };
 
-	shader CubemapEffect
+	effect CubemapEffect
 	{
 		using params MaterialParameters;
 
@@ -29,7 +29,7 @@ namespace Test
             mixin compose albedoDiffuse = ComputeColorTextureCubeReflect<TexturingKeys.TextureCube0>;
 	};
 
-    shader CubemapGeomEffect
+    effect CubemapGeomEffect
     {
 		using params MaterialParameters;
 
@@ -45,7 +45,7 @@ namespace Test
 			mixin compose albedoDiffuse = MaterialParameters.AlbedoDiffuse;
     };
 
-    shader CubemapIBLEffect
+    effect CubemapIBLEffect
     {
         mixin XenkoBaseShader;
         mixin child XenkoGBufferShaderPass;

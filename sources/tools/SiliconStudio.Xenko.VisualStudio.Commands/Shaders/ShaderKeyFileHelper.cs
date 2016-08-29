@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -17,7 +18,27 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands.Shaders
             string result;
             try
             {
-                var parsingResult = XenkoShaderParser.TryPreProcessAndParse(inputFileContent, inputFileName);
+                SiliconStudio.Shaders.Parser.ShaderMacro[] macros;
+
+                // Changed some keywords to avoid ambiguities with HLSL and improve consistency
+                if (inputFileName != null && Path.GetExtension(inputFileName).ToLowerInvariant() == ".xkfx")
+                {
+                    // XKFX
+                    macros = new[]
+                    {
+                        new SiliconStudio.Shaders.Parser.ShaderMacro("shader", "effect")
+                    };
+                }
+                else
+                {
+                    // XKSL
+                    macros = new[]
+                    {
+                        new SiliconStudio.Shaders.Parser.ShaderMacro("class", "shader")
+                    };
+                }
+
+                var parsingResult = XenkoShaderParser.TryPreProcessAndParse(inputFileContent, inputFileName, macros);
 
                 if (parsingResult.HasErrors)
                 {

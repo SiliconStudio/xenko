@@ -1,32 +1,38 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
-
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.UI
 {
     /// <summary>
-    /// Represent the definition of a grid strip.
+    /// Represents the definition of a grid strip.
     /// </summary>
+    [DataContract(nameof(StripDefinition))]
+    [Display(Expand = ExpandRule.Never)]
     public class StripDefinition
     {
-        private float maximumSize;
+        private float maximumSize = float.PositiveInfinity;
         private float minimumSize;
-        private StripType type;
-        private float sizeValue;
+        private StripType type = StripType.Star;
+        private float sizeValue = 1.0f;
 
         /// <summary>
         /// The actual size of the strip in virtual pixels.
         /// </summary>
+        [DataMemberIgnore]
         public float ActualSize { get; internal set; }
 
         /// <summary>
         /// Creates a 1-Star sized strip definition.
         /// </summary>
         public StripDefinition()
-            : this(StripType.Star, 1)
         {
         }
 
@@ -35,32 +41,28 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <param name="type">The type of the strip to create</param>
         /// <param name="sizeValue">The value of the strip to create</param>
-        public StripDefinition(StripType type, float sizeValue = 1)
+        public StripDefinition(StripType type, float sizeValue = 1.0f)
         {
             Type = type;
             SizeValue = sizeValue;
-            MaximumSize = float.PositiveInfinity;
-            MinimumSize = 0;
         }
 
         /// <summary>
         /// The maximum size of the strip in virtual pixels.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The provided value is negative.</exception>
-        /// <exception cref="InvalidOperationException">The provided value is smaller than <see cref="MinimumSize"/></exception>
+        /// <remarks>The value is coerced in the range [<see cref="MinimumSize"/>, <see cref="float.PositiveInfinity"/>].</remarks>
+        /// <userdoc>The maximum size of the strip in virtual pixels.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.PositiveInfinity)]
+        [DefaultValue(float.PositiveInfinity)]
         public float MaximumSize
         {
             get { return maximumSize; }
             set
             {
-                if(value < 0)
-                    throw new ArgumentOutOfRangeException("value");
-
-                if(value < MinimumSize)
-                    throw new InvalidOperationException("The provided maximum value is smaller than the current minimum value");
-
-                maximumSize = value;
-
+                if (float.IsNaN(value))
+                    return;
+                CoerceMaximumSize(value);
                 DefinitionChanged?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -68,21 +70,20 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// The minimum size of the strip in virtual pixels.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The provided value is negative or infinity.</exception>
-        /// <exception cref="InvalidOperationException">The provided value is bigger than <see cref="MaximumSize"/></exception>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
+        /// <userdoc>The minimum size of the strip in virtual pixels.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
+        [DefaultValue(0)]
         public float MinimumSize
         {
             get { return minimumSize; }
             set
             {
-                if (value < 0 || float.IsPositiveInfinity(value))
-                    throw new ArgumentOutOfRangeException("value");
-                
-                if (value > MaximumSize)
-                    throw new InvalidOperationException("The provided minimum value is bigger than the current maximum value");
-
-                minimumSize = value;
-
+                if (float.IsNaN(value))
+                    return;
+                minimumSize = MathUtil.Clamp(value, 0.0f, float.MaxValue); ;
+                CoerceMaximumSize(maximumSize);
                 DefinitionChanged?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -90,6 +91,9 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Gets or sets the type of the strip.
         /// </summary>
+        /// <userdoc>The type of the strip.</userdoc>
+        [DataMember]
+        [DefaultValue(StripType.Star)]
         public StripType Type
         {
             get { return type; }
@@ -99,7 +103,7 @@ namespace SiliconStudio.Xenko.UI
                     return;
 
                 type = value;
-
+                
                 DefinitionChanged?.Invoke(this, EventArgs.Empty);
             }
         }
@@ -108,20 +112,24 @@ namespace SiliconStudio.Xenko.UI
         /// Gets or sets the size value of the strip. 
         /// Note that the value is interpreted differently depending on the strip <see cref="Type"/>.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The size must be finite positive value.</exception>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
+        /// <userdoc>The size value of the strip.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
+        [DefaultValue(1.0f)]
         public float SizeValue
         {
             get { return sizeValue; }
             set
             {
-                if (value < 0 || float.IsPositiveInfinity(value))
-                    throw new ArgumentOutOfRangeException("value");
-
-                sizeValue = value;
-
+                if (float.IsNaN(value))
+                    return;
+                sizeValue = MathUtil.Clamp(value, 0.0f, float.MaxValue);
                 DefinitionChanged?.Invoke(this, EventArgs.Empty);
             }
         }
+
+        internal event EventHandler<EventArgs> DefinitionChanged;
 
         /// <summary>
         /// Clamp the provided size by the definition's minimum and maximum values.
@@ -130,14 +138,13 @@ namespace SiliconStudio.Xenko.UI
         /// <returns>The size clamped by the minimum and maximum values of the strip definition</returns>
         public float ClampSizeByMinimumMaximum(float desiredSize)
         {
-            return Math.Min(MaximumSize, Math.Max(MinimumSize, desiredSize));
+            return MathUtil.Clamp(desiredSize, MinimumSize, MaximumSize);
         }
 
         internal float ValueRelativeMinimum()
         {
             if (sizeValue < MathUtil.ZeroTolerance)
                 return 0;
-
             return MinimumSize / SizeValue;
         }
 
@@ -145,7 +152,6 @@ namespace SiliconStudio.Xenko.UI
         {
             if (sizeValue < MathUtil.ZeroTolerance)
                 return 0;
-
             return MaximumSize / SizeValue;
         }
 
@@ -171,6 +177,9 @@ namespace SiliconStudio.Xenko.UI
             }
         }
 
-        internal event EventHandler<EventArgs> DefinitionChanged;
+        private void CoerceMaximumSize(float newValue)
+        {
+            maximumSize = MathUtil.Clamp(newValue, minimumSize, float.PositiveInfinity);
+        }
     }
 }

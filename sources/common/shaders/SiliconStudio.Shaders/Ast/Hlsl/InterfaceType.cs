@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     /// <summary>
     /// Definition of a class.
     /// </summary>
-    public class InterfaceType : ObjectType, IDeclaration, IGenerics
+    public partial class InterfaceType : ObjectType, IDeclaration, IGenerics
     {
         #region Constructors and Destructors
 

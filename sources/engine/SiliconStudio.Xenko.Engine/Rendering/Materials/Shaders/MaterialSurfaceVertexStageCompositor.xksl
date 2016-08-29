@@ -3,7 +3,7 @@
 namespace SiliconStudio.Xenko.Rendering.Materials
 {
     // Temporary code for testing IMaterialSurface
-    class MaterialSurfaceVertexStageCompositor : ShaderBase
+    shader MaterialSurfaceVertexStageCompositor : ShaderBase
     {
         compose IMaterialSurface materialVertexStage;
         compose IStreamInitializer streamInitializerVertexStage;

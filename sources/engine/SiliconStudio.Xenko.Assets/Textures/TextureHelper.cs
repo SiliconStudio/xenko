@@ -273,6 +273,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
                         case PlatformType.WindowsStore:
                         case PlatformType.Windows10:
                         case PlatformType.Linux:
+                        case PlatformType.macOS:
                             switch (parameters.GraphicsPlatform)
                             {
                                 case GraphicsPlatform.Direct3D11:

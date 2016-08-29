@@ -1,7 +1,6 @@
 // Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
@@ -171,13 +170,13 @@ namespace SiliconStudio.Xenko.Physics
         private bool overrideGravity;
 
         /// <summary>
-        /// Gets or sets the angular damping of this rigidbody
+        /// Gets or sets if this Rigidbody overrides world gravity
         /// </summary>
         /// <value>
         /// true, false
         /// </value>
         /// <userdoc>
-        /// The angular damping of this Rigidbody
+        /// If this Rigidbody overrides world gravity
         /// </userdoc>
         [DataMember(95)]
         public bool OverrideGravity
@@ -303,6 +302,9 @@ namespace SiliconStudio.Xenko.Physics
 
         protected override void OnAttach()
         {
+            GetWorldTransformCallback = (out Matrix transform) => RigidBodyGetWorldTransform(out transform);
+            SetWorldTransformCallback = transform => RigidBodySetWorldTransform(ref transform);
+
             InternalRigidBody = new BulletSharp.RigidBody(0.0f, MotionState, ColliderShape.InternalShape, Vector3.Zero)
             {
                 UserObject = this
@@ -335,11 +337,6 @@ namespace SiliconStudio.Xenko.Physics
             OverrideGravity = overrideGravity;
             Gravity = gravity;
             RigidBodyType = IsKinematic ? RigidBodyTypes.Kinematic : RigidBodyTypes.Dynamic;
-
-            GetWorldTransformCallback = (out Matrix transform) => RigidBodyGetWorldTransform(out transform);
-            SetWorldTransformCallback = transform => RigidBodySetWorldTransform(ref transform);
-
-            UpdatePhysicsTransformation(); //this will set position and rotation of the collider
 
             Simulation.AddRigidBody(this, (CollisionFilterGroupFlags)CollisionGroup, CanCollideWith);
         }
@@ -505,7 +502,12 @@ namespace SiliconStudio.Xenko.Physics
         /// </summary>
         public void ClearForces()
         {
+            if (InternalRigidBody == null) return;
             InternalRigidBody?.ClearForces();
+            InternalRigidBody.InterpolationAngularVelocity = Vector3.Zero;
+            InternalRigidBody.LinearVelocity = Vector3.Zero;
+            InternalRigidBody.InterpolationAngularVelocity = Vector3.Zero;
+            InternalRigidBody.AngularVelocity = Vector3.Zero;
         }
 
         /// <summary>

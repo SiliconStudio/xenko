@@ -5,7 +5,7 @@ namespace SiliconStudio.Shaders.Ast.Glsl
     /// <summary>
     /// An interface type.
     /// </summary>
-    public class InterfaceType : StructType
+    public partial class InterfaceType : StructType
     {
         public InterfaceType()
         {

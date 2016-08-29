@@ -5,14 +5,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <summary>
     /// A Color transform group effect
     /// </summary>
-    shader ColorTransformCompose
+    effect ColorTransformCompose
     {
         using params ColorTransformKeys;
 
         mixin ColorTransformKeys.Shader, ColorTransformKeys.GenericArguments;
     };
 
-    shader ColorTransformGroupEffect
+    effect ColorTransformGroupEffect
     {
         using params ColorTransformGroupKeys;
 

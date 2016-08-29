@@ -36,7 +36,9 @@ namespace SiliconStudio.Xenko.Graphics
         public bool HasStencil;
 
         private int TexturePixelSize => Format.SizeInBytes();
+        // D3D12_TEXTURE_DATA_PITCH_ALIGNMENT (not exposed by SharpDX)
         private const int TextureRowPitchAlignment = 256;
+        // D3D12_TEXTURE_DATA_PLACEMENT_ALIGNMENT (not exposed by SharpDX)
         private const int TextureSubresourceAlignment = 512;
 
         public void Recreate(DataBox[] dataBoxes = null)
@@ -110,38 +112,65 @@ namespace SiliconStudio.Xenko.Graphics
                     //return;
                 }
 
-                if (dataBoxes != null)
+                if (dataBoxes != null && dataBoxes.Length > 0)
                     currentResourceState = ResourceStates.CopyDestination;
 
                 // TODO D3D12 move that to a global allocator in bigger committed resources
                 NativeDeviceChild = GraphicsDevice.NativeDevice.CreateCommittedResource(new HeapProperties(heapType), HeapFlags.None, nativeDescription, currentResourceState);
                 GraphicsDevice.TextureMemory += (Depth*DepthStride) / (float)0x100000;
 
-                if (dataBoxes != null)
+                if (dataBoxes != null && dataBoxes.Length > 0)
                 {
-                    // TODO D3D12 allocate in upload heap (placed resources?)
-                    var nativeUploadTexture = NativeDevice.CreateCommittedResource(new HeapProperties(CpuPageProperty.WriteBack, MemoryPool.L0), HeapFlags.None,
-                        nativeDescription,
-                        ResourceStates.GenericRead);
-
-                    GraphicsDevice.TemporaryResources.Enqueue(new KeyValuePair<long, DeviceChild>(GraphicsDevice.NextFenceValue, nativeUploadTexture));
-
-                    for (int i = 0; i < dataBoxes.Length; ++i)
-                    {
-                        var databox = dataBoxes[i];
-                        nativeUploadTexture.WriteToSubresource(i, null, databox.DataPointer, databox.RowPitch, databox.SlicePitch);
-                    }
+                    if (Usage == GraphicsResourceUsage.Staging)
+                        throw new NotImplementedException("D3D12: Staging textures can't be created with initial data");
 
                     // Trigger copy
                     var commandList = GraphicsDevice.NativeCopyCommandList;
                     commandList.Reset(GraphicsDevice.NativeCopyCommandAllocator, null);
-                    if (Usage == GraphicsResourceUsage.Staging)
-                        throw new NotImplementedException("D3D12: Staging textures can't be created with initial data");
-                    commandList.CopyResource(NativeResource, nativeUploadTexture);
+
+                    long textureCopySize;
+                    var placedSubresources = new PlacedSubResourceFootprint[dataBoxes.Length];
+                    var rowCounts = new int[dataBoxes.Length];
+                    var rowSizeInBytes = new long[dataBoxes.Length];
+                    GraphicsDevice.NativeDevice.GetCopyableFootprints(ref nativeDescription, 0, dataBoxes.Length, 0, placedSubresources, rowCounts, rowSizeInBytes, out textureCopySize);
+
+                    SharpDX.Direct3D12.Resource uploadResource;
+                    int uploadOffset;
+                    var uploadMemory = GraphicsDevice.AllocateUploadBuffer((int)textureCopySize, out uploadResource, out uploadOffset, TextureSubresourceAlignment);
+
+                    for (int i = 0; i < dataBoxes.Length; ++i)
+                    {
+                        var databox = dataBoxes[i];
+                        var dataPointer = databox.DataPointer;
+
+                        var rowCount = rowCounts[i];
+                        var sliceCount = placedSubresources[i].Footprint.Depth;
+                        var rowSize = (int)rowSizeInBytes[i];
+                        var destRowPitch = placedSubresources[i].Footprint.RowPitch;
+
+                        // Memcpy data
+                        for (int z = 0; z < sliceCount; ++z)
+                        {
+                            var uploadMemoryCurrent = uploadMemory + (int)placedSubresources[i].Offset + z * destRowPitch * rowCount;
+                            var dataPointerCurrent = dataPointer + z * databox.SlicePitch;
+                            for (int y = 0; y < rowCount; ++y)
+                            {
+                                Utilities.CopyMemory(uploadMemoryCurrent, dataPointerCurrent, rowSize);
+                                uploadMemoryCurrent += destRowPitch;
+                                dataPointerCurrent += databox.RowPitch;
+                            }
+                        }
+
+                        // Adjust upload offset (circular dependency between GetCopyableFootprints and AllocateUploadBuffer)
+                        placedSubresources[i].Offset += uploadOffset;
+
+                        commandList.CopyTextureRegion(new TextureCopyLocation(NativeResource, i), 0, 0, 0, new TextureCopyLocation(uploadResource, placedSubresources[i]), null);
+                    }
+
                     commandList.ResourceBarrierTransition(NativeResource, ResourceStates.CopyDestination, initialResourceState);
                     commandList.Close();
 
-                    GraphicsDevice.NativeCommandQueue.ExecuteCommandList(commandList);
+                    GraphicsDevice.WaitCopyQueue();
                 }
 
                 NativeResourceState = initialResourceState;

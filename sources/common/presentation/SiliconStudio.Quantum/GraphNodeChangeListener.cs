@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Quantum.Contents;
 
@@ -15,14 +16,15 @@ namespace SiliconStudio.Quantum
     public class GraphNodeChangeListener : IDisposable
     {
         private readonly IGraphNode rootNode;
-        private readonly Func<IGraphNode, GraphNodePath, bool> shouldRegisterNode;
+        private readonly Func<MemberContent, IGraphNode, bool> shouldRegisterNode;
+        protected readonly HashSet<IGraphNode> RegisteredNodes = new HashSet<IGraphNode>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphNodeChangeListener"/> class.
         /// </summary>
         /// <param name="rootNode">The root node for which to track referenced node changes.</param>
         /// <param name="shouldRegisterNode">A method that can indicate whether a node of the hierarchy should be registered to the listener.</param>
-        public GraphNodeChangeListener(IGraphNode rootNode, Func<IGraphNode, GraphNodePath, bool> shouldRegisterNode = null)
+        public GraphNodeChangeListener(IGraphNode rootNode, Func<MemberContent, IGraphNode, bool> shouldRegisterNode = null)
         {
             this.rootNode = rootNode;
             this.shouldRegisterNode = shouldRegisterNode;
@@ -53,30 +55,41 @@ namespace SiliconStudio.Quantum
         public void Dispose()
         {
             var visitor = new GraphVisitorBase();
-            visitor.Visiting += UnregisterNode;
+            visitor.Visiting += (node, path) => UnregisterNode(node);
             visitor.Visit(rootNode);
         }
 
-        protected virtual void RegisterNode(IGraphNode node, GraphNodePath path)
+        protected virtual bool RegisterNode(IGraphNode node)
         {
-            node.Content.PrepareChange += ContentPrepareChange;
-            node.Content.FinalizeChange += ContentFinalizeChange;
-            node.Content.Changing += ContentChanging;
-            node.Content.Changed += ContentChanged;
+            // A node can be registered multiple times when it is referenced via multiple paths
+            if (RegisteredNodes.Add(node))
+            {
+                node.Content.PrepareChange += ContentPrepareChange;
+                node.Content.FinalizeChange += ContentFinalizeChange;
+                node.Content.Changing += ContentChanging;
+                node.Content.Changed += ContentChanged;
+                return true;
+            }
+            return false;
         }
 
-        protected virtual void UnregisterNode(IGraphNode node, GraphNodePath path)
+        protected virtual bool UnregisterNode(IGraphNode node)
         {
-            node.Content.PrepareChange -= ContentPrepareChange;
-            node.Content.FinalizeChange -= ContentFinalizeChange;
-            node.Content.Changing -= ContentChanging;
-            node.Content.Changed -= ContentChanged;
+            if (RegisteredNodes.Remove(node))
+            {
+                node.Content.PrepareChange -= ContentPrepareChange;
+                node.Content.FinalizeChange -= ContentFinalizeChange;
+                node.Content.Changing -= ContentChanging;
+                node.Content.Changed -= ContentChanged;
+                return true;
+            }
+            return false;
         }
 
         private void RegisterAllNodes()
         {
             var visitor = new GraphVisitorBase();
-            visitor.Visiting += RegisterNode;
+            visitor.Visiting += (node, path) => RegisterNode(node);
             visitor.ShouldVisit = shouldRegisterNode;
             visitor.Visit(rootNode);
         }
@@ -87,7 +100,7 @@ namespace SiliconStudio.Quantum
             if (node != null)
             {
                 var visitor = new GraphVisitorBase();
-                visitor.Visiting += UnregisterNode;
+                visitor.Visiting += (node1, path) => UnregisterNode(node1);
                 visitor.ShouldVisit = shouldRegisterNode;
                 switch (e.ChangeType)
                 {
@@ -118,7 +131,7 @@ namespace SiliconStudio.Quantum
             if (node != null)
             {
                 var visitor = new GraphVisitorBase();
-                visitor.Visiting += RegisterNode;
+                visitor.Visiting += (node1, path) => RegisterNode(node1);
                 visitor.ShouldVisit = shouldRegisterNode;
                 switch (e.ChangeType)
                 {
@@ -131,19 +144,23 @@ namespace SiliconStudio.Quantum
                         if (node.Content.IsReference && e.NewValue != null)
                         {
                             IGraphNode addedNode;
+                            Index index;
                             if (!e.Index.IsEmpty)
                             {
+                                index = e.Index;
                                 addedNode = node.Content.Reference.AsEnumerable[e.Index].TargetNode;
                             }
                             else
                             {
                                 var reference = node.Content.Reference.AsEnumerable.First(x => x.TargetNode.Content.Retrieve() == e.NewValue);
+                                index = reference.Index;
                                 addedNode = reference.TargetNode;
                             }
 
                             if (addedNode != null)
                             {
-                                visitor.Visit(addedNode);
+                                var path = new GraphNodePath(node).PushIndex(index);
+                                visitor.Visit(addedNode, path);
                             }
                         }
                         break;

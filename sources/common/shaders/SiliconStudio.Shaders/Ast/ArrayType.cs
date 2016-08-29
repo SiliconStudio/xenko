@@ -11,7 +11,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// Array type.
     /// </summary>
-    public class ArrayType : TypeBase
+    public partial class ArrayType : TypeBase
     {
         #region Constructors and Destructors
 

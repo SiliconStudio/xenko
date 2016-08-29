@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public TextBlockTest()
         {
-            CurrentVersion = 6;
+            CurrentVersion = 7; // Font type, names & sizes changed slightly
         }
 
         protected override async Task LoadContent()
@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             textBlock = new TextBlock
             {
                 TextColor = Color.Black,
-                Font = Content.Load<SpriteFont>("MSMincho10"),
+                Font = Content.Load<SpriteFont>("HanSans13"),
                 Text = @"Text Block test
 にほんご ニホンゴ 人
 Several line of texts with different width.
@@ -44,7 +44,7 @@ This is the last line.",
                 BackgroundColor = Color.LightSkyBlue
             };
 
-            UIComponent.RootElement = textBlock;
+            UIComponent.Page = new Engine.UIPage { RootElement = textBlock };
         }
 
         protected override void Update(GameTime gameTime)
@@ -59,11 +59,11 @@ This is the last line.",
                 UIComponent.Resolution = new Vector3(GraphicsDevice.Presenter.BackBuffer.Width, GraphicsDevice.Presenter.BackBuffer.Height, 500);
 
             if (Input.IsKeyPressed(Keys.Left))
-                textBlock.TextSize = 3 * textBlock.TextSize / 4;
+                textBlock.TextSize = 3 * textBlock.ActualTextSize / 4;
             if (Input.IsKeyPressed(Keys.Right))
-                textBlock.TextSize = 4 * textBlock.TextSize / 3;
+                textBlock.TextSize = 4 * textBlock.ActualTextSize / 3;
             if (Input.IsKeyPressed(Keys.Delete))
-                textBlock.TextSize = textBlock.Font.Size;
+                textBlock.TextSize = float.NaN;
 
             if (Input.IsKeyReleased(Keys.NumPad1))
                 textBlock.VerticalAlignment = VerticalAlignment.Top;

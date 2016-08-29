@@ -158,6 +158,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Strings.resx</DependentUpon>
     </Compile>
+    <Compile Include="ValueConverters\AllEqualMultiConverter.cs" />
     <Compile Include="ValueConverters\ConverterHelper.cs" />
     <Compile Include="ValueConverters\EmptyStringToBool.cs" />
     <Compile Include="ValueConverters\SumMultiConverter.cs" />
@@ -201,7 +202,7 @@
     <Compile Include="Commands\CommandBase.cs" />
     <Compile Include="Controls\Commands\ControlCommands.cs" />
     <Compile Include="Controls\Commands\NamespaceDoc.cs" />
-    <Compile Include="Controls\GameEngineHwndHost.cs" />
+    <Compile Include="Controls\GameEngineHost.cs" />
     <Compile Include="Controls\TextLogViewer.cs" />
     <Compile Include="Controls\Vector2Editor.cs" />
     <Compile Include="Controls\Vector3Editor.cs" />

@@ -3,6 +3,7 @@
 using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.UI.Controls;
 
 namespace SiliconStudio.Xenko.UI.Tests.Layering
@@ -14,6 +15,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
     [System.ComponentModel.Description("Tests for TextBlock layering")]
     public class TextBlockTests : TextBlock
     {
+        private class DummyFont : SpriteFont { }
+
         /// <summary>
         /// Test the invalidations generated object property changes.
         /// </summary>
@@ -21,7 +24,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
         public void TestBasicInvalidations()
         {
             // - test the properties that are supposed to invalidate the object measurement
-            UIElementLayeringTests.TestMeasureInvalidation(this, () => Font = null);
+            UIElementLayeringTests.TestMeasureInvalidation(this, () => Font = new DummyFont());
+            Font = null;
             UIElementLayeringTests.TestMeasureInvalidation(this, () => Text = "New Text");
 
             // - test the properties that are not supposed to invalidate the object layout state

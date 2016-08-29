@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
-    class CustomShader : SpriteBase
+    shader CustomShader : SpriteBase
     {
         // factor used by CustomEffect
         stage float SwitchEffectLevel;

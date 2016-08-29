@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// <summary>
     /// Base interface for a material layer (vertex stage)
     /// </summary>
-    class IMaterialSurfaceDomain : IMaterialSurface, MaterialDomainStream
+    shader IMaterialSurfaceDomain : IMaterialSurface, MaterialDomainStream
     {
     };
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
@@ -20,7 +21,7 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Gets or sets a method that will be invoked to check whether a node should be visited or not.
         /// </summary>
-        public Func<IGraphNode, GraphNodePath, bool> ShouldVisit { get; set; }
+        public Func<MemberContent, IGraphNode, bool> ShouldVisit { get; set; }
 
         /// <summary>
         /// Gets the root node of the current visit.
@@ -41,7 +42,7 @@ namespace SiliconStudio.Quantum
         {
             var path = initialPath ?? new GraphNodePath(node);
             RootNode = node;
-            if (ShouldVisitNode(node, path))
+            if (ShouldVisitNode(null, node))
             {
                 VisitNode(node, path);
             }
@@ -77,7 +78,7 @@ namespace SiliconStudio.Quantum
             foreach (var child in node.Children)
             {
                 var childPath = currentPath.PushMember(child.Name);
-                if (ShouldVisitNode(child, childPath))
+                if (ShouldVisitNode(child.Content as MemberContent, child))
                 {
                     VisitNode(child, childPath);
                 }
@@ -125,7 +126,7 @@ namespace SiliconStudio.Quantum
         /// <param name="targetPath">The path of the node targeted by this reference.</param>
         protected virtual void VisitReference(IGraphNode referencer, ObjectReference reference, GraphNodePath targetPath)
         {
-            if (ShouldVisitNode(reference.TargetNode, targetPath))
+            if (ShouldVisitNode(referencer.Content as MemberContent, reference.TargetNode))
             {
                 VisitNode(reference.TargetNode, targetPath);
             }
@@ -134,12 +135,12 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Indicates whether a node should be visited.
         /// </summary>
-        /// <param name="node">The node to evaluate.</param>
-        /// <param name="currentPath">The path of the node to evaluate.</param>
+        /// <param name="memberContent">The member content referencing the node to evaluate.</param>
+        /// <param name="targetNode">The node to evaluate. Can be the node holding the <paramref name="memberContent"/>, or one of its target node if this node contains a reference.</param>
         /// <returns>True if the node should be visited, False otherwise.</returns>
-        protected virtual bool ShouldVisitNode(IGraphNode node, GraphNodePath currentPath)
+        protected virtual bool ShouldVisitNode(MemberContent memberContent, IGraphNode targetNode)
         {
-            return !visitedNodes.Contains(node) && (ShouldVisit?.Invoke(node, currentPath) ?? true);
+            return !visitedNodes.Contains(targetNode) && (ShouldVisit?.Invoke(memberContent, targetNode) ?? true);
         }
     }
 }
