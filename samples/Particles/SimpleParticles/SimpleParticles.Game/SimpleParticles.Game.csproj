@@ -110,6 +110,7 @@
     <Compile Include="LaserOrientationScript.cs" />
     <Compile Include="Materials\ParticleCustomMaterial.cs" />
     <Compile Include="Materials\ParticleCustomShaderKeys.cs" />
+    <Compile Include="NextSceneScript.cs" />
     <Compile Include="Particles\CustomParticleFields.cs" />
     <Compile Include="Particles\Initializers\CustomParticleInitializer.cs" />
     <Compile Include="Particles\ShapeBuilders\CustomParticleShape.cs" />

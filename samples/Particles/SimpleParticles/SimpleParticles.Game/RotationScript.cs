@@ -23,6 +23,7 @@ namespace SimpleParticles
             // Add an AnimationComponent to the current entity and register our custom clip
             const string animationName = "MyCustomAnimation";
             var animationComponent = Entity.GetOrCreate<AnimationComponent>();
+            animationComponent.Animations.Clear();
             animationComponent.Animations.Add(animationName, animationClip);
 
             // Start playing the animation right away and keep repeating it

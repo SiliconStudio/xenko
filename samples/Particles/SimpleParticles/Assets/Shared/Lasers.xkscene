@@ -2731,6 +2731,9 @@ Hierarchy:
                         Projection: Perspective
                     - !SimpleParticles.CameraOrbitScript,SimpleParticles.Game
                         ~Id: 5bc83c29-7826-49d6-a70b-5c6f5b9f20ee
+                    - !SimpleParticles.NextSceneScript,SimpleParticles.Game
+                        ~Id: 73c3e2cc-baa5-453d-956b-aeddff51543e
+                        NextScene: RibbonParticles
         -   BaseId: 5ba92d2f-47e3-4da2-a07f-bb1ca2ee1ff6
             BasePartInstanceId: 3eb0855e-68cb-4f1f-bf22-b417c151603d
             Entity:

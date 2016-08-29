@@ -697,6 +697,9 @@ Hierarchy:
                         Projection: Perspective
                     - !SimpleParticles.CameraOrbitScript,SimpleParticles.Game
                         ~Id: 5bc83c29-7826-49d6-a70b-5c6f5b9f20ee
+                    - !SimpleParticles.NextSceneScript,SimpleParticles.Game
+                        ~Id: 827217f6-c4bd-44ad-ac78-02557cdd9cab
+                        NextScene: AnimatedParticles
         -   Entity:
                 Id: b300f706-d568-4c45-9cc2-f2bd162f2c31
                 Name: ProceduralCylinder

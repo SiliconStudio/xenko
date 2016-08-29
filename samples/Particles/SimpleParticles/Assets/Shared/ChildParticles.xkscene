@@ -879,6 +879,9 @@ Hierarchy:
                         Projection: Perspective
                     - !SimpleParticles.CameraOrbitScript,SimpleParticles.Game
                         ~Id: 5bc83c29-7826-49d6-a70b-5c6f5b9f20ee
+                    - !SimpleParticles.NextSceneScript,SimpleParticles.Game
+                        ~Id: bcf9341c-7f12-4257-bbf9-b3bd97b7e131
+                        NextScene: CustomMaterials
         -   Entity:
                 Id: bb66c45b-34d7-4b3c-b0c1-33133ee0f7db
                 Name: Sign02

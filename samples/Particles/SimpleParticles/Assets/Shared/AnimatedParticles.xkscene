@@ -673,6 +673,9 @@ Hierarchy:
                     - !CameraComponent
                         ~Id: 4d31ee61-664a-4a90-9544-cf5405d608c8
                         Projection: Perspective
+                    - !SimpleParticles.NextSceneScript,SimpleParticles.Game
+                        ~Id: aba7b52a-6a8c-4839-91c8-d9b17504d930
+                        NextScene: ChildParticles
         -   Entity:
                 Id: 8e06c8ea-c2ae-4c9c-8844-1c1e948c9bef
                 Name: Color Animation
