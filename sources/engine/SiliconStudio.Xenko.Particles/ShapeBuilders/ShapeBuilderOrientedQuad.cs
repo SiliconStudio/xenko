@@ -65,6 +65,10 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             var posAttribute = vtxBuilder.GetAccessor(VertexAttributes.Position);
             var texAttribute = vtxBuilder.GetAccessor(vtxBuilder.DefaultTexCoords);
 
+            Vector3 invViewZ;
+            Vector3.Cross(ref invViewX, ref invViewY, out invViewZ);
+            invViewZ.Normalize();
+
             foreach (var particle in sorter)
             {
                 var centralPos = GetParticlePosition(particle, positionField, lifeField);
@@ -86,15 +90,24 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                 var unitX = invViewX;
                 var unitY = invViewY;
+
                 {
                     var centralAxis = centralOffset;
+
+                    float dotZ;
+                    Vector3.Dot(ref centralAxis, ref invViewZ, out dotZ);
+                    centralAxis -= invViewZ*dotZ;
+                    centralAxis.Normalize();
+
                     float dotX;
                     Vector3.Dot(ref centralAxis, ref unitX, out dotX);
+
                     float dotY;
                     Vector3.Dot(ref centralAxis, ref unitY, out dotY);
 
-                    unitX = unitX * dotY - unitY * dotX;
+                    unitX = unitX*dotY - unitY*dotX;
                     unitX.Normalize();
+
                     unitY = centralOffset;
                 }
 
