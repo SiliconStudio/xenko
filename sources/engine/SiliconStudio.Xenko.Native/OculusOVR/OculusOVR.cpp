@@ -681,7 +681,7 @@ extern "C" {
 	{
 	}
 
-	xnOvrQuadLayer* xnOvrCreateQuadLayerTexturesDx(void* session, void* dxDevice, int* outTextureCount, int width, int height, bool headLocked)
+	void* xnOvrCreateQuadLayerTexturesDx(void* session, void* dxDevice, int* outTextureCount, int width, int height, bool headLocked)
 	{
 		return NULL;
 	}
