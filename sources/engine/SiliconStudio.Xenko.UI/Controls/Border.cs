@@ -16,11 +16,23 @@ namespace SiliconStudio.Xenko.UI.Controls
         private Thickness borderThickness = Thickness.UniformCuboid(0);
 
         /// <summary>
+        /// Gets or sets the color of the border.
+        /// </summary>
+        /// <userdoc>The color of the border.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory, order: 300)]
+        public Color BorderColor
+        {
+            get { return BorderColorInternal; }
+            set { BorderColorInternal = value; }
+        }
+
+        /// <summary>
         /// Gets or sets the thickness of the border.
         /// </summary>
         /// <userdoc>The thickness of the border.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 301)]
         public Thickness BorderThickness
         {
             get { return borderThickness; }
@@ -29,18 +41,6 @@ namespace SiliconStudio.Xenko.UI.Controls
                 borderThickness = value;
                 InvalidateMeasure();
             }
-        }
-
-        /// <summary>
-        /// Gets or sets the color of the border.
-        /// </summary>
-        /// <userdoc>The color of the border.</userdoc>
-        [DataMember]
-        [Display(category: AppearanceCategory)]
-        public Color BorderColor
-        {
-            get { return BorderColorInternal; }
-            set { BorderColorInternal = value; }
         }
 
         protected override Vector3 MeasureOverride(Vector3 availableSizeWithoutMargins)

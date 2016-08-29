@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The color of the bar.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 100)]
         public Color BarColor
         {
             get { return BarColorInternal; }

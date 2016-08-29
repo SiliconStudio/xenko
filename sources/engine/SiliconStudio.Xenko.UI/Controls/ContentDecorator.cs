@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The background image.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 300)]
         [DefaultValue(null)]
         public ISpriteProvider BackgroundImage { get; set; }
 

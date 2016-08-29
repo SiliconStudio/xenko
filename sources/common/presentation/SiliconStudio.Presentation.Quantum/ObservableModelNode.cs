@@ -122,7 +122,22 @@ namespace SiliconStudio.Presentation.Quantum
         }
 
         /// <inheritdoc/>
-        public override int? Order => CustomOrder ?? (SourceNode.Content is MemberContent && Index.IsEmpty ? ((MemberContent)SourceNode.Content).Member.Order : null);
+        public override int? Order
+        {
+            get
+            {
+                if (CustomOrder != null)
+                    return CustomOrder;
+
+                var memberContent = SourceNode.Content as MemberContent;
+                if (memberContent == null || !Index.IsEmpty)
+                    return null;
+
+                var descriptor = (MemberDescriptorBase)memberContent.Member;
+                var displayAttribute = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(descriptor.MemberInfo);
+                return displayAttribute?.Order ?? descriptor.Order;
+            }
+        }
 
         /// <summary>
         /// Gets or sets a custom value for the <see cref="Order"/> of this node.

@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>Indicates how the image should be stretched to fill the destination rectangle.</userdoc>
         [DataMember]
-        [Display(category: LayoutCategory)]
+        [Display(category: LayoutCategory, order: 100)]
         [DefaultValue(StretchType.Uniform)]
         public StretchType StretchType
         {
@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>Indicates how the image is scaled.</userdoc>
         [DataMember]
-        [Display(category: LayoutCategory)]
+        [Display(category: LayoutCategory, order: 101)]
         [DefaultValue(StretchDirection.Both)]
         public StretchDirection StretchDirection
         {
@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The provider for the image.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 100)]
         [DefaultValue(null)]
         public ISpriteProvider Source
         {
@@ -83,7 +83,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <remarks>The initial image color is multiplied by this color.</remarks>
         /// <userdoc>The color used to tint the image. The default value is white.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 101)]
         public Color Color { get; set; } = Color.White;
 
         protected override Vector3 ArrangeOverride(Vector3 finalSizeWithoutMargins)

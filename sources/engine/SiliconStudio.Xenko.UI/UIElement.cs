@@ -156,7 +156,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <userdoc>The number of layers used to draw this element.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 4)]
         [DefaultValue(1)]
         public int DrawLayerNumber { get; set; } = 1; // one layer for BackgroundColor/Clipping
 
@@ -356,7 +356,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <userdoc>True if the UI system should perform hit test on this element, False otherwise.</userdoc>
         [DataMember]
-        [Display(category: BehaviorCategory)]
+        [Display(category: BehaviorCategory, order: 2)]
         [DefaultValue(false)]
         public bool CanBeHitByUser { get; set; }
 
@@ -365,7 +365,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <userdoc>True if this element is enabled, False otherwise.</userdoc>
         [DataMember]
-        [Display(category: BehaviorCategory)]
+        [Display(category: BehaviorCategory, order: 1)]
         [DefaultValue(true)]
         public virtual bool IsEnabled
         {
@@ -400,7 +400,7 @@ namespace SiliconStudio.Xenko.UI
         /// <userdoc>Opacity factor applied to this element when rendered in the user interface (UI).</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, 1.0f, 0.01f, 0.1f, 2)]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 1)]
         [DefaultValue(1.0f)]
         public float Opacity
         {
@@ -418,7 +418,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <userdoc>Visibility of this element.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 2)]
         [DefaultValue(Visibility.Visible)]
         public Visibility Visibility
         {
@@ -440,7 +440,7 @@ namespace SiliconStudio.Xenko.UI
         /// <userdoc>Default height of this element.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
-        [Display(category: LayoutCategory)]
+        [Display(category: LayoutCategory, order: 14)]
         [DefaultValue(0.0f)]
         public float DefaultHeight
         {
@@ -461,7 +461,7 @@ namespace SiliconStudio.Xenko.UI
         /// <userdoc>Default width of this element.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
-        [Display(category: LayoutCategory)]
+        [Display(category: LayoutCategory, order: 13)]
         [DefaultValue(0.0f)]
         public float DefaultWidth
         {
@@ -482,7 +482,7 @@ namespace SiliconStudio.Xenko.UI
         /// <userdoc>Default depth of this element.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
-        [Display(category: LayoutCategory)]
+        [Display(category: LayoutCategory, order: 15)]
         [DefaultValue(0.0f)]
         public float DefaultDepth
         {
@@ -503,7 +503,7 @@ namespace SiliconStudio.Xenko.UI
         /// <userdoc>Height of this element. If NaN, the default height will be used instead.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue, AllowNaN = true)]
-        [Display(category: LayoutCategory)]
+        [Display(category: LayoutCategory, order: 1)]
         [DefaultValue(float.NaN)]
         public float Height
         {
@@ -522,7 +522,7 @@ namespace SiliconStudio.Xenko.UI
         /// <userdoc>Width of this element. If NaN, the default width will be used instead.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue, AllowNaN = true)]
-        [Display(category: LayoutCategory)]
+        [Display(category: LayoutCategory, order: 0)]
         [DefaultValue(float.NaN)]
         public float Width
         {
@@ -541,7 +541,7 @@ namespace SiliconStudio.Xenko.UI
         /// <userdoc>Depth of this element. If NaN, the default depth will be used instead.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue, AllowNaN = true)]
-        [Display(category: LayoutCategory)]
+        [Display(category: LayoutCategory, order: 2)]
         [DefaultValue(float.NaN)]
         public float Depth
         {
@@ -590,7 +590,7 @@ namespace SiliconStudio.Xenko.UI
         /// <userdoc>Minimum height of this element.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
-        [Display(category: LayoutCategory)]
+        [Display(category: LayoutCategory, order: 8)]
         [DefaultValue(0.0f)]
         public float MinimumHeight
         {
@@ -611,7 +611,7 @@ namespace SiliconStudio.Xenko.UI
         /// <userdoc>Minimum width of this element.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
-        [Display(category: LayoutCategory)]
+        [Display(category: LayoutCategory, order: 7)]
         [DefaultValue(0.0f)]
         public float MinimumWidth
         {
@@ -632,7 +632,7 @@ namespace SiliconStudio.Xenko.UI
         /// <userdoc>Minimum depth of this element.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
-        [Display(category: LayoutCategory)]
+        [Display(category: LayoutCategory, order: 9)]
         [DefaultValue(0.0f)]
         public float MinimumDepth
         {
@@ -653,7 +653,7 @@ namespace SiliconStudio.Xenko.UI
         /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
         /// <userdoc>Indicates whether to clip the content of this element (or content coming from the child elements of this element).</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 3)]
         [DefaultValue(false)]
         public bool ClipToBounds { get; set; } = false;
 
@@ -664,7 +664,7 @@ namespace SiliconStudio.Xenko.UI
         /// <userdoc>Maximum height of this element.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.PositiveInfinity)]
-        [Display(category: LayoutCategory)]
+        [Display(category: LayoutCategory, order: 11)]
         [DefaultValue(float.PositiveInfinity)]
         public float MaximumHeight
         {
@@ -685,7 +685,7 @@ namespace SiliconStudio.Xenko.UI
         /// <userdoc>Maximum width of this element.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.PositiveInfinity)]
-        [Display(category: LayoutCategory)]
+        [Display(category: LayoutCategory, order: 10)]
         [DefaultValue(float.PositiveInfinity)]
         public float MaximumWidth
         {
@@ -706,7 +706,7 @@ namespace SiliconStudio.Xenko.UI
         /// <userdoc>Maximum depth of this element.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.PositiveInfinity)]
-        [Display(category: LayoutCategory)]
+        [Display(category: LayoutCategory, order: 12)]
         [DefaultValue(float.PositiveInfinity)]
         public float MaximumDepth
         {
@@ -725,7 +725,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <userdoc>Horizontal alignment of this element.</userdoc>
         [DataMember]
-        [Display(category: LayoutCategory)]
+        [Display(category: LayoutCategory, order: 3)]
         [DefaultValue(HorizontalAlignment.Stretch)]
         public HorizontalAlignment HorizontalAlignment
         {
@@ -742,7 +742,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <userdoc>Vertical alignment of this element.</userdoc>
         [DataMember]
-        [Display(category: LayoutCategory)]
+        [Display(category: LayoutCategory, order: 4)]
         [DefaultValue(VerticalAlignment.Stretch)]
         public VerticalAlignment VerticalAlignment
         {
@@ -759,7 +759,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <userdoc>Depth alignment of this element.</userdoc>
         [DataMember]
-        [Display(category: LayoutCategory)]
+        [Display(category: LayoutCategory, order: 5)]
         [DefaultValue(DepthAlignment.Center)]
         public DepthAlignment DepthAlignment
         {
@@ -820,7 +820,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <userdoc>Layout margin of this element.</userdoc>
         [DataMember]
-        [Display(category: LayoutCategory)]
+        [Display(category: LayoutCategory, order: 6)]
         public Thickness Margin
         {
             get { return MarginInternal; }
@@ -890,7 +890,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <userdoc>Color used for the background surface of this element.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 0)]
         public Color BackgroundColor { get; set; }
 
         /// <inheritdoc/>

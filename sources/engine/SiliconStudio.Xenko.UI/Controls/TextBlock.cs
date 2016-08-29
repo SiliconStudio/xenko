@@ -1,10 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
 
 using SiliconStudio.Core;
@@ -47,7 +45,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The font of the text block.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 100)]
         [DefaultValue(null)]
         public SpriteFont Font
         {
@@ -67,6 +65,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The text of the text block.</userdoc>
         [DataMember]
+        [Display(order: 100)]
         [DefaultValue(null)]
         public string Text
         {
@@ -83,7 +82,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The color of the text.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 102)]
         public Color TextColor { get; set; } = Color.FromAbgr(0xF0F0F0FF);
 
         /// <summary>
@@ -95,7 +94,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <userdoc>The size of the text in virtual pixels unit.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue, AllowNaN = true)]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 101)]
         [DefaultValue(float.NaN)]
         public float TextSize
         {
@@ -113,7 +112,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>True if the text should automatically return of the beginning of the line when it is too long to fit the line width, false otherwise.</userdoc>
         [DataMember]
-        [Display(category: BehaviorCategory)]
+        [Display(category: BehaviorCategory, order: 100)]
         [DefaultValue(false)]
         public bool WrapText
         {
@@ -137,7 +136,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </remarks>
         /// <userdoc>True if dynamic characters should be generated synchronously, false otherwise.</userdoc>
         [DataMember]
-        [Display(category: BehaviorCategory)]
+        [Display(category: BehaviorCategory, order: 102)]
         [DefaultValue(false)]
         public bool SynchronousCharacterGeneration
         {
@@ -159,7 +158,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>Alignment of the text.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 103)]
         [DefaultValue(default(TextAlignment))]
         public TextAlignment TextAlignment { get; set; }
 
@@ -172,7 +171,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </remarks>
         /// <userdoc>True to never snap to the closest screen pixel, false to snap it (only works for dynamic font).</userdoc>
         [DataMember]
-        [Display(category: BehaviorCategory)]
+        [Display(category: BehaviorCategory, order: 101)]
         [DefaultValue(false)]
         public bool DoNotSnapText { get; set; }
 

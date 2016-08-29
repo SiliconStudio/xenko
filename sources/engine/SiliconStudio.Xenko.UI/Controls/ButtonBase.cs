@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>Indicates when the click event occurs.</userdoc>
         [DataMember]
-        [Display(category: BehaviorCategory)]
+        [Display(category: BehaviorCategory, order: 300)]
         [DefaultValue(ClickMode.Release)]
         public ClickMode ClickMode { get; set; } = ClickMode.Release;
 

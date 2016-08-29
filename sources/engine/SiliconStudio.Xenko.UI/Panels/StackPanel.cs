@@ -79,6 +79,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// </summary>
         /// <userdoc>True if the Stack Panel's children must be virtualized, false otherwise.</userdoc>
         [DataMember]
+        [Display(category: BehaviorCategory, order: 200)]
         [DefaultValue(false)]
         public bool ItemVirtualizationEnabled
         {
@@ -157,7 +158,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// </summary>
         /// <userdoc>The orientation by which children are stacked.</userdoc>
         [DataMember]
-        [Display(category: LayoutCategory)]
+        [Display(category: LayoutCategory, order: 200)]
         [DefaultValue(Orientation.Vertical)]
         public Orientation Orientation
         {

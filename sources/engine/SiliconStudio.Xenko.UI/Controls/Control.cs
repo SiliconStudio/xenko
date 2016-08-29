@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The padding inside a control.</userdoc>
         [DataMember]
-        [Display(category: LayoutCategory)]
+        [Display(category: LayoutCategory, order: 100)]
         public Thickness Padding
         {
             get { return padding; }

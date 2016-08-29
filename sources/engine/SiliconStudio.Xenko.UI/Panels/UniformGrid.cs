@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <userdoc>The number of columns.</userdoc>
         [DataMember]
         [DataMemberRange(1, int.MaxValue)]
-        [Display(category: LayoutCategory)]
+        [Display(category: LayoutCategory, order: 301)]
         [DefaultValue(1)]
         public int Columns
         {
@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <userdoc>The number of rows.</userdoc>
         [DataMember]
         [DataMemberRange(1, int.MaxValue)]
-        [Display(category: LayoutCategory)]
+        [Display(category: LayoutCategory, order: 300)]
         [DefaultValue(1)]
         public int Rows
         {
@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <userdoc>The number of layers.</userdoc>
         [DataMember]
         [DataMemberRange(1, int.MaxValue)]
-        [Display(category: LayoutCategory)]
+        [Display(category: LayoutCategory, order: 302)]
         [DefaultValue(1)]
         public int Layers
         {
