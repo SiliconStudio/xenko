@@ -16,26 +16,22 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
         {
             LoadContent().Wait();
 
-            if (BeforeUpdating != null)
-                BeforeUpdating(this);
+            BeforeUpdating?.Invoke(this);
 
             base.Update(gameTime);
 
-            if (AfterUpdating != null)
-                AfterUpdating(this);
+            AfterUpdating?.Invoke(this);
         }
 
         protected override void Draw(GameTime gameTime)
         {
             LoadContent().Wait();
 
-            if (BeforeDrawing != null)
-                BeforeDrawing(this);
+            BeforeDrawing?.Invoke(this);
 
             base.Draw(gameTime);
 
-            if (AfterDrawing != null)
-                AfterDrawing(this);
+            AfterDrawing?.Invoke(this);
         }
 
         protected override async Task LoadContent()
@@ -45,8 +41,7 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
 
             await base.LoadContent();
 
-            if (LoadingContent != null)
-                LoadingContent(this);
+            LoadingContent?.Invoke(this);
 
             ContentLoaded = true;
         }

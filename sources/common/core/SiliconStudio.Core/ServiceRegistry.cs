@@ -111,14 +111,12 @@ namespace SiliconStudio.Core
 
         private void OnServiceAdded(ServiceEventArgs e)
         {
-            EventHandler<ServiceEventArgs> handler = ServiceAdded;
-            if (handler != null) handler(this, e);
+            ServiceAdded?.Invoke(this, e);
         }
 
         private void OnServiceRemoved(ServiceEventArgs e)
         {
-            EventHandler<ServiceEventArgs> handler = ServiceRemoved;
-            if (handler != null) handler(this, e);
+            ServiceRemoved?.Invoke(this, e);
         }
     }
 }

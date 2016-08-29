@@ -138,9 +138,7 @@ namespace SiliconStudio.Xenko.Graphics
                 BordersInternal = value;
                 HasBorders = BordersInternal.Length() > MathUtil.ZeroTolerance;
 
-                var handler = BorderChanged;
-                if (handler != null)
-                    handler(this, EventArgs.Empty);
+                BorderChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -172,9 +170,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                 sizeInPixels = value;
 
-                var handler = SizeChanged;
-                if (handler != null)
-                    handler(this, EventArgs.Empty);
+                SizeChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 

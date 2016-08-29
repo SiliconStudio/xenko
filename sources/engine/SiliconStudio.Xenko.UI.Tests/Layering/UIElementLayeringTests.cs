@@ -487,8 +487,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
 
         protected override void CollapseOverride()
         {
-            if (onCollapsedOverride != null)
-                onCollapsedOverride();
+            onCollapsedOverride?.Invoke();
         }
 
         private delegate Vector3 ArrangeOverrideDelegate(Vector3 finalSizeWithoutMargins);

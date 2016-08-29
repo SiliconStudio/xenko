@@ -84,9 +84,7 @@ namespace SiliconStudio.Assets.Compiler
                 var resultPerAssetType = compiler.Compile(context, assetItem);
 
                 // Raise the AssetCompiled event.
-                var handler = AssetCompiled;
-                if (handler != null)
-                    handler(this, new AssetCompiledArgs(assetItem, resultPerAssetType));
+                AssetCompiled?.Invoke(this, new AssetCompiledArgs(assetItem, resultPerAssetType));
 
                 // TODO: See if this can be unified with PackageBuilder.BuildStepProcessed
                 foreach (var message in resultPerAssetType.Messages)
