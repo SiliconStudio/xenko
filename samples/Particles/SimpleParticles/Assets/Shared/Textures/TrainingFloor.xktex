@@ -1,6 +1,6 @@
 !Texture
-Id: 3eca7314-84a5-4fb2-9d16-8cf7eab99572
+Id: d5255f81-4609-41a4-929d-78d8a4817268
 SerializedVersion: {Xenko: 1.4.0-beta}
 Tags: []
-Source: ../../Resources/dota.png
+Source: ../../../Resources/TrainingFloor.dds
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

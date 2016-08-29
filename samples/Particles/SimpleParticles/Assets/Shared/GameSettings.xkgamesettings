@@ -1,26 +1,26 @@
 !GameSettingsAsset
-Id: 74a5bca3-5ebb-4394-b050-dd7e44ecb107
+Id: e6395b48-106b-4111-bc8b-8cf309b8edb6
 SerializedVersion: {Xenko: 1.6.1-alpha01}
 Tags: []
-DefaultScene: 1c61b5e9-fa56-4bb3-94fd-90ecc49157d5/b4210f42-14a3-4917-80b6-006d7f81b1c6:MainScene
+DefaultScene: 20abd6b2-dac2-45b4-bdc4-345be9481f61/b4210f42-14a3-4917-80b6-006d7f81b1c6:MainScene
 Defaults:
     - !SiliconStudio.Xenko.Graphics.RenderingSettings,SiliconStudio.Xenko.Graphics
-        ~Id: dc97561f-d431-44b9-88a8-79e730ea6aa3
+        ~Id: 6a183059-f955-4492-99fa-4afd36759dad
         DefaultBackBufferWidth: 1280
         DefaultBackBufferHeight: 720
         AdaptBackBufferToScreen: false
         DefaultGraphicsProfile: Level_9_3
         ColorSpace: Linear
-        DisplayOrientation: LandscapeRight
+        DisplayOrientation: Portrait
         PreferredGraphicsPlatform: Default
     - !SiliconStudio.Xenko.Assets.EditorSettings,SiliconStudio.Xenko.Assets
-        ~Id: 3e1135f1-fffa-412c-beec-e1599c938d69
-        RenderingMode: LDR
+        ~Id: efd8b4f7-bc4c-4491-8adb-738d059d938e
+        RenderingMode: HDR
     - !SiliconStudio.Xenko.Assets.Textures.TextureSettings,SiliconStudio.Xenko.Assets
-        ~Id: 71b3f627-cdf1-4a01-aabc-62217675e40c
+        ~Id: 2c7c2cd2-366d-40af-bf44-445f12abf589
         TextureQuality: Fast
     - !SiliconStudio.Xenko.Physics.PhysicsSettings,SiliconStudio.Xenko.Physics
-        ~Id: 8545e038-881e-4aa4-87e6-73e18f83280c
+        ~Id: 657e260d-5ab7-4a22-a571-97681ab407f4
         Flags: None
         MaxSubSteps: 1
         FixedTimeStep: 0.0166666675

@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.UI;
 using SiliconStudio.Xenko.UI.Controls;
 using SiliconStudio.Xenko.UI.Panels;
 
-namespace RibbonParticles
+namespace SimpleParticles
 {
     public class UIScript : StartupScript
     {

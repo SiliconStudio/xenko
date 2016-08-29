@@ -1,6 +1,7 @@
 !Texture
-Id: 3eca7314-84a5-4fb2-9d16-8cf7eab99572
+Id: ad3bc951-0f20-464d-a236-fb9c3727f4e7
 SerializedVersion: {Xenko: 1.4.0-beta}
 Tags: []
-Source: ../../Resources/dota.png
+Source: ../../Resources/XenkoLogoWhite.png
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Format: AsIs

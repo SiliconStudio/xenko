@@ -1,0 +1,24 @@
+!Model
+Id: 523eb034-e48c-4a09-aa0e-69a75404fe85
+SerializedVersion: {Xenko: 1.5.0-alpha02}
+Tags: []
+Source: ../../Resources/knight/knight.fbx
+Materials:
+    -   ~Id: 594a66a2-33fb-464c-bd27-bee2ad28dc69
+        Name: c100_chr_ch00_Knight_KINGHT_iron
+        MaterialInstance:
+            ~Id: 075d28ed-0c6a-4631-8d6e-a587769d418c
+            Material: d4e8e96f-7569-47d5-8856-37f096c75ac2/ba948521-1b92-4f2e-a737-1148313ce48d:c100_chr_ch00_Knight_KINGHT_iron
+    -   ~Id: d38687ca-e449-4f98-84f4-95fbd3659c9f
+        Name: c100_chr_ch00_Knight_KINGHT
+        MaterialInstance:
+            ~Id: 40bc8565-fc11-4f91-b700-74c6a7ca6de3
+            Material: dc9266eb-8dee-4e10-87ed-653828b237c3/4037eb57-9a6d-4df0-a0f6-aabaab93dfb4:c100_chr_ch00_Knight_KINGHT
+    -   ~Id: f6f589b6-5bfe-4fbb-b2b7-bc8e7024bd5c
+        Name: c100_chr_ch00_Knight_SWORD1
+        MaterialInstance:
+            ~Id: 9e171417-caf6-42ac-ba4e-04f384c77a3c
+            Material: 78138ac5-a4af-4cab-98e3-18612f448f42/ada7c685-4ac7-48d0-b2c5-fdb2f3dc7688:c100_chr_ch00_Knight_SWORD1
+Skeleton: 6dfa0af0-b6f5-4b4b-8e30-d5299d2429e2/84cbd6b6-9d7e-4c63-9d7f-5570b7e14f00:knight Skeleton
+~SourceHashes:
+    ../../Resources/knight/knight.fbx: e91ae586b5f1facc6e420d651cc74c05

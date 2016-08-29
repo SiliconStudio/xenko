@@ -1,0 +1,9 @@
+!Animation
+Id: 1b3a633d-bc96-45df-92bd-1b3f0a090179
+SerializedVersion: {Xenko: 1.5.0-alpha02}
+Tags: []
+Source: ../../../Resources/knight/he03_run.fbx
+RepeatMode: LoopInfinite
+Skeleton: 1587e6f8-be60-4d03-b8ab-67e1b25e0107/84cbd6b6-9d7e-4c63-9d7f-5570b7e14f00:knight Skeleton
+RootMotion: false
+PreviewModel: 9086d10f-8991-4aeb-845d-b075af7915d2/523eb034-e48c-4a09-aa0e-69a75404fe85:knight

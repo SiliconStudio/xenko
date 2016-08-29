@@ -1,6 +1,6 @@
 !Texture
-Id: 3eca7314-84a5-4fb2-9d16-8cf7eab99572
+Id: 72741f20-0066-47e9-a73d-c5ac24900e47
 SerializedVersion: {Xenko: 1.4.0-beta}
 Tags: []
-Source: ../../Resources/dota.png
+Source: ../../Resources/smoke.png
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
