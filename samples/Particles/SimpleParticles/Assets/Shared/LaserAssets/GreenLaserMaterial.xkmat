@@ -1,0 +1,41 @@
+!MaterialAsset
+Id: 41702246-6d6e-4add-b943-dc04d1802581
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Attributes:
+    Emissive: !MaterialEmissiveMapFeature
+        EmissiveMap: !ComputeBinaryColor
+            Operator: Multiply
+            LeftChild: !ComputeShaderClassColor
+                MixinReference: ComputeColorTextureScroll
+                Generics:
+                    UvSpeed: !ComputeColorParameterFloat
+                        ~Id: 9bb60b2c-2abe-4cff-aee9-c7d589a34adb
+                        Value: 1.0
+                    colorIntensity: !ComputeColorParameterFloat
+                        ~Id: 2891ad4a-6fb1-4da7-bd14-0e49132dc1c2
+                        Value: 1.0
+                CompositionNodes: {}
+            RightChild: !ComputeBinaryColor
+                Operator: Multiply
+                LeftChild: !ComputeTextureColor
+                    Texture: f7db1f65-1136-4fe3-9b3d-9f9ec1909fae/2ac3c157-7d5a-4fcd-990d-3e3f4785354b:TiledPattern01
+                    FallbackValue:
+                        Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+                    Scale: {X: 1.0, Y: 1.0}
+                    Offset: {X: 0.0, Y: 0.0}
+                    Swizzle: null
+                RightChild: !ComputeFloat4
+                    Value: {X: 1.0, Y: 10.0, Z: 3.0, W: 1.0}
+        Intensity: !ComputeFloat
+            Value: 1.0
+        UseAlpha: true
+    Transparency: !MaterialTransparencyAdditiveFeature
+        Alpha: !ComputeFloat
+            Value: 0.5
+        Tint: !ComputeColor
+            Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+    Overrides:
+        UVScale: {X: 1.0, Y: 1.0}
+    CullMode: None
+Layers: []

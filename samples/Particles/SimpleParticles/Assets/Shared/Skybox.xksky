@@ -1,0 +1,7 @@
+!SkyboxAsset
+Id: af08cb87-8ca1-4203-b45d-5ea0d68cc6e0
+Tags: []
+Model: !SkyboxCubeMapModel
+    ~Id: 392823af-56e8-4640-beb5-af207c4003d5
+    CubeMap: 7cd724b6-c172-450d-b0b4-32d41c69fd05/17b97672-54a3-46e8-95fb-23fa9e5d033b:skybox_texture_hdr
+Usage: Lighting

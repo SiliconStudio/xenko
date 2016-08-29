@@ -1,0 +1,12 @@
+!ProceduralModelAsset
+Id: 38020c21-659c-4fce-8738-8c55b1622152
+SerializedVersion: {Xenko: 1.5.0-alpha01}
+Tags: []
+Type: !TorusProceduralModel
+    Radius: 0.875
+    Thickness: 0.0625
+    Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+    UvScale: {X: 1.0, Y: 1.0}
+    MaterialInstance:
+        ~Id: 61ea0e89-b35e-4b8c-880f-004298efa556
+        Material: ecd6761d-4982-4ce5-8a33-e82a572ca6ca/45505943-81cf-4e21-81ff-5a6bf85bb062:Metal Material

@@ -1,0 +1,11 @@
+!ProceduralModelAsset
+Id: 3a57fc61-9428-47be-b916-1d1a3bd4495d
+SerializedVersion: {Xenko: 1.5.0-alpha01}
+Tags: []
+Type: !CylinderProceduralModel
+    Radius: 0.6
+    Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+    UvScale: {X: 1.0, Y: 1.0}
+    MaterialInstance:
+        ~Id: 99d8297f-6700-451f-9a8e-f1270579c097
+        Material: ab64747b-19a4-4c3c-be5a-f701a40be250/9c2acd4d-f385-4795-a787-7c9df6315af8:LaserAssets/RedLaserMaterial
