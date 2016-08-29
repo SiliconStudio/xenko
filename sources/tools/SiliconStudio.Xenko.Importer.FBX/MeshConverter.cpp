@@ -1208,11 +1208,10 @@ public:
 		Vector3 scaling;
 		matrix.Decompose(scaling, rotation, translation);
 
+		// Apply rotation on top level nodes only
 		if (node->ParentIndex == 0)
 		{
-			translation = translation * sceneMapping->ScaleToMeters;
 			Vector3::TransformCoordinate(translation, sceneMapping->AxisSystemRotationMatrix, translation);
-			scaling *= sceneMapping->ScaleToMeters;
 			rotation = Quaternion::Multiply(rotation, Quaternion::RotationMatrix(sceneMapping->AxisSystemRotationMatrix));
 		}
 

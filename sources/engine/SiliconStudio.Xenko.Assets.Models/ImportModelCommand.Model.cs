@@ -82,6 +82,13 @@ namespace SiliconStudio.Xenko.Assets.Models
             // Move meshes in the new nodes
             foreach (var mesh in model.Meshes)
             {
+                // Apply scale import on meshes
+                if (!MathUtil.NearEqual(ScaleImport, 1.0f))
+                {
+                    var transformationMatrix = Matrix.Scaling(ScaleImport);
+                    mesh.Draw.VertexBuffers[0].TransformBuffer(ref transformationMatrix);
+                }
+
                 var skinning = mesh.Skinning;
                 if (skinning != null)
                 {
@@ -96,6 +103,12 @@ namespace SiliconStudio.Xenko.Assets.Models
                         var newNodeIndex = skeletonMapping.SourceToSource[mesh.NodeIndex];
 
                         skinning.Bones[i].NodeIndex = skeletonMapping.SourceToTarget[linkNodeIndex];
+
+                        // Adjust scale import
+                        if (!MathUtil.NearEqual(ScaleImport, 1.0f))
+                        {
+                            skinning.Bones[i].LinkToMeshMatrix.TranslationVector = skinning.Bones[i].LinkToMeshMatrix.TranslationVector * ScaleImport;
+                        }
 
                         // If it was remapped, we also need to update matrix
                         if (nodeIndex != newNodeIndex)

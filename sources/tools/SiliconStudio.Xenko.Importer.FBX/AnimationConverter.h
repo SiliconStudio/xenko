@@ -484,20 +484,20 @@ namespace SiliconStudio {
 						curves[2] = pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z);
 						auto scalingCurve = ProcessAnimationCurveVector<Vector3>(animationClip, "Transform.Scale", 3, curves, 0.005f);
 
+						if (translationCurve != nullptr)
+						{
+							auto keyFrames = translationCurve->KeyFrames;
+							for (int i = 0; i < keyFrames->Count; i++)
+							{
+								auto keyFrame = keyFrames[i];
+								keyFrame.Value = keyFrame.Value * sceneMapping->ScaleToMeters;
+								Vector3::TransformCoordinate(keyFrame.Value, sceneMapping->AxisSystemRotationMatrix, keyFrame.Value);
+								keyFrames[i] = keyFrame;
+							}
+						}
+
 						if (nodeData.ParentIndex == 0)
 						{
-							if (translationCurve != nullptr)
-							{
-								auto keyFrames = translationCurve->KeyFrames;
-								for (int i = 0; i < keyFrames->Count; i++)
-								{
-									auto keyFrame = keyFrames[i];
-									keyFrame.Value = keyFrame.Value * sceneMapping->ScaleToMeters;
-									Vector3::TransformCoordinate(keyFrame.Value, sceneMapping->AxisSystemRotationMatrix, keyFrame.Value);
-									keyFrames[i] = keyFrame;
-								}
-							}
-
 							if (rotationCurve != nullptr)
 							{
 								auto axisSystemRotationQuaternion = Quaternion::RotationMatrix(sceneMapping->AxisSystemRotationMatrix);
@@ -506,18 +506,6 @@ namespace SiliconStudio {
 								{
 									auto keyFrame = keyFrames[i];
 									keyFrame.Value = Quaternion::Multiply(keyFrame.Value, axisSystemRotationQuaternion);
-									keyFrames[i] = keyFrame;
-								}
-							}
-
-							if (scalingCurve != nullptr)
-							{
-								auto scaleToMeters = sceneMapping->ScaleToMeters;
-								auto keyFrames = scalingCurve->KeyFrames;
-								for (int i = 0; i < keyFrames->Count; i++)
-								{
-									auto keyFrame = keyFrames[i];
-									keyFrame.Value *= scaleToMeters;
 									keyFrames[i] = keyFrame;
 								}
 							}

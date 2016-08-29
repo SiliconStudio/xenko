@@ -126,12 +126,17 @@ namespace SiliconStudio {
 
 					Matrix ConvertMatrixFromFbx(FbxAMatrix& _m) 
 					{
-						return FBXMatrixToMatrix(_m);
+						auto result = FBXMatrixToMatrix(_m);
+						// Adjust translation
+						result.M41 *= ScaleToMeters;
+						result.M42 *= ScaleToMeters;
+						result.M43 *= ScaleToMeters;
+						return result;
 					}
 
 					Vector3 ConvertPointFromFbx(const FbxVector4& _p)
 					{
-						return (Vector3)FbxDouble4ToVector4(_p);
+						return (Vector3)FbxDouble4ToVector4(_p) * ScaleToMeters;
 					}
 
 					Vector3 ConvertNormalFromFbx(const FbxVector4& _p)
