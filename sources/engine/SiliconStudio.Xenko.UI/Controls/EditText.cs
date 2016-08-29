@@ -1,10 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
 
 using SiliconStudio.Core;
@@ -211,7 +209,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>True if the control is read-only, false otherwise.</userdoc>
         [DataMember]
-        [Display(category: BehaviorCategory)]
+        [Display(category: BehaviorCategory, order: 200)]
         [DefaultValue(false)]
         public bool IsReadOnly
         {
@@ -231,7 +229,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The font of the text block.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 200)]
         public SpriteFont Font
         {
             get { return font; }
@@ -250,7 +248,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The color of the text.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 202)]
         public Color TextColor { get; set; } = Color.FromAbgr(0xF0F0F0FF);
 
         /// <summary>
@@ -258,7 +256,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The color of the selection.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 209)]
         public Color SelectionColor { get; set; } = Color.FromAbgr(0xF0F0F0FF);
 
         /// <summary>
@@ -266,7 +264,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The color of the caret.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 207)]
         public Color CaretColor { get; set; } = Color.FromAbgr(0xF0F0F0FF);
 
         /// <summary>
@@ -276,7 +274,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <userdoc>The maximum number of characters that can be manually entered into the text box.</userdoc>
         [DataMember]
         [DataMemberRange(1, int.MaxValue)]
-        [Display(category: BehaviorCategory)]
+        [Display(category: BehaviorCategory, order: 202)]
         [DefaultValue(int.MaxValue)]
         public int MaxLength
         {
@@ -295,7 +293,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <userdoc>The maximum number of visible lines.</userdoc>
         [DataMember]
         [DataMemberRange(1, int.MaxValue)]
-        [Display(category: BehaviorCategory)]
+        [Display(category: BehaviorCategory, order: 204)]
         [DefaultValue(int.MaxValue)]
         public int MaxLines
         {
@@ -314,7 +312,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <userdoc>The minimum number of visible lines.</userdoc>
         [DataMember]
         [DataMemberRange(1, int.MaxValue)]
-        [Display(category: BehaviorCategory)]
+        [Display(category: BehaviorCategory, order: 203)]
         [DefaultValue(1)]
         public int MinLines
         {
@@ -331,7 +329,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The image that is displayed in background when the edit is active.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 204)]
         [DefaultValue(null)]
         public ISpriteProvider ActiveImage { get; set; }
 
@@ -340,7 +338,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The image that is displayed in background when the edit is inactive.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 205)]
         [DefaultValue(null)]
         public ISpriteProvider InactiveImage { get; set; }
 
@@ -349,7 +347,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The image that the button displays when the mouse is over it.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 206)]
         [DefaultValue(null)]
         public ISpriteProvider MouseOverImage { get; set; }
 
@@ -360,7 +358,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// When <value>false</value>, it is snapped only if the font is dynamic and the element is rendered by a SceneUIRenderer.</remarks>
         /// <userdoc>True if the snapping of the Text to the closest screen pixel should be skipped, false otherwise.</userdoc>
         [DataMember]
-        [Display(category: BehaviorCategory)]
+        [Display(category: BehaviorCategory, order: 205)]
         [DefaultValue(false)]
         public bool DoNotSnapText { get; set; } = false;
 
@@ -387,7 +385,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <userdoc>The width of the edit text's cursor (in virtual pixels).</userdoc>
         [DataMember]
         [DataMemberRange(0, float.MaxValue)]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 208)]
         [DefaultValue(0)]
         public float CaretWidth
         {
@@ -406,7 +404,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <userdoc>The caret blinking frequency.</userdoc>
         [DataMember]
         [DataMemberRange(0, float.MaxValue)]
-        [Display(category: BehaviorCategory)]
+        [Display(category: BehaviorCategory, order: 206)]
         [DefaultValue(0)]
         public float CaretFrequency
         {
@@ -460,7 +458,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The edit text input type.</userdoc>
         [DataMember]
-        [Display(category: BehaviorCategory)]
+        [Display(category: BehaviorCategory, order: 201)]
         [DefaultValue(default(InputTypeFlags))]
         public InputTypeFlags InputType
         {
@@ -485,7 +483,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <userdoc>The size of the text in virtual pixels unit.</userdoc>
         [DataMember]
         [DataMemberRange(0, float.MaxValue, AllowNaN = true)]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 201)]
         [DefaultValue(float.NaN)]
         public float TextSize
         {
@@ -507,7 +505,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The alignment of the text to display.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 203)]
         [DefaultValue(default(TextAlignment))]
         public TextAlignment TextAlignment { get; set; }
 

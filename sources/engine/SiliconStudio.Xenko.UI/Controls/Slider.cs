@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The image to display as Track background.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 100)]
         [DefaultValue(null)]
         public ISpriteProvider TrackBackgroundImage
         {
@@ -75,7 +75,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The image to display as Track foreground.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 101)]
         [DefaultValue(null)]
         public ISpriteProvider TrackForegroundImage { get; set; }
 
@@ -84,7 +84,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The image to display as slider thumb (button).</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 103)]
         [DefaultValue(null)]
         public ISpriteProvider ThumbImage { get; set; }
 
@@ -93,7 +93,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The image to display as slider thumb (button) when the mouse is over the slider.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 104)]
         [DefaultValue(null)]
         public ISpriteProvider MouseOverThumbImage { get; set; }
 
@@ -102,7 +102,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The image to display as tick.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 105)]
         [DefaultValue(null)]
         public ISpriteProvider TickImage { get; set; }
 
@@ -113,6 +113,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <userdoc>The smallest possible value of the slider.</userdoc>
         [DataMember]
         [DataMemberRange(float.MinValue, float.MaxValue)]
+        [Display(order: 101)]
         [DefaultValue(0.0f)]
         public float Minimum
         {
@@ -133,6 +134,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <userdoc>The greatest possible value of the slider.</userdoc>
         [DataMember]
         [DataMemberRange(float.MinValue, float.MaxValue)]
+        [Display(order: 102)]
         [DefaultValue(1.0f)]
         public float Maximum
         {
@@ -152,6 +154,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <userdoc>The step of a change of the value.</userdoc>
         [DataMember]
         [DataMemberRange(0, float.MaxValue)]
+        [Display(order: 103)]
         [DefaultValue(0.1f)]
         public float Step
         {
@@ -171,6 +174,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <userdoc>The current value of the slider.</userdoc>
         [DataMember]
         [DataMemberRange(float.MinValue, float.MaxValue)]
+        [Display(order: 100)]
         [DefaultValue(0.0f)]
         public float Value
         {
@@ -197,7 +201,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <userdoc>The frequency of the ticks on the slider track.</userdoc>
         [DataMember]
         [DataMemberRange(1, float.MaxValue)]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 107)]
         [DefaultValue(10.0f)]
         public float TickFrequency
         {
@@ -218,7 +222,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <userdoc>The offset in virtual pixels between the center of the track and center of the ticks (for an not-stretched slider).</userdoc>
         [DataMember]
         [DataMemberRange(0, float.MaxValue)]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 108)]
         [DefaultValue(10.0f)]
         public float TickOffset
         {
@@ -236,7 +240,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The left/right offsets specifying where the track region starts. </userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 102)]
         public Vector2 TrackStartingOffsets { get; set; }
 
         /// <summary>
@@ -244,7 +248,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>True if the default direction of the slider should reversed, false otherwise.</userdoc>
         [DataMember]
-        [Display(category: BehaviorCategory)]
+        [Display(category: BehaviorCategory, order: 101)]
         [DefaultValue(false)]
         public bool IsDirectionReversed { get; set; } = false;
 
@@ -253,7 +257,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>True if the ticks should be displayed, false otherwise.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 106)]
         [DefaultValue(false)]
         public bool AreTicksDisplayed { get; set; } = false;
 
@@ -262,7 +266,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>True if the slider valuye should be snapped to the ticks, false otherwise.</userdoc>
         [DataMember]
-        [Display(category: BehaviorCategory)]
+        [Display(category: BehaviorCategory, order: 100)]
         [DefaultValue(false)]
         public bool ShouldSnapToTicks
         {
@@ -279,7 +283,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The orientation of the slider.</userdoc>
         [DataMember]
-        [Display(category: LayoutCategory)]
+        [Display(category: LayoutCategory, order: 100)]
         [DefaultValue(Orientation.Horizontal)]
         public Orientation Orientation
         {

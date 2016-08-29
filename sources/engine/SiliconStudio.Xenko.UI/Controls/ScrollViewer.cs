@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <remarks>Snapping will work only if <see cref="Content"/> implements interface <see cref="IScrollAnchorInfo"/></remarks>
         /// <userdoc>True if the element should snap its scrolling to anchors, false otherwise.</userdoc>
         [DataMember]
-        [Display(category: BehaviorCategory)]
+        [Display(category: BehaviorCategory, order: 304)]
         [DefaultValue(false)]
         public bool SnapToAnchors { get; set; } = false;
 
@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The threshold distance over which a touch move starts scrolling.</userdoc>
         [DataMember]
-        [Display(category: BehaviorCategory)]
+        [Display(category: BehaviorCategory, order: 301)]
         [DefaultValue(10.0f)]
         public float ScrollStartThreshold { get; set; } = 10.0f;
 
@@ -272,7 +272,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The viewer allowed scrolling mode.</userdoc>
         [DataMember]
-        [Display(category: BehaviorCategory)]
+        [Display(category: BehaviorCategory, order: 300)]
         [DefaultValue(ScrollingMode.Horizontal)]
         public ScrollingMode ScrollMode
         {
@@ -292,7 +292,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The automatic deceleration of the scroll after the user remove its finger from the screen. The unit is in virtual pixels.</userdoc>
         [DataMember]
-        [Display(category: BehaviorCategory)]
+        [Display(category: BehaviorCategory, order: 302)]
         [DefaultValue(1500.0f)]
         public float Deceleration
         {
@@ -310,7 +310,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>True to allow the user to scroll by touching, false to forbid it.</userdoc>
         [DataMember]
-        [Display(category: BehaviorCategory)]
+        [Display(category: BehaviorCategory, order: 303)]
         [DefaultValue(true)]
         public bool TouchScrollingEnabled
         {
@@ -330,7 +330,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The color of the scrolling bar.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 300)]
         public Color ScrollBarColor { get; set; } = new Color(0.1f, 0.1f, 0.1f, 1f);
 
         /// <summary>
@@ -338,7 +338,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The scrolling bar thickness in virtual pixels.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 301)]
         [DefaultValue(6.0f)]
         public float ScrollBarThickness { get; set; } = 6.0f;
 

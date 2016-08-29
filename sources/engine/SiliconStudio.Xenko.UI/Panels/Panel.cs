@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <summary>
         /// The key to the ZIndex dependency property.
         /// </summary>
-        [Display(category: AppearanceCategory)]
+        [Display(category: AppearanceCategory, order: 100)]
         public static readonly PropertyKey<int> ZIndexPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(ZIndexPropertyKey), typeof(Panel), 0, PanelZSortedChildInvalidator);
 
         /// <summary>
