@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Physics.Engine
         {
         }
 
-        public Entity CreateDebugEntity(PhysicsComponent component)
+        public Entity CreateDebugEntity(PhysicsComponent component, bool alwaysAddOffset = false)
         {
             if (component?.ColliderShape == null) return null;
 
@@ -74,7 +74,9 @@ namespace SiliconStudio.Xenko.Physics.Engine
                 }
             }
 
-            var colliderEntity = CreateChildEntity(component, component.ColliderShape, true);
+            var rigidBody = component as RigidbodyComponent;
+
+            var colliderEntity = CreateChildEntity(component, component.ColliderShape, alwaysAddOffset || rigidBody == null);
             if (colliderEntity != null) debugEntity.AddChild(colliderEntity);
 
             return debugEntity;
@@ -96,7 +98,7 @@ namespace SiliconStudio.Xenko.Physics.Engine
                         for (var i = 0; i < compound.Count; i++)
                         {
                             var subShape = compound[i];
-                            var subEntity = CreateChildEntity(component, subShape, true);
+                            var subEntity = CreateChildEntity(component, subShape, addOffset);
                             if (subEntity != null)
                             {
                                 entity.AddChild(subEntity);
@@ -168,9 +170,9 @@ namespace SiliconStudio.Xenko.Physics.Engine
                             }
                         };
 
-                        var offset = addOffset ? Matrix.RotationQuaternion(shape.LocalRotation) * Matrix.Translation(shape.LocalOffset * shape.Scaling) : Matrix.Identity;
+                        var offset = addOffset ? Matrix.RotationQuaternion(shape.LocalRotation) * Matrix.Translation(shape.LocalOffset) : Matrix.Identity;
 
-                        entity.Transform.LocalMatrix = shape.DebugPrimitiveMatrix * Matrix.Scaling(shape.Scaling) * offset;
+                        entity.Transform.LocalMatrix = shape.DebugPrimitiveMatrix * offset * Matrix.Scaling(shape.Scaling);
 
                         entity.Transform.UseTRS = false;
 

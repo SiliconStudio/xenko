@@ -369,19 +369,12 @@ namespace SiliconStudio.Xenko.Physics
         {
             base.OnUpdateDraw();
 
-            //write to ModelViewHierarchy
-            var model = Data.ModelComponent;
-            if (type != RigidBodyTypes.Dynamic) return;
-
-            model.Skeleton.NodeTransformations[BoneIndex].WorldMatrix = BoneWorldMatrixOut;
-
-            if (DebugEntity == null) return;
-
-            Vector3 scale, pos;
-            Quaternion rot;
-            BoneWorldMatrixOut.Decompose(out scale, out rot, out pos);
-            DebugEntity.Transform.Position = pos;
-            DebugEntity.Transform.Rotation = rot;
+            if (type == RigidBodyTypes.Dynamic && BoneIndex == -1)
+            {
+                //write to ModelViewHierarchy
+                var model = Data.ModelComponent;
+                model.Skeleton.NodeTransformations[BoneIndex].WorldMatrix = BoneWorldMatrixOut;
+            }
         }
     
         //This is called by the physics engine to update the transformation of Dynamic rigidbodies.
@@ -400,6 +393,11 @@ namespace SiliconStudio.Xenko.Physics
             }
 
             if (DebugEntity == null) return;
+
+            if (ColliderShape.LocalOffset != Vector3.Zero || ColliderShape.LocalRotation != Quaternion.Identity)
+            {
+                physicsTransform = Matrix.Multiply(ColliderShape.PositiveCenterMatrix, physicsTransform);
+            }
 
             Vector3 scale, pos;
             Quaternion rot;
