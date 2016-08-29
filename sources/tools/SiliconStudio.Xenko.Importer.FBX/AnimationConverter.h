@@ -236,7 +236,7 @@ namespace SiliconStudio {
 						return animationCurve;
 					}
 
-					AnimationCurve<Quaternion>^ ProcessAnimationCurveRotation(AnimationClip^ animationClip, String^ name, FbxAnimCurve** curves, float maxErrorThreshold)
+					AnimationCurve<Quaternion>^ ProcessAnimationCurveRotation(AnimationClip^ animationClip, String^ name, FbxAnimCurve** curves, float maxErrorThreshold, Matrix rotationAdjust)
 					{
 						auto keyFrames = ProcessAnimationCurveFloatsHelper<Vector3>(curves, 3);
 						if (keyFrames == nullptr)
@@ -259,7 +259,7 @@ namespace SiliconStudio {
 							auto keyFrame = keyFrames[i];
 							Vector3 rotation = keyFrame.Value;
 
-							auto finalMatrix = Matrix::RotationX(rotation.X) * Matrix::RotationY(rotation.Y) * Matrix::RotationZ(rotation.Z);
+							auto finalMatrix = Matrix::Transpose(rotationAdjust) * Matrix::RotationX(rotation.X) * Matrix::RotationY(rotation.Y) * Matrix::RotationZ(rotation.Z) * rotationAdjust;
 							Vector3 scaling;
 							Quaternion rotationQuat;
 							Vector3 translation;
@@ -469,6 +469,13 @@ namespace SiliconStudio {
 
 						auto nodeName = nodeData.Name;
 
+						auto matrixModifier = sceneMapping->MatrixModifier;
+
+						Vector3 translation;
+						Matrix rotation;
+						Vector3 scaling;
+						matrixModifier.Decompose(scaling, rotation, translation);
+
 						curves[0] = pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X);
 						curves[1] = pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y);
 						curves[2] = pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z);
@@ -477,49 +484,32 @@ namespace SiliconStudio {
 						curves[0] = pNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X);
 						curves[1] = pNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y);
 						curves[2] = pNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z);
-						auto rotationCurve = ProcessAnimationCurveRotation(animationClip, "Transform.Rotation", curves, 0.01f);
+						ProcessAnimationCurveRotation(animationClip, "Transform.Rotation", curves, 0.01f, rotation);
 
 						curves[0] = pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X);
 						curves[1] = pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y);
 						curves[2] = pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z);
 						auto scalingCurve = ProcessAnimationCurveVector<Vector3>(animationClip, "Transform.Scale", 3, curves, 0.005f);
 
-						if (nodeData.ParentIndex == 0)
+						if (translationCurve != nullptr)
 						{
-							if (translationCurve != nullptr)
+							auto keyFrames = translationCurve->KeyFrames;
+							for (int i = 0; i < keyFrames->Count; i++)
 							{
-								auto keyFrames = translationCurve->KeyFrames;
-								for (int i = 0; i < keyFrames->Count; i++)
-								{
-									auto keyFrame = keyFrames[i];
-									keyFrame.Value = keyFrame.Value * sceneMapping->ScaleToMeters;
-									Vector3::TransformCoordinate(keyFrame.Value, sceneMapping->AxisSystemRotationMatrix, keyFrame.Value);
-									keyFrames[i] = keyFrame;
-								}
+								auto keyFrame = keyFrames[i];
+								keyFrame.Value = (Vector3)Vector4::Transform(Vector4(keyFrame.Value, 1.0f), matrixModifier);
+								keyFrames[i] = keyFrame;
 							}
+						}
 
-							if (rotationCurve != nullptr)
+						if (scalingCurve != nullptr)
+						{
+							auto keyFrames = scalingCurve->KeyFrames;
+							for (int i = 0; i < keyFrames->Count; i++)
 							{
-								auto axisSystemRotationQuaternion = Quaternion::RotationMatrix(sceneMapping->AxisSystemRotationMatrix);
-								auto keyFrames = rotationCurve->KeyFrames;
-								for (int i = 0; i < keyFrames->Count; i++)
-								{
-									auto keyFrame = keyFrames[i];
-									keyFrame.Value = Quaternion::Multiply(keyFrame.Value, axisSystemRotationQuaternion);
-									keyFrames[i] = keyFrame;
-								}
-							}
-
-							if (scalingCurve != nullptr)
-							{
-								auto scaleToMeters = sceneMapping->ScaleToMeters;
-								auto keyFrames = scalingCurve->KeyFrames;
-								for (int i = 0; i < keyFrames->Count; i++)
-								{
-									auto keyFrame = keyFrames[i];
-									keyFrame.Value *= scaleToMeters;
-									keyFrames[i] = keyFrame;
-								}
+								auto keyFrame = keyFrames[i];
+								keyFrame.Value = Vector3::TransformNormal(keyFrame.Value, rotation);
+								keyFrames[i] = keyFrame;
 							}
 						}
 

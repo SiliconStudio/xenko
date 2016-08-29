@@ -194,38 +194,21 @@ namespace SiliconStudio.Xenko.Assets.Models
                             nodeAnimationClip = combinedAnimationClip;
                         }
 
-                        var transformStart = $"{nameof(ModelNodeTransformation.Transform)}.";
-                        var transformScale = $"{nameof(ModelNodeTransformation.Transform)}.{nameof(TransformTRS.Scale)}";
-                        var transformPosition = $"{nameof(ModelNodeTransformation.Transform)}.{nameof(TransformTRS.Position)}";
-
                         foreach (var channel in nodeAnimationClip.Channels)
                         {
                             var curve = nodeAnimationClip.Curves[channel.Value.CurveIndex];
 
                             // TODO: Root motion
                             var channelName = channel.Key;
-                            if (channelName.StartsWith(transformStart))
+                            if (channelName.StartsWith($"{nameof(ModelNodeTransformation.Transform)}."))
                             {
-                                if (parentNodeIndex == 0)
+                                if (parentNodeIndex == 0 && channelName == $"{nameof(ModelNodeTransformation.Transform)}.{nameof(TransformTRS.Position)}")
                                 {
-                                    if (channelName == transformScale)
+                                    // Translate node with parent 0 using PivotPosition
+                                    var keyFrames = ((AnimationCurve<Vector3>)curve).KeyFrames;
+                                    for (int i = 0; i < keyFrames.Count; ++i)
                                     {
-                                        // Scale node with parent 0 using ScaleImport
-                                        var keyFrames = ((AnimationCurve<Vector3>)curve).KeyFrames;
-                                        for (int i = 0; i < keyFrames.Count; ++i)
-                                        {
-                                            keyFrames.Items[i].Value *= ScaleImport;
-                                        }
-                                    }
-                                    else if (channelName == transformPosition)
-                                    {
-                                        // Translate node with parent 0 using PivotPosition
-                                        var keyFrames = ((AnimationCurve<Vector3>)curve).KeyFrames;
-                                        for (int i = 0; i < keyFrames.Count; ++i)
-                                        {
-                                            keyFrames.Items[i].Value -= PivotPosition;
-                                            keyFrames.Items[i].Value *= ScaleImport;
-                                        }
+                                        keyFrames.Items[i].Value -= PivotPosition * ScaleImport;
                                     }
                                 }
                                 animationClip.AddCurve($"[ModelComponent.Key].Skeleton.NodeTransformations[{skeletonMapping.SourceToTarget[nodeIndex]}]." + channelName, curve);

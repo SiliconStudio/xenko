@@ -44,19 +44,19 @@ namespace SiliconStudio.Xenko.Assets.Models
         public UFile Source { get; set; } = new UFile("");
 
         /// <summary>
-        /// Gets or sets the pivot position, that will be used as center of object.
-        /// </summary>
-        [DataMember(10)]
-        public Vector3 PivotPosition { get; set; }
-
-        /// <summary>
         /// Gets or sets the scale import.
         /// </summary>
         /// <value>The scale import.</value>
         /// <userdoc>The scale applied when importing a model.</userdoc>
-        [DataMember(15)]
+        [DataMember(10)]
         [DefaultValue(1.0f)]
         public float ScaleImport { get; set; } = 1.0f;
+
+        /// <summary>
+        /// Gets or sets the pivot position, that will be used as center of object.
+        /// </summary>
+        [DataMember(15)]
+        public Vector3 PivotPosition { get; set; }
 
         /// <inheritdoc/>
         [DataMember(40)]

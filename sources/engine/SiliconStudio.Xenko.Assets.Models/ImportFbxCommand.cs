@@ -52,6 +52,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             return new Importer.FBX.MeshConverter(commandContext.Logger)
             {
                 AllowUnsignedBlendIndices = AllowUnsignedBlendIndices,
+                ScaleImport = ScaleImport,
             };
         }
 

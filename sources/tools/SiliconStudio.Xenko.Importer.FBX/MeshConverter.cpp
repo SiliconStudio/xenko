@@ -48,6 +48,7 @@ public ref class MeshConverter
 {
 public:
 	property bool AllowUnsignedBlendIndices;
+	property float ScaleImport;
 
 	Logger^ logger;
 
@@ -1208,14 +1209,6 @@ public:
 		Vector3 scaling;
 		matrix.Decompose(scaling, rotation, translation);
 
-		if (node->ParentIndex == 0)
-		{
-			translation = translation * sceneMapping->ScaleToMeters;
-			Vector3::TransformCoordinate(translation, sceneMapping->AxisSystemRotationMatrix, translation);
-			scaling *= sceneMapping->ScaleToMeters;
-			rotation = Quaternion::Multiply(rotation, Quaternion::RotationMatrix(sceneMapping->AxisSystemRotationMatrix));
-		}
-
 		// Setup the transform for this node
 		node->Transform.Position = translation;
 		node->Transform.Rotation = rotation;
@@ -1484,7 +1477,7 @@ private:
 		scene->GetRootNode()->ResetPivotSetAndConvertAnimation(framerate, false, false);
 
 		// Initialize the node mapping
-		sceneMapping = gcnew SceneMapping(scene);
+		sceneMapping = gcnew SceneMapping(scene, ScaleImport);
 	}
 	
 	bool HasAnimationData(String^ inputFile)
