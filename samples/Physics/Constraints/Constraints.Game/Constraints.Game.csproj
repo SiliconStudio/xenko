@@ -81,6 +81,7 @@
     <Compile Include="EnemyScript.cs" />
     <Compile Include="GuiScript.cs" />
     <Compile Include="ImpulseOnSpaceScript.cs" />
+    <Compile Include="NextSceneScript.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RaycastingScript.cs" />

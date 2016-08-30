@@ -251,6 +251,9 @@ Hierarchy:
                     - !CameraComponent
                         ~Id: 7b8dae54-4ed8-4d4f-b279-6f323fdf0b14
                         Projection: Perspective
+                    - !Constraints.NextSceneScript,Constraints.Game
+                        ~Id: 133f5387-2b15-405f-9e63-b70901c07dbd
+                        NextScene: Scene
         -   Entity:
                 Id: ef7d2057-b70a-4f12-af97-1ac2d8736797
                 Name: Ambient light
@@ -280,51 +283,3 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
                             - {Entity: {Id: 95664a00-cbe6-40d4-b536-9d0bf74af845}, Id: 2e3ef041-2f80-4db2-95a7-74c7f12119bd}
-~BaseParts:
-    -   Location: CubePrefab
-        Asset: !PrefabAsset
-            Id: 81d2f7ea-8b18-44ab-96fd-6a0383065606
-            SerializedVersion: {Xenko: 1.7.0-beta04}
-            Tags: []
-            Hierarchy:
-                ~Id: be299a1b-2b49-45ba-9075-844aff0d5ca0
-                RootPartIds:
-                    - 7bab5198-56f2-4bda-8979-f5b7022b951a
-                Parts:
-                    -   Entity:
-                            Id: 7bab5198-56f2-4bda-8979-f5b7022b951a
-                            Name: cube
-                            Components:
-                                - !TransformComponent
-                                    ~Id: 2e3ef041-2f80-4db2-95a7-74c7f12119bd
-                                    Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                                    Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                    Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                                    Children: []
-                                - !Constraints.ImpulseOnSpaceScript,Constraints.Game
-                                    ~Id: 58aa8440-db94-4437-b91e-aee2c10b59d9
-                                - !RigidbodyComponent
-                                    ~Id: 88c5c6b8-61b5-4401-adb1-357b024c4015
-                                    CanSleep: true
-                                    Restitution: 0.0
-                                    Friction: 0.5
-                                    RollingFriction: 0.0
-                                    CcdMotionThreshold: 0.0
-                                    CcdSweptSphereRadius: 0.0
-                                    IsTrigger: false
-                                    IsKinematic: false
-                                    Mass: 1.0
-                                    LinearDamping: 0.0
-                                    AngularDamping: 0.0
-                                    OverrideGravity: false
-                                    Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
-                                    NodeName: null
-                                    ColliderShapes:
-                                        - !ColliderShapeAssetDesc
-                                            ~Id: 942f107d-2b37-48b1-b144-2fd78041aa91
-                                            Shape: b1ecc6c8-dfe4-454d-b6d4-6605f4b68f64/f9e50676-761f-47c9-87e3-1e949c24ff9e:cube_cs
-                                - !ModelComponent
-                                    ~Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
-                                    Model: 841764d7-dc26-40e4-a3fb-7062b1f484ba/140faeee-f1b9-4f29-91a2-14b11ae22718:Cube
-                                    Materials:
-                                        - null

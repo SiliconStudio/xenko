@@ -181,6 +181,9 @@ Hierarchy:
                     - !CameraComponent
                         ~Id: b5838899-93ff-4e3e-b9ad-2bc49a8669d6
                         Projection: Perspective
+                    - !Constraints.NextSceneScript,Constraints.Game
+                        ~Id: 4fa4523d-551f-46b2-8dbf-8376d9b3945d
+                        NextScene: CharacterController
         -   Entity:
                 Id: 4946b032-53e8-4029-b72c-4396af3b286d
                 Name: Player

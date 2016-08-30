@@ -128,6 +128,9 @@ Hierarchy:
                         Projection: Orthographic
                         FarClipPlane: 10.0
                         AspectRatio: 1.777
+                    - !Constraints.NextSceneScript,Constraints.Game
+                        ~Id: e931786d-8eca-49e0-b157-84c80f168d7a
+                        NextScene: Raycasting
         -   Entity:
                 Id: 9a60a268-6c2d-44d9-bac2-a4c569a73ef0
                 Name: Player

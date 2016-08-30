@@ -172,6 +172,9 @@ Hierarchy:
                         ~Id: f78e32b9-12e9-4587-9032-34c0b683f570
                         Projection: Perspective
                         FarClipPlane: 100.0
+                    - !Constraints.NextSceneScript,Constraints.Game
+                        ~Id: f81c69c1-613f-4b95-9da8-cadcde73ab36
+                        NextScene: VolumeTrigger
         -   Entity:
                 Id: e6289325-fb51-4913-84a6-96f4faa42f40
                 Name: Ambient light

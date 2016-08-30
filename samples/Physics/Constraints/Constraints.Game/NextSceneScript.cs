@@ -3,7 +3,7 @@ using SiliconStudio.Core.Extensions;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Input;
 
-namespace SimpleParticles
+namespace Constraints
 {
     public class NextSceneScript : SyncScript
     {
