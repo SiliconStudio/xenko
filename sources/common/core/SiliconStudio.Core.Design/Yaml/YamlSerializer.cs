@@ -298,6 +298,7 @@ namespace SiliconStudio.Core.Yaml
                         Attributes = new AtributeRegistryFilter(),
                         PreferredIndent = 4,
                         EmitShortTypeName = true,
+                        ComparerForKeySorting = MemberComparer.Default,
                     };
 
                     if (generateIds)
@@ -463,6 +464,57 @@ namespace SiliconStudio.Core.Yaml
                 // Reset the current serializer as the set of assemblies has changed
                 globalSerializer = null;
                 globalSerializerWithoutId = null;
+            }
+        }
+
+        private class MemberComparer : IComparer<object>
+        {
+            public static readonly MemberComparer Default = new MemberComparer();
+
+            /// <inheritdoc/>
+            public virtual int Compare(object x, object y)
+            {
+                var left = x as IMemberDescriptor;
+                var right = y as IMemberDescriptor;
+                if (left != null && right != null)
+                {
+                    // If order is defined, first order by order
+                    if (left.Order.HasValue || right.Order.HasValue)
+                    {
+                        var leftOrder = left.Order ?? 0;
+                        var rightOrder = right.Order ?? 0;
+                        var comparison = leftOrder.CompareTo(rightOrder);
+                        if (comparison != 0)
+                            return comparison;
+                    }
+
+                    // try to order by class hierarchy + token (same as declaration order)
+                    var leftMember = (x as MemberDescriptorBase)?.MemberInfo;
+                    var rightMember = (y as MemberDescriptorBase)?.MemberInfo;
+                    if (leftMember != null || rightMember != null)
+                    {
+                        var comparison = leftMember.CompareMetadataTokenWith(rightMember);
+                        if (comparison != -1)
+                            return comparison;
+                    }
+
+                    // else order by name (dynamic members, etc...)
+                    return left.DefaultNameComparer.Compare(left.Name, right.Name);
+                }
+
+                if (x is string && y is string)
+                {
+                    return string.CompareOrdinal((string)x, (string)y);
+                }
+
+                var leftComparable = x as IComparable;
+                if (leftComparable != null)
+                {
+                    return leftComparable.CompareTo(y);
+                }
+
+                var rightComparable = y as IComparable;
+                return rightComparable?.CompareTo(y) ?? 0;
             }
         }
     }

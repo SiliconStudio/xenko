@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Reflection;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Presentation.Commands;
@@ -17,6 +17,7 @@ namespace SiliconStudio.Presentation.Quantum
         private readonly List<object> combinedNodeInitialValues;
         private readonly HashSet<object> distinctCombinedNodeInitialValues;
         private readonly int? order;
+        private readonly MemberInfo memberInfo;
 
         protected static readonly HashSet<CombinedObservableNode> ChangedNodes = new HashSet<CombinedObservableNode>();
         protected static bool ChangeInProgress;
@@ -58,6 +59,11 @@ namespace SiliconStudio.Presentation.Quantum
 
                 if (order == node.Order || (!nullOrder && order == null))
                     order = node.Order;
+
+                // Note: sometimes member info could be different for the same member if we select objects of types that inherit from another
+                // This will just affect the view order, so it shouldn't be a problem.
+                if (memberInfo == null)
+                    memberInfo = node.MemberInfo;
 
                 combinedNodeInitialValues.Add(node.Value);
                 distinctCombinedNodeInitialValues.Add(node.Value);
@@ -155,6 +161,8 @@ namespace SiliconStudio.Presentation.Quantum
         public IEnumerable<object> DistinctInitialValues => distinctCombinedNodeInitialValues;
 
         public override int? Order => order;
+
+        public override MemberInfo MemberInfo => memberInfo;
 
         public bool GroupByType { get; set; }
 

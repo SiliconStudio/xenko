@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reflection;
 using SiliconStudio.Core;
 using SiliconStudio.Presentation.Commands;
 using SiliconStudio.Quantum;
@@ -96,6 +97,12 @@ namespace SiliconStudio.Presentation.Quantum
         /// Gets the order number of this node in its parent.
         /// </summary>
         int? Order { get; }
+
+        /// <summary>
+        /// Gets the member info (if any).
+        /// </summary>
+        /// <remarks>Used mostly for sorting purpose.</remarks>
+        MemberInfo MemberInfo { get; }
 
         /// <summary>
         /// Gets whether this node contains a list
