@@ -1,0 +1,9 @@
+!ColliderShapeAsset
+Id: e3030570-16a5-4ee6-b77b-37b4f19d16c7
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+ColliderShapes:
+    - !SphereColliderShapeDesc
+        ~Id: 677d7297-11d4-477f-8d38-0cc170a337c5
+        Is2D: true
+        LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}

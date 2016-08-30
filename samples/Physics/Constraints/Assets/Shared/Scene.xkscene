@@ -9,9 +9,7 @@ SceneSettings:
         Cameras:
             -   ~Id: 063b8503-f9d0-4a00-a8a2-25ba313818c3
                 Name: null
-                Camera:
-                    Entity: {Id: b7690cff-f2ad-4f33-ae7e-26573f84dd7f}
-                    Id: f78e32b9-12e9-4587-9032-34c0b683f570
+                Camera: {Entity: {Id: b7690cff-f2ad-4f33-ae7e-26573f84dd7f}, Id: f78e32b9-12e9-4587-9032-34c0b683f570}
         Layers: []
         Master:
             ~Id: 99b9fcc5-5b04-495f-8f2b-9e978c7c9950
@@ -205,11 +203,10 @@ Hierarchy:
                     - !Constraints.DemoScript,Constraints.Game
                         ~Id: 46650e10-9713-4da4-a9e9-b9e50263ec16
                         Font: 8c3a1598-0c68-4b66-be63-b47ce5898a7d/62eec53a-f82a-460a-91c3-bf3c6ece95c2:Font
-                        cube:
-                            Id: 909c7c74-e1e9-4d9e-aa61-207f1d6367d0
-                        sphere:
-                            Id: 70f2e3d6-2d8d-4cc5-aa99-1b9cae14aed2
+                        cube: {Id: 909c7c74-e1e9-4d9e-aa61-207f1d6367d0}
+                        sphere: {Id: 70f2e3d6-2d8d-4cc5-aa99-1b9cae14aed2}
                     - !UIComponent
                         ~Id: fbf47521-cdd8-4cc6-8902-7bd3cf961d70
+                        Page: null
                         Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
                         Size: {X: 1.0, Y: 1.0, Z: 1.0}
