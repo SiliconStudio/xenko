@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The color of the border.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory, order: 300)]
+        [Display(category: AppearanceCategory)]
         public Color BorderColor
         {
             get { return BorderColorInternal; }
@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The thickness of the border.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory, order: 301)]
+        [Display(category: AppearanceCategory)]
         public Thickness BorderThickness
         {
             get { return borderThickness; }

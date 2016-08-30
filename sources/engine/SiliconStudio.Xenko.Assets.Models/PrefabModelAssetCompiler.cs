@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             private struct EntityChunk
             {
                 public Entity Entity;
-                public Rendering.Model Model;
+                public Model Model;
                 public int MaterialIndex;
             }
 
@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 ComputeCompileTimeDependenciesHash(package, writer, AssetParameters);
             }
 
-            private static void ProcessMaterial(ContentManager manager, ICollection<EntityChunk> chunks, MaterialInstance material, Rendering.Model prefabModel)
+            private static void ProcessMaterial(ContentManager manager, ICollection<EntityChunk> chunks, MaterialInstance material, Model prefabModel)
             {
                 //we need to futher group by VertexDeclaration
                 var meshes = new Dictionary<VertexDeclaration, MeshData>();
@@ -276,7 +276,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                     if (prefab == null) throw new Exception("Failed to load prefab.");
                 }
 
-                var prefabModel = new Rendering.Model();
+                var prefabModel = new Model();
 
                 //The objective is to create 1 mesh per material/shadow params
                 //1. We group by materials
@@ -299,7 +299,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                         
                         if (modelComponent == null || modelComponent.Skeleton.Nodes.Length != 1) continue;
                         
-                        var modelAsset = contentManager.Load<Rendering.Model>(AttachedReferenceManager.GetUrl(modelComponent.Model), loadSettings);
+                        var modelAsset = contentManager.Load<Model>(AttachedReferenceManager.GetUrl(modelComponent.Model), loadSettings);
                         if (modelAsset == null ||
                             modelAsset.Meshes.Any(x => x.Draw.PrimitiveType != PrimitiveType.TriangleList || x.Draw.VertexBuffers == null || x.Draw.VertexBuffers.Length != 1) ||
                             modelAsset.Materials.Any(x => x.Material != null && x.Material.HasTransparency) ||
@@ -317,7 +317,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 foreach (var subEntity in validEntities)
                 {
                     var modelComponent = subEntity.Get<ModelComponent>();
-                    var modelAsset = contentManager.Load<Rendering.Model>(AttachedReferenceManager.GetUrl(modelComponent.Model), loadSettings);
+                    var modelAsset = contentManager.Load<Model>(AttachedReferenceManager.GetUrl(modelComponent.Model), loadSettings);
                     for (var index = 0; index < modelAsset.Materials.Count; index++)
                     {
                         var material = modelAsset.Materials[index];

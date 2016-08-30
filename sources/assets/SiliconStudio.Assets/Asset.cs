@@ -80,7 +80,7 @@ namespace SiliconStudio.Assets
         /// Gets or sets the base.
         /// </summary>
         /// <value>The base.</value>
-        [DataMember(BaseProperty), DefaultValue(null)]
+        [DataMember(int.MaxValue - 2000, BaseProperty), DefaultValue(null)]
         [Display(Browsable = false)]
         public AssetBase Base { get; set; }
 
@@ -93,7 +93,7 @@ namespace SiliconStudio.Assets
         /// Gets or sets the base for part assets.
         /// </summary>
         /// <value>The part assets.</value>
-        [DataMember(BasePartsProperty), DefaultValue(null)]
+        [DataMember(int.MaxValue - 1000, BasePartsProperty), DefaultValue(null)]
         [Display(Browsable = false)]
         [NotNullItems]
         public List<AssetBase> BaseParts { get; set; }

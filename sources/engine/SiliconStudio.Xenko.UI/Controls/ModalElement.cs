@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <userdoc>he color of the overlay drawn upon underneath elements.</userdoc>
         /// <userdoc>he color of the overlay drawn upon underneath elements.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory, order: 400)]
+        [Display(category: AppearanceCategory)]
         public Color OverlayColor
         {
             get { return OverlayColorInternal; }
@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>True if the control should block the input of underneath elements, false otherwise.</userdoc>
         [DataMember]
-        [Display(category: BehaviorCategory, order: 400)]
+        [Display(category: BehaviorCategory)]
         [DefaultValue(true)]
         public bool IsModal { get; set; } = true;
 

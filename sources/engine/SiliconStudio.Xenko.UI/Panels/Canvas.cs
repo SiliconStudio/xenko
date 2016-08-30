@@ -17,29 +17,29 @@ namespace SiliconStudio.Xenko.UI.Panels
     public class Canvas : Panel
     {
         /// <summary>
+        /// The key to the UseAbsolutionPosition dependency property. This indicates whether to use the AbsolutePosition or the RelativePosition to place to element.
+        /// </summary>
+        [Display(category: LayoutCategory)]
+        public static readonly PropertyKey<bool> UseAbsolutionPositionPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(UseAbsolutionPositionPropertyKey), typeof(Canvas), false, InvalidateCanvasMeasure);
+
+        /// <summary>
         /// The key to the AbsolutePosition dependency property. AbsolutePosition indicates where the <see cref="UIElement"/> is pinned in the canvas.
         /// </summary>
-        [Display(category: LayoutCategory, order: 201)]
+        [Display(category: LayoutCategory)]
         public static readonly PropertyKey<Vector3> AbsolutePositionPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(AbsolutePositionPropertyKey), typeof(Canvas), Vector3.Zero, InvalidateCanvasMeasure);
 
         /// <summary>
         /// The key to the RelativePosition dependency property. RelativePosition indicates where the <see cref="UIElement"/> is pinned in the canvas.
         /// </summary>
-        [Display(category: LayoutCategory, order: 202)]
+        [Display(category: LayoutCategory)]
         public static readonly PropertyKey<Vector3> RelativePositionPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(RelativePositionPropertyKey), typeof(Canvas), Vector3.Zero, InvalidateCanvasMeasure);
 
         /// <summary>
         /// The key to the RelativeSize dependency property. RelativeSize indicates the ratio of the size of the <see cref="UIElement"/> with respect to the parent size.
         /// </summary>
         /// <remarks>Relative size must be strictly positive</remarks>
-        [Display(category: LayoutCategory, order: 203)]
+        [Display(category: LayoutCategory)]
         public static readonly PropertyKey<Vector3> RelativeSizePropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(RelativeSizePropertyKey), typeof(Canvas), new Vector3(float.NaN), CoerceRelativeSize, InvalidateCanvasMeasure);
-
-        /// <summary>
-        /// The key to the UseAbsolutionPosition dependency property. This indicates whether to use the AbsolutePosition or the RelativePosition to place to element.
-        /// </summary>
-        [Display(category: LayoutCategory, order: 200)]
-        public static readonly PropertyKey<bool> UseAbsolutionPositionPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(UseAbsolutionPositionPropertyKey), typeof(Canvas), false, InvalidateCanvasMeasure);
 
         /// <summary>
         /// The key to the PinOrigin dependency property. The PinOrigin indicate which point of the <see cref="UIElement"/> should be pinned to the canvas. 
@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// Those values are normalized between 0 and 1. (0,0,0) represent the Left/Top/Back corner and (1,1,1) represent the Right/Bottom/Front corner. 
         /// <see cref="UIElement"/>'s margins are included in the normalization. 
         /// Values beyond [0,1] are clamped.</remarks>
-        [Display(category: LayoutCategory, order: 204)]
+        [Display(category: LayoutCategory)]
         public static readonly PropertyKey<Vector3> PinOriginPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(PinOriginPropertyKey), typeof(Canvas), Vector3.Zero, CoercePinOriginValue, InvalidateCanvasMeasure);
         
         private static void CoercePinOriginValue(ref Vector3 value)
