@@ -12,6 +12,7 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
 using AttributeRegistry = SharpYaml.Serialization.AttributeRegistry;
 using IMemberDescriptor = SharpYaml.Serialization.IMemberDescriptor;
+using MemberDescriptorBase = SharpYaml.Serialization.Descriptors.MemberDescriptorBase;
 
 namespace SiliconStudio.Core.Yaml
 {
@@ -494,7 +495,7 @@ namespace SiliconStudio.Core.Yaml
                     if (leftMember != null || rightMember != null)
                     {
                         var comparison = leftMember.CompareMetadataTokenWith(rightMember);
-                        if (comparison != -1)
+                        if (comparison != 0)
                             return comparison;
                     }
 
