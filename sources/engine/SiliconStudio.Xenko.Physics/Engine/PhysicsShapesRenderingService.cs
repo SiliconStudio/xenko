@@ -54,11 +54,6 @@ namespace SiliconStudio.Xenko.Physics.Engine
                 skinnedElement.BoneWorldMatrixOut.Decompose(out scale, out rot, out pos);
                 debugEntity.Transform.Position = pos;
                 debugEntity.Transform.Rotation = rot;
-
-                if (component.CanScaleShape)
-                {
-                    component.ColliderShape.Scaling = scale;
-                }
             }
             else
             {
@@ -67,16 +62,12 @@ namespace SiliconStudio.Xenko.Physics.Engine
                 component.Entity.Transform.WorldMatrix.Decompose(out scale, out rot, out pos);
                 debugEntity.Transform.Position = pos;
                 debugEntity.Transform.Rotation = rot;
-
-                if (component.CanScaleShape)
-                {
-                    component.ColliderShape.Scaling = scale;
-                }
             }
 
             var rigidBody = component as RigidbodyComponent;
 
-            var colliderEntity = CreateChildEntity(component, component.ColliderShape, alwaysAddOffset || rigidBody == null);
+            //don't add offset for non bone dynamic and kinematic as it is added already in the updates
+            var colliderEntity = CreateChildEntity(component, component.ColliderShape, alwaysAddOffset || (skinnedElement != null && skinnedElement.BoneIndex != -1) || rigidBody == null);
             if (colliderEntity != null) debugEntity.AddChild(colliderEntity);
 
             return debugEntity;

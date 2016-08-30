@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <value>
         /// The positive center matrix.
         /// </value>
-        public Matrix PositiveCenterMatrix { get; private set; }
+        public Matrix PositiveCenterMatrix;
 
         /// <summary>
         /// Gets the negative center matrix.
@@ -81,7 +81,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <value>
         /// The negative center matrix.
         /// </value>
-        public Matrix NegativeCenterMatrix { get; private set; }
+        public Matrix NegativeCenterMatrix;
 
         protected Vector3 CachedScaling;
 

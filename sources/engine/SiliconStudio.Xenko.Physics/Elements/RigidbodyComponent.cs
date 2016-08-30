@@ -302,6 +302,8 @@ namespace SiliconStudio.Xenko.Physics
 
         protected override void OnAttach()
         {
+            SetupBoneLink();
+
             GetWorldTransformCallback = (out Matrix transform) => RigidBodyGetWorldTransform(out transform);
             SetWorldTransformCallback = transform => RigidBodySetWorldTransform(ref transform);
 
