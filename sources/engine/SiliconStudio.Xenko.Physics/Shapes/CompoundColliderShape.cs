@@ -70,7 +70,9 @@ namespace SiliconStudio.Xenko.Physics
         {
             colliderShapes.Add(shape);
 
-            InternalCompoundShape.AddChildShape(shape.PositiveCenterMatrix, shape.InternalShape);
+            var compoundMatrix = Matrix.RotationQuaternion(LocalRotation) * Matrix.Translation(LocalOffset * CachedScaling);
+
+            InternalCompoundShape.AddChildShape(compoundMatrix, shape.InternalShape);
 
             shape.Parent = this;
         }

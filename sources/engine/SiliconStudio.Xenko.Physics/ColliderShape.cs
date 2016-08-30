@@ -56,12 +56,13 @@ namespace SiliconStudio.Xenko.Physics
 
             //if we are part of a compund we should update the transformation properly
             if (Parent == null) return;
+            var compoundMatrix = Matrix.RotationQuaternion(LocalRotation) * Matrix.Translation(LocalOffset * CachedScaling);
             var childs = Parent.InternalCompoundShape.ChildList;
             for (var i = 0; i < childs.Count; i++)
             {
                 if (childs[i].ChildShape == InternalShape)
                 {
-                    Parent.InternalCompoundShape.UpdateChildTransform(i, PositiveCenterMatrix, true);
+                    Parent.InternalCompoundShape.UpdateChildTransform(i, compoundMatrix, true);
                 }
             }
         }
@@ -110,6 +111,7 @@ namespace SiliconStudio.Xenko.Physics
 
                 //If we have a debug entity apply correct scaling to it as well
                 if (DebugEntity == null) return;
+
                 var invertedScale = Matrix.Scaling(oldScale);
                 invertedScale.Invert();
                 var unscaledMatrix = DebugEntity.Transform.LocalMatrix*invertedScale;

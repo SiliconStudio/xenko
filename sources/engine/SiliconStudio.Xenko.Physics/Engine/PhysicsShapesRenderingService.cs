@@ -98,7 +98,7 @@ namespace SiliconStudio.Xenko.Physics.Engine
                         for (var i = 0; i < compound.Count; i++)
                         {
                             var subShape = compound[i];
-                            var subEntity = CreateChildEntity(component, subShape, addOffset);
+                            var subEntity = CreateChildEntity(component, subShape, true); //always add offsets to compounds
                             if (subEntity != null)
                             {
                                 entity.AddChild(subEntity);
