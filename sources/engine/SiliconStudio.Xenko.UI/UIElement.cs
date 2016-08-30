@@ -102,6 +102,469 @@ namespace SiliconStudio.Xenko.UI
         public PropertyContainer DependencyProperties;
 
         /// <summary>
+        /// Gets or sets the LocalMatrix of this element.
+        /// </summary>
+        /// <remarks>The local transform is not taken is account during the layering. The transformation is purely for rendering effects.</remarks>
+        /// <userdoc>Local matrix of this element.</userdoc>
+        [DataMember]
+        [Display(Browsable = false)]
+        public Matrix LocalMatrix
+        {
+            get { return localMatrix; }
+            set
+            {
+                localMatrix = value;
+                LocalMatrixChanged = true;
+            }
+        }
+
+        /// <summary>
+        /// The background color of the element.
+        /// </summary>
+        /// <userdoc>Color used for the background surface of this element.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        public Color BackgroundColor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the opacity factor applied to the entire UIElement when it is rendered in the user interface (UI).
+        /// </summary>
+        /// <remarks>The value is coerced in the range [0, 1].</remarks>
+        /// <userdoc>Opacity factor applied to this element when rendered in the user interface (UI).</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, 1.0f, 0.01f, 0.1f, 2)]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(1.0f)]
+        public float Opacity
+        {
+            get { return opacity; }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                opacity = MathUtil.Clamp(value, 0.0f, 1.0f);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the user interface (UI) visibility of this element.
+        /// </summary>
+        /// <userdoc>Visibility of this element.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(Visibility.Visible)]
+        public Visibility Visibility
+        {
+            get { return visibility; }
+            set
+            {
+                if (value == visibility)
+                    return;
+
+                visibility = value;
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to clip the content of this element (or content coming from the child elements of this element) 
+        /// to fit into the size of the containing element.
+        /// </summary>
+        /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
+        /// <userdoc>Indicates whether to clip the content of this element (or content coming from the child elements of this element).</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(false)]
+        public bool ClipToBounds { get; set; } = false;
+
+        /// <summary>
+        /// The number of layers used to draw this element. 
+        /// This value has to be modified by the user when he redefines the default element renderer,
+        /// so that <see cref="DepthBias"/> values of the relatives keeps enough spaces to draw the different layers.
+        /// </summary>
+        /// <userdoc>The number of layers used to draw this element.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(1)]
+        public int DrawLayerNumber { get; set; } = 1; // one layer for BackgroundColor/Clipping
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this element is enabled in the user interface (UI).
+        /// </summary>
+        /// <userdoc>True if this element is enabled, False otherwise.</userdoc>
+        [DataMember]
+        [Display(category: BehaviorCategory)]
+        [DefaultValue(true)]
+        public virtual bool IsEnabled
+        {
+            get { return isEnabled; }
+            set
+            {
+                isEnabled = value;
+
+                MouseOverState = MouseOverState.MouseOverNone;
+            }
+        }
+
+        /// <summary>
+        /// Indicate if the UIElement can be hit by the user. 
+        /// If this property is true, the UI system performs hit test on the UIElement.
+        /// </summary>
+        /// <userdoc>True if the UI system should perform hit test on this element, False otherwise.</userdoc>
+        [DataMember]
+        [Display(category: BehaviorCategory)]
+        [DefaultValue(false)]
+        public bool CanBeHitByUser { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user suggested width of this element.
+        /// </summary>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
+        /// <userdoc>Width of this element. If NaN, the default width will be used instead.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue, AllowNaN = true)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(float.NaN)]
+        public float Width
+        {
+            get { return width; }
+            set
+            {
+                width = MathUtil.Clamp(value, 0.0f, float.MaxValue);
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the user suggested height of this element.
+        /// </summary>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
+        /// <userdoc>Height of this element. If NaN, the default height will be used instead.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue, AllowNaN = true)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(float.NaN)]
+        public float Height
+        {
+            get { return height; }
+            set
+            {
+                height = MathUtil.Clamp(value, 0.0f, float.MaxValue);
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the user suggested depth of this element.
+        /// </summary>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
+        /// <userdoc>Depth of this element. If NaN, the default depth will be used instead.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue, AllowNaN = true)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(float.NaN)]
+        public float Depth
+        {
+            get { return depth; }
+            set
+            {
+                depth = MathUtil.Clamp(value, 0.0f, float.MaxValue);
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the size of the element. Same as setting separately <see cref="Width"/>, <see cref="Height"/>, and <see cref="Depth"/>
+        /// </summary>
+        [DataMemberIgnore]
+        public Vector3 Size
+        {
+            get { return new Vector3(Width, Height, Depth); }
+            set
+            {
+                Width = value.X;
+                Height = value.Y;
+                Depth = value.Z;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the horizontal alignment of this element.
+        /// </summary>
+        /// <userdoc>Horizontal alignment of this element.</userdoc>
+        [DataMember]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(HorizontalAlignment.Stretch)]
+        public HorizontalAlignment HorizontalAlignment
+        {
+            get { return horizontalAlignment; }
+            set
+            {
+                horizontalAlignment = value;
+                InvalidateArrange();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the vertical alignment of this element.
+        /// </summary>
+        /// <userdoc>Vertical alignment of this element.</userdoc>
+        [DataMember]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(VerticalAlignment.Stretch)]
+        public VerticalAlignment VerticalAlignment
+        {
+            get { return verticalAlignment; }
+            set
+            {
+                verticalAlignment = value;
+                InvalidateArrange();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the depth alignment of this element.
+        /// </summary>
+        /// <userdoc>Depth alignment of this element.</userdoc>
+        [DataMember]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(DepthAlignment.Center)]
+        public DepthAlignment DepthAlignment
+        {
+            get { return depthAlignment; }
+            set
+            {
+                depthAlignment = value;
+                InvalidateArrange();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the margins of this element.
+        /// </summary>
+        /// <userdoc>Layout margin of this element.</userdoc>
+        [DataMember]
+        [Display(category: LayoutCategory)]
+        public Thickness Margin
+        {
+            get { return MarginInternal; }
+            set
+            {
+                MarginInternal = value;
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the minimum width of this element.
+        /// </summary>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
+        /// <userdoc>Minimum width of this element.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(0.0f)]
+        public float MinimumWidth
+        {
+            get { return minimumWidth; }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                minimumWidth = MathUtil.Clamp(value, 0.0f, float.MaxValue);
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the minimum height of this element.
+        /// </summary>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
+        /// <userdoc>Minimum height of this element.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(0.0f)]
+        public float MinimumHeight
+        {
+            get { return minimumHeight; }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                minimumHeight = MathUtil.Clamp(value, 0.0f, float.MaxValue);
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the minimum height of this element.
+        /// </summary>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
+        /// <userdoc>Minimum depth of this element.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(0.0f)]
+        public float MinimumDepth
+        {
+            get { return minimumDepth; }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                minimumDepth = MathUtil.Clamp(value, 0.0f, float.MaxValue);
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum width of this element.
+        /// </summary>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.PositiveInfinity"/>].</remarks>
+        /// <userdoc>Maximum width of this element.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.PositiveInfinity)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(float.PositiveInfinity)]
+        public float MaximumWidth
+        {
+            get { return maximumWidth; }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                maximumWidth = MathUtil.Clamp(value, 0.0f, float.PositiveInfinity);
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum height of this element.
+        /// </summary>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.PositiveInfinity"/>].</remarks>
+        /// <userdoc>Maximum height of this element.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.PositiveInfinity)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(float.PositiveInfinity)]
+        public float MaximumHeight
+        {
+            get { return maximumHeight; }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                maximumHeight = MathUtil.Clamp(value, 0.0f, float.PositiveInfinity);
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the maximum height of this element.
+        /// </summary>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.PositiveInfinity"/>].</remarks>
+        /// <userdoc>Maximum depth of this element.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.PositiveInfinity)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(float.PositiveInfinity)]
+        public float MaximumDepth
+        {
+            get { return maximumDepth; }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                maximumDepth = MathUtil.Clamp(value, 0.0f, float.PositiveInfinity);
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the default width of this element.
+        /// </summary>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
+        /// <userdoc>Default width of this element.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(0.0f)]
+        public float DefaultWidth
+        {
+            get { return defaultWidth; }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                defaultWidth = MathUtil.Clamp(value, 0.0f, float.MaxValue);
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the default height of this element.
+        /// </summary>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
+        /// <userdoc>Default height of this element.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(0.0f)]
+        public float DefaultHeight
+        {
+            get { return defaultHeight; }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                defaultHeight = MathUtil.Clamp(value, 0.0f, float.MaxValue); ;
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the default width of this element.
+        /// </summary>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
+        /// <userdoc>Default depth of this element.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(0.0f)]
+        public float DefaultDepth
+        {
+            get { return defaultDepth; }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                defaultDepth = MathUtil.Clamp(value, 0.0f, float.MaxValue);
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the name of this element.
+        /// </summary>
+        /// <userdoc>Name of this element.</userdoc>
+        [DataMember]
+        [Display(category: MiscCategory)]
+        [DefaultValue(null)]
+        public string Name
+        {
+            get { return name; }
+            set
+            {
+                if (name == value)
+                    return;
+
+                name = value;
+                OnNameChanged();
+            }
+        }
+
+        /// <summary>
         /// Gets the size that this element computed during the measure pass of the layout process.
         /// </summary>
         /// <remarks>This value does not contain possible <see cref="Margin"/></remarks>
@@ -148,17 +611,6 @@ namespace SiliconStudio.Xenko.UI
         /// The maximum depth bias value among the children of the element resulting from the parent/children z order update.
         /// </summary>
         internal int MaxChildrenDepthBias { get; private set; }
-
-        /// <summary>
-        /// The number of layers used to draw this element. 
-        /// This value has to be modified by the user when he redefines the default element renderer,
-        /// so that <see cref="DepthBias"/> values of the relatives keeps enough spaces to draw the different layers.
-        /// </summary>
-        /// <userdoc>The number of layers used to draw this element.</userdoc>
-        [DataMember]
-        [Display(category: AppearanceCategory, order: 4)]
-        [DefaultValue(1)]
-        public int DrawLayerNumber { get; set; } = 1; // one layer for BackgroundColor/Clipping
 
         internal bool ForceNextMeasure = true;
         internal bool ForceNextArrange = true;
@@ -351,34 +803,6 @@ namespace SiliconStudio.Xenko.UI
         }
 
         /// <summary>
-        /// Indicate if the UIElement can be hit by the user. 
-        /// If this property is true, the UI system performs hit test on the UIElement.
-        /// </summary>
-        /// <userdoc>True if the UI system should perform hit test on this element, False otherwise.</userdoc>
-        [DataMember]
-        [Display(category: BehaviorCategory, order: 2)]
-        [DefaultValue(false)]
-        public bool CanBeHitByUser { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether this element is enabled in the user interface (UI).
-        /// </summary>
-        /// <userdoc>True if this element is enabled, False otherwise.</userdoc>
-        [DataMember]
-        [Display(category: BehaviorCategory, order: 1)]
-        [DefaultValue(true)]
-        public virtual bool IsEnabled
-        {
-            get { return isEnabled; }
-            set
-            {
-                isEnabled = value;
-
-                MouseOverState = MouseOverState.MouseOverNone;
-            }
-        }
-
-        /// <summary>
         /// Gets the value indicating whether this element and all its upper hierarchy are enabled or not.
         /// </summary>
         public bool IsHierarchyEnabled => isHierarchyEnabled;
@@ -394,181 +818,6 @@ namespace SiliconStudio.Xenko.UI
         public bool IsCollapsed => Visibility == Visibility.Collapsed;
 
         /// <summary>
-        /// Gets or sets the opacity factor applied to the entire UIElement when it is rendered in the user interface (UI).
-        /// </summary>
-        /// <remarks>The value is coerced in the range [0, 1].</remarks>
-        /// <userdoc>Opacity factor applied to this element when rendered in the user interface (UI).</userdoc>
-        [DataMember]
-        [DataMemberRange(0.0f, 1.0f, 0.01f, 0.1f, 2)]
-        [Display(category: AppearanceCategory, order: 1)]
-        [DefaultValue(1.0f)]
-        public float Opacity
-        {
-            get { return opacity; }
-            set
-            {
-                if (float.IsNaN(value))
-                    return;
-                opacity = MathUtil.Clamp(value, 0.0f, 1.0f);
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the user interface (UI) visibility of this element.
-        /// </summary>
-        /// <userdoc>Visibility of this element.</userdoc>
-        [DataMember]
-        [Display(category: AppearanceCategory, order: 2)]
-        [DefaultValue(Visibility.Visible)]
-        public Visibility Visibility
-        {
-            get { return visibility; }
-            set
-            {
-                if(value == visibility)
-                    return; 
-
-                visibility = value;
-                InvalidateMeasure();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the default height of this element.
-        /// </summary>
-        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
-        /// <userdoc>Default height of this element.</userdoc>
-        [DataMember]
-        [DataMemberRange(0.0f, float.MaxValue)]
-        [Display(category: LayoutCategory, order: 14)]
-        [DefaultValue(0.0f)]
-        public float DefaultHeight
-        {
-            get { return defaultHeight; }
-            set
-            {
-                if (float.IsNaN(value))
-                    return;
-                defaultHeight = MathUtil.Clamp(value, 0.0f, float.MaxValue); ;
-                InvalidateMeasure();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the default width of this element.
-        /// </summary>
-        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
-        /// <userdoc>Default width of this element.</userdoc>
-        [DataMember]
-        [DataMemberRange(0.0f, float.MaxValue)]
-        [Display(category: LayoutCategory, order: 13)]
-        [DefaultValue(0.0f)]
-        public float DefaultWidth
-        {
-            get { return defaultWidth; }
-            set
-            {
-                if (float.IsNaN(value))
-                    return;
-                defaultWidth = MathUtil.Clamp(value, 0.0f, float.MaxValue);
-                InvalidateMeasure();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the default width of this element.
-        /// </summary>
-        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
-        /// <userdoc>Default depth of this element.</userdoc>
-        [DataMember]
-        [DataMemberRange(0.0f, float.MaxValue)]
-        [Display(category: LayoutCategory, order: 15)]
-        [DefaultValue(0.0f)]
-        public float DefaultDepth
-        {
-            get { return defaultDepth; }
-            set
-            {
-                if (float.IsNaN(value))
-                    return;
-                defaultDepth = MathUtil.Clamp(value, 0.0f, float.MaxValue);
-                InvalidateMeasure();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the user suggested height of this element.
-        /// </summary>
-        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
-        /// <userdoc>Height of this element. If NaN, the default height will be used instead.</userdoc>
-        [DataMember]
-        [DataMemberRange(0.0f, float.MaxValue, AllowNaN = true)]
-        [Display(category: LayoutCategory, order: 1)]
-        [DefaultValue(float.NaN)]
-        public float Height
-        {
-            get { return height; }
-            set
-            {
-                height = MathUtil.Clamp(value, 0.0f, float.MaxValue);
-                InvalidateMeasure();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the user suggested width of this element.
-        /// </summary>
-        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
-        /// <userdoc>Width of this element. If NaN, the default width will be used instead.</userdoc>
-        [DataMember]
-        [DataMemberRange(0.0f, float.MaxValue, AllowNaN = true)]
-        [Display(category: LayoutCategory, order: 0)]
-        [DefaultValue(float.NaN)]
-        public float Width
-        {
-            get { return width; }
-            set
-            {
-                width = MathUtil.Clamp(value, 0.0f, float.MaxValue);
-                InvalidateMeasure();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the user suggested depth of this element.
-        /// </summary>
-        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
-        /// <userdoc>Depth of this element. If NaN, the default depth will be used instead.</userdoc>
-        [DataMember]
-        [DataMemberRange(0.0f, float.MaxValue, AllowNaN = true)]
-        [Display(category: LayoutCategory, order: 2)]
-        [DefaultValue(float.NaN)]
-        public float Depth
-        {
-            get { return depth; }
-            set
-            {
-                depth = MathUtil.Clamp(value, 0.0f, float.MaxValue);
-                InvalidateMeasure();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the size of the element. Same as setting separately <see cref="Width"/>, <see cref="Height"/>, and <see cref="Depth"/>
-        /// </summary>
-        [DataMemberIgnore]
-        public Vector3 Size
-        {
-            get { return new Vector3(Width, Height, Depth); }
-            set
-            {
-                Width = value.X;
-                Height = value.Y;
-                Depth = value.Z;
-            }
-        }
-
-        /// <summary>
         /// Set one component of the size of the element.
         /// </summary>
         /// <param name="dimensionIndex">Index indicating which component to set</param>
@@ -581,214 +830,6 @@ namespace SiliconStudio.Xenko.UI
                 Height = value;
             else
                 Depth = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the minimum height of this element.
-        /// </summary>
-        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
-        /// <userdoc>Minimum height of this element.</userdoc>
-        [DataMember]
-        [DataMemberRange(0.0f, float.MaxValue)]
-        [Display(category: LayoutCategory, order: 8)]
-        [DefaultValue(0.0f)]
-        public float MinimumHeight
-        {
-            get { return minimumHeight; }
-            set
-            {
-                if (float.IsNaN(value))
-                    return;
-                minimumHeight = MathUtil.Clamp(value, 0.0f, float.MaxValue);
-                InvalidateMeasure();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the minimum width of this element.
-        /// </summary>
-        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
-        /// <userdoc>Minimum width of this element.</userdoc>
-        [DataMember]
-        [DataMemberRange(0.0f, float.MaxValue)]
-        [Display(category: LayoutCategory, order: 7)]
-        [DefaultValue(0.0f)]
-        public float MinimumWidth
-        {
-            get { return minimumWidth; }
-            set
-            {
-                if (float.IsNaN(value))
-                    return;
-                minimumWidth = MathUtil.Clamp(value, 0.0f, float.MaxValue);
-                InvalidateMeasure();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the minimum height of this element.
-        /// </summary>
-        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
-        /// <userdoc>Minimum depth of this element.</userdoc>
-        [DataMember]
-        [DataMemberRange(0.0f, float.MaxValue)]
-        [Display(category: LayoutCategory, order: 9)]
-        [DefaultValue(0.0f)]
-        public float MinimumDepth
-        {
-            get { return minimumDepth; }
-            set
-            {
-                if (float.IsNaN(value))
-                    return;
-                minimumDepth = MathUtil.Clamp(value, 0.0f, float.MaxValue);
-                InvalidateMeasure();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether to clip the content of this element (or content coming from the child elements of this element) 
-        /// to fit into the size of the containing element.
-        /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value has to be positive and finite.</exception>
-        /// <userdoc>Indicates whether to clip the content of this element (or content coming from the child elements of this element).</userdoc>
-        [DataMember]
-        [Display(category: AppearanceCategory, order: 3)]
-        [DefaultValue(false)]
-        public bool ClipToBounds { get; set; } = false;
-
-        /// <summary>
-        /// Gets or sets the maximum height of this element.
-        /// </summary>
-        /// <remarks>The value is coerced in the range [0, <see cref="float.PositiveInfinity"/>].</remarks>
-        /// <userdoc>Maximum height of this element.</userdoc>
-        [DataMember]
-        [DataMemberRange(0.0f, float.PositiveInfinity)]
-        [Display(category: LayoutCategory, order: 11)]
-        [DefaultValue(float.PositiveInfinity)]
-        public float MaximumHeight
-        {
-            get { return maximumHeight; }
-            set
-            {
-                if (float.IsNaN(value))
-                    return;
-                maximumHeight = MathUtil.Clamp(value, 0.0f, float.PositiveInfinity);
-                InvalidateMeasure();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the maximum width of this element.
-        /// </summary>
-        /// <remarks>The value is coerced in the range [0, <see cref="float.PositiveInfinity"/>].</remarks>
-        /// <userdoc>Maximum width of this element.</userdoc>
-        [DataMember]
-        [DataMemberRange(0.0f, float.PositiveInfinity)]
-        [Display(category: LayoutCategory, order: 10)]
-        [DefaultValue(float.PositiveInfinity)]
-        public float MaximumWidth
-        {
-            get { return maximumWidth; }
-            set
-            {
-                if (float.IsNaN(value))
-                    return;
-                maximumWidth = MathUtil.Clamp(value, 0.0f, float.PositiveInfinity);
-                InvalidateMeasure();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the maximum height of this element.
-        /// </summary>
-        /// <remarks>The value is coerced in the range [0, <see cref="float.PositiveInfinity"/>].</remarks>
-        /// <userdoc>Maximum depth of this element.</userdoc>
-        [DataMember]
-        [DataMemberRange(0.0f, float.PositiveInfinity)]
-        [Display(category: LayoutCategory, order: 12)]
-        [DefaultValue(float.PositiveInfinity)]
-        public float MaximumDepth
-        {
-            get { return maximumDepth; }
-            set
-            {
-                if (float.IsNaN(value))
-                    return;
-                maximumDepth = MathUtil.Clamp(value, 0.0f, float.PositiveInfinity);
-                InvalidateMeasure();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the horizontal alignment of this element.
-        /// </summary>
-        /// <userdoc>Horizontal alignment of this element.</userdoc>
-        [DataMember]
-        [Display(category: LayoutCategory, order: 3)]
-        [DefaultValue(HorizontalAlignment.Stretch)]
-        public HorizontalAlignment HorizontalAlignment
-        {
-            get { return horizontalAlignment; }
-            set
-            {
-                horizontalAlignment = value;
-                InvalidateArrange();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the vertical alignment of this element.
-        /// </summary>
-        /// <userdoc>Vertical alignment of this element.</userdoc>
-        [DataMember]
-        [Display(category: LayoutCategory, order: 4)]
-        [DefaultValue(VerticalAlignment.Stretch)]
-        public VerticalAlignment VerticalAlignment
-        {
-            get { return verticalAlignment; }
-            set
-            {
-                verticalAlignment = value;
-                InvalidateArrange();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the depth alignment of this element.
-        /// </summary>
-        /// <userdoc>Depth alignment of this element.</userdoc>
-        [DataMember]
-        [Display(category: LayoutCategory, order: 5)]
-        [DefaultValue(DepthAlignment.Center)]
-        public DepthAlignment DepthAlignment
-        {
-            get { return depthAlignment; }
-            set
-            {
-                depthAlignment = value;
-                InvalidateArrange();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the name of this element.
-        /// </summary>
-        /// <userdoc>Name of this element.</userdoc>
-        [DataMember]
-        [Display(category: MiscCategory)]
-        [DefaultValue(null)]
-        public string Name
-        {
-            get { return name; }
-            set
-            {
-                if (name == value)
-                    return;
-
-                name = value;
-                OnNameChanged();
-            }
         }
 
         /// <summary>
@@ -814,39 +855,6 @@ namespace SiliconStudio.Xenko.UI
         /// The list of the children of the element that can be hit by the user.
         /// </summary>
         protected internal virtual FastCollection<UIElement> HitableChildren => VisualChildrenCollection;
-
-        /// <summary>
-        /// Gets or sets the margins of this element.
-        /// </summary>
-        /// <userdoc>Layout margin of this element.</userdoc>
-        [DataMember]
-        [Display(category: LayoutCategory, order: 6)]
-        public Thickness Margin
-        {
-            get { return MarginInternal; }
-            set 
-            { 
-                MarginInternal = value; 
-                InvalidateMeasure();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the LocalMatrix of this element.
-        /// </summary>
-        /// <remarks>The local transform is not taken is account during the layering. The transformation is purely for rendering effects.</remarks>
-        /// <userdoc>Local matrix of this element.</userdoc>
-        [DataMember]
-        [Display(Browsable = false)]
-        public Matrix LocalMatrix
-        {
-            get { return localMatrix; }
-            set
-            {
-                localMatrix = value;
-                LocalMatrixChanged = true;
-            }
-        }
 
         /// <summary>
         /// The opacity used to render element. 
@@ -884,14 +892,6 @@ namespace SiliconStudio.Xenko.UI
         /// Gets the rendered depth of this element.
         /// </summary>
         public float ActualDepth => RenderSize.Z;
-
-        /// <summary>
-        /// The background color of the element.
-        /// </summary>
-        /// <userdoc>Color used for the background surface of this element.</userdoc>
-        [DataMember]
-        [Display(category: AppearanceCategory, order: 0)]
-        public Color BackgroundColor { get; set; }
 
         /// <inheritdoc/>
         IEnumerable<IUIElementChildren> IUIElementChildren.Children => EnumerateChildren();

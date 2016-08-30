@@ -51,60 +51,30 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the image to display as Track background.
+        /// Gets or sets the current value of the slider.
         /// </summary>
-        /// <userdoc>The image to display as Track background.</userdoc>
+        /// <remarks>The value is coerced in the range [<see cref="Minimum"/>, <see cref="Maximum"/>].</remarks>
+        /// <userdoc>The current value of the slider.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory, order: 100)]
-        [DefaultValue(null)]
-        public ISpriteProvider TrackBackgroundImage
+        [DataMemberRange(float.MinValue, float.MaxValue)]
+        [DefaultValue(0.0f)]
+        public float Value
         {
-            get { return trackBackgroundImageSource; }
+            get { return value; }
             set
             {
-                if (trackBackgroundImageSource == value)
+                if (float.IsNaN(value))
                     return;
+                var oldValue = Value;
 
-                trackBackgroundImageSource = value;
-                OnTrackBackgroundSpriteChanged(trackBackgroundImageSource?.GetSprite());
+                this.value = MathUtil.Clamp(value, Minimum, Maximum);
+                if (ShouldSnapToTicks)
+                    this.value = CalculateClosestTick(this.value);
+
+                if (Math.Abs(oldValue - this.value) > MathUtil.ZeroTolerance)
+                    RaiseEvent(new RoutedEventArgs(ValueChangedEvent));
             }
         }
-
-        /// <summary>
-        /// Gets or sets the image to display as Track foreground.
-        /// </summary>
-        /// <userdoc>The image to display as Track foreground.</userdoc>
-        [DataMember]
-        [Display(category: AppearanceCategory, order: 101)]
-        [DefaultValue(null)]
-        public ISpriteProvider TrackForegroundImage { get; set; }
-
-        /// <summary>
-        /// Gets or sets the image to display as slider thumb (button).
-        /// </summary>
-        /// <userdoc>The image to display as slider thumb (button).</userdoc>
-        [DataMember]
-        [Display(category: AppearanceCategory, order: 103)]
-        [DefaultValue(null)]
-        public ISpriteProvider ThumbImage { get; set; }
-
-        /// <summary>
-        /// Gets or sets the image to display as slider thumb (button) when the mouse is over the slider.
-        /// </summary>
-        /// <userdoc>The image to display as slider thumb (button) when the mouse is over the slider.</userdoc>
-        [DataMember]
-        [Display(category: AppearanceCategory, order: 104)]
-        [DefaultValue(null)]
-        public ISpriteProvider MouseOverThumbImage { get; set; }
-
-        /// <summary>
-        /// Gets or sets the image to display as tick.
-        /// </summary>
-        /// <userdoc>The image to display as tick.</userdoc>
-        [DataMember]
-        [Display(category: AppearanceCategory, order: 105)]
-        [DefaultValue(null)]
-        public ISpriteProvider TickImage { get; set; }
 
         /// <summary>
         /// Gets or sets the smallest possible value of the slider.
@@ -113,7 +83,6 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <userdoc>The smallest possible value of the slider.</userdoc>
         [DataMember]
         [DataMemberRange(float.MinValue, float.MaxValue)]
-        [Display(order: 101)]
         [DefaultValue(0.0f)]
         public float Minimum
         {
@@ -134,7 +103,6 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <userdoc>The greatest possible value of the slider.</userdoc>
         [DataMember]
         [DataMemberRange(float.MinValue, float.MaxValue)]
-        [Display(order: 102)]
         [DefaultValue(1.0f)]
         public float Maximum
         {
@@ -154,7 +122,6 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <userdoc>The step of a change of the value.</userdoc>
         [DataMember]
         [DataMemberRange(0, float.MaxValue)]
-        [Display(order: 103)]
         [DefaultValue(0.1f)]
         public float Step
         {
@@ -168,31 +135,77 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the current value of the slider.
+        /// Gets or sets the image to display as Track background.
         /// </summary>
-        /// <remarks>The value is coerced in the range [<see cref="Minimum"/>, <see cref="Maximum"/>].</remarks>
-        /// <userdoc>The current value of the slider.</userdoc>
+        /// <userdoc>The image to display as Track background.</userdoc>
         [DataMember]
-        [DataMemberRange(float.MinValue, float.MaxValue)]
-        [Display(order: 100)]
-        [DefaultValue(0.0f)]
-        public float Value
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(null)]
+        public ISpriteProvider TrackBackgroundImage
         {
-            get { return value; }
+            get { return trackBackgroundImageSource; }
             set
             {
-                if (float.IsNaN(value))
+                if (trackBackgroundImageSource == value)
                     return;
-                var oldValue = Value;
 
-                this.value = MathUtil.Clamp(value, Minimum, Maximum);
-                if(ShouldSnapToTicks)
-                    this.value = CalculateClosestTick(this.value);
-
-                if(Math.Abs(oldValue - this.value) > MathUtil.ZeroTolerance)
-                    RaiseEvent(new RoutedEventArgs(ValueChangedEvent));
+                trackBackgroundImageSource = value;
+                OnTrackBackgroundSpriteChanged(trackBackgroundImageSource?.GetSprite());
             }
         }
+
+        /// <summary>
+        /// Gets or sets the image to display as Track foreground.
+        /// </summary>
+        /// <userdoc>The image to display as Track foreground.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(null)]
+        public ISpriteProvider TrackForegroundImage { get; set; }
+
+        /// <summary>
+        /// Gets or sets the left/right offsets specifying where the track region starts. 
+        /// </summary>
+        /// <userdoc>The left/right offsets specifying where the track region starts. </userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        public Vector2 TrackStartingOffsets { get; set; }
+
+        /// <summary>
+        /// Gets or sets the image to display as slider thumb (button).
+        /// </summary>
+        /// <userdoc>The image to display as slider thumb (button).</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(null)]
+        public ISpriteProvider ThumbImage { get; set; }
+
+        /// <summary>
+        /// Gets or sets the image to display as slider thumb (button) when the mouse is over the slider.
+        /// </summary>
+        /// <userdoc>The image to display as slider thumb (button) when the mouse is over the slider.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(null)]
+        public ISpriteProvider MouseOverThumbImage { get; set; }
+
+        /// <summary>
+        /// Gets or sets the image to display as tick.
+        /// </summary>
+        /// <userdoc>The image to display as tick.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(null)]
+        public ISpriteProvider TickImage { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value indicating if the ticks should be displayed or not.
+        /// </summary>
+        /// <userdoc>True if the ticks should be displayed, false otherwise.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(false)]
+        public bool AreTicksDisplayed { get; set; } = false;
 
         /// <summary>
         /// Gets or sets the frequency of the ticks on the slider track.
@@ -201,7 +214,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <userdoc>The frequency of the ticks on the slider track.</userdoc>
         [DataMember]
         [DataMemberRange(1, float.MaxValue)]
-        [Display(category: AppearanceCategory, order: 107)]
+        [Display(category: AppearanceCategory)]
         [DefaultValue(10.0f)]
         public float TickFrequency
         {
@@ -222,7 +235,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <userdoc>The offset in virtual pixels between the center of the track and center of the ticks (for an not-stretched slider).</userdoc>
         [DataMember]
         [DataMemberRange(0, float.MaxValue)]
-        [Display(category: AppearanceCategory, order: 108)]
+        [Display(category: AppearanceCategory)]
         [DefaultValue(10.0f)]
         public float TickOffset
         {
@@ -236,37 +249,11 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the left/right offsets specifying where the track region starts. 
-        /// </summary>
-        /// <userdoc>The left/right offsets specifying where the track region starts. </userdoc>
-        [DataMember]
-        [Display(category: AppearanceCategory, order: 102)]
-        public Vector2 TrackStartingOffsets { get; set; }
-
-        /// <summary>
-        /// Gets or sets the value indicating if the default direction of the slider should reversed or not.
-        /// </summary>
-        /// <userdoc>True if the default direction of the slider should reversed, false otherwise.</userdoc>
-        [DataMember]
-        [Display(category: BehaviorCategory, order: 101)]
-        [DefaultValue(false)]
-        public bool IsDirectionReversed { get; set; } = false;
-
-        /// <summary>
-        /// Gets or sets the value indicating if the ticks should be displayed or not.
-        /// </summary>
-        /// <userdoc>True if the ticks should be displayed, false otherwise.</userdoc>
-        [DataMember]
-        [Display(category: AppearanceCategory, order: 106)]
-        [DefaultValue(false)]
-        public bool AreTicksDisplayed { get; set; } = false;
-
-        /// <summary>
         /// Gets or sets the value indicating if the slider <see cref="Value"/> should be snapped to the ticks or not.
         /// </summary>
         /// <userdoc>True if the slider valuye should be snapped to the ticks, false otherwise.</userdoc>
         [DataMember]
-        [Display(category: BehaviorCategory, order: 100)]
+        [Display(category: BehaviorCategory)]
         [DefaultValue(false)]
         public bool ShouldSnapToTicks
         {
@@ -279,11 +266,20 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
+        /// Gets or sets the value indicating if the default direction of the slider should reversed or not.
+        /// </summary>
+        /// <userdoc>True if the default direction of the slider should reversed, false otherwise.</userdoc>
+        [DataMember]
+        [Display(category: BehaviorCategory)]
+        [DefaultValue(false)]
+        public bool IsDirectionReversed { get; set; } = false;
+
+        /// <summary>
         /// Gets or sets the orientation of the slider.
         /// </summary>
         /// <userdoc>The orientation of the slider.</userdoc>
         [DataMember]
-        [Display(category: LayoutCategory, order: 100)]
+        [Display(category: LayoutCategory)]
         [DefaultValue(Orientation.Horizontal)]
         public Orientation Orientation
         {

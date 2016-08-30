@@ -1,5 +1,6 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -22,28 +23,9 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// </summary>
         private Vector3 finalForOneCell;
 
-        private int columns = 1;
         private int rows = 1;
+        private int columns = 1;
         private int layers = 1;
-
-        /// <summary>
-        /// Gets or sets the number of columns that the <see cref="UniformGrid"/> has.
-        /// </summary>
-        /// <remarks>The value is coerced in the range [1, <see cref="int.MaxValue"/>].</remarks>
-        /// <userdoc>The number of columns.</userdoc>
-        [DataMember]
-        [DataMemberRange(1, int.MaxValue)]
-        [Display(category: LayoutCategory, order: 301)]
-        [DefaultValue(1)]
-        public int Columns
-        {
-            get { return columns; }
-            set
-            {
-                columns = MathUtil.Clamp(value, 1, int.MaxValue);
-                InvalidateMeasure();
-            }
-        }
 
         /// <summary>
         /// Gets or sets the number of rows that the <see cref="UniformGrid"/> has.
@@ -52,7 +34,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <userdoc>The number of rows.</userdoc>
         [DataMember]
         [DataMemberRange(1, int.MaxValue)]
-        [Display(category: LayoutCategory, order: 300)]
+        [Display(category: LayoutCategory)]
         [DefaultValue(1)]
         public int Rows
         {
@@ -65,13 +47,32 @@ namespace SiliconStudio.Xenko.UI.Panels
         }
 
         /// <summary>
+        /// Gets or sets the number of columns that the <see cref="UniformGrid"/> has.
+        /// </summary>
+        /// <remarks>The value is coerced in the range [1, <see cref="int.MaxValue"/>].</remarks>
+        /// <userdoc>The number of columns.</userdoc>
+        [DataMember]
+        [DataMemberRange(1, int.MaxValue)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(1)]
+        public int Columns
+        {
+            get { return columns; }
+            set
+            {
+                columns = MathUtil.Clamp(value, 1, int.MaxValue);
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the number of layers that the <see cref="UniformGrid"/> has.
         /// </summary>
         /// <remarks>The value is coerced in the range [1, <see cref="int.MaxValue"/>].</remarks>
         /// <userdoc>The number of layers.</userdoc>
         [DataMember]
         [DataMemberRange(1, int.MaxValue)]
-        [Display(category: LayoutCategory, order: 302)]
+        [Display(category: LayoutCategory)]
         [DefaultValue(1)]
         public int Layers
         {

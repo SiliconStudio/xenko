@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The image displayed when the button is checked.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory, order: 400)]
+        [Display(category: AppearanceCategory)]
         [DefaultValue(null)]
         public ISpriteProvider CheckedImage
         {
@@ -59,31 +59,11 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the image displayed when the button state is undeterminate.
-        /// </summary>
-        /// <userdoc>The image displayed when the button state is undeterminate.</userdoc>
-        [DataMember]
-        [Display(category: AppearanceCategory, order: 402)]
-        [DefaultValue(null)]
-        public ISpriteProvider IndeterminateImage
-        {
-            get { return indeterminateImage; }
-            set
-            {
-                if (checkedImage == value)
-                    return;
-
-                indeterminateImage = value;
-                OnToggleImageInvalidated();
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the image displayed when the button is unchecked.
         /// </summary>
         /// <userdoc>The image displayed when the button is unchecked.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory, order: 401)]
+        [Display(category: AppearanceCategory)]
         [DefaultValue(null)]
         public ISpriteProvider UncheckedImage
         {
@@ -99,12 +79,52 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
+        /// Gets or sets the image displayed when the button state is undeterminate.
+        /// </summary>
+        /// <userdoc>The image displayed when the button state is undeterminate.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(null)]
+        public ISpriteProvider IndeterminateImage
+        {
+            get { return indeterminateImage; }
+            set
+            {
+                if (checkedImage == value)
+                    return;
+
+                indeterminateImage = value;
+                OnToggleImageInvalidated();
+            }
+        }
+
+        /// <summary>
+        /// Determines whether the control supports two or three states.
+        /// </summary>
+        /// <remarks>Setting <see cref="IsThreeState"/> to false changes the <see cref="State"/> of the toggle button if currently set to <see cref="ToggleState.Indeterminate"/></remarks>
+        /// <userdoc>True if the control support three states, false otherwise.</userdoc>
+        [DataMember]
+        [Display(category: BehaviorCategory)]
+        [DefaultValue(false)]
+        public bool IsThreeState
+        {
+            get { return isThreeState; }
+            set
+            {
+                if(value == false && State == ToggleState.Indeterminate)
+                    GoToNextState();
+
+                isThreeState = value;
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the state of the <see cref="ToggleButton"/>
         /// </summary>
         /// <remarks>Setting the state of the toggle button to <see cref="ToggleState.Indeterminate"/> sets <see cref="IsThreeState"/> to true.</remarks>
         /// <userdoc>The state of the button.</userdoc>
         [DataMember]
-        [Display(category: BehaviorCategory, order: 401)]
+        [Display(category: BehaviorCategory)]
         [DefaultValue(ToggleState.UnChecked)]
         public ToggleState State
         {
@@ -131,26 +151,6 @@ namespace SiliconStudio.Xenko.UI.Controls
                     default:
                         throw new ArgumentOutOfRangeException(nameof(value));
                 }
-            }
-        }
-
-        /// <summary>
-        /// Determines whether the control supports two or three states.
-        /// </summary>
-        /// <remarks>Setting <see cref="IsThreeState"/> to false changes the <see cref="State"/> of the toggle button if currently set to <see cref="ToggleState.Indeterminate"/></remarks>
-        /// <userdoc>True if the control support three states, false otherwise.</userdoc>
-        [DataMember]
-        [Display(category: BehaviorCategory, order: 400)]
-        [DefaultValue(false)]
-        public bool IsThreeState
-        {
-            get { return isThreeState; }
-            set
-            {
-                if(value == false && State == ToggleState.Indeterminate)
-                    GoToNextState();
-
-                isThreeState = value;
             }
         }
 

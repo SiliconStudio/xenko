@@ -24,45 +24,11 @@ namespace SiliconStudio.Xenko.UI.Controls
         private StretchDirection stretchDirection = StretchDirection.Both;
 
         /// <summary>
-        /// Gets or sets a value that describes how the image should be stretched to fill the destination rectangle.
-        /// </summary>
-        /// <userdoc>Indicates how the image should be stretched to fill the destination rectangle.</userdoc>
-        [DataMember]
-        [Display(category: LayoutCategory, order: 100)]
-        [DefaultValue(StretchType.Uniform)]
-        public StretchType StretchType
-        {
-            get { return stretchType; }
-            set
-            {
-                stretchType = value;
-                InvalidateMeasure();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets a value that indicates how the image is scaled.
-        /// </summary>
-        /// <userdoc>Indicates how the image is scaled.</userdoc>
-        [DataMember]
-        [Display(category: LayoutCategory, order: 101)]
-        [DefaultValue(StretchDirection.Both)]
-        public StretchDirection StretchDirection
-        {
-            get { return stretchDirection; }
-            set
-            {
-                stretchDirection = value;
-                InvalidateMeasure();
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the <see cref="ISpriteProvider"/> for the image.
         /// </summary>
         /// <userdoc>The provider for the image.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory, order: 100)]
+        [Display(category: AppearanceCategory)]
         [DefaultValue(null)]
         public ISpriteProvider Source
         {
@@ -83,8 +49,42 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <remarks>The initial image color is multiplied by this color.</remarks>
         /// <userdoc>The color used to tint the image. The default value is white.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory, order: 101)]
+        [Display(category: AppearanceCategory)]
         public Color Color { get; set; } = Color.White;
+
+        /// <summary>
+        /// Gets or sets a value that describes how the image should be stretched to fill the destination rectangle.
+        /// </summary>
+        /// <userdoc>Indicates how the image should be stretched to fill the destination rectangle.</userdoc>
+        [DataMember]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(StretchType.Uniform)]
+        public StretchType StretchType
+        {
+            get { return stretchType; }
+            set
+            {
+                stretchType = value;
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value that indicates how the image is scaled.
+        /// </summary>
+        /// <userdoc>Indicates how the image is scaled.</userdoc>
+        [DataMember]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(StretchDirection.Both)]
+        public StretchDirection StretchDirection
+        {
+            get { return stretchDirection; }
+            set
+            {
+                stretchDirection = value;
+                InvalidateMeasure();
+            }
+        }
 
         protected override Vector3 ArrangeOverride(Vector3 finalSizeWithoutMargins)
         {

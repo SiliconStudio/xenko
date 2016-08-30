@@ -48,47 +48,11 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets a value that describes how the button image should be stretched to fill the destination rectangle.
-        /// </summary>
-        /// <remarks>This property has no effect is <see cref="SizeToContent"/> is <c>true</c>.</remarks>
-        /// <userdoc>Describes how the button image should be stretched to fill the destination rectangle.</userdoc>
-        [DataMember]
-        [Display(category: LayoutCategory, order: 400)]
-        [DefaultValue(StretchType.Uniform)]
-        public StretchType ImageStretchType
-        {
-            get { return imageStretchType; }
-            set
-            {
-                imageStretchType = value;
-                InvalidateMeasure();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets a value that indicates how the button image is scaled.
-        /// </summary>
-        /// <remarks>This property has no effect is <see cref="SizeToContent"/> is <c>true</c>.</remarks>
-        /// <userdoc>Indicates how the button image is scaled.</userdoc>
-        [DataMember]
-        [Display(category: LayoutCategory, order: 401)]
-        [DefaultValue(StretchDirection.Both)]
-        public StretchDirection ImageStretchDirection
-        {
-            get { return imageStretchDirection; }
-            set
-            {
-                imageStretchDirection = value;
-                InvalidateMeasure();
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the image displayed when the button is pressed.
         /// </summary>
         /// <userdoc>Image displayed when the button is pressed.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory, order: 400)]
+        [Display(category: AppearanceCategory)]
         [DefaultValue(null)]
         public ISpriteProvider PressedImage
         {
@@ -108,7 +72,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>Image displayed when the button is not pressed.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory, order: 401)]
+        [Display(category: AppearanceCategory)]
         [DefaultValue(null)]
         public ISpriteProvider NotPressedImage
         {
@@ -128,7 +92,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>Image displayed when the mouse hovers over the button.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory, order: 402)]
+        [Display(category: AppearanceCategory)]
         [DefaultValue(null)]
         public ISpriteProvider MouseOverImage
         {
@@ -144,11 +108,47 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
+        /// Gets or sets a value that describes how the button image should be stretched to fill the destination rectangle.
+        /// </summary>
+        /// <remarks>This property has no effect is <see cref="SizeToContent"/> is <c>true</c>.</remarks>
+        /// <userdoc>Describes how the button image should be stretched to fill the destination rectangle.</userdoc>
+        [DataMember]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(StretchType.Uniform)]
+        public StretchType ImageStretchType
+        {
+            get { return imageStretchType; }
+            set
+            {
+                imageStretchType = value;
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value that indicates how the button image is scaled.
+        /// </summary>
+        /// <remarks>This property has no effect is <see cref="SizeToContent"/> is <c>true</c>.</remarks>
+        /// <userdoc>Indicates how the button image is scaled.</userdoc>
+        [DataMember]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(StretchDirection.Both)]
+        public StretchDirection ImageStretchDirection
+        {
+            get { return imageStretchDirection; }
+            set
+            {
+                imageStretchDirection = value;
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
         /// Gets or sets whether the size depends on the Content. The default is <c>true</c>.
         /// </summary>
         /// <userdoc>True if this button's size depends of its content, false otherwise.</userdoc>
         [DataMember]
-        [Display(category: LayoutCategory, order: 402)]
+        [Display(category: LayoutCategory)]
         [DefaultValue(true)]
         public bool SizeToContent
         {
