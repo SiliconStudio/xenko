@@ -19,7 +19,7 @@ namespace SiliconStudio.Presentation.ValueConverters
             int length;
             try
             {
-                length = System.Convert.ToInt32(parameter);
+                length = ConverterHelper.ConvertToInt32(parameter, culture);
                 if (length == 0) throw new Exception();
             }
             catch (Exception)
@@ -30,7 +30,7 @@ namespace SiliconStudio.Presentation.ValueConverters
             if (value == null)
                 return null;
 
-            bool addEllipsis = length >= 0;
+            var addEllipsis = length >= 0;
             length = Math.Abs(length);
             var str = value.ToString();
 

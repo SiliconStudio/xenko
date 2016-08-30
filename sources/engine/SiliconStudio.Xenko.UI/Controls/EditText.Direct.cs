@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.UI.Controls
 
             var textRegionSize = (ActualWidth - Padding.Left - Padding.Right);
             var fontScale = LayoutingContext.RealVirtualResolutionRatio;
-            var fontSize = new Vector2(fontScale.Y * TextSize); // we don't want letters non-uniform ratio
+            var fontSize = new Vector2(fontScale.Y * ActualTextSize); // we don't want letters non-uniform ratio
 
             // calculate the offset of the beginning of the text due to text alignment
             var alignmentOffset = -textRegionSize / 2f;
@@ -173,7 +173,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                 SelectedText = new string(character, 1);
         }
 
-        private bool TryConvertKeyToCharacter(Keys key, bool isMajuscule, ref Char character)
+        private bool TryConvertKeyToCharacter(Keys key, bool isMajuscule, ref char character)
         {
             switch (key)
             {
@@ -445,7 +445,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                     character = '/';
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("key");
+                    throw new ArgumentOutOfRangeException(nameof(key));
             }
 
             return true;

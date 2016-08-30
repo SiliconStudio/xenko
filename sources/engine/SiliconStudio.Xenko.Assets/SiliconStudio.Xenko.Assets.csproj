@@ -221,7 +221,7 @@
     <Compile Include="Effect\EffectShaderAssetCompiler.cs" />
     <Compile Include="Effect\EffectShaderAsset.cs" />
     <Compile Include="Entities\ConvertedDescriptor.cs" />
-    <Compile Include="Entities\EntityAnalysis.cs" />
+    <Compile Include="Entities\EntityComponentReferenceSerializer.cs" />
     <Compile Include="Entities\EntityDesign.cs" />
     <Compile Include="Entities\EntityHierarchyAssetBase.Upgraders.cs" />
     <Compile Include="Entities\PrefabAsset.cs" />
@@ -235,6 +235,8 @@
     <Compile Include="Analysis\GamePackageSessionAnalysis.cs" />
     <Compile Include="Entities\SceneAsset.Upgraders.cs" />
     <Compile Include="Entities\SceneAssetFactories.cs" />
+    <Compile Include="UI\UIAssetCompilerBase.cs" />
+    <Compile Include="UI\UIElementHierarchyData.cs" />
     <Compile Include="GameSettingsAsset.cs" />
     <Compile Include="Entities\SceneAsset.cs" />
     <Compile Include="GameSettingsAssetCompiler.cs" />
@@ -287,6 +289,12 @@
     <Compile Include="Tasks\PackageDeployTask.cs" />
     <Compile Include="Tasks\PackageGetVersionTask.cs" />
     <Compile Include="Textures\TextureSettings.cs" />
+    <Compile Include="UI\UIAssetBase.cs" />
+    <Compile Include="UI\UIFactories.cs" />
+    <Compile Include="UI\UILibraryAsset.cs" />
+    <Compile Include="UI\UILibraryAssetCompiler.cs" />
+    <Compile Include="UI\UIPageAsset.cs" />
+    <Compile Include="UI\UIPageAssetCompiler.cs" />
     <Compile Include="XenkoPackageUpgrader.cs" />
     <Compile Include="RenderingMode.cs" />
     <Compile Include="Scripts\ScriptSourceFileAsset.cs" />

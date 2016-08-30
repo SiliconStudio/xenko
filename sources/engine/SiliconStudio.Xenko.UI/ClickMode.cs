@@ -10,10 +10,12 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// Specifies that the Click event should be raised as soon as a button is pressed.
         /// </summary>
+        /// <userdoc>Specifies that the Click event should be raised as soon as a button is pressed.</userdoc>
         Press,
         /// <summary>
         /// Specifies that the Click event should be raised when a button is pressed and released.
         /// </summary>
+        /// <userdoc>Specifies that the Click event should be raised when a button is pressed and released.</userdoc>
         Release,
     }
 }

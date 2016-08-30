@@ -52,9 +52,7 @@ namespace SiliconStudio.Presentation.Core
 
         private void RaiseEvent()
         {
-            var handler = Timeout;
-            if (handler != null)
-                handler(this, EventArgs.Empty);
+            Timeout?.Invoke(this, EventArgs.Empty);
         }
     }
 }

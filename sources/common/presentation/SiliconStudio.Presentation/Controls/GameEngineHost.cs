@@ -177,35 +177,35 @@ namespace SiliconStudio.Presentation.Controls
             {
                 case NativeHelper.WM_RBUTTONDOWN:
                     mouseMoveCount = 0;
-                    task = Dispatcher.BeginInvoke(new Action(() =>
+                    task = Dispatcher.InvokeAsync(() =>
                     {
                         RaiseMouseButtonEvent(Mouse.PreviewMouseDownEvent, MouseButton.Right);
                         RaiseMouseButtonEvent(Mouse.MouseDownEvent, MouseButton.Right);
-                    }));
+                    });
                     task.Wait(TimeSpan.FromSeconds(1.0f));
                     break;
                 case NativeHelper.WM_RBUTTONUP:
-                    task = Dispatcher.BeginInvoke(new Action(() =>
+                    task = Dispatcher.InvokeAsync(() =>
                     {
                         RaiseMouseButtonEvent(Mouse.PreviewMouseUpEvent, MouseButton.Right);
                         RaiseMouseButtonEvent(Mouse.MouseUpEvent, MouseButton.Right);
-                    }));
+                    });
                     task.Wait(TimeSpan.FromSeconds(1.0f));
                     break;
                 case NativeHelper.WM_LBUTTONDOWN:
-                    task = Dispatcher.BeginInvoke(new Action(() =>
+                    task = Dispatcher.InvokeAsync(() =>
                     {
                         RaiseMouseButtonEvent(Mouse.PreviewMouseDownEvent, MouseButton.Left);
                         RaiseMouseButtonEvent(Mouse.MouseDownEvent, MouseButton.Left);
-                    }));
+                    });
                     task.Wait(TimeSpan.FromSeconds(1.0f));
                     break;
                 case NativeHelper.WM_LBUTTONUP:
-                    task = Dispatcher.BeginInvoke(new Action(() =>
+                    task = Dispatcher.InvokeAsync(() =>
                     {
                         RaiseMouseButtonEvent(Mouse.PreviewMouseUpEvent, MouseButton.Left);
                         RaiseMouseButtonEvent(Mouse.MouseUpEvent, MouseButton.Left);
-                    }));
+                    });
                     task.Wait(TimeSpan.FromSeconds(1.0f));
                     break;
                 case NativeHelper.WM_MOUSEMOVE:
@@ -215,7 +215,7 @@ namespace SiliconStudio.Presentation.Controls
                     // TODO: Tracking drag offset would be better, but might be difficult since we replace the mouse to its initial position each time it is moved.
                     if (mouseMoveCount < 3)
                     {
-                        Dispatcher.BeginInvoke(new Action(() =>
+                        Dispatcher.InvokeAsync(() =>
                         {
                             DependencyObject dependencyObject = this;
                             while (dependencyObject != null)
@@ -241,7 +241,7 @@ namespace SiliconStudio.Presentation.Controls
                                 }
                                 dependencyObject = VisualTreeHelper.GetParent(dependencyObject);
                             }
-                        }));
+                        });
                     }
                     break;
                 default:
@@ -253,7 +253,7 @@ namespace SiliconStudio.Presentation.Controls
 
         private void RaiseMouseButtonEvent(RoutedEvent routedEvent, MouseButton button)
         {
-            RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, button)
+            RaiseEvent(new MouseButtonEventArgs(Mouse.PrimaryDevice, Environment.TickCount, button)
             {
                 RoutedEvent = routedEvent,
                 Source = this,

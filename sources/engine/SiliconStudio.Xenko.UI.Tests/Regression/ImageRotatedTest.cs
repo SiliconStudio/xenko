@@ -57,7 +57,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 Children = { img1, img2, img3, img4 }
             };
 
-            UIComponent.RootElement = grid;
+            UIComponent.Page = new Engine.UIPage { RootElement = grid };
         }
 
         [Test]

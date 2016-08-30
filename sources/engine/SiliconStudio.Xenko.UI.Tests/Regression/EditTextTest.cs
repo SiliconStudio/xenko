@@ -46,6 +46,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 TextSize = 20,
                 SynchronousCharacterGeneration = true
             };
+            ApplyEditTextDefaultStyle(edit1);
             edit1.DependencyProperties.Set(Canvas.PinOriginPropertyKey, 0.5f * Vector3.One);
             edit1.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, new Vector3(middleOfScreen.X, 100, 0));
             edit1.TextChanged += Edit1OnTextChanged;
@@ -60,6 +61,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 CharacterFilterPredicate = IsLetter,
                 SynchronousCharacterGeneration = true
             };
+            ApplyEditTextDefaultStyle(edit2);
             edit2.DependencyProperties.Set(Canvas.PinOriginPropertyKey, 0.5f * Vector3.One);
             edit2.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, new Vector3(middleOfScreen.X, 200, 0));
             edit2.TextChanged += Edit2OnTextChanged;
@@ -75,6 +77,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 InputType = EditText.InputTypeFlags.Password,
                 SynchronousCharacterGeneration = true
             };
+            ApplyEditTextDefaultStyle(edit3);
             edit3.DependencyProperties.Set(Canvas.PinOriginPropertyKey, 0.5f * Vector3.One);
             edit3.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, new Vector3(middleOfScreen.X, 300, 0));
             
@@ -87,6 +90,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 TextSize = 24,
                 SynchronousCharacterGeneration = true
             };
+            ApplyEditTextDefaultStyle(edit4);
             edit4.DependencyProperties.Set(Canvas.PinOriginPropertyKey, 0.5f * Vector3.One);
             edit4.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, new Vector3(middleOfScreen.X, 400, 0));
 
@@ -98,7 +102,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             canvas.UIElementServices = new UIElementServices { Services = this.Services };
 
-            UIComponent.RootElement = canvas;
+            UIComponent.Page = new Engine.UIPage { RootElement = canvas };
         }
 
         private bool IsLetter(char c)

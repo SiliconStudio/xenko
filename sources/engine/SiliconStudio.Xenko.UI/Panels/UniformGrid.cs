@@ -1,9 +1,12 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.UI.Panels
@@ -11,69 +14,74 @@ namespace SiliconStudio.Xenko.UI.Panels
     /// <summary>
     /// Represents the grid where all the rows and columns have an uniform size.
     /// </summary>
+    [DataContract(nameof(UniformGrid))]
     [DebuggerDisplay("UniformGrid - Name={Name}")]
     public class UniformGrid : GridBase
     {
-        /// <summary>
-        /// The key to the Columns dependency property.
-        /// </summary>
-        public readonly static PropertyKey<int> ColumnsPropertyKey = new PropertyKey<int>("ColumnsKey", typeof(UniformGrid), DefaultValueMetadata.Static(1), ValidateValueMetadata.New<int>(GridSizeValidator), ObjectInvalidationMetadata.New<int>(InvalidateGridMeasure));
-
-        /// <summary>
-        /// The key to the Rows dependency property.
-        /// </summary>
-        public readonly static PropertyKey<int> RowsPropertyKey = new PropertyKey<int>("RowsKey", typeof(UniformGrid), DefaultValueMetadata.Static(1), ValidateValueMetadata.New<int>(GridSizeValidator), ObjectInvalidationMetadata.New<int>(InvalidateGridMeasure));
-
-        /// <summary>
-        /// The key to the Layers dependency property.
-        /// </summary>
-        public readonly static PropertyKey<int> LayersPropertyKey = new PropertyKey<int>("LayersKey", typeof(UniformGrid), DefaultValueMetadata.Static(1), ValidateValueMetadata.New<int>(GridSizeValidator), ObjectInvalidationMetadata.New<int>(InvalidateGridMeasure));
-
         /// <summary>
         /// The final size of one cell
         /// </summary>
         private Vector3 finalForOneCell;
 
-        private static void InvalidateGridMeasure(object propertyOwner, PropertyKey<int> propertyKey, int propertyOldValue)
-        {
-            var element = (UIElement)propertyOwner;
-            element.InvalidateMeasure();
-        }
-
-        private static void GridSizeValidator(ref int value)
-        {
-            if (value < 1)
-                throw new ArgumentOutOfRangeException("value");
-        }
+        private int rows = 1;
+        private int columns = 1;
+        private int layers = 1;
 
         /// <summary>
-        /// Gets or sets the number of Columns that the <see cref="UniformGrid"/> has.
+        /// Gets or sets the number of rows that the <see cref="UniformGrid"/> has.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value must be strictly positive</exception>
-        public int Columns
-        {
-            get { return DependencyProperties.Get(ColumnsPropertyKey); }
-            set { DependencyProperties.Set(ColumnsPropertyKey, value); }
-        }
-
-        /// <summary>
-        /// Gets or sets the number of Rows that the <see cref="UniformGrid"/> has.
-        /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value must be strictly positive</exception>
+        /// <remarks>The value is coerced in the range [1, <see cref="int.MaxValue"/>].</remarks>
+        /// <userdoc>The number of rows.</userdoc>
+        [DataMember]
+        [DataMemberRange(1, int.MaxValue)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(1)]
         public int Rows
         {
-            get { return DependencyProperties.Get(RowsPropertyKey); }
-            set { DependencyProperties.Set(RowsPropertyKey, value); }
+            get { return rows; }
+            set
+            {
+                rows = MathUtil.Clamp(value, 1, int.MaxValue);
+                InvalidateMeasure();
+            }
         }
 
         /// <summary>
-        /// Gets or sets the number of Layers that the <see cref="UniformGrid"/> has.
+        /// Gets or sets the number of columns that the <see cref="UniformGrid"/> has.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value must be strictly positive</exception>
+        /// <remarks>The value is coerced in the range [1, <see cref="int.MaxValue"/>].</remarks>
+        /// <userdoc>The number of columns.</userdoc>
+        [DataMember]
+        [DataMemberRange(1, int.MaxValue)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(1)]
+        public int Columns
+        {
+            get { return columns; }
+            set
+            {
+                columns = MathUtil.Clamp(value, 1, int.MaxValue);
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the number of layers that the <see cref="UniformGrid"/> has.
+        /// </summary>
+        /// <remarks>The value is coerced in the range [1, <see cref="int.MaxValue"/>].</remarks>
+        /// <userdoc>The number of layers.</userdoc>
+        [DataMember]
+        [DataMemberRange(1, int.MaxValue)]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(1)]
         public int Layers
         {
-            get { return DependencyProperties.Get(LayersPropertyKey); }
-            set { DependencyProperties.Set(LayersPropertyKey, value); }
+            get { return layers; }
+            set
+            {
+                layers = MathUtil.Clamp(value, 1, int.MaxValue);
+                InvalidateMeasure();
+            }
         }
 
         protected override Vector3 MeasureOverride(Vector3 availableSizeWithoutMargins)

@@ -260,14 +260,12 @@ namespace SiliconStudio.Core.Reflection
 
         private static void OnAssemblyRegistered(Assembly assembly, HashSet<string> categories)
         {
-            EventHandler<AssemblyRegisteredEventArgs> handler = AssemblyRegistered;
-            if (handler != null) handler(null, new AssemblyRegisteredEventArgs(assembly, categories));
+            AssemblyRegistered?.Invoke(null, new AssemblyRegisteredEventArgs(assembly, categories));
         }
 
         private static void OnAssemblyUnregistered(Assembly assembly, HashSet<string> categories)
         {
-            EventHandler<AssemblyRegisteredEventArgs> handler = AssemblyUnregistered;
-            if (handler != null) handler(null, new AssemblyRegisteredEventArgs(assembly, categories));
+            AssemblyUnregistered?.Invoke(null, new AssemblyRegisteredEventArgs(assembly, categories));
         }
     }
 }

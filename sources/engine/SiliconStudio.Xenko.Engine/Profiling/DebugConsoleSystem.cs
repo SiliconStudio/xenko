@@ -94,7 +94,7 @@ namespace SiliconStudio.Xenko.Profiling
             //TODO, this is not so nice
             if (spriteBatch == null)
             {
-                spriteBatch = new SpriteBatch(Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice);
+                spriteBatch = new SpriteBatch(Game.GraphicsDevice);
             }
 
             //TODO, this is not so nice
@@ -112,6 +112,7 @@ namespace SiliconStudio.Xenko.Profiling
             }
 
             // TODO GRAPHICS REFACTOR where to get command list from?
+            Game.GraphicsContext.CommandList.SetRenderTarget(null, Game.GraphicsDevice.Presenter.BackBuffer);
             spriteBatch.Begin(Game.GraphicsContext, depthStencilState: DepthStencilStates.None);
 
             while (overlayMessages.Count > 0)

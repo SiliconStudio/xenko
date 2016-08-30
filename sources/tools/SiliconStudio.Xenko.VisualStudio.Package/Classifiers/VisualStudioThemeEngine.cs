@@ -126,10 +126,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Classifiers
         {
             if (msg == WM_SYSCOLORCHANGE)
             {
-                if (OnThemeChanged != null)
-                {
-                    OnThemeChanged(this, EventArgs.Empty);
-                }
+                OnThemeChanged?.Invoke(this, EventArgs.Empty);
             }
             return VSConstants.S_OK;
         }

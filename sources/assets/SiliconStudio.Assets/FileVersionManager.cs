@@ -150,10 +150,7 @@ namespace SiliconStudio.Assets
                         return;
                     }
 
-                    if (request.FileHashCallback != null)
-                    {
-                        request.FileHashCallback(request.File, hash);
-                    }
+                    request.FileHashCallback?.Invoke(request.File, hash);
                 }
                 // Once we have processed the list, we can clear it
                 requestsToProcess.Clear();

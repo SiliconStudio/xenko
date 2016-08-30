@@ -19,6 +19,11 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
     [System.ComponentModel.Description("Tests for UIElement layering")]
     public class UIElementLayeringTests : UIElement
     {
+        protected override IEnumerable<IUIElementChildren> EnumerateChildren()
+        {
+            throw new NotImplementedException();
+        }
+
         private Random rand;
 
         /// <summary>
@@ -145,9 +150,9 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             Assert.IsTrue(newElement.IsEnabled);
             Assert.AreEqual(1f, newElement.Opacity);
             Assert.AreEqual(Visibility.Visible, newElement.Visibility);
-            Assert.AreEqual(0f, newElement.DependencyProperties.Get(DefaultWidthPropertyKey));
-            Assert.AreEqual(0f, newElement.DependencyProperties.Get(DefaultHeightPropertyKey));
-            Assert.AreEqual(0f, newElement.DependencyProperties.Get(DefaultDepthPropertyKey));
+            Assert.AreEqual(0f, newElement.DefaultWidth);
+            Assert.AreEqual(0f, newElement.DefaultHeight);
+            Assert.AreEqual(0f, newElement.DefaultDepth);
             Assert.AreEqual(float.NaN, newElement.Height);
             Assert.AreEqual(float.NaN, newElement.Width);
             Assert.AreEqual(float.NaN, newElement.Depth);
@@ -160,7 +165,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             Assert.AreEqual(HorizontalAlignment.Stretch, newElement.HorizontalAlignment);
             Assert.AreEqual(VerticalAlignment.Stretch, newElement.VerticalAlignment);
             Assert.AreEqual(DepthAlignment.Center, newElement.DepthAlignment);
-            Assert.AreEqual(null, newElement.DependencyProperties.Get(NamePropertyKey));
+            Assert.AreEqual(null, newElement.Name);
             Assert.AreEqual(Thickness.UniformCuboid(0), newElement.Margin);
             Assert.AreEqual(Matrix.Identity, newElement.LocalMatrix);
 
@@ -175,43 +180,81 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             Opacity = 0.5f;
             Assert.AreEqual(0.5f, Opacity);
 
-            // default sizes
-            Assert.Throws<ArgumentOutOfRangeException>(() => DependencyProperties.Set(DefaultWidthPropertyKey, -1f));
-            Assert.Throws<ArgumentOutOfRangeException>(() => DependencyProperties.Set(DefaultWidthPropertyKey, float.NaN));
-            Assert.Throws<ArgumentOutOfRangeException>(() => DependencyProperties.Set(DefaultWidthPropertyKey, float.PositiveInfinity));
-            Assert.Throws<ArgumentOutOfRangeException>(() => DependencyProperties.Set(DefaultHeightPropertyKey, -1f));
-            Assert.Throws<ArgumentOutOfRangeException>(() => DependencyProperties.Set(DefaultHeightPropertyKey, float.NaN));
-            Assert.Throws<ArgumentOutOfRangeException>(() => DependencyProperties.Set(DefaultHeightPropertyKey, float.PositiveInfinity));
-            Assert.Throws<ArgumentOutOfRangeException>(() => DependencyProperties.Set(DefaultDepthPropertyKey, -1f));
-            Assert.Throws<ArgumentOutOfRangeException>(() => DependencyProperties.Set(DefaultDepthPropertyKey, float.NaN));
-            Assert.Throws<ArgumentOutOfRangeException>(() => DependencyProperties.Set(DefaultDepthPropertyKey, float.PositiveInfinity));
+            // default sizes (values should remain in range [0, float.MaxValue])
+            Assert.DoesNotThrow(() => DefaultWidth = -1f);
+            Assert.AreEqual(0f, DefaultWidth);
+            Assert.DoesNotThrow(() => DefaultWidth = float.NaN);
+            Assert.AreEqual(0f, DefaultWidth); // previous value unchanged
+            Assert.DoesNotThrow(() => DefaultWidth = float.PositiveInfinity);
+            Assert.AreEqual(float.MaxValue, DefaultWidth);
 
-            // sizes 
-            Assert.Throws<ArgumentOutOfRangeException>(() => Width = -1f);
-            Assert.Throws<ArgumentOutOfRangeException>(() => Width = float.PositiveInfinity);
-            Assert.Throws<ArgumentOutOfRangeException>(() => Height = -1f);
-            Assert.Throws<ArgumentOutOfRangeException>(() => Height = float.PositiveInfinity);
-            Assert.Throws<ArgumentOutOfRangeException>(() => Depth = -1f);
-            Assert.Throws<ArgumentOutOfRangeException>(() => Depth = float.PositiveInfinity);
+            Assert.DoesNotThrow(() => DefaultHeight = -1f);
+            Assert.AreEqual(0f, DefaultHeight);
+            Assert.DoesNotThrow(() => DefaultHeight = float.NaN);
+            Assert.AreEqual(0f, DefaultHeight); // previous value unchanged
+            Assert.DoesNotThrow(() => DefaultHeight = float.PositiveInfinity);
+            Assert.AreEqual(float.MaxValue, DefaultHeight);
 
-            // minimum sizes
-            Assert.Throws<ArgumentOutOfRangeException>(() => MinimumWidth = -1f);
-            Assert.Throws<ArgumentOutOfRangeException>(() => MinimumWidth = float.NaN);
-            Assert.Throws<ArgumentOutOfRangeException>(() => MinimumWidth = float.PositiveInfinity);
-            Assert.Throws<ArgumentOutOfRangeException>(() => MinimumHeight = -1f);
-            Assert.Throws<ArgumentOutOfRangeException>(() => MinimumHeight = float.NaN);
-            Assert.Throws<ArgumentOutOfRangeException>(() => MinimumHeight = float.PositiveInfinity);
-            Assert.Throws<ArgumentOutOfRangeException>(() => MinimumDepth = -1f);
-            Assert.Throws<ArgumentOutOfRangeException>(() => MinimumDepth = float.NaN);
-            Assert.Throws<ArgumentOutOfRangeException>(() => MinimumDepth = float.PositiveInfinity);
+            Assert.DoesNotThrow(() => DefaultDepth = -1f);
+            Assert.AreEqual(0f, DefaultDepth);
+            Assert.DoesNotThrow(() => DefaultDepth = float.NaN);
+            Assert.AreEqual(0f, DefaultDepth); // previous value unchanged
+            Assert.DoesNotThrow(() => DefaultDepth = float.PositiveInfinity);
+            Assert.AreEqual(float.MaxValue, DefaultDepth);
 
-            // maximum sizes
-            Assert.Throws<ArgumentOutOfRangeException>(() => MaximumWidth = -1f);
-            Assert.Throws<ArgumentOutOfRangeException>(() => MaximumWidth = float.NaN);
-            Assert.Throws<ArgumentOutOfRangeException>(() => MaximumHeight = -1f);
-            Assert.Throws<ArgumentOutOfRangeException>(() => MaximumHeight = float.NaN);
-            Assert.Throws<ArgumentOutOfRangeException>(() => MaximumDepth = -1f);
-            Assert.Throws<ArgumentOutOfRangeException>(() => MaximumDepth = float.NaN);
+            // sizes (values should remain in range [0, float.MaxValue])
+            Assert.DoesNotThrow(() => Width = -1f);
+            Assert.AreEqual(0f, Width);
+            Assert.DoesNotThrow(() => Width = float.PositiveInfinity);
+            Assert.AreEqual(float.MaxValue, Width);
+
+            Assert.DoesNotThrow(() => Height = -1f);
+            Assert.AreEqual(0f, Height);
+            Assert.DoesNotThrow(() => Height = float.PositiveInfinity);
+            Assert.AreEqual(float.MaxValue, Height);
+
+            Assert.DoesNotThrow(() => Depth = -1f);
+            Assert.AreEqual(0f, Depth);
+            Assert.DoesNotThrow(() => Depth = float.PositiveInfinity);
+            Assert.AreEqual(float.MaxValue, Depth);
+
+            // minimum sizes (values should remain in range [0, float.MaxValue])
+            Assert.DoesNotThrow(() => MinimumWidth = -1f);
+            Assert.AreEqual(0f, MinimumWidth);
+            Assert.DoesNotThrow(() => MinimumWidth = float.NaN);
+            Assert.AreEqual(0f, MinimumWidth); // previous value unchanged
+            Assert.DoesNotThrow(() => MinimumWidth = float.PositiveInfinity);
+            Assert.AreEqual(float.MaxValue, MinimumWidth);
+
+            Assert.DoesNotThrow(() => MinimumHeight = -1f);
+            Assert.AreEqual(0f, MinimumHeight);
+            Assert.DoesNotThrow(() => MinimumHeight = float.NaN);
+            Assert.AreEqual(0f, MinimumHeight); // previous value unchanged
+            Assert.DoesNotThrow(() => MinimumHeight = float.PositiveInfinity);
+            Assert.AreEqual(float.MaxValue, MinimumHeight);
+
+            Assert.DoesNotThrow(() => MinimumDepth = -1f);
+            Assert.AreEqual(0f, MinimumDepth);
+            Assert.DoesNotThrow(() => MinimumDepth = float.NaN);
+            Assert.AreEqual(0f, MinimumDepth); // previous value unchanged
+            Assert.DoesNotThrow(() => MinimumDepth = float.PositiveInfinity);
+            Assert.AreEqual(float.MaxValue, MinimumDepth);
+
+            // maximum sizes (values should remain in range [0, float.PositiveInfinity])
+            Assert.DoesNotThrow(() => MaximumWidth = -1f);
+            Assert.AreEqual(0f, MaximumWidth);
+            Assert.DoesNotThrow(() => MaximumWidth = float.NaN);
+            Assert.AreEqual(0f, MaximumWidth); // previous value unchanged
+
+            Assert.DoesNotThrow(() => MaximumHeight = -1f);
+            Assert.AreEqual(0f, MaximumHeight);
+            Assert.DoesNotThrow(() => MaximumHeight = float.NaN);
+            Assert.AreEqual(0f, MaximumHeight); // previous value unchanged
+
+            Assert.DoesNotThrow(() => MaximumDepth = -1f);
+            Assert.AreEqual(0f, MaximumDepth);
+            Assert.DoesNotThrow(() => MaximumDepth = float.NaN);
+            Assert.AreEqual(0f, MaximumDepth); // previous value unchanged
         }
 
         /// <summary>
@@ -253,24 +296,14 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
         {
             ResetElementState();
 
-            // test that  left, top, back value are returned if stretched
-            HorizontalAlignment = HorizontalAlignment.Stretch;
-            VerticalAlignment = VerticalAlignment.Stretch;
-            DepthAlignment = DepthAlignment.Stretch;
-            Margin = rand.NextThickness(10, 20, 30, 40, 50, 60);
-            var expectedOffsets = new Vector3(Margin.Left, Margin.Top, Margin.Front);
-            var randV1 = rand.NextVector3();
-            var randV2 = rand.NextVector3();
-            AssertAreNearlySame(expectedOffsets, CalculateAdjustmentOffsets(ref MarginInternal, ref randV1, ref randV2));
-
             // test that  left, top, back value are returned if aligned to beginning
             HorizontalAlignment = HorizontalAlignment.Left;
             VerticalAlignment = VerticalAlignment.Top;
             DepthAlignment = DepthAlignment.Front;
             Margin = rand.NextThickness(10, 20, 30, 40, 50, 60);
-            expectedOffsets = new Vector3(Margin.Left, Margin.Top, Margin.Front);
-            randV1 = rand.NextVector3();
-            randV2 = rand.NextVector3();
+            var expectedOffsets = new Vector3(Margin.Left, Margin.Top, Margin.Front);
+            var randV1 = rand.NextVector3();
+            var randV2 = rand.NextVector3();
             AssertAreNearlySame(expectedOffsets, CalculateAdjustmentOffsets(ref MarginInternal, ref randV1, ref randV2));
 
             // test that element is correctly centered 
@@ -282,6 +315,12 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             var usedSpace = 100 * rand.NextVector3();
             var usedSpaceWithMargins = CalculateSizeWithThickness(ref usedSpace, ref MarginInternal);
             expectedOffsets = new Vector3(Margin.Left, Margin.Top, Margin.Front) + (givenSpace - usedSpaceWithMargins) / 2;
+            AssertAreNearlySame(expectedOffsets, CalculateAdjustmentOffsets(ref MarginInternal, ref givenSpace, ref usedSpace));
+
+            // test that stretched is equivalent to centered
+            HorizontalAlignment = HorizontalAlignment.Stretch;
+            VerticalAlignment = VerticalAlignment.Stretch;
+            DepthAlignment = DepthAlignment.Stretch;
             AssertAreNearlySame(expectedOffsets, CalculateAdjustmentOffsets(ref MarginInternal, ref givenSpace, ref usedSpace));
 
             // test that the element is correctly right aligned
@@ -448,8 +487,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
 
         protected override void CollapseOverride()
         {
-            if (onCollapsedOverride != null)
-                onCollapsedOverride();
+            onCollapsedOverride?.Invoke();
         }
 
         private delegate Vector3 ArrangeOverrideDelegate(Vector3 finalSizeWithoutMargins);

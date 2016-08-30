@@ -61,6 +61,7 @@ namespace SiliconStudio.Quantum
 
         protected virtual bool RegisterNode(IGraphNode node)
         {
+            // A node can be registered multiple times when it is referenced via multiple paths
             if (RegisteredNodes.Add(node))
             {
                 node.Content.PrepareChange += ContentPrepareChange;

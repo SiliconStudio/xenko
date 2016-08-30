@@ -12,6 +12,8 @@ namespace SiliconStudio.Xenko.UI.Events
     /// </summary>
     public static class EventManager
     {
+        private static readonly object SyncRoot = new object();
+
         /// <summary>
         /// Finds the routed event identified by its name and owner.
         /// </summary>
@@ -23,8 +25,8 @@ namespace SiliconStudio.Xenko.UI.Events
             var currentType = ownerType;
             while (currentType != null)
             {
-                if (ownerToEvents.ContainsKey(currentType) && ownerToEvents[currentType].ContainsKey(eventName))
-                    return ownerToEvents[currentType][eventName];
+                if (OwnerToEvents.ContainsKey(currentType) && OwnerToEvents[currentType].ContainsKey(eventName))
+                    return OwnerToEvents[currentType][eventName];
 
                 currentType = currentType.GetTypeInfo().BaseType;
             }
@@ -38,7 +40,7 @@ namespace SiliconStudio.Xenko.UI.Events
         /// <returns>An array of type <see cref="RoutedEvent"/> that contains the registered objects.</returns>
         public static RoutedEvent[] GetRoutedEvents()
         {
-            return routedEvents.ToArray();
+            return RoutedEvents.ToArray();
         }
 
         /// <summary>
@@ -57,7 +59,7 @@ namespace SiliconStudio.Xenko.UI.Events
                 currentType = currentType.GetTypeInfo().BaseType;
             }
 
-            return types.Where(t => ownerToEvents.ContainsKey(t)).SelectMany(t => ownerToEvents[t].Values).ToArray();
+            return types.Where(t => OwnerToEvents.ContainsKey(t)).SelectMany(t => OwnerToEvents[t].Values).ToArray();
         }
 
         /// <summary>
@@ -71,14 +73,17 @@ namespace SiliconStudio.Xenko.UI.Events
         /// <exception cref="ArgumentNullException"><paramref name="classType"/>, <paramref name="routedEvent"/>, or <paramref name="handler"/> is null.</exception>
         public static void RegisterClassHandler<T>(Type classType, RoutedEvent<T> routedEvent, EventHandler<T> handler, bool handledEventsToo = false) where T : RoutedEventArgs
         {
-            if (classType == null) throw new ArgumentNullException("classType");
-            if (routedEvent == null) throw new ArgumentNullException("routedEvent");
-            if (handler == null) throw new ArgumentNullException("handler");
+            if (classType == null) throw new ArgumentNullException(nameof(classType));
+            if (routedEvent == null) throw new ArgumentNullException(nameof(routedEvent));
+            if (handler == null) throw new ArgumentNullException(nameof(handler));
 
-            if(!classesToClassHandlers.ContainsKey(classType))
-                classesToClassHandlers[classType] = new Dictionary<RoutedEvent, RoutedEventHandlerInfo>();
+            lock(SyncRoot)
+            {
+                if (!ClassesToClassHandlers.ContainsKey(classType))
+                    ClassesToClassHandlers[classType] = new Dictionary<RoutedEvent, RoutedEventHandlerInfo>();
 
-            classesToClassHandlers[classType][routedEvent] = new RoutedEventHandlerInfo<T>(handler, handledEventsToo);
+                ClassesToClassHandlers[classType][routedEvent] = new RoutedEventHandlerInfo<T>(handler, handledEventsToo); 
+            }
         }
 
         /// <summary>
@@ -90,14 +95,14 @@ namespace SiliconStudio.Xenko.UI.Events
         /// <exception cref="ArgumentNullException"><paramref name="classType"/>, or <paramref name="routedEvent"/> is null.</exception>
         internal static RoutedEventHandlerInfo GetClassHandler(Type classType, RoutedEvent routedEvent)
         {
-            if (classType == null) throw new ArgumentNullException("classType");
-            if (routedEvent == null) throw new ArgumentNullException("routedEvent");
+            if (classType == null) throw new ArgumentNullException(nameof(classType));
+            if (routedEvent == null) throw new ArgumentNullException(nameof(routedEvent));
 
             var currentType = classType;
             while (currentType != null)
             {
-                if (classesToClassHandlers.ContainsKey(currentType) && classesToClassHandlers[currentType].ContainsKey(routedEvent))
-                    return classesToClassHandlers[currentType][routedEvent];
+                if (ClassesToClassHandlers.ContainsKey(currentType) && ClassesToClassHandlers[currentType].ContainsKey(routedEvent))
+                    return ClassesToClassHandlers[currentType][routedEvent];
 
                 currentType = currentType.GetTypeInfo().BaseType;
             }
@@ -105,7 +110,7 @@ namespace SiliconStudio.Xenko.UI.Events
             return null;
         }
 
-        private readonly static Dictionary<Type, Dictionary<RoutedEvent, RoutedEventHandlerInfo>> classesToClassHandlers = new Dictionary<Type, Dictionary<RoutedEvent, RoutedEventHandlerInfo>>();
+        private static readonly Dictionary<Type, Dictionary<RoutedEvent, RoutedEventHandlerInfo>> ClassesToClassHandlers = new Dictionary<Type, Dictionary<RoutedEvent, RoutedEventHandlerInfo>>();
 
         /// <summary>
         /// Registers a new routed event.
@@ -121,25 +126,28 @@ namespace SiliconStudio.Xenko.UI.Events
         /// </exception>
         public static RoutedEvent<T> RegisterRoutedEvent<T>(string name, RoutingStrategy routingStrategy, Type ownerType) where T: RoutedEventArgs
         {
-            if (name == null) throw new ArgumentNullException("name");
-            if (ownerType == null) throw new ArgumentNullException("ownerType");
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (ownerType == null) throw new ArgumentNullException(nameof(ownerType));
             
             if (GetRoutedEvent(ownerType, name) != null)
                 throw new InvalidOperationException("A routed event named '" + name + "' already exists in provided owner type '" + ownerType + "' or base classes.");
 
             var newRoutedEvent = new RoutedEvent<T> {  Name = name, OwnerType = ownerType, RoutingStrategy = routingStrategy, };
-            routedEvents.Add(newRoutedEvent);
-            
-            if(!ownerToEvents.ContainsKey(ownerType))
-                ownerToEvents[ownerType] = new Dictionary<string, RoutedEvent>();
+            lock(SyncRoot)
+            {
+                RoutedEvents.Add(newRoutedEvent);
 
-            ownerToEvents[ownerType][name] = newRoutedEvent;
+                if (!OwnerToEvents.ContainsKey(ownerType))
+                    OwnerToEvents[ownerType] = new Dictionary<string, RoutedEvent>();
+
+                OwnerToEvents[ownerType][name] = newRoutedEvent; 
+            }
 
             return newRoutedEvent;
         }
 
-        private readonly static List<RoutedEvent> routedEvents = new List<RoutedEvent>();
-        private readonly static Dictionary<Type, Dictionary<string, RoutedEvent>> ownerToEvents = new Dictionary<Type, Dictionary<string, RoutedEvent>>();
+        private static readonly List<RoutedEvent> RoutedEvents = new List<RoutedEvent>();
+        private static readonly Dictionary<Type, Dictionary<string, RoutedEvent>> OwnerToEvents = new Dictionary<Type, Dictionary<string, RoutedEvent>>();
  
         /// <summary>
         /// This functions reset all the registers and invalidate all the created routed events.
@@ -147,9 +155,12 @@ namespace SiliconStudio.Xenko.UI.Events
         /// </summary>
         internal static void ResetRegisters()
         {
-            routedEvents.Clear();
-            ownerToEvents.Clear();
-            classesToClassHandlers.Clear();
+            lock(SyncRoot)
+            {
+                RoutedEvents.Clear();
+                OwnerToEvents.Clear();
+                ClassesToClassHandlers.Clear(); 
+            }
         }
     }
 }

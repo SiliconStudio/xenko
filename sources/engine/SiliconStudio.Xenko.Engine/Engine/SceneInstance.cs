@@ -385,8 +385,7 @@ namespace SiliconStudio.Xenko.Engine
 
         private void OnSceneChanged()
         {
-            EventHandler<EventArgs> handler = SceneChanged;
-            if (handler != null) handler(this, EventArgs.Empty);
+            SceneChanged?.Invoke(this, EventArgs.Empty);
         }
 
         class RegisteredRenderProcessors

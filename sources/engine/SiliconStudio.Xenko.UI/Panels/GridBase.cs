@@ -1,9 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
+
 using System.Diagnostics;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.UI.Panels
@@ -11,58 +12,85 @@ namespace SiliconStudio.Xenko.UI.Panels
     /// <summary>
     /// Represents the base primitive for all the grid-like controls
     /// </summary>
+    [DataContract(nameof(GridBase))]
     [DebuggerDisplay("GridBase - Name={Name}")]
     public abstract class GridBase : Panel
     {
         /// <summary>
-        /// The key to the Column attached dependency property. This defines the column an item is inserted into.
-        /// </summary>
-        /// <remarks>First column has 0 as index</remarks>
-        public readonly static PropertyKey<int> ColumnPropertyKey = new PropertyKey<int>("ColumnKey", typeof(GridBase), DefaultValueMetadata.Static(0), ObjectInvalidationMetadata.New<int>(InvalidateParentGridMeasure));
-
-        /// <summary>
         /// The key to the Row attached dependency property. This defines the row an item is inserted into.
         /// </summary>
+        /// <remarks>The value is coerced in the range [0, <see cref="int.MaxValue"/>].</remarks>
         /// <remarks>First row has 0 as index</remarks>
-        public readonly static PropertyKey<int> RowPropertyKey = new PropertyKey<int>("RowKey", typeof(GridBase), DefaultValueMetadata.Static(0), ObjectInvalidationMetadata.New<int>(InvalidateParentGridMeasure));
-
-        /// <summary>
-        /// The key to the Layer attached dependency property. This defines the layer an item is inserted into.
-        /// </summary>
-        /// <remarks>First layer has 0 as index</remarks>
-        public readonly static PropertyKey<int> LayerPropertyKey = new PropertyKey<int>("LayerKey", typeof(GridBase), DefaultValueMetadata.Static(0), ObjectInvalidationMetadata.New<int>(InvalidateParentGridMeasure));
-
-        /// <summary>
-        /// The key to the ColumnSpan attached dependency property. This defines the number of columns an item takes.
-        /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value must be strictly positive</exception>
-        public readonly static PropertyKey<int> ColumnSpanPropertyKey = new PropertyKey<int>("ColumnSpanKey", typeof(GridBase), DefaultValueMetadata.Static(1), ValidateValueMetadata.New<int>(SpanValidator), ObjectInvalidationMetadata.New<int>(InvalidateParentGridMeasure));
+        [DataMemberRange(0, int.MaxValue)]
+        [Display(category: LayoutCategory)]
+        public static readonly PropertyKey<int> RowPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(RowPropertyKey), typeof(GridBase), 0, CoerceGridPositionsValue, InvalidateParentGridMeasure);
 
         /// <summary>
         /// The key to the RowSpan attached dependency property. This defines the number of rows an item takes.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value must be strictly positive</exception>
-        public readonly static PropertyKey<int> RowSpanPropertyKey = new PropertyKey<int>("RowSpanKey", typeof(GridBase), DefaultValueMetadata.Static(1), ValidateValueMetadata.New<int>(SpanValidator), ObjectInvalidationMetadata.New<int>(InvalidateParentGridMeasure));
+        /// <remarks>The value is coerced in the range [1, <see cref="int.MaxValue"/>].</remarks>
+        [DataMemberRange(1, int.MaxValue)]
+        [Display(category: LayoutCategory)]
+        public static readonly PropertyKey<int> RowSpanPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(RowSpanPropertyKey), typeof(GridBase), 1, CoerceSpanValue, InvalidateParentGridMeasure);
+
+        /// <summary>
+        /// The key to the Column attached dependency property. This defines the column an item is inserted into.
+        /// </summary>
+        /// <remarks>The value is coerced in the range [0, <see cref="int.MaxValue"/>].</remarks>
+        /// <remarks>First column has 0 as index</remarks>
+        [DataMemberRange(0, int.MaxValue)]
+        [Display(category: LayoutCategory)]
+        public static readonly PropertyKey<int> ColumnPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(ColumnPropertyKey), typeof(GridBase), 0, CoerceGridPositionsValue, InvalidateParentGridMeasure);
+
+        /// <summary>
+        /// The key to the ColumnSpan attached dependency property. This defines the number of columns an item takes.
+        /// </summary>
+        /// <remarks>The value is coerced in the range [1, <see cref="int.MaxValue"/>].</remarks>
+        [DataMemberRange(1, int.MaxValue)]
+        [Display(category: LayoutCategory)]
+        public static readonly PropertyKey<int> ColumnSpanPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(ColumnSpanPropertyKey), typeof(GridBase), 1, CoerceSpanValue, InvalidateParentGridMeasure);
+
+        /// <summary>
+        /// The key to the Layer attached dependency property. This defines the layer an item is inserted into.
+        /// </summary>
+        /// <remarks>The value is coerced in the range [0, <see cref="int.MaxValue"/>].</remarks>
+        /// <remarks>First layer has 0 as index</remarks>
+        [DataMemberRange(0, int.MaxValue)]
+        [Display(category: LayoutCategory)]
+        public static readonly PropertyKey<int> LayerPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(LayerPropertyKey), typeof(GridBase), 0, CoerceGridPositionsValue, InvalidateParentGridMeasure);
 
         /// <summary>
         /// The key to the LayerSpan attached dependency property. This defines the number of layers an item takes.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The value must be strictly positive</exception>
-        public readonly static PropertyKey<int> LayerSpanPropertyKey = new PropertyKey<int>("LayerSpanKey", typeof(GridBase), DefaultValueMetadata.Static(1), ValidateValueMetadata.New<int>(SpanValidator), ObjectInvalidationMetadata.New<int>(InvalidateParentGridMeasure));
+        /// <remarks>The value is coerced in the range [1, <see cref="int.MaxValue"/>].</remarks>
+        [DataMemberRange(1, int.MaxValue)]
+        [Display(category: LayoutCategory)]
+        public static readonly PropertyKey<int> LayerSpanPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(LayerSpanPropertyKey), typeof(GridBase), 1, CoerceSpanValue, InvalidateParentGridMeasure);
 
         private static void InvalidateParentGridMeasure(object propertyowner, PropertyKey<int> propertykey, int propertyoldvalue)
         {
             var element = (UIElement)propertyowner;
             var parentGridBase = element.Parent as GridBase;
 
-            if(parentGridBase != null)
-                parentGridBase.InvalidateMeasure();
+            parentGridBase?.InvalidateMeasure();
         }
 
-        private static void SpanValidator(ref int value)
+        /// <summary>
+        /// Coerce the value of <see cref="ColumnPropertyKey"/> <see cref="LayerPropertyKey"/>, or <see cref="RowPropertyKey"/> between 0 and <see cref="int.MaxValue"/>.
+        /// </summary>
+        /// <param name="value"></param>
+        private static void CoerceGridPositionsValue(ref int value)
         {
-            if (value < 1)
-                throw new ArgumentOutOfRangeException("value");
+            value = MathUtil.Clamp(value, 0, int.MaxValue);
+        }
+
+        /// <summary>
+        /// Coerce the value of <see cref="ColumnSpanPropertyKey"/> <see cref="LayerSpanPropertyKey"/>, ir <see cref="RowSpanPropertyKey"/> between 1 and <see cref="int.MaxValue"/>.
+        /// </summary>
+        /// <param name="value"></param>
+        private static void CoerceSpanValue(ref int value)
+        {
+            value = MathUtil.Clamp(value, 1, int.MaxValue);
         }
 
         /// <summary>
@@ -90,6 +118,7 @@ namespace SiliconStudio.Xenko.UI.Panels
                 element.DependencyProperties.Get(RowPropertyKey),
                 element.DependencyProperties.Get(LayerPropertyKey));
         }
+
         /// <summary>
         /// Get an element span values as an <see cref="Vector3"/>.
         /// </summary>

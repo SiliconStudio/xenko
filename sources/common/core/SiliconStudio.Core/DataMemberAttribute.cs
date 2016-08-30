@@ -78,6 +78,17 @@ namespace SiliconStudio.Core
         /// </summary>
         /// <param name="order">The order.</param>
         /// <param name="name">The name.</param>
+        public DataMemberAttribute(int order, string name)
+        {
+            Order = order;
+            this.name = name;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DataMemberAttribute"/> class.
+        /// </summary>
+        /// <param name="order">The order.</param>
+        /// <param name="name">The name.</param>
         /// <param name="mode">The mode.</param>
         public DataMemberAttribute(int order, string name, DataMemberMode mode)
         {

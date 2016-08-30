@@ -140,10 +140,7 @@ namespace SiliconStudio.Core.Diagnostics
             if (!isEnabled) return;
 
             // Give a chance to the profiling to end and put some property in this profiler state
-            if (disposeProfileDelegate != null)
-            {
-                disposeProfileDelegate(ref this);
-            }
+            disposeProfileDelegate?.Invoke(ref this);
 
             End();
         }

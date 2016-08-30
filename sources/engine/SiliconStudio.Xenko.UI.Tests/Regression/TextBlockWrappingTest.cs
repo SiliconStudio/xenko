@@ -52,7 +52,7 @@ Does it work with kanjis too? let's see that in the following line. Here we goes
                 BackgroundImage = (SpriteFromTexture)new Sprite(Content.Load<Texture>("DumbWhite"))
             };
 
-            UIComponent.RootElement = decorator;
+            UIComponent.Page = new Engine.UIPage { RootElement = decorator };
         }
 
         protected override void Update(GameTime gameTime)

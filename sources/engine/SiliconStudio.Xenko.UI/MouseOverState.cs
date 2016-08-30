@@ -10,16 +10,17 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// The mouse is neither over the element nor one of its children.
         /// </summary>
+        /// <userdoc>The mouse is neither over the element nor one of its children.</userdoc>
         MouseOverNone,
-
         /// <summary>
         /// The mouse is over one of children of the element.
         /// </summary>
+        /// <userdoc>The mouse is over one of children of the element.</userdoc>
         MouseOverChild,
-
         /// <summary>
         /// The mouse is directly over the element.
         /// </summary>
+        /// <userdoc>The mouse is directly over the element.</userdoc>
         MouseOverElement,
     }
 }

@@ -74,7 +74,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         private void ContentChanging(object sender, ContentChangeEventArgs e)
         {
-            if (!notifyChangesOnly || !Equals(Content.Retrieve(e.OldValue, e.Index, e.Content.Descriptor), Content.Retrieve(e.NewValue, e.Index, e.Content.Descriptor)))
+            if (!notifyChangesOnly || !Equals(e.OldValue, e.NewValue))
             {
                 propertyChanging?.Invoke(new[] { propertyName });
             }
@@ -82,7 +82,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         private void ContentChanged(object sender, ContentChangeEventArgs e)
         {
-            if (!notifyChangesOnly || !Equals(Content.Retrieve(e.OldValue, e.Index, e.Content.Descriptor), Content.Retrieve(e.NewValue, e.Index, e.Content.Descriptor)))
+            if (!notifyChangesOnly || !Equals(e.OldValue,e.NewValue))
             {
                 propertyChanged?.Invoke(new[] { propertyName });
             }

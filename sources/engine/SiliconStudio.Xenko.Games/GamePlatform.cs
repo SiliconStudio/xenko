@@ -116,11 +116,7 @@ namespace SiliconStudio.Xenko.Games
             gameWindow.InitCallback = OnInitCallback;
             gameWindow.RunCallback = OnRunCallback;
 
-            var windowCreated = WindowCreated;
-            if (windowCreated != null)
-            {
-                windowCreated(this, EventArgs.Empty);
-            }
+            WindowCreated?.Invoke(this, EventArgs.Empty);
 
             gameWindow.Run();
         }
@@ -192,38 +188,32 @@ namespace SiliconStudio.Xenko.Games
 
         protected void OnActivated(object source, EventArgs e)
         {
-            EventHandler<EventArgs> handler = Activated;
-            if (handler != null) handler(this, e);
+            Activated?.Invoke(this, e);
         }
 
         protected void OnDeactivated(object source, EventArgs e)
         {
-            EventHandler<EventArgs> handler = Deactivated;
-            if (handler != null) handler(this, e);
+            Deactivated?.Invoke(this, e);
         }
 
         protected void OnExiting(object source, EventArgs e)
         {
-            EventHandler<EventArgs> handler = Exiting;
-            if (handler != null) handler(this, e);
+            Exiting?.Invoke(this, e);
         }
 
         protected void OnIdle(object source, EventArgs e)
         {
-            EventHandler<EventArgs> handler = Idle;
-            if (handler != null) handler(this, e);
+            Idle?.Invoke(this, e);
         }
 
         protected void OnResume(object source, EventArgs e)
         {
-            EventHandler<EventArgs> handler = Resume;
-            if (handler != null) handler(this, e);
+            Resume?.Invoke(this, e);
         }
 
         protected void OnSuspend(object source, EventArgs e)
         {
-            EventHandler<EventArgs> handler = Suspend;
-            if (handler != null) handler(this, e);
+            Suspend?.Invoke(this, e);
         }
 
         protected void AddDevice(DisplayMode mode,  GraphicsDeviceInformation deviceBaseInfo, GameGraphicsParameters preferredParameters, List<GraphicsDeviceInformation> graphicsDeviceInfos)

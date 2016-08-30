@@ -70,11 +70,6 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             return Blocks.ContainsKey(id) || Links.ContainsKey(id);
         }
 
-        public override void FixupPartReferences()
-        {
-            AssetCompositeAnalysis.FixupAssetPartReferences(this, ResolveReference);
-        }
-
         public override void SetPart(Guid id, Guid baseId, Guid basePartInstanceId)
         {
             foreach (var variable in Variables)
@@ -102,7 +97,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             }
         }
 
-        protected virtual object ResolveReference(object partReference)
+        protected override object ResolvePartReference(object partReference)
         {
             var variableReference = partReference as Variable;
             if (variableReference != null)

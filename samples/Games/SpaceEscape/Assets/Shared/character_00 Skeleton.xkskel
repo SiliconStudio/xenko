@@ -1,8 +1,9 @@
 !Skeleton
 Id: bfe057df-2fd1-402a-97bc-bd16edee241a
+SerializedVersion: {Xenko: 1.7.8-beta}
 Tags: []
 Source: ../../Resources/model/character/scene/character_00.FBX
-ScaleImport: 0.0
+PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Nodes:
     - {~Id: cbb75c39-ef6f-4bb2-8efa-dac9c1f2b57e, Name: RootNode, Depth: 0}
     - {~Id: 6b3e95b4-1e86-4b90-8c49-08c3280d0b1a, Name: Root, Depth: 1}
