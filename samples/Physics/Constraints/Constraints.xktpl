@@ -6,6 +6,6 @@ Description: Creates a sample project which shows how to use physics system's co
 FullDescription: Creates a sample project which shows how to use physics system's constraints, raycasting and character controllers.
 Group: Samples/Physics
 Icon: ../.xktpl/NewPhysics.png
-DefaultOutputName: Physics
+DefaultOutputName: Constraints
 Screenshots:
     - .xktpl/screenshot_small.png

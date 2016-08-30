@@ -6,6 +6,6 @@ Description: This sample contains several scenes, each of which shows one aspect
 FullDescription: This sample contains scenes for simple particle systems, animated particles, lasers, ribbons, child particle systems, custom materials for particles and custom particle updaters and modules.
 Group: Samples/Particles
 Icon: ../.xktpl/Icon.png
-DefaultOutputName: Particles
+DefaultOutputName: SimpleParticles
 Screenshots:
     - .xktpl/screenshot_small.jpg
