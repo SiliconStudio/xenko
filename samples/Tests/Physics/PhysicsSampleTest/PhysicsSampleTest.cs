@@ -60,6 +60,20 @@ namespace PhysicsSampleTest
                 game.Wait(TimeSpan.FromMilliseconds(1000));
                 game.TakeScreenshot();
 
+
+                game.KeyPress(Keys.Right, TimeSpan.FromMilliseconds(500));
+                game.Wait(TimeSpan.FromMilliseconds(1000));
+                game.TakeScreenshot();
+
+                game.KeyPress(Keys.Right, TimeSpan.FromMilliseconds(500));
+                game.Wait(TimeSpan.FromMilliseconds(1000));
+                game.TakeScreenshot();
+
+                game.KeyPress(Keys.Right, TimeSpan.FromMilliseconds(500));
+                game.Wait(TimeSpan.FromMilliseconds(1000));
+                game.TakeScreenshot();
+
+                game.KeyPress(Keys.Right, TimeSpan.FromMilliseconds(500));              
                 game.Wait(TimeSpan.FromMilliseconds(1000));
             }
         }
