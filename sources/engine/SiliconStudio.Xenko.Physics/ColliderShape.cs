@@ -46,27 +46,10 @@ namespace SiliconStudio.Xenko.Physics
         /// </summary>
         public void UpdateLocalTransformations()
         {
-            var inverseRotation = LocalRotation;
-            inverseRotation.Invert();
-
             //cache matrices used to translate the position from and to physics engine / gfx engine
-            Matrix positiveMatrix;
-            TransformComponent.CreateMatrixTRS(ref LocalOffset, ref LocalRotation, ref CachedScaling, out positiveMatrix);
-            PositiveCenterMatrix = positiveMatrix;
-            positiveMatrix.Invert();
-            NegativeCenterMatrix = positiveMatrix;
-
-            //if we are part of a compund we should update the transformation properly
-            if (Parent == null) return;
-            var compoundMatrix = Matrix.RotationQuaternion(LocalRotation) * Matrix.Translation(LocalOffset * CachedScaling);
-            var childs = Parent.InternalCompoundShape.ChildList;
-            for (var i = 0; i < childs.Count; i++)
-            {
-                if (childs[i].ChildShape == InternalShape)
-                {
-                    Parent.InternalCompoundShape.UpdateChildTransform(i, compoundMatrix, true);
-                }
-            }
+            PositiveCenterMatrix = Matrix.RotationQuaternion(LocalRotation) * Matrix.Translation(LocalOffset);
+            NegativeCenterMatrix = PositiveCenterMatrix;
+            NegativeCenterMatrix.Invert();
         }
 
         /// <summary>
@@ -107,7 +90,11 @@ namespace SiliconStudio.Xenko.Physics
 
                 CachedScaling = value;
                 if (Is2D) CachedScaling.Z = 0.0f;
-                InternalShape.LocalScaling = CachedScaling;
+
+                if (Parent == null)
+                {
+                    InternalShape.LocalScaling = CachedScaling;
+                }
 
                 UpdateLocalTransformations();
 

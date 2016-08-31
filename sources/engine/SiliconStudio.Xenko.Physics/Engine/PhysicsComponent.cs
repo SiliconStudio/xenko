@@ -457,6 +457,10 @@ namespace SiliconStudio.Xenko.Engine
             }
         }
 
+        /// <summary>
+        /// Computes the physics transformation from the TransformComponent values
+        /// </summary>
+        /// <returns></returns>
         internal void DeriveBonePhysicsTransformation(out Matrix derivedTransformation)
         {
             Quaternion rotation;
@@ -526,6 +530,10 @@ namespace SiliconStudio.Xenko.Engine
             entity.Transform.Rotation = rotation;
         }
 
+        /// <summary>
+        /// Updades the graphics transformation from the given physics transformation
+        /// </summary>
+        /// <param name="physicsTransform"></param>
         internal void UpdateBoneTransformation(ref Matrix physicsTransform)
         {
             if (ColliderShape.LocalOffset != Vector3.Zero || ColliderShape.LocalRotation != Quaternion.Identity)
