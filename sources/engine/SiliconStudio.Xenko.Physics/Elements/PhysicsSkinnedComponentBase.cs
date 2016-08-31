@@ -24,11 +24,8 @@ namespace SiliconStudio.Xenko.Physics
         [DataMember(190)]
         public string NodeName { get; set; }
 
-
-        protected override void OnAttach()
+        protected void SetupBoneLink()
         {
-            base.OnAttach();
-
             if (NodeName.IsNullOrEmpty() || Data.ModelComponent?.Skeleton == null) return;
 
             if (!Data.BoneMatricesUpdated)

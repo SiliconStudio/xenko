@@ -7,8 +7,8 @@
     <ProjectGuid>{66873EDD-9B6B-4A1F-A0D0-E4CD9BA06F0D}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SimpleParticlesTest</RootNamespace>
-    <AssemblyName>SimpleParticlesTest</AssemblyName>
+    <RootNamespace>ParticlesSampleTest</RootNamespace>
+    <AssemblyName>ParticlesSampleTest</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -72,7 +72,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="SimpleParticlesTest.cs" />
+    <Compile Include="ParticlesSampleTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="$(SiliconStudioXenkoDir)\sources\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>

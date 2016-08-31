@@ -55,7 +55,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Physics", "Physics", "{6B8A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CharacterControllerSampleTest", "Physics\CharacterControllerSampleTest\CharacterControllerSampleTest.csproj", "{C0C9585B-5D8F-4BDA-8363-7AD974B4BF10}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConstraintsTest", "Physics\ConstraintsTest\ConstraintsTest.csproj", "{FC878663-53F8-4F4E-9C75-2EB2CF669980}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhysicsSampleTest", "Physics\PhysicsSampleTest\PhysicsSampleTest.csproj", "{FC878663-53F8-4F4E-9C75-2EB2CF669980}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RaycastingTest", "Physics\RaycastingTest\RaycastingTest.csproj", "{A2BD1582-DF38-451F-B979-0CB805C4FD43}"
 EndProject
@@ -69,7 +69,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomAnimationTest", "Othe
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Particles", "Particles", "{2F0F0292-D828-4DB4-9B64-D6E7BE82E74B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleParticlesTest", "Particles\SimpleParticlesTest\SimpleParticlesTest.csproj", "{66873EDD-9B6B-4A1F-A0D0-E4CD9BA06F0D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParticlesSampleTest", "Particles\ParticlesSampleTest\ParticlesSampleTest.csproj", "{66873EDD-9B6B-4A1F-A0D0-E4CD9BA06F0D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomParticlesTest", "Particles\CustomParticlesTest\CustomParticlesTest.csproj", "{6F28D601-394E-4EDC-A6AF-89BD391552F5}"
 EndProject

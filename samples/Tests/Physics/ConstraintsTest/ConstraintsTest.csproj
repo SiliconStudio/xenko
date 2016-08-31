@@ -7,8 +7,8 @@
     <ProjectGuid>{FC878663-53F8-4F4E-9C75-2EB2CF669980}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>ConstraintsTest</RootNamespace>
-    <AssemblyName>ConstraintsTest</AssemblyName>
+    <RootNamespace>PhysicsSampleTest</RootNamespace>
+    <AssemblyName>PhysicsSampleTest</AssemblyName>
     <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -69,7 +69,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConstraintsTest.cs" />
+    <Compile Include="PhysicsSampleTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="$(SiliconStudioXenkoDir)\sources\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
