@@ -169,14 +169,14 @@ namespace SiliconStudio.Assets
                     var type = RegisteredDefaultAssetExtension.Where(x => x.Value == extension).Select(x => x.Key).FirstOrDefault();
                     if (type != null)
                     {
-                        return typeof(ProjectCodeGeneratorAsset).IsAssignableFrom(type);
+                        return typeof(IProjectFileGeneratorAsset).IsAssignableFrom(type);
                     }
                 }
                 return false;
             }
         }
 
-        public static bool IsProjectSourceCodeAssetFileExtension(string extension)
+        public static bool IsProjectAssetFileExtension(string extension)
         {
             if (extension == null) return false;
             lock (RegisteredAssetFileExtensions)
@@ -187,7 +187,7 @@ namespace SiliconStudio.Assets
                     var type = RegisteredDefaultAssetExtension.Where(x => x.Value == extension).Select(x => x.Key).FirstOrDefault();
                     if (type != null)
                     {
-                        return typeof(ProjectSourceCodeAsset).IsAssignableFrom(type);
+                        return typeof(IProjectAsset).IsAssignableFrom(type);
                     }
                 }
                 return false;

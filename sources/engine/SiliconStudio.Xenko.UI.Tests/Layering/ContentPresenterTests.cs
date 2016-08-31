@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
     /// <summary>
     /// A class that contains test functions for layering of the <see cref="ContentPresenter"/> class.
     /// </summary>
-    [TestFixture]
+    [TestFixture, Ignore("ContentPresenter is deprecated.")]
     [System.ComponentModel.Description("Tests for ContentPresenter layering")]
     public class ContentPresenterTests : ContentPresenter
     {

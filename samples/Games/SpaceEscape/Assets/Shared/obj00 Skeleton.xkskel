@@ -1,7 +1,9 @@
 !Skeleton
 Id: 9f53d2c9-5a21-4440-aa65-f849e0385304
+SerializedVersion: {Xenko: 1.7.8-beta}
 Tags: []
 Source: ../../Resources/model/BG/scene/obj00.FBX
+PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Nodes:
     - {~Id: defa0a51-df2e-4c71-b1f5-5213d4ab9afe, Name: RootNode, Depth: 0}
     - {~Id: 5f0b062c-c796-47b6-9223-b463d54c667a, Name: Root, Depth: 1}

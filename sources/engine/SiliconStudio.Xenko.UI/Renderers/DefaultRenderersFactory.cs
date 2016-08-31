@@ -21,19 +21,17 @@ namespace SiliconStudio.Xenko.UI.Renderers
         public DefaultRenderersFactory(IServiceRegistry services)
         {
             defaultRenderer = new ElementRenderer(services);
-            typeToRenderers[typeof(ImageElement)] = new DefaultImageRenderer(services);
+            typeToRenderers[typeof(Border)] = new DefaultBorderRenderer(services);
             typeToRenderers[typeof(Button)] = new DefaultButtonRenderer(services);
-            typeToRenderers[typeof(ImageButton)] = new ElementRenderer(services);
-            typeToRenderers[typeof(ToggleButton)] = new ElementRenderer(services);
-            typeToRenderers[typeof(TextBlock)] = new DefaultTextBlockRenderer(services);
-            typeToRenderers[typeof(ScrollingText)] = new DefaultScrollingTextRenderer(services);
+            typeToRenderers[typeof(ContentDecorator)] = new DefaultContentDecoratorRenderer(services);
+            typeToRenderers[typeof(EditText)] = new DefaultEditTextRenderer(services);
+            typeToRenderers[typeof(ImageElement)] = new DefaultImageRenderer(services);
             typeToRenderers[typeof(ModalElement)] = new DefaultModalElementRenderer(services);
             typeToRenderers[typeof(ScrollBar)] = new DefaultScrollBarRenderer(services);
-            typeToRenderers[typeof(EditText)] = new DefaultEditTextRenderer(services);
-            typeToRenderers[typeof(ContentDecorator)] = new DefaultContentDecoratorRenderer(services);
-            typeToRenderers[typeof(Border)] = new DefaultBorderRenderer(services);
-            typeToRenderers[typeof(ToggleButton)] = new DefaultToggleButtonRenderer(services);
+            typeToRenderers[typeof(ScrollingText)] = new DefaultScrollingTextRenderer(services);
             typeToRenderers[typeof(Slider)] = new DefaultSliderRenderer(services);
+            typeToRenderers[typeof(TextBlock)] = new DefaultTextBlockRenderer(services);
+            typeToRenderers[typeof(ToggleButton)] = new DefaultToggleButtonRenderer(services);
         }
 
         public ElementRenderer TryCreateRenderer(UIElement element)

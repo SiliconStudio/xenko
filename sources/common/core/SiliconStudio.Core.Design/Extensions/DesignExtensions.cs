@@ -151,6 +151,9 @@ namespace SiliconStudio.Core.Extensions
             var nodes = new Stack<T>();
             foreach (var item in source)
             {
+                if (item == null)
+                    continue;
+
                 nodes.Push(item);
                 while (nodes.Count > 0)
                 {

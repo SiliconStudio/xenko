@@ -91,15 +91,18 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             var uiEntity = new Entity();
 
             // Create a procedural model with a diffuse material
-            var uiComponent = new UIComponent();
-            uiComponent.RootElement = new UniformGrid { Children = { background, grid } };
-
-            uiComponent.Resolution = new Vector3(100, 100, 100);    // Same size as the inner grid
-            uiComponent.IsFullScreen = false;
-//            uiComponent.IsBillboard = true;
-            uiComponent.IsFixedSize = fixedSize;
-            uiComponent.Size = new Vector3(0.1f);   // 10% of the vertical resolution
-
+            var uiComponent = new UIComponent
+            {
+                Page = new UIPage
+                {
+                    RootElement = new UniformGrid { Children = { background, grid } }
+                },
+                //IsBillboard = true,
+                IsFixedSize = fixedSize,
+                IsFullScreen = false,
+                Resolution = new Vector3(100, 100, 100), // Same size as the inner grid
+                Size = new Vector3(0.1f), // 10% of the vertical resolution
+            };
             uiEntity.Add(uiComponent);
 
             uiEntity.Transform.Position = position;

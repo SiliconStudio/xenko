@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine;
 
@@ -8,21 +10,17 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// A <see cref="ContentControl"/> decorating its <see cref="ContentControl.Content"/> with a background image.
     /// </summary>
+    [DataContract(nameof(ContentDecorator))]
     public class ContentDecorator : ContentControl
     {
         /// <summary>
-        /// The key to the NotPressedImage dependency property.
+        /// Gets or sets the background image.
         /// </summary>
-        public static readonly PropertyKey<ISpriteProvider> BackgroundImagePropertyKey = new PropertyKey<ISpriteProvider>("BackgroundImageKey", typeof(ContentDecorator), DefaultValueMetadata.Static<ISpriteProvider>(null));
-        
-        /// <summary>
-        /// Gets or sets the image that the button displays when pressed
-        /// </summary>
-        public ISpriteProvider BackgroundImage
-        {
-            get { return DependencyProperties.Get(BackgroundImagePropertyKey); }
-            set { DependencyProperties.Set(BackgroundImagePropertyKey, value); }
-        }
+        /// <userdoc>The background image.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(null)]
+        public ISpriteProvider BackgroundImage { get; set; }
 
         public ContentDecorator()
         {

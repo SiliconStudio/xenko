@@ -110,8 +110,7 @@ namespace SiliconStudio.Xenko.Graphics
             PrimitiveQuad.Dispose();
 
             // Notify listeners
-            if (Disposing != null)
-                Disposing(this, EventArgs.Empty);
+            Disposing?.Invoke(this, EventArgs.Empty);
 
             // Destroy resources
             lock (Resources)

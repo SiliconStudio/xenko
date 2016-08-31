@@ -18,6 +18,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
     [System.ComponentModel.Description("Tests for EditText layering")]
     public class EditTextTests
     {
+        class DummyFont : SpriteFont { }
+
         /// <summary>
         /// Test the invalidations generated object property changes.
         /// </summary>
@@ -31,7 +33,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             edit.UIElementServices = new UIElementServices { Services = services };
 
             // - test the properties that are supposed to invalidate the object measurement
-            UIElementLayeringTests.TestMeasureInvalidation(edit, () => edit.Font = null);
+            UIElementLayeringTests.TestMeasureInvalidation(edit, () => edit.Font = new DummyFont());
+            edit.Font = null;
             UIElementLayeringTests.TestMeasureInvalidation(edit, () => edit.MaxLines = 34);
             UIElementLayeringTests.TestMeasureInvalidation(edit, () => edit.MinLines = 34);
             UIElementLayeringTests.TestMeasureInvalidation(edit, () => edit.SelectedText = "toto");

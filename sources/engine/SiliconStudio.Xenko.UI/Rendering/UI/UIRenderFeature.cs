@@ -122,7 +122,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
             foreach (var uiElementState in uiElementStates)
             {
                 var uiComponent = uiElementState.RenderObject.UIComponent;
-                var rootElement = uiComponent.RootElement;
+                var rootElement = uiComponent.Page?.RootElement;
                 if (rootElement == null)
                     continue;
                 
@@ -160,7 +160,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
             foreach (var uiElementState in uiElementStates)
             {
                 var uiComponent = uiElementState.RenderObject.UIComponent;
-                var rootElement = uiComponent.RootElement;
+                var rootElement = uiComponent.Page?.RootElement;
                 if (rootElement == null)
                     continue;
 
@@ -227,7 +227,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 batch.Begin(context.GraphicsContext, ref uiElementState.WorldViewProjectionMatrix, BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
 
                 // Render the UI elements in the final render target
-                ReccursiveDrawWithClipping(context, rootElement, ref uiElementState.WorldViewProjectionMatrix);
+                RecursiveDrawWithClipping(context, rootElement, ref uiElementState.WorldViewProjectionMatrix);
 
                 // end the image draw session
                 batch.End();
@@ -245,7 +245,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
             }
         }
 
-        private void ReccursiveDrawWithClipping(RenderDrawContext context, UIElement element, ref Matrix worldViewProj)
+        private void RecursiveDrawWithClipping(RenderDrawContext context, UIElement element, ref Matrix worldViewProj)
         {
             // if the element is not visible, we also remove all its children
             if (!element.IsVisible)
@@ -275,7 +275,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
             // render the children
             foreach (var child in element.VisualChildrenCollection)
-                ReccursiveDrawWithClipping(context, child, ref worldViewProj);
+                RecursiveDrawWithClipping(context, child, ref worldViewProj);
 
             // clear the element clipping region from the stencil buffer
             if (element.ClipToBounds)

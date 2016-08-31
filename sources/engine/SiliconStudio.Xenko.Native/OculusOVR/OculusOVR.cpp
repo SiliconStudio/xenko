@@ -269,12 +269,13 @@ extern "C" {
 	struct xnOvrSession
 	{
 		ovrSession Session;
-		ovrTextureSwapChain SwapChain;
 		ovrMirrorTexture Mirror;
+		ovrHmdDesc HmdDesc;
 		ovrEyeRenderDesc EyeRenderDesc[2];
 		ovrVector3f HmdToEyeViewOffset[2];
+
+		ovrTextureSwapChain SwapChain;
 		ovrLayerEyeFov Layer;
-		ovrHmdDesc HmdDesc;
 	};
 
 	xnOvrSession* xnOvrCreateSessionDx(int64_t* luidOut)
@@ -369,10 +370,79 @@ extern "C" {
 		return true;
 	}
 
+	struct xnOvrQuadLayer
+	{
+		ovrTextureSwapChain SwapChain;
+		ovrLayerQuad Layer;
+	};
+
+	xnOvrQuadLayer* xnOvrCreateQuadLayerTexturesDx(xnOvrSession* session, void* dxDevice, int* outTextureCount, int width, int height, bool headLocked)
+	{
+		auto layer = new xnOvrQuadLayer;
+
+		ovrTextureSwapChainDesc texDesc = {};
+		texDesc.Type = ovrTexture_2D;
+		texDesc.Format = OVR_FORMAT_R8G8B8A8_UNORM_SRGB;
+		texDesc.ArraySize = 1;
+		texDesc.Width = width;
+		texDesc.Height = height;
+		texDesc.MipLevels = 1;
+		texDesc.SampleCount = 1;
+		texDesc.StaticImage = ovrFalse;
+		texDesc.MiscFlags = ovrTextureMisc_None;
+		texDesc.BindFlags = ovrTextureBind_DX_RenderTarget;
+
+		if (!OVR_SUCCESS(ovr_CreateTextureSwapChainDXFunc(session->Session, dxDevice, &texDesc, &layer->SwapChain)))
+		{
+			delete layer;
+			return NULL;
+		}
+
+		auto count = 0;
+		ovr_GetTextureSwapChainLengthFunc(session->Session, layer->SwapChain, &count);
+		*outTextureCount = count;
+
+		layer->Layer.Header.Type = ovrLayerType_Quad;
+		layer->Layer.Header.Flags = headLocked ? ovrLayerFlag_HeadLocked | ovrLayerFlag_HighQuality : ovrLayerFlag_HighQuality;
+		layer->Layer.ColorTexture = layer->SwapChain;
+		layer->Layer.Viewport.Pos.x = 0;
+		layer->Layer.Viewport.Pos.y = 0;
+		layer->Layer.Viewport.Size.w = width;
+		layer->Layer.Viewport.Size.h = height;
+		layer->Layer.QuadPoseCenter.Orientation.x = 0;
+		layer->Layer.QuadPoseCenter.Orientation.y = 0;
+		layer->Layer.QuadPoseCenter.Orientation.z = 0;
+		layer->Layer.QuadPoseCenter.Orientation.w = 1;
+		layer->Layer.QuadPoseCenter.Position.x = 0;
+		layer->Layer.QuadPoseCenter.Position.y = 0;
+		layer->Layer.QuadPoseCenter.Position.z = -1;
+		layer->Layer.QuadSize.x = 2;
+		layer->Layer.QuadSize.y = 2;
+
+		return layer;
+	}
+
+	void xnOvrSetQuadLayerParams(xnOvrQuadLayer* layer, float* position, float* orientation, float* size)
+	{
+		memcpy(&layer->Layer.QuadPoseCenter.Orientation, orientation, sizeof(float) * 4);
+		memcpy(&layer->Layer.QuadPoseCenter.Position, position, sizeof(float) * 3);
+		memcpy(&layer->Layer.QuadSize, size, sizeof(float) * 2);
+	}
+
 	void* xnOvrGetTextureAtIndexDx(xnOvrSession* session, GUID textureGuid, int index)
 	{
 		void* texture = NULL;
 		if (!OVR_SUCCESS(ovr_GetTextureSwapChainBufferDXFunc(session->Session, session->SwapChain, index, textureGuid, &texture)))
+		{
+			return NULL;
+		}
+		return texture;
+	}
+
+	void* xnOvrGetQuadLayerTextureAtIndexDx(xnOvrSession* session, xnOvrQuadLayer* layer, GUID textureGuid, int index)
+	{
+		void* texture = NULL;
+		if (!OVR_SUCCESS(ovr_GetTextureSwapChainBufferDXFunc(session->Session, layer->SwapChain, index, textureGuid, &texture)))
 		{
 			return NULL;
 		}
@@ -393,6 +463,13 @@ extern "C" {
 	{
 		int index;
 		ovr_GetTextureSwapChainCurrentIndexFunc(session->Session, session->SwapChain, &index);
+		return index;
+	}
+
+	int xnOvrGetCurrentQuadLayerTargetIndex(xnOvrSession* session, xnOvrQuadLayer* layer)
+	{
+		int index;
+		ovr_GetTextureSwapChainCurrentIndexFunc(session->Session, layer->SwapChain, &index);
 		return index;
 	}
 
@@ -436,11 +513,22 @@ extern "C" {
 		memcpy(properties->RotRight, &session->Layer.RenderPose[1].Orientation, sizeof(float) * 4);
 	}
 
-	bool xnOvrCommitFrame(xnOvrSession* session)
+	bool xnOvrCommitFrame(xnOvrSession* session, xnOvrQuadLayer** extraLayers, int numberOfExtraLayers)
 	{
+		ovrLayerHeader* layers[1 + numberOfExtraLayers];
+		//add the default layer first
+		layers[0] = &session->Layer.Header;
+		//commit the default fov layer
 		ovr_CommitTextureSwapChainFunc(session->Session, session->SwapChain);
-		ovrLayerHeader* layers[1] = { &session->Layer.Header };
-		if(!OVR_SUCCESS(ovr_SubmitFrameFunc(session->Session, 0, NULL, layers, 1)))
+		for (auto i = 0; i < numberOfExtraLayers; i++)
+		{
+			//add further quad layers
+			layers[i + 1] = &extraLayers[i]->Layer.Header;
+			//also commit the quad layer
+			ovr_CommitTextureSwapChainFunc(session->Session, extraLayers[i]->SwapChain);
+		}
+
+		if(!OVR_SUCCESS(ovr_SubmitFrameFunc(session->Session, 0, NULL, layers, 1 + numberOfExtraLayers)))
 		{
 			return false;
 		}
@@ -590,6 +678,25 @@ extern "C" {
 	}
 
 	void xnOvrGetAudioDeviceID(wchar_t* deviceString)
+	{
+	}
+
+	void* xnOvrCreateQuadLayerTexturesDx(void* session, void* dxDevice, int* outTextureCount, int width, int height, bool headLocked)
+	{
+		return NULL;
+	}
+
+	int xnOvrGetCurrentQuadLayerTargetIndex(void* session, void* layer)
+	{
+		return 0;
+	}
+
+	void* xnOvrGetQuadLayerTextureAtIndexDx(void* session, void* layer, GUID textureGuid, int index)
+	{
+		return NULL;
+	}
+
+	void xnOvrSetQuadLayerParams(void* layer, float* position, float* orientation, float* size)
 	{
 	}
 }

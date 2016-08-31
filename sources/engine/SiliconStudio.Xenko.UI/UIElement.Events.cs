@@ -3,109 +3,81 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
 using System.Reflection;
-
 using SiliconStudio.Core;
-using SiliconStudio.Core.Collections;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.UI.Events;
 
 namespace SiliconStudio.Xenko.UI
 {
-    public abstract partial class UIElement : IUIElementUpdate
+    public abstract partial class UIElement
     {
         #region Routed Events
 
-        private static readonly RoutedEvent<TouchEventArgs> previewTouchDownEvent = EventManager.RegisterRoutedEvent<TouchEventArgs>(
-            "PreviewTouchDown",
-            RoutingStrategy.Tunnel,
-            typeof(UIElement));
+        private static readonly RoutedEvent<TouchEventArgs> PreviewTouchDownEvent =
+            EventManager.RegisterRoutedEvent<TouchEventArgs>("PreviewTouchDown", RoutingStrategy.Tunnel, typeof(UIElement));
 
-        private static readonly RoutedEvent<TouchEventArgs> previewTouchMoveEvent = EventManager.RegisterRoutedEvent<TouchEventArgs>(
-            "PreviewTouchMove",
-            RoutingStrategy.Tunnel,
-            typeof(UIElement));
+        private static readonly RoutedEvent<TouchEventArgs> PreviewTouchMoveEvent =
+            EventManager.RegisterRoutedEvent<TouchEventArgs>("PreviewTouchMove", RoutingStrategy.Tunnel, typeof(UIElement));
 
-        private static readonly RoutedEvent<TouchEventArgs> previewTouchUpEvent = EventManager.RegisterRoutedEvent<TouchEventArgs>(
-            "PreviewTouchUp",
-            RoutingStrategy.Tunnel,
-            typeof(UIElement));
+        private static readonly RoutedEvent<TouchEventArgs> PreviewTouchUpEvent =
+            EventManager.RegisterRoutedEvent<TouchEventArgs>("PreviewTouchUp", RoutingStrategy.Tunnel, typeof(UIElement));
 
-        private static readonly RoutedEvent<TouchEventArgs> touchDownEvent = EventManager.RegisterRoutedEvent<TouchEventArgs>(
-            "TouchDown",
-            RoutingStrategy.Bubble,
-            typeof(UIElement));
+        private static readonly RoutedEvent<TouchEventArgs> TouchDownEvent =
+            EventManager.RegisterRoutedEvent<TouchEventArgs>("TouchDown", RoutingStrategy.Bubble, typeof(UIElement));
 
-        private static readonly RoutedEvent<TouchEventArgs> touchEnterEvent = EventManager.RegisterRoutedEvent<TouchEventArgs>(
-            "TouchEnter",
-            RoutingStrategy.Direct,
-            typeof(UIElement));
+        private static readonly RoutedEvent<TouchEventArgs> TouchEnterEvent =
+            EventManager.RegisterRoutedEvent<TouchEventArgs>("TouchEnter", RoutingStrategy.Direct, typeof(UIElement));
 
-        private static readonly RoutedEvent<TouchEventArgs> touchLeaveEvent = EventManager.RegisterRoutedEvent<TouchEventArgs>(
-            "TouchLeave",
-            RoutingStrategy.Direct,
-            typeof(UIElement));
+        private static readonly RoutedEvent<TouchEventArgs> TouchLeaveEvent =
+            EventManager.RegisterRoutedEvent<TouchEventArgs>("TouchLeave", RoutingStrategy.Direct, typeof(UIElement));
 
-        private static readonly RoutedEvent<TouchEventArgs> touchMoveEvent = EventManager.RegisterRoutedEvent<TouchEventArgs>(
-            "TouchMove",
-            RoutingStrategy.Bubble,
-            typeof(UIElement));
+        private static readonly RoutedEvent<TouchEventArgs> TouchMoveEvent =
+            EventManager.RegisterRoutedEvent<TouchEventArgs>("TouchMove", RoutingStrategy.Bubble, typeof(UIElement));
 
-        private static readonly RoutedEvent<TouchEventArgs> touchUpEvent = EventManager.RegisterRoutedEvent<TouchEventArgs>(
-            "TouchUp",
-            RoutingStrategy.Bubble,
-            typeof(UIElement));
+        private static readonly RoutedEvent<TouchEventArgs> TouchUpEvent =
+            EventManager.RegisterRoutedEvent<TouchEventArgs>("TouchUp", RoutingStrategy.Bubble, typeof(UIElement));
 
-        private static readonly RoutedEvent<KeyEventArgs> keyPressedEvent = EventManager.RegisterRoutedEvent<KeyEventArgs>(
-            "KeyPressed",
-            RoutingStrategy.Bubble,
-            typeof(UIElement));
+        private static readonly RoutedEvent<KeyEventArgs> KeyPressedEvent =
+            EventManager.RegisterRoutedEvent<KeyEventArgs>("KeyPressed", RoutingStrategy.Bubble, typeof(UIElement));
 
-        private static readonly RoutedEvent<KeyEventArgs> keyDownEvent = EventManager.RegisterRoutedEvent<KeyEventArgs>(
-            "KeyDown",
-            RoutingStrategy.Bubble,
-            typeof(UIElement));
+        private static readonly RoutedEvent<KeyEventArgs> KeyDownEvent =
+            EventManager.RegisterRoutedEvent<KeyEventArgs>("KeyDown", RoutingStrategy.Bubble, typeof(UIElement));
 
-        private static readonly RoutedEvent<KeyEventArgs> keyReleasedEvent = EventManager.RegisterRoutedEvent<KeyEventArgs>(
-            "KeyReleased",
-            RoutingStrategy.Bubble,
-            typeof(UIElement));
+        private static readonly RoutedEvent<KeyEventArgs> KeyReleasedEvent =
+            EventManager.RegisterRoutedEvent<KeyEventArgs>("KeyReleased", RoutingStrategy.Bubble,typeof(UIElement));
 
         #endregion
 
-        private readonly static Queue<List<RoutedEventHandlerInfo>> routedEventHandlerInfoListPool = new Queue<List<RoutedEventHandlerInfo>>();
+        private static readonly Queue<List<RoutedEventHandlerInfo>> RoutedEventHandlerInfoListPool = new Queue<List<RoutedEventHandlerInfo>>();
 
         static UIElement()
         {
             // register the class handlers
-            EventManager.RegisterClassHandler(typeof(UIElement), previewTouchDownEvent, PreviewTouchDownClassHandler);
-            EventManager.RegisterClassHandler(typeof(UIElement), previewTouchMoveEvent, PreviewTouchMoveClassHandler);
-            EventManager.RegisterClassHandler(typeof(UIElement), previewTouchUpEvent, PreviewTouchUpClassHandler);
-            EventManager.RegisterClassHandler(typeof(UIElement), touchDownEvent, TouchDownClassHandler);
-            EventManager.RegisterClassHandler(typeof(UIElement), touchEnterEvent, TouchEnterClassHandler);
-            EventManager.RegisterClassHandler(typeof(UIElement), touchLeaveEvent, TouchLeaveClassHandler);
-            EventManager.RegisterClassHandler(typeof(UIElement), touchMoveEvent, TouchMoveClassHandler);
-            EventManager.RegisterClassHandler(typeof(UIElement), touchUpEvent, TouchUpClassHandler);
-            EventManager.RegisterClassHandler(typeof(UIElement), keyPressedEvent, KeyPressedClassHandler);
-            EventManager.RegisterClassHandler(typeof(UIElement), keyDownEvent, KeyDownClassHandler);
-            EventManager.RegisterClassHandler(typeof(UIElement), keyReleasedEvent, KeyReleasedClassHandler);
+            EventManager.RegisterClassHandler(typeof(UIElement), PreviewTouchDownEvent, PreviewTouchDownClassHandler);
+            EventManager.RegisterClassHandler(typeof(UIElement), PreviewTouchMoveEvent, PreviewTouchMoveClassHandler);
+            EventManager.RegisterClassHandler(typeof(UIElement), PreviewTouchUpEvent, PreviewTouchUpClassHandler);
+            EventManager.RegisterClassHandler(typeof(UIElement), TouchDownEvent, TouchDownClassHandler);
+            EventManager.RegisterClassHandler(typeof(UIElement), TouchEnterEvent, TouchEnterClassHandler);
+            EventManager.RegisterClassHandler(typeof(UIElement), TouchLeaveEvent, TouchLeaveClassHandler);
+            EventManager.RegisterClassHandler(typeof(UIElement), TouchMoveEvent, TouchMoveClassHandler);
+            EventManager.RegisterClassHandler(typeof(UIElement), TouchUpEvent, TouchUpClassHandler);
+            EventManager.RegisterClassHandler(typeof(UIElement), KeyPressedEvent, KeyPressedClassHandler);
+            EventManager.RegisterClassHandler(typeof(UIElement), KeyDownEvent, KeyDownClassHandler);
+            EventManager.RegisterClassHandler(typeof(UIElement), KeyReleasedEvent, KeyReleasedClassHandler);
         }
-    
 
         /// <summary>
         /// Gets a value indicating whether the <see cref="UIElement"/> is currently touched by the user.
         /// </summary>
+        [DataMemberIgnore]
         public bool IsTouched { get; internal set; }
-       
 
         /// <summary>
         /// Gets the current state of the mouse over the UI element.
         /// </summary>
         /// <remarks>Only elements that can be clicked by user can have the <cref>MouseOverState.MouseOverElement</cref> value. 
         /// That is element that have <see cref="CanBeHitByUser"/> set to <value>true</value></remarks>
+        [DataMemberIgnore]
         public MouseOverState MouseOverState
         {
             get { return mouseOverState; }
@@ -138,9 +110,9 @@ namespace SiliconStudio.Xenko.UI
             if (eventsToHandlers.ContainsKey(routedEvent))
             {
                 // get a list of handler from the pool where we can copy the handler to trigger
-                if (routedEventHandlerInfoListPool.Count == 0)
-                    routedEventHandlerInfoListPool.Enqueue(new List<RoutedEventHandlerInfo>());
-                var pooledList = routedEventHandlerInfoListPool.Dequeue();
+                if (RoutedEventHandlerInfoListPool.Count == 0)
+                    RoutedEventHandlerInfoListPool.Enqueue(new List<RoutedEventHandlerInfo>());
+                var pooledList = RoutedEventHandlerInfoListPool.Dequeue();
 
                 // copy the RoutedEventHandlerEventInfo list into a list of the pool in order to be able to modify the handler list in the handler itself
                 pooledList.AddRange(eventsToHandlers[routedEvent]);
@@ -154,7 +126,7 @@ namespace SiliconStudio.Xenko.UI
 
                 // add the pooled list back to the pool.
                 pooledList.Clear(); // avoid to keep dead references
-                routedEventHandlerInfoListPool.Enqueue(pooledList);
+                RoutedEventHandlerInfoListPool.Enqueue(pooledList);
             }
 
             // propagate afterwards if bubbling
@@ -248,8 +220,8 @@ namespace SiliconStudio.Xenko.UI
         /// <remarks>A click event is tunneling</remarks>
         public event EventHandler<TouchEventArgs> PreviewTouchDown
         {
-            add { AddHandler(previewTouchDownEvent, value); }
-            remove { RemoveHandler(previewTouchDownEvent, value); }
+            add { AddHandler(PreviewTouchDownEvent, value); }
+            remove { RemoveHandler(PreviewTouchDownEvent, value); }
         }
 
         /// <summary>
@@ -259,8 +231,8 @@ namespace SiliconStudio.Xenko.UI
         /// <remarks>A click event is tunneling</remarks>
         public event EventHandler<TouchEventArgs> PreviewTouchMove
         {
-            add { AddHandler(previewTouchMoveEvent, value); }
-            remove { RemoveHandler(previewTouchMoveEvent, value); }
+            add { AddHandler(PreviewTouchMoveEvent, value); }
+            remove { RemoveHandler(PreviewTouchMoveEvent, value); }
         }
 
         /// <summary>
@@ -269,8 +241,8 @@ namespace SiliconStudio.Xenko.UI
         /// <remarks>A click event is tunneling</remarks>
         public event EventHandler<TouchEventArgs> PreviewTouchUp
         {
-            add { AddHandler(previewTouchUpEvent, value); }
-            remove { RemoveHandler(previewTouchUpEvent, value); }
+            add { AddHandler(PreviewTouchUpEvent, value); }
+            remove { RemoveHandler(PreviewTouchUpEvent, value); }
         }
 
         /// <summary>
@@ -279,8 +251,8 @@ namespace SiliconStudio.Xenko.UI
         /// <remarks>A click event is bubbling</remarks>
         public event EventHandler<TouchEventArgs> TouchDown
         {
-            add { AddHandler(touchDownEvent, value); }
-            remove { RemoveHandler(touchDownEvent, value); }
+            add { AddHandler(TouchDownEvent, value); }
+            remove { RemoveHandler(TouchDownEvent, value); }
         }
 
         /// <summary>
@@ -290,8 +262,8 @@ namespace SiliconStudio.Xenko.UI
         /// <remarks>A click event is bubbling</remarks>
         public event EventHandler<TouchEventArgs> TouchEnter
         {
-            add { AddHandler(touchEnterEvent, value); }
-            remove { RemoveHandler(touchEnterEvent, value); }
+            add { AddHandler(TouchEnterEvent, value); }
+            remove { RemoveHandler(TouchEnterEvent, value); }
         }
 
         /// <summary>
@@ -301,8 +273,8 @@ namespace SiliconStudio.Xenko.UI
         /// <remarks>A click event is bubbling</remarks>
         public event EventHandler<TouchEventArgs> TouchLeave
         {
-            add { AddHandler(touchLeaveEvent, value); }
-            remove { RemoveHandler(touchLeaveEvent, value); }
+            add { AddHandler(TouchLeaveEvent, value); }
+            remove { RemoveHandler(TouchLeaveEvent, value); }
         }
 
         /// <summary>
@@ -312,8 +284,8 @@ namespace SiliconStudio.Xenko.UI
         /// <remarks>A click event is bubbling</remarks>
         public event EventHandler<TouchEventArgs> TouchMove
         {
-            add { AddHandler(touchMoveEvent, value); }
-            remove { RemoveHandler(touchMoveEvent, value); }
+            add { AddHandler(TouchMoveEvent, value); }
+            remove { RemoveHandler(TouchMoveEvent, value); }
         }
 
         /// <summary>
@@ -322,8 +294,8 @@ namespace SiliconStudio.Xenko.UI
         /// <remarks>A click event is bubbling</remarks>
         public event EventHandler<TouchEventArgs> TouchUp
         {
-            add { AddHandler(touchUpEvent, value); }
-            remove { RemoveHandler(touchUpEvent, value); }
+            add { AddHandler(TouchUpEvent, value); }
+            remove { RemoveHandler(TouchUpEvent, value); }
         }
 
         /// <summary>
@@ -332,8 +304,8 @@ namespace SiliconStudio.Xenko.UI
         /// <remarks>A key pressed event is bubbling</remarks>
         internal event EventHandler<KeyEventArgs> KeyPressed
         {
-            add { AddHandler(keyPressedEvent, value); }
-            remove { RemoveHandler(keyPressedEvent, value); }
+            add { AddHandler(KeyPressedEvent, value); }
+            remove { RemoveHandler(KeyPressedEvent, value); }
         }
 
         /// <summary>
@@ -342,8 +314,8 @@ namespace SiliconStudio.Xenko.UI
         /// <remarks>A key down event is bubbling</remarks>
         internal event EventHandler<KeyEventArgs> KeyDown
         {
-            add { AddHandler(keyDownEvent, value); }
-            remove { RemoveHandler(keyDownEvent, value); }
+            add { AddHandler(KeyDownEvent, value); }
+            remove { RemoveHandler(KeyDownEvent, value); }
         }
 
         /// <summary>
@@ -352,8 +324,8 @@ namespace SiliconStudio.Xenko.UI
         /// <remarks>A key released event is bubbling</remarks>
         internal event EventHandler<KeyEventArgs> KeyReleased
         {
-            add { AddHandler(keyReleasedEvent, value); }
-            remove { RemoveHandler(keyReleasedEvent, value); }
+            add { AddHandler(KeyReleasedEvent, value); }
+            remove { RemoveHandler(KeyReleasedEvent, value); }
         }
 
         #endregion
@@ -362,58 +334,58 @@ namespace SiliconStudio.Xenko.UI
 
         internal void RaiseTouchDownEvent(TouchEventArgs touchArgs)
         {
-            touchArgs.RoutedEvent = previewTouchDownEvent;
+            touchArgs.RoutedEvent = PreviewTouchDownEvent;
             RaiseEvent(touchArgs);
 
-            touchArgs.RoutedEvent = touchDownEvent;
+            touchArgs.RoutedEvent = TouchDownEvent;
             RaiseEvent(touchArgs);
         }
 
         internal void RaiseTouchEnterEvent(TouchEventArgs touchArgs)
         {
-            touchArgs.RoutedEvent = touchEnterEvent;
+            touchArgs.RoutedEvent = TouchEnterEvent;
             RaiseEvent(touchArgs);
         }
 
         internal void RaiseTouchLeaveEvent(TouchEventArgs touchArgs)
         {
-            touchArgs.RoutedEvent = touchLeaveEvent;
+            touchArgs.RoutedEvent = TouchLeaveEvent;
             RaiseEvent(touchArgs);
         }
 
         internal void RaiseTouchMoveEvent(TouchEventArgs touchArgs)
         {
-            touchArgs.RoutedEvent = previewTouchMoveEvent;
+            touchArgs.RoutedEvent = PreviewTouchMoveEvent;
             RaiseEvent(touchArgs);
 
-            touchArgs.RoutedEvent = touchMoveEvent;
+            touchArgs.RoutedEvent = TouchMoveEvent;
             RaiseEvent(touchArgs);
         }
 
         internal void RaiseTouchUpEvent(TouchEventArgs touchArgs)
         {
-            touchArgs.RoutedEvent = previewTouchUpEvent;
+            touchArgs.RoutedEvent = PreviewTouchUpEvent;
             RaiseEvent(touchArgs);
 
-            touchArgs.RoutedEvent = touchUpEvent;
+            touchArgs.RoutedEvent = TouchUpEvent;
             RaiseEvent(touchArgs);
         }
 
         internal void RaiseKeyPressedEvent(KeyEventArgs keyEventArgs)
         {
-            keyEventArgs.RoutedEvent = keyPressedEvent;
+            keyEventArgs.RoutedEvent = KeyPressedEvent;
             RaiseEvent(keyEventArgs);
         }
 
         internal void RaiseKeyDownEvent(KeyEventArgs keyEventArgs)
         {
-            keyEventArgs.RoutedEvent = keyDownEvent;
+            keyEventArgs.RoutedEvent = KeyDownEvent;
             RaiseEvent(keyEventArgs);
         }
 
         internal void RaiseKeyReleasedEvent(KeyEventArgs keyEventArgs)
         {
-            keyEventArgs.RoutedEvent = keyReleasedEvent;
+            keyEventArgs.RoutedEvent = KeyReleasedEvent;
             RaiseEvent(keyEventArgs);
         }
 

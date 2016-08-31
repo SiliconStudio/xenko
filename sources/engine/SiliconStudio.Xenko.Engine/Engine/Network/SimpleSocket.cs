@@ -81,8 +81,7 @@ namespace SiliconStudio.Xenko.Engine.Network
                     // it sometimes happen when doing port forwarding because service don't refuse connection right away but only fails when sending data)
                     await SendAndReceiveAck(clientSocketContext.socket, MagicAck, MagicAck);
 
-                    if (Connected != null)
-                        Connected(clientSocketContext);
+                    Connected?.Invoke(clientSocketContext);
 
                     clientSocketContext.isConnected = true;
                 }
@@ -126,8 +125,7 @@ namespace SiliconStudio.Xenko.Engine.Network
                 if (needAck)
                     await SendAndReceiveAck(socket, MagicAck, MagicAck);
 
-                if (Connected != null)
-                    Connected(this);
+                Connected?.Invoke(this);
 
                 isConnected = true;
             }
@@ -159,8 +157,7 @@ namespace SiliconStudio.Xenko.Engine.Network
                 if (isConnected)
                 {
                     isConnected = false;
-                    if (Disconnected != null)
-                        Disconnected(this);
+                    Disconnected?.Invoke(this);
                 }
 
                 this.socket.Dispose();

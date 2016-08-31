@@ -19,6 +19,11 @@ namespace SiliconStudio.Xenko.UI.Tests.Events
     [System.ComponentModel.Description("Tests for UIElement events")]
     public class UIElementEventTests : UIElement
     {
+        protected override IEnumerable<IUIElementChildren> EnumerateChildren()
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Performs all the tests
         /// </summary>

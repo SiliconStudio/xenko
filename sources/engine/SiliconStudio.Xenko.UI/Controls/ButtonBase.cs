@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 
 using SiliconStudio.Core;
@@ -11,14 +12,11 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// <summary>
     /// Represents the base primitive for all the button-like controls
     /// </summary>
+    [DataContract(nameof(ButtonBase))]
     [DebuggerDisplay("ButtonBase - Name={Name}")]
+    [Display(category: InputCategory)]
     public abstract class ButtonBase : ContentControl
     {
-        /// <summary>
-        /// The key to the ClickMode dependency property.
-        /// </summary>
-        public readonly static PropertyKey<ClickMode> ClickModePropertyKey = new PropertyKey<ClickMode>("ClickModeKey", typeof(ButtonBase), DefaultValueMetadata.Static(ClickMode.Release));
-        
         static ButtonBase()
         {
             EventManager.RegisterClassHandler(typeof(ButtonBase), ClickEvent, ClickClassHandler);
@@ -35,15 +33,16 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets when the Click event occurs.
         /// </summary>
-        public ClickMode ClickMode
-        {
-            get { return DependencyProperties.Get(ClickModePropertyKey); }
-            set { DependencyProperties.Set(ClickModePropertyKey, value); }
-        }
+        /// <userdoc>Indicates when the click event occurs.</userdoc>
+        [DataMember]
+        [Display(category: BehaviorCategory)]
+        [DefaultValue(ClickMode.Release)]
+        public ClickMode ClickMode { get; set; } = ClickMode.Release;
 
         /// <summary>
         /// Gets a value that indicates whether the button is currently down.
         /// </summary>
+        [DataMemberIgnore]
         public virtual bool IsPressed { get; protected set; }
 
         /// <summary>
@@ -63,6 +62,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             "Click",
             RoutingStrategy.Bubble,
             typeof(Button));
+
 
         protected override void OnTouchDown(TouchEventArgs args)
         {

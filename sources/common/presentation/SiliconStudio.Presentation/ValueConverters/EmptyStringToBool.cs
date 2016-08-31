@@ -14,7 +14,7 @@ namespace SiliconStudio.Presentation.ValueConverters
     {
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var stringValue = System.Convert.ToString(value);
+            var stringValue = ConverterHelper.ConvertToString(value, culture);
             return parameter is bool && (bool)parameter
                 ? string.IsNullOrWhiteSpace(stringValue)
                 : string.IsNullOrEmpty(stringValue);

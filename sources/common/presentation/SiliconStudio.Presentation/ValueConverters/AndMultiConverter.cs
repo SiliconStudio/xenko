@@ -14,7 +14,7 @@ namespace SiliconStudio.Presentation.ValueConverters
             if (values.Length < 2)
                 throw new InvalidOperationException("This multi converter must be invoked with at least two elements");
 
-            bool fallbackValue = parameter is bool && (bool)parameter;
+            var fallbackValue = parameter is bool && (bool)parameter;
             return values.All(x => x == DependencyProperty.UnsetValue ? fallbackValue : (bool)x);
         }
     }

@@ -169,8 +169,7 @@ namespace SiliconStudio.Core.MicroThreading
                 var previousRunningMicrothread = runningMicroThread.Value;
                 if (previousRunningMicrothread != null)
                 {
-                    if (MicroThreadCallbackEnd != null)
-                        MicroThreadCallbackEnd(this, new SchedulerThreadEventArgs(previousRunningMicrothread, managedThreadId));
+                    MicroThreadCallbackEnd?.Invoke(this, new SchedulerThreadEventArgs(previousRunningMicrothread, managedThreadId));
                 }
 
                 runningMicroThread.Value = microThread;
@@ -186,8 +185,7 @@ namespace SiliconStudio.Core.MicroThreading
                         if (microThread.State == MicroThreadState.Starting && MicroThreadStarted != null)
                             MicroThreadStarted(this, new SchedulerThreadEventArgs(microThread, managedThreadId));
 
-                        if (MicroThreadCallbackStart != null)
-                            MicroThreadCallbackStart(this, new SchedulerThreadEventArgs(microThread, managedThreadId));
+                        MicroThreadCallbackStart?.Invoke(this, new SchedulerThreadEventArgs(microThread, managedThreadId));
 
                         using (Profiler.Begin(MicroThreadProfilingKeys.ProfilingKey, microThread.ScriptId))
                         {
@@ -206,8 +204,7 @@ namespace SiliconStudio.Core.MicroThreading
                     }
                     finally
                     {
-                        if (MicroThreadCallbackEnd != null)
-                            MicroThreadCallbackEnd(this, new SchedulerThreadEventArgs(microThread, managedThreadId));
+                        MicroThreadCallbackEnd?.Invoke(this, new SchedulerThreadEventArgs(microThread, managedThreadId));
 
                         SynchronizationContext.SetSynchronizationContext(previousSyncContext);
                         if (microThread.IsOver)
@@ -230,16 +227,14 @@ namespace SiliconStudio.Core.MicroThreading
                                         ExceptionDispatchInfo.Capture(microThread.Exception).Throw();
                                 }
 
-                                if (MicroThreadEnded != null)
-                                    MicroThreadEnded(this, new SchedulerThreadEventArgs(microThread, managedThreadId));
+                                MicroThreadEnded?.Invoke(this, new SchedulerThreadEventArgs(microThread, managedThreadId));
                             }
                         }
 
                         runningMicroThread.Value = previousRunningMicrothread;
                         if (previousRunningMicrothread != null)
                         {
-                            if (MicroThreadCallbackStart != null)
-                                MicroThreadCallbackStart(this, new SchedulerThreadEventArgs(previousRunningMicrothread, managedThreadId));
+                            MicroThreadCallbackStart?.Invoke(this, new SchedulerThreadEventArgs(previousRunningMicrothread, managedThreadId));
                         }
                     }
                 }
