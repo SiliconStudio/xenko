@@ -4,26 +4,10 @@ Tags: []
 Description*!: This is a test
 AssetDirectory: !UDirectory /test/dynamic/path/to/file/in/object/property
 AssetUrl: !UFile /test/dynamic/path/to/file/in/object/property
-CustomObjectWithProtectedSet:
-    Name: customObject
 CustomReference2: 00000000-0000-0000-0000-000000000000:/this/is/an/url/to/MyCustomReference2
 CustomReferences:
     - 00000000-0000-0000-0000-000000000000:/this/is/an/url/to/MyCustomReferenceItem1
-MapItems1:
-    key1: 1
-    key2: 2
-MapItems2:
-    Name: null
-    ~Items:
-        key1: 1
-        key2: 2
-        key3: 3
-MapItems3:
-    key1: 1
-    key2: 2
-    key3: 3
-    key4: 3
-MapItemsEmpty: {}
+SeqItemsEmpty: []
 SeqItems1:
     - value1
     - value2
@@ -44,4 +28,20 @@ SeqItems5: !MyCollection
     Name: null
     ~Items:
         - value0
-SeqItemsEmpty: []
+MapItemsEmpty: {}
+MapItems1:
+    key1: 1
+    key2: 2
+MapItems2:
+    Name: null
+    ~Items:
+        key1: 1
+        key2: 2
+        key3: 3
+MapItems3:
+    key1: 1
+    key2: 2
+    key3: 3
+    key4: 3
+CustomObjectWithProtectedSet:
+    Name: customObject
