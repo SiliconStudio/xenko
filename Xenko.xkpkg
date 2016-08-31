@@ -113,7 +113,7 @@ TemplateFolders:
         - samples\Input\TouchInputs\TouchInputs.xktpl
         - samples\Input\GravitySensor\GravitySensor.xktpl
         - samples\Particles\ParticlesSample\ParticlesSample.xktpl
-        - samples\Physics\Constraints\Constraints.xktpl
+        - samples\Physics\PhysicsSample\PhysicsSample.xktpl
         - samples\UI\GameMenu\GameMenu.xktpl
         - samples\UI\UIParticles\UIParticles.xktpl
         - samples\UI\UIElementLink\UIElementLink.xktpl

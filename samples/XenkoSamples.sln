@@ -131,14 +131,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpriteEntity.Game", "Graphi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpriteEntity.Windows", "Graphics\SpriteEntity\SpriteEntity.Windows\SpriteEntity.Windows.csproj", "{CF73C920-19CE-4BEE-8C26-5752B444D821}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Constraints", "Constraints", "{5C3ACE5D-F60D-4138-8EC8-EB8BC7D9F5BD}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PhysicsSample", "PhysicsSample", "{5C3ACE5D-F60D-4138-8EC8-EB8BC7D9F5BD}"
 	ProjectSection(SiliconStudioPackage) = preProject
-		Physics/Constraints/Constraints.xkpkg = Physics/Constraints/Constraints.xkpkg
+		Physics/PhysicsSample/PhysicsSample.xkpkg = Physics/PhysicsSample/PhysicsSample.xkpkg
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Constraints.Game", "Physics\Constraints\Constraints.Game\Constraints.Game.csproj", "{95CFD515-3747-41CE-893E-B7E279BE5F2D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhysicsSample.Game", "Physics\PhysicsSample\PhysicsSample.Game\PhysicsSample.Game.csproj", "{95CFD515-3747-41CE-893E-B7E279BE5F2D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Constraints.Windows", "Physics\Constraints\Constraints.Windows\Constraints.Windows.csproj", "{3C442DD9-2A24-4523-AAD1-0D7E778A2594}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PhysicsSample.Windows", "Physics\PhysicsSample\PhysicsSample.Windows\PhysicsSample.Windows.csproj", "{3C442DD9-2A24-4523-AAD1-0D7E778A2594}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SimpleDynamicTexture", "SimpleDynamicTexture", "{23F2FC76-C8E1-42F8-9857-C6F4F3F34F68}"
 	ProjectSection(SiliconStudioPackage) = preProject
