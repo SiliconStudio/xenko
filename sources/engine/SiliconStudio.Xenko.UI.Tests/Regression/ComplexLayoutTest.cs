@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public ComplexLayoutTest()
         {
-            CurrentVersion = 11;
+            CurrentVersion = 12;
         }
 
         protected override async Task LoadContent()
@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             stackPanel = new StackPanel { Orientation = Orientation.Vertical };
 
             scrollViewer = new ScrollViewer { ScrollMode = ScrollingMode.Vertical };
-            scrollViewer.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, new Vector3(resolution.X / 4, resolution.Y / 10, 0));
+            scrollViewer.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, new Vector3(resolution.X / 4, 0, 0));
             scrollViewer.Content = stackPanel;
 
             var button1 = new Button { Margin = Thickness.UniformRectangle(5), Padding = Thickness.UniformRectangle(5), LocalMatrix = Matrix.Scaling(2, 2, 2) };

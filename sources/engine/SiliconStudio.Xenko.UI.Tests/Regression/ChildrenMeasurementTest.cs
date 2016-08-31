@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public ChildrenMeasurementTest()
         {
-            CurrentVersion = 0;
+            CurrentVersion = 1;
         }
 
         protected override async Task LoadContent()
