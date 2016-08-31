@@ -1,15 +1,13 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
-using System.Threading;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Audio
 {
@@ -121,10 +119,8 @@ namespace SiliconStudio.Xenko.Audio
             component.AttachToProcessor();
         }
 
-        public override void Draw(RenderContext context)
+        public override void Update(GameTime time)
         {
-            base.Draw(context);
-
             foreach (var associatedData in ComponentDatas.Values)
             {
                 if(!associatedData.AudioEmitterComponent.Enabled)
@@ -167,18 +163,19 @@ namespace SiliconStudio.Xenko.Audio
                         }
 
                         // Apply3D localization
-                        if (instanceListener.Key.PlayState == SoundPlayState.Playing || controller.ShouldBePlayed)
+                        if (instanceListener.Key.PlayState == SoundPlayState.Playing)
                         {
                             instanceListener.Key.Apply3D(emitter);
                         }
 
                         //Apply parameters
                         if (instanceListener.Key.Volume != controller.Volume) instanceListener.Key.Volume = controller.Volume; // ensure that instance volume is valid
-                        if (instanceListener.Key.IsLooped != controller.IsLooped) instanceListener.Key.IsLooped = controller.IsLooped;
+                        if (instanceListener.Key.IsLooping != controller.IsLooping) instanceListener.Key.IsLooping = controller.IsLooping;
 
                         //Play if stopped
                         if (instanceListener.Key.PlayState != SoundPlayState.Playing && controller.ShouldBePlayed)
                         {
+                            instanceListener.Key.Apply3D(emitter);
                             instanceListener.Key.Play();
                             associatedData.IsPlaying = true;
                         }
@@ -190,7 +187,7 @@ namespace SiliconStudio.Xenko.Audio
                         var instance = controller.FastInstances[i];
                         if (instance.PlayState != SoundPlayState.Playing)
                         {
-                            // Decrement the loop counter to iterate this index again, since later elements will get moved down during the remove operation.
+                            //Decrement the loop counter to iterate this index again, since later elements will get moved down during the remove operation.
                             controller.FastInstances.RemoveAt(i--);
                             controller.DestroySoundInstance(instance);
                         }
@@ -219,8 +216,6 @@ namespace SiliconStudio.Xenko.Audio
                         }
                         controller.FastInstancePlay = false;
                     }
-
-                    controller.ShouldBePlayed = false;
                 }
             }
         }
