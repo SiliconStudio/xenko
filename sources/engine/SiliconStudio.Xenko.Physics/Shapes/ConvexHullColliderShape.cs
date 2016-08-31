@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Physics
                 LocalScaling = CachedScaling
             };
 
-            DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(1, 1, 1) * 1.01f);
+            DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(1, 1, 1) * DebugScaling);
 
             pointsList = points;
             indicesList = indices;

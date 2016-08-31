@@ -461,8 +461,6 @@ namespace SiliconStudio.Xenko.Engine
         {
             Quaternion rotation;
             Vector3 translation;
-
-            //derive rotation and translation, scale is ignored for now
             Vector3 scale;
             BoneWorldMatrix.Decompose(out scale, out rotation, out translation);
 
@@ -596,7 +594,12 @@ namespace SiliconStudio.Xenko.Engine
 
                 ColliderShape = PhysicsColliderShape.CreateShape(ColliderShapes[0]);
 
-                ColliderShape?.UpdateLocalTransformations();
+                if (ColliderShape != null)
+                {
+                    ColliderShape.Scaling = Vector3.One;
+                }
+
+                //ColliderShape?.UpdateLocalTransformations();
             }
             else if (ColliderShapes.Count > 1) //need a compound shape in this case
             {
@@ -618,7 +621,9 @@ namespace SiliconStudio.Xenko.Engine
 
                 ColliderShape = compound;
 
-                ColliderShape.UpdateLocalTransformations();
+                ColliderShape.Scaling = Vector3.One;
+
+                //ColliderShape.UpdateLocalTransformations();
             }
         }
 

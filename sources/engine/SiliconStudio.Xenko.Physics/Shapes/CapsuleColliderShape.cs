@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.Physics
 
             InternalShape = Is2D ? (CollisionShape)new Convex2DShape(shape) { LocalScaling = CachedScaling } : shape;
 
-            DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(1.01f)) * rotation;
+            DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(DebugScaling)) * rotation;
         }
 
         public override MeshDraw CreateDebugPrimitive(GraphicsDevice device)

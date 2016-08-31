@@ -11,6 +11,8 @@ namespace SiliconStudio.Xenko.Physics
 {
     public class ColliderShape : IDisposable
     {
+        protected const float DebugScaling = 1.0f;
+
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
