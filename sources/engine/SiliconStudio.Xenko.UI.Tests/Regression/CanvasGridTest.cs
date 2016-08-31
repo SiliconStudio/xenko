@@ -40,6 +40,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             // left/top
             var image1 = new ImageElement { Source = (SpriteFromTexture)new Sprite(Content.Load<Texture>("uv")), StretchType = StretchType.FillOnStretch };
+            image1.DependencyProperties.Set(Canvas.UseAbsolutePositionPropertyKey, false);
             image1.DependencyProperties.Set(Canvas.RelativeSizePropertyKey, relativeSize * Vector3.One);
             image1.DependencyProperties.Set(Canvas.RelativePositionPropertyKey, new Vector3(0, 0, 0));
             image1.DependencyProperties.Set(Canvas.PinOriginPropertyKey, new Vector3(0, 0, 0));
@@ -47,6 +48,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             // right/top
             var image2 = new ImageElement { Source = (SpriteFromTexture)new Sprite(Content.Load<Texture>("uv")), StretchType = StretchType.FillOnStretch };
+            image2.DependencyProperties.Set(Canvas.UseAbsolutePositionPropertyKey, false);
             image2.DependencyProperties.Set(Canvas.RelativeSizePropertyKey, relativeSize * Vector3.One);
             image2.DependencyProperties.Set(Canvas.RelativePositionPropertyKey, new Vector3(1, 0, 0));
             image2.DependencyProperties.Set(Canvas.PinOriginPropertyKey, new Vector3(1, 0, 0));
@@ -54,6 +56,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             // left/bottom
             var image3 = new ImageElement { Source = (SpriteFromTexture)new Sprite(Content.Load<Texture>("uv")), StretchType = StretchType.FillOnStretch };
+            image3.DependencyProperties.Set(Canvas.UseAbsolutePositionPropertyKey, false);
             image3.DependencyProperties.Set(Canvas.RelativeSizePropertyKey, relativeSize * Vector3.One);
             image3.DependencyProperties.Set(Canvas.RelativePositionPropertyKey, new Vector3(0, 1, 0));
             image3.DependencyProperties.Set(Canvas.PinOriginPropertyKey, new Vector3(0, 1, 0));
@@ -61,6 +64,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             // 1/3 right/bottom
             var image4 = new ImageElement { Source = (SpriteFromTexture)new Sprite(Content.Load<Texture>("uv")), StretchType = StretchType.FillOnStretch };
+            image4.DependencyProperties.Set(Canvas.UseAbsolutePositionPropertyKey, false);
             image4.DependencyProperties.Set(Canvas.RelativeSizePropertyKey, relativeSize * Vector3.One);
             image4.DependencyProperties.Set(Canvas.RelativePositionPropertyKey, new Vector3(1, 1, 0));
             image4.DependencyProperties.Set(Canvas.PinOriginPropertyKey, new Vector3(1, 1, 0));
@@ -68,6 +72,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             // 1/3 left/top middle centered
             var image5 = new ImageElement { Source = (SpriteFromTexture)new Sprite(Content.Load<Texture>("uv")), StretchType = StretchType.FillOnStretch };
+            image5.DependencyProperties.Set(Canvas.UseAbsolutePositionPropertyKey, false);
             image5.DependencyProperties.Set(Canvas.RelativeSizePropertyKey, relativeSize * Vector3.One);
             image5.DependencyProperties.Set(Canvas.RelativePositionPropertyKey, new Vector3(1/3f, 1/3f, 0));
             image5.DependencyProperties.Set(Canvas.PinOriginPropertyKey, new Vector3(0.5f, 0.5f, 0));
@@ -75,6 +80,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             // 1/3 right/top right aligned 
             var image6 = new ImageElement { Source = (SpriteFromTexture)new Sprite(Content.Load<Texture>("uv")), StretchType = StretchType.FillOnStretch };
+            image6.DependencyProperties.Set(Canvas.UseAbsolutePositionPropertyKey, false);
             image6.DependencyProperties.Set(Canvas.RelativeSizePropertyKey, relativeSize * Vector3.One);
             image6.DependencyProperties.Set(Canvas.RelativePositionPropertyKey, new Vector3(2 / 3f, 1 / 3f, 0));
             image6.DependencyProperties.Set(Canvas.PinOriginPropertyKey, new Vector3(0, 0.5f, 0));
@@ -82,6 +88,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             // 1/3 left/bottom bottom aligned
             var image7 = new ImageElement { Source = (SpriteFromTexture)new Sprite(Content.Load<Texture>("uv")), StretchType = StretchType.FillOnStretch };
+            image7.DependencyProperties.Set(Canvas.UseAbsolutePositionPropertyKey, false);
             image7.DependencyProperties.Set(Canvas.RelativeSizePropertyKey, relativeSize * Vector3.One);
             image7.DependencyProperties.Set(Canvas.RelativePositionPropertyKey, new Vector3(1/3f, 2/3f, 0));
             image7.DependencyProperties.Set(Canvas.PinOriginPropertyKey, new Vector3(0.5f, 0, 0));
@@ -89,6 +96,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             // 1/3 right/bottom top aligned
             var image8 = new ImageElement { Source = (SpriteFromTexture)new Sprite(Content.Load<Texture>("uv")), StretchType = StretchType.FillOnStretch };
+            image8.DependencyProperties.Set(Canvas.UseAbsolutePositionPropertyKey, false);
             image8.DependencyProperties.Set(Canvas.RelativeSizePropertyKey, relativeSize * Vector3.One);
             image8.DependencyProperties.Set(Canvas.RelativePositionPropertyKey, new Vector3(2/3f, 2/3f, 0));
             image8.DependencyProperties.Set(Canvas.PinOriginPropertyKey, new Vector3(0.5f, 1, 0));
