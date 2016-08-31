@@ -197,14 +197,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CustomAnimation.Windows", "
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Particles", "Particles", "{82EAB4A6-B265-47C2-B544-D7671BDB3D2D}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SimpleParticles", "SimpleParticles", "{2B920979-D010-44FA-A415-E52D97E51DF3}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ParticlesSample", "ParticlesSample", "{2B920979-D010-44FA-A415-E52D97E51DF3}"
 	ProjectSection(SiliconStudioPackage) = preProject
-		Particles/SimpleParticles/SimpleParticles.xkpkg = Particles/SimpleParticles/SimpleParticles.xkpkg
+		Particles/ParticlesSample/ParticlesSample.xkpkg = Particles/ParticlesSample/ParticlesSample.xkpkg
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleParticles.Windows", "Particles\SimpleParticles\SimpleParticles.Windows\SimpleParticles.Windows.csproj", "{BDDD6C01-7873-4066-BC52-3E5847FE9F39}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParticlesSample.Windows", "Particles\ParticlesSample\ParticlesSample.Windows\ParticlesSample.Windows.csproj", "{BDDD6C01-7873-4066-BC52-3E5847FE9F39}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleParticles.Game", "Particles\SimpleParticles\SimpleParticles.Game\SimpleParticles.Game.csproj", "{C821E6B2-04B2-4983-8348-7AC37B23C5E1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ParticlesSample.Game", "Particles\ParticlesSample\ParticlesSample.Game\ParticlesSample.Game.csproj", "{C821E6B2-04B2-4983-8348-7AC37B23C5E1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UIParticles", "UIParticles", "{9F892E18-E9CD-4C4F-BD2F-7837E10265BF}"
 	ProjectSection(SiliconStudioPackage) = preProject

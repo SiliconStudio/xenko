@@ -5,12 +5,12 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Games.Testing;
 
-namespace SimpleParticlesTest
+namespace ParticlesSampleTest
 {
     [TestFixture]
-    public class SimpleParticlesTest
+    public class ParticlesSampleTest
     {
-        private const string Path = "samples\\Particles\\SimpleParticles\\Bin\\Windows\\Debug\\SimpleParticles.exe";
+        private const string Path = "samples\\Particles\\ParticlesSample\\Bin\\Windows\\Debug\\ParticlesSample.exe";
 
 #if TEST_ANDROID
         private const PlatformType TestPlatform = PlatformType.Android;

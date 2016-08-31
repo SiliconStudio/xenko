@@ -112,7 +112,7 @@ TemplateFolders:
         - samples\Graphics\SpriteStudioDemo\SpriteStudioDemo.xktpl
         - samples\Input\TouchInputs\TouchInputs.xktpl
         - samples\Input\GravitySensor\GravitySensor.xktpl
-        - samples\Particles\SimpleParticles\SimpleParticles.xktpl
+        - samples\Particles\ParticlesSample\ParticlesSample.xktpl
         - samples\Physics\Constraints\Constraints.xktpl
         - samples\UI\GameMenu\GameMenu.xktpl
         - samples\UI\UIParticles\UIParticles.xktpl
