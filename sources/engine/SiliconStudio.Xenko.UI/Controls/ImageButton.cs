@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.UI.Controls
 
         private void UpdateContentImage()
         {
-            contentImageElement.Source = IsPressed ? PressedImage : MouseOverState == MouseOverState.MouseOverElement? MouseOverImage: NotPressedImage;
+            contentImageElement.Source = ButtonImageProvider;
         }
 
         /// <summary>
