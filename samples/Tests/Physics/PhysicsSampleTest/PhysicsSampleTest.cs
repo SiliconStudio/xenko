@@ -38,6 +38,7 @@ namespace PhysicsSampleTest
 
                 // X:0.8367187 Y:0.9375
 
+                // Constraints
                 game.TakeScreenshot();
 
                 game.Tap(new Vector2(0.83f, 0.93f), TimeSpan.FromMilliseconds(200));
@@ -60,21 +61,35 @@ namespace PhysicsSampleTest
                 game.Wait(TimeSpan.FromMilliseconds(1000));
                 game.TakeScreenshot();
 
-
+                // VolumeTrigger
                 game.KeyPress(Keys.Right, TimeSpan.FromMilliseconds(500));
                 game.Wait(TimeSpan.FromMilliseconds(1000));
                 game.TakeScreenshot();
 
+                // CharacterController
                 game.KeyPress(Keys.Right, TimeSpan.FromMilliseconds(500));
                 game.Wait(TimeSpan.FromMilliseconds(1000));
                 game.TakeScreenshot();
 
+                game.KeyPress(Keys.Space, TimeSpan.FromMilliseconds(200));
+                game.TakeScreenshot();
+
+                // Raycasting
                 game.KeyPress(Keys.Right, TimeSpan.FromMilliseconds(500));
                 game.Wait(TimeSpan.FromMilliseconds(1000));
+                game.TakeScreenshot();
+
+                game.Tap(new Vector2(0.3304687f, 0.6055555f), TimeSpan.FromMilliseconds(200));
+                game.TakeScreenshot();
+
+                game.Tap(new Vector2(0.496875f, 0.4125f), TimeSpan.FromMilliseconds(200));
+                game.TakeScreenshot();
+
+                game.Tap(new Vector2(0.659375f, 0.5319445f), TimeSpan.FromMilliseconds(200));
                 game.TakeScreenshot();
 
                 game.KeyPress(Keys.Right, TimeSpan.FromMilliseconds(500));              
-                game.Wait(TimeSpan.FromMilliseconds(1000));
+                game.Wait(TimeSpan.FromMilliseconds(500));
             }
         }
     }
