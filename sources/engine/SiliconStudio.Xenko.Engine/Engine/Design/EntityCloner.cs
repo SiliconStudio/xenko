@@ -8,6 +8,7 @@ using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Xenko.Animations;
+using SiliconStudio.Xenko.Audio;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Font;
 using SiliconStudio.Xenko.Rendering;
@@ -24,6 +25,7 @@ namespace SiliconStudio.Xenko.Engine.Design
     [DataSerializerGlobal(typeof(CloneSerializer<Mesh>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(CloneSerializer<Model>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(CloneSerializer<AnimationClip>), Profile = "Clone")]
+    [DataSerializerGlobal(typeof(CloneSerializer<Sound>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(CloneSerializer<string>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(CloneSerializer<OfflineRasterizedSpriteFont>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(CloneSerializer<RuntimeRasterizedSpriteFont>), Profile = "Clone")]
@@ -122,6 +124,7 @@ namespace SiliconStudio.Xenko.Engine.Design
         /// <param name="clonedObjects">The cloned objects.</param>
         /// <param name="mappedObjects">The mapped objects.</param>
         /// <param name="entity">The entity.</param>
+        /// <param name="serviceRegistry">The context service registry</param>
         /// <returns></returns>
         private static T Clone<T>(HashSet<object> clonedObjects, TryGetValueFunction<object, object> mappedObjects, T entity) where T : class
         {
