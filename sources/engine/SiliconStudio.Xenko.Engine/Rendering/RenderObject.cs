@@ -14,6 +14,8 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public abstract class RenderObject
     {
+        private static int currentIndex;
+
         public bool Enabled = true;
         public EntityGroup RenderGroup;
 
@@ -28,6 +30,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         public ActiveRenderStage[] ActiveRenderStages;
         public uint StateSortKey;
+        public readonly int Index = currentIndex++;
 
         // TODO: Switch to a "StaticPropertyContainer" that will be optimized by assembly processor
         //public PropertyContainer Tags;

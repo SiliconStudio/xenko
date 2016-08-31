@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
         public SpriteRenderer3DTests()
         {
-            CurrentVersion = 3;
+            CurrentVersion = 4;
             GraphicsDeviceManager.PreferredBackBufferWidth = ScreenWidth;
             GraphicsDeviceManager.PreferredBackBufferHeight = ScreenHeight;
         }
@@ -90,7 +90,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
             for (int i = 0; i < rotatingSprites.Count; i++)
             {
                 // Add some z-offset, so non-deterministic sorting due to threading does not cause issues with blending and depth testing enabled
-                rotatingSprites[i].Transform.Position = new Vector3(ScreenWidth, ScreenHeight, i) / 2;
+                rotatingSprites[i].Transform.Position = new Vector3(ScreenWidth, ScreenHeight, 0) / 2;
             }
 
             // add all the entities to the scene
