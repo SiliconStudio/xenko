@@ -9,7 +9,7 @@ SceneSettings:
         Cameras:
             -   ~Id: 063b8503-f9d0-4a00-a8a2-25ba313818c3
                 Name: null
-                Camera: {Entity: {Id: b7690cff-f2ad-4f33-ae7e-26573f84dd7f}, Id: f78e32b9-12e9-4587-9032-34c0b683f570}
+                Camera: b7690cff-f2ad-4f33-ae7e-26573f84dd7f/f78e32b9-12e9-4587-9032-34c0b683f570
         Layers: []
         Master:
             ~Id: 99b9fcc5-5b04-495f-8f2b-9e978c7c9950
@@ -54,10 +54,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: da71ca88-7768-431d-b3e1-03d8127c6b27
-                        Position: {X: 1.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 1.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !BackgroundComponent
                         ~Id: fc13480f-6539-433b-aa78-22620da5b9dd
                         Texture: d66fc875-96b3-455a-9560-e26e15794ccb/d46cb653-bbdb-4b7b-9449-37beb6774cfd:XenkoBackground
@@ -67,10 +67,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: dc72fb10-f8a9-4fbf-961a-a64b6dfe37b4
-                        Position: {X: -2.0, Y: 0.0, Z: -9.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: -2.0, Y: 0.0, Z: -9.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !RigidbodyComponent
                         ~Id: 9a3e92bf-7ad3-4d72-86b2-6dd090e69cd6
                         CanSleep: true
@@ -102,10 +102,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: db696f49-772b-469a-8130-7933feee8c8c
-                        Position: {X: 2.0, Y: 0.0, Z: -9.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 2.0, Y: 0.0, Z: -9.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !RigidbodyComponent
                         ~Id: 0ee762a3-5c6a-4816-a3f7-1ce5efec5a16
                         CanSleep: true
@@ -137,10 +137,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 4ab69ec5-018e-453a-8039-51ebe18f50e1
-                        Position: {X: -2.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 0.86, X: -0.42, Y: -0.22, Z: -0.17}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: -2.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: -0.42, Y: -0.22, Z: -0.17, W: 0.86}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !LightComponent
                         ~Id: 14d7e916-557e-4c62-9b8c-2ea09292ca2b
                         Type: !LightDirectional
@@ -164,16 +164,16 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: ddbb0449-963f-4202-b7af-e3cb6c6d9c85
-                        Position: {X: 0.0, Y: -1.25, Z: 3.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: -1.25, Z: 3.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !CameraComponent
                         ~Id: f78e32b9-12e9-4587-9032-34c0b683f570
                         Projection: Perspective
                         FarClipPlane: 100.0
                     - !Constraints.NextSceneScript,Constraints.Game
-                        ~Id: f81c69c1-613f-4b95-9da8-cadcde73ab36
+                        ~Id: bc017c7d-ed44-4b30-823b-1d6e86eefbff
                         NextScene: VolumeTrigger
         -   Entity:
                 Id: e6289325-fb51-4913-84a6-96f4faa42f40
@@ -181,10 +181,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 403cb046-d7ea-4543-ab87-7ae3a92d9bb9
-                        Position: {X: -1.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: -1.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !LightComponent
                         ~Id: 07072a06-e65e-4cbe-ab8e-b437d5a36158
                         Type: !LightAmbient
@@ -199,15 +199,15 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: a536572c-ec5e-4b1d-bdf3-4364fd5398d3
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !Constraints.DemoScript,Constraints.Game
                         ~Id: 46650e10-9713-4da4-a9e9-b9e50263ec16
+                        cube: 909c7c74-e1e9-4d9e-aa61-207f1d6367d0
+                        sphere: 70f2e3d6-2d8d-4cc5-aa99-1b9cae14aed2
                         Font: 8c3a1598-0c68-4b66-be63-b47ce5898a7d/62eec53a-f82a-460a-91c3-bf3c6ece95c2:Font
-                        cube: {Id: 909c7c74-e1e9-4d9e-aa61-207f1d6367d0}
-                        sphere: {Id: 70f2e3d6-2d8d-4cc5-aa99-1b9cae14aed2}
                     - !UIComponent
                         ~Id: fbf47521-cdd8-4cc6-8902-7bd3cf961d70
                         Page: null

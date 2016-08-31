@@ -9,7 +9,7 @@ SceneSettings:
         Cameras:
             -   ~Id: 411985ec-72b0-430f-aec2-7a01790fbb53
                 Name: null
-                Camera: {Entity: {Id: 34123ad7-7f97-4c0a-b592-d844e0400f5e}, Id: b5838899-93ff-4e3e-b9ad-2bc49a8669d6}
+                Camera: 34123ad7-7f97-4c0a-b592-d844e0400f5e/b5838899-93ff-4e3e-b9ad-2bc49a8669d6
         Layers: []
         Master:
             ~Id: 17a2cee1-74fc-4e3c-a5f8-0a0b1e0eac85
@@ -56,13 +56,13 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee
-                        Position: {X: -0.0133164823, Y: 2.55761766, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: -0.0133164823, Y: 2.55761766, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !Constraints.AutoResetRigidbody,Constraints.Game
                         ~Id: 2d8df8bb-ca7a-4135-a8dd-44e9b932746c
-                        TriggerEntity*: {Id: cfe82ef3-b615-435c-a9b6-15793dca565d}
+                        TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
                     - !RigidbodyComponent
                         ~Id: bb5b0832-d05b-4100-ba2c-f58c62312deb
                         CanSleep: false
@@ -96,13 +96,13 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee
-                        Position: {X: 1.97378922, Y: 1.239566, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 1.97378922, Y: 1.239566, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !Constraints.AutoResetRigidbody,Constraints.Game
                         ~Id: 2d8df8bb-ca7a-4135-a8dd-44e9b932746c
-                        TriggerEntity*: {Id: cfe82ef3-b615-435c-a9b6-15793dca565d}
+                        TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
                     - !RigidbodyComponent
                         ~Id: bb5b0832-d05b-4100-ba2c-f58c62312deb
                         CanSleep: false
@@ -136,13 +136,13 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee
-                        Position: {X: 1.48668349, Y: 2.55761766, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 1.48668349, Y: 2.55761766, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !Constraints.AutoResetRigidbody,Constraints.Game
                         ~Id: 2d8df8bb-ca7a-4135-a8dd-44e9b932746c
-                        TriggerEntity*: {Id: cfe82ef3-b615-435c-a9b6-15793dca565d}
+                        TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
                     - !RigidbodyComponent
                         ~Id: bb5b0832-d05b-4100-ba2c-f58c62312deb
                         CanSleep: false
@@ -174,15 +174,15 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 52e45470-e29e-49be-b283-ea1a2dd1d5de
-                        Position: {X: -2.91726849E-07, Y: 1.35450363, Z: 3.681111}
-                        Rotation: {W: 0.989579, X: -0.143991053, Y: 9.130449E-09, Z: 1.08727676E-08}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: -2.91726849E-07, Y: 1.35450363, Z: 3.681111}
+                        Rotation: {X: -0.143991053, Y: 9.130449E-09, Z: 1.08727676E-08, W: 0.989579}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !CameraComponent
                         ~Id: b5838899-93ff-4e3e-b9ad-2bc49a8669d6
                         Projection: Perspective
                     - !Constraints.NextSceneScript,Constraints.Game
-                        ~Id: 4fa4523d-551f-46b2-8dbf-8376d9b3945d
+                        ~Id: d770c007-918e-4f05-9478-965644839f14
                         NextScene: CharacterController
         -   Entity:
                 Id: 4946b032-53e8-4029-b72c-4396af3b286d
@@ -190,11 +190,11 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: ff3fea84-c59d-4adb-a54c-7ee9187a86ae
-                        Position: {X: -6.003331, Y: 1.463115, Z: -6.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.7841593, Y: 1.7841593, Z: 1.7841593}
                         Children:
-                            - {Entity: {Id: 34123ad7-7f97-4c0a-b592-d844e0400f5e}, Id: 52e45470-e29e-49be-b283-ea1a2dd1d5de}
+                            - 34123ad7-7f97-4c0a-b592-d844e0400f5e/52e45470-e29e-49be-b283-ea1a2dd1d5de
+                        Position: {X: -6.003331, Y: 1.463115, Z: -6.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.7841593, Y: 1.7841593, Z: 1.7841593}
                     - !Constraints.Player,Constraints.Game
                         ~Id: 29b4149c-5839-45a4-9ee8-2d2581c5555b
                     - !CharacterComponent
@@ -215,7 +215,7 @@ Hierarchy:
                             - !CapsuleColliderShapeDesc
                                 ~Id: 7e84d032-9e02-4652-9c2a-0c9376757e15
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
-                                LocalRotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                     - !ModelComponent
                         ~Id: 5c9108d4-628d-4aba-bc30-09fb941ef880
                         Model: cb4bb5f3-4de7-496d-bff7-6d9dd6a0f60c/9fab8da2-f2c8-4586-9435-20d8fad479e2:Player
@@ -229,13 +229,13 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee
-                        Position: {X: -1.51331651, Y: 2.55761766, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: -1.51331651, Y: 2.55761766, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !Constraints.AutoResetRigidbody,Constraints.Game
                         ~Id: 2d8df8bb-ca7a-4135-a8dd-44e9b932746c
-                        TriggerEntity*: {Id: cfe82ef3-b615-435c-a9b6-15793dca565d}
+                        TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
                     - !RigidbodyComponent
                         ~Id: bb5b0832-d05b-4100-ba2c-f58c62312deb
                         CanSleep: false
@@ -269,13 +269,13 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee
-                        Position: {X: 0.473789275, Y: 1.239566, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.473789275, Y: 1.239566, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !Constraints.AutoResetRigidbody,Constraints.Game
                         ~Id: 2d8df8bb-ca7a-4135-a8dd-44e9b932746c
-                        TriggerEntity*: {Id: cfe82ef3-b615-435c-a9b6-15793dca565d}
+                        TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
                     - !RigidbodyComponent
                         ~Id: bb5b0832-d05b-4100-ba2c-f58c62312deb
                         CanSleep: false
@@ -307,11 +307,11 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 8b07be15-4371-4c48-9782-4cd03de22c0e
-                        Position: {X: 0.0, Y: 5.91308975, Z: -11.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            - {Entity: {Id: c6485208-a49a-4142-918c-e49b1da1c1a6}, Id: 0901b52e-31e0-4802-9fb2-a602898cc11d}
+                            - c6485208-a49a-4142-918c-e49b1da1c1a6/0901b52e-31e0-4802-9fb2-a602898cc11d
+                        Position: {X: 0.0, Y: 5.91308975, Z: -11.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
         -   BaseId: 333ac088-05d4-4b0e-859c-d545cbf033ad
             BasePartInstanceId: 2e872639-5cde-427d-b313-2c22c21e9989
             Entity:
@@ -320,13 +320,13 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee
-                        Position: {X: 1.5, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 1.5, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !Constraints.AutoResetRigidbody,Constraints.Game
                         ~Id: 2d8df8bb-ca7a-4135-a8dd-44e9b932746c
-                        TriggerEntity*: {Id: cfe82ef3-b615-435c-a9b6-15793dca565d}
+                        TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
                     - !RigidbodyComponent
                         ~Id: bb5b0832-d05b-4100-ba2c-f58c62312deb
                         CanSleep: false
@@ -358,29 +358,29 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: eba47045-4614-4963-af10-a5d79d81996f
-                        Position: {X: 0.0, Y: 0.5, Z: -11.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            - {Entity: {Id: edce808c-89be-4445-8762-5deb3dd98284}, Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee}
-                            - {Entity: {Id: c5ba9b19-2910-4b34-a0ab-882bb29c7993}, Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee}
-                            - {Entity: {Id: 8f3e22d1-bd8d-453e-a244-693b4cc9b441}, Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee}
-                            - {Entity: {Id: 748aba8c-a6d0-4a16-b844-946006ce49ad}, Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee}
-                            - {Entity: {Id: ff29c179-d1d9-49ce-97b9-c6f1dbb98618}, Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee}
-                            - {Entity: {Id: 1e1de2cd-6c7b-484b-8498-b501a88096be}, Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee}
-                            - {Entity: {Id: 0da87cf3-7179-4d1f-8739-45d8691c49cf}, Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee}
-                            - {Entity: {Id: 6210c6b5-a405-45e9-9735-7e113b2d7235}, Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee}
-                            - {Entity: {Id: 24791b49-f177-4a80-82ea-7ff41208fa11}, Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee}
+                            - edce808c-89be-4445-8762-5deb3dd98284/5f75aa91-7f38-47f1-96dd-3464553ea2ee
+                            - c5ba9b19-2910-4b34-a0ab-882bb29c7993/5f75aa91-7f38-47f1-96dd-3464553ea2ee
+                            - 8f3e22d1-bd8d-453e-a244-693b4cc9b441/5f75aa91-7f38-47f1-96dd-3464553ea2ee
+                            - 748aba8c-a6d0-4a16-b844-946006ce49ad/5f75aa91-7f38-47f1-96dd-3464553ea2ee
+                            - ff29c179-d1d9-49ce-97b9-c6f1dbb98618/5f75aa91-7f38-47f1-96dd-3464553ea2ee
+                            - 1e1de2cd-6c7b-484b-8498-b501a88096be/5f75aa91-7f38-47f1-96dd-3464553ea2ee
+                            - 0da87cf3-7179-4d1f-8739-45d8691c49cf/5f75aa91-7f38-47f1-96dd-3464553ea2ee
+                            - 6210c6b5-a405-45e9-9735-7e113b2d7235/5f75aa91-7f38-47f1-96dd-3464553ea2ee
+                            - 24791b49-f177-4a80-82ea-7ff41208fa11/5f75aa91-7f38-47f1-96dd-3464553ea2ee
+                        Position: {X: 0.0, Y: 0.5, Z: -11.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
         -   Entity:
                 Id: b0299af4-0f94-47f0-8d94-e87d157024c5
                 Name: Directional light
                 Components:
                     - !TransformComponent
                         ~Id: 520ea0ce-fa9b-4119-9969-0b84b532406c
-                        Position: {X: -0.5946913, Y: 1.40200758, Z: -2.42663574}
-                        Rotation: {W: 0.742511451, X: -0.569751441, Y: 0.1918805, Z: -0.2953674}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: -0.5946913, Y: 1.40200758, Z: -2.42663574}
+                        Rotation: {X: -0.569751441, Y: 0.1918805, Z: -0.2953674, W: 0.742511451}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !LightComponent
                         ~Id: d045c7b3-bfa0-4b2f-8185-5d5c9323f28d
                         Type: !LightDirectional
@@ -408,13 +408,13 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee
-                        Position: {X: -1.5, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: -1.5, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !Constraints.AutoResetRigidbody,Constraints.Game
                         ~Id: 2d8df8bb-ca7a-4135-a8dd-44e9b932746c
-                        TriggerEntity*: {Id: cfe82ef3-b615-435c-a9b6-15793dca565d}
+                        TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
                     - !RigidbodyComponent
                         ~Id: bb5b0832-d05b-4100-ba2c-f58c62312deb
                         CanSleep: false
@@ -448,13 +448,13 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 0901b52e-31e0-4802-9fb2-a602898cc11d
-                        Position*: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 0.918539345, X: 0.0, Y: 0.0, Z: 0.3953296}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position*: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.3953296, W: 0.918539345}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !Constraints.AutoResetRigidbody,Constraints.Game
                         ~Id: b65bc8a4-795e-4679-ac12-5062f07f8507
-                        TriggerEntity*: {Id: cfe82ef3-b615-435c-a9b6-15793dca565d}
+                        TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
                     - !RigidbodyComponent
                         ~Id: c495e000-fe10-43f1-bbac-85640eafd46e
                         CanCollideWith: DefaultFilter, CharacterFilter
@@ -488,10 +488,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 715d90ff-64a4-4fac-bd8f-f40d5354d11b
-                        Position: {X: 0.0, Y: 0.7304367, Z: -6.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 7.190572, Y: 2.02149439, Z: 4.181841}
                         Children: []
+                        Position: {X: 0.0, Y: 0.7304367, Z: -6.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 7.190572, Y: 2.02149439, Z: 4.181841}
                     - !Constraints.Trigger,Constraints.Game
                         ~Id: cee46d5d-507b-4060-9f85-b53ba7134ac7
                     - !StaticColliderComponent
@@ -510,7 +510,7 @@ Hierarchy:
                                 Is2D: false
                                 Size: {X: 1.0, Y: 1.0, Z: 1.0}
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
-                                LocalRotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                     - !ModelComponent
                         ~Id: 2e2aa22e-4ab5-41fd-ac11-b9dbcd9be00f
                         Model: b3102ad4-d4a3-4b7a-85a2-801cd1c8c49a/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
@@ -524,13 +524,13 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !Constraints.AutoResetRigidbody,Constraints.Game
                         ~Id: 2d8df8bb-ca7a-4135-a8dd-44e9b932746c
-                        TriggerEntity*: {Id: cfe82ef3-b615-435c-a9b6-15793dca565d}
+                        TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
                     - !RigidbodyComponent
                         ~Id: bb5b0832-d05b-4100-ba2c-f58c62312deb
                         CanSleep: false
@@ -562,10 +562,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 949f0ba2-93ad-42e7-bb1c-89b6e1d6aee7
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !StaticColliderComponent
                         ~Id: 0804dd98-ed62-4939-97c3-63d697c8f29f
                         CanCollideWith: DefaultFilter, SensorTrigger, CharacterFilter
@@ -594,13 +594,13 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee
-                        Position: {X: -1.02621078, Y: 1.239566, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: -1.02621078, Y: 1.239566, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !Constraints.AutoResetRigidbody,Constraints.Game
                         ~Id: 2d8df8bb-ca7a-4135-a8dd-44e9b932746c
-                        TriggerEntity*: {Id: cfe82ef3-b615-435c-a9b6-15793dca565d}
+                        TriggerEntity*: cfe82ef3-b615-435c-a9b6-15793dca565d
                     - !RigidbodyComponent
                         ~Id: bb5b0832-d05b-4100-ba2c-f58c62312deb
                         CanSleep: false
@@ -643,10 +643,10 @@ Hierarchy:
                             Components:
                                 - !TransformComponent
                                     ~Id: 0901b52e-31e0-4802-9fb2-a602898cc11d
-                                    Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                                    Rotation: {W: 0.918539345, X: 0.0, Y: 0.0, Z: 0.3953296}
-                                    Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                     Children: []
+                                    Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                    Rotation: {X: 0.0, Y: 0.0, Z: 0.3953296, W: 0.918539345}
+                                    Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                 - !Constraints.AutoResetRigidbody,Constraints.Game
                                     ~Id: b65bc8a4-795e-4679-ac12-5062f07f8507
                                     TriggerEntity: null
@@ -695,16 +695,18 @@ Hierarchy:
                     - 9a21b30e-26ff-406d-aeba-d3e0788bbb75
                     - 554f8faa-e43d-4790-92e3-31fa97ad884d
                 Parts:
-                    -   Entity:
+                    -   BaseId: bd21c191-c738-4b04-aa3b-1ea9736fb9a0
+                        BasePartInstanceId: 04211d09-fbcc-43b3-acf6-e9fb6608435c
+                        Entity:
                             Id: 1f974780-9e25-478c-ac1d-177b8fec5b12
-                            Name: Cube6
+                            Name*: Cube6
                             Components:
                                 - !TransformComponent
                                     ~Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee
+                                    Children: []
                                     Position*: {X: 1.97378922, Y: 1.239566, Z: 0.0}
-                                    Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                    Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                     Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                                    Children: []
                                 - !Constraints.AutoResetRigidbody,Constraints.Game
                                     ~Id: 2d8df8bb-ca7a-4135-a8dd-44e9b932746c
                                     TriggerEntity: null
@@ -733,16 +735,18 @@ Hierarchy:
                                     Model: 873f71b4-3fd4-49af-87c5-6214e0879a89/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
                                     Materials:
                                         - null
-                    -   Entity:
+                    -   BaseId: bd21c191-c738-4b04-aa3b-1ea9736fb9a0
+                        BasePartInstanceId: 71591d1d-8448-4de6-bffe-9444b68c75cf
+                        Entity:
                             Id: 333ac088-05d4-4b0e-859c-d545cbf033ad
-                            Name: Cube3
+                            Name*: Cube3
                             Components:
                                 - !TransformComponent
                                     ~Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee
+                                    Children: []
                                     Position*: {X: 1.5, Y: 0.0, Z: 0.0}
-                                    Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                    Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                     Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                                    Children: []
                                 - !Constraints.AutoResetRigidbody,Constraints.Game
                                     ~Id: 2d8df8bb-ca7a-4135-a8dd-44e9b932746c
                                     TriggerEntity: null
@@ -771,16 +775,18 @@ Hierarchy:
                                     Model: 873f71b4-3fd4-49af-87c5-6214e0879a89/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
                                     Materials:
                                         - null
-                    -   Entity:
+                    -   BaseId: bd21c191-c738-4b04-aa3b-1ea9736fb9a0
+                        BasePartInstanceId: 42bca581-f3b0-4c84-82ae-aada5ad6edfd
+                        Entity:
                             Id: 462c1a6d-4105-4d81-a6ff-4d2922a68f53
-                            Name: Cube7
+                            Name*: Cube7
                             Components:
                                 - !TransformComponent
                                     ~Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee
+                                    Children: []
                                     Position*: {X: -0.0133164823, Y: 2.55761766, Z: 0.0}
-                                    Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                    Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                     Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                                    Children: []
                                 - !Constraints.AutoResetRigidbody,Constraints.Game
                                     ~Id: 2d8df8bb-ca7a-4135-a8dd-44e9b932746c
                                     TriggerEntity: null
@@ -809,16 +815,18 @@ Hierarchy:
                                     Model: 873f71b4-3fd4-49af-87c5-6214e0879a89/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
                                     Materials:
                                         - null
-                    -   Entity:
+                    -   BaseId: bd21c191-c738-4b04-aa3b-1ea9736fb9a0
+                        BasePartInstanceId: 36562445-42fc-4b29-84b9-b96db4881859
+                        Entity:
                             Id: 554f8faa-e43d-4790-92e3-31fa97ad884d
-                            Name: Cube9
+                            Name*: Cube9
                             Components:
                                 - !TransformComponent
                                     ~Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee
+                                    Children: []
                                     Position*: {X: 1.48668349, Y: 2.55761766, Z: 0.0}
-                                    Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                    Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                     Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                                    Children: []
                                 - !Constraints.AutoResetRigidbody,Constraints.Game
                                     ~Id: 2d8df8bb-ca7a-4135-a8dd-44e9b932746c
                                     TriggerEntity: null
@@ -847,16 +855,18 @@ Hierarchy:
                                     Model: 873f71b4-3fd4-49af-87c5-6214e0879a89/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
                                     Materials:
                                         - null
-                    -   Entity:
+                    -   BaseId: bd21c191-c738-4b04-aa3b-1ea9736fb9a0
+                        BasePartInstanceId: 7e0c0e30-dba7-4c4b-a20d-299e2dae07b8
+                        Entity:
                             Id: 7e967465-e0f1-4346-ba03-bfaf8f3a04c0
-                            Name: Cube2
+                            Name*: Cube2
                             Components:
                                 - !TransformComponent
                                     ~Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee
+                                    Children: []
                                     Position*: {X: -1.5, Y: 0.0, Z: 0.0}
-                                    Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                    Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                     Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                                    Children: []
                                 - !Constraints.AutoResetRigidbody,Constraints.Game
                                     ~Id: 2d8df8bb-ca7a-4135-a8dd-44e9b932746c
                                     TriggerEntity: null
@@ -885,16 +895,18 @@ Hierarchy:
                                     Model: 873f71b4-3fd4-49af-87c5-6214e0879a89/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
                                     Materials:
                                         - null
-                    -   Entity:
+                    -   BaseId: bd21c191-c738-4b04-aa3b-1ea9736fb9a0
+                        BasePartInstanceId: e7813fd7-7fe8-43c0-a4a8-4c68ebabf1f0
+                        Entity:
                             Id: 8b979eea-e7ca-4c96-91f9-716520ecffa6
-                            Name: Cube5
+                            Name*: Cube5
                             Components:
                                 - !TransformComponent
                                     ~Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee
+                                    Children: []
                                     Position*: {X: -1.02621078, Y: 1.239566, Z: 0.0}
-                                    Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                    Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                     Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                                    Children: []
                                 - !Constraints.AutoResetRigidbody,Constraints.Game
                                     ~Id: 2d8df8bb-ca7a-4135-a8dd-44e9b932746c
                                     TriggerEntity: null
@@ -923,16 +935,18 @@ Hierarchy:
                                     Model: 873f71b4-3fd4-49af-87c5-6214e0879a89/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
                                     Materials:
                                         - null
-                    -   Entity:
+                    -   BaseId: bd21c191-c738-4b04-aa3b-1ea9736fb9a0
+                        BasePartInstanceId: d4ab52d6-eaa6-49e8-98a3-5ef1558d4b24
+                        Entity:
                             Id: 9a21b30e-26ff-406d-aeba-d3e0788bbb75
-                            Name: Cube8
+                            Name*: Cube8
                             Components:
                                 - !TransformComponent
                                     ~Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee
+                                    Children: []
                                     Position*: {X: -1.51331651, Y: 2.55761766, Z: 0.0}
-                                    Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                    Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                     Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                                    Children: []
                                 - !Constraints.AutoResetRigidbody,Constraints.Game
                                     ~Id: 2d8df8bb-ca7a-4135-a8dd-44e9b932746c
                                     TriggerEntity: null
@@ -961,16 +975,18 @@ Hierarchy:
                                     Model: 873f71b4-3fd4-49af-87c5-6214e0879a89/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
                                     Materials:
                                         - null
-                    -   Entity:
+                    -   BaseId: bd21c191-c738-4b04-aa3b-1ea9736fb9a0
+                        BasePartInstanceId: f900ee98-b321-43e5-a2e9-ce47d36de943
+                        Entity:
                             Id: c35ab69e-a4cc-41ac-a740-89706a59148d
-                            Name: Cube4
+                            Name*: Cube4
                             Components:
                                 - !TransformComponent
                                     ~Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee
-                                    Position*: {X: 0.473789275, Y: 1.239566, Z: 0.0}
-                                    Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                    Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                     Children: []
+                                    Position*: {X: 0.473789275, Y: 1.239566, Z: 0.0}
+                                    Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                                    Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                 - !Constraints.AutoResetRigidbody,Constraints.Game
                                     ~Id: 2d8df8bb-ca7a-4135-a8dd-44e9b932746c
                                     TriggerEntity: null
@@ -999,16 +1015,18 @@ Hierarchy:
                                     Model: 873f71b4-3fd4-49af-87c5-6214e0879a89/bd2fa89a-6eb0-41d8-a979-b2d0e53de6b6:ProceduralModel
                                     Materials:
                                         - null
-                    -   Entity:
+                    -   BaseId: bd21c191-c738-4b04-aa3b-1ea9736fb9a0
+                        BasePartInstanceId: 80bbd32c-3741-4c9a-b7ac-f5556993dca8
+                        Entity:
                             Id: e4055f69-b082-49a3-8c1c-51004796b9cf
                             Name: Cube1
                             Components:
                                 - !TransformComponent
                                     ~Id: 5f75aa91-7f38-47f1-96dd-3464553ea2ee
-                                    Position*: {X: 0.0, Y: 0.0, Z: 0.0}
-                                    Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                                    Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                     Children: []
+                                    Position*: {X: 0.0, Y: 0.0, Z: 0.0}
+                                    Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                                    Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                 - !Constraints.AutoResetRigidbody,Constraints.Game
                                     ~Id: 2d8df8bb-ca7a-4135-a8dd-44e9b932746c
                                     TriggerEntity: null

@@ -9,7 +9,7 @@ SceneSettings:
         Cameras:
             -   ~Id: 39c913b4-fcee-42d5-b92e-08d2b1fcd3fa
                 Name: null
-                Camera: {Entity: {Id: 996fb61d-3623-4019-8dfe-949fd5a5c3d2}, Id: db798a71-bd42-4ee0-8633-b10f7fa15460}
+                Camera: 996fb61d-3623-4019-8dfe-949fd5a5c3d2/db798a71-bd42-4ee0-8633-b10f7fa15460
         Layers: []
         Master:
             ~Id: c888f57b-2d69-4163-a476-77a6858feea7
@@ -52,10 +52,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 022c5692-5828-435f-9bc6-cbd4b5a9e7d4
-                        Position: {X: 0.0, Y: -5.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: -5.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !StaticColliderComponent
                         ~Id: a2e3d53d-39fa-49a5-979d-f1e0e90bef40
                         CanSleep: true
@@ -75,10 +75,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 447c9352-bb92-4713-b0b4-89e3a67891bb
-                        Position: {X: 0.0, Y: -4.6, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: -4.6, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !Constraints.EnemyScript,Constraints.Game
                         ~Id: cf0aaa0c-5091-485a-b18d-50fec9ea3f2f
                     - !StaticColliderComponent
@@ -106,10 +106,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 274f6528-661f-4d47-b40a-a996d7ef135a
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !BackgroundComponent
                         ~Id: b6361123-5213-472f-9ab4-46ce1f1e9556
                         Texture: ea03aac1-7686-4c4a-bbd7-4ddfff9c1199/d46cb653-bbdb-4b7b-9449-37beb6774cfd:XenkoBackground
@@ -119,17 +119,17 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: f407c0b6-b934-4b97-861f-e6f31760b85e
-                        Position: {X: 0.0, Y: 0.0, Z: 5.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 5.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !CameraComponent
                         ~Id: db798a71-bd42-4ee0-8633-b10f7fa15460
                         Projection: Orthographic
                         FarClipPlane: 10.0
                         AspectRatio: 1.777
                     - !Constraints.NextSceneScript,Constraints.Game
-                        ~Id: e931786d-8eca-49e0-b157-84c80f168d7a
+                        ~Id: 70daecb1-4ff0-4a2b-9509-05e4ed5c0fa9
                         NextScene: Raycasting
         -   Entity:
                 Id: 9a60a268-6c2d-44d9-bac2-a4c569a73ef0
@@ -137,10 +137,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 1f1e58ab-1fda-4bef-8f76-da03f1e62ebf
-                        Position: {X: -4.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: -4.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !Constraints.CharacterScript,Constraints.Game
                         ~Id: 85aa35f0-a9e3-4c55-9fd8-3f2eecdd6e9a
                     - !CharacterComponent
@@ -163,6 +163,6 @@ Hierarchy:
                         ~Id: b20862b2-f1f9-4fea-88a3-162e0b9aa502
                         SpriteProvider: !SpriteFromSheet
                             ~Id: e4e5fcad-9232-46d7-b59b-d3cfe620d749
-                            CurrentFrame: 2
                             Sheet: 36131d0a-711c-46a0-a1f1-6bf579563283/4a17b086-10b4-4c11-b9ec-8baad5730240:SpriteSheet
+                            CurrentFrame: 2
                         Color: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
