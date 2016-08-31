@@ -9,10 +9,12 @@ namespace SiliconStudio.Xenko.Rendering
     {
         public ulong Value;
         public int Index;
+        public int StableIndex;
 
         public int CompareTo(SortKey other)
         {
-            return Value.CompareTo(other.Value);
+            var result = Value.CompareTo(other.Value);
+            return result != 0 ? result : StableIndex.CompareTo(other.StableIndex);
         }
     }
 }

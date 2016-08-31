@@ -112,7 +112,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
                     // This will force effects to be generated and saved in the object database
                     var time = new GameTime();
                     sceneRenderer.GameSystems.Update(time);
-                    sceneRenderer.GraphicsContext.ResourceGroupAllocator.Reset();
+                    sceneRenderer.GraphicsContext.ResourceGroupAllocator.Reset(sceneRenderer.GraphicsContext.CommandList);
                     sceneRenderer.GameSystems.Draw(time);
                 }
             }

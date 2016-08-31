@@ -16,6 +16,8 @@ namespace SiliconStudio.Xenko.Graphics
     {
         public static readonly int ThreadCount = 1; //AppConfig.GetConfiguration<Config>("RenderSystem").ThreadCount;
 
+        internal readonly Dictionary<PipelineStateDescriptionWithHash, PipelineState> CachedPipelineStates = new Dictionary<PipelineStateDescriptionWithHash, PipelineState>();
+
         internal readonly Dictionary<SamplerStateDescription, SamplerState> CachedSamplerStates = new Dictionary<SamplerStateDescription, SamplerState>();
 
         /// <summary>
@@ -27,7 +29,6 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal readonly bool NeedWorkAroundForUpdateSubResource;
         internal Effect CurrentEffect;
-        private readonly bool isDeferred;
 
         private readonly List<IDisposable> sharedDataToDispose = new List<IDisposable>();
         private readonly Dictionary<object, IDisposable> sharedDataPerDevice;
@@ -35,6 +36,8 @@ namespace SiliconStudio.Xenko.Graphics
         private GraphicsPresenter presenter;
 
         internal PipelineState DefaultPipelineState;
+
+        internal CommandList InternalMainCommandList;
 
         internal PrimitiveQuad PrimitiveQuad;
         private ColorSpace colorSpace;
@@ -48,7 +51,7 @@ namespace SiliconStudio.Xenko.Graphics
         public static GraphicsPlatform Platform => GraphicPlatform;
 
         public string RendererName => GetRendererName();
-
+        
         /// <summary>
         ///     Initializes a new instance of the <see cref="GraphicsDevice" /> class.
         /// </summary>
@@ -58,9 +61,6 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="windowHandle">The window handle.</param>
         protected GraphicsDevice(GraphicsAdapter adapter, GraphicsProfile[] profile, DeviceCreationFlags deviceCreationFlags, WindowHandle windowHandle)
         {
-            // Setup IsDeferred to false for the main device
-            isDeferred = false;
-
             // Create shared data
             sharedDataPerDevice = new Dictionary<object, IDisposable>();
 
@@ -84,14 +84,14 @@ namespace SiliconStudio.Xenko.Graphics
             // Create a new graphics device
             Features = new GraphicsDeviceFeatures(this);
 
-            InitializePostFeatures();
-
             SamplerStates = new SamplerStateFactory(this);
 
             var defaultPipelineStateDescription = new PipelineStateDescription();
             defaultPipelineStateDescription.SetDefaults();
             AdjustDefaultPipelineStateDescription(ref defaultPipelineStateDescription);
             DefaultPipelineState = PipelineState.New(this, ref defaultPipelineStateDescription);
+
+            InitializePostFeatures();
         }
 
         protected override void Destroy()
@@ -164,18 +164,12 @@ namespace SiliconStudio.Xenko.Graphics
         public bool IsDebugMode { get; private set; }
 
         /// <summary>
-        ///     Gets a value indicating whether this instance is a deferred graphics device context.
+        ///     Indicates wether this device allows for concurrent building and deferred submission of CommandLists
         /// </summary>
         /// <value>
         ///     <c>true</c> if this instance is deferred; otherwise, <c>false</c>.
         /// </value>
-        public bool IsDeferred
-        {
-            get
-            {
-                return isDeferred;
-            }
-        }
+        public bool IsDeferred { get; private set; }
 
         /// <summary>
         ///     Gets a value indicating whether this instance supports GPU markers and profiling.

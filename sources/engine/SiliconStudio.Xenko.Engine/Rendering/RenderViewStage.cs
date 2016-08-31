@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SiliconStudio.Core.Threading;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -14,7 +15,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// List of render nodes. It might cover multiple RenderStage and RootRenderFeature. RenderStages contains RenderStage range information.
         /// Used mostly for sorting and rendering.
         /// </summary>
-        public readonly List<RenderNodeFeatureReference> RenderNodes = new List<RenderNodeFeatureReference>();
+        public readonly ConcurrentCollector<RenderNodeFeatureReference> RenderNodes = new ConcurrentCollector<RenderNodeFeatureReference>();
 
         /// <summary>
         /// Sorted list of render nodes, that should be used during actual drawing.

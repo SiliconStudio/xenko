@@ -510,7 +510,16 @@ namespace SiliconStudio.Core.Mathematics
         /// </summary>
         public void Transpose()
         {
-            Transpose(ref this, out this);
+            float temp;
+
+            temp = M21; M21 = M12; M12 = temp;
+            temp = M31; M31 = M13; M13 = temp;
+            temp = M41; M41 = M14; M14 = temp;
+
+            temp = M32; M32 = M23; M23 = temp;
+            temp = M42; M42 = M24; M24 = temp;
+
+            temp = M43; M43 = M34; M34 = temp;
         }
 
         /// <summary>
@@ -1344,9 +1353,8 @@ namespace SiliconStudio.Core.Mathematics
         /// <returns>The transpose of the specified matrix.</returns>
         public static Matrix Transpose(Matrix value)
         {
-            Matrix result;
-            Transpose(ref value, out result);
-            return result;
+            value.Transpose();
+            return value;
         }
 
         /// <summary>

@@ -13,6 +13,7 @@ namespace SiliconStudio.Xenko.Graphics
     public class ResourceGroupAllocator : ComponentBase
     {
         private readonly GraphicsDevice graphicsDevice;
+        private readonly GraphicsResourceAllocator allocator;
         private readonly List<DescriptorPool> descriptorPools = new List<DescriptorPool>();
         private readonly List<BufferPool> bufferPools = new List<BufferPool>();
 
@@ -25,12 +26,15 @@ namespace SiliconStudio.Xenko.Graphics
         private BufferPool currentBufferPool;
         private int currentBufferPoolIndex = -1;
 
-        public ResourceGroupAllocator(GraphicsDevice graphicsDevice)
+        private CommandList commandList;
+
+        public ResourceGroupAllocator(GraphicsResourceAllocator allocator, CommandList commandList)
         {
-            this.graphicsDevice = graphicsDevice;
+            this.allocator = allocator;
+            this.commandList = commandList;
+            this.graphicsDevice = commandList.GraphicsDevice;
 
             SetupNextDescriptorPool();
-            SetupNextBufferPool();
         }
 
         protected override void Destroy()
@@ -46,12 +50,15 @@ namespace SiliconStudio.Xenko.Graphics
             base.Destroy();
         }
 
-        public void Reset()
+        public void Reset(CommandList commandList)
         {
+            this.commandList = commandList;
+
             foreach (var descriptorPool in descriptorPools)
             {
                 descriptorPool.Reset();
             }
+
             foreach (var bufferPool in bufferPools)
             {
                 bufferPool.Reset();
@@ -62,8 +69,13 @@ namespace SiliconStudio.Xenko.Graphics
             currentDescriptorPool = descriptorPools[0];
             currentDescriptorPoolIndex = 0;
 
-            currentBufferPool = bufferPools[0];
-            currentBufferPoolIndex = 0;
+            currentBufferPool = null;
+            currentBufferPoolIndex = -1;
+        }
+
+        public void Flush()
+        {
+            currentBufferPool?.Unmap();
         }
 
         public ResourceGroup AllocateResourceGroup()
@@ -98,7 +110,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (resourceGroupLayout.ConstantBufferSize > 0)
             {
-                if (!currentBufferPool.CanAllocate(resourceGroupLayout.ConstantBufferSize))
+                if (currentBufferPool == null || !currentBufferPool.CanAllocate(resourceGroupLayout.ConstantBufferSize))
                 {
                     SetupNextBufferPool();
                 }
@@ -109,15 +121,19 @@ namespace SiliconStudio.Xenko.Graphics
 
         private void SetupNextBufferPool()
         {
+            Flush();
+
             currentBufferPoolIndex++;
             if (currentBufferPoolIndex >= bufferPools.Count)
             {
-                bufferPools.Add(currentBufferPool = BufferPool.New(graphicsDevice, 1024*1024));
+                bufferPools.Add(currentBufferPool = BufferPool.New(allocator, graphicsDevice, 1024*1024));
             }
             else
             {
                 currentBufferPool = bufferPools[currentBufferPoolIndex];
             }
+
+            currentBufferPool.Map(commandList);
         }
 
         private void SetupNextDescriptorPool()

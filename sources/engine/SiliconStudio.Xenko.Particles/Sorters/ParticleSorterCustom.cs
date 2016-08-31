@@ -1,69 +1,32 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections;
 using System.Collections.Generic;
 
 namespace SiliconStudio.Xenko.Particles.Sorters
 {
-
     /// <summary>
     /// The custom sorter uses a user-defined method for generating sort index from a user-defined field
     /// </summary>
-    public class ParticleSorterCustom<T> : ParticleSorter where T : struct
+    public abstract class ParticleSorterCustom<T> where T : struct
     {
-        SortedParticle[] particleList;
-        private int currentLivingParticles;
+        protected readonly ParticleFieldDescription<T> fieldDesc;
 
-        private readonly ParticleFieldDescription<T> fieldDesc;
-        private readonly GetSortIndex<T> getIndex;
+        protected readonly ConcurrentArrayPool<SortedParticle> ArrayPool = new ConcurrentArrayPool<SortedParticle>();
 
-        public ParticleSorterCustom(ParticlePool pool, ParticleFieldDescription<T> fieldDesc, GetSortIndex<T> getIndex) : base(pool)
+        protected readonly ParticlePool ParticlePool;
+
+        protected ParticleSorterCustom(ParticlePool pool, ParticleFieldDescription<T> fieldDesc)
         {
-            particleList = new SortedParticle[pool.ParticleCapacity];
-            currentLivingParticles = 0;
-
+            ParticlePool = pool;
             this.fieldDesc = fieldDesc;
-            this.getIndex = getIndex;
         }
+    }
 
-        public override void Sort() 
-        {
-            currentLivingParticles = ParticlePool.LivingParticles;
-            var i = 0;
-
-            var posField = ParticlePool.GetField(fieldDesc);
-
-            if (posField.IsValid())
-            {
-                unsafe
-                {
-                    foreach (var particle in ParticlePool)
-                    {
-                        particleList[i] = new SortedParticle(particle, getIndex(particle.Get(posField)));
-                        i++;
-                    }
-                }
-            }
-            else
-            {
-                foreach (var particle in ParticlePool)
-                {
-                    particleList[i] = new SortedParticle(particle, 0);
-                    i++;
-                }
-            }
-
-            // Sort the list
-            Array.Sort(particleList, 0, currentLivingParticles); // GC problem? Switch to another solution if needed
-        }
-
-        public override IEnumerator<Particle> GetEnumerator()
-        {
-            return new Enumerator(particleList, currentLivingParticles);
-        }
-
+    public interface ISortValueCalculator<T> where T : struct
+    {
+        float GetSortValue(T value);
     }
 
     public struct Enumerator : IEnumerator<Particle>
@@ -101,5 +64,4 @@ namespace SiliconStudio.Xenko.Particles.Sorters
 
         object IEnumerator.Current => sortedList[index].Particle;
     }
-
 }

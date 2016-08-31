@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (nativeDeviceChild != null)
             {
                 // Schedule the resource for destruction (as soon as we are done with it)
-                GraphicsDevice.TemporaryResources.Enqueue(new KeyValuePair<long, SharpDX.Direct3D12.DeviceChild>(GraphicsDevice.NextFenceValue, nativeDeviceChild));
+                GraphicsDevice.TemporaryResources.Enqueue(new KeyValuePair<long, object>(GraphicsDevice.NextFenceValue, nativeDeviceChild));
                 nativeDeviceChild = null;
             }
             NativeResource = null;

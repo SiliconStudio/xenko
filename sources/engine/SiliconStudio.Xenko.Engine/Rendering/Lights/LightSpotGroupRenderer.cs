@@ -42,6 +42,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             private ValueParameterKey<int> countKey;
             private ValueParameterKey<SpotLightData> lightsKey;
             private FastListStruct<SpotLightData> lightsData = new FastListStruct<SpotLightData>(8);
+            private readonly object applyLock = new object();
 
             public SpotLightShaderGroup(RenderContext renderContext, ILightShadowMapShaderGroupData shadowGroupData)
                 : base(renderContext, shadowGroupData)
@@ -81,40 +82,44 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             public override void ApplyDrawParameters(RenderDrawContext context, int viewIndex, ParameterCollection parameters, ref BoundingBoxExt boundingBox)
             {
-                CurrentLights.Clear();
-                var lightRange = LightRanges[viewIndex];
-                for (int i = lightRange.Start; i < lightRange.End; ++i)
-                    CurrentLights.Add(Lights[i]);
-
-                base.ApplyDrawParameters(context, viewIndex, parameters, ref boundingBox);
-
-                // TODO: Octree structure to select best lights quicker
-                var boundingBox2 = (BoundingBox)boundingBox;
-                foreach (var lightEntry in CurrentLights)
+                // TODO THREADING: Make CurrentLights and lightData (thread-) local
+                lock (applyLock)
                 {
-                    var light = lightEntry.Light;
+                    CurrentLights.Clear();
+                    var lightRange = LightRanges[viewIndex];
+                    for (int i = lightRange.Start; i < lightRange.End; ++i)
+                        CurrentLights.Add(Lights[i]);
 
-                    if (light.BoundingBox.Intersects(ref boundingBox2))
+                    base.ApplyDrawParameters(context, viewIndex, parameters, ref boundingBox);
+
+                    // TODO: Octree structure to select best lights quicker
+                    var boundingBox2 = (BoundingBox)boundingBox;
+                    for (int i = 0; i < CurrentLights.Count; i++)
                     {
-                        var spotLight = (LightSpot)light.Type;
-                        lightsData.Add(new SpotLightData
+                        var light = CurrentLights[i].Light;
+
+                        if (light.BoundingBox.Intersects(ref boundingBox2))
                         {
-                            PositionWS = light.Position,
-                            DirectionWS = light.Direction,
-                            AngleOffsetAndInvSquareRadius = new Vector3(spotLight.LightAngleScale, spotLight.LightAngleOffset, spotLight.InvSquareRange),
-                            Color = light.Color,
-                        });
+                            var spotLight = (LightSpot)light.Type;
+                            lightsData.Add(new SpotLightData
+                            {
+                                PositionWS = light.Position,
+                                DirectionWS = light.Direction,
+                                AngleOffsetAndInvSquareRadius = new Vector3(spotLight.LightAngleScale, spotLight.LightAngleOffset, spotLight.InvSquareRange),
+                                Color = light.Color,
+                            });
 
-                        // Did we reach max number of simultaneous lights?
-                        // TODO: Still collect everything but sort by importance and remove the rest?
-                        if (lightsData.Count >= LightCurrentCount)
-                            break;
+                            // Did we reach max number of simultaneous lights?
+                            // TODO: Still collect everything but sort by importance and remove the rest?
+                            if (lightsData.Count >= LightCurrentCount)
+                                break;
+                        }
                     }
-                }
 
-                parameters.Set(countKey, lightsData.Count);
-                parameters.Set(lightsKey, lightsData.Count, ref lightsData.Items[0]);
-                lightsData.Clear();
+                    parameters.Set(countKey, lightsData.Count);
+                    parameters.Set(lightsKey, lightsData.Count, ref lightsData.Items[0]);
+                    lightsData.Clear();
+                }
             }
         }
     }

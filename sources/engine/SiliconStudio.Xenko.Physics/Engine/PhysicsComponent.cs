@@ -402,11 +402,11 @@ namespace SiliconStudio.Xenko.Engine
         [DataMemberIgnore]
         public Entity DebugEntity { get; set; }
 
-        public void AddDebugEntity(Scene scene)
+        public void AddDebugEntity(Scene scene, bool alwaysAddOffset = false)
         {
             if (DebugEntity != null) return;
 
-            var entity = Data?.PhysicsComponent?.DebugShapeRendering?.CreateDebugEntity(this);
+            var entity = Data?.PhysicsComponent?.DebugShapeRendering?.CreateDebugEntity(this, alwaysAddOffset);
             DebugEntity = entity;
 
             if (DebugEntity == null) return;
@@ -457,12 +457,14 @@ namespace SiliconStudio.Xenko.Engine
             }
         }
 
+        /// <summary>
+        /// Computes the physics transformation from the TransformComponent values
+        /// </summary>
+        /// <returns></returns>
         internal void DeriveBonePhysicsTransformation(out Matrix derivedTransformation)
         {
             Quaternion rotation;
             Vector3 translation;
-
-            //derive rotation and translation, scale is ignored for now
             Vector3 scale;
             BoneWorldMatrix.Decompose(out scale, out rotation, out translation);
 
@@ -528,6 +530,10 @@ namespace SiliconStudio.Xenko.Engine
             entity.Transform.Rotation = rotation;
         }
 
+        /// <summary>
+        /// Updades the graphics transformation from the given physics transformation
+        /// </summary>
+        /// <param name="physicsTransform"></param>
         internal void UpdateBoneTransformation(ref Matrix physicsTransform)
         {
             if (ColliderShape.LocalOffset != Vector3.Zero || ColliderShape.LocalRotation != Quaternion.Identity)
@@ -596,7 +602,12 @@ namespace SiliconStudio.Xenko.Engine
 
                 ColliderShape = PhysicsColliderShape.CreateShape(ColliderShapes[0]);
 
-                ColliderShape?.UpdateLocalTransformations();
+                if (ColliderShape != null)
+                {
+                    ColliderShape.Scaling = Vector3.One;
+                }
+
+                //ColliderShape?.UpdateLocalTransformations();
             }
             else if (ColliderShapes.Count > 1) //need a compound shape in this case
             {
@@ -618,7 +629,9 @@ namespace SiliconStudio.Xenko.Engine
 
                 ColliderShape = compound;
 
-                ColliderShape.UpdateLocalTransformations();
+                ColliderShape.Scaling = Vector3.One;
+
+                //ColliderShape.UpdateLocalTransformations();
             }
         }
 

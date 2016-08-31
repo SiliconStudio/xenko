@@ -1,47 +1,59 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Collections;
+using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Particles.Sorters
 {
-    /// <summary>
-    /// Base enumerator which accesses all particles in a <see cref="ParticlePool"/> in a sorted manner
-    /// </summary>
-    public abstract class ParticleSorter : IEnumerable
+    public struct SortedParticle : IComparable<SortedParticle>
     {
-        /// <summary>
-        /// Target <see cref="ParticlePool"/> to iterate and sort
-        /// </summary>
-        protected ParticlePool ParticlePool;
+        public readonly Particle Particle;
+        public readonly float SortIndex;         // TODO Maybe use a Int32 key rather than float?
 
-        protected ParticleSorter(ParticlePool pool)
+        public SortedParticle(Particle particle, float sortIndex)
         {
-            ParticlePool = pool;
+            Particle = particle;
+            SortIndex = sortIndex;
         }
 
-        /// <summary>
-        /// Returns a particle field accessor for the contained <see cref="ParticlePool"/>
-        /// </summary>
-        /// <typeparam name="T">Type data for the field</typeparam>
-        /// <param name="fieldDesc">The field description</param>
-        /// <returns></returns>
-        public ParticleFieldAccessor<T> GetField<T>(ParticleFieldDescription<T> fieldDesc) where T : struct
+        int IComparable<SortedParticle>.CompareTo(SortedParticle other)
         {
-            return ParticlePool.GetField<T>(fieldDesc);
+            return (SortIndex < other.SortIndex) ? -1 : (SortIndex > other.SortIndex) ? 1 : 0;
         }
 
-        /// <summary>
-        /// Sorts the particles. Should be called once per frame, after the particles have been updated and before they are drawn
-        /// </summary>
-        public abstract void Sort();
+        public static bool operator <(SortedParticle left, SortedParticle right) => (left.SortIndex < right.SortIndex);
 
-        IEnumerator IEnumerable.GetEnumerator()
+        public static bool operator >(SortedParticle left, SortedParticle right) => (left.SortIndex > right.SortIndex);
+
+        public static bool operator <=(SortedParticle left, SortedParticle right) => (left.SortIndex <= right.SortIndex);
+
+        public static bool operator >=(SortedParticle left, SortedParticle right) => (left.SortIndex >= right.SortIndex);
+
+        public static bool operator ==(SortedParticle left, SortedParticle right) => (left.SortIndex == right.SortIndex);
+
+        public static bool operator !=(SortedParticle left, SortedParticle right) => (left.SortIndex != right.SortIndex);
+
+        public override bool Equals(object obj)
         {
-            return GetEnumerator();
+            if (!(obj is SortedParticle))
+                return false;
+
+            var other = (SortedParticle)obj;
+            return (this == other);
         }
 
-        public abstract IEnumerator<Particle> GetEnumerator();
+        public override int GetHashCode()
+        {
+            return SortIndex.GetHashCode();
+        }
+    }
+
+    public interface IParticleSorter
+    {
+        ParticleList GetSortedList(Vector3 depth);
+
+        void FreeSortedList(ref ParticleList sortedList);
     }
 }

@@ -66,7 +66,7 @@ namespace SiliconStudio.Xenko.UI
         public static void SetCanvasRelativePosition(this UIElement element, Vector3 position)
         {
             element.DependencyProperties.Set(Canvas.RelativePositionPropertyKey, position);
-            element.DependencyProperties.Set(Canvas.UseAbsolutionPositionPropertyKey, false);
+            element.DependencyProperties.Set(Canvas.UseAbsolutePositionPropertyKey, false);
         }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace SiliconStudio.Xenko.UI
         public static void SetCanvasAbsolutePosition(this UIElement element, Vector3 position)
         {
             element.DependencyProperties.Set(Canvas.AbsolutePositionPropertyKey, position);
-            element.DependencyProperties.Set(Canvas.UseAbsolutionPositionPropertyKey, true);
+            element.DependencyProperties.Set(Canvas.UseAbsolutePositionPropertyKey, true);
         }
 
         /// <summary>

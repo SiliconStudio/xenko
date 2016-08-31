@@ -708,13 +708,13 @@ namespace SiliconStudio.Xenko.Games
             // Setup default command list
             if (GraphicsContext == null)
             {
-                GraphicsContext = new GraphicsContext(new CommandList(GraphicsDevice), new ResourceGroupAllocator(GraphicsDevice));
+                GraphicsContext = new GraphicsContext(GraphicsDevice);
                 Services.AddService(typeof(GraphicsContext), GraphicsContext);
             }
             else
             {
                 // Reset allocator
-                GraphicsContext.ResourceGroupAllocator.Reset();
+                GraphicsContext.ResourceGroupAllocator.Reset(GraphicsContext.CommandList);
                 GraphicsContext.CommandList.Reset();
             }
 
@@ -820,8 +820,10 @@ namespace SiliconStudio.Xenko.Games
                     GraphicsContext.CommandList.ResourceBarrierTransition(GraphicsDevice.Presenter.BackBuffer, GraphicsResourceState.Present);
                 }
 
+                GraphicsContext.ResourceGroupAllocator.Flush();
+
                 // Close command list
-                GraphicsContext.CommandList.Close();
+                GraphicsContext.CommandList.Flush();
 
                 // Present (if necessary)
                 graphicsDeviceManager.EndDraw(present);

@@ -44,6 +44,8 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     public partial class GraphicsDevice
     {
+        internal readonly int ConstantBufferDataPlacementAlignment = 16;
+
         private static readonly Logger Log = GlobalLogger.GetLogger("GraphicsDevice");
 
         internal int FrameCounter;
@@ -453,7 +455,16 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
         }
 
-        public void ExecuteCommandList(CommandList commandList)
+        public void ExecuteCommandList(CompiledCommandList commandList)
+        {
+#if DEBUG
+            EnsureContextActive();
+#endif
+
+            throw new NotImplementedException();
+        }
+
+        public void ExecuteCommandLists(int count, CompiledCommandList[] commandList)
         {
 #if DEBUG
             EnsureContextActive();
@@ -905,6 +916,9 @@ namespace SiliconStudio.Xenko.Graphics
                 graphicsContext.MakeCurrent(windowInfo);
             }
 #endif
+
+            // Create the main command list
+            InternalMainCommandList = new CommandList(this);
         }
 
         private void AdjustDefaultPipelineStateDescription(ref PipelineStateDescription pipelineStateDescription)
@@ -964,6 +978,11 @@ namespace SiliconStudio.Xenko.Graphics
             //boundFBO = 0;
             //boundFBOHeight = 0;
             //boundProgram = 0;
+        }
+
+        internal void TagResource(GraphicsResourceLink resourceLink)
+        {
+            resourceLink.Resource.DiscardNextMap = true;
         }
 
         internal void InitDefaultRenderTarget(PresentationParameters presentationParameters)

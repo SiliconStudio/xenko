@@ -28,6 +28,8 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
         private UIBatch batch;
 
+        private readonly object drawLock = new object();
+
         private readonly LayoutingContext layoutingContext = new LayoutingContext();
 
         private readonly List<UIElementState> uiElementStates = new List<UIElementState>();
@@ -63,6 +65,14 @@ namespace SiliconStudio.Xenko.Rendering.UI
         partial void PickingClear();
 
         public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
+        {
+            lock (drawLock)
+            {
+                DrawInternal(context, renderView, renderViewStage, startIndex, endIndex);
+            }
+        }
+
+        private void DrawInternal(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
             base.Draw(context, renderView, renderViewStage, startIndex, endIndex);
 

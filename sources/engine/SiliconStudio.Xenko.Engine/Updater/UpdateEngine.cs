@@ -7,6 +7,7 @@ using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Threading;
 
 namespace SiliconStudio.Xenko.Updater
 {
@@ -15,6 +16,7 @@ namespace SiliconStudio.Xenko.Updater
     /// </summary>
     public static unsafe class UpdateEngine
     {
+        static readonly ConcurrentPool<Stack<UpdateStackEntry>> StackPool = new ConcurrentPool<Stack<UpdateStackEntry>>(() => new Stack<UpdateStackEntry>());
         static readonly Dictionary<UpdateKey, UpdatableMember> UpdateKeys = new Dictionary<UpdateKey, UpdatableMember>();
         static readonly Dictionary<Type, UpdateMemberResolver> MemberResolvers = new Dictionary<Type, UpdateMemberResolver>();
 
@@ -435,7 +437,7 @@ namespace SiliconStudio.Xenko.Updater
             var operations = compiledUpdate.UpdateOperations;
             var temporaryObjects = compiledUpdate.TemporaryObjects;
 
-            var stack = new Stack<UpdateStackEntry>();
+            var stack = StackPool.Acquire();
 
             // Current object being processed
             object currentObj = target;
@@ -657,6 +659,8 @@ namespace SiliconStudio.Xenko.Updater
 
                 operation = Interop.IncrementPinned(operation);
             }
+
+            StackPool.Release(stack);
         }
 
         // Helper struct to blit small struct

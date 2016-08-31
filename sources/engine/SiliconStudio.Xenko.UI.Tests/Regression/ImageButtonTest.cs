@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public ImageButtonTest()
         {
-            CurrentVersion = 3;
+            CurrentVersion = 4;
         }
 
         protected override async Task LoadContent()

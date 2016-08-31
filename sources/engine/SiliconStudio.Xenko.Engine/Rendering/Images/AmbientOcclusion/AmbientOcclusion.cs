@@ -30,32 +30,32 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             //Enabled = false;
 
-            NumberOfSamples = 9;
-            ParamProjScale = 1;
-            ParamIntensity = 0.5f;
+            NumberOfSamples = 13;
+            ParamProjScale = 0.5f;
+            ParamIntensity = 0.2f;
             ParamBias = 0.01f;
-            ParamRadius = 1.5f;
+            ParamRadius = 1f;
             NumberOfBounces = 2;
-            BlurScale = 1.75f;
-            EdgeSharpness = 8;
+            BlurScale = 1.85f;
+            EdgeSharpness = 3f;
             TempSize = TemporaryBufferSize.SizeFull;
         }
 
         [DataMember(10)]
-        [DefaultValue(9)]
+        [DefaultValue(13)]
         [DataMemberRange(1, 50)]
         [Display("Number of samples")]
-        public int NumberOfSamples { get; set; } = 9;
+        public int NumberOfSamples { get; set; } = 13;
 
         [DataMember(20)]
-        [DefaultValue(1f)]
+        [DefaultValue(0.5f)]
         [Display("Projection Scale")]
-        public float ParamProjScale { get; set; } = 1f;
+        public float ParamProjScale { get; set; } = 0.5f;
 
         [DataMember(30)]
-        [DefaultValue(1f)]
+        [DefaultValue(0.2f)]
         [Display("Occlusion Intensity")]
-        public float ParamIntensity { get; set; } = 1f;
+        public float ParamIntensity { get; set; } = 0.2f;
 
         [DataMember(40)]
         [DefaultValue(0.01f)]
@@ -63,25 +63,25 @@ namespace SiliconStudio.Xenko.Rendering.Images
         public float ParamBias { get; set; } = 0.01f;
 
         [DataMember(50)]
-        [DefaultValue(1)]
+        [DefaultValue(1f)]
         [Display("Sample Radius")]
         public float ParamRadius { get; set; } = 1f;
 
         [DataMember(70)]
-        [DefaultValue(1)]
+        [DefaultValue(2)]
         [DataMemberRange(0, 3)]
         [Display("Blur Count")]
-        public int NumberOfBounces { get; set; } = 1;
+        public int NumberOfBounces { get; set; } = 2;
 
         [DataMember(74)]
-        [DefaultValue(2f)]
+        [DefaultValue(1.85f)]
         [Display("Blur Scale")]
-        public float BlurScale { get; set; } = 2f;
+        public float BlurScale { get; set; } = 1.85f;
 
         [DataMember(78)]
-        [DefaultValue(4f)]
+        [DefaultValue(3f)]
         [Display("Edge Sharpness")]
-        public float EdgeSharpness { get; set; } = 4f;
+        public float EdgeSharpness { get; set; } = 3f;
 
         [DataMember(100)]
         [DefaultValue(TemporaryBufferSize.SizeFull)]

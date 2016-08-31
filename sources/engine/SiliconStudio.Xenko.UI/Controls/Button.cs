@@ -163,7 +163,9 @@ namespace SiliconStudio.Xenko.UI.Controls
             }
         }
 
-        internal Sprite ButtonImage => (IsPressed ? PressedImage : MouseOverState == MouseOverState.MouseOverElement ? MouseOverImage : NotPressedImage)?.GetSprite();
+        internal ISpriteProvider ButtonImageProvider => IsPressed ? PressedImage : (MouseOverState == MouseOverState.MouseOverElement && MouseOverImage != null ? MouseOverImage : NotPressedImage);
+
+        internal Sprite ButtonImage => ButtonImageProvider?.GetSprite();
 
         /// <inheritdoc/>
         protected override Vector3 ArrangeOverride(Vector3 finalSizeWithoutMargins)

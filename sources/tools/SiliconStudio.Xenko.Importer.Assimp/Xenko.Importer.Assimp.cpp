@@ -84,7 +84,6 @@ public ref class MeshConverter
 public:
 	property Logger^ Logger;
 	property bool AllowUnsignedBlendIndices;
-	property float ScaleImport;
 
 private:
 	Stopwatch^ internalStopwatch;
@@ -224,10 +223,6 @@ private:
 		bool hasSkinningNormal = false;
 		int totalClusterCount = 0;
 
-		auto scaling = Matrix::Scaling(ScaleImport);
-		auto scalingInvert = scaling;
-		scalingInvert.Invert();
-
 		// Build the bone's indices/weights and attach bones to NodeData 
 		//(bones info are present in the mesh so that is why we have to perform that here)
 		std::vector<std::vector<std::pair<short, float> > > vertexIndexToBoneIdWeight;
@@ -273,7 +268,7 @@ private:
 				MeshBoneDefinition boneDef;
 				boneDef.NodeIndex = nodeIndex;
 				auto bindPoseMatrix = aiMatrixToMatrix(bone->mOffsetMatrix);
-				boneDef.LinkToMeshMatrix = scalingInvert * bindPoseMatrix * scaling;
+				boneDef.LinkToMeshMatrix = bindPoseMatrix;
 				bones->Add(boneDef);
 			}
 			NormalizeVertexWeights(vertexIndexToBoneIdWeight, nbBonesByVertex);
@@ -373,10 +368,8 @@ private:
 		for (unsigned int i = 0; i < mesh->mNumVertices; i++)
 		{
 			auto position = aiVector3ToVector3(mesh->mVertices[i]);
-			auto position4 = Vector4(position, 1.0f);
-			auto newPosition = (Vector3)Vector4::Transform(position4, scaling);
 
-			*((Vector3*)(vbPointer + positionOffset)) = newPosition;
+			*((Vector3*)(vbPointer + positionOffset)) = position;
 
 			if (mesh->HasNormals())
 				*((Vector3*)(vbPointer + normalOffset)) = aiVector3ToVector3(mesh->mNormals[i]);
@@ -501,7 +494,7 @@ private:
 		// Create node
 		ModelNodeDefinition modelNodeDefinition;
 		modelNodeDefinition.ParentIndex = parentIndex;
-		modelNodeDefinition.Transform.Position = Vector3(aiTranslation.x, aiTranslation.y, aiTranslation.z) * ScaleImport;
+		modelNodeDefinition.Transform.Position = Vector3(aiTranslation.x, aiTranslation.y, aiTranslation.z);
 		modelNodeDefinition.Transform.Rotation = aiQuaternionToQuaternion(aiOrientation);
 		
 		if (parentIndex == -1)
@@ -548,10 +541,8 @@ private:
 		}
 	}
 
-	void ProcessAnimationCurveVector(AnimationClip^ animationClip, const aiVectorKey* keys, unsigned int nbKeys, String^ partialTargetName, double ticksPerSec, bool scaled)
+	void ProcessAnimationCurveVector(AnimationClip^ animationClip, const aiVectorKey* keys, unsigned int nbKeys, String^ partialTargetName, double ticksPerSec)
 	{
-		auto scaling = Matrix::Scaling(ScaleImport);
-
 		auto animationCurve = gcnew AnimationCurve<Vector3>();
 
 		// Switch to cubic implicit interpolation mode for Vector3
@@ -573,8 +564,6 @@ private:
 			key.Value.X = value.X;
 			key.Value.Y = value.Y;
 			key.Value.Z = value.Z;
-
-			if(scaled) key.Value = (Vector3)Vector3::Transform(key.Value, scaling);
 
 			animationCurve->KeyFrames->Add(key);
 			if(keyId == 0 || keyId == nbKeys-1) // discontinuity at animation first and last frame
@@ -632,11 +621,11 @@ private:
 		auto animationClip = gcnew AnimationClip();
 		
 		// The translation
-		ProcessAnimationCurveVector(animationClip, nodeAnim->mPositionKeys, nodeAnim->mNumPositionKeys, "Transform.Position", ticksPerSec, true);
+		ProcessAnimationCurveVector(animationClip, nodeAnim->mPositionKeys, nodeAnim->mNumPositionKeys, "Transform.Position", ticksPerSec);
 		// The rotation
 		ProcessAnimationCurveQuaternion(animationClip, nodeAnim->mRotationKeys, nodeAnim->mNumRotationKeys, "Transform.Rotation", ticksPerSec);
 		// The scales
-		ProcessAnimationCurveVector(animationClip, nodeAnim->mScalingKeys, nodeAnim->mNumScalingKeys, "Transform.Scale", ticksPerSec, false);
+		ProcessAnimationCurveVector(animationClip, nodeAnim->mScalingKeys, nodeAnim->mNumScalingKeys, "Transform.Scale", ticksPerSec);
 
 		if (animationClip->Curves->Count > 0)
 			animationClips->Add(nodeName, animationClip);

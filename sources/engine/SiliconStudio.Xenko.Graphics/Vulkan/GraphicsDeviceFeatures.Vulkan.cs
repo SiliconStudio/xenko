@@ -59,6 +59,8 @@ namespace SiliconStudio.Xenko.Graphics
             HasDepthAsSRV = true;
             HasDepthAsReadOnlyRT = true;
 
+            HasResourceRenaming = false;
+
             // TODO D3D12
             //// Check features for each DXGI.Format
             //foreach (var format in Enum.GetValues(typeof(SharpDX.DXGI.Format)))

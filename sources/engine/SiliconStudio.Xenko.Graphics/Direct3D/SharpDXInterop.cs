@@ -36,16 +36,6 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <summary>
-        /// Gets the DX11 native device context
-        /// </summary>
-        /// <param name="commandList">The Xenko CommandList</param>
-        /// <returns></returns>
-        public static object GetNativeDeviceContext(CommandList commandList)
-        {
-            return GetNativeDeviceContextImpl(commandList);
-        }
-
-        /// <summary>
         /// Gets the DX11 native resource handle
         /// </summary>
         /// <param name="resource">The Xenko GraphicsResourceBase</param>
@@ -86,16 +76,6 @@ namespace SiliconStudio.Xenko.Graphics
         private static object GetNativeCommandQueueImpl(GraphicsDevice device)
         {
             return null;
-        }
-
-        /// <summary>
-        /// Gets the DX11 native device context
-        /// </summary>
-        /// <param name="commandList">The Xenko CommandList</param>
-        /// <returns></returns>
-        private static DeviceContext GetNativeDeviceContextImpl(CommandList commandList)
-        {
-            return commandList.NativeDeviceContext;
         }
 
         /// <summary>
@@ -145,16 +125,6 @@ namespace SiliconStudio.Xenko.Graphics
         private static CommandQueue GetNativeCommandQueueImpl(GraphicsDevice device)
         {
             return device.NativeCommandQueue;
-        }
-
-        /// <summary>
-        /// Gets the DX11 native device context
-        /// </summary>
-        /// <param name="commandList">The Xenko CommandList</param>
-        /// <returns></returns>
-        private static GraphicsCommandList GetNativeDeviceContextImpl(CommandList commandList)
-        {
-            return commandList.NativeCommandList;
         }
 
         /// <summary>

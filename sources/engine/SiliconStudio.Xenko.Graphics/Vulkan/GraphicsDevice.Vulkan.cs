@@ -5,15 +5,23 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 using SharpVulkan;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Threading;
 using Semaphore = SharpVulkan.Semaphore;
 
 namespace SiliconStudio.Xenko.Graphics
 {
     public partial class GraphicsDevice
     {
+        // TODO: Query device
+        internal readonly int ConstantBufferDataPlacementAlignment = 256;
+
+        internal readonly ConcurrentPool<List<SharpVulkan.DescriptorPool>> DescriptorPoolLists = new ConcurrentPool<List<SharpVulkan.DescriptorPool>>(() => new List<SharpVulkan.DescriptorPool>());
+        internal readonly ConcurrentPool<List<Texture>> StagingResourceLists = new ConcurrentPool<List<Texture>>(() => new List<Texture>());
+
         private const GraphicsPlatform GraphicPlatform = GraphicsPlatform.Vulkan;
         internal GraphicsProfile RequestedProfile;
 
@@ -22,10 +30,12 @@ namespace SiliconStudio.Xenko.Graphics
 
         private Device nativeDevice;
         internal Queue NativeCommandQueue;
+        internal object QueueLock = new object();
 
         internal CommandPool NativeCopyCommandPool;
         internal CommandBuffer NativeCopyCommandBuffer;
-        private NativeResourceCollector NativeResourceCollector;
+        private NativeResourceCollector nativeResourceCollector;
+        private GraphicsResourceLinkCollector graphicsResourceLinkCollector;
 
         private SharpVulkan.Buffer nativeUploadBuffer;
         private DeviceMemory nativeUploadBufferMemory;
@@ -37,7 +47,7 @@ namespace SiliconStudio.Xenko.Graphics
         private long lastCompletedFence;
         internal long NextFenceValue = 1;
 
-        internal HeapPool descriptorPools;
+        internal HeapPool DescriptorPools;
         internal const uint MaxDescriptorSetCount = 256;
         internal readonly uint[] MaxDescriptorTypeCounts = new uint[DescriptorSetLayout.DescriptorTypeCount]
         {
@@ -162,12 +172,53 @@ namespace SiliconStudio.Xenko.Graphics
         /// Executes a deferred command list.
         /// </summary>
         /// <param name="commandList">The deferred command list.</param>
-        public void ExecuteCommandList(CommandList commandList)
+        public void ExecuteCommandList(CompiledCommandList commandList)
         {
-            //if (commandList == null) throw new ArgumentNullException("commandList");
-            //
-            //NativeDeviceContext.ExecuteCommandList(((CommandList)commandList).NativeCommandList, false);
-            //commandList.Dispose();
+            ExecuteCommandListInternal(commandList);
+        }
+
+        /// <summary>
+        /// Executes multiple deferred command lists.
+        /// </summary>
+        /// <param name="count">Number of command lists to execute.</param>
+        /// <param name="commandLists">The deferred command lists.</param>
+        public unsafe void ExecuteCommandLists(int count, CompiledCommandList[] commandLists)
+        {
+            if (commandLists == null) throw new ArgumentNullException(nameof(commandLists));
+            if (count > commandLists.Length) throw new ArgumentOutOfRangeException(nameof(count));
+
+            var fenceValue = NextFenceValue++;
+
+            // Create a fence
+            var fenceCreateInfo = new FenceCreateInfo { StructureType = StructureType.FenceCreateInfo };
+            var fence = nativeDevice.CreateFence(ref fenceCreateInfo);
+            nativeFences.Enqueue(new KeyValuePair<long, Fence>(fenceValue, fence));
+
+            // Collect resources
+            var commandBuffers = stackalloc CommandBuffer[count];
+            for (int i = 0; i < count; i++)
+            {
+                commandBuffers[i] = commandLists[i].NativeCommandBuffer;
+                RecycleCommandListResources(commandLists[i], fenceValue);
+            }
+
+            // Submit commands
+            var pipelineStageFlags = PipelineStageFlags.BottomOfPipe;
+            var presentSemaphoreCopy = presentSemaphore;
+            var submitInfo = new SubmitInfo
+            {
+                StructureType = StructureType.SubmitInfo,
+                CommandBufferCount = (uint)count,
+                CommandBuffers = new IntPtr(commandBuffers),
+                WaitSemaphoreCount = presentSemaphore != Semaphore.Null ? 1U : 0U,
+                WaitSemaphores = new IntPtr(&presentSemaphoreCopy),
+                WaitDstStageMask = new IntPtr(&pipelineStageFlags),
+            };
+            NativeCommandQueue.Submit(1, &submitInfo, fence);
+
+            presentSemaphore = Semaphore.Null;
+            nativeResourceCollector.Release();
+            graphicsResourceLinkCollector.Release();
         }
 
         private void InitializePostFeatures()
@@ -208,6 +259,9 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             var queueProperties = NativePhysicalDevice.QueueFamilyProperties;
+
+            // Command lists are thread-safe and execute deferred
+            IsDeferred = true;
 
             // TODO VULKAN
             // Create Vulkan device based on profile
@@ -298,9 +352,10 @@ namespace SiliconStudio.Xenko.Graphics
             NativeDevice.AllocateCommandBuffers(ref commandBufferAllocationInfo, &nativeCommandBuffer);
             NativeCopyCommandBuffer = nativeCommandBuffer;
 
-            descriptorPools = new HeapPool(this);
+            DescriptorPools = new HeapPool(this);
 
-            NativeResourceCollector = new NativeResourceCollector(this);
+            nativeResourceCollector = new NativeResourceCollector(this);
+            graphicsResourceLinkCollector = new GraphicsResourceLinkCollector(this);
 
             EmptyTexelBuffer = Buffer.Typed.New(this, 1, PixelFormat.R32G32B32A32_Float);
         }
@@ -404,16 +459,16 @@ namespace SiliconStudio.Xenko.Graphics
             if (nativeUploadBuffer != SharpVulkan.Buffer.Null)
             {
                 NativeDevice.UnmapMemory(nativeUploadBufferMemory);
-                NativeResourceCollector.Add(lastCompletedFence, nativeUploadBuffer);
-                NativeResourceCollector.Add(lastCompletedFence, nativeUploadBufferMemory);
+                nativeResourceCollector.Add(lastCompletedFence, nativeUploadBuffer);
+                nativeResourceCollector.Add(lastCompletedFence, nativeUploadBufferMemory);
 
                 nativeUploadBuffer = SharpVulkan.Buffer.Null;
                 nativeUploadBufferMemory = DeviceMemory.Null;
             }
 
             // Release fenced resources
-            NativeResourceCollector.Dispose();
-            descriptorPools.Dispose();
+            nativeResourceCollector.Dispose();
+            DescriptorPools.Dispose();
 
             nativeDevice.DestroyCommandPool(NativeCopyCommandPool);
             nativeDevice.Destroy();
@@ -423,7 +478,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
         }
 
-        internal unsafe long ExecuteCommandListInternal(CommandBuffer nativeCommandBuffer)
+        internal unsafe long ExecuteCommandListInternal(CompiledCommandList commandList)
         {
             //if (nativeUploadBuffer != SharpVulkan.Buffer.Null)
             //{
@@ -434,13 +489,18 @@ namespace SiliconStudio.Xenko.Graphics
             //    nativeUploadBufferMemory = DeviceMemory.Null;
             //}
 
+            var fenceValue = NextFenceValue++;
+
             // Create new fence
             var fenceCreateInfo = new FenceCreateInfo { StructureType = StructureType.FenceCreateInfo };
             var fence = nativeDevice.CreateFence(ref fenceCreateInfo);
-            nativeFences.Enqueue(new KeyValuePair<long, Fence>(NextFenceValue, fence));
+            nativeFences.Enqueue(new KeyValuePair<long, Fence>(fenceValue, fence));
+
+            // Collect resources
+            RecycleCommandListResources(commandList, fenceValue);
 
             // Submit commands
-            var nativeCommandBufferCopy = nativeCommandBuffer;
+            var nativeCommandBufferCopy = commandList.NativeCommandBuffer;
             var pipelineStageFlags = PipelineStageFlags.BottomOfPipe;
 
             var presentSemaphoreCopy = presentSemaphore;
@@ -456,9 +516,32 @@ namespace SiliconStudio.Xenko.Graphics
             NativeCommandQueue.Submit(1, &submitInfo, fence);
 
             presentSemaphore = Semaphore.Null;
-            NativeResourceCollector.Release();
+            nativeResourceCollector.Release();
+            graphicsResourceLinkCollector.Release();
 
-            return NextFenceValue++;
+            return fenceValue;
+        }
+
+        private void RecycleCommandListResources(CompiledCommandList commandList, long fenceValue)
+        {
+            // Set fence on staging textures
+            foreach (var stagingResource in commandList.StagingResources)
+            {
+                stagingResource.StagingFenceValue = fenceValue;
+            }
+
+            StagingResourceLists.Release(commandList.StagingResources);
+            commandList.StagingResources.Clear();
+
+            // Recycle all resources
+            foreach (var descriptorPool in commandList.DescriptorPools)
+            {
+                DescriptorPools.RecycleObject(fenceValue, descriptorPool);
+            }
+            DescriptorPoolLists.Release(commandList.DescriptorPools);
+            commandList.DescriptorPools.Clear();
+
+            commandList.Builder.CommandBufferPool.RecycleObject(fenceValue, commandList.NativeCommandBuffer);
         }
 
         internal bool IsFenceCompleteInternal(long fenceValue)
@@ -472,17 +555,29 @@ namespace SiliconStudio.Xenko.Graphics
             return fenceValue <= lastCompletedFence;
         }
 
+        private SpinLock spinLock = new SpinLock();
+
         internal unsafe long GetCompletedValue()
         {
-            // TODO VULKAN: SpinLock this
-            while (nativeFences.Count > 0 && NativeDevice.GetFenceStatus(nativeFences.Peek().Value) == Result.Success)
+            bool lockTaken = false;
+            try
             {
-                var fence = nativeFences.Dequeue();
-                NativeDevice.DestroyFence(fence.Value);
-                lastCompletedFence = Math.Max(lastCompletedFence, fence.Key);
-            }
+                spinLock.Enter(ref lockTaken);
 
-            return lastCompletedFence;
+                while (nativeFences.Count > 0 && NativeDevice.GetFenceStatus(nativeFences.Peek().Value) == Result.Success)
+                {
+                    var fence = nativeFences.Dequeue();
+                    NativeDevice.DestroyFence(fence.Value);
+                    lastCompletedFence = Math.Max(lastCompletedFence, fence.Key);
+                }
+
+                return lastCompletedFence;
+            }
+            finally
+            {
+                if (lockTaken)
+                    spinLock.Exit(false);
+            }
         }
 
         internal unsafe void WaitForFenceInternal(long fenceValue)
@@ -517,7 +612,26 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal void Collect(NativeResource nativeResource)
         {
-            NativeResourceCollector.Add(NextFenceValue, nativeResource);
+            nativeResourceCollector.Add(NextFenceValue, nativeResource);
+        }
+
+        internal void TagResource(GraphicsResourceLink resourceLink)
+        {
+            var texture = resourceLink.Resource as Texture;
+            if (texture != null && texture.Usage == GraphicsResourceUsage.Dynamic)
+            {
+                // Increase the reference count until GPU is done with the resource
+                resourceLink.ReferenceCount++;
+                graphicsResourceLinkCollector.Add(NextFenceValue, resourceLink);
+            }
+
+            var buffer = resourceLink.Resource as Buffer;
+            if (buffer != null && buffer.Usage == GraphicsResourceUsage.Dynamic)
+            {
+                // Increase the reference count until GPU is done with the resource
+                resourceLink.ReferenceCount++;
+                graphicsResourceLinkCollector.Add(NextFenceValue, resourceLink);
+            }
         }
     }
 
@@ -752,6 +866,18 @@ namespace SiliconStudio.Xenko.Graphics
                     device.NativeDevice.DestroyFence(*(Fence*)&handleCopy);
                     break;
             }
+        }
+    }
+
+    internal class GraphicsResourceLinkCollector : TemporaryResourceCollector<GraphicsResourceLink>
+    {
+        public GraphicsResourceLinkCollector(GraphicsDevice graphicsDevice) : base(graphicsDevice)
+        {
+        }
+
+        protected override void ReleaseObject(GraphicsResourceLink item)
+        {
+            item.ReferenceCount--;
         }
     }
 

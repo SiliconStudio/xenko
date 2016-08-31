@@ -1,6 +1,9 @@
 using System;
+using System.Threading;
+using System.Threading.Tasks;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Rendering.Materials;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -10,13 +13,18 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public class SkinningRenderFeature : SubRenderFeature
     {
-        private StaticObjectPropertyKey<RenderEffect> renderEffectKey;
+        private const int DefaultBufferSize = 128;
 
+        private StaticObjectPropertyKey<RenderEffect> renderEffectKey;
+        private StaticObjectPropertyKey<SkinningInfo> skinningInfoKey;
         private ObjectPropertyKey<RenderModelFrameInfo> renderModelObjectInfoKey;
 
         private ConstantBufferOffsetReference blendMatrices;
 
-        private readonly FastList<NodeFrameInfo> nodeInfos = new FastList<NodeFrameInfo>();
+        //private readonly FastList<NodeFrameInfo> nodeInfos = new FastList<NodeFrameInfo>();
+        private readonly object nodeInfoLock = new object();
+        private NodeFrameInfo[] nodeInfos = new NodeFrameInfo[DefaultBufferSize];
+        private int nodeInfoCount;
 
         // Good number for low profiles?
         public int MaxBones { get; set; } = 56;
@@ -36,10 +44,21 @@ namespace SiliconStudio.Xenko.Rendering
             public int NodeInfoCount;
         }
 
+        struct SkinningInfo
+        {
+            public ParameterCollection Parameters;
+            public int PermutationCounter;
+
+            public bool HasSkinningPosition;
+            public bool HasSkinningNormal;
+            public bool HasSkinningTangent;
+        }
+
         /// <inheritdoc/>
         protected override void InitializeCore()
         {
             renderModelObjectInfoKey = RootRenderFeature.RenderData.CreateObjectKey<RenderModelFrameInfo>();
+            skinningInfoKey = RootRenderFeature.RenderData.CreateStaticObjectKey<SkinningInfo>();
             renderEffectKey = ((RootEffectRenderFeature)RootRenderFeature).RenderEffectKey;
 
             blendMatrices = ((RootEffectRenderFeature)RootRenderFeature).CreateDrawCBufferOffsetSlot(TransformationSkinningKeys.BlendMatrixArray.Name);
@@ -49,18 +68,36 @@ namespace SiliconStudio.Xenko.Rendering
         /// <inheritdoc/>
         public override void PrepareEffectPermutations(RenderDrawContext context)
         {
+            var skinningInfos = RootRenderFeature.RenderData.GetData(skinningInfoKey);
+
             var renderEffects = RootRenderFeature.RenderData.GetData(renderEffectKey);
             int effectSlotCount = ((RootEffectRenderFeature)RootRenderFeature).EffectPermutationSlotCount;
 
-            foreach (var renderObject in RootRenderFeature.RenderObjects)
+            //foreach (var objectNodeReference in RootRenderFeature.ObjectNodeReferences)
+            Dispatcher.ForEach(((RootEffectRenderFeature)RootRenderFeature).ObjectNodeReferences, objectNodeReference =>
             {
-                var staticObjectNode = renderObject.StaticObjectNode;
+                var objectNode = RootRenderFeature.GetObjectNode(objectNodeReference);
+                var renderMesh = (RenderMesh)objectNode.RenderObject;
+                var staticObjectNode = renderMesh.StaticObjectNode;
+
+                var skinningInfo = skinningInfos[staticObjectNode];
+                var parameters = renderMesh.Mesh.Parameters;
+                if (parameters != skinningInfo.Parameters || parameters.PermutationCounter != skinningInfo.PermutationCounter)
+                {
+                    skinningInfo.Parameters = parameters;
+                    skinningInfo.PermutationCounter = parameters.PermutationCounter;
+
+                    skinningInfo.HasSkinningPosition = parameters.Get(MaterialKeys.HasSkinningPosition);
+                    skinningInfo.HasSkinningNormal = parameters.Get(MaterialKeys.HasSkinningNormal);
+                    skinningInfo.HasSkinningTangent = parameters.Get(MaterialKeys.HasSkinningTangent);
+
+                    skinningInfos[staticObjectNode] = skinningInfo;
+                }
 
                 for (int i = 0; i < effectSlotCount; ++i)
                 {
                     var staticEffectObjectNode = staticObjectNode * effectSlotCount + i;
                     var renderEffect = renderEffects[staticEffectObjectNode];
-                    var renderMesh = (RenderMesh)renderObject;
 
                     // Skip effects not used during this frame
                     if (renderEffect == null || !renderEffect.IsUsedDuringThisFrame(RenderSystem))
@@ -68,15 +105,15 @@ namespace SiliconStudio.Xenko.Rendering
 
                     if (renderMesh.Mesh.Skinning != null)
                     {
-                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningPosition, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningPosition));
-                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningNormal, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningNormal));
-                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningTangent, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningTangent));
+                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningPosition, skinningInfo.HasSkinningPosition);
+                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningNormal, skinningInfo.HasSkinningNormal);
+                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningTangent, skinningInfo.HasSkinningTangent);
 
                         var skinningBones = Math.Max(MaxBones, renderMesh.Mesh.Skinning.Bones.Length);
                         renderEffect.EffectValidator.ValidateParameter(MaterialKeys.SkinningMaxBones, skinningBones);
                     }
                 }
-            }
+            });
         }
 
         /// <inheritdoc/>
@@ -84,9 +121,10 @@ namespace SiliconStudio.Xenko.Rendering
         {
             var renderModelObjectInfo = RootRenderFeature.RenderData.GetData(renderModelObjectInfoKey);
 
-            nodeInfos.Clear();
+            nodeInfoCount = 0;
 
-            foreach (var objectNodeReference in RootRenderFeature.ObjectNodeReferences)
+            //foreach (var objectNodeReference in RootRenderFeature.ObjectNodeReferences)
+            Dispatcher.ForEach(RootRenderFeature.ObjectNodeReferences, objectNodeReference =>
             {
                 var objectNode = RootRenderFeature.GetObjectNode(objectNodeReference);
                 var renderMesh = (RenderMesh)objectNode.RenderObject;
@@ -98,34 +136,44 @@ namespace SiliconStudio.Xenko.Rendering
                 if (skinning == null)
                 {
                     renderModelObjectInfo[objectNodeReference] = new RenderModelFrameInfo();
-                    continue;
+                    return;
                 }
 
                 var bones = skinning.Bones;
                 var boneCount = bones.Length;
 
                 // Reserve space in the node buffer
+                var newNodeInfoCount = Interlocked.Add(ref nodeInfoCount, boneCount);
+                var nodeInfoOffset = newNodeInfoCount - boneCount;
+
                 renderModelObjectInfo[objectNodeReference] = new RenderModelFrameInfo
                 {
-                    NodeInfoOffset = nodeInfos.Count,
+                    NodeInfoOffset = nodeInfoOffset,
                     NodeInfoCount = boneCount
                 };
 
                 // Ensure buffer capacity
-                nodeInfos.EnsureCapacity(nodeInfos.Count + boneCount);
+                if (nodeInfos.Length < newNodeInfoCount)
+                {
+                    lock (nodeInfoLock)
+                    {
+                        if (nodeInfos.Length < newNodeInfoCount)
+                            Array.Resize(ref nodeInfos, Math.Max(newNodeInfoCount, nodeInfos.Length * 2));
+                    }
+                }
 
-                // Copy matrices
+                var nodeTransformations = skeleton.NodeTransformations;
                 for (int index = 0; index < boneCount; index++)
                 {
                     var nodeIndex = bones[index].NodeIndex;
 
-                    nodeInfos.Add(new NodeFrameInfo
+                    nodeInfos[nodeInfoOffset + index] = new NodeFrameInfo
                     {
                         LinkToMeshMatrix = bones[index].LinkToMeshMatrix,
-                        NodeTransformation = skeleton.NodeTransformations[nodeIndex].WorldMatrix
-                    });
+                        NodeTransformation = nodeTransformations[nodeIndex].WorldMatrix
+                    };
                 }
-            }
+            });
         }
 
         /// <inheritdoc/>
@@ -133,15 +181,15 @@ namespace SiliconStudio.Xenko.Rendering
         {
             var renderModelObjectInfoData = RootRenderFeature.RenderData.GetData(renderModelObjectInfoKey);
 
-            foreach (var renderNode in ((RootEffectRenderFeature)RootRenderFeature).RenderNodes)
+            Dispatcher.ForEach(((RootEffectRenderFeature)RootRenderFeature).RenderNodes, (ref RenderNode renderNode) =>
             {
                 var perDrawLayout = renderNode.RenderEffect.Reflection.PerDrawLayout;
                 if (perDrawLayout == null)
-                    continue;
+                    return;
 
                 var blendMatricesOffset = perDrawLayout.GetConstantBufferOffset(blendMatrices);
                 if (blendMatricesOffset == -1)
-                    continue;
+                    return;
 
                 var renderModelObjectInfo = renderModelObjectInfoData[renderNode.RenderObject.ObjectNode];
 
@@ -151,9 +199,9 @@ namespace SiliconStudio.Xenko.Rendering
                 for (int i = 0; i < renderModelObjectInfo.NodeInfoCount; i++)
                 {
                     int boneInfoIndex = renderModelObjectInfo.NodeInfoOffset + i;
-                    Matrix.Multiply(ref nodeInfos.Items[boneInfoIndex].LinkToMeshMatrix, ref nodeInfos.Items[boneInfoIndex].NodeTransformation, out *blendMatrix++);
+                    Matrix.Multiply(ref nodeInfos[boneInfoIndex].LinkToMeshMatrix, ref nodeInfos[boneInfoIndex].NodeTransformation, out *blendMatrix++);
                 }
-            }
+            });
         }
     }
 }

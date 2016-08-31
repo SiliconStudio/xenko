@@ -104,6 +104,7 @@
     <Compile Include="ComplexSerializerGenerator.cs" />
     <Compile Include="CustomAssemblyResolver.cs" />
     <Compile Include="DataContractAliasProcessor.cs" />
+    <Compile Include="DispatcherProcessor.cs" />
     <Compile Include="FixupValueTypeVisitor.cs" />
     <Compile Include="GenerateUserDocumentationProcessor.cs" />
     <Compile Include="InitLocalsProcessor.cs" />

@@ -75,5 +75,8 @@ namespace SiliconStudio.Xenko.Particles
         {
             
         }
+
+        /// <inheritdoc />
+        public virtual void PreUpdate() { }
     }
 }

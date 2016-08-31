@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
 
@@ -49,15 +50,18 @@ namespace SiliconStudio.Xenko.Rendering
         {
             var renderModelObjectInfo = RootRenderFeature.RenderData.GetData(renderModelObjectInfoKey);
 
-            foreach (var objectNodeReference in RootRenderFeature.ObjectNodeReferences)
+            //for (int index = 0; index < RootRenderFeature.ObjectNodeReferences.Count; index++)
+            Dispatcher.For(0, RootRenderFeature.ObjectNodeReferences.Count, index =>
             {
+                var objectNodeReference = RootRenderFeature.ObjectNodeReferences[index];
                 var objectNode = RootRenderFeature.GetObjectNode(objectNodeReference);
                 var renderMesh = objectNode.RenderObject as RenderMesh;
+
                 // TODO: Extract world
-                var world = (renderMesh != null) ? renderMesh.World : Matrix.Identity;
+                var world = renderMesh?.World ?? Matrix.Identity;
 
                 renderModelObjectInfo[objectNodeReference] = new RenderModelFrameInfo { World = world };
-            }
+            });
         }
 
         /// <param name="context"></param>
@@ -91,7 +95,7 @@ namespace SiliconStudio.Xenko.Rendering
                 var viewFeature = view.Features[RootRenderFeature.Index];
 
                 // Compute WorldView and WorldViewProjection
-                foreach (var renderPerViewNodeReference in viewFeature.ViewObjectNodes)
+                Dispatcher.ForEach(viewFeature.ViewObjectNodes, renderPerViewNodeReference =>
                 {
                     var renderPerViewNode = RootRenderFeature.GetViewObjectNode(renderPerViewNodeReference);
                     var renderModelFrameInfo = renderModelObjectInfoData[renderPerViewNode.ObjectNode];
@@ -102,7 +106,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                     // TODO: Use ref locals or Utilities instead, to avoid double copy
                     renderModelViewInfoData[renderPerViewNodeReference] = renderModelViewInfo;
-                }
+                });
 
                 // Copy ViewProjection to PerView cbuffer
                 foreach (var viewLayout in viewFeature.Layouts)
@@ -150,15 +154,15 @@ namespace SiliconStudio.Xenko.Rendering
             // Update PerDraw (World, WorldViewProj, etc...)
             // Copy Entity.World to PerDraw cbuffer
             // TODO: Have a PerObject cbuffer?
-            foreach (var renderNode in ((RootEffectRenderFeature)RootRenderFeature).RenderNodes)
+            Dispatcher.ForEach(((RootEffectRenderFeature)RootRenderFeature).RenderNodes, (ref RenderNode renderNode) =>
             {
                 var perDrawLayout = renderNode.RenderEffect.Reflection.PerDrawLayout;
                 if (perDrawLayout == null)
-                    continue;
+                    return;
 
                 var worldOffset = perDrawLayout.GetConstantBufferOffset(this.world);
                 if (worldOffset == -1)
-                    continue;
+                    return;
 
                 var renderModelObjectInfo = renderModelObjectInfoData[renderNode.RenderObject.ObjectNode];
                 var renderModelViewInfo = renderModelViewInfoData[renderNode.ViewObjectNode];
@@ -168,20 +172,26 @@ namespace SiliconStudio.Xenko.Rendering
 
 
                 // Fill PerDraw
-                perDraw->World = renderModelObjectInfo.World;
-                Matrix.Invert(ref renderModelObjectInfo.World, out perDraw->WorldInverse);
-                // TODO GRAPHICS REFACTOR avoid cbuffer read
-                Matrix.Transpose(ref perDraw->WorldInverse, out perDraw->WorldInverseTranspose);
-                perDraw->WorldView = renderModelViewInfo.WorldView;
-                Matrix.Invert(ref renderModelViewInfo.WorldView, out perDraw->WorldViewInverse);
-                perDraw->WorldViewProjection = renderModelViewInfo.WorldViewProjection;
-                perDraw->WorldScale = new Vector3(
+                var perDrawData = new PerDraw
+                {
+                    World = renderModelObjectInfo.World,
+                    WorldView = renderModelViewInfo.WorldView,
+                    WorldViewProjection = renderModelViewInfo.WorldViewProjection
+                };
+
+                Matrix.Invert(ref renderModelObjectInfo.World, out perDrawData.WorldInverse);
+                Matrix.Transpose(ref perDrawData.WorldInverse, out perDrawData.WorldInverseTranspose);
+                Matrix.Invert(ref renderModelViewInfo.WorldView, out perDrawData.WorldViewInverse);
+
+                perDrawData.WorldScale = new Vector3(
                     ((Vector3)renderModelObjectInfo.World.Row1).Length(),
                     ((Vector3)renderModelObjectInfo.World.Row2).Length(),
                     ((Vector3)renderModelObjectInfo.World.Row3).Length());
-                // TODO GRAPHICS REFACTOR avoid cbuffer read
-                perDraw->EyeMS = new Vector4(perDraw->WorldViewInverse.M41, perDraw->WorldViewInverse.M42, perDraw->WorldViewInverse.M43, 1.0f);
-            }
+                
+                perDrawData.EyeMS = new Vector4(perDrawData.WorldInverse.M41, perDrawData.WorldInverse.M42, perDrawData.WorldInverse.M43, 1.0f);
+
+                *perDraw = perDrawData;
+            });
         }
 
         [StructLayout(LayoutKind.Sequential)]

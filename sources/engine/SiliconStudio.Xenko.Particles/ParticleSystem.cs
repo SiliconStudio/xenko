@@ -194,6 +194,19 @@ namespace SiliconStudio.Xenko.Particles
             oldEmitterCount = -1;
         }
 
+//        private Object thisLock = new Object();
+
+        private void PreUpdate()
+        {
+//            lock (thisLock)
+//            {
+                foreach (var particleEmitter in Emitters)
+                {
+                    particleEmitter.PreUpdate();
+                }
+//            }
+        }
+
         /// <summary>
         /// Updates the particles
         /// </summary>
@@ -203,6 +216,8 @@ namespace SiliconStudio.Xenko.Particles
         /// </userdoc>
         public void Update(float dt)
         {
+            PreUpdate();
+
             if (timeout > 0f)
             {
                 timeout -= dt;

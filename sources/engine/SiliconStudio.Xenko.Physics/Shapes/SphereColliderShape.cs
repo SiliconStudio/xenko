@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Physics
                 InternalShape = shape;
             }
 
-            DebugPrimitiveMatrix = Matrix.Scaling(2 * radius * 1.01f);
+            DebugPrimitiveMatrix = Matrix.Scaling(2 * radius * DebugScaling);
             if (Is2D)
             {
                 DebugPrimitiveMatrix.M33 = 0f;

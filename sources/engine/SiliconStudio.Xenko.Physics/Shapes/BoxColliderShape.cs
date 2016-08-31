@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Physics
                 LocalScaling = CachedScaling
             };
 
-            DebugPrimitiveMatrix = Matrix.Scaling(size * 1.01f);
+            DebugPrimitiveMatrix = Matrix.Scaling(size * DebugScaling);
         }
 
         public override MeshDraw CreateDebugPrimitive(GraphicsDevice device)

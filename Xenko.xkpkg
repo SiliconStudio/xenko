@@ -18,6 +18,7 @@ Profiles:
         - Path: sources/engine/SiliconStudio.Xenko.Engine/Rendering
         - Path: sources/engine/SiliconStudio.Xenko.Graphics/Shaders
         - Path: sources/editor/SiliconStudio.Xenko.Assets.Presentation/Shaders
+        - Path: sources/engine/SiliconStudio.Xenko.Assets/UI
         - Path: sources/engine/SiliconStudio.Xenko.Particles/Shaders
 TemplateFolders:
     - Path: sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Core
@@ -69,6 +70,7 @@ TemplateFolders:
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scenes/DefaultScene.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scenes/SceneHDR.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scenes/SceneLDR.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Animation/AnimationBlend.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Camera/BasicCameraController.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Camera/SideScrollingCamera.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Camera/FpsCamera.xktpl
@@ -113,8 +115,8 @@ TemplateFolders:
         - samples\Graphics\SpriteStudioDemo\SpriteStudioDemo.xktpl
         - samples\Input\TouchInputs\TouchInputs.xktpl
         - samples\Input\GravitySensor\GravitySensor.xktpl
-        - samples\Particles\SimpleParticles\SimpleParticles.xktpl
-        - samples\Physics\Constraints\Constraints.xktpl
+        - samples\Particles\ParticlesSample\ParticlesSample.xktpl
+        - samples\Physics\PhysicsSample\PhysicsSample.xktpl
         - samples\UI\GameMenu\GameMenu.xktpl
         - samples\UI\UIParticles\UIParticles.xktpl
         - samples\UI\UIElementLink\UIElementLink.xktpl

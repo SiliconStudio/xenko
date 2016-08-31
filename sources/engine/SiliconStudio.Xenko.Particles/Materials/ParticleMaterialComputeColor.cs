@@ -166,21 +166,21 @@ namespace SiliconStudio.Xenko.Particles.Materials
         }
 
         /// <inheritdoc />
-        public unsafe override void PatchVertexBuffer(ParticleVertexBuilder vertexBuilder, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
+        public unsafe override void PatchVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, ref ParticleList sorter)
         {
             // If you want, you can implement the base builder here and not call it. It should result in slight speed up
-            base.PatchVertexBuffer(vertexBuilder, invViewX, invViewY, sorter);
+            base.PatchVertexBuffer(ref bufferState, invViewX, invViewY, ref sorter);
 
             //  The UV Builder, if present, animates the basic (0, 0, 1, 1) uv coordinates of each billboard
-            UVBuilder?.BuildUVCoordinates(vertexBuilder, sorter, vertexBuilder.DefaultTexCoords);
-            vertexBuilder.RestartBuffer();
+            UVBuilder?.BuildUVCoordinates(ref bufferState, ref sorter, bufferState.DefaultTexCoords);
+            bufferState.StartOver();
 
             // If the particles have color field, the base class should have already passed the information
             if (HasColorField)
                 return;
 
             // If the particles don't have color field but there is no color stream either we don't need to fill anything
-            var colAttribute = vertexBuilder.GetAccessor(VertexAttributes.Color);
+            var colAttribute = bufferState.GetAccessor(VertexAttributes.Color);
             if (colAttribute.Size <= 0)
                 return;
 
@@ -190,12 +190,12 @@ namespace SiliconStudio.Xenko.Particles.Materials
             // TODO: for loop. Remove IEnumerable from sorter
             foreach (var particle in sorter)
             {
-                vertexBuilder.SetAttributePerParticle(colAttribute, (IntPtr)(&color));
+                bufferState.SetAttributePerParticle(colAttribute, (IntPtr)(&color));
 
-                vertexBuilder.NextParticle();
+                bufferState.NextParticle();
             }
 
-            vertexBuilder.RestartBuffer();
+            bufferState.StartOver();
         }
 
     }

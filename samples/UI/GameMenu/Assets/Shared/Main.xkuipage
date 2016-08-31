@@ -215,6 +215,7 @@ Hierarchy:
                     Canvas.PinOriginPropertyKey: {X: 1.0, Y: 0.0, Z: 0.0}
                     Canvas.RelativePositionPropertyKey: {X: 0.93, Y: 0.44, Z: 0.0}
                     Canvas.RelativeSizePropertyKey: {X: NaN, Y: 0.4, Z: 1.0}
+                    Canvas.UseAbsolutePositionPropertyKey: false
                 Id: 5053fa40-46ac-43be-8dde-a82569860dfc
                 LocalMatrix: {M11: 1.0, M12: 0.0, M13: 0.0, M14: 0.0, M21: 0.0, M22: 1.0, M23: 0.0, M24: 0.0, M31: 0.0, M32: 0.0, M33: 1.0, M34: 0.0, M41: 0.0, M42: 0.0, M43: 0.0, M44: 1.0}
                 Margin: {}
@@ -237,7 +238,7 @@ Hierarchy:
                 DependencyProperties:
                     Panel.ZIndexPropertyKey: 1
                     Canvas.AbsolutePositionPropertyKey: {X: 128.0, Y: NaN, Z: NaN}
-                    Canvas.UseAbsolutionPositionPropertyKey: true
+                    Canvas.UseAbsolutePositionPropertyKey: true
                     Canvas.RelativePositionPropertyKey: {X: NaN, Y: 0.44, Z: 0.0}
                 Font: 32bf2303-fa3d-42ad-a418-d51187b1c38c/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
                 HorizontalAlignment: Left
@@ -617,7 +618,7 @@ Hierarchy:
                     Panel.ZIndexPropertyKey: -1
                     Canvas.RelativePositionPropertyKey: {X: 0.0, Y: 0.0, Z: 0.0}
                     Canvas.RelativeSizePropertyKey: {X: 1.0, Y: 0.25, Z: 1.0}
-                    Canvas.UseAbsolutionPositionPropertyKey: true
+                    Canvas.UseAbsolutePositionPropertyKey: true
                     Canvas.PinOriginPropertyKey: {X: 0.0, Y: 0.0, Z: 0.0}
                     Canvas.AbsolutePositionPropertyKey: {X: 0.0, Y: 30.0, Z: 0.0}
                 HorizontalAlignment: Left

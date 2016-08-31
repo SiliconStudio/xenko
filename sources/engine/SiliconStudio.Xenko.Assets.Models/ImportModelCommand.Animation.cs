@@ -194,21 +194,26 @@ namespace SiliconStudio.Xenko.Assets.Models
                             nodeAnimationClip = combinedAnimationClip;
                         }
 
+                        var transformStart = $"{nameof(ModelNodeTransformation.Transform)}.";
+                        var transformPosition = $"{nameof(ModelNodeTransformation.Transform)}.{nameof(TransformTRS.Position)}";
+
                         foreach (var channel in nodeAnimationClip.Channels)
                         {
                             var curve = nodeAnimationClip.Curves[channel.Value.CurveIndex];
 
                             // TODO: Root motion
                             var channelName = channel.Key;
-                            if (channelName.StartsWith($"{nameof(ModelNodeTransformation.Transform)}."))
+                            if (channelName.StartsWith(transformStart))
                             {
-                                if (parentNodeIndex == 0 && channelName == $"{nameof(ModelNodeTransformation.Transform)}.{nameof(TransformTRS.Position)}")
+                                if (channelName == transformPosition)
                                 {
                                     // Translate node with parent 0 using PivotPosition
                                     var keyFrames = ((AnimationCurve<Vector3>)curve).KeyFrames;
                                     for (int i = 0; i < keyFrames.Count; ++i)
                                     {
-                                        keyFrames.Items[i].Value -= PivotPosition * ScaleImport;
+                                        if (parentNodeIndex == 0)
+                                            keyFrames.Items[i].Value -= PivotPosition;
+                                        keyFrames.Items[i].Value *= ScaleImport;
                                     }
                                 }
                                 animationClip.AddCurve($"[ModelComponent.Key].Skeleton.NodeTransformations[{skeletonMapping.SourceToTarget[nodeIndex]}]." + channelName, curve);
