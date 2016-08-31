@@ -41,11 +41,27 @@ namespace SiliconStudio.Xenko.UI.Controls
         public virtual string TextToDisplay => WrapText ? wrappedText : Text;
 
         /// <summary>
+        /// Gets or sets the text of the text block.
+        /// </summary>
+        /// <userdoc>The text of the text block.</userdoc>
+        [DataMember]
+        [DefaultValue(null)]
+        public string Text
+        {
+            get { return text; }
+            set
+            {
+                text = value;
+                OnTextChanged();
+            }
+        }
+
+        /// <summary>
         /// Gets or sets the font of the text block.
         /// </summary>
         /// <userdoc>The font of the text block.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory, order: 100)]
+        [Display(category: AppearanceCategory)]
         [DefaultValue(null)]
         public SpriteFont Font
         {
@@ -61,31 +77,6 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the text of the text block.
-        /// </summary>
-        /// <userdoc>The text of the text block.</userdoc>
-        [DataMember]
-        [Display(order: 100)]
-        [DefaultValue(null)]
-        public string Text
-        {
-            get { return text; }
-            set
-            {
-                text = value;
-                OnTextChanged();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the color of the text.
-        /// </summary>
-        /// <userdoc>The color of the text.</userdoc>
-        [DataMember]
-        [Display(category: AppearanceCategory, order: 102)]
-        public Color TextColor { get; set; } = Color.FromAbgr(0xF0F0F0FF);
-
-        /// <summary>
         /// Gets or sets the size of the text in virtual pixels unit.
         /// </summary>
         /// <remarks>If the value set is <c>null</c>, the default size of the <see cref="Font"/> will be used instead.</remarks>
@@ -94,7 +85,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <userdoc>The size of the text in virtual pixels unit.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue, AllowNaN = true)]
-        [Display(category: AppearanceCategory, order: 101)]
+        [Display(category: AppearanceCategory)]
         [DefaultValue(float.NaN)]
         public float TextSize
         {
@@ -107,12 +98,29 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
+        /// Gets or sets the color of the text.
+        /// </summary>
+        /// <userdoc>The color of the text.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        public Color TextColor { get; set; } = Color.FromAbgr(0xF0F0F0FF);
+
+        /// <summary>
+        /// Gets or sets the alignment of the text to display.
+        /// </summary>
+        /// <userdoc>Alignment of the text.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(default(TextAlignment))]
+        public TextAlignment TextAlignment { get; set; }
+
+        /// <summary>
         /// Gets or sets the value indicating if the <see cref="Text"/> of the <see cref="TextBlock"/> 
         /// should automatically return to the beginning of the line when it is too long for the line width.
         /// </summary>
         /// <userdoc>True if the text should automatically return of the beginning of the line when it is too long to fit the line width, false otherwise.</userdoc>
         [DataMember]
-        [Display(category: BehaviorCategory, order: 100)]
+        [Display(category: BehaviorCategory)]
         [DefaultValue(false)]
         public bool WrapText
         {
@@ -128,6 +136,19 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
+        /// Gets or sets the value indicating if the snapping of the <see cref="Text"/> of the <see cref="TextBlock"/> to the closest screen pixel should be skipped.
+        /// </summary>
+        /// <remarks>
+        /// When <value>true</value>, the element's text is never snapped. 
+        /// When <value>false</value>, it is snapped only if the font is dynamic and the element is rendered by a SceneUIRenderer.
+        /// </remarks>
+        /// <userdoc>True to never snap to the closest screen pixel, false to snap it (only works for dynamic font).</userdoc>
+        [DataMember]
+        [Display(category: BehaviorCategory)]
+        [DefaultValue(false)]
+        public bool DoNotSnapText { get; set; }
+
+        /// <summary>
         /// Gets or sets the value indicating if the text block should generate <see cref="Graphics.Font.RuntimeRasterizedSpriteFont"/> characters synchronously or asynchronously.
         /// </summary>
         /// <remarks>
@@ -136,7 +157,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </remarks>
         /// <userdoc>True if dynamic characters should be generated synchronously, false otherwise.</userdoc>
         [DataMember]
-        [Display(category: BehaviorCategory, order: 102)]
+        [Display(category: BehaviorCategory)]
         [DefaultValue(false)]
         public bool SynchronousCharacterGeneration
         {
@@ -152,28 +173,6 @@ namespace SiliconStudio.Xenko.UI.Controls
                     CalculateTextSize();
             }
         }
-
-        /// <summary>
-        /// Gets or sets the alignment of the text to display.
-        /// </summary>
-        /// <userdoc>Alignment of the text.</userdoc>
-        [DataMember]
-        [Display(category: AppearanceCategory, order: 103)]
-        [DefaultValue(default(TextAlignment))]
-        public TextAlignment TextAlignment { get; set; }
-
-        /// <summary>
-        /// Gets or sets the value indicating if the snapping of the <see cref="Text"/> of the <see cref="TextBlock"/> to the closest screen pixel should be skipped.
-        /// </summary>
-        /// <remarks>
-        /// When <value>true</value>, the element's text is never snapped. 
-        /// When <value>false</value>, it is snapped only if the font is dynamic and the element is rendered by a SceneUIRenderer.
-        /// </remarks>
-        /// <userdoc>True to never snap to the closest screen pixel, false to snap it (only works for dynamic font).</userdoc>
-        [DataMember]
-        [Display(category: BehaviorCategory, order: 101)]
-        [DefaultValue(false)]
-        public bool DoNotSnapText { get; set; }
 
         /// <summary>
         /// Calculate and returns the size of the <see cref="Text"/> in virtual pixels size.

@@ -79,7 +79,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// </summary>
         /// <userdoc>True if the Stack Panel's children must be virtualized, false otherwise.</userdoc>
         [DataMember]
-        [Display(category: BehaviorCategory, order: 200)]
+        [Display(category: BehaviorCategory)]
         [DefaultValue(false)]
         public bool ItemVirtualizationEnabled
         {
@@ -110,6 +110,26 @@ namespace SiliconStudio.Xenko.UI.Panels
                     visibleChildren.Clear();
                 }
 
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value that indicates the orientation by which child elements are stacked.
+        /// </summary>
+        /// <userdoc>The orientation by which children are stacked.</userdoc>
+        [DataMember]
+        [Display(category: LayoutCategory)]
+        [DefaultValue(Orientation.Vertical)]
+        public Orientation Orientation
+        {
+            get { return orientation; }
+            set
+            {
+                if (orientation == value)
+                    return;
+
+                orientation = value;
                 InvalidateMeasure();
             }
         }
@@ -151,26 +171,6 @@ namespace SiliconStudio.Xenko.UI.Panels
 
             // calculate the size taken by all elements if proportional
             return accumulatedSize / (Children.Count - indexElement) * Children.Count;
-        }
-
-        /// <summary>
-        /// Gets or sets a value that indicates the orientation by which child elements are stacked.
-        /// </summary>
-        /// <userdoc>The orientation by which children are stacked.</userdoc>
-        [DataMember]
-        [Display(category: LayoutCategory, order: 200)]
-        [DefaultValue(Orientation.Vertical)]
-        public Orientation Orientation
-        {
-            get { return orientation; }
-            set
-            {
-                if (orientation == value)
-                    return;
-
-                orientation = value;
-                InvalidateMeasure();
-            }
         }
 
         protected override void OnLogicalChildRemoved(UIElement oldElement, int index)

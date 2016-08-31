@@ -205,11 +205,129 @@ namespace SiliconStudio.Xenko.UI.Controls
         protected bool ShouldHideText => (inputType & InputTypeFlags.Password) != 0;
 
         /// <summary>
+        /// Gets or sets the font of the text block.
+        /// </summary>
+        /// <userdoc>The font of the text block.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        public SpriteFont Font
+        {
+            get { return font; }
+            set
+            {
+                if (font == value)
+                    return;
+
+                font = value;
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the size of the text in virtual pixels unit.
+        /// </summary>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
+        /// <userdoc>The size of the text in virtual pixels unit.</userdoc>
+        [DataMember]
+        [DataMemberRange(0, float.MaxValue, AllowNaN = true)]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(float.NaN)]
+        public float TextSize
+        {
+            get { return textSize; }
+            set
+            {
+                textSize = MathUtil.Clamp(value, 0.0f, float.MaxValue);
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the color of the text.
+        /// </summary>
+        /// <userdoc>The color of the text.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        public Color TextColor { get; set; } = Color.FromAbgr(0xF0F0F0FF);
+
+        /// <summary>
+        /// Gets or sets the alignment of the text to display.
+        /// </summary>
+        /// <userdoc>The alignment of the text to display.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(default(TextAlignment))]
+        public TextAlignment TextAlignment { get; set; }
+
+        /// <summary>
+        /// Gets or sets the image that is displayed in background when the edit is active.
+        /// </summary>
+        /// <userdoc>The image that is displayed in background when the edit is active.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(null)]
+        public ISpriteProvider ActiveImage { get; set; }
+
+        /// <summary>
+        /// Gets or sets the image that is displayed in background when the edit is inactive.
+        /// </summary>
+        /// <userdoc>The image that is displayed in background when the edit is inactive.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(null)]
+        public ISpriteProvider InactiveImage { get; set; }
+
+        /// <summary>
+        /// Gets or sets the image that the button displays when the mouse is over it.
+        /// </summary>
+        /// <userdoc>The image that the button displays when the mouse is over it.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(null)]
+        public ISpriteProvider MouseOverImage { get; set; }
+
+        /// <summary>
+        /// Gets or sets the color of the caret.
+        /// </summary>
+        /// <userdoc>The color of the caret.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        public Color CaretColor { get; set; } = Color.FromAbgr(0xF0F0F0FF);
+
+        /// <summary>
+        /// Gets or sets the width of the edit text's cursor (in virtual pixels).
+        /// </summary>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
+        /// <userdoc>The width of the edit text's cursor (in virtual pixels).</userdoc>
+        [DataMember]
+        [DataMemberRange(0, float.MaxValue)]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(0)]
+        public float CaretWidth
+        {
+            get { return caretWith; }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                caretWith = MathUtil.Clamp(value, 0.0f, float.MaxValue);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the color of the selection.
+        /// </summary>
+        /// <userdoc>The color of the selection.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        public Color SelectionColor { get; set; } = Color.FromAbgr(0xF0F0F0FF);
+
+        /// <summary>
         /// Gets or sets whether the control is read-only, or not.
         /// </summary>
         /// <userdoc>True if the control is read-only, false otherwise.</userdoc>
         [DataMember]
-        [Display(category: BehaviorCategory, order: 200)]
+        [Display(category: BehaviorCategory)]
         [DefaultValue(false)]
         public bool IsReadOnly
         {
@@ -225,47 +343,27 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the font of the text block.
+        /// Gets or sets the edit text input type by setting a combination of <see cref="InputTypeFlags"/>.
         /// </summary>
-        /// <userdoc>The font of the text block.</userdoc>
+        /// <userdoc>The edit text input type.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory, order: 200)]
-        public SpriteFont Font
+        [Display(category: BehaviorCategory)]
+        [DefaultValue(default(InputTypeFlags))]
+        public InputTypeFlags InputType
         {
-            get { return font; }
+            get { return inputType; }
             set
             {
-                if (font == value)
+                if (inputType == value)
                     return;
 
-                font = value;
-                InvalidateMeasure();
+                inputType = value;
+
+                UpdateTextToDisplay();
+
+                UpdateInputTypeImpl();
             }
         }
-
-        /// <summary>
-        /// Gets or sets the color of the text.
-        /// </summary>
-        /// <userdoc>The color of the text.</userdoc>
-        [DataMember]
-        [Display(category: AppearanceCategory, order: 202)]
-        public Color TextColor { get; set; } = Color.FromAbgr(0xF0F0F0FF);
-
-        /// <summary>
-        /// Gets or sets the color of the selection.
-        /// </summary>
-        /// <userdoc>The color of the selection.</userdoc>
-        [DataMember]
-        [Display(category: AppearanceCategory, order: 209)]
-        public Color SelectionColor { get; set; } = Color.FromAbgr(0xF0F0F0FF);
-
-        /// <summary>
-        /// Gets or sets the color of the caret.
-        /// </summary>
-        /// <userdoc>The color of the caret.</userdoc>
-        [DataMember]
-        [Display(category: AppearanceCategory, order: 207)]
-        public Color CaretColor { get; set; } = Color.FromAbgr(0xF0F0F0FF);
 
         /// <summary>
         /// Gets or sets the maximum number of characters that can be manually entered into the text box.
@@ -274,7 +372,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <userdoc>The maximum number of characters that can be manually entered into the text box.</userdoc>
         [DataMember]
         [DataMemberRange(1, int.MaxValue)]
-        [Display(category: BehaviorCategory, order: 202)]
+        [Display(category: BehaviorCategory)]
         [DefaultValue(int.MaxValue)]
         public int MaxLength
         {
@@ -287,32 +385,13 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the maximum number of visible lines.
-        /// </summary>
-        /// <remarks>The value is coerced in the range [int, <see cref="int.MaxValue"/>].</remarks>
-        /// <userdoc>The maximum number of visible lines.</userdoc>
-        [DataMember]
-        [DataMemberRange(1, int.MaxValue)]
-        [Display(category: BehaviorCategory, order: 204)]
-        [DefaultValue(int.MaxValue)]
-        public int MaxLines
-        {
-            get { return maxLines; }
-            set
-            {
-                maxLines = MathUtil.Clamp(value, 1, int.MaxValue);
-                OnMaxLinesChanged();
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the minimum number of visible lines.
         /// </summary>
         /// <remarks>The value is coerced in the range [1, <see cref="int.MaxValue"/>].</remarks>
         /// <userdoc>The minimum number of visible lines.</userdoc>
         [DataMember]
         [DataMemberRange(1, int.MaxValue)]
-        [Display(category: BehaviorCategory, order: 203)]
+        [Display(category: BehaviorCategory)]
         [DefaultValue(1)]
         public int MinLines
         {
@@ -325,31 +404,23 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the image that is displayed in background when the edit is active.
+        /// Gets or sets the maximum number of visible lines.
         /// </summary>
-        /// <userdoc>The image that is displayed in background when the edit is active.</userdoc>
+        /// <remarks>The value is coerced in the range [int, <see cref="int.MaxValue"/>].</remarks>
+        /// <userdoc>The maximum number of visible lines.</userdoc>
         [DataMember]
-        [Display(category: AppearanceCategory, order: 204)]
-        [DefaultValue(null)]
-        public ISpriteProvider ActiveImage { get; set; }
-
-        /// <summary>
-        /// Gets or sets the image that is displayed in background when the edit is inactive.
-        /// </summary>
-        /// <userdoc>The image that is displayed in background when the edit is inactive.</userdoc>
-        [DataMember]
-        [Display(category: AppearanceCategory, order: 205)]
-        [DefaultValue(null)]
-        public ISpriteProvider InactiveImage { get; set; }
-
-        /// <summary>
-        /// Gets or sets the image that the button displays when the mouse is over it.
-        /// </summary>
-        /// <userdoc>The image that the button displays when the mouse is over it.</userdoc>
-        [DataMember]
-        [Display(category: AppearanceCategory, order: 206)]
-        [DefaultValue(null)]
-        public ISpriteProvider MouseOverImage { get; set; }
+        [DataMemberRange(1, int.MaxValue)]
+        [Display(category: BehaviorCategory)]
+        [DefaultValue(int.MaxValue)]
+        public int MaxLines
+        {
+            get { return maxLines; }
+            set
+            {
+                maxLines = MathUtil.Clamp(value, 1, int.MaxValue);
+                OnMaxLinesChanged();
+            }
+        }
 
         /// <summary>
         /// Gets or sets the value indicating if the snapping of the <see cref="Text"/> of the <see cref="TextBlock"/> to the closest screen pixel should be skipped.
@@ -358,9 +429,28 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// When <value>false</value>, it is snapped only if the font is dynamic and the element is rendered by a SceneUIRenderer.</remarks>
         /// <userdoc>True if the snapping of the Text to the closest screen pixel should be skipped, false otherwise.</userdoc>
         [DataMember]
-        [Display(category: BehaviorCategory, order: 205)]
+        [Display(category: BehaviorCategory)]
         [DefaultValue(false)]
         public bool DoNotSnapText { get; set; } = false;
+
+        /// <summary>
+        /// Gets or sets the caret blinking frequency.
+        /// </summary>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
+        /// <userdoc>The caret blinking frequency.</userdoc>
+        [DataMember]
+        [DataMemberRange(0, float.MaxValue)]
+        [Display(category: BehaviorCategory)]
+        [DefaultValue(0)]
+        public float CaretFrequency
+        {
+            get { return caretFrequency; }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                caretFrequency = MathUtil.Clamp(value, 0.0f, float.MaxValue); }
+        }
 
         /// <summary>
         /// Gets or sets the caret position in the <see cref="EditText"/>'s text.
@@ -376,44 +466,6 @@ namespace SiliconStudio.Xenko.UI.Controls
                 return caretAtStart? selectionStart: selectionStop;
             }
             set { Select(value, 0); }
-        }
-
-        /// <summary>
-        /// Gets or sets the width of the edit text's cursor (in virtual pixels).
-        /// </summary>
-        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
-        /// <userdoc>The width of the edit text's cursor (in virtual pixels).</userdoc>
-        [DataMember]
-        [DataMemberRange(0, float.MaxValue)]
-        [Display(category: AppearanceCategory, order: 208)]
-        [DefaultValue(0)]
-        public float CaretWidth
-        {
-            get { return caretWith; }
-            set
-            {
-                if (float.IsNaN(value))
-                    return;
-                caretWith = MathUtil.Clamp(value, 0.0f, float.MaxValue); }
-        }
-
-        /// <summary>
-        /// Gets or sets the caret blinking frequency.
-        /// </summary>
-        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
-        /// <userdoc>The caret blinking frequency.</userdoc>
-        [DataMember]
-        [DataMemberRange(0, float.MaxValue)]
-        [Display(category: BehaviorCategory, order: 206)]
-        [DefaultValue(0)]
-        public float CaretFrequency
-        {
-            get { return caretFrequency; }
-            set
-            {
-                if (float.IsNaN(value))
-                    return;
-                caretFrequency = MathUtil.Clamp(value, 0.0f, float.MaxValue); }
         }
 
         /// <summary>
@@ -454,60 +506,9 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the edit text input type by setting a combination of <see cref="InputTypeFlags"/>.
-        /// </summary>
-        /// <userdoc>The edit text input type.</userdoc>
-        [DataMember]
-        [Display(category: BehaviorCategory, order: 201)]
-        [DefaultValue(default(InputTypeFlags))]
-        public InputTypeFlags InputType
-        {
-            get { return inputType; }
-            set
-            {
-                if(inputType == value)
-                    return;
-
-                inputType = value;
-
-                UpdateTextToDisplay();
-
-                UpdateInputTypeImpl();
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the size of the text in virtual pixels unit.
-        /// </summary>
-        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
-        /// <userdoc>The size of the text in virtual pixels unit.</userdoc>
-        [DataMember]
-        [DataMemberRange(0, float.MaxValue, AllowNaN = true)]
-        [Display(category: AppearanceCategory, order: 201)]
-        [DefaultValue(float.NaN)]
-        public float TextSize
-        {
-            get { return textSize; }
-            set
-            {
-                textSize = MathUtil.Clamp(value, 0.0f, float.MaxValue);
-                InvalidateMeasure();
-            }
-        }
-
-        /// <summary>
         /// Gets the total number of lines in the text box.
         /// </summary>
         public int LineCount => GetLineCountImpl();
-
-        /// <summary>
-        /// Gets or sets the alignment of the text to display.
-        /// </summary>
-        /// <userdoc>The alignment of the text to display.</userdoc>
-        [DataMember]
-        [Display(category: AppearanceCategory, order: 203)]
-        [DefaultValue(default(TextAlignment))]
-        public TextAlignment TextAlignment { get; set; }
 
         /// <summary>
         /// Gets or sets the filter used to determine whether the inputed characters are valid or not.

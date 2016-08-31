@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <userdoc>The scrolling speed of the text. The unit is in virtual pixels.</userdoc>
         [DataMember]
         [DataMemberRange(0.0f, float.MaxValue)]
-        [Display(category: BehaviorCategory, order: 200)]
+        [Display(category: BehaviorCategory)]
         [DefaultValue(40.0f)]
         public float ScrollingSpeed
         {
@@ -72,7 +72,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>The desired number of character in average to display at a given time. This value is taken in account during the measurement stage of the element.</userdoc>
         [DataMember]
-        [Display(category: BehaviorCategory, order: 201)]
+        [Display(category: BehaviorCategory)]
         [DefaultValue((uint)10)]
         public uint DesiredCharacterNumber
         {
@@ -92,7 +92,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// </summary>
         /// <userdoc>True if the text message must be repeated (wrapped), false otherwise.</userdoc>
         [DataMember]
-        [Display(category: BehaviorCategory, order: 202)]
+        [Display(category: BehaviorCategory)]
         [DefaultValue(true)]
         public bool RepeatText
         {

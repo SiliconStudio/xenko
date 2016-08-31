@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Linq;
+using System.Reflection;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
@@ -136,6 +137,16 @@ namespace SiliconStudio.Presentation.Quantum
                 var descriptor = (MemberDescriptorBase)memberContent.Member;
                 var displayAttribute = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(descriptor.MemberInfo);
                 return displayAttribute?.Order ?? descriptor.Order;
+            }
+        }
+
+        public override MemberInfo MemberInfo
+        {
+            get
+            {
+                var memberContent = SourceNode.Content as MemberContent;
+                var memberDescriptorBase = memberContent?.Member as MemberDescriptorBase;
+                return memberDescriptorBase?.MemberInfo;
             }
         }
 

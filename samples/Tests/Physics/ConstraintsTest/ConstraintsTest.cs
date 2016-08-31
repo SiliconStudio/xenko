@@ -5,12 +5,12 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Games.Testing;
 
-namespace ConstraintsTest
+namespace PhysicsSampleTest
 {
     [TestFixture]
-    public class ConstraintsTest
+    public class PhysicsSampleTest
     {
-        private const string Path = "samples\\Physics\\Constraints\\Bin\\Windows-Direct3D11\\Debug\\Constraints.exe";
+        private const string Path = "samples\\Physics\\PhysicsSample\\Bin\\Windows-Direct3D11\\Debug\\PhysicsSample.exe";
 
 #if TEST_ANDROID
         private const PlatformType TestPlatform = PlatformType.Android;

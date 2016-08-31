@@ -5,8 +5,10 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Dynamic;
 using System.Linq;
+using System.Reflection;
 using System.Windows;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Presentation.Collections;
 using SiliconStudio.Presentation.Commands;
 using SiliconStudio.Presentation.Core;
@@ -137,8 +139,14 @@ namespace SiliconStudio.Presentation.Quantum
         public abstract int? Order { get; }
 
         /// <summary>
+        /// Gets the member info (if any).
+        /// </summary>
+        public virtual MemberInfo MemberInfo => null;
+
+        /// <summary>
         /// Gets whether this node contains a list
         /// </summary>
+        /// <remarks>Used mostly for sorting purpose.</remarks>
         public abstract bool HasList { get; }
 
         /// <summary>
@@ -527,14 +535,8 @@ namespace SiliconStudio.Presentation.Quantum
         private static int CompareChildren(IObservableNode a, IObservableNode b)
         {
             // Order has the best priority for comparison, if set.
-            if (a.Order != null && b.Order != null)
-                return ((int)a.Order).CompareTo(b.Order);
-
-            // If one has order and not the other one, consider the one with order as more prioritary
-            if (a.Order != null)
-                return -1;
-            if (b.Order != null)
-                return 1;
+            if ((a.Order ?? 0) != (b.Order ?? 0))
+                return (a.Order ?? 0).CompareTo(b.Order ?? 0);
 
             // Then we use index, if they are set and comparable.
             if (!a.Index.IsEmpty && !b.Index.IsEmpty)
@@ -545,9 +547,19 @@ namespace SiliconStudio.Presentation.Quantum
                 }
             }
 
+            // Then, try to use metadata token (if members)
+            if (a.MemberInfo != null || b.MemberInfo != null)
+            {
+                var comparison = a.MemberInfo.CompareMetadataTokenWith(b.MemberInfo);
+                if (comparison != 0)
+                    return comparison;
+            }
+
             // Then we use name, only if both orders are unset.
             if (a.Order == null && b.Order == null)
+            {
                 return string.Compare(a.Name, b.Name, StringComparison.InvariantCultureIgnoreCase);
+            }
 
             // Otherwise, the first child would be the one who have an order value.
             return a.Order == null ? 1 : -1;

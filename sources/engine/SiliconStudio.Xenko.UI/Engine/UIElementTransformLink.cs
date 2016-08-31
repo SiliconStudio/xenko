@@ -75,9 +75,9 @@ namespace SiliconStudio.Xenko.Engine
                 parentUIComponent.Entity.Transform.UpdateWorldMatrix();
             }
 
-            if (parentUIComponent.Page.RootElement != rootElement)
+            if (parentUIComponent.Page?.RootElement != rootElement)
             {
-                rootElement = parentUIComponent.Page.RootElement;
+                rootElement = parentUIComponent.Page?.RootElement;
                 followedElement = FindElementByName(elementName, rootElement);
             }
 
