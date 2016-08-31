@@ -10,9 +10,6 @@ namespace SiliconStudio.Core.Threading
 {
     public class Dispatcher
     {
-        private static readonly ConcurrentPool<BatchState> loopStatePool = new ConcurrentPool<BatchState>(() => new BatchState());
-        private static readonly ConcurrentPool<SortState> sortStatePool = new ConcurrentPool<SortState>(() => new SortState());
-
         private static readonly int MaxDregreeOfParallelism = Environment.ProcessorCount;
 
         public delegate void ValueAction<T>(ref T obj);
@@ -38,8 +35,7 @@ namespace SiliconStudio.Core.Threading
                 }
                 else
                 {
-                    var state = loopStatePool.Acquire();
-                    state.ActiveWorkerCount = 1;
+                    var state = BatchState.Acquire();
                     state.StartInclusive = fromInclusive;
 
                     try
@@ -48,14 +44,16 @@ namespace SiliconStudio.Core.Threading
                         int batchSize = (count + (batchCount - 1)) / batchCount;
 
                         // Kick off a worker, then perform work synchronously
+                        state.AddReference();
                         Fork(toExclusive, batchSize, MaxDregreeOfParallelism, action, state);
 
                         // Wait for all workers to finish
-                        state.Finished.WaitOne();
+                        if (state.ActiveWorkerCount != 0)
+                            state.Finished.WaitOne();
                     }
                     finally
                     {
-                        loopStatePool.Release(state);
+                        state.Release();
                     }
                 }
             }
@@ -82,8 +80,7 @@ namespace SiliconStudio.Core.Threading
                 }
                 else
                 {
-                    var state = loopStatePool.Acquire();
-                    state.ActiveWorkerCount = 1;
+                    var state = BatchState.Acquire();
                     state.StartInclusive = fromInclusive;
 
                     try
@@ -92,14 +89,16 @@ namespace SiliconStudio.Core.Threading
                         int batchSize = (count + (batchCount - 1)) / batchCount;
 
                         // Kick off a worker, then perform work synchronously
+                        state.AddReference();
                         Fork(toExclusive, batchSize, MaxDregreeOfParallelism, initializeLocal, action, finalizeLocal, state);
 
                         // Wait for all workers to finish
-                        state.Finished.WaitOne();
+                        if (state.ActiveWorkerCount != 0)
+                            state.Finished.WaitOne();
                     }
                     finally
                     {
-                        loopStatePool.Release(state);
+                        state.Release();
                     }
                 }
             }
@@ -129,24 +128,24 @@ namespace SiliconStudio.Core.Threading
             }
             else
             {
-                var state = loopStatePool.Acquire();
-                state.ActiveWorkerCount = 1;
-                state.StartInclusive = 0;
+                var state = BatchState.Acquire();
 
                 try
                 {
                     int batchCount = Math.Min(MaxDregreeOfParallelism, collection.Count);
                     int batchSize = (collection.Count + (batchCount - 1)) / batchCount;
 
-                    // Wait for all workers to finish
+                    // Kick off a worker, then perform work synchronously
+                    state.AddReference();
                     Fork(collection, batchSize, MaxDregreeOfParallelism, action, state);
 
-                    // Kick off a worker, then perform work synchronously
-                    state.Finished.WaitOne();
+                    // Wait for all workers to finish
+                    if (state.ActiveWorkerCount != 0)
+                        state.Finished.WaitOne();
                 }
                 finally
                 {
-                    loopStatePool.Release(state);
+                    state.Release();
                 }
             }
         }
@@ -159,24 +158,24 @@ namespace SiliconStudio.Core.Threading
             }
             else
             {
-                var state = loopStatePool.Acquire();
-                state.ActiveWorkerCount = 1;
-                state.StartInclusive = 0;
+                var state = BatchState.Acquire();
 
                 try
                 {
                     int batchCount = Math.Min(MaxDregreeOfParallelism, collection.Count);
                     int batchSize = (collection.Count + (batchCount - 1)) / batchCount;
 
-                    // Wait for all workers to finish
+                    // Kick off a worker, then perform work synchronously
+                    state.AddReference();
                     Fork(collection, batchSize, MaxDregreeOfParallelism, initializeLocal, action, finalizeLocal, state);
 
-                    // Kick off a worker, then perform work synchronously
-                    state.Finished.WaitOne();
+                    // Wait for all workers to finish
+                    if (state.ActiveWorkerCount != 0)
+                        state.Finished.WaitOne();
                 }
                 finally
                 {
-                    loopStatePool.Release(state);
+                    state.Release();
                 }
             }
         }
@@ -208,10 +207,20 @@ namespace SiliconStudio.Core.Threading
 
         private static void Fork<TKey, TValue>(Dictionary<TKey, TValue> collection, int batchSize, int maxDegreeOfParallelism, [Pooled] Action<KeyValuePair<TKey, TValue>> action, BatchState state)
         {
+            // Other threads already processed all work before this one started. ActiveWorkerCount is already 0
+            if (state.StartInclusive >= collection.Count)
+            {
+                state.Release();
+                return;
+            }
+
+            // This thread is now actively processing work items, meaning there might be work in progress
+            Interlocked.Increment(ref state.ActiveWorkerCount);
+
             // Kick off another worker if there's any work left
             if (maxDegreeOfParallelism > 1 && state.StartInclusive + batchSize < collection.Count)
             {
-                Interlocked.Increment(ref state.ActiveWorkerCount);
+                state.AddReference();
                 ThreadPool.Instance.QueueWorkItem(() => Fork(collection, batchSize, maxDegreeOfParallelism - 1, action, state));
             }
 
@@ -228,6 +237,8 @@ namespace SiliconStudio.Core.Threading
             }
             finally
             {
+                state.Release();
+
                 // If this was the last batch, signal
                 if (Interlocked.Decrement(ref state.ActiveWorkerCount) == 0)
                 {
@@ -238,10 +249,20 @@ namespace SiliconStudio.Core.Threading
 
         private static void Fork<TKey, TValue, TLocal>(Dictionary<TKey, TValue> collection, int batchSize, int maxDegreeOfParallelism, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<KeyValuePair<TKey, TValue>, TLocal> action, [Pooled] Action<TLocal> finalizeLocal, BatchState state)
         {
+            // Other threads already processed all work before this one started. ActiveWorkerCount is already 0
+            if (state.StartInclusive >= collection.Count)
+            {
+                state.Release();
+                return;
+            }
+
+            // This thread is now actively processing work items, meaning there might be work in progress
+            Interlocked.Increment(ref state.ActiveWorkerCount);
+
             // Kick off another worker if there's any work left
             if (maxDegreeOfParallelism > 1 && state.StartInclusive + batchSize < collection.Count)
             {
-                Interlocked.Increment(ref state.ActiveWorkerCount);
+                state.AddReference();
                 ThreadPool.Instance.QueueWorkItem(() => Fork(collection, batchSize, maxDegreeOfParallelism - 1, initializeLocal, action, finalizeLocal, state));
             }
 
@@ -258,6 +279,8 @@ namespace SiliconStudio.Core.Threading
             }
             finally
             {
+                state.Release();
+
                 // If this was the last batch, signal
                 if (Interlocked.Decrement(ref state.ActiveWorkerCount) == 0)
                 {
@@ -297,10 +320,20 @@ namespace SiliconStudio.Core.Threading
 
         private static void Fork(int endExclusive, int batchSize, int maxDegreeOfParallelism, [Pooled] Action<int> action, BatchState state)
         {
+            // Other threads already processed all work before this one started. ActiveWorkerCount is already 0
+            if (state.StartInclusive >= endExclusive)
+            {
+                state.Release();
+                return;
+            }
+
+            // This thread is now actively processing work items, meaning there might be work in progress
+            Interlocked.Increment(ref state.ActiveWorkerCount);
+
             // Kick off another worker if there's any work left
             if (maxDegreeOfParallelism > 1 && state.StartInclusive + batchSize < endExclusive)
             {
-                Interlocked.Increment(ref state.ActiveWorkerCount);
+                state.AddReference();
                 ThreadPool.Instance.QueueWorkItem(() => Fork(endExclusive, batchSize, maxDegreeOfParallelism - 1, action, state));
             }
 
@@ -315,6 +348,8 @@ namespace SiliconStudio.Core.Threading
             }
             finally
             {
+                state.Release();
+
                 // If this was the last batch, signal
                 if (Interlocked.Decrement(ref state.ActiveWorkerCount) == 0)
                 {
@@ -325,10 +360,20 @@ namespace SiliconStudio.Core.Threading
 
         private static void Fork<TLocal>(int endExclusive, int batchSize, int maxDegreeOfParallelism, [Pooled] Func<TLocal> initializeLocal, [Pooled] Action<int, TLocal> action, [Pooled] Action<TLocal> finalizeLocal, BatchState state)
         {
+            // Other threads already processed all work before this one started. ActiveWorkerCount is already 0
+            if (state.StartInclusive >= endExclusive)
+            {
+                state.Release();
+                return;
+            }
+
+            // This thread is now actively processing work items, meaning there might be work in progress
+            Interlocked.Increment(ref state.ActiveWorkerCount);
+
             // Kick off another worker if there's any work left
             if (maxDegreeOfParallelism > 1 && state.StartInclusive + batchSize < endExclusive)
             {
-                Interlocked.Increment(ref state.ActiveWorkerCount);
+                state.AddReference();
                 ThreadPool.Instance.QueueWorkItem(() => Fork(endExclusive, batchSize, maxDegreeOfParallelism - 1, initializeLocal, action, finalizeLocal, state));
             }
 
@@ -343,6 +388,8 @@ namespace SiliconStudio.Core.Threading
             }
             finally
             {
+                state.Release();
+
                 // If this was the last batch, signal
                 if (Interlocked.Decrement(ref state.ActiveWorkerCount) == 0)
                 {
@@ -417,14 +464,7 @@ namespace SiliconStudio.Core.Threading
             if (length <= 0)
                 return;
 
-            int depth = 0;
-            int degreeOfParallelism = MaxDregreeOfParallelism;
-
-            //while ((degreeOfParallelism >>= 1) != 0)
-            //    depth++;
-
-            var state = sortStatePool.Acquire();
-            state.ActiveWorkerCount = 1;
+            var state = SortState.Acquire();
 
             try
             {
@@ -432,20 +472,32 @@ namespace SiliconStudio.Core.Threading
                 state.Partitions.Enqueue(new SortRange(index, length - 1));
 
                 // Sort recursively
+                state.AddReference();
                 Sort(collection, MaxDregreeOfParallelism, comparer, state);
 
                 // Wait for all work to finish
-                state.Finished.WaitOne();
+                if (state.ActiveWorkerCount != 0)
+                    state.Finished.WaitOne();
             }
             finally
             {
-                sortStatePool.Release(state);
+                state.Release();
             }
         }
 
         private static void Sort<T>(T[] collection, int maxDegreeOfParallelism, IComparer<T> comparer, SortState state)
         {
             const int sequentialThreshold = 2048;
+
+            // Other threads already processed all work before this one started. ActiveWorkerCount is already 0
+            if (state.Partitions.IsEmpty)
+            {
+                state.Release();
+                return;
+            }
+
+            // This thread is now actively processing work items, meaning there might be work in progress
+            Interlocked.Increment(ref state.ActiveWorkerCount);
 
             bool hasChild = false;
 
@@ -473,7 +525,7 @@ namespace SiliconStudio.Core.Threading
                         // Add a new worker if necessary
                         if (maxDegreeOfParallelism > 1 && !hasChild)
                         {
-                            Interlocked.Increment(ref state.ActiveWorkerCount);
+                            state.AddReference();
                             Fork(collection, maxDegreeOfParallelism, comparer, state);
                             hasChild = true;
                         }
@@ -482,6 +534,8 @@ namespace SiliconStudio.Core.Threading
             }
             finally
             {
+                state.Release();
+
                 if (Interlocked.Decrement(ref state.ActiveWorkerCount) == 0)
                 {
                     state.Finished.Set();
@@ -538,11 +592,38 @@ namespace SiliconStudio.Core.Threading
 
         private class BatchState
         {
-            public readonly AutoResetEvent Finished = new AutoResetEvent(false);
+            private static readonly ConcurrentPool<BatchState> Pool = new ConcurrentPool<BatchState>(() => new BatchState());
+
+            private int referenceCount;
+
+            public readonly ManualResetEvent Finished = new ManualResetEvent(false);
 
             public int StartInclusive;
 
             public int ActiveWorkerCount;
+
+            public static BatchState Acquire()
+            {
+                var state = Pool.Acquire();
+                state.referenceCount = 1;
+                state.ActiveWorkerCount = 0;
+                state.StartInclusive = 0;
+                state.Finished.Reset();
+                return state;
+            }
+
+            public void AddReference()
+            {
+                Interlocked.Increment(ref referenceCount);
+            }
+
+            public void Release()
+            {
+                if (Interlocked.Decrement(ref referenceCount) == 0)
+                {
+                    Pool.Release(this);
+                }
+            }
         }
 
         private struct SortRange
@@ -560,11 +641,37 @@ namespace SiliconStudio.Core.Threading
 
         private class SortState
         {
-            public readonly AutoResetEvent Finished = new AutoResetEvent(false);
+            private static readonly ConcurrentPool<SortState> Pool = new ConcurrentPool<SortState>(() => new SortState());
+
+            private int referenceCount;
+
+            public readonly ManualResetEvent Finished = new ManualResetEvent(false);
 
             public readonly ConcurrentQueue<SortRange> Partitions = new ConcurrentQueue<SortRange>();
 
             public int ActiveWorkerCount;
+
+            public static SortState Acquire()
+            {
+                var state = Pool.Acquire();
+                state.referenceCount = 1;
+                state.ActiveWorkerCount = 0;
+                state.Finished.Reset();
+                return state;
+            }
+
+            public void AddReference()
+            {
+                Interlocked.Increment(ref referenceCount);
+            }
+
+            public void Release()
+            {
+                if (Interlocked.Decrement(ref referenceCount) == 0)
+                {
+                    Pool.Release(this);
+                }
+            }
         }
 
         private class DispatcherNode
