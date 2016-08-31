@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// The key to the UseAbsolutionPosition dependency property. This indicates whether to use the AbsolutePosition or the RelativePosition to place to element.
         /// </summary>
         [Display(category: LayoutCategory)]
-        public static readonly PropertyKey<bool> UseAbsolutionPositionPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(UseAbsolutionPositionPropertyKey), typeof(Canvas), false, InvalidateCanvasMeasure);
+        public static readonly PropertyKey<bool> UseAbsolutePositionPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(UseAbsolutePositionPropertyKey), typeof(Canvas), true, InvalidateCanvasMeasure);
 
         /// <summary>
         /// The key to the AbsolutePosition dependency property. AbsolutePosition indicates where the <see cref="UIElement"/> is pinned in the canvas.
@@ -133,11 +133,11 @@ namespace SiliconStudio.Xenko.UI.Panels
         {
             var relativePosition = child.DependencyProperties.Get(RelativePositionPropertyKey);
             var absolutePosition = child.DependencyProperties.Get(AbsolutePositionPropertyKey);
-            var useAbsolutionPosition = child.DependencyProperties.Get(UseAbsolutionPositionPropertyKey);
+            var useAbsolutePosition = child.DependencyProperties.Get(UseAbsolutePositionPropertyKey);
 
             for (var dim = 0; dim < 3; ++dim)
             {
-                if (float.IsNaN(absolutePosition[dim]) || !useAbsolutionPosition && !float.IsNaN(relativePosition[dim]))
+                if (float.IsNaN(absolutePosition[dim]) || !useAbsolutePosition && !float.IsNaN(relativePosition[dim]))
                     absolutePosition[dim] = relativePosition[dim] == 0f ? 0f : relativePosition[dim] * parentSize[dim];
             }
 
