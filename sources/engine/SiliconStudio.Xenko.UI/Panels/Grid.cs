@@ -21,12 +21,7 @@ namespace SiliconStudio.Xenko.UI.Panels
     {
         private readonly Logger logger = GlobalLogger.GetLogger("UI");
 
-        private readonly StripDefinitionCollection[] stripDefinitions = 
-            {
-                new StripDefinitionCollection(),
-                new StripDefinitionCollection(),
-                new StripDefinitionCollection()
-            };
+        private readonly StripDefinitionCollection[] stripDefinitions = new StripDefinitionCollection[3];
 
         /// <summary>
         /// For each dimension and index of strip, return the list of UIElement that are contained only in auto-sized strips
@@ -118,8 +113,9 @@ namespace SiliconStudio.Xenko.UI.Panels
 
         public Grid()
         {
-            foreach (var definitionCollection in stripDefinitions)
-                definitionCollection.CollectionChanged += DefinitionCollectionChanged;
+            RowDefinitions.CollectionChanged += DefinitionCollectionChanged;
+            ColumnDefinitions.CollectionChanged += DefinitionCollectionChanged;
+            LayerDefinitions.CollectionChanged += DefinitionCollectionChanged;
         }
 
         private void DefinitionCollectionChanged(object sender, TrackingCollectionChangedEventArgs trackingCollectionChangedEventArgs)
@@ -151,7 +147,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <userdoc>The definitions of the grid rows.</userdoc>
         [DataMember]
         [Display(category: LayoutCategory)]
-        public StripDefinitionCollection RowDefinitions => stripDefinitions[1];
+        public StripDefinitionCollection RowDefinitions { get; } = new StripDefinitionCollection();
 
         /// <summary>
         /// The definitions of the grid columns.
@@ -160,7 +156,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <userdoc>The definitions of the grid columns.</userdoc>
         [DataMember]
         [Display(category: LayoutCategory)]
-        public StripDefinitionCollection ColumnDefinitions => stripDefinitions[0];
+        public StripDefinitionCollection ColumnDefinitions { get; } = new StripDefinitionCollection();
 
         /// <summary>
         /// The definitions of the grid layers.
@@ -169,7 +165,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <userdoc>The definitions of the grid layers.</userdoc>
         [DataMember]
         [Display(category: LayoutCategory)]
-        public StripDefinitionCollection LayerDefinitions => stripDefinitions[2];
+        public StripDefinitionCollection LayerDefinitions { get; } = new StripDefinitionCollection();
 
         protected override Vector3 MeasureOverride(Vector3 availableSizeWithoutMargins)
         {
@@ -659,18 +655,34 @@ namespace SiliconStudio.Xenko.UI.Panels
 
         private void CheckChildrenPositionsAndAdjustGridSize()
         {
+            // Setup strips (use a default entry if nothing is set)
+            CreateDefaultStripIfNecessary(ref stripDefinitions[0], ColumnDefinitions);
+            CreateDefaultStripIfNecessary(ref stripDefinitions[1], RowDefinitions);
+            CreateDefaultStripIfNecessary(ref stripDefinitions[2], LayerDefinitions);
+
             // add default strip definitions as long as one element is partially outside of the grid
             foreach (var child in VisualChildrenCollection)
             {
                 var childLastStripPlusOne = GetElementGridPositions(child) + GetElementSpanValues(child);
                 for (var dim = 0; dim < 3; dim++)
                 {
+                    // TODO: We should reassign everything outside to last row or 0?
                     if (stripDefinitions[dim].Count < childLastStripPlusOne[dim])
-                        logger.Warning("Element 'Name={0}' is outside of the grid 'Name={1}' definition for [{2}]. Auto strip definitions will be added to complete the grid definition.", child, Name, dim == 0 ? "Column" : dim == 1 ? "Row" : "Layer");
-
-                    while (stripDefinitions[dim].Count < childLastStripPlusOne[dim])
-                        stripDefinitions[dim].Add(new StripDefinition(StripType.Auto));
+                        logger.Warning("Element 'Name={0}' is outside of the grid 'Name={1}' definition for [{2}].", child, Name, dim == 0 ? "Column" : dim == 1 ? "Row" : "Layer");
                 }
+            }
+        }
+
+        private void CreateDefaultStripIfNecessary(ref StripDefinitionCollection computedCollection, StripDefinitionCollection userCollection)
+        {
+            if (userCollection.Count > 0)
+            {
+                computedCollection = userCollection;
+            }
+            else if (computedCollection == userCollection || computedCollection == null)
+            {
+                // Need to create default collection (it will be kept until user one is not empty again)
+                computedCollection = new StripDefinitionCollection { new StripDefinition() };
             }
         }
 
@@ -759,6 +771,19 @@ namespace SiliconStudio.Xenko.UI.Panels
             GetDistanceToSurroundingAnchors(cachedStripIndexToStripPosition[(int)direction], position, out distances);
 
             return distances;
+        }
+
+        protected override Int3 GetElementGridPositions(UIElement element)
+        {
+            var position = base.GetElementGridPositions(element);
+            return Int3.Min(position, new Int3(stripDefinitions[0].Count - 1, stripDefinitions[1].Count - 1, stripDefinitions[2].Count - 1));
+        }
+
+        protected override Int3 GetElementSpanValues(UIElement element)
+        {
+            var position = GetElementGridPositions(element);
+            var span = base.GetElementSpanValues(element);
+            return Int3.Min(position + span, new Int3(stripDefinitions[0].Count, stripDefinitions[1].Count, stripDefinitions[2].Count)) - position;
         }
     }
 }
