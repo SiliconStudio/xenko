@@ -106,8 +106,7 @@ namespace SiliconStudio.Xenko.UI
         /// </summary>
         /// <remarks>The local transform is not taken is account during the layering. The transformation is purely for rendering effects.</remarks>
         /// <userdoc>Local matrix of this element.</userdoc>
-        [DataMember]
-        [Display(Browsable = false)]
+        [DataMemberIgnore]
         public Matrix LocalMatrix
         {
             get { return localMatrix; }

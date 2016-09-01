@@ -44,7 +44,6 @@ Hierarchy:
         -   UIElement: !ToggleButton
                 DependencyProperties: {}
                 Id: 1dfd7e9f-ab5a-4849-b6e3-1c50b0974f5f
-                LocalMatrix: {M11: 1.0, M21: 0.0, M31: 0.0, M41: 0.0, M12: 0.0, M22: 1.0, M32: 0.0, M42: 0.0, M13: 0.0, M23: 0.0, M33: 1.0, M43: 0.0, M14: 0.0, M24: 0.0, M34: 0.0, M44: 1.0}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
                 CanBeHitByUser: true
@@ -67,7 +66,6 @@ Hierarchy:
         -   UIElement: !ModalElement
                 DependencyProperties: {}
                 Id: 4266a97c-9ff2-45fb-8afd-5bd88a04c101
-                LocalMatrix: {M11: 1.0, M21: 0.0, M31: 0.0, M41: 0.0, M12: 0.0, M22: 1.0, M32: 0.0, M42: 0.0, M13: 0.0, M23: 0.0, M33: 1.0, M43: 0.0, M14: 0.0, M24: 0.0, M34: 0.0, M44: 1.0}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
                 CanBeHitByUser: true
@@ -80,7 +78,6 @@ Hierarchy:
         -   UIElement: !TextBlock
                 DependencyProperties: {}
                 Id: 5b044962-d303-4961-8195-e27d497b9e2b
-                LocalMatrix: {M11: 1.0, M21: 0.0, M31: 0.0, M41: 0.0, M12: 0.0, M22: 1.0, M32: 0.0, M42: 0.0, M13: 0.0, M23: 0.0, M33: 1.0, M43: 0.0, M14: 0.0, M24: 0.0, M34: 0.0, M44: 1.0}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 HorizontalAlignment: Center
                 VerticalAlignment: Center
@@ -92,7 +89,6 @@ Hierarchy:
         -   UIElement: !Border
                 DependencyProperties: {}
                 Id: 606486b0-61b1-498a-beed-5425893fc384
-                LocalMatrix: {M11: 1.0, M21: 0.0, M31: 0.0, M41: 0.0, M12: 0.0, M22: 1.0, M32: 0.0, M42: 0.0, M13: 0.0, M23: 0.0, M33: 1.0, M43: 0.0, M14: 0.0, M24: 0.0, M34: 0.0, M44: 1.0}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Name: Border
@@ -102,7 +98,6 @@ Hierarchy:
         -   UIElement: !TextBlock
                 DependencyProperties: {}
                 Id: 6a778e64-1d79-44c8-b209-be1779349abb
-                LocalMatrix: {M11: 1.0, M21: 0.0, M31: 0.0, M41: 0.0, M12: 0.0, M22: 1.0, M32: 0.0, M42: 0.0, M13: 0.0, M23: 0.0, M33: 1.0, M43: 0.0, M14: 0.0, M24: 0.0, M34: 0.0, M44: 1.0}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Name: TextBlock
@@ -112,7 +107,6 @@ Hierarchy:
         -   UIElement: !Grid
                 DependencyProperties: {}
                 Id: 72d195ac-472a-4f9b-8540-9f4f7d5fc53e
-                LocalMatrix: {M11: 1.0, M21: 0.0, M31: 0.0, M41: 0.0, M12: 0.0, M22: 1.0, M32: 0.0, M42: 0.0, M13: 0.0, M23: 0.0, M33: 1.0, M43: 0.0, M14: 0.0, M24: 0.0, M34: 0.0, M44: 1.0}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Name: Grid
@@ -123,7 +117,6 @@ Hierarchy:
         -   UIElement: !ScrollingText
                 DependencyProperties: {}
                 Id: 7d51286a-f844-48de-afe1-cb6b00e2dcb8
-                LocalMatrix: {M11: 1.0, M21: 0.0, M31: 0.0, M41: 0.0, M12: 0.0, M22: 1.0, M32: 0.0, M42: 0.0, M13: 0.0, M23: 0.0, M33: 1.0, M43: 0.0, M14: 0.0, M24: 0.0, M34: 0.0, M44: 1.0}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 4
                 Margin: {}
@@ -134,7 +127,6 @@ Hierarchy:
         -   UIElement: !StackPanel
                 DependencyProperties: {}
                 Id: 97a0fc3a-e627-4122-b585-d33a6a7cd785
-                LocalMatrix: {M11: 1.0, M21: 0.0, M31: 0.0, M41: 0.0, M12: 0.0, M22: 1.0, M32: 0.0, M42: 0.0, M13: 0.0, M23: 0.0, M33: 1.0, M43: 0.0, M14: 0.0, M24: 0.0, M34: 0.0, M44: 1.0}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Name: StackPanel
@@ -142,7 +134,6 @@ Hierarchy:
         -   UIElement: !Canvas
                 DependencyProperties: {}
                 Id: 9b996723-bbd3-44c3-9406-fdc49875d2a2
-                LocalMatrix: {M11: 1.0, M21: 0.0, M31: 0.0, M41: 0.0, M12: 0.0, M22: 1.0, M32: 0.0, M42: 0.0, M13: 0.0, M23: 0.0, M33: 1.0, M43: 0.0, M14: 0.0, M24: 0.0, M34: 0.0, M44: 1.0}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Name: Canvas
@@ -150,7 +141,6 @@ Hierarchy:
         -   UIElement: !ContentDecorator
                 DependencyProperties: {}
                 Id: a35da784-9d42-4fe0-bd28-3eb547bc2812
-                LocalMatrix: {M11: 1.0, M21: 0.0, M31: 0.0, M41: 0.0, M12: 0.0, M22: 1.0, M32: 0.0, M42: 0.0, M13: 0.0, M23: 0.0, M33: 1.0, M43: 0.0, M14: 0.0, M24: 0.0, M34: 0.0, M44: 1.0}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
                 Margin: {}
@@ -159,7 +149,6 @@ Hierarchy:
         -   UIElement: !ScrollViewer
                 DependencyProperties: {}
                 Id: a7e881dd-2f09-49b3-a87e-08a54bbc0cee
-                LocalMatrix: {M11: 1.0, M21: 0.0, M31: 0.0, M41: 0.0, M12: 0.0, M22: 1.0, M32: 0.0, M42: 0.0, M13: 0.0, M23: 0.0, M33: 1.0, M43: 0.0, M14: 0.0, M24: 0.0, M34: 0.0, M44: 1.0}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 ClipToBounds: true
                 CanBeHitByUser: true
@@ -170,14 +159,12 @@ Hierarchy:
         -   UIElement: !UniformGrid
                 DependencyProperties: {}
                 Id: a89f94fa-840f-48d4-9b26-418e9e4a2358
-                LocalMatrix: {M11: 1.0, M21: 0.0, M31: 0.0, M41: 0.0, M12: 0.0, M22: 1.0, M32: 0.0, M42: 0.0, M13: 0.0, M23: 0.0, M33: 1.0, M43: 0.0, M14: 0.0, M24: 0.0, M34: 0.0, M44: 1.0}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Children: []
         -   UIElement: !TextBlock
                 DependencyProperties: {}
                 Id: ac7f6048-d7d0-45ae-a8f3-e4bddafeec22
-                LocalMatrix: {M11: 1.0, M21: 0.0, M31: 0.0, M41: 0.0, M12: 0.0, M22: 1.0, M32: 0.0, M42: 0.0, M13: 0.0, M23: 0.0, M33: 1.0, M43: 0.0, M14: 0.0, M24: 0.0, M34: 0.0, M44: 1.0}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 HorizontalAlignment: Center
                 VerticalAlignment: Center
@@ -189,7 +176,6 @@ Hierarchy:
         -   UIElement: !ImageElement
                 DependencyProperties: {}
                 Id: d44fc541-dd44-4a50-897d-c406966fac51
-                LocalMatrix: {M11: 1.0, M21: 0.0, M31: 0.0, M41: 0.0, M12: 0.0, M22: 1.0, M32: 0.0, M42: 0.0, M13: 0.0, M23: 0.0, M33: 1.0, M43: 0.0, M14: 0.0, M24: 0.0, M34: 0.0, M44: 1.0}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Name: ImageElement
@@ -197,7 +183,6 @@ Hierarchy:
         -   UIElement: !Button
                 DependencyProperties: {}
                 Id: e8985e3a-8d82-40a6-adb1-76619eb19cd8
-                LocalMatrix: {M11: 1.0, M21: 0.0, M31: 0.0, M41: 0.0, M12: 0.0, M22: 1.0, M32: 0.0, M42: 0.0, M13: 0.0, M23: 0.0, M33: 1.0, M43: 0.0, M14: 0.0, M24: 0.0, M34: 0.0, M44: 1.0}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 2
                 CanBeHitByUser: true
@@ -219,7 +204,6 @@ Hierarchy:
         -   UIElement: !EditText
                 DependencyProperties: {}
                 Id: eef44bd6-bd2d-4abe-8335-0971d5d83b10
-                LocalMatrix: {M11: 1.0, M21: 0.0, M31: 0.0, M41: 0.0, M12: 0.0, M22: 1.0, M32: 0.0, M42: 0.0, M13: 0.0, M23: 0.0, M33: 1.0, M43: 0.0, M14: 0.0, M24: 0.0, M34: 0.0, M44: 1.0}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 5
                 CanBeHitByUser: true
@@ -248,7 +232,6 @@ Hierarchy:
         -   UIElement: !ScrollBar
                 DependencyProperties: {}
                 Id: f23d4157-8437-4285-845d-5cab68bca82a
-                LocalMatrix: {M11: 1.0, M21: 0.0, M31: 0.0, M41: 0.0, M12: 0.0, M22: 1.0, M32: 0.0, M42: 0.0, M13: 0.0, M23: 0.0, M33: 1.0, M43: 0.0, M14: 0.0, M24: 0.0, M34: 0.0, M44: 1.0}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 Margin: {}
                 Name: ScrollBar
@@ -256,7 +239,6 @@ Hierarchy:
         -   UIElement: !Slider
                 DependencyProperties: {}
                 Id: fcd540ef-6f9e-4cab-b24d-ba1533b0fdb9
-                LocalMatrix: {M11: 1.0, M21: 0.0, M31: 0.0, M41: 0.0, M12: 0.0, M22: 1.0, M32: 0.0, M42: 0.0, M13: 0.0, M23: 0.0, M33: 1.0, M43: 0.0, M14: 0.0, M24: 0.0, M34: 0.0, M44: 1.0}
                 BackgroundColor: {R: 0, G: 0, B: 0, A: 0}
                 DrawLayerNumber: 5
                 CanBeHitByUser: true
