@@ -19,7 +19,8 @@ namespace SiliconStudio.AssemblyProcessor
         private readonly Dictionary<AssemblyDefinition, byte[]> assemblyData = new Dictionary<AssemblyDefinition, byte[]>();
 
         private readonly List<string> references = new List<string>();
-        
+        private readonly List<string> referencePaths = new List<string>();
+
         private HashSet<string> existingWindowsKitsReferenceAssemblies;
 
         /// <summary>
@@ -29,7 +30,12 @@ namespace SiliconStudio.AssemblyProcessor
 
  		readonly IDictionary<string, AssemblyDefinition> cache;
 
-		public CustomAssemblyResolver ()
+        public List<string> References
+        {
+            get { return references; }
+        }
+
+        public CustomAssemblyResolver ()
 		{
 			cache = new Dictionary<string, AssemblyDefinition> (StringComparer.Ordinal);
 		}
@@ -73,6 +79,7 @@ namespace SiliconStudio.AssemblyProcessor
         public void RegisterReference(string path)
         {
             references.Add(path);
+            referencePaths.Add(Path.GetDirectoryName(path));
         }
 
         /// <summary>
@@ -105,6 +112,22 @@ namespace SiliconStudio.AssemblyProcessor
                 if (string.Compare(Path.GetFileNameWithoutExtension(reference), name.Name, StringComparison.OrdinalIgnoreCase) == 0 && File.Exists(reference))
                 {
                     return GetAssembly(reference, parameters);
+                }
+            }
+
+            // Try list of reference paths
+            foreach (var referencePath in referencePaths)
+            {
+                foreach (var extension in new[] { ".dll", ".exe" })
+                {
+                    var assemblyFile = Path.Combine(referencePath, name.Name + extension);
+                    if (File.Exists(assemblyFile))
+                    {
+                        // Add it as a new reference
+                        references.Add(assemblyFile);
+
+                        return GetAssembly(assemblyFile, parameters);
+                    }
                 }
             }
 

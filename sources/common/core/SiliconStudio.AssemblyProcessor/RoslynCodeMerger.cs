@@ -18,7 +18,7 @@ namespace SiliconStudio.AssemblyProcessor
     /// </summary>
     public static class RoslynCodeMerger
     {
-        public static AssemblyDefinition GenerateRoslynAssembly(BaseAssemblyResolver assemblyResolver, AssemblyDefinition assembly, string serializationAssemblyLocation, string signKeyFile, List<string> references, List<AssemblyDefinition> memoryReferences, TextWriter log, IEnumerable<string> sourceCodes)
+        public static AssemblyDefinition GenerateRoslynAssembly(CustomAssemblyResolver assemblyResolver, AssemblyDefinition assembly, string serializationAssemblyLocation, string signKeyFile, List<string> references, List<AssemblyDefinition> memoryReferences, TextWriter log, IEnumerable<string> sourceCodes)
         {
             var syntaxTrees = sourceCodes.Select(x => CSharpSyntaxTree.ParseText(x));
 
@@ -42,7 +42,7 @@ namespace SiliconStudio.AssemblyProcessor
 
             // Add references (files and in-memory PE data)
             var metadataReferences = new List<MetadataReference>();
-            foreach (var reference in references)
+            foreach (var reference in assemblyResolver.References)
             {
                 metadataReferences.Add(MetadataReference.CreateFromFile(reference));
             }
