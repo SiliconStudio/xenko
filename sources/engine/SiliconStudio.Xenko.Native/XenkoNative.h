@@ -3,6 +3,21 @@
 
 #pragma once
 
+/*
+* Some platforms requires a special declaration before the function declaration to export them
+* in the shared library. Defining NEED_DLL_EXPORT will define DLL_EXPORT_API to do the right thing
+* for those platforms.
+*
+* To export void foo(int a), do:
+*
+*   DLL_EXPORT_API void foo (int a);
+*/
+#ifdef NEED_DLL_EXPORT
+#define DLL_EXPORT_API __declspec(dllexport)
+#else
+#define DLL_EXPORT_API
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -62,8 +77,6 @@ typedef struct SpriteDrawInfo
 	int Orientation;
 } SpriteDrawInfo;
 #pragma pack(pop)
-
-extern void UpdateBufferValuesFromElementInfo(SpriteDrawInfo* drawInfo, VertexPositionColorTextureSwizzle* vertexPointer, void* indexPointer, int vertexStartOffset);
 
 #ifdef __cplusplus
 }

@@ -36,7 +36,6 @@
     <Compile Include="SuppressUnmanagedCodeSecurityAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="symbols.def" />
     <None Include="SiliconStudio.Core.Native.dll.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -47,6 +46,7 @@
     <None Include="LZ4\lz4hc.c" />
     <None Include="LZ4\lz4hc.h" />
     <None Include="CoreNative.c" />
+    <None Include="CoreNative.h" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
