@@ -41,10 +41,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 9acf979c-68b7-4e07-959c-e282a2740efb
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !GameMenu.MainScript,GameMenu.Game
                         ~Id: 22b8232d-2333-4478-8565-0a003fa813fe
                         MainSceneImages: 6c5b350e-abe9-47dd-9f0b-b2cf064e5384/dba38b73-6f43-40ba-a4da-8e711695c7e8:MainSceneImages
