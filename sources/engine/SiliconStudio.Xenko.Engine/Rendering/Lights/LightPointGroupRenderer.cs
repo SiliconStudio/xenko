@@ -38,6 +38,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             private ValueParameterKey<int> countKey;
             private ValueParameterKey<PointLightData> lightsKey;
             private FastListStruct<PointLightData> lightsData = new FastListStruct<PointLightData>(8);
+            private readonly object applyLock = new object();
 
             public PointLightShaderGroup(RenderContext renderContext, ILightShadowMapShaderGroupData shadowGroupData)
                 : base(renderContext, shadowGroupData)
@@ -77,40 +78,44 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             public override void ApplyDrawParameters(RenderDrawContext context, int viewIndex, ParameterCollection parameters, ref BoundingBoxExt boundingBox)
             {
-                CurrentLights.Clear();
-                var lightRange = LightRanges[viewIndex];
-                for (int i = lightRange.Start; i < lightRange.End; ++i)
-                    CurrentLights.Add(Lights[i]);
-
-                base.ApplyDrawParameters(context, viewIndex, parameters, ref boundingBox);
-
-                // TODO: Since we cull per object, we could maintain a higher number of allowed light than the shader support (i.e. 4 lights active per object even though the scene has many more of them)
-                // TODO: Octree structure to select best lights quicker
-                var boundingBox2 = (BoundingBox)boundingBox;
-                foreach (var lightEntry in CurrentLights)
+                // TODO THREADING: Make CurrentLights and lightData (thread-) local
+                lock (applyLock)
                 {
-                    var light = lightEntry.Light;
+                    CurrentLights.Clear();
+                    var lightRange = LightRanges[viewIndex];
+                    for (int i = lightRange.Start; i < lightRange.End; ++i)
+                        CurrentLights.Add(Lights[i]);
 
-                    if (light.BoundingBox.Intersects(ref boundingBox2))
+                    base.ApplyDrawParameters(context, viewIndex, parameters, ref boundingBox);
+
+                    // TODO: Since we cull per object, we could maintain a higher number of allowed light than the shader support (i.e. 4 lights active per object even though the scene has many more of them)
+                    // TODO: Octree structure to select best lights quicker
+                    var boundingBox2 = (BoundingBox)boundingBox;
+                    foreach (var lightEntry in CurrentLights)
                     {
-                        var pointLight = (LightPoint)light.Type;
-                        lightsData.Add(new PointLightData
+                        var light = lightEntry.Light;
+
+                        if (light.BoundingBox.Intersects(ref boundingBox2))
                         {
-                            PositionWS = light.Position,
-                            InvSquareRadius = pointLight.InvSquareRadius,
-                            Color = light.Color,
-                        });
+                            var pointLight = (LightPoint)light.Type;
+                            lightsData.Add(new PointLightData
+                            {
+                                PositionWS = light.Position,
+                                InvSquareRadius = pointLight.InvSquareRadius,
+                                Color = light.Color,
+                            });
 
-                        // Did we reach max number of simultaneous lights?
-                        // TODO: Still collect everything but sort by importance and remove the rest?
-                        if (lightsData.Count >= LightCurrentCount)
-                            break;
+                            // Did we reach max number of simultaneous lights?
+                            // TODO: Still collect everything but sort by importance and remove the rest?
+                            if (lightsData.Count >= LightCurrentCount)
+                                break;
+                        }
                     }
-                }
 
-                parameters.Set(countKey, lightsData.Count);
-                parameters.Set(lightsKey, lightsData.Count, ref lightsData.Items[0]);
-                lightsData.Clear();
+                    parameters.Set(countKey, lightsData.Count);
+                    parameters.Set(lightsKey, lightsData.Count, ref lightsData.Items[0]);
+                    lightsData.Clear();
+                }
             }
         }
     }
