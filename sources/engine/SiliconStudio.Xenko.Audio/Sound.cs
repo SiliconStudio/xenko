@@ -168,7 +168,7 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         protected override void Destroy()
         {
-            if (AudioEngine.State == AudioEngineState.Invalidated)
+            if (AudioEngine == null || AudioEngine.State == AudioEngineState.Invalidated)
                 return;
 
             if (!StreamFromDisk)
