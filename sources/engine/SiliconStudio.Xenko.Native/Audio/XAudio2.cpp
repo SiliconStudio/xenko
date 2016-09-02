@@ -1502,10 +1502,10 @@ extern "C" {
 			source->source_voice_->DestroyVoice();
 			if (source->emitter_) delete source->emitter_;
 			if (source->dsp_settings_)
-			{
-				delete source->dsp_settings_;
+			{		
 				delete[] source->dsp_settings_->pMatrixCoefficients;
 				delete[] source->dsp_settings_->pDelayTimes;
+				delete source->dsp_settings_;
 			}
 			delete source;
 		}
