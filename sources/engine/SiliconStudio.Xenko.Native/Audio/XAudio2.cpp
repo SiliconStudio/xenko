@@ -1402,6 +1402,7 @@ extern "C" {
 			volatile float doppler_pitch_ = 1.0f;
 
 			SpinLock bufferLock_;
+			SpinLock apply3DLock_;
 			xnAudioBuffer** freeBuffers_;
 			int freeBuffersMax_;
 
@@ -1813,6 +1814,8 @@ extern "C" {
 
 		void xnAudioSourceStop(xnAudioSource* source)
 		{
+			source->apply3DLock_.Lock();
+
 			source->source_voice_->Stop();
 			source->source_voice_->FlushSourceBuffers();
 			source->playing_ = false;
@@ -1824,6 +1827,8 @@ extern "C" {
 				xnAudioBuffer* singleBuffer = source->freeBuffers_[0];
 				source->source_voice_->SubmitSourceBuffer(&singleBuffer->buffer_, NULL);
 			}
+
+			source->apply3DLock_.Unlock();
 		}
 
 		void xnAudioListenerPush3D(xnAudioListener* listener, float* pos, float* forward, float* up, float* vel)
@@ -1843,6 +1848,8 @@ extern "C" {
 			memcpy(&source->emitter_->OrientFront, forward, sizeof(float) * 3);
 			memcpy(&source->emitter_->OrientTop, up, sizeof(float) * 3);
 
+			source->apply3DLock_.Lock();
+
 			//everything is calculated by Xaudio for us
 			X3DAudioCalculateFunc(source->listener_->device_->x3_audio_, &source->listener_->listener_, source->emitter_, 
 				X3DAUDIO_CALCULATE_MATRIX | X3DAUDIO_CALCULATE_DOPPLER | X3DAUDIO_CALCULATE_LPF_DIRECT | X3DAUDIO_CALCULATE_REVERB, source->dsp_settings_);
@@ -1852,6 +1859,8 @@ extern "C" {
 			source->source_voice_->SetFrequencyRatio(source->dsp_settings_->DopplerFactor * source->pitch_);
 			XAUDIO2_FILTER_PARAMETERS filter_parameters = { LowPassFilter, 2.0f * sin(X3DAUDIO_PI / 6.0f * source->dsp_settings_->LPFDirectCoefficient), 1.0f };
 			source->source_voice_->SetFilterParameters(&filter_parameters);
+
+			source->apply3DLock_.Unlock();
 		}
 
 		npBool xnAudioSourceIsPlaying(xnAudioSource* source)
