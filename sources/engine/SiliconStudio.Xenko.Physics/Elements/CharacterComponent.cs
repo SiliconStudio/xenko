@@ -181,6 +181,13 @@ namespace SiliconStudio.Xenko.Physics
             KinematicCharacter?.SetWalkDirection(movement);
         }
 
+        /// <summary>
+        /// Sets or gets the orientation of the Entity attached to this character controller
+        /// </summary>
+        /// <remarks>This orientation has no impact in the physics simulation</remarks>
+        [DataMemberIgnore]
+        public Quaternion Orientation { get; set; }
+
         [DataMemberIgnore]
         internal BulletSharp.KinematicCharacterController KinematicCharacter;
 

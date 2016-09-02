@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Physics
 
         private readonly List<PhysicsComponent> elements = new List<PhysicsComponent>();
         private readonly List<PhysicsSkinnedComponentBase> boneElements = new List<PhysicsSkinnedComponentBase>();
-        private readonly List<PhysicsComponent> characters = new List<PhysicsComponent>();
+        private readonly List<CharacterComponent> characters = new List<CharacterComponent>();
 
         private Bullet2PhysicsSystem physicsSystem;
         private SceneSystem sceneSystem;
@@ -215,7 +215,7 @@ namespace SiliconStudio.Xenko.Physics
             {
                 if(!element.Enabled || element.ColliderShape == null) continue;
 
-                var worldTransform = element.PhysicsWorldTransform;
+                var worldTransform = Matrix.RotationQuaternion(element.Orientation) * element.PhysicsWorldTransform;
                 element.UpdateTransformationComponent(ref worldTransform);
 
                 if (element.DebugEntity != null)
