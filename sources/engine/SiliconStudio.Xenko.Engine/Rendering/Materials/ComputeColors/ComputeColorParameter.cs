@@ -4,6 +4,7 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 
@@ -32,6 +33,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
     public abstract class ComputeColorParameterValue<T> : IComputeColorParameter
     {
         [DataMember(10)]
+        [InlineProperty]
         public T Value { get; set; }
     }
 
