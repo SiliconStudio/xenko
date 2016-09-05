@@ -11,7 +11,7 @@ using SiliconStudio.Xenko.UI;
 namespace SiliconStudio.Xenko.Assets.UI
 {
     [DataContract("UILibraryAsset")]
-    [AssetDescription(FileExtension)]
+    [AssetDescription(FileExtension, AllowArchetype = false)]
     [AssetCompiler(typeof(UILibraryAssetCompiler))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
     [Display("UI Library")]
