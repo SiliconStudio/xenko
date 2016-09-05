@@ -371,6 +371,7 @@ namespace GameMenu
             };
 
             var nameEditText = welcomePopup.FindVisualChildOfType<EditText>("nameEditText");
+            nameEditText.Text = DefaultName;
             var validateButton = welcomePopup.FindVisualChildOfType<Button>("validateButton");
             validateButton.Click += delegate
             {
