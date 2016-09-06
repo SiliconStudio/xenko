@@ -29,10 +29,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
-using System.Threading;
-#if NET45
-using TaskEx = System.Threading.Tasks.Task;
-#endif
+using SiliconStudio.Core.Native;
 
 namespace SiliconStudio.Core
 {
@@ -728,25 +725,26 @@ namespace SiliconStudio.Core
         }
 
         /// <summary>
-        /// Suspends the current thread of a <see cref="sleepTimeInMillis"/>.
+        /// Suspends current thread for a <param name="sleepTime"/>.
         /// </summary>
-        /// <param name="sleepTime">The duration to sleep.</param>
+        /// <param name="sleepTime">The duration of sleep.</param>
         public static void Sleep(TimeSpan sleepTime)
         {
-#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
-            Thread.Sleep(sleepTime);
-#else
-            TaskEx.Delay(sleepTime).Wait();
-#endif
+            long ms = (long) sleepTime.TotalMilliseconds;
+            if (ms < 0 || ms > int.MaxValue)
+            {
+                throw new ArgumentOutOfRangeException(nameof(sleepTime), "Sleep time must be a duration less than '2^31 - 1' milliseconds.");
+            }
+            NativeInvoke.Sleep((int)ms);
         }
 
         /// <summary>
-        /// Suspends the current thread of a <see cref="sleepTimeInMillis"/>.
+        /// Suspends current thread for a <see cref="sleepTimeInMillis"/>.
         /// </summary>
-        /// <param name="sleepTimeInMillis">The duration to sleep in milliseconds.</param>
+        /// <param name="sleepTimeInMillis">The duration of sleep in milliseconds.</param>
         public static void Sleep(int sleepTimeInMillis)
         {
-            Sleep(TimeSpan.FromMilliseconds(sleepTimeInMillis));
+            NativeInvoke.Sleep(sleepTimeInMillis);
         }
 
         /// <summary>

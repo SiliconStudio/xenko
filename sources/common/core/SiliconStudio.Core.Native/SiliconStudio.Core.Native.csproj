@@ -13,8 +13,6 @@
     <RootNamespace>SiliconStudio.Core.Native</RootNamespace>
     <AssemblyName>SiliconStudio.Core.Native</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
-    <SiliconStudioAssemblyProcessorOptions>--serialization --parameter-key</SiliconStudioAssemblyProcessorOptions>
     <XenkoBuildTags>*</XenkoBuildTags>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
@@ -32,14 +30,10 @@
     </Compile>
     <Compile Include="LZ4\NativeLZ4Base.cs" />
     <Compile Include="NativeInvoke.cs" />
+    <Compile Include="NativeLibrary.cs" />
+    <Compile Include="NativeLibraryInternal.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\SiliconStudio.Core\SiliconStudio.Core.csproj">
-      <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
-      <Name>SiliconStudio.Core</Name>
-      <Private>False</Private>
-    </ProjectReference>
+    <Compile Include="SuppressUnmanagedCodeSecurityAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="symbols.def" />
@@ -52,8 +46,8 @@
     <None Include="LZ4\lz4.h" />
     <None Include="LZ4\lz4hc.c" />
     <None Include="LZ4\lz4hc.h" />
+    <None Include="CoreNative.c" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -6,3 +6,4 @@ LZ4_compress_limitedOutput
 LZ4_uncompress_unknownOutputSize
 LZ4_compressHC
 LZ4_compressHC_limitedOutput
+cnSleep

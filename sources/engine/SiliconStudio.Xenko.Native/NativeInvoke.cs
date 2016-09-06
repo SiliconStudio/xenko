@@ -33,9 +33,5 @@ namespace SiliconStudio.Xenko.Native
         [SuppressUnmanagedCodeSecurity]
         [DllImport(Library, CallingConvention = CallingConvention.Cdecl)]
         public static extern void UpdateBufferValuesFromElementInfo(IntPtr drawInfo, IntPtr vertexPtr, IntPtr indexPtr, int vertexOffset);
-
-        [SuppressUnmanagedCodeSecurity]
-        [DllImport(Library, EntryPoint = "xnSleep", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void Sleep(int ms);
     }
 }

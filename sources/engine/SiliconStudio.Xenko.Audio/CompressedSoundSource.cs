@@ -270,7 +270,7 @@ namespace SiliconStudio.Xenko.Audio
                     Sources.Remove(source);
                 }
 
-                NativeInvoke.Sleep(20);
+                Utilities.Sleep(20);
             }
         }
 

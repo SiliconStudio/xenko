@@ -695,11 +695,7 @@ extern "C" {
 			
 			BufferData(buffer->buffer, mono ? AL_FORMAT_MONO16 : AL_FORMAT_STEREO16, pcm, bufferSize, sampleRate);
 		}
-
-		void xnSleep(int milliseconds)
-		{
-			npThreadSleep(milliseconds);
-		}
+		
 	}
 }
 
