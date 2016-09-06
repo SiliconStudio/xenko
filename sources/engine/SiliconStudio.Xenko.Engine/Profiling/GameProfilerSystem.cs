@@ -319,6 +319,7 @@ namespace SiliconStudio.Xenko.Profiling
             }
 
             // TODO GRAPHICS REFACTOR where to get command list from?
+            Game.GraphicsContext.CommandList.SetRenderTargetAndViewport(null, Game.GraphicsDevice.Presenter.BackBuffer);
             spriteBatch.Begin(Game.GraphicsContext, depthStencilState: DepthStencilStates.None);
             lock (stringLock)
             {                
