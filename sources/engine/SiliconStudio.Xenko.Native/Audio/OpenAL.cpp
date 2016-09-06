@@ -12,6 +12,7 @@
 #include "../../../../deps/NativePath/TINYSTL/unordered_set.h"
 #include "../../../../deps/NativePath/TINYSTL/unordered_map.h"
 #include "../../../../deps/NativePath/TINYSTL/vector.h"
+#include "../XenkoNative.h"
 
 
 #define HAVE_STDINT_H
@@ -112,7 +113,7 @@ extern "C" {
 
 		SpinLock ContextState::sOpenAlLock;
 
-		npBool xnAudioInit()
+		DLL_EXPORT_API npBool xnAudioInit()
 		{
 			if (OpenALLibrary) return true;
 
@@ -248,7 +249,7 @@ extern "C" {
 			tinystl::vector<xnAudioBuffer*> freeBuffers;
 		};
 
-		xnAudioDevice* xnAudioCreate(const char* deviceName)
+		DLL_EXPORT_API xnAudioDevice* xnAudioCreate(const char* deviceName)
 		{
 			auto res = new xnAudioDevice;
 			res->device = OpenDevice(deviceName);
@@ -261,14 +262,14 @@ extern "C" {
 			return res;
 		}
 
-		void xnAudioDestroy(xnAudioDevice* device)
+		DLL_EXPORT_API void xnAudioDestroy(xnAudioDevice* device)
 		{
 			CloseDevice(device->device);
 			ALC_ERROR(device->device);
 			delete device;
 		}
 
-		void xnAudioUpdate(xnAudioDevice* device)
+		DLL_EXPORT_API void xnAudioUpdate(xnAudioDevice* device)
 		{
 			device->deviceLock.Lock();
 
@@ -312,7 +313,7 @@ extern "C" {
 			device->deviceLock.Unlock();
 		}
 
-		xnAudioListener* xnAudioListenerCreate(xnAudioDevice* device)
+		DLL_EXPORT_API xnAudioListener* xnAudioListenerCreate(xnAudioDevice* device)
 		{
 			auto res = new xnAudioListener;
 			res->device = device;
@@ -333,7 +334,7 @@ extern "C" {
 			return res;
 		}
 
-		void xnAudioListenerDestroy(xnAudioListener* listener)
+		DLL_EXPORT_API void xnAudioListenerDestroy(xnAudioListener* listener)
 		{
 			listener->device->deviceLock.Lock();
 
@@ -346,7 +347,7 @@ extern "C" {
 			delete listener;
 		}
 
-		void xnAudioSetMasterVolume(xnAudioDevice* device, float volume)
+		DLL_EXPORT_API void xnAudioSetMasterVolume(xnAudioDevice* device, float volume)
 		{
 			device->deviceLock.Lock();
 			for(auto listener : device->listeners)
@@ -357,20 +358,20 @@ extern "C" {
 			device->deviceLock.Unlock();
 		}
 
-		npBool xnAudioListenerEnable(xnAudioListener* listener)
+		DLL_EXPORT_API npBool xnAudioListenerEnable(xnAudioListener* listener)
 		{
 			bool res = MakeContextCurrent(listener->context);
 			ProcessContext(listener->context);
 			return res;
 		}
 
-		void xnAudioListenerDisable(xnAudioListener* listener)
+		DLL_EXPORT_API void xnAudioListenerDisable(xnAudioListener* listener)
 		{
 			SuspendContext(listener->context);
 			MakeContextCurrent(NULL);
 		}
 
-		xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener, int sampleRate, int maxNBuffers, npBool mono, npBool spatialized, npBool streamed)
+		DLL_EXPORT_API xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener, int sampleRate, int maxNBuffers, npBool mono, npBool spatialized, npBool streamed)
 		{
 			(void)spatialized;
 			(void)maxNBuffers;
@@ -404,7 +405,7 @@ extern "C" {
 			return res;
 		}
 
-		void xnAudioSourceDestroy(xnAudioSource* source)
+		DLL_EXPORT_API void xnAudioSourceDestroy(xnAudioSource* source)
 		{
 			ContextState lock(source->listener->context);
 
@@ -416,7 +417,7 @@ extern "C" {
 			delete source;
 		}
 
-		double xnAudioSourceGetPosition(xnAudioSource* source)
+		DLL_EXPORT_API double xnAudioSourceGetPosition(xnAudioSource* source)
 		{
 			ContextState lock(source->listener->context);
 
@@ -431,7 +432,7 @@ extern "C" {
 			return offset + source->dequeuedTime;
 		}
 
-		void xnAudioSourceSetPan(xnAudioSource* source, float pan)
+		DLL_EXPORT_API void xnAudioSourceSetPan(xnAudioSource* source, float pan)
 		{
 			auto clampedPan = pan > 1.0f ? 1.0f : pan < -1.0f ? -1.0f : pan;
 			ALfloat alpan[3];
@@ -444,14 +445,14 @@ extern "C" {
 			SourceFV(source->source, AL_POSITION, alpan);
 		}
 
-		void xnAudioSourceSetLooping(xnAudioSource* source, npBool looping)
+		DLL_EXPORT_API void xnAudioSourceSetLooping(xnAudioSource* source, npBool looping)
 		{
 			ContextState lock(source->listener->context);
 
 			SourceI(source->source, AL_LOOPING, looping ? AL_TRUE : AL_FALSE);
 		}
 
-		void xnAudioSourceSetRange(xnAudioSource* source, double startTime, double stopTime)
+		DLL_EXPORT_API void xnAudioSourceSetRange(xnAudioSource* source, double startTime, double stopTime)
 		{
 			if (source->streamed)
 			{
@@ -499,21 +500,21 @@ extern "C" {
 			if (playing == AL_PLAYING) SourcePlay(source->source);
 		}
 
-		void xnAudioSourceSetGain(xnAudioSource* source, float gain)
+		DLL_EXPORT_API void xnAudioSourceSetGain(xnAudioSource* source, float gain)
 		{
 			ContextState lock(source->listener->context);
 
 			SourceF(source->source, AL_GAIN, gain);
 		}
 
-		void xnAudioSourceSetPitch(xnAudioSource* source, float pitch)
+		DLL_EXPORT_API void xnAudioSourceSetPitch(xnAudioSource* source, float pitch)
 		{
 			ContextState lock(source->listener->context);
 
 			SourceF(source->source, AL_PITCH, pitch);
 		}
 
-		void xnAudioSourceSetBuffer(xnAudioSource* source, xnAudioBuffer* buffer)
+		DLL_EXPORT_API void xnAudioSourceSetBuffer(xnAudioSource* source, xnAudioBuffer* buffer)
 		{
 			ContextState lock(source->listener->context);
 
@@ -521,7 +522,7 @@ extern "C" {
 			SourceI(source->source, AL_BUFFER, buffer->buffer);
 		}
 
-		void xnAudioSourceQueueBuffer(xnAudioSource* source, xnAudioBuffer* buffer, short* pcm, int bufferSize, BufferType type)
+		DLL_EXPORT_API void xnAudioSourceQueueBuffer(xnAudioSource* source, xnAudioBuffer* buffer, short* pcm, int bufferSize, BufferType type)
 		{
 			ContextState lock(source->listener->context);
 
@@ -532,7 +533,7 @@ extern "C" {
 			source->listener->buffers[buffer->buffer] = buffer;
 		}
 
-		xnAudioBuffer* xnAudioSourceGetFreeBuffer(xnAudioSource* source)
+		DLL_EXPORT_API xnAudioBuffer* xnAudioSourceGetFreeBuffer(xnAudioSource* source)
 		{
 			ContextState lock(source->listener->context);
 
@@ -546,21 +547,21 @@ extern "C" {
 			return NULL;
 		}
 
-		void xnAudioSourcePlay(xnAudioSource* source)
+		DLL_EXPORT_API void xnAudioSourcePlay(xnAudioSource* source)
 		{
 			ContextState lock(source->listener->context);
 
 			SourcePlay(source->source);
 		}
 
-		void xnAudioSourcePause(xnAudioSource* source)
+		DLL_EXPORT_API void xnAudioSourcePause(xnAudioSource* source)
 		{
 			ContextState lock(source->listener->context);
 
 			SourcePause(source->source);
 		}
 
-		void xnAudioSourceStop(xnAudioSource* source)
+		DLL_EXPORT_API void xnAudioSourceStop(xnAudioSource* source)
 		{
 			ContextState lock(source->listener->context);
 
@@ -592,7 +593,7 @@ extern "C" {
 			}
 		}
 
-		void xnAudioListenerPush3D(xnAudioListener* listener, float* pos, float* forward, float* up, float* vel)
+		DLL_EXPORT_API void xnAudioListenerPush3D(xnAudioListener* listener, float* pos, float* forward, float* up, float* vel)
 		{
 			ContextState lock(listener->context);
 
@@ -627,7 +628,7 @@ extern "C" {
 			}
 		}
 
-		void xnAudioSourcePush3D(xnAudioSource* source, float* pos, float* forward, float* up, float* vel)
+		DLL_EXPORT_API void xnAudioSourcePush3D(xnAudioSource* source, float* pos, float* forward, float* up, float* vel)
 		{
 			ContextState lock(source->listener->context);
 
@@ -662,7 +663,7 @@ extern "C" {
 			}
 		}
 
-		npBool xnAudioSourceIsPlaying(xnAudioSource* source)
+		DLL_EXPORT_API npBool xnAudioSourceIsPlaying(xnAudioSource* source)
 		{
 			ContextState lock(source->listener->context);
 
@@ -671,7 +672,7 @@ extern "C" {
 			return value == AL_PLAYING || value == AL_PAUSED;
 		}
 
-		xnAudioBuffer* xnAudioBufferCreate(int maxBufferSize)
+		DLL_EXPORT_API xnAudioBuffer* xnAudioBufferCreate(int maxBufferSize)
 		{
 			auto res = new xnAudioBuffer;
 			res->pcm = (short*)malloc(maxBufferSize);
@@ -679,14 +680,14 @@ extern "C" {
 			return res;
 		}
 
-		void xnAudioBufferDestroy(xnAudioBuffer* buffer)
+		DLL_EXPORT_API void xnAudioBufferDestroy(xnAudioBuffer* buffer)
 		{
 			DeleteBuffers(1, &buffer->buffer);
 			free(buffer->pcm);
 			delete buffer;
 		}
 
-		void xnAudioBufferFill(xnAudioBuffer* buffer, short* pcm, int bufferSize, int sampleRate, npBool mono)
+		DLL_EXPORT_API void xnAudioBufferFill(xnAudioBuffer* buffer, short* pcm, int bufferSize, int sampleRate, npBool mono)
 		{
 			//we have to keep a copy sadly because we might need to offset the data at some point			
 			memcpy(buffer->pcm, pcm, bufferSize);
