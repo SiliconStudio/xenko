@@ -78,25 +78,5 @@ namespace SiliconStudio.Xenko.Assets.Materials
                 return null;
             }
         }
-
-        public ShaderClassType ParseShader(string shaderSource)
-        {
-            try
-            {
-                var shader = ShaderLoader.ParseSource(shaderSource, logger);
-                if (logger.HasErrors)
-                {
-                    // TODO: output messages
-                    logger.Messages.Clear();
-                    return null;
-                }
-                return shader;
-            }
-            catch
-            {
-                // TODO: output messages
-                return null;
-            }
-        }
     }
 }

@@ -245,7 +245,7 @@
     <Compile Include="GameSettingsProfileBase.cs" />
     <Compile Include="GameUserSettings.cs" />
     <Compile Include="IGameSettingsProfile.cs" />
-    <Compile Include="Materials\ComputeShaderClassBaseExtensions.cs" />
+    <Compile Include="Materials\ComputeShaderClassHelper.cs" />
     <Compile Include="Materials\MaterialFactories.cs" />
     <Compile Include="Materials\MaterialNodeClassLoader.cs" />
     <Compile Include="Materials\MaterialStreamFactory.cs" />
