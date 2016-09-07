@@ -9,7 +9,11 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 {
     public class CustomCodeBlock : ExecutionBlock
     {
+        public string Name { get; set; }
+
         public string Code { get; set; }
+
+        public override string Title => !string.IsNullOrEmpty(Name) ? Name : "Custom Code";
 
         public override void GenerateCode(VisualScriptCompilerContext context)
         {

@@ -11,6 +11,8 @@ namespace SiliconStudio.Xenko.Assets.Scripts
     {
         public Variable Variable { get; set; }
 
+        public override string Title => Variable != null ? $"Set {Variable.Name}" : "Set";
+
         [DataMemberIgnore]
         public Slot InputSlot => FindSlot(SlotDirection.Input, SlotKind.Value, null);
 
