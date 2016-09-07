@@ -477,7 +477,9 @@ namespace SiliconStudio.Xenko.Graphics
                         createInfo.ViewType = ImageViewType.Image2DArray;
                         break;
                     case TextureDimension.TextureCube:
-                        createInfo.ViewType = ImageViewType.ImageCubeArray;
+                        if (ArraySize % 6 != 0) throw new NotSupportedException("Texture cubes require an ArraySize which is a multiple of 6");
+
+                        createInfo.ViewType = ArraySize > 6 ? ImageViewType.ImageCubeArray : ImageViewType.ImageCube;
                         break;
                 }
             }
@@ -499,9 +501,6 @@ namespace SiliconStudio.Xenko.Graphics
                         break;
                     case TextureDimension.Texture3D:
                         createInfo.ViewType = ImageViewType.Image3D;
-                        break;
-                    case TextureDimension.TextureCube:
-                        createInfo.ViewType = ImageViewType.ImageCube;
                         break;
                 }
             }
