@@ -365,8 +365,20 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             }
 
             var shader = parsingResult.Shader;
-            var shaderClass = shader.Declarations.OfType<ShaderClassType>().Single();
-
+            var shaderClass = shader.Declarations.OfType<ShaderClassType>().SingleOrDefault();
+            if (shaderClass == null)
+            {
+                var queue = new Queue<NamespaceBlock>(shader.Declarations.OfType<NamespaceBlock>());
+                while (queue.Count > 0 && shaderClass == null)
+                {
+                    var namespaceNode = queue.Dequeue();
+                    shaderClass = namespaceNode.Body.OfType<ShaderClassType>().SingleOrDefault();
+                    foreach (var subNamespace in namespaceNode.Body.OfType<NamespaceBlock>())
+                    {
+                        queue.Enqueue(subNamespace);
+                    }
+                }
+            }
             return shaderClass;
         }
 
