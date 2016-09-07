@@ -979,20 +979,25 @@ namespace SiliconStudio.Xenko.Graphics
             int lengthInBytes = 0;
 
             var texture = resource as Texture;
+            int blockSize;
             if (texture != null)
             {
                 lengthInBytes = databox.SlicePitch * (region.Back - region.Front);
+                blockSize = texture.Format.IsCompressed() ? texture.NativeFormat.BlockSizeInBytes() : texture.TexturePixelSize;
             }
             else
             {
                 lengthInBytes = region.Right - region.Left;
+                blockSize = 4;
             }
 
-            // BufferImageCopy.BufferOffset needs to be a multiple of 4
+            // Buffer-to-image copies need to be aligned to the pixel size and 4 (always a power of 2)
+            var alignmentMask = (blockSize < 4 ? 4 : blockSize) - 1;
+
             SharpVulkan.Buffer uploadResource;
             int uploadOffset;
-            var uploadMemory = GraphicsDevice.AllocateUploadBuffer(lengthInBytes + 4, out uploadResource, out uploadOffset);
-            var alignment = ((uploadOffset + 3) & ~3) - uploadOffset;
+            var uploadMemory = GraphicsDevice.AllocateUploadBuffer(lengthInBytes + alignmentMask, out uploadResource, out uploadOffset);
+            var alignment = ((uploadOffset + alignmentMask) & ~alignmentMask) - uploadOffset;
 
             Utilities.CopyMemory(uploadMemory + alignment, databox.DataPointer, lengthInBytes);
 
