@@ -312,7 +312,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             LivingQuads = minQuads;
             MaxParticles = livingParticles;
 
-            if (requiredQuads == 0 || minQuads > requiredQuads || maxQuads <= requiredQuads / 2)
+            if (minQuads > requiredQuads || maxQuads <= requiredQuads / 2)
             {
                 requiredQuads = maxQuads;
                 IsBufferDirty = true;

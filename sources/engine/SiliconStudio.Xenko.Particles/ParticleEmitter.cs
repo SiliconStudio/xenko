@@ -918,8 +918,6 @@ namespace SiliconStudio.Xenko.Particles
 
         #endregion
 
-        private bool hasBuildVertexOnce = false;
-
         /// <summary>
         /// <see cref="PrepareForDraw"/> prepares and updates the Material, ShapeBuilder and VertexBuilder if necessary
         /// </summary>
@@ -939,7 +937,7 @@ namespace SiliconStudio.Xenko.Particles
             vertexBufferHasChanged = (Material.HasVertexLayoutChanged || ShapeBuilder.VertexLayoutHasChanged || VertexBuilder.IsBufferDirty);
 
             // Update the vertex builder and the vertex layout if needed
-            if (!hasBuildVertexOnce || (vertexBufferHasChanged && (ShapeBuilder.QuadsPerParticle * pool.LivingParticles) > 0))
+            if (vertexBufferHasChanged)
             {
                 VertexBuilder.ResetVertexElementList();
 
