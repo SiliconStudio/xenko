@@ -16,8 +16,7 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial class GraphicsDevice
     {
-        // TODO: Query device
-        internal readonly int ConstantBufferDataPlacementAlignment = 256;
+        internal int ConstantBufferDataPlacementAlignment;
 
         internal readonly ConcurrentPool<List<SharpVulkan.DescriptorPool>> DescriptorPoolLists = new ConcurrentPool<List<SharpVulkan.DescriptorPool>>(() => new List<SharpVulkan.DescriptorPool>());
         internal readonly ConcurrentPool<List<Texture>> StagingResourceLists = new ConcurrentPool<List<Texture>>(() => new List<Texture>());
@@ -251,12 +250,11 @@ namespace SiliconStudio.Xenko.Graphics
 
             rendererName = Adapter.Description;
 
-            RequestedProfile = graphicsProfiles.Last();
+            PhysicalDeviceProperties physicalDeviceProperties;
+            NativePhysicalDevice.GetProperties(out physicalDeviceProperties);
+            ConstantBufferDataPlacementAlignment = (int)physicalDeviceProperties.Limits.MinUniformBufferOffsetAlignment;
 
-            if ((deviceCreationFlags & DeviceCreationFlags.Debug) != 0)
-            {
-                // TODO VULKAN debug layer
-            }
+            RequestedProfile = graphicsProfiles.Last();
 
             var queueProperties = NativePhysicalDevice.QueueFamilyProperties;
 
@@ -273,8 +271,6 @@ namespace SiliconStudio.Xenko.Graphics
                 QueueCount = 1,
                 QueuePriorities = new IntPtr(&queuePriorities)
             };
-
-            bool enableDebugging = false;
 
             var enabledFeature = new PhysicalDeviceFeatures
             {
