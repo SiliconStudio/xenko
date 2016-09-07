@@ -98,6 +98,9 @@ shader ParticleBase : DepthBase, ShaderBase, Texturing, ParticleUtilities
             screenCoords.y = 1 - screenCoords.y;
 #endif
 
+            // Account for Viewport offset and scaling
+            screenCoords.xy = Viewport.xy + screenCoords.xy * Viewport.zw;
+
             // Convert to linear depth for proper edge smoothing
             float linearZOwn = -streams.ZDepth;
             float linearZOpaque = GetLinearDepth(DepthStencil.Sample(Texturing.PointSampler, screenCoords).r);
