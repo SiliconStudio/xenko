@@ -60,7 +60,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Identifies the <see cref="IsDropDownOpen"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsDropDownOpenProperty = DependencyProperty.Register("IsDropDownOpen", typeof(bool), typeof(FilteringComboBox));
+        public static readonly DependencyProperty IsDropDownOpenProperty = DependencyProperty.Register("IsDropDownOpen", typeof(bool), typeof(FilteringComboBox), new FrameworkPropertyMetadata(false, OnIsDropDownOpenChanged));
 
         /// <summary>
         /// Identifies the <see cref="OpenDropDownOnFocus"/> dependency property.
@@ -76,6 +76,11 @@ namespace SiliconStudio.Presentation.Controls
         /// Identifies the <see cref="WatermarkContent"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty WatermarkContentProperty = DependencyProperty.Register("WatermarkContent", typeof(object), typeof(FilteringComboBox), new PropertyMetadata(null));
+
+        /// <summary>
+        /// Identifies the <see cref="IsFiltering"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty IsFilteringProperty = DependencyProperty.Register("IsFiltering", typeof(bool), typeof(FilteringComboBox), new FrameworkPropertyMetadata(true, OnIsFilteringChanged));
 
         /// <summary>
         /// Identifies the <see cref="ItemsToExclude"/> dependency property.
@@ -122,7 +127,6 @@ namespace SiliconStudio.Presentation.Controls
         static FilteringComboBox()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(FilteringComboBox), new FrameworkPropertyMetadata(typeof(FilteringComboBox)));
-            IsDropDownOpenProperty.OverrideMetadata(typeof(FilteringComboBox), new FrameworkPropertyMetadata(false, OnIsDropDownOpenChanged));
         }
 
         public FilteringComboBox()
@@ -159,6 +163,11 @@ namespace SiliconStudio.Presentation.Controls
         /// Gets or sets the content to display when the TextBox is empty.
         /// </summary>
         public object WatermarkContent { get { return GetValue(WatermarkContentProperty); } set { SetValue(WatermarkContentProperty, value); } }
+
+        /// <summary>
+        /// Gets or sets the content to display when the TextBox is empty.
+        /// </summary>
+        public bool IsFiltering { get { return (bool)GetValue(IsFilteringProperty); } set { SetValue(IsFilteringProperty, value); } }
 
         [Obsolete]
         public IEnumerable ItemsToExclude { get { return (IEnumerable)GetValue(ItemsToExcludeProperty); } set { SetValue(ItemsToExcludeProperty, value); } }
@@ -206,6 +215,15 @@ namespace SiliconStudio.Presentation.Controls
         {
             var filteringComboBox = (FilteringComboBox)d;
             if ((bool)e.NewValue && filteringComboBox.ItemsSource != null)
+            {
+                filteringComboBox.UpdateCollectionView();
+            }
+        }
+
+        private static void OnIsFilteringChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var filteringComboBox = (FilteringComboBox)d;
+            if (filteringComboBox.ItemsSource != null)
             {
                 filteringComboBox.UpdateCollectionView();
             }
@@ -402,7 +420,7 @@ namespace SiliconStudio.Presentation.Controls
         private void UpdateCollectionView()
         {
             var collectionView = CollectionViewSource.GetDefaultView(ItemsSource);
-            collectionView.Filter = InternalFilter;
+            collectionView.Filter = IsFiltering ? (Predicate<object>)InternalFilter : null;
             var listCollectionView = collectionView as ListCollectionView;
             if (listCollectionView != null)
             {
@@ -523,7 +541,7 @@ namespace SiliconStudio.Presentation.Controls
             var tokens = inputText.Split(" \t\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
             foreach (var token in tokens)
             {
-                if (text.IndexOf(token, StringComparison.InvariantCultureIgnoreCase) < 0 && !MatchCamelCase(token, text))
+                if (text.IndexOf(token, StringComparison.InvariantCultureIgnoreCase) < 0 && !token.MatchCamelCase(text))
                     return false;
             }
             return true;
@@ -546,36 +564,6 @@ namespace SiliconStudio.Presentation.Controls
                 BindingOperations.ClearBinding(this, InternalValuePathProperty);
             }
             return value;
-        }
-
-        private static bool MatchCamelCase(string inputText, string text)
-        {
-            var camelCaseSplit = text.CamelCaseSplit();
-            var filter = inputText.ToLowerInvariant();
-            var currentFilterChar = 0;
-
-            foreach (var word in camelCaseSplit)
-            {
-                var currentWordChar = 0;
-                while (currentFilterChar > 0)
-                {
-                    if (char.ToLower(word[currentWordChar]) == filter[currentFilterChar])
-                        break;
-                    --currentFilterChar;
-                }
-
-                while (char.ToLower(word[currentWordChar]) == filter[currentFilterChar])
-                {
-                    ++currentWordChar;
-                    ++currentFilterChar;
-                    if (currentFilterChar == filter.Length)
-                        return true;
-
-                    if (currentWordChar == word.Length)
-                        break;
-                }
-            }
-            return currentFilterChar == filter.Length;
         }
     }
 }

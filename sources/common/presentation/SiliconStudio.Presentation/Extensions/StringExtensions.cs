@@ -52,5 +52,35 @@ namespace SiliconStudio.Presentation.Extensions
 
             return result.Select(x => x.Trim()).Where(x => x.Length > 0).ToList();
         }
+
+        public static bool MatchCamelCase(this string inputText, string text)
+        {
+            var camelCaseSplit = text.CamelCaseSplit();
+            var filter = inputText.ToLowerInvariant();
+            var currentFilterChar = 0;
+
+            foreach (var word in camelCaseSplit)
+            {
+                var currentWordChar = 0;
+                while (currentFilterChar > 0)
+                {
+                    if (char.ToLower(word[currentWordChar]) == filter[currentFilterChar])
+                        break;
+                    --currentFilterChar;
+                }
+
+                while (char.ToLower(word[currentWordChar]) == filter[currentFilterChar])
+                {
+                    ++currentWordChar;
+                    ++currentFilterChar;
+                    if (currentFilterChar == filter.Length)
+                        return true;
+
+                    if (currentWordChar == word.Length)
+                        break;
+                }
+            }
+            return currentFilterChar == filter.Length;
+        }
     }
 }

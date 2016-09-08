@@ -10,21 +10,49 @@ namespace SiliconStudio.Xenko.Assets.Scripts
     {
         public string MethodName { get; set; }
 
+        public bool IsMemberCall { get; set; }
+
+        public override string Title
+        {
+            get
+            {
+                // Take up to two qualifiers (class+method)
+                var titleStart = MethodName.LastIndexOf('.');
+                titleStart = titleStart > 0 ? MethodName.LastIndexOf('.', titleStart - 1) : -1;
+
+                return MethodName.Substring(titleStart + 1);
+            }
+        }
+
         public override void GenerateCode(VisualScriptCompilerContext context)
         {
             var arguments = new List<SyntaxNodeOrToken>();
-            foreach (var slot in Slots)
+            var memberCallProcessed = false;
+
+            var invocationTarget = MethodName;
+
+            for (int index = 0; index < Slots.Count; index++)
             {
+                var slot = Slots[index];
                 if (slot.Direction == SlotDirection.Input && slot.Kind == SlotKind.Value)
                 {
+                    var argument = context.GenerateExpression(slot) ?? IdentifierName("unknown");
+
+                    if (IsMemberCall && !memberCallProcessed)
+                    {
+                        // this parameter (non-static or extension method)
+                        memberCallProcessed = true;
+                        invocationTarget = argument.ToFullString() +  "." + invocationTarget;
+                        continue;
+                    }
+
                     if (arguments.Count > 0)
                         arguments.Add(Token(SyntaxKind.CommaToken));
 
-                    var argument = context.GenerateExpression(slot) ?? IdentifierName("unknown");
-                    arguments.Add(argument);
+                    arguments.Add(Argument(argument));
                 }
             }
-            context.AddStatement(ExpressionStatement(InvocationExpression(ParseExpression(MethodName), ArgumentList(SeparatedList<ArgumentSyntax>(arguments)))));
+            context.AddStatement(ExpressionStatement(InvocationExpression(ParseExpression(invocationTarget), ArgumentList(SeparatedList<ArgumentSyntax>(arguments)))));
         }
 
         public override void RegenerateSlots(IList<Slot> newSlots)

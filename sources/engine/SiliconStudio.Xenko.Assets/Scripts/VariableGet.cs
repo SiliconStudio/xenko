@@ -19,15 +19,14 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         public override ExpressionSyntax GenerateExpression()
         {
             if (Variable == null)
-                return null;
+                return IdentifierName("variable_not_set");
 
             return IdentifierName(Variable.Name);
         }
 
         public override void RegenerateSlots(IList<Slot> newSlots)
         {
-            if (Variable != null)
-                newSlots.Add(new Slot { Kind = SlotKind.Value, Direction = SlotDirection.Output });
+            newSlots.Add(new Slot { Kind = SlotKind.Value, Direction = SlotDirection.Output });
         }
     }
 }
