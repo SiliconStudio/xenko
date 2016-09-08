@@ -12,6 +12,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
     [Display("Binary Operator")]
     public class ComputeBinaryColor : ComputeBinaryBase<IComputeColor>, IComputeColor
     {
+        private BinaryOperator cachedOperator;
+
         public ComputeBinaryColor()
         {
         }
@@ -27,7 +29,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
             get
             {
                 // Null children force skip changes
-                return (LeftChild != null && RightChild != null && (LeftChild.HasChanged || RightChild.HasChanged));
+                if (LeftChild == null || RightChild == null || ((cachedOperator == Operator) && !LeftChild.HasChanged && !RightChild.HasChanged))
+                    return false;
+
+                cachedOperator = Operator;
+                return true;
             }
         }
     }
