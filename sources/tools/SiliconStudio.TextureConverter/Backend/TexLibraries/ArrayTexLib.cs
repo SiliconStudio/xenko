@@ -293,7 +293,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             TexImage.SubImage[] subImages = new TexImage.SubImage[array.SubImageArray.Length + subImageCount];
             int offset = 0;
 
-            // Copying memory of the textures positionned before the new texture
+            // Copying memory of the textures positioned before the new texture
             for (int i = 0; i < indice; ++i)
             {
                 subImages[i] = array.SubImageArray[i];
@@ -312,7 +312,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 ++ct;
             }
 
-            // Copying memory of the textures positionned after the new texture
+            // Copying memory of the textures positioned after the new texture
             for (int i = indice; i < array.SubImageArray.Length; ++i)
             {
                 subImages[ct] = array.SubImageArray[i];
