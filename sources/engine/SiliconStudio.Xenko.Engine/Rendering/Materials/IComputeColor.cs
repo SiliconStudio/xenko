@@ -11,6 +11,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     [InlineProperty]
     public interface IComputeColor : IComputeNode
     {
-        
+        /// <summary>
+        /// Indicates if the IComputeColor has changed since the last time it was checked, which might require recompilation of the shader mixins
+        /// </summary>
+        bool HasChanged { get; }        
     }
 }

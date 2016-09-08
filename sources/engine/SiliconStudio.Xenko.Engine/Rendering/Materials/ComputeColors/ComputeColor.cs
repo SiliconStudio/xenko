@@ -14,6 +14,12 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
     [Display("Color")]
     public class ComputeColor : ComputeValueBase<Color4>, IComputeColor
     {
+        private bool premultiplyAlpha;
+        private bool hasChanged;
+
+        // Possible optimization will be to keep this on the ComputeValueBase<T> side
+        private Color4 cachedColor;
+
         /// <summary>
         /// Gets or sets a value indicating whether to convert the texture in pre-multiplied alpha.
         /// </summary>
@@ -23,7 +29,14 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
         /// </userdoc>
         [DataMember(10)]
         [DefaultValue(true)]
-        public bool PremultiplyAlpha { get; set; }
+        public bool PremultiplyAlpha {
+            get { return premultiplyAlpha; }
+            set
+            {
+                hasChanged = (premultiplyAlpha != value);
+                premultiplyAlpha = value;
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ComputeColor"/> class.
@@ -40,13 +53,32 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
         public ComputeColor(Color4 value)
             : base(value)
         {
-            PremultiplyAlpha = true;
+            premultiplyAlpha = true;
+
+            cachedColor = Color4.Black;
+
+            // Force recompilation of the shader mixins the first time ComputeColor is created by setting the value to true
+            hasChanged = true;
         }
 
         /// <inheritdoc/>
         public override string ToString()
         {
             return "Color";
+        }
+
+        /// <inheritdoc/>
+        public bool HasChanged
+        {
+            get
+            {
+                if (!hasChanged && cachedColor == Value)
+                    return false;
+
+                hasChanged = false;
+                cachedColor = Value;
+                return true;
+            }
         }
 
         public override ShaderSource GenerateShaderSource(ShaderGeneratorContext context, MaterialComputeColorKeys baseKeys)

@@ -91,21 +91,17 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
             if (ComputeColor != null)
             {
-                var shaderGeneratorContext = new ShaderGeneratorContext(graphicsDevice)
+                if (ComputeColor.HasChanged)
                 {
-                    Parameters = Parameters,
-                    ColorSpace = graphicsDevice.ColorSpace
-                };
+                    var shaderGeneratorContext = new ShaderGeneratorContext(graphicsDevice)
+                    {
+                        Parameters = Parameters,
+                        ColorSpace = graphicsDevice.ColorSpace
+                    };
 
-                var newShaderSource = ComputeColor.GenerateShaderSource(shaderGeneratorContext, new MaterialComputeColorKeys(ParticleBaseKeys.EmissiveMap, ParticleBaseKeys.EmissiveValue, Color.White));
-
-                // Check if shader code has changed
-                if (!newShaderSource.Equals(shaderSource))
-                {
-                    shaderSource = newShaderSource;
+                    shaderSource = ComputeColor.GenerateShaderSource(shaderGeneratorContext, new MaterialComputeColorKeys(ParticleBaseKeys.EmissiveMap, ParticleBaseKeys.EmissiveValue, Color.White));
                     Parameters.Set(ParticleBaseKeys.BaseColor, shaderSource);
 
-                    // TODO: Is this necessary?
                     HasVertexLayoutChanged = true;
                 }
             }

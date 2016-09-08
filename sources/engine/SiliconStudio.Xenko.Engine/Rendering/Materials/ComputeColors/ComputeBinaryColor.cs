@@ -20,5 +20,15 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
             : base(leftChild, rightChild, binaryOperator)
         {
         }
+
+        /// <inheritdoc/>
+        public bool HasChanged
+        {
+            get
+            {
+                // Null children force skip changes
+                return (LeftChild != null && RightChild != null && (LeftChild.HasChanged || RightChild.HasChanged));
+            }
+        }
     }
 }

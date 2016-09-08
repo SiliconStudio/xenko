@@ -13,5 +13,14 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
     // TODO: This class has been made abstract to be removed from the editor - unabstract it to re-enable it!
     public class ComputeShaderClassColor : ComputeShaderClassBase<IComputeColor>, IComputeColor 
     {
+        /// <inheritdoc/>
+        public bool HasChanged
+        {
+            get
+            {
+                // Shaders are too generic so we always return true.
+                return true;
+            }
+        }
     }
 }
