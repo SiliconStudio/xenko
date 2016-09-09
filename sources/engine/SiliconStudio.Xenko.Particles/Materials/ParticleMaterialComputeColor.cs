@@ -100,7 +100,15 @@ namespace SiliconStudio.Xenko.Particles.Materials
                     };
 
                     shaderSource = ComputeColor.GenerateShaderSource(shaderGeneratorContext, new MaterialComputeColorKeys(ParticleBaseKeys.EmissiveMap, ParticleBaseKeys.EmissiveValue, Color.White));
-                    Parameters.Set(ParticleBaseKeys.BaseColor, shaderSource);
+
+                    if (Parameters.Get(ParticleBaseKeys.BaseColor)?.Equals(shaderSource) ?? false)
+                    {
+                        shaderSource = Parameters.Get(ParticleBaseKeys.BaseColor);
+                    }
+                    else
+                    {
+                        Parameters.Set(ParticleBaseKeys.BaseColor, shaderSource);
+                    }
 
                     HasVertexLayoutChanged = true;
                 }
