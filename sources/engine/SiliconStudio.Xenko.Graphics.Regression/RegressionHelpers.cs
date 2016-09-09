@@ -138,6 +138,8 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             return TestPlatform.WindowsPhone;
 #elif SILICONSTUDIO_PLATFORM_WINDOWS_STORE
             return TestPlatform.WindowsStore;
+#elif SILICONSTUDIO_XENKO_GRAPHICS_API_NULL
+            return TestPlatform.None;
 #elif SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
             return TestPlatform.WindowsDx;
 #elif SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
@@ -201,6 +203,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
     public enum TestPlatform
     {
+        None,
         WindowsDx,
         WindowsOgl,
         WindowsOgles,

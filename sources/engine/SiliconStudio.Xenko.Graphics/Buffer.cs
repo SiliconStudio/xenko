@@ -48,6 +48,15 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="Buffer" /> class.
+        /// </summary>
+        /// <param name="device">The <see cref="GraphicsDevice"/>.</param>
+        protected Buffer(GraphicsDevice device) : base(device)
+        {
+        }
+
+
+        /// <summary>
         /// Gets the description of this buffer.
         /// </summary>
         public BufferDescription Description
@@ -615,6 +624,7 @@ namespace SiliconStudio.Xenko.Graphics
     /// <typeparam name="T">Type of an element of this buffer.</typeparam>
     public class Buffer<T> : Buffer where T : struct
     {
+
         protected internal Buffer(GraphicsDevice device, BufferDescription description, BufferFlags viewFlags, PixelFormat viewFormat, IntPtr dataPointer) : base(device)
         {
             InitializeFromImpl(description, viewFlags, viewFormat, dataPointer);

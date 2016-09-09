@@ -72,7 +72,7 @@ namespace SiliconStudio.Xenko.Graphics
             else
             {
                 // TODO Hardcoded to the fact it uses only one command list, this should be fixed
-                CommandList = graphicsDevice.MainCommandList;
+                CommandList = graphicsDevice.InternalMainCommandList;
             }
         }
 

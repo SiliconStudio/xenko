@@ -7,7 +7,7 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
-    /// Performs resource bindings and primitive-based rendering. See <see cref="The+GraphicsDevice+class"/> to learn more about the class.
+    /// Performs resource bindings and primitive-based rendering. See the <see cref="GraphicsDevice"/> class to learn more about the class.
     /// </summary>
     public partial class CommandList : GraphicsResourceBase
     {

@@ -75,12 +75,16 @@ namespace SiliconStudio.Xenko.Graphics
 
         public static CommandList New(GraphicsDevice device)
         {
-            throw new InvalidOperationException("Can't create multiple command lists with OpenGL");
+            if (device.InternalMainCommandList != null)
+            {
+                throw new InvalidOperationException("Can't create multiple command lists with OpenGL");
+            }
+            return new CommandList(device);
         }
 
-        internal CommandList(GraphicsDevice device) : base(device)
+        private CommandList(GraphicsDevice device) : base(device)
         {
-            device.MainCommandList = this;
+            device.InternalMainCommandList = this;
 
             // Default state
             DepthStencilBoundState.DepthBufferWriteEnable = true;
