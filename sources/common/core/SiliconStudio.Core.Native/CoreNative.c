@@ -2,12 +2,13 @@
 // This file is distributed under GPL v3. See LICENSE.md for details
 
 #include "../../../../deps/NativePath/NativeThreading.h"
+#include "CoreNative.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void cnSleep(int milliseconds)
+DLL_EXPORT_API void cnSleep(int milliseconds)
 {
     npThreadSleep(milliseconds);
 }
