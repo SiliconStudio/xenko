@@ -12,6 +12,10 @@ echo Processing Windows with SDL
 ..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.ProjectGenerator.exe solution Xenko.sln -o Xenko.Direct3D.SDL.sln -p Windows
 echo.
 
+echo Processing Windows with a Null graphic backend
+..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.ProjectGenerator.exe solution Xenko.sln -o Xenko.Null.sln -p Windows
+echo.
+
 echo Processing Windows with Vulkan
 ..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.ProjectGenerator.exe solution Xenko.sln -o Xenko.Vulkan.sln -p Windows 
 echo.
