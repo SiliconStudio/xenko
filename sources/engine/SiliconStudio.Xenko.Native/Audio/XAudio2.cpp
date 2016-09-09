@@ -1901,11 +1901,6 @@ extern "C" {
 			memcpy(const_cast<char*>(buffer->buffer_.pAudioData), pcm, bufferSize);
 		}
 
-		void xnSleep(int milliseconds)
-		{
-			npThreadSleep(milliseconds);
-		}
-
 		void xnAudioSource::OnVoiceError(void* context, long error)
 		{
 		}
