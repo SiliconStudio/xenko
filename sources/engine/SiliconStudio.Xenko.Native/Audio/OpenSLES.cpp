@@ -773,11 +773,6 @@ extern "C" {
 			buffer->dataLength = bufferSize;
 			memcpy(buffer->dataPtr, pcm, bufferSize);
 		}
-
-		void xnSleep(int milliseconds)
-		{
-			npThreadSleep(milliseconds);
-		}
 	}
 }
 
