@@ -3,7 +3,6 @@
 using System;
 using System.Linq;
 using System.Windows;
-using System.Windows.Data;
 using System.Windows.Interactivity;
 
 using SiliconStudio.Presentation.Core;
@@ -14,7 +13,7 @@ namespace SiliconStudio.Presentation.Behaviors
     /// An abstract behavior that allows to perform actions when an event is raised. It supports both <see cref="RoutedEvent"/> and standard <c>event</c>,
     /// and allow to catch routed event triggered by any control.
     /// </summary>
-    public abstract class OnEventBehavior : Behavior<FrameworkElement>
+    public abstract class OnEventBehavior : Behavior<DependencyObject>
     {
         /// <summary>
         /// Identifies the <see cref="EventName"/> dependency property.
@@ -64,26 +63,28 @@ namespace SiliconStudio.Presentation.Behaviors
         protected override void OnAttached()
         {
             if (EventName == null)
-                throw new ArgumentException(string.Format("The EventName property must be set on behavior '{0}'.", GetType().FullName));
+                throw new ArgumentException($"The EventName property must be set on behavior '{GetType().FullName}'.");
 
             var eventOwnerType = EventOwnerType ?? AssociatedObject.GetType();
 
-            RoutedEvent[] routedEvents = EventManager.GetRoutedEvents().Where(evt => evt.Name == EventName && evt.OwnerType.IsAssignableFrom(eventOwnerType)).ToArray();
+            var uiElement = AssociatedObject as UIElement;
 
-            if (routedEvents.Length > 0)
+            var routedEvents = EventManager.GetRoutedEvents().Where(x => x.Name == EventName && x.OwnerType.IsAssignableFrom(eventOwnerType)).ToArray();
+
+            if (uiElement != null && routedEvents.Length > 0)
             {
                 if (routedEvents.Length > 1)
                     throw new NotImplementedException("TODO: several events found, find a way to decide the most relevant one.");
 
                 routedEvent = routedEvents.First();
-                AssociatedObject.AddHandler(routedEvent, routedEventHandler);
+                uiElement.AddHandler(routedEvent, routedEventHandler);
             }
             else
             {
                 var eventInfo = AssociatedObject.GetType().GetEvent(EventName);
 
                 if (eventInfo == null)
-                    throw new InvalidOperationException(string.Format("Impossible to find a valid event named '{0}'.", EventName));
+                    throw new InvalidOperationException($"Impossible to find a valid event named '{EventName}'.");
 
                 eventHandler = AnonymousEventHandler.RegisterEventHandler(eventInfo, AssociatedObject, OnEvent);
             }
@@ -94,7 +95,8 @@ namespace SiliconStudio.Presentation.Behaviors
         {
             if (routedEvent != null)
             {
-                AssociatedObject.RemoveHandler(routedEvent, routedEventHandler);
+                var uiElement = (UIElement)AssociatedObject;
+                uiElement.RemoveHandler(routedEvent, routedEventHandler);
                 routedEvent = null;
             }
             else if (eventHandler != null)
