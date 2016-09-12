@@ -17,6 +17,15 @@ namespace SiliconStudio.Presentation.Extensions
         /// <summary>
         /// This methods is a wrapper to the internal method Clone of the <see cref="BindingBase"/>. Using this method should be considered unsafe.
         /// </summary>
+        /// <param name="binding">The Binding to clone.</param>
+        /// <returns>A clone of the given <see cref="BindingBase"/></returns>
+        public static Binding CloneBinding(this Binding binding)
+        {
+            return (Binding)binding.CloneBinding(binding.Mode);
+        }
+        /// <summary>
+        /// This methods is a wrapper to the internal method Clone of the <see cref="BindingBase"/>. Using this method should be considered unsafe.
+        /// </summary>
         /// <param name="bindingBase">The BindingBase to clone.</param>
         /// <param name="mode">The BindingMode value to set for the clone.</param>
         /// <returns>A clone of the given <see cref="BindingBase"/></returns>
