@@ -12,5 +12,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
         /// </summary>
         /// <returns>A string with the name of the stream semantic.</returns>
         string GetSemanticName();
+
+        /// <summary>
+        /// Gets the hash code of the semantic name.
+        /// </summary>
+        /// <returns>An int with the hash code of the semantic name.</returns>
+        int GetSemanticNameHash();
     }
 }

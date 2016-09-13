@@ -16,12 +16,19 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
     [Display("Texture")]
     public class ComputeTextureColor : ComputeTextureBase, IComputeColor
     {
+        private bool hasChanged;
+
+        // Possible optimization will be to keep this on the ComputeTextureBase side
+        private Texture cachedTexture;
+
         /// <summary>
         /// Constructor
         /// </summary>
         public ComputeTextureColor()
             : this(null, TextureCoordinate.Texcoord0, Vector2.One, Vector2.Zero)
         {
+            hasChanged = true;
+            cachedTexture = null;
         }
 
         /// <summary>
@@ -44,6 +51,20 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
             : base(texture, texcoordIndex, scale, offset)
         {
             FallbackValue = new ComputeColor(Color4.White);
+        }
+
+        /// <inheritdoc/>
+        public bool HasChanged
+        {
+            get
+            {
+                if (!hasChanged && cachedTexture == Texture)
+                    return false;
+
+                hasChanged = false;
+                cachedTexture = Texture;
+                return true;
+            }
         }
 
         public string Swizzle { get; set; }
