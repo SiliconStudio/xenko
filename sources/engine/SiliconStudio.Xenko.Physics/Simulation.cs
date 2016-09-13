@@ -860,7 +860,15 @@ namespace SiliconStudio.Xenko.Physics
 
         private void ContactRemoval(ContactPoint contact, PhysicsComponent component0, PhysicsComponent component1)
         {
-            var existingPair = component0.Collisions.FirstOrDefault(x => x.InternalEquals(component0, component1));
+            Collision existingPair = null;
+            foreach (var x in component0.Collisions)
+            {
+                if (x.InternalEquals(component0, component1))
+                {
+                    existingPair = x;
+                    break;
+                }
+            }
             if (existingPair == null)
             {
 #if DEBUG
@@ -927,7 +935,15 @@ namespace SiliconStudio.Xenko.Physics
                 var component0 = (PhysicsComponent)obj0.UserObject;
                 var component1 = (PhysicsComponent)obj1.UserObject;
 
-                var existingPair = component0.Collisions.FirstOrDefault(x => x.InternalEquals(component0, component1));
+                Collision existingPair = null;
+                foreach (var x in component0.Collisions)
+                {
+                    if (x.InternalEquals(component0, component1))
+                    {
+                        existingPair = x;
+                        break;
+                    }
+                }
                 if (existingPair != null)
                 {
                     if (existingPair.Contacts.Contains(contact))
@@ -963,7 +979,15 @@ namespace SiliconStudio.Xenko.Physics
                 var component0 = (PhysicsComponent)obj0.UserObject;
                 var component1 = (PhysicsComponent)obj1.UserObject;
 
-                var existingPair = component0.Collisions.FirstOrDefault(x => x.InternalEquals(component0, component1));
+                Collision existingPair = null;
+                foreach (var x in component0.Collisions)
+                {
+                    if (x.InternalEquals(component0, component1))
+                    {
+                        existingPair = x;
+                        break;
+                    }
+                }
                 if (existingPair != null)
                 {
                     if (existingPair.Contacts.Contains(contact))
