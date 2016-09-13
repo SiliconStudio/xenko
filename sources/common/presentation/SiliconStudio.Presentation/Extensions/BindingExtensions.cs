@@ -1,11 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 
 namespace SiliconStudio.Presentation.Extensions
@@ -14,6 +10,15 @@ namespace SiliconStudio.Presentation.Extensions
     {
         private static readonly MethodInfo CloneMethodInfo = typeof(BindingBase).GetMethod("Clone", BindingFlags.Instance | BindingFlags.NonPublic);
 
+        /// <summary>
+        /// This methods is a wrapper to the internal method Clone of the <see cref="BindingBase"/>. Using this method should be considered unsafe.
+        /// </summary>
+        /// <param name="binding">The Binding to clone.</param>
+        /// <returns>A clone of the given <see cref="Binding"/></returns>
+        public static Binding CloneBinding(this Binding binding)
+        {
+            return (Binding)binding.CloneBinding(binding.Mode);
+        }
         /// <summary>
         /// This methods is a wrapper to the internal method Clone of the <see cref="BindingBase"/>. Using this method should be considered unsafe.
         /// </summary>

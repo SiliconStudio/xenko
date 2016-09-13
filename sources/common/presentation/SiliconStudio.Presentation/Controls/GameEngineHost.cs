@@ -75,12 +75,12 @@ namespace SiliconStudio.Presentation.Controls
             if (newValue)
             {
                 Attach();
-                UpdateWindowPosition();
             }
             else
             {
                 Detach();
             }
+            UpdateWindowPosition();
         }
 
         private void Attach()
@@ -141,13 +141,27 @@ namespace SiliconStudio.Presentation.Controls
             Dispatcher.InvokeAsync(() =>
             {
                 updateRequested = false;
-                // We do not use Window.GetParent because this method can return a window that is not yet the actual ancestor of this element.
-                var parentWindow = this.FindVisualParentOfType<Window>();
-                if (parentWindow == null)
+                Visual root = null;
+                bool shouldShow = true;
+                var parent = (Visual)VisualTreeHelper.GetParent(this);
+                while (parent != null)
+                {
+                    root = parent;
+
+                    parent = VisualTreeHelper.GetParent(root) as Visual;
+                    var parentElement = parent as FrameworkElement;
+                    if (parentElement != null && !parentElement.IsLoaded)
+                        shouldShow = false;
+
+                    if (parent == null)
+                        break;
+                }
+
+                if (root == null)
                     return;
 
                 // Find proper position for the game
-                var positionTransform = TransformToAncestor(parentWindow);
+                var positionTransform = TransformToAncestor(root);
                 var areaPosition = positionTransform.Transform(new Point(0, 0));
                 var boundingBox = new Int4((int)areaPosition.X, (int)areaPosition.Y, (int)ActualWidth, (int)ActualHeight);
                 if (boundingBox == lastBoundingBox)
@@ -159,8 +173,11 @@ namespace SiliconStudio.Presentation.Controls
                 // TODO: do we want SWP_NOCOPYBITS?
                 const int flags = NativeHelper.SWP_ASYNCWINDOWPOS | NativeHelper.SWP_NOACTIVATE | NativeHelper.SWP_NOZORDER;
                 NativeHelper.SetWindowPos(Handle, NativeHelper.HWND_TOP, boundingBox.X, boundingBox.Y, boundingBox.Z, boundingBox.W, flags);
-                NativeHelper.ShowWindow(Handle, NativeHelper.SW_SHOWNOACTIVATE);
-            });
+                if (shouldShow)
+                {
+                    NativeHelper.ShowWindow(Handle, NativeHelper.SW_SHOWNOACTIVATE);
+                }
+            }, DispatcherPriority.Input); // This code must be dispatched after the DispatcherPriority.Loaded to properly work since it's checking the IsLoaded flag!
         }
 
         /// <summary>
