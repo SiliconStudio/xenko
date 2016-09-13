@@ -68,6 +68,7 @@ namespace SiliconStudio.Xenko.Graphics
                     {
                         case EffectParameterClass.ConstantBuffer:
                             {
+                                //commandList.SetConstantBuffer(bindingOperation.Stage, bindingOperation.SlotStart, (Buffer)value.Value);
                                 commandList.SetConstantBuffer(bindingOperation.Stage, bindingOperation.SlotStart, (Buffer)value.Value);
                                 break;
                             }

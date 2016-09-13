@@ -61,7 +61,16 @@ namespace SiliconStudio.Xenko.Particles.Updaters
         [DataMember(300)]
         [Display("Random Seed")]
         public uint SeedOffset { get; set; } = 0;
-        
+
+        /// <inheritdoc />
+        public override void PreUpdate()
+        {
+            base.PreUpdate();
+
+            SamplerMain?.UpdateChanges();
+            SamplerOptional?.UpdateChanges();
+        }
+
         /// <inheritdoc />
         public override void Update(float dt, ParticlePool pool)
         {
@@ -85,8 +94,6 @@ namespace SiliconStudio.Xenko.Particles.Updaters
         {
             var colorField = pool.GetField(ParticleFields.Color);
             var lifeField  = pool.GetField(ParticleFields.Life);
-
-            SamplerMain.UpdateChanges();
 
             foreach (var particle in pool)
             {
@@ -112,9 +119,6 @@ namespace SiliconStudio.Xenko.Particles.Updaters
             var colorField = pool.GetField(ParticleFields.Color);
             var lifeField  = pool.GetField(ParticleFields.Life);
             var randField  = pool.GetField(ParticleFields.RandomSeed);
-
-            SamplerMain.UpdateChanges();
-            SamplerOptional.UpdateChanges();
 
             foreach (var particle in pool)
             {

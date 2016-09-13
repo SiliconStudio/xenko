@@ -70,7 +70,9 @@ namespace SiliconStudio.Xenko.Physics
         {
             colliderShapes.Add(shape);
 
-            InternalCompoundShape.AddChildShape(shape.PositiveCenterMatrix, shape.InternalShape);
+            var compoundMatrix = Matrix.RotationQuaternion(shape.LocalRotation) * Matrix.Translation(shape.LocalOffset);
+
+            InternalCompoundShape.AddChildShape(compoundMatrix, shape.InternalShape);
 
             shape.Parent = this;
         }
@@ -114,7 +116,8 @@ namespace SiliconStudio.Xenko.Physics
             }
             set
             {
-                CachedScaling = value;
+                base.Scaling = value;
+
                 foreach (var colliderShape in colliderShapes)
                 {
                     colliderShape.Scaling = CachedScaling;

@@ -324,6 +324,8 @@ namespace SiliconStudio.Xenko.Games
             }
         }
 
+        internal abstract void ConfirmRenderingSettings(bool gameCreation);
+
         /// <summary>
         /// Gets the full name of the device this game is running if available
         /// </summary>
@@ -706,13 +708,13 @@ namespace SiliconStudio.Xenko.Games
             // Setup default command list
             if (GraphicsContext == null)
             {
-                GraphicsContext = new GraphicsContext(new CommandList(GraphicsDevice), new ResourceGroupAllocator(GraphicsDevice));
+                GraphicsContext = new GraphicsContext(GraphicsDevice);
                 Services.AddService(typeof(GraphicsContext), GraphicsContext);
             }
             else
             {
                 // Reset allocator
-                GraphicsContext.ResourceGroupAllocator.Reset();
+                GraphicsContext.ResourceGroupAllocator.Reset(GraphicsContext.CommandList);
                 GraphicsContext.CommandList.Reset();
             }
 
@@ -818,8 +820,10 @@ namespace SiliconStudio.Xenko.Games
                     GraphicsContext.CommandList.ResourceBarrierTransition(GraphicsDevice.Presenter.BackBuffer, GraphicsResourceState.Present);
                 }
 
+                GraphicsContext.ResourceGroupAllocator.Flush();
+
                 // Close command list
-                GraphicsContext.CommandList.Close();
+                GraphicsContext.CommandList.Flush();
 
                 // Present (if necessary)
                 graphicsDeviceManager.EndDraw(present);
@@ -856,11 +860,7 @@ namespace SiliconStudio.Xenko.Games
         /// <param name="args">Arguments for the Activated event.</param>
         protected virtual void OnActivated(object sender, EventArgs args)
         {
-            var handler = Activated;
-            if (handler != null)
-            {
-                handler(this, args);
-            }
+            Activated?.Invoke(this, args);
         }
 
         /// <summary>
@@ -870,11 +870,7 @@ namespace SiliconStudio.Xenko.Games
         /// <param name="args">Arguments for the Deactivated event.</param>
         protected virtual void OnDeactivated(object sender, EventArgs args)
         {
-            var handler = Deactivated;
-            if (handler != null)
-            {
-                handler(this, args);
-            }
+            Deactivated?.Invoke(this, args);
         }
 
         /// <summary>
@@ -884,20 +880,12 @@ namespace SiliconStudio.Xenko.Games
         /// <param name="args">Arguments for the Exiting event.</param>
         protected virtual void OnExiting(object sender, EventArgs args)
         {
-            var handler = Exiting;
-            if (handler != null)
-            {
-                handler(this, args);
-            }
+            Exiting?.Invoke(this, args);
         }
 
         protected virtual void OnWindowCreated()
         {
-            EventHandler<EventArgs> handler = WindowCreated;
-            if (handler != null)
-            {
-                handler(this, EventArgs.Empty);
-            }
+            WindowCreated?.Invoke(this, EventArgs.Empty);
         }
 
         private void GamePlatformOnWindowCreated(object sender, EventArgs eventArgs)

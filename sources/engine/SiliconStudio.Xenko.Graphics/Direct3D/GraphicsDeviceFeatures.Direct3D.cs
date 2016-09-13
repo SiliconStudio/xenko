@@ -51,6 +51,8 @@ namespace SiliconStudio.Xenko.Graphics
             RequestedProfile = deviceRoot.RequestedProfile;
             CurrentProfile = GraphicsProfileHelper.FromFeatureLevel(nativeDevice.FeatureLevel);
 
+            HasResourceRenaming = true;
+
             HasComputeShaders = nativeDevice.CheckFeatureSupport(Feature.ComputeShaders);
             HasDoublePrecision = nativeDevice.CheckFeatureSupport(Feature.ShaderDoubles);
             nativeDevice.CheckThreadingSupport(out HasMultiThreadingConcurrentResources, out this.HasDriverCommandLists);

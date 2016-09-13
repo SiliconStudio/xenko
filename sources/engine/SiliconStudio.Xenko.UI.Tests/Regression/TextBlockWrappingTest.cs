@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public TextBlockWrappingTest()
         {
-            CurrentVersion = 6;
+            CurrentVersion = 7; // Font type, names & sizes changed slightly
         }
 
         protected override async Task LoadContent()
@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 WrapText = true,
                 TextSize = 15,
                 TextColor = Color.Black,
-                Font = Content.Load<SpriteFont>("MSMincho10"),
+                Font = Content.Load<SpriteFont>("HanSans13"),
                 Text = @"This is a very long sentence that will hopefully be wrapped up. 
 Does it work with kanjis too? let's see that in the following line. Here we goes.
 漢字も大丈夫そうですね！良かった！でも、文章の切る所は本当に合ってますか？どうかな。。
@@ -52,7 +52,7 @@ Does it work with kanjis too? let's see that in the following line. Here we goes
                 BackgroundImage = (SpriteFromTexture)new Sprite(Content.Load<Texture>("DumbWhite"))
             };
 
-            UIComponent.RootElement = decorator;
+            UIComponent.Page = new Engine.UIPage { RootElement = decorator };
         }
 
         protected override void Update(GameTime gameTime)

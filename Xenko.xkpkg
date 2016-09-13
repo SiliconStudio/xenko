@@ -3,7 +3,7 @@ Id: cc1bcc78-50b2-4da6-8902-f7a3ae42898b
 SerializedVersion: {Assets: 0.0.2}
 Meta:
     Name: Xenko
-    Version: 1.7.0-alpha03
+    Version: 1.8.1-beta
     Owners:
       - Silicon Studio
     Authors: 
@@ -18,6 +18,7 @@ Profiles:
         - Path: sources/engine/SiliconStudio.Xenko.Engine/Rendering
         - Path: sources/engine/SiliconStudio.Xenko.Graphics/Shaders
         - Path: sources/editor/SiliconStudio.Xenko.Assets.Presentation/Shaders
+        - Path: sources/engine/SiliconStudio.Xenko.Assets/UI
         - Path: sources/engine/SiliconStudio.Xenko.Particles/Shaders
 TemplateFolders:
     - Path: sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Core
@@ -41,10 +42,14 @@ TemplateFolders:
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Audio/SpatializedSound.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Audio/MusicSound.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Materials/DefaultMaterial.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Materials/DiffuseMaterial.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Materials/PBRMetalnessMaterial.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Materials/PBRSpecularMaterial.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Misc/DefaultRawAsset.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Misc/DefaultRenderFrame.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Misc/DefaultSkybox.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Models/DefaultModel.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Models/PrefabModel.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Models/ProceduralCapsule.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Models/ProceduralCone.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Models/ProceduralCube.xktpl
@@ -62,6 +67,10 @@ TemplateFolders:
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Physics/ColliderShapeSphere.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Prefabs/DefaultPrefab.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scenes/DefaultScene.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scenes/SceneHDR.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scenes/SceneLDR.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Animation/AnimationBlend.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Camera/BasicCameraController.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Camera/SideScrollingCamera.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Camera/FpsCamera.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Physics/PlayerController.xktpl
@@ -78,6 +87,8 @@ TemplateFolders:
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/SpriteSheetUI.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Sprites/OfflineRasterizedSpriteFont.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Textures/DefaultTexture.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/UI/Library.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/UI/Page.xktpl
     - Path: sources/engine/SiliconStudio.Xenko.SpriteStudio.Offline/Templates/Assets
       Group: Assets
       Files:
@@ -92,32 +103,19 @@ TemplateFolders:
         - samples\Games\SpaceEscape\SpaceEscape.xktpl
         - samples\Graphics\AnimatedModel\AnimatedModel.xktpl
         - samples\Graphics\CustomEffect\CustomEffect.xktpl
-        - samples\Graphics\ForwardLighting\ForwardLighting.xktpl
         - samples\Graphics\GeometricPrimitives\GeometricPrimitives.xktpl
-        - samples\Graphics\HelloWorld\HelloWorld.xktpl
         - samples\Graphics\MaterialSample\MaterialSample.xktpl
         - samples\Graphics\MaterialShader\MaterialShader.xktpl
         - samples\Graphics\RenderSceneToTexture\RenderSceneToTexture.xktpl
         - samples\Graphics\SimpleDynamicTexture\SimpleDynamicTexture.xktpl
-        - samples\Graphics\SimpleModel\SimpleModel.xktpl
         - samples\Graphics\SimpleSprite\SimpleSprite.xktpl
         - samples\Graphics\SpriteEntity\SpriteEntity.xktpl
         - samples\Graphics\SpriteFonts\SpriteFonts.xktpl
-        - samples\Graphics\SimpleTerrain\SimpleTerrain.xktpl
         - samples\Graphics\SpriteStudioDemo\SpriteStudioDemo.xktpl
         - samples\Input\TouchInputs\TouchInputs.xktpl
         - samples\Input\GravitySensor\GravitySensor.xktpl
-        - samples\Particles\SimpleParticles\SimpleParticles.xktpl
-        - samples\Particles\CustomParticles\CustomParticles.xktpl
-        - samples\Particles\ParticleMaterialShader\ParticleMaterialShader.xktpl
-        - samples\Particles\AnimatedParticles\AnimatedParticles.xktpl
-        - samples\Particles\RibbonParticles\RibbonParticles.xktpl
-        - samples\Particles\ChildParticles\ChildParticles.xktpl
-        - samples\Particles\LightningsAndLasers\LightningsAndLasers.xktpl
-        - samples\Physics\CharacterControllerSample\CharacterControllerSample.xktpl
-        - samples\Physics\Constraints\Constraints.xktpl
-        - samples\Physics\Raycasting\Raycasting.xktpl
-        - samples\Physics\VolumeTrigger\VolumeTrigger.xktpl
+        - samples\Particles\ParticlesSample\ParticlesSample.xktpl
+        - samples\Physics\PhysicsSample\PhysicsSample.xktpl
         - samples\UI\GameMenu\GameMenu.xktpl
         - samples\UI\UIParticles\UIParticles.xktpl
         - samples\UI\UIElementLink\UIElementLink.xktpl

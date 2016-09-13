@@ -8,26 +8,26 @@ using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Serialization
 {
-    class MemberSerializer
+    public class MemberSerializer
     {
         public static readonly Dictionary<string, Type> CachedTypes = new Dictionary<string, Type>();
         public static readonly Dictionary<Type, string> ReverseCachedTypes = new Dictionary<Type, string>();
 
         // Holds object references during serialization, useful when same object is referenced multiple time in same serialization graph.
-        internal static PropertyKey<Dictionary<object, int>> ObjectSerializeReferences = new PropertyKey<Dictionary<object, int>>("ObjectSerializeReferences", typeof(SerializerExtensions),
+        public static PropertyKey<Dictionary<object, int>> ObjectSerializeReferences = new PropertyKey<Dictionary<object, int>>("ObjectSerializeReferences", typeof(SerializerExtensions),
             DefaultValueMetadata.Delegate(
                 delegate
                 {
                     return new Dictionary<object, int>(ObjectReferenceEqualityComparer.Default);
                 }));
-        internal static PropertyKey<List<object>> ObjectDeserializeReferences = new PropertyKey<List<object>>("ObjectDeserializeReferences", typeof(SerializerExtensions), DefaultValueMetadata.Delegate(delegate { return new List<object>(); }));
+        public static PropertyKey<List<object>> ObjectDeserializeReferences = new PropertyKey<List<object>>("ObjectDeserializeReferences", typeof(SerializerExtensions), DefaultValueMetadata.Delegate(delegate { return new List<object>(); }));
 
-        internal static PropertyKey<Action<int, object>> ObjectDeserializeCallback = new PropertyKey<Action<int, object>>("ObjectDeserializeCallback", typeof(SerializerExtensions));
+        public static PropertyKey<Action<int, object>> ObjectDeserializeCallback = new PropertyKey<Action<int, object>>("ObjectDeserializeCallback", typeof(SerializerExtensions));
 
         /// <summary>
         /// Implements an equality comparer based on object reference instead of <see cref="object.Equals(object)"/>.
         /// </summary>
-        private class ObjectReferenceEqualityComparer : EqualityComparer<object>
+        public class ObjectReferenceEqualityComparer : EqualityComparer<object>
         {
             private static IEqualityComparer<object> defaultEqualityComparer;
 
@@ -61,7 +61,7 @@ namespace SiliconStudio.Core.Serialization
 
         protected DataSerializer<T> dataSerializer;
 
-        public MemberSerializer(DataSerializer<T> dataSerializer)
+        protected MemberSerializer(DataSerializer<T> dataSerializer)
         {
             this.dataSerializer = dataSerializer;
         }

@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     /// <summary>
     /// Technique description.
     /// </summary>
-    public class Technique : Node, IDeclaration, IAttributes
+    public partial class Technique : Node, IDeclaration, IAttributes
     {
         #region Constructors and Destructors
 

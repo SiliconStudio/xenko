@@ -1,3 +1,4 @@
+using System.Threading;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -16,8 +17,7 @@ namespace SiliconStudio.Xenko.Rendering
             if (LastFrameUsed == renderSystem.FrameCounter)
                 return false;
 
-            LastFrameUsed = renderSystem.FrameCounter;
-            return true;
+            return Interlocked.Exchange(ref LastFrameUsed, renderSystem.FrameCounter) != renderSystem.FrameCounter;
         }
     }
 }

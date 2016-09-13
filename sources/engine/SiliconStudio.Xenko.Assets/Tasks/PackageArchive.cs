@@ -46,8 +46,11 @@ namespace SiliconStudio.Xenko.Assets.Tasks
                     NewFile(@"Bin\**\*.xml", "Bin", @"Bin\**\.*\**\*.xml"),
                     NewFile(@"Bin\**\*.usrdoc", "Bin", @"Bin\**\.*\**\*.usrdoc"),
                     NewFile(@"Bin\**\*.winmd", "Bin", @"Bin\**\.*\**\*.winmd"),
+                    NewFile(@"Bin\**\*.sh", "Bin", @"Bin\**\.*\**\*.sh"),
+                    NewFile(@"Bin\**\*.json", "Bin", @"Bin\**\.*\**\*.json"),
                     NewFile(@"deps\AssemblyProcessor\*.exe", @"deps/AssemblyProcessor"),
                     NewFile(@"deps\AssemblyProcessor\*.dll", @"deps/AssemblyProcessor"),
+                    NewFile(@"deps\CoreFX\**\*.*", @"deps\CoreFX"),
                     NewFile($@"Bin\{mainPlatformDirectory}\ios-tcprelay\*.py",$@"Bin\{mainPlatformDirectory}\ios-tcprelay"),
                     NewFile(@"Targets\*.targets", "Targets"),
                     NewFile($@"Bin\{mainPlatformDirectory}\SiliconStudio.*.pdb", $@"Bin\{mainPlatformDirectory}", @"Bin\**\SiliconStudio.Xenko.Importer*.pdb;Bin\**\SiliconStudio.Xenko.Assimp.Translation.pdb"),
@@ -68,6 +71,9 @@ namespace SiliconStudio.Xenko.Assets.Tasks
                     files.Add(NewFile(assetFolder.Path.MakeRelative(rootDir) + "/**/*.xksl", target));
                     files.Add(NewFile(assetFolder.Path.MakeRelative(rootDir) + "/**/*.xkfx", target));
                     files.Add(NewFile(assetFolder.Path.MakeRelative(rootDir) + "/**/*.xkfnt", target));
+                    files.Add(NewFile(assetFolder.Path.MakeRelative(rootDir) + "/**/*.xksheet", target));
+                    files.Add(NewFile(assetFolder.Path.MakeRelative(rootDir) + "/**/*.xkuilib", target));
+                    files.Add(NewFile(assetFolder.Path.MakeRelative(rootDir) + "/**/UIDesigns.dds", target));
                 }
 
                 var targetProfile = new PackageProfile(profile.Name);

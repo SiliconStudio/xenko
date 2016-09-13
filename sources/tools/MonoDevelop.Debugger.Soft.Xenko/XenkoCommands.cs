@@ -16,7 +16,7 @@ namespace MonoDevelop.Debugger.Soft.Xenko
     {
         protected override void Run()
         {
-            IdeApp.ProjectOperations.DebugApplication("XenkoDebugServer");
+            IdeApp.ProjectOperations.DebugApplication("XenkoDebugServer", null, null, null);
         }
     }
 
@@ -24,7 +24,7 @@ namespace MonoDevelop.Debugger.Soft.Xenko
     {
         protected override void Run()
         {
-            IdeApp.ProjectOperations.DebugApplication("XenkoDebugClient");
+            IdeApp.ProjectOperations.DebugApplication("XenkoDebugClient", null, null, null);
         }
     }
 }

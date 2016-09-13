@@ -30,12 +30,11 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphicsResourceAllocator" /> class.
         /// </summary>
-        /// <param name="serviceRegistry">The service registry.</param>
-        public GraphicsResourceAllocator(IServiceRegistry serviceRegistry)
+        /// <param name="graphicsDevice">The graphics device.</param>
+        public GraphicsResourceAllocator(GraphicsDevice graphicsDevice)
         {
-            if (serviceRegistry == null) throw new ArgumentNullException("serviceRegistry");
-            Services = serviceRegistry;
-            GraphicsDevice = serviceRegistry.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
+            if (graphicsDevice == null) throw new ArgumentNullException(nameof(graphicsDevice));
+            GraphicsDevice = graphicsDevice;
 
             getTextureDefinitionDelegate = GetTextureDefinition;
             getBufferDescriptionDelegate = GetBufferDescription;
@@ -343,6 +342,9 @@ namespace SiliconStudio.Xenko.Graphics
             resourceLink.AccessTotalCount++;
             resourceLink.AccessCountSinceLastRecycle++;
             resourceLink.LastAccessTime = DateTime.Now;
+
+            if (resourceLink.ReferenceCount == 0)
+                GraphicsDevice.TagResource(resourceLink);
         }
 
         /// <summary>

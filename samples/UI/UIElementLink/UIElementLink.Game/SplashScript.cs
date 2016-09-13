@@ -76,7 +76,7 @@ namespace UIElementLink
             var rootElement = new Canvas() { Children = { followedButton, cornerTL, cornerTR, cornerBL, cornerBR },
                 MaximumWidth = backBufferSize.X, MaximumHeight = backBufferSize.Y };
 
-            Entity.Get<UIComponent>().RootElement = rootElement;
+            Entity.Get<UIComponent>().Page = new UIPage { RootElement = rootElement };
         }
 
         protected override void UpdateScene()

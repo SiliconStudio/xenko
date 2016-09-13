@@ -1,5 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using SiliconStudio.Core;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Utility;
 
@@ -9,6 +11,7 @@ namespace SiliconStudio.Shaders.Parser
     /// <summary>
     /// A Parsing result.
     /// </summary>
+    [DataContract]
     public class ParsingResult : LoggerResult
     {
         #region Public Properties

@@ -294,8 +294,8 @@
     <Setter Property="Foreground" Value="WhiteSmoke" />
   </Style>
   <Style TargetType="{x:Type Image}" x:Key="{x:Static local:XamlMarkdown.ImageStyleKey}">
-    <Setter Property="Height" Value="{Binding RelativeSource={RelativeSource Self}, Path=Source.(BitmapSource.PixelHeight)}" />
-    <Setter Property="Width" Value="{Binding RelativeSource={RelativeSource Self}, Path=Source.(BitmapSource.PixelWidth)}" />
+    <Setter Property="MaxHeight" Value="{Binding RelativeSource={RelativeSource Self}, Path=Source.(BitmapSource.PixelHeight)}" />
+    <Setter Property="MaxWidth" Value="{Binding RelativeSource={RelativeSource Self}, Path=Source.(BitmapSource.PixelWidth)}" />
     <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality" />
   </Style>
   <Style TargetType="{x:Type wnd:MessageBox}" BasedOn="{StaticResource MessageDialogChromeStyle}">
@@ -319,7 +319,7 @@
                    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" RenderOptions.BitmapScalingMode="HighQuality"
                    Height="{Binding RelativeSource={RelativeSource Self}, Path=Source.(BitmapSource.PixelHeight)}" Width="{Binding RelativeSource={RelativeSource Self}, Path=Source.(BitmapSource.PixelWidth)}"
                    Visibility="{Binding Image, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}, Converter={cvt:Chained {cvt:ObjectToBool}, {cvt:VisibleOrCollapsed}}}" />
-            <ctrl:MarkdownTextBlock Text="{Binding}" VerticalAlignment="Center" HyperlinkCommand="{x:Static cmd:UtilityCommands.OpenHyperlinkCommand}" />
+            <ctrl:MarkdownTextBlock Text="{Binding}" VerticalAlignment="Center" />
           </DockPanel>
         </DataTemplate>
       </Setter.Value>
@@ -351,6 +351,7 @@
   </Style>
 
   <Style TargetType="{x:Type ctrl:MarkdownTextBlock}">
+    <Setter Property="HyperlinkCommand" Value="{x:Static cmd:UtilityCommands.OpenHyperlinkCommand}" />
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type ctrl:MarkdownTextBlock}">
@@ -2194,7 +2195,7 @@
       </Setter.Value>
     </Setter>
   </Style>
-    
+
   <Style x:Key="ComboBoxSeparator" TargetType="{x:Type Separator}">
     <Setter Property="Background" Value="{DynamicResource MenuBorderBrush}"/>
     <Setter Property="Height" Value="1"/>

@@ -4,9 +4,9 @@
 namespace SiliconStudio.Xenko.Rendering.Images
 {
     /// <summary>
-    /// Base class to perform post effects. Draws the input mesh without transformation.
+    /// Base shader to perform post effects. Draws the input mesh without transformation.
     /// </summary>
-    class ImageEffectShader : SpriteBase
+    shader ImageEffectShader : SpriteBase
     {
     };
 }

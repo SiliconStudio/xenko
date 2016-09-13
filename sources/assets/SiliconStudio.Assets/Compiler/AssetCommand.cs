@@ -15,10 +15,6 @@ namespace SiliconStudio.Assets.Compiler
     {
         public string Url { get; set; }
 
-        protected AssetCommand()
-        {
-        }
-        
         protected AssetCommand(string url)
         {
             Url = url;
@@ -28,10 +24,6 @@ namespace SiliconStudio.Assets.Compiler
 
     public abstract class AssetCommand<T> : AssetCommand
     {
-
-        protected AssetCommand()
-        {
-        }
 
         protected AssetCommand(string url, T assetParameters)
             : base (url)
@@ -54,7 +46,7 @@ namespace SiliconStudio.Assets.Compiler
             var assetWithCompileTimeDependencies = asset as IAssetCompileTimeDependencies;
             if (assetWithCompileTimeDependencies != null)
             {
-                foreach (var dependentAssetReference in assetWithCompileTimeDependencies.EnumerateCompileTimeDependencies())
+                foreach (var dependentAssetReference in assetWithCompileTimeDependencies.EnumerateCompileTimeDependencies(package.Session))
                 {
                     var dependentAssetItem = package.FindAsset(dependentAssetReference);
                     var dependentAsset = dependentAssetItem != null ? dependentAssetItem.Asset : null;

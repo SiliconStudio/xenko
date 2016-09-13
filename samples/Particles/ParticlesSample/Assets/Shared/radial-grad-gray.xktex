@@ -1,0 +1,7 @@
+!Texture
+Id: d550fb3f-f109-494e-a0c5-a79f70f5a63c
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/radial-grad-gray.png
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Format: AsIs

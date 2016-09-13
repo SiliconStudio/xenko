@@ -68,7 +68,7 @@ namespace SiliconStudio
             if (ReservedNames.Contains(originalName))
                 return originalName + replacementCharacter;
 
-            if (ReservedNames.Contains(originalName))
+            if (additionalReservedWords != null && additionalReservedWords.Contains(originalName))
                 return originalName + replacementCharacter;
 
             return Regex.Replace(originalName, $"{RegexReservedCharacters}|[.](?=[0-9])", replacementCharacter.ToString());

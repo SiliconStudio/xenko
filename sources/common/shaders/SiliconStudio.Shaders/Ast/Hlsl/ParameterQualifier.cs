@@ -7,38 +7,33 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     /// <summary>
     /// Specialized ParameterQualifier for Hlsl.
     /// </summary>
-    public class ParameterQualifier : Ast.ParameterQualifier
+    public static class ParameterQualifier
     {
 
         /// <summary>
         ///   Point modifier, only for method parameters in Geometry Shader.
         /// </summary>
-        public static readonly Ast.ParameterQualifier Point = new Ast.ParameterQualifier("point");
+        public static readonly Qualifier Point = new Qualifier("point");
 
         /// <summary>
         ///   Line modifier, only for method parameters in Geometry Shader.
         /// </summary>
-        public static readonly Ast.ParameterQualifier Line = new Ast.ParameterQualifier("line");
+        public static readonly Qualifier Line = new Qualifier("line");
 
         /// <summary>
         ///   LineAdjacent modifier, only for method parameters in Geometry Shader.
         /// </summary>
-        public static readonly Ast.ParameterQualifier LineAdj = new Ast.ParameterQualifier("lineadj");
+        public static readonly Qualifier LineAdj = new Qualifier("lineadj");
 
         /// <summary>
         ///   Triangle modifier, only for method parameters in Geometry Shader.
         /// </summary>
-        public static readonly Ast.ParameterQualifier Triangle = new Ast.ParameterQualifier("triangle");
+        public static readonly Qualifier Triangle = new Qualifier("triangle");
 
         /// <summary>
         ///   TriangleAdjacent modifier, only for method parameters in Geometry Shader.
         /// </summary>
-        public static readonly Ast.ParameterQualifier TriangleAdj = new Ast.ParameterQualifier("triangleadj");
-
-        /// <summary>
-        ///   Internal map used for parsing.
-        /// </summary>
-        private static readonly StringEnumMap Map = PrepareParsing<ParameterQualifier>();
+        public static readonly Qualifier TriangleAdj = new Qualifier("triangleadj");
 
         /// <summary>
         /// Parses the specified enum name.
@@ -49,10 +44,21 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
         /// <returns>
         /// A parameter qualifier
         /// </returns>
-        public static new Ast.ParameterQualifier Parse(string enumName)
+        public static Qualifier Parse(string enumName)
         {
-            return Map.ParseEnumFromName<Ast.ParameterQualifier>(enumName);
-        }
+            if (enumName == (string)Point.Key)
+                return Point;
+            if (enumName == (string)Line.Key)
+                return Line;
+            if (enumName == (string)LineAdj.Key)
+                return LineAdj;
+            if (enumName == (string)Triangle.Key)
+                return Triangle;
+            if (enumName == (string)TriangleAdj.Key)
+                return TriangleAdj;
 
+            // Fallback to shared parameter qualifiers
+            return Ast.ParameterQualifier.Parse(enumName);
+        }
     }
 }

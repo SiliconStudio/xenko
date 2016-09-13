@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-
+using SiliconStudio.Core;
 using SiliconStudio.Shaders.Ast;
 
 namespace SiliconStudio.Shaders.Ast
@@ -9,6 +9,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A Generic parameter for a method that provides a constraint resolver.
     /// </summary>
+    [DataContract]
     public class GenericParameterConstraint
     {
         /// <summary>

@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public BorderImageTest()
         {
-            CurrentVersion = 7;
+            CurrentVersion = 8;
         }
 
         protected override async Task LoadContent()
@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             stackPanel.Children.Add(bi2);
             stackPanel.Children.Add(bi3);
 
-            UIComponent.RootElement = new ScrollViewer { Content = stackPanel, ScrollMode = ScrollingMode.HorizontalVertical };
+            UIComponent.Page = new Engine.UIPage { RootElement = new ScrollViewer { Content = stackPanel, ScrollMode = ScrollingMode.HorizontalVertical } };
         }
 
         protected override void RegisterTests()

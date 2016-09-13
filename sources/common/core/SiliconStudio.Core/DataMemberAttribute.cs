@@ -12,6 +12,7 @@ namespace SiliconStudio.Core
     {
         // Ideally should point to YamlMemberAttribute.DefaultMask, but it is not referenced in this assembly
         public const uint DefaultMask = 1;
+        public const uint IgnoreMask = 0xF0000000;
 
         private readonly DataMemberMode mode;
         private readonly string name;
@@ -70,6 +71,17 @@ namespace SiliconStudio.Core
         {
             Order = order;
             this.mode = mode;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DataMemberAttribute"/> class.
+        /// </summary>
+        /// <param name="order">The order.</param>
+        /// <param name="name">The name.</param>
+        public DataMemberAttribute(int order, string name)
+        {
+            Order = order;
+            this.name = name;
         }
 
         /// <summary>

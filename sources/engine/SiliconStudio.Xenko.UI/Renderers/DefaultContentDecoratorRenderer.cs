@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.UI.Controls;
@@ -21,14 +22,12 @@ namespace SiliconStudio.Xenko.UI.Renderers
             base.RenderColor(element, context);
 
             var decorator = (ContentDecorator)element;
-            var image = decorator.BackgroundImage?.GetSprite();
-            if (image == null)
+            var sprite = decorator.BackgroundImage?.GetSprite();
+            if (sprite?.Texture == null)
                 return;
-            
-            var color = decorator.RenderOpacity * Color.White;
 
-            Batch.DrawImage(image.Texture, ref decorator.WorldMatrixInternal, ref image.RegionInternal,
-                            ref decorator.RenderSizeInternal, ref image.BordersInternal, ref color, context.DepthBias, image.Orientation);
+            var color = element.RenderOpacity * Color.White;
+            Batch.DrawImage(sprite.Texture, ref element.WorldMatrixInternal, ref sprite.RegionInternal, ref element.RenderSizeInternal, ref sprite.BordersInternal, ref color, context.DepthBias, sprite.Orientation);
         }
     }
 }

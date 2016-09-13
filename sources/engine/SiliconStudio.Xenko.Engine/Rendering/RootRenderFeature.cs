@@ -5,8 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.Threading;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -15,8 +17,8 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public abstract class RootRenderFeature : RenderFeature
     {
-        private List<ViewObjectNode> viewObjectNodes = new List<ViewObjectNode>();
-        private List<ObjectNode> objectNodes = new List<ObjectNode>();
+        private readonly ConcurrentCollector<ViewObjectNode> viewObjectNodes = new ConcurrentCollector<ViewObjectNode>();
+        private readonly ConcurrentCollector<ObjectNode> objectNodes = new ConcurrentCollector<ObjectNode>();
 
         // storage for properties (struct of arrays)
         public RenderDataHolder RenderData;
@@ -37,12 +39,12 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Object nodes to process this frame.
         /// </summary>
-        public List<ObjectNodeReference> ObjectNodeReferences { get; } = new List<ObjectNodeReference>();
+        public ConcurrentCollector<ObjectNodeReference> ObjectNodeReferences { get; } = new ConcurrentCollector<ObjectNodeReference>();
 
         /// <summary>
         /// List of render nodes for this specific root render feature.
         /// </summary>
-        public List<RenderNode> RenderNodes { get; } = new List<RenderNode>();
+        public ConcurrentCollector<RenderNode> RenderNodes { get; } = new ConcurrentCollector<RenderNode>();
 
         /// <summary>
         /// Overrides that allow defining which render stages are enabled for a specific <see cref="RenderObject"/>.
@@ -105,8 +107,8 @@ namespace SiliconStudio.Xenko.Rendering
             var renderNode = new RenderNode(renderObject, renderView, renderPerViewNode, renderStage);
 
             // Create view node
-            var result = new RenderNodeReference(RenderNodes.Count);
-            RenderNodes.Add(renderNode);
+            var index = RenderNodes.Add(renderNode);
+            var result = new RenderNodeReference(index);
             return result;
         }
 
@@ -121,23 +123,39 @@ namespace SiliconStudio.Xenko.Rendering
             var renderViewNode = new ViewObjectNode(renderObject, view, renderObject.ObjectNode);
 
             // Create view node
-            var result = new ViewObjectNodeReference(viewObjectNodes.Count);
-            viewObjectNodes.Add(renderViewNode);
+            var index = viewObjectNodes.Add(renderViewNode);
+            var result = new ViewObjectNodeReference(index);
             return result;
         }
 
-        internal ObjectNodeReference GetOrCreateObjectNode(RenderObject renderObject)
+        internal unsafe ObjectNodeReference GetOrCreateObjectNode(RenderObject renderObject)
         {
-            if (renderObject.ObjectNode == ObjectNodeReference.Invalid)
+            fixed (ObjectNodeReference* objectNodeRef = &renderObject.ObjectNode)
             {
-
-                renderObject.ObjectNode = new ObjectNodeReference(objectNodes.Count);
-                objectNodes.Add(new ObjectNode(renderObject));
-
-                ObjectNodeReferences.Add(renderObject.ObjectNode);
+                var oldValue = Interlocked.CompareExchange(ref *(int*)objectNodeRef, -2, -1);
+                if (oldValue == -1)
+                {
+                    var index = objectNodes.Add(new ObjectNode(renderObject));
+                    renderObject.ObjectNode = new ObjectNodeReference(index);
+                    ObjectNodeReferences.Add(renderObject.ObjectNode);
+                }
+                else
+                {
+                    while (renderObject.ObjectNode.Index == -2)
+                    {
+                    }
+                }
             }
 
             return renderObject.ObjectNode;
+        }
+
+        internal void CloseNodeCollectors()
+        {
+            viewObjectNodes.Close();
+            RenderNodes.Close();
+            objectNodes.Close();
+            ObjectNodeReferences.Close();
         }
 
         /// <summary>
@@ -198,10 +216,10 @@ namespace SiliconStudio.Xenko.Rendering
         public virtual void Reset()
         {
             // Clear nodes
-            viewObjectNodes.Clear();
-            objectNodes.Clear();
-            ObjectNodeReferences.Clear();
-            RenderNodes.Clear();
+            viewObjectNodes.Clear(false);
+            objectNodes.Clear(false);
+            ObjectNodeReferences.Clear(true);
+            RenderNodes.Clear(false);
         }
 
         public void PrepareDataArrays()

@@ -46,6 +46,9 @@ namespace SiliconStudio.Xenko.Graphics
         private readonly int adapterOrdinal;
         private readonly AdapterDescription1 description;
 
+        private GraphicsProfile minimumUnsupportedProfile = (GraphicsProfile)int.MaxValue;
+        private GraphicsProfile maximumSupportedProfile;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphicsAdapter" /> class.
         /// </summary>
@@ -62,6 +65,8 @@ namespace SiliconStudio.Xenko.Graphics
             outputs = new GraphicsOutput[count];
             for (var i = 0; i < outputs.Length; i++)
                 outputs[i] = new GraphicsOutput(this, i).DisposeBy(this);
+
+            AdapterUid = adapter.Description1.Luid.ToString();
         }
 
         /// <summary>
@@ -116,7 +121,25 @@ namespace SiliconStudio.Xenko.Graphics
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D12
             return true;
 #else
-            return SharpDX.Direct3D11.Device.IsSupportedFeatureLevel(this.NativeAdapter, (SharpDX.Direct3D.FeatureLevel)graphicsProfile);
+            // Did we check fo this or a higher profile, and it was supported?
+            if (maximumSupportedProfile >= graphicsProfile)
+                return true;
+
+            // Did we check for this or a lower profile and it was unsupported?
+            if (minimumUnsupportedProfile <= graphicsProfile)
+                return false;
+
+            // Check and min/max cached values
+            if (SharpDX.Direct3D11.Device.IsSupportedFeatureLevel(this.NativeAdapter, (SharpDX.Direct3D.FeatureLevel)graphicsProfile))
+            {
+                maximumSupportedProfile = graphicsProfile;
+                return true;
+            }
+            else
+            {
+                minimumUnsupportedProfile = graphicsProfile;
+                return false;
+            }
 #endif
         }
     }

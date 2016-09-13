@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.Assets.Audio
                 var assetDirectory = AssetParameters.Source.GetParent();
                 var assetSource = UPath.Combine(assetDirectory, AssetParameters.Source);
 
-                var installationDir = DirectoryHelper.GetInstallationDirectory("Xenko");
+                var installationDir = DirectoryHelper.GetPackageDirectory("Xenko");
                 var binDir = UPath.Combine(installationDir, new UDirectory("Bin"));
                 binDir = UPath.Combine(binDir, new UDirectory("Windows-Direct3D11"));
                 var ffmpeg = UPath.Combine(binDir, new UFile("ffmpeg.exe"));
@@ -133,16 +133,10 @@ namespace SiliconStudio.Xenko.Assets.Audio
                             newSound.MaxPacketLength = Math.Max(newSound.MaxPacketLength, len);
                         }
 
-                        try
-                        {
-                            //todo use position vs length!! lazy me
-                            buffer[count] = reader.ReadSingle();
-                        }
-                        catch (EndOfStreamException)
-                        {
-                            break;
-                        }
+                        buffer[count] = reader.ReadSingle();
                         count++;
+
+                        if (reader.BaseStream.Position == reader.BaseStream.Length) break;
                     }
 
                     if (count > 0) //flush

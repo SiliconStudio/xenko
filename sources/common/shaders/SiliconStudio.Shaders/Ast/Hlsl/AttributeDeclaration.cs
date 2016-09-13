@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     /// <summary>
     /// Describes an attribute.
     /// </summary>
-    public class AttributeDeclaration : AttributeBase
+    public partial class AttributeDeclaration : AttributeBase
     {
         #region Constructors and Destructors
 

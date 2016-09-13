@@ -1,0 +1,12 @@
+!SpriteFont
+Id: 0dbf1792-c53a-41ea-9f98-ba65014c5277
+SerializedVersion: {Xenko: 1.7.0-beta04}
+Tags: []
+FontSource: !SystemFontProvider
+    ~Id: 4ccc497b-fdc9-48a4-89a3-2e22815d4eed
+    FontName: Courier New
+    Style: Regular
+FontType: !RuntimeRasterizedSpriteFontType
+    ~Id: 8733244b-911b-4021-bccf-8d461eda1618
+    Size: 13.0
+    AntiAlias: Aliased

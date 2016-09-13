@@ -90,11 +90,7 @@ namespace SiliconStudio.Assets.Compiler
 
         private void OnAssetCompiled(object sender, AssetCompiledArgs assetCompiledArgs)
         {
-            var assetsCompiled = AssetCompiled;
-            if (assetsCompiled != null)
-            {
-                assetsCompiled(this, assetCompiledArgs);
-            }
+            AssetCompiled?.Invoke(this, assetCompiledArgs);
         }
 
         /// <summary>

@@ -154,8 +154,7 @@ namespace SiliconStudio.ExecServer
 
         private void OnShuttingDown()
         {
-            EventHandler<EventArgs> handler = ShuttingDown;
-            if (handler != null) handler(this, EventArgs.Empty);
+            ShuttingDown?.Invoke(this, EventArgs.Empty);
         }
     }
 }

@@ -2,13 +2,13 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 namespace Test3
 {
-    partial shader ChildMixin
+    partial effect ChildMixin
     {
         mixin C1;
         mixin C2;
     };
 
-    shader DefaultSimpleChild
+    effect DefaultSimpleChild
     {
         mixin A;
         mixin B;

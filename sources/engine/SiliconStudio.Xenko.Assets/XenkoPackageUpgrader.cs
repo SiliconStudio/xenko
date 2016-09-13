@@ -25,7 +25,7 @@ using SiliconStudio.Xenko.Assets.Effect;
 
 namespace SiliconStudio.Xenko.Assets
 {
-    [PackageUpgrader(XenkoConfig.PackageName, "1.0.0-beta01", "1.7.0-alpha03")]
+    [PackageUpgrader(XenkoConfig.PackageName, "1.0.0-beta01", "1.8.0-beta")]
     public class XenkoPackageUpgrader : PackageUpgrader
     {
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
@@ -274,7 +274,7 @@ namespace SiliconStudio.Xenko.Assets
                             assetYaml.DynamicRootNode.SourceHash = DynamicYamlEmpty.Default;
                         }
                         assetYaml.DynamicRootNode.ImporterId = DynamicYamlEmpty.Default;
-                        assetYaml.DynamicRootNode.KeepSourceSideBySide = DynamicYamlEmpty.Default;
+                        assetYaml.DynamicRootNode.SourceKeepSideBySide = DynamicYamlEmpty.Default;
 
                         var assetBase = assetYaml.DynamicRootNode["~Base"];
                         if (assetBase != null)

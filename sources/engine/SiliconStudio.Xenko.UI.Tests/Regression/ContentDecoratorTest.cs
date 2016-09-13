@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public ContentDecoratorTest()
         {
-            CurrentVersion = 5;
+            CurrentVersion = 6; // Font type, names & sizes changed slightly
         }
 
         protected override async Task LoadContent()
@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             textBlock = new TextBlock
             {
                 TextColor = Color.Black,
-                Font = Content.Load<SpriteFont>("MSMincho10"),
+                Font = Content.Load<SpriteFont>("HanSans13"),
                 Text = @"Simple sample text surrounded by decorator.",
                 SynchronousCharacterGeneration = true
             };
@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
                 BackgroundImage = (SpriteFromTexture)new Sprite(Content.Load<Texture>("DumbWhite"))
             };
 
-            UIComponent.RootElement = decorator;
+            UIComponent.Page = new Engine.UIPage { RootElement = decorator };
         }
 
         protected override void Update(GameTime gameTime)
@@ -53,11 +53,11 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             base.Update(gameTime);
 
             if (Input.IsKeyPressed(Keys.Left))
-                textBlock.TextSize = 3 * textBlock.TextSize / 4;
+                textBlock.TextSize = 3 * textBlock.ActualTextSize / 4;
             if (Input.IsKeyPressed(Keys.Right))
-                textBlock.TextSize = 4 * textBlock.TextSize / 3;
+                textBlock.TextSize = 4 * textBlock.ActualTextSize / 3;
             if (Input.IsKeyPressed(Keys.Delete))
-                textBlock.TextSize = textBlock.Font.Size;
+                textBlock.TextSize = float.NaN;
         }
 
         protected override void RegisterTests()

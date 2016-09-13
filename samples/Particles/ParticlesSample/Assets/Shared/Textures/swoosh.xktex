@@ -1,0 +1,6 @@
+!Texture
+Id: f8a9d365-cece-45f9-9abc-c59ffb6b03c3
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../../Resources/swoosh.png
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

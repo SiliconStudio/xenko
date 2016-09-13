@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Linq;
+using System.Reflection;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
@@ -122,7 +123,32 @@ namespace SiliconStudio.Presentation.Quantum
         }
 
         /// <inheritdoc/>
-        public override int? Order => CustomOrder ?? (SourceNode.Content is MemberContent && Index.IsEmpty ? ((MemberContent)SourceNode.Content).Member.Order : null);
+        public override int? Order
+        {
+            get
+            {
+                if (CustomOrder != null)
+                    return CustomOrder;
+
+                var memberContent = SourceNode.Content as MemberContent;
+                if (memberContent == null || !Index.IsEmpty)
+                    return null;
+
+                var descriptor = (MemberDescriptorBase)memberContent.Member;
+                var displayAttribute = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(descriptor.MemberInfo);
+                return displayAttribute?.Order ?? descriptor.Order;
+            }
+        }
+
+        public override MemberInfo MemberInfo
+        {
+            get
+            {
+                var memberContent = SourceNode.Content as MemberContent;
+                var memberDescriptorBase = memberContent?.Member as MemberDescriptorBase;
+                return memberDescriptorBase?.MemberInfo;
+            }
+        }
 
         /// <summary>
         /// Gets or sets a custom value for the <see cref="Order"/> of this node.
@@ -255,7 +281,7 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 var objectReference = SourceNode.Content.Reference as ObjectReference;
                 // Discard the children of the referenced object if requested by the property provider
-                if (objectReference != null && !Owner.PropertiesProvider.ShouldExpandReference(objectReference, targetNodePath))
+                if (objectReference != null && !Owner.PropertiesProvider.ShouldExpandReference(SourceNode.Content as MemberContent, objectReference))
                     return;
             }
 
@@ -276,7 +302,7 @@ namespace SiliconStudio.Presentation.Quantum
                         // a boxed float to double for example. Otherwise, we don't want to have a node type that is value-dependent.
                         var type = reference.TargetNode != null && reference.TargetNode.Content.IsPrimitive ? reference.TargetNode.Content.Type : reference.Type;
                         var actualPath = targetNodePath.PushIndex(reference.Index);
-                        if (Owner.PropertiesProvider.ShouldExpandReference(reference, actualPath))
+                        if (Owner.PropertiesProvider.ShouldExpandReference(SourceNode.Content as MemberContent, reference))
                         {
                             var observableNode = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, false, targetNode, targetNodePath, type, reference.Index);
                             AddChild(observableNode);
@@ -322,7 +348,7 @@ namespace SiliconStudio.Presentation.Quantum
                     if (displayAttribute == null || displayAttribute.Browsable)
                     {
                         // The path is the source path here - the target path might contain the target resolution that we don't want at that point
-                        if (Owner.PropertiesProvider.ShouldConstructMember(memberContent, SourceNodePath))
+                        if (Owner.PropertiesProvider.ShouldConstructMember(memberContent))
                         {
                             var childPath = targetNodePath.PushMember(child.Name);
                             var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, child.Name, child.Content.IsPrimitive, child, childPath, child.Content.Type, Index.Empty);

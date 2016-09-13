@@ -10,7 +10,7 @@
 extern "C" {
 #endif
 
-void UpdateBufferValuesFromElementInfo(SpriteDrawInfo* drawInfo, VertexPositionColorTextureSwizzle* vertexPointer, void* indexPointer, int vertexStartOffset)
+DLL_EXPORT_API void UpdateBufferValuesFromElementInfo(SpriteDrawInfo* drawInfo, VertexPositionColorTextureSwizzle* vertexPointer, void* indexPointer, int vertexStartOffset)
 {
 	float deltaX = 1.0f / drawInfo->TextureSize.X;
 	float deltaY = 1.0f / drawInfo->TextureSize.Y;

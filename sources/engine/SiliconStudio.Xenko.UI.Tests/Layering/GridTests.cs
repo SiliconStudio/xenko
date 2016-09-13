@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
         {
             Initialize();
             TestGridDefaultState();
-            TestDefinitionCompletion();
+            TestDefinitionNoCompletion();
             TestFixedOnlyBasicLayering();
             TestFixedOnlyComplexLayering();
             TestAutoOnlyBasicLayering();
@@ -80,10 +80,10 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
         }
 
         /// <summary>
-        /// Test that strip definition are correctly added when a child is partially outside of the grid definition.
+        /// Test that no strip definition are added when a child is partially outside of the grid definition.
         /// </summary>
         [Test]
-        public void TestDefinitionCompletion()
+        public void TestDefinitionNoCompletion()
         {
             var grid = new Grid();
 
@@ -105,20 +105,36 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             grid.Measure(Vector3.Zero);
             grid.Arrange(Vector3.Zero, false);
 
-            Assert.AreEqual(grid.ColumnDefinitions.Count, 6);
-            foreach (var definition in grid.ColumnDefinitions)
-                Assert.AreEqual(StripType.Auto, definition.Type);
-
-            Assert.AreEqual(grid.RowDefinitions.Count, 7);
-            foreach (var definition in grid.ColumnDefinitions)
-                Assert.AreEqual(StripType.Auto, definition.Type);
-
-            Assert.AreEqual(grid.LayerDefinitions.Count, 5);
-            foreach (var definition in grid.ColumnDefinitions)
-                Assert.AreEqual(StripType.Auto, definition.Type);
+            Assert.AreEqual(grid.ColumnDefinitions.Count, 0);
+            Assert.AreEqual(grid.RowDefinitions.Count, 0);
+            Assert.AreEqual(grid.LayerDefinitions.Count, 0);
         }
 
+        /// <summary>
+        /// Tests that a grid without row/column/layer definitions behave like a grid with one of each.
+        /// </summary>
+        [Test]
+        public void TestDefaultGridLayering()
+        {
+            var grid = new Grid();
 
+            var child0 = new MeasureArrangeValidator { ExpectedMeasureValue = new Vector3(200, 200, 0), ExpectedArrangeValue = new Vector3(200, 200, 0), ReturnedMeasuredValue = new Vector3(100, 400, 0), DepthAlignment = DepthAlignment.Stretch };
+            //var child1 = new MeasureArrangeValidator { ExpectedMeasureValue = new Vector3(200, 200, 0), ExpectedArrangeValue = new Vector3(200, 200, 0), ReturnedMeasuredValue = new Vector3(100, 400, 0), Width = 100, Height = 400, DepthAlignment = DepthAlignment.Stretch };
+
+            grid.Children.Add(child0);
+            //grid.Children.Add(child1);
+
+            grid.Measure(new Vector3(200, 200, 0));
+            grid.Arrange(new Vector3(200, 200, 0), false);
+
+            // Try again with strips (it should behave the same)
+            grid.ColumnDefinitions.Add(new StripDefinition());
+            grid.RowDefinitions.Add(new StripDefinition());
+            grid.LayerDefinitions.Add(new StripDefinition());
+
+            grid.Measure(new Vector3(200, 200, 0));
+            grid.Arrange(new Vector3(200, 200, 0), false);
+        }
 
         /// <summary>
         /// Test that fix-size strip layering (both measuring and arranging) works properly.
@@ -368,6 +384,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
         {
             var grid = new Grid();
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star, 10) { MinimumSize = 20 });
+            grid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
 
             //    min = 20
             // 0    10*   20   
@@ -394,6 +411,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
         {
             var grid = new Grid();
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star, 10) { MaximumSize = 20 });
+            grid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
 
             //    max = 20
             // 0    10*   20   
@@ -420,6 +438,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             var grid = new Grid();
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star, 10) { MinimumSize = 20 });
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star, 20) { MinimumSize = 30 });
+            grid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
 
             //    min = 20   min = 30
             // 0    10*   20   20*   50
@@ -452,6 +471,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             var grid = new Grid();
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star, 10) { MinimumSize = 20 });
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star, 20) { MinimumSize = 80 });
+            grid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
 
             //    min = 20    min = 80
             // 0    10*    20   20*   50
@@ -484,6 +504,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             var grid = new Grid();
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star, 10) { MinimumSize = 20 });
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star, 20) { MinimumSize = 30 });
+            grid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
 
             //    min = 20   min = 30
             // 0    10*    20   20*   50
@@ -516,6 +537,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             var grid = new Grid();
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star, 10) { MaximumSize = 20 });
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star, 20) { MaximumSize = 30 });
+            grid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
 
             //    max = 20   max = 30
             // 0    10*    20   20*   50
@@ -548,6 +570,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             var grid = new Grid();
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star, 10) { MaximumSize = 20 });
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star, 20) { MaximumSize = 50 });
+            grid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
 
             //    max = 20   max = 50
             // 0    10*    20   20*   50
@@ -580,6 +603,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             var grid = new Grid();
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star, 10) { MaximumSize = 40 });
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star, 20) { MaximumSize = 50 });
+            grid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
 
             //    max = 40   max = 50
             // 0    10*    20   20*   50
@@ -614,6 +638,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star, 20) { MinimumSize = 30 });
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star, 30) { MinimumSize = 40 });
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star, 40) { MinimumSize = 50 });
+            grid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
 
             //    min = 20    min = 30  min = 40  min = 50
             // 0    10*    20   20*   50        90       140
@@ -646,6 +671,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star) { MinimumSize = 50 });
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star) { MinimumSize = 40 });
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star) { MinimumSize = 30 });
+            grid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
 
             // | <--min 20-> |<---min 50--->|<---min 40-->| <-min 30--> |
             // 0      1*     20     1*      75     1*     115    1*     140
@@ -678,6 +704,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star) { MaximumSize = 50 });
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star) { MaximumSize = 40 });
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star) { MaximumSize = 30 });
+            grid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
 
             // |<---max 20-->|<---max 50--->|<---max 40-->|<--max 30--->|
             // 0      1*     20     1*      75     1*     115    1*     140
@@ -710,6 +737,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star) { MaximumSize = 50 });
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star) { MaximumSize = 40 });
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star) { MaximumSize = 30 });
+            grid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
 
             // |<---max 20-->|<---max 50----|<->---max 40-|<->-max 30-->|
             // 0      1*     20     1*      75     1*     115    1*     140
@@ -742,6 +770,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star) { MinimumSize = 25, MaximumSize = 35 });
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star) { MinimumSize = 30, MaximumSize = 40 });
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star) { MinimumSize = 45, MaximumSize = 60 });
+            grid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
 
             // |<--min 10->  |<---min 25--> |<---min 30-> |<--min 45-->|
             // |<---max 20-->|<---max 35--->|<---max 40-->|<----max 60---->|
@@ -775,6 +804,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star) { MinimumSize = 20, MaximumSize = 35 });
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star) { MinimumSize = 30, MaximumSize = 55 });
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star) { MinimumSize = 40, MaximumSize = 45 });
+            grid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
 
             // |<--min 10->  |<---min 20->  |<---min 30-> |<--min 40->|
             // |<---max 70---|<-->-max 35-->|<---max 55-->|<---max 45-->|
@@ -807,6 +837,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Fixed, 30));
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Auto));
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Star));
+            grid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
+            grid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
 
             // 0     30     30     auto     60     1*     100
             // +-------------+--------------+-------------+
@@ -851,6 +883,12 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             // +-------+-----------+-------------+
 
             var grid = new Grid();
+
+            grid.ColumnDefinitions.Add(new StripDefinition(StripType.Auto));
+            grid.ColumnDefinitions.Add(new StripDefinition(StripType.Auto));
+            grid.ColumnDefinitions.Add(new StripDefinition(StripType.Auto));
+            grid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
+            grid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
 
             var c00 = new ArrangeValidator { ReturnedMeasuredValue = new Vector3(10, 0, 0), ExpectedArrangeValue = new Vector3(10, 0, 0) };
             var c01 = new ArrangeValidator { ReturnedMeasuredValue = new Vector3(20, 0, 0), ExpectedArrangeValue = new Vector3(30, 0, 0) };
@@ -902,6 +940,14 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             // +-------+-----------+-----------------+
 
             var grid = new Grid();
+
+            grid.ColumnDefinitions.Add(new StripDefinition(StripType.Auto));
+            grid.ColumnDefinitions.Add(new StripDefinition(StripType.Auto));
+            grid.ColumnDefinitions.Add(new StripDefinition(StripType.Auto));
+            grid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
+            grid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
+            grid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
+            grid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
 
             var c00 = new ArrangeValidator { ReturnedMeasuredValue = new Vector3(10, 0, 0), ExpectedArrangeValue = new Vector3(10, 0, 0) };
             var c01 = new ArrangeValidator { ReturnedMeasuredValue = new Vector3(20, 0, 0), ExpectedArrangeValue = new Vector3(30, 0, 0) };
@@ -973,6 +1019,11 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Auto));
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Auto) { MaximumSize = 20 });
             grid.ColumnDefinitions.Add(new StripDefinition(StripType.Auto) { MaximumSize = 20, MinimumSize = 20 });
+            grid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
+            grid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
+            grid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
+            grid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
+            grid.RowDefinitions.Add(new StripDefinition(StripType.Auto));
 
             // create the children
             var c00 = new ArrangeValidator { ReturnedMeasuredValue = new Vector3(10, 0, 0), ExpectedArrangeValue = new Vector3(20, 0, 0), Name = "c00" };

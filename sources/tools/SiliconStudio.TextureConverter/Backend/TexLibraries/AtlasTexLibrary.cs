@@ -107,7 +107,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             // Finding the best layout for the textures in the atlas 
             Node tree = PositionTextures(atlas, request);
 
-            // One of many textures couldn't be positionned which means the atlas is too small
+            // One of many textures couldn't be positioned which means the atlas is too small
             if (tree == null)
             {
                 Marshal.FreeHGlobal(atlas.Data);
@@ -455,7 +455,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// </summary>
         /// <param name="atlas">The atlas.</param>
         /// <param name="request">The request.</param>
-        /// <returns>The binary tree containing the positionned textures or null if the atlas is too small.</returns>
+        /// <returns>The binary tree containing the positioned textures or null if the atlas is too small.</returns>
         private Node PositionTextures(TexAtlas atlas, AtlasCreationRequest request)
         {
             Node root = new Node(0, 0, atlas.Width, atlas.Height);

@@ -11,7 +11,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     /// <summary>
     /// Describes a semantic.
     /// </summary>
-    public class Semantic : Qualifier
+    public partial class Semantic : Qualifier
     {
         #region Constructors and Destructors
 

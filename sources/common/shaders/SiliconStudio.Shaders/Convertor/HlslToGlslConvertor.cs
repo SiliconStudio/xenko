@@ -27,7 +27,7 @@ namespace SiliconStudio.Shaders.Convertor
     /// - Change main signature.
     /// - Convert return statements into GLSL out assignments.
     /// </summary>
-    public class HlslToGlslConvertor : ShaderVisitor
+    public class HlslToGlslConvertor : ShaderRewriter
     {
         // Each sampler+texture pair will map to a GLSL sampler.
         // KeyValuePair<Variable-SamplerType, Variable-TextureType> => Variable
@@ -511,9 +511,18 @@ namespace SiliconStudio.Shaders.Convertor
         /// <param name="variable">
         /// The variable.
         /// </param>
-        [Visit]
-        protected Node Visit(Variable variable)
+        public override Node Visit(Variable variable)
         {
+            // All variable arrays are processed later to simplify/unify their bounds
+            var variableType = variable != null ? variable.Type.ResolveType() : null;
+            var arrayType = variableType as ArrayType;
+
+            if (arrayType != null)
+            {
+                if (!this.listOfMultidimensionArrayVariable.Contains(variable))
+                    this.listOfMultidimensionArrayVariable.Add(variable);
+            }
+
             var isInMethod = !shader.Declarations.Contains(variable);
 
             // Static variable are allowed inside HLSL functions 
@@ -527,7 +536,7 @@ namespace SiliconStudio.Shaders.Convertor
             if (isInMethod && variable.Qualifiers.Contains(Ast.StorageQualifier.Const))
                 variable.Qualifiers.Values.Remove(Ast.StorageQualifier.Const);
 
-            Visit((Node)variable);
+            base.Visit(variable);
 
             // Set the Type of a variable by using the resolve type
             if (variable.Type.TypeInference.Declaration is Typedef)
@@ -581,8 +590,7 @@ namespace SiliconStudio.Shaders.Convertor
         /// Visits the specified function.
         /// </summary>
         /// <param name="function">The function.</param>
-        [Visit]
-        protected void Visit(MethodDefinition function)
+        public override Node Visit(MethodDefinition function)
         {
             // Enter this function
             CurrentFunction = function;
@@ -606,7 +614,7 @@ namespace SiliconStudio.Shaders.Convertor
 
             // Convert function return type
             // Visit all subnodes of this function
-            Visit((Node)function);
+            base.Visit(function);
 
             // For entry point restore arguments/declcontext
             if (function == entryPoint)
@@ -621,6 +629,8 @@ namespace SiliconStudio.Shaders.Convertor
 
             // Clear current function viside
             CurrentFunction = null;
+
+            return function;
         }
 
         /// <summary>
@@ -645,7 +655,7 @@ namespace SiliconStudio.Shaders.Convertor
                     inputs.Add(arg);
 
                     // Process and convert GS input layout type
-                    foreach (var qualifier in arg.Qualifiers.OfType<Ast.ParameterQualifier>())
+                    foreach (var qualifier in arg.Qualifiers)
                     {
                         switch ((string)qualifier.Key)
                         {
@@ -911,10 +921,9 @@ namespace SiliconStudio.Shaders.Convertor
         /// </summary>
         /// <param name="castExpression">The cast expression.</param>
         /// <returns>A transformed cast expression</returns>
-        [Visit]
-        protected Expression Visit(CastExpression castExpression)
+        public override Node Visit(CastExpression castExpression)
         {
-            Visit((Node)castExpression);
+            base.Visit(castExpression);
 
             var targetType = castExpression.Target.TypeInference.TargetType;
 
@@ -954,42 +963,37 @@ namespace SiliconStudio.Shaders.Convertor
         /// </summary>
         /// <param name="statement">The statement.</param>
         /// <returns>A transformed statement</returns>
-        [Visit]
-        protected Statement Visit(Statement statement)
+        public override Node Visit(ExpressionStatement expressionStatement)
         {
             Statement newStatement = null;
 
-            var expressionStatement = statement as ExpressionStatement;
-            if (expressionStatement != null)
+            var methodInvocationExpression = expressionStatement.Expression as MethodInvocationExpression;
+            if (methodInvocationExpression != null)
             {
-                var methodInvocationExpression = expressionStatement.Expression as MethodInvocationExpression;
-                if (methodInvocationExpression != null)
+                var methodVar = methodInvocationExpression.Target as VariableReferenceExpression;
+                if (methodVar != null)
                 {
-                    var methodVar = methodInvocationExpression.Target as VariableReferenceExpression;
-                    if (methodVar != null)
-                    {
-                        newStatement = VisitStatementAsFunctionInvocation(statement, methodInvocationExpression, methodVar);
-                    }
-                    else
-                    {
-                        var memberReferenceExpression = methodInvocationExpression.Target as MemberReferenceExpression;
-                        if (memberReferenceExpression != null)
-                        {
-                            newStatement = VisitStatementAsMemberInvocation(statement, methodInvocationExpression, memberReferenceExpression);
-                        }
-                    }
+                    newStatement = VisitStatementAsFunctionInvocation(expressionStatement, methodInvocationExpression, methodVar);
                 }
                 else
                 {
-                    var assignExpression = expressionStatement.Expression as AssignmentExpression;
-                    if (assignExpression != null)
+                    var memberReferenceExpression = methodInvocationExpression.Target as MemberReferenceExpression;
+                    if (memberReferenceExpression != null)
                     {
-                        newStatement = VisitStatementAsAssignExpression(statement, assignExpression);
+                        newStatement = VisitStatementAsMemberInvocation(expressionStatement, methodInvocationExpression, memberReferenceExpression);
                     }
                 }
             }
+            else
+            {
+                var assignExpression = expressionStatement.Expression as AssignmentExpression;
+                if (assignExpression != null)
+                {
+                    newStatement = VisitStatementAsAssignExpression(expressionStatement, assignExpression);
+                }
+            }
 
-            return newStatement ?? (Statement)this.Visit((Node)statement);
+            return newStatement ?? base.Visit(expressionStatement);
         }
 
         /// <summary>
@@ -999,7 +1003,7 @@ namespace SiliconStudio.Shaders.Convertor
         /// <param name="methodInvocationExpression">The function invocation expression.</param>
         /// <param name="methodVar">The name of the function.</param>
         /// <returns></returns>
-        protected Statement VisitStatementAsFunctionInvocation(Statement statement, MethodInvocationExpression methodInvocationExpression, VariableReferenceExpression methodVar)
+        protected Statement VisitStatementAsFunctionInvocation(ExpressionStatement statement, MethodInvocationExpression methodInvocationExpression, VariableReferenceExpression methodVar)
         {
             var methodName = methodVar.Name;
 
@@ -1013,7 +1017,7 @@ namespace SiliconStudio.Shaders.Convertor
                         if (!methodInvocationHandled.ContainsKey(methodInvocationExpression))
                             methodInvocationHandled.Add(methodInvocationExpression, true);
 
-                        Visit((Node)statement);
+                        base.Visit(statement);
 
                         var clipArgType = methodInvocationExpression.Arguments[0].TypeInference.TargetType;
 
@@ -1039,7 +1043,7 @@ namespace SiliconStudio.Shaders.Convertor
                     {
                         if (!methodInvocationHandled.ContainsKey(methodInvocationExpression))
                             methodInvocationHandled.Add(methodInvocationExpression, true);
-                        Visit((Node)statement);
+                        base.Visit(statement);
 
                         var sinAssign =
                             new ExpressionStatement(
@@ -1213,10 +1217,9 @@ namespace SiliconStudio.Shaders.Convertor
         /// <returns>
         /// A transformed method invocation expression.
         /// </returns>
-        [Visit]
-        protected Expression Visit(MethodInvocationExpression methodInvocationExpression)
+        public override Node Visit(MethodInvocationExpression methodInvocationExpression)
         {
-            Visit((Node)methodInvocationExpression);
+            base.Visit(methodInvocationExpression);
 
             // If method is already handled
             if (methodInvocationHandled.ContainsKey(methodInvocationExpression))
@@ -1565,7 +1568,7 @@ namespace SiliconStudio.Shaders.Convertor
             for (int i = expression.Arguments.Count - 1; i >= 0; i--)
             {
                 var argument = expression.Arguments[i];
-                if (ClassType.IsStreamType(argument.TypeInference.TargetType))
+                if (ClassType.IsStreamOutputType(argument.TypeInference.TargetType))
                 {
                     expression.Arguments.RemoveAt(i);
                 }
@@ -1578,7 +1581,7 @@ namespace SiliconStudio.Shaders.Convertor
             for (int i = declaration.Parameters.Count - 1; i >= 0; i--)
             {
                 var argument = declaration.Parameters[i];
-                if (ClassType.IsStreamType(argument.Type.TypeInference.TargetType))
+                if (ClassType.IsStreamOutputType(argument.Type.TypeInference.TargetType))
                 {
                     declaration.Parameters.RemoveAt(i);
                 }
@@ -1589,10 +1592,9 @@ namespace SiliconStudio.Shaders.Convertor
         /// Visits the specified conditional expression.
         /// </summary>
         /// <param name="conditionalExpression">The conditional expression.</param>
-        [Visit]
-        protected Expression Visit(ConditionalExpression conditionalExpression)
+        public override Node Visit(ConditionalExpression conditionalExpression)
         {
-            Visit((Node)conditionalExpression);
+            base.Visit(conditionalExpression);
 
             var conditionType = conditionalExpression.Condition.TypeInference.TargetType;
 
@@ -1615,10 +1617,9 @@ namespace SiliconStudio.Shaders.Convertor
         /// Visits the specified constant buffer.
         /// </summary>
         /// <param name="constantBuffer">The constant buffer.</param>
-        [Visit]
-        protected void Visit(ConstantBuffer constantBuffer)
+        public override Node Visit(ConstantBuffer constantBuffer)
         {
-            Visit((Node)constantBuffer);
+            base.Visit(constantBuffer);
 
             // Remove initializers from constant buffers
             foreach (var variable in constantBuffer.Members.OfType<Variable>())
@@ -1629,6 +1630,8 @@ namespace SiliconStudio.Shaders.Convertor
                     variable.InitialValue = null;
                 }
             }
+
+            return constantBuffer;
         }
 
         /// <summary>
@@ -1636,10 +1639,9 @@ namespace SiliconStudio.Shaders.Convertor
         /// </summary>
         /// <param name="varRefExpr">The var ref expr.</param>
         /// <returns>A transformed expression.</returns>
-        [Visit]
-        protected Expression Visit(VariableReferenceExpression varRefExpr)
+        public override Node Visit(VariableReferenceExpression varRefExpr)
         {
-            Visit((Node)varRefExpr);
+            base.Visit(varRefExpr);
 
             // If this is a global variable used as a temporary, don't perform any transform on it
             if (globalUniformVisitor.IsVariableAsGlobalTemporary(varRefExpr))
@@ -1663,11 +1665,12 @@ namespace SiliconStudio.Shaders.Convertor
         /// Visits the specified if statement.
         /// </summary>
         /// <param name="ifStatement">If statement.</param>
-        [Visit]
-        protected void Visit(IfStatement ifStatement)
+        public override Node Visit(IfStatement ifStatement)
         {
-            Visit((Node)ifStatement);
+            base.Visit(ifStatement);
             ifStatement.Condition = ConvertCondition(ifStatement.Condition);
+
+            return ifStatement;
         }
 
         /// <summary>
@@ -1675,10 +1678,9 @@ namespace SiliconStudio.Shaders.Convertor
         /// </summary>
         /// <param name="forStatement"></param>
         /// <returns></returns>
-        [Visit]
-        protected Node Visit(ForStatement forStatement)
+        public override Node Visit(ForStatement forStatement)
         {
-            Visit((Node)forStatement);
+            base.Visit(forStatement);
 
             // unroll foreach if necessary
             if (UnrollForLoops && forStatement.Attributes.OfType<AttributeDeclaration>().Any(x => x.Name.Text == "unroll"))
@@ -1903,10 +1905,9 @@ namespace SiliconStudio.Shaders.Convertor
         /// </summary>
         /// <param name="expression">The expression.</param>
         /// <returns>A transformed expression</returns>
-        [Visit]
-        protected Expression Visit(MemberReferenceExpression expression)
+        public override Node Visit(MemberReferenceExpression expression)
         {
-            Visit((Node)expression);
+            base.Visit(expression);
 
             // A matrix contains values organized in rows and columns, which can be accessed using the structure operator "." followed by one of two naming sets:
             // The zero-based row-column position:
@@ -1964,12 +1965,11 @@ namespace SiliconStudio.Shaders.Convertor
         /// </summary>
         /// <param name="arrayCreationExpression">The array creation expression.</param>
         /// <returns>A transformed expression</returns>
-        [Visit]
-        protected Expression Visit(ArrayInitializerExpression arrayCreationExpression)
+        public override Node Visit(ArrayInitializerExpression arrayCreationExpression)
         {
             var variable = ParentNode as Variable;
 
-            var result = (Expression)Visit((Node)arrayCreationExpression);
+            var result = (Expression)base.Visit(arrayCreationExpression);
 
             // If there is a parent variable and no subscript, It is probably a cast to an implicit array type (float2,float3,float4...etc.)
             if (variable != null)
@@ -2012,8 +2012,7 @@ namespace SiliconStudio.Shaders.Convertor
         /// </summary>
         /// <param name="assignExpression">The assign expression.</param>
         /// <returns>A transformed expression</returns>
-        [Visit]
-        protected Expression Visit(AssignmentExpression assignExpression)
+        public override Node Visit(AssignmentExpression assignExpression)
         {
             // Put a special flag while visiting assignment target for tracking assignment to input varying (not allowed in OpenGL)
             // TODO: use stack of assignmentTarget instead, as it would not work with nested assignement
@@ -2035,8 +2034,7 @@ namespace SiliconStudio.Shaders.Convertor
         /// </summary>
         /// <param name="technique">The technique.</param>
         /// <returns>The technique</returns>
-        [Visit]
-        protected Technique Visit(Technique technique)
+        public override Node Visit(Technique technique)
         {
             // Skip all techniques while parsing
             return technique;
@@ -2047,10 +2045,9 @@ namespace SiliconStudio.Shaders.Convertor
         /// </summary>
         /// <param name="binaryExpression">The binary expression.</param>
         /// <returns>A transformed binary expression.</returns>
-        [Visit]
-        protected Expression Visit(BinaryExpression binaryExpression)
+        public override Node Visit(BinaryExpression binaryExpression)
         {
-            Visit((Node)binaryExpression);
+            base.Visit(binaryExpression);
 
             // -----------------------------------------------------
             // Handle binary expression with gl_FrontFacing variable
@@ -2180,10 +2177,9 @@ namespace SiliconStudio.Shaders.Convertor
         /// </summary>
         /// <param name="returnStatement">The return statement.</param>
         /// <returns>A transformed return statement.</returns>
-        [Visit]
-        protected Statement Visit(ReturnStatement returnStatement)
+        public override Node Visit(ReturnStatement returnStatement)
         {
-            Visit((Node)returnStatement);
+            base.Visit(returnStatement);
 
             // Only transform return in entry function
             if (!IsInEntryPoint)
@@ -2201,8 +2197,7 @@ namespace SiliconStudio.Shaders.Convertor
         /// <returns>
         /// A transformed statement list.
         /// </returns>
-        [Visit]
-        protected Statement Visit(StatementList statementList)
+        public override Node Visit(StatementList statementList)
         {
             // Try to transform return statement with ConvertReturn at the block level first.
             // As an example, { stmt1; return Y; } gets converted to { stmt1; out_x = x; out_y = y; ... }
@@ -2309,7 +2304,7 @@ namespace SiliconStudio.Shaders.Convertor
                         {
                             var targetVariable = (VariableReferenceExpression) method.Target;
                             var targetType = targetVariable.TypeInference.TargetType;
-                            if (ClassType.IsStreamType(targetType))
+                            if (ClassType.IsStreamOutputType(targetType))
                             {
                                 if (method.Member == "Append")
                                 {
@@ -2356,7 +2351,7 @@ namespace SiliconStudio.Shaders.Convertor
                     newStatementList.Add(stmt);
             }
 
-            Visit((Node)newStatementList);
+            base.Visit(newStatementList);
 
             return newStatementList;
         }
@@ -2366,8 +2361,7 @@ namespace SiliconStudio.Shaders.Convertor
         /// </summary>
         /// <param name="indexerExpression">The indexer expression.</param>
         /// <returns>A transformed indexer expression</returns>
-        [Visit]
-        protected Expression Visit(IndexerExpression indexerExpression)
+        public override Node Visit(IndexerExpression indexerExpression)
         {
             // Collect all indices in the order of the declaration
             var targetIterator = indexerExpression.Target;
@@ -2407,9 +2401,6 @@ namespace SiliconStudio.Shaders.Convertor
 
                 if (arrayType != null && arrayType.Dimensions.Count == indices.Count)
                 {
-                    if (!this.listOfMultidimensionArrayVariable.Contains(variable))
-                        this.listOfMultidimensionArrayVariable.Add(variable);
-
                     // Transform multi-dimensionnal array to single dimension
                     // float myarray[s1][s2][s3]...[sn] = {{.{..{...}}};
                     // float value = myarray[i1][i2][i3]...[in]    => float value = myarray[(i1)*(s2)*(s3)*...*(sn) + (i2)*(s3)*...*(sn) + (i#)*(s#+1)*(s#+2)*...*(sn)];
@@ -2432,7 +2423,7 @@ namespace SiliconStudio.Shaders.Convertor
                 }
             }
 
-            Visit((Node)indexerExpression);
+            base.Visit(indexerExpression);
 
             // When NoSwapForBinaryMatrixOperation, we need to transpose accessor
             // HLSL: float4x3[0] -> first row -> float4(...)
@@ -2496,7 +2487,7 @@ namespace SiliconStudio.Shaders.Convertor
             }
             else
             {
-                AddGlobalDeclaration(new Variable(SamplerStateType.SamplerState, "NoSampler"));
+                AddGlobalDeclaration(new Variable(StateType.SamplerState, "NoSampler"));
             }
         }
 
@@ -2504,8 +2495,7 @@ namespace SiliconStudio.Shaders.Convertor
         /// Visits the specified shader.
         /// </summary>
         /// <param name="shader">The shader.</param>
-        [Visit]
-        protected void Visit(Shader shader)
+        public override Node Visit(Shader shader)
         {
             geometryLayoutInput = null;
             geometryInputParameter = null;
@@ -2516,7 +2506,7 @@ namespace SiliconStudio.Shaders.Convertor
             // shader.Declarations.RemoveAll(x => x is TextureType);
 
             // Visit AST.
-            Visit((Node)shader);
+            base.Visit(shader);
 
             // Post transform all array variable with multidimension
             TransformArrayDimensions();
@@ -2660,6 +2650,8 @@ namespace SiliconStudio.Shaders.Convertor
             entryPoint.Qualifiers = Qualifier.None;
             entryPoint.ReturnType = TypeBase.Void;
             entryPoint.Name = new Identifier("main");
+
+            return shader;
         }
 
         private void TransformInputAndOutputToInterfaceBlock()
@@ -2834,10 +2826,9 @@ namespace SiliconStudio.Shaders.Convertor
         /// </summary>
         /// <param name="parenthesizedExpression">The parenthesized expression.</param>
         /// <returns>A transformed expression.</returns>
-        [Visit]
-        protected virtual Expression Visit(ParenthesizedExpression parenthesizedExpression)
+        public override Node Visit(ParenthesizedExpression parenthesizedExpression)
         {
-            Visit((Node)parenthesizedExpression);
+            base.Visit(parenthesizedExpression);
 
             // Copy back type inference target type to parennthesized expression
             parenthesizedExpression.TypeInference.TargetType = parenthesizedExpression.Content.TypeInference.TargetType;
@@ -3156,7 +3147,7 @@ namespace SiliconStudio.Shaders.Convertor
                 // Remove any kind of register location
                 // if (forceImplicitLayout)
                 // variable.Qualifiers.Values.RemoveAll((type) => type is RegisterLocation);
-                var allocatedRegister = variable.Type is SamplerType ? allocatedRegistersForSamplers : allocatedRegistersForUniforms;
+                var allocatedRegister = variable.Type.IsSamplerType() ? allocatedRegistersForSamplers : allocatedRegistersForUniforms;
                 var size = GetNumberOfFloat4FromVariable(variable.Type);
 
                 int registerIndex = FindAvailableBinding(allocatedRegister, 0, size);
@@ -3202,7 +3193,7 @@ namespace SiliconStudio.Shaders.Convertor
                     {
                         variableTag.Location = location;
 
-                        if (isInput && (pipelineStage == PipelineStage.Vertex || pipelineStage == PipelineStage.Geometry))
+                        if (InputAttributeNames != null && isInput && (pipelineStage == PipelineStage.Vertex || pipelineStage == PipelineStage.Geometry))
                             InputAttributeNames[location] = semantic.Name.Text;
                     }
 
@@ -4177,9 +4168,8 @@ namespace SiliconStudio.Shaders.Convertor
             mapToGlsl.Add(new MatrixType(ScalarType.Float, 1, 1), ScalarType.Float);
 
             // Sampler objects
-            mapToGlsl.Add(SamplerStateType.SamplerState, new TypeName("sampler"));
-            mapToGlsl.Add(new StateType("SamplerState"), new TypeName("sampler"));
-            mapToGlsl.Add(new StateType("SamplerComparisonState"), new TypeName("samplerShadow"));
+            mapToGlsl.Add(StateType.SamplerState, new TypeName("sampler"));
+            mapToGlsl.Add(StateType.SamplerComparisonState, new TypeName("samplerShadow"));
             //mapToGlsl.Add(SamplerStateType.SamplerComparisonState, new TypeName("sampler"));
 
             // Texture objects

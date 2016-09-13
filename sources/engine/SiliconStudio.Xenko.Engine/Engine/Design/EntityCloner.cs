@@ -8,7 +8,9 @@ using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Xenko.Animations;
+using SiliconStudio.Xenko.Audio;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Font;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Engine.Design
@@ -23,12 +25,16 @@ namespace SiliconStudio.Xenko.Engine.Design
     [DataSerializerGlobal(typeof(CloneSerializer<Mesh>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(CloneSerializer<Model>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(CloneSerializer<AnimationClip>), Profile = "Clone")]
+    [DataSerializerGlobal(typeof(CloneSerializer<Sound>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(CloneSerializer<string>), Profile = "Clone")]
+    [DataSerializerGlobal(typeof(CloneSerializer<OfflineRasterizedSpriteFont>), Profile = "Clone")]
+    [DataSerializerGlobal(typeof(CloneSerializer<RuntimeRasterizedSpriteFont>), Profile = "Clone")]
+    [DataSerializerGlobal(typeof(CloneSerializer<SignedDistanceFieldSpriteFont>), Profile = "Clone")]
     public class EntityCloner
     {
         private static readonly CloneContext cloneContext = new CloneContext();
         private static SerializerSelector cloneSerializerSelector = null;
-        internal static readonly PropertyKey<CloneContext> CloneContextProperty = new PropertyKey<CloneContext>("CloneContext", typeof(EntityCloner));
+        public static readonly PropertyKey<CloneContext> CloneContextProperty = new PropertyKey<CloneContext>("CloneContext", typeof(EntityCloner));
 
         // CloneObject TLS used to clone entities, so that we don't create one everytime we clone
         [ThreadStatic] private static HashSet<object> clonedObjectsTLS;
@@ -118,6 +124,7 @@ namespace SiliconStudio.Xenko.Engine.Design
         /// <param name="clonedObjects">The cloned objects.</param>
         /// <param name="mappedObjects">The mapped objects.</param>
         /// <param name="entity">The entity.</param>
+        /// <param name="serviceRegistry">The context service registry</param>
         /// <returns></returns>
         private static T Clone<T>(HashSet<object> clonedObjects, TryGetValueFunction<object, object> mappedObjects, T entity) where T : class
         {
@@ -168,7 +175,7 @@ namespace SiliconStudio.Xenko.Engine.Design
         /// <summary>
         /// Helper class for cloning <see cref="Entity"/>.
         /// </summary>
-        internal class CloneContext
+        public class CloneContext
         {
             public void Cleanup()
             {

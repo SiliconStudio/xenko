@@ -16,7 +16,7 @@ namespace SiliconStudio.Quantum.Tests
         public class ObjectContainer
         {
             public object Instance { get; set; }
-            public override string ToString() => $"{{ObjectContainer: {(Instance != this ? Instance : "This")}}}";
+            public override string ToString() => "{ObjectContainer}";
         }
 
         public class ObjectsContainer

@@ -19,6 +19,7 @@ namespace SiliconStudio.Xenko.Graphics
         private const int UnorderedAcccesViewCount = SharpDX.Direct3D11.ComputeShaderStage.UnorderedAccessViewSlotCount;
 
         private SharpDX.Direct3D11.DeviceContext nativeDeviceContext;
+        private SharpDX.Direct3D11.DeviceContext1 nativeDeviceContext1;
         private SharpDX.Direct3D11.UserDefinedAnnotation nativeDeviceProfiler;
 
         private SharpDX.Direct3D11.InputAssemblerStage inputAssembler;
@@ -35,9 +36,15 @@ namespace SiliconStudio.Xenko.Graphics
 
         private DescriptorSet[] currentDescriptorSets = new DescriptorSet[32];
 
-        public CommandList(GraphicsDevice device) : base(device)
+        public static CommandList New(GraphicsDevice device)
+        {
+            throw new InvalidOperationException("Can't create multiple command lists with D3D11");
+        }
+
+        internal CommandList(GraphicsDevice device) : base(device)
         {
             nativeDeviceContext = device.NativeDeviceContext;
+            nativeDeviceContext1 = new SharpDX.Direct3D11.DeviceContext1(nativeDeviceContext.NativePointer);
             nativeDeviceProfiler = device.IsDebugMode ? SharpDX.ComObject.QueryInterfaceOrNull<SharpDX.Direct3D11.UserDefinedAnnotation>(nativeDeviceContext.NativePointer) : null;
             InitializeStages();
 
@@ -62,8 +69,14 @@ namespace SiliconStudio.Xenko.Graphics
         {
         }
 
-        public void Close()
+        public void Flush()
         {
+
+        }
+
+        public CompiledCommandList Close()
+        {
+            return default(CompiledCommandList);
         }
 
         private void ClearStateImpl()
@@ -180,6 +193,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         public void UnsetReadWriteBuffers()
         {
+            // TODO: This should be done automatically on SetPipelineState
             // TODO optimize it using SetUnorderedAccessViews
             for (int i = 0; i < UnorderedAcccesViewCount; i++)
             {
@@ -202,6 +216,27 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="slot">The binding slot.</param>
         /// <param name="buffer">The constant buffer to set.</param>
         internal void SetConstantBuffer(ShaderStage stage, int slot, Buffer buffer)
+        {
+            if (stage == ShaderStage.None)
+                throw new ArgumentException("Cannot use Stage.None", "stage");
+
+            int stageIndex = (int)stage - 1;
+
+            int slotIndex = stageIndex * ConstantBufferCount + slot;
+            if (constantBuffers[slotIndex] != buffer)
+            {
+                constantBuffers[slotIndex] = buffer;
+                shaderStages[stageIndex].SetConstantBuffer(slot, buffer != null ? buffer.NativeBuffer : null);
+            }
+        }
+
+        /// <summary>
+        ///     Sets a constant buffer to the shader pipeline.
+        /// </summary>
+        /// <param name="stage">The shader stage.</param>
+        /// <param name="slot">The binding slot.</param>
+        /// <param name="buffer">The constant buffer to set.</param>
+        internal void SetConstantBuffer(ShaderStage stage, int slot, int offset, Buffer buffer)
         {
             if (stage == ShaderStage.None)
                 throw new ArgumentException("Cannot use Stage.None", "stage");
@@ -669,6 +704,11 @@ namespace SiliconStudio.Xenko.Graphics
         public unsafe MappedResource MapSubresource(GraphicsResource resource, int subResourceIndex, MapMode mapMode, bool doNotWait = false, int offsetInBytes = 0, int lengthInBytes = 0)
         {
             if (resource == null) throw new ArgumentNullException("resource");
+
+            // This resource has just been recycled by the GraphicsResourceAllocator, we force a rename to avoid GPU=>GPU sync point
+            if (resource.DiscardNextMap && mapMode == MapMode.WriteNoOverwrite)
+                mapMode = MapMode.WriteDiscard;
+
             SharpDX.DataBox dataBox = NativeDeviceContext.MapSubresource(resource.NativeResource, subResourceIndex, (SharpDX.Direct3D11.MapMode)mapMode, doNotWait ? SharpDX.Direct3D11.MapFlags.DoNotWait : SharpDX.Direct3D11.MapFlags.None);
             var databox = *(DataBox*)Interop.Cast(ref dataBox);
             if (!dataBox.IsEmpty)

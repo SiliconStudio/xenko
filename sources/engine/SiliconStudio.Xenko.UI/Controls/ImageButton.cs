@@ -9,6 +9,7 @@ namespace SiliconStudio.Xenko.UI.Controls
     /// A <see cref="Button"/> whose <see cref="ContentControl.Content"/> are the <see cref="Button.PressedImage"/> and <see cref="Button.NotPressedImage"/>.
     /// </summary>
     [DebuggerDisplay("ImageButton - Name={Name}")]
+    [Obsolete("Use Button with SizeToContent set to false.")]
     public class ImageButton : Button
     {
         private readonly ImageElement contentImageElement = new ImageElement();
@@ -28,7 +29,7 @@ namespace SiliconStudio.Xenko.UI.Controls
 
         private void UpdateContentImage()
         {
-            contentImageElement.Source = IsPressed ? PressedImage : MouseOverState == MouseOverState.MouseOverElement? MouseOverImage: NotPressedImage;
+            contentImageElement.Source = ButtonImageProvider;
         }
 
         /// <summary>

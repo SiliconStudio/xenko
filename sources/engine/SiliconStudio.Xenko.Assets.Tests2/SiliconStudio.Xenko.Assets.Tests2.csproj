@@ -114,9 +114,9 @@
       <Name>SiliconStudio.Xenko.Graphics</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Xenko.Assets.Model\SiliconStudio.Xenko.Assets.Model.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko.Assets.Models\SiliconStudio.Xenko.Assets.Models.csproj">
       <Project>{C904D2C6-5A15-4E0B-8432-33967E1735AA}</Project>
-      <Name>SiliconStudio.Xenko.Assets.Model</Name>
+      <Name>SiliconStudio.Xenko.Assets.Models</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Shaders.Compiler\SiliconStudio.Xenko.Shaders.Compiler.csproj">

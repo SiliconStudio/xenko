@@ -103,6 +103,13 @@ namespace SiliconStudio.Presentation.Controls
         public static readonly DependencyProperty ValidatedItemProperty = DependencyProperty.Register("ValidatedItem", typeof(object), typeof(FilteringComboBox));
 
         /// <summary>
+        /// Identifies the <see cref="ValidateOnLostFocus"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ValidateOnLostFocusProperty =
+            DependencyProperty.Register(nameof(ValidateOnLostFocus), typeof(bool), typeof(FilteringComboBox), new PropertyMetadata(true));
+
+
+        /// <summary>
         /// Raised just before the TextBox changes are validated. This event is cancellable
         /// </summary>
         public static readonly RoutedEvent ValidatingEvent = EventManager.RegisterRoutedEvent("Validating", RoutingStrategy.Bubble, typeof(CancelRoutedEventHandler), typeof(FilteringComboBox));
@@ -115,6 +122,7 @@ namespace SiliconStudio.Presentation.Controls
         static FilteringComboBox()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(FilteringComboBox), new FrameworkPropertyMetadata(typeof(FilteringComboBox)));
+            IsDropDownOpenProperty.OverrideMetadata(typeof(FilteringComboBox), new FrameworkPropertyMetadata(false, OnIsDropDownOpenChanged));
         }
 
         public FilteringComboBox()
@@ -170,6 +178,11 @@ namespace SiliconStudio.Presentation.Controls
         public object ValidatedItem { get { return GetValue(ValidatedItemProperty); } set { SetValue(ValidatedItemProperty, value); } }
 
         /// <summary>
+        /// Gets or sets whether the validation should happen when the control losts focus.
+        /// </summary>
+        public bool ValidateOnLostFocus { get { return (bool)GetValue(ValidateOnLostFocusProperty); } set { SetValue(ValidateOnLostFocusProperty, value); } }
+
+        /// <summary>
         /// Raised just before the TextBox changes are validated. This event is cancellable
         /// </summary>
         public event CancelRoutedEventHandler Validating { add { AddHandler(ValidatingEvent, value); } remove { RemoveHandler(ValidatingEvent, value); } }
@@ -185,13 +198,16 @@ namespace SiliconStudio.Presentation.Controls
 
             if (newValue != null)
             {
-                var cvs = (CollectionView)CollectionViewSource.GetDefaultView(newValue);
-                cvs.Filter = InternalFilter;
-                var listCollectionView = cvs as ListCollectionView;
-                if (listCollectionView != null)
-                {
-                    listCollectionView.CustomSort = Sort;
-                }
+                UpdateCollectionView();
+            }
+        }
+
+        private static void OnIsDropDownOpenChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var filteringComboBox = (FilteringComboBox)d;
+            if ((bool)e.NewValue && filteringComboBox.ItemsSource != null)
+            {
+                filteringComboBox.UpdateCollectionView();
             }
         }
 
@@ -341,7 +357,10 @@ namespace SiliconStudio.Presentation.Controls
                 SelectedItem = null;
                 updatingSelection = false;
             }
-            editableTextBox.Validate();
+            if (ValidateOnLostFocus)
+            {
+                editableTextBox.Validate();
+            }
             // Make sure the drop down is closed
             IsDropDownOpen = false;
             clearing = false;
@@ -364,13 +383,10 @@ namespace SiliconStudio.Presentation.Controls
                 Sort.Token = editableTextBox.Text;
 
             // TODO: this will update the selected index because the collection view is shared. If UpdateSelectionOnValidation is true, this will still modify the SelectedIndex
+            UpdateCollectionView();
+
             var collectionView = CollectionViewSource.GetDefaultView(ItemsSource);
-            collectionView.Filter = InternalFilter;
             var listCollectionView = collectionView as ListCollectionView;
-            if (listCollectionView != null)
-            {
-                listCollectionView.CustomSort = Sort;
-            }
 
             collectionView.Refresh();
             if (!validating)
@@ -381,6 +397,17 @@ namespace SiliconStudio.Presentation.Controls
                 }
             }
             updatingSelection = false;
+        }
+
+        private void UpdateCollectionView()
+        {
+            var collectionView = CollectionViewSource.GetDefaultView(ItemsSource);
+            collectionView.Filter = InternalFilter;
+            var listCollectionView = collectionView as ListCollectionView;
+            if (listCollectionView != null)
+            {
+                listCollectionView.CustomSort = Sort;
+            }
         }
 
         private void EditableTextBoxPreviewKeyDown(object sender, KeyEventArgs e)

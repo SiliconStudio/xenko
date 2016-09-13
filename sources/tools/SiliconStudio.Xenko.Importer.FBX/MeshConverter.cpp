@@ -48,7 +48,6 @@ public ref class MeshConverter
 {
 public:
 	property bool AllowUnsignedBlendIndices;
-	property float ScaleImport;
 
 	Logger^ logger;
 
@@ -1209,6 +1208,13 @@ public:
 		Vector3 scaling;
 		matrix.Decompose(scaling, rotation, translation);
 
+		// Apply rotation on top level nodes only
+		if (node->ParentIndex == 0)
+		{
+			Vector3::TransformCoordinate(translation, sceneMapping->AxisSystemRotationMatrix, translation);
+			rotation = Quaternion::Multiply(rotation, Quaternion::RotationMatrix(sceneMapping->AxisSystemRotationMatrix));
+		}
+
 		// Setup the transform for this node
 		node->Transform.Position = translation;
 		node->Transform.Rotation = rotation;
@@ -1477,7 +1483,7 @@ private:
 		scene->GetRootNode()->ResetPivotSetAndConvertAnimation(framerate, false, false);
 
 		// Initialize the node mapping
-		sceneMapping = gcnew SceneMapping(scene, ScaleImport);
+		sceneMapping = gcnew SceneMapping(scene);
 	}
 	
 	bool HasAnimationData(String^ inputFile)
@@ -1663,6 +1669,10 @@ private:
 				{
 					materialIndex = materialIndices->GetAt(i);
 				}
+				else if (materialMappingMode == FbxGeometryElement::eAllSame)
+				{
+					materialIndex = materialIndices->GetAt(0);
+				}
 
 				// Equivalent to std::vector::resize()
 				while (materialIndex >= buildMeshes->Count)
@@ -1715,9 +1725,10 @@ private:
 				}
 
 				FbxGeometryElementMaterial* lMaterialElement = pMesh->GetElementMaterial();
-				if (lMaterialElement != NULL)
+				FbxSurfaceMaterial* lMaterial = pNode->GetMaterial(i);
+				if ((materialMappingMode == FbxGeometryElement::eByPolygon || materialMappingMode == FbxGeometryElement::eAllSame)
+					&& lMaterialElement != NULL && lMaterial != NULL)
 				{
-					FbxSurfaceMaterial* lMaterial = pNode->GetMaterial(i);
 					std::map<std::string, size_t> uvElements;
 					auto uvNames = gcnew List<String^>();
 					for (int j = 0; j < pMesh->GetElementUVCount(); ++j)

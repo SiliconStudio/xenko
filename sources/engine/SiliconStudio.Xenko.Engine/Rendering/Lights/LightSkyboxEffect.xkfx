@@ -5,9 +5,9 @@ using SiliconStudio.Xenko.Rendering.Data;
 namespace SiliconStudio.Xenko.Rendering.Lights
 {
     /// <summary>
-    /// Base shader
+    /// Base effect
     /// </summary>
-    shader LightSkyboxEffect
+    effect LightSkyboxEffect
     {
         using params LightSkyboxShaderKeys;
 

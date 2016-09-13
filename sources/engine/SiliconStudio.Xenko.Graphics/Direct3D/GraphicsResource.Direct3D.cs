@@ -14,6 +14,7 @@ namespace SiliconStudio.Xenko.Graphics
     {
         private ShaderResourceView shaderResourceView;
         private UnorderedAccessView unorderedAccessView;
+        internal bool DiscardNextMap; // Used to internally force a WriteDiscard (to force a rename) with the GraphicsResourceAllocator
 
         protected bool IsDebugMode
         {

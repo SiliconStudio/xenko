@@ -15,7 +15,8 @@ namespace SiliconStudio.Xenko.Data
         WindowsPhone = 1 << PlatformType.WindowsPhone,
         iOS = 1 << PlatformType.iOS,
         Android = 1 << PlatformType.Android,
-        Linux = 1 << PlatformType.Linux
+        Linux = 1 << PlatformType.Linux,
+        macOS = 1 << PlatformType.macOS
     }
 
     [DataContract]

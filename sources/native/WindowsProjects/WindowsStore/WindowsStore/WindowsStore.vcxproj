@@ -140,7 +140,7 @@
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>$(XenkoDependenciesDir)\NativePath\WindowsStore\x86\</AdditionalLibraryDirectories>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/DEF:$(XenkoNativeProjectFolder)\symbols.def $(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>$(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -156,7 +156,7 @@
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>$(XenkoDependenciesDir)\NativePath\WindowsStore\x86\</AdditionalLibraryDirectories>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/DEF:$(XenkoNativeProjectFolder)\symbols.def $(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>$(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm'">
@@ -173,7 +173,7 @@
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>$(XenkoDependenciesDir)\NativePath\WindowsStore\ARM\</AdditionalLibraryDirectories>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/INCREMENTAL:NO /DEF:$(XenkoNativeProjectFolder)\symbols.def $(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/INCREMENTAL:NO $(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm'">
@@ -189,7 +189,7 @@
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>$(XenkoDependenciesDir)\NativePath\WindowsStore\ARM\</AdditionalLibraryDirectories>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/INCREMENTAL:NO /DEF:$(XenkoNativeProjectFolder)\symbols.def $(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/INCREMENTAL:NO $(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -206,7 +206,7 @@
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>$(XenkoDependenciesDir)\NativePath\WindowsStore\x64\</AdditionalLibraryDirectories>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/DEF:$(XenkoNativeProjectFolder)\symbols.def $(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>$(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -222,14 +222,14 @@
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>$(XenkoDependenciesDir)\NativePath\WindowsStore\x64\</AdditionalLibraryDirectories>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/DEF:$(XenkoNativeProjectFolder)\symbols.def $(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>$(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Object Include="$(XenkoNativeProjectFolder)\obj\*.obj" />
+    <Object Include="$(XenkoNativeProjectObjFolder)\*.obj" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

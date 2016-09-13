@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (nativeDeviceChild != null)
             {
                 // Schedule the resource for destruction (as soon as we are done with it)
-                GraphicsDevice.TemporaryResources.Enqueue(new KeyValuePair<long, SharpDX.Direct3D12.DeviceChild>(GraphicsDevice.NextFenceValue, nativeDeviceChild));
+                GraphicsDevice.TemporaryResources.Enqueue(new KeyValuePair<long, object>(GraphicsDevice.NextFenceValue, nativeDeviceChild));
                 nativeDeviceChild = null;
             }
             NativeResource = null;
@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Called when graphics device has been recreated.
         /// </summary>
-        /// <returns>True if item transitionned to a <see cref="GraphicsResourceLifetimeState.Active"/> state.</returns>
+        /// <returns>True if item transitioned to a <see cref="GraphicsResourceLifetimeState.Active"/> state.</returns>
         protected internal virtual bool OnRecreate()
         {
             return false;

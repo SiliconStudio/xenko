@@ -1,33 +1,7 @@
 !SceneAsset
 Id: 49fe9241-18f3-478f-8f71-e87f87346da2
-SerializedVersion: {Xenko: 1.7.0-beta02}
+SerializedVersion: {Xenko: 1.7.0-beta04}
 Tags: []
-Hierarchy:
-    ~Id: f6179207-c6a1-4692-a2df-cffa00f09103
-    RootEntities:
-        - 820d34a8-2971-4381-abfa-2965d94ec672
-    Entities:
-        -   Entity:
-                Id: 820d34a8-2971-4381-abfa-2965d94ec672
-                Name: Splash
-                Components:
-                    - !TransformComponent
-                        ~Id: 6bdc33bf-ffb7-4ec2-9a05-e50a0f025227
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: []
-                    - !GameMenu.SplashScript,GameMenu.Game
-                        ~Id: e77d2bac-3b55-4bbc-a5bb-d9c3ba319cc1
-                        SplashScreenImages: feefd366-28b9-404c-80e5-a083cd45e7d8/ba4ff50b-212b-47c5-af90-6672a8019b04:SplashScreenImages
-                        WesternFont: fe95c3b6-1014-4c00-8ddf-55902252f1d2/6a45aa77-17aa-4fde-9acd-9452744e14ca:WesternFont
-                    - !UIComponent
-                        ~Id: a8b1b6f6-8ad4-4580-bd94-0370455f3450
-                        Page: null
-                        Resolution: {X: 640.0, Y: 1136.0, Z: 1000.0}
-                        Size: {X: 1.0, Y: 1.0, Z: 1.0}
-                        ResolutionStretch: FixedWidthFixedHeight
-            Design: {}
 SceneSettings:
     ~Id: 8dfe4154-403a-48cb-9020-dbc029d08503
     GraphicsCompositor: !SceneGraphicsCompositorLayers
@@ -56,3 +30,26 @@ SceneSettings:
         Mode: !SceneEditorGraphicsModeLDRSettings
             ~Id: 23067b86-4714-400d-8328-0b2f6ca4113a
             BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+Hierarchy:
+    ~Id: f6179207-c6a1-4692-a2df-cffa00f09103
+    RootPartIds:
+        - 820d34a8-2971-4381-abfa-2965d94ec672
+    Parts:
+        -   Entity:
+                Id: 820d34a8-2971-4381-abfa-2965d94ec672
+                Name: Splash
+                Components:
+                    - !TransformComponent
+                        ~Id: 6bdc33bf-ffb7-4ec2-9a05-e50a0f025227
+                        Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !GameMenu.SplashScript,GameMenu.Game
+                        ~Id: e77d2bac-3b55-4bbc-a5bb-d9c3ba319cc1
+                    - !UIComponent
+                        ~Id: a8b1b6f6-8ad4-4580-bd94-0370455f3450
+                        Page: a540b88f-cd39-4f3c-adf0-9175144229b1/62c493c2-13ea-4fac-bbaf-578afafac104:SplashUI
+                        Resolution: {X: 640.0, Y: 1136.0, Z: 1000.0}
+                        Size: {X: 1.0, Y: 1.0, Z: 1.0}
+                        ResolutionStretch: FixedWidthFixedHeight

@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// <summary>
     /// Defines a skybox environment light
     /// </summary>
-    class LightSkyboxShader : EnvironmentLight, MaterialPixelShadingStream, NormalStream, Transformation
+    shader LightSkyboxShader : EnvironmentLight, MaterialPixelShadingStream, NormalStream, Transformation
     {
         cbuffer PerView.Lighting
         {

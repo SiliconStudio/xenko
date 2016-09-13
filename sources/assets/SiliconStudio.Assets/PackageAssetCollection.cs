@@ -141,11 +141,7 @@ namespace SiliconStudio.Assets
             // Handle notification - insert
             if (!collectionChangedSuspended)
             {
-                var handler = CollectionChanged;
-                if (handler != null)
-                {
-                    handler(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
-                }
+                CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item));
             }
         }
 
@@ -169,11 +165,7 @@ namespace SiliconStudio.Assets
             // Handle notification - clear items
             if (!collectionChangedSuspended)
             {
-                var handler = CollectionChanged;
-                if (handler != null)
-                {
-                    handler(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-                }
+                CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
             }
         }
 
@@ -219,11 +211,7 @@ namespace SiliconStudio.Assets
                 // Handle notification - replace
                 if (!collectionChangedSuspended)
                 {
-                    var handler = CollectionChanged;
-                    if (handler != null)
-                    {
-                        handler(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item));
-                    }
+                    CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item));
                 }
                 return true;
             }
@@ -261,11 +249,7 @@ namespace SiliconStudio.Assets
             collectionChangedSuspended = false;
 
             // Handle notification - clear items
-            var handler = CollectionChanged;
-            if (handler != null)
-            {
-                handler(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-            }
+            CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
         private void RemoveInternal(AssetItem item)

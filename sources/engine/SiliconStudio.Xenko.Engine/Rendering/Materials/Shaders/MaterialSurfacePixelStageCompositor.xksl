@@ -3,7 +3,7 @@
 namespace SiliconStudio.Xenko.Rendering.Materials
 {
     // Temporary code for testing IMaterialSurface
-    class MaterialSurfacePixelStageCompositor : ShadingBase, Transformation, PositionStream, MaterialPixelShadingStream, DirectLightGroupArray, EnvironmentLightArray
+    shader MaterialSurfacePixelStageCompositor : ShadingBase, Transformation, PositionStream, MaterialPixelShadingStream, DirectLightGroupArray, EnvironmentLightArray
     {
         compose IMaterialSurface materialPixelStage;
         compose IStreamInitializer streamInitializerPixelStage;

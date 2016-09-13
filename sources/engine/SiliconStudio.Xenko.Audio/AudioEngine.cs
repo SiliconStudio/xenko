@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Xenko.Native;
 
 namespace SiliconStudio.Xenko.Audio
 {
@@ -25,7 +26,7 @@ namespace SiliconStudio.Xenko.Audio
         {
             if (!Native.AudioLayer.Init())
             {
-                throw new Exception("Failed to initialize the OpenAL native layer.");
+                throw new Exception("Failed to initialize the audio native layer.");
             }
         }
 
@@ -35,7 +36,7 @@ namespace SiliconStudio.Xenko.Audio
         public static readonly Logger Logger = GlobalLogger.GetLogger("AudioEngine");
 
         /// <summary>
-        /// Create an Audio Engine on the default audio device
+        /// Initializes a new instance of the <see cref="AudioEngine"/> class with the default audio device.
         /// </summary>
         /// <param name="sampleRate">The desired sample rate of the audio graph. 0 let the engine choose the best value depending on the hardware.</param>
         /// <exception cref="AudioInitializationException">Initialization of the audio engine failed. May be due to memory problems or missing audio hardware.</exception>
@@ -45,7 +46,7 @@ namespace SiliconStudio.Xenko.Audio
         }
 
         /// <summary>
-        /// Create the Audio Engine on the specified device.
+        /// Initializes a new instance of the <see cref="AudioEngine"/> class with the default audio device.
         /// </summary>
         /// <param name="device">Device on which to create the audio engine.</param>
         /// <param name="sampleRate">The desired sample rate of the audio graph. 0 let the engine choose the best value depending on the hardware.</param>
@@ -59,14 +60,16 @@ namespace SiliconStudio.Xenko.Audio
             audioDevice = device;
         }
 
+        private float masterVolume = 1.0f;
+
         internal Native.AudioLayer.Device AudioDevice;
 
         /// <summary>
         /// Initialize audio engine
         /// </summary>
-        public virtual void InitializeAudioEngine()
+        internal virtual void InitializeAudioEngine()
         {
-            AudioDevice = Native.AudioLayer.Create(audioDevice.Name == "default" ? null : audioDevice.Name);
+            AudioDevice = AudioLayer.Create(audioDevice.Name == "default" ? null : audioDevice.Name);
             if (AudioDevice.Ptr == IntPtr.Zero)
             {
                 State = AudioEngineState.Invalidated;
@@ -104,12 +107,36 @@ namespace SiliconStudio.Xenko.Audio
         /// <exception cref="InvalidOperationException">One or several of the sounds asked for play had invalid data (corrupted or unsupported formats).</exception>
         public void Update()
         {
+            if (State != AudioEngineState.Disposed && State != AudioEngineState.Invalidated)
+            {
+                AudioLayer.Update(AudioDevice);
+            }
         }
 
         /// <summary>
         /// The current state of the <see cref="AudioEngine"/>.
         /// </summary>
         public AudioEngineState State { get; protected set; }
+
+        /// <summary>
+        /// Gets or sets the Global audio volume
+        /// </summary>
+        public float MasterVolume
+        {
+            get
+            {
+                return masterVolume;
+            }
+            set
+            {
+                if (State != AudioEngineState.Disposed && State != AudioEngineState.Invalidated)
+                {
+                    AudioLayer.SetMasterVolume(AudioDevice, value);
+                }
+
+                masterVolume = value;
+            }
+        }
 
         /// <summary>
         /// Pause the audio engine. That is, pause all the currently playing <see cref="SoundInstance"/>, and block any future play until <see cref="ResumeAudio"/> is called.
@@ -174,6 +201,9 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
+        /// <summary>
+        /// Destroys the instance.
+        /// </summary>
         protected override void Destroy()
         {
             base.Destroy();

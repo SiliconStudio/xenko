@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Markup;
 using System.Windows.Threading;
+using SiliconStudio.Presentation.Extensions;
 
 namespace SiliconStudio.Presentation.Controls
 {
@@ -273,6 +274,22 @@ namespace SiliconStudio.Presentation.Controls
                     ParentTreeView.SelectLast();
                     e.Handled = true;
                     break;
+            }
+        }
+
+        protected override void OnLostKeyboardFocus(KeyboardFocusChangedEventArgs e)
+        {
+            base.OnLostKeyboardFocus(e);
+            if (IsEditing)
+            {
+                var newFocus = e.NewFocus as DependencyObject;
+                if (ReferenceEquals(newFocus, this))
+                    return;
+
+                if (newFocus != null && !ReferenceEquals(newFocus.FindVisualParentOfType<TreeViewItem>(), this))
+                {
+                    StopEditing();
+                }
             }
         }
 

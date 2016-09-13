@@ -93,8 +93,7 @@ namespace SiliconStudio.Core.IO
         /// <param name="e">The file event.</param>
         protected virtual void OnModified(object sender, FileEvent e)
         {
-            var handler = Modified;
-            if (handler != null) handler(sender, e);
+            Modified?.Invoke(sender, e);
         }
 
 #if !SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP

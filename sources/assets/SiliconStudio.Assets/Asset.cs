@@ -80,7 +80,7 @@ namespace SiliconStudio.Assets
         /// Gets or sets the base.
         /// </summary>
         /// <value>The base.</value>
-        [DataMember(BaseProperty), DefaultValue(null)]
+        [DataMember(int.MaxValue - 2000, BaseProperty), DefaultValue(null)]
         [Display(Browsable = false)]
         public AssetBase Base { get; set; }
 
@@ -93,7 +93,7 @@ namespace SiliconStudio.Assets
         /// Gets or sets the base for part assets.
         /// </summary>
         /// <value>The part assets.</value>
-        [DataMember(BasePartsProperty), DefaultValue(null)]
+        [DataMember(int.MaxValue - 1000, BasePartsProperty), DefaultValue(null)]
         [Display(Browsable = false)]
         [NotNullItems]
         public List<AssetBase> BaseParts { get; set; }
@@ -133,11 +133,12 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Creates an asset that inherits from this asset.
         /// </summary>
-        /// <param name="location">The location of this asset.</param>
+        /// <param name="baseLocation">The location of this asset.</param>
+        /// <param name="idRemapping">A dictionary in which will be stored all the <see cref="Guid"/> remapping done for the child asset.</param>
         /// <returns>An asset that inherits this asset instance</returns>
-        public virtual Asset CreateChildAsset(string location)
+        public virtual Asset CreateChildAsset(string baseLocation, IDictionary<Guid, Guid> idRemapping = null)
         {
-            if (location == null) throw new ArgumentNullException(nameof(location));
+            if (baseLocation == null) throw new ArgumentNullException(nameof(baseLocation));
 
             // Clone this asset to make the base
             var assetBase = (Asset)AssetCloner.Clone(this);
@@ -145,11 +146,17 @@ namespace SiliconStudio.Assets
             // Clone it again without the base and without overrides (as we want all parameters to inherit from base)
             var newAsset = (Asset)AssetCloner.Clone(assetBase, AssetClonerFlags.RemoveOverrides);
 
-            // Sets a new identifier for this asset
-            newAsset.Id = Guid.NewGuid();
+            // Create a new identifier for this asset
+            var newId = Guid.NewGuid();
+
+            // Register this new identifier in the remapping dictionary
+            idRemapping?.Add(newAsset.Id, newId);
+            
+            // Write the new id into the new asset.
+            newAsset.Id = newId;
 
             // Create the base of this asset
-            newAsset.Base = new AssetBase(location, assetBase);
+            newAsset.Base = new AssetBase(baseLocation, assetBase);
             return newAsset;
         }
 

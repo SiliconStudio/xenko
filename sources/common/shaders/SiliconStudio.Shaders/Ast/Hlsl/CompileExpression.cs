@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     /// <summary>
     /// A Compile expression.
     /// </summary>
-    public class CompileExpression : Expression
+    public partial class CompileExpression : Expression
     {
         #region Constructors and Destructors
 

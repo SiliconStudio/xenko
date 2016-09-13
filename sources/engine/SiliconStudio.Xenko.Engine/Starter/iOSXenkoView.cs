@@ -14,7 +14,6 @@ using OpenTK.Graphics.ES30;
 using OpenTK.Platform.iPhoneOS;
 using SiliconStudio.Xenko.Games;
 using UIKit;
-using RectangleF = OpenTK.RectangleF;
 
 namespace SiliconStudio.Xenko.Starter
 {

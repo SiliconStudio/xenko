@@ -60,6 +60,8 @@ namespace SiliconStudio.Xenko.Graphics
             HasDepthAsSRV = true;
             HasDepthAsReadOnlyRT = true;
 
+            HasResourceRenaming = false;
+
             HasMultiThreadingConcurrentResources = true;
             HasDriverCommandLists = true;
 

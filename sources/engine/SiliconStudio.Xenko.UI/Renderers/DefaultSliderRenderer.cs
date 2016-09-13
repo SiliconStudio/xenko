@@ -31,14 +31,14 @@ namespace SiliconStudio.Xenko.UI.Renderers
             var axisPrime = (axis + 1) % 2;
             var color = slider.RenderOpacity * Color.White;
             var isGaugeReverted = axis == 1 ? !slider.IsDirectionReversed : slider.IsDirectionReversed; // we want the track going up from the bottom in vertical mode by default
-            var sliderRatio = slider.Value / (slider.Maximum - slider.Minimum);
+            var sliderRatio = MathUtil.InverseLerp(slider.Minimum, slider.Maximum, slider.Value);
             var trackOffsets = new Vector2(slider.TrackStartingOffsets[axis], slider.TrackStartingOffsets[axisPrime]);
             var fullGaugeSize = slider.RenderSizeInternal[axis] - trackOffsets.X - trackOffsets.Y;
 
             var image = slider.TrackBackgroundImage?.GetSprite();
             var trackIdealSize = image != null ? new Vector2?(image.SizeInPixels) : null;
             // draws the track background
-            if (image != null)
+            if (image?.Texture != null)
             {
                 var imageAxis = (int)image.Orientation;
                 var imageOrientation = (ImageOrientation)(axis ^ imageAxis);
@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
             
             // draw the track foreground
             image = slider.TrackForegroundImage?.GetSprite();
-            if (image != null)
+            if (image?.Texture != null)
             {
                 var imageAxis = (int)image.Orientation;
                 var imageOrientation = (ImageOrientation)(axis ^ imageAxis);
@@ -93,7 +93,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
 
             // draws the ticks
             image = slider.TickImage?.GetSprite();
-            if (slider.AreTicksDisplayed && image != null)
+            if (slider.AreTicksDisplayed && image?.Texture != null)
             {
                 var imageAxis = (int)image.Orientation;
                 var imageOrientation = (ImageOrientation)(axis ^ imageAxis);
@@ -117,7 +117,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
                 worldMatrix.M42 += startOffset[axis] * worldMatrix[(axis << 2) + 1] + startOffset[axisPrime] * worldMatrix[(axisPrime << 2) + 1];
                 worldMatrix.M43 += startOffset[axis] * worldMatrix[(axis << 2) + 2] + startOffset[axisPrime] * worldMatrix[(axisPrime << 2) + 2];
                 
-                for (int i = 0; i < slider.TickFrequency + 1; i++)
+                for (var i = 0; i < slider.TickFrequency + 1; i++)
                 {
                     Batch.DrawImage(image.Texture, ref worldMatrix, ref image.RegionInternal, ref size, ref image.BordersInternal, ref color, context.DepthBias, imageOrientation, SwizzleMode.None, true);
 
@@ -130,7 +130,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
 
             //draws the thumb
             image = (slider.MouseOverState == MouseOverState.MouseOverElement ? slider.MouseOverThumbImage : slider.ThumbImage)?.GetSprite();
-            if (image != null)
+            if (image?.Texture != null)
             {
                 var imageAxis = (int)image.Orientation;
                 var imageOrientation = (ImageOrientation)(axis ^ imageAxis);

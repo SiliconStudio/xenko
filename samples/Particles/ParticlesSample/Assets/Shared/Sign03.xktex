@@ -1,0 +1,6 @@
+!Texture
+Id: 839682f7-532c-4541-a40f-d2689b6fbe72
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../Resources/Sign03.png
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

@@ -1,52 +1,36 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.ComponentModel;
 using System.Diagnostics;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
-using SiliconStudio.Xenko.Graphics.Font;
 
 namespace SiliconStudio.Xenko.UI.Controls
 {
     /// <summary>
     /// A text viewer that scrolls automatically the text from right to left.
     /// </summary>
+    [DataContract(nameof(ScrollingText))]
     [DebuggerDisplay("ScrollingText - Name={Name}")]
     public class ScrollingText : TextBlock
     {
-        /// <summary>
-        /// The key to the ScrollingSpeed dependency property.
-        /// </summary>
-        protected readonly static PropertyKey<float> ScrollingSpeedPropertyKey = new PropertyKey<float>("ScrollingSpeedKey", typeof(ScrollingText), DefaultValueMetadata.Static(40f), ValidateValueMetadata.New<float>(ValidateScrollingSpeedCallback));
-
-        /// <summary>
-        /// The key to the TextWrapped dependency property.
-        /// </summary>
-        protected readonly static PropertyKey<bool> RepeatTextPropertyKey = new PropertyKey<bool>("TextWrappedKey", typeof(ScrollingText), DefaultValueMetadata.Static(true), ObjectInvalidationMetadata.New<bool>(RepeatTextInvalidationCallback));
-
-        /// <summary>
-        /// The key to the DesiredCharacterNumber dependency property.
-        /// </summary>
-        protected readonly static PropertyKey<uint> DesiredCharacterNumberPropertyKey = new PropertyKey<uint>("DesiredCharacterNumberKey", typeof(ScrollingText), DefaultValueMetadata.Static((uint)10), ObjectInvalidationMetadata.New<uint>(InvalidateCharacterNumber));
-
-        private static void InvalidateCharacterNumber(object propertyOwner, PropertyKey<uint> propertyKey, uint propertyOldValue)
-        {
-            var element = (UIElement)propertyOwner;
-            element.InvalidateMeasure();
-        }
-
         private string textToDisplay = "";
 
         private float elementWidth;
 
         /// <summary>
-        /// The index in <see cref="Controls.TextBlock.Text"/> defining the position of the next letter to add to <see cref="TextToDisplay"/>.
+        /// The index in <see cref="TextBlock.Text"/> defining the position of the next letter to add to <see cref="TextToDisplay"/>.
         /// </summary>
         private int nextLetterIndex;
 
         private bool textHasBeenAppended;
+        private float scrollingSpeed = 40.0f;
+        private uint desiredCharacterNumber = 10;
+        private bool repeatText = true;
 
         /// <summary>
         /// The current offset of the text in the Ox axis.
@@ -67,41 +51,60 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <summary>
         /// Gets or sets the scrolling speed of the text. The unit is in virtual pixels.
         /// </summary>
-        /// <exception cref="ArgumentOutOfRangeException">The provided speed must be positive or null.</exception>
+        /// <remarks>The value is coerced in the range [0, <see cref="float.MaxValue"/>].</remarks>
+        /// <userdoc>The scrolling speed of the text. The unit is in virtual pixels.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue)]
+        [Display(category: BehaviorCategory)]
+        [DefaultValue(40.0f)]
         public float ScrollingSpeed
         {
-            get { return DependencyProperties.Get(ScrollingSpeedPropertyKey); }
-            set { DependencyProperties.Set(ScrollingSpeedPropertyKey, value); }
+            get { return scrollingSpeed; }
+            set
+            {
+                if (float.IsNaN(value))
+                    return;
+                scrollingSpeed = MathUtil.Clamp(value, 0.0f, float.MaxValue); }
         }
 
         /// <summary>
         /// Gets or sets the desired number of character in average to display at a given time. This value is taken in account during the measurement stage of the element.
         /// </summary>
+        /// <userdoc>The desired number of character in average to display at a given time. This value is taken in account during the measurement stage of the element.</userdoc>
+        [DataMember]
+        [Display(category: BehaviorCategory)]
+        [DefaultValue((uint)10)]
         public uint DesiredCharacterNumber
         {
-            get { return DependencyProperties.Get(DesiredCharacterNumberPropertyKey); }
-            set { DependencyProperties.Set(DesiredCharacterNumberPropertyKey, value); }
+            get { return desiredCharacterNumber; }
+            set
+            {
+                if (desiredCharacterNumber == value)
+                    return;
+
+                desiredCharacterNumber = value;
+                InvalidateMeasure();
+            }
         }
 
         /// <summary>
         /// Gets or sets the a value indicating if the text message must be repeated (wrapped) or not.
         /// </summary>
+        /// <userdoc>True if the text message must be repeated (wrapped), false otherwise.</userdoc>
+        [DataMember]
+        [Display(category: BehaviorCategory)]
+        [DefaultValue(true)]
         public bool RepeatText
         {
-            get { return DependencyProperties.Get(RepeatTextPropertyKey); }
-            set { DependencyProperties.Set(RepeatTextPropertyKey, value); }
-        }
+            get { return repeatText; }
+            set
+            {
+                if (repeatText == value)
+                    return;
 
-        private static void ValidateScrollingSpeedCallback(ref float value)
-        {
-            if (value < 0)
-                throw new ArgumentOutOfRangeException("value");
-        }
-
-        private static void RepeatTextInvalidationCallback(object propertyOwner, PropertyKey<bool> propertyKey, bool propertyOldValue)
-        {
-            var scrollingText = (ScrollingText)propertyOwner;
-            scrollingText.ResetDisplayingText();
+                repeatText = value;
+                ResetDisplayingText();
+            }
         }
 
         /// <summary>
@@ -110,7 +113,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         /// <param name="text">The text to append</param>
         public void AppendText(string text)
         {
-            if (text == null) throw new ArgumentNullException("text");
+            if (text == null) throw new ArgumentNullException(nameof(text));
 
             textHasBeenAppended = true;
             Text += text;
@@ -140,11 +143,8 @@ namespace SiliconStudio.Xenko.UI.Controls
             AccumulatedWidth = 0;
         }
 
-        public override string TextToDisplay
-        {
-            get { return textToDisplay; }
-        }
-        
+        public override string TextToDisplay => textToDisplay;
+
         /// <summary>
         /// Calculate the width of the text to display in virtual pixels size.
         /// </summary>
@@ -197,7 +197,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                 textToDisplay = "";
 
             // remove characters at the beginning of TextToDisplay as long as possible
-            var fontSize = new Vector2(TextSize, TextSize);
+            var fontSize = new Vector2(ActualTextSize, ActualTextSize);
             while (textToDisplay.Length > 1 && Font.MeasureString(textToDisplay, ref fontSize, 1).X < nextOffsetShift)
             {
                 nextOffsetShift -= Font.MeasureString(textToDisplay, ref fontSize, 1).X;

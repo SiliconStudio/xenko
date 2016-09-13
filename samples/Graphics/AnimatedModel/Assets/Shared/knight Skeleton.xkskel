@@ -1,8 +1,9 @@
 !Skeleton
 Id: 218816f5-b393-4b12-adaf-e0e12817d892
+SerializedVersion: {Xenko: 1.7.8-beta}
 Tags: []
 Source: ../../Resources/knight/knight.fbx
-ScaleImport: 0.0
+PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Nodes:
     - {~Id: 65363bed-ca99-4cf5-9f54-52b4eac022a9, Name: RootNode, Depth: 0}
     - {~Id: 805bcf58-5143-425c-a13e-fba058e44cfd, Name: root, Depth: 1}

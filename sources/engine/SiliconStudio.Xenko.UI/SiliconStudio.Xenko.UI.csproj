@@ -52,12 +52,20 @@
     <Compile Include="Controls\ModalElement.cs" />
     <Compile Include="Controls\ScrollBar.cs" />
     <Compile Include="Controls\Slider.cs" />
+    <Compile Include="DependencyPropertyFactory.cs" />
+    <Compile Include="DependencyPropertyKeyMetadata.cs" />
     <Compile Include="Engine\Processors\UIElementLinkProcessor.cs" />
+    <Compile Include="Engine\Design\UICloner.cs" />
     <Compile Include="Engine\UIComponent.cs" />
     <Compile Include="Engine\UIElementLinkComponent.cs" />
     <Compile Include="Engine\UIElementTransformLink.cs" />
+    <Compile Include="Engine\UILibrary.cs" />
+    <Compile Include="Engine\UILibraryExtensions.cs" />
+    <Compile Include="Engine\UIPage.cs" />
+    <Compile Include="ImageSizeHelper.cs" />
     <Compile Include="IScrollAnchorInfo.cs" />
     <Compile Include="IScrollInfo.cs" />
+    <Compile Include="IUIElementChildren.cs" />
     <Compile Include="KeyEventArgs.cs" />
     <Compile Include="LayoutingContext.cs" />
     <Compile Include="Module.cs" />
@@ -140,6 +148,7 @@
     <Compile Include="UISystem.cs" />
     <Compile Include="VerticalAlignment.cs" />
     <Compile Include="Visibility.cs" />
+    <Compile Include="VisualTreeHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">

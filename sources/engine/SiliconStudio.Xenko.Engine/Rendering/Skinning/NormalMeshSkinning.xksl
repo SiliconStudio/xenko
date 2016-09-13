@@ -3,7 +3,7 @@
 /// <summary>
 /// Performs skinning on the normals.
 /// </summary>
-class NormalMeshSkinning : TransformationSkinning, NormalStream
+shader NormalMeshSkinning : TransformationSkinning, NormalStream
 {
     override stage void PreTransformPosition()
     {

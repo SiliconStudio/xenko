@@ -48,6 +48,9 @@
 // This option is useless on Little_Endian CPU (such as x86)
 //#define BIG_ENDIAN_NATIVE_BUT_INCOMPATIBLE 1
 
+#include "../../../../../deps/NativePath/standard/stdlib.h"
+#include "../../../../../deps/NativePath/standard/string.h"
+
 //**************************************
 // CPU Feature Detection
 //**************************************
@@ -124,8 +127,7 @@
 //**************************************
 // Includes
 //**************************************
-#include "../../../../../deps/NativePath/standard/stdlib.h"
-#include "../../../../../deps/NativePath/standard/string.h"
+
 #include "lz4.h"
 
 
@@ -763,7 +765,7 @@ _last_literals:
 }
 
 
-int LZ4_compress_limitedOutput(const char* source,
+DLL_EXPORT_API int LZ4_compress_limitedOutput(const char* source,
     char* dest,
     int isize,
     int maxOutputSize)
@@ -783,7 +785,7 @@ int LZ4_compress_limitedOutput(const char* source,
 #endif
 }
 
-int LZ4_compress(const char* source,
+DLL_EXPORT_API int LZ4_compress(const char* source,
     char* dest,
     int isize)
 {
@@ -801,7 +803,7 @@ int LZ4_compress(const char* source,
 //      LZ4_uncompress() guarantees that it will never read before source, nor beyond source + LZ4_compressBound(osize)
 //      A corrupted input will produce an error result, a negative int, indicating the position of the error within input stream.
 
-int LZ4_uncompress(const char* source,
+DLL_EXPORT_API int LZ4_uncompress(const char* source,
     char* dest,
     int osize)
 {
@@ -905,7 +907,7 @@ _output_error:
     return (int) (-(((char*)ip)-source));
 }
 
-int LZ4_uncompress_unknownOutputSize(
+DLL_EXPORT_API int LZ4_uncompress_unknownOutputSize(
     const char* source,
     char* dest,
     int isize,

@@ -76,12 +76,17 @@ namespace SiliconStudio.Xenko.Rendering.Composers
 
                     // Draw the master track
                     Master.Draw(context);
+
+                    // Flush
+                    RenderSystem.Flush(context);
                 }
                 finally
                 {
                     // Reset render context data
                     RenderSystem.Reset();
                 }
+
+                context.RenderContext.Reset();
             }
         }
     }

@@ -204,6 +204,11 @@ namespace SiliconStudio.Xenko.Games
         public DeviceCreationFlags DeviceCreationFlags { get; set; }
 
         /// <summary>
+        /// If populated the engine will try to initialize the device with the same unique id
+        /// </summary>
+        public string RequiredAdapterUid { get; set; }
+
+        /// <summary>
         /// Gets or sets the default color space.
         /// </summary>
         /// <value>The default color space.</value>
@@ -644,7 +649,8 @@ namespace SiliconStudio.Xenko.Games
                     PreferredMultiSampleLevel = PreferredMultiSampleLevel,
                     SynchronizeWithVerticalRetrace = SynchronizeWithVerticalRetrace,
                     PreferredGraphicsProfile = (GraphicsProfile[])PreferredGraphicsProfile.Clone(),
-                    ColorSpace = PreferredColorSpace
+                    ColorSpace = PreferredColorSpace,
+                    RequiredAdapterUid = RequiredAdapterUid
             };
 
             // Remap to Srgb backbuffer if necessary
@@ -683,7 +689,7 @@ namespace SiliconStudio.Xenko.Games
             GraphicsProfile availableGraphicsProfile;
             if (!IsPreferredProfileAvailable(preferredParameters.PreferredGraphicsProfile, out availableGraphicsProfile))
             {
-                throw new InvalidOperationException(string.Format("Graphics profiles [{0}] are not supported by the device. The highest available profile is [{1}].", string.Join(", ", preferredParameters.PreferredGraphicsProfile), availableGraphicsProfile));
+                throw new InvalidOperationException($"Graphics profiles [{string.Join(", ", preferredParameters.PreferredGraphicsProfile)}] are not supported by the device. The highest available profile is [{availableGraphicsProfile}].");
             }
 
             var devices = graphicsDeviceFactory.FindBestDevices(preferredParameters);
@@ -873,47 +879,27 @@ namespace SiliconStudio.Xenko.Games
 
         protected virtual void OnDeviceCreated(object sender, EventArgs args)
         {
-            var handler = DeviceCreated;
-            if (handler != null)
-            {
-                handler(sender, args);
-            }
+            DeviceCreated?.Invoke(sender, args);
         }
 
         protected virtual void OnDeviceDisposing(object sender, EventArgs args)
         {
-            var handler = DeviceDisposing;
-            if (handler != null)
-            {
-                handler(sender, args);
-            }
+            DeviceDisposing?.Invoke(sender, args);
         }
         
         protected virtual void OnDeviceReset(object sender, EventArgs args)
         {
-            var handler = DeviceReset;
-            if (handler != null)
-            {
-                handler(sender, args);
-            }
+            DeviceReset?.Invoke(sender, args);
         }
         
         protected virtual void OnDeviceResetting(object sender, EventArgs args)
         {
-            var handler = DeviceResetting;
-            if (handler != null)
-            {
-                handler(sender, args);
-            }
+            DeviceResetting?.Invoke(sender, args);
         }
         
         protected virtual void OnPreparingDeviceSettings(object sender, PreparingDeviceSettingsEventArgs args)
         {
-            var handler = PreparingDeviceSettings;
-            if (handler != null)
-            {
-                handler(sender, args);
-            }
+            PreparingDeviceSettings?.Invoke(sender, args);
         }
 
         private void Window_ClientSizeChanged(object sender, EventArgs e)
@@ -1015,6 +1001,8 @@ namespace SiliconStudio.Xenko.Games
             {
                 using (Profiler.Begin(GraphicsDeviceManagerProfilingKeys.CreateDevice))
                 {
+                    game.ConfirmRenderingSettings(GraphicsDevice == null); //if Device is null we assume we are still at game creation phase
+
                     isChangingDevice = true;
                     var width = game.Window.ClientBounds.Width;
                     var height = game.Window.ClientBounds.Height;

@@ -210,26 +210,22 @@ namespace SiliconStudio.Xenko.Games
 
         protected virtual void OnDrawOrderChanged(object source, EventArgs e)
         {
-            EventHandler<EventArgs> handler = DrawOrderChanged;
-            if (handler != null) handler(source, e);
+            DrawOrderChanged?.Invoke(source, e);
         }
 
         private void OnVisibleChanged(EventArgs e)
         {
-            EventHandler<EventArgs> handler = VisibleChanged;
-            if (handler != null) handler(this, e);
+            VisibleChanged?.Invoke(this, e);
         }
 
         private void OnEnabledChanged(EventArgs e)
         {
-            EventHandler<EventArgs> handler = EnabledChanged;
-            if (handler != null) handler(this, e);
+            EnabledChanged?.Invoke(this, e);
         }
 
         protected virtual void OnUpdateOrderChanged(object source, EventArgs e)
         {
-            EventHandler<EventArgs> handler = UpdateOrderChanged;
-            if (handler != null) handler(source, e);
+            UpdateOrderChanged?.Invoke(source, e);
         }
 
         #region Implementation of IContentable

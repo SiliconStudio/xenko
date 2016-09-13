@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-
+using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Storage;
@@ -18,8 +18,6 @@ using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Convertor;
 using SiliconStudio.Shaders.Writer.Hlsl;
 using ConstantBuffer = SiliconStudio.Shaders.Ast.Hlsl.ConstantBuffer;
-using LayoutQualifier = SiliconStudio.Shaders.Ast.LayoutQualifier;
-using ParameterQualifier = SiliconStudio.Shaders.Ast.Hlsl.ParameterQualifier;
 using StorageQualifier = SiliconStudio.Shaders.Ast.StorageQualifier;
 
 namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
@@ -70,7 +68,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             {
                 case GraphicsPlatform.OpenGL:
                     shaderPlatform = GlslShaderPlatform.OpenGL;
-                    shaderVersion = 420;
+                    shaderVersion = 410;
                     break;
                 case GraphicsPlatform.OpenGLES:
                     shaderPlatform = GlslShaderPlatform.OpenGLES;
@@ -106,7 +104,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                 using (var stream = new MemoryStream())
                 {
                     BinarySerialization.Write(stream, shaderBytecodes);
-#if !SILICONSTUDIO_RUNTIME_CORECLR
+#if !SILICONSTUDIO_RUNTIME_CORECLR && !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
                     rawData = stream.GetBuffer();
 #else
 // FIXME: Manu: The call to "ToArray()" might be slower than "GetBuffer()"
@@ -114,6 +112,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
 #endif
                 }
             }
+#if !SILICONSTUDIO_RUNTIME_CORECLR && !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
             else if (effectParameters.Platform == GraphicsPlatform.Vulkan)
             {
                 string inputFileExtension;
@@ -137,20 +136,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                 File.WriteAllBytes(inputFileName, Encoding.ASCII.GetBytes(shader));
 
                 // Run shader compiler
-                var process = new Process
-                {
-                    StartInfo =
-                    {
-                        FileName = "glslangValidator.exe",
-                        Arguments = $"-V -s -o {outputFileName} {inputFileName}",
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true,
-                        UseShellExecute = false,
-                        CreateNoWindow = true
-                    }
-                };
-                process.Start();
-                process.WaitForExit();
+                var filename = Platform.Type == PlatformType.Windows ? "glslangValidator.exe" : "glslangValidator";
+                ShellHelper.RunProcessAndRedirectToLogger(filename, $"-V -o {outputFileName} {inputFileName}", null, shaderBytecodeResult);
 
                 if (!File.Exists(outputFileName))
                 {
@@ -176,10 +163,11 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                 File.Delete(inputFileName);
                 File.Delete(outputFileName);
             }
+#endif
             else
             {
                 // store string on OpenGL platforms
-                rawData = Encoding.ASCII.GetBytes(shader);
+                rawData = Encoding.UTF8.GetBytes(shader);
             }
             
             var bytecodeId = ObjectId.FromBytes(rawData);
@@ -415,6 +403,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
 
             var realShaderSource = glslShaderCode.ToString();
 
+// TODO: Disabled because glsl optimizer don't properly put lowp/highp qualifier inside struct (which make shader compilation fails since we use struct for lighting)
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             // optimize shader
             try
@@ -539,6 +528,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             }
         }
 
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+
         private string RunOptimizer(ShaderBytecodeResult shaderBytecodeResult, string baseShader, GlslShaderPlatform shaderPlatform, int shaderVersion, bool vertex)
 	    {
             lock (GlslOptimizerLock)
@@ -602,5 +593,6 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
 
         [DllImport("glsl_optimizer.dll", CallingConvention = CallingConvention.Cdecl)]
         private static extern void glslopt_cleanup(IntPtr ctx);
+#endif
     }
 }

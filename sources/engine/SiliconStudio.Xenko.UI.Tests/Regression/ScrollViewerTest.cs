@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         public ScrollViewerTest()
         {
-            CurrentVersion = 7;
+            CurrentVersion = 8;
         }
 
         protected override async Task LoadContent()
@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             contentDecorator = new ContentDecorator { Content = scrollViewer };
 
-            UIComponent.RootElement = contentDecorator;
+            UIComponent.Page = new Engine.UIPage { RootElement = contentDecorator };
         }
 
         protected override void Update(GameTime gameTime)

@@ -3,7 +3,7 @@
 /// <summary>
 /// Computes skinned normals in view space.
 /// </summary>
-class NormalVSSkinningFromMesh : NormalFromMesh
+shader NormalVSSkinningFromMesh : NormalFromMesh
 {
     override stage void GenerateNormal_VS()
     {

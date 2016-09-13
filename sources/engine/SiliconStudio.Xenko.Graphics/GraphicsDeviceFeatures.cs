@@ -82,6 +82,11 @@ namespace SiliconStudio.Xenko.Graphics
         public readonly bool HasDepthAsReadOnlyRT;
 
         /// <summary>
+        /// Boolean indicating if the graphics API supports resource renaming (with either <see cref="MapMode.WriteDiscard"/> or <see cref="CommandList.UpdateSubresource"/> with full size).
+        /// </summary>
+        public readonly bool HasResourceRenaming;
+
+        /// <summary>
         /// Gets the <see cref="FeaturesPerFormat" /> for the specified <see cref="SharpDX.DXGI.Format" />.
         /// </summary>
         /// <param name="dxgiFormat">The dxgi format.</param>

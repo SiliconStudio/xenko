@@ -222,7 +222,8 @@ namespace SiliconStudio.Shaders.Grammar.Hlsl
         /// </typeparam>
         protected static void CreateGenericTypeAst<T1>(ParsingContext parsingcontext, ParseTreeNode node)
         {
-            var value = Ast<GenericType<T1>>(node);
+            var value = Ast<GenericType>(node);
+            value.ParameterTypes.Add(typeof(T1));
 
             // [0]       [1]      [2]      [3]
             // keyword + "<" + type_name + ">"
@@ -240,7 +241,7 @@ namespace SiliconStudio.Shaders.Grammar.Hlsl
             }
 
             value.Name = identifier;
-            value.Parameters[0] = (Node)node.ChildNodes[2].AstNode;
+            value.Parameters.Add((Node)node.ChildNodes[2].AstNode);
         }
 
         /// <summary>
@@ -256,7 +257,9 @@ namespace SiliconStudio.Shaders.Grammar.Hlsl
         /// </typeparam>
         protected static void CreateGenericTypeAst<T1, T2>(ParsingContext parsingcontext, ParseTreeNode node)
         {
-            var value = Ast<GenericType<T1, T2>>(node);
+            var value = Ast<GenericType>(node);
+            value.ParameterTypes.Add(typeof(T1));
+            value.ParameterTypes.Add(typeof(T2));
 
             // [0]          [1]      [2]             [3]
             // identifier + "<" + type_name + "," + value ">"
@@ -275,8 +278,8 @@ namespace SiliconStudio.Shaders.Grammar.Hlsl
 
             value.Name = identifier;
 
-            value.Parameters[0] = (Node)node.ChildNodes[2].AstNode;
-            value.Parameters[1] = (Node)node.ChildNodes[3].AstNode;
+            value.Parameters.Add((Node)node.ChildNodes[2].AstNode);
+            value.Parameters.Add((Node)node.ChildNodes[3].AstNode);
         }
 
         /// <summary>

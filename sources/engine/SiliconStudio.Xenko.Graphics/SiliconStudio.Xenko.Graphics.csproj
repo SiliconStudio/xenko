@@ -13,6 +13,7 @@
     <AssemblyName>SiliconStudio.Xenko.Graphics</AssemblyName>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
+    <XenkoProjectPlatformDependentWindows>true</XenkoProjectPlatformDependentWindows>
     <XenkoBuildTags>*</XenkoBuildTags>
     <DefineConstants>$(DefineConstants);SILICONSTUDIO_XENKO_GRAPHICS_NO_DESCRIPTOR_COPIES</DefineConstants>
   </PropertyGroup>
@@ -24,24 +25,7 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Choose>
-    <When Condition="$(SiliconStudioUI.Contains('SDL'))">
-      <ItemGroup>
-        <Reference Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoDependenciesDir)\SDL2-CS\SDL2-CS.dll</HintPath>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
-  <Choose>
-    <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
-      <ItemGroup>
-        <Reference Condition="($(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))) OR ($(SiliconStudioUI.Contains('OPENTK')) AND '$(SiliconStudioRuntime)' == '')" Include="System.Drawing" />
-        <Reference Condition="$(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))" Include="System.Windows.Forms" />
-      </ItemGroup>
-    </When>
-  </Choose>
+  <Import Condition="$(SiliconStudioUI.Contains('SDL'))" Project="..\..\common\targets\SDL.targets" />
   <Choose>
     <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' Or '$(XenkoGraphicsApi)' == 'Direct3D12' ">
       <ItemGroup>
@@ -79,36 +63,6 @@
     </When>
   </Choose>
   <Choose>
-    <When Condition=" '$(XenkoGraphicsApi)' == 'OpenGL' Or '$(XenkoGraphicsApi)' == 'OpenGLES' ">
-      <Choose>
-        <When Condition=" '$(SiliconStudioPlatform)' == 'Linux'">
-          <ItemGroup>
-            <Reference Include="OpenTK">
-              <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(XenkoDependenciesDir)OpenTK\Linux\OpenTK.dll</HintPath>
-              <HintPath Condition="'$(SiliconStudioRuntime)' != ''">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\OpenTK.dll</HintPath>
-            </Reference>
-          </ItemGroup>
-        </When>
-        <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
-          <ItemGroup>
-            <Reference Include="OpenTK">
-              <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(XenkoDependenciesDir)OpenTK\OpenTK.dll</HintPath>
-              <HintPath Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\OpenTK.dll</HintPath>
-            </Reference>
-          </ItemGroup>
-        </When>
-        <When Condition=" '$(SiliconStudioPlatform)' == 'Android' Or '$(SiliconStudioPlatform)' == 'iOS' ">
-          <ItemGroup>
-            <Reference Include="OpenTK-1.1">
-              <HintPath Condition="'$(SiliconStudioPlatform)' == 'Android'">$(XenkoDependenciesDir)OpenTK\Android\OpenTK-1.1.dll</HintPath>
-              <HintPath Condition="'$(SiliconStudioPlatform)' == 'iOS'">$(XenkoDependenciesDir)OpenTK\iOS\OpenTK-1.1.dll</HintPath>
-            </Reference>
-          </ItemGroup>
-        </When>
-      </Choose>
-    </When>
-  </Choose>
-  <Choose>
     <When Condition=" '$(XenkoGraphicsApi)' == 'Vulkan' ">
       <Choose>
         <When Condition=" '$(SiliconStudioPlatform)' == 'Windows'">
@@ -118,7 +72,7 @@
               <HintPath>$(XenkoDependenciesDir)\SharpVulkan\Windows\SharpVulkan.dll</HintPath>
             </Reference>
           </ItemGroup>
-		</When>
+        </When>
         <Otherwise>
           <ItemGroup>
             <Reference Include="SharpVulkan">
@@ -126,14 +80,14 @@
               <HintPath>$(XenkoDependenciesDir)\SharpVulkan\Other\SharpVulkan.dll</HintPath>
             </Reference>
           </ItemGroup>
-		</Otherwise>
-	  </Choose>	  
+        </Otherwise>
+      </Choose>
     </When>
   </Choose>
   <Choose>
     <When Condition="$(SiliconStudioUI.Contains('SDL'))">
       <ItemGroup>
-        <Content Include="$(XenkoDependenciesDir)\SDL2\$(SiliconStudioPlatform)\**\SDL2.dll">
+        <Content Include="$(XenkoDependenciesDir)\SDL2\$(SiliconStudioPlatform)\**\*SDL2*">
           <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
@@ -141,7 +95,7 @@
     </When>
   </Choose>
   <ItemGroup>
-    <None Include="..\..\..\deps\freetype\$(SiliconStudioPlatform)\$(Configuration)\**\*.*">
+    <None Include="$(XenkoDependenciesDir)\freetype\$(SiliconStudioPlatform)\**\*.*">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -149,13 +103,13 @@
   <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS'">
     <Reference Include="SharpFont">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(XenkoDependenciesDir)SharpFont\iOS\Release\SharpFont.dll</HintPath>
+      <HintPath>$(XenkoDependenciesDir)SharpFont\iOS\SharpFont.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition="'$(SiliconStudioPlatform)' != 'iOS'">
     <Reference Include="SharpFont">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(XenkoDependenciesDir)SharpFont\Portable\Release\SharpFont.dll</HintPath>
+      <HintPath>$(XenkoDependenciesDir)SharpFont\Portable\SharpFont.dll</HintPath>
     </Reference>
   </ItemGroup>
   <!-- Files for Direct3D  -->
@@ -165,11 +119,16 @@
     <Compile Include="BufferPool.cs" />
     <Compile Include="BufferPoolAllocationResult.cs" />
     <Compile Include="CommandList.cs" />
+    <Compile Include="CompiledCommandList.cs" />
+    <Compile Include="DefaultCommandListLock.cs" />
+    <Compile Include="Direct3D12\CompiledCommandList.Direct3D12.cs" />
+    <Compile Include="Direct3D\SharpDXInterop.cs" />
     <Compile Include="Font\SignedDistanceFieldSpriteFont.cs" />
     <Compile Include="OpenGL\GraphicsResource.OpenGL.cs" />
     <Compile Include="Font\SignedDistanceFieldSpriteFontContentSerializer.cs" />
     <Compile Include="OpenGL\MappedResource.OpenGL.cs" />
     <Compile Include="Font\SignedDistanceFieldSpriteFontSerializer.cs" />
+    <Compile Include="PipelineStateDescriptionWithHash.cs" />
     <Compile Include="RenderingSettings.cs" />
     <Compile Include="Data\TextureContentSerializer.cs" />
     <Compile Include="DescriptorPool.cs" />
@@ -253,12 +212,12 @@
     <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.Direct3D11.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.OpenGL.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.OpenGLES.Level_9_3.cs" />
-	<Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.Vulkan.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\SignedDistanceFieldFontShader.signedDistanceFieldFontBytecode.Vulkan.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.Extensions.cs" />
     <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.Direct3D11.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.OpenGL.Level_9_3.cs" />
     <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.OpenGLES.Level_9_3.cs" />
-	<Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.Vulkan.Level_9_3.cs" />
+    <Compile Include="Shaders093.Bytecodes\SpriteSignedDistanceFieldFontShader.spriteSignedDistanceFieldFontBytecode.Vulkan.Level_9_3.cs" />
     <Compile Include="Shaders\BackgroundEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -466,6 +425,7 @@
     <Compile Include="Vulkan\Buffer.Vulkan.cs" />
     <Compile Include="Vulkan\ColorHelper.cs" />
     <Compile Include="Vulkan\CommandList.Vulkan.cs" />
+    <Compile Include="Vulkan\CompiledCommandList.Vulkan.cs" />
     <Compile Include="Vulkan\DescriptorPool.Vulkan.cs" />
     <Compile Include="Vulkan\DescriptorSet.Vulkan.cs" />
     <Compile Include="Vulkan\DescriptorSetLayout.Vulkan.cs" />
@@ -590,6 +550,11 @@
     <Compile Include="ViewType.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Native\SiliconStudio.Core.Native.csproj">
+      <Project>{fcf36d39-bffe-4719-b245-05640ee34c5f}</Project>
+      <Name>SiliconStudio.Core.Native</Name>
+      <Private>False</Private>
+    </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
       <Name>SiliconStudio.Core</Name>

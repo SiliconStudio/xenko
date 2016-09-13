@@ -118,7 +118,7 @@ namespace SiliconStudio.Xenko.Physics
                             NeedsCustomCollisionCallback = true
                         };
 
-                        shape.UpdateLocalTransformations();
+                        //shape.UpdateLocalTransformations();
                         shape.Description = desc;
 
                         return shape;
@@ -139,11 +139,11 @@ namespace SiliconStudio.Xenko.Physics
                         if(indices.Count == 0) continue;
 
                         var subHull = new ConvexHullColliderShape(verts, indices, convexDesc.Scaling);
-                        subHull.UpdateLocalTransformations();
+                        //subHull.UpdateLocalTransformations();
                         subCompound.AddChildShape(subHull);
                     }
 
-                    subCompound.UpdateLocalTransformations();
+                    //subCompound.UpdateLocalTransformations();
                     subCompound.Description = desc;
 
                     return subCompound;
@@ -166,7 +166,7 @@ namespace SiliconStudio.Xenko.Physics
                         if(indices[0].Count == 0) continue;
 
                         var subHull = new ConvexHullColliderShape(verts[0], indices[0], convexDesc.Scaling);
-                        subHull.UpdateLocalTransformations();
+                        //subHull.UpdateLocalTransformations();
                         compound.AddChildShape(subHull);
                     }
                     else if (verts.Count > 1)
@@ -181,17 +181,17 @@ namespace SiliconStudio.Xenko.Physics
                             if (subIndex.Count == 0) continue;
 
                             var subHull = new ConvexHullColliderShape(subVerts, subIndex, convexDesc.Scaling);
-                            subHull.UpdateLocalTransformations();
+                            //subHull.UpdateLocalTransformations();
                             subCompound.AddChildShape(subHull);
                         }
 
-                        subCompound.UpdateLocalTransformations();
+                        //subCompound.UpdateLocalTransformations();
 
                         compound.AddChildShape(subCompound);
                     }
                 }
 
-                compound.UpdateLocalTransformations();
+                //compound.UpdateLocalTransformations();
                 compound.Description = desc;
 
                 return compound;
@@ -215,7 +215,7 @@ namespace SiliconStudio.Xenko.Physics
 
             if (shape == null) return shape;
 
-            shape.UpdateLocalTransformations();
+            //shape.UpdateLocalTransformations();
             shape.Description = desc;
 
             return shape;

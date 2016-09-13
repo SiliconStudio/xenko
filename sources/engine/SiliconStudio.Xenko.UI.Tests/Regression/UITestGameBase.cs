@@ -1,9 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Threading.Tasks;
 
-using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
@@ -35,33 +35,33 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
         private readonly SceneGraphicsCompositorLayers graphicsCompositor;
 
-        protected UIComponent UIComponent { get {  return UIRoot.Get<UIComponent>(); } }
+        protected UIComponent UIComponent => UIRoot.Get<UIComponent>();
 
         protected CameraComponent CameraComponent
         {
             get { return Camera.Get<CameraComponent>(); }
             set
             {
-                bool previousFound = false;
-                for (int i = 0; i < Camera.Components.Count; i++)
+                var previousFound = false;
+                for (var i = 0; i < Camera.Components.Count; i++)
                 {
                     var cameraComponent = Camera.Components[i] as CameraComponent;
-                    if (cameraComponent != null)
+                    if (cameraComponent == null)
+                        continue;
+
+                    previousFound = true;
+                    if (cameraComponent != value)
                     {
-                        previousFound = true;
-                        if (cameraComponent != value)
+                        if (value == null)
                         {
-                            if (value == null)
-                            {
-                                Camera.Components.RemoveAt(i);
-                            }
-                            else
-                            {
-                                Camera.Components[i] = value;
-                            }
+                            Camera.Components.RemoveAt(i);
                         }
-                        break;
+                        else
+                        {
+                            Camera.Components[i] = value;
+                        }
                     }
+                    break;
                 }
 
                 if (!previousFound && value != null)
@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         /// Gets the UI system.
         /// </summary>
         /// <value>The UI.</value>
-        protected UISystem UI { get; private set; }
+        protected UISystem UI { get; }
 
         /// <summary>
         /// Create an instance of the game test
@@ -128,76 +128,137 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            object existingStyle;
+            // Default styles
+            // Note: this is temporary and should be replaced with default template of UI elements
+            textBlockTextColor = Color.LightGray;
 
-            // Set dependency properties test values.
-            UI.DefaultResourceDictionary.TryGetValue(typeof(TextBlock), out existingStyle);
-            UI.DefaultResourceDictionary[typeof(TextBlock)] = new Style(typeof(TextBlock), (Style)existingStyle)
-            {
-                Setters =
-                {
-                    new Setter<Color>(TextBlock.TextColorPropertyKey, Color.LightGray),
-                }
-            };
-
-            UI.DefaultResourceDictionary.TryGetValue(typeof(ScrollingText), out existingStyle);
-            UI.DefaultResourceDictionary[typeof(ScrollingText)] = new Style(typeof(ScrollingText), (Style)existingStyle)
-            {
-                Setters =
-                {
-                    new Setter<Color>(TextBlock.TextColorPropertyKey, Color.LightGray),
-                }
-            };
+            scrollingTextTextColor = Color.LightGray;
 
             var buttonPressedTexture = TextureExtensions.FromFileData(GraphicsDevice, ElementTestDesigns.ButtonPressed);
             var buttonNotPressedTexture = TextureExtensions.FromFileData(GraphicsDevice, ElementTestDesigns.ButtonNotPressed);
             var buttonOverredTexture = TextureExtensions.FromFileData(GraphicsDevice, ElementTestDesigns.ButtonOverred);
-            UI.DefaultResourceDictionary.TryGetValue(typeof(Button), out existingStyle);
-            UI.DefaultResourceDictionary[typeof(Button)] = new Style(typeof(Button), (Style)existingStyle)
-            {
-                Setters =
-                {
-                    new Setter<ISpriteProvider>(Button.PressedImagePropertyKey, (SpriteFromTexture)new Sprite("Test button pressed design", buttonPressedTexture) { Borders = 8 * Vector4.One }),
-                    new Setter<ISpriteProvider>(Button.NotPressedImagePropertyKey, (SpriteFromTexture)new Sprite("Test button not pressed design", buttonNotPressedTexture) { Borders = 8 * Vector4.One }),
-                    new Setter<ISpriteProvider>(Button.MouseOverImagePropertyKey, (SpriteFromTexture)new Sprite("Test button overred design", buttonOverredTexture) { Borders = 8 * Vector4.One }),
-                }
-            };
+            buttonPressedImage = (SpriteFromTexture)new Sprite("Test button pressed design", buttonPressedTexture) { Borders = 8 * Vector4.One };
+            buttonNotPressedImage = (SpriteFromTexture)new Sprite("Test button not pressed design", buttonNotPressedTexture) { Borders = 8 * Vector4.One };
+            buttonMouseOverImage = (SpriteFromTexture)new Sprite("Test button overred design", buttonOverredTexture) { Borders = 8 * Vector4.One };
 
             var editActiveTexture = TextureExtensions.FromFileData(GraphicsDevice, ElementTestDesigns.EditTextActive);
             var editInactiveTexture = TextureExtensions.FromFileData(GraphicsDevice, ElementTestDesigns.EditTextInactive);
             var editOverredTexture = TextureExtensions.FromFileData(GraphicsDevice, ElementTestDesigns.EditTextOverred);
-            UI.DefaultResourceDictionary.TryGetValue(typeof(EditText), out existingStyle);
-            UI.DefaultResourceDictionary[typeof(EditText)] = new Style(typeof(EditText), (Style)existingStyle)
-            {
-                Setters =
-                {
-                    new Setter<Color>(EditText.TextColorPropertyKey, Color.LightGray),
-                    new Setter<Color>(EditText.SelectionColorPropertyKey, Color.FromAbgr(0x623574FF)),
-                    new Setter<Color>(EditText.CaretColorPropertyKey, Color.FromAbgr(0xF0F0F0FF)),
-                    new Setter<ISpriteProvider>(EditText.ActiveImagePropertyKey, (SpriteFromTexture)new Sprite("Test edit active design", editActiveTexture) { Borders = 12 * Vector4.One }),
-                    new Setter<ISpriteProvider>(EditText.InactiveImagePropertyKey, (SpriteFromTexture)new Sprite("Test edit inactive design", editInactiveTexture) { Borders = 12 * Vector4.One }),
-                    new Setter<ISpriteProvider>(EditText.MouseOverImagePropertyKey, (SpriteFromTexture)new Sprite("Test edit overred design", editOverredTexture) { Borders = 12 * Vector4.One }),
-                }
-            };
+            editTextTextColor = Color.LightGray;
+            editTextSelectionColor = Color.FromAbgr(0x623574FF);
+            editTextCaretColor = Color.FromAbgr(0xF0F0F0FF);
+            editTextActiveImage = (SpriteFromTexture)new Sprite("Test edit active design", editActiveTexture) { Borders = 12 * Vector4.One };
+            editTextInactiveImage = (SpriteFromTexture)new Sprite("Test edit inactive design", editInactiveTexture) { Borders = 12 * Vector4.One };
+            editTextMouseOverImage = (SpriteFromTexture)new Sprite("Test edit overred design", editOverredTexture) { Borders = 12 * Vector4.One };
 
             var toggleButtonChecked = TextureExtensions.FromFileData(GraphicsDevice, ElementTestDesigns.ToggleButtonChecked);
             var toggleButtonUnchecked = TextureExtensions.FromFileData(GraphicsDevice, ElementTestDesigns.ToggleButtonUnchecked);
             var toggleButtonIndeterminate = TextureExtensions.FromFileData(GraphicsDevice, ElementTestDesigns.ToggleButtonIndeterminate);
-            UI.DefaultResourceDictionary.TryGetValue(typeof(ToggleButton), out existingStyle);
-            UI.DefaultResourceDictionary[typeof(ToggleButton)] = new Style(typeof(ToggleButton), (Style)existingStyle)
-            {
-                Setters =
-                {
-                    new Setter<ISpriteProvider>(ToggleButton.CheckedImagePropertyKey, (SpriteFromTexture)new Sprite("Test toggle button checked design", toggleButtonChecked) { Borders = 8 * Vector4.One }),
-                    new Setter<ISpriteProvider>(ToggleButton.UncheckedImagePropertyKey, (SpriteFromTexture)new Sprite("Test toggle button unchecked design", toggleButtonUnchecked) { Borders = 8 * Vector4.One }),
-                    new Setter<ISpriteProvider>(ToggleButton.IndeterminateImagePropertyKey, (SpriteFromTexture)new Sprite("Test toggle button indeterminate design", toggleButtonIndeterminate) { Borders = 8 * Vector4.One }),
-                }
-            };
+            toggleButtonCheckedImage = (SpriteFromTexture)new Sprite("Test toggle button checked design", toggleButtonChecked) { Borders = 8 * Vector4.One };
+            toggleButtonUncheckedImage = (SpriteFromTexture)new Sprite("Test toggle button unchecked design", toggleButtonUnchecked) { Borders = 8 * Vector4.One };
+            toggleButtonIndeterminateImage = (SpriteFromTexture)new Sprite("Test toggle button indeterminate design", toggleButtonIndeterminate) { Borders = 8 * Vector4.One };
+
+            var designsTexture = TextureExtensions.FromFileData(GraphicsDevice, DefaultDesigns.Designs);
+            sliderTrackBackgroundImage = (SpriteFromTexture)new Sprite("Default slider track background design", designsTexture) { Borders = 14 * Vector4.One, Region = new RectangleF(207, 3, 32, 32) };
+            sliderTrackForegroundImage = (SpriteFromTexture)new Sprite("Default slider track foreground design", designsTexture) { Borders = 0 * Vector4.One, Region = new RectangleF(3, 37, 32, 32) };
+            sliderThumbImage = (SpriteFromTexture)new Sprite("Default slider thumb design", designsTexture) { Borders = 4 * Vector4.One, Region = new RectangleF(37, 37, 16, 32) };
+            sliderMouseOverThumbImage = (SpriteFromTexture)new Sprite("Default slider thumb overred design", designsTexture) { Borders = 4 * Vector4.One, Region = new RectangleF(71, 37, 16, 32) };
+            sliderTickImage = (SpriteFromTexture)new Sprite("Default slider track foreground design", designsTexture) { Region = new RectangleF(245, 3, 3, 6) };
+            sliderTickOffset = 13f;
+            sliderTrackStartingOffsets = new Vector2(3);
 
             Window.IsMouseVisible = true;
 
             SceneSystem.SceneInstance = new SceneInstance(Services, Scene);
         }
+
+        #region Temporary Fix (Style)
+        // Button
+        private ISpriteProvider buttonPressedImage;
+        private ISpriteProvider buttonNotPressedImage;
+        private ISpriteProvider buttonMouseOverImage;
+        // Edit Text
+        private Color editTextTextColor;
+        private Color editTextSelectionColor;
+        private Color editTextCaretColor;
+        private ISpriteProvider editTextActiveImage;
+        private ISpriteProvider editTextInactiveImage;
+        private ISpriteProvider editTextMouseOverImage;
+        // ScrollingText
+        private Color scrollingTextTextColor;
+        // Slider
+        private ISpriteProvider sliderTrackBackgroundImage;
+        private ISpriteProvider sliderTrackForegroundImage;
+        private ISpriteProvider sliderThumbImage;
+        private ISpriteProvider sliderMouseOverThumbImage;
+        private ISpriteProvider sliderTickImage;
+        private float sliderTickOffset;
+        private Vector2 sliderTrackStartingOffsets;
+        // TextBlock
+        private Color textBlockTextColor;
+        // ToggleButton
+        private ISpriteProvider toggleButtonCheckedImage;
+        private ISpriteProvider toggleButtonUncheckedImage;
+        private ISpriteProvider toggleButtonIndeterminateImage;
+
+        protected void ApplyButtonDefaultStyle(Button button)
+        {
+            if (button == null) throw new ArgumentNullException(nameof(button));
+
+            button.PressedImage = buttonPressedImage;
+            button.NotPressedImage = buttonNotPressedImage;
+            button.MouseOverImage = buttonMouseOverImage;
+        }
+
+        protected void ApplyEditTextDefaultStyle(EditText editText)
+        {
+            if (editText == null) throw new ArgumentNullException(nameof(editText));
+
+            editText.TextColor = editTextTextColor;
+            editText.SelectionColor = editTextSelectionColor;
+            editText.CaretColor = editTextCaretColor;
+            editText.ActiveImage = editTextActiveImage;
+            editText.InactiveImage = editTextInactiveImage;
+            editText.MouseOverImage = editTextMouseOverImage;
+        }
+
+        protected void ApplyScrollingTextDefaultStyle(ScrollingText scollingText)
+        {
+            if (scollingText == null) throw new ArgumentNullException(nameof(scollingText));
+
+            ApplyTextBlockDefaultStyle(scollingText);
+            scollingText.TextColor = scrollingTextTextColor;
+        }
+
+        protected void ApplySliderDefaultStyle(Slider slider)
+        {
+            if (slider == null) throw new ArgumentNullException(nameof(slider));
+
+            slider.TrackBackgroundImage = sliderTrackBackgroundImage;
+            slider.TrackForegroundImage = sliderTrackForegroundImage;
+            slider.ThumbImage = sliderThumbImage;
+            slider.MouseOverThumbImage = sliderMouseOverThumbImage;
+            slider.TickImage = sliderTickImage;
+            slider.TickOffset = sliderTickOffset;
+            slider.TrackStartingOffsets = sliderTrackStartingOffsets;
+        }
+
+        protected void ApplyTextBlockDefaultStyle(TextBlock textBlock)
+        {
+            if (textBlock == null) throw new ArgumentNullException(nameof(textBlock));
+
+            textBlock.TextColor = textBlockTextColor;
+        }
+
+        protected void ApplyToggleButtonBlockDefaultStyle(ToggleButton toggleButton)
+        {
+            if (toggleButton == null) throw new ArgumentNullException(nameof(toggleButton));
+
+            toggleButton.CheckedImage = toggleButtonCheckedImage;
+            toggleButton.UncheckedImage = toggleButtonUncheckedImage;
+            toggleButton.IndeterminateImage = toggleButtonIndeterminateImage;
+        }
+        #endregion // Temporary Fix (Style)
 
         protected override void Update(GameTime gameTime)
         {

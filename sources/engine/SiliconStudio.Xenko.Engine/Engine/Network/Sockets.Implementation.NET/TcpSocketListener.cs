@@ -95,8 +95,7 @@ namespace Sockets.Plugin
                     var wrappedClient = new TcpSocketClient(nativeClient, _bufferSize);
 
                     var eventArgs = new TcpSocketListenerConnectEventArgs(wrappedClient);
-                    if (ConnectionReceived != null)
-                        ConnectionReceived(this, eventArgs);
+                    ConnectionReceived?.Invoke(this, eventArgs);
                 }
             },
                 cancelToken,

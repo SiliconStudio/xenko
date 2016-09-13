@@ -2,9 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
@@ -68,23 +70,44 @@ namespace SiliconStudio.Xenko.Audio
         /// Create an new instance of underlying sound, and register it in the controller's sound instance list.
         /// </summary>
         /// <returns>The new sound effect instance created</returns>
-        internal SoundInstance CreateSoundInstance(AudioListenerComponent listener)
+        internal SoundInstance CreateSoundInstance(AudioListenerComponent listener, bool forget)
         {
             var newInstance = sound.CreateInstance(listener.Listener);
 
-            InstanceToListener.Add(newInstance, listener);
+            if (!forget)
+            {
+                InstanceToListener.Add(newInstance, listener);
+            }
 
             listener.AttachedInstances.Add(newInstance);
 
             return newInstance;
         }
 
+        internal void DestroySoundInstance(SoundInstance instance)
+        {
+            instance.Dispose();
+            InstanceToListener.Remove(instance);
+        }
+
         internal void DestroySoundInstances(AudioListenerComponent listener)
         {
-            foreach (var instance in listener.AttachedInstances)
+            foreach (var instance in InstanceToListener.Keys)
             {
                 instance.Dispose();
-                InstanceToListener.Remove(instance);
+                listener.AttachedInstances.Remove(instance);
+            }
+            InstanceToListener.Clear();
+
+            for (var i = 0; i < FastInstances.Count; i++)
+            {
+                var instance = FastInstances[i];
+                if (instance.Listener == listener.Listener)
+                {
+                    //Decrement the loop counter to iterate this index again, since later elements will get moved down during the remove operation.
+                    FastInstances.RemoveAt(i--);
+                    DestroySoundInstance(instance);
+                }
             }
         }
 
@@ -124,19 +147,19 @@ namespace SiliconStudio.Xenko.Audio
                     return SoundPlayState.Playing;
 
                 return playState = SoundPlayState.Stopped;
-            } 
+            }
         }
 
-        private bool isLooped;
+        private bool isLooping;
 
         /// <summary>
         /// Gets or sets whether the sound is automatically looping from beginning when it reaches the end.
         /// </summary>
-        public bool IsLooped
+        public bool IsLooping
         {
             get
             {
-                return isLooped;
+                return isLooping;
             }
             set
             {
@@ -144,8 +167,18 @@ namespace SiliconStudio.Xenko.Audio
                 {
                     instance.Key.IsLooped = value;
                 }
-                isLooped = value;
+                isLooping = value;
             }
+        }
+
+        /// <summary>
+        /// Gets or sets whether the sound is automatically looping from beginning when it reaches the end.
+        /// </summary>
+        [Obsolete("Renamed, please use IsLooping.")]
+        public bool IsLooped
+        {
+            get{ return IsLooping; }
+            set { IsLooping = value; }
         }
 
         private float pitch = 1.0f;
@@ -170,7 +203,7 @@ namespace SiliconStudio.Xenko.Audio
         /// Indicate the <see cref="AudioListenerProcessor"/> if the controller's sound instances need to be played.
         /// This variable is need because <see cref="Play"/> is asynchronous and actually starts playing only on next system update.
         /// </summary>
-        internal bool ShouldBePlayed;
+        internal volatile bool ShouldBePlayed;
 
         public void Play()
         {
@@ -181,9 +214,19 @@ namespace SiliconStudio.Xenko.Audio
             // Such a asynchronous behavior is required in order to be able to update the associated AudioEmitter
             // and apply localization to the sound before starting to play.
 
-            parent.ShouldBeProcessed = true; // tells the EmitterProcessor to update to AudioEmiter values.
-
             ShouldBePlayed = true;  // tells the EmitterProcessor to start playing the underlying instances.
+        }
+
+        internal volatile bool FastInstancePlay;
+        internal List<SoundInstance> FastInstances = new List<SoundInstance>();
+
+        /// <summary>
+        /// Plays the attached sound in a new instance and let's the engine handle it's disposal.
+        /// This is useful for very fast overlapping sounds, gun shots, machine gun etc. Where you don't care about controlling each sound.
+        /// </summary>
+        public void PlayAndForget()
+        {
+            FastInstancePlay = true; // tells the EmitterProcessor to create and start playing a temporary instances.
         }
 
         public void Pause()

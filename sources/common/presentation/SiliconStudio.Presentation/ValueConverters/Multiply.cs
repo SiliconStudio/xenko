@@ -19,7 +19,7 @@ namespace SiliconStudio.Presentation.ValueConverters
             double scalar;
             try
             {
-                scalar = System.Convert.ToDouble(value, culture);
+                scalar = ConverterHelper.ConvertToDouble(value, culture);
             }
             catch (Exception exception)
             {
@@ -29,7 +29,7 @@ namespace SiliconStudio.Presentation.ValueConverters
             double param;
             try
             {
-                param = System.Convert.ToDouble(parameter, culture);
+                param = ConverterHelper.ConvertToDouble(parameter, culture);
             }
             catch (Exception exception)
             {
@@ -45,7 +45,7 @@ namespace SiliconStudio.Presentation.ValueConverters
             double scalar;
             try
             {
-                scalar = System.Convert.ToDouble(value, culture);
+                scalar = ConverterHelper.ConvertToDouble(value, culture);
             }
             catch (Exception exception)
             {
@@ -55,7 +55,7 @@ namespace SiliconStudio.Presentation.ValueConverters
             double param;
             try
             {
-                param = System.Convert.ToDouble(parameter, culture);
+                param = ConverterHelper.ConvertToDouble(parameter, culture);
             }
             catch (Exception exception)
             {

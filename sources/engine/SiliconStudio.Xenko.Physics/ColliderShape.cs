@@ -11,6 +11,8 @@ namespace SiliconStudio.Xenko.Physics
 {
     public class ColliderShape : IDisposable
     {
+        protected const float DebugScaling = 1.0f;
+
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
@@ -44,22 +46,10 @@ namespace SiliconStudio.Xenko.Physics
         /// </summary>
         public void UpdateLocalTransformations()
         {
-            var inverseRotation = LocalRotation;
-            inverseRotation.Invert();
-
-            PositiveCenterMatrix = Matrix.RotationQuaternion(LocalRotation)*Matrix.Translation(LocalOffset * CachedScaling);
-            NegativeCenterMatrix = Matrix.RotationQuaternion(inverseRotation)*Matrix.Translation(-LocalOffset * CachedScaling);
-
-            //if we are part of a compund we should update the transformation properly
-            if (Parent == null) return;
-            var childs = Parent.InternalCompoundShape.ChildList;
-            for (var i = 0; i < childs.Count; i++)
-            {
-                if (childs[i].ChildShape == InternalShape)
-                {
-                    Parent.InternalCompoundShape.UpdateChildTransform(i, PositiveCenterMatrix, true);
-                }
-            }
+            //cache matrices used to translate the position from and to physics engine / gfx engine
+            PositiveCenterMatrix = Matrix.RotationQuaternion(LocalRotation) * Matrix.Translation(LocalOffset);
+            NegativeCenterMatrix = PositiveCenterMatrix;
+            NegativeCenterMatrix.Invert();
         }
 
         /// <summary>
@@ -68,7 +58,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <value>
         /// The positive center matrix.
         /// </value>
-        public Matrix PositiveCenterMatrix { get; private set; }
+        public Matrix PositiveCenterMatrix;
 
         /// <summary>
         /// Gets the negative center matrix.
@@ -76,7 +66,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <value>
         /// The negative center matrix.
         /// </value>
-        public Matrix NegativeCenterMatrix { get; private set; }
+        public Matrix NegativeCenterMatrix;
 
         protected Vector3 CachedScaling;
 
@@ -100,12 +90,17 @@ namespace SiliconStudio.Xenko.Physics
 
                 CachedScaling = value;
                 if (Is2D) CachedScaling.Z = 0.0f;
-                InternalShape.LocalScaling = CachedScaling;
+
+                if (Parent == null)
+                {
+                    InternalShape.LocalScaling = CachedScaling;
+                }
 
                 UpdateLocalTransformations();
 
                 //If we have a debug entity apply correct scaling to it as well
                 if (DebugEntity == null) return;
+
                 var invertedScale = Matrix.Scaling(oldScale);
                 invertedScale.Invert();
                 var unscaledMatrix = DebugEntity.Transform.LocalMatrix*invertedScale;

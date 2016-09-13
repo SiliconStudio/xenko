@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-class ParticleUtilities
+shader ParticleUtilities
 {
 
     // -------------------------------------
@@ -18,6 +18,8 @@ class ParticleUtilities
 
         // .x - Width, .y - Height, .z - Near, .w - Far
         stage float4   ViewFrustum;
+
+        stage float4 Viewport;
     }
 
     stage float GetLinearDepth(float z)

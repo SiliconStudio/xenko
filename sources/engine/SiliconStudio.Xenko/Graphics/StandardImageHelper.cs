@@ -25,5 +25,19 @@ namespace SiliconStudio.Xenko.Graphics
                 *destPtr++ = value;
             }
         }
+
+        static unsafe void CopyMemoryRRR1(IntPtr dest, IntPtr src, int sizeInBytesToCopy)
+        {
+            var bufferSize = sizeInBytesToCopy;
+            var srcPtr = (byte*)src;
+            var destPtr = (uint*)dest;
+            for (int i = 0; i < bufferSize; ++i)
+            {
+                uint value = *srcPtr++;
+                // R => RGBA
+                value = (0xFF000000) | ((value) << 8) | (value) | ((value) << 16);
+                *destPtr++ = value;
+            }
+        }
     }
 }

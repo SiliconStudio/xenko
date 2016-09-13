@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Audio
         /// <summary>
         /// Gets or sets whether the sound is automatically looping from beginning when it reaches the end.
         /// </summary>
-        bool IsLooped { get; set; }
+        bool IsLooping { get; set; }
 
         /// <summary>
         /// Start or resume playing the sound.

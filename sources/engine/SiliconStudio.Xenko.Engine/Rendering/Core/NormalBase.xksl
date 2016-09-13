@@ -3,7 +3,7 @@
 /// <summary>
 /// Defines the methods to get the normal in view space and inserts them in the pipeline.
 /// </summary>
-class NormalBase : NormalStream, ShaderBase
+shader NormalBase : NormalStream, ShaderBase
 {
     override stage void VSMain()
     {

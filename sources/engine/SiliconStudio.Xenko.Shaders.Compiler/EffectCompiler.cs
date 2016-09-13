@@ -136,6 +136,9 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             shaderMixinSource.AddMacro("GRAPHICS_PROFILE_LEVEL_11_1", (int)GraphicsProfile.Level_11_1);
             shaderMixinSource.AddMacro("GRAPHICS_PROFILE_LEVEL_11_2", (int)GraphicsProfile.Level_11_2);
 
+            // In .xksl, class has been renamed to shader to avoid ambiguities with HLSL
+            shaderMixinSource.AddMacro("class", "shader");
+
             var parsingResult = GetMixinParser().Parse(shaderMixinSource, shaderMixinSource.Macros.ToArray());
 
             // Copy log from parser results to output
@@ -239,8 +242,8 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             var stageStringBuilder = new StringBuilder();
 #endif
-            // if the shader (non-compute) does not have a pixel shader, we should add it on OpenGL ES.
-            if (effectParameters.Platform == GraphicsPlatform.OpenGLES && !parsingResult.EntryPoints.ContainsKey(ShaderStage.Pixel) && !parsingResult.EntryPoints.ContainsKey(ShaderStage.Compute))
+            // if the shader (non-compute) does not have a pixel shader, we should add it for OpenGL and OpenGL ES.
+            if ((effectParameters.Platform == GraphicsPlatform.OpenGL || effectParameters.Platform == GraphicsPlatform.OpenGLES) && !parsingResult.EntryPoints.ContainsKey(ShaderStage.Pixel) && !parsingResult.EntryPoints.ContainsKey(ShaderStage.Compute))
             {
                 parsingResult.EntryPoints.Add(ShaderStage.Pixel, null);
             }

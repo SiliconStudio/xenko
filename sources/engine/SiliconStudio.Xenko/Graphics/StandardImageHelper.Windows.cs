@@ -1,6 +1,6 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_UNIX
 using System;
 #if (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
 using System.Drawing;
@@ -191,7 +191,11 @@ namespace SiliconStudio.Xenko.Graphics
                     else if (description.Format == PixelFormat.B8G8R8A8_UNorm || description.Format == PixelFormat.B8G8R8A8_UNorm_SRgb)
                         Utilities.CopyMemory(bitmapData.Scan0, pixelBuffers[0].DataPointer, pixelBuffers[0].BufferStride);
                     else
-                        throw new NotSupportedException(string.Format("Pixel format [{0}] is not supported", description.Format));
+                    {
+                        // TODO Ideally we will want to support grayscale images, but the SpriteBatch can only render RGBA for now
+                        //  so convert the grayscale image as an RGBA and save it
+                        CopyMemoryRRR1(bitmapData.Scan0, pixelBuffers[0].DataPointer, pixelBuffers[0].BufferStride);
+                    }
                 }
                 finally
                 {

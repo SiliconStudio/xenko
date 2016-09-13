@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Physics.Engine
         {
         }
 
-        public Entity CreateDebugEntity(PhysicsComponent component)
+        public Entity CreateDebugEntity(PhysicsComponent component, bool alwaysAddOffset = false)
         {
             if (component?.ColliderShape == null) return null;
 
@@ -54,11 +54,6 @@ namespace SiliconStudio.Xenko.Physics.Engine
                 skinnedElement.BoneWorldMatrixOut.Decompose(out scale, out rot, out pos);
                 debugEntity.Transform.Position = pos;
                 debugEntity.Transform.Rotation = rot;
-
-                if (component.CanScaleShape)
-                {
-                    component.ColliderShape.Scaling = scale;
-                }
             }
             else
             {
@@ -67,14 +62,12 @@ namespace SiliconStudio.Xenko.Physics.Engine
                 component.Entity.Transform.WorldMatrix.Decompose(out scale, out rot, out pos);
                 debugEntity.Transform.Position = pos;
                 debugEntity.Transform.Rotation = rot;
-
-                if (component.CanScaleShape)
-                {
-                    component.ColliderShape.Scaling = scale;
-                }
             }
 
-            var colliderEntity = CreateChildEntity(component, component.ColliderShape, true);
+            var rigidBody = component as RigidbodyComponent;
+
+            //don't add offset for non bone dynamic and kinematic as it is added already in the updates
+            var colliderEntity = CreateChildEntity(component, component.ColliderShape, alwaysAddOffset || rigidBody == null);
             if (colliderEntity != null) debugEntity.AddChild(colliderEntity);
 
             return debugEntity;
@@ -96,7 +89,7 @@ namespace SiliconStudio.Xenko.Physics.Engine
                         for (var i = 0; i < compound.Count; i++)
                         {
                             var subShape = compound[i];
-                            var subEntity = CreateChildEntity(component, subShape, true);
+                            var subEntity = CreateChildEntity(component, subShape, true); //always add offsets to compounds
                             if (subEntity != null)
                             {
                                 entity.AddChild(subEntity);
@@ -168,9 +161,9 @@ namespace SiliconStudio.Xenko.Physics.Engine
                             }
                         };
 
-                        var offset = addOffset ? Matrix.RotationQuaternion(shape.LocalRotation) * Matrix.Translation(shape.LocalOffset * shape.Scaling) : Matrix.Identity;
+                        var offset = addOffset ? Matrix.RotationQuaternion(shape.LocalRotation) * Matrix.Translation(shape.LocalOffset) : Matrix.Identity;
 
-                        entity.Transform.LocalMatrix = shape.DebugPrimitiveMatrix * Matrix.Scaling(shape.Scaling) * offset;
+                        entity.Transform.LocalMatrix = shape.DebugPrimitiveMatrix * offset * Matrix.Scaling(shape.Scaling);
 
                         entity.Transform.UseTRS = false;
 

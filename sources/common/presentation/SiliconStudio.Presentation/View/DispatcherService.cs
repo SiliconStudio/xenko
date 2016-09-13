@@ -38,13 +38,20 @@ namespace SiliconStudio.Presentation.View
         /// <inheritdoc/>
         public void Invoke(Action callback)
         {
-            dispatcher.Invoke(callback);
+            if (CheckAccess())
+            {
+                callback();
+            }
+            else
+            {
+                dispatcher.Invoke(callback);
+            }
         }
 
         /// <inheritdoc/>
         public TResult Invoke<TResult>(Func<TResult> callback)
         {
-            return dispatcher.Invoke(callback);
+            return CheckAccess() ? callback() : dispatcher.Invoke(callback);
         }
 
         /// <inheritdoc/>
@@ -57,6 +64,13 @@ namespace SiliconStudio.Presentation.View
         public Task InvokeAsync(Action callback)
         {
             var operation = dispatcher.InvokeAsync(callback);
+            return operation.Task;
+        }
+
+        /// <inheritdoc/>
+        public Task LowPriorityInvokeAsync(Action callback)
+        {
+            var operation = dispatcher.InvokeAsync(callback, DispatcherPriority.ApplicationIdle);
             return operation.Task;
         }
 

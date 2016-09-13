@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <summary>
     /// Makes front-objects transparent for the back out-of-focus area.  
     /// </summary>
-    class ThresholdAlphaCoC: ImageEffectShader
+    shader ThresholdAlphaCoC: ImageEffectShader
     {
 
         // Previous CoC value (lower level)

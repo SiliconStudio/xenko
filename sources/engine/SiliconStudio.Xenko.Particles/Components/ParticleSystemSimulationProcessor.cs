@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Particles.Components
 
         public List<ParticleSystemComponentState> ParticleSystems { get; private set; }
 
-        internal void UpdateParticleSystem(ParticleSystemComponentState state, float deltaTime)
+        private void UpdateParticleSystem(ParticleSystemComponentState state, float deltaTime)
         {
             var speed = state.ParticleSystemComponent.Speed;
             var transformComponent = state.TransformComponent;
@@ -112,25 +112,7 @@ namespace SiliconStudio.Xenko.Particles.Components
                 }
             }
 
-            if (ParticleSystems.Count > 8)
-            {
-                TaskList.Dispatch(
-                    ParticleSystems,
-                    8,
-                    8,
-                    (i, particleSystemComponentState) =>
-                    {
-                        UpdateParticleSystem(particleSystemComponentState, deltaTime);
-                    }
-                    );
-            }
-            else
-            {
-                foreach (var particleSystemComponentState in ParticleSystems)
-                {
-                    UpdateParticleSystem(particleSystemComponentState, deltaTime);
-                }
-            }
+            Dispatcher.ForEach(ParticleSystems, state => UpdateParticleSystem(state, deltaTime));
         }
 
         /// <inheritdoc />

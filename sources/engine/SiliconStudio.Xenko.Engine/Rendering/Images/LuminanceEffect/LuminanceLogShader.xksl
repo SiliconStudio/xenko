@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <summary>
     /// A log luminance shader (by default using luma/Perceptive luminance Y'601)
     /// </summary>
-    class LuminanceLogShader : ImageEffectShader
+    shader LuminanceLogShader : ImageEffectShader
     {
         float GetLuminance(float3 color)
         {

@@ -4,7 +4,7 @@
 using System;
 using SiliconStudio.Xenko.Shaders;
 using SiliconStudio.Xenko.Shaders.Compiler;
-using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Shaders.Ast.Xenko;
 using SiliconStudio.Xenko.Shaders.Parser.Mixins;
 
 namespace SiliconStudio.Xenko.Assets.Materials
@@ -70,27 +70,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
                     logger.Messages.Clear();
                     return null;
                 }
-                return shader;
-            }
-            catch
-            {
-                // TODO: output messages
-                return null;
-            }
-        }
-
-        public ShaderClassType ParseShader(string shaderSource)
-        {
-            try
-            {
-                var shader = ShaderLoader.ParseSource(shaderSource, logger);
-                if (logger.HasErrors)
-                {
-                    // TODO: output messages
-                    logger.Messages.Clear();
-                    return null;
-                }
-                return shader;
+                return shader.Type;
             }
             catch
             {

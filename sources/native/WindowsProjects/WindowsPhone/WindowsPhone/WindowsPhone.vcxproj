@@ -102,7 +102,7 @@
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>$(XenkoDependenciesDir)\NativePath\WindowsPhone\x86\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/DEF:$(XenkoNativeProjectFolder)\symbols.def $(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>$(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -119,7 +119,7 @@
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>$(XenkoDependenciesDir)\NativePath\WindowsPhone\x86\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/DEF:$(XenkoNativeProjectFolder)\symbols.def $(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>$(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -137,7 +137,7 @@
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>$(XenkoDependenciesDir)\NativePath\WindowsPhone\ARM\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/INCREMENTAL:NO /DEF:$(XenkoNativeProjectFolder)\symbols.def $(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/INCREMENTAL:NO $(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
@@ -154,14 +154,14 @@
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <AdditionalLibraryDirectories>$(XenkoDependenciesDir)\NativePath\WindowsPhone\ARM\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalOptions>/INCREMENTAL:NO /DEF:$(XenkoNativeProjectFolder)\symbols.def $(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/INCREMENTAL:NO $(XenkoNativePathLibs) %(AdditionalOptions)</AdditionalOptions>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Object Include="$(XenkoNativeProjectFolder)\obj\*.obj" />
+    <Object Include="$(XenkoNativeProjectObjFolder)\*.obj" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
