@@ -44,9 +44,7 @@ namespace SiliconStudio.Core.Storage
             var hash = CurrentHash;
             stream.Dispose();
 
-            var disposed = Disposed;
-            if (disposed != null)
-                disposed(this);
+            Disposed?.Invoke(this);
         }
 
         public override long Length

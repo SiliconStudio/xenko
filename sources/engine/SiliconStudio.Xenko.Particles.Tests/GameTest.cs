@@ -180,9 +180,9 @@ namespace SiliconStudio.Xenko.Particles.Tests
 
             // using (var game = new VisualTestSoftEdge(GraphicsProfile.Level_9_3)) { game.Run(); } // This is not implemented yet and may not be
 
-            using (var game = new VisualTestSoftEdge(GraphicsProfile.Level_10_0)) { game.Run(); }
+            using (var game = new GameTest("VisualTestSoftEdge", GraphicsProfile.Level_10_0)) { game.Run(); }
 
-            using (var game = new VisualTestSoftEdge(GraphicsProfile.Level_11_0)) { game.Run(); }
+            using (var game = new GameTest("VisualTestSoftEdge", GraphicsProfile.Level_11_0)) { game.Run(); }
         }
     }
 }

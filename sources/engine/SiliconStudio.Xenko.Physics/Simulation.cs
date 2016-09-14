@@ -5,7 +5,6 @@ using SiliconStudio.Core.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Engine;
@@ -143,166 +142,9 @@ namespace SiliconStudio.Xenko.Physics
         readonly List<ContactPoint> updatedContactsCache = new List<ContactPoint>();
         readonly List<ContactPoint> removedContactsCache = new List<ContactPoint>();
 
-        struct ContactInfo
-        {
-            public PhysicsComponent ColA;
-            public PhysicsComponent ColB;
-            public bool NewContact;
-            public ContactPoint ContactPoint;
-        }
+        //private ProfilingState contactsProfilingState;
 
-        private readonly List<ContactInfo> frameContacts = new List<ContactInfo>();
-        readonly Dictionary<BulletSharp.ManifoldPoint, ContactPoint> manifoldToContact = new Dictionary<BulletSharp.ManifoldPoint, ContactPoint>();
-
-        private ProfilingState contactsProfilingState;
-
-        internal void RemoveContact(ContactPoint point)
-        {
-            var collision = point?.Collision;
-
-            if (collision == null || collision.Contacts.Count == 0) return;
-
-            collision.Contacts.Remove(point);
-
-            removedContactsCache.Add(point);
-
-            //if (collision.Contacts.Count > 0) return;
-
-            //collision.ColliderA.Collisions.Remove(collision);
-            //collision.ColliderB.Collisions.Remove(collision);
-
-            //removedCollisionsCache.Add(collision);
-        }
-
-        internal void CacheContacts()
-        {
-            contactsProfilingState = Profiler.Begin(PhysicsProfilingKeys.ContactsProfilingKey);
-
-            var pastFrameContacts = frameContacts.Select(x => x.ContactPoint).ToList();
-
-            frameContacts.Clear();
-            var numManifolds = collisionWorld.Dispatcher.NumManifolds;
-            for (var i = 0; i < numManifolds; i++)
-            {
-                var manifold = collisionWorld.Dispatcher.GetManifoldByIndexInternal(i);
-                var numContacts = manifold.NumContacts;
-                var bodyA = manifold.Body0;
-                var bodyB = manifold.Body1;
-
-                var colA = (PhysicsComponent)bodyA?.UserObject;
-                var colB = (PhysicsComponent)bodyB?.UserObject;
-
-                if (colA == null || colB == null)
-                {
-                    continue;
-                }
-
-                if (!colA.ProcessCollisions && !colB.ProcessCollisions)
-                {
-                    continue;
-                }
-
-                for (var y = 0; y < numContacts; y++)
-                {
-                    var cp = manifold.GetContactPoint(y);
-
-                    if (cp.Distance > 0.0f)
-                    {
-                        continue;
-                    }
-
-                    var info = new ContactInfo
-                    {
-                        ColA = colA,
-                        ColB = colB
-                    };
-
-                    //this can be recycled by bullet so its not very correct.. need to figure if it is really new.. comparing life times might help
-                    if (!manifoldToContact.TryGetValue(cp, out info.ContactPoint))
-                    {
-                        info.ContactPoint = new ContactPoint { Collision = null };
-                        info.NewContact = true;
-                        manifoldToContact[cp] = info.ContactPoint;
-                    }
-
-                    if (info.ContactPoint.LifeTime > cp.LifeTime || cp.LifeTime == 1)
-                    {
-                        RemoveContact(info.ContactPoint);
-
-                        //this is a new contact as well
-                        info.ContactPoint.Collision = null;
-                        info.NewContact = true;
-                    }
-
-                    info.ContactPoint.LifeTime = cp.LifeTime;
-                    info.ContactPoint.Distance = cp.Distance;
-                    info.ContactPoint.Normal = cp.NormalWorldOnB;
-                    info.ContactPoint.PositionOnA = cp.PositionWorldOnA;
-                    info.ContactPoint.PositionOnB = cp.PositionWorldOnB;
-
-                    frameContacts.Add(info);
-                    pastFrameContacts.Remove(info.ContactPoint);
-                }
-            }
-
-            foreach (var contact in pastFrameContacts)
-            {
-                RemoveContact(contact);
-            }
-        }
-
-        internal void ProcessContacts()
-        {
-            foreach (var contactInfo in frameContacts)
-            {
-                var collision = contactInfo.ContactPoint.Collision;
-
-                if (collision == null)
-                {
-                    //find if a collision already existed
-                    foreach (var col in contactInfo.ColA.Collisions)
-                    {
-                        if ((col.ColliderA != contactInfo.ColA || col.ColliderB != contactInfo.ColB) && (col.ColliderA != contactInfo.ColB || col.ColliderB != contactInfo.ColA)) continue;
-                        collision = col;
-                        break;
-                    }
-                }
-
-                if(collision == null) continue;
-
-//                //if it's still null we need to create a new collision 
-//                if (collision == null)
-//                {
-//                    //new collision
-//                    collision = new Collision
-//                    {
-//                        Contacts = new TrackingCollection<ContactPoint>(),
-//                        ColliderA = contactInfo.ColA,
-//                        ColliderB = contactInfo.ColB
-//                    };
-//
-//                    collision.Contacts.Clear();
-//
-//                    contactInfo.ColA.Collisions.Add(collision);
-//                    contactInfo.ColB.Collisions.Add(collision);
-//
-//                    newCollisionsCache.Add(collision);
-//                }
-
-                contactInfo.ContactPoint.Collision = collision;
-
-                if (contactInfo.NewContact)
-                {
-                    collision.Contacts.Add(contactInfo.ContactPoint);
-
-                    newContactsFastCache.Add(contactInfo.ContactPoint);
-                }
-                else
-                {
-                    updatedContactsCache.Add(contactInfo.ContactPoint);
-                }
-            }
-        }
+        private readonly Dictionary<ContactPoint, Collision> contactToCollision = new Dictionary<ContactPoint, Collision>(ContactPointEqualityComparer.Default);
 
         internal void SendEvents()
         {
@@ -334,34 +176,37 @@ namespace SiliconStudio.Xenko.Physics
 
             foreach (var contactPoint in newContactsFastCache)
             {
-                //todo remove should never happen
-                if (contactPoint.Collision == null) continue;
-
-                while (contactPoint.Collision.NewContactChannel.Balance < 0)
+                Collision collision;
+                if (contactToCollision.TryGetValue(contactPoint, out collision))
                 {
-                    contactPoint.Collision.NewContactChannel.Send(contactPoint);
+                    while (collision.NewContactChannel.Balance < 0)
+                    {
+                        collision.NewContactChannel.Send(contactPoint);
+                    }
                 }
             }
 
             foreach (var contactPoint in updatedContactsCache)
             {
-                //todo remove should never happen
-                if (contactPoint.Collision == null) continue;
-
-                while (contactPoint.Collision.ContactUpdateChannel.Balance < 0)
+                Collision collision;
+                if (contactToCollision.TryGetValue(contactPoint, out collision))
                 {
-                    contactPoint.Collision.ContactUpdateChannel.Send(contactPoint);
+                    while (collision.ContactUpdateChannel.Balance < 0)
+                    {
+                        collision.ContactUpdateChannel.Send(contactPoint);
+                    }
                 }
             }
 
             foreach (var contactPoint in removedContactsCache)
             {
-                //todo remove should never happen
-                if (contactPoint.Collision == null) continue;
-
-                while (contactPoint.Collision.ContactEndedChannel.Balance < 0)
+                Collision collision;
+                if (contactToCollision.TryGetValue(contactPoint, out collision))
                 {
-                    contactPoint.Collision.ContactEndedChannel.Send(contactPoint);
+                    while (collision.ContactEndedChannel.Balance < 0)
+                    {
+                        collision.ContactEndedChannel.Send(contactPoint);
+                    }
                 }
             }
 
@@ -371,7 +216,7 @@ namespace SiliconStudio.Xenko.Physics
             updatedContactsCache.Clear();
             removedContactsCache.Clear();
 
-            contactsProfilingState.End("Contacts: {0}", frameContacts.Count);
+            //contactsProfilingState.End("Contacts: {0}", currentFrameContacts.Count);
         }
 
         /// <summary>
@@ -1000,124 +845,224 @@ namespace SiliconStudio.Xenko.Physics
             handler?.Invoke(this, e);
         }
 
-        //todo lots of data dupes, this needs rework soon
-        readonly HashSet<Collision> skippedCollisions = new HashSet<Collision>();
-        readonly HashSet<Collision> newCollisions = new HashSet<Collision>();
-
         internal void BeginContactTesting()
         {
-            skippedCollisions.Clear();
-            newCollisions.Clear();
+            //swap the lists
+            var previous = currentFrameContacts;
+            currentFrameContacts = previousFrameContacts;
+            currentFrameContacts.Clear();
+            previousFrameContacts = previous;         
+        }
+
+        private readonly FastList<ContactPoint> newContacts = new FastList<ContactPoint>();
+        private readonly FastList<ContactPoint> updatedContacts = new FastList<ContactPoint>();
+        private readonly FastList<ContactPoint> removedContacts = new FastList<ContactPoint>();
+
+        private void ContactRemoval(ContactPoint contact, PhysicsComponent component0, PhysicsComponent component1)
+        {
+            Collision existingPair = null;
+            foreach (var x in component0.Collisions)
+            {
+                if (x.InternalEquals(component0, component1))
+                {
+                    existingPair = x;
+                    break;
+                }
+            }
+            if (existingPair == null)
+            {
+#if DEBUG
+                //should not happen?
+                throw new Exception("Pair not present.");
+#else
+                return;
+#endif
+            }
+
+            if (existingPair.Contacts.Contains(contact))
+            {
+                existingPair.Contacts.Remove(contact);
+                removedContactsCache.Add(contact);
+
+                contactToCollision.Remove(contact);
+
+                if (existingPair.Contacts.Count == 0)
+                {
+                    component0.Collisions.Remove(existingPair);
+                    component1.Collisions.Remove(existingPair);
+                    removedCollisionsCache.Add(existingPair);
+                }
+            }
+            else
+            {
+#if DEBUG
+                //should not happen?
+                throw new Exception("Contact not in pair.");
+#endif
+            }
         }
 
         internal void EndContactTesting()
         {
-            foreach (var collision in skippedCollisions)
+            newContacts.Clear(true);
+            updatedContacts.Clear(true);
+            removedContacts.Clear(true);
+
+            foreach (var currentFrameContact in currentFrameContacts)
             {
-                if(newCollisions.Contains(collision)) continue;
-
-                collision.ColliderA.Collisions.Remove(collision);
-                collision.ColliderB.Collisions.Remove(collision);
-                removedCollisionsCache.Add(collision);
-
-                removedContactsCache.Add(collision.Contacts[0]);
-            }
-        }
-
-        [StructLayout(LayoutKind.Sequential, Pack = 4)]
-        unsafe struct ContactData
-        {
-            public readonly void* ColliderA;
-            public readonly void* ColliderB;
-
-            public readonly float Distance;
-
-            public readonly float NormalX;
-            public readonly float NormalY;
-            public readonly float NormalZ;
-
-            public readonly float PositionOnAx;
-            public readonly float PositionOnAy;
-            public readonly float PositionOnAz;
-
-            public readonly float PositionOnBx;
-            public readonly float PositionOnBy;
-            public readonly float PositionOnBz;
-        }
-
-        unsafe internal void ContactTest(PhysicsComponent component)
-        {
-            foreach (var collision in component.Collisions)
-            {
-                skippedCollisions.Add(collision);
+                if (!previousFrameContacts.Contains(currentFrameContact))
+                {
+                    newContacts.Add(currentFrameContact);
+                }
+                else
+                {
+                    updatedContacts.Add(currentFrameContact);
+                }
             }
 
-            IntPtr buffer;
-            int bufferSize;
-            collisionWorld.GetCollisions(component.NativeCollisionObject, out buffer, out bufferSize);
-
-            var contacts = (ContactData*) buffer;
-            for (var i = 0; i < bufferSize; i++)
+            foreach (var previousFrameContact in previousFrameContacts)
             {
-                var contact = contacts[i];
-                var obj0 = BulletSharp.CollisionObject.GetManaged((IntPtr)contact.ColliderA);
-                var obj1 = BulletSharp.CollisionObject.GetManaged((IntPtr)contact.ColliderB);
+                if (!currentFrameContacts.Contains(previousFrameContact))
+                {
+                    removedContacts.Add(previousFrameContact);
+                }
+            }
+
+            foreach (var contact in newContacts)
+            {
+                var obj0 = BulletSharp.CollisionObject.GetManaged(contact.ColliderA);
+                var obj1 = BulletSharp.CollisionObject.GetManaged(contact.ColliderB);
                 var component0 = (PhysicsComponent)obj0.UserObject;
                 var component1 = (PhysicsComponent)obj1.UserObject;
 
-                if (((int)component0.CanCollideWith & (int)component1.CollisionGroup) != 0 || ((int)component1.CanCollideWith & (int)component0.CollisionGroup) != 0)
+                Collision existingPair = null;
+                foreach (var x in component0.Collisions)
                 {
-                    var skip = false;
-                    foreach (var collision in component0.Collisions)
+                    if (x.InternalEquals(component0, component1))
                     {
-                        if ((collision.ColliderA == component0 && collision.ColliderB == component1) || (collision.ColliderA == component1 && collision.ColliderB == component0))
-                        {
-                            var oldContact = collision.Contacts[0];
-                            oldContact.Distance = contact.Distance;
-                            oldContact.Normal = new Vector3(contact.NormalX, contact.NormalY, contact.NormalZ);
-                            oldContact.PositionOnA = new Vector3(contact.PositionOnAx, contact.PositionOnAy, contact.PositionOnAz);
-                            oldContact.PositionOnB = new Vector3(contact.PositionOnBx, contact.PositionOnBy, contact.PositionOnBz);
-                            updatedContactsCache.Add(oldContact);
-
-                            skippedCollisions.Remove(collision);
-                            skip = true;
-                            break;
-                        }
+                        existingPair = x;
+                        break;
                     }
-
-                    if (skip)
-                    {
-                        continue;
-                    }
-
-                    var newCollision = new Collision
-                    {
-                        Contacts = new TrackingCollection<ContactPoint>(),
-                        ColliderA = component0,
-                        ColliderB = component1
-                    };
-
-                    //todo this has to change
-                    var newContact = new ContactPoint
-                    {
-                        Collision = newCollision,
-                        Distance = contact.Distance,
-                        LifeTime = 0,
-                        Normal = new Vector3(contact.NormalX, contact.NormalY, contact.NormalZ),
-                        PositionOnA = new Vector3(contact.PositionOnAx, contact.PositionOnAy, contact.PositionOnAz),
-                        PositionOnB = new Vector3(contact.PositionOnBx, contact.PositionOnBy, contact.PositionOnBz)
-                    };
-                    newCollision.Contacts.Add(newContact);
-
-                    component0.Collisions.Add(newCollision);
-                    component1.Collisions.Add(newCollision);
-
-                    newCollisionsCache.Add(newCollision);
-
-                    newContactsFastCache.Add(newContact);
-
-                    newCollisions.Add(newCollision);
                 }
+                if (existingPair != null)
+                {
+                    if (existingPair.Contacts.Contains(contact))
+                    {
+#if DEBUG
+                        //should not happen?
+                        throw new Exception("Contact already added.");
+#else
+                        continue;
+#endif
+                    }
+
+                    existingPair.Contacts.Add(contact);
+                }
+                else
+                {
+                    var newPair = new Collision(component0, component1);
+                    newPair.Contacts.Add(contact);
+                    component0.Collisions.Add(newPair);
+                    component1.Collisions.Add(newPair);
+
+                    contactToCollision.Add(contact, newPair);
+
+                    newCollisionsCache.Add(newPair);
+                    newContactsFastCache.Add(contact);
+                }
+            }
+
+            foreach (var contact in updatedContacts)
+            {
+                var obj0 = BulletSharp.CollisionObject.GetManaged(contact.ColliderA);
+                var obj1 = BulletSharp.CollisionObject.GetManaged(contact.ColliderB);
+                var component0 = (PhysicsComponent)obj0.UserObject;
+                var component1 = (PhysicsComponent)obj1.UserObject;
+
+                Collision existingPair = null;
+                foreach (var x in component0.Collisions)
+                {
+                    if (x.InternalEquals(component0, component1))
+                    {
+                        existingPair = x;
+                        break;
+                    }
+                }
+                if (existingPair != null)
+                {
+                    if (existingPair.Contacts.Contains(contact))
+                    {
+                        //update data values (since comparison is only at pointer level internally)
+                        existingPair.Contacts.Remove(contact);
+                        existingPair.Contacts.Add(contact);
+                        updatedContactsCache.Add(contact);
+                    }
+                    else
+                    {
+#if DEBUG
+                        //should not happen?
+                        throw new Exception("Contact not in pair.");
+#endif
+                    }
+                }
+                else
+                {
+#if DEBUG
+                    //should not happen?
+                    throw new Exception("Pair not present.");
+#endif
+                }
+            }
+
+            foreach (var contact in removedContacts)
+            {
+                var obj0 = BulletSharp.CollisionObject.GetManaged(contact.ColliderA);
+                var obj1 = BulletSharp.CollisionObject.GetManaged(contact.ColliderB);
+                var component0 = (PhysicsComponent)obj0.UserObject;
+                var component1 = (PhysicsComponent)obj1.UserObject;
+
+                ContactRemoval(contact, component0, component1);
+            }     
+        }
+
+        private HashSet<ContactPoint> currentFrameContacts = new HashSet<ContactPoint>(ContactPointEqualityComparer.Default);
+        private HashSet<ContactPoint> previousFrameContacts = new HashSet<ContactPoint>(ContactPointEqualityComparer.Default);
+
+        internal unsafe void ContactTest(PhysicsComponent component)
+        {
+            IntPtr buffer;
+            int bufferSize;
+            collisionWorld.GetCollisions(component.NativeCollisionObject, out buffer, out bufferSize);
+            var contacts = (ContactPoint*) buffer;
+            for (var i = 0; i < bufferSize; i++)
+            {
+                var contact = contacts[i];
+                currentFrameContacts.Add(contact);
+            }
+        }
+
+        private readonly FastList<ContactPoint> previousToRemove = new FastList<ContactPoint>();
+
+        internal void CleanContacts(PhysicsComponent component)
+        {
+            previousToRemove.Clear(true);
+
+            foreach (var previousFrameContact in previousFrameContacts)
+            {
+                var obj0 = BulletSharp.CollisionObject.GetManaged(previousFrameContact.ColliderA);
+                var obj1 = BulletSharp.CollisionObject.GetManaged(previousFrameContact.ColliderB);
+                var component0 = (PhysicsComponent)obj0.UserObject;
+                var component1 = (PhysicsComponent)obj1.UserObject;
+                if (component == component0 || component == component1)
+                {
+                    previousToRemove.Add(previousFrameContact);
+                    ContactRemoval(previousFrameContact, component0, component1);
+                }
+            }
+
+            foreach (var contactPoint in previousToRemove)
+            {
+                previousFrameContacts.Remove(contactPoint);
             }
         }
     }

@@ -195,6 +195,7 @@ namespace SiliconStudio.AssemblyProcessor
                 }
 
                 processors.Add(new InitLocalsProcessor());
+                processors.Add(new DispatcherProcessor());
                 processors.Add(new OpenSourceSignProcessor());
 
                 // Check if pdb was actually read

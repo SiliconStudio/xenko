@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Globalization;
+using System.Windows;
 using System.Windows.Media;
 
 using SiliconStudio.Core.Mathematics;
@@ -22,7 +23,7 @@ namespace SiliconStudio.Presentation.ValueConverters
             var brush = value as SolidColorBrush;
             if (brush != null)
                 value = brush.Color;
-
+            
             if (value is Color)
             {
                 var color = (Color)value;
@@ -89,13 +90,13 @@ namespace SiliconStudio.Presentation.ValueConverters
                 if (targetType == typeof(string))
                     return ColorExtensions.RgbaToString(color.ToRgba());
             }
-            if (value is string)
+            var stringColor = value as string;
+            if (stringColor != null)
             {
-                var stringColor = value as string;
-                uint intValue = 0xFF000000;
+                var intValue = 0xFF000000;
                 if (stringColor.StartsWith("#"))
                 {
-                    if (stringColor.Length == "#000".Length && UInt32.TryParse(stringColor.Substring(1, 3), NumberStyles.HexNumber, null, out intValue))
+                    if (stringColor.Length == "#000".Length && uint.TryParse(stringColor.Substring(1, 3), NumberStyles.HexNumber, null, out intValue))
                     {
                         intValue = ((intValue & 0x00F) << 16)
                                  | ((intValue & 0x00F) << 20)
@@ -105,14 +106,14 @@ namespace SiliconStudio.Presentation.ValueConverters
                                  | ((intValue & 0xF00) >> 8)
                                  | (0xFF000000);
                     }
-                    if (stringColor.Length == "#000000".Length && UInt32.TryParse(stringColor.Substring(1, 6), NumberStyles.HexNumber, null, out intValue))
+                    if (stringColor.Length == "#000000".Length && uint.TryParse(stringColor.Substring(1, 6), NumberStyles.HexNumber, null, out intValue))
                     {
                         intValue = ((intValue & 0x000000FF) << 16)
                                  | (intValue & 0x0000FF00)
                                  | ((intValue & 0x00FF0000) >> 16)
                                  | (0xFF000000);
                     }
-                    if (stringColor.Length == "#00000000".Length && UInt32.TryParse(stringColor.Substring(1, 8), NumberStyles.HexNumber, null, out intValue))
+                    if (stringColor.Length == "#00000000".Length && uint.TryParse(stringColor.Substring(1, 8), NumberStyles.HexNumber, null, out intValue))
                     {
                         intValue = ((intValue & 0x000000FF) << 16)
                                  | (intValue & 0x0000FF00)
@@ -146,7 +147,15 @@ namespace SiliconStudio.Presentation.ValueConverters
                 if (targetType == typeof(string))
                     return stringColor;
             }
+
+#if DEBUG
+            if (value == null || value == DependencyProperty.UnsetValue)
+                return DependencyProperty.UnsetValue;
+
             throw new NotSupportedException("Requested conversion is not supported.");
+#else
+            return DependencyProperty.UnsetValue;
+#endif
         }
 
         /// <inheritdoc/>

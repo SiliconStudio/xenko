@@ -73,7 +73,12 @@ namespace SiliconStudio.Xenko.Graphics
         private int[] _currentScissorsSetBuffer = new int[4 * MaxBoundRenderTargets];
 #endif
 
-        public CommandList(GraphicsDevice device) : base(device)
+        public static CommandList New(GraphicsDevice device)
+        {
+            throw new InvalidOperationException("Can't create multiple command lists with OpenGL");
+        }
+
+        internal CommandList(GraphicsDevice device) : base(device)
         {
             device.MainCommandList = this;
 
@@ -92,8 +97,14 @@ namespace SiliconStudio.Xenko.Graphics
         {
         }
 
-        public void Close()
+        public void Flush()
         {
+            
+        }
+
+        public CompiledCommandList Close()
+        {
+            return default(CompiledCommandList);
         }
 
         public void Clear(Texture depthStencilBuffer, DepthStencilClearOptions options, float depth = 1, byte stencil = 0)
@@ -314,9 +325,6 @@ namespace SiliconStudio.Xenko.Graphics
             GL.ColorMask(true, true, true, true);
             currentPipelineState.DepthStencilState.Apply(this);
             currentPipelineState.RasterizerState.Apply(this);
-
-            // Set default render targets
-            SetRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE
             GL.Enable(EnableCap.FramebufferSrgb);
@@ -844,6 +852,11 @@ namespace SiliconStudio.Xenko.Graphics
             GraphicsDevice.EnsureContextActive();
 #endif
 
+            // This resource has just been recycled by the GraphicsResourceAllocator, we force a rename to avoid GPU=>GPU sync point
+            if (resource.DiscardNextMap && mapMode == MapMode.WriteNoOverwrite)
+                mapMode = MapMode.WriteDiscard;
+
+
             var buffer = resource as Buffer;
             if (buffer != null)
             {
@@ -1039,7 +1052,10 @@ namespace SiliconStudio.Xenko.Graphics
                         {
                             //UnbindVertexArrayObject();
                             GL.BindBuffer(buffer.BufferTarget, buffer.BufferId);
-                            GL.BufferSubData(buffer.BufferTarget, (IntPtr)unmapped.OffsetInBytes, (IntPtr)unmapped.SizeInBytes, unmapped.DataBox.DataPointer);
+                            if (unmapped.OffsetInBytes == 0 && unmapped.SizeInBytes == buffer.SizeInBytes)
+                                GL.BufferData(buffer.BufferTarget, unmapped.SizeInBytes, unmapped.DataBox.DataPointer, buffer.BufferUsageHint);
+                            else
+                                GL.BufferSubData(buffer.BufferTarget, (IntPtr)unmapped.OffsetInBytes, (IntPtr)unmapped.SizeInBytes, unmapped.DataBox.DataPointer);
                         }
                     }
                     else
@@ -1084,9 +1100,6 @@ namespace SiliconStudio.Xenko.Graphics
                 boundProgram = program;
                 GL.UseProgram(boundProgram);
             }
-
-            // Setup index buffer
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBuffer.Buffer != null ? indexBuffer.Buffer.BufferId : 0);
 
             int vertexBufferSlot = -1;
             var vertexBufferView = default(VertexBufferView);
@@ -1502,6 +1515,9 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 // Setup index buffer
                 indexBuffer = newIndexBuffer;
+
+                // Setup index buffer
+                GL.BindBuffer(BufferTarget.ElementArrayBuffer, indexBuffer.Buffer != null ? indexBuffer.Buffer.BufferId : 0);
             }
         }
 

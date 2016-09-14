@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
     /// <summary>
     /// Sample a cubemap using the MaterialPixelShadingStream roughness parameter.
     /// </summary>
-    class LevelCubeMapEnvironmentColor : IComputeEnvironmentColor, Texturing
+    shader LevelCubeMapEnvironmentColor : IComputeEnvironmentColor, Texturing
     {
         TextureCube CubeMap;
         float MipLevel;

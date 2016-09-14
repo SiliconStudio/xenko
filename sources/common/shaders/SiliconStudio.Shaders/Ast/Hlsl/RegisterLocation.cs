@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     /// <summary>
     /// Describe a register location
     /// </summary>
-    public class RegisterLocation : Qualifier
+    public partial class RegisterLocation : Qualifier
     {
         #region Constructors and Destructors
 

@@ -99,7 +99,9 @@ namespace SiliconStudio.Presentation.Windows
             switch (button)
             {
                 case MessageBoxButton.OK:
-                    buttons = new[] { ButtonOK };
+                    var buttonOk = ButtonOK;
+                    buttonOk.IsCancel = true;
+                    buttons = new[] { buttonOk };
                     break;
 
                 case MessageBoxButton.OKCancel:

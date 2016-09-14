@@ -1,11 +1,8 @@
 ﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Collections;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Particles.Sorters;
@@ -44,9 +41,8 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// <summary>
         /// Prepares the material for drawing the current frame with the current <see cref="ParticleVertexBuilder"/> and <see cref="ParticleSorter"/>
         /// </summary>
-        /// <param name="vertexBuilder">Current <see cref="ParticleVertexBuilder"/></param>
-        /// <param name="sorter">Current <see cref="ParticleSorter"/></param>
-        public virtual void PrepareForDraw(ParticleVertexBuilder vertexBuilder, ParticleSorter sorter)
+        /// <param name="fieldsList">A container for the <see cref="ParticlePool"/> which can poll if a certain field exists as an attribute</param>
+        public virtual void PrepareVertexLayout(ParticlePoolFieldsList fieldsList)
         {
         }
 
@@ -92,11 +88,11 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// Patch the particle's vertex buffer which was already built by the <see cref="ShapeBuilders.ShapeBuilder"/>
         /// This involes animating hte uv coordinates and filling per-particle fields, such as the color field
         /// </summary>
-        /// <param name="vertexBuilder">The target buffer builder to use for patching the vertex data</param>
+        /// <param name="bufferState">The particle buffer state which is used to build the assigned vertex buffer</param>
         /// <param name="invViewX">Unit vector X (right) in camera space, extracted from the inverse view matrix</param>
         /// <param name="invViewY">Unit vector Y (up) in camera space, extracted from the inverse view matrix</param>
         /// <param name="sorter">Particle enumerator which can be iterated and returns sported particles</param>
-        public virtual void PatchVertexBuffer(ParticleVertexBuilder vertexBuilder, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
+        public virtual void PatchVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, ref ParticleList sortedList)
         {
         }
 

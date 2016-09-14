@@ -9,7 +9,7 @@ namespace Test7
         string param3 = "ok";
     };
 
-    shader DefaultSimpleParams
+    effect DefaultSimpleParams
     {
         using params TestParameters;
 

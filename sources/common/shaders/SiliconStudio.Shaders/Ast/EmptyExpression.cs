@@ -5,7 +5,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A Empty expression
     /// </summary>
-    public class EmptyExpression : Expression
+    public partial class EmptyExpression : Expression
     {
         /// <inheritdoc />
         public override string ToString()

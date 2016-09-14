@@ -91,21 +91,25 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
             if (ComputeColor != null)
             {
-                var shaderGeneratorContext = new ShaderGeneratorContext(graphicsDevice)
+                if (ComputeColor.HasChanged)
                 {
-                    Parameters = Parameters,
-                    ColorSpace = graphicsDevice.ColorSpace
-                };
+                    var shaderGeneratorContext = new ShaderGeneratorContext(graphicsDevice)
+                    {
+                        Parameters = Parameters,
+                        ColorSpace = graphicsDevice.ColorSpace
+                    };
 
-                var newShaderSource = ComputeColor.GenerateShaderSource(shaderGeneratorContext, new MaterialComputeColorKeys(ParticleBaseKeys.EmissiveMap, ParticleBaseKeys.EmissiveValue, Color.White));
+                    shaderSource = ComputeColor.GenerateShaderSource(shaderGeneratorContext, new MaterialComputeColorKeys(ParticleBaseKeys.EmissiveMap, ParticleBaseKeys.EmissiveValue, Color.White));
 
-                // Check if shader code has changed
-                if (!newShaderSource.Equals(shaderSource))
-                {
-                    shaderSource = newShaderSource;
-                    Parameters.Set(ParticleBaseKeys.BaseColor, shaderSource);
+                    if (Parameters.Get(ParticleBaseKeys.BaseColor)?.Equals(shaderSource) ?? false)
+                    {
+                        shaderSource = Parameters.Get(ParticleBaseKeys.BaseColor);
+                    }
+                    else
+                    {
+                        Parameters.Set(ParticleBaseKeys.BaseColor, shaderSource);
+                    }
 
-                    // TODO: Is this necessary?
                     HasVertexLayoutChanged = true;
                 }
             }
@@ -121,39 +125,10 @@ namespace SiliconStudio.Xenko.Particles.Materials
             //  The arguments we need are in the GenericArguments, which is again just an array of strings
             //  We could search it element by element, but in the end getting the entire string and searching it instead is the same
             {
-                var code = shaderSource?.ToString();
-
-                if (code?.Contains("COLOR0") ?? false)
-                {
-                    vertexBuilder.AddVertexElement(ParticleVertexElements.Color);
-                }
-
-                var coordIndex = code?.IndexOf("TEXCOORD", 0, StringComparison.Ordinal) ?? -1;
-
-                if (coordIndex < 0)
-                {
-                    // If there is no explicit texture coordinate usage, but we can still force it
-                    if (ForceTexCoords)
-                    {
-                        vertexBuilder.AddVertexElement(ParticleVertexElements.TexCoord[0]);
-                    }
-                }
-
-                while (coordIndex >= 0)
-                {
-                    var semanticIndex = 0;
-                    var subStr = code.Substring(coordIndex + 8);
-
-                    if (int.TryParse(Regex.Match(subStr, @"\d+").Value, out semanticIndex))
-                    {
-                        semanticIndex = (semanticIndex < 0) ? 0 : semanticIndex;
-                        semanticIndex = (semanticIndex > 15) ? 15 : semanticIndex;
-
-                        vertexBuilder.AddVertexElement(ParticleVertexElements.TexCoord[semanticIndex]);
-                    }
-
-                    coordIndex = code.IndexOf("TEXCOORD", coordIndex + 1);
-                }
+                // 95% of all particle effects will require both texture coordinates and vertex color, so we can add it to the layout here
+                // Possible optimization can be detecting material changes
+                vertexBuilder.AddVertexElement(ParticleVertexElements.Color);
+                vertexBuilder.AddVertexElement(ParticleVertexElements.TexCoord[0]);
             } // Part of the graphics improvement XK-3052
 
         }
@@ -166,21 +141,21 @@ namespace SiliconStudio.Xenko.Particles.Materials
         }
 
         /// <inheritdoc />
-        public unsafe override void PatchVertexBuffer(ParticleVertexBuilder vertexBuilder, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
+        public unsafe override void PatchVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, ref ParticleList sorter)
         {
             // If you want, you can implement the base builder here and not call it. It should result in slight speed up
-            base.PatchVertexBuffer(vertexBuilder, invViewX, invViewY, sorter);
+            base.PatchVertexBuffer(ref bufferState, invViewX, invViewY, ref sorter);
 
             //  The UV Builder, if present, animates the basic (0, 0, 1, 1) uv coordinates of each billboard
-            UVBuilder?.BuildUVCoordinates(vertexBuilder, sorter, vertexBuilder.DefaultTexCoords);
-            vertexBuilder.RestartBuffer();
+            UVBuilder?.BuildUVCoordinates(ref bufferState, ref sorter, bufferState.DefaultTexCoords);
+            bufferState.StartOver();
 
             // If the particles have color field, the base class should have already passed the information
             if (HasColorField)
                 return;
 
             // If the particles don't have color field but there is no color stream either we don't need to fill anything
-            var colAttribute = vertexBuilder.GetAccessor(VertexAttributes.Color);
+            var colAttribute = bufferState.GetAccessor(VertexAttributes.Color);
             if (colAttribute.Size <= 0)
                 return;
 
@@ -190,12 +165,12 @@ namespace SiliconStudio.Xenko.Particles.Materials
             // TODO: for loop. Remove IEnumerable from sorter
             foreach (var particle in sorter)
             {
-                vertexBuilder.SetAttributePerParticle(colAttribute, (IntPtr)(&color));
+                bufferState.SetAttributePerParticle(colAttribute, (IntPtr)(&color));
 
-                vertexBuilder.NextParticle();
+                bufferState.NextParticle();
             }
 
-            vertexBuilder.RestartBuffer();
+            bufferState.StartOver();
         }
 
     }

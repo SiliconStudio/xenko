@@ -16,7 +16,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <inheritdoc/>
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value != null ? value.ToString().Replace("/", "\\") : null;
+            return value?.ToString().Replace("/", "\\");
         }
 
         /// <inheritdoc/>
@@ -39,7 +39,7 @@ namespace SiliconStudio.Presentation.ValueConverters
                     return value != null ? new UDirectory("") : null;
             }
 
-            throw new ArgumentException(@"target type must be either UFile or UDirectory", "targetType");
+            throw new ArgumentException(@"target type must be either UFile or UDirectory", nameof(targetType));
         }
     }
 }

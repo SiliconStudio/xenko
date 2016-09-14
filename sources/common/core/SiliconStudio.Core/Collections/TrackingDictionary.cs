@@ -54,9 +54,7 @@ namespace SiliconStudio.Core.Collections
         public void Add(TKey key, TValue value)
         {
             innerDictionary.Add(key, value);
-            var collectionChanged = itemAdded;
-            if (collectionChanged != null)
-                collectionChanged(this, new TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, key, value, null, true));
+            itemAdded?.Invoke(this, new TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, key, value, null, true));
         }
 
         /// <inheritdoc/>

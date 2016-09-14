@@ -4,9 +4,9 @@
 namespace SiliconStudio.Xenko.Rendering.Skyboxes
 {
     /// <summary>
-    /// Sample class to sample a skybox.
+    /// Sample shader to sample a skybox.
     /// </summary>
-    class ComputeSkyboxCubeMapColor<LinkType TTexture> : IComputeEnvironmentColor, Texturing, DynamicTextureCube<TTexture, PerLighting>
+    shader ComputeSkyboxCubeMapColor<LinkType TTexture> : IComputeEnvironmentColor, Texturing, DynamicTextureCube<TTexture, PerLighting>
     {
         override float4 Compute(float3 direction)
         {

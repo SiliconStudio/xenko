@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <summary>
     /// The first pass of a shader performing Lambertian pre-filtering using Spherical Harmonics
     /// </summary>
-    class LambertianPrefilteringSHPass1<int TBlockSize, int THarmonicsOrder> : SphericalHarmonicsBase<THarmonicsOrder>, ComputeShaderBase, Texturing
+    shader LambertianPrefilteringSHPass1<int TBlockSize, int THarmonicsOrder> : SphericalHarmonicsBase<THarmonicsOrder>, ComputeShaderBase, Texturing
     {    
         // the input texture containing the radiance
         TextureCube<float4> RadianceMap;

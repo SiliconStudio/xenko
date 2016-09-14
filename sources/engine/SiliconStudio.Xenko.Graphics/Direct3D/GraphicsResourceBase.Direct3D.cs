@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Called when graphics device has been recreated.
         /// </summary>
-        /// <returns>True if item transitionned to a <see cref="GraphicsResourceLifetimeState.Active"/> state.</returns>
+        /// <returns>True if item transitioned to a <see cref="GraphicsResourceLifetimeState.Active"/> state.</returns>
         protected internal virtual bool OnRecreate()
         {
             return false;

@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// <summary>
     /// Converts Metalness to specular color
     /// </summary>
-    class MaterialSurfaceMetalness : IMaterialSurfacePixel
+    shader MaterialSurfaceMetalness : IMaterialSurfacePixel
     {
         compose ComputeColor metalnessMap;
 

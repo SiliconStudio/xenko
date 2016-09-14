@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.UI.Events
 
     internal class RoutedEventHandlerInfo<T> : RoutedEventHandlerInfo where T : RoutedEventArgs
     {
-        public EventHandler<T> RoutedEventHandler { get; private set; }
+        public EventHandler<T> RoutedEventHandler { get; }
 
         public RoutedEventHandlerInfo(EventHandler<T> routedEventHandler, bool handledEventToo = false)
             : base(handledEventToo)
@@ -44,9 +44,6 @@ namespace SiliconStudio.Xenko.UI.Events
             RoutedEventHandler(sender, (T)args);
         }
 
-        public override Delegate Handler
-        {
-            get { return RoutedEventHandler; }
-        }
+        public override Delegate Handler => RoutedEventHandler;
     }
 }

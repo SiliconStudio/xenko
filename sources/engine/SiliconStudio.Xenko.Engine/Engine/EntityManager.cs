@@ -560,26 +560,22 @@ namespace SiliconStudio.Xenko.Engine
 
         protected virtual void OnComponentTypeAdded(TypeInfo obj)
         {
-            var handler = ComponentTypeAdded;
-            if (handler != null) handler(this, obj);
+            ComponentTypeAdded?.Invoke(this, obj);
         }
 
         protected virtual void OnEntityAdded(Entity e)
         {
-            var handler = EntityAdded;
-            if (handler != null) handler(this, e);
+            EntityAdded?.Invoke(this, e);
         }
 
         protected virtual void OnEntityRemoved(Entity e)
         {
-            var handler = EntityRemoved;
-            if (handler != null) handler(this, e);
+            EntityRemoved?.Invoke(this, e);
         }
 
         protected virtual void OnComponentChanged(Entity entity, int index, EntityComponent previousComponent, EntityComponent newComponent)
         {
-            var handler = ComponentChanged;
-            if (handler != null) handler(this, new EntityComponentEventArgs(entity, index, previousComponent, newComponent));
+            ComponentChanged?.Invoke(this, new EntityComponentEventArgs(entity, index, previousComponent, newComponent));
         }
 
         void IEntityComponentNotify.OnComponentChanged(Entity entity, int index, EntityComponent oldComponent, EntityComponent newComponent)

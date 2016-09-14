@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 
 using SharpDX.XInput;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
 {
@@ -124,6 +125,18 @@ namespace SiliconStudio.Xenko.Input
                 }
 
                 return gamePadState;
+            }
+
+            public override void SetVibration(float leftMotor, float rightMotor)
+            {
+                leftMotor = MathUtil.Clamp(leftMotor, 0.0f, 1.0f);
+                rightMotor = MathUtil.Clamp(rightMotor, 0.0f, 1.0f);
+                var vibration = new Vibration
+                {
+                    LeftMotorSpeed = (ushort)(leftMotor*65535.0f),
+                    RightMotorSpeed = (ushort)(rightMotor*65535.0f)
+                };
+                instance.SetVibration(vibration);
             }
         }
     }

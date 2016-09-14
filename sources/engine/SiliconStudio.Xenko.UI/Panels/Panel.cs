@@ -6,6 +6,7 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.UI.Controls;
@@ -15,30 +16,32 @@ namespace SiliconStudio.Xenko.UI.Panels
     /// <summary>
     /// Provides a base class for all Panel elements. Use Panel elements to position and arrange child objects Xenko applications.
     /// </summary>
+    [DataContract(nameof(Panel))]
     [DebuggerDisplay("Panel - Name={Name}")]
+    [Display(category: PanelCategory)]
     public abstract class Panel : UIElement, IScrollAnchorInfo
     {
         /// <summary>
         /// The key to the ZIndex dependency property.
         /// </summary>
-        public readonly static PropertyKey<int> ZIndexPropertyKey = new PropertyKey<int>("ZIndexKey", typeof(Panel), DefaultValueMetadata.Static(0), ObjectInvalidationMetadata.New<int>(PanelZSortedChildInvalidator));
+        [Display(category: AppearanceCategory)]
+        public static readonly PropertyKey<int> ZIndexPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(ZIndexPropertyKey), typeof(Panel), 0, PanelZSortedChildInvalidator);
 
         /// <summary>
         /// The key to the PanelArrangeMatrix dependency property. This property can be used by panels to arrange they children as they want.
         /// </summary>
-        protected readonly static PropertyKey<Matrix> PanelArrangeMatrixPropertyKey = new PropertyKey<Matrix>("PanelArrangeMatrixKey", typeof(Panel), DefaultValueMetadata.Static(Matrix.Identity), ObjectInvalidationMetadata.New<Matrix>(InvalidateArrangeMatrix));
+        protected static readonly PropertyKey<Matrix> PanelArrangeMatrixPropertyKey = DependencyPropertyFactory.RegisterAttached(nameof(PanelArrangeMatrixPropertyKey), typeof(Panel), Matrix.Identity, InvalidateArrangeMatrix);
 
         private static void InvalidateArrangeMatrix(object propertyOwner, PropertyKey<Matrix> propertyKey, Matrix propertyOldValue)
         {
             var element = (UIElement)propertyOwner;
             var parentPanel = element.VisualParent as Panel;
-
-            if(parentPanel!=null) // if the element is not added to a panel yet, the invalidation will occur during the add of the child
-                parentPanel.childrenWithArrangeMatrixInvalidated.Add(element);
+            // if the element is not added to a panel yet, the invalidation will occur during the add of the child
+            parentPanel?.childrenWithArrangeMatrixInvalidated.Add(element);
         }
 
         private readonly bool[] shouldAnchor = new bool[3];
-        
+
         /// <summary>
         /// A comparer sorting the <see cref="Panel"/> children by increasing Z-Index.
         /// </summary>
@@ -61,7 +64,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <summary>
         /// A instance of <see cref="PanelChildrenComparer"/> that can be used to sort panels children by increasing Z-Indices.
         /// </summary>
-        protected readonly static PanelChildrenComparer PanelChildrenSorter = new PanelChildrenComparer();
+        protected static readonly PanelChildrenComparer PanelChildrenSorter = new PanelChildrenComparer();
 
         private readonly HashSet<UIElement> childrenWithArrangeMatrixInvalidated = new HashSet<UIElement>();
         private Matrix[] childrenArrangeWorldMatrix = new Matrix[2];
@@ -69,7 +72,16 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <summary>
         /// Gets the <see cref="UIElementCollection"/> of child elements of this Panel.
         /// </summary>
-        public UIElementCollection Children { get; private set; }
+        [DataMember(DataMemberMode.Content)]
+        [NotNullItems]
+        [MemberCollection(CanReorderItems = true)]
+        public UIElementCollection Children { get; }
+
+        /// <inheritdoc/>
+        protected override IEnumerable<IUIElementChildren> EnumerateChildren()
+        {
+            return Children;
+        }
 
         /// <summary>
         /// Invalidation callback that sort panel children back after a modification of a child ZIndex.
@@ -82,10 +94,7 @@ namespace SiliconStudio.Xenko.UI.Panels
             var uiElement = (UIElement)element;
             var parentAsPanel = uiElement.VisualParent as Panel;
 
-            if(parentAsPanel == null)
-                return;
-
-            parentAsPanel.VisualChildrenCollection.Sort(PanelChildrenSorter);
+            parentAsPanel?.VisualChildrenCollection.Sort(PanelChildrenSorter);
         }
 
         /// <summary>
@@ -94,7 +103,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         protected Panel()
         {
             // activate anchoring by default
-            for (int i = 0; i < shouldAnchor.Length; i++)
+            for (var i = 0; i < shouldAnchor.Length; i++)
                 shouldAnchor[i] = true;
 
             Children = new UIElementCollection();
@@ -119,7 +128,7 @@ namespace SiliconStudio.Xenko.UI.Panels
                     OnLogicalChildRemoved(modifiedElement, elementIndex);
                     break;
                 default:
-                    throw new NotImplementedException();
+                    throw new NotSupportedException();
             }
             InvalidateMeasure();
         }
@@ -149,8 +158,8 @@ namespace SiliconStudio.Xenko.UI.Panels
             SetParent(newElement, this);
             SetVisualParent(newElement, this);
             VisualChildrenCollection.Sort(PanelChildrenSorter);
-            if(Children.Count > childrenArrangeWorldMatrix.Length)
-                childrenArrangeWorldMatrix = new Matrix[2*Children.Count];
+            if (Children.Count > childrenArrangeWorldMatrix.Length)
+                childrenArrangeWorldMatrix = new Matrix[2 * Children.Count];
         }
 
         protected override void UpdateWorldMatrix(ref Matrix parentWorldMatrix, bool parentWorldChanged)
@@ -198,6 +207,7 @@ namespace SiliconStudio.Xenko.UI.Panels
             return new Vector2(-validPosition, maxPosition - validPosition);
         }
 
+        [DataMemberIgnore]
         public ScrollViewer ScrollOwner { get; set; }
     }
 }

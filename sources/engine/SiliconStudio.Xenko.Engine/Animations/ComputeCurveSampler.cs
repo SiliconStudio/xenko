@@ -89,6 +89,8 @@ namespace SiliconStudio.Xenko.Animations
                 return;
             }
 
+            curve?.UpdateChanges();
+
             for (var i = 0; i < bakedArraySize; i++)
             {
                 var t = i/(float)(bakedArraySize - 1);

@@ -72,10 +72,10 @@ namespace SiliconStudio.Xenko.Particles.Tests
                 var sizeField = pool.GetField(ParticleFields.Size);
 
                 var sorter = new ParticleSorterLiving(pool);
-                sorter.Sort();
+                var sortedList = sorter.GetSortedList(new Vector3(0, 0, -1));
 
                 var i = 0;
-                foreach (var particle in sorter)
+                foreach (var particle in sortedList)
                 {
                     Assert.That(*((Vector3*)particle[positionField]), Is.EqualTo(testPos));
 
@@ -87,6 +87,8 @@ namespace SiliconStudio.Xenko.Particles.Tests
 
                     i++;
                 }
+
+                sorter.FreeSortedList(ref sortedList);
 
                 // Assert that the number of living particles is still maxParticles, not maxParticles x2
                 Assert.That(i, Is.EqualTo(maxParticles));
@@ -102,10 +104,10 @@ namespace SiliconStudio.Xenko.Particles.Tests
                 var sizeField = pool.GetField(ParticleFields.Size);
 
                 var sorter = new ParticleSorterLiving(pool);
-                sorter.Sort();
+                var sortedList = sorter.GetSortedList(new Vector3(0, 0, -1));
 
                 var i = 0;
-                foreach (var particle in sorter)
+                foreach (var particle in sortedList)
                 {
                     Assert.That(*((Vector3*)particle[positionField]), Is.EqualTo(testPos));
 
@@ -117,6 +119,8 @@ namespace SiliconStudio.Xenko.Particles.Tests
 
                     i++;
                 }
+
+                sorter.FreeSortedList(ref sortedList);
 
                 // Assert that the number of living particles is still maxParticles /2, not maxParticles x2
                 Assert.That(i, Is.EqualTo(maxParticles / 2));
@@ -227,10 +231,10 @@ namespace SiliconStudio.Xenko.Particles.Tests
                 var sizeField = pool.GetField(ParticleFields.Size);
 
                 var sorter = new ParticleSorterLiving(pool);
-                sorter.Sort();
+                var sortedList = sorter.GetSortedList(new Vector3(0, 0, -1));
 
                 var i = 0;
-                foreach (var particle in sorter)
+                foreach (var particle in sortedList)
                 {
                     Assert.That(*((Vector3*)particle[positionField]), Is.EqualTo(testPos));
 
@@ -242,6 +246,8 @@ namespace SiliconStudio.Xenko.Particles.Tests
 
                     i++;
                 }
+
+                sorter.FreeSortedList(ref sortedList);
 
                 // Assert that the number of living particles is still maxParticles, not maxParticles x2
                 Assert.That(i, Is.EqualTo(maxParticles));
@@ -257,10 +263,10 @@ namespace SiliconStudio.Xenko.Particles.Tests
                 var sizeField = pool.GetField(ParticleFields.Size);
 
                 var sorter = new ParticleSorterLiving(pool);
-                sorter.Sort();
+                var sortedList = sorter.GetSortedList(new Vector3(0, 0, -1));
 
                 var i = 0;
-                foreach (var particle in sorter)
+                foreach (var particle in sortedList)
                 {
                     Assert.That(*((Vector3*)particle[positionField]), Is.EqualTo(testPos));
 
@@ -272,6 +278,8 @@ namespace SiliconStudio.Xenko.Particles.Tests
 
                     i++;
                 }
+
+                sorter.FreeSortedList(ref sortedList);
 
                 // Assert that the number of living particles is still maxParticles /2, not maxParticles x2
                 Assert.That(i, Is.EqualTo(maxParticles / 2));
@@ -291,10 +299,10 @@ namespace SiliconStudio.Xenko.Particles.Tests
                 Assert.That(velocityField.IsValid(), Is.EqualTo(false));
 
                 var sorter = new ParticleSorterLiving(pool);
-                sorter.Sort();
+                var sortedList = sorter.GetSortedList(new Vector3(0, 0, -1));
 
                 var i = 0;
-                foreach (var particle in sorter)
+                foreach (var particle in sortedList)
                 {
                     Assert.That(*((Vector3*)particle[positionField]), Is.EqualTo(testPos));
 
@@ -304,6 +312,8 @@ namespace SiliconStudio.Xenko.Particles.Tests
 
                     i++;
                 }
+
+                sorter.FreeSortedList(ref sortedList);
 
                 // Assert that the number of living particles is still maxParticles /2, not maxParticles x2
                 Assert.That(i, Is.EqualTo(maxParticles / 2));
@@ -322,10 +332,10 @@ namespace SiliconStudio.Xenko.Particles.Tests
                 Assert.That(sizeField.IsValid(), Is.EqualTo(false));
 
                 var sorter = new ParticleSorterLiving(pool);
-                sorter.Sort();
+                var sortedList = sorter.GetSortedList(new Vector3(0, 0, -1));
 
                 var i = 0;
-                foreach (var particle in sorter)
+                foreach (var particle in sortedList)
                 {
                     Assert.That(*((Vector3*)particle[positionField]), Is.EqualTo(testPos));
 
@@ -333,6 +343,8 @@ namespace SiliconStudio.Xenko.Particles.Tests
 
                     i++;
                 }
+
+                sorter.FreeSortedList(ref sortedList);
 
                 // Assert that the number of living particles is still maxParticles /2, not maxParticles x2
                 Assert.That(i, Is.EqualTo(maxParticles / 2));
@@ -352,15 +364,17 @@ namespace SiliconStudio.Xenko.Particles.Tests
                 Assert.That(positionField.IsValid(), Is.EqualTo(false));
 
                 var sorter = new ParticleSorterLiving(pool);
-                sorter.Sort();
+                var sortedList = sorter.GetSortedList(new Vector3(0, 0, -1));
 
                 var i = 0;
-                foreach (var particle in sorter)
+                foreach (var particle in sortedList)
                 {
                     Assert.That(*((float*)particle[lifetimeField]), Is.EqualTo(testLife));
 
                     i++;
                 }
+
+                sorter.FreeSortedList(ref sortedList);
 
                 // Assert that the number of living particles is still maxParticles /2, not maxParticles x2
                 Assert.That(i, Is.EqualTo(maxParticles / 2));

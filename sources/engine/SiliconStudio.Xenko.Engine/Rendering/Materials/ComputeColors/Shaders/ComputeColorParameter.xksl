@@ -3,7 +3,7 @@
 /// <summary>
 /// Returns the color from a parameter.
 /// </summary>
-class ComputeColorParameter : ComputeColor
+shader ComputeColorParameter : ComputeColor
 {
     [Color]
     stage float4 ColorParameter;

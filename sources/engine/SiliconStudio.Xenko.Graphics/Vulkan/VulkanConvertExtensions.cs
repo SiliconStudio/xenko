@@ -546,6 +546,97 @@ namespace SiliconStudio.Xenko.Graphics
                     throw new NotImplementedException();
             }
         }
+
+        public static int BlockSizeInBytes(this Format format)
+        {
+            switch (format)
+            {
+                case Format.Bc1RgbUNormBlock:
+                case Format.Bc1RgbSRgbBlock:
+                case Format.Bc1RgbaUNormBlock:
+                case Format.Bc1RgbaSRgbBlock:
+                    return 8;
+
+                case Format.Bc2UNormBlock:
+                case Format.Bc2SRgbBlock:
+                case Format.Bc3UNormBlock:
+                case Format.Bc3SRgbBlock:
+                    return 16;
+
+                case Format.Bc4UNormBlock:
+                case Format.Bc4SNormBlock:
+                    return 8;
+
+                case Format.Bc5UNormBlock:
+                case Format.Bc5SNormBlock:
+                case Format.Bc6HUFloatBlock:
+                case Format.Bc6HSFloatBlock:
+                case Format.Bc7UNormBlock:
+                case Format.Bc7SRgbBlock:
+                    return 16;
+
+                case Format.Etc2R8G8B8UNormBlock:
+                case Format.Etc2R8G8B8SRgbBlock:
+                case Format.Etc2R8G8B8A1UNormBlock:
+                case Format.Etc2R8G8B8A1SRgbBlock:
+                    return 8;
+
+                case Format.Etc2R8G8B8A8UNormBlock:
+                case Format.Etc2R8G8B8A8SRgbBlock:
+                    return 16;
+
+                case Format.EacR11UNormBlock:
+                case Format.EacR11SNormBlock:
+                    return 8;
+
+                case Format.EacR11G11UNormBlock:
+                case Format.EacR11G11SNormBlock:
+                    return 16;
+
+                case Format.Astc4X4UNormBlock:
+                case Format.Astc4X4SRgbBlock:
+                case Format.Astc5X4UNormBlock:
+                case Format.Astc5X4SRgbBlock:
+                case Format.Astc5X5UNormBlock:
+                case Format.Astc5X5SRgbBlock:
+                case Format.Astc6X5UNormBlock:
+                case Format.Astc6X5SRgbBlock:
+                case Format.Astc6X6UNormBlock:
+                case Format.Astc6X6SRgbBlock:
+                case Format.Astc8X5UNormBlock:
+                case Format.Astc8X5SRgbBlock:
+                case Format.Astc8X6UNormBlock:
+                case Format.Astc8X6SRgbBlock:
+                case Format.Astc8X8UNormBlock:
+                case Format.Astc8X8SRgbBlock:
+                case Format.Astc10X5UNormBlock:
+                case Format.Astc10X5SRgbBlock:
+                case Format.Astc10X6UNormBlock:
+                case Format.Astc10X6SRgbBlock:
+                case Format.Astc10X8UNormBlock:
+                case Format.Astc10X8SRgbBlock:
+                case Format.Astc10X10UNormBlock:
+                case Format.Astc10X10SRgbBlock:
+                case Format.Astc12X10UNormBlock:
+                case Format.Astc12X10SRgbBlock:
+                case Format.Astc12X12UNormBlock:
+                case Format.Astc12X12SRgbBlock:
+                    return 16;
+
+                //case Format.Pvrtc12BppUNormBlock:
+                //case Format.Pvrtc14BppUNormBlock:
+                //case Format.Pvrtc22BppUNormBlock:
+                //case Format.Pvrtc24BppUNormBlock:
+                //case Format.Pvrtc12BppSRgbBlock:
+                //case Format.Pvrtc14BppSRgbBlock:
+                //case Format.Pvrtc22BppSRgbBlock:
+                //case Format.Pvrtc24BppSRgbBlock:
+                //    return 8;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(format));
+            }
+        }
     }
 }
 

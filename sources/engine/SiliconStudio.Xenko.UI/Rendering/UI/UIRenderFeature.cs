@@ -28,6 +28,8 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
         private UIBatch batch;
 
+        private readonly object drawLock = new object();
+
         private readonly LayoutingContext layoutingContext = new LayoutingContext();
 
         private readonly List<UIElementState> uiElementStates = new List<UIElementState>();
@@ -63,6 +65,14 @@ namespace SiliconStudio.Xenko.Rendering.UI
         partial void PickingClear();
 
         public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
+        {
+            lock (drawLock)
+            {
+                DrawInternal(context, renderView, renderViewStage, startIndex, endIndex);
+            }
+        }
+
+        private void DrawInternal(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
             base.Draw(context, renderView, renderViewStage, startIndex, endIndex);
 
@@ -112,7 +122,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
             foreach (var uiElementState in uiElementStates)
             {
                 var uiComponent = uiElementState.RenderObject.UIComponent;
-                var rootElement = uiComponent.RootElement;
+                var rootElement = uiComponent.Page?.RootElement;
                 if (rootElement == null)
                     continue;
                 
@@ -150,7 +160,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
             foreach (var uiElementState in uiElementStates)
             {
                 var uiComponent = uiElementState.RenderObject.UIComponent;
-                var rootElement = uiComponent.RootElement;
+                var rootElement = uiComponent.Page?.RootElement;
                 if (rootElement == null)
                     continue;
 
@@ -217,7 +227,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
                 batch.Begin(context.GraphicsContext, ref uiElementState.WorldViewProjectionMatrix, BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
 
                 // Render the UI elements in the final render target
-                ReccursiveDrawWithClipping(context, rootElement, ref uiElementState.WorldViewProjectionMatrix);
+                RecursiveDrawWithClipping(context, rootElement, ref uiElementState.WorldViewProjectionMatrix);
 
                 // end the image draw session
                 batch.End();
@@ -235,7 +245,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
             }
         }
 
-        private void ReccursiveDrawWithClipping(RenderDrawContext context, UIElement element, ref Matrix worldViewProj)
+        private void RecursiveDrawWithClipping(RenderDrawContext context, UIElement element, ref Matrix worldViewProj)
         {
             // if the element is not visible, we also remove all its children
             if (!element.IsVisible)
@@ -265,7 +275,7 @@ namespace SiliconStudio.Xenko.Rendering.UI
 
             // render the children
             foreach (var child in element.VisualChildrenCollection)
-                ReccursiveDrawWithClipping(context, child, ref worldViewProj);
+                RecursiveDrawWithClipping(context, child, ref worldViewProj);
 
             // clear the element clipping region from the stencil buffer
             if (element.ClipToBounds)

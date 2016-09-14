@@ -1,10 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
-
+using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
@@ -14,17 +15,13 @@ namespace SiliconStudio.Xenko.UI.Panels
     /// <summary>
     /// Represents a grid control with adjustable columns, rows and layers.
     /// </summary>
+    [DataContract(nameof(Grid))]
     [DebuggerDisplay("Grid - Name={Name}")]
     public class Grid : GridBase
     {
         private readonly Logger logger = GlobalLogger.GetLogger("UI");
 
-        private readonly StripDefinitionCollection[] stripDefinitions = 
-            {
-                new StripDefinitionCollection(),
-                new StripDefinitionCollection(),
-                new StripDefinitionCollection()
-            };
+        private readonly StripDefinitionCollection[] stripDefinitions = new StripDefinitionCollection[3];
 
         /// <summary>
         /// For each dimension and index of strip, return the list of UIElement that are contained only in auto-sized strips
@@ -116,8 +113,9 @@ namespace SiliconStudio.Xenko.UI.Panels
 
         public Grid()
         {
-            foreach (var definitionCollection in stripDefinitions)
-                definitionCollection.CollectionChanged += DefinitionCollectionChanged;
+            RowDefinitions.CollectionChanged += DefinitionCollectionChanged;
+            ColumnDefinitions.CollectionChanged += DefinitionCollectionChanged;
+            LayerDefinitions.CollectionChanged += DefinitionCollectionChanged;
         }
 
         private void DefinitionCollectionChanged(object sender, TrackingCollectionChangedEventArgs trackingCollectionChangedEventArgs)
@@ -132,7 +130,7 @@ namespace SiliconStudio.Xenko.UI.Panels
                     modifiedElement.DefinitionChanged -= OnStripDefinitionChanged;
                     break;
                 default:
-                    throw new NotImplementedException();
+                    throw new NotSupportedException();
             }
             InvalidateMeasure();
         }
@@ -143,31 +141,31 @@ namespace SiliconStudio.Xenko.UI.Panels
         }
 
         /// <summary>
-        /// The definitions of the grid columns.
-        /// </summary>
-        /// <exception cref="ArgumentNullException">The provided value is null.</exception>
-        public StripDefinitionCollection ColumnDefinitions
-        {
-            get { return stripDefinitions[0]; }
-        }
-
-        /// <summary>
         /// The definitions of the grid rows.
         /// </summary>
         /// <exception cref="ArgumentNullException">The provided value is null.</exception>
-        public StripDefinitionCollection RowDefinitions
-        {
-            get { return stripDefinitions[1]; }
-        }
+        /// <userdoc>The definitions of the grid rows.</userdoc>
+        [DataMember]
+        [Display(category: LayoutCategory)]
+        public StripDefinitionCollection RowDefinitions { get; } = new StripDefinitionCollection();
+
+        /// <summary>
+        /// The definitions of the grid columns.
+        /// </summary>
+        /// <exception cref="ArgumentNullException">The provided value is null.</exception>
+        /// <userdoc>The definitions of the grid columns.</userdoc>
+        [DataMember]
+        [Display(category: LayoutCategory)]
+        public StripDefinitionCollection ColumnDefinitions { get; } = new StripDefinitionCollection();
 
         /// <summary>
         /// The definitions of the grid layers.
         /// </summary>
         /// <exception cref="ArgumentNullException">The provided value is null.</exception>
-        public StripDefinitionCollection LayerDefinitions
-        {
-            get { return stripDefinitions[2]; }
-        }
+        /// <userdoc>The definitions of the grid layers.</userdoc>
+        [DataMember]
+        [Display(category: LayoutCategory)]
+        public StripDefinitionCollection LayerDefinitions { get; } = new StripDefinitionCollection();
 
         protected override Vector3 MeasureOverride(Vector3 availableSizeWithoutMargins)
         {
@@ -657,18 +655,34 @@ namespace SiliconStudio.Xenko.UI.Panels
 
         private void CheckChildrenPositionsAndAdjustGridSize()
         {
+            // Setup strips (use a default entry if nothing is set)
+            CreateDefaultStripIfNecessary(ref stripDefinitions[0], ColumnDefinitions);
+            CreateDefaultStripIfNecessary(ref stripDefinitions[1], RowDefinitions);
+            CreateDefaultStripIfNecessary(ref stripDefinitions[2], LayerDefinitions);
+
             // add default strip definitions as long as one element is partially outside of the grid
             foreach (var child in VisualChildrenCollection)
             {
                 var childLastStripPlusOne = GetElementGridPositions(child) + GetElementSpanValues(child);
                 for (var dim = 0; dim < 3; dim++)
                 {
+                    // TODO: We should reassign everything outside to last row or 0?
                     if (stripDefinitions[dim].Count < childLastStripPlusOne[dim])
-                        logger.Warning("Element 'Name={0}' is outside of the grid 'Name={1}' definition for [{2}]. Auto strip definitions will be added to complete the grid definition.", child, Name, dim == 0 ? "Column" : dim == 1 ? "Row" : "Layer");
-
-                    while (stripDefinitions[dim].Count < childLastStripPlusOne[dim])
-                        stripDefinitions[dim].Add(new StripDefinition(StripType.Auto));
+                        logger.Warning("Element 'Name={0}' is outside of the grid 'Name={1}' definition for [{2}].", child, Name, dim == 0 ? "Column" : dim == 1 ? "Row" : "Layer");
                 }
+            }
+        }
+
+        private void CreateDefaultStripIfNecessary(ref StripDefinitionCollection computedCollection, StripDefinitionCollection userCollection)
+        {
+            if (userCollection.Count > 0)
+            {
+                computedCollection = userCollection;
+            }
+            else if (computedCollection == userCollection || computedCollection == null)
+            {
+                // Need to create default collection (it will be kept until user one is not empty again)
+                computedCollection = new StripDefinitionCollection { new StripDefinition() };
             }
         }
 
@@ -691,27 +705,30 @@ namespace SiliconStudio.Xenko.UI.Panels
             }
         }
 
-        private float SumStripCurrentSize(StripDefinitionCollection definitions)
+        private static float SumStripCurrentSize(StripDefinitionCollection definitions)
         {
             var sum = 0f;
+            // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (var def in definitions) // do not use linq to avoid allocations
                 sum += def.ActualSize;
 
             return sum;
         }
         
-        private float SumStripCurrentSize(List<StripDefinition> definitions)
+        private static float SumStripCurrentSize(List<StripDefinition> definitions)
         {
             var sum = 0f;
+            // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (var def in definitions) // do not use linq to avoid allocations
                 sum += def.ActualSize;
 
             return sum;
         }
 
-        private float SumStripAutoAndFixedSize(StripDefinitionCollection definitions)
+        private static float SumStripAutoAndFixedSize(StripDefinitionCollection definitions)
         {
             var sum = 0f;
+            // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (var def in definitions) // do not use linq to avoid allocations
                 if (def.Type != StripType.Star)
                     sum += def.ActualSize;
@@ -719,16 +736,17 @@ namespace SiliconStudio.Xenko.UI.Panels
             return sum;
         }
 
-        private float SumValues(List<StripDefinition> definitions) // use List instead of IEnumerable in  order to avoid boxing in "foreach"
+        private static float SumValues(List<StripDefinition> definitions) // use List instead of IEnumerable in  order to avoid boxing in "foreach"
         {
             var sum = 0f;
+            // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (var def in definitions) // do not use linq to avoid allocations
                 sum += def.SizeValue;
 
             return sum;
         }
 
-        private void GetDistanceToSurroundingAnchors(List<float> stripPosition, float position, out Vector2 distances)
+        private static void GetDistanceToSurroundingAnchors(List<float> stripPosition, float position, out Vector2 distances)
         {
             if (stripPosition.Count < 2)
             {
@@ -753,6 +771,19 @@ namespace SiliconStudio.Xenko.UI.Panels
             GetDistanceToSurroundingAnchors(cachedStripIndexToStripPosition[(int)direction], position, out distances);
 
             return distances;
+        }
+
+        protected override Int3 GetElementGridPositions(UIElement element)
+        {
+            var position = base.GetElementGridPositions(element);
+            return Int3.Min(position, new Int3(stripDefinitions[0].Count - 1, stripDefinitions[1].Count - 1, stripDefinitions[2].Count - 1));
+        }
+
+        protected override Int3 GetElementSpanValues(UIElement element)
+        {
+            var position = GetElementGridPositions(element);
+            var span = base.GetElementSpanValues(element);
+            return Int3.Min(position + span, new Int3(stripDefinitions[0].Count, stripDefinitions[1].Count, stripDefinitions[2].Count)) - position;
         }
     }
 }

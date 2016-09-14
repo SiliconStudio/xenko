@@ -64,6 +64,14 @@ namespace SiliconStudio.Xenko.Particles.Updaters
         [Display("Random Seed")]
         public uint SeedOffset { get; set; } = 0;
 
+        /// <inheritdoc />
+        public override void PreUpdate()
+        {
+            base.PreUpdate();
+
+            SamplerMain?.UpdateChanges();
+            SamplerOptional?.UpdateChanges();
+        }
 
         /// <inheritdoc />
         public override void Update(float dt, ParticlePool pool)
@@ -89,8 +97,6 @@ namespace SiliconStudio.Xenko.Particles.Updaters
             var angleField = pool.GetField(ParticleFields.Angle);
             var lifeField = pool.GetField(ParticleFields.Life);
 
-            SamplerMain.UpdateChanges();
-
             foreach (var particle in pool)
             {
                 var life = 1f - (*((float*)particle[lifeField]));   // The Life field contains remaining life, so for sampling we take (1 - life)
@@ -108,9 +114,6 @@ namespace SiliconStudio.Xenko.Particles.Updaters
             var angleField = pool.GetField(ParticleFields.Angle);
             var lifeField = pool.GetField(ParticleFields.Life);
             var randField = pool.GetField(ParticleFields.RandomSeed);
-
-            SamplerMain.UpdateChanges();
-            SamplerOptional.UpdateChanges();
 
             foreach (var particle in pool)
             {

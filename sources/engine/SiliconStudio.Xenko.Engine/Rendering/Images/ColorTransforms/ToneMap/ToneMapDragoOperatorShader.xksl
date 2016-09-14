@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <summary>
     /// The Drago tonemap operator.
     /// </summary>
-    internal class ToneMapDragoOperatorShader : ToneMapCommonOperatorShader
+    internal shader ToneMapDragoOperatorShader : ToneMapCommonOperatorShader
     {
         float DragoBias = 0.5f;
 

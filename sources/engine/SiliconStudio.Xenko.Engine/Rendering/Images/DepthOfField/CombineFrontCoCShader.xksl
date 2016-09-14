@@ -8,7 +8,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <summary>
     /// Combines the different blur levels depending on the pixel's CoC. (Front area only.)
     /// </summary>
-    class CombineFrontCoCShader<int TLevelCount> : ImageEffectShader
+    shader CombineFrontCoCShader<int TLevelCount> : ImageEffectShader
     {
 
         stage override float4 Shading()

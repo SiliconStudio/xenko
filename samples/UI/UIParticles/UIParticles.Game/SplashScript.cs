@@ -168,7 +168,7 @@ namespace UIParticles
             var background = new ImageElement { Source = SpriteFromSheet.Create(SplashScreenImages, "background_uiimage"), StretchType = StretchType.Fill };
             background.SetPanelZIndex(-1);
 
-            Entity.Get<UIComponent>().RootElement = new UniformGrid { Children = { background, grid } };
+            Entity.Get<UIComponent>().Page = new UIPage { RootElement = new UniformGrid { Children = { background, grid } } };
         }
 
         protected Vector3 ToOrthographicCamera(Vector3 worldPosition)

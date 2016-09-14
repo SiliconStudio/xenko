@@ -184,7 +184,7 @@ namespace SiliconStudio.Quantum.Tests
             // Check that the object references match.
             foreach (var objReference in referenceEnum.Zip(collection.Cast<object>(), Tuple.Create))
             {
-                Assert.AreEqual(objReference.Item1.ObjectValue, objReference.Item2);
+                Assert.AreEqual(objReference.Item2, objReference.Item1.ObjectValue);
                 if (objReference.Item2 != null)
                 {
                     TestNonNullObjectReference(objReference.Item1, objReference.Item2, true);

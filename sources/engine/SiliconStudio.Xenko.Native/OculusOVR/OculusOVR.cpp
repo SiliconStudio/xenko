@@ -1,10 +1,12 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+
 #if defined(WINDOWS_DESKTOP) || !defined(__clang__)
 
 #include "../../../../deps/NativePath/NativeDynamicLinking.h"
 #include "../../../../deps/NativePath/NativePath.h"
+#include "../XenkoNative.h"
 
 #ifndef __clang__
 //Make resharper work!
@@ -71,6 +73,8 @@ typedef ovrResult (*ovr_GetMirrorTextureBufferDXPtr)(ovrSession session, ovrMirr
 typedef void (*ovr_CalcEyePosesPtr)(ovrPosef headPose, const ovrVector3f hmdToEyeOffset[2], ovrPosef outEyePoses[2]);
 typedef ovrMatrix4f (*ovrMatrix4f_ProjectionPtr)(ovrFovPort fov, float znear, float zfar, unsigned int projectionModFlags);
 
+typedef ovrResult (*ovr_GetAudioDeviceOutGuidStrPtr)(wchar_t deviceOutStrBuffer[128]);
+
 extern "C" {
 
 	void* __libOvr = NULL;
@@ -124,8 +128,9 @@ extern "C" {
 
 	ovr_CalcEyePosesPtr ovr_CalcEyePosesFunc = NULL;
 	ovrMatrix4f_ProjectionPtr ovrMatrix4f_ProjectionFunc = NULL;
+	ovr_GetAudioDeviceOutGuidStrPtr ovr_GetAudioDeviceOutGuidStrFunc = NULL;
 
-	bool xnOvrStartup()
+	DLL_EXPORT_API bool xnOvrStartup()
 	{
 		if(!__libOvr)
 		{
@@ -235,6 +240,9 @@ extern "C" {
 			if (!ovr_CalcEyePosesFunc) { printf("Failed to get ovr_CalcEyePoses\n"); return false; }
 			ovrMatrix4f_ProjectionFunc = (ovrMatrix4f_ProjectionPtr)GetSymbolAddress(__libOvr, "ovrMatrix4f_Projection");
 			if (!ovrMatrix4f_ProjectionFunc) { printf("Failed to get ovrMatrix4f_Projection\n"); return false; }
+
+			ovr_GetAudioDeviceOutGuidStrFunc = (ovr_GetAudioDeviceOutGuidStrPtr)GetSymbolAddress(__libOvr, "ovr_GetAudioDeviceOutGuidStr");
+			if (!ovr_GetAudioDeviceOutGuidStrFunc) { printf("Failed to get ovr_GetAudioDeviceOutGuidStr\n"); return false; }
 		}
 
 		ovrResult result = ovr_InitializeFunc(NULL);
@@ -242,7 +250,7 @@ extern "C" {
 		return OVR_SUCCESS(result);
 	}
 
-	void xnOvrShutdown()
+	DLL_EXPORT_API void xnOvrShutdown()
 	{
 		if (!__libOvr) return;
 
@@ -252,7 +260,7 @@ extern "C" {
 		__libOvr = NULL;
 	}
 
-	int xnOvrGetError(char* errorString)
+	DLL_EXPORT_API int xnOvrGetError(char* errorString)
 	{
 		ovrErrorInfo errInfo;
 		ovr_GetLastErrorInfoFunc(&errInfo);
@@ -263,15 +271,16 @@ extern "C" {
 	struct xnOvrSession
 	{
 		ovrSession Session;
-		ovrTextureSwapChain SwapChain;
 		ovrMirrorTexture Mirror;
+		ovrHmdDesc HmdDesc;
 		ovrEyeRenderDesc EyeRenderDesc[2];
 		ovrVector3f HmdToEyeViewOffset[2];
+
+		ovrTextureSwapChain SwapChain;
 		ovrLayerEyeFov Layer;
-		ovrHmdDesc HmdDesc;
 	};
 
-	xnOvrSession* xnOvrCreateSessionDx(int64_t* luidOut)
+	DLL_EXPORT_API xnOvrSession* xnOvrCreateSessionDx(int64_t* luidOut)
 	{
 		ovrSession session;
 		ovrGraphicsLuid luid;
@@ -291,16 +300,16 @@ extern "C" {
 		return NULL;
 	}
 
-	void xnOvrDestroySession(xnOvrSession* session)
+	DLL_EXPORT_API void xnOvrDestroySession(xnOvrSession* session)
 	{
 		ovr_DestroyFunc(session->Session);
 	}
 
-	bool xnOvrCreateTexturesDx(xnOvrSession* session, void* dxDevice, int* outTextureCount, int backBufferWidth, int backBufferHeight)
+	DLL_EXPORT_API bool xnOvrCreateTexturesDx(xnOvrSession* session, void* dxDevice, int* outTextureCount, float pixelPerDisplayPixel, int mirrorBufferWidth, int mirrorBufferHeight)
 	{
 		session->HmdDesc = ovr_GetHmdDescFunc(session->Session);
-		ovrSizei sizel = ovr_GetFovTextureSizeFunc(session->Session, ovrEye_Left, session->HmdDesc.DefaultEyeFov[0], 1.0f);
-		ovrSizei sizer = ovr_GetFovTextureSizeFunc(session->Session, ovrEye_Right, session->HmdDesc.DefaultEyeFov[1], 1.0f);
+		ovrSizei sizel = ovr_GetFovTextureSizeFunc(session->Session, ovrEye_Left, session->HmdDesc.DefaultEyeFov[0], pixelPerDisplayPixel);
+		ovrSizei sizer = ovr_GetFovTextureSizeFunc(session->Session, ovrEye_Right, session->HmdDesc.DefaultEyeFov[1], pixelPerDisplayPixel);
 		ovrSizei bufferSize;
 		bufferSize.w = sizel.w + sizer.w;
 		bufferSize.h = fmax(sizel.h, sizer.h);
@@ -348,19 +357,81 @@ extern "C" {
 		session->Layer.Viewport[1].Size.h = bufferSize.h;
 
 		//create mirror as well
-		ovrMirrorTextureDesc mirrorDesc = {};
-		mirrorDesc.Format = OVR_FORMAT_R8G8B8A8_UNORM_SRGB;
-		mirrorDesc.Width = backBufferWidth;
-		mirrorDesc.Height = backBufferHeight;
-		if (!OVR_SUCCESS(ovr_CreateMirrorTextureDXFunc(session->Session, dxDevice, &mirrorDesc, &session->Mirror)))
+		if (mirrorBufferHeight != 0 && mirrorBufferWidth != 0)
 		{
-			return false;
+			ovrMirrorTextureDesc mirrorDesc = {};
+			mirrorDesc.Format = OVR_FORMAT_R8G8B8A8_UNORM_SRGB;
+			mirrorDesc.Width = mirrorBufferWidth;
+			mirrorDesc.Height = mirrorBufferHeight;
+			if (!OVR_SUCCESS(ovr_CreateMirrorTextureDXFunc(session->Session, dxDevice, &mirrorDesc, &session->Mirror)))
+			{
+				return false;
+			}
 		}
 		
 		return true;
 	}
 
-	void* xnOvrGetTextureAtIndexDx(xnOvrSession* session, GUID textureGuid, int index)
+	struct xnOvrQuadLayer
+	{
+		ovrTextureSwapChain SwapChain;
+		ovrLayerQuad Layer;
+	};
+
+	DLL_EXPORT_API xnOvrQuadLayer* xnOvrCreateQuadLayerTexturesDx(xnOvrSession* session, void* dxDevice, int* outTextureCount, int width, int height, bool headLocked)
+	{
+		auto layer = new xnOvrQuadLayer;
+
+		ovrTextureSwapChainDesc texDesc = {};
+		texDesc.Type = ovrTexture_2D;
+		texDesc.Format = OVR_FORMAT_R8G8B8A8_UNORM_SRGB;
+		texDesc.ArraySize = 1;
+		texDesc.Width = width;
+		texDesc.Height = height;
+		texDesc.MipLevels = 1;
+		texDesc.SampleCount = 1;
+		texDesc.StaticImage = ovrFalse;
+		texDesc.MiscFlags = ovrTextureMisc_None;
+		texDesc.BindFlags = ovrTextureBind_DX_RenderTarget;
+
+		if (!OVR_SUCCESS(ovr_CreateTextureSwapChainDXFunc(session->Session, dxDevice, &texDesc, &layer->SwapChain)))
+		{
+			delete layer;
+			return NULL;
+		}
+
+		auto count = 0;
+		ovr_GetTextureSwapChainLengthFunc(session->Session, layer->SwapChain, &count);
+		*outTextureCount = count;
+
+		layer->Layer.Header.Type = ovrLayerType_Quad;
+		layer->Layer.Header.Flags = headLocked ? ovrLayerFlag_HeadLocked | ovrLayerFlag_HighQuality : ovrLayerFlag_HighQuality;
+		layer->Layer.ColorTexture = layer->SwapChain;
+		layer->Layer.Viewport.Pos.x = 0;
+		layer->Layer.Viewport.Pos.y = 0;
+		layer->Layer.Viewport.Size.w = width;
+		layer->Layer.Viewport.Size.h = height;
+		layer->Layer.QuadPoseCenter.Orientation.x = 0;
+		layer->Layer.QuadPoseCenter.Orientation.y = 0;
+		layer->Layer.QuadPoseCenter.Orientation.z = 0;
+		layer->Layer.QuadPoseCenter.Orientation.w = 1;
+		layer->Layer.QuadPoseCenter.Position.x = 0;
+		layer->Layer.QuadPoseCenter.Position.y = 0;
+		layer->Layer.QuadPoseCenter.Position.z = -1;
+		layer->Layer.QuadSize.x = 2;
+		layer->Layer.QuadSize.y = 2;
+
+		return layer;
+	}
+
+	DLL_EXPORT_API void xnOvrSetQuadLayerParams(xnOvrQuadLayer* layer, float* position, float* orientation, float* size)
+	{
+		memcpy(&layer->Layer.QuadPoseCenter.Orientation, orientation, sizeof(float) * 4);
+		memcpy(&layer->Layer.QuadPoseCenter.Position, position, sizeof(float) * 3);
+		memcpy(&layer->Layer.QuadSize, size, sizeof(float) * 2);
+	}
+
+	DLL_EXPORT_API void* xnOvrGetTextureAtIndexDx(xnOvrSession* session, GUID textureGuid, int index)
 	{
 		void* texture = NULL;
 		if (!OVR_SUCCESS(ovr_GetTextureSwapChainBufferDXFunc(session->Session, session->SwapChain, index, textureGuid, &texture)))
@@ -370,7 +441,17 @@ extern "C" {
 		return texture;
 	}
 
-	void* xnOvrGetMirrorTextureDx(xnOvrSession* session, GUID textureGuid)
+	DLL_EXPORT_API void* xnOvrGetQuadLayerTextureAtIndexDx(xnOvrSession* session, xnOvrQuadLayer* layer, GUID textureGuid, int index)
+	{
+		void* texture = NULL;
+		if (!OVR_SUCCESS(ovr_GetTextureSwapChainBufferDXFunc(session->Session, layer->SwapChain, index, textureGuid, &texture)))
+		{
+			return NULL;
+		}
+		return texture;
+	}
+
+	DLL_EXPORT_API void* xnOvrGetMirrorTextureDx(xnOvrSession* session, GUID textureGuid)
 	{
 		void* texture = NULL;
 		if (!OVR_SUCCESS(ovr_GetMirrorTextureBufferDXFunc(session->Session, session->Mirror, textureGuid, &texture)))
@@ -380,18 +461,38 @@ extern "C" {
 		return texture;
 	}
 
-	int xnOvrGetCurrentTargetIndex(xnOvrSession* session)
+	DLL_EXPORT_API int xnOvrGetCurrentTargetIndex(xnOvrSession* session)
 	{
 		int index;
 		ovr_GetTextureSwapChainCurrentIndexFunc(session->Session, session->SwapChain, &index);
 		return index;
 	}
 
-	void xnOvrPrepareRender(xnOvrSession* session, 
-		float near, float far, 
-		float* projLeft, float* projRight, 
-		float* positionLeft, float* positionRight, 
-		float* rotationLeft, float* rotationRight)
+	DLL_EXPORT_API int xnOvrGetCurrentQuadLayerTargetIndex(xnOvrSession* session, xnOvrQuadLayer* layer)
+	{
+		int index;
+		ovr_GetTextureSwapChainCurrentIndexFunc(session->Session, layer->SwapChain, &index);
+		return index;
+	}
+
+#pragma pack(push, 4)
+	struct FrameProperties
+	{
+		//Camera properties
+		float Near;
+		float Far;
+		float ProjLeft[16];
+		float ProjRight[16];
+		float PosLeft[3];
+		float PosRight[3];
+		float RotLeft[4];
+		float RotRight[4];
+
+		//Todo add Touch Controllers properties
+	};
+#pragma pack(pop)
+
+	DLL_EXPORT_API void xnOvrPrepareRender(xnOvrSession* session, FrameProperties* properties)
 	{
 		session->EyeRenderDesc[0] = ovr_GetRenderDescFunc(session->Session, ovrEye_Left, session->HmdDesc.DefaultEyeFov[0]);
 		session->EyeRenderDesc[1] = ovr_GetRenderDescFunc(session->Session, ovrEye_Right, session->HmdDesc.DefaultEyeFov[1]);
@@ -402,33 +503,95 @@ extern "C" {
 		auto hmdState = ovr_GetTrackingStateFunc(session->Session, session->Layer.SensorSampleTime, ovrTrue);
 		ovr_CalcEyePosesFunc(hmdState.HeadPose.ThePose, session->HmdToEyeViewOffset, session->Layer.RenderPose);
 
-		auto leftProj = ovrMatrix4f_ProjectionFunc(session->Layer.Fov[0], near, far, 0);
-		auto rightProj = ovrMatrix4f_ProjectionFunc(session->Layer.Fov[1], near, far, 0);
+		auto leftProj = ovrMatrix4f_ProjectionFunc(session->Layer.Fov[0], properties->Near, properties->Far, 0);
+		auto rightProj = ovrMatrix4f_ProjectionFunc(session->Layer.Fov[1], properties->Near, properties->Far, 0);
 
-		memcpy(projLeft, &leftProj, sizeof(float) * 16);
-		memcpy(positionLeft, &session->Layer.RenderPose[0].Position, sizeof(float) * 3);
-		memcpy(rotationLeft, &session->Layer.RenderPose[0].Orientation, sizeof(float) * 4);
+		memcpy(properties->ProjLeft, &leftProj, sizeof(float) * 16);
+		memcpy(properties->PosLeft, &session->Layer.RenderPose[0].Position, sizeof(float) * 3);
+		memcpy(properties->RotLeft, &session->Layer.RenderPose[0].Orientation, sizeof(float) * 4);
 		
-		memcpy(projRight, &rightProj, sizeof(float) * 16);
-		memcpy(positionRight, &session->Layer.RenderPose[1].Position, sizeof(float) * 3);
-		memcpy(rotationRight, &session->Layer.RenderPose[1].Orientation, sizeof(float) * 4);
+		memcpy(properties->ProjRight, &rightProj, sizeof(float) * 16);
+		memcpy(properties->PosRight, &session->Layer.RenderPose[1].Position, sizeof(float) * 3);
+		memcpy(properties->RotRight, &session->Layer.RenderPose[1].Orientation, sizeof(float) * 4);
 	}
 
-	bool xnOvrCommitFrame(xnOvrSession* session)
+	DLL_EXPORT_API bool xnOvrCommitFrame(xnOvrSession* session, xnOvrQuadLayer** extraLayers, int numberOfExtraLayers)
 	{
+		ovrLayerHeader* layers[1 + numberOfExtraLayers];
+		//add the default layer first
+		layers[0] = &session->Layer.Header;
+		//commit the default fov layer
 		ovr_CommitTextureSwapChainFunc(session->Session, session->SwapChain);
-		auto layers = &session->Layer.Header;
-		if(OVR_SUCCESS(ovr_SubmitFrameFunc(session->Session, 0, NULL, &layers, 1)))
+		for (auto i = 0; i < numberOfExtraLayers; i++)
 		{
-			return true;
+			//add further quad layers
+			layers[i + 1] = &extraLayers[i]->Layer.Header;
+			//also commit the quad layer
+			ovr_CommitTextureSwapChainFunc(session->Session, extraLayers[i]->SwapChain);
 		}
 
-		return false;
+		if(!OVR_SUCCESS(ovr_SubmitFrameFunc(session->Session, 0, NULL, layers, 1 + numberOfExtraLayers)))
+		{
+			return false;
+		}
+
+		ovrSessionStatus status;
+		if (!OVR_SUCCESS(ovr_GetSessionStatusFunc(session->Session, &status)))
+		{
+			return false;
+		}
+
+		if(status.ShouldRecenter)
+		{
+			ovr_RecenterTrackingOriginFunc(session->Session);
+		}
+
+		return true;
 	}
 
+#pragma pack(push, 4)
+	struct xnOvrSessionStatus
+	{
+		npBool IsVisible;    ///< True if the process has VR focus and thus is visible in the HMD.
+		npBool HmdPresent;   ///< True if an HMD is present.
+		npBool HmdMounted;   ///< True if the HMD is on the user's head.
+		npBool DisplayLost;  ///< True if the session is in a display-lost state. See ovr_SubmitFrame.
+		npBool ShouldQuit;   ///< True if the application should initiate shutdown.    
+		npBool ShouldRecenter;  ///< True if UX has requested re-centering. Must call ovr_ClearShouldRecenterFlag or ovr_RecenterTrackingOrigin. 
+	};
+#pragma pack(pop)
+
+	DLL_EXPORT_API void xnOvrGetStatus(xnOvrSession* session, xnOvrSessionStatus* statusOut)
+	{
+		ovrSessionStatus status;
+		if (!OVR_SUCCESS(ovr_GetSessionStatusFunc(session->Session, &status)))
+		{
+			return;
+		}
+
+		statusOut->IsVisible = status.IsVisible;
+		statusOut->HmdPresent = status.HmdPresent;
+		statusOut->HmdMounted = status.HmdMounted;
+		statusOut->DisplayLost = status.DisplayLost;
+		statusOut->ShouldQuit = status.ShouldQuit;
+		statusOut->ShouldRecenter = status.ShouldRecenter;
+	}
+
+	DLL_EXPORT_API void xnOvrRecenter(xnOvrSession* session)
+	{
+		ovr_RecenterTrackingOriginFunc(session->Session);
+	}
+
+	DLL_EXPORT_API void xnOvrGetAudioDeviceID(wchar_t* deviceString)
+	{
+		ovr_GetAudioDeviceOutGuidStrFunc(deviceString);
+	}
 }
 
 #else
+
+#include "../../../../deps/NativePath/NativePath.h"
+#include "../XenkoNative.h"
 
 extern "C" {
 	typedef struct _GUID {
@@ -438,52 +601,52 @@ extern "C" {
 		unsigned char  Data4[8];
 	} GUID;
 
-	bool xnOvrStartup()
+	DLL_EXPORT_API bool xnOvrStartup()
 	{
 		return true;
 	}
 
-	void xnOvrShutdown()
+	DLL_EXPORT_API void xnOvrShutdown()
 	{
 		
 	}
 
-	int xnOvrGetError(char* errorString)
+	DLL_EXPORT_API int xnOvrGetError(char* errorString)
 	{
 		return 0;
 	}
 
-	void* xnOvrCreateSessionDx(void* luidOut)
+	DLL_EXPORT_API void* xnOvrCreateSessionDx(void* luidOut)
 	{
 		return 0;
 	}
 
-	void xnOvrDestroySession(void* session)
+	DLL_EXPORT_API void xnOvrDestroySession(void* session)
 	{
 		
 	}
 
-	bool xnOvrCreateTexturesDx(void* session, void* dxDevice, int* outTextureCount)
+	DLL_EXPORT_API bool xnOvrCreateTexturesDx(void* session, void* dxDevice, int* outTextureCount)
 	{
 		return true;
 	}
 
-	void* xnOvrGetTextureAtIndexDx(void* session, GUID textureGuid, int index)
+	DLL_EXPORT_API void* xnOvrGetTextureAtIndexDx(void* session, GUID textureGuid, int index)
 	{
 		return 0;
 	}
 
-	void* xnOvrGetMirrorTextureDx(void* session, GUID textureGuid)
+	DLL_EXPORT_API void* xnOvrGetMirrorTextureDx(void* session, GUID textureGuid)
 	{
 		return 0;
 	}
 
-	int xnOvrGetCurrentTargetIndex(void* session)
+	DLL_EXPORT_API int xnOvrGetCurrentTargetIndex(void* session)
 	{
 		return 0;
 	}
 
-	void xnOvrPrepareRender(void* session,
+	DLL_EXPORT_API void xnOvrPrepareRender(void* session,
 		float near, float far,
 		float* projLeft, float* projRight,
 		float* positionLeft, float* positionRight,
@@ -492,9 +655,52 @@ extern "C" {
 		
 	}
 
-	bool xnOvrCommitFrame(void* session)
+	DLL_EXPORT_API bool xnOvrCommitFrame(void* session)
 	{
 		return true;
+	}
+
+#pragma pack(push, 4)
+	DLL_EXPORT_API struct xnOvrSessionStatus
+	{
+		npBool IsVisible;    ///< True if the process has VR focus and thus is visible in the HMD.
+		npBool HmdPresent;   ///< True if an HMD is present.
+		npBool HmdMounted;   ///< True if the HMD is on the user's head.
+		npBool DisplayLost;  ///< True if the session is in a display-lost state. See ovr_SubmitFrame.
+		npBool ShouldQuit;   ///< True if the application should initiate shutdown.    
+		npBool ShouldRecenter;  ///< True if UX has requested re-centering. Must call ovr_ClearShouldRecenterFlag or ovr_RecenterTrackingOrigin. 
+	};
+#pragma pack(pop)
+
+	DLL_EXPORT_API void xnOvrGetStatus(void* session, void* statusOut)
+	{
+	}
+
+	DLL_EXPORT_API void xnOvrRecenter(void* session)
+	{
+	}
+
+	DLL_EXPORT_API void xnOvrGetAudioDeviceID(wchar_t* deviceString)
+	{
+	}
+
+	DLL_EXPORT_API void* xnOvrCreateQuadLayerTexturesDx(void* session, void* dxDevice, int* outTextureCount, int width, int height, bool headLocked)
+	{
+		return NULL;
+	}
+
+	DLL_EXPORT_API int xnOvrGetCurrentQuadLayerTargetIndex(void* session, void* layer)
+	{
+		return 0;
+	}
+
+	DLL_EXPORT_API void* xnOvrGetQuadLayerTextureAtIndexDx(void* session, void* layer, GUID textureGuid, int index)
+	{
+		return NULL;
+	}
+
+	DLL_EXPORT_API void xnOvrSetQuadLayerParams(void* layer, float* position, float* orientation, float* size)
+	{
 	}
 }
 

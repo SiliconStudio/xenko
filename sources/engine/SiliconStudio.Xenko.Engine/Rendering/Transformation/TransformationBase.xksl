@@ -6,7 +6,7 @@
 /// The second is performed after the tessellation.
 /// The third is performed at the end of the geometry pipeline.
 /// </summary>
-class TransformationBase : ShaderBase
+shader TransformationBase : ShaderBase
 {
     // End of the VS (usually skinning)
     stage void PreTransformPosition() {}

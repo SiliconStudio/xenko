@@ -2,11 +2,14 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Diagnostics;
+using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Xenko.Shaders.Parser.Performance
 {
     public static class StreamCreatorPerformance
     {
+        internal static Logger Logger = GlobalLogger.GetLogger("XenkoShaderPerformance"); // Global logger for shader profiling
+
         private static Stopwatch Global = new Stopwatch();
         private static Stopwatch StreamAnalyzer = new Stopwatch();
         private static Stopwatch FindEntryPoint = new Stopwatch();
@@ -161,26 +164,24 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Performance
 
         public static void PrintResult()
         {
-            Console.WriteLine();
-            Console.WriteLine(@"----------------------------STREAM CREATOR ANALYZER-----------------------------");
-            Console.WriteLine(@"Stream creation took {0} ms", Global.ElapsedMilliseconds);
-            Console.WriteLine(@"StreamAnalyzer took {0} ms", StreamAnalyzer.ElapsedMilliseconds);
-            Console.WriteLine(@"FindEntryPoint took {0} ms", FindEntryPoint.ElapsedMilliseconds);
-            Console.WriteLine(@"StreamAnalysisPerShader took {0} ms", StreamAnalysisPerShader.ElapsedMilliseconds);
-            Console.WriteLine(@"BubbleUpStreamUsages took {0} ms", BubbleUpStreamUsages.ElapsedMilliseconds);
-            Console.WriteLine(@"ComputeShaderStreamAnalysis took {0} ms", ComputeShaderStreamAnalysis.ElapsedMilliseconds);
-            Console.WriteLine(@"TagCleaner took {0} ms", TagCleaner.ElapsedMilliseconds);
-            Console.WriteLine(@"GenerateStreams took {0} ms", GenerateStreams.ElapsedMilliseconds);
-            Console.WriteLine(@"RemoveUselessAndSortMethods took {0} ms", RemoveUselessAndSortMethods.ElapsedMilliseconds);
-            Console.WriteLine(@"PropagateStreamsParameter took {0} ms", PropagateStreamsParameter.ElapsedMilliseconds);
-            Console.WriteLine(@"TransformStreamsAssignments took {0} ms", TransformStreamsAssignments.ElapsedMilliseconds);
-            Console.WriteLine(@"AssignSearch took {0} ms", AssignSearch.ElapsedMilliseconds);
-            Console.WriteLine(@"CreateOutputFromStream took {0} ms", CreateOutputFromStream.ElapsedMilliseconds);
-            Console.WriteLine(@"CreateStreamFromInput took {0} ms", CreateStreamFromInput.ElapsedMilliseconds);
-            Console.WriteLine(@"StreamFieldVisitor took {0} ms for {1} calls", StreamFieldVisitor.ElapsedMilliseconds, StreamFieldVisitorCount);
-            Console.WriteLine(@"StreamFieldVisitorClone took {0} ms", StreamFieldVisitorClone.ElapsedMilliseconds);
-            Console.WriteLine(@"-------------------------------------------------------------------------------");
-            Console.WriteLine();
+            Logger.Info(@"----------------------------STREAM CREATOR ANALYZER-----------------------------");
+            Logger.Info(@"Stream creation took {0} ms", Global.ElapsedMilliseconds);
+            Logger.Info(@"StreamAnalyzer took {0} ms", StreamAnalyzer.ElapsedMilliseconds);
+            Logger.Info(@"FindEntryPoint took {0} ms", FindEntryPoint.ElapsedMilliseconds);
+            Logger.Info(@"StreamAnalysisPerShader took {0} ms", StreamAnalysisPerShader.ElapsedMilliseconds);
+            Logger.Info(@"BubbleUpStreamUsages took {0} ms", BubbleUpStreamUsages.ElapsedMilliseconds);
+            Logger.Info(@"ComputeShaderStreamAnalysis took {0} ms", ComputeShaderStreamAnalysis.ElapsedMilliseconds);
+            Logger.Info(@"TagCleaner took {0} ms", TagCleaner.ElapsedMilliseconds);
+            Logger.Info(@"GenerateStreams took {0} ms", GenerateStreams.ElapsedMilliseconds);
+            Logger.Info(@"RemoveUselessAndSortMethods took {0} ms", RemoveUselessAndSortMethods.ElapsedMilliseconds);
+            Logger.Info(@"PropagateStreamsParameter took {0} ms", PropagateStreamsParameter.ElapsedMilliseconds);
+            Logger.Info(@"TransformStreamsAssignments took {0} ms", TransformStreamsAssignments.ElapsedMilliseconds);
+            Logger.Info(@"AssignSearch took {0} ms", AssignSearch.ElapsedMilliseconds);
+            Logger.Info(@"CreateOutputFromStream took {0} ms", CreateOutputFromStream.ElapsedMilliseconds);
+            Logger.Info(@"CreateStreamFromInput took {0} ms", CreateStreamFromInput.ElapsedMilliseconds);
+            Logger.Info(@"StreamFieldVisitor took {0} ms for {1} calls", StreamFieldVisitor.ElapsedMilliseconds, StreamFieldVisitorCount);
+            Logger.Info(@"StreamFieldVisitorClone took {0} ms", StreamFieldVisitorClone.ElapsedMilliseconds);
+            Logger.Info(@"-------------------------------------------------------------------------------");
         }
     }
 

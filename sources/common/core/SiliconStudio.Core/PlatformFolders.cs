@@ -151,7 +151,7 @@ namespace SiliconStudio.Core
 
         private static string GetApplicationExecutablePath()
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_MONO_MOBILE || SILICONSTUDIO_PLATFORM_LINUX
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_MONO_MOBILE || SILICONSTUDIO_PLATFORM_UNIX
             Assembly currentAssembly = Assembly.GetEntryAssembly();
             if (currentAssembly == null)
             {
@@ -193,8 +193,8 @@ namespace SiliconStudio.Core
         private static string GetApplicationBinaryDirectory()
         {
             var directoryName = GetApplicationExecutablePath();
-            var result = String.IsNullOrWhiteSpace(directoryName) ? String.Empty : Path.GetDirectoryName(GetApplicationExecutablePath());
-            if (result == String.Empty)
+            var result = string.IsNullOrWhiteSpace(directoryName) ? String.Empty : Path.GetDirectoryName(directoryName);
+            if (result == string.Empty)
                 result = ".";
 
             return result;
@@ -209,7 +209,7 @@ namespace SiliconStudio.Core
 #elif SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
             return Windows.ApplicationModel.Package.Current.InstalledLocation.Path + @"\data";
 #else
-            return Path.Combine(Directory.GetCurrentDirectory(), "data");
+            return Path.Combine(GetApplicationBinaryDirectory(), "data");
 #endif
         }
     }

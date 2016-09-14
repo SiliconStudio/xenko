@@ -6,7 +6,7 @@ using SiliconStudio.Xenko.Shaders.Compiler;
 
 namespace SiliconStudio.Xenko.Rendering
 {
-    shader XenkoWireframeShadingEffect
+    effect XenkoWireframeShadingEffect
     {
         using params MaterialFrontBackBlendShaderKeys;
 

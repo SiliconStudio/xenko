@@ -2,6 +2,7 @@
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Materials;
@@ -64,13 +65,14 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Note: we are rebuilding RenderMeshes every frame
             // TODO: check if it wouldn't be better to add/remove directly in CheckMeshes()?
-            foreach (var entity in ComponentDatas)
+            //foreach (var entity in ComponentDatas)
+            Dispatcher.ForEach(ComponentDatas, entity =>
             {
                 var renderModel = entity.Value;
 
                 CheckMeshes(renderModel);
                 UpdateRenderModel(renderModel);
-            }
+            });
         }
 
         private void UpdateRenderModel(RenderModel renderModel)
@@ -133,10 +135,13 @@ namespace SiliconStudio.Xenko.Rendering
             // Remove old meshes
             if (renderModel.Meshes != null)
             {
-                foreach (var renderMesh in renderModel.Meshes)
+                lock (VisibilityGroup.RenderObjects)
                 {
-                    // Unregister from render system
-                    VisibilityGroup.RenderObjects.Remove(renderMesh);
+                    foreach (var renderMesh in renderModel.Meshes)
+                    {
+                        // Unregister from render system
+                        VisibilityGroup.RenderObjects.Remove(renderMesh);
+                    }
                 }
             }
 
@@ -166,9 +171,12 @@ namespace SiliconStudio.Xenko.Rendering
             renderModel.Meshes = renderMeshes;
 
             // Update and register with render system
-            foreach (var renderMesh in renderMeshes)
+            lock (VisibilityGroup.RenderObjects)
             {
-                VisibilityGroup.RenderObjects.Add(renderMesh);
+                foreach (var renderMesh in renderMeshes)
+                {
+                    VisibilityGroup.RenderObjects.Add(renderMesh);
+                }
             }
         }
     }

@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Audio
         public int GetData(byte[] buffer, int offset, int count)
         {
             // Just to avoid warning on BufferReady, code to remove
-            if (BufferReady != null) BufferReady(this, EventArgs.Empty);
+            BufferReady?.Invoke(this, EventArgs.Empty);
             throw new NotImplementedException();
         }
 

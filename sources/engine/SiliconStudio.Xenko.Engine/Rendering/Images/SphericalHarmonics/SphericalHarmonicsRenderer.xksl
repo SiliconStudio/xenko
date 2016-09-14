@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <summary>
     /// A shader performing Lambertian pre-filtering.
     /// </summary>
-    internal class SphericalHarmonicsRenderer<int THarmonicsOrder>: SphericalHarmonicsBase<THarmonicsOrder>, ImageEffectShader, Texturing
+    internal shader SphericalHarmonicsRenderer<int THarmonicsOrder>: SphericalHarmonicsBase<THarmonicsOrder>, ImageEffectShader, Texturing
     {    
         [Color] stage float3 SHCoefficients[CoefficientsCount];
 

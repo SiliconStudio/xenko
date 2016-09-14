@@ -204,10 +204,7 @@ namespace SiliconStudio.Xenko.Games
             }
             finally
             {
-                if (ExitCallback != null)
-                {
-                    ExitCallback();
-                }
+                ExitCallback?.Invoke();
             }
         }
 

@@ -14,6 +14,18 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
     [Display("Custom Vertex Stream")]
     public class VertexUserStreamDefinition : VertexStreamDefinitionBase
     {
+        private string name;
+
+        private int hashCode;
+
+        public override int GetHashCode() => hashCode;
+
+        public VertexUserStreamDefinition()
+        {
+            name = "COLOR";
+            hashCode = name.GetHashCode();
+        }
+
         /// <summary>
         /// Name of the semantic of the stream to read data from.
         /// </summary>
@@ -21,11 +33,19 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
         /// Semantic name of the stream to read data from.
         /// </userdoc>
         [DataMember(10)]
-        public string Name { get; set; }
+        public string Name {
+            get { return name; }
+            set { name = value; hashCode = name.GetHashCode(); }
+        }
 
         public override string GetSemanticName()
         {
-            return Name;
+            return name;
+        }
+
+        public override int GetSemanticNameHash()
+        {
+            return hashCode;
         }
     }
 }

@@ -92,20 +92,22 @@ namespace SiliconStudio.Assets.Tests
             return Parts.Any(t => t.Id == id);
         }
 
-        public override void FixupPartReferences()
+        protected override object ResolvePartReference(object referencedObject)
         {
             throw new NotImplementedException();
         }
 
-        public override Asset CreateChildAsset(string location)
+        public override Asset CreateChildAsset(string baseLocation, IDictionary<Guid, Guid> idRemapping = null)
         {
-            var asset = (TestAssetWithParts)base.CreateChildAsset(location);
+            var asset = (TestAssetWithParts)base.CreateChildAsset(baseLocation, idRemapping);
 
             // Create asset with new base
             for (int i = 0; i < asset.Parts.Count; i++)
             {
                 var part = asset.Parts[i];
-                asset.Parts[i] = new AssetPartTestItem(Guid.NewGuid(), part.Id);
+                var newId = Guid.NewGuid();
+                idRemapping?.Add(part.Id, newId);
+                asset.Parts[i] = new AssetPartTestItem(newId, part.Id);
             }
 
             return asset;

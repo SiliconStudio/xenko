@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
     /// </summary>
     [DataContract("UVBuilderScroll")]
     [Display("Scrolling")]
-    public class UVBuilderScroll : UVBuilder, IAttributeTransformer<Vector2>
+    public class UVBuilderScroll : UVBuilder, IAttributeTransformer<Vector2, Vector4>
     {
         /// <summary>
         /// Starting sub-region (rectangle) for the scroll
@@ -36,20 +36,20 @@ namespace SiliconStudio.Xenko.Particles.Materials
         public Vector4 EndFrame { get; set; } = new Vector4(0, 1, 1, 2);
 
         /// <inheritdoc />
-        public unsafe override void BuildUVCoordinates(ParticleVertexBuilder vertexBuilder, ParticleSorter sorter, AttributeDescription texCoordsDescription)
+        public unsafe override void BuildUVCoordinates(ref ParticleBufferState bufferState, ref ParticleList sorter, AttributeDescription texCoordsDescription)
         {
             var lifeField = sorter.GetField(ParticleFields.RemainingLife);
 
             if (!lifeField.IsValid())
                 return;
 
-            var texAttribute = vertexBuilder.GetAccessor(texCoordsDescription);
+            var texAttribute = bufferState.GetAccessor(texCoordsDescription);
             if (texAttribute.Size == 0 && texAttribute.Offset == 0)
             {
                 return;
             }
 
-            var texDefault = vertexBuilder.GetAccessor(vertexBuilder.DefaultTexCoords);
+            var texDefault = bufferState.GetAccessor(bufferState.DefaultTexCoords);
             if (texDefault.Size == 0 && texDefault.Offset == 0)
             {
                 return;
@@ -59,22 +59,20 @@ namespace SiliconStudio.Xenko.Particles.Materials
             {
                 var normalizedTimeline = 1f - *(float*)(particle[lifeField]); ;
 
-                uvTransform = Vector4.Lerp(StartFrame, EndFrame, normalizedTimeline);
+                Vector4 uvTransform = Vector4.Lerp(StartFrame, EndFrame, normalizedTimeline);
                 uvTransform.Z -= uvTransform.X;
                 uvTransform.W -= uvTransform.Y;
 
-                vertexBuilder.TransformAttributePerSegment(texDefault, texAttribute, this);
+                bufferState.TransformAttributePerSegment(texDefault, texAttribute, this, ref uvTransform);
 
-                vertexBuilder.NextSegment();
+                bufferState.NextSegment();
             }
 
 
-            vertexBuilder.RestartBuffer();
+            bufferState.StartOver();
         }
 
-        private Vector4 uvTransform = new Vector4(0, 0, 1, 1);
-
-        public void Transform(ref Vector2 attribute)
+        public void Transform(ref Vector2 attribute, ref Vector4 uvTransform)
         {
             attribute.X = uvTransform.X + uvTransform.Z * attribute.X;
             attribute.Y = uvTransform.Y + uvTransform.W * attribute.Y;

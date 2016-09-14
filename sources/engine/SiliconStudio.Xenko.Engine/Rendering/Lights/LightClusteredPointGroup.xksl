@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// <summary>
     /// Defines a group of point lights in clustered shading.
     /// </summary>
-    class LightClusteredPointGroup<int ClusterSize> : DirectLightGroup, LightClustered<ClusterSize>, LightPoint
+    shader LightClusteredPointGroup<int ClusterSize> : DirectLightGroup, LightClustered<ClusterSize>, LightPoint
     {
         rgroup PerView.Lighting
         {

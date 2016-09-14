@@ -138,9 +138,7 @@ namespace SiliconStudio.Xenko.Graphics
                 BordersInternal = value;
                 HasBorders = BordersInternal.Length() > MathUtil.ZeroTolerance;
 
-                var handler = BorderChanged;
-                if (handler != null)
-                    handler(this, EventArgs.Empty);
+                BorderChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -172,16 +170,14 @@ namespace SiliconStudio.Xenko.Graphics
 
                 sizeInPixels = value;
 
-                var handler = SizeChanged;
-                if (handler != null)
-                    handler(this, EventArgs.Empty);
+                SizeChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
         /// <summary>
         /// Gets or sets the pixels per scene unit of the sprite.
         /// </summary>
-        /// <remarks>The value is trunked to a strictly positive value.</remarks>
+        /// <remarks>The value is clamped to a strictly positive value.</remarks>
         public Vector2 PixelsPerUnit
         {
             get { return pixelsPerUnit; }

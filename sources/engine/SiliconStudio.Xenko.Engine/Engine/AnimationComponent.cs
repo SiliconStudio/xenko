@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Engine
         private readonly TrackingCollection<PlayingAnimation> playingAnimations;
 
         [DataMemberIgnore]
-        internal AnimationBlender Blender = new AnimationBlender();
+        public AnimationBlender Blender { get; internal set; } = new AnimationBlender();
 
         //Please note that this will be gone most likely when we renew the animation system.
         //But for now it's the only way to allow user code to read animation results
@@ -154,5 +154,13 @@ namespace SiliconStudio.Xenko.Engine
         [MemberCollection(CanReorderItems = true)]
         [NotNullItems]
         public TrackingCollection<PlayingAnimation> PlayingAnimations => playingAnimations;
+
+        [DataMemberIgnore]
+        public IBlendTreeBuilder BlendTreeBuilder { get; set; }
+    }
+
+    public interface IBlendTreeBuilder
+    {
+        void BuildBlendTree(FastList<AnimationOperation> animationList);
     }
 }

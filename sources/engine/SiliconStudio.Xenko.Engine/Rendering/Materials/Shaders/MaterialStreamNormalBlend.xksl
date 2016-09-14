@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// <summary>
     /// Blend a stream using RNM
     /// </summary>
-    class MaterialStreamNormalBlend : IMaterialStreamBlend
+    shader MaterialStreamNormalBlend : IMaterialStreamBlend
     {
         override void Compute(Streams fromStream)
         {

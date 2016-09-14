@@ -103,5 +103,13 @@ namespace SiliconStudio.Xenko.Rendering
         public virtual void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
         }
+
+        /// <summary>
+        /// Releases temporary resources and cleans the state. Should be called once after all <see cref="Draw"/> calls have finished.
+        /// </summary>
+        /// <param name="context"></param>
+        public virtual void Flush(RenderDrawContext context)
+        {            
+        }
     }
 }

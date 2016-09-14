@@ -14,7 +14,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <inheritdoc/>
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var unicodeValue = System.Convert.ToInt32(value);
+            var unicodeValue = ConverterHelper.ConvertToInt32(value, culture);
             return unicodeValue;
         }
 
@@ -23,7 +23,7 @@ namespace SiliconStudio.Presentation.ValueConverters
         {
             try
             {
-                var charValue = System.Convert.ToChar(System.Convert.ToInt32(value));
+                var charValue = ConverterHelper.ConvertToChar(ConverterHelper.ConvertToInt32(value, culture), culture);
                 return charValue;
             }
             catch (Exception)

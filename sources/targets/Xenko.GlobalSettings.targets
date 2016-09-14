@@ -17,8 +17,8 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <XenkoDependenciesDir Condition="'$(XenkoDependenciesDir)' == ''">$(MSBuildThisFileDirectory)..\..\deps\</XenkoDependenciesDir>
     <XenkoDependenciesDir Condition="'$(XenkoDependenciesDir)' != '' and !HasTrailingSlash('$(XenkoDependenciesDir)')">$(XenkoDependenciesDir)\</XenkoDependenciesDir>
+    <XenkoDependenciesDir Condition="'$(XenkoDependenciesDir)' == ''">$(MSBuildThisFileDirectory)..\..\deps\</XenkoDependenciesDir>
   </PropertyGroup>
 
   <!--Import global SiliconStudio settings-->
@@ -99,7 +99,7 @@
     <XenkoGraphicsApiDefines>$(XenkoGraphicsApiDefines);XENKO_YEBIS</XenkoGraphicsApiDefines>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
+  <PropertyGroup>
     <XenkoGraphicsApiDefines>$(XenkoGraphicsApiDefines);SILICONSTUDIO_XENKO_EFFECT_COMPILER</XenkoGraphicsApiDefines>
     <XenkoEffectCompiler>true</XenkoEffectCompiler>
   </PropertyGroup>

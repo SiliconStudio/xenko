@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Shaders.Grammar.Hlsl;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
@@ -18,6 +19,7 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
     /// <summary>
     /// A Type reference analysis is building type references.
     /// </summary>
+    [DataSerializerGlobal(null, typeof(List<MatrixType.Indexer>))]
     public class HlslSemanticAnalysis : SemanticAnalysis
     {
         private static readonly Object lockInit = new Object();
@@ -42,7 +44,7 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
 
         #region Public Methods
 
-        private static readonly object SwizzleTag = "MatrixSwizzleDecode";
+        private static readonly string SwizzleTag = "MatrixSwizzleDecode";
 
 
         /// <summary>
@@ -103,30 +105,29 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
             return swizzles;
         }
 
-        [Visit]
-        public void Visit(AsmExpression asmExpression)
+        public override Node Visit(AsmExpression asmExpression)
         {
-
+            return asmExpression;
         }
 
-        [Visit]
-        public void Visit(Annotations annotations)
+        public override Node Visit(Annotations annotations)
         {
-
+            return annotations;
         }
 
-        [Visit]
-        public void Visit(CastExpression castExpression)
+        public override Node Visit(CastExpression castExpression)
         {
-            Visit((Node)castExpression);
+            base.Visit(castExpression);
 
             var targetType = castExpression.Target.ResolveType();
             castExpression.TypeInference = (TypeInference)castExpression.Target.TypeInference.Clone();
             if (castExpression.TypeInference.TargetType == null)
                 castExpression.TypeInference.TargetType = targetType;
+
+            return castExpression;
         }
 
-        protected override void Visit(MethodInvocationExpression expression)
+        public override Node Visit(MethodInvocationExpression expression)
         {
             var methodAsVariable = expression.Target as VariableReferenceExpression;
 
@@ -137,32 +138,32 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
                 {
                     case "ConstructGSWithSO":
                     case "CompileShader":
-                        return;
+                        return expression;
                 }
             }            
             
-            base.Visit(expression);
+            return base.Visit(expression);
         }
 
 
-        [Visit]
-        public virtual void Visit(CompileExpression compileExpression)
+        public override Node Visit(CompileExpression compileExpression)
         {
-            // Visit((Node)compileExpression);
+            // base.Visit(compileExpression);
             //Warning("TypeInference on CompileExpression is not handled", compileExpression.Span);
+            return compileExpression;
         }
 
-        [Visit]
-        public virtual void Visit(StateExpression stateExpression)
+        public override Node Visit(StateExpression stateExpression)
         {
-            // Visit((Node)stateExpression);
+            // base.Visit(stateExpression);
             // Warning("TypeInference on StateExpression is not handled", stateExpression.Span);
+            return stateExpression;
         }
 
-        [Visit]
-        public virtual void Visit(Technique technique)
+        public override Node Visit(Technique technique)
         {
             // Force to not visit a techniques
+            return technique;
         }
 
 
@@ -170,10 +171,9 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
         /// Visits the specified type name.
         /// </summary>
         /// <param name="typeName">Name of the type.</param>
-        [Visit]
-        protected virtual void Visit(GenericType genericType)
+        public override Node Visit(GenericType genericType)
         {
-            Visit((Node)genericType);
+            base.Visit(genericType);
 
             string genericName = genericType.Name.Text;
 
@@ -187,6 +187,8 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
             {
                 genericType.TypeInference.TargetType = GetGenericInstance(genericName, genericType, typeBase);
             }
+
+            return genericType;
         }
 
         protected override IEnumerable<IDeclaration> FindDeclarationsFromObject(TypeBase typeBase, string memberName)
@@ -254,12 +256,13 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
             base.ProcessMethodInvocation(expression, methodName, declarations);
         }
 
-        [Visit]
-        protected virtual void Visit(TextureType textureType)
+        public override Node Visit(TextureType textureType)
         {
-            Visit((Node)textureType);
+            base.Visit(textureType);
 
             AssociatePredefinedObjects(textureType);
+
+            return textureType;
         }
 
         private void AssociatePredefinedObjects(TypeBase typebase)
@@ -268,7 +271,7 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
             TypeBase predefinedType;
             if (typebase.TypeInference.TargetType == null && BuiltinObjects.TryGetValue(typebase.Name.Text, out predefinedType))
             {
-                var textureType = new GenericType<TypeBase>();
+                var textureType = new GenericType(null, 1);
                 textureType.Parameters[0] = VectorType.Float4;
 
                 typebase.TypeInference.TargetType = GetGenericInstance(typebase.Name.Text, textureType, predefinedType);
@@ -279,10 +282,9 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
         /// Visits the specified type name.
         /// </summary>
         /// <param name="typeName">Name of the type.</param>
-        [Visit]
-        protected override TypeBase Visit(TypeName typeName)
+        public override Node Visit(TypeName typeName)
         {
-            Visit((Node)typeName);
+            base.Visit(typeName);
 
             var name = typeName.Name.Text;
 
@@ -385,7 +387,7 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
 
         #region Methods
 
-        private static TypeBase GetGenericInstance(string typename, GenericType genericType, TypeBase predefinedType)
+        private static TypeBase GetGenericInstance(string typename, GenericBaseType genericType, TypeBase predefinedType)
         {
             var key = new GenericInstanceKey(typename, genericType.Parameters);
 
@@ -434,7 +436,7 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
                 foreach (var parameter in methodDeclaration.Parameters)
                 {
                     var parameterType = parameter.Type;
-                    if (parameterType is SamplerType)
+                    if (parameterType.IsSamplerType())
                     {
                         parameterType = SamplerType.Sampler;
                     }
@@ -525,7 +527,7 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
                 DeepCloner.DeepCollect(decl, cloneContext);
 
             foreach (var bInObj in BuiltinObjects)
-                DeepCloner.DeepCollect(bInObj, cloneContext);
+                DeepCloner.DeepCollect(bInObj.Value, cloneContext);
 
             UpdateCloneContext(cloneContext);
         }
@@ -710,7 +712,7 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
             return new Ast.Parameter() { Name = new Identifier(paramName), Type = type };
         }
 
-        private static Ast.Parameter GenericParam(string paramName, TypeBase type, ParameterQualifier qualifier)
+        private static Ast.Parameter GenericParam(string paramName, TypeBase type, Qualifier qualifier)
         {
             return new Ast.Parameter() { Name = new Identifier(paramName), Type = type, Qualifiers = qualifier };
         }

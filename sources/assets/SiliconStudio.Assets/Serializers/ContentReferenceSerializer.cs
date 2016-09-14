@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using SharpYaml;
 using SharpYaml.Events;
 using SharpYaml.Serialization;
@@ -19,18 +20,7 @@ namespace SiliconStudio.Assets.Serializers
 
         public override bool CanVisit(Type type)
         {
-            return IsReferenceType(type);
-        }
-
-        public static bool IsReferenceType(Type type)
-        {
-            // TODO: Quite inefficient, probably need an attribute
-            var serializer = SerializerSelector.AssetWithReuse.GetSerializer(type);
-            if (serializer == null)
-                return false;
-
-            var serializerType = serializer.GetType();
-            return serializerType.IsGenericType && serializerType.GetGenericTypeDefinition() == typeof(ReferenceSerializer<>);
+            return ReferenceSerializer.IsReferenceType(type);
         }
 
         public override object ConvertFrom(ref ObjectContext context, Scalar fromScalar)

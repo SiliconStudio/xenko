@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 /// <summary>
-/// Base class to perfom shading. Defines the basic method and inserts it in the pipeline.
+/// Base shader to perfom shading. Defines the basic method and inserts it in the pipeline.
 /// </summary>
 /// <remarks>
 /// RENDER_TARGET_COUNT: Macro - Number of render targets.
@@ -11,7 +11,7 @@
 # define RENDER_TARGET_COUNT 1
 #endif
 
-class ShadingBase : ShaderBase
+shader ShadingBase : ShaderBase
 {
     compose ComputeColor ShadingColor0;
 

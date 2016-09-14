@@ -34,7 +34,8 @@ namespace SiliconStudio.AssemblyProcessor.Serializers
                 // Avoid processing system assemblies
                 // TODO: Scan what is actually in framework folders
                 if (referencedAssemblyName.Name == "mscorlib" || referencedAssemblyName.Name.StartsWith("System")
-                    || referencedAssemblyName.FullName.Contains("PublicKeyToken=31bf3856ad364e35")) // Signed with Microsoft public key (likely part of system libraries)
+                    || referencedAssemblyName.FullName.Contains("PublicKeyToken=31bf3856ad364e35") // Signed with Microsoft public key (likely part of system libraries)
+                    || referencedAssemblyName.Name.StartsWith("SharpDX"))
                     continue;
 
                 try

@@ -31,8 +31,11 @@
    - LZ4 source repository : http://code.google.com/p/lz4/
 */
 
-
 #ifndef LZ4_CS_ADAPTER
+
+#include "../../../../../deps/NativePath/standard/stdlib.h"
+#include "../../../../../deps/NativePath/standard/string.h"
+
 //**************************************
 // CPU Feature Detection
 //**************************************
@@ -121,8 +124,6 @@
 //**************************************
 // Includes
 //**************************************
-#include "../../../../../deps/NativePath/standard/stdlib.h"
-#include "../../../../../deps/NativePath/standard/string.h"
 #include "lz4hc.h"
 #include "lz4.h"
 
@@ -734,7 +735,7 @@ _Search3:
 }
 
 
-int LZ4_compressHC_limitedOutput(const char* source, 
+DLL_EXPORT_API int LZ4_compressHC_limitedOutput(const char* source, 
 				 char* dest,
 				 int inputSize,
 				 int maxOutputSize)
@@ -747,7 +748,7 @@ int LZ4_compressHC_limitedOutput(const char* source,
 }
 
 
-int LZ4_compressHC(const char* source, 
+DLL_EXPORT_API int LZ4_compressHC(const char* source, 
 				 char* dest,
 				 int inputSize)
 {

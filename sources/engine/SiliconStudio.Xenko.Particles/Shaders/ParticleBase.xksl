@@ -5,7 +5,7 @@
 # define UsesSoftEdge 0
 #endif
 
-class ParticleBase : DepthBase, ShaderBase, Texturing, ParticleUtilities
+shader ParticleBase : DepthBase, ShaderBase, Texturing, ParticleUtilities
 {
     // -------------------------------------
     // streams
@@ -48,7 +48,7 @@ class ParticleBase : DepthBase, ShaderBase, Texturing, ParticleUtilities
     // VertexShader
     // -------------------------------------
 
-    // Override Vertex shader main method from the ShaderBase class
+    // Override Vertex shader main method from the ShaderBase shader
     stage override void VSMain()
     {
         float4 worldPos = streams.Position;
@@ -79,7 +79,7 @@ class ParticleBase : DepthBase, ShaderBase, Texturing, ParticleUtilities
     // PixelShader
     // -------------------------------------
 
-    // Override Pixel shader main method from the ShaderBase class
+    // Override Pixel shader main method from the ShaderBase shader
     stage override void PSMain()
     {
         float4 colorTarget = Shading();
@@ -97,6 +97,9 @@ class ParticleBase : DepthBase, ShaderBase, Texturing, ParticleUtilities
             var screenCoords = (streams.ScreenPosition.xy / streams.ScreenPosition.ww) * float2(0.5, 0.5) + float2(0.5, 0.5);
             screenCoords.y = 1 - screenCoords.y;
 #endif
+
+            // Account for Viewport offset and scaling
+            screenCoords.xy = Viewport.xy + screenCoords.xy * Viewport.zw;
 
             // Convert to linear depth for proper edge smoothing
             float linearZOwn = -streams.ZDepth;

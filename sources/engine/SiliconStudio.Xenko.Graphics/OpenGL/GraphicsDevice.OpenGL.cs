@@ -44,6 +44,8 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     public partial class GraphicsDevice
     {
+        internal readonly int ConstantBufferDataPlacementAlignment = 16;
+
         private static readonly Logger Log = GlobalLogger.GetLogger("GraphicsDevice");
 
         internal int FrameCounter;
@@ -148,7 +150,7 @@ namespace SiliconStudio.Xenko.Graphics
         private OpenTK.Graphics.IGraphicsContext graphicsContext;
         private OpenTK.Platform.IWindowInfo windowInfo;
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_UNIX
 #if SILICONSTUDIO_XENKO_UI_SDL
         private SiliconStudio.Xenko.Graphics.SDL.Window gameWindow;
 #else
@@ -344,24 +346,39 @@ namespace SiliconStudio.Xenko.Graphics
 
         private int CreateCopyProgram(bool srgb, out int offsetLocation, out int scaleLocation)
         {
+            string shaderVersion, inAttribute, outAttribute, varyingFragment, fragColorDeclaration, fragColorVariable, textureAPI;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            const string shaderVersion = "#version 100\n";
-            const string inAttribute = "attribute";
-            const string outAttribute = "varying";
-            const string fragColorDeclaration = "";
-            const string fragColorVariable = "gl_FragColor";
-            const string textureAPI = "texture2D";
+            // We aim at OpenGLES 3.0 or greater.
+            shaderVersion = "#version 300 es";
 #else
-            const string shaderVersion = "#version 410\n";
-            const string inAttribute = "in";
-            const string outAttribute = "out";
-            const string fragColorDeclaration = "out vec4 gFragColor;\n";
-            const string fragColorVariable = "gFragColor";
-            const string textureAPI = "texture";
+            shaderVersion = "#version 410";
 #endif
 
-            const string copyVertexShaderSource =
-                shaderVersion +
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+            if (currentVersion < 300)
+            {
+                // Override the version
+                shaderVersion = "#version 100";
+                inAttribute = "attribute";
+                outAttribute = "varying";
+                varyingFragment = "varying";
+                fragColorDeclaration = "";
+                fragColorVariable = "gl_FragColor";
+                textureAPI = "texture2D";
+            }
+            else
+#endif
+            {
+                inAttribute = "in";
+                outAttribute = "out";
+                varyingFragment = "in";
+                fragColorDeclaration = "out vec4 gFragColor;\n";
+                fragColorVariable = "gFragColor";
+                textureAPI = "texture";
+            }
+
+            string copyVertexShaderSource =
+                shaderVersion + "\n" +
                 inAttribute + " vec2 aPosition;   \n" +
                 outAttribute + " vec2 vTexCoord;  \n" +
                 "uniform vec4 uScale;     \n" +
@@ -373,10 +390,10 @@ namespace SiliconStudio.Xenko.Graphics
                 "   vTexCoord = transformedPosition.xy;   \n" +
                 "}                           \n";
 
-            const string copyFragmentShaderSource =
-                shaderVersion +
+            string copyFragmentShaderSource =
+                shaderVersion + "\n" +
                 "precision mediump float;                            \n" +
-                inAttribute + " vec2 vTexCoord;                     \n" +
+                varyingFragment + " vec2 vTexCoord;                  \n" +
                 fragColorDeclaration +
                 "uniform sampler2D s_texture;                        \n" +
                 "void main()                                         \n" +
@@ -384,10 +401,10 @@ namespace SiliconStudio.Xenko.Graphics
                 "    " + fragColorVariable + " = " + textureAPI + "(s_texture, vTexCoord); \n" +
                 "}                                                   \n";
 
-            const string copyFragmentShaderSourceSRgb =
-                shaderVersion +
+            string copyFragmentShaderSourceSRgb =
+                shaderVersion + "\n" +
                 "precision mediump float;                            \n" +
-                inAttribute + " vec2 vTexCoord;                     \n" +
+                varyingFragment + " vec2 vTexCoord;                  \n" +
                 fragColorDeclaration +
                 "uniform sampler2D s_texture;                        \n" +
                 "void main()                                         \n" +
@@ -438,7 +455,16 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
         }
 
-        public void ExecuteCommandList(CommandList commandList)
+        public void ExecuteCommandList(CompiledCommandList commandList)
+        {
+#if DEBUG
+            EnsureContextActive();
+#endif
+
+            throw new NotImplementedException();
+        }
+
+        public void ExecuteCommandLists(int count, CompiledCommandList[] commandList)
         {
 #if DEBUG
             EnsureContextActive();
@@ -744,7 +770,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             renderer = GL.GetString(StringName.Renderer);
 
-#if SILICONSTUDIO_PLATFORM_LINUX || SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+#if SILICONSTUDIO_PLATFORM_UNIX || SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 #if SILICONSTUDIO_XENKO_UI_SDL
             gameWindow = (SiliconStudio.Xenko.Graphics.SDL.Window)windowHandle.NativeWindow;
 #else
@@ -890,6 +916,9 @@ namespace SiliconStudio.Xenko.Graphics
                 graphicsContext.MakeCurrent(windowInfo);
             }
 #endif
+
+            // Create the main command list
+            InternalMainCommandList = new CommandList(this);
         }
 
         private void AdjustDefaultPipelineStateDescription(ref PipelineStateDescription pipelineStateDescription)
@@ -949,6 +978,11 @@ namespace SiliconStudio.Xenko.Graphics
             //boundFBO = 0;
             //boundFBOHeight = 0;
             //boundProgram = 0;
+        }
+
+        internal void TagResource(GraphicsResourceLink resourceLink)
+        {
+            resourceLink.Resource.DiscardNextMap = true;
         }
 
         internal void InitDefaultRenderTarget(PresentationParameters presentationParameters)
@@ -1046,7 +1080,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             get
             {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_UNIX
                 return gameWindow.WindowState == WindowState.Fullscreen;
 #else
                 throw new NotImplementedException();
@@ -1055,7 +1089,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             set
             {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_UNIX
                 if (value ^ (gameWindow.WindowState == WindowState.Fullscreen))
                     gameWindow.WindowState = value ? WindowState.Fullscreen : WindowState.Normal;
 #else

@@ -3,7 +3,7 @@
 /// <summary>
 /// 
 /// </summary>
-class MinMaxBounding : ShadingBase, TransformationBase, PositionHStream4
+shader MinMaxBounding : ShadingBase, TransformationBase, PositionHStream4
 {
     override float4 Shading() {
         float3 pos = streams.PositionH.xyz / streams.PositionH.w;

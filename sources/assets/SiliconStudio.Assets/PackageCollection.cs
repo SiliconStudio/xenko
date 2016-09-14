@@ -155,8 +155,7 @@ namespace SiliconStudio.Assets
 
         private void OnCollectionChanged(NotifyCollectionChangedEventArgs e)
         {
-            NotifyCollectionChangedEventHandler handler = CollectionChanged;
-            if (handler != null) handler(this, e);
+            CollectionChanged?.Invoke(this, e);
         }
     }
 }

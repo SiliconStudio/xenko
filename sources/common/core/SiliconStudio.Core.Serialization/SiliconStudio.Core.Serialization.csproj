@@ -70,6 +70,7 @@
     <Compile Include="Serialization\IReference.cs" />
     <Compile Include="Serialization\AttachedReference.cs" />
     <Compile Include="Serialization\AttachedReferenceManager.cs" />
+    <Compile Include="Serialization\ReferenceSerializer.cs" />
     <Compile Include="Storage\Blob.cs" />
     <Compile Include="Storage\BlobStream.cs" />
     <Compile Include="Storage\BundleDescription.cs" />
