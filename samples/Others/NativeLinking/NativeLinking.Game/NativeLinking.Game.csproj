@@ -33,7 +33,6 @@
     <IntermediateOutputPath>obj\Windows\Debug\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>5</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -45,7 +44,6 @@
     <IntermediateOutputPath>obj\Windows\Release\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>5</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Testing|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -57,7 +55,6 @@
     <IntermediateOutputPath>obj\Windows\Testing\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>5</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -69,7 +66,6 @@
     <IntermediateOutputPath>obj\Windows\AppStore\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>5</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|WindowsStore' ">
     <DebugSymbols>true</DebugSymbols>
@@ -82,7 +78,6 @@
     <IntermediateOutputPath>obj\WindowsStore\Debug\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>5</LangVersion>
     <NoWarn>;2008</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|WindowsStore' ">
@@ -95,7 +90,6 @@
     <IntermediateOutputPath>obj\WindowsStore\Release\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>5</LangVersion>
     <NoWarn>;2008</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Testing|WindowsStore' ">
@@ -108,7 +102,6 @@
     <IntermediateOutputPath>obj\WindowsStore\Testing\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>5</LangVersion>
     <NoWarn>;2008</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|WindowsStore' ">
@@ -121,7 +114,6 @@
     <IntermediateOutputPath>obj\WindowsStore\AppStore\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>5</LangVersion>
     <NoWarn>;2008</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|WindowsPhone' ">
@@ -135,7 +127,6 @@
     <IntermediateOutputPath>obj\WindowsPhone\Debug\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>5</LangVersion>
     <NoWarn>;2008</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|WindowsPhone' ">
@@ -148,7 +139,6 @@
     <IntermediateOutputPath>obj\WindowsPhone\Release\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>5</LangVersion>
     <NoWarn>;2008</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Testing|WindowsPhone' ">
@@ -161,7 +151,6 @@
     <IntermediateOutputPath>obj\WindowsPhone\Testing\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>5</LangVersion>
     <NoWarn>;2008</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|WindowsPhone' ">
@@ -174,7 +163,6 @@
     <IntermediateOutputPath>obj\WindowsPhone\AppStore\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>5</LangVersion>
     <NoWarn>;2008</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Android' ">
@@ -188,7 +176,6 @@
     <IntermediateOutputPath>obj\Android\Debug\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>5</LangVersion>
     <AndroidUseSharedRuntime>True</AndroidUseSharedRuntime>
     <AndroidLinkMode>None</AndroidLinkMode>
   </PropertyGroup>
@@ -202,7 +189,6 @@
     <IntermediateOutputPath>obj\Android\Release\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>5</LangVersion>
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
     <AndroidLinkMode>SdkOnly</AndroidLinkMode>
   </PropertyGroup>
@@ -216,7 +202,6 @@
     <IntermediateOutputPath>obj\Android\Testing\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>5</LangVersion>
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
     <AndroidLinkMode>SdkOnly</AndroidLinkMode>
   </PropertyGroup>
@@ -230,7 +215,6 @@
     <IntermediateOutputPath>obj\Android\AppStore\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>5</LangVersion>
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
     <AndroidLinkMode>SdkOnly</AndroidLinkMode>
   </PropertyGroup>
@@ -245,7 +229,6 @@
     <IntermediateOutputPath>obj\iOS\Debug\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>5</LangVersion>
     <ConsolePause>false</ConsolePause>
     <MtouchUseSGen>True</MtouchUseSGen>
     <MtouchArch>ARMv7, ARMv7s, ARM64</MtouchArch>
@@ -263,7 +246,6 @@
     <IntermediateOutputPath>obj\iOS\Release\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>5</LangVersion>
     <ConsolePause>false</ConsolePause>
     <MtouchUseSGen>True</MtouchUseSGen>
     <MtouchArch>ARMv7, ARMv7s, ARM64</MtouchArch>
@@ -279,7 +261,6 @@
     <IntermediateOutputPath>obj\iOS\Testing\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>5</LangVersion>
     <ConsolePause>false</ConsolePause>
     <MtouchUseSGen>True</MtouchUseSGen>
     <MtouchArch>ARMv7, ARMv7s, ARM64</MtouchArch>
@@ -297,7 +278,6 @@
     <IntermediateOutputPath>obj\iOS\AppStore\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>5</LangVersion>
     <ConsolePause>false</ConsolePause>
     <MtouchUseSGen>True</MtouchUseSGen>
     <MtouchArch>ARMv7, ARMv7s, ARM64</MtouchArch>
@@ -314,7 +294,6 @@
     <IntermediateOutputPath>obj\iOS\Debug\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>5</LangVersion>
     <MtouchDebug>True</MtouchDebug>
     <MtouchLink>None</MtouchLink>
     <MtouchArch>i386, x86_64</MtouchArch>
@@ -329,7 +308,6 @@
     <IntermediateOutputPath>obj\iOS\Release\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>5</LangVersion>
     <MtouchLink>None</MtouchLink>
     <MtouchArch>i386, x86_64</MtouchArch>
   </PropertyGroup>
