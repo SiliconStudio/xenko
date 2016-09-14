@@ -371,7 +371,7 @@ namespace SiliconStudio.Xenko.Physics
         {
             base.OnUpdateDraw();
 
-            if (type == RigidBodyTypes.Dynamic && BoneIndex == -1)
+            if (type == RigidBodyTypes.Dynamic && !IsKinematic && BoneIndex != -1)
             {
                 //write to ModelViewHierarchy
                 var model = Data.ModelComponent;
