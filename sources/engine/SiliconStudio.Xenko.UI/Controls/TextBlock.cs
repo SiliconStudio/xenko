@@ -1,77 +1,51 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
+
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Text;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Graphics.Font;
 
 namespace SiliconStudio.Xenko.UI.Controls
 {
     /// <summary>
     /// Provides a lightweight control for displaying small amounts of text.
     /// </summary>
+    [DataContract(nameof(TextBlock))]
     [DebuggerDisplay("TextBlock - Name={Name}")]
     public class TextBlock : UIElement
     {
-        /// <summary>
-        /// The key to the Font dependency property.
-        /// </summary>
-        public readonly static PropertyKey<SpriteFont> FontPropertyKey = new PropertyKey<SpriteFont>("FontKey", typeof(TextBlock), DefaultValueMetadata.Static<SpriteFont>(null), ObjectInvalidationMetadata.New<SpriteFont>(InvalidateFont));
-
-        /// <summary>
-        /// The key to the TextColor dependency property.
-        /// </summary>
-        public readonly static PropertyKey<Color> TextColorPropertyKey = new PropertyKey<Color>("TextColorKey", typeof(TextBlock), DefaultValueMetadata.Static(Color.FromAbgr(0xF0F0F0FF)));
-
-        private static void InvalidateFont(object propertyOwner, PropertyKey propertyKey, object propertyOldValue)
-        {
-            var element = (TextBlock)propertyOwner;
-            element.InvalidateMeasure();
-        }
-
+        private SpriteFont font;
         private string text;
-
+        private float textSize = float.NaN;
         private bool wrapText;
+        private bool synchronousCharacterGeneration;
 
         private string wrappedText;
 
-        private float? textSize;
-
-        private bool synchronousCharacterGeneration;
-
         /// <summary>
-        /// Method triggered when the <see cref="Text"/> changes.
-        /// Can be overridden in inherited class to changed the default behavior.
+        /// Returns the actual size of the text in virtual pixels unit.
         /// </summary>
-        protected virtual void OnTextChanged()
-        {
-            InvalidateMeasure();
-        }
+        /// <remarks>If <see cref="TextSize"/> is <see cref="float.IsNaN"/>, returns the default size of the <see cref="Font"/>.</remarks>
+        /// <seealso cref="TextSize"/>
+        /// <seealso cref="SpriteFont.Size"/>
+        public float ActualTextSize => !float.IsNaN(TextSize) ? TextSize : Font?.Size ?? 0;
 
         /// <summary>
         /// Returns the text to display during the draw call.
         /// </summary>
-        public virtual string TextToDisplay
-        {
-            get { return WrapText? wrappedText: Text; }
-        }
+        public virtual string TextToDisplay => WrapText ? wrappedText : Text;
 
         /// <summary>
-        /// Gets or sets the font of the text block
+        /// Gets or sets the text of the text block.
         /// </summary>
-        public SpriteFont Font
-        {
-            get { return DependencyProperties.Get(FontPropertyKey); }
-            set { DependencyProperties.Set(FontPropertyKey, value); }
-        }
-
-        /// <summary>
-        /// Gets or sets the text of the text block
-        /// </summary>
+        /// <userdoc>The text of the text block.</userdoc>
+        [DataMember]
+        [DefaultValue(null)]
         public string Text
         {
             get { return text; }
@@ -83,66 +57,114 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the text of the text block
+        /// Gets or sets the font of the text block.
         /// </summary>
-        public Color TextColor
+        /// <userdoc>The font of the text block.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(null)]
+        public SpriteFont Font
         {
-            get { return DependencyProperties.Get(TextColorPropertyKey); }
-            set { DependencyProperties.Set(TextColorPropertyKey, value); }
-        }
-
-        /// <summary>
-        /// Gets or sets the size of the text in virtual pixels unit
-        /// </summary>
-        public float TextSize
-        {
-            get
-            {
-                if (textSize.HasValue)
-                    return textSize.Value;
-
-                if (Font != null)
-                    return Font.Size;
-
-                return 0;
-            }
+            get { return font; }
             set
             {
-                textSize = Math.Max(0, Math.Min(float.MaxValue, value));
+                if (font == value)
+                    return;
 
+                font = value;
                 InvalidateMeasure();
             }
         }
 
         /// <summary>
-        /// Gets or sets the value indicating if the <see cref="Text"/> of the <see cref="TextBlock"/> 
-        /// should automatically return to the beginning of the line when it is too big for the line width.
+        /// Gets or sets the size of the text in virtual pixels unit.
         /// </summary>
+        /// <remarks>If the value set is <c>null</c>, the default size of the <see cref="Font"/> will be used instead.</remarks>
+        /// <seealso cref="ActualTextSize"/>
+        /// <seealso cref="SpriteFont.Size"/>
+        /// <userdoc>The size of the text in virtual pixels unit.</userdoc>
+        [DataMember]
+        [DataMemberRange(0.0f, float.MaxValue, AllowNaN = true)]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(float.NaN)]
+        public float TextSize
+        {
+            get { return textSize; }
+            set
+            {
+                textSize = MathUtil.Clamp(value, 0.0f, float.MaxValue);
+                InvalidateMeasure();
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the color of the text.
+        /// </summary>
+        /// <userdoc>The color of the text.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        public Color TextColor { get; set; } = Color.FromAbgr(0xF0F0F0FF);
+
+        /// <summary>
+        /// Gets or sets the alignment of the text to display.
+        /// </summary>
+        /// <userdoc>Alignment of the text.</userdoc>
+        [DataMember]
+        [Display(category: AppearanceCategory)]
+        [DefaultValue(default(TextAlignment))]
+        public TextAlignment TextAlignment { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value indicating if the <see cref="Text"/> of the <see cref="TextBlock"/> 
+        /// should automatically return to the beginning of the line when it is too long for the line width.
+        /// </summary>
+        /// <userdoc>True if the text should automatically return of the beginning of the line when it is too long to fit the line width, false otherwise.</userdoc>
+        [DataMember]
+        [Display(category: BehaviorCategory)]
+        [DefaultValue(false)]
         public bool WrapText
         {
             get { return wrapText; }
             set
             {
-                if(wrapText == value)
+                if (wrapText == value)
                     return;
 
                 wrapText = value;
-
                 InvalidateMeasure();
             }
         }
 
         /// <summary>
-        /// Gets or sets the value indicating if the text block should generate <see cref="RuntimeRasterizedSpriteFont"/> characters synchronously or asynchronously.
+        /// Gets or sets the value indicating if the snapping of the <see cref="Text"/> of the <see cref="TextBlock"/> to the closest screen pixel should be skipped.
         /// </summary>
-        /// <remarks>If synchronous generation is activated, the game will be block until all the characters have finished to be generate.
-        /// If asynchronous generation is activated, some characters can appears with one or two frames of delay.</remarks>
+        /// <remarks>
+        /// When <value>true</value>, the element's text is never snapped. 
+        /// When <value>false</value>, it is snapped only if the font is dynamic and the element is rendered by a SceneUIRenderer.
+        /// </remarks>
+        /// <userdoc>True to never snap to the closest screen pixel, false to snap it (only works for dynamic font).</userdoc>
+        [DataMember]
+        [Display(category: BehaviorCategory)]
+        [DefaultValue(false)]
+        public bool DoNotSnapText { get; set; }
+
+        /// <summary>
+        /// Gets or sets the value indicating if the text block should generate <see cref="Graphics.Font.RuntimeRasterizedSpriteFont"/> characters synchronously or asynchronously.
+        /// </summary>
+        /// <remarks>
+        /// If synchronous generation is activated, the game will be block until all the characters have finished to be generate.
+        /// If asynchronous generation is activated, some characters can appears with one or two frames of delay.
+        /// </remarks>
+        /// <userdoc>True if dynamic characters should be generated synchronously, false otherwise.</userdoc>
+        [DataMember]
+        [Display(category: BehaviorCategory)]
+        [DefaultValue(false)]
         public bool SynchronousCharacterGeneration
         {
             get { return synchronousCharacterGeneration; }
             set
             {
-                if(synchronousCharacterGeneration == value)
+                if (synchronousCharacterGeneration == value)
                     return;
 
                 synchronousCharacterGeneration = value;
@@ -153,24 +175,21 @@ namespace SiliconStudio.Xenko.UI.Controls
         }
 
         /// <summary>
-        /// Gets or sets the alignment of the text to display.
-        /// </summary>
-        public TextAlignment TextAlignment { get; set; }
-
-        /// <summary>
-        /// Gets or sets the value indicating if the snapping of the <see cref="Text"/> of the <see cref="TextBlock"/> to the closest screen pixel should be skipped.
-        /// </summary>
-        /// <remarks>When <value>true</value>, the element's text is never snapped. 
-        /// When <value>false</value>, it is snapped only if the font is dynamic and the element is rendered by a SceneUIRenderer.</remarks>
-        public bool DoNotSnapText { get; set; }
-
-        /// <summary>
         /// Calculate and returns the size of the <see cref="Text"/> in virtual pixels size.
         /// </summary>
         /// <returns>The size of the Text in virtual pixels.</returns>
         public Vector2 CalculateTextSize()
         {
             return CalculateTextSize(TextToDisplay);
+        }
+
+        /// <inheritdoc/>
+        protected override Vector3 ArrangeOverride(Vector3 finalSizeWithoutMargins)
+        {
+            if (WrapText)
+                UpdateWrappedText(finalSizeWithoutMargins);
+
+            return base.ArrangeOverride(finalSizeWithoutMargins);
         }
 
         /// <summary>
@@ -186,6 +205,24 @@ namespace SiliconStudio.Xenko.UI.Controls
             return CalculateTextSize(new SpriteFont.StringProxy(textToMeasure));
         }
 
+        /// <inheritdoc/>
+        protected override Vector3 MeasureOverride(Vector3 availableSizeWithoutMargins)
+        {
+            if (WrapText)
+                UpdateWrappedText(availableSizeWithoutMargins);
+
+            return new Vector3(CalculateTextSize(), 0);
+        }
+
+        /// <summary>
+        /// Method triggered when the <see cref="Text"/> changes.
+        /// Can be overridden in inherited class to changed the default behavior.
+        /// </summary>
+        protected virtual void OnTextChanged()
+        {
+            InvalidateMeasure();
+        }
+
         private Vector2 CalculateTextSize(StringBuilder textToMeasure)
         {
             return CalculateTextSize(new SpriteFont.StringProxy(textToMeasure));
@@ -197,11 +234,11 @@ namespace SiliconStudio.Xenko.UI.Controls
                 return Vector2.Zero;
 
             var sizeRatio = LayoutingContext.RealVirtualResolutionRatio;
-            var measureFontSize = new Vector2(sizeRatio.Y * TextSize); // we don't want letters non-uniform ratio
+            var measureFontSize = new Vector2(sizeRatio.Y * ActualTextSize); // we don't want letters non-uniform ratio
             var realSize = Font.MeasureString(ref textToMeasure, ref measureFontSize);
 
             // force pre-generation if synchronous generation is required
-            if(SynchronousCharacterGeneration)
+            if (SynchronousCharacterGeneration)
                 Font.PreGenerateGlyphs(ref textToMeasure, ref measureFontSize);
 
             if (Font.FontType == SpriteFontType.Dynamic)
@@ -213,28 +250,12 @@ namespace SiliconStudio.Xenko.UI.Controls
 
             if (Font.FontType == SpriteFontType.SDF)
             {
-                var scaleRatio = TextSize / Font.Size;
+                var scaleRatio = ActualTextSize / Font.Size;
                 realSize.X *= scaleRatio;
                 realSize.Y *= scaleRatio;
             }
 
             return realSize;
-        } 
-
-        protected override Vector3 MeasureOverride(Vector3 availableSizeWithoutMargins)
-        {
-            if (WrapText)
-                UpdateWrappedText(availableSizeWithoutMargins);
-
-            return new Vector3(CalculateTextSize(), 0);
-        }
-
-        protected override Vector3 ArrangeOverride(Vector3 finalSizeWithoutMargins)
-        {
-            if (WrapText)
-                UpdateWrappedText(finalSizeWithoutMargins);
-
-            return base.ArrangeOverride(finalSizeWithoutMargins);
         }
 
         private void UpdateWrappedText(Vector3 availableSpace)
@@ -249,7 +270,7 @@ namespace SiliconStudio.Xenko.UI.Controls
                 float lineCurrentSize;
                 var indexNextCharacter = 0;
                 var indexOfLastSpace = -1;
-                
+
                 while (true)
                 {
                     lineCurrentSize = CalculateTextSize(currentLine).X;
@@ -291,12 +312,12 @@ namespace SiliconStudio.Xenko.UI.Controls
                 else // at least one white space in the line
                 {
                     // remove all extra characters until last space (included)
-                    if(indexNextCharacter > indexOfLastSpace)
+                    if (indexNextCharacter > indexOfLastSpace)
                         currentLine.Remove(indexOfLastSpace, indexNextCharacter - indexOfLastSpace);
                     indexOfNewLine += indexOfLastSpace + 1;
                 }
 
-            AppendLine:
+                AppendLine:
 
                 // add the next line to the current text
                 currentLine.Append('\n');

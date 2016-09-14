@@ -7,7 +7,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A Scalar type
     /// </summary>
-    public class ScalarType : TypeBase
+    public partial class ScalarType : TypeBase
     {
         #region Constants and Fields
 

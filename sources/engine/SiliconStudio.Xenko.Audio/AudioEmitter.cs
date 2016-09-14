@@ -84,6 +84,9 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AudioEmitter"/> class.
+        /// </summary>
         public AudioEmitter()
         {
             Forward = new Vector3(0, 0, 1);

@@ -57,7 +57,7 @@ namespace SiliconStudio.Xenko.Physics
                     throw new ArgumentOutOfRangeException(nameof(orientation));
             }
 
-            DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(radius * 2, height, radius * 2) * 1.01f) * rotation;
+            DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(radius * 2, height, radius * 2) * DebugScaling) * rotation;
         }
 
         public override MeshDraw CreateDebugPrimitive(GraphicsDevice device)

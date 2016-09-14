@@ -34,9 +34,7 @@ namespace SiliconStudio.Xenko.Debugger.Target
 
         public void OnGameExited()
         {
-            var gameExited = GameExited;
-            if (gameExited != null)
-                gameExited();
+            GameExited?.Invoke();
         }
 
         public void OnLogMessage(SerializableLogMessage logMessage)

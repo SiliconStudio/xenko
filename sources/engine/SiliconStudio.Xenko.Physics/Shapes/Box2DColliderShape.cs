@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Physics
             CachedScaling = new Vector3(1, 1, 0);
             InternalShape = new BulletSharp.Box2DShape(size/2) { LocalScaling = CachedScaling };           
 
-            DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(size.X, size.Y, 0f) * 1.01f);
+            DebugPrimitiveMatrix = Matrix.Scaling(new Vector3(size.X, size.Y, 0f) * DebugScaling);
         }
 
         public override MeshDraw CreateDebugPrimitive(GraphicsDevice device)

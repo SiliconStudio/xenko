@@ -1,6 +1,0 @@
-!Texture
-Id: b9b96234-dcac-48da-979c-65eae07be389
-SerializedVersion: {Xenko: 1.4.0-beta}
-Tags: []
-Source: ../../Resources/dot.png
-ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

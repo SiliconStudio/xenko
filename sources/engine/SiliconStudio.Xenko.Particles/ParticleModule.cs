@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Particles
         /// <summary>
         /// Resets the current state to the module's initial state
         /// </summary>
-        internal virtual void ResetSimulation() { }
+        public virtual void ResetSimulation() { }
 
         /// <summary>
         /// Attepmts to get a debug shape (shape type and location matrix) for the current module in order to display its boundaries better
@@ -75,5 +75,8 @@ namespace SiliconStudio.Xenko.Particles
         {
             
         }
+
+        /// <inheritdoc />
+        public virtual void PreUpdate() { }
     }
 }

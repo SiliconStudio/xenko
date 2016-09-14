@@ -2,6 +2,10 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using SiliconStudio.Core;
+using SiliconStudio.Xenko.Extensions;
 
 namespace SiliconStudio.Xenko.Engine
 {
@@ -62,6 +66,31 @@ namespace SiliconStudio.Xenko.Engine
         {
             if (entity == null) throw new ArgumentNullException(nameof(entity));
             return entity.Transform.Parent?.Entity;
+        }
+
+        /// <summary>
+        /// Returns the first child in the hierarchy with the provided name.
+        /// This function can be slow, do not use every frame!
+        /// </summary>
+        /// <param name="parentEntity">The parent Entity.</param>
+        /// <param name="childName">The name of the child to look for.</param>
+        /// <returns>Null or the first child with the requested name.</returns>
+        public static Entity FindChild(this Entity parentEntity, string childName)
+        {
+            if (parentEntity == null) throw new ArgumentNullException(nameof(parentEntity));
+            return Utilities.IterateTree(parentEntity, entity => entity?.GetChildren()).FirstOrDefault(entity => entity != null && entity.Name == childName);
+        }
+
+        public static Entity FindRoot(this Entity entity)
+        {
+            var root = entity.GetParent();
+            var prevRoot = root;
+            while (root != null)
+            {
+                prevRoot = root;
+                root = root.GetParent();
+            }
+            return prevRoot;
         }
     }
 }

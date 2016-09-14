@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             stackPanel.Children.Add(image4);
             stackPanel.Children.Add(image5);
 
-            UIComponent.RootElement = new ScrollViewer { Content = stackPanel };
+            UIComponent.Page = new Engine.UIPage { RootElement = new ScrollViewer { Content = stackPanel } };
         }
 
         protected override void RegisterTests()

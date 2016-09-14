@@ -16,6 +16,8 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial class GraphicsDevice
     {
+        internal readonly int ConstantBufferDataPlacementAlignment = 16;
+
         private const GraphicsPlatform GraphicPlatform = GraphicsPlatform.Direct3D11;
 
         private bool simulateReset = false;
@@ -130,12 +132,18 @@ namespace SiliconStudio.Xenko.Graphics
         /// Executes a deferred command list.
         /// </summary>
         /// <param name="commandList">The deferred command list.</param>
-        public void ExecuteCommandList(CommandList commandList)
+        public void ExecuteCommandList(CompiledCommandList commandList)
         {
-            //if (commandList == null) throw new ArgumentNullException("commandList");
-            //
-            //NativeDeviceContext.ExecuteCommandList(((CommandList)commandList).NativeCommandList, false);
-            //commandList.Dispose();
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Executes multiple deferred command lists.
+        /// </summary>
+        /// <param name="commandLists">The deferred command lists.</param>
+        public void ExecuteCommandLists(int count, CompiledCommandList[] commandLists)
+        {
+            throw new NotImplementedException();
         }
 
         public void SimulateReset()
@@ -145,7 +153,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         private void InitializePostFeatures()
         {
-            
+            // Create the main command list
+            InternalMainCommandList = new CommandList(this);
         }
 
         private string GetRendererName()
@@ -241,9 +250,12 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (IsDebugMode)
             {
-                var deviceDebug = new SharpDX.Direct3D11.DeviceDebug(NativeDevice);
-                deviceDebug.ReportLiveDeviceObjects(SharpDX.Direct3D11.ReportingLevel.Detail);
-                deviceDebug.Dispose();
+                var debugDevice = NativeDevice.QueryInterfaceOrNull<SharpDX.Direct3D11.DeviceDebug>();
+                if (debugDevice != null)
+                {
+                    debugDevice.ReportLiveDeviceObjects(SharpDX.Direct3D11.ReportingLevel.Detail);
+                    debugDevice.Dispose();
+                }
             }
 
             nativeDevice.Dispose();
@@ -252,6 +264,11 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal void OnDestroyed()
         {
+        }
+
+        internal void TagResource(GraphicsResourceLink resourceLink)
+        {
+            resourceLink.Resource.DiscardNextMap = true;
         }
     }
 }

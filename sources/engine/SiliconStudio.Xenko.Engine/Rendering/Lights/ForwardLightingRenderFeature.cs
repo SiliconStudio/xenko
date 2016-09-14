@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Threading;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Storage;
+using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Shadows;
@@ -41,10 +43,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             internal ParameterCollectionLayout ViewParameterLayout;
             internal ParameterCollection ViewParameters = new ParameterCollection();
 
-            internal ObjectId DrawLayoutHash;
-            internal ParameterCollectionLayout DrawParameterLayout;
-            internal ParameterCollection DrawParameters = new ParameterCollection();
-
             public RenderViewLightData()
             {
                 ActiveLightGroups = new Dictionary<Type, LightComponentCollectionGroup>(16);
@@ -55,6 +53,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 LightComponentsWithShadows = new Dictionary<LightComponent, LightShadowMapTexture>(16);
             }
         }
+
+        private readonly ThreadLocal<PrepareThreadLocals> prepareThreadLocals = new ThreadLocal<PrepareThreadLocals>(() => new PrepareThreadLocals());
 
         private StaticObjectPropertyKey<RenderEffect> renderEffectKey;
 
@@ -267,12 +267,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             var directLightShaders = GetReadonlyShaderSources(ShaderPermutation.DirectLightShaders);
             var environmentLightShaders = GetReadonlyShaderSources(ShaderPermutation.EnvironmentLightShaders);
 
-            foreach (var renderObject in RootRenderFeature.RenderObjects)
+            //foreach (var renderObject in RootRenderFeature.RenderObjects)
+            Dispatcher.ForEach(RootRenderFeature.RenderObjects, renderObject =>
             {
                 var renderMesh = (RenderMesh)renderObject;
 
                 if (!renderMesh.Material.IsLightDependent)
-                    continue;
+                    return;
 
                 var staticObjectNode = renderMesh.StaticObjectNode;
 
@@ -296,7 +297,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     foreach (var lightGroup in ShaderPermutation.PermutationLightGroups)
                         lightGroup.ApplyEffectPermutations(renderEffect);
                 }
-            }
+            });
         }
 
         /// <summary>
@@ -392,51 +393,50 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 }
 
                 // PerDraw
-                var drawParameters = renderViewData.DrawParameters;
-
-                foreach (var renderNodeReference in viewFeature.RenderNodes)
+                Dispatcher.ForEach(viewFeature.RenderNodes, () => prepareThreadLocals.Value, (renderNodeReference, locals) =>
                 {
                     var renderNode = RootRenderFeature.GetRenderNode(renderNodeReference);
 
                     // Ignore fallback effects
                     if (renderNode.RenderEffect.State != RenderEffectState.Normal)
-                        continue;
+                        return;
 
                     var drawLayout = renderNode.RenderEffect.Reflection.PerDrawLayout;
                     if (drawLayout == null)
-                        continue;
+                        return;
 
                     var drawLighting = drawLayout.GetLogicalGroup(drawLightingKey);
                     if (drawLighting.Hash == ObjectId.Empty)
-                        continue;
+                        return;
 
                     // First time, let's build layout
-                    if (drawLighting.Hash != renderViewData.DrawLayoutHash)
+                    if (drawLighting.Hash != locals.DrawLayoutHash)
                     {
-                        renderViewData.DrawLayoutHash = drawLighting.Hash;
+                        locals.DrawLayoutHash = drawLighting.Hash;
 
                         // Generate layout
                         var drawParameterLayout = new ParameterCollectionLayout();
                         drawParameterLayout.ProcessLogicalGroup(drawLayout, ref drawLighting);
 
-                        drawParameters.UpdateLayout(drawParameterLayout);
+                        locals.DrawParameters.UpdateLayout(drawParameterLayout);
                     }
 
-                    Debug.Assert(drawLighting.Hash == renderViewData.DrawLayoutHash, "PerDraw Lighting layout differs between different RenderObject in the same RenderView");
+                    // TODO: Does this ever fail?
+                    Debug.Assert(drawLighting.Hash == locals.DrawLayoutHash, "PerDraw Lighting layout differs between different RenderObject in the same RenderView");
 
                     // Compute PerDraw lighting
                     foreach (var directLightGroup in ShaderPermutation.DirectLightGroups)
                     {
-                        directLightGroup.ApplyDrawParameters(context, renderViewData.ViewIndex, drawParameters, ref renderNode.RenderObject.BoundingBox);
+                        directLightGroup.ApplyDrawParameters(context, renderViewData.ViewIndex, locals.DrawParameters, ref renderNode.RenderObject.BoundingBox);
                     }
                     foreach (var environmentLight in ShaderPermutation.EnvironmentLights)
                     {
-                        environmentLight.ApplyDrawParameters(context, renderViewData.ViewIndex, drawParameters, ref renderNode.RenderObject.BoundingBox);
+                        environmentLight.ApplyDrawParameters(context, renderViewData.ViewIndex, locals.DrawParameters, ref renderNode.RenderObject.BoundingBox);
                     }
 
                     // Update resources
-                    renderNode.Resources.UpdateLogicalGroup(ref drawLighting, drawParameters);
-                }
+                    renderNode.Resources.UpdateLogicalGroup(ref drawLighting, locals.DrawParameters);
+                });
             }
         }
 
@@ -655,6 +655,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             public readonly LightGroupRendererBase LightRenderer;
 
             public readonly LightComponentCollectionGroup LightGroup;
+        }
+
+        private class PrepareThreadLocals
+        {
+            public ObjectId DrawLayoutHash;
+
+            public readonly ParameterCollection DrawParameters = new ParameterCollection();
         }
     }
 }

@@ -12,6 +12,13 @@ xnOvrGetCurrentTargetIndex
 xnOvrCommitFrame
 xnOvrPrepareRender
 xnOvrGetMirrorTextureDx
+xnOvrGetStatus
+xnOvrRecenter
+xnOvrGetAudioDeviceID
+xnOvrCreateQuadLayerTexturesDx
+xnOvrGetQuadLayerTextureAtIndexDx
+xnOvrGetCurrentQuadLayerTargetIndex
+xnOvrSetQuadLayerParams
 xnCeltCreate
 xnCeltDestroy
 xnCeltEncodeFloat
@@ -21,6 +28,7 @@ xnCeltDecodeShort
 xnAudioInit
 xnAudioCreate
 xnAudioDestroy
+xnAudioUpdate
 xnAudioSetMasterVolume
 xnAudioListenerCreate
 xnAudioListenerDestroy
@@ -28,6 +36,7 @@ xnAudioListenerEnable
 xnAudioListenerDisable
 xnAudioSourceCreate
 xnAudioSourceDestroy
+xnAudioSourceGetPosition
 xnAudioSourceSetPan
 xnAudioBufferCreate
 xnAudioBufferDestroy
@@ -39,6 +48,7 @@ xnAudioSourcePlay
 xnAudioSourcePause
 xnAudioSourceStop
 xnAudioSourceSetLooping
+xnAudioSourceSetRange
 xnAudioSourceSetGain
 xnAudioSourceSetPitch
 xnAudioListenerPush3D

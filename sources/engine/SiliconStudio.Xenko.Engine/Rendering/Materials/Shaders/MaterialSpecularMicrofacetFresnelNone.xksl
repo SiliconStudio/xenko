@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// <summary>
     /// Interface for a microfacet Fresnel function
     /// </summary>
-    class MaterialSpecularMicrofacetFresnelNone : IMaterialSpecularMicrofacetFresnelFunction
+    shader MaterialSpecularMicrofacetFresnelNone : IMaterialSpecularMicrofacetFresnelFunction
     {
         override float3 Compute(float3 f0)
         {

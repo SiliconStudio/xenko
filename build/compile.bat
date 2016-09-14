@@ -6,6 +6,7 @@ set STARTTIME=%TIME%
 set __SkipTestBuild=true
 set __BuildType=Debug
 set __BuildVerbosity=m
+set __BuildDoc=0
 set __ContinueOnError=false
 
 :Arg_Loop
@@ -20,6 +21,7 @@ if /i "%1" == "verbosity:q" (set __BuildVerbosity=q && shift && goto Arg_loop)
 if /i "%1" == "verbosity:m" (set __BuildVerbosity=m && shift && goto Arg_loop)
 if /i "%1" == "verbosity:n" (set __BuildVerbosity=n && shift && goto Arg_loop)
 if /i "%1" == "verbosity:d" (set __BuildVerbosity=d && shift && goto Arg_loop)
+if /i "%1" == "doc" (set __BuildDoc=1 && shift && goto Arg_loop)
 rem No space after %2 as it would add a space at the end of __SelectedProject
 if /i "%1" == "project" (if "%2" == "" (goto Usage) else (set __SelectedProject=%2&& shift && shift && goto Arg_loop))
 echo.
@@ -65,13 +67,25 @@ set Project=Xenko.Direct3D.CoreCLR.sln
 call :compile
 if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
+set Project=Xenko.Direct3D12.sln
+call :compile
+if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
+
 set Project=Xenko.Vulkan.sln
 call :compile
-if %ERRORLEVEL% != 0 goto exit
+if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.Vulkan.SDL.sln
 call :compile
-if %ERRORLEVEL% != 0 goto exit
+if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
+
+set Project=Xenko.OpenGL.sln
+call :compile
+if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
+
+set Project=Xenko.OpenGL.CoreCLR.sln
+call :compile
+if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.Linux.sln
 set _platform_target=Linux
@@ -80,7 +94,7 @@ if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.Linux.Vulkan.sln
 call :compile
-if %ERRORLEVEL% != 0 goto exit
+if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.Linux.CoreCLR.sln
 call :compile
@@ -88,14 +102,14 @@ if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
 set Project=Xenko.Linux.Vulkan.CoreCLR.sln
 call :compile
-if %ERRORLEVEL% != 0 goto exit
+if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
-set Project=Xenko.OpenGL.sln
-set _platform_target=Mixed Platforms
+set Project=Xenko.macOS.sln
+set _platform_target=macOS
 call :compile
 if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
-set Project=Xenko.OpenGL.CoreCLR.sln
+set Project=Xenko.macOS.CoreCLR.sln
 call :compile
 if %ERRORLEVEL% NEQ 0 if "%__ContinueOnError%" == "false" goto exit
 
@@ -131,6 +145,8 @@ rem "Project" is the solution name
 rem "_platform_target" is the platform being targeted
 :compile
 set _option=/nologo /nr:false /m /verbosity:%__BuildVerbosity% /p:Configuration=%__BuildType% /p:Platform="%_platform_target%" /p:SiliconStudioPackageBuild=%__SkipTestBuild% %Project%
+
+if "%__BuildDoc%" == "1" set _option=%_option% /p:SiliconStudioGenerateDoc=true
 
 rem Skip Compilation if __SelectedProject was set and does not match what was requested
 if "%__SelectedProject%" NEQ "" (

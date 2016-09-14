@@ -17,7 +17,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
+using SiliconStudio.Core.Extensions;
 using VHACDSharp;
+using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Assets.Physics
 {
@@ -47,16 +49,6 @@ namespace SiliconStudio.Xenko.Assets.Physics
             }
 
             private readonly Package package;
-
-            private ConvexHullMesh convexHullMesh;
-
-            public override void Cancel()
-            {
-                lock (this)
-                {
-                    if (convexHullMesh != null) convexHullMesh.Cancel();
-                }
-            }
 
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
             {
@@ -144,8 +136,23 @@ namespace SiliconStudio.Xenko.Assets.Physics
                             var indexOffset = (uint)combinedVerts.Count / 3;
 
                             var stride = meshData.Draw.VertexBuffers[0].Declaration.VertexStride;
-                            var vertexDataAsset = assetManager.Load<Graphics.Buffer>(AttachedReferenceManager.GetUrl(meshData.Draw.VertexBuffers[0].Buffer));
-                            var vertexData = vertexDataAsset.GetSerializationData().Content;
+
+                            var vertexBufferRef = AttachedReferenceManager.GetAttachedReference(meshData.Draw.VertexBuffers[0].Buffer);
+                            byte[] vertexData;
+                            if (vertexBufferRef.Data != null)
+                            {
+                                vertexData = ((BufferData)vertexBufferRef.Data).Content;
+                            }
+                            else if (!vertexBufferRef.Url.IsNullOrEmpty())
+                            {
+                                var dataAsset = assetManager.Load<Buffer>(vertexBufferRef.Url);
+                                vertexData = dataAsset.GetSerializationData().Content;
+                            }
+                            else
+                            {
+                                continue;
+                            }
+
                             var vertexIndex = meshData.Draw.VertexBuffers[0].Offset;
                             for (var v = 0; v < meshData.Draw.VertexBuffers[0].Count; v++)
                             {
@@ -162,8 +169,22 @@ namespace SiliconStudio.Xenko.Assets.Physics
                                 vertexIndex += stride;
                             }
 
-                            var indexDataAsset = assetManager.Load<Graphics.Buffer>(AttachedReferenceManager.GetUrl(meshData.Draw.IndexBuffer.Buffer));
-                            var indexData = indexDataAsset.GetSerializationData().Content;
+                            var indexBufferRef = AttachedReferenceManager.GetAttachedReference(meshData.Draw.IndexBuffer.Buffer);
+                            byte[] indexData;
+                            if (indexBufferRef.Data != null)
+                            {
+                                indexData = ((BufferData)indexBufferRef.Data).Content;
+                            }
+                            else if (!indexBufferRef.Url.IsNullOrEmpty())
+                            {
+                                var dataAsset = assetManager.Load<Buffer>(indexBufferRef.Url);
+                                indexData = dataAsset.GetSerializationData().Content;
+                            }
+                            else
+                            {
+                                throw new Exception("Failed to find index buffer while building a convex hull.");
+                            }
+
                             var indexIndex = meshData.Draw.IndexBuffer.Offset;
                             for (var v = 0; v < meshData.Draw.IndexBuffer.Count; v++)
                             {
@@ -196,10 +217,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
                             SimpleHull = convexHullDesc.SimpleWrap
                         };
 
-                        lock (this)
-                        {
-                            convexHullMesh = new ConvexHullMesh();
-                        }
+                        var convexHullMesh = new ConvexHullMesh();
 
                         convexHullMesh.Generate(decompositionDesc);
 
@@ -239,11 +257,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
                             indicesList.Add(indexList);
                         }
 
-                        lock (this)
-                        {
-                            convexHullMesh.Dispose();
-                            convexHullMesh = null;
-                        }
+                        convexHullMesh.Dispose();
 
                         commandContext.Logger.Info("For a total of " + vertexCountHull + " vertexes");
                     }

@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Globalization;
 
-using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Shaders.Ast.Xenko;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Visitor;
@@ -48,7 +48,6 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         }
 
         /// <inheritdoc />
-        [Visit]
         public override void Visit(Variable variable)
         {
             if (VariableAsParameterKey)
@@ -68,8 +67,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// Visits the specified namespace block.
         /// </summary>
         /// <param name="namespaceBlock">The namespace block.</param>
-        [Visit]
-        protected virtual void Visit(NamespaceBlock namespaceBlock)
+        public override void Visit(NamespaceBlock namespaceBlock)
         {
             WriteLinkLine(namespaceBlock);
             Write("namespace ").Write(namespaceBlock.Name);
@@ -81,10 +79,9 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             CloseBrace();
         }
 
-        //[Visit]
-        //protected virtual void Visit(ConstantBuffer constantBuffer)
+        //public override void Visit(ConstantBuffer constantBuffer)
         //{
-        //    Visit((Node)constantBuffer);
+        //    VisitDynamic(constantBuffer);
         //}
 
         internal bool IsParameterKey(Variable variable)
@@ -206,7 +203,6 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// Visits the specified type.
         /// </summary>
         /// <param name="typeName">the type.</param>
-        [Visit]
         public override void Visit(TypeName typeName)
         {
             var type = typeName.ResolveType();
@@ -222,7 +218,6 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         }
 
         /// <inheritdoc />
-        [Visit]
         public override void Visit(ScalarType scalarType)
         {
             base.Visit(scalarType);
@@ -233,8 +228,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// Visits the specified type.
         /// </summary>
         /// <param name="type">the type.</param>
-        [Visit]
-        protected virtual void Visit(VectorType type)
+        public override void Visit(VectorType type)
         {
             var finalTypeName = "Vector" + type.Dimension;
             if (IsColorStatus)
@@ -254,8 +248,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// Visits the specified type.
         /// </summary>
         /// <param name="type">the type.</param>
-        [Visit]
-        protected virtual void Visit(MatrixType type)
+        public override void Visit(MatrixType type)
         {
             Write("Matrix");
             ProcessInitialValueStatus = true;
@@ -265,8 +258,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// Visits the specified type.
         /// </summary>
         /// <param name="type">the type.</param>
-        [Visit]
-        protected virtual void Visit(TextureType type)
+        public override void Visit(TextureType type)
         {
             Write("Texture");
         }
@@ -275,17 +267,16 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// Visits the specified type.
         /// </summary>
         /// <param name="type">the type.</param>
-        [Visit]
-        protected virtual void Visit(StateType type)
+        public override void Visit(ObjectType type)
         {
-            Write("SamplerState");
+            if (type.IsSamplerStateType())
+                Write("SamplerState");
         }
 
         /// <summary>
         /// Visits the specified type.
         /// </summary>
         /// <param name="type">the type.</param>
-        [Visit]
         public override void Visit(ArrayType type)
         {
             var dimensions = type.Dimensions;
@@ -307,15 +298,20 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             IsArrayStatus = true;
         }
 
-        /// <summary>
-        /// Visits the specified type.
-        /// </summary>
-        /// <param name="type">the type.</param>
-        [Visit]
-        protected virtual void Visit(TypeBase type)
+        public override void DefaultVisit(Node node)
         {
-            Write(type.Name);
-            ProcessInitialValueStatus = true;
+            base.DefaultVisit(node);
+
+            var typeBase = node as TypeBase;
+            if (typeBase != null)
+            {
+                // Unhandled types only
+                if (!(typeBase is TypeName || typeBase is ScalarType || typeBase is MatrixType || typeBase is TextureType || typeBase.IsStateType() || typeBase is ArrayType))
+                {
+                    Write(typeBase.Name);
+                    ProcessInitialValueStatus = true;
+                }
+            }
         }
 
         protected static bool IsStringInList(string value, params string[] list)
@@ -326,13 +322,13 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         protected static bool IsTextureType(TypeBase type)
         {
             // TODO we should improve AST type system
-            return type is TextureType || (type is GenericType && type.Name.Text.Contains("Texture"));
+            return type is TextureType || (type is GenericBaseType && type.Name.Text.Contains("Texture"));
         }
 
         protected static bool IsBufferType(TypeBase type)
         {
             // TODO we should improve AST type system
-            return type is GenericType && type.Name.Text.Contains("Buffer");
+            return type is GenericBaseType && type.Name.Text.Contains("Buffer");
         }
     }
 }

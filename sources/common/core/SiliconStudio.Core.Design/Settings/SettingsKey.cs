@@ -112,9 +112,7 @@ namespace SiliconStudio.Core.Settings
         /// <param name="profile">The profile in which the change has been validated.</param>
         internal void NotifyChangesValidated(SettingsProfile profile)
         {
-            var handler = ChangesValidated;
-            if (handler != null)
-                handler(this, new ChangesValidatedEventArgs(profile));
+            ChangesValidated?.Invoke(this, new ChangesValidatedEventArgs(profile));
         }
 
         /// <summary>

@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if (SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX) && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+#if (SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_UNIX) && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
 using SiliconStudio.Core.Mathematics;
 using OpenTK;
 using Rectangle = SiliconStudio.Core.Mathematics.Rectangle;
@@ -10,6 +10,12 @@ using OpenGLWindow = SiliconStudio.Xenko.Graphics.SDL.Window;
 #else
 using WindowState = OpenTK.WindowState;
 using OpenGLWindow = OpenTK.GameWindow;
+#endif
+
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+using OpenTK.Graphics.ES30;
+#else
+using OpenTK.Graphics.OpenGL;
 #endif
 
 namespace SiliconStudio.Xenko.Graphics
@@ -57,6 +63,10 @@ namespace SiliconStudio.Xenko.Graphics
                     new Rectangle(0, 0, backBuffer.Width, backBuffer.Height),
                     new Rectangle(0, 0, GraphicsDevice.WindowProvidedRenderTexture.Width, GraphicsDevice.WindowProvidedRenderTexture.Height), true);
 
+                // On macOS, `SwapBuffers` will swap whatever framebuffer is active and in our case it is not the window provided
+                // framebuffer, and in addition if the active framebuffer is single buffered, it won't do anything. Forcing a bind
+                // will ensure the window is updated.
+                GL.BindFramebuffer(FramebufferTarget.Framebuffer, GraphicsDevice.WindowProvidedFrameBuffer);
                 OpenTK.Graphics.GraphicsContext.CurrentContext.SwapBuffers();
             }
         }

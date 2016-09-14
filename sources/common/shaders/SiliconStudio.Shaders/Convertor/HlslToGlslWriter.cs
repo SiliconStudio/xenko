@@ -55,7 +55,6 @@ namespace SiliconStudio.Shaders.Convertor
         #region Public Methods
 
         /// <inheritdoc/>
-        [Visit]
         public override void Visit(Shader shader)
         {
             // #version
@@ -72,6 +71,7 @@ namespace SiliconStudio.Shaders.Convertor
             if (shaderPlatform == GlslShaderPlatform.OpenGLES)
             {
                 WriteLine("precision highp float;");
+                WriteLine("precision highp int;");
 
                 if (shaderVersion >= 300)
                 {
@@ -113,7 +113,7 @@ namespace SiliconStudio.Shaders.Convertor
             {
                 // null entry point for pixel shader means no pixel shader. In that case, we return a default function.
                 // TODO: support that directly in HlslToGlslConvertor?
-                if (pipelineStage == PipelineStage.Pixel && shaderPlatform == GlslShaderPlatform.OpenGLES && shaderVersion >= 300)
+                if (pipelineStage == PipelineStage.Pixel)
                 {
                     WriteLine("out float fragmentdepth; void main(){ fragmentdepth = gl_FragCoord.z; }");
                 }
@@ -129,7 +129,6 @@ namespace SiliconStudio.Shaders.Convertor
         }
 
         /// <inheritdoc/>
-        [Visit]
         public override void Visit(Literal literal)
         {
             if (TrimFloatSuffix && literal.Value is float)
@@ -139,8 +138,7 @@ namespace SiliconStudio.Shaders.Convertor
         }
 
         /// <inheritdoc />
-        [Visit]
-        public virtual void Visit(Ast.Glsl.InterfaceType interfaceType)
+        public override void Visit(Ast.Glsl.InterfaceType interfaceType)
         {
             Write(interfaceType.Qualifiers, true);
 
@@ -165,31 +163,26 @@ namespace SiliconStudio.Shaders.Convertor
         }
 
         /// <inheritdoc/>
-        [Visit]
         public override void Visit(Annotations annotations)
         {
         }
 
         /// <inheritdoc/>
-        [Visit]
         public override void Visit(ClassType classType)
         {
         }
 
         /// <inheritdoc/>
-        [Visit]
         public override void Visit(InterfaceType interfaceType)
         {
         }
 
         /// <inheritdoc/>
-        [Visit]
         public override void Visit(AsmExpression asmExpression)
         {
         }
 
         /// <inheritdoc/>
-        [Visit]
         public override void Visit(ConstantBuffer constantBuffer)
         {
             // Flatten the constant buffers
@@ -207,7 +200,7 @@ namespace SiliconStudio.Shaders.Convertor
                     }
                     Write("uniform").Write(" ").Write(constantBuffer.Name).WriteSpace().Write("{").WriteLine();
                     Indent();
-                    VisitDynamicList(constantBuffer.Members);
+                    VisitList(constantBuffer.Members);
                 }
                 else
                 {
@@ -237,20 +230,17 @@ namespace SiliconStudio.Shaders.Convertor
         }
 
         /// <inheritdoc/>
-        [Visit]
         public override void Visit(Typedef typedef)
         {
         }
 
         /// <inheritdoc/>
-        [Visit]
         public override void Visit(AttributeDeclaration attributeDeclaration)
         {
 
         }
 
         /// <inheritdoc/>
-        [Visit]
         public override void Visit(CastExpression castExpression)
         {
         }
@@ -259,44 +249,37 @@ namespace SiliconStudio.Shaders.Convertor
         /// Visits the specified technique.
         /// </summary>
         /// <param name="technique">The technique.</param>
-        [Visit]
         public override void Visit(Technique technique)
         {
         }
 
         /// <inheritdoc />
-        [Visit]
         public override void Visit(StateInitializer stateInitializer)
         {
         }
 
         /// <inheritdoc />
-        [Visit]
         public override void Visit(StateExpression stateExpression)
         {
         }
 
         /// <inheritdoc />
-        [Visit]
         public override void Visit(Semantic semantic)
         {
         }
 
         /// <inheritdoc />
-        [Visit]
         public override void Visit(PackOffset packOffset)
         {
         }
 
         /// <inheritdoc />
-        [Visit]
         public override void Visit(RegisterLocation registerLocation)
         {
         }
 
         /// <inheritdoc />
-        [Visit]
-        public void Visit(Ast.Glsl.LayoutQualifier layoutQualifier)
+        public override void Visit(Ast.Glsl.LayoutQualifier layoutQualifier)
         {
             Write("layout(");
             for (int i = 0; i < layoutQualifier.Layouts.Count; i++)
@@ -307,7 +290,7 @@ namespace SiliconStudio.Shaders.Convertor
                 if (layout.Value != null)
                 {
                     WriteSpace().Write("=").WriteSpace();
-                    Visit((Node)layout.Value);
+                    base.Visit(layout.Value);
                 }
             }
             Write(")");

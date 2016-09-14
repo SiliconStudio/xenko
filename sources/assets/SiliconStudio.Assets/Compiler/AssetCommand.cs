@@ -46,7 +46,7 @@ namespace SiliconStudio.Assets.Compiler
             var assetWithCompileTimeDependencies = asset as IAssetCompileTimeDependencies;
             if (assetWithCompileTimeDependencies != null)
             {
-                foreach (var dependentAssetReference in assetWithCompileTimeDependencies.EnumerateCompileTimeDependencies())
+                foreach (var dependentAssetReference in assetWithCompileTimeDependencies.EnumerateCompileTimeDependencies(package.Session))
                 {
                     var dependentAssetItem = package.FindAsset(dependentAssetReference);
                     var dependentAsset = dependentAssetItem != null ? dependentAssetItem.Asset : null;

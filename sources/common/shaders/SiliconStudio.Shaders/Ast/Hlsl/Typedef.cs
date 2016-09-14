@@ -10,7 +10,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     /// <summary>
     /// Typedef declaration.
     /// </summary>
-    public class Typedef : TypeBase, IDeclaration
+    public partial class Typedef : TypeBase, IDeclaration
     {
         #region Constructors and Destructors
 

@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Rendering
                     distanceI = ~distanceI;
 
                 // Compute sort key
-                sortKeys[i] = new SortKey { Value = ((ulong)renderNode.RootRenderFeature.SortKey << 56) | ((ulong)(distanceI >> distanceShift) << distancePosition) | ((ulong)(renderObject.StateSortKey >> stateShift) << statePosition), Index = i };
+                sortKeys[i] = new SortKey { Value = ((ulong)renderNode.RootRenderFeature.SortKey << 56) | ((ulong)(distanceI >> distanceShift) << distancePosition) | ((ulong)(renderObject.StateSortKey >> stateShift) << statePosition), Index = i, StableIndex = renderObject.Index };
             }
         }
     }

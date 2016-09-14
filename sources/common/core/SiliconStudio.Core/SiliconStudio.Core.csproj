@@ -94,6 +94,7 @@
     <Compile Include="Reflection\ObjectFactory.cs" />
     <Compile Include="Reflection\ObjectFactoryAttribute.cs" />
     <Compile Include="Serialization\NullSerializer.cs" />
+    <Compile Include="Serialization\Serializers\HashSetSerializer.cs" />
     <Compile Include="Storage\ObjectIdSimpleBuilder.cs" />
     <Compile Include="ThreadHelper.WindowsRuntime.cs" />
     <Compile Include="Collections\PriorityNodeQueue.cs" />
@@ -265,7 +266,13 @@
     <Compile Include="DataMemberIgnoreAttribute.cs" />
     <Compile Include="DataContractAttribute.cs" />
     <Compile Include="SuppressUnmanagedCodeSecurityAttribute.cs" />
-    <Compile Include="Threading\TaskList.cs" />
+    <Compile Include="Threading\ConcurrentCollector.cs" />
+    <Compile Include="Threading\ConcurrentPool.cs" />
+    <Compile Include="Threading\Dispatcher.cs" />
+    <Compile Include="Threading\IPooledClosure.cs" />
+    <Compile Include="Threading\PooledAttribute.cs" />
+    <Compile Include="Threading\PooledDelegateHelper.cs" />
+    <Compile Include="Threading\ThreadPool.cs" />
     <Compile Include="UnmanagedArray.cs" />
     <Compile Include="Utilities.cs" />
     <Compile Include="Utilities.Interop.cs" />

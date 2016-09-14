@@ -3,6 +3,7 @@
 using System;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text.RegularExpressions;
 using SiliconStudio.Shaders.Properties;
@@ -33,25 +34,20 @@ namespace SiliconStudio.Shaders.Convertor
         /// Initializes the <see cref="GlslKeywords"/> class by loading the keywords file.
         /// </summary>
         /// <remarks>
-        /// It tries to load the "keywords.glsl" file from the same directory than this assembly (allowing overrides)
-        /// else it loads it from an internal resource of this assembly.
+        /// It loads it from an internal resource of this assembly.
         /// </remarks>
         static GlslKeywords()
         {
             Stream stream = null;
             try
             {
-                // Try to load from the 
-                var keywordFilePath = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(typeof (GlslKeywords).GetTypeInfo().Assembly.Location)), KeywordsFileName);
-                if (File.Exists(keywordFilePath))
-                    stream = new FileStream(keywordFilePath, FileMode.Open, FileAccess.Read);
-
-                if (stream == null) stream = new MemoryStream(Resources.Keywords);
+                stream = new MemoryStream(Resources.Keywords);
 
                 InitializeFromStream(stream);
-            } catch(Exception ex)
+            }
+            catch (Exception ex)
             {
-                Console.WriteLine("Unable to load keywords.glsl file. Reason: " + ex);
+                Debug.WriteLine("Unable to load keywords.glsl file. Reason: " + ex);
             } finally
             {
                 if (stream != null)

@@ -94,6 +94,7 @@ End
 We use several open-source products from Xenko, and would like to thanks them for their contributions:
 
 * [SharpDX](http://sharpdx.org/) (MIT License)
+* [SharpVulkan] (https://github.com/jwollen/SharpVulkan) (MIT License)
 * [OpenTK](http://www.opentk.com/) (MIT License)
 * [Irony](https://irony.codeplex.com/) (MIT License)
 * [NuGet](https://nuget.codeplex.com/) (Apache License 2.0)

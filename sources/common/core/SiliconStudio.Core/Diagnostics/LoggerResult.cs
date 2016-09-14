@@ -129,11 +129,7 @@ namespace SiliconStudio.Core.Diagnostics
                 Info(e.Message);
             }
 
-            EventHandler<ProgressStatusEventArgs> handler = ProgressChanged;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
+            ProgressChanged?.Invoke(this, e);
         }
 
         void IProgressStatus.OnProgressChanged(ProgressStatusEventArgs e)

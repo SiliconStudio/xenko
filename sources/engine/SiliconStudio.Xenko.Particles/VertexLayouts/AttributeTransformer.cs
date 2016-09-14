@@ -4,8 +4,8 @@
 
 namespace SiliconStudio.Xenko.Particles.VertexLayouts
 {
-    public interface IAttributeTransformer<T>
+    public interface IAttributeTransformer<T, U>
     {
-        void Transform(ref T attribute);
+        void Transform(ref T attribute, ref U transformer);
     }
 }

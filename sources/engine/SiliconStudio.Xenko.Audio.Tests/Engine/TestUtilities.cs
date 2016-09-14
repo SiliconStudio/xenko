@@ -77,13 +77,11 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
 
             public void OneLoopTurnActionBfrUpdate(Game game)
             {
-                if (oneLoopTurnActionBfrUpdate != null)
-                    oneLoopTurnActionBfrUpdate(game, loopCount, loopCountSum);
+                oneLoopTurnActionBfrUpdate?.Invoke(game, loopCount, loopCountSum);
             }
             public void OneLoopTurnActionAftUpdate(Game game)
             {
-                if (oneLoopTurnActionAftUpdate != null)
-                    oneLoopTurnActionAftUpdate(game, loopCount, loopCountSum);
+                oneLoopTurnActionAftUpdate?.Invoke(game, loopCount, loopCountSum);
 
                 ++loopCount;
                 loopCountSum += loopCount;

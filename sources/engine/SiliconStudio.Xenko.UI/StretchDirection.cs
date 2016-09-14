@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 namespace SiliconStudio.Xenko.UI
 {
     /// <summary>
@@ -10,14 +11,17 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// The content stretches to fit the parent according to the Stretch mode.
         /// </summary>
+        /// <userdoc>The content stretches to fit the parent according to the Stretch mode.</userdoc>
         Both,
         /// <summary>
         /// The content scales downward only when it is larger than the parent. If the content is smaller, no scaling upward is performed.
         /// </summary>
+        /// <userdoc>The content scales downward only when it is larger than the parent. If the content is smaller, no scaling upward is performed.</userdoc>
         DownOnly,
         /// <summary>
         /// The content scales upward only when it is smaller than the parent. If the content is larger, no scaling downward is performed.
         /// </summary>
+        /// <userdoc>The content scales upward only when it is smaller than the parent. If the content is larger, no scaling downward is performed.</userdoc>
         UpOnly,
     }
 }

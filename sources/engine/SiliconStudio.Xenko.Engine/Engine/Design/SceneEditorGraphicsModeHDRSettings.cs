@@ -48,6 +48,7 @@ namespace SiliconStudio.Xenko.Engine.Design
                 fx.ColorTransforms.Transforms.Add(new ToneMap() { LuminanceLocalFactor = 0.0f });
                 fx.ColorTransforms.Transforms.Add(new FilmGrain() { Enabled = false });
                 fx.ColorTransforms.Transforms.Add(new Vignetting() { Enabled =  false } );
+                fx.AmbientOcclusion.Enabled = false;
                 fx.DepthOfField.Enabled = false;
                 fx.Bloom.Enabled = false;
                 fx.LensFlare.Enabled = false;

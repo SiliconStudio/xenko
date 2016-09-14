@@ -16,6 +16,9 @@ namespace SiliconStudio.Xenko.Audio
     /// </summary>
     public class AudioSystem : GameSystemBase, IAudioEngineProvider
     {
+        private static readonly object AudioEngineStaticLock = new object();
+        private static AudioEngine audioEngineSingleton;
+
         /// <summary>
         /// Create an new instance of AudioSystem
         /// </summary>
@@ -35,6 +38,8 @@ namespace SiliconStudio.Xenko.Audio
         /// <value>The audio engine.</value>
         public AudioEngine AudioEngine { get; private set; }
 
+        public AudioDevice RequestedAudioDevice { get; set; } = new AudioDevice();
+
         /// <summary>
         /// A collection containing the <see cref="AudioListenerComponent"/>-<see cref="AudioListener"/> associations.
         /// The AudioListenerComponent keys are added/removed by the user by calls to <see cref="AddListener"/>/<see cref="RemoveListener"/>.
@@ -48,7 +53,19 @@ namespace SiliconStudio.Xenko.Audio
         {
             base.Initialize();
 
-            AudioEngine = AudioEngineFactory.NewAudioEngine();
+            lock (AudioEngineStaticLock)
+            {
+                if (audioEngineSingleton == null)
+                {
+                    audioEngineSingleton = AudioEngineFactory.NewAudioEngine(RequestedAudioDevice);
+                }
+                else
+                {
+                    ((IReferencable)audioEngineSingleton).AddReference();
+                }
+
+                AudioEngine = audioEngineSingleton;
+            }
 
             Game.Activated += OnActivated;
             Game.Deactivated += OnDeactivated;
@@ -95,8 +112,15 @@ namespace SiliconStudio.Xenko.Audio
 
             base.Destroy();
 
-            AudioEngine.Dispose();
-            AudioEngine = null;
+            lock (AudioEngineStaticLock)
+            {
+                AudioEngine = null;
+                var count = ((IReferencable)audioEngineSingleton).Release();
+                if (count == 0)
+                {
+                    audioEngineSingleton = null;
+                }
+            }
         }
 
         private void OnActivated(object sender, EventArgs e)

@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Animations;
@@ -30,17 +31,20 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         [Display("Additive Rotation Animation")]
         public ComputeCurveSampler<float> SamplerRotation { get; set; }
 
-
         /// <inheritdoc />
-        public unsafe override int BuildVertexBuffer(ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY, 
-            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticleSorter sorter)
+        public override void PreUpdate()
         {
-            // Update the curve samplers if required
-            base.BuildVertexBuffer(vtxBuilder, invViewX, invViewY, ref spaceTranslation, ref spaceRotation, spaceScale, sorter);
+            base.PreUpdate();
 
             SamplerRotation?.UpdateChanges();
+        }
 
-
+        /// <inheritdoc />
+        public override unsafe int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY, 
+            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ref ParticleList sorter)
+        {
+            // Update the curve samplers if required
+            base.BuildVertexBuffer(ref bufferState, invViewX, invViewY, ref spaceTranslation, ref spaceRotation, spaceScale, ref sorter);
 
             // Get all the required particle fields
             var positionField = sorter.GetField(ParticleFields.Position);
@@ -60,8 +64,8 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
             var renderedParticles = 0;
 
-            var posAttribute = vtxBuilder.GetAccessor(VertexAttributes.Position);
-            var texAttribute = vtxBuilder.GetAccessor(vtxBuilder.DefaultTexCoords);
+            var posAttribute = bufferState.GetAccessor(VertexAttributes.Position);
+            var texAttribute = bufferState.GetAccessor(bufferState.DefaultTexCoords);
 
             foreach (var particle in sorter)
             {
@@ -96,33 +100,33 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 var particlePos = centralPos - unitX + unitY;
                 var uvCoord = new Vector2(0, 0);
                 // 0f 0f
-                vtxBuilder.SetAttribute(posAttribute, (IntPtr) (&particlePos));
-                vtxBuilder.SetAttribute(texAttribute, (IntPtr) (&uvCoord));
-                vtxBuilder.NextVertex();
+                bufferState.SetAttribute(posAttribute, (IntPtr) (&particlePos));
+                bufferState.SetAttribute(texAttribute, (IntPtr) (&uvCoord));
+                bufferState.NextVertex();
 
 
                 // 1f 0f
                 particlePos += unitX * 2;
                 uvCoord.X = 1;
-                vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
-                vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
-                vtxBuilder.NextVertex();
+                bufferState.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                bufferState.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
+                bufferState.NextVertex();
 
 
                 // 1f 1f
                 particlePos -= unitY * 2;
                 uvCoord.Y = 1;
-                vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
-                vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
-                vtxBuilder.NextVertex();
+                bufferState.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                bufferState.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
+                bufferState.NextVertex();
 
 
                 // 0f 1f
                 particlePos -= unitX * 2;
                 uvCoord.X = 0;
-                vtxBuilder.SetAttribute(posAttribute, (IntPtr)(&particlePos));
-                vtxBuilder.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
-                vtxBuilder.NextVertex();
+                bufferState.SetAttribute(posAttribute, (IntPtr)(&particlePos));
+                bufferState.SetAttribute(texAttribute, (IntPtr)(&uvCoord));
+                bufferState.NextVertex();
 
                 renderedParticles++;
             }

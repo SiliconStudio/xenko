@@ -149,7 +149,7 @@ namespace SpaceEscape
         /// </summary>
         public void StartMainMenuMode()
         {
-            Entity.Get<UIComponent>().RootElement = mainMenuRoot;
+            Entity.Get<UIComponent>().Page = new UIPage { RootElement = mainMenuRoot };
         }
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace SpaceEscape
         /// </summary>
         public void StartPlayMode()
         {
-            Entity.Get<UIComponent>().RootElement = gameRoot;
+            Entity.Get<UIComponent>().Page = new UIPage { RootElement = gameRoot };
         }
 
         /// <summary>
@@ -165,7 +165,7 @@ namespace SpaceEscape
         /// </summary>
         public void StartGameOverMode()
         {
-            Entity.Get<UIComponent>().RootElement = gameOverRoot;
+            Entity.Get<UIComponent>().Page = new UIPage { RootElement = gameOverRoot };
         }
 
         /// <summary>

@@ -5,13 +5,11 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-using SiliconStudio.Presentation.MarkupExtensions;
-
 namespace SiliconStudio.Presentation.ValueConverters
 {
     /// <summary>
     /// This converter will convert a double value to a <see cref="Thickness"/> structure that can be used for Margin, Padding, etc.
-    /// A <see cref="Thickness"/> must be passed as a parameter of this converter. You can use the <see cref="ThicknessExtension"/>
+    /// A <see cref="Thickness"/> must be passed as a parameter of this converter. You can use the <see cref="MarkupExtensions.ThicknessExtension"/>
     /// markup extension to easily pass one, with the following syntax: {sskk:Thickness (arguments)}. The resulting thickness will
     /// be the parameter thickness multiplied bu the scalar double value.
     /// </summary>
@@ -24,7 +22,7 @@ namespace SiliconStudio.Presentation.ValueConverters
             double scalar;
             try
             {
-                scalar = System.Convert.ToDouble(value);
+                scalar = ConverterHelper.ConvertToDouble(value, culture);
             }
             catch (Exception exception)
             {
@@ -55,7 +53,7 @@ namespace SiliconStudio.Presentation.ValueConverters
             var thicknessValue = (Thickness)value;
             var thicknessParameter = (Thickness)parameter;
 
-            double scalar = 0.0;
+            var scalar = 0.0;
             if (Math.Abs(thicknessParameter.Left) > double.Epsilon)
             {
                 scalar = thicknessValue.Left / thicknessParameter.Left;

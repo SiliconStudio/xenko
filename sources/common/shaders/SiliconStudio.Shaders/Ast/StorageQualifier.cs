@@ -7,45 +7,19 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A Storage qualifier.
     /// </summary>
-    public class StorageQualifier : Qualifier
+    public partial class StorageQualifier
     {
         #region Constants and Fields
 
         /// <summary>
         ///   Const qualifier.
         /// </summary>
-        public static readonly StorageQualifier Const = new StorageQualifier("const");
+        public static readonly Qualifier Const = new Qualifier("const");
 
         /// <summary>
         ///   Uniform qualifier.
         /// </summary>
-        public static readonly StorageQualifier Uniform = new StorageQualifier("uniform");
-
-        /// <summary>
-        ///   Internal map used for parsing.
-        /// </summary>
-        private static readonly StringEnumMap Map = PrepareParsing<StorageQualifier>();
-
-        #endregion
-
-        #region Constructors and Destructors
-
-        /// <summary>
-        ///   Initializes a new instance of the <see cref = "StorageQualifier" /> class.
-        /// </summary>
-        public StorageQualifier()
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="StorageQualifier"/> class.
-        /// </summary>
-        /// <param name="key">
-        /// Name of the enum.
-        /// </param>
-        public StorageQualifier(object key) : base(key)
-        {
-        }
+        public static readonly Qualifier Uniform = new Qualifier("uniform");
 
         #endregion
 
@@ -60,52 +34,14 @@ namespace SiliconStudio.Shaders.Ast
         /// <returns>
         /// A storage qualifier
         /// </returns>
-        public static StorageQualifier Parse(string enumName)
+        public static Qualifier Parse(string enumName)
         {
-            return Map.ParseEnumFromName<StorageQualifier>(enumName);
-        }
+            if (enumName == (string)Const.Key)
+                return Const;
+            if (enumName == (string)Uniform.Key)
+                return Uniform;
 
-        #endregion
-
-        #region Operators
-
-        /// <summary>
-        ///   Implements the operator ==.
-        /// </summary>
-        /// <param name = "left">The left.</param>
-        /// <param name = "right">The right.</param>
-        /// <returns>
-        ///   The result of the operator.
-        /// </returns>
-        public static StorageQualifier operator &(StorageQualifier left, StorageQualifier right)
-        {
-            return OperatorAnd(left, right);
-        }
-
-        /// <summary>
-        ///   Implements the operator |.
-        /// </summary>
-        /// <param name = "left">The left.</param>
-        /// <param name = "right">The right.</param>
-        /// <returns>
-        ///   The result of the operator.
-        /// </returns>
-        public static StorageQualifier operator |(StorageQualifier left, StorageQualifier right)
-        {
-            return OperatorOr(left, right);
-        }
-
-        /// <summary>
-        ///   Implements the operator ^.
-        /// </summary>
-        /// <param name = "left">The left.</param>
-        /// <param name = "right">The right.</param>
-        /// <returns>
-        ///   The result of the operator.
-        /// </returns>
-        public static StorageQualifier operator ^(StorageQualifier left, StorageQualifier right)
-        {
-            return OperatorXor(left, right);
+            throw new ArgumentException(string.Format("Unable to convert [{0}] to qualifier", enumName), "key");
         }
 
         #endregion

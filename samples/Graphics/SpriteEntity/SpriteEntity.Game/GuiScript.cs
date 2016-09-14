@@ -26,7 +26,7 @@ namespace SpriteEntity
             };
             textBlock.SetCanvasRelativePosition(new Vector3(0.008f, 0.9f, 0));
 
-            Entity.Get<UIComponent>().RootElement = new Canvas { Children = { textBlock } };
+            Entity.Get<UIComponent>().Page = new UIPage { RootElement = new Canvas { Children = { textBlock } } };
         }
     }
 }

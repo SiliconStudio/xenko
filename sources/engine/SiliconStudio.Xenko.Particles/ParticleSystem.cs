@@ -194,6 +194,19 @@ namespace SiliconStudio.Xenko.Particles
             oldEmitterCount = -1;
         }
 
+//        private Object thisLock = new Object();
+
+        private void PreUpdate()
+        {
+//            lock (thisLock)
+//            {
+                foreach (var particleEmitter in Emitters)
+                {
+                    particleEmitter.PreUpdate();
+                }
+//            }
+        }
+
         /// <summary>
         /// Updates the particles
         /// </summary>
@@ -203,6 +216,8 @@ namespace SiliconStudio.Xenko.Particles
         /// </userdoc>
         public void Update(float dt)
         {
+            PreUpdate();
+
             if (timeout > 0f)
             {
                 timeout -= dt;
@@ -289,6 +304,9 @@ namespace SiliconStudio.Xenko.Particles
             hasStarted = false;
         }
 
+        [DataMemberIgnore]
+        public bool IsPaused => isPaused;
+
         /// <summary>
         /// isPaused shows if the simulation progresses by delta time every frame or no
         /// </summary>
@@ -313,6 +331,11 @@ namespace SiliconStudio.Xenko.Particles
         public void Play()
         {
             isPaused = false;
+
+            foreach (var particleEmitter in Emitters)
+            {
+                particleEmitter.CanEmitParticles = true;
+            }
         }
 
         /// <summary>

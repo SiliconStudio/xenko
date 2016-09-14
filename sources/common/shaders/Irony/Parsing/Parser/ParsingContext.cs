@@ -118,8 +118,7 @@ namespace Irony.Parsing {
     public event EventHandler<ParsingEventArgs> TokenCreated;
 
     internal void OnTokenCreated() {
-      if (TokenCreated != null)
-        TokenCreated(this, SharedParsingEventArgs);
+      TokenCreated?.Invoke(this, SharedParsingEventArgs);
     }
     #endregion
 

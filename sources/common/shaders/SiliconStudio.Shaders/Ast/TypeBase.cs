@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// Base type for all types.
     /// </summary>
-    public abstract class TypeBase : Node, IAttributes, ITypeInferencer, IQualifiers
+    public abstract partial class TypeBase : Node, IAttributes, ITypeInferencer, IQualifiers
     {
         #region Constructors and Destructors
 

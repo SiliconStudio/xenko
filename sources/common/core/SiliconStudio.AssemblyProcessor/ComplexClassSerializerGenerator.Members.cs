@@ -201,20 +201,16 @@ namespace SiliconStudio.AssemblyProcessor
 
             var fieldEnum = type.Fields.Where(x => (x.IsPublic || (x.IsAssembly && x.CustomAttributes.Any(a => a.AttributeType.FullName == "SiliconStudio.Core.DataMemberAttribute"))) && !x.IsStatic && !ignoredMembers.Contains(x));
 
-            // If there is a explicit or sequential layout, use offset, otherwise use name
-            // (not sure if Cecil follow declaration order, in which case it could be OK to not sort;
-            // sorting has the advantage of being more resistant to type upgrade, when field is added/remove, as long as field name is saved)
+            // If there is a explicit or sequential layout, sort by offset
             if (type.IsSequentialLayout || type.IsExplicitLayout)
                 fieldEnum = fieldEnum.OrderBy(x => x.Offset);
-            else
-                fieldEnum = fieldEnum.OrderBy(x => x.Name);
 
             foreach (var field in fieldEnum)
             {
                 fields.Add(field);
             }
 
-            foreach (var property in type.Properties.OrderBy(x => x.Name))
+            foreach (var property in type.Properties)
             {
                 // Need a non-static public get method
                 if (property.GetMethod == null || !property.GetMethod.IsPublic || property.GetMethod.IsStatic)

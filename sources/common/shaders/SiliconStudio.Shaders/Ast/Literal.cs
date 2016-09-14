@@ -10,7 +10,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A field of a struct.
     /// </summary>
-    public sealed class Literal : Node
+    public sealed partial class Literal : Node
     {
         private object value;
 
@@ -40,14 +40,6 @@ namespace SiliconStudio.Shaders.Ast
         #region Public Properties
 
         /// <summary>
-        ///   Gets or sets the text.
-        /// </summary>
-        /// <value>
-        ///   The text.
-        /// </value>
-        public string Text { get; set; }
-
-        /// <summary>
         ///   Gets or sets the value.
         /// </summary>
         /// <value>
@@ -66,6 +58,15 @@ namespace SiliconStudio.Shaders.Ast
                 Text = ConvertValueToString(value);
             }
         }
+
+        /// <summary>
+        ///   Gets or sets the text.
+        /// </summary>
+        /// <value>
+        ///   The text.
+        /// </value>
+        public string Text { get; set; }
+
 
         /// <summary>
         /// Gets or sets the sub literals.
@@ -118,6 +119,8 @@ namespace SiliconStudio.Shaders.Ast
                 return ((int)value).ToString(CultureInfo.InvariantCulture);
             if (value is uint)
                 return ((uint)value).ToString(CultureInfo.InvariantCulture);
+            if (value is bool)
+                return (bool)value ? "true" : "false";
 
             return value.ToString();            
         }

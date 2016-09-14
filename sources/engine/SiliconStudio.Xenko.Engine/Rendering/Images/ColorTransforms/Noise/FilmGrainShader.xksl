@@ -8,7 +8,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// Adapted from the shader of Martins Upitis.
     /// http://devlog-martinsh.blogspot.ca/2013/05/image-imperfections-and-film-grain-post.html
     /// </summary>
-    internal class FilmGrainShader : ColorTransformShader, Texturing
+    internal shader FilmGrainShader : ColorTransformShader, Texturing
     {
         // Amount
         float Amount;

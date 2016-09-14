@@ -2,8 +2,10 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Threading;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.Shaders.Compiler;
@@ -12,9 +14,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
 {
     public class SpriteRenderFeature : RootRenderFeature
     {
-        private Sprite3DBatch sprite3DBatch;
-
-        private EffectInstance pickingSpriteEffect;
+        private ThreadLocal<ThreadContext> threadContext;
 
         public override Type SupportedRenderObjectType => typeof(RenderSprite);
 
@@ -22,19 +22,24 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         {
             base.InitializeCore();
 
-            sprite3DBatch = new Sprite3DBatch(RenderSystem.GraphicsDevice);
+            threadContext = new ThreadLocal<ThreadContext>(() => new ThreadContext(Context.GraphicsDevice), true);
         }
 
         protected override void Destroy()
         {
             base.Destroy();
 
-            sprite3DBatch.Dispose();
+            foreach (var context in threadContext.Values)
+            {
+                context.Dispose();
+            }
         }
 
         public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
             base.Draw(context, renderView, renderViewStage, startIndex, endIndex);
+
+            var batchContext = threadContext.Value;
 
             Matrix viewInverse;
             Matrix.Invert(ref renderView.View, out viewInverse);
@@ -72,18 +77,34 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                 // Note! It doesn't really matter in what order we build the bitmask, the result is not preserved anywhere except in this method
                 var currentBatchState = isPicking ? 0U : sprite.IsTransparent ? (spriteComp.PremultipliedAlpha ? 1U : 2U) : 3U;
                 currentBatchState = (currentBatchState << 1) + (renderSprite.SpriteComponent.IgnoreDepth ? 1U : 0U);
+                currentBatchState = (currentBatchState << 2) + ((uint)renderSprite.SpriteComponent.Sampler);
 
                 if (previousBatchState != currentBatchState)
                 {
                     var blendState = isPicking ? BlendStates.Default : sprite.IsTransparent ? (spriteComp.PremultipliedAlpha ? BlendStates.AlphaBlend : BlendStates.NonPremultiplied) : BlendStates.Opaque;
-                    var currentEffect = isPicking ? GetOrCreatePickingSpriteEffect() : null; // TODO remove this code when material are available
+                    var currentEffect = isPicking ? batchContext.GetOrCreatePickingSpriteEffect(RenderSystem.EffectSystem) : null; // TODO remove this code when material are available
                     var depthStencilState = renderSprite.SpriteComponent.IgnoreDepth ? DepthStencilStates.None : DepthStencilStates.Default;
+
+                    var samplerState = context.GraphicsDevice.SamplerStates.LinearClamp;
+                    if (renderSprite.SpriteComponent.Sampler != SpriteComponent.SpriteSampler.LinearClamp)
+                    {
+                        switch (renderSprite.SpriteComponent.Sampler)
+                        {
+                            case SpriteComponent.SpriteSampler.PointClamp:
+                                samplerState = context.GraphicsDevice.SamplerStates.PointClamp;
+                                break;
+                            case SpriteComponent.SpriteSampler.AnisotropicClamp:
+                                samplerState = context.GraphicsDevice.SamplerStates.AnisotropicClamp;
+                                break;
+                        }
+                    }
 
                     if (hasBegin)
                     {
-                        sprite3DBatch.End();
+                        batchContext.SpriteBatch.End();
                     }
-                    sprite3DBatch.Begin(context.GraphicsContext, renderView.ViewProjection, SpriteSortMode.Deferred, blendState, null, depthStencilState, RasterizerStates.CullNone, currentEffect);
+
+                    batchContext.SpriteBatch.Begin(context.GraphicsContext, renderView.ViewProjection, SpriteSortMode.Deferred, blendState, samplerState, depthStencilState, RasterizerStates.CullNone, currentEffect);
                     hasBegin = true;
                 }
                 previousBatchState = currentBatchState;
@@ -134,15 +155,35 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                 worldMatrix.M43 -= centerOffset.X * worldMatrix.M13 + centerOffset.Y * worldMatrix.M23;
 
                 // draw the sprite
-                sprite3DBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref sprite.SizeInternal, ref color, sprite.Orientation, SwizzleMode.None, projectedZ);
+                batchContext.SpriteBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref sprite.SizeInternal, ref color, sprite.Orientation, SwizzleMode.None, projectedZ);
             }
 
-            if(hasBegin) sprite3DBatch.End();
+            if (hasBegin)
+            {
+                batchContext.SpriteBatch.End();
+            }
         }
 
-        private EffectInstance GetOrCreatePickingSpriteEffect()
+        private class ThreadContext : IDisposable
         {
-            return pickingSpriteEffect ?? (pickingSpriteEffect = new EffectInstance(RenderSystem.EffectSystem.LoadEffect("SpritePicking").WaitForResult()));
+            private EffectInstance pickingEffect;
+
+            public Sprite3DBatch SpriteBatch { get; }
+
+            public ThreadContext(GraphicsDevice device)
+            {
+                SpriteBatch = new Sprite3DBatch(device);
+            }
+
+            public EffectInstance GetOrCreatePickingSpriteEffect(EffectSystem effectSystem)
+            {
+                return pickingEffect ?? (pickingEffect = new EffectInstance(effectSystem.LoadEffect("SpritePicking").WaitForResult()));
+            }
+
+            public void Dispose()
+            {
+                SpriteBatch.Dispose();
+            }
         }
     }
 }

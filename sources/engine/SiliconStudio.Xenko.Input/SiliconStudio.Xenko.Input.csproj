@@ -25,24 +25,7 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Choose>
-    <When Condition="$(SiliconStudioUI.Contains('SDL')) AND ('$(SiliconStudioPlatform)' != 'Linux')">
-      <ItemGroup>
-        <Reference Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoDependenciesDir)\SDL2-CS\SDL2-CS.dll</HintPath>
-        </Reference>
-      </ItemGroup>
-    </When>
-    <When Condition="$(SiliconStudioUI.Contains('SDL')) AND ('$(SiliconStudioPlatform)' == 'Linux')">
-      <ItemGroup>
-        <Reference Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoDependenciesDir)\SDL2-CS\Linux\SDL2-CS.dll</HintPath>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
+  <Import Condition="$(SiliconStudioUI.Contains('SDL'))" Project="..\..\common\targets\SDL.targets"/> 
   <Choose>
     <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
       <ItemGroup>
@@ -170,6 +153,9 @@
       <Project>{1dbbc150-f085-43ef-b41d-27c72d133770}</Project>
       <Name>SiliconStudio.Xenko.Native</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="SharpDX, Version=3.0.2.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

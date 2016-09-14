@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
     [DataContract("EffectCompositorAsset")]
     [AssetDescription(FileExtension, AlwaysMarkAsRoot = true, AllowArchetype = false)]
     [Display(95, "Effect Compositor")]
-    public sealed class EffectCompositorAsset : ProjectCodeGeneratorAsset
+    public sealed class EffectCompositorAsset : ProjectSourceCodeWithFileGeneratorAsset
     {
         /// <summary>
         /// The default file extension used by the <see cref="EffectCompositorAsset"/>.
@@ -19,5 +19,10 @@ namespace SiliconStudio.Xenko.Assets.Effect
         public const string FileExtension = ".xkfx;.pdxfx";
 
         public override string Generator { get; set; } = "XenkoShaderKeyGenerator";
+
+        public override void SaveGeneratedAsset()
+        {
+            // TODO: Implement this?
+        }
     }
 }

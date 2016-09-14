@@ -33,8 +33,6 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
         private int currentMaterialIndex;
 
-        private bool isWireframe;
-
         private RasterizerStateDescription wireframeState;
 
         private SpriteBatch spriteBatch;

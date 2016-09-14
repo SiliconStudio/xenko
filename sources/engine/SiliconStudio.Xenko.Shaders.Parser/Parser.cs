@@ -6,10 +6,10 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-using SiliconStudio.Xenko.Shaders.Parser.Ast;
-using SiliconStudio.Xenko.Shaders.Parser.Grammar;
+using SiliconStudio.Shaders.Ast.Xenko;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
+using SiliconStudio.Shaders.Grammar.Xenko;
 using SiliconStudio.Shaders.Parser;
 using SiliconStudio.Shaders.Visitor;
 
@@ -57,6 +57,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
             return PrepareShader(ShaderParser.GetParser<XenkoGrammar>().PreProcessAndParse(source, sourceFileName, macros, includeDirectories));
         }
 
+#if !SILICONSTUDIO_PLATFORM_WINDOWS_PHONE && !SILICONSTUDIO_PLATFORM_WINDOWS_STORE
         /// <summary>
         /// Preprocesses and parses the specified source.
         /// </summary>
@@ -81,6 +82,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
         {
             return PreProcessAndParse(File.ReadAllText(sourceFileName), sourceFileName, macros, includeDirectories);
         }
+#endif
 
         /// <summary>
         /// Parses the specified source code.

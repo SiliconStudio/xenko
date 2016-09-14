@@ -159,28 +159,24 @@ namespace SiliconStudio.Xenko.Particles.Tests
             // Sort by depth
             uint[] sortedDepth = { 4, 1, 3, 2 }; // List of expected values
             {
-                GetSortIndex<Vector3> sortByDepth = value => value.Z;
-
-                var depthSorter = new ParticleSorterCustom<Vector3>(pool, ParticleFields.Position, sortByDepth);
-                depthSorter.Sort();
+                var depthSorter = new ParticleSorterDepth(pool);
+                var sortedList = depthSorter.GetSortedList(new Vector3(0, 0, 1));
 
                 var i = 0;
-                foreach (var particle in depthSorter)
+                foreach (var particle in sortedList)
                 {
                     Assert.That(particle.Get(customField), Is.EqualTo(sortedDepth[i++]));
                 }
             }
 
             // Sort by age
-            uint[] sortedAge = { 3, 1, 4, 2 }; // List of expected values
+            uint[] sortedAge = { 2, 4, 1, 3 }; // List of expected values
             {
-                GetSortIndex<float> sortByAge = value => { return value; };
-
-                var ageSorter = new ParticleSorterCustom<float>(pool, ParticleFields.Life, sortByAge);
-                ageSorter.Sort();
+                var ageSorter = new ParticleSorterAge(pool);
+                var sortedList = ageSorter.GetSortedList(new Vector3(0, 0, 1));
 
                 var i = 0;
-                foreach (var particle in ageSorter)
+                foreach (var particle in sortedList)
                 {
                     Assert.That(particle.Get(customField), Is.EqualTo(sortedAge[i++]));
                 }

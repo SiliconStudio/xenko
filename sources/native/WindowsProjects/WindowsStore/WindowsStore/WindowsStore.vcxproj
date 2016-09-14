@@ -229,7 +229,7 @@
     <ClCompile Include="dllmain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Object Include="$(XenkoNativeProjectFolder)\obj\*.obj" />
+    <Object Include="$(XenkoNativeProjectObjFolder)\*.obj" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

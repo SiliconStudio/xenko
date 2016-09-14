@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading;
 using SiliconStudio.Core;
+using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Native;
 
@@ -24,8 +26,8 @@ namespace SiliconStudio.Xenko.Audio
         /// <summary>
         /// Create the audio engine to the sound base instance.
         /// </summary>
-        /// <param name="engine">A valid AudioEngine</param>
-        /// <exception cref="ArgumentNullException">The engine argument is null</exception>
+        /// <param name="engine">A valid AudioEngine.</param>
+        /// <exception cref="ArgumentNullException">The engine argument is null.</exception>
         internal void AttachEngine(AudioEngine engine)
         {
             if (engine == null)
@@ -81,7 +83,7 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         /// <returns>A new sound instance</returns>
         /// <exception cref="ObjectDisposedException">The sound has already been disposed</exception>
-        public SoundInstance CreateInstance(AudioListener listener = null)
+        public SoundInstance CreateInstance(AudioListener listener = null, bool forceLoadInMemory = false)
         {
             if (listener == null)
             {
@@ -90,7 +92,7 @@ namespace SiliconStudio.Xenko.Audio
 
             CheckNotDisposed();
 
-            var newInstance = new SoundInstance(this, listener) { Name = Name + " - Instance " + intancesCreationCount };
+            var newInstance = new SoundInstance(this, listener, forceLoadInMemory) { Name = Name + " - Instance " + intancesCreationCount };
 
             RegisterInstance(newInstance);
 
@@ -98,6 +100,11 @@ namespace SiliconStudio.Xenko.Audio
 
             return newInstance;
         }
+
+        /// <summary>
+        /// Gets the total length in time of the Sound.
+        /// </summary>
+        public TimeSpan TotalLength => TimeSpan.FromSeconds(((double)NumberOfPackets * (double)CompressedSoundSource.SamplesPerFrame) / (double)SampleRate);
 
         internal void Attach(AudioEngine engine)
         {
@@ -156,14 +163,47 @@ namespace SiliconStudio.Xenko.Audio
             Instances.Add(instance);
         }
 
+        /// <summary>
+        /// Destroys the instance.
+        /// </summary>
         protected override void Destroy()
         {
-            if (AudioEngine.State == AudioEngineState.Invalidated)
+            if (AudioEngine == null || AudioEngine.State == AudioEngineState.Invalidated)
                 return;
 
             if (!StreamFromDisk)
             {
                 AudioLayer.BufferDestroy(PreloadedBuffer);
+            }
+        }
+
+        internal void LoadSoundInMemory()
+        {
+            if (PreloadedBuffer.Ptr != IntPtr.Zero) return;
+
+            using (var soundStream = ContentManager.FileProvider.OpenStream(CompressedDataUrl, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read, StreamFlags.Seekable))
+            using (var decoder = new Celt(SampleRate, CompressedSoundSource.SamplesPerFrame, Channels, true))
+            {
+                var reader = new BinarySerializationReader(soundStream);
+                var samplesPerPacket = CompressedSoundSource.SamplesPerFrame * Channels;
+
+                PreloadedBuffer = AudioLayer.BufferCreate(samplesPerPacket * NumberOfPackets * sizeof(short));
+
+                var memory = new UnmanagedArray<short>(samplesPerPacket * NumberOfPackets);
+
+                var offset = 0;
+                var outputBuffer = new short[samplesPerPacket];
+                for (var i = 0; i < NumberOfPackets; i++)
+                {
+                    var len = reader.ReadInt16();
+                    var compressedBuffer = reader.ReadBytes(len);
+                    var samplesDecoded = decoder.Decode(compressedBuffer, len, outputBuffer);
+                    memory.Write(outputBuffer, offset, 0, samplesDecoded * Channels);
+                    offset += samplesDecoded * Channels * sizeof(short);
+                }
+
+                AudioLayer.BufferFill(PreloadedBuffer, memory.Pointer, memory.Length * sizeof(short), SampleRate, Channels == 1);
+                memory.Dispose();
             }
         }
     }

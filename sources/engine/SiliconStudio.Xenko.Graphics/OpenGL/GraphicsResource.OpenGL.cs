@@ -19,6 +19,8 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     public partial class GraphicsResource
     {
+        internal bool DiscardNextMap; // Used to internally force a WriteDiscard (to force a rename) with the GraphicsResourceAllocator
+
         // Shaader resource view (Texture or Texture Buffer)
         internal int TextureId;
         internal TextureTarget TextureTarget;

@@ -67,7 +67,8 @@ namespace {1}
             switch (graphicsPlatform)
             {
                 case GraphicsPlatform.Direct3D11:
-                    xenkoDefine = "SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11";
+                case GraphicsPlatform.Direct3D12:
+                    xenkoDefine = "SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D";
                     break;
                 case GraphicsPlatform.OpenGL:
                     xenkoDefine = "SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE";

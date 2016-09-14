@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// <summary>
     /// Performs a Lambert shading
     /// </summary>
-    class MaterialSurfaceShadingSpecularBlinnPhong : IMaterialSurfaceShading, NormalStream
+    shader MaterialSurfaceShadingSpecularBlinnPhong : IMaterialSurfaceShading, NormalStream
     {
         override float3 ComputeDirectLightContribution()
         {

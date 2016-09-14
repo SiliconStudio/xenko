@@ -8,7 +8,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A method invocation.
     /// </summary>
-    public class MethodInvocationExpression : Expression
+    public partial class MethodInvocationExpression : Expression
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MethodInvocationExpression"/> class.

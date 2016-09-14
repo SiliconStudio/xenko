@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering.Composers;
 
@@ -17,17 +18,17 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// The part of the view specific to a given <see cref="RootRenderFeature"/>.
         /// </summary>
-        public List<RenderViewFeature> Features = new List<RenderViewFeature>();
+        public readonly List<RenderViewFeature> Features = new List<RenderViewFeature>();
 
         /// <summary>
         /// List of data sepcific to each <see cref="RenderStage"/> for this <see cref="RenderView"/>.
         /// </summary>
-        public List<RenderViewStage> RenderStages = new List<RenderViewStage>();
+        public readonly List<RenderViewStage> RenderStages = new List<RenderViewStage>();
 
         /// <summary>
         /// List of visible render objects.
         /// </summary>
-        public List<RenderObject> RenderObjects = new List<RenderObject>();
+        public readonly ConcurrentCollector<RenderObject> RenderObjects = new ConcurrentCollector<RenderObject>();
 
         /// <summary>
         /// Index in <see cref="RenderSystem.Views"/>.

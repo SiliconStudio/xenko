@@ -1,13 +1,13 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Shaders.Ast.Xenko;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Visitor;
 
 namespace SiliconStudio.Xenko.Shaders.Parser
 {
-    internal class XenkoShaderCleaner : ShaderVisitor
+    internal class XenkoShaderCleaner : ShaderRewriter
     {
         public XenkoShaderCleaner() : base(false, false)
         {
@@ -29,27 +29,23 @@ namespace SiliconStudio.Xenko.Shaders.Parser
             Run(shader);
         }
 
-        [Visit]
-        public void Visit(Variable variable)
+        public override Node DefaultVisit(Node node)
         {
-            variable.RemoveTag(XenkoTags.ConstantBuffer);
-            variable.Qualifiers.Values.Remove(XenkoStorageQualifier.Stream);
-            variable.Qualifiers.Values.Remove(XenkoStorageQualifier.Stage);
-            variable.Qualifiers.Values.Remove(XenkoStorageQualifier.PatchStream);
-            Visit((Node)variable);
-        }
+            var qualifierNode = node as IQualifiers;
+            if (qualifierNode != null)
+            {
+                qualifierNode.Qualifiers.Values.Remove(XenkoStorageQualifier.Stream);
+                qualifierNode.Qualifiers.Values.Remove(XenkoStorageQualifier.Stage);
+                qualifierNode.Qualifiers.Values.Remove(XenkoStorageQualifier.PatchStream);
+                qualifierNode.Qualifiers.Values.Remove(XenkoStorageQualifier.Override);
+                qualifierNode.Qualifiers.Values.Remove(XenkoStorageQualifier.Clone);
+                qualifierNode.Qualifiers.Values.Remove(XenkoStorageQualifier.Stage);
+            }
 
-        [Visit]
-        public void Visit(MethodDeclaration methodDeclaration)
-        {
-            methodDeclaration.Qualifiers.Values.Remove(XenkoStorageQualifier.Override);
-            methodDeclaration.Qualifiers.Values.Remove(XenkoStorageQualifier.Clone);
-            methodDeclaration.Qualifiers.Values.Remove(XenkoStorageQualifier.Stage);
-            Visit((Node)methodDeclaration);
+            return base.DefaultVisit(node);
         }
-
-        [Visit]
-        public AttributeDeclaration Visit(AttributeDeclaration attribute)
+        
+        public override Node Visit(AttributeDeclaration attribute)
         {
             if (XenkoAttributes.AvailableAttributes.Contains(attribute.Name))
                 return null;

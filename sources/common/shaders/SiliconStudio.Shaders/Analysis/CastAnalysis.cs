@@ -12,11 +12,10 @@ namespace SiliconStudio.Shaders.Analysis
         {
         }
 
-        [Visit]
-        protected Expression Visit(UnaryExpression expression)
+        public override Node Visit(UnaryExpression expression)
         {
             // First, dispatch to resolve type of node at deeper level
-            Visit((Node)expression);
+            base.Visit(expression);
 
             var unaryType = expression.TypeInference.TargetType;
             var inputType = expression.Expression.TypeInference.TargetType;
@@ -28,11 +27,10 @@ namespace SiliconStudio.Shaders.Analysis
             return expression;
         }
 
-        [Visit]
-        protected Expression Visit(BinaryExpression expression)
+        public override Node Visit(BinaryExpression expression)
         {
             // First, dispatch to resolve type of node at deeper level
-            Visit((Node)expression);
+            base.Visit(expression);
 
             var leftType = expression.Left.TypeInference.TargetType;
             var rightType = expression.Right.TypeInference.TargetType;
@@ -97,24 +95,24 @@ namespace SiliconStudio.Shaders.Analysis
         }
 
 
-        [Visit]
-        protected virtual void Visit(IfStatement ifStatement)
+        public override Node Visit(IfStatement ifStatement)
         {
             // First, dispatch to resolve type of node at deeper level
-            Visit((Node)ifStatement);
+            base.Visit(ifStatement);
 
             var conditionType = ifStatement.Condition.TypeInference.TargetType;
             if (!(ifStatement.Condition is BinaryExpression || ifStatement.Condition is UnaryExpression))
             {
                 ifStatement.Condition = ConvertExpressionToBool(ifStatement.Condition, conditionType);
             }
+
+            return ifStatement;
         }
 
-        [Visit]
-        protected void Visit(ConditionalExpression conditionalExpression)
+        public override Node Visit(ConditionalExpression conditionalExpression)
         {
             // First, dispatch to resolve type of node at deeper level
-            Visit((Node)conditionalExpression);
+            base.Visit(conditionalExpression);
 
             var leftType = conditionalExpression.Left.TypeInference.TargetType;
             var rightType = conditionalExpression.Right.TypeInference.TargetType;
@@ -127,6 +125,8 @@ namespace SiliconStudio.Shaders.Analysis
             {
                 conditionalExpression.Right = Cast(rightType, leftType, conditionalExpression.Right);
             }
+
+            return conditionalExpression;
         }
 
 
@@ -146,11 +146,10 @@ namespace SiliconStudio.Shaders.Analysis
             return expression;
         }
 
-        [Visit]
-        protected void Visit(ReturnStatement returnStatement)
+        public override Node Visit(ReturnStatement returnStatement)
         {
             // First, dispatch to resolve type of node at deeper level
-            Visit((Node)returnStatement);
+            base.Visit(returnStatement);
 
             if (returnStatement.Value != null)
             {
@@ -158,13 +157,14 @@ namespace SiliconStudio.Shaders.Analysis
                 if (expressionType != null)
                     returnStatement.Value = Cast(expressionType, returnStatement.Value.TypeInference.ExpectedType ?? expressionType, returnStatement.Value);
             }
+
+            return returnStatement;
         }
 
-        [Visit]
-        protected void Visit(Variable variable)
+        public override Node Visit(Variable variable)
         {
             // First, dispatch to resolve type of node at deeper level
-            Visit((Node)variable);
+            base.Visit(variable);
 
             if (variable.InitialValue != null)
             {
@@ -174,24 +174,26 @@ namespace SiliconStudio.Shaders.Analysis
                     variable.InitialValue = Cast(expressionType, variable.Type.ResolveType(), variable.InitialValue);
                 }
             }
+
+            return variable;
         }
 
-        [Visit]
-        protected void Visit(AssignmentExpression expression)
+        public override Node Visit(AssignmentExpression expression)
         {
             // First, dispatch to resolve type of node at deeper level
-            Visit((Node)expression);
+            base.Visit(expression);
 
             var expressionType = expression.Target.TypeInference.TargetType;
             var targetType = expression.Target.TypeInference.ExpectedType ?? expressionType;
             expression.Value = Cast(expression.Value.TypeInference.TargetType, targetType, expression.Value);
+
+            return expression;
         }
 
-        [Visit]
-        protected void Visit(IndexerExpression expression)
+        public override Node Visit(IndexerExpression expression)
         {
             // First, dispatch to resolve type of node at deeper level
-            Visit((Node)expression);
+            base.Visit(expression);
             
             var indexerType = expression.Index.TypeInference.TargetType;
             if (indexerType != null)
@@ -200,13 +202,14 @@ namespace SiliconStudio.Shaders.Analysis
                 if (baseType == ScalarType.Float || baseType == ScalarType.Double)
                     expression.Index = Cast(indexerType, ScalarType.Int, expression.Index);
             }
+
+            return expression;
         }
 
-        [Visit]
-        protected void Visit(MethodInvocationExpression expression)
+        public override Node Visit(MethodInvocationExpression expression)
         {
             // First, dispatch to resolve type of node at deeper level
-            Visit((Node)expression);
+            base.Visit(expression);
 
             // Add appropriate cast for all arguments
             for (int i = 0; i < expression.Arguments.Count; ++i)
@@ -216,6 +219,8 @@ namespace SiliconStudio.Shaders.Analysis
                 if (targetType != null && !(targetType is ObjectType))
                     expression.Arguments[i] = Cast(targetType, argument.TypeInference.ExpectedType ?? targetType, argument);
             }
+
+            return expression;
         }
 
         /// <inheritdoc/>

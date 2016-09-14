@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <summary>
     /// A reduction shader
     /// </summary>
-    class DepthMinMaxShader<bool TFirstPass> : ImageEffectShader
+    shader DepthMinMaxShader<bool TFirstPass> : ImageEffectShader
     {
         Texture2D<float> TextureMap;
         Texture2D<float2> TextureReduction;

@@ -519,6 +519,44 @@ namespace SiliconStudio.Xenko.Input
         }
 
         /// <summary>
+        /// Sets the vibration state of the gamepad
+        /// </summary>
+        /// <param name="gamepadIndex">Index of the gamepad. -1 to use the first connected gamepad</param>
+        /// <param name="leftMotor">A value from 0.0 to 1.0 where 0.0 is no vibration and 1.0 is full vibration power; applies to the left motor.</param>
+        /// <param name="rightMotor">A value from 0.0 to 1.0 where 0.0 is no vibration and 1.0 is full vibration power; applies to the right motor.</param>
+        public void SetGamePadVibration(int gamepadIndex, float leftMotor, float rightMotor)
+        {
+            // If the game pad index is negative or larger, take the first connected gamepad
+            if (gamepadIndex < 0)
+            {
+                gamepadIndex = 0;
+                for (int i = 0; i < gamePadStates.Length; i++)
+                {
+                    if (gamePadStates[i].IsConnected)
+                    {
+                        gamepadIndex = i;
+                        break;
+                    }
+                }
+            }
+            else if (gamepadIndex >= gamePadStates.Length)
+            {
+                for (gamepadIndex = gamePadStates.Length - 1; gamepadIndex >= 0; gamepadIndex--)
+                {
+                    if (gamePadStates[gamepadIndex].IsConnected)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            if (gamePadStates[gamepadIndex].IsConnected)
+            {
+                gamePads[gamepadIndex].SetVibration(leftMotor, rightMotor);
+            }
+        }
+
+        /// <summary>
         /// Determines whether the specified game pad button is being pressed down.
         /// </summary>
         /// <param name="gamepadIndex">A valid game pad index</param>
@@ -1131,6 +1169,11 @@ namespace SiliconStudio.Xenko.Input
             }
 
             public abstract GamePadState GetState();
+
+            public virtual void SetVibration(float leftMotor, float rightMotor)
+            {
+                
+            }
         }
 
         /// <summary>

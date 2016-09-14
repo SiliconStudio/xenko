@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     /// <summary>
     /// A shader performing Lambertian pre-filtering.
     /// </summary>
-    internal class SphericalHarmonicsBase<int TOrder> : Math
+    internal shader SphericalHarmonicsBase<int TOrder> : Math
     {    
         static const int CoefficientsCount = TOrder * TOrder;
 

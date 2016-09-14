@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
     /// <summary>
     /// Sample a cubemap using the MaterialPixelShadingStream roughness parameter.
     /// </summary>
-    class RoughnessCubeMapEnvironmentColor : IComputeEnvironmentColor, Texturing, MaterialPixelShadingStream
+    shader RoughnessCubeMapEnvironmentColor : IComputeEnvironmentColor, Texturing, MaterialPixelShadingStream
     {
         cbuffer PerView.Lighting
         {

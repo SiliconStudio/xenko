@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     /// <summary>
     /// Declaration of a constant buffer.
     /// </summary>
-    public class ConstantBuffer : Node, IAttributes
+    public partial class ConstantBuffer : Node, IAttributes
     {
         #region Constructors and Destructors
 

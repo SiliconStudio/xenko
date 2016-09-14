@@ -143,7 +143,7 @@ namespace SiliconStudio.Xenko.Physics
 
                 if (KinematicCharacter != null)
                 {
-                    KinematicCharacter.Gravity = -value;
+                    KinematicCharacter.Gravity = new Vector3(0.0f, value, 0.0f);
                 }
             }
         }
@@ -172,13 +172,21 @@ namespace SiliconStudio.Xenko.Physics
         }
 
         /// <summary>
-        /// Moves the specified movement.
+        /// Moves the character towards the specified movement vector.
+        /// Motion will stay in place unless modified or canceled passing Vector3.Zero
         /// </summary>
-        /// <param name="movement">The movement.</param>
+        /// <param name="movement">The absolute movement vector, typically direction * delta time `var dt = this.GetSimulation().FixedTimeStep;` * speed.</param>
         public void Move(Vector3 movement)
         {
             KinematicCharacter?.SetWalkDirection(movement);
         }
+
+        /// <summary>
+        /// Sets or gets the orientation of the Entity attached to this character controller
+        /// </summary>
+        /// <remarks>This orientation has no impact in the physics simulation</remarks>
+        [DataMemberIgnore]
+        public Quaternion Orientation { get; set; }
 
         [DataMemberIgnore]
         internal BulletSharp.KinematicCharacterController KinematicCharacter;
@@ -200,7 +208,7 @@ namespace SiliconStudio.Xenko.Physics
 
             NativeCollisionObject.ContactProcessingThreshold = !Simulation.CanCcd ? 1e18f : 1e30f;
 
-            KinematicCharacter = new BulletSharp.KinematicCharacterController((BulletSharp.PairCachingGhostObject)NativeCollisionObject, (BulletSharp.ConvexShape)ColliderShape.InternalShape, StepHeight);
+            KinematicCharacter = new BulletSharp.KinematicCharacterController((BulletSharp.PairCachingGhostObject)NativeCollisionObject, (BulletSharp.ConvexShape)ColliderShape.InternalShape, StepHeight, Vector3.UnitY);
 
             base.OnAttach();
 

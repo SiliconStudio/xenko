@@ -89,6 +89,9 @@ namespace SiliconStudio.Xenko.Rendering
 
             parameterUpdater.Update(commandList.GraphicsDevice, graphicsContext.ResourceGroupAllocator, Parameters);
 
+            // Flush resource groups and cbuffer
+            graphicsContext.ResourceGroupAllocator.Flush();
+
             var resourceGroups = parameterUpdater.ResourceGroups;
 
             // Update cbuffer

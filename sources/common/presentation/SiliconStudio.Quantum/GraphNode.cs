@@ -109,7 +109,7 @@ namespace SiliconStudio.Quantum
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"{Name}: [{Content.Value}]";
+            return $"{{Node: {Name} = [{Content.Value}]}}";
         }
     }
 }

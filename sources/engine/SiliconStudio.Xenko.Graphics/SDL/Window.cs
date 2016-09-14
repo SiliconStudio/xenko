@@ -28,7 +28,12 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             int res = SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_CONTEXT_PROFILE_MASK, (int)SDL.SDL_GLprofile.SDL_GL_CONTEXT_PROFILE_CORE);
             // 4.2 is the lowest version we support.
             res = SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+#if SILICONSTUDIO_PLATFORM_MACOS
+            res = SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_CONTEXT_MINOR_VERSION, 1);
+#else
             res = SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_CONTEXT_MINOR_VERSION, 2);
+#endif
+
 #endif
         }
 
@@ -65,6 +70,8 @@ namespace SiliconStudio.Xenko.Graphics.SDL
 #elif SILICONSTUDIO_PLATFORM_LINUX
                     Handle = info.info.x11.window;
                     Display = info.info.x11.display;
+#elif SILICONSTUDIO_PLATFORM_MACOS
+                    Handle = info.info.cocoa.window;
 #endif
                 }
                 Application.RegisterWindow(this);

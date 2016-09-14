@@ -17,8 +17,8 @@ namespace SiliconStudio.Presentation.ValueConverters
             if (value == null)
                 return parameter == null;
 
-            bool useEquals = value.GetType().IsValueType || value is string;
-            bool result = useEquals ? Equals(value, parameter) : ReferenceEquals(value, parameter);
+            var useEquals = value.GetType().IsValueType || value is string;
+            var result = useEquals ? Equals(value, parameter) : ReferenceEquals(value, parameter);
             return result;
         }
     }

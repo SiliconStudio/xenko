@@ -76,6 +76,11 @@ namespace SiliconStudio.Xenko.UI.Controls
 
         private void InitializeImpl()
         {
+            // nothing to do here
+        }
+
+        private void EnsureGameContext()
+        {
             if (gameContext == null)
             {
                 var game = GetGame();
@@ -167,6 +172,8 @@ namespace SiliconStudio.Xenko.UI.Controls
 
         private void ActivateEditTextImpl()
         {
+            EnsureGameContext();
+
             currentActiveEditText = this;
             attachedTextField = textField;
 

@@ -9,7 +9,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// An identifier.
     /// </summary>
-    public class Identifier : Node
+    public partial class Identifier : Node
     {
         #region Constructors and Destructors
 

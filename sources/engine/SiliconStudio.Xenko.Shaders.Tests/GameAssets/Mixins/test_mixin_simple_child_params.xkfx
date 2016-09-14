@@ -8,7 +8,7 @@ namespace Test4
         bool UseComputeColorEffect;
     };
 
-    partial shader ChildParamsMixin
+    partial effect ChildParamsMixin
     {
         using params TestParameters;
 
@@ -17,7 +17,7 @@ namespace Test4
             mixin C1;
     };
 
-    shader DefaultSimpleChildParams
+    effect DefaultSimpleChildParams
     {
         using params TestParameters;
 

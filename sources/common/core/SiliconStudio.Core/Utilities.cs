@@ -51,7 +51,7 @@ namespace SiliconStudio.Core
         private const string MemcpyDll = "msvcrt.dll";
 #elif SILICONSTUDIO_PLATFORM_ANDROID
         private const string MemcpyDll = "libc.so";
-#elif SILICONSTUDIO_PLATFORM_LINUX
+#elif SILICONSTUDIO_PLATFORM_UNIX
         // We do not specifiy the .so extension as libc.so on Linux
         // is actually not a .so files but a script. Using just libc
         // will automatically find the corresponding .so.
@@ -733,7 +733,7 @@ namespace SiliconStudio.Core
         /// <param name="sleepTime">The duration to sleep.</param>
         public static void Sleep(TimeSpan sleepTime)
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_IOS || SILICONSTUDIO_PLATFORM_ANDROID
+#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
             Thread.Sleep(sleepTime);
 #else
             TaskEx.Delay(sleepTime).Wait();
@@ -787,6 +787,26 @@ namespace SiliconStudio.Core
         internal static int UnsafeSizeOf<T>()
         {
             return Interop.SizeOf<T>();
+        }
+
+        /// <summary>
+        /// Linq assisted full tree iteration and collection in a single line.
+        /// Warning, could be slow.
+        /// </summary>
+        /// <typeparam name="T">The type to iterate.</typeparam>
+        /// <param name="root">The root item</param>
+        /// <param name="childrenF">The function to retreive childs</param>
+        /// <returns></returns>
+        public static IEnumerable<T> IterateTree<T>(T root, Func<T, IEnumerable<T>> childrenF)
+        {
+            var q = new List<T> { root };
+            while (q.Any())
+            {
+                var c = q[0];
+                q.RemoveAt(0);
+                q.AddRange(childrenF(c) ?? Enumerable.Empty<T>());
+                yield return c;
+            }
         }
     }
 }

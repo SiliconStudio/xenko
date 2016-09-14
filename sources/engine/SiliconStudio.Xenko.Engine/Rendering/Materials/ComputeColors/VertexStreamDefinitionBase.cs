@@ -10,6 +10,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
     [DataContract(Inherited = true)]
     public abstract class VertexStreamDefinitionBase :  IVertexStreamDefinition
     {
+        public abstract int GetSemanticNameHash();
+
         public abstract string GetSemanticName();
     }
 }

@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
     /// </summary>
     [DataContract("UVBuilderFlipbook")]
     [Display("Flipbook")]
-    public class UVBuilderFlipbook : UVBuilder, IAttributeTransformer<Vector2>
+    public class UVBuilderFlipbook : UVBuilder, IAttributeTransformer<Vector2, Vector4>
     {
         private uint xDivisions = 4;
         private uint yDivisions = 4;
@@ -99,20 +99,20 @@ namespace SiliconStudio.Xenko.Particles.Materials
         }
 
         /// <inheritdoc />
-        public override unsafe void BuildUVCoordinates(ParticleVertexBuilder vertexBuilder, ParticleSorter sorter, AttributeDescription texCoordsDescription)
+        public override unsafe void BuildUVCoordinates(ref ParticleBufferState bufferState, ref ParticleList sorter, AttributeDescription texCoordsDescription)
         {
             var lifeField = sorter.GetField(ParticleFields.RemainingLife);
 
             if (!lifeField.IsValid())
                 return;
 
-            var texAttribute = vertexBuilder.GetAccessor(texCoordsDescription);
+            var texAttribute = bufferState.GetAccessor(texCoordsDescription);
             if (texAttribute.Size == 0 && texAttribute.Offset == 0)
             {
                 return;
             }
 
-            var texDefault = vertexBuilder.GetAccessor(vertexBuilder.DefaultTexCoords);
+            var texDefault = bufferState.GetAccessor(bufferState.DefaultTexCoords);
             if (texDefault.Size == 0 && texDefault.Offset == 0)
             {
                 return;
@@ -125,21 +125,18 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
                 var spriteId = startingFrame + (int)(normalizedTimeline*animationSpeedOverLife);
 
-                uvTransform = new Vector4((spriteId%xDivisions)*xStep, (spriteId/xDivisions)*yStep, xStep, yStep);
+                Vector4 uvTransform = new Vector4((spriteId%xDivisions)*xStep, (spriteId/xDivisions)*yStep, xStep, yStep);
 
-                vertexBuilder.TransformAttributePerParticle(texDefault, texAttribute, this);
+                bufferState.TransformAttributePerParticle(texDefault, texAttribute, this, ref uvTransform);
 
-                vertexBuilder.NextParticle();
+                bufferState.NextParticle();
             }
 
 
-            vertexBuilder.RestartBuffer();
+            bufferState.StartOver();
         }
 
-
-        private Vector4 uvTransform = new Vector4(0, 0, 1, 1);
-
-        public void Transform(ref Vector2 attribute) 
+        public void Transform(ref Vector2 attribute, ref Vector4 uvTransform) 
         {
             attribute.X = uvTransform.X + uvTransform.Z * attribute.X;
             attribute.Y = uvTransform.Y + uvTransform.W * attribute.Y;

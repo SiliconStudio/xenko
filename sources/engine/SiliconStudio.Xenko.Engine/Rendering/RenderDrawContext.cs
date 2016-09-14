@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Graphics;
 
@@ -56,10 +55,10 @@ namespace SiliconStudio.Xenko.Rendering
         /// <returns></returns>
         /// This is necessary only during Collect(), Extract() and Prepare() phases, not during Draw().
         /// Some graphics API might not require actual locking, in which case this object might do nothing.
-        public CommandListLock LockCommandList()
+        public DefaultCommandListLock LockCommandList()
         {
             // TODO: Temporary, for now we use the CommandList itself as a lock
-            return new CommandListLock(CommandList);
+            return new DefaultCommandListLock(CommandList);
         }
 
         /// <summary>
@@ -156,29 +155,6 @@ namespace SiliconStudio.Xenko.Rendering
                 commandList.SetRenderTargetsAndViewport(DepthStencilBuffer, RenderTargetCount > 0 ? RenderTargets : null);
                 if (RenderTargetCount > 0)
                     commandList.SetViewports(Viewports);
-            }
-        }
-
-        /// <summary>
-        /// Used to prevent concurrent uses of CommandList.
-        /// </summary>
-        public struct CommandListLock : IDisposable
-        {
-            private readonly bool lockTaken;
-            private object lockObject;
-
-            public CommandListLock(object lockObject)
-            {
-                this.lockObject = lockObject;
-                lockTaken = false;
-                Monitor.Enter(lockObject, ref lockTaken);
-            }
-
-            public void Dispose()
-            {
-                if (lockTaken)
-                    Monitor.Exit(lockObject);
-                lockObject = null;
             }
         }
     }

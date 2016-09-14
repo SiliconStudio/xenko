@@ -11,7 +11,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
     /// <summary>
     /// A State type.
     /// </summary>
-    public class TextureType : ObjectType
+    public partial class TextureType : ObjectType
     {
         #region Constants and Fields
 

@@ -38,6 +38,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
+      <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
+      <Name>SiliconStudio.Core.Mathematics</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Native\SiliconStudio.Core.Native.csproj">
       <Project>{fcf36d39-bffe-4719-b245-05640ee34c5f}</Project>
       <Name>SiliconStudio.Core.Native</Name>
@@ -73,6 +77,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="LinuxAllocator.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Audio\Common.h" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -38,6 +38,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             element4 = new ContentDecorator
             {
                 Name = "4",
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top,
                 Width = 200, Height = 100,
                 LocalMatrix = Matrix.Translation(-50, -50, 0),
                 BackgroundImage = SpriteFromSheet.Create(uiGroup, "uvNotRotated")
@@ -45,7 +47,9 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             element3 = new ContentDecorator
             {
-                Name = "3", 
+                Name = "3",
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top,
                 Width = 300, Height = 150,
                 Content = element4,
                 LocalMatrix = Matrix.Translation(-200, -100, 0),
@@ -55,6 +59,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             element2 = new ContentDecorator
             {
                 Name = "2",
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top,
                 Width = 600, Height = 300,
                 Content = element3,
                 BackgroundImage = SpriteFromSheet.Create(uiGroup, "BorderButton")
@@ -65,6 +71,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             element1 = new ContentDecorator
             {
                 Name = "1",
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Top,
                 Width = 600, Height = 300,
                 BackgroundImage = SpriteFromSheet.Create(uiGroup, "GameScreen")
             };
@@ -73,7 +81,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             canvas.Children.Add(element1);
             canvas.Children.Add(element2);
 
-            UIComponent.RootElement = canvas;
+            UIComponent.Page = new Engine.UIPage { RootElement = canvas };
         }
 
         protected override void Update(GameTime gameTime)
