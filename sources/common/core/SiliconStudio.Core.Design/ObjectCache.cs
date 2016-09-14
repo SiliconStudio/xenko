@@ -5,7 +5,7 @@ using System.Linq;
 namespace SiliconStudio.Core
 {
     /// <summary>
-    /// A cache of indexed objects that will keep the most recently accessed instance around in a fixed size buffer.
+    /// A thread-safe cache of indexed objects that will keep the most recently accessed instance around in a fixed size buffer.
     /// </summary>
     /// <typeparam name="TKey">The type of keys used to index objects.</typeparam>
     /// <typeparam name="TValue">The type of objects contained in the cache.</typeparam>
@@ -18,6 +18,7 @@ namespace SiliconStudio.Core
 
         private readonly SortedList<long, TKey> accessHistory;
         private readonly Dictionary<TKey, TValue> cache;
+        private readonly object objectLock = new object();
         private int size;
         private long currentAccessCount;
 
@@ -64,20 +65,23 @@ namespace SiliconStudio.Core
         /// <returns>The object corresponding to the given key if it's available in the cache, <c>Null</c> otherwise.</returns>
         public TValue TryGet(TKey key)
         {
-            TValue result;
-            if (cache.TryGetValue(key, out result))
+            lock (objectLock)
             {
-                // If we were able to find the object, we must update the access history.
-                var historyEntry = accessHistory.FirstOrDefault(x => x.Value.Equals(key)).Key;
-                if (historyEntry != default(long))
+                TValue result;
+                if (cache.TryGetValue(key, out result))
                 {
-                    // Remove the key if it was already in the history.
-                    accessHistory.Remove(historyEntry);
+                    // If we were able to find the object, we must update the access history.
+                    var historyEntry = accessHistory.FirstOrDefault(x => x.Value.Equals(key)).Key;
+                    if (historyEntry != default(long))
+                    {
+                        // Remove the key if it was already in the history.
+                        accessHistory.Remove(historyEntry);
+                    }
+                    // Insert the key at the end of the access history
+                    accessHistory.Add(++currentAccessCount, key);
                 }
-                // Insert the key at the end of the access history
-                accessHistory.Add(++currentAccessCount, key);
+                return result;
             }
-            return result;
         }
 
         /// <summary>
@@ -87,20 +91,26 @@ namespace SiliconStudio.Core
         /// <param name="value">The object to cache.</param>
         public void Cache(TKey key, TValue value)
         {
-            // If the cache is full, remove the oldest accessed items, and reserve space for the item we want to add.
-            ShrinkCache(1);
-            // Add the object to the cache
-            cache.Add(key, value);
-            // Make an access on it to set it as the most recently accessed object. 
-            TryGet(key);
+            lock (objectLock)
+            {
+                // If the cache is full, remove the oldest accessed items, and reserve space for the item we want to add.
+                ShrinkCache(1);
+                // Add the object to the cache
+                cache.Add(key, value);
+                // Make an access on it to set it as the most recently accessed object. 
+                TryGet(key);
+            }
         }
 
         private void Resize(int newSize)
         {
-            if (newSize <= 0) throw new ArgumentOutOfRangeException(nameof(size), @"The size must be a positive non-null integer.");
-            size = newSize;
-            // Remove any object that is beyond our new size.
-            ShrinkCache();
+            lock (objectLock)
+            {
+                if (newSize <= 0) throw new ArgumentOutOfRangeException(nameof(size), @"The size must be a positive non-null integer.");
+                size = newSize;
+                // Remove any object that is beyond our new size.
+                ShrinkCache();
+            }
         }
 
         private void ShrinkCache(int emptySlotToKeep = 0)
