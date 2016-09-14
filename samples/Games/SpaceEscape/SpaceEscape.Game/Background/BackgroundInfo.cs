@@ -5,7 +5,12 @@ namespace SpaceEscape.Background
 {
     public class BackgroundInfo : ScriptComponent
     {
+        public BackgroundInfo()
+        {
+            Holes = new List<Hole>();
+        }
+
         public int MaxNbObstacles { get; set; }
-        public List<Hole> Holes { get; private set; } = new List<Hole>();
+        public List<Hole> Holes { get; private set; }
     }
 }

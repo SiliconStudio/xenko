@@ -33,8 +33,8 @@ namespace SpriteEntity
         private SpriteSheet spriteSheet;
 
         // random
-        private static int seed = Environment.TickCount;
-        private static Random enemyRandomLocal = new Random(seed);
+        private static readonly int seed = Environment.TickCount;
+        private static readonly Random enemyRandomLocal = new Random(seed);
 
         [DataMember(Mask = LiveScriptingMask)] // keep the value when reloading the script (live-scripting)
         private float elapsedTime;
