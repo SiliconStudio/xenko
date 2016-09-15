@@ -40,7 +40,6 @@ namespace SiliconStudio.Xenko.Physics
         public RigidbodyComponent()
         {
             LinkedConstraints = new List<Constraint>();
-            MotionState = new XenkoMotionState(this);
         }
 
         private bool isKinematic;
@@ -302,6 +301,8 @@ namespace SiliconStudio.Xenko.Physics
 
         protected override void OnAttach()
         {
+            MotionState = new XenkoMotionState(this);
+
             SetupBoneLink();
 
             GetWorldTransformCallback = (out Matrix transform) => RigidBodyGetWorldTransform(out transform);
@@ -345,6 +346,9 @@ namespace SiliconStudio.Xenko.Physics
 
         protected override void OnDetach()
         {
+            MotionState.Dispose();
+            MotionState.Clear();
+
             if (NativeCollisionObject == null) return;
 
             //Remove constraints safely
@@ -365,9 +369,6 @@ namespace SiliconStudio.Xenko.Physics
             Simulation.RemoveRigidBody(this);
 
             base.OnDetach();
-
-            MotionState.Dispose();
-            MotionState.Clear();
         }
 
         protected internal override void OnUpdateDraw()
