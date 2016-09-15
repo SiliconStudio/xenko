@@ -9,12 +9,10 @@ namespace SiliconStudio.Core.Storage
     /// A hash to uniquely identify data.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-#if ASSEMBLY_PROCESSOR
-    internal unsafe partial struct ObjectId : IEquatable<ObjectId>, IComparable<ObjectId>
-#else
+#if !SILICONSTUDIO_ASSEMBLY_PROCESSOR
     [DataContract("ObjectId")]
-    public unsafe partial struct ObjectId : IEquatable<ObjectId>, IComparable<ObjectId>
 #endif
+    public unsafe partial struct ObjectId : IEquatable<ObjectId>, IComparable<ObjectId>
     {
         // ***************************************************************
         // NOTE: This file is shared with the AssemblyProcessor.

@@ -24,11 +24,7 @@ namespace SiliconStudio.Core.Storage
     /// A builder for <see cref="ObjectId"/> using Murmurshash3 128 bits
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-#if ASSEMBLY_PROCESSOR
-    internal unsafe struct ObjectIdBuilder
-#else
     public unsafe struct ObjectIdBuilder
-#endif
     {
         // ***************************************************************
         // NOTE: This file is shared with the AssemblyProcessor.
@@ -222,8 +218,9 @@ namespace SiliconStudio.Core.Storage
                 Write((byte*)strPtr, str.Length * sizeof(char));
         }
 
-
-#if !ASSEMBLY_PROCESSOR
+// Those routines are using Interop which are not implemented when compiling
+// the assembly processor as it is it that generates them (Chicken & Egg problem).
+#if !SILICONSTUDIO_ASSEMBLY_PROCESSOR
         /// <summary>
         /// Writes the specified buffer to this instance.
         /// </summary>
