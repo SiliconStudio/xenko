@@ -365,6 +365,8 @@ namespace SiliconStudio.Xenko.Physics
             Simulation.RemoveRigidBody(this);
 
             base.OnDetach();
+
+            MotionState.Dispose();
         }
 
         protected internal override void OnUpdateDraw()
