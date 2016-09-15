@@ -7,11 +7,16 @@ namespace SiliconStudio.Xenko.Physics
 {
     class XenkoMotionState : BulletSharp.SharpMotionState
     {
-        private readonly RigidbodyComponent rigidBody;
+        private RigidbodyComponent rigidBody;
 
         public XenkoMotionState(RigidbodyComponent rb)
         {
             rigidBody = rb;
+        }
+
+        public void Clear()
+        {
+            rigidBody = null;
         }
 
         public override void GetWorldTransform(out Matrix transform)

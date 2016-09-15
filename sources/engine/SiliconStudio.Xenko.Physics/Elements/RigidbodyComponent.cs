@@ -367,6 +367,7 @@ namespace SiliconStudio.Xenko.Physics
             base.OnDetach();
 
             MotionState.Dispose();
+            MotionState.Clear();
         }
 
         protected internal override void OnUpdateDraw()
