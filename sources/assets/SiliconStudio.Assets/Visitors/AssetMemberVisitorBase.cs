@@ -49,6 +49,7 @@ namespace SiliconStudio.Assets.Visitors
             }
             else
             {
+                Visit(key, keyDescriptor);
                 VisitAssetMember(value, valueDescriptor);
             }
         }
