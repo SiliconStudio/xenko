@@ -15,7 +15,6 @@ namespace SiliconStudio.Presentation.Quantum
     public abstract class ObservableModelNode : SingleObservableNode
     {
         public readonly IGraphNode SourceNode;
-        protected readonly GraphNodePath SourceNodePath;
         private readonly bool isPrimitive;
         private bool isInitialized;
         private int? customOrder;
@@ -106,7 +105,7 @@ namespace SiliconStudio.Presentation.Quantum
 
             if (!isPrimitive && targetNode != null)
             {
-                var targetNodePath = GetTargetNodePath(SourceNode, Index, SourceNodePath);
+                var targetNodePath = GetTargetNodePath();
                 if (targetNodePath == null || !targetNodePath.IsValid)
                     throw new InvalidOperationException("Unable to retrieve the path of the given model node.");
 
@@ -121,6 +120,8 @@ namespace SiliconStudio.Presentation.Quantum
 
             CheckDynamicMemberConsistency();
         }
+        
+        public GraphNodePath SourceNodePath { get; }
 
         /// <inheritdoc/>
         public override int? Order
@@ -173,7 +174,12 @@ namespace SiliconStudio.Presentation.Quantum
         //public sealed override bool HasDictionary => (targetNode.Content.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Content.Reference).IsDictionary);
 
         internal Guid ModelGuid => SourceNode.Guid;
-   
+
+        public new void AddCommand(INodeCommandWrapper command)
+        {
+            base.AddCommand(command);
+        }
+
         /// <summary>
         /// Indicates whether this <see cref="ObservableModelNode"/> instance corresponds to the given <see cref="IGraphNode"/>.
         /// </summary>
@@ -240,6 +246,16 @@ namespace SiliconStudio.Presentation.Quantum
         public new void ClearCommands()
         {
             base.ClearCommands();
+        }
+        
+        /// <summary>
+        /// Retrieves the path of the target node if the source node content holds a reference or a sequence of references, or the source node path otherwise.
+        /// </summary>
+        /// <returns>The path to the corresponding target node if available, or the path to source node itself if it does not contain any reference or if its content should not process references.</returns>
+        /// <remarks>This method can return null if the target node is null.</remarks>
+        public GraphNodePath GetTargetNodePath()
+        {
+            return GetTargetNodePath(SourceNode, Index, SourceNodePath);
         }
 
         protected void AssertInit()

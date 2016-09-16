@@ -50,6 +50,11 @@ namespace SiliconStudio.Presentation.Quantum
 
         public override bool IsPrimitive { get; }
 
+        public new void AddCommand(INodeCommandWrapper command)
+        {
+            base.AddCommand(command);
+        }
+
         /// <summary>
         /// Clears the list of children from this <see cref="VirtualObservableNode"/>.
         /// </summary>
@@ -75,11 +80,6 @@ namespace SiliconStudio.Presentation.Quantum
             associatedContent = content;
             associatedContent.Changing += ContentChanging;
             associatedContent.Changed += ContentChanged;
-        }
-
-        public new void AddCommand(INodeCommandWrapper command)
-        {
-            base.AddCommand(command);
         }
 
         protected virtual void SetTypedValue(object value)

@@ -361,6 +361,17 @@ namespace SiliconStudio.Quantum
         public GraphNodePath PushIndex(Index index) => PushElement(index, ElementType.Index);
 
         [Pure]
+        public GraphNodePath PushChildPath(GraphNodePath childPath)
+        {
+            if (childPath.IsEmpty)
+                return Clone();
+
+            var result = Clone(RootNode, false);
+            result.path.AddRange(childPath.path);
+            return result;
+        }
+
+        [Pure]
         public MemberPath ToMemberPath()
         {
             if (!IsValid)
@@ -368,8 +379,9 @@ namespace SiliconStudio.Quantum
 
             var memberPath = new MemberPath();
             var node = RootNode;
-            foreach (var itemPath in path)
+            for (var i = 0; i < path.Count; i++)
             {
+                var itemPath = path[i];
                 switch (itemPath.Type)
                 {
                     case ElementType.Member:
@@ -378,25 +390,26 @@ namespace SiliconStudio.Quantum
                         memberPath.Push(((MemberContent)node.Content).Member);
                         break;
                     case ElementType.Target:
-                        if (itemPath != path[path.Count - 1])
+                        if (i != path.Count - 1)
                         {
                             var objectRefererence = (ObjectReference)node.Content.Reference;
                             node = objectRefererence.TargetNode;
                         }
                         break;
                     case ElementType.Index:
-                        if (itemPath != path[path.Count - 1])
-                        {
-                            var enumerableReference = (ReferenceEnumerable)node.Content.Reference;
-                            var descriptor = node.Content.Descriptor;
-                            var collectionDescriptor = descriptor as CollectionDescriptor;
-                            if (collectionDescriptor != null)
-                                memberPath.Push(collectionDescriptor, (int)itemPath.Value);
-                            var dictionaryDescriptor = descriptor as DictionaryDescriptor;
-                            if (dictionaryDescriptor != null)
-                                memberPath.Push(dictionaryDescriptor, itemPath.Value);
+                        var index = (Index)itemPath.Value;
+                        var enumerableReference = (ReferenceEnumerable)node.Content.Reference;
+                        var descriptor = node.Content.Descriptor;
+                        var collectionDescriptor = descriptor as CollectionDescriptor;
+                        if (collectionDescriptor != null)
+                            memberPath.Push(collectionDescriptor, index.Int);
+                        var dictionaryDescriptor = descriptor as DictionaryDescriptor;
+                        if (dictionaryDescriptor != null)
+                            memberPath.Push(dictionaryDescriptor, index.Value);
 
-                            var objectRefererence = enumerableReference.Single(x => Equals(x.Index, itemPath.Value));
+                        if (i != path.Count - 1)
+                        {
+                            var objectRefererence = enumerableReference.Single(x => Equals(x.Index, index));
                             node = objectRefererence.TargetNode;
                         }
                         break;
