@@ -5,9 +5,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Storage;
@@ -162,6 +164,18 @@ namespace SiliconStudio.Core.Serialization.Assets
         }
 
         /// <summary>
+        /// Reloads an asset asynchronously. If possible, same recursively referenced objects are reused.
+        /// </summary>
+        /// <param name="obj">The object.</param>
+        /// <param name="settings">The settings.</param>
+        /// <returns>True if it could be reloaded, false otherwise.</returns>
+        /// <exception cref="System.InvalidOperationException">Content not loaded through this ContentManager.</exception>
+        public Task<bool> ReloadAsync(object obj, AssetManagerLoaderSettings settings = null)
+        {
+            return ScheduleAsync(() => Reload(obj, settings));
+        }
+
+        /// <summary>
         /// Loads an asset from the specified URL asynchronously.
         /// </summary>
         /// <typeparam name="T">The content type.</typeparam>
@@ -171,7 +185,7 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// <returns></returns>
         public Task<T> LoadAsync<T>(string url, AssetManagerLoaderSettings settings = null) where T : class
         {
-            return Task.Factory.StartNew(() => Load<T>(url, settings));
+            return ScheduleAsync(() => Load<T>(url, settings));
         }
 
         /// <summary>
@@ -184,7 +198,19 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// <returns></returns>
         public Task<object> LoadAsync(Type type, string url, AssetManagerLoaderSettings settings = null)
         {
-            return Task.Factory.StartNew(() => Load(type, url, settings));
+            return ScheduleAsync(() => Load(type, url, settings));
+        }
+
+        private static Task<T> ScheduleAsync<T>(Func<T> action)
+        {
+            var microThread = Scheduler.CurrentMicroThread;
+            return Task.Factory.StartNew(() =>
+            {
+                // This synchronization context gives access to any MicroThreadLocal values. The database to use might actually be micro thread local.
+                var synchronizationContext = new MicrothreadProxySynchronizationContext(microThread);
+                SynchronizationContext.SetSynchronizationContext(synchronizationContext);
+                return action();
+            });
         }
 
         /// <summary>
