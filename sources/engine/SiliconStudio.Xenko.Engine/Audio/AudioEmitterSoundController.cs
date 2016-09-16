@@ -79,8 +79,6 @@ namespace SiliconStudio.Xenko.Audio
                 InstanceToListener.Add(newInstance, listener);
             }
 
-            listener.AttachedInstances.Add(newInstance);
-
             return newInstance;
         }
 
@@ -95,8 +93,8 @@ namespace SiliconStudio.Xenko.Audio
             foreach (var instance in InstanceToListener.Keys)
             {
                 instance.Dispose();
-                listener.AttachedInstances.Remove(instance);
             }
+
             InstanceToListener.Clear();
 
             for (var i = 0; i < FastInstances.Count; i++)
