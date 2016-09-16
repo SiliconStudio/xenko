@@ -208,6 +208,7 @@
     <Compile Include="RawAssetCompiler.cs" />
     <Compile Include="RawAssetImporter.cs" />
     <Compile Include="UPathAttribute.cs" />
+    <Compile Include="Visitors\AssetMemberVisitorBase.cs" />
     <Compile Include="VSProjectHelper.cs" />
     <Compile Include="RawImport.cs" />
     <Compile Include="ProjectReference.cs" />
