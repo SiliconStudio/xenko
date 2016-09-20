@@ -36,11 +36,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             newSlots.Add(InputExecutionSlotDefinition);
             newSlots.Add(OutputExecutionSlotDefinition);
 
-            if (Variable != null)
-            {
-                newSlots.Add(new Slot { Kind = SlotKind.Value, Direction = SlotDirection.Input });
-                //newSlots.Add(new Slot { Kind = SlotKind.Value, Direction = SlotDirection.Output });
-            }
+            newSlots.Add(new Slot { Kind = SlotKind.Value, Direction = SlotDirection.Input });
         }
 
         private LiteralExpressionSyntax ConvertLiteralExpression(string type, object value)

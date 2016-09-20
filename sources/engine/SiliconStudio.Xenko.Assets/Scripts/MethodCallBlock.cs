@@ -1,16 +1,21 @@
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using SiliconStudio.Core;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
 
 namespace SiliconStudio.Xenko.Assets.Scripts
 {
-    public class MethodCallBlock : ExecutionBlock
+    public class MethodCallBlock : ExecutionBlock, IExpressionBlock
     {
         public string MethodName { get; set; }
 
         public bool IsMemberCall { get; set; }
+
+        [DataMemberIgnore]
+        public Slot ReturnSlot => FindSlot(SlotDirection.Output, SlotKind.Value, null);
 
         public override string Title
         {
@@ -22,6 +27,13 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
                 return MethodName.Substring(titleStart + 1);
             }
+        }
+
+        public ExpressionSyntax GenerateExpression(VisualScriptCompilerContext context, Slot slot)
+        {
+            // TODO: Out/ref
+            // Other cases should have been handled by context.RegisterLocalVariable during code generation
+            throw new System.NotImplementedException("out/ref are not implemented yet");
         }
 
         public override void GenerateCode(VisualScriptCompilerContext context)
@@ -36,7 +48,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                 var slot = Slots[index];
                 if (slot.Direction == SlotDirection.Input && slot.Kind == SlotKind.Value)
                 {
-                    var argument = context.GenerateExpression(slot) ?? IdentifierName("unknown");
+                    var argument = context.GenerateExpression(slot) ?? IdentifierName("null");
 
                     if (IsMemberCall && !memberCallProcessed)
                     {
@@ -52,7 +64,31 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                     arguments.Add(Argument(argument));
                 }
             }
-            context.AddStatement(ExpressionStatement(InvocationExpression(ParseExpression(invocationTarget), ArgumentList(SeparatedList<ArgumentSyntax>(arguments)))));
+
+            var expression = InvocationExpression(ParseExpression(invocationTarget), ArgumentList(SeparatedList<ArgumentSyntax>(arguments)));
+            var statement = (StatementSyntax)ExpressionStatement(expression);
+
+            // Only store return variable if somebody is using it
+            if (ReturnSlot != null && context.FindOutputLinks(ReturnSlot).Any())
+            {
+                var localVariableName = context.GenerateLocalVariableName();
+
+                // Store return value in a local variable
+                statement =
+                    LocalDeclarationStatement(
+                        VariableDeclaration(
+                            IdentifierName("var"))
+                        .WithVariables(
+                            SingletonSeparatedList<VariableDeclaratorSyntax>(
+                                VariableDeclarator(
+                                    Identifier(localVariableName))
+                                .WithInitializer(
+                                    EqualsValueClause(expression)))));
+
+                context.RegisterLocalVariable(ReturnSlot, localVariableName);
+            }
+
+            context.AddStatement(statement);
         }
 
         public override void RegenerateSlots(IList<Slot> newSlots)

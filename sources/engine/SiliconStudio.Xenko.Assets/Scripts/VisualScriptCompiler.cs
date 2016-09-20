@@ -29,7 +29,11 @@ namespace SiliconStudio.Xenko.Assets.Scripts
     public class VisualScriptCompilerContext
     {
         private int labelCount;
+        private int localCount;
         private VisualScriptAsset asset;
+
+        // If a specific output Slot was stored in a local variable, this will store its name
+        private Dictionary<Slot, string> outputSlotLocals = new Dictionary<Slot, string>();
 
         internal Queue<Tuple<BasicBlock, ExecutionBlock>> CodeToGenerate = new Queue<Tuple<BasicBlock, ExecutionBlock>>();
 
@@ -65,6 +69,16 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             return null;
         }
 
+        public IEnumerable<Link> FindOutputLinks(Slot outputSlot)
+        {
+            return asset.Links.Where(x => x.Source == outputSlot && x.Target != null);
+        }
+
+        public Link FindInputLink(Slot inputSlot)
+        {
+            return asset.Links.FirstOrDefault(x => x.Target == inputSlot && x.Source != null);
+        }
+
         public ExpressionSyntax GenerateExpression(Slot conditionSlot)
         {
             // Automatically flow to next execution slot (if it has a null name => default behavior)
@@ -73,6 +87,12 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                 var nextExecutionLink = asset.Links.FirstOrDefault(x => x.Target == conditionSlot);
                 if (nextExecutionLink != null)
                 {
+                    string localName;
+                    if (outputSlotLocals.TryGetValue(nextExecutionLink.Source, out localName))
+                    {
+                        return IdentifierName(localName);
+                    }
+
                     return ((IExpressionBlock)nextExecutionLink.Source.Owner).GenerateExpression(this, nextExecutionLink.Source);
                 }
             }
@@ -128,6 +148,17 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
             return basicBlock.Label;
         }
+
+        public string GenerateLocalVariableName(string nameHint = null)
+        {
+            return $"{nameHint ?? "local"}{localCount++}";
+        }
+
+
+        public void RegisterLocalVariable(Slot returnSlot, string localVariableName)
+        {
+            outputSlotLocals.Add(returnSlot, localVariableName);
+        }
     }
 
     public class VisualScriptCompilerResult : LoggerResult
@@ -176,7 +207,8 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                                     Identifier(variable.Name)))))
                     .WithModifiers(
                         TokenList(
-                            Token(SyntaxKind.PublicKeyword)));
+                            Token(SyntaxKind.PublicKeyword),
+                            Token(SyntaxKind.PartialKeyword)));
 
                 members.Add(field);
             }
