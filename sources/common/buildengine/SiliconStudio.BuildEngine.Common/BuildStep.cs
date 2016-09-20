@@ -188,7 +188,8 @@ namespace SiliconStudio.BuildEngine
             {
                 try
                 {
-                    IndexFileCommand.MountDatabase(executeContext.GetOutputObjectsGroups());
+                    IEnumerable<IDictionary<ObjectUrl, OutputObject>> outputObjectsGroups = executeContext.GetOutputObjectsGroups();
+                    MicrothreadLocalDatabases.MountDatabase(outputObjectsGroups);
                     StepProcessed(this, new BuildStepEventArgs(this, executeContext.Logger));
                 }
                 catch (Exception ex)
@@ -197,7 +198,7 @@ namespace SiliconStudio.BuildEngine
                 }
                 finally
                 {
-                    IndexFileCommand.UnmountDatabase();                    
+                    MicrothreadLocalDatabases.UnmountDatabase();
                 }
             }
         }
