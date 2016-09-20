@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                 var nextExecutionLink = asset.Links.FirstOrDefault(x => x.Target == conditionSlot);
                 if (nextExecutionLink != null)
                 {
-                    return ((ExpressionBlock)nextExecutionLink.Source.Owner).GenerateExpression();
+                    return ((IExpressionBlock)nextExecutionLink.Source.Owner).GenerateExpression(this, nextExecutionLink.Source);
                 }
             }
 

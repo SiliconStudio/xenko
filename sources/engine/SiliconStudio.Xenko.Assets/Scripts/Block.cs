@@ -133,8 +133,18 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         public abstract void GenerateCode(VisualScriptCompilerContext context);
     }
 
-    public abstract class ExpressionBlock : Block
+    public interface IExpressionBlock
     {
+        ExpressionSyntax GenerateExpression(VisualScriptCompilerContext context, Slot slot);
+    }
+
+    public abstract class ExpressionBlock : Block, IExpressionBlock
+    {
+        ExpressionSyntax IExpressionBlock.GenerateExpression(VisualScriptCompilerContext context, Slot slot)
+        {
+            return GenerateExpression();
+        }
+
         public abstract ExpressionSyntax GenerateExpression();
     }
 
