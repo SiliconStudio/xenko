@@ -31,7 +31,7 @@ namespace ParticlesSample
         {
             while (true)
             {
-                targetPosition = Target?.WorldMatrix.TranslationVector ?? new Vector3(0, 0, 0);
+                targetPosition = Target != null ? Target.WorldMatrix.TranslationVector : new Vector3(0, 0, 0);
                 UpdateRotation();
 
                 // wait until next frame
