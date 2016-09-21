@@ -518,6 +518,7 @@ namespace SiliconStudio.Presentation.Extensions
         public const int WM_XBUTTONDBLCLK = 0x020D;
         public const int WM_XBUTTONDOWN = 0x020B;
         public const int WM_XBUTTONUP = 0x020C;
+        public const int WM_DPICHANGED = 0x02E0; // Note: available since Windows 8.1
 
         public const uint EVENT_OBJECT_SHOW = 0x8002;
         public const uint EVENT_OBJECT_HIDE = 0x8003;
