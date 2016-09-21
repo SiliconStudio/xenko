@@ -8,6 +8,7 @@ using System.Windows;
 using System.Windows.Threading;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Presentation.Extensions;
+using SiliconStudio.Presentation.Interop;
 using SiliconStudio.Presentation.View;
 
 namespace SiliconStudio.Presentation.Windows

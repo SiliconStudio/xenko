@@ -8,7 +8,7 @@ using System.Windows.Interop;
 using System.Windows.Threading;
 using NUnit.Framework;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Presentation.Extensions;
+using SiliconStudio.Presentation.Interop;
 using SiliconStudio.Presentation.Windows;
 
 namespace SiliconStudio.Presentation.Tests

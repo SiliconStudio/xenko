@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Threading;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Presentation.Extensions;
+using SiliconStudio.Presentation.Interop;
 using Point = System.Windows.Point;
 
 namespace SiliconStudio.Presentation.Controls

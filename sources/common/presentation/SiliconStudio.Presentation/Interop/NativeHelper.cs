@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Windows;
 
-namespace SiliconStudio.Presentation.Extensions
+namespace SiliconStudio.Presentation.Interop
 {
     public static class NativeHelper
     {
@@ -113,6 +113,9 @@ namespace SiliconStudio.Presentation.Extensions
 
         [DllImport("user32.dll")]
         public static extern bool IsChild(IntPtr hWndParent, IntPtr hWnd);
+
+        [DllImport("user32.dll")]
+        public static extern int GetSystemMetrics(SystemMetric smIndex);
 
         #endregion Methods
 

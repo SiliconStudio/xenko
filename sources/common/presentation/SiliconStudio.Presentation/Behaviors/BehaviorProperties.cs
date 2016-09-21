@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Interop;
 
 using SiliconStudio.Presentation.Extensions;
+using SiliconStudio.Presentation.Interop;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
