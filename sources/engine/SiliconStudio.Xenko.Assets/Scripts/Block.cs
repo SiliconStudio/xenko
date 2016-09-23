@@ -160,7 +160,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         public override void RegenerateSlots(IList<Slot> newSlots)
         {
-            newSlots.Add(new Slot { Kind = SlotKind.Execution, Direction = SlotDirection.Output, Name = StartSlotName, Flags = SlotFlags.AutoflowExecution });
+            newSlots.Add(new Slot(SlotDirection.Output, SlotKind.Execution, StartSlotName, SlotFlags.AutoflowExecution));
         }
 
         public override void GenerateCode(VisualScriptCompilerContext context)

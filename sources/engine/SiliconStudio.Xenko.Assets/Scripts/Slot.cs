@@ -13,31 +13,44 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             Id = Guid.NewGuid();
         }
 
+        public Slot(SlotDirection direction, SlotKind kind, string name = null, SlotFlags flags = SlotFlags.None, object value = null)
+        {
+            Direction = direction;
+            Kind = kind;
+            Name = name;
+            Flags = flags;
+            Value = value;
+        }
+
         [DataMemberIgnore]
         public Block Owner { get; internal set; }
 
         [DataMember(-100), Display(Browsable = false)]
         public Guid Id { get; set; }
 
+        // TODO: Internal setter when serialization supports it
         [DataMember(0)]
         public SlotDirection Direction { get; set; }
 
+        // TODO: Internal setter when serialization supports it
         [DataMember(10)]
         [DefaultValue(SlotKind.Value)]
         public SlotKind Kind { get; set; }
 
+        // TODO: Internal setter when serialization supports it
         [DataMember(20)]
         [DefaultValue(null)]
         public string Name { get; set; }
 
+
+        // TODO: Internal setter when serialization supports it
         [DataMember(40)]
-        [DefaultValue(null)]
-        public object Value { get; set; }
-
-
-        [DataMember(50)]
         [DefaultValue(SlotFlags.None)]
 
         public SlotFlags Flags { get; set; }
+
+        [DataMember(50)]
+        [DefaultValue(null)]
+        public object Value { get; set; }
     }
 }
