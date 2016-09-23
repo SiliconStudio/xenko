@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.MicroThreading;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.BuildEngine
@@ -97,12 +97,12 @@ namespace SiliconStudio.BuildEngine
 
         internal static BuildTransaction CreateTransaction(IEnumerable<IDictionary<ObjectUrl, OutputObject>> transactionOutputObjectsGroups)
         {
-            return new BuildTransaction(Builder.ObjectDatabase.AssetIndexMap, GetOutputObjectsGroups(transactionOutputObjectsGroups));
+            return new BuildTransaction(Builder.ObjectDatabase.ContentIndexMap, GetOutputObjectsGroups(transactionOutputObjectsGroups));
         }
 
         private static DatabaseFileProvider CreateDatabase(BuildTransaction transaction)
         {
-            return new DatabaseFileProvider(new BuildTransaction.DatabaseAssetIndexMap(transaction), Builder.ObjectDatabase);
+            return new DatabaseFileProvider(new BuildTransaction.DatabaseContentIndexMap(transaction), Builder.ObjectDatabase);
         }
     }
 }

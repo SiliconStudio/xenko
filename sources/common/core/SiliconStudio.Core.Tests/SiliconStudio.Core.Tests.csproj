@@ -35,7 +35,7 @@
     <Compile Include="TestPriorityQueue.cs" />
     <Compile Include="TestProfiler.cs" />
     <Compile Include="TestSerialization.StructLayout.cs" />
-    <Compile Include="TestAssetManager.cs" />
+    <Compile Include="TestContentManager.cs" />
     <Compile Include="TestLogger.cs" />
     <Compile Include="TestMicroThread.cs" />
     <Compile Include="TestStore.cs" />

@@ -2,7 +2,6 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Xenko.Animations;
 using SiliconStudio.Xenko.SpriteStudio.Runtime;
 using System;
@@ -11,6 +10,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Graphics;
 

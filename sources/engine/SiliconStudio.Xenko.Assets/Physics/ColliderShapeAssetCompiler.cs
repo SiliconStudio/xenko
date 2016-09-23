@@ -7,7 +7,6 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics.Data;
@@ -18,6 +17,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.Serialization.Contents;
 using VHACDSharp;
 using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
@@ -70,9 +70,9 @@ namespace SiliconStudio.Xenko.Assets.Physics
                 {
                     //decompose and fill vertex data
 
-                    var loadSettings = new AssetManagerLoaderSettings
+                    var loadSettings = new ContentManagerLoaderSettings
                     {
-                        ContentFilter = AssetManagerLoaderSettings.NewContentFilterByType(typeof(Mesh), typeof(Skeleton))
+                        ContentFilter = ContentManagerLoaderSettings.NewContentFilterByType(typeof(Mesh), typeof(Skeleton))
                     };
 
                     var modelAsset = assetManager.Load<Model>(AttachedReferenceManager.GetUrl(convexHullDesc.Model), loadSettings);

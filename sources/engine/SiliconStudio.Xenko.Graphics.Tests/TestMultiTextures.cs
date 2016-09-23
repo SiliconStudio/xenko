@@ -34,9 +34,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             await base.LoadContent();
 
             var objDatabase = new ObjectDatabase(VirtualFileSystem.ApplicationDatabasePath);
-            using (var assetIndexMap = new AssetIndexMap("/assets"))
+            using (var contentIndexMap = new contentIndexMap("/assets"))
             {
-                assetIndexMap.LoadNewValues();
+                contentIndexMap.LoadNewValues();
                 DatabaseFileProvider database = null;
                 foreach (var provider in VirtualFileSystem.Providers)
                 {
@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                     }
                 }
                 if (database == null)
-                    database = new DatabaseFileProvider(assetIndexMap, objDatabase);
+                    database = new DatabaseFileProvider(contentIndexMap, objDatabase);
 
                 foreach (var shaderName in Directory.EnumerateFiles(@"..\..\..\..\shaders", "*.xksl"))
                     CopyStream(database, shaderName);

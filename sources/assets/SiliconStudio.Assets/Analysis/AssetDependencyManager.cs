@@ -8,6 +8,7 @@ using SiliconStudio.Assets.Tracking;
 using SiliconStudio.Assets.Visitors;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets.Analysis
 {

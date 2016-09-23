@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.TextureConverter;
 using SiliconStudio.Xenko.Assets.SpriteFont.Compiler;
 using SiliconStudio.Xenko.Assets.Textures;

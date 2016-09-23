@@ -4,7 +4,7 @@ using System;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Xenko.Shaders.Compiler
@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
         {
             var url = GetStoragePathFromShaderType(type);
             ObjectId shaderSourceId;
-            ContentManager.FileProvider.AssetIndexMap.TryGetValue(url, out shaderSourceId);
+            ContentManager.FileProvider.ContentIndexMap.TryGetValue(url, out shaderSourceId);
             return shaderSourceId;
         }
 

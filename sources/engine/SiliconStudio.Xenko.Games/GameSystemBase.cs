@@ -25,7 +25,7 @@ using System;
 
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Games
 {
@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Games
         private readonly GameBase game;
         private int updateOrder;
         private bool visible;
-        private readonly IAssetManager assetManager;
+        private readonly IContentManager contentManager;
         private IGraphicsDeviceService graphicsDeviceService;
 
         /// <summary>
@@ -51,14 +51,14 @@ namespace SiliconStudio.Xenko.Games
         /// </summary>
         /// <param name="registry">The registry.</param>
         /// <remarks>
-        /// The GameSystem is expecting the following services to be registered: <see cref="IGame"/> and <see cref="IAssetManager"/>.
+        /// The GameSystem is expecting the following services to be registered: <see cref="IGame"/> and <see cref="IContentManager"/>.
         /// </remarks>
         protected GameSystemBase(IServiceRegistry registry)
         {
             if (registry == null) throw new ArgumentNullException("registry");
             this.registry = registry;
             game = (GameBase)Services.GetServiceAs<IGame>();
-            assetManager = Services.GetSafeServiceAs<IAssetManager>();
+            contentManager = Services.GetSafeServiceAs<IContentManager>();
         }
 
         /// <summary>
@@ -87,11 +87,11 @@ namespace SiliconStudio.Xenko.Games
         /// Gets the content manager.
         /// </summary>
         /// <value>The content.</value>
-        protected IAssetManager Asset
+        protected IContentManager Content
         {
             get
             {
-                return assetManager;
+                return contentManager;
             }
         }
 

@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Generic;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets
 {
@@ -12,6 +12,6 @@ namespace SiliconStudio.Assets
     [DataContract(Inherited = true)]
     public abstract class AssetSelector
     {
-        public abstract IEnumerable<string> Select(PackageSession packageSession, IAssetIndexMap assetIndexMap);
+        public abstract IEnumerable<string> Select(PackageSession packageSession, IContentIndexMap contentIndexMap);
     }
 }

@@ -35,7 +35,7 @@ namespace SiliconStudio.BuildEngine
                 // Not sure which is the best.
                 //
                 // Anyway, current approach should be OK for now since the index map is "process-safe" (as long as we load new values as necessary).
-                //AssetIndexMap.Save();
+                //contentIndexMap.Save();
             }
 
             MicrothreadLocalDatabases.UnmountDatabase();

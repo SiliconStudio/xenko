@@ -13,7 +13,7 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Assets.Textures.Packing;
 using SiliconStudio.Xenko.Graphics;
