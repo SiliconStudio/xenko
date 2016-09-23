@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Collections;
 using SiliconStudio.Core.Reflection;
 
@@ -6,8 +9,6 @@ namespace SiliconStudio.Assets.Visitors
 {
     public abstract class AssetMemberVisitorBase : AssetVisitorBase
     {
-        private readonly MemberPath memberPath;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AssetMemberVisitorBase"/> class.
         /// </summary>
@@ -15,13 +16,19 @@ namespace SiliconStudio.Assets.Visitors
         protected AssetMemberVisitorBase(MemberPath path)
         {
             if (path == null) throw new ArgumentNullException(nameof(path));
-            memberPath = path;
+            MemberPath = path;
         }
+
+        /// <summary>
+        /// Gets the <see cref="Core.Reflection.MemberPath"/> that will be checked against when visiting.
+        /// </summary>
+        /// <seealso cref="AssetVisitorBase.CurrentPath"/>
+        protected MemberPath MemberPath { get; }
 
         /// <inheritdoc/>
         public override void VisitArrayItem(Array array, ArrayDescriptor descriptor, int index, object item, ITypeDescriptor itemDescriptor)
         {
-            if (CurrentPath.Match(memberPath))
+            if (CurrentPath.Match(MemberPath))
                 VisitAssetMember(item, itemDescriptor);
             else
                 base.VisitArrayItem(array, descriptor, index, item, itemDescriptor);
@@ -30,7 +37,7 @@ namespace SiliconStudio.Assets.Visitors
         /// <inheritdoc/>
         public override void VisitCollectionItem(IEnumerable collection, CollectionDescriptor descriptor, int index, object item, ITypeDescriptor itemDescriptor)
         {
-            if (CurrentPath.Match(memberPath))
+            if (CurrentPath.Match(MemberPath))
                 VisitAssetMember(item, itemDescriptor);
             else
                 base.VisitCollectionItem(collection, descriptor, index, item, itemDescriptor);
@@ -39,7 +46,7 @@ namespace SiliconStudio.Assets.Visitors
         /// <inheritdoc/>
         public override void VisitDictionaryKeyValue(object dictionary, DictionaryDescriptor descriptor, object key, ITypeDescriptor keyDescriptor, object value, ITypeDescriptor valueDescriptor)
         {
-            if (CurrentPath.Match(memberPath))
+            if (CurrentPath.Match(MemberPath))
             {
                 Visit(key, keyDescriptor);
                 VisitAssetMember(value, valueDescriptor);
@@ -53,7 +60,7 @@ namespace SiliconStudio.Assets.Visitors
         /// <inheritdoc/>
         public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
         {
-            if (CurrentPath.Match(memberPath))
+            if (CurrentPath.Match(MemberPath))
                 VisitAssetMember(value, member.TypeDescriptor);
             else
                 base.VisitObjectMember(container, containerDescriptor, member, value);
@@ -62,7 +69,7 @@ namespace SiliconStudio.Assets.Visitors
         /// <inheritdoc/>
         public override void VisitPrimitive(object primitive, PrimitiveDescriptor descriptor)
         {
-            if (CurrentPath.Match(memberPath))
+            if (CurrentPath.Match(MemberPath))
                 VisitAssetMember(primitive, descriptor);
             else
                 base.VisitPrimitive(primitive, descriptor);
