@@ -1,10 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System.IO;
 using System.Threading.Tasks;
 using SiliconStudio.Core.IO;
 
-namespace SiliconStudio.Core.Serialization.Assets
+namespace SiliconStudio.Core.Serialization.Contents
 {
     /// <summary>
     /// Interface of the asset manager.
@@ -31,18 +32,18 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// </summary>
         /// <typeparam name="T">The content type.</typeparam>
         /// <param name="url">The URL to load from.</param>
-        /// <param name="settings">The settings. If null, fallback to <see cref="AssetManagerLoaderSettings.Default"/>.</param>
+        /// <param name="settings">The settings. If null, fallback to <see cref="ContentManagerLoaderSettings.Default"/>.</param>
         /// <returns></returns>
-        T Load<T>(string url, AssetManagerLoaderSettings settings = null) where T : class;
+        T Load<T>(string url, ContentManagerLoaderSettings settings = null) where T : class;
 
         /// <summary>
         /// Loads content from the specified URL asynchronously.
         /// </summary>
         /// <typeparam name="T">The content type.</typeparam>
         /// <param name="url">The URL to load from.</param>
-        /// <param name="settings">The settings. If null, fallback to <see cref="AssetManagerLoaderSettings.Default"/>.</param>
+        /// <param name="settings">The settings. If null, fallback to <see cref="ContentManagerLoaderSettings.Default"/>.</param>
         /// <returns></returns>
-        Task<T> LoadAsync<T>(string url, AssetManagerLoaderSettings settings = null) where T : class;
+        Task<T> LoadAsync<T>(string url, ContentManagerLoaderSettings settings = null) where T : class;
 
         /// <summary>
         /// Unloads the specified object.
@@ -54,6 +55,6 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// Gets the serializer.
         /// </summary>
         /// <value>The serializer.</value>
-        AssetSerializer Serializer { get; }
+        ContentSerializer Serializer { get; }
     }
 }

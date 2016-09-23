@@ -1,8 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 
-namespace SiliconStudio.Core.Serialization
+namespace SiliconStudio.Core.Serialization.Contents
 {
     /// <summary>
     /// An interface that provides a reference to an object identified by a <see cref="Guid"/> and a location.

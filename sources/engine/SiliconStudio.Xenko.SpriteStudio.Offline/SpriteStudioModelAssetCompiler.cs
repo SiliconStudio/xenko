@@ -5,7 +5,6 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Graphics;
@@ -13,6 +12,7 @@ using SiliconStudio.Xenko.SpriteStudio.Runtime;
 using System.Collections.Generic;
 using System.Globalization;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.SpriteStudio.Offline
 {

@@ -1,15 +1,16 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SiliconStudio.Core.Serialization.Assets
+namespace SiliconStudio.Core.Serialization.Contents
 {
     /// <summary>
     /// A class representing stats computed for an instance of <see cref="ContentManager"/> at a given time. This class
     /// is intended to be used for debug purpose only.
     /// </summary>
-    public class AssetManagerStats
+    public class ContentManagerStats
     {
         /// <summary>
         /// A class representing information on a single loaded asset. This class is intended to be used for debug purpose only.
@@ -44,10 +45,10 @@ namespace SiliconStudio.Core.Serialization.Assets
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AssetManagerStats"/> class.
+        /// Initializes a new instance of the <see cref="ContentManagerStats"/> class.
         /// </summary>
-        /// <param name="assetReferences">The collection of <see cref="ContentManager.AssetReference"/> representing the currently loaded assets.</param>
-        internal AssetManagerStats(IEnumerable<ContentManager.AssetReference> assetReferences)
+        /// <param name="assetReferences">The collection of <see cref="ContentManager.Reference"/> representing the currently loaded assets.</param>
+        internal ContentManagerStats(IEnumerable<ContentManager.Reference> assetReferences)
         {
             LoadedAssets = new List<LoadedAsset>(assetReferences.Select(x => new LoadedAsset(x.Url, x.PublicReferenceCount, x.PrivateReferenceCount)));
         }

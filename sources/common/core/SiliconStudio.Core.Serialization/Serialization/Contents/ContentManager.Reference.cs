@@ -3,19 +3,19 @@
 
 using System.Collections.Generic;
 
-namespace SiliconStudio.Core.Serialization.Assets
+namespace SiliconStudio.Core.Serialization.Contents
 {
     partial class ContentManager
     {
         /// <summary>
         /// Internal object that represents a loaded asset, with its url and reference counts.
         /// </summary>
-        internal class AssetReference
+        internal class Reference
         {
             /// <summary>
             /// The next item in the linked list.
             /// </summary>
-            public AssetReference Next, Prev;
+            public Reference Next, Prev;
 
             public bool Deserialized;
 
@@ -43,9 +43,9 @@ namespace SiliconStudio.Core.Serialization.Assets
             public uint CollectIndex;
 
             // TODO: Lazily create this list?
-            public HashSet<AssetReference> References = new HashSet<AssetReference>();
+            public HashSet<Reference> References = new HashSet<Reference>();
 
-            public AssetReference(string url, bool publicReference)
+            public Reference(string url, bool publicReference)
             {
                 Url = url;
                 PublicReferenceCount = publicReference ? 1 : 0;
@@ -55,7 +55,7 @@ namespace SiliconStudio.Core.Serialization.Assets
 
             public override string ToString()
             {
-                return string.Format("{0}, references: {1} public(s), {2} private(s)", Object, PublicReferenceCount, PrivateReferenceCount);
+                return $"{Object}, references: {PublicReferenceCount} public(s), {PrivateReferenceCount} private(s)";
             }
         }
     }

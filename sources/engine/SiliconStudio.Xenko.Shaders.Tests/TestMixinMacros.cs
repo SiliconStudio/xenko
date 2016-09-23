@@ -7,7 +7,7 @@ using System.Linq;
 using NUnit.Framework;
 
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Shaders.Parser;
 using SiliconStudio.Shaders.Ast;

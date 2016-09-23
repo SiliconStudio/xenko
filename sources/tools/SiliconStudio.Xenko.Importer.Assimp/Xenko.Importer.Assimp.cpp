@@ -19,7 +19,6 @@ using namespace SiliconStudio::Core::Diagnostics;
 using namespace SiliconStudio::Core::IO;
 using namespace SiliconStudio::Core::Mathematics;
 using namespace SiliconStudio::Core::Serialization;
-using namespace SiliconStudio::Core::Serialization::Assets;
 using namespace SiliconStudio::Core::Serialization::Contents;
 using namespace SiliconStudio::Xenko::Assets::Materials;
 using namespace SiliconStudio::Xenko::Rendering;
