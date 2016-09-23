@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.Assets
                 {
                     PackageId = package.Id,
                     PackageName = package.Meta.Name,
-                    DefaultSceneUrl = AssetParameters.DefaultScene != null ? AttachedReferenceManager.GetUrl(AssetParameters.DefaultScene) : null,
+                    DefaultSceneUrl = Parameters.DefaultScene != null ? AttachedReferenceManager.GetUrl(Parameters.DefaultScene) : null,
                     EffectCompilation = package.UserSettings.GetValue(GameUserSettings.Effect.EffectCompilation),
                     RecordUsedEffects = package.UserSettings.GetValue(GameUserSettings.Effect.RecordUsedEffects),
                     Configurations = new PlatformConfigurations(),
@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.Assets
 
                 //start from the default platform and go down overriding
 
-                foreach (var configuration in AssetParameters.Defaults.Where(x => !x.OfflineOnly))
+                foreach (var configuration in Parameters.Defaults.Where(x => !x.OfflineOnly))
                 {
                     result.Configurations.Configurations.Add(new ConfigurationOverride
                     {
@@ -81,15 +81,15 @@ namespace SiliconStudio.Xenko.Assets
                     });
                 }
 
-                foreach (var configurationOverride in AssetParameters.Overrides.Where(x => x.Configuration != null && !x.Configuration.OfflineOnly))
+                foreach (var configurationOverride in Parameters.Overrides.Where(x => x.Configuration != null && !x.Configuration.OfflineOnly))
                 {
                     result.Configurations.Configurations.Add(configurationOverride);
                 }
 
-                result.Configurations.PlatformFilters = AssetParameters.PlatformFilters;
+                result.Configurations.PlatformFilters = Parameters.PlatformFilters;
 
                 //make sure we modify platform specific files to set the wanted orientation
-                SetPlatformOrientation(package, platform, AssetParameters.Get<RenderingSettings>().DisplayOrientation);
+                SetPlatformOrientation(package, platform, Parameters.Get<RenderingSettings>().DisplayOrientation);
 
                 var assetManager = new ContentManager();
                 assetManager.Save(Url, result);

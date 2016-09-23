@@ -14,15 +14,15 @@ namespace SiliconStudio.Xenko.Assets.Models
 {
     internal class ProceduralModelAssetCompiler : AssetCompilerBase<ProceduralModelAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, ProceduralModelAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, UFile assetAbsolutePath, AssetItem assetItem, ProceduralModelAsset asset, AssetCompilerResult result)
         {
             result.BuildSteps = new ListBuildStep { new GeometricPrimitiveCompileCommand(urlInStorage, asset) };
         }
 
         private class GeometricPrimitiveCompileCommand : AssetCommand<ProceduralModelAsset>
         {
-            public GeometricPrimitiveCompileCommand(string url, ProceduralModelAsset assetParameters)
-                : base(url, assetParameters)
+            public GeometricPrimitiveCompileCommand(string url, ProceduralModelAsset parameters)
+                : base(url, parameters)
             {
             }
 
@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 var assetManager = new ContentManager();
-                assetManager.Save(Url, new ProceduralModelDescriptor(AssetParameters.Type));
+                assetManager.Save(Url, new ProceduralModelDescriptor(Parameters.Type));
 
                 return Task.FromResult(ResultStatus.Successful);
             }

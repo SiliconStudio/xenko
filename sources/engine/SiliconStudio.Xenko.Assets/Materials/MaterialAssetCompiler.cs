@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
                 // We also want to serialize recursively the compile-time dependent assets
                 // (since they are not added as reference but actually embedded as part of the current asset)
                 // TODO: Ideally we would want to put that automatically in AssetCommand<>, but we would need access to package
-                ComputeCompileTimeDependenciesHash(package, writer, AssetParameters);
+                ComputeCompileTimeDependenciesHash(package, writer, Parameters);
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
@@ -101,7 +101,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
                 };
                 materialContext.AddLoadingFromSession(package);
 
-                var materialClone = (MaterialAsset)AssetCloner.Clone(AssetParameters);
+                var materialClone = (MaterialAsset)AssetCloner.Clone(Parameters);
                 var result = MaterialGenerator.Generate(new MaterialDescriptor() { MaterialId = materialClone.Id, Attributes = materialClone.Attributes, Layers = materialClone.Layers}, materialContext, string.Format("{0}:{1}", materialClone.Id, assetUrl));
 
                 if (result.HasErrors)

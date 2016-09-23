@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         private class SceneCommand : EntityHierarchyCommandBase
         {
-            public SceneCommand(string url, Package package, AssetCompilerContext context, SceneAsset assetParameters) : base(url, package, context, assetParameters)
+            public SceneCommand(string url, Package package, AssetCompilerContext context, SceneAsset parameters) : base(url, package, context, parameters)
             {
             }
 

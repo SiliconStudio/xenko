@@ -44,14 +44,14 @@ namespace SiliconStudio.Xenko.Assets.Textures
             protected override System.Collections.Generic.IEnumerable<ObjectUrl> GetInputFilesImpl()
             {
                 // TODO dependency not working
-                yield return new ObjectUrl(UrlType.File, AssetParameters.SourcePathFromDisk);
+                yield return new ObjectUrl(UrlType.File, Parameters.SourcePathFromDisk);
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
-                var convertParameters = new TextureHelper.ImportParameters(AssetParameters) { OutputUrl = Url };
+                var convertParameters = new TextureHelper.ImportParameters(Parameters) { OutputUrl = Url };
                 using (var texTool = new TextureTool())
-                using (var texImage = texTool.Load(AssetParameters.SourcePathFromDisk, convertParameters.IsSRgb))
+                using (var texImage = texTool.Load(Parameters.SourcePathFromDisk, convertParameters.IsSRgb))
                 {
                     var importResult = TextureHelper.ImportTextureImage(texTool, texImage, convertParameters, CancellationToken, commandContext.Logger);
 

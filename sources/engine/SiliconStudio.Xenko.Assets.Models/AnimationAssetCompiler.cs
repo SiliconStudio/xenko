@@ -93,7 +93,7 @@ namespace SiliconStudio.Xenko.Assets.Models
 
         internal class AdditiveAnimationCommand : AssetCommand<AdditiveAnimationParameters>
         {
-            public AdditiveAnimationCommand(string url, AdditiveAnimationParameters assetParameters) : base(url, assetParameters)
+            public AdditiveAnimationCommand(string url, AdditiveAnimationParameters parameters) : base(url, parameters)
             {
             }
 
@@ -102,8 +102,8 @@ namespace SiliconStudio.Xenko.Assets.Models
                 var assetManager = new ContentManager();
 
                 // Load source and base animations
-                var baseAnimation = assetManager.Load<AnimationClip>(AssetParameters.BaseUrl);
-                var sourceAnimation = assetManager.Load<AnimationClip>(AssetParameters.SourceUrl);
+                var baseAnimation = assetManager.Load<AnimationClip>(Parameters.BaseUrl);
+                var sourceAnimation = assetManager.Load<AnimationClip>(Parameters.SourceUrl);
 
                 // Generate diff animation
                 var animation = SubtractAnimations(baseAnimation, sourceAnimation);
@@ -156,7 +156,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                         time = sourceAnimation.Duration;
 
                     TimeSpan baseTime;
-                    switch (AssetParameters.Mode)
+                    switch (Parameters.Mode)
                     {
                         case AdditiveAnimationBaseMode.FirstFrame:
                             baseTime = TimeSpan.Zero;

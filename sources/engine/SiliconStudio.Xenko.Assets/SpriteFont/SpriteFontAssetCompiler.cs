@@ -90,7 +90,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
             protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
             {
-                var fontTypeStatic = AssetParameters.FontType as OfflineRasterizedSpriteFontType;
+                var fontTypeStatic = Parameters.FontType as OfflineRasterizedSpriteFontType;
                 if (fontTypeStatic == null)
                     throw new ArgumentException("Tried to compile a dynamic sprite font with compiler for signed distance field fonts");
 
@@ -110,7 +110,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 Graphics.SpriteFont staticFont;
                 try
                 {
-                    staticFont = OfflineRasterizedFontCompiler.Compile(FontDataFactory, AssetParameters, colorspace == ColorSpace.Linear);
+                    staticFont = OfflineRasterizedFontCompiler.Compile(FontDataFactory, Parameters, colorspace == ColorSpace.Linear);
                 }
                 catch (FontNotFoundException ex) 
                 {
@@ -146,7 +146,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
             protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
             {
-                var fontTypeSDF = AssetParameters.FontType as SignedDistanceFieldSpriteFontType;
+                var fontTypeSDF = Parameters.FontType as SignedDistanceFieldSpriteFontType;
                 if (fontTypeSDF == null)
                     throw new ArgumentException("Tried to compile a dynamic sprite font with compiler for signed distance field fonts");
 
@@ -168,7 +168,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 Graphics.SpriteFont scalableFont;
                 try
                 {
-                    scalableFont = SignedDistanceFieldFontCompiler.Compile(FontDataFactory, AssetParameters);
+                    scalableFont = SignedDistanceFieldFontCompiler.Compile(FontDataFactory, Parameters);
                 }
                 catch (FontNotFoundException ex)
                 {
@@ -202,9 +202,9 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 var dynamicFont = FontDataFactory.NewDynamic(
-                    AssetParameters.FontType.Size, AssetParameters.FontSource.GetFontName(), AssetParameters.FontSource.Style, 
-                    AssetParameters.FontType.AntiAlias, useKerning:false, extraSpacing:AssetParameters.Spacing, extraLineSpacing:AssetParameters.LineSpacing, 
-                    defaultCharacter:AssetParameters.DefaultCharacter);
+                    Parameters.FontType.Size, Parameters.FontSource.GetFontName(), Parameters.FontSource.Style, 
+                    Parameters.FontType.AntiAlias, useKerning:false, extraSpacing:Parameters.Spacing, extraLineSpacing:Parameters.LineSpacing, 
+                    defaultCharacter:Parameters.DefaultCharacter);
 
                 var assetManager = new ContentManager();
                 assetManager.Save(Url, dynamicFont);

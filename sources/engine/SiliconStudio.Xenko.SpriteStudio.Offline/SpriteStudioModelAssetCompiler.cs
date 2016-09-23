@@ -79,14 +79,14 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
             {
                 var nodes = new List<SpriteStudioNode>();
                 string modelName;
-                if (!SpriteStudioXmlImport.ParseModel(AssetParameters.Source, nodes, out modelName)) return null;
+                if (!SpriteStudioXmlImport.ParseModel(Parameters.Source, nodes, out modelName)) return null;
 
                 var cells = new List<SpriteStudioCell>();
                 var textures = new List<UFile>();
-                if (!SpriteStudioXmlImport.ParseCellMaps(AssetParameters.Source, textures, cells)) return null;
+                if (!SpriteStudioXmlImport.ParseCellMaps(Parameters.Source, textures, cells)) return null;
 
                 var anims = new List<SpriteStudioAnim>();
-                if (!SpriteStudioXmlImport.ParseAnimations(AssetParameters.Source, anims)) return null;             
+                if (!SpriteStudioXmlImport.ParseAnimations(Parameters.Source, anims)) return null;             
 
                 var assetManager = new ContentManager();
 
@@ -94,7 +94,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
 
                 foreach (var cell in cells)
                 {
-                    var sprite = new Sprite(cell.Name, AttachedReferenceManager.CreateProxyObject<Texture>(Guid.Empty, AssetParameters.BuildTextures[cell.TextureIndex]))
+                    var sprite = new Sprite(cell.Name, AttachedReferenceManager.CreateProxyObject<Texture>(Guid.Empty, Parameters.BuildTextures[cell.TextureIndex]))
                     {
                         Region = cell.Rectangle,
                         Center = cell.Pivot,

@@ -36,29 +36,29 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
             protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
             {
-                yield return new ObjectUrl(UrlType.File, AssetParameters.FontDataFile);
+                yield return new ObjectUrl(UrlType.File, Parameters.FontDataFile);
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 using (var texTool = new TextureTool())
-                using (var texImage = texTool.Load(AssetParameters.FontDataFile, AssetParameters.IsSrgb))
+                using (var texImage = texTool.Load(Parameters.FontDataFile, Parameters.IsSrgb))
                 {
                     //make sure we are RGBA and not BGRA
-                    texTool.Convert(texImage, AssetParameters.IsSrgb ? PixelFormat.R8G8B8A8_UNorm_SRgb : PixelFormat.R8G8B8A8_UNorm);
+                    texTool.Convert(texImage, Parameters.IsSrgb ? PixelFormat.R8G8B8A8_UNorm_SRgb : PixelFormat.R8G8B8A8_UNorm);
 
                     var image = texTool.ConvertToXenkoImage(texImage);
 
                     Graphics.SpriteFont staticFont = FontDataFactory.NewStatic(
-                        AssetParameters.Size,
-                        AssetParameters.Glyphs,
+                        Parameters.Size,
+                        Parameters.Glyphs,
                         new[] { image },
-                        AssetParameters.BaseOffset,
-                        AssetParameters.DefaultLineSpacing,
-                        AssetParameters.Kernings,
-                        AssetParameters.ExtraSpacing,
-                        AssetParameters.ExtraLineSpacing,
-                        AssetParameters.DefaultCharacter);
+                        Parameters.BaseOffset,
+                        Parameters.DefaultLineSpacing,
+                        Parameters.Kernings,
+                        Parameters.ExtraSpacing,
+                        Parameters.ExtraLineSpacing,
+                        Parameters.DefaultCharacter);
 
                     // save the data into the database
                     var assetManager = new ContentManager();

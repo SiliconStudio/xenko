@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             private readonly Package package;
             private readonly AssetCompilerContext context;
 
-            public EntityHierarchyCommandBase(string url, Package package, AssetCompilerContext context, T assetParameters) : base(url, assetParameters)
+            public EntityHierarchyCommandBase(string url, Package package, AssetCompilerContext context, T parameters) : base(url, parameters)
             {
                 this.package = package;
                 this.context = context;
@@ -68,10 +68,10 @@ namespace SiliconStudio.Xenko.Assets.Entities
             {
                 var assetManager = new ContentManager();
 
-                var prefab = Create(AssetParameters);
-                foreach (var rootEntity in AssetParameters.Hierarchy.RootPartIds)
+                var prefab = Create(Parameters);
+                foreach (var rootEntity in Parameters.Hierarchy.RootPartIds)
                 {
-                    prefab.Entities.Add(AssetParameters.Hierarchy.Parts[rootEntity].Entity);
+                    prefab.Entities.Add(Parameters.Hierarchy.Parts[rootEntity].Entity);
                 }
                 assetManager.Save(Url, prefab);
 

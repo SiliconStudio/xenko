@@ -101,15 +101,15 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         /// </summary>
         public class SpriteSheetCommand : AssetCommand<SpriteSheetParameters>
         {
-            public SpriteSheetCommand(string url, SpriteSheetParameters assetParameters)
-                : base(url, assetParameters)
+            public SpriteSheetCommand(string url, SpriteSheetParameters parameters)
+                : base(url, parameters)
             {
             }
 
             /// <inheritdoc/>
             protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
             {
-                foreach (var dependency in AssetParameters.ImageToTextureUrl)
+                foreach (var dependency in Parameters.ImageToTextureUrl)
                 {
                     // Use UrlType.Content instead of UrlType.Link, as we are actualy using the content linked of assets in order to create the spritesheet
                     yield return new ObjectUrl(UrlType.Content, dependency.Value);
@@ -124,7 +124,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                 Dictionary<SpriteInfo, PackedSpriteInfo> spriteToPackedSprite = null;
 
                 // Generate texture atlas
-                var isPacking = AssetParameters.SheetAsset.Packing.Enabled;
+                var isPacking = Parameters.SheetAsset.Packing.Enabled;
                 if (isPacking)
                 {
                     var resultStatus = CreateAtlasTextures(commandContext.Logger, out spriteToPackedSprite);
@@ -136,7 +136,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                 var imageGroupData = new SpriteSheet();
 
                 // add the sprite data to the sprite list.
-                foreach (var image in AssetParameters.SheetAsset.Sprites)
+                foreach (var image in Parameters.SheetAsset.Sprites)
                 {
                     string textureUrl;
                     RectangleF region;
@@ -190,7 +190,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     {
                         region = image.TextureRegion;
                         orientation = image.Orientation;
-                        AssetParameters.ImageToTextureUrl.TryGetValue(image, out textureUrl);
+                        Parameters.ImageToTextureUrl.TryGetValue(image, out textureUrl);
                     }
 
                     // Affect the texture
@@ -218,7 +218,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                 }
 
                 // set the transparency information to all the sprites
-                if(AssetParameters.SheetAsset.Alpha != AlphaFormat.None) // Skip the calculation when format is forced without alpha.
+                if(Parameters.SheetAsset.Alpha != AlphaFormat.None) // Skip the calculation when format is forced without alpha.
                 {
                     var urlToTexImage = new Dictionary<string, Tuple<TexImage, Image>>();
                     using (var texTool = new TextureTool())
@@ -284,9 +284,9 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     var imageDictionary = new Dictionary<string, Image>();
                     var imageInfoDictionary = new Dictionary<string, SpriteInfo>();
 
-                    var sprites = AssetParameters.SheetAsset.Sprites;
-                    var packingParameters = AssetParameters.SheetAsset.Packing;
-                    bool isSRgb = AssetParameters.SheetAsset.ColorSpace.ToColorSpace(AssetParameters.ColorSpace, TextureHint.Color) == ColorSpace.Linear;
+                    var sprites = Parameters.SheetAsset.Sprites;
+                    var packingParameters = Parameters.SheetAsset.Packing;
+                    bool isSRgb = Parameters.SheetAsset.ColorSpace.ToColorSpace(Parameters.ColorSpace, TextureHint.Color) == ColorSpace.Linear;
 
                     for (var i = 0; i < sprites.Count; ++i)
                     {
@@ -316,7 +316,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     }
 
                     // find the maximum texture size supported
-                    var maximumSize = TextureHelper.FindMaximumTextureSize(new TextureHelper.ImportParameters(AssetParameters), new Size2(int.MaxValue/2, int.MaxValue/2));
+                    var maximumSize = TextureHelper.FindMaximumTextureSize(new TextureHelper.ImportParameters(Parameters), new Size2(int.MaxValue/2, int.MaxValue/2));
 
                     // Initialize packing configuration from GroupAsset
                     var texturePacker = new TexturePacker
@@ -346,7 +346,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                         using (var texImage = texTool.Load(atlasImage, isSRgb))
                         {
                             var outputUrl = SpriteSheetAsset.BuildTextureAtlasUrl(Url, textureAtlasIndex);
-                            var convertParameters = new TextureHelper.ImportParameters(AssetParameters) { OutputUrl = outputUrl };
+                            var convertParameters = new TextureHelper.ImportParameters(Parameters) { OutputUrl = outputUrl };
                             resultStatus = TextureHelper.ImportTextureImage(texTool, texImage, convertParameters, CancellationToken, logger);
                         }
 

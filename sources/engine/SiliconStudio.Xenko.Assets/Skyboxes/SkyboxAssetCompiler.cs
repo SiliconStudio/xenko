@@ -58,8 +58,8 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
 
         private class SkyboxCompileCommand : AssetCommand<SkyboxAsset>
         {
-            public SkyboxCompileCommand(string url, SkyboxAsset assetParameters)
-                : base(url, assetParameters)
+            public SkyboxCompileCommand(string url, SkyboxAsset parameters)
+                : base(url, parameters)
             {
             }
 
@@ -73,9 +73,9 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             /// <inheritdoc/>
             protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
             {
-                if (AssetParameters.Model != null)
+                if (Parameters.Model != null)
                 {
-                    foreach (var dependency in AssetParameters.Model.GetDependencies())
+                    foreach (var dependency in Parameters.Model.GetDependencies())
                     {
                         // Use UrlType.Content instead of UrlType.Link, as we are actualy using the content linked of assets in order to compute the skybox
                         yield return new ObjectUrl(UrlType.Content, SkyboxGenerator.BuildTextureForSkyboxGenerationLocation(dependency.Location));
@@ -89,9 +89,9 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                 // TODO Convert SkyboxAsset to Skybox and save to Skybox object
                 // TODO Add system to prefilter
 
-                using (var context = new SkyboxGeneratorContext(AssetParameters))
+                using (var context = new SkyboxGeneratorContext(Parameters))
                 {
-                    var result = SkyboxGenerator.Compile(AssetParameters, context);
+                    var result = SkyboxGenerator.Compile(Parameters, context);
 
                     if (result.HasErrors)
                     {

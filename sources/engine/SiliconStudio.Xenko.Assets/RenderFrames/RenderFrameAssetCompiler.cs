@@ -20,15 +20,15 @@ namespace SiliconStudio.Xenko.Assets.RenderFrames
 
         private class RenderFrameCompileCommand : AssetCommand<RenderFrameAsset>
         {
-            public RenderFrameCompileCommand(string url, RenderFrameAsset assetParameters)
-                : base(url, assetParameters)
+            public RenderFrameCompileCommand(string url, RenderFrameAsset parameters)
+                : base(url, parameters)
             {
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 var assetManager = new ContentManager();
-                assetManager.Save(Url, RenderFrame.NewFake(AssetParameters.Descriptor));
+                assetManager.Save(Url, RenderFrame.NewFake(Parameters.Descriptor));
 
                 return Task.FromResult(ResultStatus.Successful);
             }

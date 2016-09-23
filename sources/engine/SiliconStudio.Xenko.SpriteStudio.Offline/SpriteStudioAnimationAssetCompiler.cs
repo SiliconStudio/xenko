@@ -46,26 +46,26 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
             {
                 var nodes = new List<SpriteStudioNode>();
                 string modelName;
-                if (!SpriteStudioXmlImport.ParseModel(AssetParameters.Source, nodes, out modelName))
+                if (!SpriteStudioXmlImport.ParseModel(Parameters.Source, nodes, out modelName))
                 {
                     return null;
                 }
 
                 var anims = new List<SpriteStudioAnim>();
-                if (!SpriteStudioXmlImport.ParseAnimations(AssetParameters.Source, anims))
+                if (!SpriteStudioXmlImport.ParseAnimations(Parameters.Source, anims))
                 {
                     return null;
                 }
 
                 var assetManager = new ContentManager();
 
-                var anim = anims.First(x => x.Name == AssetParameters.AnimationName);
+                var anim = anims.First(x => x.Name == Parameters.AnimationName);
 
                 //Compile the animations
                 var animation = new AnimationClip
                 {
                     Duration = TimeSpan.FromSeconds((1.0 / anim.Fps) * anim.FrameCount),
-                    RepeatMode = AssetParameters.RepeatMode
+                    RepeatMode = Parameters.RepeatMode
                 };
 
                 var nodeMapping = nodes.Select((x, i) => new { Name = x.Name, Index = i }).ToDictionary(x => x.Name, x => x.Index);
