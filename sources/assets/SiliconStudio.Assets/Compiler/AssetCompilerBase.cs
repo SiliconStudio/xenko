@@ -31,7 +31,7 @@ namespace SiliconStudio.Assets.Compiler
             }
 
             // Try to compile only if we're sure that the sources exist.
-            if (EnsureSourcesExist(result, (T)assetItem.Asset, assetItem.FullPath))
+            if (EnsureSourcesExist(result, assetItem))
             {
                 Compile((AssetCompilerContext)context, assetItem.Location.GetDirectoryAndFileName(), assetItem.FullPath, assetItem, (T)assetItem.Asset, result);
             }
@@ -69,35 +69,33 @@ namespace SiliconStudio.Assets.Compiler
         /// Ensures that the sources of an <see cref="Asset"/> exist.
         /// </summary>
         /// <param name="result">The <see cref="AssetCompilerResult"/> in which to output log of potential errors.</param>
-        /// <param name="asset">The asset to check.</param>
-        /// <param name="assetAbsolutePath">The absolute path of the asset on the disk</param>
+        /// <param name="assetItem">The asset to check.</param>
         /// <returns><c>true</c> if the source file exists, <c>false</c> otherwise.</returns>
         /// <exception cref="ArgumentNullException">Any of the argument is <c>null</c>.</exception>
-        private static bool EnsureSourcesExist(AssetCompilerResult result, T asset, UFile assetAbsolutePath)
+        private static bool EnsureSourcesExist(AssetCompilerResult result, AssetItem assetItem)
         {
             if (result == null) throw new ArgumentNullException(nameof(result));
-            if (asset == null) throw new ArgumentNullException(nameof(asset));
-            if (assetAbsolutePath == null) throw new ArgumentNullException(nameof(assetAbsolutePath));
+            if (assetItem == null) throw new ArgumentNullException(nameof(assetItem));
 
             var collector = new SourceFilesCollector();
-            var sourceMembers = collector.GetSourceMembers(asset);
+            var sourceMembers = collector.GetSourceMembers(assetItem.Asset);
 
             foreach (var member in sourceMembers)
             {
                 if (string.IsNullOrEmpty(member.Value))
                 {
-                    result.Error($"Source is null for Asset [{asset}] in property [{member.Key}]");
+                    result.Error($"Source is null for Asset [{assetItem}] in property [{member.Key}]");
                     return false;
                 }
 
                 // Get absolute path of asset source on disk
-                var assetDirectory = assetAbsolutePath.GetParent();
+                var assetDirectory = assetItem.FullPath.GetParent();
                 var assetSource = UPath.Combine(assetDirectory, member.Value);
 
                 // Ensure the file exists
                 if (!File.Exists(assetSource))
                 {
-                    result.Error($"Unable to find the source file '{assetSource}' for Asset [{asset}]");
+                    result.Error($"Unable to find the source file '{assetSource}' for Asset [{assetItem}]");
                     return false;
                 }
             }
