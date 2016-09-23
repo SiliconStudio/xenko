@@ -206,10 +206,12 @@ namespace SiliconStudio.Core.Serialization.Assets
             var microThread = Scheduler.CurrentMicroThread;
             return Task.Factory.StartNew(() =>
             {
+                var initialContext = SynchronizationContext.Current;
                 // This synchronization context gives access to any MicroThreadLocal values. The database to use might actually be micro thread local.
-                var synchronizationContext = new MicrothreadProxySynchronizationContext(microThread);
-                SynchronizationContext.SetSynchronizationContext(synchronizationContext);
-                return action();
+                SynchronizationContext.SetSynchronizationContext(new MicrothreadProxySynchronizationContext(microThread));
+                var result = action();
+                SynchronizationContext.SetSynchronizationContext(initialContext);
+                return result;
             });
         }
 
