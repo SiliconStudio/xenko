@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
 {
     internal class SkyboxAssetCompiler : AssetCompilerBase<SkyboxAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, SkyboxAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, SkyboxAsset asset, AssetCompilerResult result)
         {
             result.BuildSteps = new ListBuildStep();
             result.ShouldWaitForPreviousBuilds = true;
@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             }
 
             // add the skybox command itself.
-            result.BuildSteps.Add(new AssetBuildStep(assetItem) {  new SkyboxCompileCommand(urlInStorage, asset) });
+            result.BuildSteps.Add(new AssetBuildStep(assetItem) {  new SkyboxCompileCommand(assetItem.Location, asset) });
         }
 
         private class SkyboxCompileCommand : AssetCommand<SkyboxAsset>

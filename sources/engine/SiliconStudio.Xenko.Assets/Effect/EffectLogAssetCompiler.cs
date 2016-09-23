@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
     /// </summary>
     public class EffectLogAssetCompiler : AssetCompilerBase<EffectLogAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, EffectLogAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, EffectLogAsset asset, AssetCompilerResult result)
         {
             var originalSourcePath = asset.AbsoluteSourceLocation;
             result.ShouldWaitForPreviousBuilds = true;

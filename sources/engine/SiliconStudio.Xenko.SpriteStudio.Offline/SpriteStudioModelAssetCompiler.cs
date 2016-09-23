@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
 {
     internal class SpriteStudioModelAssetCompiler : AssetCompilerBase<SpriteStudioModelAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, SpriteStudioModelAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, SpriteStudioModelAsset asset, AssetCompilerResult result)
         {
             var gameSettingsAsset = context.GetGameSettingsAsset();
             var renderingSettings = gameSettingsAsset.Get<RenderingSettings>(context.Platform);
@@ -46,19 +46,19 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
 
                 result.BuildSteps.Add(
                 new TextureAssetCompiler.TextureConvertCommand(
-                    urlInStorage + texIndex,
+                    assetItem.Location + texIndex,
                     new TextureConvertParameters(texture, textureAsset, context.Platform,
                         context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile,
                         gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace)));
 
-                asset.BuildTextures.Add(urlInStorage + texIndex);
+                asset.BuildTextures.Add(assetItem.Location + texIndex);
 
                 texIndex++;
             }
 
             result.BuildSteps.Add(new AssetBuildStep(assetItem)
             {
-                new SpriteStudioModelAssetCommand(urlInStorage, asset, colorSpace)
+                new SpriteStudioModelAssetCommand(assetItem.Location, asset, colorSpace)
             });
         }
 

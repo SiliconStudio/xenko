@@ -19,9 +19,9 @@ namespace SiliconStudio.Xenko.Assets.Effect
     {
         public static readonly PropertyKey<ConcurrentDictionary<string, string>> ShaderLocationsKey = new PropertyKey<ConcurrentDictionary<string, string>>("ShaderPathsKey", typeof(EffectShaderAssetCompiler));
 
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, EffectShaderAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, EffectShaderAsset asset, AssetCompilerResult result)
         {
-            var url = EffectCompilerBase.DefaultSourceShaderFolder + "/" + Path.GetFileName(assetAbsolutePath);
+            var url = EffectCompilerBase.DefaultSourceShaderFolder + "/" + Path.GetFileName(assetItem.FullPath);
 
             var originalSourcePath = asset.AbsoluteSourceLocation;
             result.BuildSteps = new AssetBuildStep(assetItem) { new ImportStreamCommand { SourcePath = originalSourcePath, Location = url, SaveSourcePath = true } };

@@ -17,10 +17,10 @@ namespace SiliconStudio.Xenko.Assets.Models
 {
     public class ModelAssetCompiler : AssetCompilerBase<ModelAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, ModelAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, ModelAsset asset, AssetCompilerResult result)
         {
             // Get absolute path of asset source on disk
-            var assetDirectory = assetAbsolutePath.GetParent();
+            var assetDirectory = assetItem.FullPath.GetParent();
             var assetSource = UPath.Combine(assetDirectory, asset.Source);
 
             var gameSettingsAsset = context.GetGameSettingsAsset();
@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Assets.Models
 
             importModelCommand.Mode = ImportModelCommand.ExportMode.Model;
             importModelCommand.SourcePath = assetSource;
-            importModelCommand.Location = urlInStorage;
+            importModelCommand.Location = assetItem.Location;
             importModelCommand.Allow32BitIndex = allow32BitIndex;
             importModelCommand.AllowUnsignedBlendIndices = allowUnsignedBlendIndices;
             importModelCommand.Materials = asset.Materials;

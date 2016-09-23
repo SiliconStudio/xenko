@@ -15,10 +15,10 @@ namespace SiliconStudio.Xenko.Assets.Materials
 {
     internal class MaterialAssetCompiler : AssetCompilerBase<MaterialAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, MaterialAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, MaterialAsset asset, AssetCompilerResult result)
         {
             result.ShouldWaitForPreviousBuilds = true;
-            result.BuildSteps = new AssetBuildStep(assetItem) { new MaterialCompileCommand(urlInStorage, assetItem, asset, context) };
+            result.BuildSteps = new AssetBuildStep(assetItem) { new MaterialCompileCommand(assetItem.Location, assetItem, asset, context) };
         }
 
         private class MaterialCompileCommand : AssetCommand<MaterialAsset>
@@ -52,7 +52,6 @@ namespace SiliconStudio.Xenko.Assets.Materials
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
             {
                 base.ComputeParameterHash(writer);
-                writer.Serialize(ref assetUrl, ArchiveMode.Serialize);
 
                 // Write the 
                 writer.Write(colorSpace);

@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
-using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Rendering.ProceduralModels;
 
@@ -14,9 +12,9 @@ namespace SiliconStudio.Xenko.Assets.Models
 {
     internal class ProceduralModelAssetCompiler : AssetCompilerBase<ProceduralModelAsset>
     {
-        protected override void Compile(AssetCompilerContext context, UFile assetAbsolutePath, AssetItem assetItem, ProceduralModelAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, ProceduralModelAsset asset, AssetCompilerResult result)
         {
-            result.BuildSteps = new ListBuildStep { new GeometricPrimitiveCompileCommand(urlInStorage, asset) };
+            result.BuildSteps = new ListBuildStep { new GeometricPrimitiveCompileCommand(assetItem.Location, asset) };
         }
 
         private class GeometricPrimitiveCompileCommand : AssetCommand<ProceduralModelAsset>
@@ -24,11 +22,6 @@ namespace SiliconStudio.Xenko.Assets.Models
             public GeometricPrimitiveCompileCommand(string url, ProceduralModelAsset parameters)
                 : base(url, parameters)
             {
-            }
-
-            protected override void ComputeParameterHash(BinarySerializationWriter writer)
-            {
-                base.ComputeParameterHash(writer);
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)

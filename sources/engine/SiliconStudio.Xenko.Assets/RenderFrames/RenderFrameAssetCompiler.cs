@@ -13,9 +13,9 @@ namespace SiliconStudio.Xenko.Assets.RenderFrames
 {
     public class RenderFrameAssetCompiler : AssetCompilerBase<RenderFrameAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, RenderFrameAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, RenderFrameAsset asset, AssetCompilerResult result)
         {
-            result.BuildSteps = new ListBuildStep { new RenderFrameCompileCommand(urlInStorage, asset) };
+            result.BuildSteps = new ListBuildStep { new RenderFrameCompileCommand(assetItem.Location, asset) };
         }
 
         private class RenderFrameCompileCommand : AssetCommand<RenderFrameAsset>

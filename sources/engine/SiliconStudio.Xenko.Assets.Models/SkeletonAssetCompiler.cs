@@ -9,9 +9,9 @@ namespace SiliconStudio.Xenko.Assets.Models
 {
     public class SkeletonAssetCompiler : AssetCompilerBase<SkeletonAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, SkeletonAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, SkeletonAsset asset, AssetCompilerResult result)
         {
-            var assetSource = GetAbsolutePath(assetAbsolutePath, asset.Source);
+            var assetSource = GetAbsolutePath(assetItem.FullPath, asset.Source);
             var extension = assetSource.GetFileExtension();
             var buildStep = new AssetBuildStep(assetItem);
 
@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             }
 
             importModelCommand.SourcePath = assetSource;
-            importModelCommand.Location = urlInStorage;
+            importModelCommand.Location = assetItem.Location;
             importModelCommand.Mode = ImportModelCommand.ExportMode.Skeleton;
             importModelCommand.ScaleImport = asset.ScaleImport;
             importModelCommand.PivotPosition = asset.PivotPosition;

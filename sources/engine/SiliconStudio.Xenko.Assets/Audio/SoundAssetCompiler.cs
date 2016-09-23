@@ -18,11 +18,11 @@ namespace SiliconStudio.Xenko.Assets.Audio
 {
     public class SoundAssetCompiler : AssetCompilerBase<SoundAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, SoundAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, SoundAsset asset, AssetCompilerResult result)
         {
             result.BuildSteps = new AssetBuildStep(assetItem)
             {
-                new DecodeSoundFileCommand(urlInStorage, asset)
+                new DecodeSoundFileCommand(assetItem.Location, asset)
             };
         }
 

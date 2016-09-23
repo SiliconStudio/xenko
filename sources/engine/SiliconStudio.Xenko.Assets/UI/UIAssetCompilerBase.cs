@@ -14,9 +14,9 @@ namespace SiliconStudio.Xenko.Assets.UI
     public abstract class UIAssetCompilerBase<T> : AssetCompilerBase<T>
         where T : UIAssetBase
     {
-        protected sealed override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, T asset, AssetCompilerResult result)
+        protected sealed override void Compile(AssetCompilerContext context, AssetItem assetItem, T asset, AssetCompilerResult result)
         {
-            result.BuildSteps = new AssetBuildStep(assetItem) { Create(urlInStorage, asset) };
+            result.BuildSteps = new AssetBuildStep(assetItem) { Create(assetItem.Location, asset) };
         }
 
         protected abstract UIConvertCommand Create(string url, T parameters);

@@ -22,9 +22,9 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     {
         private static readonly FontDataFactory FontDataFactory = new FontDataFactory();
 
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, PrecompiledSpriteFontAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, PrecompiledSpriteFontAsset asset, AssetCompilerResult result)
         {
-            result.BuildSteps = new AssetBuildStep(assetItem) { new PrecompiledSpriteFontCommand(urlInStorage, asset) };
+            result.BuildSteps = new AssetBuildStep(assetItem) { new PrecompiledSpriteFontCommand(assetItem.Location, asset) };
         }
 
         internal class PrecompiledSpriteFontCommand : AssetCommand<PrecompiledSpriteFontAsset>

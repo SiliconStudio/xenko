@@ -19,13 +19,13 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
 {
     internal class SpriteStudioAnimationAssetCompiler : AssetCompilerBase<SpriteStudioAnimationAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, SpriteStudioAnimationAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, SpriteStudioAnimationAsset asset, AssetCompilerResult result)
         {
             var colorSpace = context.GetColorSpace();
 
             result.BuildSteps = new AssetBuildStep(assetItem)
             {
-                new SpriteStudioAnimationAssetCommand(urlInStorage, asset, colorSpace)
+                new SpriteStudioAnimationAssetCommand(assetItem.Location, asset, colorSpace)
             };
         }
 
