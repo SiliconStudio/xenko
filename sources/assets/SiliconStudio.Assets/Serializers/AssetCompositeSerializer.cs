@@ -148,7 +148,7 @@ namespace SiliconStudio.Assets.Serializers
             var contextToken = PrepareLocalContext(context.Descriptor.Type);
             try
             {
-                context.Visitor.VisitObject(context.Instance, context.Descriptor, true);
+                context.Visitor.VisitObject(context.Instance, context.Descriptor, !LocalContext.Value.SerializeAsReference);
             }
             finally
             {
