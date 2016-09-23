@@ -60,11 +60,11 @@ namespace SiliconStudio.Xenko.Engine.NextGen
 
             int cubeWidth = 8;
 
-            //var skybox = Asset.Load<Skybox>("Skybox");
+            //var skybox = Content.Load<Skybox>("Skybox");
             //var skyboxEntity = new Entity { new SkyboxComponent { Skybox = skybox } };
             //Scene.Entities.Add(skyboxEntity);
 
-            var backgroundTexture = Asset.Load<Texture>("XenkoBackground");
+            var backgroundTexture = Content.Load<Texture>("XenkoBackground");
             var backgroundEntity = new Entity { new BackgroundComponent { Texture = backgroundTexture } };
             Scene.Entities.Add(backgroundEntity);
 
@@ -88,7 +88,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
                 }
             }
 
-            //var spriteSheet = Asset.Load<SpriteSheet>("SpriteSheet");
+            //var spriteSheet = Content.Load<SpriteSheet>("SpriteSheet");
             //var spriteEntity = new Entity
             //{
             //    new SpriteComponent

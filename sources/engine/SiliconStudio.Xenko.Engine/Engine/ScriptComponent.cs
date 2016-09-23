@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Engine
             graphicsDeviceService = Services.GetSafeServiceAs<IGraphicsDeviceService>();
 
             Game = Services.GetSafeServiceAs<IGame>();
-            Content = (ContentManager)Services.GetSafeServiceAs<IAssetManager>();
+            Content = (ContentManager)Services.GetSafeServiceAs<IContentManager>();
             Input = Services.GetSafeServiceAs<InputManager>();
             Script = Services.GetSafeServiceAs<ScriptSystem>();
             SceneSystem = Services.GetSafeServiceAs<SceneSystem>();

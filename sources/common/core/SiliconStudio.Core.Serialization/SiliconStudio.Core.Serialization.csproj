@@ -59,7 +59,7 @@
     <Compile Include="Serialization\Assets\AssetSerializer.cs" />
     <Compile Include="Serialization\Assets\ChunkHeader.cs" />
     <Compile Include="Serialization\Assets\IAssetIndexMap.cs" />
-    <Compile Include="Serialization\Assets\IAssetManager.cs" />
+    <Compile Include="Serialization\Assets\IContentManager.cs" />
     <Compile Include="Serialization\Assets\ObjectUrl.cs" />
     <Compile Include="Serialization\Assets\UrlType.cs" />
     <Compile Include="Serialization\ContentReferenceState.cs" />

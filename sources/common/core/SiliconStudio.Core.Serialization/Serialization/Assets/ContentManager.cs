@@ -19,7 +19,7 @@ namespace SiliconStudio.Core.Serialization.Assets
     /// <summary>
     /// Loads and saves assets.
     /// </summary>
-    public sealed partial class ContentManager : IAssetManager
+    public sealed partial class ContentManager : IContentManager
     {
         private static readonly Logger Log = GlobalLogger.GetLogger("ContentManager");
 
@@ -48,7 +48,7 @@ namespace SiliconStudio.Core.Serialization.Assets
             Serializer = new AssetSerializer();
             if (services != null)
             {
-                services.AddService(typeof(IAssetManager), this);
+                services.AddService(typeof(IContentManager), this);
                 services.AddService(typeof(ContentManager), this);
                 Serializer.SerializerContextTags.Set(ServiceRegistry.ServiceRegistryKey, services);
             }

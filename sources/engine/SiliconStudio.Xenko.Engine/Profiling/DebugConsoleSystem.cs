@@ -107,7 +107,7 @@ namespace SiliconStudio.Xenko.Profiling
             {
                 try
                 {
-                    Font = Asset.Load<SpriteFont>("XenkoDefaultFont");
+                    Font = Content.Load<SpriteFont>("XenkoDefaultFont");
                 }
                 catch (Exception)
                 {

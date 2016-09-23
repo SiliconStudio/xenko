@@ -9,7 +9,7 @@ namespace SiliconStudio.Core.Serialization.Assets
     /// <summary>
     /// Interface of the asset manager.
     /// </summary>
-    public interface IAssetManager
+    public interface IContentManager
     {
         /// <summary>
         /// Check if the specified asset url exists.

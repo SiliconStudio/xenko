@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
         /// <summary>
         /// A reference to the game asset manager.
         /// </summary>
-        public IAssetManager Asset { get; private set; }
+        public IContentManager Content { get; private set; }
 
         private IGraphicsDeviceService GraphicsDeviceService { get; }
 
@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
         /// <param name="services">The list of registered services</param>
         public ElementRenderer(IServiceRegistry services)
         {
-            Asset = services.GetSafeServiceAs<IAssetManager>();
+            Content = services.GetSafeServiceAs<IContentManager>();
             GraphicsDeviceService = services.GetSafeServiceAs<IGraphicsDeviceService>();
 
             UI = services.GetServiceAs<UISystem>();

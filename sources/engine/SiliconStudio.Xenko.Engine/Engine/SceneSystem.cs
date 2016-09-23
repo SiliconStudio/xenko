@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Engine
         /// Initializes a new instance of the <see cref="GameSystemBase" /> class.
         /// </summary>
         /// <param name="registry">The registry.</param>
-        /// <remarks>The GameSystem is expecting the following services to be registered: <see cref="IGame" /> and <see cref="IAssetManager" />.</remarks>
+        /// <remarks>The GameSystem is expecting the following services to be registered: <see cref="IGame" /> and <see cref="IContentManager" />.</remarks>
         public SceneSystem(IServiceRegistry registry)
             : base(registry)
         {
