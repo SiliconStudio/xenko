@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Assets.Models
 {
     public class ModelAssetCompiler : AssetCompilerBase<ModelAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, ModelAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, ModelAsset asset, AssetCompilerResult result)
         {
             // Get absolute path of asset source on disk
             var assetDirectory = assetAbsolutePath.GetParent();
@@ -26,13 +26,13 @@ namespace SiliconStudio.Xenko.Assets.Models
             var gameSettingsAsset = context.GetGameSettingsAsset();
             var renderingSettings = gameSettingsAsset.Get<RenderingSettings>();
             var allow32BitIndex = renderingSettings.DefaultGraphicsProfile >= GraphicsProfile.Level_9_2;
-            var allowUnsignedBlendIndices = context.GetGraphicsPlatform(AssetItem.Package) != GraphicsPlatform.OpenGLES;
+            var allowUnsignedBlendIndices = context.GetGraphicsPlatform(assetItem.Package) != GraphicsPlatform.OpenGLES;
             var extension = asset.Source.GetFileExtension();
 
             // Find skeleton asset, if any
             AssetItem skeleton = null;
             if (asset.Skeleton != null)
-                skeleton = AssetItem.Package.FindAssetFromAttachedReference(asset.Skeleton);
+                skeleton = assetItem.Package.FindAssetFromAttachedReference(asset.Skeleton);
 
             var importModelCommand = ImportModelCommand.Create(extension);
             if (importModelCommand == null)
@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             importModelCommand.PivotPosition = asset.PivotPosition;
             importModelCommand.SkeletonUrl = skeleton?.Location;
 
-            result.BuildSteps = new AssetBuildStep(AssetItem) { importModelCommand };
+            result.BuildSteps = new AssetBuildStep(assetItem) { importModelCommand };
         }
     }
 }

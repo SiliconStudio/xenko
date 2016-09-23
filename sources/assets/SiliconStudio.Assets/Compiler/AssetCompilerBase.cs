@@ -13,17 +13,10 @@ namespace SiliconStudio.Assets.Compiler
     /// <typeparam name="T">Type of the asset</typeparam>
     public abstract class AssetCompilerBase<T> : IAssetCompiler where T : Asset
     {
-        /// <summary>
-        /// The current <see cref="AssetItem"/> to compile.
-        /// </summary>
-        protected AssetItem AssetItem;
-
         public AssetCompilerResult Compile(CompilerContext context, AssetItem assetItem)
         {
             if (context == null) throw new ArgumentNullException(nameof(context));
             if (assetItem == null) throw new ArgumentNullException(nameof(assetItem));
-
-            AssetItem = assetItem;
 
             var result = new AssetCompilerResult(GetType().Name)
             {
@@ -40,9 +33,8 @@ namespace SiliconStudio.Assets.Compiler
             // Try to compile only if we're sure that the sources exist.
             if (EnsureSourcesExist(result, (T)assetItem.Asset, assetItem.FullPath))
             {
-                Compile((AssetCompilerContext)context, assetItem.Location.GetDirectoryAndFileName(), assetItem.FullPath, (T)assetItem.Asset, result);
+                Compile((AssetCompilerContext)context, assetItem.Location.GetDirectoryAndFileName(), assetItem.FullPath, assetItem, (T)assetItem.Asset, result);
             }
-            AssetItem = null;
 
             return result;
         }
@@ -53,9 +45,10 @@ namespace SiliconStudio.Assets.Compiler
         /// <param name="context"></param>
         /// <param name="urlInStorage">The absolute URL to the asset, relative to the storage.</param>
         /// <param name="assetAbsolutePath">Absolute path of the asset on the disk</param>
+        /// <param name="assetItem"></param>
         /// <param name="asset">The asset.</param>
         /// <param name="result">The result where the commands and logs should be output.</param>
-        protected abstract void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, T asset, AssetCompilerResult result);
+        protected abstract void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, T asset, AssetCompilerResult result);
 
         /// <summary>
         /// Returns the absolute path on the disk of an <see cref="UFile"/> that is relative to the asset location.

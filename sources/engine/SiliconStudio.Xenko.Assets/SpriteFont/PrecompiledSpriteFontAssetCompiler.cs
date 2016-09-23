@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
@@ -21,9 +22,9 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     {
         private static readonly FontDataFactory FontDataFactory = new FontDataFactory();
 
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, PrecompiledSpriteFontAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, PrecompiledSpriteFontAsset asset, AssetCompilerResult result)
         {
-            result.BuildSteps = new AssetBuildStep(AssetItem) { new PrecompiledSpriteFontCommand(urlInStorage, asset) };
+            result.BuildSteps = new AssetBuildStep(assetItem) { new PrecompiledSpriteFontCommand(urlInStorage, asset) };
         }
 
         internal class PrecompiledSpriteFontCommand : AssetCommand<PrecompiledSpriteFontAsset>

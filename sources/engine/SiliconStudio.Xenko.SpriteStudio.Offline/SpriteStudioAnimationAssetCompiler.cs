@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using SiliconStudio.Assets;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Graphics;
@@ -18,12 +19,11 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
 {
     internal class SpriteStudioAnimationAssetCompiler : AssetCompilerBase<SpriteStudioAnimationAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath,
-            SpriteStudioAnimationAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, SpriteStudioAnimationAsset asset, AssetCompilerResult result)
         {
             var colorSpace = context.GetColorSpace();
 
-            result.BuildSteps = new AssetBuildStep(AssetItem)
+            result.BuildSteps = new AssetBuildStep(assetItem)
             {
                 new SpriteStudioAnimationAssetCommand(urlInStorage, asset, colorSpace)
             };

@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     {
         private static readonly FontDataFactory FontDataFactory = new FontDataFactory();
 
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, SpriteFontAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, SpriteFontAsset asset, AssetCompilerResult result)
         {
             var colorSpace = context.GetColorSpace();
 
@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 assetClone.FontSource = asset.FontSource;
                 fontTypeSDF.CharacterSet = !string.IsNullOrEmpty(fontTypeSDF.CharacterSet) ? UPath.Combine(assetDirectory, fontTypeSDF.CharacterSet) : null;
 
-                result.BuildSteps = new AssetBuildStep(AssetItem) { new SignedDistanceFieldFontCommand(urlInStorage, assetClone) };
+                result.BuildSteps = new AssetBuildStep(assetItem) { new SignedDistanceFieldFontCommand(urlInStorage, assetClone) };
             }
             else
             if (asset.FontType is RuntimeRasterizedSpriteFontType)
@@ -50,13 +50,13 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 if (fontPathOnDisk == null)
                 {
                     result.Error("Runtime rasterized font compilation failed. Font {0} was not found on this machine.", asset.FontSource.GetFontName());
-                    result.BuildSteps = new AssetBuildStep(AssetItem) { new FailedFontCommand() };
+                    result.BuildSteps = new AssetBuildStep(assetItem) { new FailedFontCommand() };
                     return;
                 }
 
                 var fontImportLocation = FontHelper.GetFontPath(asset.FontSource.GetFontName(), asset.FontSource.Style);
 
-                result.BuildSteps = new AssetBuildStep(AssetItem)
+                result.BuildSteps = new AssetBuildStep(assetItem)
                 {
                     new ImportStreamCommand { SourcePath = fontPathOnDisk, Location = fontImportLocation },
                     new RuntimeRasterizedFontCommand(urlInStorage, asset)
@@ -74,7 +74,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 assetClone.FontSource = asset.FontSource;
                 fontTypeStatic.CharacterSet = !string.IsNullOrEmpty(fontTypeStatic.CharacterSet) ? UPath.Combine(assetDirectory, fontTypeStatic.CharacterSet): null;
 
-                result.BuildSteps = new AssetBuildStep(AssetItem) { new OfflineRasterizedFontCommand(urlInStorage, assetClone, colorSpace) };
+                result.BuildSteps = new AssetBuildStep(assetItem) { new OfflineRasterizedFontCommand(urlInStorage, assetClone, colorSpace) };
             }
         }
 

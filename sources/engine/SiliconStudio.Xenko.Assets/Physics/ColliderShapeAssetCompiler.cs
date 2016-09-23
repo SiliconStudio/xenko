@@ -30,11 +30,11 @@ namespace SiliconStudio.Xenko.Assets.Physics
             NativeLibrary.PreloadLibrary("VHACD.dll");
         }
 
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, ColliderShapeAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, ColliderShapeAsset asset, AssetCompilerResult result)
         {
-            result.BuildSteps = new AssetBuildStep(AssetItem)
+            result.BuildSteps = new AssetBuildStep(assetItem)
             {
-                new ColliderShapeCombineCommand(urlInStorage, asset, AssetItem.Package),
+                new ColliderShapeCombineCommand(urlInStorage, asset, assetItem.Package),
             };
 
             result.ShouldWaitForPreviousBuilds = asset.ColliderShapes.Any(shape => shape != null && shape.GetType() == typeof(ConvexHullColliderShapeDesc));

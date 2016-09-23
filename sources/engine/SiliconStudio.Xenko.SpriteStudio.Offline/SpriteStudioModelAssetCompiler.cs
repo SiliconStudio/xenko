@@ -11,6 +11,7 @@ using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.SpriteStudio.Runtime;
 using System.Collections.Generic;
 using System.Globalization;
+using SiliconStudio.Assets;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
 
@@ -18,7 +19,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
 {
     internal class SpriteStudioModelAssetCompiler : AssetCompilerBase<SpriteStudioModelAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, SpriteStudioModelAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, SpriteStudioModelAsset asset, AssetCompilerResult result)
         {
             var gameSettingsAsset = context.GetGameSettingsAsset();
             var renderingSettings = gameSettingsAsset.Get<RenderingSettings>(context.Platform);
@@ -47,7 +48,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                 new TextureAssetCompiler.TextureConvertCommand(
                     urlInStorage + texIndex,
                     new TextureConvertParameters(texture, textureAsset, context.Platform,
-                        context.GetGraphicsPlatform(AssetItem.Package), renderingSettings.DefaultGraphicsProfile,
+                        context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile,
                         gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace)));
 
                 asset.BuildTextures.Add(urlInStorage + texIndex);
@@ -55,7 +56,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                 texIndex++;
             }
 
-            result.BuildSteps.Add(new AssetBuildStep(AssetItem)
+            result.BuildSteps.Add(new AssetBuildStep(assetItem)
             {
                 new SpriteStudioModelAssetCommand(urlInStorage, asset, colorSpace)
             });

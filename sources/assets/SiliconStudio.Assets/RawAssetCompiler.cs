@@ -11,13 +11,13 @@ namespace SiliconStudio.Assets
     /// </summary>
     internal class RawAssetCompiler : AssetCompilerBase<RawAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, RawAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, RawAsset asset, AssetCompilerResult result)
         {
             // Get absolute path of asset source on disk
             var assetSource = GetAbsolutePath(assetAbsolutePath, asset.Source);
             var importCommand = new ImportStreamCommand(urlInStorage, assetSource) { DisableCompression = !asset.Compress };
 
-            result.BuildSteps = new AssetBuildStep(AssetItem) { importCommand };
+            result.BuildSteps = new AssetBuildStep(assetItem) { importCommand };
         }
     }
 }

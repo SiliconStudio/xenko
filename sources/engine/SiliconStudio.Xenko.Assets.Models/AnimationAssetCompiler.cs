@@ -16,18 +16,18 @@ namespace SiliconStudio.Xenko.Assets.Models
 {
     public class AnimationAssetCompiler : AssetCompilerBase<AnimationAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AnimationAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, AnimationAsset asset, AssetCompilerResult result)
         {
             // Get absolute path of asset source on disk
             var assetDirectory = assetAbsolutePath.GetParent();
             var assetSource = GetAbsolutePath(assetAbsolutePath, asset.Source);
             var extension = assetSource.GetFileExtension();
-            var buildStep = new AssetBuildStep(AssetItem);
+            var buildStep = new AssetBuildStep(assetItem);
 
             // Find skeleton asset, if any
             AssetItem skeleton = null;
             if (asset.Skeleton != null)
-                skeleton = AssetItem.Package.FindAssetFromAttachedReference(asset.Skeleton);
+                skeleton = assetItem.Package.FindAssetFromAttachedReference(asset.Skeleton);
 
             var sourceBuildStep = ImportModelCommand.Create(extension);
             if (sourceBuildStep == null)

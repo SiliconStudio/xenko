@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
 {
     internal class SkyboxAssetCompiler : AssetCompilerBase<SkyboxAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, SkyboxAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, SkyboxAsset asset, AssetCompilerResult result)
         {
             result.BuildSteps = new ListBuildStep();
             result.ShouldWaitForPreviousBuilds = true;
@@ -27,16 +27,16 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             // build the textures for windows (needed for skybox compilation)
             foreach (var dependency in asset.Model.GetDependencies())
             {
-                var assetItem = AssetItem.Package.Assets.Find(dependency.Id);
-                if (assetItem != null && assetItem.Asset is TextureAsset)
+                var dependencyItem = assetItem.Package.Assets.Find(dependency.Id);
+                if (dependencyItem?.Asset is TextureAsset)
                 {
-                    var textureAsset = (TextureAsset)assetItem.Asset;
+                    var textureAsset = (TextureAsset)dependencyItem.Asset;
 
                     // Get absolute path of asset source on disk
-                    var assetSource = GetAbsolutePath(assetItem.Location.GetDirectoryAndFileName(), textureAsset.Source);
+                    var assetSource = GetAbsolutePath(dependencyItem.Location.GetDirectoryAndFileName(), textureAsset.Source);
 
                     // Create a synthetic url
-                    var textureUrl = SkyboxGenerator.BuildTextureForSkyboxGenerationLocation(assetItem.Location);
+                    var textureUrl = SkyboxGenerator.BuildTextureForSkyboxGenerationLocation(dependencyItem.Location);
 
                     var gameSettingsAsset = context.GetGameSettingsAsset();
                     var renderingSettings = gameSettingsAsset.Get<RenderingSettings>(context.Platform);
@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             }
 
             // add the skybox command itself.
-            result.BuildSteps.Add(new AssetBuildStep(AssetItem) {  new SkyboxCompileCommand(urlInStorage, asset) });
+            result.BuildSteps.Add(new AssetBuildStep(assetItem) {  new SkyboxCompileCommand(urlInStorage, asset) });
         }
 
         private class SkyboxCompileCommand : AssetCommand<SkyboxAsset>

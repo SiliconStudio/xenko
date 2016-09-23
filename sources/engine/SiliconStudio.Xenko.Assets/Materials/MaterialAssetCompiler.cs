@@ -15,10 +15,10 @@ namespace SiliconStudio.Xenko.Assets.Materials
 {
     internal class MaterialAssetCompiler : AssetCompilerBase<MaterialAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, MaterialAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, MaterialAsset asset, AssetCompilerResult result)
         {
             result.ShouldWaitForPreviousBuilds = true;
-            result.BuildSteps = new AssetBuildStep(AssetItem) { new MaterialCompileCommand(urlInStorage, AssetItem, asset, context) };
+            result.BuildSteps = new AssetBuildStep(assetItem) { new MaterialCompileCommand(urlInStorage, assetItem, asset, context) };
         }
 
         private class MaterialCompileCommand : AssetCommand<MaterialAsset>

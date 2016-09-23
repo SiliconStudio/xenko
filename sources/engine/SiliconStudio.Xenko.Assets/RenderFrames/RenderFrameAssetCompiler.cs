@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Threading.Tasks;
-
+using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Assets.RenderFrames
 {
     public class RenderFrameAssetCompiler : AssetCompilerBase<RenderFrameAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, RenderFrameAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, RenderFrameAsset asset, AssetCompilerResult result)
         {
             result.BuildSteps = new ListBuildStep { new RenderFrameCompileCommand(urlInStorage, asset) };
         }

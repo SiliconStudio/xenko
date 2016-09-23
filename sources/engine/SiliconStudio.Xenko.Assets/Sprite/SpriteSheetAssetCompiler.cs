@@ -26,12 +26,12 @@ namespace SiliconStudio.Xenko.Assets.Sprite
     /// </summary>
     public class SpriteSheetAssetCompiler : AssetCompilerBase<SpriteSheetAsset> 
     {
-        private bool TextureFileIsValid(UFile file)
+        private static bool TextureFileIsValid(UFile file)
         {
             return file != null && File.Exists(file);
         }
 
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, SpriteSheetAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, SpriteSheetAsset asset, AssetCompilerResult result)
         {
             var gameSettingsAsset = context.GetGameSettingsAsset();
             var renderingSettings = gameSettingsAsset.Get<RenderingSettings>(context.Platform);
@@ -84,15 +84,15 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     {
                         new TextureAssetCompiler.TextureConvertCommand(
                             textureUrl,
-                            new TextureConvertParameters(assetSource, textureAsset, context.Platform, context.GetGraphicsPlatform(AssetItem.Package), renderingSettings.DefaultGraphicsProfile, gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace))
+                            new TextureConvertParameters(assetSource, textureAsset, context.Platform, context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile, gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace))
                     });
                 }
             }
 
             if (!result.HasErrors)
             {
-                var parameters = new SpriteSheetParameters(asset, imageToTextureUrl, context.Platform, context.GetGraphicsPlatform(AssetItem.Package), renderingSettings.DefaultGraphicsProfile, gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace);
-                result.BuildSteps.Add(new AssetBuildStep(AssetItem) { new SpriteSheetCommand(urlInStorage, parameters) });
+                var parameters = new SpriteSheetParameters(asset, imageToTextureUrl, context.Platform, context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile, gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace);
+                result.BuildSteps.Add(new AssetBuildStep(assetItem) { new SpriteSheetCommand(urlInStorage, parameters) });
             }
         }
 
@@ -399,27 +399,21 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                 /// <summary>
                 /// The index of the atlas texture the sprite has been packed in.
                 /// </summary>
-                public int AtlasTextureIndex { get; private set; }
+                public int AtlasTextureIndex { get; }
 
                 /// <summary>
                 /// Gets the region of the packed sprite.
                 /// </summary>
-                public RectangleF Region
-                {
-                    get
-                    {
-                        return new RectangleF(
-                            borderSize + packedRectangle.X, 
-                            borderSize + packedRectangle.Y,
-                            packedRectangle.Width - 2 * borderSize,
-                            packedRectangle.Height - 2 * borderSize);
-                    }
-                }
+                public RectangleF Region => new RectangleF(
+                    borderSize + packedRectangle.X, 
+                    borderSize + packedRectangle.Y,
+                    packedRectangle.Width - 2 * borderSize,
+                    packedRectangle.Height - 2 * borderSize);
 
                 /// <summary>
                 /// Indicate if the packed sprite have been rotated.
                 /// </summary>
-                public bool IsRotated { get { return packedRectangle.IsRotated; } }
+                public bool IsRotated => packedRectangle.IsRotated;
 
                 public PackedSpriteInfo(RotableRectangle packedRectangle, int atlasTextureIndex, float borderSize)
                 {

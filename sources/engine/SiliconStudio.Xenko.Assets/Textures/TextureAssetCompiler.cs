@@ -1,9 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Threading.Tasks;
-
+using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
@@ -20,7 +19,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
     /// </summary>
     public class TextureAssetCompiler : AssetCompilerBase<TextureAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, TextureAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, TextureAsset asset, AssetCompilerResult result)
         {        
             // Get absolute path of asset source on disk
             var assetSource = GetAbsolutePath(assetAbsolutePath, asset.Source);
@@ -28,8 +27,8 @@ namespace SiliconStudio.Xenko.Assets.Textures
             var gameSettingsAsset = context.GetGameSettingsAsset();
             var colorSpace = context.GetColorSpace();
 
-            var parameter = new TextureConvertParameters(assetSource, asset, context.Platform, context.GetGraphicsPlatform(AssetItem.Package), gameSettingsAsset.Get<RenderingSettings>(context.Platform).DefaultGraphicsProfile, gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace);
-            result.BuildSteps = new AssetBuildStep(AssetItem) { new TextureConvertCommand(urlInStorage, parameter) };
+            var parameter = new TextureConvertParameters(assetSource, asset, context.Platform, context.GetGraphicsPlatform(assetItem.Package), gameSettingsAsset.Get<RenderingSettings>(context.Platform).DefaultGraphicsProfile, gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace);
+            result.BuildSteps = new AssetBuildStep(assetItem) { new TextureConvertCommand(urlInStorage, parameter) };
         }
 
         /// <summary>

@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 {
     public abstract class EntityHierarchyCompilerBase<T> : AssetCompilerBase<T> where T : EntityHierarchyAssetBase
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, T asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, T asset, AssetCompilerResult result)
         {
             foreach (var entityData in asset.Hierarchy.Parts)
             {
@@ -35,8 +35,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     var modelId = modelAttachedReference.Id;
 
                     // compute the full path to the source asset.
-                    var assetItem = AssetItem.Package.Session.FindAsset(modelId);
-                    if (assetItem == null)
+                    var modelAssetItem = assetItem.Package.Session.FindAsset(modelId);
+                    if (modelAssetItem == null)
                     {
                         result.Error($"The entity [{urlInStorage}:{entityData.Entity.Name}] is referencing an unreachable model.");
                         continue;
@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 }
             }
 
-            result.BuildSteps = new AssetBuildStep(AssetItem) { Create(urlInStorage, AssetItem.Package, context, asset) };
+            result.BuildSteps = new AssetBuildStep(assetItem) { Create(urlInStorage, assetItem.Package, context, asset) };
         }
 
         protected abstract EntityHierarchyCommandBase Create(string url, Package package, AssetCompilerContext context, T assetParameters);
