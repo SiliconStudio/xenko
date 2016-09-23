@@ -11,19 +11,19 @@
 extern "C"
 {
 	// Navmesh Builder
-	NavigationBuilder* xnNavigationCreateBuilder()
+	DLL_EXPORT_API NavigationBuilder* xnNavigationCreateBuilder()
 	{
 		return new NavigationBuilder();
 	}
-	void xnNavigationDestroyBuilder(NavigationBuilder* nav)
+	DLL_EXPORT_API void xnNavigationDestroyBuilder(NavigationBuilder* nav)
 	{
 		delete nav;
 	}
-	void xnNavigationSetSettings(NavigationBuilder* nav, BuildSettings* buildSettings)
+	DLL_EXPORT_API void xnNavigationSetSettings(NavigationBuilder* nav, BuildSettings* buildSettings)
 	{
 		nav->SetSettings(*buildSettings);
 	}
-	GeneratedData* xnNavigationBuildNavmesh(NavigationBuilder* nav,
+	DLL_EXPORT_API GeneratedData* xnNavigationBuildNavmesh(NavigationBuilder* nav,
 		Vector3* vertices, int numVertices,
 		int* indices, int numIndices)
 	{
@@ -31,7 +31,7 @@ extern "C"
 	}
 
 	// Navmesh Query
-	void* xnNavigationLoadNavmesh(uint8_t* data, int dataLength)
+	DLL_EXPORT_API void* xnNavigationLoadNavmesh(uint8_t* data, int dataLength)
 	{
 		Navmesh* navmesh = new Navmesh();
 		if (!navmesh->Load(data, dataLength))
@@ -41,11 +41,11 @@ extern "C"
 		}
 		return navmesh;
 	}
-	void xnNavigationDestroyNavmesh(Navmesh* navmesh)
+	DLL_EXPORT_API void xnNavigationDestroyNavmesh(Navmesh* navmesh)
 	{
 		delete navmesh;
 	}
-	NavmeshQueryResult* xnNavigationQuery(Navmesh* navmesh, NavmeshQuery query)
+	DLL_EXPORT_API NavmeshQueryResult* xnNavigationQuery(Navmesh* navmesh, NavmeshQuery query)
 	{
 		return navmesh->Query(query);
 	}
