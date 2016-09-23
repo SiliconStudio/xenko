@@ -19,8 +19,6 @@ using SiliconStudio.Core.IO;
 using System.Reflection;
 using SiliconStudio.Core.Extensions;
 
-using SiliconStudio.Core.Serialization;
-
 namespace SiliconStudio.BuildEngine
 {
     public class Builder : IDisposable
@@ -49,6 +47,11 @@ namespace SiliconStudio.BuildEngine
             /// </summary>
             CleanAndDelete,
         }
+
+        /// <summary>
+        /// Gets the <see cref="ObjectDatabase"/> in which built objects are written.
+        /// </summary>
+        public static ObjectDatabase ObjectDatabase { get; private set; }
 
         /// <summary>
         /// Logger used by the builder and the commands
@@ -182,30 +185,27 @@ namespace SiliconStudio.BuildEngine
             InitialVariables = new Dictionary<string, string>();
         }
 
-        public static void SetupBuildPath(string buildPath, string indexName)
+        public static void OpenObjectDatabase(string buildPath, string indexName)
         {
             // Mount build path
             ((FileSystemProvider)VirtualFileSystem.ApplicationData).ChangeBasePath(buildPath);
-            if (IndexFileCommand.ObjectDatabase == null)
+            if (ObjectDatabase == null)
             {
                 // Note: this has to be done after VFS.ChangeBasePath
-                IndexFileCommand.ObjectDatabase = new ObjectDatabase(VirtualFileSystem.ApplicationDatabasePath, indexName, null, false);
+                ObjectDatabase = new ObjectDatabase(VirtualFileSystem.ApplicationDatabasePath, indexName, null, false);
             }
         }
 
-        public static void ReleaseBuildPath()
+        public static void CloseObjectDatabase()
         {
-            if (IndexFileCommand.ObjectDatabase != null)
-            {
-                var db = IndexFileCommand.ObjectDatabase;
-                IndexFileCommand.ObjectDatabase = null;
-                db.Dispose();
-            }
+            var db = ObjectDatabase;
+            ObjectDatabase = null;
+            db?.Dispose();
         }
 
         public void Dispose()
         {
-            ReleaseBuildPath();
+            CloseObjectDatabase();
         }
 
         private class ExecuteContext : IExecuteContext
@@ -367,7 +367,8 @@ namespace SiliconStudio.BuildEngine
                         {
                             try
                             {
-                                IndexFileCommand.MountDatabase(executeContext.GetOutputObjectsGroups());
+                                IEnumerable<IDictionary<ObjectUrl, OutputObject>> outputObjectsGroups = executeContext.GetOutputObjectsGroups();
+                                MicrothreadLocalDatabases.MountDatabase(outputObjectsGroups);
 
                                 // Execute
                                 status = await buildStep.Execute(executeContext, builderContext);
@@ -386,8 +387,8 @@ namespace SiliconStudio.BuildEngine
                             }
                             finally
                             {
-                                IndexFileCommand.UnmountDatabase();
-                                
+                                MicrothreadLocalDatabases.UnmountDatabase();
+
                                 // Ensure the command set at least the result status
                                 if (status == ResultStatus.NotProcessed)
                                     throw new InvalidDataException("The build step " + buildStep + " returned ResultStatus.NotProcessed after completion.");
@@ -529,8 +530,8 @@ namespace SiliconStudio.BuildEngine
         public BuildResultCode Run(Mode mode, bool writeIndexFile = true, bool enableMonitor = true)
         {
             // When we setup the database ourself we have to take responsibility to close it after
-            var shouldCloseDatabase = IndexFileCommand.ObjectDatabase == null;
-            SetupBuildPath(buildPath, indexName);
+            var shouldCloseDatabase = ObjectDatabase == null;
+            OpenObjectDatabase(buildPath, indexName);
 
             PreRun();
 
@@ -551,7 +552,7 @@ namespace SiliconStudio.BuildEngine
             {
                 var builderContext = new BuilderContext(buildPath, buildProfile, inputHashes, parameters, MaxParallelProcesses, SlaveBuilderPath);
 
-                resultMap = IndexFileCommand.ObjectDatabase;
+                resultMap = ObjectDatabase;
 
                 scheduler = new Scheduler();
                 if (enableMonitor)
@@ -657,10 +658,9 @@ namespace SiliconStudio.BuildEngine
             resultMap = null;
             IsRunning = false;
 
-            if (shouldCloseDatabase && IndexFileCommand.ObjectDatabase != null)
+            if (shouldCloseDatabase)
             {
-                IndexFileCommand.ObjectDatabase.Dispose();
-                IndexFileCommand.ObjectDatabase = null;
+                CloseObjectDatabase();
             }
 
             return result;
@@ -668,7 +668,7 @@ namespace SiliconStudio.BuildEngine
 
         private void PreRun()
         {
-            var objectDatabase = IndexFileCommand.ObjectDatabase;
+            var objectDatabase = Builder.ObjectDatabase;
 
             // Check current database version, and erase it if too old
             int currentVersion = 0;
@@ -712,7 +712,7 @@ namespace SiliconStudio.BuildEngine
             }
 
             // Prepare data base directories
-            ContentManager.GetFileProvider = () => IndexFileCommand.DatabaseFileProvider;
+            ContentManager.GetFileProvider = () => MicrothreadLocalDatabases.DatabaseFileProvider;
             var databasePathSplits = VirtualFileSystem.ApplicationDatabasePath.Split('/');
             var accumulatorPath = "/";
             foreach (var pathPart in databasePathSplits.Where(x => x != ""))
@@ -818,9 +818,10 @@ namespace SiliconStudio.BuildEngine
 
         private static IEnumerable<CommandBuildStep> CollectCommandSteps(BuildStep step)
         {
-            if (step is CommandBuildStep)
+            var commandBuildStep = step as CommandBuildStep;
+            if (commandBuildStep != null)
             {
-                yield return (CommandBuildStep)step;
+                yield return commandBuildStep;
             }
 
             // NOTE: We assume that only EnumerableBuildStep is the base class for sub-steps and that ContentReferencable BuildStep are accessible from them (not through dynamic build step)

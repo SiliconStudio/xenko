@@ -246,14 +246,15 @@ namespace SiliconStudio.BuildEngine
 
         internal bool ShouldExecute(IExecuteContext executeContext, CommandResultEntry[] previousResultCollection, ObjectId commandHash, out CommandResultEntry matchingResult)
         {
-            IndexFileCommand.MountDatabase(executeContext.GetOutputObjectsGroups());
+            IEnumerable<IDictionary<ObjectUrl, OutputObject>> outputObjectsGroups = executeContext.GetOutputObjectsGroups();
+            MicrothreadLocalDatabases.MountDatabase(outputObjectsGroups);
             try
             {
                 matchingResult = FindMatchingResult(executeContext, previousResultCollection);
             }
             finally
             {
-                IndexFileCommand.UnmountDatabase();
+                MicrothreadLocalDatabases.UnmountDatabase();
             }
 
             if (matchingResult == null || Command.ShouldForceExecution())
