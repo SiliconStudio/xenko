@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     {
         private static readonly FontDataFactory FontDataFactory = new FontDataFactory();
 
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, SpriteFontAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, SpriteFontAsset asset, AssetCompilerResult result)
         {
             var colorSpace = context.GetColorSpace();
 
@@ -37,11 +37,11 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
                 // copy the asset and transform the source and character set file path to absolute paths
                 var assetClone = (SpriteFontAsset)AssetCloner.Clone(asset);
-                var assetDirectory = assetAbsolutePath.GetParent();
+                var assetDirectory = assetItem.FullPath.GetParent();
                 assetClone.FontSource = asset.FontSource;
                 fontTypeSDF.CharacterSet = !string.IsNullOrEmpty(fontTypeSDF.CharacterSet) ? UPath.Combine(assetDirectory, fontTypeSDF.CharacterSet) : null;
 
-                result.BuildSteps = new AssetBuildStep(AssetItem) { new SignedDistanceFieldFontCommand(urlInStorage, assetClone) };
+                result.BuildSteps = new AssetBuildStep(assetItem) { new SignedDistanceFieldFontCommand(assetItem.Location, assetClone) };
             }
             else
             if (asset.FontType is RuntimeRasterizedSpriteFontType)
@@ -50,16 +50,16 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 if (fontPathOnDisk == null)
                 {
                     result.Error("Runtime rasterized font compilation failed. Font {0} was not found on this machine.", asset.FontSource.GetFontName());
-                    result.BuildSteps = new AssetBuildStep(AssetItem) { new FailedFontCommand() };
+                    result.BuildSteps = new AssetBuildStep(assetItem) { new FailedFontCommand() };
                     return;
                 }
 
                 var fontImportLocation = FontHelper.GetFontPath(asset.FontSource.GetFontName(), asset.FontSource.Style);
 
-                result.BuildSteps = new AssetBuildStep(AssetItem)
+                result.BuildSteps = new AssetBuildStep(assetItem)
                 {
                     new ImportStreamCommand { SourcePath = fontPathOnDisk, Location = fontImportLocation },
-                    new RuntimeRasterizedFontCommand(urlInStorage, asset)
+                    new RuntimeRasterizedFontCommand(assetItem.Location, asset)
                 };  
             }
             else
@@ -70,11 +70,11 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
                 // copy the asset and transform the source and character set file path to absolute paths
                 var assetClone = (SpriteFontAsset)AssetCloner.Clone(asset);
-                var assetDirectory = assetAbsolutePath.GetParent();
+                var assetDirectory = assetItem.FullPath.GetParent();
                 assetClone.FontSource = asset.FontSource;
                 fontTypeStatic.CharacterSet = !string.IsNullOrEmpty(fontTypeStatic.CharacterSet) ? UPath.Combine(assetDirectory, fontTypeStatic.CharacterSet): null;
 
-                result.BuildSteps = new AssetBuildStep(AssetItem) { new OfflineRasterizedFontCommand(urlInStorage, assetClone, colorSpace) };
+                result.BuildSteps = new AssetBuildStep(assetItem) { new OfflineRasterizedFontCommand(assetItem.Location, assetClone, colorSpace) };
             }
         }
 
@@ -90,7 +90,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
             protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
             {
-                var fontTypeStatic = AssetParameters.FontType as OfflineRasterizedSpriteFontType;
+                var fontTypeStatic = Parameters.FontType as OfflineRasterizedSpriteFontType;
                 if (fontTypeStatic == null)
                     throw new ArgumentException("Tried to compile a dynamic sprite font with compiler for signed distance field fonts");
 
@@ -110,7 +110,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 Graphics.SpriteFont staticFont;
                 try
                 {
-                    staticFont = OfflineRasterizedFontCompiler.Compile(FontDataFactory, AssetParameters, colorspace == ColorSpace.Linear);
+                    staticFont = OfflineRasterizedFontCompiler.Compile(FontDataFactory, Parameters, colorspace == ColorSpace.Linear);
                 }
                 catch (FontNotFoundException ex) 
                 {
@@ -146,7 +146,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
             protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
             {
-                var fontTypeSDF = AssetParameters.FontType as SignedDistanceFieldSpriteFontType;
+                var fontTypeSDF = Parameters.FontType as SignedDistanceFieldSpriteFontType;
                 if (fontTypeSDF == null)
                     throw new ArgumentException("Tried to compile a dynamic sprite font with compiler for signed distance field fonts");
 
@@ -168,7 +168,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 Graphics.SpriteFont scalableFont;
                 try
                 {
-                    scalableFont = SignedDistanceFieldFontCompiler.Compile(FontDataFactory, AssetParameters);
+                    scalableFont = SignedDistanceFieldFontCompiler.Compile(FontDataFactory, Parameters);
                 }
                 catch (FontNotFoundException ex)
                 {
@@ -202,9 +202,9 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 var dynamicFont = FontDataFactory.NewDynamic(
-                    AssetParameters.FontType.Size, AssetParameters.FontSource.GetFontName(), AssetParameters.FontSource.Style, 
-                    AssetParameters.FontType.AntiAlias, useKerning:false, extraSpacing:AssetParameters.Spacing, extraLineSpacing:AssetParameters.LineSpacing, 
-                    defaultCharacter:AssetParameters.DefaultCharacter);
+                    Parameters.FontType.Size, Parameters.FontSource.GetFontName(), Parameters.FontSource.Style, 
+                    Parameters.FontType.AntiAlias, useKerning:false, extraSpacing:Parameters.Spacing, extraLineSpacing:Parameters.LineSpacing, 
+                    defaultCharacter:Parameters.DefaultCharacter);
 
                 var assetManager = new ContentManager();
                 assetManager.Save(Url, dynamicFont);

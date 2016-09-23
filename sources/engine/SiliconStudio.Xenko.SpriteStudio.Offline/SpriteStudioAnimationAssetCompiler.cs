@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using SiliconStudio.Assets;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Graphics;
@@ -18,14 +19,13 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
 {
     internal class SpriteStudioAnimationAssetCompiler : AssetCompilerBase<SpriteStudioAnimationAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath,
-            SpriteStudioAnimationAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, SpriteStudioAnimationAsset asset, AssetCompilerResult result)
         {
             var colorSpace = context.GetColorSpace();
 
-            result.BuildSteps = new AssetBuildStep(AssetItem)
+            result.BuildSteps = new AssetBuildStep(assetItem)
             {
-                new SpriteStudioAnimationAssetCommand(urlInStorage, asset, colorSpace)
+                new SpriteStudioAnimationAssetCommand(assetItem.Location, asset, colorSpace)
             };
         }
 
@@ -46,26 +46,26 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
             {
                 var nodes = new List<SpriteStudioNode>();
                 string modelName;
-                if (!SpriteStudioXmlImport.ParseModel(AssetParameters.Source, nodes, out modelName))
+                if (!SpriteStudioXmlImport.ParseModel(Parameters.Source, nodes, out modelName))
                 {
                     return null;
                 }
 
                 var anims = new List<SpriteStudioAnim>();
-                if (!SpriteStudioXmlImport.ParseAnimations(AssetParameters.Source, anims))
+                if (!SpriteStudioXmlImport.ParseAnimations(Parameters.Source, anims))
                 {
                     return null;
                 }
 
                 var assetManager = new ContentManager();
 
-                var anim = anims.First(x => x.Name == AssetParameters.AnimationName);
+                var anim = anims.First(x => x.Name == Parameters.AnimationName);
 
                 //Compile the animations
                 var animation = new AnimationClip
                 {
                     Duration = TimeSpan.FromSeconds((1.0 / anim.Fps) * anim.FrameCount),
-                    RepeatMode = AssetParameters.RepeatMode
+                    RepeatMode = Parameters.RepeatMode
                 };
 
                 var nodeMapping = nodes.Select((x, i) => new { Name = x.Name, Index = i }).ToDictionary(x => x.Name, x => x.Index);

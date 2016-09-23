@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         private class PrefabCommand : EntityHierarchyCommandBase
         {
-            public PrefabCommand(string url, Package package, AssetCompilerContext context, PrefabAsset assetParameters) : base(url, package, context, assetParameters)
+            public PrefabCommand(string url, Package package, AssetCompilerContext context, PrefabAsset parameters) : base(url, package, context, parameters)
             {
             }
 

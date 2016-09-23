@@ -1,9 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Threading.Tasks;
-
+using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
@@ -20,19 +19,16 @@ namespace SiliconStudio.Xenko.Assets.Textures
     /// </summary>
     public class TextureAssetCompiler : AssetCompilerBase<TextureAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, TextureAsset asset, AssetCompilerResult result)
-        {
-            if (!EnsureSourcesExist(result, asset, assetAbsolutePath))
-                return;
-        
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, TextureAsset asset, AssetCompilerResult result)
+        {        
             // Get absolute path of asset source on disk
-            var assetSource = GetAbsolutePath(assetAbsolutePath, asset.Source);
+            var assetSource = GetAbsolutePath(assetItem.FullPath, asset.Source);
 
             var gameSettingsAsset = context.GetGameSettingsAsset();
             var colorSpace = context.GetColorSpace();
 
-            var parameter = new TextureConvertParameters(assetSource, asset, context.Platform, context.GetGraphicsPlatform(AssetItem.Package), gameSettingsAsset.Get<RenderingSettings>(context.Platform).DefaultGraphicsProfile, gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace);
-            result.BuildSteps = new AssetBuildStep(AssetItem) { new TextureConvertCommand(urlInStorage, parameter) };
+            var parameter = new TextureConvertParameters(assetSource, asset, context.Platform, context.GetGraphicsPlatform(assetItem.Package), gameSettingsAsset.Get<RenderingSettings>(context.Platform).DefaultGraphicsProfile, gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace);
+            result.BuildSteps = new AssetBuildStep(assetItem) { new TextureConvertCommand(assetItem.Location, parameter) };
         }
 
         /// <summary>
@@ -48,14 +44,14 @@ namespace SiliconStudio.Xenko.Assets.Textures
             protected override System.Collections.Generic.IEnumerable<ObjectUrl> GetInputFilesImpl()
             {
                 // TODO dependency not working
-                yield return new ObjectUrl(UrlType.File, AssetParameters.SourcePathFromDisk);
+                yield return new ObjectUrl(UrlType.File, Parameters.SourcePathFromDisk);
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
-                var convertParameters = new TextureHelper.ImportParameters(AssetParameters) { OutputUrl = Url };
+                var convertParameters = new TextureHelper.ImportParameters(Parameters) { OutputUrl = Url };
                 using (var texTool = new TextureTool())
-                using (var texImage = texTool.Load(AssetParameters.SourcePathFromDisk, convertParameters.IsSRgb))
+                using (var texImage = texTool.Load(Parameters.SourcePathFromDisk, convertParameters.IsSRgb))
                 {
                     var importResult = TextureHelper.ImportTextureImage(texTool, texImage, convertParameters, CancellationToken, commandContext.Logger);
 
