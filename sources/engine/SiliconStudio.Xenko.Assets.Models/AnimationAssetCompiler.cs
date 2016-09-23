@@ -18,9 +18,6 @@ namespace SiliconStudio.Xenko.Assets.Models
     {
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AnimationAsset asset, AssetCompilerResult result)
         {
-            if (!EnsureSourcesExist(result, asset, assetAbsolutePath))
-                return;
-
             // Get absolute path of asset source on disk
             var assetDirectory = assetAbsolutePath.GetParent();
             var assetSource = GetAbsolutePath(assetAbsolutePath, asset.Source);

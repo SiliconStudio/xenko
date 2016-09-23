@@ -13,9 +13,6 @@ namespace SiliconStudio.Assets
     {
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, RawAsset asset, AssetCompilerResult result)
         {
-            if (!EnsureSourcesExist(result, asset, assetAbsolutePath))
-                return;
-        
             // Get absolute path of asset source on disk
             var assetSource = GetAbsolutePath(assetAbsolutePath, asset.Source);
             var importCommand = new ImportStreamCommand(urlInStorage, assetSource) { DisableCompression = !asset.Compress };

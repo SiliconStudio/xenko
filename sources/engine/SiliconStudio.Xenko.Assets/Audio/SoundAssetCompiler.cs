@@ -20,9 +20,6 @@ namespace SiliconStudio.Xenko.Assets.Audio
     {
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, SoundAsset asset, AssetCompilerResult result)
         {
-            if (!EnsureSourcesExist(result, asset, assetAbsolutePath))
-                return;
-
             result.BuildSteps = new AssetBuildStep(AssetItem)
             {
                 new DecodeSoundFileCommand(urlInStorage, asset)

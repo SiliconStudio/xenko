@@ -37,8 +37,11 @@ namespace SiliconStudio.Assets.Compiler
                 throw new InvalidOperationException("assetItem must be an absolute path");
             }
 
-            Compile((AssetCompilerContext)context, assetItem.Location.GetDirectoryAndFileName(), assetItem.FullPath, (T)assetItem.Asset, result);
-
+            // Try to compile only if we're sure that the sources exist.
+            if (EnsureSourcesExist(result, (T)assetItem.Asset, assetItem.FullPath))
+            {
+                Compile((AssetCompilerContext)context, assetItem.Location.GetDirectoryAndFileName(), assetItem.FullPath, (T)assetItem.Asset, result);
+            }
             AssetItem = null;
 
             return result;
@@ -77,7 +80,7 @@ namespace SiliconStudio.Assets.Compiler
         /// <param name="assetAbsolutePath">The absolute path of the asset on the disk</param>
         /// <returns><c>true</c> if the source file exists, <c>false</c> otherwise.</returns>
         /// <exception cref="ArgumentNullException">Any of the argument is <c>null</c>.</exception>
-        protected static bool EnsureSourcesExist(AssetCompilerResult result, T asset, UFile assetAbsolutePath)
+        private static bool EnsureSourcesExist(AssetCompilerResult result, T asset, UFile assetAbsolutePath)
         {
             if (result == null) throw new ArgumentNullException(nameof(result));
             if (asset == null) throw new ArgumentNullException(nameof(asset));

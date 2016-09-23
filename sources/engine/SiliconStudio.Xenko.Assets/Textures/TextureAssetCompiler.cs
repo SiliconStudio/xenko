@@ -21,10 +21,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
     public class TextureAssetCompiler : AssetCompilerBase<TextureAsset>
     {
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, TextureAsset asset, AssetCompilerResult result)
-        {
-            if (!EnsureSourcesExist(result, asset, assetAbsolutePath))
-                return;
-        
+        {        
             // Get absolute path of asset source on disk
             var assetSource = GetAbsolutePath(assetAbsolutePath, asset.Source);
 

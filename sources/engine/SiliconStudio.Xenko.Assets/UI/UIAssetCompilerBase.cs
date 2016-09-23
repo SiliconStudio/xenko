@@ -15,9 +15,6 @@ namespace SiliconStudio.Xenko.Assets.UI
     {
         protected sealed override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, T asset, AssetCompilerResult result)
         {
-            if (!EnsureSourcesExist(result, asset, assetAbsolutePath))
-                return;
-            
             result.BuildSteps = new AssetBuildStep(AssetItem) { Create(urlInStorage, asset) };
         }
 
