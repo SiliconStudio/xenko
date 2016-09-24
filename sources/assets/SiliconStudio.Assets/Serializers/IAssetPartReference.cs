@@ -1,5 +1,4 @@
 using System;
-using SiliconStudio.Core;
 
 namespace SiliconStudio.Assets.Serializers
 {
@@ -12,7 +11,7 @@ namespace SiliconStudio.Assets.Serializers
         /// Gets or sets the actual type of object that is being deserialized.
         /// </summary>
         /// <remarks>
-        /// This property is transient and used only during serialization. Therefore, implementations should have the <see cref="DataMemberIgnoreAttribute"/> set on this property.
+        /// This property is transient and used only during serialization. Therefore, implementations should have the <see cref="Core.DataMemberIgnoreAttribute"/> set on this property.
         /// </remarks>
         Type InstanceType { get; set; }
 
@@ -28,7 +27,7 @@ namespace SiliconStudio.Assets.Serializers
         /// <param name="partType">The type of asset part to generate.</param>
         /// <returns>A proxy asset part built from this instance.</returns>
         /// <remarks>
-        /// Proxy asset parts should be resolved to the actual corresponding asset part in the <see cref="AssetComposite.FixupPartReferences"/> method.
+        /// Proxy asset parts should be resolved to the actual corresponding asset part in the <see cref="AssetComposite.FixupReferences"/> method.
         /// This method is invoked at the end of the deserialization.
         /// </remarks>
         object GenerateProxyPart(Type partType);

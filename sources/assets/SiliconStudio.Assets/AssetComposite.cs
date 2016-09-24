@@ -42,7 +42,8 @@ namespace SiliconStudio.Assets
 
         public abstract bool ContainsPart(Guid id);
 
-        public void FixupPartReferences()
+        /// <inheritdoc />
+        public override void FixupReferences()
         {
             var visitor = new AssetCompositePartReferenceCollector();
             visitor.VisitAsset(this);

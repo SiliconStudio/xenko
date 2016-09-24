@@ -160,6 +160,11 @@ namespace SiliconStudio.Assets
             return newAsset;
         }
 
+        public virtual void FixupReferences()
+        {
+            // default implementation does nothing
+        }
+
         /// <summary>
         /// Merge an asset with its base, and new base and parts into this instance.
         /// </summary>

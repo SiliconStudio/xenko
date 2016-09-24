@@ -56,7 +56,7 @@ namespace SiliconStudio.Assets.Serializers
                 {
                     // Let's fixup part references after serialization
                     var assetComposite = (AssetComposite)objectContext.Instance;
-                    assetComposite.FixupPartReferences();
+                    assetComposite.FixupReferences();
                 }
 
                 return result;
@@ -164,7 +164,7 @@ namespace SiliconStudio.Assets.Serializers
             public AssetCompositeVisitorContext OldContext;
         }
 
-        private LocalContextToken PrepareLocalContext(Type type)
+        private static LocalContextToken PrepareLocalContext(Type type)
         {
             var token = new LocalContextToken
             {
@@ -190,7 +190,7 @@ namespace SiliconStudio.Assets.Serializers
             return token;
         }
 
-        private void CleanLocalContext(LocalContextToken token)
+        private static void CleanLocalContext(LocalContextToken token)
         {
             LocalContext.Value?.LeaveNode(token.Type, token.RemoveLastEnteredType);
 

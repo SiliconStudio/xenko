@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             {
                 // set to null reference outside of the sub-tree
                 var tempAsset = new PrefabAsset { Hierarchy = clonedHierarchy };
-                tempAsset.FixupPartReferences();
+                tempAsset.FixupReferences();
             }
 
             // temporary nullify the hierarchy to avoid to clone it
@@ -135,7 +135,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             {
                 // set to null reference outside of the sub-tree
                 var tempAsset = new PrefabAsset { Hierarchy = clonedHierarchy };
-                tempAsset.FixupPartReferences();
+                tempAsset.FixupReferences();
             }
 
             // temporary nullify the hierarchy to avoid to clone it
