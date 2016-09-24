@@ -722,7 +722,7 @@ namespace SiliconStudio.Assets
                 AssetMigration.MigrateAssetIfNeeded(context, packageFile, "Assets");
 
                 var package = packageFile.AssetContent != null
-                    ? (Package)AssetSerializer.Load(new MemoryStream(packageFile.AssetContent), Path.GetExtension(filePath), log, out aliasOccurred)
+                    ? AssetSerializer.Load<Package>(new MemoryStream(packageFile.AssetContent), Path.GetExtension(filePath), log, out aliasOccurred)
                     : AssetSerializer.Load<Package>(filePath, log, out aliasOccurred);
 
                 package.FullPath = filePath;
@@ -1069,8 +1069,8 @@ namespace SiliconStudio.Assets
         private static Asset LoadAsset(ILogger log, string assetFullPath, string assetPath, string projectFullPath, string projectInclude, byte[] assetContent, out bool assetDirty)
         {
             var asset = assetContent != null
-                ? (Asset)AssetSerializer.Load(new MemoryStream(assetContent), Path.GetExtension(assetFullPath), log, out assetDirty)
-                : AssetSerializer.Load<Asset>(assetFullPath, log, out assetDirty);
+                ? AssetSerializer.Load(new MemoryStream(assetContent), Path.GetExtension(assetFullPath), log, out assetDirty)
+                : AssetSerializer.Load(assetFullPath, log, out assetDirty);
 
             // Set location on source code asset
             var sourceCodeAsset = asset as SourceCodeAsset;
@@ -1218,9 +1218,8 @@ namespace SiliconStudio.Assets
                             log.Warning("Template [{0}] does not exist ", file);
                             continue;
                         }
-
-                        bool aliasOccurred;
-                        var templateDescription = AssetSerializer.Load<TemplateDescription>(file.FullName, null, out aliasOccurred);
+                        
+                        var templateDescription = AssetSerializer.Load<TemplateDescription>(file.FullName);
                         templateDescription.FullPath = file.FullName;
                         Templates.Add(templateDescription);
                     }
