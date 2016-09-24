@@ -164,10 +164,10 @@ namespace SiliconStudio.Assets
         /// Serializes an <see cref="Asset" /> to the specified file path.
         /// </summary>
         /// <param name="filePath">The file path.</param>
-        /// <param name="asset">The asset object.</param>
+        /// <param name="asset">The asset.</param>
         /// <param name="log">The logger.</param>
         /// <exception cref="ArgumentNullException">filePath</exception>
-        public static void Save(string filePath, object asset, ILogger log = null)
+        public static void Save(string filePath, Asset asset, ILogger log = null)
         {
             if (filePath == null) throw new ArgumentNullException(nameof(filePath));
 
@@ -190,14 +190,14 @@ namespace SiliconStudio.Assets
         /// Serializes an <see cref="Asset" /> to the specified stream.
         /// </summary>
         /// <param name="stream">The stream.</param>
-        /// <param name="asset">The asset object.</param>
+        /// <param name="asset">The asset.</param>
         /// <param name="log">The logger.</param>
         /// <exception cref="ArgumentNullException">
         /// stream
         /// or
         /// assetFileExtension
         /// </exception>
-        public static void Save(Stream stream, object asset, ILogger log = null)
+        public static void Save(Stream stream, Asset asset, ILogger log = null)
         {
             if (stream == null) throw new ArgumentNullException(nameof(stream));
             if (asset == null) return;
