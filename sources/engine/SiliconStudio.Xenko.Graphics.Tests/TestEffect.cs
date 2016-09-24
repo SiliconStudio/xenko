@@ -61,10 +61,10 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Create and mount database file system
             var objDatabase = new ObjectDatabase(VirtualFileSystem.ApplicationDatabasePath);
-            using (var assetIndexMap = new AssetIndexMap("/assets"))
+            using (var contentIndexMap = new contentIndexMap("/assets"))
             {
-                assetIndexMap.LoadNewValues();
-                var database = new DatabaseFileProvider(assetIndexMap, objDatabase);
+                contentIndexMap.LoadNewValues();
+                var database = new DatabaseFileProvider(contentIndexMap, objDatabase);
 
                 foreach (var shaderName in Directory.EnumerateFiles(@"..\..\..\..\shaders", "*.xksl"))
                     CopyStream(database, shaderName);
@@ -103,10 +103,10 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Create and mount database file system
             var objDatabase = new ObjectDatabase(VirtualFileSystem.ApplicationDatabasePath);
-            using (var assetIndexMap = new AssetIndexMap("/assets"))
+            using (var contentIndexMap = new contentIndexMap("/assets"))
             {
-                assetIndexMap.LoadNewValues();
-                var database = new DatabaseFileProvider(assetIndexMap, objDatabase);
+                contentIndexMap.LoadNewValues();
+                var database = new DatabaseFileProvider(contentIndexMap, objDatabase);
 
                 foreach (var shaderName in Directory.EnumerateFiles(@"..\..\..\..\shaders", "*.xksl"))
                     CopyStream(database, shaderName);
@@ -148,10 +148,10 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Create and mount database file system
             var objDatabase = new ObjectDatabase(VirtualFileSystem.ApplicationDatabasePath);
-            using (var assetIndexMap = new AssetIndexMap("/assets"))
+            using (var contentIndexMap = new contentIndexMap("/assets"))
             {
-                assetIndexMap.LoadNewValues();
-                var database = new DatabaseFileProvider(assetIndexMap, objDatabase);
+                contentIndexMap.LoadNewValues();
+                var database = new DatabaseFileProvider(contentIndexMap, objDatabase);
 
                 foreach (var shaderName in Directory.EnumerateFiles(@"..\..\..\..\shaders", "*.xksl"))
                     CopyStream(database, shaderName);

@@ -34,13 +34,6 @@ Sprites:
         CenterFromMiddle: false
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   ~Id: 2e99b3aa-acd0-495d-8777-c75643f06358
-        Name: NoTexture
-        TextureRegion: {X: 0, Y: 0, Width: 150, Height: 150}
-        PixelsPerUnit: 1.0
-        Center: {X: 0.0, Y: 0.0}
-        Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
-        BorderColor: {R: 0, G: 0, B: 0, A: 0}
     -   ~Id: 74852202-2456-4695-b1f5-7e5cd893edad
         Source: ../../../data/tests/Sphere.png
         Name: NullWidth

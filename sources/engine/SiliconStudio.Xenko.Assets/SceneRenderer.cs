@@ -1,6 +1,6 @@
 using System;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;

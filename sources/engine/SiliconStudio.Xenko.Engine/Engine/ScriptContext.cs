@@ -5,7 +5,7 @@ using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Audio;
 using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Games;
@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Engine
             graphicsDeviceService = Services.GetSafeServiceAs<IGraphicsDeviceService>();
 
             Game = Services.GetSafeServiceAs<IGame>();
-            Content = (ContentManager)Services.GetSafeServiceAs<IAssetManager>();
+            Content = (ContentManager)Services.GetSafeServiceAs<IContentManager>();
             Input = Services.GetSafeServiceAs<InputManager>();
             Script = Services.GetSafeServiceAs<ScriptSystem>();
             SceneSystem = Services.GetSafeServiceAs<SceneSystem>();

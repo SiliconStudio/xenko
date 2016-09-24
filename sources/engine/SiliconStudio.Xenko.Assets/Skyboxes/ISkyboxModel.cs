@@ -4,6 +4,7 @@
 using System.Collections.Generic;
 
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Assets.Skyboxes

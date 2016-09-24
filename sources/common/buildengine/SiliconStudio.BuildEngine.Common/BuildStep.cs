@@ -2,11 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.Serialization.Assets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.BuildEngine
@@ -188,7 +188,8 @@ namespace SiliconStudio.BuildEngine
             {
                 try
                 {
-                    IndexFileCommand.MountDatabase(executeContext.GetOutputObjectsGroups());
+                    IEnumerable<IDictionary<ObjectUrl, OutputObject>> outputObjectsGroups = executeContext.GetOutputObjectsGroups();
+                    MicrothreadLocalDatabases.MountDatabase(outputObjectsGroups);
                     StepProcessed(this, new BuildStepEventArgs(this, executeContext.Logger));
                 }
                 catch (Exception ex)
@@ -197,7 +198,7 @@ namespace SiliconStudio.BuildEngine
                 }
                 finally
                 {
-                    IndexFileCommand.UnmountDatabase();                    
+                    MicrothreadLocalDatabases.UnmountDatabase();
                 }
             }
         }

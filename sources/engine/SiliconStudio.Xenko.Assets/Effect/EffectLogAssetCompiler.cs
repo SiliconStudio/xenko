@@ -9,7 +9,6 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Shaders.Compiler;
@@ -21,11 +20,11 @@ namespace SiliconStudio.Xenko.Assets.Effect
     /// </summary>
     public class EffectLogAssetCompiler : AssetCompilerBase<EffectLogAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, EffectLogAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, EffectLogAsset asset, AssetCompilerResult result)
         {
             var originalSourcePath = asset.AbsoluteSourceLocation;
             result.ShouldWaitForPreviousBuilds = true;
-            result.BuildSteps = new AssetBuildStep(AssetItem) { new EffectLogBuildStep(context, originalSourcePath, AssetItem.Package) };
+            result.BuildSteps = new AssetBuildStep(assetItem) { new EffectLogBuildStep(context, originalSourcePath, assetItem.Package) };
         }
 
         public class EffectLogBuildStep : EnumerableBuildStep
