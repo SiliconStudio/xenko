@@ -154,10 +154,12 @@ namespace SiliconStudio.Assets
 
             var serializer = FindSerializer(assetFileExtension);
             if (serializer == null)
-            {
                 throw new InvalidOperationException($"Unable to find a serializer for [{assetFileExtension}]");
-            }
-            return (Asset)serializer.Load(stream, assetFileExtension, log, out aliasOccurred);
+
+            var asset = (Asset)serializer.Load(stream, assetFileExtension, log, out aliasOccurred);
+            // Let's fixup references after deserialization
+            asset.FixupReferences();
+            return asset;
         }
 
         /// <summary>

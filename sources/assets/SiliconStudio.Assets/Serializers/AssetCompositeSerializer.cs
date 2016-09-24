@@ -45,21 +45,10 @@ namespace SiliconStudio.Assets.Serializers
         /// <inheritdoc/>
         public override object ReadYaml(ref ObjectContext objectContext)
         {
-            var type = objectContext.Descriptor.Type;
             var contextToken = PrepareLocalContext(objectContext.Descriptor.Type);
-
             try
             {
-                var result = base.ReadYaml(ref objectContext);
-
-                if (typeof(AssetComposite).IsAssignableFrom(type))
-                {
-                    // Let's fixup part references after serialization
-                    var assetComposite = (AssetComposite)objectContext.Instance;
-                    assetComposite.FixupReferences();
-                }
-
-                return result;
+                return base.ReadYaml(ref objectContext);
             }
             finally
             {
