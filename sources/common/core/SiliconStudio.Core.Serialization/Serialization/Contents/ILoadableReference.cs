@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SiliconStudio.Core.Serialization
+namespace SiliconStudio.Core.Serialization.Contents
 {
     public interface ILoadableReference
     {

@@ -1,9 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
-using SiliconStudio.Core.Serialization.Contents;
 
-namespace SiliconStudio.Core.Serialization
+using System;
+
+namespace SiliconStudio.Core.Serialization.Contents
 {
     internal sealed class ContentReferenceDataSerializer<T> : DataSerializer<ContentReference<T>> where T : class
     {

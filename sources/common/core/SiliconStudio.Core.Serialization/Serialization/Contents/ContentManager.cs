@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,15 +12,14 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Storage;
 
-namespace SiliconStudio.Core.Serialization.Assets
+namespace SiliconStudio.Core.Serialization.Contents
 {
     /// <summary>
     /// Loads and saves assets.
     /// </summary>
-    public sealed partial class ContentManager : IAssetManager
+    public sealed partial class ContentManager : IContentManager
     {
         private static readonly Logger Log = GlobalLogger.GetLogger("ContentManager");
 
@@ -27,17 +27,17 @@ namespace SiliconStudio.Core.Serialization.Assets
 
         public static Func<DatabaseFileProvider> GetFileProvider { get; set; }
 
-        public AssetSerializer Serializer { get; private set; }
+        public ContentSerializer Serializer { get; private set; }
 
         /// <summary>
-        /// A dictionary mapping, for each loaded object, its url to the corresponding instance of <see cref="AssetReference"/>.
+        /// A dictionary mapping, for each loaded object, its url to the corresponding instance of <see cref="Reference"/>.
         /// </summary>
-        internal readonly Dictionary<string, AssetReference> LoadedAssetUrls = new Dictionary<string, AssetReference>();
+        internal readonly Dictionary<string, Reference> LoadedAssetUrls = new Dictionary<string, Reference>();
 
         /// <summary>
-        /// A dictionary mapping, for each loaded object, the corresponding instance of <see cref="AssetReference"/>.
+        /// A dictionary mapping, for each loaded object, the corresponding instance of <see cref="Reference"/>.
         /// </summary>
-        internal readonly Dictionary<object, AssetReference> LoadedAssetReferences = new Dictionary<object, AssetReference>();
+        internal readonly Dictionary<object, Reference> LoadedAssetReferences = new Dictionary<object, Reference>();
 
         public ContentManager() : this(null)
         {
@@ -45,10 +45,10 @@ namespace SiliconStudio.Core.Serialization.Assets
 
         public ContentManager(IServiceRegistry services)
         {
-            Serializer = new AssetSerializer();
+            Serializer = new ContentSerializer();
             if (services != null)
             {
-                services.AddService(typeof(IAssetManager), this);
+                services.AddService(typeof(IContentManager), this);
                 services.AddService(typeof(ContentManager), this);
                 Serializer.SerializerContextTags.Set(ServiceRegistry.ServiceRegistryKey, services);
             }
@@ -88,7 +88,7 @@ namespace SiliconStudio.Core.Serialization.Assets
         public bool Exists(string url)
         {
             ObjectId objectId;
-            return FileProvider.AssetIndexMap.TryGetValue(url, out objectId);
+            return FileProvider.ContentIndexMap.TryGetValue(url, out objectId);
         }
 
         public Stream OpenAsStream(string url, StreamFlags streamFlags)
@@ -101,10 +101,10 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// </summary>
         /// <typeparam name="T">The content type.</typeparam>
         /// <param name="url">The URL to load from.</param>
-        /// <param name="settings">The settings. If null, fallback to <see cref="AssetManagerLoaderSettings.Default" />.</param>
+        /// <param name="settings">The settings. If null, fallback to <see cref="ContentManagerLoaderSettings.Default" />.</param>
         /// <remarks>If the asset is already loaded, it just increases the reference count of the asset and return the same instance.</remarks>
         /// <returns></returns>
-        public T Load<T>(string url, AssetManagerLoaderSettings settings = null) where T : class
+        public T Load<T>(string url, ContentManagerLoaderSettings settings = null) where T : class
         {
             return (T)Load(typeof(T), url, settings);
         }
@@ -118,10 +118,10 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// <returns></returns>
         /// <remarks>If the asset is already loaded, it just increases the reference count of the asset and return the same instance.</remarks>
         /// <exception cref="System.ArgumentNullException">url</exception>
-        public object Load(Type type, string url, AssetManagerLoaderSettings settings = null)
+        public object Load(Type type, string url, ContentManagerLoaderSettings settings = null)
         {
             if (settings == null)
-                settings = AssetManagerLoaderSettings.Default;
+                settings = ContentManagerLoaderSettings.Default;
 
             if (url == null) throw new ArgumentNullException("url");
 
@@ -141,18 +141,18 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// <param name="settings">The settings.</param>
         /// <returns>True if it could be reloaded, false otherwise.</returns>
         /// <exception cref="System.InvalidOperationException">Content not loaded through this ContentManager.</exception>
-        public bool Reload(object obj, AssetManagerLoaderSettings settings = null)
+        public bool Reload(object obj, ContentManagerLoaderSettings settings = null)
         {
             if (settings == null)
-                settings = AssetManagerLoaderSettings.Default;
+                settings = ContentManagerLoaderSettings.Default;
 
             lock (LoadedAssetUrls)
             {
-                AssetReference assetReference;
-                if (!LoadedAssetReferences.TryGetValue(obj, out assetReference))
+                Reference reference;
+                if (!LoadedAssetReferences.TryGetValue(obj, out reference))
                     return false;
 
-                var url = assetReference.Url;
+                var url = reference.Url;
 
                 using (var profile = Profiler.Begin(ContentProfilingKeys.ContentReload, url))
                 {
@@ -170,7 +170,7 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// <param name="settings">The settings.</param>
         /// <returns>True if it could be reloaded, false otherwise.</returns>
         /// <exception cref="System.InvalidOperationException">Content not loaded through this ContentManager.</exception>
-        public Task<bool> ReloadAsync(object obj, AssetManagerLoaderSettings settings = null)
+        public Task<bool> ReloadAsync(object obj, ContentManagerLoaderSettings settings = null)
         {
             return ScheduleAsync(() => Reload(obj, settings));
         }
@@ -180,10 +180,10 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// </summary>
         /// <typeparam name="T">The content type.</typeparam>
         /// <param name="url">The URL to load from.</param>
-        /// <param name="settings">The settings. If null, fallback to <see cref="AssetManagerLoaderSettings.Default" />.</param>
+        /// <param name="settings">The settings. If null, fallback to <see cref="ContentManagerLoaderSettings.Default" />.</param>
         /// <remarks>If the asset is already loaded, it just increases the reference count of the asset and return the same instance.</remarks>
         /// <returns></returns>
-        public Task<T> LoadAsync<T>(string url, AssetManagerLoaderSettings settings = null) where T : class
+        public Task<T> LoadAsync<T>(string url, ContentManagerLoaderSettings settings = null) where T : class
         {
             return ScheduleAsync(() => Load<T>(url, settings));
         }
@@ -196,7 +196,7 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// <param name="settings">The settings.</param>
         /// <remarks>If the asset is already loaded, it just increases the reference count of the asset and return the same instance.</remarks>
         /// <returns></returns>
-        public Task<object> LoadAsync(Type type, string url, AssetManagerLoaderSettings settings = null)
+        public Task<object> LoadAsync(Type type, string url, ContentManagerLoaderSettings settings = null)
         {
             return ScheduleAsync(() => Load(type, url, settings));
         }
@@ -248,8 +248,8 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// <returns><c>True</c> if an asset with the given URL is currently loaded, <c>false</c> otherwise.</returns>
         public bool IsLoaded(string url, bool loadedManuallyOnly = false)
         {
-            AssetReference assetReference;
-            return LoadedAssetUrls.TryGetValue(url, out assetReference) && (!loadedManuallyOnly || assetReference.PublicReferenceCount > 0);
+            Reference reference;
+            return LoadedAssetUrls.TryGetValue(url, out reference) && (!loadedManuallyOnly || reference.PublicReferenceCount > 0);
         }
 
         public bool TryGetAssetUrl(object obj, out string url)
@@ -257,14 +257,14 @@ namespace SiliconStudio.Core.Serialization.Assets
             if (obj == null) throw new ArgumentNullException("obj");
             lock (LoadedAssetUrls)
             {
-                AssetReference assetReference;
-                if (!LoadedAssetReferences.TryGetValue(obj, out assetReference))
+                Reference reference;
+                if (!LoadedAssetReferences.TryGetValue(obj, out reference))
                 {
                     url = null;
                     return false;
                 }
 
-                url = assetReference.Url;
+                url = reference.Url;
                 return true;
             }
         }
@@ -278,12 +278,12 @@ namespace SiliconStudio.Core.Serialization.Assets
         {
             lock (LoadedAssetUrls)
             {
-                AssetReference assetReference;
-                if (!LoadedAssetReferences.TryGetValue(obj, out assetReference))
+                Reference reference;
+                if (!LoadedAssetReferences.TryGetValue(obj, out reference))
                     throw new InvalidOperationException("Content not loaded through this ContentManager.");
 
                 // Release reference
-                DecrementReference(assetReference, true);
+                DecrementReference(reference, true);
             }
         }
 
@@ -297,12 +297,12 @@ namespace SiliconStudio.Core.Serialization.Assets
             lock (LoadedAssetUrls)
             {
                 // Try to find already loaded object
-                AssetReference assetReference;
-                if (!LoadedAssetUrls.TryGetValue(url, out assetReference))
+                Reference reference;
+                if (!LoadedAssetUrls.TryGetValue(url, out reference))
                     throw new InvalidOperationException("Content not loaded through this ContentManager.");
                 
                 // Release reference
-                DecrementReference(assetReference, true);
+                DecrementReference(reference, true);
             }
         }
 
@@ -310,9 +310,9 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// Computes statistics about the assets that are currently loaded. This method is intended to be used for debug purpose only.
         /// </summary>
         /// <returns></returns>
-        public AssetManagerStats GetStats()
+        public ContentManagerStats GetStats()
         {
-            return new AssetManagerStats(LoadedAssetUrls.Values);
+            return new ContentManagerStats(LoadedAssetUrls.Values);
         }
 
         private void PrepareSerializerContext(ContentSerializerContext contentSerializerContext, SerializerContext context)
@@ -328,26 +328,26 @@ namespace SiliconStudio.Core.Serialization.Assets
 
         struct DeserializeOperation
         {
-            public readonly AssetReference ParentAssetReference;
+            public readonly Reference ParentReference;
             public readonly string Url;
             public readonly Type ObjectType;
             public readonly Object Object;
 
-            public DeserializeOperation(AssetReference parentAssetReference, string url, Type objectType, object obj)
+            public DeserializeOperation(Reference parentReference, string url, Type objectType, object obj)
             {
-                ParentAssetReference = parentAssetReference;
+                ParentReference = parentReference;
                 Url = url;
                 ObjectType = objectType;
                 Object = obj;
             }
         }
 
-        private object DeserializeObject(string url, Type type, object obj, AssetManagerLoaderSettings settings)
+        private object DeserializeObject(string url, Type type, object obj, ContentManagerLoaderSettings settings)
         {
             var serializeOperations = new Queue<DeserializeOperation>();
             serializeOperations.Enqueue(new DeserializeOperation(null, url, type, obj));
 
-            AssetReference reference = null;
+            Reference reference = null;
             if (obj != null)
             {
                 reference = FindDeserializedObject(url, type);
@@ -358,12 +358,12 @@ namespace SiliconStudio.Core.Serialization.Assets
             }
 
             // Let's put aside old references, so that we unload them only afterwise (avoid a referenced object to be unloaded for no reason)
-            HashSet<AssetReference> references = null;
+            HashSet<Reference> references = null;
             if (reference != null)
             {
                 // Let's collect dependent reference, and reset current list
                 references = reference.References;
-                reference.References = new HashSet<AssetReference>();
+                reference.References = new HashSet<Reference>();
 
                 // Mark object as not deserialized yet
                 reference.Deserialized = false;
@@ -375,7 +375,7 @@ namespace SiliconStudio.Core.Serialization.Assets
             while (serializeOperations.Count > 0)
             {
                 var serializeOperation = serializeOperations.Dequeue();
-                var deserializedObject = DeserializeObject(serializeOperations, serializeOperation.ParentAssetReference, serializeOperation.Url, serializeOperation.ObjectType, serializeOperation.Object, settings);
+                var deserializedObject = DeserializeObject(serializeOperations, serializeOperation.ParentReference, serializeOperation.Url, serializeOperation.ObjectType, serializeOperation.Object, settings);
                 if (isFirstOperation)
                 {
                     result = deserializedObject;
@@ -394,22 +394,22 @@ namespace SiliconStudio.Core.Serialization.Assets
             return result;
         }
 
-        internal AssetReference FindDeserializedObject(string url, Type objType)
+        internal Reference FindDeserializedObject(string url, Type objType)
         {
             // Try to find already loaded object
-            AssetReference assetReference;
-            if (LoadedAssetUrls.TryGetValue(url, out assetReference))
+            Reference reference;
+            if (LoadedAssetUrls.TryGetValue(url, out reference))
             {
-                while (assetReference != null && !objType.GetTypeInfo().IsAssignableFrom(assetReference.Object.GetType().GetTypeInfo()))
+                while (reference != null && !objType.GetTypeInfo().IsAssignableFrom(reference.Object.GetType().GetTypeInfo()))
                 {
-                    assetReference = assetReference.Next;
+                    reference = reference.Next;
                 }
 
-                if (assetReference != null)
+                if (reference != null)
                 {
                     // TODO: Currently ReferenceSerializer creates a reference, so we will go through DeserializeObject later to add the reference
                     // This should be unified at some point
-                    return assetReference;
+                    return reference;
                 }
             }
 
@@ -418,7 +418,7 @@ namespace SiliconStudio.Core.Serialization.Assets
 
         internal void RegisterDeserializedObject<T>(string url, T obj)
         {
-            var assetReference = new AssetReference(url, false);
+            var assetReference = new Reference(url, false);
             SetAssetObject(assetReference, obj);
         }
 
@@ -443,20 +443,20 @@ namespace SiliconStudio.Core.Serialization.Assets
             }
         }
 
-        private object DeserializeObject(Queue<DeserializeOperation> serializeOperations, AssetReference parentAssetReference, string url, Type objType, object obj, AssetManagerLoaderSettings settings)
+        private object DeserializeObject(Queue<DeserializeOperation> serializeOperations, Reference parentReference, string url, Type objType, object obj, ContentManagerLoaderSettings settings)
         {
             // Try to find already loaded object
-            AssetReference assetReference = FindDeserializedObject(url, objType);
-            if (assetReference != null && assetReference.Deserialized)
+            Reference reference = FindDeserializedObject(url, objType);
+            if (reference != null && reference.Deserialized)
             {
                 // Add reference
-                bool isRoot = parentAssetReference == null;
-                if (isRoot || parentAssetReference.References.Add(assetReference))
+                bool isRoot = parentReference == null;
+                if (isRoot || parentReference.References.Add(reference))
                 {
-                    IncrementReference(assetReference, isRoot);
+                    IncrementReference(reference, isRoot);
                 }
 
-                return assetReference.Object;
+                return reference.Object;
             }
 
             if (!FileProvider.FileExists(url))
@@ -503,34 +503,34 @@ namespace SiliconStudio.Core.Serialization.Assets
                         streamReader.NativeStream.Seek(chunkHeader.OffsetToObject, SeekOrigin.Begin);
                     }
 
-                    if (assetReference == null)
+                    if (reference == null)
                     {
-                        // Create AssetReference
-                        assetReference = new AssetReference(url, parentAssetReference == null);
+                        // Create Reference
+                        reference = new Reference(url, parentReference == null);
                         result = obj ?? serializer.Construct(contentSerializerContext);
-                        SetAssetObject(assetReference, result);
+                        SetAssetObject(reference, result);
                     }
                     else
                     {
-                        result = assetReference.Object;
+                        result = reference.Object;
                     }
 
-                    assetReference.Deserialized = true;
+                    reference.Deserialized = true;
 
                     PrepareSerializerContext(contentSerializerContext, streamReader.Context);
 
                     contentSerializerContext.SerializeContent(streamReader, serializer, result);
 
                     // Add reference
-                    if (parentAssetReference != null)
+                    if (parentReference != null)
                     {
-                        parentAssetReference.References.Add(assetReference);
+                        parentReference.References.Add(reference);
                     }
                 }
             }
             catch (Exception exception)
             {
-                throw new AssetManagerException(string.Format("Unexpected exception while loading asset [{0}]. Reason: {1}. Check inner-exception for details.", url, exception.Message), exception);
+                throw new ContentManagerException(string.Format("Unexpected exception while loading asset [{0}]. Reason: {1}. Check inner-exception for details.", url, exception.Message), exception);
             }
 
             if (settings.LoadContentReferences)
@@ -541,13 +541,13 @@ namespace SiliconStudio.Core.Serialization.Assets
                 {
                     bool shouldBeLoaded = true;
 
-                    //AssetReference childReference;
+                    //Reference childReference;
 
                     settings.ContentFilter?.Invoke(contentReference, ref shouldBeLoaded);
 
                     if (shouldBeLoaded)
                     {
-                        serializeOperations.Enqueue(new DeserializeOperation(assetReference, contentReference.Location, contentReference.Type, contentReference.ObjectValue));
+                        serializeOperations.Enqueue(new DeserializeOperation(reference, contentReference.Location, contentReference.Type, contentReference.ObjectValue));
                     }
                 }
             }
@@ -632,7 +632,7 @@ namespace SiliconStudio.Core.Serialization.Assets
                 }
             }
 
-            var assetReference = new AssetReference(url, publicReference);
+            var assetReference = new Reference(url, publicReference);
             SetAssetObject(assetReference, obj);
 
             // Process content references
@@ -651,46 +651,46 @@ namespace SiliconStudio.Core.Serialization.Assets
         }
 
         /// <summary>
-        /// Sets AssetReference.Object, and updates loadedAssetByUrl collection.
+        /// Sets Reference.Object, and updates loadedAssetByUrl collection.
         /// </summary>
-        internal void SetAssetObject(AssetReference assetReference, object obj)
+        internal void SetAssetObject(Reference reference, object obj)
         {
             if (obj == null) throw new ArgumentNullException("obj");
 
-            if (assetReference.Object != null)
+            if (reference.Object != null)
             {
-                if (assetReference.Object != obj)
+                if (reference.Object != obj)
                     throw new InvalidOperationException("SetAssetObject has already been called with a different object");
 
                 return;
             }
 
-            var url = assetReference.Url;
-            assetReference.Object = obj;
+            var url = reference.Url;
+            reference.Object = obj;
 
             lock (LoadedAssetUrls)
             {
-                AssetReference previousAssetReference;
+                Reference previousReference;
 
-                if (LoadedAssetUrls.TryGetValue(url, out previousAssetReference))
+                if (LoadedAssetUrls.TryGetValue(url, out previousReference))
                 {
-                    assetReference.Next = previousAssetReference.Next;
-                    assetReference.Prev = previousAssetReference;
+                    reference.Next = previousReference.Next;
+                    reference.Prev = previousReference;
 
-                    if (previousAssetReference.Next != null)
-                        previousAssetReference.Next.Prev = assetReference;
-                    previousAssetReference.Next = assetReference;
+                    if (previousReference.Next != null)
+                        previousReference.Next.Prev = reference;
+                    previousReference.Next = reference;
                 }
                 else
                 {
-                    LoadedAssetUrls[url] = assetReference;
+                    LoadedAssetUrls[url] = reference;
                 }
 
-                LoadedAssetReferences[obj] = assetReference;
+                LoadedAssetReferences[obj] = reference;
 
                 // TODO: Currently here so that reference.ObjectValue later keeps its Url.
                 // Need some reorganization?
-                AttachedReferenceManager.SetUrl(obj, assetReference.Url);
+                AttachedReferenceManager.SetUrl(obj, reference.Url);
             }
         }
 
@@ -698,7 +698,7 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// Notify debugger and logging when an asset could not be found.
         /// </summary>
         /// <param name="url">The URL.</param>
-        /// <exception cref="SiliconStudio.Core.Serialization.Assets.AssetManagerException"></exception>
+        /// <exception cref="ContentManagerException"></exception>
         // TODO: Replug this when an asset is not found?
         private static void HandleAssetNotFound(string url)
         {
@@ -709,7 +709,7 @@ namespace SiliconStudio.Core.Serialization.Assets
             {
                 try
                 {
-                    throw new AssetManagerException(errorMessage);
+                    throw new ContentManagerException(errorMessage);
                 }
                 catch (Exception)
                 {

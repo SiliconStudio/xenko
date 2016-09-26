@@ -10,7 +10,7 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Audio;
 using SiliconStudio.Xenko.Native;
 
@@ -18,14 +18,11 @@ namespace SiliconStudio.Xenko.Assets.Audio
 {
     public class SoundAssetCompiler : AssetCompilerBase<SoundAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, SoundAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, SoundAsset asset, AssetCompilerResult result)
         {
-            if (!EnsureSourcesExist(result, asset, assetAbsolutePath))
-                return;
-
-            result.BuildSteps = new AssetBuildStep(AssetItem)
+            result.BuildSteps = new AssetBuildStep(assetItem)
             {
-                new DecodeSoundFileCommand(urlInStorage, asset)
+                new DecodeSoundFileCommand(assetItem.Location, asset)
             };
         }
 
@@ -70,8 +67,8 @@ namespace SiliconStudio.Xenko.Assets.Audio
                 var assetManager = new ContentManager();
 
                 // Get absolute path of asset source on disk
-                var assetDirectory = AssetParameters.Source.GetParent();
-                var assetSource = UPath.Combine(assetDirectory, AssetParameters.Source);
+                var assetDirectory = Parameters.Source.GetParent();
+                var assetSource = UPath.Combine(assetDirectory, Parameters.Source);
 
                 var installationDir = DirectoryHelper.GetPackageDirectory("Xenko");
                 var binDir = UPath.Combine(installationDir, new UDirectory("Bin"));
@@ -82,28 +79,28 @@ namespace SiliconStudio.Xenko.Assets.Audio
                     throw new AssetException("Failed to compile a sound asset, ffmpeg was not found.");
                 }
 
-                var channels = AssetParameters.Spatialized ? 1 : 2;
+                var channels = Parameters.Spatialized ? 1 : 2;
                 var tempPcmFile = Path.GetTempFileName();
-                var ret = RunProcessAndGetOutput(ffmpeg, $"-i \"{assetSource}\" -f f32le -acodec pcm_f32le -ac {channels} -ar {AssetParameters.SampleRate} -y \"{tempPcmFile}\"");
+                var ret = RunProcessAndGetOutput(ffmpeg, $"-i \"{assetSource}\" -f f32le -acodec pcm_f32le -ac {channels} -ar {Parameters.SampleRate} -y \"{tempPcmFile}\"");
                 if (ret != 0)
                 {
                     File.Delete(tempPcmFile);
                     throw new AssetException($"Failed to compile a sound asset, ffmpeg failed to convert {assetSource}");
                 }
 
-                var encoder = new Celt(AssetParameters.SampleRate, CompressedSoundSource.SamplesPerFrame, channels, false);
+                var encoder = new Celt(Parameters.SampleRate, CompressedSoundSource.SamplesPerFrame, channels, false);
 
                 var uncompressed = CompressedSoundSource.SamplesPerFrame * channels * sizeof(short); //compare with int16 for CD quality comparison.. but remember we are dealing with 32 bit floats for encoding!!
-                var target = (int)Math.Floor(uncompressed / (float)AssetParameters.CompressionRatio);
+                var target = (int)Math.Floor(uncompressed / (float)Parameters.CompressionRatio);
 
                 var dataUrl = Url + "_Data";
                 var newSound = new Sound
                 {
                     CompressedDataUrl = dataUrl,
                     Channels = channels,
-                    SampleRate = AssetParameters.SampleRate,
-                    StreamFromDisk = AssetParameters.StreamFromDisk,
-                    Spatialized = AssetParameters.Spatialized,
+                    SampleRate = Parameters.SampleRate,
+                    StreamFromDisk = Parameters.StreamFromDisk,
+                    Spatialized = Parameters.Spatialized,
                 };
 
                 //make sure we don't compress celt data

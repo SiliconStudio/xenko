@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Concurrent;
 using System.IO;
+using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
@@ -18,12 +19,12 @@ namespace SiliconStudio.Xenko.Assets.Effect
     {
         public static readonly PropertyKey<ConcurrentDictionary<string, string>> ShaderLocationsKey = new PropertyKey<ConcurrentDictionary<string, string>>("ShaderPathsKey", typeof(EffectShaderAssetCompiler));
 
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, EffectShaderAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, EffectShaderAsset asset, AssetCompilerResult result)
         {
-            var url = EffectCompilerBase.DefaultSourceShaderFolder + "/" + Path.GetFileName(assetAbsolutePath);
+            var url = EffectCompilerBase.DefaultSourceShaderFolder + "/" + Path.GetFileName(assetItem.FullPath);
 
             var originalSourcePath = asset.AbsoluteSourceLocation;
-            result.BuildSteps = new AssetBuildStep(AssetItem) { new ImportStreamCommand { SourcePath = originalSourcePath, Location = url, SaveSourcePath = true } };
+            result.BuildSteps = new AssetBuildStep(assetItem) { new ImportStreamCommand { SourcePath = originalSourcePath, Location = url, SaveSourcePath = true } };
             var shaderLocations = (ConcurrentDictionary<string, string>)context.Properties.GetOrAdd(ShaderLocationsKey, key => new ConcurrentDictionary<string, string>());
 
             // Store directly this into the context TODO this this temporary

@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Graphics.Tests

@@ -7,22 +7,22 @@ using System.Text.RegularExpressions;
 
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Core.IO
 {
     public sealed class DatabaseFileProvider : VirtualFileProviderBase
     {
-        private readonly IAssetIndexMap assetIndexMap;
+        private readonly IContentIndexMap contentIndexMap;
         private readonly ObjectDatabase objectDatabase;
 
-        public DatabaseFileProvider(ObjectDatabase objectDatabase, string mountPoint = null) : this(objectDatabase.AssetIndexMap, objectDatabase, mountPoint)
+        public DatabaseFileProvider(ObjectDatabase objectDatabase, string mountPoint = null) : this(objectDatabase.ContentIndexMap, objectDatabase, mountPoint)
         {
         }
 
-        public DatabaseFileProvider(IAssetIndexMap assetIndexMap, ObjectDatabase objectDatabase, string mountPoint = null) : base(mountPoint)
+        public DatabaseFileProvider(IContentIndexMap contentIndexMap, ObjectDatabase objectDatabase, string mountPoint = null) : base(mountPoint)
         {
-            this.assetIndexMap = assetIndexMap;
+            this.contentIndexMap = contentIndexMap;
             this.objectDatabase = objectDatabase;
         }
 
@@ -31,9 +31,9 @@ namespace SiliconStudio.Core.IO
         /// </summary>
         public static readonly string ObjectIdUrl = "id://";
 
-        public IAssetIndexMap AssetIndexMap
+        public IContentIndexMap ContentIndexMap
         {
-            get { return assetIndexMap; }
+            get { return contentIndexMap; }
         }
 
         public ObjectDatabase ObjectDatabase
@@ -44,14 +44,14 @@ namespace SiliconStudio.Core.IO
         /// <inheritdoc/>
         public override Stream OpenStream(string url, VirtualFileMode mode, VirtualFileAccess access, VirtualFileShare share = VirtualFileShare.Read, StreamFlags streamFlags = StreamFlags.None)
         {
-            // Open or create the file through the underlying (IAssetIndexMap, IOdbBackend) couple.
+            // Open or create the file through the underlying (IContentIndexMap, IOdbBackend) couple.
             // Also read/write a ObjectHeader.
             if (mode == VirtualFileMode.Open)
             {
                 ObjectId objectId;
                 if (url.StartsWith(ObjectIdUrl))
                     ObjectId.TryParse(url.Substring(ObjectIdUrl.Length), out objectId);
-                else if (!assetIndexMap.TryGetValue(url, out objectId))
+                else if (!contentIndexMap.TryGetValue(url, out objectId))
                     throw new FileNotFoundException(string.Format("Unable to find the file [{0}]", url));
 
                 var result = objectDatabase.OpenStream(objectId, mode, access, share);
@@ -80,7 +80,7 @@ namespace SiliconStudio.Core.IO
                 stream.Disposed += x =>
                     {
                         // Commit index changes
-                        assetIndexMap[url] = x.CurrentHash;
+                        contentIndexMap[url] = x.CurrentHash;
                     };
 
                 return result;
@@ -96,20 +96,20 @@ namespace SiliconStudio.Core.IO
             string recursivePattern = searchOption == VirtualSearchOption.AllDirectories ? "(.*/)*" : "/?";
             var regex = new Regex("^" + url + recursivePattern + searchPattern + "$");
 
-            return assetIndexMap.SearchValues(x => regex.IsMatch(x.Key)).Select(x => x.Key).ToArray();
+            return contentIndexMap.SearchValues(x => regex.IsMatch(x.Key)).Select(x => x.Key).ToArray();
         }
 
         public override bool FileExists(string url)
         {
             ObjectId objectId;
-            return assetIndexMap.TryGetValue(url, out objectId)
+            return contentIndexMap.TryGetValue(url, out objectId)
                 && objectDatabase.Exists(objectId);
         }
 
         public override long FileSize(string url)
         {
             ObjectId objectId;
-            if (!assetIndexMap.TryGetValue(url, out objectId))
+            if (!contentIndexMap.TryGetValue(url, out objectId))
                 throw new FileNotFoundException();
 
             return objectDatabase.GetSize(objectId);
@@ -118,7 +118,7 @@ namespace SiliconStudio.Core.IO
         public override string GetAbsolutePath(string url)
         {
             ObjectId objectId;
-            if (!assetIndexMap.TryGetValue(url, out objectId))
+            if (!contentIndexMap.TryGetValue(url, out objectId))
                 throw new FileNotFoundException();
 
             return objectDatabase.GetFilePath(objectId);
@@ -140,7 +140,7 @@ namespace SiliconStudio.Core.IO
                 objectId = ObjectId.Empty;
                 return null;
             }
-            return provider.AssetIndexMap.TryGetValue(resolveProviderResult.Path, out objectId) ? provider : null;
+            return provider.ContentIndexMap.TryGetValue(resolveProviderResult.Path, out objectId) ? provider : null;
         }
 
         abstract class DatabaseFileStream : VirtualFileStream, IDatabaseStream

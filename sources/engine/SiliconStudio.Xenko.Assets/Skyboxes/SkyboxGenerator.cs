@@ -7,7 +7,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.ComputeEffect.GGXPrefiltering;
 using SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering;

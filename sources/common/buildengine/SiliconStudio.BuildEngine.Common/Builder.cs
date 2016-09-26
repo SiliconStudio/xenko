@@ -13,11 +13,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.MicroThreading;
-using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.IO;
 
 using System.Reflection;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.BuildEngine
 {
@@ -267,7 +267,7 @@ namespace SiliconStudio.BuildEngine
 
                         if (dbProvider != null)
                         {
-                            dbProvider.AssetIndexMap.TryGetValue(providerResult.Path, out hash);
+                            dbProvider.ContentIndexMap.TryGetValue(providerResult.Path, out hash);
                         }
                         break;
                 }
@@ -506,7 +506,7 @@ namespace SiliconStudio.BuildEngine
                 VirtualFileSystem.FileDelete(IndexFileFullPath);
             }
 
-            using (var indexFile = AssetIndexMap.NewTool(indexName))
+            using (var indexFile = ContentIndexMap.NewTool(indexName))
             {
                 // Filter database Location
                 indexFile.AddValues(

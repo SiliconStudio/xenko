@@ -6,7 +6,6 @@ using SiliconStudio.Core.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.BuildEngine

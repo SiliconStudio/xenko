@@ -12,9 +12,8 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.MicroThreading;
-using SiliconStudio.Core.Serialization.Assets;
-
 using System.Threading;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Assets.Effect;
 using SiliconStudio.Xenko.Graphics;
