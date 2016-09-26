@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     {
         private static readonly FontDataFactory FontDataFactory = new FontDataFactory();
 
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, SpriteFontAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, SpriteFontAsset asset, AssetCompilerResult result)
         {
             var colorSpace = context.GetColorSpace();
 
@@ -37,11 +37,11 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
                 // copy the asset and transform the source and character set file path to absolute paths
                 var assetClone = (SpriteFontAsset)AssetCloner.Clone(asset);
-                var assetDirectory = assetItem.FullPath.GetParent();
+                var assetDirectory = assetAbsolutePath.GetParent();
                 assetClone.FontSource = asset.FontSource;
                 fontTypeSDF.CharacterSet = !string.IsNullOrEmpty(fontTypeSDF.CharacterSet) ? UPath.Combine(assetDirectory, fontTypeSDF.CharacterSet) : null;
 
-                result.BuildSteps = new AssetBuildStep(assetItem) { new SignedDistanceFieldFontCommand(assetItem.Location, assetClone) };
+                result.BuildSteps = new AssetBuildStep(assetItem) { new SignedDistanceFieldFontCommand(urlInStorage, assetClone) };
             }
             else
             if (asset.FontType is RuntimeRasterizedSpriteFontType)
@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 result.BuildSteps = new AssetBuildStep(assetItem)
                 {
                     new ImportStreamCommand { SourcePath = fontPathOnDisk, Location = fontImportLocation },
-                    new RuntimeRasterizedFontCommand(assetItem.Location, asset)
+                    new RuntimeRasterizedFontCommand(urlInStorage, asset)
                 };  
             }
             else
@@ -70,11 +70,11 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
                 // copy the asset and transform the source and character set file path to absolute paths
                 var assetClone = (SpriteFontAsset)AssetCloner.Clone(asset);
-                var assetDirectory = assetItem.FullPath.GetParent();
+                var assetDirectory = assetAbsolutePath.GetParent();
                 assetClone.FontSource = asset.FontSource;
                 fontTypeStatic.CharacterSet = !string.IsNullOrEmpty(fontTypeStatic.CharacterSet) ? UPath.Combine(assetDirectory, fontTypeStatic.CharacterSet): null;
 
-                result.BuildSteps = new AssetBuildStep(assetItem) { new OfflineRasterizedFontCommand(assetItem.Location, assetClone, colorSpace) };
+                result.BuildSteps = new AssetBuildStep(assetItem) { new OfflineRasterizedFontCommand(urlInStorage, assetClone, colorSpace) };
             }
         }
 

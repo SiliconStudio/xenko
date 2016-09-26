@@ -19,12 +19,12 @@ namespace SiliconStudio.Xenko.Assets
 {
     public class GameSettingsAssetCompiler : AssetCompilerBase<GameSettingsAsset>
     {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, GameSettingsAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, GameSettingsAsset asset, AssetCompilerResult result)
         {
             // TODO: We should ignore game settings stored in dependencies
             result.BuildSteps = new AssetBuildStep(assetItem)
             {
-                new GameSettingsCompileCommand(assetItem.Location, assetItem.Package, context.Platform, context.GetCompilationMode(), asset),
+                new GameSettingsCompileCommand(urlInStorage, assetItem.Package, context.Platform, context.GetCompilationMode(), asset),
             };
         }
 

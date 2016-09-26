@@ -22,10 +22,10 @@ namespace SiliconStudio.Xenko.Assets.Models
 {
     internal class PrefabModelAssetCompiler : AssetCompilerBase<PrefabModelAsset>
     {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, PrefabModelAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, PrefabModelAsset asset, AssetCompilerResult result)
         {
             var renderingSettings = context.GetGameSettingsAsset().Get<RenderingSettings>();
-            result.BuildSteps = new ListBuildStep { new PrefabModelAssetCompileCommand(assetItem.Location, asset, assetItem, renderingSettings) };
+            result.BuildSteps = new ListBuildStep { new PrefabModelAssetCompileCommand(urlInStorage, asset, assetItem, renderingSettings) };
             result.ShouldWaitForPreviousBuilds = true;
         }
 
