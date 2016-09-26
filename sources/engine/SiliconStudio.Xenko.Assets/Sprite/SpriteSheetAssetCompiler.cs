@@ -24,15 +24,16 @@ namespace SiliconStudio.Xenko.Assets.Sprite
     /// <summary>
     /// The <see cref="SpriteSheetAsset"/> compiler.
     /// </summary>
-    public class SpriteSheetAssetCompiler : AssetCompilerBase<SpriteSheetAsset> 
+    public class SpriteSheetAssetCompiler : AssetCompilerBase 
     {
         private static bool TextureFileIsValid(UFile file)
         {
             return file != null && File.Exists(file);
         }
 
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, SpriteSheetAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
+            var asset = (SpriteSheetAsset)assetItem.Asset;
             var gameSettingsAsset = context.GetGameSettingsAsset();
             var renderingSettings = gameSettingsAsset.Get<RenderingSettings>(context.Platform);
 
@@ -55,7 +56,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     if(!TextureFileIsValid(textureFile))
                         continue;
 
-                    var textureUrl = SpriteSheetAsset.BuildTextureUrl(urlInStorage, i);
+                    var textureUrl = SpriteSheetAsset.BuildTextureUrl(targetUrlInStorage, i);
 
                     var spriteAssetArray = spriteByTextures[i].ToArray();
                     foreach (var spriteAsset in spriteAssetArray)
@@ -76,7 +77,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     };
 
                     // Get absolute path of asset source on disk
-                    var assetDirectory = assetAbsolutePath.GetParent();
+                    var assetDirectory = assetItem.FullPath.GetParent();
                     var assetSource = UPath.Combine(assetDirectory, spriteAssetArray[0].Source);
 
                     // add the texture build command.
@@ -92,7 +93,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
             if (!result.HasErrors)
             {
                 var parameters = new SpriteSheetParameters(asset, imageToTextureUrl, context.Platform, context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile, gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace);
-                result.BuildSteps.Add(new AssetBuildStep(assetItem) { new SpriteSheetCommand(urlInStorage, parameters) });
+                result.BuildSteps.Add(new AssetBuildStep(assetItem) { new SpriteSheetCommand(targetUrlInStorage, parameters) });
             }
         }
 

@@ -17,15 +17,16 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.SpriteStudio.Offline
 {
-    internal class SpriteStudioAnimationAssetCompiler : AssetCompilerBase<SpriteStudioAnimationAsset>
+    internal class SpriteStudioAnimationAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, SpriteStudioAnimationAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
+            var asset = (SpriteStudioAnimationAsset)assetItem.Asset;
             var colorSpace = context.GetColorSpace();
 
             result.BuildSteps = new AssetBuildStep(assetItem)
             {
-                new SpriteStudioAnimationAssetCommand(urlInStorage, asset, colorSpace)
+                new SpriteStudioAnimationAssetCommand(targetUrlInStorage, asset, colorSpace)
             };
         }
 

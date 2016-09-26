@@ -2,29 +2,25 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
-using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.TextureConverter;
-using SiliconStudio.Xenko.Assets.SpriteFont.Compiler;
-using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Font;
 
 namespace SiliconStudio.Xenko.Assets.SpriteFont
 {
-    public class PrecompiledSpriteFontAssetCompiler : AssetCompilerBase<PrecompiledSpriteFontAsset>
+    public class PrecompiledSpriteFontAssetCompiler : AssetCompilerBase
     {
         private static readonly FontDataFactory FontDataFactory = new FontDataFactory();
 
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, PrecompiledSpriteFontAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
-            result.BuildSteps = new AssetBuildStep(assetItem) { new PrecompiledSpriteFontCommand(urlInStorage, asset) };
+            var asset = (PrecompiledSpriteFontAsset)assetItem.Asset;
+            result.BuildSteps = new AssetBuildStep(assetItem) { new PrecompiledSpriteFontCommand(targetUrlInStorage, asset) };
         }
 
         internal class PrecompiledSpriteFontCommand : AssetCommand<PrecompiledSpriteFontAsset>

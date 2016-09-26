@@ -5,18 +5,18 @@ using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
-using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Rendering.ProceduralModels;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
-    internal class ProceduralModelAssetCompiler : AssetCompilerBase<ProceduralModelAsset>
+    internal class ProceduralModelAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, UFile assetAbsolutePath, AssetItem assetItem, ProceduralModelAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
-            result.BuildSteps = new ListBuildStep { new GeometricPrimitiveCompileCommand(urlInStorage, asset) };
+            var asset = (ProceduralModelAsset)assetItem.Asset;
+            result.BuildSteps = new ListBuildStep { new GeometricPrimitiveCompileCommand(targetUrlInStorage, asset) };
         }
 
         private class GeometricPrimitiveCompileCommand : AssetCommand<ProceduralModelAsset>

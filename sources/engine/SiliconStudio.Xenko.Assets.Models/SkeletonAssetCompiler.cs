@@ -3,15 +3,15 @@
 
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
-using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
-    public class SkeletonAssetCompiler : AssetCompilerBase<SkeletonAsset>
+    public class SkeletonAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, SkeletonAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
-            var assetSource = GetAbsolutePath(assetAbsolutePath, asset.Source);
+            var asset = (SkeletonAsset)assetItem.Asset;
+            var assetSource = GetAbsolutePath(assetItem, asset.Source);
             var extension = assetSource.GetFileExtension();
             var buildStep = new AssetBuildStep(assetItem);
 
@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             }
 
             importModelCommand.SourcePath = assetSource;
-            importModelCommand.Location = urlInStorage;
+            importModelCommand.Location = targetUrlInStorage;
             importModelCommand.Mode = ImportModelCommand.ExportMode.Skeleton;
             importModelCommand.ScaleImport = asset.ScaleImport;
             importModelCommand.PivotPosition = asset.PivotPosition;

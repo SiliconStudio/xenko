@@ -17,10 +17,11 @@ using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.SpriteStudio.Offline
 {
-    internal class SpriteStudioModelAssetCompiler : AssetCompilerBase<SpriteStudioModelAsset>
+    internal class SpriteStudioModelAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, SpriteStudioModelAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
+            var asset = (SpriteStudioModelAsset)assetItem.Asset;
             var gameSettingsAsset = context.GetGameSettingsAsset();
             var renderingSettings = gameSettingsAsset.Get<RenderingSettings>(context.Platform);
             var colorSpace = renderingSettings.ColorSpace;
@@ -45,20 +46,20 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                 };
 
                 result.BuildSteps.Add(
-                new TextureAssetCompiler.TextureConvertCommand(
-                    urlInStorage + texIndex,
-                    new TextureConvertParameters(texture, textureAsset, context.Platform,
-                        context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile,
-                        gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace)));
+                    new TextureAssetCompiler.TextureConvertCommand(
+                        targetUrlInStorage + texIndex,
+                        new TextureConvertParameters(texture, textureAsset, context.Platform,
+                            context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile,
+                            gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace)));
 
-                asset.BuildTextures.Add(urlInStorage + texIndex);
+                asset.BuildTextures.Add(targetUrlInStorage + texIndex);
 
                 texIndex++;
             }
 
             result.BuildSteps.Add(new AssetBuildStep(assetItem)
             {
-                new SpriteStudioModelAssetCommand(urlInStorage, asset, colorSpace)
+                new SpriteStudioModelAssetCommand(targetUrlInStorage, asset, colorSpace)
             });
         }
 

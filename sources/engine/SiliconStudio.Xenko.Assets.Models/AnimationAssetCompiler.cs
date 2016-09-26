@@ -14,13 +14,15 @@ using SiliconStudio.Xenko.Animations;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
-    public class AnimationAssetCompiler : AssetCompilerBase<AnimationAsset>
+    public class AnimationAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, AnimationAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
+            var asset = (AnimationAsset)assetItem.Asset;
+            var assetAbsolutePath = assetItem.FullPath;
             // Get absolute path of asset source on disk
             var assetDirectory = assetAbsolutePath.GetParent();
-            var assetSource = GetAbsolutePath(assetAbsolutePath, asset.Source);
+            var assetSource = GetAbsolutePath(assetItem, asset.Source);
             var extension = assetSource.GetFileExtension();
             var buildStep = new AssetBuildStep(assetItem);
 
@@ -38,7 +40,7 @@ namespace SiliconStudio.Xenko.Assets.Models
 
             sourceBuildStep.Mode = ImportModelCommand.ExportMode.Animation;
             sourceBuildStep.SourcePath = assetSource;
-            sourceBuildStep.Location = urlInStorage;
+            sourceBuildStep.Location = targetUrlInStorage;
             sourceBuildStep.AnimationRepeatMode = asset.RepeatMode;
             sourceBuildStep.AnimationRootMotion = asset.RootMotion;
             sourceBuildStep.ScaleImport = asset.ScaleImport;
@@ -48,8 +50,8 @@ namespace SiliconStudio.Xenko.Assets.Models
             var additiveAnimationAsset = asset as AdditiveAnimationAsset;
             if (additiveAnimationAsset != null)
             {
-                var baseUrlInStorage = urlInStorage + "_animation_base";
-                var sourceUrlInStorage = urlInStorage + "_animation_source";
+                var baseUrlInStorage = targetUrlInStorage + "_animation_base";
+                var sourceUrlInStorage = targetUrlInStorage + "_animation_source";
 
                 var baseAssetSource = UPath.Combine(assetDirectory, additiveAnimationAsset.BaseSource);
                 var baseExtension = baseAssetSource.GetFileExtension();
@@ -80,7 +82,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 buildStep.Add(new WaitBuildStep());
 
                 // Generate the diff of those two animations
-                buildStep.Add(new AdditiveAnimationCommand(urlInStorage, new AdditiveAnimationParameters(baseUrlInStorage, sourceUrlInStorage, additiveAnimationAsset.Mode)));
+                buildStep.Add(new AdditiveAnimationCommand(targetUrlInStorage, new AdditiveAnimationParameters(baseUrlInStorage, sourceUrlInStorage, additiveAnimationAsset.Mode)));
             }
             else
             {

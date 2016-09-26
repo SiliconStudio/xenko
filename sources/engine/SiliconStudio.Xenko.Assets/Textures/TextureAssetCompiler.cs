@@ -17,18 +17,19 @@ namespace SiliconStudio.Xenko.Assets.Textures
     /// <summary>
     /// Texture asset compiler.
     /// </summary>
-    public class TextureAssetCompiler : AssetCompilerBase<TextureAsset>
+    public class TextureAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, TextureAsset asset, AssetCompilerResult result)
-        {        
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
+        {
+            var asset = (TextureAsset)assetItem.Asset;
             // Get absolute path of asset source on disk
-            var assetSource = GetAbsolutePath(assetAbsolutePath, asset.Source);
+            var assetSource = GetAbsolutePath(assetItem, asset.Source);
 
             var gameSettingsAsset = context.GetGameSettingsAsset();
             var colorSpace = context.GetColorSpace();
 
             var parameter = new TextureConvertParameters(assetSource, asset, context.Platform, context.GetGraphicsPlatform(assetItem.Package), gameSettingsAsset.Get<RenderingSettings>(context.Platform).DefaultGraphicsProfile, gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace);
-            result.BuildSteps = new AssetBuildStep(assetItem) { new TextureConvertCommand(urlInStorage, parameter) };
+            result.BuildSteps = new AssetBuildStep(assetItem) { new TextureConvertCommand(targetUrlInStorage, parameter) };
         }
 
         /// <summary>

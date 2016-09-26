@@ -13,12 +13,13 @@ using SiliconStudio.Xenko.Rendering.Materials;
 
 namespace SiliconStudio.Xenko.Assets.Materials
 {
-    internal class MaterialAssetCompiler : AssetCompilerBase<MaterialAsset>
+    internal class MaterialAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, MaterialAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
+            var asset = (MaterialAsset)assetItem.Asset;
             result.ShouldWaitForPreviousBuilds = true;
-            result.BuildSteps = new AssetBuildStep(assetItem) { new MaterialCompileCommand(urlInStorage, assetItem, asset, context) };
+            result.BuildSteps = new AssetBuildStep(assetItem) { new MaterialCompileCommand(targetUrlInStorage, assetItem, asset, context) };
         }
 
         private class MaterialCompileCommand : AssetCommand<MaterialAsset>

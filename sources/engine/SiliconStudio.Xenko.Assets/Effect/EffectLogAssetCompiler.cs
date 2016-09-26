@@ -18,10 +18,11 @@ namespace SiliconStudio.Xenko.Assets.Effect
     /// <summary>
     /// Compiles same effects as a previous recorded session.
     /// </summary>
-    public class EffectLogAssetCompiler : AssetCompilerBase<EffectLogAsset>
+    public class EffectLogAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, AssetItem assetItem, EffectLogAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
+            var asset = (EffectLogAsset)assetItem.Asset;
             var originalSourcePath = asset.AbsoluteSourceLocation;
             result.ShouldWaitForPreviousBuilds = true;
             result.BuildSteps = new AssetBuildStep(assetItem) { new EffectLogBuildStep(context, originalSourcePath, assetItem.Package) };
