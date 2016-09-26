@@ -26,6 +26,8 @@
     </Compile>
     <Compile Include="NugetLogEventArgs.cs" />
     <Compile Include="NugetStore.cs" />
+    <Compile Include="NugetPackage.cs" />
+    <Compile Include="NugetSemanticVersion.cs" />
     <Compile Include="TargetGenerator.cs">
       <DependentUpon>TargetGenerator.tt</DependentUpon>
       <AutoGen>True</AutoGen>

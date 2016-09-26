@@ -137,24 +137,34 @@ namespace SiliconStudio.Assets
             return SourceRepository.Repositories.Any(CheckSource);
         }
 
-        public IPackage GetLatestPackageInstalled(string packageId)
+        public NugetPackage GetLatestPackageInstalled(string packageId)
         {
-            return LocalRepository.GetPackages().Where(p => p.Id == packageId).OrderByDescending(p => p.Version).FirstOrDefault();
+            return new NugetPackage(LocalRepository.GetPackages().Where(p => p.Id == packageId).OrderByDescending(p => p.Version).FirstOrDefault());
         }
 
-        public IList<IPackage> GetPackagesInstalled(string packageId)
+        public IList<NugetPackage> GetPackagesInstalled(string packageId)
         {
-            return LocalRepository.GetPackages().Where(p => p.Id == packageId).OrderByDescending(p => p.Version).ToArray();
+            var l = new List<NugetPackage>();
+            foreach (var package in LocalRepository.GetPackages().Where(p => p.Id == packageId).OrderByDescending(p => p.Version))
+            {
+                l.Add(new NugetPackage(package));
+            }
+            return l;
         }
 
-        public IPackage GetLatestPackageInstalled(IEnumerable<string> packageIds)
+        public NugetPackage GetLatestPackageInstalled(IEnumerable<string> packageIds)
         {
-            return LocalRepository.GetPackages().Where(p => packageIds.Any(x => x == p.Id)).OrderByDescending(p => p.Version).FirstOrDefault();
+            return new NugetPackage(LocalRepository.GetPackages().Where(p => packageIds.Any(x => x == p.Id)).OrderByDescending(p => p.Version).FirstOrDefault());
         }
 
-        public IList<IPackage> GetPackagesInstalled(IEnumerable<string> packageIds)
+        public IList<NugetPackage> GetPackagesInstalled(IEnumerable<string> packageIds)
         {
-            return LocalRepository.GetPackages().Where(p => packageIds.Any(x => x == p.Id)).OrderByDescending(p => p.Version).ToArray();
+            var l = new List<NugetPackage>();
+            foreach (var package in LocalRepository.GetPackages().Where(p => packageIds.Any(x => x == p.Id)).OrderByDescending(p => p.Version))
+            {
+                l.Add(new NugetPackage(package));
+            }
+            return l;
         }
 
         public static bool CheckSource(IPackageRepository repository)
@@ -200,7 +210,7 @@ namespace SiliconStudio.Assets
             return File.Exists(storeConfig);
         }
 
-        public void InstallPackage(string packageId, SemanticVersion version)
+        public void InstallPackage(string packageId, NuGet.SemanticVersion version)
         {
             using (GetLocalRepositoryLocker())
             {
@@ -310,6 +320,11 @@ namespace SiliconStudio.Assets
 
             // Remove it from the list of packages to process
             packages.Remove(packageToTrack);
+        }
+
+        public string GetPackageDirectory(NugetPackage xenkoPackage)
+        {
+            return PathResolver.GetPackageDirectory(xenkoPackage.IPackage);
         }
     }
 }

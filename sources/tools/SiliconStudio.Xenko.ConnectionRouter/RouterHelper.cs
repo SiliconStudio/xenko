@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                 if (xenkoPackage == null)
                     return null;
 
-                var packageDirectory = store.PathResolver.GetPackageDirectory(xenkoPackage);
+                var packageDirectory = store.GetPackageDirectory(xenkoPackage);
                 return Path.Combine(xenkoSdkDir, store.RepositoryPath, packageDirectory);
             }
 
