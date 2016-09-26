@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Assets.UI
 
             protected override ComponentBase Create(ICommandContext commandContext)
             {
-                return new Engine.UIPage { RootElement = AssetParameters.Hierarchy.Parts[AssetParameters.Hierarchy.RootPartIds.Single()].UIElement };
+                return new Engine.UIPage { RootElement = Parameters.Hierarchy.Parts[Parameters.Hierarchy.RootPartIds.Single()].UIElement };
             }
         }
     }

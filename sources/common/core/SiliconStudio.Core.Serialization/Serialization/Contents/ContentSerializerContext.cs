@@ -3,7 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Serialization.Serializers;
 
 // Serializer for ContentSerializerContext.SerializeReferences()

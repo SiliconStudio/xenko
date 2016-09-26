@@ -4,10 +4,9 @@ using NUnit.Framework;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.BuildEngine.Tests.Commands;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization.Assets;
-
 using System.Linq;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.BuildEngine.Tests
 {
@@ -23,7 +22,7 @@ namespace SiliconStudio.BuildEngine.Tests
 
             Assert.Contains(new ObjectUrl(UrlType.ContentLink, "/db/url1"), step.Result.OutputObjects.Keys);
 
-            var indexMap = AssetIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
+            var indexMap = ContentIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
             indexMap.UseTransaction = true;
             indexMap.LoadNewValues();
 
@@ -65,7 +64,7 @@ namespace SiliconStudio.BuildEngine.Tests
             Assert.IsTrue(step.Result.OutputObjects.Keys.Contains(new ObjectUrl(UrlType.ContentLink, "/db/url1")));
             Assert.IsTrue(childStep.Result.OutputObjects.Keys.Contains(new ObjectUrl(UrlType.ContentLink, "/db/url1")));
 
-            var indexMap = AssetIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
+            var indexMap = ContentIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
             indexMap.UseTransaction = true;
             indexMap.LoadNewValues();
 
@@ -96,7 +95,7 @@ namespace SiliconStudio.BuildEngine.Tests
             Assert.IsTrue(step1.Result.OutputObjects.Keys.Contains(new ObjectUrl(UrlType.ContentLink, "/db/url1")));
             Assert.IsTrue(step2.Result.OutputObjects.Keys.Contains(new ObjectUrl(UrlType.ContentLink, "/db/url1")));
 
-            var indexMap = AssetIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
+            var indexMap = ContentIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
             indexMap.UseTransaction = true;
             indexMap.LoadNewValues();
 
@@ -128,7 +127,7 @@ namespace SiliconStudio.BuildEngine.Tests
             Assert.That(step.Status, Is.EqualTo(ResultStatus.NotTriggeredWasSuccessful));
             Assert.IsTrue(step.Result.OutputObjects.Keys.Contains(new ObjectUrl(UrlType.ContentLink, "/db/url1")));
 
-            var indexMap = AssetIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
+            var indexMap = ContentIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
             indexMap.UseTransaction = true;
             indexMap.LoadNewValues();
 
@@ -154,7 +153,7 @@ namespace SiliconStudio.BuildEngine.Tests
 
             Assert.That(step.SpawnedSteps.Count(), Is.EqualTo(1));
 
-            var indexMap = AssetIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
+            var indexMap = ContentIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
             indexMap.UseTransaction = true;
             indexMap.LoadNewValues();
 
@@ -180,7 +179,7 @@ namespace SiliconStudio.BuildEngine.Tests
 
             Assert.That(step.SpawnedSteps.Count(), Is.EqualTo(1));
 
-            var indexMap = AssetIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
+            var indexMap = ContentIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
             indexMap.UseTransaction = true;
             indexMap.LoadNewValues();
 
@@ -206,7 +205,7 @@ namespace SiliconStudio.BuildEngine.Tests
             Assert.IsTrue(step.Result.OutputObjects.Keys.Contains(new ObjectUrl(UrlType.ContentLink, "/db/url1")));
             Assert.IsTrue(childStep.Result.OutputObjects.Keys.Contains(new ObjectUrl(UrlType.ContentLink, "/db/url2")));
 
-            var indexMap = AssetIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
+            var indexMap = ContentIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
             indexMap.UseTransaction = true;
             indexMap.LoadNewValues();
 
@@ -242,7 +241,7 @@ namespace SiliconStudio.BuildEngine.Tests
             Assert.IsTrue(step.Result.OutputObjects.Keys.Contains(new ObjectUrl(UrlType.ContentLink, "/db/url1")));
             Assert.IsTrue(childStep.Result.OutputObjects.Keys.Contains(new ObjectUrl(UrlType.ContentLink, "/db/url2")));
 
-            var indexMap = AssetIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
+            var indexMap = ContentIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
             indexMap.UseTransaction = true;
             indexMap.LoadNewValues();
 
@@ -266,7 +265,7 @@ namespace SiliconStudio.BuildEngine.Tests
             CommandBuildStep step = builder.Root.Add(command);
             builder.Run(Builder.Mode.Build);
 
-            var indexMap = AssetIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
+            var indexMap = ContentIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
             indexMap.UseTransaction = true;
             indexMap.LoadNewValues();
 
@@ -293,7 +292,7 @@ namespace SiliconStudio.BuildEngine.Tests
             CommandBuildStep step2 = builder2.Root.Add(new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.File, Utils.GetSourcePath("input1")), OutputUrl = "/db/url1", InputDependencies = { inputDep } });
             builder2.Run(Builder.Mode.Build);
 
-            var indexMap = AssetIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
+            var indexMap = ContentIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
             indexMap.LoadNewValues();
 
             Assert.That(step1.Status, Is.EqualTo(ResultStatus.Successful));

@@ -12,7 +12,7 @@ namespace SiliconStudio.Assets.Tests
     {
         public bool TestSingleUrl(PathSelector pathSelector, string asset)
         {
-            var assetIndexMap = new ObjectDatabaseAssetIndexMap();
+            var assetIndexMap = new ObjectDatabaseContentIndexMap();
             assetIndexMap[asset] = ObjectId.New();
 
             return pathSelector.Select(null, assetIndexMap).Count() == 1;

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using NUnit.Framework;
@@ -98,7 +97,6 @@ namespace SiliconStudio.Xenko.Engine.Tests
             rotatingSprites.Add(CreateSpriteEntity(debugSheet, "OutOfImage"));
 
             // Invalid sprites
-            CreateSpriteEntity(debugSheet, "NoTexture");
             CreateSpriteEntity(debugSheet, "NullWidth");
             CreateSpriteEntity(debugSheet, "NegativeHeight");
 

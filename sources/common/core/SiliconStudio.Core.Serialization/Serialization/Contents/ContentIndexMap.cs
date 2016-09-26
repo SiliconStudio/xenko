@@ -1,31 +1,31 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.IO;
-using System.Collections.Generic;
-using System.Linq;
+using SiliconStudio.Core.Storage;
 
-
-namespace SiliconStudio.Core.Serialization.Assets
+namespace SiliconStudio.Core.Serialization.Contents
 {
-    public sealed class AssetIndexMap : DictionaryStore<string, ObjectId>, IAssetIndexMap
+    public sealed class ContentIndexMap : DictionaryStore<string, ObjectId>, IContentIndexMap
     {
         private static readonly Regex RegexEntry = new Regex(@"^(.*?)\s+(\w+)$");
 
-        private AssetIndexMap()
+        private ContentIndexMap()
             : base(null)
         {
         }
 
-        public static AssetIndexMap NewTool(string indexName)
+        public static ContentIndexMap NewTool(string indexName)
         {
             if (indexName == null) throw new ArgumentNullException(nameof(indexName));
 
-            var result = new AssetIndexMap
+            var result = new ContentIndexMap
             {
                 // Try to open with read-write
                 stream = VirtualFileSystem.OpenStream(
@@ -38,18 +38,18 @@ namespace SiliconStudio.Core.Serialization.Assets
             return result;
         }
 
-        public static AssetIndexMap CreateInMemory()
+        public static ContentIndexMap CreateInMemory()
         {
-            var result = new AssetIndexMap { stream = new MemoryStream() };
+            var result = new ContentIndexMap { stream = new MemoryStream() };
             result.LoadNewValues();
             return result;
         }
 
-        public static AssetIndexMap Load(string indexFile, bool isReadOnly = false)
+        public static ContentIndexMap Load(string indexFile, bool isReadOnly = false)
         {
             if (indexFile == null) throw new ArgumentNullException(nameof(indexFile));
 
-            var result = new AssetIndexMap();
+            var result = new ContentIndexMap();
 
             var isAppDataWriteable = !isReadOnly;
             if (isAppDataWriteable)

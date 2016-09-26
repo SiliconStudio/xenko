@@ -7,7 +7,6 @@ using System.Text;
 using NUnit.Framework;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Serialization.Serializers;
 using SiliconStudio.Core.Storage;
@@ -19,7 +18,7 @@ namespace SiliconStudio.Core.Tests
     [DataSerializerGlobal(typeof(ReferenceSerializer<B>), Profile = "Content")]
     [DataSerializerGlobal(typeof(ReferenceSerializer<C>), Profile = "Content")]
     [DataSerializerGlobal(typeof(ReferenceSerializer<D>), Profile = "Content")]
-    public class TestAssetManager
+    public class TestContentManager
     {
         [ContentSerializer(typeof(DataContentSerializer<A>))]
         [DataContract]
@@ -73,7 +72,7 @@ namespace SiliconStudio.Core.Tests
         public void SetupDatabase()
         {
             VirtualFileSystem.CreateDirectory(VirtualFileSystem.ApplicationDatabasePath);
-            var databaseFileProvider = new DatabaseFileProvider(AssetIndexMap.NewTool(VirtualFileSystem.ApplicationDatabaseIndexName), new ObjectDatabase(VirtualFileSystem.ApplicationDatabasePath, VirtualFileSystem.ApplicationDatabaseIndexName));
+            var databaseFileProvider = new DatabaseFileProvider(ContentIndexMap.NewTool(VirtualFileSystem.ApplicationDatabaseIndexName), new ObjectDatabase(VirtualFileSystem.ApplicationDatabasePath, VirtualFileSystem.ApplicationDatabaseIndexName));
             ContentManager.GetFileProvider = () => databaseFileProvider;
         }
 
@@ -157,7 +156,7 @@ namespace SiliconStudio.Core.Tests
             Assert.That(b2.A.I, Is.EqualTo(b1.A.I));
 
             // Try to load without references
-            var b3 = assetManager3.Load<B>("test", new AssetManagerLoaderSettings { LoadContentReferences = false });
+            var b3 = assetManager3.Load<B>("test", new ContentManagerLoaderSettings { LoadContentReferences = false });
 
             Assert.That(b3, Is.Not.EqualTo(b1));
 
