@@ -250,17 +250,6 @@ namespace SiliconStudio.Presentation.Controls
             listBox.MouseUp += ListBoxMouseUp;
         }
 
-        protected override void OnSelectionChanged(SelectionChangedEventArgs e)
-        {
-            base.OnSelectionChanged(e);
-            if (SelectedItem == null && !updatingSelection)
-            {
-                clearing = true;
-                editableTextBox.Clear();
-                clearing = false;
-            }
-        }
-
         protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
         {
             base.OnGotKeyboardFocus(e);
