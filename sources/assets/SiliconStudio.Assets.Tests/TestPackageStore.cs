@@ -20,7 +20,7 @@ namespace SiliconStudio.Assets.Tests
 
             Assert.AreEqual(installationPath, packageManager.InstallationPath);
 
-            var packageFileName = packageManager.GetPackageFileName(packageManager.DefaultPackageName);
+            var packageFileName = packageManager.GetPackageWithFileName(packageManager.DefaultPackageName);
 
             Assert.IsTrue(File.Exists(packageFileName), "Unable to find default package file [{0}]".ToFormat(packageFileName));
         }

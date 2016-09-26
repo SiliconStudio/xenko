@@ -196,6 +196,17 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
+        /// Gets the filename to the specific package using just a package name.
+        /// </summary>
+        /// <param name="packageName">Name of the package.</param>
+        /// <returns>A location on the disk to the specified package or null if not found.</returns>
+        /// <exception cref="System.ArgumentNullException">packageName</exception>
+        public UFile GetPackageWithFileName(string packageName)
+        {
+            return GetPackageFileName(packageName);
+        }
+
+        /// <summary>
         /// Gets the filename to the specific package.
         /// </summary>
         /// <param name="packageName">Name of the package.</param>
