@@ -10,7 +10,7 @@ using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Xenko.Assets.Tasks
 {
-    internal sealed class PackageArchive
+    public static class PackageArchive
     {
         public static void Build(Package package, string specialVersion = null, string outputDirectory = null)
         {

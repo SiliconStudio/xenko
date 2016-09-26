@@ -68,6 +68,7 @@
     <Compile Include="IAssetWithLocation.cs" />
     <Compile Include="IProjectAsset.cs" />
     <Compile Include="IProjectFileGeneratorAsset.cs" />
+    <Compile Include="PackageArchive.cs" />
     <Compile Include="Serializers\AssetCompositeVisitorContext.cs" />
     <Compile Include="Serializers\AssetPartReferenceAttribute.cs" />
     <Compile Include="Serializers\AssetCompositeSerializer.cs" />

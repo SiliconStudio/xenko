@@ -1,5 +1,4 @@
 using System.IO;
-using NuGet;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Shaders.Ast;
