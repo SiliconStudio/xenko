@@ -10,6 +10,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Assets.Entities;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
@@ -34,6 +35,8 @@ namespace SiliconStudio.Xenko.Assets.Navigation
         [DataMember(2000)]
         public NavmeshBuildSettings BuildSettings { get; set; }
 
+        [DataMember(2500)]
+        public bool AutoGenerateBoundingBox { get; set; } = true;
         public NavmeshAsset()
         {
             // Initialize build settings

@@ -1,15 +1,62 @@
-﻿#include "../../../../deps/Recast/include/Recast.h"
-#include "../../../../deps/Recast/include/DetourNavMeshBuilder.h"
+﻿#include "../../../../deps/Recast/include/DetourNavMeshBuilder.h"
 #include "../XenkoNative.h"
 
 #include "../../../../deps/NativePath/NativePath.h"
-#include "../../../../deps/NativePath/TINYSTL/vector.h"
 #include "Navigation.hpp"
 #include "NavigationBuilder.hpp"
+#include "../../../../deps/NativePath/NativeTime.h"
+
+// TODO: Remove this
+#ifdef _WIN32
+#define WINAPI __stdcall
+#define WINBASEAPI __declspec(dllimport)
+extern "C"
+{
+	WINBASEAPI uint32_t WINAPI AllocConsole();
+	WINBASEAPI uint32_t WINAPI FreeConsole();
+	WINBASEAPI uint32_t WINAPI AttachConsole(uint32_t dwProcessId);
+	WINBASEAPI void* WINAPI GetConsoleWindow(void);
+	WINBASEAPI uint32_t WINAPI CloseWindow(void* hWnd);
+	WINBASEAPI uint32_t WINAPI GetCurrentProcessId(void);
+	WINBASEAPI void* __cdecl freopen(
+			char const* _FileName,
+			char const* _Mode,
+			void*       _Stream
+		);
+	WINBASEAPI void* __cdecl __acrt_iob_func(unsigned); 
+	#define stdin (__acrt_iob_func(0))
+	#define stdout (__acrt_iob_func(1))
+	#define stderr (__acrt_iob_func(2))
+}
+class DebugConsole
+{
+	DebugConsole()
+	{
+		AllocConsole();
+		AttachConsole(GetCurrentProcessId());
+		freopen("CON", "w", stdout);
+	}
+public:
+	~DebugConsole()
+	{
+		void* consoleWindow = GetConsoleWindow();
+		FreeConsole();
+		CloseWindow(consoleWindow);
+	}
+	static DebugConsole& Get()
+	{
+		static DebugConsole console;
+		return console;
+	}
+};
+#endif
 
 NavigationBuilder::NavigationBuilder()
 {
 	m_context = new rcContext(false);
+#ifdef _WIN32
+	DebugConsole::Get();
+#endif
 }
 NavigationBuilder::~NavigationBuilder()
 {
@@ -46,6 +93,16 @@ void NavigationBuilder::Cleanup()
 }
 GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertices, int* indices, int numIndices)
 {
+	printf(" -- Generating navmesh --\n");
+	printf("Input Vertices: %d\n", numVertices);
+	printf("Input Indices: %d\n", numIndices);
+	printf("CS: %f  CH: %f\n", m_config.cs, m_config.ch);
+	printf("Bounds: \n\t{%f, %f, %f}\n\t{%f, %f, %f}\n", 
+		m_config.bmin[0], m_config.bmin[1], m_config.bmin[2],
+		m_config.bmax[0], m_config.bmax[1], m_config.bmax[2]);
+	printf("Agent Radius: %f  Height: %f\n", m_buildSettings.agentSettings.radius, m_buildSettings.agentSettings.height);
+
+	double totalTime = npSeconds();
 	GeneratedData* ret = &m_result;
 	ret->success = false;
 
@@ -71,16 +128,17 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 	{
 		return ret;
 	}
-
 	// Find triangles which are walkable based on their slope and rasterize them.
 	// If your input data is multiple meshes, you can transform them here, calculate
 	// the are type for each of the meshes and rasterize them.
+	double rasterizationTime = npSeconds();
 	memset(m_triareas, 0, numTriangles * sizeof(unsigned char));
 	rcMarkWalkableTriangles(m_context, m_config.walkableSlopeAngle, (float*)vertices, numVertices, indices, numTriangles, m_triareas);
 	if(!rcRasterizeTriangles(m_context, (float*)vertices, numVertices, indices, m_triareas, numTriangles, *m_solid, m_config.walkableClimb))
 	{
 		return ret;
 	}
+	rasterizationTime = npSeconds() - rasterizationTime;
 
 	//
 	// Step 3. Filter walkables surfaces.
@@ -100,6 +158,7 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 	// Compact the heightfield so that it is faster to handle from now on.
 	// This will result more cache coherent data as well as the neighbours
 	// between walkable cells will be calculated.
+	double buildHeightFieldTime = npSeconds();
 	m_chf = rcAllocCompactHeightfield();
 	if(!m_chf)
 	{
@@ -114,6 +173,7 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 		rcFreeHeightField(m_solid);
 		m_solid = 0;
 	}
+	buildHeightFieldTime = npSeconds() - buildHeightFieldTime;
 
 	// Erode the walkable area by agent radius.
 	if(!rcErodeWalkableArea(m_context, m_config.walkableRadius, *m_chf))
@@ -151,6 +211,7 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 	//     if you have large open areas with small obstacles (not a problem if you use tiles)
 	//   * good choice to use for tiled navmesh with medium and small sized tiles
 
+	double regionsTime = npSeconds();
 	//if (m_partitionType == SAMPLE_PARTITION_WATERSHED)
 	{
 		// Prepare for region partitioning, by calculating distance field along the walkable surface.
@@ -184,12 +245,14 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 	//		return false;
 	//	}
 	//}
+	regionsTime = npSeconds() - regionsTime;
 
 	//
 	// Step 5. Trace and simplify region contours.
 	//
 
 	// Create contours.
+	double contoursTime = npSeconds();
 	m_cset = rcAllocContourSet();
 	if(!m_cset)
 	{
@@ -199,12 +262,14 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 	{
 		return ret;
 	}
+	contoursTime = npSeconds() - contoursTime;
 
 	//
 	// Step 6. Build polygons mesh from contours.
 	//
 
 	// Build polygon navmesh from the contours.
+	double polyMeshTime = npSeconds();
 	m_pmesh = rcAllocPolyMesh();
 	if(!m_pmesh)
 	{
@@ -214,11 +279,13 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 	{
 		return ret;
 	}
+	polyMeshTime = npSeconds() - polyMeshTime;
 
 	//
 	// Step 7. Create detail mesh which allows to access approximate height on each polygon.
 	//
 
+	double detailMeshTime = npSeconds();
 	m_dmesh = rcAllocPolyMeshDetail();
 	if(!m_dmesh)
 	{
@@ -229,6 +296,7 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 	{
 		return ret;
 	}
+	detailMeshTime = npSeconds() - detailMeshTime;
 
 	{
 		rcFreeCompactHeightfield(m_chf);
@@ -241,15 +309,34 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 	GenerateNavMeshVertices();
 	ret->navmeshVertices = m_navmeshVertices.data();
 	ret->numNavmeshVertices = m_navmeshVertices.size();
+	double createMeshTime = npSeconds();
 	if(!CreateDetourMesh())
 		return ret;
+	createMeshTime = npSeconds() - createMeshTime;
 	ret->navmeshData = m_navmeshData.data();
 	ret->navmeshDataLength = m_navmeshData.size();
 	ret->success = true;
+
+	totalTime = npSeconds() - totalTime;
+
+	printf("Navmesh build timings\n");
+	printf("Rasterization: %.03f\n", rasterizationTime);
+	printf("Heightfield: %.03f\n", buildHeightFieldTime);
+	printf("Regions: %.03f\n", regionsTime);
+	printf("Contours: %.03f\n", contoursTime);
+	printf("Poly Mesh: %.03f\n", polyMeshTime);
+	printf("Detail Mesh: %.03f\n", detailMeshTime);
+	printf("Create Mesh: %.03f\n", createMeshTime);
+	printf("Total Duration: %.03f\n", totalTime);
+
 	return ret;
 }
 void NavigationBuilder::SetSettings(BuildSettings buildSettings)
 {
+	// Copy this to have access to original settings
+	m_buildSettings = buildSettings;
+
+	// TODO: Expose these settings
 	float regionMinSize = 0.1f;
 	float regionMergeSize = 20;
 	float edgeMaxLen = 12.0f;

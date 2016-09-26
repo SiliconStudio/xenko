@@ -1,9 +1,5 @@
-﻿#include "../../../../deps/Recast/include/Recast.h"
-#include "../../../../deps/Recast/include/DetourNavMeshBuilder.h"
-#include "../XenkoNative.h"
-
+﻿#include "../XenkoNative.h"
 #include "../../../../deps/NativePath/NativePath.h"
-#include "../../../../deps/NativePath/TINYSTL/vector.h"
 #include "Navigation.hpp"
 #include "NavigationBuilder.hpp"
 #include "Navmesh.hpp"

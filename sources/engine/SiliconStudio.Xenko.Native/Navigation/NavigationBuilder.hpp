@@ -1,4 +1,6 @@
 ﻿#pragma once
+#include "../../../../deps/Recast/include/Recast.h"
+#include "../../../../deps/NativePath/TINYSTL/vector.h"
 
 class NavigationBuilder
 {
@@ -9,6 +11,7 @@ class NavigationBuilder
 	rcPolyMesh* m_pmesh = nullptr;
 	rcPolyMeshDetail* m_dmesh = nullptr;
 	rcConfig m_config;
+	BuildSettings m_buildSettings;
 	rcContext* m_context;
 
 	// Calculated navmesh vertices
