@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Runtime.CompilerServices;
+using System.Threading;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Threading;
@@ -127,13 +128,23 @@ namespace SiliconStudio.Xenko.Rendering
             return result;
         }
 
-        internal ObjectNodeReference GetOrCreateObjectNode(RenderObject renderObject)
+        internal unsafe ObjectNodeReference GetOrCreateObjectNode(RenderObject renderObject)
         {
-            if (renderObject.ObjectNode == ObjectNodeReference.Invalid)
+            fixed (ObjectNodeReference* objectNodeRef = &renderObject.ObjectNode)
             {
-                var index = objectNodes.Add(new ObjectNode(renderObject));
-                renderObject.ObjectNode = new ObjectNodeReference(index);
-                ObjectNodeReferences.Add(renderObject.ObjectNode);
+                var oldValue = Interlocked.CompareExchange(ref *(int*)objectNodeRef, -2, -1);
+                if (oldValue == -1)
+                {
+                    var index = objectNodes.Add(new ObjectNode(renderObject));
+                    renderObject.ObjectNode = new ObjectNodeReference(index);
+                    ObjectNodeReferences.Add(renderObject.ObjectNode);
+                }
+                else
+                {
+                    while (renderObject.ObjectNode.Index == -2)
+                    {
+                    }
+                }
             }
 
             return renderObject.ObjectNode;

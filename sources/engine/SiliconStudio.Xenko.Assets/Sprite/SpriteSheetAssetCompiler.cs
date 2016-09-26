@@ -13,7 +13,7 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Assets.Textures.Packing;
 using SiliconStudio.Xenko.Graphics;
@@ -26,12 +26,12 @@ namespace SiliconStudio.Xenko.Assets.Sprite
     /// </summary>
     public class SpriteSheetAssetCompiler : AssetCompilerBase<SpriteSheetAsset> 
     {
-        private bool TextureFileIsValid(UFile file)
+        private static bool TextureFileIsValid(UFile file)
         {
             return file != null && File.Exists(file);
         }
 
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, SpriteSheetAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, SpriteSheetAsset asset, AssetCompilerResult result)
         {
             var gameSettingsAsset = context.GetGameSettingsAsset();
             var renderingSettings = gameSettingsAsset.Get<RenderingSettings>(context.Platform);
@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     if(!TextureFileIsValid(textureFile))
                         continue;
 
-                    var textureUrl = SpriteSheetAsset.BuildTextureUrl(urlInStorage, i);
+                    var textureUrl = SpriteSheetAsset.BuildTextureUrl(assetItem.Location, i);
 
                     var spriteAssetArray = spriteByTextures[i].ToArray();
                     foreach (var spriteAsset in spriteAssetArray)
@@ -76,7 +76,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     };
 
                     // Get absolute path of asset source on disk
-                    var assetDirectory = assetAbsolutePath.GetParent();
+                    var assetDirectory = assetItem.FullPath.GetParent();
                     var assetSource = UPath.Combine(assetDirectory, spriteAssetArray[0].Source);
 
                     // add the texture build command.
@@ -84,15 +84,15 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     {
                         new TextureAssetCompiler.TextureConvertCommand(
                             textureUrl,
-                            new TextureConvertParameters(assetSource, textureAsset, context.Platform, context.GetGraphicsPlatform(AssetItem.Package), renderingSettings.DefaultGraphicsProfile, gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace))
+                            new TextureConvertParameters(assetSource, textureAsset, context.Platform, context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile, gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace))
                     });
                 }
             }
 
             if (!result.HasErrors)
             {
-                var parameters = new SpriteSheetParameters(asset, imageToTextureUrl, context.Platform, context.GetGraphicsPlatform(AssetItem.Package), renderingSettings.DefaultGraphicsProfile, gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace);
-                result.BuildSteps.Add(new AssetBuildStep(AssetItem) { new SpriteSheetCommand(urlInStorage, parameters) });
+                var parameters = new SpriteSheetParameters(asset, imageToTextureUrl, context.Platform, context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile, gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace);
+                result.BuildSteps.Add(new AssetBuildStep(assetItem) { new SpriteSheetCommand(assetItem.Location, parameters) });
             }
         }
 
@@ -101,15 +101,15 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         /// </summary>
         public class SpriteSheetCommand : AssetCommand<SpriteSheetParameters>
         {
-            public SpriteSheetCommand(string url, SpriteSheetParameters assetParameters)
-                : base(url, assetParameters)
+            public SpriteSheetCommand(string url, SpriteSheetParameters parameters)
+                : base(url, parameters)
             {
             }
 
             /// <inheritdoc/>
             protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
             {
-                foreach (var dependency in AssetParameters.ImageToTextureUrl)
+                foreach (var dependency in Parameters.ImageToTextureUrl)
                 {
                     // Use UrlType.Content instead of UrlType.Link, as we are actualy using the content linked of assets in order to create the spritesheet
                     yield return new ObjectUrl(UrlType.Content, dependency.Value);
@@ -124,7 +124,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                 Dictionary<SpriteInfo, PackedSpriteInfo> spriteToPackedSprite = null;
 
                 // Generate texture atlas
-                var isPacking = AssetParameters.SheetAsset.Packing.Enabled;
+                var isPacking = Parameters.SheetAsset.Packing.Enabled;
                 if (isPacking)
                 {
                     var resultStatus = CreateAtlasTextures(commandContext.Logger, out spriteToPackedSprite);
@@ -136,7 +136,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                 var imageGroupData = new SpriteSheet();
 
                 // add the sprite data to the sprite list.
-                foreach (var image in AssetParameters.SheetAsset.Sprites)
+                foreach (var image in Parameters.SheetAsset.Sprites)
                 {
                     string textureUrl;
                     RectangleF region;
@@ -190,7 +190,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     {
                         region = image.TextureRegion;
                         orientation = image.Orientation;
-                        AssetParameters.ImageToTextureUrl.TryGetValue(image, out textureUrl);
+                        Parameters.ImageToTextureUrl.TryGetValue(image, out textureUrl);
                     }
 
                     // Affect the texture
@@ -218,7 +218,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                 }
 
                 // set the transparency information to all the sprites
-                if(AssetParameters.SheetAsset.Alpha != AlphaFormat.None) // Skip the calculation when format is forced without alpha.
+                if(Parameters.SheetAsset.Alpha != AlphaFormat.None) // Skip the calculation when format is forced without alpha.
                 {
                     var urlToTexImage = new Dictionary<string, Tuple<TexImage, Image>>();
                     using (var texTool = new TextureTool())
@@ -284,9 +284,9 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     var imageDictionary = new Dictionary<string, Image>();
                     var imageInfoDictionary = new Dictionary<string, SpriteInfo>();
 
-                    var sprites = AssetParameters.SheetAsset.Sprites;
-                    var packingParameters = AssetParameters.SheetAsset.Packing;
-                    bool isSRgb = AssetParameters.SheetAsset.ColorSpace.ToColorSpace(AssetParameters.ColorSpace, TextureHint.Color) == ColorSpace.Linear;
+                    var sprites = Parameters.SheetAsset.Sprites;
+                    var packingParameters = Parameters.SheetAsset.Packing;
+                    bool isSRgb = Parameters.SheetAsset.ColorSpace.ToColorSpace(Parameters.ColorSpace, TextureHint.Color) == ColorSpace.Linear;
 
                     for (var i = 0; i < sprites.Count; ++i)
                     {
@@ -316,7 +316,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     }
 
                     // find the maximum texture size supported
-                    var maximumSize = TextureHelper.FindMaximumTextureSize(new TextureHelper.ImportParameters(AssetParameters), new Size2(int.MaxValue/2, int.MaxValue/2));
+                    var maximumSize = TextureHelper.FindMaximumTextureSize(new TextureHelper.ImportParameters(Parameters), new Size2(int.MaxValue/2, int.MaxValue/2));
 
                     // Initialize packing configuration from GroupAsset
                     var texturePacker = new TexturePacker
@@ -346,7 +346,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                         using (var texImage = texTool.Load(atlasImage, isSRgb))
                         {
                             var outputUrl = SpriteSheetAsset.BuildTextureAtlasUrl(Url, textureAtlasIndex);
-                            var convertParameters = new TextureHelper.ImportParameters(AssetParameters) { OutputUrl = outputUrl };
+                            var convertParameters = new TextureHelper.ImportParameters(Parameters) { OutputUrl = outputUrl };
                             resultStatus = TextureHelper.ImportTextureImage(texTool, texImage, convertParameters, CancellationToken, logger);
                         }
 
@@ -399,27 +399,21 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                 /// <summary>
                 /// The index of the atlas texture the sprite has been packed in.
                 /// </summary>
-                public int AtlasTextureIndex { get; private set; }
+                public int AtlasTextureIndex { get; }
 
                 /// <summary>
                 /// Gets the region of the packed sprite.
                 /// </summary>
-                public RectangleF Region
-                {
-                    get
-                    {
-                        return new RectangleF(
-                            borderSize + packedRectangle.X, 
-                            borderSize + packedRectangle.Y,
-                            packedRectangle.Width - 2 * borderSize,
-                            packedRectangle.Height - 2 * borderSize);
-                    }
-                }
+                public RectangleF Region => new RectangleF(
+                    borderSize + packedRectangle.X, 
+                    borderSize + packedRectangle.Y,
+                    packedRectangle.Width - 2 * borderSize,
+                    packedRectangle.Height - 2 * borderSize);
 
                 /// <summary>
                 /// Indicate if the packed sprite have been rotated.
                 /// </summary>
-                public bool IsRotated { get { return packedRectangle.IsRotated; } }
+                public bool IsRotated => packedRectangle.IsRotated;
 
                 public PackedSpriteInfo(RotableRectangle packedRectangle, int atlasTextureIndex, float borderSize)
                 {

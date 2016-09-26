@@ -147,17 +147,18 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             DepthAlignment = DepthAlignment.Stretch;
             
             var child = new ArrangeValidator();
+            child.DependencyProperties.Set(UseAbsolutePositionPropertyKey, false);
             child.DependencyProperties.Set(RelativeSizePropertyKey, new Vector3(0.2f, 0.3f, 0.4f));
             child.DependencyProperties.Set(PinOriginPropertyKey, new Vector3(0f, 0.5f, 1f));
             child.DependencyProperties.Set(RelativePositionPropertyKey, new Vector3(0.2f, 0.4f, 0.6f));
             Children.Add(child);
 
             child.ReturnedMeasuredValue = 2 * new Vector3(2, 6, 12);
-            child.ExpectedArrangeValue = new Vector3(4, 12, 18);
+            child.ExpectedArrangeValue = child.ReturnedMeasuredValue;
             providedSize = new Vector3(10, 20, 30);
             Measure(providedSize);
             Arrange(providedSize, false);
-            Assert.AreEqual(Matrix.Translation(2f-5f,8f-6f-10f,18f-18f-15f), child.DependencyProperties.Get(PanelArrangeMatrixPropertyKey));
+            Assert.AreEqual(Matrix.Translation(2f-5f,8f-6f-10f,18f-24f-15f), child.DependencyProperties.Get(PanelArrangeMatrixPropertyKey));
         }
         
         /// <summary>
@@ -211,63 +212,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
             var childDesiredSize = new Vector3(30, 80, 130);
 
             var pinOrigin = Vector3.Zero;
-            TestOutOfBounds(child, childDesiredSize, new Vector3(0, 80, 130), new Vector3(-1, 100, 150), pinOrigin, availableSize, new Vector3(49, 200, 300));
-            TestOutOfBounds(child, childDesiredSize, new Vector3(0, 80, 130), new Vector3(101, 100, 150), pinOrigin, availableSize, new Vector3(151, 200, 300));
-            TestOutOfBounds(child, childDesiredSize, new Vector3(30, 0, 130), new Vector3(50, -1, 150), pinOrigin, availableSize, new Vector3(100, 99, 300));
-            TestOutOfBounds(child, childDesiredSize, new Vector3(30, 0, 130), new Vector3(50, 201, 150), pinOrigin, availableSize, new Vector3(100, 301, 300));
-            TestOutOfBounds(child, childDesiredSize, new Vector3(30, 80,  0), new Vector3(50, 100, -1), pinOrigin, availableSize, new Vector3(100, 200, 149));
-            TestOutOfBounds(child, childDesiredSize, new Vector3(30, 80,  0), new Vector3(50, 100, 301), pinOrigin, availableSize, new Vector3(100, 200, 451));
-
-            pinOrigin = Vector3.One;
-            TestOutOfBounds(child, childDesiredSize, new Vector3(0, 80, 130), new Vector3(-1, 100, 150), pinOrigin, availableSize, new Vector3(0, 100, 150));
-            TestOutOfBounds(child, childDesiredSize, new Vector3(0, 80, 130), new Vector3(101, 100, 150), pinOrigin, availableSize, new Vector3(101, 100, 150));
-            TestOutOfBounds(child, childDesiredSize, new Vector3(30, 0, 130), new Vector3(50, -1, 150), pinOrigin, availableSize, new Vector3(50, 0, 150));
-            TestOutOfBounds(child, childDesiredSize, new Vector3(30, 0, 130), new Vector3(50, 201, 150), pinOrigin, availableSize, new Vector3(50, 201, 150));
-            TestOutOfBounds(child, childDesiredSize, new Vector3(30, 80,  0), new Vector3(50, 100, -1), pinOrigin, availableSize, new Vector3(50, 100, 0));
-            TestOutOfBounds(child, childDesiredSize, new Vector3(30, 80,  0), new Vector3(50, 100, 301), pinOrigin, availableSize, new Vector3(50, 100, 301));
-
-            pinOrigin = 0.5f * Vector3.One;
-            TestOutOfBounds(child, childDesiredSize, new Vector3(0, 180, 280), new Vector3(-1, 100, 150), pinOrigin, availableSize, new Vector3(24, 150, 225));
-            TestOutOfBounds(child, childDesiredSize, new Vector3(0, 180, 280), new Vector3(101, 100, 150), pinOrigin, availableSize, new Vector3(126, 150, 225));
-            TestOutOfBounds(child, childDesiredSize, new Vector3(80, 0, 280), new Vector3(50, -1, 150), pinOrigin, availableSize, new Vector3(75, 49, 225));
-            TestOutOfBounds(child, childDesiredSize, new Vector3(80, 0, 280), new Vector3(50, 201, 150), pinOrigin, availableSize, new Vector3(75, 251, 225));
-            TestOutOfBounds(child, childDesiredSize, new Vector3(80, 180,  0), new Vector3(50, 100, -1), pinOrigin, availableSize, new Vector3(75, 150, 74));
-            TestOutOfBounds(child, childDesiredSize, new Vector3(80, 180,  0), new Vector3(50, 100, 301), pinOrigin, availableSize, new Vector3(75, 150, 376));
-
-            // check canvas desired size and child provided size with one child in the available zone
-            var position = availableSize / 2;
-            TestOutOfBounds(child, childDesiredSize, new Vector3(30, 80, 130), position, Vector3.Zero, availableSize, new Vector3(100, 200, 300));
-            TestOutOfBounds(child, childDesiredSize, new Vector3(30, 80, 130), position, Vector3.One, availableSize, new Vector3(50, 100, 150));
-            TestOutOfBounds(child, childDesiredSize, new Vector3(80, 180, 280), position, 0.5f * Vector3.One, availableSize, new Vector3(75, 150, 225));
-
-            // check that canvas desired size with several children
-            ResetState();
-            var child1 = new CanvasTests();
-            var child2 = new CanvasTests();
-            var child3 = new CanvasTests();
-            Children.Add(child1);
-            Children.Add(child2);
-            Children.Add(child3);
-            child1.Margin = new Thickness(10, 20, 30, 40, 50, 60);
-            child2.Margin = new Thickness(60, 50, 40, 30, 20, 10);
-            child3.Margin = new Thickness(1, 2, 3, 4, 5, 6);
-            child1.Width = 100;
-            child1.Height = 200;
-            child1.Depth = 300;
-            child2.Width = 10;
-            child2.Height = 20;
-            child2.Depth = 30;
-            child3.Width = 300;
-            child3.Height = 200;
-            child3.Depth = 100;
-            child1.DependencyProperties.Set(AbsolutePositionPropertyKey, new Vector3(1000, 1100, 1200));
-            child1.DependencyProperties.Set(PinOriginPropertyKey, new Vector3(0, 0, 1));
-            child2.DependencyProperties.Set(AbsolutePositionPropertyKey, new Vector3(1050, 1150, 1200));
-            child2.DependencyProperties.Set(PinOriginPropertyKey, new Vector3(1, 1, 0));
-            child3.DependencyProperties.Set(AbsolutePositionPropertyKey, new Vector3(500, 600, 700));
-            child3.DependencyProperties.Set(PinOriginPropertyKey, new Vector3(0.5f, 0.5f, 0.5f));
-            Measure(Vector3.Zero);
-            Assert.AreEqual(new Vector3(1150, 1370, 1280), DesiredSize);
+            TestOutOfBounds(child, childDesiredSize, new Vector3(float.PositiveInfinity), new Vector3(-1, 100, 150), pinOrigin, availableSize, Vector3.Zero);
         }
 
         private void TestOutOfBounds(MeasureValidator child, Vector3 childDesiredSize, Vector3 childExpectedValue, Vector3 pinPosition, Vector3 pinOrigin, Vector3 availableSize, Vector3 expectedSize)
@@ -306,10 +251,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Layering
                 child.Margin = new Thickness(10, 11, 12, 13, 14, 15);
 
                 child.ReturnedMeasuredValue = (i%2)==0? new Vector3(1000) : availablesizeWithMargins/3f;
-                child.ExpectedArrangeValue = new Vector3(
-                    Math.Min(child.ReturnedMeasuredValue.X, Math.Max(0, i > 1 ? availablesizeWithMargins.X * (1 - ((i >> 1) - 1) * 0.5f) - 23 : 0)),
-                    Math.Min(child.ReturnedMeasuredValue.Y, (i>> 1) == 2? availablesizeWithMargins.Y - 25 : 0),
-                    Math.Min(child.ReturnedMeasuredValue.Z, Math.Max(0, i < 8 ? availablesizeWithMargins.Z * (((i >> 1) - 1) * 0.5f) - 27 : 0)));
+                child.ExpectedArrangeValue = child.ReturnedMeasuredValue;
 
                 canvas.Children.Add(child);
             }

@@ -3,7 +3,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets.Selectors
 {
@@ -27,7 +27,7 @@ namespace SiliconStudio.Assets.Selectors
         /// <value>The tags.</value>
         public TagCollection Tags { get; private set; }
 
-        public override IEnumerable<string> Select(PackageSession packageSession, IAssetIndexMap assetIndexMap)
+        public override IEnumerable<string> Select(PackageSession packageSession, IContentIndexMap contentIndexMap)
         {
             return packageSession.Packages
                 .SelectMany(package => package.Assets) // Select all assets

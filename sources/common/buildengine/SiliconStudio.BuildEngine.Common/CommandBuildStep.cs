@@ -6,13 +6,12 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-
-using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.IO;
 
 using System.Diagnostics;
 using System.ServiceModel;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.BuildEngine
 {
@@ -232,7 +231,7 @@ namespace SiliconStudio.BuildEngine
         {
             //foreach (var outputObject in result.OutputObjects.Where(outputObject => outputObject.Key.Type == UrlType.Internal))
             //{
-            //    builderContext.AssetIndexMap[outputObject.Key.Path] = outputObject.Value;
+            //    builderContext.contentIndexMap[outputObject.Key.Path] = outputObject.Value;
             //}
 
             Result = result;
@@ -246,14 +245,15 @@ namespace SiliconStudio.BuildEngine
 
         internal bool ShouldExecute(IExecuteContext executeContext, CommandResultEntry[] previousResultCollection, ObjectId commandHash, out CommandResultEntry matchingResult)
         {
-            IndexFileCommand.MountDatabase(executeContext.GetOutputObjectsGroups());
+            IEnumerable<IDictionary<ObjectUrl, OutputObject>> outputObjectsGroups = executeContext.GetOutputObjectsGroups();
+            MicrothreadLocalDatabases.MountDatabase(outputObjectsGroups);
             try
             {
                 matchingResult = FindMatchingResult(executeContext, previousResultCollection);
             }
             finally
             {
-                IndexFileCommand.UnmountDatabase();
+                MicrothreadLocalDatabases.UnmountDatabase();
             }
 
             if (matchingResult == null || Command.ShouldForceExecution())
@@ -272,7 +272,7 @@ namespace SiliconStudio.BuildEngine
                 return null;
 
             // Then check input dependencies and output versions
-            //builderContext.AssetIndexMap.LoadNewValues();
+            //builderContext.contentIndexMap.LoadNewValues();
 
             foreach (CommandResultEntry entry in commandResultCollection)
             {
@@ -446,7 +446,7 @@ namespace SiliconStudio.BuildEngine
                         var fileProvider = ContentManager.FileProvider;
                         if (fileProvider != null)
                         {
-                            var assetIndexMap = fileProvider.AssetIndexMap;
+                            var assetIndexMap = fileProvider.ContentIndexMap;
                             foreach (var prerequisiteStep in PrerequisiteSteps)
                             {
                                 foreach (var output in prerequisiteStep.OutputObjectIds)

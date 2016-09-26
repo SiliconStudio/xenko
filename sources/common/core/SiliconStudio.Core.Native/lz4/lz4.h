@@ -33,12 +33,7 @@
 */
 #pragma once
 
-#ifdef LZ4_FUNC
-	#define LZ4_compress LZ4_FUNC(LZ4_compress)
-	#define LZ4_uncompress LZ4_FUNC(LZ4_uncompress)
-	#define LZ4_compress_limitedOutput LZ4_FUNC(LZ4_compress_limitedOutput)
-	#define LZ4_uncompress_unknownOutputSize LZ4_FUNC(LZ4_uncompress_unknownOutputSize)
-#endif
+#include "../CoreNative.h"
 
 #if defined (__cplusplus)
 extern "C" {
@@ -55,8 +50,8 @@ extern "C" {
 // Simple Functions
 //****************************
 
-int LZ4_compress(const char* source, char* dest, int inputSize);
-int LZ4_uncompress(const char* source, char* dest, int outputSize);
+DLL_EXPORT_API int LZ4_compress(const char* source, char* dest, int inputSize);
+DLL_EXPORT_API int LZ4_uncompress(const char* source, char* dest, int outputSize);
 
 /*
 LZ4_compress() :
@@ -97,7 +92,7 @@ LZ4_compressBound() :
 */
 
 
-int LZ4_compress_limitedOutput(const char* source, char* dest, int isize, int maxOutputSize);
+DLL_EXPORT_API int LZ4_compress_limitedOutput(const char* source, char* dest, int isize, int maxOutputSize);
 
 /*
 LZ4_compress_limitedOutput() :
@@ -112,7 +107,7 @@ LZ4_compress_limitedOutput() :
 */
 
 
-int LZ4_uncompress_unknownOutputSize(const char* source, char* dest, int isize, int maxOutputSize);
+DLL_EXPORT_API int LZ4_uncompress_unknownOutputSize(const char* source, char* dest, int isize, int maxOutputSize);
 
 /*
 LZ4_uncompress_unknownOutputSize() :

@@ -1,8 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System.IO;
 
-namespace SiliconStudio.Core.Serialization.Assets
+namespace SiliconStudio.Core.Serialization.Contents
 {
     /// <summary>
     /// This class describes the header of an asset serialized in a blob file. Its (serialized) size has to remain constant

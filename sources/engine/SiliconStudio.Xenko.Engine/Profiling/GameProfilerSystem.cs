@@ -315,10 +315,11 @@ namespace SiliconStudio.Xenko.Profiling
 
             if (Font == null)
             {
-                Font = Asset.Load<SpriteFont>("XenkoDefaultFont");
+                Font = Content.Load<SpriteFont>("XenkoDefaultFont");
             }
 
             // TODO GRAPHICS REFACTOR where to get command list from?
+            Game.GraphicsContext.CommandList.SetRenderTargetAndViewport(null, Game.GraphicsDevice.Presenter.BackBuffer);
             spriteBatch.Begin(Game.GraphicsContext, depthStencilState: DepthStencilStates.None);
             lock (stringLock)
             {                

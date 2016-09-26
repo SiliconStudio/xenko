@@ -41,10 +41,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 6bdc33bf-ffb7-4ec2-9a05-e50a0f025227
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !GameMenu.SplashScript,GameMenu.Game
                         ~Id: e77d2bac-3b55-4bbc-a5bb-d9c3ba319cc1
                     - !UIComponent

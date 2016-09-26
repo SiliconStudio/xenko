@@ -7,7 +7,6 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics.Data;
@@ -18,6 +17,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.Serialization.Contents;
 using VHACDSharp;
 using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
@@ -30,11 +30,11 @@ namespace SiliconStudio.Xenko.Assets.Physics
             NativeLibrary.PreloadLibrary("VHACD.dll");
         }
 
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, ColliderShapeAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, ColliderShapeAsset asset, AssetCompilerResult result)
         {
-            result.BuildSteps = new AssetBuildStep(AssetItem)
+            result.BuildSteps = new AssetBuildStep(assetItem)
             {
-                new ColliderShapeCombineCommand(urlInStorage, asset, AssetItem.Package),
+                new ColliderShapeCombineCommand(assetItem.Location, asset, assetItem.Package),
             };
 
             result.ShouldWaitForPreviousBuilds = asset.ColliderShapes.Any(shape => shape != null && shape.GetType() == typeof(ConvexHullColliderShapeDesc));
@@ -42,8 +42,8 @@ namespace SiliconStudio.Xenko.Assets.Physics
 
         private class ColliderShapeCombineCommand : AssetCommand<ColliderShapeAsset>
         {
-            public ColliderShapeCombineCommand(string url, ColliderShapeAsset assetParameters, Package package)
-                : base(url, assetParameters)
+            public ColliderShapeCombineCommand(string url, ColliderShapeAsset parameters, Package package)
+                : base(url, parameters)
             {
                 this.package = package;
             }
@@ -53,26 +53,26 @@ namespace SiliconStudio.Xenko.Assets.Physics
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
             {
                 base.ComputeParameterHash(writer);
-                ComputeCompileTimeDependenciesHash(package, writer, AssetParameters);
+                ComputeCompileTimeDependenciesHash(package, writer, Parameters);
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 var assetManager = new ContentManager();
 
-                AssetParameters.ColliderShapes = AssetParameters.ColliderShapes.Where(x => x != null
+                Parameters.ColliderShapes = Parameters.ColliderShapes.Where(x => x != null
                     && (x.GetType() != typeof(ConvexHullColliderShapeDesc) || ((ConvexHullColliderShapeDesc)x).Model != null)).ToList();
 
                 //pre process special types
                 foreach (var convexHullDesc in
-                    (from shape in AssetParameters.ColliderShapes let type = shape.GetType() where type == typeof(ConvexHullColliderShapeDesc) select shape)
+                    (from shape in Parameters.ColliderShapes let type = shape.GetType() where type == typeof(ConvexHullColliderShapeDesc) select shape)
                     .Cast<ConvexHullColliderShapeDesc>())
                 {
                     //decompose and fill vertex data
 
-                    var loadSettings = new AssetManagerLoaderSettings
+                    var loadSettings = new ContentManagerLoaderSettings
                     {
-                        ContentFilter = AssetManagerLoaderSettings.NewContentFilterByType(typeof(Mesh), typeof(Skeleton))
+                        ContentFilter = ContentManagerLoaderSettings.NewContentFilterByType(typeof(Mesh), typeof(Skeleton))
                     };
 
                     var modelAsset = assetManager.Load<Model>(AttachedReferenceManager.GetUrl(convexHullDesc.Model), loadSettings);
@@ -263,7 +263,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
                     }
                 }
 
-                var runtimeShape = new PhysicsColliderShape { Descriptions = AssetParameters.ColliderShapes };
+                var runtimeShape = new PhysicsColliderShape { Descriptions = Parameters.ColliderShapes };
                 assetManager.Save(Url, runtimeShape);
 
                 return Task.FromResult(ResultStatus.Successful);

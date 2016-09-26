@@ -2,23 +2,21 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Threading.Tasks;
+using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Assets.UI
 {
     public abstract class UIAssetCompilerBase<T> : AssetCompilerBase<T>
         where T : UIAssetBase
     {
-        protected sealed override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, T asset, AssetCompilerResult result)
+        protected sealed override void Compile(AssetCompilerContext context, AssetItem assetItem, T asset, AssetCompilerResult result)
         {
-            if (!EnsureSourcesExist(result, asset, assetAbsolutePath))
-                return;
-            
-            result.BuildSteps = new AssetBuildStep(AssetItem) { Create(urlInStorage, asset) };
+            result.BuildSteps = new AssetBuildStep(assetItem) { Create(assetItem.Location, asset) };
         }
 
         protected abstract UIConvertCommand Create(string url, T parameters);

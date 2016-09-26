@@ -8,6 +8,7 @@
 #include "../../../../deps/NativePath/NativePath.h"
 #include "../../../../deps/NativePath/NativeThreading.h"
 #include "../../../../deps/NativePath/NativeDynamicLinking.h"
+#include "../XenkoNative.h"
 
 extern "C" {
 	class SpinLock
@@ -1188,7 +1189,7 @@ extern "C" {
 		extern HRESULT __stdcall IIDFromString(_In_ LPCOLESTR lpsz, _Out_ LPIID lpiid);
 #endif
 
-		npBool xnAudioInit()
+		DLL_EXPORT_API npBool xnAudioInit()
 		{
 			CoInitializeEx(NULL, 0x0);
 
@@ -1234,7 +1235,7 @@ extern "C" {
 		};
 
 		struct xnAudioSource;
-		void xnAudioSourceStop(xnAudioSource* source);
+		DLL_EXPORT_API void xnAudioSourceStop(xnAudioSource* source);
 
 		struct xnAudioBuffer
 		{
@@ -1250,7 +1251,7 @@ extern "C" {
 			X3DAUDIO_LISTENER listener_;
 		};
 
-		xnAudioDevice* xnAudioCreate(void* deviceName) //Device name is actually LPCWSTR, on C# side encoding is Unicode!
+		DLL_EXPORT_API xnAudioDevice* xnAudioCreate(void* deviceName) //Device name is actually LPCWSTR, on C# side encoding is Unicode!
 		{
 			xnAudioDevice* res = new xnAudioDevice;
 
@@ -1334,7 +1335,7 @@ extern "C" {
 			return res;
 		}
 
-		void xnAudioDestroy(xnAudioDevice* device)
+		DLL_EXPORT_API void xnAudioDestroy(xnAudioDevice* device)
 		{
 			if(xnAudioWindows7Hacks)
 			{
@@ -1350,16 +1351,16 @@ extern "C" {
 			delete device;
 		}
 
-		void xnAudioUpdate(xnAudioDevice* device)
+		DLL_EXPORT_API void xnAudioUpdate(xnAudioDevice* device)
 		{
 		}
 
-		void xnAudioSetMasterVolume(xnAudioDevice* device, float volume)
+		DLL_EXPORT_API void xnAudioSetMasterVolume(xnAudioDevice* device, float volume)
 		{
 			device->mastering_voice_->SetVolume(volume);
 		}
 
-		xnAudioListener* xnAudioListenerCreate(xnAudioDevice* device)
+		DLL_EXPORT_API xnAudioListener* xnAudioListenerCreate(xnAudioDevice* device)
 		{
 			auto res = new xnAudioListener;
 			res->device_ = device;
@@ -1367,19 +1368,19 @@ extern "C" {
 			return res;
 		}
 
-		void xnAudioListenerDestroy(xnAudioListener* listener)
+		DLL_EXPORT_API void xnAudioListenerDestroy(xnAudioListener* listener)
 		{
 			delete listener;
 		}
 
-		npBool xnAudioListenerEnable(xnAudioListener* listener)
+		DLL_EXPORT_API npBool xnAudioListenerEnable(xnAudioListener* listener)
 		{
 			//unused in Xaudio2
 			(void)listener;
 			return true;
 		}
 
-		void xnAudioListenerDisable(xnAudioListener* listener)
+		DLL_EXPORT_API void xnAudioListenerDisable(xnAudioListener* listener)
 		{
 			//unused in Xaudio2
 			(void)listener;
@@ -1402,6 +1403,7 @@ extern "C" {
 			volatile float doppler_pitch_ = 1.0f;
 
 			SpinLock bufferLock_;
+			SpinLock apply3DLock_;
 			xnAudioBuffer** freeBuffers_;
 			int freeBuffersMax_;
 
@@ -1422,7 +1424,7 @@ extern "C" {
 			void __stdcall OnVoiceError(void* context, HRESULT error) override;
 		};
 
-		xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener, int sampleRate, int maxNBuffers, npBool mono, npBool spatialized, npBool streamed)
+		DLL_EXPORT_API xnAudioSource* xnAudioSourceCreate(xnAudioListener* listener, int sampleRate, int maxNBuffers, npBool mono, npBool spatialized, npBool streamed)
 		{
 			(void)streamed;
 
@@ -1495,21 +1497,21 @@ extern "C" {
 			return res;
 		}
 
-		void xnAudioSourceDestroy(xnAudioSource* source)
+		DLL_EXPORT_API void xnAudioSourceDestroy(xnAudioSource* source)
 		{
 			source->source_voice_->Stop();
 			source->source_voice_->DestroyVoice();
 			if (source->emitter_) delete source->emitter_;
 			if (source->dsp_settings_)
-			{
-				delete source->dsp_settings_;
+			{		
 				delete[] source->dsp_settings_->pMatrixCoefficients;
 				delete[] source->dsp_settings_->pDelayTimes;
+				delete source->dsp_settings_;
 			}
 			delete source;
 		}
 
-		void xnAudioSourceSetBuffer(xnAudioSource* source, xnAudioBuffer* buffer)
+		DLL_EXPORT_API void xnAudioSourceSetBuffer(xnAudioSource* source, xnAudioBuffer* buffer)
 		{
 			//this function is called only when the audio source is acutally fully cached in memory, so we deal only with the first buffer
 			source->streamed_ = false;
@@ -1523,7 +1525,7 @@ extern "C" {
 			}
 		}
 
-		void xnAudioSource::OnBufferEnd(void* context)
+        void xnAudioSource::OnBufferEnd(void* context)
 		{
 			//callback, called when Xaudio ended playing one buffer
 			auto buffer = static_cast<xnAudioBuffer*>(context);
@@ -1545,7 +1547,7 @@ extern "C" {
 			}
 		}
 
-		xnAudioBuffer* xnAudioSourceGetFreeBuffer(xnAudioSource* source)
+		DLL_EXPORT_API xnAudioBuffer* xnAudioSourceGetFreeBuffer(xnAudioSource* source)
 		{
 			//this is used only when we are streaming audio, to fetch the next free buffer to fill
 			source->bufferLock_.Lock();
@@ -1566,7 +1568,7 @@ extern "C" {
 			return buffer;
 		}
 
-		void xnAudioSourcePlay(xnAudioSource* source)
+		DLL_EXPORT_API void xnAudioSourcePlay(xnAudioSource* source)
 		{
 			source->source_voice_->Start();
 			source->playing_ = true;
@@ -1591,7 +1593,7 @@ extern "C" {
 			source->pause_ = false;
 		}
 
-		void xnAudioSourceSetPan(xnAudioSource* source, float pan)
+		DLL_EXPORT_API void xnAudioSourceSetPan(xnAudioSource* source, float pan)
 		{
 			if (source->mono_)
 			{
@@ -1629,7 +1631,7 @@ extern "C" {
 			}
 		}
 
-		double xnAudioSourceGetPosition(xnAudioSource* source)
+		DLL_EXPORT_API double xnAudioSourceGetPosition(xnAudioSource* source)
 		{
 			XAUDIO2_VOICE_STATE state;
 			if(xnAudioWindows7Hacks)
@@ -1659,12 +1661,12 @@ extern "C" {
 			return double(state.SamplesPlayed - source->samplesAtBegin) / double(source->sampleRate_);
 		}
 
-		void xnAudioSourceSetLooping(xnAudioSource* source, npBool looping)
+		DLL_EXPORT_API void xnAudioSourceSetLooping(xnAudioSource* source, npBool looping)
 		{
 			source->looped_ = looping;
 		}
 
-		void xnAudioSourceSetRange(xnAudioSource* source, double startTime, double stopTime)
+		DLL_EXPORT_API void xnAudioSourceSetRange(xnAudioSource* source, double startTime, double stopTime)
 		{
 			if(!source->streamed_)
 			{
@@ -1706,26 +1708,26 @@ extern "C" {
 			}
 		}
 
-		void xnAudioSourceSetGain(xnAudioSource* source, float gain)
+		DLL_EXPORT_API void xnAudioSourceSetGain(xnAudioSource* source, float gain)
 		{
 			source->source_voice_->SetVolume(gain);
 		}
 
-		void xnAudioSourceSetPitch(xnAudioSource* source, float pitch)
+		DLL_EXPORT_API void xnAudioSourceSetPitch(xnAudioSource* source, float pitch)
 		{
 			source->pitch_ = pitch;
 			source->source_voice_->SetFrequencyRatio(source->doppler_pitch_ * source->pitch_);
 		}
 
-		void xnAudioSource::OnVoiceProcessingPassStart(unsigned BytesRequired)
+        void xnAudioSource::OnVoiceProcessingPassStart(unsigned BytesRequired)
 		{
 		}
 
-		void xnAudioSource::OnVoiceProcessingPassEnd()
+        void xnAudioSource::OnVoiceProcessingPassEnd()
 		{
 		}
 
-		void xnAudioSource::OnStreamEnd()
+        void xnAudioSource::OnStreamEnd()
 		{
 			if (streamed_ && playing_)
 			{
@@ -1735,7 +1737,7 @@ extern "C" {
 			}
 		}
 
-		void xnAudioSource::OnBufferStart(void* context)
+        void xnAudioSource::OnBufferStart(void* context)
 		{
 			auto buffer = static_cast<xnAudioBuffer*>(context);
 
@@ -1757,7 +1759,7 @@ extern "C" {
 			}
 		}
 
-		void xnAudioSource::OnLoopEnd(void* context)
+        void xnAudioSource::OnLoopEnd(void* context)
 		{
 			if (!looped_ && !streamed_ && playing_)
 			{
@@ -1766,7 +1768,7 @@ extern "C" {
 			}
 		}
 
-		void xnAudioSourceQueueBuffer(xnAudioSource* source, xnAudioBuffer* buffer, short* pcm, int bufferSize, BufferType type)
+		DLL_EXPORT_API void xnAudioSourceQueueBuffer(xnAudioSource* source, xnAudioBuffer* buffer, short* pcm, int bufferSize, BufferType type)
 		{
 			//used only when streaming, to fill a buffer, often..
 			source->streamed_ = true;
@@ -1784,7 +1786,7 @@ extern "C" {
 			source->source_voice_->SubmitSourceBuffer(&buffer->buffer_);
 		}
 
-		void xnAudioSourcePause(xnAudioSource* source)
+		DLL_EXPORT_API void xnAudioSourcePause(xnAudioSource* source)
 		{
 			source->source_voice_->Stop();
 			source->playing_ = false;
@@ -1811,8 +1813,10 @@ extern "C" {
 			return *this;
 		}
 
-		void xnAudioSourceStop(xnAudioSource* source)
+		DLL_EXPORT_API void xnAudioSourceStop(xnAudioSource* source)
 		{
+			source->apply3DLock_.Lock();
+
 			source->source_voice_->Stop();
 			source->source_voice_->FlushSourceBuffers();
 			source->playing_ = false;
@@ -1824,9 +1828,11 @@ extern "C" {
 				xnAudioBuffer* singleBuffer = source->freeBuffers_[0];
 				source->source_voice_->SubmitSourceBuffer(&singleBuffer->buffer_, NULL);
 			}
+
+			source->apply3DLock_.Unlock();
 		}
 
-		void xnAudioListenerPush3D(xnAudioListener* listener, float* pos, float* forward, float* up, float* vel)
+		DLL_EXPORT_API void xnAudioListenerPush3D(xnAudioListener* listener, float* pos, float* forward, float* up, float* vel)
 		{
 			memcpy(&listener->listener_.Position, pos, sizeof(float) * 3);
 			memcpy(&listener->listener_.Velocity, vel, sizeof(float) * 3);
@@ -1834,7 +1840,7 @@ extern "C" {
 			memcpy(&listener->listener_.OrientTop, up, sizeof(float) * 3);
 		}
 
-		void xnAudioSourcePush3D(xnAudioSource* source, float* pos, float* forward, float* up, float* vel)
+		DLL_EXPORT_API void xnAudioSourcePush3D(xnAudioSource* source, float* pos, float* forward, float* up, float* vel)
 		{
 			if (!source->emitter_) return;
 			
@@ -1842,6 +1848,8 @@ extern "C" {
 			memcpy(&source->emitter_->Velocity, vel, sizeof(float) * 3);
 			memcpy(&source->emitter_->OrientFront, forward, sizeof(float) * 3);
 			memcpy(&source->emitter_->OrientTop, up, sizeof(float) * 3);
+
+			source->apply3DLock_.Lock();
 
 			//everything is calculated by Xaudio for us
 			X3DAudioCalculateFunc(source->listener_->device_->x3_audio_, &source->listener_->listener_, source->emitter_, 
@@ -1851,15 +1859,17 @@ extern "C" {
 			source->doppler_pitch_ = source->dsp_settings_->DopplerFactor;
 			source->source_voice_->SetFrequencyRatio(source->dsp_settings_->DopplerFactor * source->pitch_);
 			XAUDIO2_FILTER_PARAMETERS filter_parameters = { LowPassFilter, 2.0f * sin(X3DAUDIO_PI / 6.0f * source->dsp_settings_->LPFDirectCoefficient), 1.0f };
-			source->source_voice_->SetFilterParameters(&filter_parameters);
+			if(!xnAudioWindows7Hacks) source->source_voice_->SetFilterParameters(&filter_parameters);
+
+			source->apply3DLock_.Unlock();
 		}
 
-		npBool xnAudioSourceIsPlaying(xnAudioSource* source)
+		DLL_EXPORT_API npBool xnAudioSourceIsPlaying(xnAudioSource* source)
 		{
 			return source->playing_ || source->pause_;
 		}
 
-		xnAudioBuffer* xnAudioBufferCreate(int maxBufferSize)
+		DLL_EXPORT_API xnAudioBuffer* xnAudioBufferCreate(int maxBufferSize)
 		{
 			auto buffer = new xnAudioBuffer;
 			buffer->length_ = 0;
@@ -1874,13 +1884,13 @@ extern "C" {
 			return buffer;
 		}
 
-		void xnAudioBufferDestroy(xnAudioBuffer* buffer)
+		DLL_EXPORT_API void xnAudioBufferDestroy(xnAudioBuffer* buffer)
 		{
 			delete[] buffer->buffer_.pAudioData;
 			delete buffer;
 		}
 
-		void xnAudioBufferFill(xnAudioBuffer* buffer, short* pcm, int bufferSize, int sampleRate, npBool mono)
+		DLL_EXPORT_API void xnAudioBufferFill(xnAudioBuffer* buffer, short* pcm, int bufferSize, int sampleRate, npBool mono)
 		{
 			(void)sampleRate;
 			
@@ -1890,11 +1900,6 @@ extern "C" {
 			buffer->buffer_.LoopLength = buffer->buffer_.PlayLength = buffer->length_ = (bufferSize / sizeof(short)) / (mono ? 1 : 2);
 			
 			memcpy(const_cast<char*>(buffer->buffer_.pAudioData), pcm, bufferSize);
-		}
-
-		void xnSleep(int milliseconds)
-		{
-			npThreadSleep(milliseconds);
 		}
 
 		void xnAudioSource::OnVoiceError(void* context, long error)

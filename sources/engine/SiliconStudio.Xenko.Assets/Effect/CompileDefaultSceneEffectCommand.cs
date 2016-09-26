@@ -7,7 +7,7 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Games;
@@ -89,7 +89,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
                     // Effect can be compiled asynchronously (since we don't have any fallback, they will have to be compiled in the same frame anyway)
                     // Also set the file provider to the current transaction
                     ((EffectCompilerCache)sceneRenderer.EffectSystem.Compiler).CompileEffectAsynchronously = true;
-                    ((EffectCompilerCache)sceneRenderer.EffectSystem.Compiler).FileProvider = DatabaseFileProvider;
+                    ((EffectCompilerCache)sceneRenderer.EffectSystem.Compiler).FileProvider = MicrothreadLocalDatabases.DatabaseFileProvider;
                     ((EffectCompilerCache)sceneRenderer.EffectSystem.Compiler).CurrentCache = EffectBytecodeCacheLoadSource.StartupCache;
                     sceneRenderer.EffectSystem.EffectUsed += (effectCompileRequest, result) => compilerResult.BuildSteps.Add(EffectCompileCommand.FromRequest(context, package, baseUrl, effectCompileRequest));
 

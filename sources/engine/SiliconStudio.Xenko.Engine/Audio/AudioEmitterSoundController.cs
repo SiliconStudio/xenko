@@ -92,10 +92,22 @@ namespace SiliconStudio.Xenko.Audio
 
         internal void DestroySoundInstances(AudioListenerComponent listener)
         {
-            foreach (var instance in listener.AttachedInstances)
+            foreach (var instance in InstanceToListener.Keys)
             {
                 instance.Dispose();
-                InstanceToListener.Remove(instance);
+                listener.AttachedInstances.Remove(instance);
+            }
+            InstanceToListener.Clear();
+
+            for (var i = 0; i < FastInstances.Count; i++)
+            {
+                var instance = FastInstances[i];
+                if (instance.Listener == listener.Listener)
+                {
+                    //Decrement the loop counter to iterate this index again, since later elements will get moved down during the remove operation.
+                    FastInstances.RemoveAt(i--);
+                    DestroySoundInstance(instance);
+                }
             }
         }
 

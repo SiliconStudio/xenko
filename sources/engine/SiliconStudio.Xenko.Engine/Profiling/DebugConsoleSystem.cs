@@ -27,6 +27,7 @@ namespace SiliconStudio.Xenko.Profiling
             Visible = true;
 
             DrawOrder = 0xffffff;
+            UpdateOrder = -100100; //before script
         }
 
         /// <summary>
@@ -78,11 +79,15 @@ namespace SiliconStudio.Xenko.Profiling
         /// </summary>
         public SpriteFont Font { get; set; }
 
-
         /// <summary>
         /// Sets or gets the size of the messages queue, older messages will be discarded if the size is greater.
         /// </summary>
         public int TailSize { get; set; } = 100;
+
+        public override void Update(GameTime gameTime)
+        {
+            overlayMessages.Clear();
+        }
 
         public override void Draw(GameTime gameTime)
         {
@@ -102,7 +107,7 @@ namespace SiliconStudio.Xenko.Profiling
             {
                 try
                 {
-                    Font = Asset.Load<SpriteFont>("XenkoDefaultFont");
+                    Font = Content.Load<SpriteFont>("XenkoDefaultFont");
                 }
                 catch (Exception)
                 {
@@ -112,12 +117,11 @@ namespace SiliconStudio.Xenko.Profiling
             }
 
             // TODO GRAPHICS REFACTOR where to get command list from?
-            Game.GraphicsContext.CommandList.SetRenderTarget(null, Game.GraphicsDevice.Presenter.BackBuffer);
+            Game.GraphicsContext.CommandList.SetRenderTargetAndViewport(null, Game.GraphicsDevice.Presenter.BackBuffer);
             spriteBatch.Begin(Game.GraphicsContext, depthStencilState: DepthStencilStates.None);
 
-            while (overlayMessages.Count > 0)
+            foreach (var msg in overlayMessages)
             {
-                var msg = overlayMessages.Dequeue();
                 spriteBatch.DrawString(msg.TextFont ?? Font, msg.Message, msg.Position, msg.TextColor);
             }
 

@@ -88,7 +88,6 @@
     <Compile Include="IIdentifiable.cs" />
     <Compile Include="IO\NativeFile.cs" />
     <Compile Include="IO\NativeFile.WindowsRuntime.cs" />
-    <Compile Include="NativeLibraryInternal.cs" />
     <Compile Include="PlatformFolders.cs" />
     <Compile Include="Reflection\IObjectFactory.cs" />
     <Compile Include="Reflection\ObjectFactory.cs" />
@@ -113,7 +112,6 @@
     <Compile Include="Diagnostics\SafeAction.cs" />
     <Compile Include="Diagnostics\SerializableLogMessage.cs" />
     <Compile Include="Diagnostics\VTuneProfiler.cs" />
-    <Compile Include="NativeLibrary.cs" />
     <Compile Include="NullDisposable.cs" />
     <Compile Include="PlatformType.cs" />
     <Compile Include="Collections\ConstrainedList.cs" />
@@ -265,7 +263,6 @@
     <Compile Include="Reflection\CustomAttributeExtensions.cs" />
     <Compile Include="DataMemberIgnoreAttribute.cs" />
     <Compile Include="DataContractAttribute.cs" />
-    <Compile Include="SuppressUnmanagedCodeSecurityAttribute.cs" />
     <Compile Include="Threading\ConcurrentCollector.cs" />
     <Compile Include="Threading\ConcurrentPool.cs" />
     <Compile Include="Threading\Dispatcher.cs" />
@@ -307,6 +304,13 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SiliconStudio.Core.Native\SiliconStudio.Core.Native.csproj">
+      <Project>{fcf36d39-bffe-4719-b245-05640ee34c5f}</Project>
+      <Name>SiliconStudio.Core.Native</Name>
+      <Private>False</Private>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

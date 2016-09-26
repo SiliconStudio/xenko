@@ -230,6 +230,7 @@
     <Compile Include="Regression\BorderTest.cs" />
     <Compile Include="Regression\ButtonTest.cs" />
     <Compile Include="Regression\CanvasGridTest.cs" />
+    <Compile Include="Regression\ChildrenMeasurementTest.cs" />
     <Compile Include="Regression\ClickTests.cs" />
     <Compile Include="Regression\ClippingTest.cs" />
     <Compile Include="Regression\ComplexLayoutTest.cs" />

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets.Selectors
 {
@@ -32,7 +32,7 @@ namespace SiliconStudio.Assets.Selectors
         public List<string> Paths { get; set; }
 
         /// <inheritdoc/>
-        public override IEnumerable<string> Select(PackageSession packageSession, IAssetIndexMap assetIndexMap)
+        public override IEnumerable<string> Select(PackageSession packageSession, IContentIndexMap contentIndexMap)
         {
             // Check if we need to create or regenerate regex.
             bool needGenerateRegex = false;
@@ -57,7 +57,7 @@ namespace SiliconStudio.Assets.Selectors
             if (needGenerateRegex)
                 regexes = Paths.Select(x => new KeyValuePair<string, Regex>(x, new Regex(TransformToRegex(x)))).ToArray();
 
-            return assetIndexMap.GetMergedIdMap()
+            return contentIndexMap.GetMergedIdMap()
                 .Select(asset => asset.Key) // Select url
                 .Where(assetUrl => regexes.Any(regex => regex.Value.IsMatch(assetUrl))); // Check if any Regex matches
         }

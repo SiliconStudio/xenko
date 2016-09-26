@@ -432,14 +432,13 @@ namespace SiliconStudio.Xenko.Engine
         /// <returns></returns>
         internal void DerivePhysicsTransformation(out Matrix derivedTransformation)
         {
-            var entity = Entity;
-
-            Quaternion rotation;
+            Matrix rotation;
             Vector3 translation;
             Vector3 scale;
-            entity.Transform.WorldMatrix.Decompose(out scale, out rotation, out translation);
+            Entity.Transform.WorldMatrix.Decompose(out scale, out rotation, out translation);
 
-            derivedTransformation = Matrix.RotationQuaternion(rotation) * Matrix.Translation(translation);
+            var translationMatrix = Matrix.Translation(translation);
+            Matrix.Multiply(ref rotation, ref translationMatrix, out derivedTransformation);
 
             //handle dynamic scaling if allowed (aka not using assets)
             if (CanScaleShape)
@@ -463,12 +462,13 @@ namespace SiliconStudio.Xenko.Engine
         /// <returns></returns>
         internal void DeriveBonePhysicsTransformation(out Matrix derivedTransformation)
         {
-            Quaternion rotation;
+            Matrix rotation;
             Vector3 translation;
             Vector3 scale;
             BoneWorldMatrix.Decompose(out scale, out rotation, out translation);
 
-            derivedTransformation = Matrix.RotationQuaternion(rotation) * Matrix.Translation(translation);
+            var translationMatrix = Matrix.Translation(translation);
+            Matrix.Multiply(ref rotation, ref translationMatrix, out derivedTransformation);
 
             //handle dynamic scaling if allowed (aka not using assets)
             if (CanScaleShape)
@@ -499,17 +499,13 @@ namespace SiliconStudio.Xenko.Engine
                 physicsTransform = Matrix.Multiply(ColliderShape.NegativeCenterMatrix, physicsTransform);
             }
 
-            //extract from physics transformation matrix
-            var physTranslation = physicsTransform.TranslationVector;
-            var physRotation = Quaternion.RotationMatrix(physicsTransform);
-
             //we need to extract scale only..
-            Vector3 scale;
-            scale.X = (float)Math.Sqrt((entity.Transform.WorldMatrix.M11 * entity.Transform.WorldMatrix.M11) + (entity.Transform.WorldMatrix.M12 * entity.Transform.WorldMatrix.M12) + (entity.Transform.WorldMatrix.M13 * entity.Transform.WorldMatrix.M13));
-            scale.Y = (float)Math.Sqrt((entity.Transform.WorldMatrix.M21 * entity.Transform.WorldMatrix.M21) + (entity.Transform.WorldMatrix.M22 * entity.Transform.WorldMatrix.M22) + (entity.Transform.WorldMatrix.M23 * entity.Transform.WorldMatrix.M23));
-            scale.Z = (float)Math.Sqrt((entity.Transform.WorldMatrix.M31 * entity.Transform.WorldMatrix.M31) + (entity.Transform.WorldMatrix.M32 * entity.Transform.WorldMatrix.M32) + (entity.Transform.WorldMatrix.M33 * entity.Transform.WorldMatrix.M33));
+            Vector3 scale, translation;
+            Matrix rotation;
+            entity.Transform.WorldMatrix.Decompose(out scale, out rotation, out translation);
 
-            TransformComponent.CreateMatrixTRS(ref physTranslation, ref physRotation, ref scale, out entity.Transform.WorldMatrix);
+            var scaling = Matrix.Scaling(scale);
+            Matrix.Multiply(ref scaling, ref physicsTransform, out entity.Transform.WorldMatrix);
 
             if (entity.Transform.Parent == null)
             {
@@ -520,14 +516,13 @@ namespace SiliconStudio.Xenko.Engine
                 //We are not root so we need to derive the local matrix as well
                 var inverseParent = entity.Transform.Parent.WorldMatrix;
                 inverseParent.Invert();
-                entity.Transform.LocalMatrix = Matrix.Multiply(entity.Transform.WorldMatrix, inverseParent);
+                Matrix.Multiply(ref entity.Transform.WorldMatrix, ref inverseParent, out entity.Transform.LocalMatrix);
             }
 
-            Vector3 translation;
-            Quaternion rotation;
-            entity.Transform.LocalMatrix.Decompose(out scale, out rotation, out translation);
+            Quaternion rotQuat;
+            entity.Transform.LocalMatrix.Decompose(out scale, out rotQuat, out translation);
             entity.Transform.Position = translation;
-            entity.Transform.Rotation = rotation;
+            entity.Transform.Rotation = rotQuat;
         }
 
         /// <summary>
@@ -541,15 +536,13 @@ namespace SiliconStudio.Xenko.Engine
                 physicsTransform = Matrix.Multiply(ColliderShape.NegativeCenterMatrix, physicsTransform);
             }
 
-            var rotation = Quaternion.RotationMatrix(physicsTransform);
-            var translation = physicsTransform.TranslationVector;
+            //we need to extract scale only..
+            Vector3 scale, translation;
+            Matrix rotation;
+            BoneWorldMatrix.Decompose(out scale, out rotation, out translation);
 
-            Vector3 scale;
-            scale.X = (float)Math.Sqrt((BoneWorldMatrix.M11 * BoneWorldMatrix.M11) + (BoneWorldMatrix.M12 * BoneWorldMatrix.M12) + (BoneWorldMatrix.M13 * BoneWorldMatrix.M13));
-            scale.Y = (float)Math.Sqrt((BoneWorldMatrix.M21 * BoneWorldMatrix.M21) + (BoneWorldMatrix.M22 * BoneWorldMatrix.M22) + (BoneWorldMatrix.M23 * BoneWorldMatrix.M23));
-            scale.Z = (float)Math.Sqrt((BoneWorldMatrix.M31 * BoneWorldMatrix.M31) + (BoneWorldMatrix.M32 * BoneWorldMatrix.M32) + (BoneWorldMatrix.M33 * BoneWorldMatrix.M33));
-
-            TransformComponent.CreateMatrixTRS(ref translation, ref rotation, ref scale, out BoneWorldMatrixOut);
+            var scaling = Matrix.Scaling(scale);
+            Matrix.Multiply(ref scaling, ref physicsTransform, out BoneWorldMatrixOut);
 
             //todo propagate to other bones? need to review this.
         }
@@ -561,16 +554,17 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         public void UpdatePhysicsTransformation()
         {
-            Matrix t;
+            Matrix transform;
             if (BoneIndex == -1)
             {
-                DerivePhysicsTransformation(out t);
+                DerivePhysicsTransformation(out transform);
             }
             else
             {
-                DeriveBonePhysicsTransformation(out t);
+                DeriveBonePhysicsTransformation(out transform);
             }
-            PhysicsWorldTransform = t;
+            //finally copy back to bullet
+            PhysicsWorldTransform = transform;
         }
 
         public void ComposeShape()

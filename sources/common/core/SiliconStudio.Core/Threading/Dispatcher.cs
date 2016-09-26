@@ -10,7 +10,7 @@ namespace SiliconStudio.Core.Threading
 {
     public class Dispatcher
     {
-        public static readonly int MaxDregreeOfParallelism = Environment.ProcessorCount;
+        public static int MaxDregreeOfParallelism = Environment.ProcessorCount;
 
         public delegate void ValueAction<T>(ref T obj);
 

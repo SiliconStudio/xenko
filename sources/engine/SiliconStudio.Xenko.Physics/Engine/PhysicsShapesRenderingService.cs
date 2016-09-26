@@ -67,7 +67,7 @@ namespace SiliconStudio.Xenko.Physics.Engine
             var rigidBody = component as RigidbodyComponent;
 
             //don't add offset for non bone dynamic and kinematic as it is added already in the updates
-            var colliderEntity = CreateChildEntity(component, component.ColliderShape, alwaysAddOffset || (skinnedElement != null && skinnedElement.BoneIndex != -1) || rigidBody == null);
+            var colliderEntity = CreateChildEntity(component, component.ColliderShape, alwaysAddOffset || rigidBody == null);
             if (colliderEntity != null) debugEntity.AddChild(colliderEntity);
 
             return debugEntity;

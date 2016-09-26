@@ -35,7 +35,7 @@ namespace SiliconStudio.BuildEngine.Tests
             if (Directory.Exists(FileSourceFolder))
                 Directory.Delete(FileSourceFolder, true);
 
-            IndexFileCommand.ObjectDatabase = null;
+            Builder.CloseObjectDatabase();
 
             TestCommand.ResetCounter();
             if (!loggerHandled)

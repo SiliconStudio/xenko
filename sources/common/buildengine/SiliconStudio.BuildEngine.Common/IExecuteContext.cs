@@ -5,7 +5,7 @@ using System.Threading;
 
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.BuildEngine
 {

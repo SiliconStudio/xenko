@@ -5,20 +5,21 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.SpriteStudio.Runtime;
 using System.Collections.Generic;
 using System.Globalization;
+using SiliconStudio.Assets;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.SpriteStudio.Offline
 {
     internal class SpriteStudioModelAssetCompiler : AssetCompilerBase<SpriteStudioModelAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, SpriteStudioModelAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, SpriteStudioModelAsset asset, AssetCompilerResult result)
         {
             var gameSettingsAsset = context.GetGameSettingsAsset();
             var renderingSettings = gameSettingsAsset.Get<RenderingSettings>(context.Platform);
@@ -45,19 +46,19 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
 
                 result.BuildSteps.Add(
                 new TextureAssetCompiler.TextureConvertCommand(
-                    urlInStorage + texIndex,
+                    assetItem.Location + texIndex,
                     new TextureConvertParameters(texture, textureAsset, context.Platform,
-                        context.GetGraphicsPlatform(AssetItem.Package), renderingSettings.DefaultGraphicsProfile,
+                        context.GetGraphicsPlatform(assetItem.Package), renderingSettings.DefaultGraphicsProfile,
                         gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace)));
 
-                asset.BuildTextures.Add(urlInStorage + texIndex);
+                asset.BuildTextures.Add(assetItem.Location + texIndex);
 
                 texIndex++;
             }
 
-            result.BuildSteps.Add(new AssetBuildStep(AssetItem)
+            result.BuildSteps.Add(new AssetBuildStep(assetItem)
             {
-                new SpriteStudioModelAssetCommand(urlInStorage, asset, colorSpace)
+                new SpriteStudioModelAssetCommand(assetItem.Location, asset, colorSpace)
             });
         }
 
@@ -78,14 +79,14 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
             {
                 var nodes = new List<SpriteStudioNode>();
                 string modelName;
-                if (!SpriteStudioXmlImport.ParseModel(AssetParameters.Source, nodes, out modelName)) return null;
+                if (!SpriteStudioXmlImport.ParseModel(Parameters.Source, nodes, out modelName)) return null;
 
                 var cells = new List<SpriteStudioCell>();
                 var textures = new List<UFile>();
-                if (!SpriteStudioXmlImport.ParseCellMaps(AssetParameters.Source, textures, cells)) return null;
+                if (!SpriteStudioXmlImport.ParseCellMaps(Parameters.Source, textures, cells)) return null;
 
                 var anims = new List<SpriteStudioAnim>();
-                if (!SpriteStudioXmlImport.ParseAnimations(AssetParameters.Source, anims)) return null;             
+                if (!SpriteStudioXmlImport.ParseAnimations(Parameters.Source, anims)) return null;             
 
                 var assetManager = new ContentManager();
 
@@ -93,7 +94,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
 
                 foreach (var cell in cells)
                 {
-                    var sprite = new Sprite(cell.Name, AttachedReferenceManager.CreateProxyObject<Texture>(Guid.Empty, AssetParameters.BuildTextures[cell.TextureIndex]))
+                    var sprite = new Sprite(cell.Name, AttachedReferenceManager.CreateProxyObject<Texture>(Guid.Empty, Parameters.BuildTextures[cell.TextureIndex]))
                     {
                         Region = cell.Rectangle,
                         Center = cell.Pivot,

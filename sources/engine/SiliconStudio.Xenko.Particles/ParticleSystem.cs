@@ -364,6 +364,17 @@ namespace SiliconStudio.Xenko.Particles
         }
 
         /// <summary>
+        /// Use to stop emitting new particles, but continue updating existing ones
+        /// </summary>
+        public void StopEmitters()
+        {
+            foreach (var particleEmitter in Emitters)
+            {
+                particleEmitter.CanEmitParticles = false;
+            }
+        }
+
+        /// <summary>
         /// Gets the first emitter with matching name which is contained in this <see cref="ParticleSystem"/>
         /// </summary>
         /// <param name="name">Name of the emitter. Some emitters might not have a name and cannot be referenced</param>

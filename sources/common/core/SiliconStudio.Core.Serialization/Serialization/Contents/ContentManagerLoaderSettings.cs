@@ -1,14 +1,15 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Linq;
 
-namespace SiliconStudio.Core.Serialization.Assets
+namespace SiliconStudio.Core.Serialization.Contents
 {
     /// <summary>
     /// Specifies settings for <see cref="ContentManager.Load{T}"/> operations.
     /// </summary>
-    public sealed class AssetManagerLoaderSettings
+    public sealed class ContentManagerLoaderSettings
     {
         public delegate void ContentFilterDelegate(ILoadableReference reference, ref bool shouldBeLoaded);
 
@@ -18,7 +19,7 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// <value>
         /// The default loader settings.
         /// </value>
-        public static AssetManagerLoaderSettings Default { get; } = new AssetManagerLoaderSettings();
+        public static ContentManagerLoaderSettings Default { get; } = new ContentManagerLoaderSettings();
 
         /// <summary>
         /// Gets the loader settings which doesn't load content references.
@@ -26,7 +27,7 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// <value>
         /// The loader settings which doesn't load content references.
         /// </value>
-        public static AssetManagerLoaderSettings IgnoreReferences { get; } = new AssetManagerLoaderSettings { LoadContentReferences = false };
+        public static ContentManagerLoaderSettings IgnoreReferences { get; } = new ContentManagerLoaderSettings { LoadContentReferences = false };
 
         /// <summary>
         /// Gets or sets a value indicating whether <see cref="IReference"/> should be loaded.

@@ -9,7 +9,7 @@ using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Graphics;
 
@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
 {
     internal class SkyboxAssetCompiler : AssetCompilerBase<SkyboxAsset>
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, SkyboxAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, SkyboxAsset asset, AssetCompilerResult result)
         {
             result.BuildSteps = new ListBuildStep();
             result.ShouldWaitForPreviousBuilds = true;
@@ -27,16 +27,16 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             // build the textures for windows (needed for skybox compilation)
             foreach (var dependency in asset.Model.GetDependencies())
             {
-                var assetItem = AssetItem.Package.Assets.Find(dependency.Id);
-                if (assetItem != null && assetItem.Asset is TextureAsset)
+                var dependencyItem = assetItem.Package.Assets.Find(dependency.Id);
+                if (dependencyItem?.Asset is TextureAsset)
                 {
-                    var textureAsset = (TextureAsset)assetItem.Asset;
+                    var textureAsset = (TextureAsset)dependencyItem.Asset;
 
                     // Get absolute path of asset source on disk
-                    var assetSource = GetAbsolutePath(assetItem.Location.GetDirectoryAndFileName(), textureAsset.Source);
+                    var assetSource = GetAbsolutePath(dependencyItem.Location.GetDirectoryAndFileName(), textureAsset.Source);
 
                     // Create a synthetic url
-                    var textureUrl = SkyboxGenerator.BuildTextureForSkyboxGenerationLocation(assetItem.Location);
+                    var textureUrl = SkyboxGenerator.BuildTextureForSkyboxGenerationLocation(dependencyItem.Location);
 
                     var gameSettingsAsset = context.GetGameSettingsAsset();
                     var renderingSettings = gameSettingsAsset.Get<RenderingSettings>(context.Platform);
@@ -53,13 +53,13 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             }
 
             // add the skybox command itself.
-            result.BuildSteps.Add(new AssetBuildStep(AssetItem) {  new SkyboxCompileCommand(urlInStorage, asset) });
+            result.BuildSteps.Add(new AssetBuildStep(assetItem) {  new SkyboxCompileCommand(assetItem.Location, asset) });
         }
 
         private class SkyboxCompileCommand : AssetCommand<SkyboxAsset>
         {
-            public SkyboxCompileCommand(string url, SkyboxAsset assetParameters)
-                : base(url, assetParameters)
+            public SkyboxCompileCommand(string url, SkyboxAsset parameters)
+                : base(url, parameters)
             {
             }
 
@@ -73,9 +73,9 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             /// <inheritdoc/>
             protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
             {
-                if (AssetParameters.Model != null)
+                if (Parameters.Model != null)
                 {
-                    foreach (var dependency in AssetParameters.Model.GetDependencies())
+                    foreach (var dependency in Parameters.Model.GetDependencies())
                     {
                         // Use UrlType.Content instead of UrlType.Link, as we are actualy using the content linked of assets in order to compute the skybox
                         yield return new ObjectUrl(UrlType.Content, SkyboxGenerator.BuildTextureForSkyboxGenerationLocation(dependency.Location));
@@ -89,9 +89,9 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                 // TODO Convert SkyboxAsset to Skybox and save to Skybox object
                 // TODO Add system to prefilter
 
-                using (var context = new SkyboxGeneratorContext(AssetParameters))
+                using (var context = new SkyboxGeneratorContext(Parameters))
                 {
-                    var result = SkyboxGenerator.Compile(AssetParameters, context);
+                    var result = SkyboxGenerator.Compile(Parameters, context);
 
                     if (result.HasErrors)
                     {

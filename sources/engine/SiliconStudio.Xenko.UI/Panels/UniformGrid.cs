@@ -157,5 +157,29 @@ namespace SiliconStudio.Xenko.UI.Panels
 
             return distances;
         }
+
+        /// <summary>
+        /// Get an element span values as an <see cref="Vector3"/>.
+        /// </summary>
+        /// <param name="element">The element from which extract the span values</param>
+        /// <returns>The span values of the element</returns>
+        protected Vector3 GetElementSpanValuesAsFloat(UIElement element)
+        {
+            var intValues = GetElementSpanValues(element);
+
+            return new Vector3(intValues.X, intValues.Y, intValues.Z);
+        }
+
+        /// <summary>
+        /// Get the positions of an element in the grid as an <see cref="Vector3"/>.
+        /// </summary>
+        /// <param name="element">The element from which extract the position values</param>
+        /// <returns>The position of the element</returns>
+        protected Vector3 GetElementGridPositionsAsFloat(UIElement element)
+        {
+            var intValues = GetElementGridPositions(element);
+
+            return new Vector3(intValues.X, intValues.Y, intValues.Z);
+        }
     }
 }

@@ -3,26 +3,26 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Core.Storage
 {
     /// <summary>
     /// Content Index Map implementation which regroups all the asset index maps of every loaded file backend and asset bundle backends.
     /// </summary>
-    public class ObjectDatabaseAssetIndexMap : IAssetIndexMap
+    public class ObjectDatabaseContentIndexMap : IContentIndexMap
     {
         public Dictionary<string, ObjectId> values = new Dictionary<string, ObjectId>();
 
-        public IAssetIndexMap WriteableAssetIndexMap { get; set; }
+        public IContentIndexMap WriteableContentIndexMap { get; set; }
 
         /// <summary>
         /// Merges the values from the given asset index map.
         /// </summary>
-        /// <param name="assetIndexMap">The asset index map to merge.</param>
-        public void Merge(IAssetIndexMap assetIndexMap)
+        /// <param name="contentIndexMap">The asset index map to merge.</param>
+        public void Merge(IContentIndexMap contentIndexMap)
         {
-            Merge(assetIndexMap.GetMergedIdMap());
+            Merge(contentIndexMap.GetMergedIdMap());
         }
 
         /// <summary>
@@ -92,8 +92,8 @@ namespace SiliconStudio.Core.Storage
             {
                 lock (values)
                 {
-                    if (WriteableAssetIndexMap != null)
-                        WriteableAssetIndexMap[url] = value;
+                    if (WriteableContentIndexMap != null)
+                        WriteableContentIndexMap[url] = value;
                     values[url] = value;
                 }
             }

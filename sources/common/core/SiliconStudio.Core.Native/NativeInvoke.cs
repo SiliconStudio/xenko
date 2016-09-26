@@ -1,7 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using SiliconStudio.Core;
+using System.Runtime.InteropServices;
+using System.Security;
 
 namespace SiliconStudio.Core.Native
 {
@@ -23,5 +24,13 @@ namespace SiliconStudio.Core.Native
         {
             NativeLibrary.PreloadLibrary(LibraryName);
         }
+
+        /// <summary>
+        /// Suspends current thread for <paramref name="ms"/> milliseconds.
+        /// </summary>
+        /// <param name="ms">Number of milliseconds to sleep.</param>
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport(Library, EntryPoint = "cnSleep", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void Sleep(int ms);
     }
 }

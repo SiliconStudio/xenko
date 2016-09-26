@@ -1,13 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
-using SiliconStudio.Core.Storage;
-using SiliconStudio.Core.Serialization.Serializers;
 
-namespace SiliconStudio.Core.Serialization.Assets
+using System;
+
+namespace SiliconStudio.Core.Serialization.Contents
 {
     [DataContract]
-    [DataSerializer(typeof(ObjectUrl.Serializer))]
+    [DataSerializer(typeof(Serializer))]
     public struct ObjectUrl : IEquatable<ObjectUrl>
     {
         public static readonly ObjectUrl Empty = new ObjectUrl(UrlType.None, string.Empty);

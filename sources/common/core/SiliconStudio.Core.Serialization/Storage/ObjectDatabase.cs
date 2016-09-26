@@ -32,20 +32,20 @@ namespace SiliconStudio.Core.Storage
             if (vfsMainUrl == null) throw new ArgumentNullException(nameof(vfsMainUrl));
 
             // Create the merged asset index map
-            AssetIndexMap = new ObjectDatabaseAssetIndexMap();
+            ContentIndexMap = new ObjectDatabaseContentIndexMap();
 
             // Try to open file backends
             bool isReadOnly = Platform.Type != PlatformType.Windows;
             var backend = new FileOdbBackend(vfsMainUrl, indexName, isReadOnly);
 
-            AssetIndexMap.Merge(backend.AssetIndexMap);
+            ContentIndexMap.Merge(backend.ContentIndexMap);
             if (backend.IsReadOnly)
             {
                 backendRead1 = backend;
                 if (vfsAdditionalUrl != null)
                 {
                     backendWrite = backendRead2 = new FileOdbBackend(vfsAdditionalUrl, indexName, false);
-                    AssetIndexMap.Merge(backendWrite.AssetIndexMap);
+                    ContentIndexMap.Merge(backendWrite.ContentIndexMap);
                 }
             }
             else
@@ -53,7 +53,7 @@ namespace SiliconStudio.Core.Storage
                 backendWrite = backendRead1 = backend;
             }
 
-            AssetIndexMap.WriteableAssetIndexMap = backendWrite.AssetIndexMap;
+            ContentIndexMap.WriteableContentIndexMap = backendWrite.ContentIndexMap;
 
             BundleBackend = new BundleOdbBackend(vfsMainUrl);
 
@@ -62,7 +62,7 @@ namespace SiliconStudio.Core.Storage
             {
                 try
                 {
-                    BundleBackend.LoadBundle("default", AssetIndexMap).GetAwaiter().GetResult();
+                    BundleBackend.LoadBundle("default", ContentIndexMap).GetAwaiter().GetResult();
                 }
                 catch (FileNotFoundException)
                 {
@@ -70,7 +70,7 @@ namespace SiliconStudio.Core.Storage
             }
         }
 
-        public ObjectDatabaseAssetIndexMap AssetIndexMap { get; }
+        public ObjectDatabaseContentIndexMap ContentIndexMap { get; }
 
         public BundleOdbBackend BundleBackend { get; }
 
@@ -117,7 +117,7 @@ namespace SiliconStudio.Core.Storage
         /// <returns></returns>
         public Task LoadBundle(string bundleName)
         {
-            return BundleBackend.LoadBundle(bundleName, AssetIndexMap);
+            return BundleBackend.LoadBundle(bundleName, ContentIndexMap);
         }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace SiliconStudio.Core.Storage
         /// <returns></returns>
         public void UnloadBundle(string bundleName)
         {
-            BundleBackend.UnloadBundle(bundleName, AssetIndexMap);
+            BundleBackend.UnloadBundle(bundleName, ContentIndexMap);
         }
 
         public IEnumerable<ObjectId> EnumerateObjects()

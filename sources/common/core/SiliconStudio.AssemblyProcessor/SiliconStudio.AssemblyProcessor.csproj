@@ -17,7 +17,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>ASSEMBLY_PROCESSOR;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP;DEBUG;TRACE</DefineConstants>
+    <DefineConstants>SILICONSTUDIO_ASSEMBLY_PROCESSOR;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP;DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -27,7 +27,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>ASSEMBLY_PROCESSOR;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP;TRACE</DefineConstants>
+    <DefineConstants>SILICONSTUDIO_ASSEMBLY_PROCESSOR;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -76,8 +76,6 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>

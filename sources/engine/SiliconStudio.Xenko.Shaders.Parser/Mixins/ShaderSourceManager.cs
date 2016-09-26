@@ -9,7 +9,7 @@ using System.Text;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Xenko.Shaders.Parser.Mixins

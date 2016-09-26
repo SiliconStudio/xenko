@@ -1,3 +1,5 @@
+#include "../XenkoNative.h"
+
 #if defined(WINDOWS_DESKTOP) || !defined(__clang__)
 
 //Borrowed from: https://msdn.microsoft.com/en-us/library/windows/desktop/ee417014(v=vs.85).aspx#XInput_and_DirectInput_Side_by_Side
@@ -714,7 +716,7 @@ extern "C"
 // "IG_" (ex. "VID_045E&PID_028E&IG_00").  If it does, then it's an XInput device
 // Unfortunately this information can not be found by just using DirectInput 
 //-----------------------------------------------------------------------------
-extern "C" BOOL IsXInputDevice(const GUID* pGuidProductFromDirectInput)
+DLL_EXPORT_API extern "C" BOOL IsXInputDevice(const GUID* pGuidProductFromDirectInput)
 {
 	IWbemLocator*           pIWbemLocator = NULL;
 	IEnumWbemClassObject*   pEnumDevices = NULL;
@@ -830,7 +832,7 @@ LCleanup:
 
 #else
 
-extern "C" int IsXInputDevice(void* pGuidProductFromDirectInput)
+DLL_EXPORT_API extern "C" int IsXInputDevice(void* pGuidProductFromDirectInput)
 {
 	return 0;
 }

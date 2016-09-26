@@ -9,12 +9,12 @@ namespace SiliconStudio.AssemblyProcessor
 {
     internal class AssemblyProcessorContext
     {
-        public BaseAssemblyResolver AssemblyResolver { get; private set; }
+        public CustomAssemblyResolver AssemblyResolver { get; private set; }
         public AssemblyDefinition Assembly { get; set; }
         public PlatformType Platform { get; private set; }
         public TextWriter Log { get; private set; }
 
-        public AssemblyProcessorContext(BaseAssemblyResolver assemblyResolver, AssemblyDefinition assembly, PlatformType platform, TextWriter log)
+        public AssemblyProcessorContext(CustomAssemblyResolver assemblyResolver, AssemblyDefinition assembly, PlatformType platform, TextWriter log)
         {
             AssemblyResolver = assemblyResolver;
             Assembly = assembly;
