@@ -5,15 +5,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using NuGet;
 using SiliconStudio.Core.Windows;
+using SiliconStudio.PackageManager;
 
 namespace SiliconStudio.Assets
 {
     /// <summary>
     /// Internal class to store nuget objects
     /// </summary>
-    internal partial class NugetStore
+    public partial class NugetStore
     {
         private const string RepositoryPathKey = "repositorypath";
 
@@ -70,7 +72,7 @@ namespace SiliconStudio.Assets
 
             pathResolver = new DefaultPackagePathResolver(packagesFileSystem);
 
-            Manager = new PackageManager(SourceRepository, pathResolver, packagesFileSystem);
+            Manager = new NuGet.PackageManager(SourceRepository, pathResolver, packagesFileSystem);
 
             var mainPackageList = Settings.GetConfigValue(MainPackagesKey);
             if (string.IsNullOrWhiteSpace(mainPackageList))
@@ -124,7 +126,7 @@ namespace SiliconStudio.Assets
 
         public IPackagePathResolver PathResolver => pathResolver;
 
-        public PackageManager Manager { get; }
+        public NuGet.PackageManager Manager { get; }
 
         public IPackageRepository LocalRepository => Manager.LocalRepository;
 
@@ -196,6 +198,118 @@ namespace SiliconStudio.Assets
             if (directory == null) throw new ArgumentNullException(nameof(directory));
             var storeConfig = Path.Combine(directory, DefaultConfig);
             return File.Exists(storeConfig);
+        }
+
+        public void InstallPackage(string packageId, SemanticVersion version)
+        {
+            using (GetLocalRepositoryLocker())
+            {
+                Manager.InstallPackage(packageId, version, false, true);
+
+                // Every time a new package is installed, we are updating the common targets
+                UpdateTargetsInternal();
+
+                // Install vsix
+                ////InstallVsix(GetLatestPackageInstalled(packageId));
+            }
+        }
+
+        [Obsolete]
+        public void UpdatePackage(IPackage package)
+        {
+            using (GetLocalRepositoryLocker())
+            {
+                Manager.UpdatePackage(package, true, true);
+
+                // Every time a new package is installed, we are updating the common targets
+                UpdateTargetsInternal();
+
+                // Install vsix
+                //InstallVsix(GetLatestPackageInstalled(package.Id));
+            }
+        }
+
+        public void UninstallPackage(IPackage package)
+        {
+            using (GetLocalRepositoryLocker())
+            {
+                Manager.UninstallPackage(package);
+
+                // Every time a new package is installed, we are updating the common targets
+                UpdateTargetsInternal();
+            }
+        }
+
+        public void UpdateTargets()
+        {
+            using (GetLocalRepositoryLocker())
+            {
+                UpdateTargetsInternal();
+            }
+        }
+
+        private List<IPackage> UpdateTargetsInternal()
+        {
+            // We don't want to polute the Common.targets file with internal packages
+            var packages = GetRootPackagesInDependencyOrder().Where(package => !(package.Tags != null && package.Tags.Contains("internal"))).ToList();
+
+            // Generate target file
+            var targetGenerator = new TargetGenerator(this, packages);
+            var targetFileContent = targetGenerator.TransformText();
+
+            var targetFile = TargetFile;
+            var targetFilePath = Path.GetDirectoryName(targetFile);
+
+            // Make sure directory exists
+            if (!Directory.Exists(targetFilePath))
+                Directory.CreateDirectory(targetFilePath);
+
+            File.WriteAllText(targetFile, targetFileContent, Encoding.UTF8);
+
+            return packages;
+        }
+
+        private List<IPackage> GetRootPackagesInDependencyOrder()
+        {
+            var packagesInOrder = new List<IPackage>();
+
+            // Get all packages
+            var packages = new HashSet<IPackage>();
+            foreach (var package in LocalRepository.GetPackages().OrderBy(p => p.Id).ThenByDescending(p => p.Version))
+            {
+                if (packages.All(p => p.Id != package.Id))
+                {
+                    packages.Add(package);
+                }
+            }
+
+            while (packages.Count > 0)
+            {
+                var nextPackage = packages.FirstOrDefault();
+                AddPackageRecursive(packagesInOrder, packages, nextPackage);
+            }
+
+            return packagesInOrder;
+        }
+
+        private void AddPackageRecursive(List<IPackage> packagesOut, HashSet<IPackage> packages, IPackage packageToTrack)
+        {
+            // Go first recursively with all dependencies resolved
+            var dependencies = packageToTrack.DependencySets.SelectMany(deps => deps.Dependencies);
+            foreach (var dependency in dependencies)
+            {
+                var nextPackage = packages.FirstOrDefault(p => p.Id == dependency.Id);
+                if (nextPackage != null)
+                {
+                    AddPackageRecursive(packagesOut, packages, nextPackage);
+                }
+            }
+
+            // This package is now resolved, add it to the ordered list
+            packagesOut.Add(packageToTrack);
+
+            // Remove it from the list of packages to process
+            packages.Remove(packageToTrack);
         }
     }
 }

@@ -177,9 +177,6 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\assets\SiliconStudio.Assets\NugetStore.cs">
-      <Link>Commands\NugetStore.cs</Link>
-    </Compile>
     <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Reflection\OverrideType.cs">
       <Link>Core\OverrideType.cs</Link>
     </Compile>
@@ -335,6 +332,12 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\assets\SiliconStudio.PackageManager\SiliconStudio.PackageManager.csproj">
+      <Project>{acd2c831-bda2-4512-b4cc-75e8e1804f73}</Project>
+      <Name>SiliconStudio.PackageManager</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <UseCodebase>true</UseCodebase>

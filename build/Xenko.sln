@@ -406,6 +406,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets.Build", "00-Targ
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SiliconStudio.ShellHelper", "..\sources\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.shproj", "{3A3CB33C-64D9-4948-86C1-0D86320D23C3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.PackageManager", "..\sources\assets\SiliconStudio.PackageManager\SiliconStudio.PackageManager.csproj", "{ACD2C831-BDA2-4512-B4CC-75E8E1804F73}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
@@ -2341,6 +2343,30 @@ Global
 		{FCF36D39-BFFE-4719-B245-05640EE34C5F}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
 		{FCF36D39-BFFE-4719-B245-05640EE34C5F}.Testing|Win32.ActiveCfg = Release|Any CPU
 		{FCF36D39-BFFE-4719-B245-05640EE34C5F}.Testing|Win32.Build.0 = Release|Any CPU
+		{ACD2C831-BDA2-4512-B4CC-75E8E1804F73}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{ACD2C831-BDA2-4512-B4CC-75E8E1804F73}.AppStore|Any CPU.Build.0 = Release|Any CPU
+		{ACD2C831-BDA2-4512-B4CC-75E8E1804F73}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{ACD2C831-BDA2-4512-B4CC-75E8E1804F73}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
+		{ACD2C831-BDA2-4512-B4CC-75E8E1804F73}.AppStore|Win32.ActiveCfg = Release|Any CPU
+		{ACD2C831-BDA2-4512-B4CC-75E8E1804F73}.AppStore|Win32.Build.0 = Release|Any CPU
+		{ACD2C831-BDA2-4512-B4CC-75E8E1804F73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACD2C831-BDA2-4512-B4CC-75E8E1804F73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACD2C831-BDA2-4512-B4CC-75E8E1804F73}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{ACD2C831-BDA2-4512-B4CC-75E8E1804F73}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{ACD2C831-BDA2-4512-B4CC-75E8E1804F73}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{ACD2C831-BDA2-4512-B4CC-75E8E1804F73}.Debug|Win32.Build.0 = Debug|Any CPU
+		{ACD2C831-BDA2-4512-B4CC-75E8E1804F73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACD2C831-BDA2-4512-B4CC-75E8E1804F73}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACD2C831-BDA2-4512-B4CC-75E8E1804F73}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{ACD2C831-BDA2-4512-B4CC-75E8E1804F73}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{ACD2C831-BDA2-4512-B4CC-75E8E1804F73}.Release|Win32.ActiveCfg = Release|Any CPU
+		{ACD2C831-BDA2-4512-B4CC-75E8E1804F73}.Release|Win32.Build.0 = Release|Any CPU
+		{ACD2C831-BDA2-4512-B4CC-75E8E1804F73}.Testing|Any CPU.ActiveCfg = Release|Any CPU
+		{ACD2C831-BDA2-4512-B4CC-75E8E1804F73}.Testing|Any CPU.Build.0 = Release|Any CPU
+		{ACD2C831-BDA2-4512-B4CC-75E8E1804F73}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{ACD2C831-BDA2-4512-B4CC-75E8E1804F73}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
+		{ACD2C831-BDA2-4512-B4CC-75E8E1804F73}.Testing|Win32.ActiveCfg = Release|Any CPU
+		{ACD2C831-BDA2-4512-B4CC-75E8E1804F73}.Testing|Win32.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2449,5 +2475,6 @@ Global
 		{AB574F65-1402-4476-9314-74DCDAF19097} = {5D2D3BE8-9910-45CA-8E45-95660DA4C563}
 		{FCF36D39-BFFE-4719-B245-05640EE34C5F} = {2E93E2B5-4500-4E47-9B65-E705218AB578}
 		{3A3CB33C-64D9-4948-86C1-0D86320D23C3} = {1AC70118-C90F-4EC6-9D8B-C628BDF900F7}
+		{ACD2C831-BDA2-4512-B4CC-75E8E1804F73} = {A2A4342E-024B-4063-B10C-1DA96CA3046D}
 	EndGlobalSection
 EndGlobal

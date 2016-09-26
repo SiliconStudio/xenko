@@ -148,8 +148,6 @@
     <Compile Include="IFileSynchronizable.cs" />
     <Compile Include="Analysis\AssetResolver.cs" />
     <Compile Include="IO\FileExtensionCollection.cs" />
-    <Compile Include="NugetLogEventArgs.cs" />
-    <Compile Include="NugetStore.cs" />
     <Compile Include="AssetMigration.cs" />
     <Compile Include="OverrideUpgraderHint.cs" />
     <Compile Include="Package.Constants.cs" />
@@ -313,6 +311,10 @@
       <Project>{72390339-B2A1-4F61-A800-31ED0975B515}</Project>
       <Name>SiliconStudio.Xenko</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.PackageManager\SiliconStudio.PackageManager.csproj">
+      <Project>{acd2c831-bda2-4512-b4cc-75e8e1804f73}</Project>
+      <Name>SiliconStudio.PackageManager</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
