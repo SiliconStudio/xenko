@@ -229,13 +229,8 @@ namespace SiliconStudio.Xenko.Engine
                 return;
 
             // Check if scaling is negative
-            bool isScalingNegative = false;
-            {
-                Vector3 scale, translation;
-                Matrix rotation;
-                if (worldMatrix.Decompose(out scale, out rotation, out translation))
-                    isScalingNegative = scale.X*scale.Y*scale.Z < 0.0f;
-            }
+            var up = Vector3.Cross(worldMatrix.Right, worldMatrix.Forward);
+            bool isScalingNegative = Vector3.Dot(worldMatrix.Up, up) < 0.0f;
 
             // Make sure skeleton is up to date
             CheckSkeleton();
