@@ -19,12 +19,13 @@ using SiliconStudio.Xenko.Physics;
 
 namespace SiliconStudio.Xenko.Assets.Navigation
 {
-    class NavigationMeshAssetCompiler : AssetCompilerBase<NavigationMeshAsset>
+    class NavigationMeshAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, NavigationMeshAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             result.ShouldWaitForPreviousBuilds = true;
-            result.BuildSteps = new AssetBuildStep(assetItem) { new NavmeshBuildCommand(assetItem.Location, assetItem, asset, context) };
+            var asset = (NavigationMeshAsset)assetItem.Asset;
+            result.BuildSteps = new AssetBuildStep(assetItem) { new NavmeshBuildCommand(targetUrlInStorage, assetItem, asset, context) };
         }
 
         // DEBUG FUNCTIONS
@@ -123,14 +124,6 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 this.package = assetItem.Package;
                 assetUrl = url;
             }
-
-            //protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
-            //{
-            //    foreach (var compileTimeDependency in ((NavigationMeshAsset)assetItem.Asset).EnumerateCompileTimeDependencies(package.Session))
-            //    {
-            //        yield return new ObjectUrl(UrlType.ContentLink, compileTimeDependency.Location);
-            //    }
-            //}
 
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
             {
