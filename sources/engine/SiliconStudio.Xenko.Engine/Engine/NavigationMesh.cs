@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Engine
 
     [DataContract("NavigationMesh")]
     [DataSerializerGlobal(typeof(ReferenceSerializer<NavigationMesh>), Profile = "Content")]
-    [DataSerializer(typeof(NavmeshSerializer))]
+    [DataSerializer(typeof(NavigationMeshSerializer))]
     [ContentSerializer(typeof(DataContentSerializer<NavigationMesh>))]
     public class NavigationMesh
     {
@@ -110,14 +110,12 @@ namespace SiliconStudio.Xenko.Engine
         }
     }
 
-    internal class NavmeshSerializer : DataSerializer<NavigationMesh>, IDataSerializerInitializer
+    internal class NavigationMeshSerializer : DataSerializer<NavigationMesh>, IDataSerializerInitializer
     {
-        private DataSerializer<string> stringSerializer;
         private DataSerializer<Vector3> pointSerializer;
         
         public void Initialize(SerializerSelector serializerSelector)
         {
-            stringSerializer = MemberSerializer<string>.Create(serializerSelector);
             pointSerializer = MemberSerializer<Vector3>.Create(serializerSelector);
         }
         
