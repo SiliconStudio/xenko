@@ -31,12 +31,15 @@ namespace SiliconStudio.Assets
 
         public const string OverrideConfig = "store.local.config";
 
+        public const string MainExecutablesKey = "mainExecutables";
+        public const string PrerequisitesInstallerKey = "prerequisitesInstaller";
+
         private readonly PhysicalFileSystem rootFileSystem;
         private readonly IFileSystem packagesFileSystem;
         private readonly PackageSourceProvider packageSourceProvider;
         private readonly DefaultPackagePathResolver pathResolver;
         private readonly PackageRepositoryFactory repositoryFactory;
-        private ILogger logger;
+        private INugetLogger logger;
 
         public NugetStore(string rootDirectory, string configFile = DefaultConfig, string overrideFile = OverrideConfig)
         {
@@ -72,7 +75,7 @@ namespace SiliconStudio.Assets
 
             pathResolver = new DefaultPackagePathResolver(packagesFileSystem);
 
-            Manager = new NuGet.PackageManager(SourceRepository, pathResolver, packagesFileSystem);
+            Manager = new NugetPackageManager(new NuGet.PackageManager(SourceRepository, pathResolver, packagesFileSystem));
 
             var mainPackageList = Settings.GetConfigValue(MainPackagesKey);
             if (string.IsNullOrWhiteSpace(mainPackageList))
@@ -107,18 +110,18 @@ namespace SiliconStudio.Assets
 
         public string TargetFile => Path.Combine(RootDirectory, DefaultTargets);
 
-        public ILogger Logger
+        public INugetLogger Logger
         {
             get
             {
-                return logger ?? NullLogger.Instance;
+                return logger ?? NugetLogger.NullInstance;
             }
 
             set
             {
                 logger = value;
-                Manager.Logger = logger;
-                SourceRepository.Logger = logger;
+                Manager.Logger = new NugetLogger(logger);
+                SourceRepository.Logger = new NugetLogger(logger);
             }
         }
 
@@ -126,7 +129,7 @@ namespace SiliconStudio.Assets
 
         public IPackagePathResolver PathResolver => pathResolver;
 
-        public NuGet.PackageManager Manager { get; }
+        public NugetPackageManager Manager { get; }
 
         public IPackageRepository LocalRepository => Manager.LocalRepository;
 
@@ -140,6 +143,11 @@ namespace SiliconStudio.Assets
         public NugetPackage GetLatestPackageInstalled(string packageId)
         {
             return new NugetPackage(LocalRepository.GetPackages().Where(p => p.Id == packageId).OrderByDescending(p => p.Version).FirstOrDefault());
+        }
+
+        public string GetInstallPath(NugetPackage package)
+        {
+            return PathResolver.GetInstallPath(package.IPackage);
         }
 
         public IList<NugetPackage> GetPackagesInstalled(string packageId)
@@ -210,11 +218,11 @@ namespace SiliconStudio.Assets
             return File.Exists(storeConfig);
         }
 
-        public void InstallPackage(string packageId, NuGet.SemanticVersion version)
+        public void InstallPackage(string packageId, NugetSemanticVersion version)
         {
             using (GetLocalRepositoryLocker())
             {
-                Manager.InstallPackage(packageId, version, false, true);
+                Manager.InstallPackage(packageId, version.SemanticVersion, false, true);
 
                 // Every time a new package is installed, we are updating the common targets
                 UpdateTargetsInternal();
@@ -224,26 +232,11 @@ namespace SiliconStudio.Assets
             }
         }
 
-        [Obsolete]
-        public void UpdatePackage(IPackage package)
+        public void UninstallPackage(NugetPackage package)
         {
             using (GetLocalRepositoryLocker())
             {
-                Manager.UpdatePackage(package, true, true);
-
-                // Every time a new package is installed, we are updating the common targets
-                UpdateTargetsInternal();
-
-                // Install vsix
-                //InstallVsix(GetLatestPackageInstalled(package.Id));
-            }
-        }
-
-        public void UninstallPackage(IPackage package)
-        {
-            using (GetLocalRepositoryLocker())
-            {
-                Manager.UninstallPackage(package);
+                Manager.UninstallPackage(package.IPackage);
 
                 // Every time a new package is installed, we are updating the common targets
                 UpdateTargetsInternal();
@@ -325,6 +318,16 @@ namespace SiliconStudio.Assets
         public string GetPackageDirectory(NugetPackage xenkoPackage)
         {
             return PathResolver.GetPackageDirectory(xenkoPackage.IPackage);
+        }
+
+        public string GetMainExecutables()
+        {
+            return Settings.GetConfigValue(MainExecutablesKey);
+        }
+
+        public string GetPrerequisitesInstaller()
+        {
+            return Settings.GetConfigValue(PrerequisitesInstallerKey);
         }
     }
 }

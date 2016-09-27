@@ -24,10 +24,18 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="INugetLogger.cs" />
     <Compile Include="NugetLogEventArgs.cs" />
+    <Compile Include="NugetLogger.cs" />
+    <Compile Include="NugetMessageLevel.cs" />
+    <Compile Include="NugetPackageFile.cs" />
+    <Compile Include="NugetPackageManager.cs" />
+    <Compile Include="NugetPackageName.cs" />
+    <Compile Include="NugetPackageOperationEventArgs.cs" />
     <Compile Include="NugetStore.cs" />
     <Compile Include="NugetPackage.cs" />
     <Compile Include="NugetSemanticVersion.cs" />
+    <Compile Include="ProgressReport.cs" />
     <Compile Include="TargetGenerator.cs">
       <DependentUpon>TargetGenerator.tt</DependentUpon>
       <AutoGen>True</AutoGen>
