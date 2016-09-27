@@ -34,6 +34,8 @@ namespace SiliconStudio.Xenko.Rendering
 
         public bool IsScalingNegative;
 
+        public bool IsPreviousScalingNegative;
+
         public Matrix World = Matrix.Identity;
 
         public Matrix[] BlendMatrices;
