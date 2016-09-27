@@ -89,7 +89,35 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 file.Write(data, 0, data.Length);
             }
         }
+        
+        public static void BuildPlanePoints(ref Plane plane, float size, out Vector3[] points, out int[] inds)
+        {
+            Vector3 up = plane.Normal;
+            Vector3 right;
+            if (up.Y == 0.0f)
+                right = new Vector3(up.Z, up.Y, -up.X);
+            else
+                right = new Vector3(-up.Y, up.X, up.Z);
+            right.Normalize();
+            Vector3 forward = Vector3.Cross(up, right);
+            right = Vector3.Cross(forward, up);
 
+            points = new Vector3[4];
+            points[0] = -forward * size - right * size + up * plane.D;
+            points[1] = -forward * size + right * size + up * plane.D;
+            points[2] = forward * size - right * size + up * plane.D;
+            points[3] = forward * size + right * size + up * plane.D;
+
+            inds = new int[6];
+            // CCW
+            inds[0] = 0;
+            inds[1] = 2;
+            inds[2] = 1;
+            inds[3] = 1;
+            inds[4] = 2;
+            inds[5] = 3;
+        }
+        
         private class NavmeshBuildCommand : AssetCommand<NavigationMeshAsset>
         {
             private UFile assetUrl;
@@ -192,7 +220,6 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                     StaticColliderComponent collider = entity.Get<StaticColliderComponent>();
                     if(collider != null && collider.IsBlocking && collider.Enabled)
                     {
-                        // TODO: Add compound shapes and types other than box as well
                         collider.ComposeShape();
                         if(collider.ColliderShape == null)
                             continue; // No collider
@@ -245,13 +272,13 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                                 var plane = (StaticPlaneColliderShape)shape;
                                 var planeDesc = (StaticPlaneColliderShapeDesc)plane.Description;
                                 Matrix transform = plane.PositiveCenterMatrix * entityWorldMatrix;
-                                // TODO: Apply plane normal and offset from description?
 
                                 // Defer infinite planes because their size is not defined yet
                                 deferredShapes.Add(new DeferredShape { Description = planeDesc, Transform = transform });
                             }
                             else if(shapeType == typeof(ConvexHullColliderShape))
                             {
+                                // TODO: Fix loading of hull assets
                                 var hull = (ConvexHullColliderShape)shape;
                                 var hullDesc = (ConvexHullColliderShapeDesc)hull.Description;
                                 Matrix transform = hull.PositiveCenterMatrix * entityWorldMatrix;
@@ -299,13 +326,31 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
                 // Process deferred shapes
                 Vector3 bbExtent = buildSettings.BoundingBox.Extent;
-                float maxBoundsSize = Math.Max(bbExtent.X, Math.Max(bbExtent.Y, bbExtent.Z)) * 2.0f;
-                foreach(DeferredShape shape in deferredShapes)
+                Vector3 maxSize = boundingBox.Maximum - boundingBox.Minimum;
+                float maxDiagonal = Math.Max(maxSize.X, Math.Max(maxSize.Y, maxSize.Z));
+                foreach (DeferredShape shape in deferredShapes)
                 {
                     StaticPlaneColliderShapeDesc planeDesc = (StaticPlaneColliderShapeDesc)shape.Description;
-                    // TODO: Fit plane in bounding box properly
-                    var meshData = GeometricPrimitive.Plane.New(maxBoundsSize, maxBoundsSize);
-                    AppendInputMeshData(meshData, shape.Transform);
+                    Plane plane = new Plane(planeDesc.Normal, planeDesc.Offset);
+
+                    // Pre-Transform plane parameters
+                    plane.Normal = Vector3.TransformNormal(plane.Normal, shape.Transform);
+                    float offset = Vector3.Dot(shape.Transform.TranslationVector, plane.Normal);
+                    plane.D += offset;
+
+                    // Generate source plane triangles
+                    Vector3[] planePoints;
+                    int[] planeInds;
+                    BuildPlanePoints(ref plane, maxDiagonal, out planePoints, out planeInds);
+
+                    VertexPositionNormalTexture[] vertices = new VertexPositionNormalTexture[planePoints.Length];
+                    for(int i = 0; i < planePoints.Length; i++)
+                    {
+                        vertices[i] = new VertexPositionNormalTexture(planePoints[i] + boundingBox.Center, Vector3.UnitY, Vector2.Zero);
+                    }
+
+                    GeometricMeshData<VertexPositionNormalTexture> meshData = new GeometricMeshData<VertexPositionNormalTexture>(vertices, planeInds, false);
+                    AppendInputMeshData(meshData, Matrix.Identity);
                 }
 
                 // NOTE: Reversed winding order as input to recast
@@ -322,6 +367,10 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
                 // TODO: Remove this
                 DumpObj("input", inputMeshData);
+
+                // Can't generate when no bounding box is specified
+                if(boundingBox == BoundingBox.Empty)
+                    return Task.FromResult(ResultStatus.Failed);
 
                 if(!generatedNavigationMesh.Build(buildSettings, meshVertices.ToArray(), meshIndices.ToArray()))
                     return Task.FromResult(ResultStatus.Failed);
