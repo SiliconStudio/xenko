@@ -706,6 +706,7 @@ namespace SiliconStudio.Xenko.Engine
         {
             if (NativeCollisionObject == null) return;
 
+            NativeCollisionObject.UserObject = null;
             NativeCollisionObject.Dispose();
             NativeCollisionObject = null;
         }

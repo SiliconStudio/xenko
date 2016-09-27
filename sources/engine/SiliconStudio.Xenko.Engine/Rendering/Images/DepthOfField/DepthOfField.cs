@@ -372,8 +372,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 var maxAmplitude = farPlane * 0.2f;
                 diffToTarget = MathUtil.Clamp(diffToTarget, -maxAmplitude, maxAmplitude);
                 autoFocusDistanceCurrent = autoFocusDistanceCurrent + 0.1f * diffToTarget;
-                if (autoFocusDistanceCurrent < 1f) autoFocusDistanceCurrent = 1f;
-                depthAreas = new Vector4(0.5f, autoFocusDistanceCurrent, autoFocusDistanceCurrent, autoFocusDistanceCurrent + farPlane * 0.5f);
+                if (autoFocusDistanceCurrent < cameraState.NearClipPlane * 2.0f) autoFocusDistanceCurrent = cameraState.NearClipPlane * 2.0f;
+                depthAreas = new Vector4(cameraState.NearClipPlane, autoFocusDistanceCurrent, autoFocusDistanceCurrent, autoFocusDistanceCurrent + farPlane * 0.5f);
             }
 
             coclinearDepthMapEffect.SetInput(0, originalDepthBuffer);

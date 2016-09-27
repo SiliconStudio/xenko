@@ -15,8 +15,7 @@ namespace ParticlesSample
     /// </summary>
     public class PrefabInstance : AsyncScript
     {
-
-        private float timeIntervalCountdown = 0f;
+        private float timeIntervalCountdown;
 
         /// <summary>
         /// Source to the prefab, selectable by the user
@@ -30,7 +29,12 @@ namespace ParticlesSample
         /// </summary>
         [DataMember(20)]
         [Display("Following")]
-        public bool Following { get; set; } = true;
+        public bool Following
+        {
+            get { return following; }
+            set { following = value; }
+        }
+        private bool following = true;
 
         /// <summary>
         /// How long before the prefab instance is deleted, selectable by the user
@@ -46,16 +50,17 @@ namespace ParticlesSample
         [Display("Trigger")]
         public Keys Key = Keys.Space;
 
+
         /// <summary>
         /// Set the time interval (in seconds) at which to spawn new instances. Set it to 0 to deactivate.
         /// </summary>
         [DataMember(50)]
         [Display("Interval")]
-        public float TimeInterval { get; set; } = 0f;
+        public float TimeInterval { get; set; }
 
         [DataMember(60)]
         [Display("Delay")]
-        public float TimeDelay { get; set; } = 0f;
+        public float TimeDelay { get; set; }
 
         public override async Task Execute()
         {

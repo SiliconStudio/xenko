@@ -86,6 +86,19 @@ namespace SiliconStudio
             return Regex.Replace(originalName, "[=;,/\\?:&*<>|#%\"]", replacementCharacter.ToString());
         }
 
+        /// <summary>
+        /// Build a valid file name from the provided string. 
+        /// It replaces all the forbidden characters by the provided replacement character.
+        /// For reference see: https://msdn.microsoft.com/en-us/library/windows/desktop/aa365247(v=vs.85).aspx
+        /// </summary>
+        /// <param name="originalName">The original name</param>
+        /// <param name="replacementCharacter">The replacement character</param>
+        /// <returns></returns>
+        public static string BuildValidFileName(string originalName, char replacementCharacter = '_')
+        {
+            return Regex.Replace(originalName, "[=;,/\\?:&!.*<>|#%\"]", replacementCharacter.ToString());
+        }
+
         private static readonly string[] ReservedNames =
         {
             "abstract",
