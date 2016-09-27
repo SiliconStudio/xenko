@@ -24,12 +24,18 @@ namespace SiliconStudio.Xenko.Rendering
         // Material
         // TODO: Extract with MaterialRenderFeature
         public Material Material;
+
         // TODO GRAPHICS REFACTOR store that in RenderData (StaticObjectNode?)
         internal MaterialRenderFeature.MaterialInfo MaterialInfo;
 
         public bool IsShadowCaster;
+
         public bool IsShadowReceiver;
 
+        public bool IsScalingNegative;
+
         public Matrix World = Matrix.Identity;
+
+        public Matrix[] BlendMatrices;
     }
 }
