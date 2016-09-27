@@ -13,19 +13,19 @@ namespace JumpyJet
 
         private const float VerticalDistanceBetweenPipe = 230f;
 
-        private Entity topPipe;
-        private Entity bottomPipe;
+        private readonly Entity topPipe;
+        private readonly Entity bottomPipe;
 
-        private float scrollSpeed;
-        private float pipeWidth;
-        private float pipeHeight;
-        private float halfPipeWidth;
+        private readonly float scrollSpeed;
+        private readonly float pipeWidth;
+        private readonly float pipeHeight;
+        private readonly float halfPipeWidth;
 
         private readonly Random random = new Random();
         private readonly float startScrollPos;
         private readonly float halfScrollWidth;
 
-        private RectangleF pipeCollider;
+        private readonly RectangleF pipeCollider;
 
         public PipeSet(Entity referencePipeEntity, float scrollSpeed, float startScrollPos, float screenWidth)
         {

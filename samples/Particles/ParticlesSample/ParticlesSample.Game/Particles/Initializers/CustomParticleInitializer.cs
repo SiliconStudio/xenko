@@ -25,14 +25,16 @@ namespace ParticlesSample.Particles.Initializers
         [Display("Velocity")]
         public float Strength = 1f;
 
+
         public CustomParticleInitializer()
         {
+            DebugDraw = false;
             RequiredFields.Add(ParticleFields.Position);
             RequiredFields.Add(ParticleFields.Velocity);
             RequiredFields.Add(ParticleFields.RandomSeed);
         }
 
-        public unsafe override void Initialize(ParticlePool pool, int startIdx, int endIdx, int maxCapacity)
+        public override unsafe void Initialize(ParticlePool pool, int startIdx, int endIdx, int maxCapacity)
         {
             if (!pool.FieldExists(ParticleFields.Position) || !pool.FieldExists(ParticleFields.Velocity) || !pool.FieldExists(ParticleFields.RandomSeed))
                 return;
@@ -76,7 +78,7 @@ namespace ParticlesSample.Particles.Initializers
 
         [DataMember(8)]
         [Display("Seed offset")]
-        public UInt32 SeedOffset { get; set; } = 0;
+        public UInt32 SeedOffset { get; set; }
 
         /// <summary>
         /// Should this Particle Module's bounds be displayed as a debug draw
@@ -86,7 +88,7 @@ namespace ParticlesSample.Particles.Initializers
         /// </userdoc>
         [DataMember(-1)]
         [DefaultValue(false)]
-        public bool DebugDraw { get; set; } = false;
+        public bool DebugDraw { get; set; }
 
         public override bool TryGetDebugDrawShape(out DebugDrawShape debugDrawShape, out Vector3 translation, out Quaternion rotation, out Vector3 scale)
         {
