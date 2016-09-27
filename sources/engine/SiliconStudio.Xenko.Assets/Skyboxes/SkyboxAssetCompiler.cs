@@ -7,7 +7,6 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
-using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Assets.Textures;
@@ -15,10 +14,11 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets.Skyboxes
 {
-    internal class SkyboxAssetCompiler : AssetCompilerBase<SkyboxAsset>
+    internal class SkyboxAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, SkyboxAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
+            var asset = (SkyboxAsset)assetItem.Asset;
             result.BuildSteps = new ListBuildStep();
             result.ShouldWaitForPreviousBuilds = true;
 
@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                     var textureAsset = (TextureAsset)dependencyItem.Asset;
 
                     // Get absolute path of asset source on disk
-                    var assetSource = GetAbsolutePath(dependencyItem.Location.GetDirectoryAndFileName(), textureAsset.Source);
+                    var assetSource = GetAbsolutePath(dependencyItem, textureAsset.Source);
 
                     // Create a synthetic url
                     var textureUrl = SkyboxGenerator.BuildTextureForSkyboxGenerationLocation(dependencyItem.Location);
@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             }
 
             // add the skybox command itself.
-            result.BuildSteps.Add(new AssetBuildStep(assetItem) {  new SkyboxCompileCommand(assetItem.Location, asset) });
+            result.BuildSteps.Add(new AssetBuildStep(assetItem) {  new SkyboxCompileCommand(targetUrlInStorage, asset) });
         }
 
         private class SkyboxCompileCommand : AssetCommand<SkyboxAsset>

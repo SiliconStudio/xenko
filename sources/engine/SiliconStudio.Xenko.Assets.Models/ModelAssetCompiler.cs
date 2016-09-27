@@ -15,10 +15,11 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
-    public class ModelAssetCompiler : AssetCompilerBase<ModelAsset>
+    public class ModelAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, ModelAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
+            var asset = (ModelAsset)assetItem.Asset;
             // Get absolute path of asset source on disk
             var assetDirectory = assetItem.FullPath.GetParent();
             var assetSource = UPath.Combine(assetDirectory, asset.Source);
@@ -43,7 +44,7 @@ namespace SiliconStudio.Xenko.Assets.Models
 
             importModelCommand.Mode = ImportModelCommand.ExportMode.Model;
             importModelCommand.SourcePath = assetSource;
-            importModelCommand.Location = assetItem.Location;
+            importModelCommand.Location = targetUrlInStorage;
             importModelCommand.Allow32BitIndex = allow32BitIndex;
             importModelCommand.AllowUnsignedBlendIndices = allowUnsignedBlendIndices;
             importModelCommand.Materials = asset.Materials;
