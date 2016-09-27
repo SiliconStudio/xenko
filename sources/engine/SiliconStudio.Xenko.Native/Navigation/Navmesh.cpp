@@ -51,6 +51,8 @@ bool Navmesh::Load(uint8_t* navData, int navDataLength)
 
 NavmeshQueryResult* Navmesh::Query(NavmeshQuery query)
 {
+	// Reset result
+	m_result = NavmeshQueryResult();
 	NavmeshQueryResult* res = &m_result;
 	dtPolyRef startPoly, endPoly;
 	Vector3 startPoint, endPoint;
