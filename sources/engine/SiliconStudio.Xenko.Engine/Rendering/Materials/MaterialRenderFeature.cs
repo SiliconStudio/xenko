@@ -193,10 +193,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                         renderMesh.MaterialInfo = materialInfo;
                     }
 
-                    if (materialInfo.CullMode != material.CullMode || materialInfo.IsScalingNegative != renderMesh.IsScalingNegative)
+                    // TODO GRAPHICS REFACTOR: Negative scaling belongs into TransformationRenderFeature
+                    if (materialInfo.CullMode != material.CullMode || renderMesh.IsScalingNegative != renderMesh.IsPreviousScalingNegative)
                     {
                         materialInfo.CullMode = material.CullMode;
-                        materialInfo.IsScalingNegative = renderMesh.IsScalingNegative;
+                        renderMesh.IsPreviousScalingNegative = renderMesh.IsScalingNegative;
                         renderEffect.PipelineState = null;
                     }
 
