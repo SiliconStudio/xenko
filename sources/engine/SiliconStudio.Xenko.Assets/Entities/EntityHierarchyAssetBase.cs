@@ -1,11 +1,11 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using SiliconStudio.Assets;
-using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
@@ -41,131 +41,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             return Hierarchy?.DumpTo(writer) ?? false;
         }
 
-        /// <summary>
-        /// Clones a sub-hierarchy of this asset.
-        /// </summary>
-        /// <param name="sourceRootEntity">The entity that is the root of the sub-hierarchy to clone</param>
-        /// <param name="cleanReference">If true, any reference to an entity external to the cloned hierarchy will be set to null.</param>
-        /// <param name="entityMapping">A dictionary containing the mapping of ids from the source entites to the new entities.</param>
-        /// <returns>A <see cref="AssetCompositeHierarchyData{EntityDesign, Entity}"/> corresponding to the cloned entities.</returns>
-        public override AssetCompositeHierarchyData<EntityDesign, Entity> CloneSubHierarchy(Guid sourceRootEntity, bool cleanReference, out Dictionary<Guid, Guid> entityMapping)
-        {
-            if (!Hierarchy.Parts.ContainsKey(sourceRootEntity))
-                throw new ArgumentException(@"The source root entity must be an entity of this asset.", nameof(sourceRootEntity));
-
-            // Note: Instead of copying the whole asset (with its potentially big hierarchy),
-            // we first copy the asset only (without the hierarchy), then the sub-hierarchy to extract.
-            var subTreeRoot = Hierarchy.Parts[sourceRootEntity];
-            var subTreeHierarchy = new AssetCompositeHierarchyData<EntityDesign, Entity> { Parts = { subTreeRoot }, RootPartIds = { sourceRootEntity } };
-            foreach (var subTreeEntity in EnumerateChildParts(subTreeRoot, Hierarchy, true))
-                subTreeHierarchy.Parts.Add(Hierarchy.Parts[subTreeEntity.Entity.Id]);
-
-            // clone the entities of the sub-tree
-            var clonedHierarchy = (AssetCompositeHierarchyData<EntityDesign, Entity>)AssetCloner.Clone(subTreeHierarchy);
-            clonedHierarchy.Parts[sourceRootEntity].Entity.Transform.Parent = null;
-
-            if (cleanReference)
-            {
-                // set to null reference outside of the sub-tree
-                var tempAsset = new PrefabAsset { Hierarchy = clonedHierarchy };
-                tempAsset.FixupReferences();
-            }
-
-            // temporary nullify the hierarchy to avoid to clone it
-            var sourceHierarchy = Hierarchy;
-            Hierarchy = null;
-
-            // revert the source hierarchy
-            Hierarchy = sourceHierarchy;
-
-            // Generate entity mapping
-            entityMapping = new Dictionary<Guid, Guid>();
-            foreach (var entityDesign in clonedHierarchy.Parts)
-            {
-                // Generate new Id
-                var newEntityId = Guid.NewGuid();
-
-                // Update mappings
-                entityMapping.Add(entityDesign.Entity.Id, newEntityId);
-
-                // Update entity with new id
-                entityDesign.Entity.Id = newEntityId;
-            }
-
-            // Rewrite entity references
-            // Should we nullify invalid references?
-            AssetPartsAnalysis.RemapPartsId(clonedHierarchy, entityMapping);
-
-            return clonedHierarchy;
-        }
-
-        /// <summary>
-        /// Clones a sub-hierarchy of this asset.
-        /// </summary>
-        /// <param name="sourceRootEntities">The entities that are the roots of the sub-hierarchies to clone</param>
-        /// <param name="cleanReference">If true, any reference to an entity external to the cloned hierarchy will be set to null.</param>
-        /// <param name="entityMapping">A dictionary containing the mapping of ids from the source entites to the new entities.</param>
-        /// <returns>A <see cref="AssetCompositeHierarchyData{EntityDesign, Entity}"/> corresponding to the cloned entities.</returns>
-        /// <remarks>The entities passed to this methods must be independent in the hierarchy.</remarks>
-        public AssetCompositeHierarchyData<EntityDesign, Entity> CloneSubHierarchies(IEnumerable<Guid> sourceRootEntities, bool cleanReference, out Dictionary<Guid, Guid> entityMapping)
-        {
-            // Note: Instead of copying the whole asset (with its potentially big hierarchy),
-            // we first copy the asset only (without the hierarchy), then the sub-hierarchy to extract.
-            var subTreeHierarchy = new AssetCompositeHierarchyData<EntityDesign, Entity>();
-            foreach (var sourceRootEntity in sourceRootEntities)
-            {
-                if (!Hierarchy.Parts.ContainsKey(sourceRootEntity))
-                    throw new ArgumentException(@"The source root entities must be entities of this asset.", nameof(sourceRootEntities));
-
-                var subTreeRoot = Hierarchy.Parts[sourceRootEntity].Entity;
-                subTreeHierarchy.Parts.Add(new EntityDesign(subTreeRoot));
-                subTreeHierarchy.RootPartIds.Add(sourceRootEntity);
-                foreach (var subTreeEntity in EnumerateChildParts(subTreeRoot, true))
-                    subTreeHierarchy.Parts.Add(Hierarchy.Parts[subTreeEntity.Id]);
-            }
-
-            // clone the entities of the sub-tree
-            var clonedHierarchy = (AssetCompositeHierarchyData<EntityDesign, Entity>)AssetCloner.Clone(subTreeHierarchy);
-            foreach (var rootEntity in clonedHierarchy.RootPartIds)
-            {
-                clonedHierarchy.Parts[rootEntity].Entity.Transform.Parent = null;
-            }
-
-            if (cleanReference)
-            {
-                // set to null reference outside of the sub-tree
-                var tempAsset = new PrefabAsset { Hierarchy = clonedHierarchy };
-                tempAsset.FixupReferences();
-            }
-
-            // temporary nullify the hierarchy to avoid to clone it
-            var sourceHierarchy = Hierarchy;
-            Hierarchy = null;
-
-            // revert the source hierarchy
-            Hierarchy = sourceHierarchy;
-
-            // Generate entity mapping
-            entityMapping = new Dictionary<Guid, Guid>();
-            foreach (var entityDesign in clonedHierarchy.Parts)
-            {
-                // Generate new Id
-                var newEntityId = Guid.NewGuid();
-
-                // Update mappings
-                entityMapping.Add(entityDesign.Entity.Id, newEntityId);
-
-                // Update entity with new id
-                entityDesign.Entity.Id = newEntityId;
-            }
-
-            // Rewrite entity references
-            // Should we nullify invalid references?
-            AssetPartsAnalysis.RemapPartsId(clonedHierarchy, entityMapping);
-
-            return clonedHierarchy;
-        }
-
+        /// <inheritdoc/>
         public override MergeResult Merge(Asset baseAsset, Asset newBase, List<AssetBase> newBaseParts, UFile debugLocation = null)
         {
             var entityMerge = new PrefabAssetMerge((EntityHierarchyAssetBase)baseAsset, this, (EntityHierarchyAssetBase)newBase, newBaseParts, debugLocation);
@@ -284,6 +160,22 @@ namespace SiliconStudio.Xenko.Assets.Entities
             return mapBaseToInstanceIds;
         }
 
+        /// <inheritdoc/>
+        protected override void ClearReferences(AssetCompositeHierarchyData<EntityDesign, Entity> clonedHierarchy)
+        {
+            // set to null reference outside of the sub-tree
+            var tempAsset = new PrefabAsset { Hierarchy = clonedHierarchy };
+            tempAsset.FixupReferences();
+        }
+
+        /// <inheritdoc/>
+        protected override void PostClonePart(Entity part)
+        {
+            // disconnect the cloned entity
+            part.Transform.Parent = null;
+        }
+
+        /// <inheritdoc/>
         protected override object ResolvePartReference(object partReference)
         {
             var entityComponentReference = partReference as EntityComponent;
