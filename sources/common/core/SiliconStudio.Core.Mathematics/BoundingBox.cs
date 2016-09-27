@@ -293,6 +293,19 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
+        /// Transform a bounding box.
+        /// </summary>
+        /// <param name="value">The original bounding box.</param>
+        /// <param name="transform">The transform to apply to the bounding box.</param>
+        /// <param name="result">The transformed bounding box.</param>
+        public static void Transform(ref BoundingBox value, ref Matrix transform, out BoundingBox result)
+        {
+            var boundingBox = new BoundingBoxExt(value);
+            boundingBox.Transform(transform);
+            result = (BoundingBox)boundingBox;
+        }
+
+        /// <summary>
         /// Constructs a <see cref="SiliconStudio.Core.Mathematics.BoundingBox"/> that is as large enough to contains the bounding box and the given point.
         /// </summary>
         /// <param name="value1">The box to merge.</param>

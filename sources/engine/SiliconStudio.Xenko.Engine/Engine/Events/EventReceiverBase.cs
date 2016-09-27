@@ -32,14 +32,15 @@ namespace SiliconStudio.Xenko.Engine.Events
         // ReSharper disable once StaticMemberInGenericType
         private static readonly DataflowBlockOptions CapacityOptions = new DataflowBlockOptions
         {
-            BoundedCapacity = 1
+            BoundedCapacity = 1,
+            TaskScheduler = EventTaskScheduler.Scheduler
         };
 
         private void Init(EventKeyBase<T> key, EventReceiverOptions options)
         {
             Key = key;
 
-            BufferBlock = ((options & EventReceiverOptions.Buffered) != 0) ? new BufferBlock<T>() : new BufferBlock<T>(CapacityOptions);
+            BufferBlock = ((options & EventReceiverOptions.Buffered) != 0) ? new BufferBlock<T>(new DataflowBlockOptions { TaskScheduler = EventTaskScheduler.Scheduler }) : new BufferBlock<T>(CapacityOptions);
 
             link = key.Connect(this);
 

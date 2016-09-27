@@ -144,7 +144,7 @@ namespace SiliconStudio.Xenko.Rendering
         {
             var scaling = node.Transform.Scale;
             TransformComponent.CreateMatrixTRS(ref node.Transform.Position, ref node.Transform.Rotation, ref scaling, out node.LocalMatrix);
-            node.IsScalingNegative = scaling.X*scaling.Y*scaling.Z < 0.0f;
+            node.IsScalingNegative = (scaling.X < 0.0f) ^ (scaling.Y < 0.0f) ^ (scaling.Z < 0.0f);
         }
     }
 }

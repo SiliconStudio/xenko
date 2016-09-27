@@ -20,9 +20,18 @@ namespace SiliconStudio.Xenko.Physics
         /// <summary>
         /// Jumps this instance.
         /// </summary>
+        public void Jump(Vector3 jumpDirection)
+        {
+            KinematicCharacter?.Jump(ref jumpDirection);
+        }
+
+        /// <summary>
+        /// Jumps this instance.
+        /// </summary>
         public void Jump()
         {
-            KinematicCharacter?.Jump();
+            var zeroV = Vector3.Zero; //passing zero will jump on Up Axis
+            KinematicCharacter?.Jump(ref zeroV);
         }
 
         /// <summary>
