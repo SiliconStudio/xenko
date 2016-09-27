@@ -19,9 +19,9 @@ using SiliconStudio.Xenko.Physics;
 
 namespace SiliconStudio.Xenko.Assets.Navigation
 {
-    class NavmeshAssetCompiler : AssetCompilerBase<NavmeshAsset>
+    class NavigationMeshAssetCompiler : AssetCompilerBase<NavigationMeshAsset>
     {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, NavmeshAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, NavigationMeshAsset asset, AssetCompilerResult result)
         {
             result.ShouldWaitForPreviousBuilds = true;
             result.BuildSteps = new AssetBuildStep(assetItem) { new NavmeshBuildCommand(assetItem.Location, assetItem, asset, context) };
@@ -89,11 +89,11 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             }
         }
 
-        private class NavmeshBuildCommand : AssetCommand<NavmeshAsset>
+        private class NavmeshBuildCommand : AssetCommand<NavigationMeshAsset>
         {
             private UFile assetUrl;
             private readonly AssetItem assetItem;
-            private NavmeshAsset asset;
+            private NavigationMeshAsset asset;
             private readonly Package package;
 
             // Combined scene data to create input meshData
@@ -115,7 +115,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             // TODO: Remove this
             private List<VertexPositionNormalTexture> debugVerts = new List<VertexPositionNormalTexture>();
 
-            public NavmeshBuildCommand(string url, AssetItem assetItem, NavmeshAsset value, AssetCompilerContext context)
+            public NavmeshBuildCommand(string url, AssetItem assetItem, NavigationMeshAsset value, AssetCompilerContext context)
                 : base(url, value)
             {
                 this.asset = value;
@@ -126,7 +126,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
             //protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
             //{
-            //    foreach (var compileTimeDependency in ((NavmeshAsset)assetItem.Asset).EnumerateCompileTimeDependencies(package.Session))
+            //    foreach (var compileTimeDependency in ((NavigationMeshAsset)assetItem.Asset).EnumerateCompileTimeDependencies(package.Session))
             //    {
             //        yield return new ObjectUrl(UrlType.ContentLink, compileTimeDependency.Location);
             //    }
@@ -176,7 +176,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 var sceneAsset = (SceneAsset)package.Session.FindAsset(sceneUrl)?.Asset;
                 
                 // Copy build settings so we can modify them
-                NavmeshBuildSettings buildSettings = asset.BuildSettings;
+                NavigationMeshBuildSettings buildSettings = asset.BuildSettings;
 
                 calculateBoundingBox = asset.AutoGenerateBoundingBox;
                 boundingBox = calculateBoundingBox ? BoundingBox.Empty : buildSettings.BoundingBox;
@@ -185,7 +185,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 List <Entity> sceneEntities = sceneAsset.Hierarchy.Parts.Select(x => x.Entity).ToList();
 
                 // The output object of the compilation
-                Navmesh generatedNavmesh = new Navmesh();
+                NavigationMesh generatedNavigationMesh = new NavigationMesh();
 
                 // Generate collision triangles for all static colliders
                 List<StaticColliderComponent> staticColliders = new List<StaticColliderComponent>();
@@ -330,13 +330,13 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 // TODO: Remove this
                 DumpObj("input", inputMeshData);
 
-                if(!generatedNavmesh.Build(buildSettings, meshVertices.ToArray(), meshIndices.ToArray()))
+                if(!generatedNavigationMesh.Build(buildSettings, meshVertices.ToArray(), meshIndices.ToArray()))
                     return Task.FromResult(ResultStatus.Failed);
-                assetManager.Save(assetUrl, generatedNavmesh);
+                assetManager.Save(assetUrl, generatedNavigationMesh);
 
                 // TODO: Remove this
-                DumpObj("output", generatedNavmesh.MeshVertices);
-                DumpBinary("navmesh", generatedNavmesh.NavmeshData);
+                DumpObj("output", generatedNavigationMesh.MeshVertices);
+                DumpBinary("navigationMesh", generatedNavigationMesh.NavmeshData);
 
                 return Task.FromResult(ResultStatus.Successful);
             }

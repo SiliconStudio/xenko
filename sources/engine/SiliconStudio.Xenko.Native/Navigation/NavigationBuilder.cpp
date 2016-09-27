@@ -112,6 +112,9 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 	if(numIndices == 0 || numVertices == 0)
 		return ret;
 
+	if (m_config.walkableClimb < 0)
+		return ret;
+
 	m_solid = rcAllocHeightfield();
 	if(!rcCreateHeightfield(m_context, *m_solid, m_config.width, m_config.height, m_config.bmin, m_config.bmax, m_config.cs, m_config.ch))
 	{

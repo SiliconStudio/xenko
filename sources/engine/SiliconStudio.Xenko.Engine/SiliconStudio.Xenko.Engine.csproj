@@ -137,7 +137,7 @@
     <Compile Include="Engine\ModelNodeTransformLink.cs" />
     <Compile Include="Engine\ModelViewHierarchyTransformOperation.cs" />
     <Compile Include="Engine\NavigationComponent.cs" />
-    <Compile Include="Engine\Navmesh.cs" />
+    <Compile Include="Engine\NavigationMesh.cs" />
     <Compile Include="Engine\Network\ClientRouterMessage.cs" />
     <Compile Include="Engine\Network\ExceptionMessage.cs" />
     <Compile Include="Engine\Network\SimpleSocketException.cs" />
@@ -161,6 +161,7 @@
     <Compile Include="Engine\Processors\ModelTransformProcessor.cs" />
     <Compile Include="Engine\Prefab.cs" />
     <Compile Include="Engine\PrefabBase.cs" />
+    <Compile Include="Engine\Processors\NavigationProcessor.cs" />
     <Compile Include="Engine\StartupScript.cs" />
     <Compile Include="Engine\TransformLink.cs" />
     <Compile Include="Engine\TransformOperation.cs" />
@@ -246,7 +247,6 @@
       <LastGenOutput>AmbientOcclusionRawAOShader.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Images\AmbientOcclusion\AmbientOcclusionBlurEffect.xkfx">
-
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>AmbientOcclusionBlurEffect1.cs</LastGenOutput>
     </None>

@@ -21,13 +21,13 @@ namespace SiliconStudio.Xenko.Engine
     public class NavigationComponent : EntityComponent
     {
         [DataMember(10)]
-        public Navmesh Navmesh
+        public NavigationMesh NavigationMesh
         {
-            get { return currentNavmesh; }
+            get { return currentNavigationMesh; }
             set { SetNavmesh(value); }
         }
 
-        private Navmesh currentNavmesh;
+        private NavigationMesh currentNavigationMesh;
         private IntPtr navigationQuery = IntPtr.Zero;
 
         ~NavigationComponent()
@@ -39,9 +39,9 @@ namespace SiliconStudio.Xenko.Engine
             navigationQuery = IntPtr.Zero;
         }
 
-        private void SetNavmesh(Navmesh value)
+        private void SetNavmesh(NavigationMesh value)
         {
-            currentNavmesh = value;
+            currentNavigationMesh = value;
             if(navigationQuery != IntPtr.Zero)
             {
                 Navigation.DestroyNavmesh(navigationQuery);
@@ -53,13 +53,13 @@ namespace SiliconStudio.Xenko.Engine
         {
             if(navigationQuery == IntPtr.Zero)
             {
-                if (currentNavmesh != null && currentNavmesh.NavmeshData != null)
+                if (currentNavigationMesh != null && currentNavigationMesh.NavmeshData != null)
                 {
-                    // Load navmesh from raw data to create navigation object
+                    // Load navigationMesh from raw data to create navigation object
                     bool loaded = false;
-                    GCHandle pinnedArray = GCHandle.Alloc(Navmesh.NavmeshData, GCHandleType.Pinned);
+                    GCHandle pinnedArray = GCHandle.Alloc(NavigationMesh.NavmeshData, GCHandleType.Pinned);
                     IntPtr pointer = pinnedArray.AddrOfPinnedObject();
-                    navigationQuery = Navigation.LoadNavmesh(pointer, currentNavmesh.NavmeshData.Length);
+                    navigationQuery = Navigation.LoadNavmesh(pointer, currentNavigationMesh.NavmeshData.Length);
                     pinnedArray.Free();
                 }
             }
@@ -71,12 +71,12 @@ namespace SiliconStudio.Xenko.Engine
             if (!EnsureNavmeshInitialized())
                 return null;
 
-            Navigation.NavmeshQuery query;
+            Navigation.NavigationQuery query;
             query.Source = Entity.Transform.WorldMatrix.TranslationVector;
             query.Target = end;
             unsafe
             {
-                Navigation.NavmeshQueryResult* queryResult = (Navigation.NavmeshQueryResult*)Navigation.Query(navigationQuery, query);
+                Navigation.NavigationQueryResult* queryResult = (Navigation.NavigationQueryResult*)Navigation.Query(navigationQuery, query);
                 if(!queryResult->PathFound)
                     return null;
 

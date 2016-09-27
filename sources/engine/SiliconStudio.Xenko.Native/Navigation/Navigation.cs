@@ -24,14 +24,14 @@ namespace SiliconStudio.Xenko.Native
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 4)]
-        public struct NavmeshQuery
+        public struct NavigationQuery
         {
             public Vector3 Source;
             public Vector3 Target;
         };
 
         [StructLayout(LayoutKind.Sequential, Pack = 4)]
-        public struct NavmeshQueryResult
+        public struct NavigationQueryResult
         {
             public bool PathFound;
             public IntPtr PathPoints;
@@ -75,6 +75,6 @@ namespace SiliconStudio.Xenko.Native
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnNavigationQuery", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr Query(IntPtr navmesh, NavmeshQuery query);
+        public static extern IntPtr Query(IntPtr navmesh, NavigationQuery query);
     }
 }

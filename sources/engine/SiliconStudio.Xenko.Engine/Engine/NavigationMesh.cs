@@ -19,42 +19,43 @@ using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Engine
 {
-    [DataContract]
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct AgentSettings
-    {
-        public float Height;
-        public float Radius;
-        public float MaxClimb;
-        [DataMemberRange(0.0f, 180.0f, 0.1f, 1.0f, AllowNaN = false)]
-        public float MaxSlope;
-    }
 
     [DataContract]
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    public struct NavmeshBuildSettings
+    public struct NavigationMeshBuildSettings
     {
+        [DataContract]
+        [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        public struct AgentSettings
+        {
+            public float Height;
+            public float Radius;
+            public float MaxClimb;
+            [DataMemberRange(0.0f, 180.0f, 0.1f, 1.0f, AllowNaN = false)]
+            public float MaxSlope;
+        }
+
         // Bounding box for the generated navigation mesh
         public BoundingBox BoundingBox;
-        // Settings for agent used with this navmesh
-        public AgentSettings AgentSettings;
+        // Settings for agent used with this navigationMesh
+        public AgentSettings NavigationMeshAgentSettings;
         // Grid settings
         public float CellHeight;
         public float CellSize;
     };
 
-    [DataContract("Navmesh")]
-    [DataSerializerGlobal(typeof(ReferenceSerializer<Navmesh>), Profile = "Content")]
+    [DataContract("NavigationMesh")]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<NavigationMesh>), Profile = "Content")]
     [DataSerializer(typeof(NavmeshSerializer))]
-    [ContentSerializer(typeof(DataContentSerializer<Navmesh>))]
-    public class Navmesh
+    [ContentSerializer(typeof(DataContentSerializer<NavigationMesh>))]
+    public class NavigationMesh
     {
         [DataMemberCustomSerializer]
         public Vector3[] MeshVertices;
         [DataMemberCustomSerializer]
         public byte[] NavmeshData;
 
-        public bool Build(NavmeshBuildSettings settings, Vector3[] inputVertices, int[] inputIndices)
+        public bool Build(NavigationMeshBuildSettings settings, Vector3[] inputVertices, int[] inputIndices)
         {
             // Clear data
             NavmeshData = null;
@@ -64,10 +65,10 @@ namespace SiliconStudio.Xenko.Engine
             IntPtr nav = Navigation.CreateBuilder();
 
             // Set settings, passed by pointer, since the type is defined here
-            IntPtr settingsIntPtr = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(NavmeshBuildSettings)));
+            IntPtr settingsIntPtr = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(NavigationMeshBuildSettings)));
             Marshal.StructureToPtr(settings, settingsIntPtr, false);
             Navigation.SetSettings(nav, settingsIntPtr);
-            Marshal.DestroyStructure(settingsIntPtr, typeof(NavmeshBuildSettings));
+            Marshal.DestroyStructure(settingsIntPtr, typeof(NavigationMeshBuildSettings));
             Marshal.FreeCoTaskMem(settingsIntPtr);
 
             // Generate mesh
@@ -100,7 +101,7 @@ namespace SiliconStudio.Xenko.Engine
                 MeshVertices = outputVerts.ToArray();
             }
             
-            // Copy the generated navmesh data
+            // Copy the generated navigationMesh data
             NavmeshData = new byte[data.NavmeshDataLength];
             Marshal.Copy(data.NavmeshData, NavmeshData, 0, data.NavmeshDataLength);
 
@@ -109,19 +110,18 @@ namespace SiliconStudio.Xenko.Engine
         }
     }
 
-    internal class NavmeshSerializer : DataSerializer<Navmesh>, IDataSerializerInitializer
+    internal class NavmeshSerializer : DataSerializer<NavigationMesh>, IDataSerializerInitializer
     {
         private DataSerializer<string> stringSerializer;
         private DataSerializer<Vector3> pointSerializer;
-
-        /// <inheritdoc/>
+        
         public void Initialize(SerializerSelector serializerSelector)
         {
             stringSerializer = MemberSerializer<string>.Create(serializerSelector);
             pointSerializer = MemberSerializer<Vector3>.Create(serializerSelector);
         }
         
-        public override void Serialize(ref Navmesh obj, ArchiveMode mode, SerializationStream stream)
+        public override void Serialize(ref NavigationMesh obj, ArchiveMode mode, SerializationStream stream)
         {
             if(mode == ArchiveMode.Serialize)
             {
