@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
         public static void DumpObj(string name, Vector3[] meshData)
         {
             string filePath = @"C:\Users\g-gj-waals\Desktop\" + name + ".obj";
-            using (FileStream file = File.OpenWrite(filePath))
+            using (FileStream file = File.Open(filePath, FileMode.Create, FileAccess.Write))
             using (StreamWriter sw = new StreamWriter(file))
             {
                 for (int i = 0; i < meshData.Length; i++)
@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
         public static void DumpObj(string name, GeometricMeshData<VertexPositionNormalTexture> meshData)
         {
             string filePath = @"C:\Users\g-gj-waals\Desktop\" + name + ".obj";
-            using(FileStream file = File.OpenWrite(filePath))
+            using(FileStream file = File.Open(filePath, FileMode.Create, FileAccess.Write))
             using(StreamWriter sw = new StreamWriter(file))
             {
                 for(int i = 0; i < meshData.Vertices.Length; i++)
@@ -190,7 +190,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                     Matrix entityWorldMatrix = entityTransform.WorldMatrix;
 
                     StaticColliderComponent collider = entity.Get<StaticColliderComponent>();
-                    if(collider != null && collider.IsBlocking)
+                    if(collider != null && collider.IsBlocking && collider.Enabled)
                     {
                         // TODO: Add compound shapes and types other than box as well
                         collider.ComposeShape();

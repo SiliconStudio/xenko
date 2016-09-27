@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -12,10 +13,13 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Audio;
+using SiliconStudio.Xenko.Extensions;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.GeometricPrimitives;
 using SiliconStudio.Xenko.Native;
 using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Materials;
+using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 
 namespace SiliconStudio.Xenko.Engine
 {
@@ -54,6 +58,66 @@ namespace SiliconStudio.Xenko.Engine
         public Vector3[] MeshVertices;
         [DataMemberCustomSerializer]
         public byte[] NavmeshData;
+
+        public ModelComponent CreateDebugModelComponent(GraphicsDevice device)
+        {
+            Material navmeshMaterial = Material.New(device, new MaterialDescriptor
+            {
+                Attributes =
+                {
+                    Diffuse = new MaterialDiffuseMapFeature(new ComputeColor()),
+                    DiffuseModel = new MaterialDiffuseLambertModelFeature(),
+                    Emissive = new MaterialEmissiveMapFeature(new ComputeColor()),
+                    Transparency = new MaterialTransparencyBlendFeature(),
+                }
+            });
+            
+            Color baseColor = Color.AdjustSaturation(Color.Blue, 0.77f).WithAlpha(128);
+            Color4 deviceSpaceColor = new Color4(baseColor).ToColorSpace(device.ColorSpace);
+            
+            // set the color to the material
+            navmeshMaterial.Parameters.Set(MaterialKeys.DiffuseValue, deviceSpaceColor);
+            navmeshMaterial.Parameters.Set(MaterialKeys.EmissiveIntensity, 1.0f);
+            navmeshMaterial.Parameters.Set(MaterialKeys.EmissiveValue, deviceSpaceColor);
+            navmeshMaterial.IsLightDependent = false;
+            
+            navmeshMaterial.HasTransparency = true;
+            Entity entity = new Entity("Navigation Debug Entity");
+            
+            if(MeshVertices != null)
+            {
+                // Calculate mesh bounding box from navigation mesh points
+                BoundingBox bb = BoundingBox.FromPoints(MeshVertices);
+
+                List<VertexPositionNormalTexture> vertexList = new List<VertexPositionNormalTexture>();
+                List<int> indexList = new List<int>();
+                for (int i = 0; i < MeshVertices.Length; i++)
+                {
+                    VertexPositionNormalTexture vert = new VertexPositionNormalTexture();
+                    vert.Position = MeshVertices[i];
+                    vert.Normal = Vector3.UnitY;
+                    vert.TextureCoordinate = new Vector2(0.5f, 0.5f);
+                    vertexList.Add(vert);
+                    indexList.Add(i);
+                }
+
+                var meshData = new GeometricMeshData<VertexPositionNormalTexture>(vertexList.ToArray(), indexList.ToArray(), true);
+                GeometricPrimitive primitive = new GeometricPrimitive(device, meshData);
+                MeshDraw draw = primitive.ToMeshDraw();
+                Mesh mesh = new Mesh
+                {
+                    Draw = draw
+                };
+                mesh.BoundingBox = bb;
+                
+                // Add a new model component
+                return new ModelComponent
+                {
+                    Model = new Model { navmeshMaterial, mesh }
+                };
+            }
+            return null;
+        }
 
         public bool Build(NavigationMeshBuildSettings settings, Vector3[] inputVertices, int[] inputIndices)
         {
