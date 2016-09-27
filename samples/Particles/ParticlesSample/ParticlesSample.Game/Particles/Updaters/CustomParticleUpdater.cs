@@ -30,7 +30,10 @@ namespace ParticlesSample.Particles.Updaters
     {
         // By making this updater a post-updater we can ensure it will be called for both newly spawned and old particles (1 frame or older)
         [DataMemberIgnore]
-        public override bool IsPostUpdater => true;
+        public override bool IsPostUpdater
+        {
+            get { return true; }
+        }
 
         /// <summary>
         /// We use a simple matechematical function to calculate the rectangle's dimensions based on the particle's lifetime

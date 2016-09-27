@@ -13,15 +13,16 @@ using SiliconStudio.Xenko.Shaders.Compiler;
 namespace SiliconStudio.Xenko.Assets.Effect
 {
     /// <summary>
-    /// Entry point to compile an <see cref="EffectCompositorAsset"/>
+    /// Entry point to compile an <see cref="EffectShaderAsset"/>
     /// </summary>
-    public class EffectShaderAssetCompiler : AssetCompilerBase<EffectShaderAsset>
+    public class EffectShaderAssetCompiler : AssetCompilerBase
     {
         public static readonly PropertyKey<ConcurrentDictionary<string, string>> ShaderLocationsKey = new PropertyKey<ConcurrentDictionary<string, string>>("ShaderPathsKey", typeof(EffectShaderAssetCompiler));
 
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, EffectShaderAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var url = EffectCompilerBase.DefaultSourceShaderFolder + "/" + Path.GetFileName(assetItem.FullPath);
+            var asset = (EffectShaderAsset)assetItem.Asset;
 
             var originalSourcePath = asset.AbsoluteSourceLocation;
             result.BuildSteps = new AssetBuildStep(assetItem) { new ImportStreamCommand { SourcePath = originalSourcePath, Location = url, SaveSourcePath = true } };

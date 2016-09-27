@@ -25,7 +25,6 @@ namespace SiliconStudio.Xenko.Assets.UI
                 var uiLibrary = new Engine.UILibrary();
                 foreach (var kv in Parameters.PublicUIElements)
                 {
-
                     if (!Parameters.Hierarchy.RootPartIds.Contains(kv.Key))
                     {
                         // We might want to allow that in the future.

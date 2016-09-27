@@ -11,11 +11,12 @@ using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Assets.RenderFrames
 {
-    public class RenderFrameAssetCompiler : AssetCompilerBase<RenderFrameAsset>
+    public class RenderFrameAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, RenderFrameAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
-            result.BuildSteps = new ListBuildStep { new RenderFrameCompileCommand(assetItem.Location, asset) };
+            var asset = (RenderFrameAsset)assetItem.Asset;
+            result.BuildSteps = new ListBuildStep { new RenderFrameCompileCommand(targetUrlInStorage, asset) };
         }
 
         private class RenderFrameCompileCommand : AssetCommand<RenderFrameAsset>
