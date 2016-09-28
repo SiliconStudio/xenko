@@ -92,18 +92,24 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 file.Write(data, 0, data.Length);
             }
         }
-        
+
+        public static void GenerateTangentBitangent(Vector3 normal, out Vector3 tangent, out Vector3 bitangent)
+        {
+            if (normal.Y == 0.0f)
+                tangent = new Vector3(normal.Z, normal.Y, -normal.X);
+            else
+                tangent = new Vector3(-normal.Y, normal.X, normal.Z);
+            tangent.Normalize();
+            bitangent = Vector3.Cross(normal, tangent);
+            tangent = Vector3.Cross(bitangent, normal);
+        }
+
         public static void BuildPlanePoints(ref Plane plane, float size, out Vector3[] points, out int[] inds)
         {
             Vector3 up = plane.Normal;
             Vector3 right;
-            if (up.Y == 0.0f)
-                right = new Vector3(up.Z, up.Y, -up.X);
-            else
-                right = new Vector3(-up.Y, up.X, up.Z);
-            right.Normalize();
-            Vector3 forward = Vector3.Cross(up, right);
-            right = Vector3.Cross(forward, up);
+            Vector3 forward;
+            GenerateTangentBitangent(up, out right, out forward);
 
             points = new Vector3[4];
             points[0] = -forward * size - right * size + up * plane.D;
@@ -346,10 +352,17 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                     int[] planeInds;
                     BuildPlanePoints(ref plane, maxDiagonal, out planePoints, out planeInds);
 
+                    // TODO: Cache this and use it for the BuildPlanePoints as well
+                    Vector3 tangent, bitangent;
+                    GenerateTangentBitangent(plane.Normal, out tangent, out bitangent);
+                    // Calculate plane offset so that the plane always covers the whole range of the bounding box
+                    Vector3 planeOffset = Vector3.Dot(boundingBox.Center, tangent) * tangent;
+                    planeOffset += Vector3.Dot(boundingBox.Center, bitangent) * bitangent;
+
                     VertexPositionNormalTexture[] vertices = new VertexPositionNormalTexture[planePoints.Length];
                     for(int i = 0; i < planePoints.Length; i++)
                     {
-                        vertices[i] = new VertexPositionNormalTexture(planePoints[i] + boundingBox.Center, Vector3.UnitY, Vector2.Zero);
+                        vertices[i] = new VertexPositionNormalTexture(planePoints[i] + planeOffset, Vector3.UnitY, Vector2.Zero);
                     }
 
                     GeometricMeshData<VertexPositionNormalTexture> meshData = new GeometricMeshData<VertexPositionNormalTexture>(vertices, planeInds, false);
