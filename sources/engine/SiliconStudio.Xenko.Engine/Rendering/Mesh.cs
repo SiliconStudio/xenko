@@ -66,7 +66,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Gets or sets the bounding box encompassing this <see cref="Mesh"/>.
         /// </summary>
-        public BoundingBox BoundingBox { get; set; }
+        public BoundingBox BoundingBox;
 
         /// <summary>
         /// Gets the bounding sphere
