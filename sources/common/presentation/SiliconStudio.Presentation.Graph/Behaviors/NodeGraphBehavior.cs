@@ -52,6 +52,11 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         public static readonly DependencyProperty EdgesProperty = DependencyProperty.Register("Edges", typeof(IEnumerable), typeof(NodeGraphBehavior), new PropertyMetadata(null, OnEdgesChanged));
         #endregion
 
+        #region Events
+        public event NotifyCollectionChangedEventHandler VerticesCollectionChanged;
+        public event NotifyCollectionChangedEventHandler EdgesCollectionChanged;
+        #endregion
+
         #region Static Dependency Property Event Handler
         /// <summary>
         /// 
@@ -187,6 +192,8 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
+            VerticesCollectionChanged?.Invoke(sender, e);
         }
 
         /// <summary>
@@ -213,6 +220,8 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
+            EdgesCollectionChanged?.Invoke(sender, e);
         }
         #endregion
 

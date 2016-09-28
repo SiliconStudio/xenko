@@ -126,6 +126,9 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         private VertexControl last_vertex_control_;
         private Point last_vertex_position_;
         private Point last_pan_position_;
+
+        private NodeGraphBehavior graphBehavior;
+
         #endregion  
                 
         #region Attach & Detach Methods
@@ -153,6 +156,14 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
             //
             graph_area_ = AssociatedObject;     
 
+            // Find the graph behavior
+            graphBehavior = Interaction.GetBehaviors(graph_area_).OfType<NodeGraphBehavior>().FirstOrDefault();
+            if (graphBehavior != null)
+            {
+                graphBehavior.VerticesCollectionChanged += GraphBehavior_VerticesCollectionChanged;
+                graphBehavior.EdgesCollectionChanged += GraphBehavior_EdgesCollectionChanged;
+            }
+
             // Travel up the visual tree and get the zoom control
             // If the zoom control doesn't exist, then we can't use this behavior
             // TODO: Done on logical tree for now because visual tree is not valid during behavior OnAttachAndLoaded()
@@ -177,6 +188,13 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         /// </summary>
         private void Unregister()
         {
+            if (graphBehavior != null)
+            {
+                graphBehavior.VerticesCollectionChanged -= GraphBehavior_VerticesCollectionChanged;
+                graphBehavior.EdgesCollectionChanged -= GraphBehavior_EdgesCollectionChanged;
+                graphBehavior = null;
+            }
+
             // Remove all the event handlers so this instance can be reclaimed by the GC.
             graph_area_.VertexSelected -= OnVertexSelected;
             graph_area_.VertexMouseUp -= OnVertexMouseLeftButtonUp;
@@ -186,10 +204,67 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
             zoom_control_.MouseLeftButtonDown -= OnMouseLeftButtonDown;
             selected_vertices_.CollectionChanged -= OnSelectedVerticesChanged;
             selected_edges_.CollectionChanged -= OnSelectedEdgesChanged;
+
+            zoom_control_ = null;
+            graph_area_ = null;
         }
         #endregion
 
         #region Collection Changed Event Handlers
+        private void GraphBehavior_VerticesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            // Remove everything deleted from selection
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                case NotifyCollectionChangedAction.Replace:
+                    foreach (var oldItem in e.OldItems)
+                        SelectedVertices.Remove((VertexBase)oldItem);
+                    break;
+                case NotifyCollectionChangedAction.Move:
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    var vertices = (IList)sender;
+                    for (int index = 0; index < SelectedVertices.Count; index++)
+                    {
+                        if (!vertices.Contains(SelectedVertices[index]))
+                            SelectedVertices.RemoveAt(index--);
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        private void GraphBehavior_EdgesCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            // Remove everything deleted from selection
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Add:
+                    break;
+                case NotifyCollectionChangedAction.Remove:
+                case NotifyCollectionChangedAction.Replace:
+                    foreach (var oldItem in e.OldItems)
+                        SelectedEdges.Remove(oldItem);
+                    break;
+                case NotifyCollectionChangedAction.Move:
+                    break;
+                case NotifyCollectionChangedAction.Reset:
+                    var edges = (IList)sender;
+                    for (int index = 0; index < SelectedVertices.Count; index++)
+                    {
+                        if (!edges.Contains(SelectedEdges[index]))
+                            SelectedEdges.RemoveAt(index--);
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -199,11 +274,14 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         {
             //SanityCheck();
 
-            if (updating_vertex_collection_) { return; }
+            if (updating_vertex_collection_)
+                return;
 
             // Change from dependency property collection -> internal collection
             if (AssociatedObject != null)
             {
+                updating_vertex_collection_ = true;
+
                 VertexControl[] vertexControls = graph_area_.GetAllVertexControls();
 
                 // TODO Many different cases for this. Might to return to this in the future.
@@ -213,11 +291,11 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
                 }
 
                 if (e.NewItems != null)
-                {                    
+                {
                     foreach (var addedItem in e.NewItems.Cast<VertexBase>().Where(x => !selected_vertices_.Contains(x)))
-                    {                        
+                    {
                         var control = vertexControls.FirstOrDefault(x => x.Vertex == addedItem);
-                        SelectVertex(control, false);                        
+                        SelectVertex(control, false);
                     }
                 }
 
@@ -229,6 +307,8 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
                         UnselectVertex(control);
                     }
                 }
+
+                updating_vertex_collection_ = false;
             }
         }
 
@@ -239,6 +319,9 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         /// <param name="e"></param>
         private void OnSelectedVerticesChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            if (updating_vertex_collection_)
+                return;
+
             // Change from internal collection -> dependency property collection 
             if (SelectedVertexItems != null)
             {
@@ -251,7 +334,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
                 }
 
                 if (e.OldItems != null)
-                {                    
+                {
                     foreach (var removedItem in e.OldItems.Cast<object>())
                     {
                         SelectedVertexItems.Remove(removedItem);
@@ -263,7 +346,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
                     // TODO For now, change to observablelist later
                     //SelectedVertexItems.AddRange(e.NewItems.Cast<object>().Where(x => !SelectedVertexItems.Contains(x)));
                     foreach (var item in e.NewItems)
-                    {                        
+                    {
                         if (!SelectedVertexItems.Contains(item))
                         {
                             SelectedVertexItems.Add(item);
@@ -273,7 +356,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
                 updating_vertex_collection_ = false;
             }
         }
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -283,11 +366,14 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         {
             //SanityCheck();
 
-            if (updating_edge_collection_) { return; }
+            if (updating_edge_collection_)
+                return;
 
             // Change from dependency property collection -> internal collection
             if (AssociatedObject != null)
             {
+                updating_edge_collection_ = true;
+
                 EdgeControl[] edgeControls = graph_area_.GetAllEdgeControls();
 
                 // TODO Many different cases for this. Might to return to this in the future.
@@ -313,6 +399,8 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
                         UnselectEdge(control);
                     }
                 }
+
+                updating_edge_collection_ = false;
             }
         }
 
@@ -323,6 +411,9 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         /// <param name="e"></param>
         private void OnSelectedEdgesChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
+            if (updating_edge_collection_)
+                return;
+
             // Change from internal collection -> dependency property collection 
             if (SelectedEdgeItems != null)
             {
@@ -335,7 +426,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
                 }
 
                 if (e.OldItems != null)
-                {                   
+                {
                     foreach (var removedItem in e.OldItems.Cast<object>())
                     {
                         SelectedEdgeItems.Remove(removedItem);
@@ -357,9 +448,11 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
                 updating_edge_collection_ = false;
             }
         }
+
         #endregion
 
         #region Selection Changed Event Handlers
+
         /// <summary>
         /// 
         /// </summary>
@@ -369,8 +462,8 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         {
             // Toggle and append selection occurs in area selection only. No need to worry about it here
             var control = args.VertexControl;
-            var vertex = args.VertexControl.Vertex as VertexBase;            
-                        
+            var vertex = args.VertexControl.Vertex as VertexBase;
+
             if (args.MouseArgs.LeftButton == MouseButtonState.Pressed)
             {
                 // Is this a new selection and/or a toggle selection?
@@ -435,8 +528,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
 
             // Clicking an empty area -> Clear selection
             // Dragging (panning) does not clear selection -> Do nothing
-            if ((last_pan_position_.X != zoom_control_.TranslateX) ||
-                (last_pan_position_.Y != zoom_control_.TranslateY))
+            if ((last_pan_position_.X != zoom_control_.TranslateX) || (last_pan_position_.Y != zoom_control_.TranslateY))
             {
                 return;
             }
@@ -445,7 +537,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
             HitTestResult result = VisualTreeHelper.HitTest(graph_area_, position);
             if (result == null)
             {
-                if (!append && !toggle) 
+                if (!append && !toggle)
                 {
                     // Clear everything!
                     ClearSelection();
@@ -471,15 +563,15 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
                 // If they are the same then you move to just selection
 
                 var position = zoom_control_.TranslatePoint(args.MouseArgs.GetPosition(zoom_control_), graph_area_);
-                
+
                 if (last_vertex_position_ == position)
-                //if (last_vertex_position_ == last_vertex_control_.GetPosition())
+                    //if (last_vertex_position_ == last_vertex_control_.GetPosition())
                 {
                     ClearSelection();
-                    SelectVertex(last_vertex_control_, false);                    
+                    SelectVertex(last_vertex_control_, false);
                 }
 
-                last_vertex_control_ = null;                
+                last_vertex_control_ = null;
             }
         }
 
@@ -491,15 +583,15 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         protected void OnVertexAreaSelected(object sender, AreaSelectedEventArgs args)
         {
             bool append = Keyboard.IsKeyDown(Key.LeftShift) || Keyboard.IsKeyDown(Key.RightShift);
-            bool toggle = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);            
-                    
+            bool toggle = Keyboard.IsKeyDown(Key.LeftCtrl) || Keyboard.IsKeyDown(Key.RightCtrl);
+
             var area = args.Rectangle;
             var point = new Point(args.Rectangle.X, args.Rectangle.Y);
 
             // Probably will never hit this
-            if (!append && !toggle) 
-            { 
-                ClearVertexSelection(); 
+            if (!append && !toggle)
+            {
+                ClearVertexSelection();
             }
 
             foreach (VertexControl control in graph_area_.GetAllVertexControls())
@@ -527,9 +619,11 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
                 }
             }
         }
+
         #endregion
 
         #region Selection Methods
+
         /// <summary>
         /// 
         /// </summary>
@@ -537,7 +631,10 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         /// <param name="toggle"></param>
         public virtual void SelectVertex(VertexControl control, bool toggle)
         {
-            if (control == null) { return; }
+            if (control == null)
+            {
+                return;
+            }
 
             VertexBase vertex = (VertexBase)control.Vertex;
             if (selected_vertices_.Contains(vertex))
@@ -551,7 +648,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
                     vertex_controls_.Remove(vertex);
                 }
             }
-            else 
+            else
             {
                 control.SetValue(Selector.IsSelectedProperty, true);
                 DragBehaviour.SetIsTagged(control, true);
@@ -567,14 +664,17 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         /// <param name="control"></param>
         public virtual void UnselectVertex(VertexControl control)
         {
-            if (control == null) { return; }
+            if (control == null)
+            {
+                return;
+            }
 
             VertexBase vertex = (VertexBase)control.Vertex;
             control.SetValue(Selector.IsSelectedProperty, false);
             DragBehaviour.SetIsTagged(control, false);
 
             selected_vertices_.Remove(vertex);
-            vertex_controls_.Remove(vertex);            
+            vertex_controls_.Remove(vertex);
         }
 
         /// <summary>
@@ -584,7 +684,10 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         /// <param name="toggle"></param>
         public virtual void SelectEdge(EdgeControl control, bool toggle)
         {
-            if (control == null) { return; }
+            if (control == null)
+            {
+                return;
+            }
 
             object edge = control.Edge;
             if (selected_edges_.Contains(edge))
@@ -603,7 +706,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
 
                 selected_edges_.Add(edge);
                 edge_controls_.Add(edge, control);
-            }            
+            }
         }
 
         /// <summary>
@@ -612,7 +715,10 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         /// <param name="control"></param>
         public virtual void UnselectEdge(EdgeControl control)
         {
-            if (control == null) { return; }
+            if (control == null)
+            {
+                return;
+            }
 
             control.SetValue(Selector.IsSelectedProperty, false);
             selected_edges_.Remove(control.Edge);
@@ -634,7 +740,7 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         /// 
         /// </summary>
         public virtual void ClearVertexSelection()
-        {                      
+        {
             if (selected_vertices_.Count > 0)
             {
                 foreach (KeyValuePair<VertexBase, VertexControl> entry in vertex_controls_)
@@ -662,16 +768,35 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
 
                 selected_edges_.Clear();
                 edge_controls_.Clear();
-            }            
-        }        
+            }
+        }
+
         #endregion
 
         #region Properties
-        public IList SelectedVertexItems { get { return (IList)GetValue(SelectedVertexItemsProperty); } set { SetValue(SelectedVertexItemsProperty, value); } }
-        public IList SelectedEdgeItems { get { return (IList)GetValue(SelectedEdgeItemsProperty); } set { SetValue(SelectedEdgeItemsProperty, value); } }
 
-        public ObservableCollection<VertexBase> SelectedVertices { get { return selected_vertices_; } }
-        public ObservableCollection<object> SelectedEdges { get { return selected_edges_; } }
+        public IList SelectedVertexItems
+        {
+            get { return (IList)GetValue(SelectedVertexItemsProperty); }
+            set { SetValue(SelectedVertexItemsProperty, value); }
+        }
+
+        public IList SelectedEdgeItems
+        {
+            get { return (IList)GetValue(SelectedEdgeItemsProperty); }
+            set { SetValue(SelectedEdgeItemsProperty, value); }
+        }
+
+        public ObservableCollection<VertexBase> SelectedVertices
+        {
+            get { return selected_vertices_; }
+        }
+
+        public ObservableCollection<object> SelectedEdges
+        {
+            get { return selected_edges_; }
+        }
+
         #endregion
     }
 }
