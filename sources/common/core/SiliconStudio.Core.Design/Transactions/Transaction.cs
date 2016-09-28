@@ -11,15 +11,17 @@ namespace SiliconStudio.Core.Transactions
         private readonly List<Operation> operations = new List<Operation>();
         private readonly TransactionStack transactionStack;
         private SynchronizationContext synchronizationContext;
-        private bool isCompleted;
+        private int referenceCount = 1;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Transaction"/> class.
         /// </summary>
         /// <param name="transactionStack">The <see cref="TransactionStack"/> associated to this transaction.</param>
-        public Transaction(TransactionStack transactionStack)
+        /// <param name="flags">The flags to apply to this transaction.</param>.
+        public Transaction(TransactionStack transactionStack, TransactionFlags flags)
         {
             this.transactionStack = transactionStack;
+            this.Flags = flags;
             synchronizationContext = SynchronizationContext.Current;
         }
 
@@ -29,15 +31,15 @@ namespace SiliconStudio.Core.Transactions
         /// <inheritdoc/>
         public IReadOnlyList<Operation> Operations => operations;
 
+        /// <inheritdoc/>
+        public TransactionFlags Flags { get; }
+
         /// <summary>
         /// Disposes the transaction by completing it and registering it to the transaction stack.
         /// </summary>
         /// <seealso cref="Complete"/>
         public void Dispose()
         {
-            if (isCompleted)
-                throw new TransactionException("This transaction has already been completed.");
-
             Complete();
         }
 
@@ -48,20 +50,32 @@ namespace SiliconStudio.Core.Transactions
         }
 
         /// <inheritdoc/>
+        public void AddReference()
+        {
+            referenceCount++;
+        }
+
+        /// <inheritdoc/>
         public void Complete()
         {
-            if (isCompleted)
+            if (referenceCount == 0)
                 throw new TransactionException("This transaction has already been completed.");
 
-            // Disabling synchronization context check: when we await for dispatcher task we always resume in a different SC so it makes it difficult to enforce this rule.
-            //if (synchronizationContext != SynchronizationContext.Current)
-            //    throw new TransactionException("This transaction is being completed in a different synchronization context.");
+            // Transaction might be kept alive by others, only process it if last reference
+            // Note: this KeepAlive() and Complete() are not thread-safe, no need to use interlocked
+            if (referenceCount == 1)
+            {
+                // Disabling synchronization context check: when we await for dispatcher task we always resume in a different SC so it makes it difficult to enforce this rule.
+                //if (synchronizationContext != SynchronizationContext.Current)
+                //    throw new TransactionException("This transaction is being completed in a different synchronization context.");
 
-            TryMergeOperations();
-            transactionStack.CompleteTransaction(this);
-            // Don't keep reference to synchronization context after completion
-            synchronizationContext = null;
-            isCompleted = true;
+                TryMergeOperations();
+                transactionStack.CompleteTransaction(this);
+                // Don't keep reference to synchronization context after completion
+                synchronizationContext = null;
+            }
+
+            --referenceCount;
         }
 
         /// <summary>
