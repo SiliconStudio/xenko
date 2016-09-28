@@ -106,6 +106,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 var staticObjectNode = renderObject.StaticObjectNode;
 
                 var renderMesh = (RenderMesh)renderObject;
+                bool resetPipelineState = false;
 
                 var material = renderMesh.Material;
                 var materialInfo = renderMesh.MaterialInfo;
@@ -151,14 +152,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                         tessellationStates[staticObjectNode] = tessellationState;
 
                         // Reset pipeline states
-                        for (int i = 0; i < effectSlotCount; ++i)
-                        {
-                            var staticEffectObjectNode = staticObjectNode * effectSlotCount + i;
-                            var renderEffect = renderEffects[staticEffectObjectNode];
-
-                            if (renderEffect != null)
-                                renderEffect.PipelineState = null;
-                        }
+                        resetPipelineState = true;
                     }
 
                     renderMesh.ActiveMeshDraw = tessellationState.MeshDraw;
@@ -169,13 +163,29 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                     Utilities.Dispose(ref tessellationState.GeneratedIndicesAEN);
                 }
 
+                // Rebuild rasterizer state if culling mode changed
+                // TODO GRAPHICS REFACTOR: Negative scaling belongs into TransformationRenderFeature
+                if (materialInfo != null && (materialInfo.CullMode != material.CullMode || renderMesh.IsScalingNegative != renderMesh.IsPreviousScalingNegative))
+                {
+                    materialInfo.CullMode = material.CullMode;
+                    renderMesh.IsPreviousScalingNegative = renderMesh.IsScalingNegative;
+                    resetPipelineState = true;
+                }
+
                 for (int i = 0; i < effectSlotCount; ++i)
                 {
                     var staticEffectObjectNode = staticObjectNode * effectSlotCount + i;
                     var renderEffect = renderEffects[staticEffectObjectNode];
 
+                    if (renderEffect == null)
+                        continue;
+
+                    // If any pipeline state changed, rebuild it for all effect slots
+                    if (resetPipelineState)
+                        renderEffect.PipelineState = null;
+
                     // Skip effects not used during this frame
-                    if (renderEffect == null || !renderEffect.IsUsedDuringThisFrame(RenderSystem))
+                    if (!renderEffect.IsUsedDuringThisFrame(RenderSystem))
                         continue;
 
                     if (materialInfo == null || materialInfo.Material != material)
@@ -190,14 +200,6 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                             }
                         }
                         renderMesh.MaterialInfo = materialInfo;
-                    }
-
-                    // TODO GRAPHICS REFACTOR: Negative scaling belongs into TransformationRenderFeature
-                    if (materialInfo.CullMode != material.CullMode || renderMesh.IsScalingNegative != renderMesh.IsPreviousScalingNegative)
-                    {
-                        materialInfo.CullMode = material.CullMode;
-                        renderMesh.IsPreviousScalingNegative = renderMesh.IsScalingNegative;
-                        renderEffect.PipelineState = null;
                     }
 
                     if (materialInfo.MaterialParameters != material.Parameters || materialInfo.PermutationCounter != material.Parameters.PermutationCounter)
