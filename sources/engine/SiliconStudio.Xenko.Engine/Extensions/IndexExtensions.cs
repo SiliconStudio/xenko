@@ -442,10 +442,26 @@ namespace SiliconStudio.Xenko.Extensions
         /// Reverses the winding order of an index buffer. Assumes it is stored in <see cref="PrimitiveType.TriangleList"/> format.
         /// Works on both 32 and 16 bit indices.
         /// </summary>
-        /// <param name="vertexBufferBinding">The vertex buffer binding.</param>
-        /// <exception cref="System.NotImplementedException"></exception>
-        public unsafe static bool ReverseWindingOrder(this MeshDraw meshData)
+        public static bool ReverseWindingOrder(this MeshDraw meshData)
         {
+            byte[] newIndexBuffer;
+            if(!GetReversedWindingOrder(meshData, out newIndexBuffer))
+                return false;
+
+            meshData.IndexBuffer = new IndexBufferBinding(new BufferData(BufferFlags.IndexBuffer, newIndexBuffer).ToSerializableVersion(), meshData.IndexBuffer.Is32Bit, meshData.IndexBuffer.Count);
+            return true;
+        }
+
+        /// <summary>
+        /// Reverses the winding order of an index buffer. Assumes it is stored in <see cref="PrimitiveType.TriangleList"/> format.
+        /// Works on both 32 and 16 bit indices.
+        /// </summary>
+        /// <param name="outBytes">Output of the operation, the indices matching the reversed winding order</param>
+        public static unsafe bool GetReversedWindingOrder(this MeshDraw meshData, out byte[] outBytes)
+        {
+            // Initially set output to null
+            outBytes = null;
+
             // For now, require a MeshData with only one vertex buffer and no index buffer
             if (meshData.VertexBuffers.Length != 1 || meshData.IndexBuffer == null)
                 return false;
@@ -456,9 +472,9 @@ namespace SiliconStudio.Xenko.Extensions
 
             // Create new index buffer
             var indexCount = meshData.IndexBuffer.Count;
-            var indexBufferData = new byte[indexCount * (meshData.IndexBuffer.Is32Bit ? sizeof(uint) : sizeof(ushort))];
+            outBytes = new byte[indexCount * (meshData.IndexBuffer.Is32Bit ? sizeof(uint) : sizeof(ushort))];
             fixed (byte* oldIndexBufferDataStart = &meshData.IndexBuffer.Buffer.GetDataSafe()[0])
-            fixed (byte* indexBufferDataStart = &indexBufferData[0])
+            fixed (byte* indexBufferDataStart = &outBytes[0])
             {
                 if (meshData.IndexBuffer.Is32Bit)
                 {
@@ -490,8 +506,6 @@ namespace SiliconStudio.Xenko.Extensions
                         oldIndexBufferDataPtr += 3;
                     }
                 }
-
-                meshData.IndexBuffer = new IndexBufferBinding(new BufferData(BufferFlags.IndexBuffer, indexBufferData).ToSerializableVersion(), meshData.IndexBuffer.Is32Bit, indexCount);
             }
 
             return true;

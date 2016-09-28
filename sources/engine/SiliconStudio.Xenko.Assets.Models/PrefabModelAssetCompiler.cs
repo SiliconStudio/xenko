@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
@@ -69,7 +70,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                 ComputeCompileTimeDependenciesHash(package, writer, AssetParameters);
             }
 
-            private static void ProcessMaterial(ContentManager manager, ICollection<EntityChunk> chunks, MaterialInstance material, Model prefabModel)
+            private static unsafe void ProcessMaterial(ContentManager manager, ICollection<EntityChunk> chunks, MaterialInstance material, Model prefabModel)
             {
                 //we need to futher group by VertexDeclaration
                 var meshes = new Dictionary<VertexDeclaration, MeshData>();
@@ -109,12 +110,16 @@ namespace SiliconStudio.Xenko.Assets.Models
                             //transform the vertexes according to the entity
                             var vertexDataCopy = vertexData.ToArray();
                             chunk.Entity.Transform.UpdateWorldMatrix(); //make sure matrix is computed
-                            modelMesh.Draw.VertexBuffers[0].TransformBuffer(vertexDataCopy, ref chunk.Entity.Transform.WorldMatrix);
-                            
+                            var worldMatrix = chunk.Entity.Transform.WorldMatrix;
+                            var up = Vector3.Cross(worldMatrix.Right, worldMatrix.Forward);
+                            bool isScalingNegative = Vector3.Dot(worldMatrix.Up, up) < 0.0f;
+
+                            modelMesh.Draw.VertexBuffers[0].TransformBuffer(vertexDataCopy, ref worldMatrix);
+
                             //add to the big single array
                             var vertexes = vertexDataCopy
                                 .Skip(modelMesh.Draw.VertexBuffers[0].Offset)
-                                .Take(modelMesh.Draw.VertexBuffers[0].Count*modelMesh.Draw.VertexBuffers[0].Stride)
+                                .Take(modelMesh.Draw.VertexBuffers[0].Count * modelMesh.Draw.VertexBuffers[0].Stride)
                                 .ToArray();
 
                             mesh.VertexData.AddRange(vertexes);
@@ -137,39 +142,55 @@ namespace SiliconStudio.Xenko.Assets.Models
                             }
 
                             var indexSize = modelMesh.Draw.IndexBuffer.Is32Bit ? sizeof(uint) : sizeof(ushort);
-
-                            var indices = indexData
-                                .Skip(modelMesh.Draw.IndexBuffer.Offset)
+                            
+                            byte[] indices;
+                            if(isScalingNegative)
+                            {
+                                // Get reversed winding order
+                                modelMesh.Draw.GetReversedWindingOrder(out indices);
+                                indices = indices.Skip(modelMesh.Draw.IndexBuffer.Offset)
                                 .Take(modelMesh.Draw.IndexBuffer.Count * indexSize)
                                 .ToArray();
-
-                            //todo this code is not optimal, use unsafe
-
-                            //must convert to 32bits
-                            if (indexSize == sizeof(ushort))
+                            }
+                            else
                             {
-                                var uintIndex = new List<byte>();
-                                for (var i = 0; i < indices.Length; i += sizeof(ushort))
-                                {
-                                    var index = BitConverter.ToUInt16(indices, i);
-                                    var bi = BitConverter.GetBytes((uint)index);
-                                    uintIndex.Add(bi[0]);
-                                    uintIndex.Add(bi[1]);
-                                    uintIndex.Add(bi[2]);
-                                    uintIndex.Add(bi[3]);
-                                }
-                                indices = uintIndex.ToArray();
+                                // Get indices normally
+                                indices = indexData
+                                    .Skip(modelMesh.Draw.IndexBuffer.Offset)
+                                    .Take(modelMesh.Draw.IndexBuffer.Count * indexSize)
+                                    .ToArray();
                             }
 
-                            //need to offset the indices
-                            for (var i = 0; i < indices.Length; i += sizeof(uint))
+                            // Convert indices to 32 bits
+                            if(indexSize == sizeof(ushort))
                             {
-                                var index = BitConverter.ToUInt32(indices, i) + mesh.IndexOffset;
-                                var bi = BitConverter.GetBytes(index);
-                                indices[i + 0] = bi[0];
-                                indices[i + 1] = bi[1];
-                                indices[i + 2] = bi[2];
-                                indices[i + 3] = bi[3];
+                                var uintIndices = new byte[indices.Length*2];
+                                fixed (byte* psrc = indices)
+                                fixed (byte* pdst = uintIndices)
+                                {
+                                    var src = (ushort*)psrc;
+                                    var dst = (uint*)pdst;
+
+                                    int numIndices = indices.Length / sizeof(ushort);
+                                    for (var i = 0; i < numIndices; i++)
+                                    {
+                                        dst[i] = (uint)src[i] + (uint)mesh.IndexOffset;
+                                    }
+                                }
+                                indices = uintIndices;
+                            }
+
+                            // Offset indices by mesh.IndexOffset
+                            fixed (byte* pdst = indices)
+                            {
+                                var dst = (uint*)pdst;
+
+                                int numIndices = indices.Length / sizeof(uint);
+                                for (var i = 0; i < numIndices; i++)
+                                {
+                                    // Offset indices
+                                    dst[i] += (uint)mesh.IndexOffset;
+                                }
                             }
 
                             mesh.IndexOffset += modelMesh.Draw.VertexBuffers[0].Count;
