@@ -160,7 +160,11 @@ namespace SiliconStudio.Assets
             return newAsset;
         }
 
-        public virtual void FixupReferences()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="clearMissingReferences"></param>
+        public virtual void FixupReferences(bool clearMissingReferences = true)
         {
             // default implementation does nothing
         }

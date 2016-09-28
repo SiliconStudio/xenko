@@ -43,7 +43,7 @@ namespace SiliconStudio.Assets
         public abstract bool ContainsPart(Guid id);
 
         /// <inheritdoc />
-        public override void FixupReferences()
+        public override void FixupReferences(bool clearMissingReferences = true)
         {
             var visitor = new AssetCompositePartReferenceCollector();
             visitor.VisitAsset(this);
@@ -59,7 +59,10 @@ namespace SiliconStudio.Assets
                 var realPart = ResolvePartReference(reference.AssetPart);
                 if (realPart != reference.AssetPart)
                 {
-                    reference.Path.Apply(this, MemberPathAction.ValueSet, realPart);
+                    if (realPart != null || clearMissingReferences)
+                    {
+                        reference.Path.Apply(this, MemberPathAction.ValueSet, realPart);
+                    }
                 }
             }
         }
