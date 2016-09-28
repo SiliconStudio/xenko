@@ -10,8 +10,10 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 {
     public class MethodCallBlock : ExecutionBlock, IExpressionBlock
     {
+        [RegenerateTitle]
         public string MethodName { get; set; }
 
+        [RegenerateTitle]
         public bool IsMemberCall { get; set; }
 
         [DataMemberIgnore]
@@ -91,7 +93,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             context.AddStatement(statement);
         }
 
-        public override void RegenerateSlots(IList<Slot> newSlots)
+        public override void GenerateSlots(IList<Slot> newSlots, SlotGeneratorContext context)
         {
             newSlots.Add(InputExecutionSlotDefinition);
             newSlots.Add(OutputExecutionSlotDefinition);

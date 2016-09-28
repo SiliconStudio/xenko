@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
@@ -55,7 +56,12 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         [DataMember(10000), Display(Browsable = false)]
         public TrackingCollection<Slot> Slots { get; } = new TrackingCollection<Slot>();
 
-        public abstract void RegenerateSlots(IList<Slot> newSlots);
+        /// <summary>
+        /// Generates a list of slot. This doesn't change any state in the <see cref="Block"/>.
+        /// </summary>
+        /// <param name="newSlots">List to which generated slots will be added.</param>
+        /// <param name="context">The context that might be used to access additional information.</param>
+        public abstract void GenerateSlots(IList<Slot> newSlots, SlotGeneratorContext context);
 
         protected Slot FindSlot(SlotDirection direction, SlotKind kind, string name)
         {
@@ -142,10 +148,10 @@ namespace SiliconStudio.Xenko.Assets.Scripts
     {
         ExpressionSyntax IExpressionBlock.GenerateExpression(VisualScriptCompilerContext context, Slot slot)
         {
-            return GenerateExpression();
+            return GenerateExpression(context);
         }
 
-        public abstract ExpressionSyntax GenerateExpression();
+        public abstract ExpressionSyntax GenerateExpression(VisualScriptCompilerContext context);
     }
 
     public class FunctionStartBlock : ExecutionBlock
@@ -154,11 +160,12 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         public override string Title => $"{FunctionName} Start";
 
+        [RegenerateTitle]
         public string FunctionName { get; set; }
 
         public override Slot OutputExecution => FindSlot(SlotDirection.Output, SlotKind.Execution, SlotFlags.AutoflowExecution);
 
-        public override void RegenerateSlots(IList<Slot> newSlots)
+        public override void GenerateSlots(IList<Slot> newSlots, SlotGeneratorContext context)
         {
             newSlots.Add(new Slot(SlotDirection.Output, SlotKind.Execution, StartSlotName, SlotFlags.AutoflowExecution));
         }

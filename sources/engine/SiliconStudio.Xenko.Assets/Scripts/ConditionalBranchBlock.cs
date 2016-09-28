@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using SiliconStudio.Core;
 using static Microsoft.CodeAnalysis.CSharp.SyntaxFactory;
@@ -22,7 +23,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         public override string Title => "Condition";
 
-        public override void RegenerateSlots(IList<Slot> newSlots)
+        public override void GenerateSlots(IList<Slot> newSlots, SlotGeneratorContext context)
         {
             newSlots.Add(InputExecutionSlotDefinition);
             newSlots.Add(ConditionSlotDefinition);

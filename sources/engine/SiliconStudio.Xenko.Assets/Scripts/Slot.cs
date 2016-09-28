@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             Id = Guid.NewGuid();
         }
 
-        public Slot(SlotDirection direction, SlotKind kind, string name = null, SlotFlags flags = SlotFlags.None, object value = null)
+        public Slot(SlotDirection direction, SlotKind kind, string name = null, SlotFlags flags = SlotFlags.None, object value = null) : this()
         {
             Direction = direction;
             Kind = kind;

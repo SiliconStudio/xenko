@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using SiliconStudio.Core;
@@ -9,6 +10,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 {
     public class VariableSet : ExecutionBlock
     {
+        [RegenerateTitle]
         public Variable Variable { get; set; }
 
         public override string Title => Variable != null ? $"Set {Variable.Name}" : "Set";
@@ -31,7 +33,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             context.AddStatement(ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, IdentifierName(Variable.Name), newValue)));
         }
 
-        public override void RegenerateSlots(IList<Slot> newSlots)
+        public override void GenerateSlots(IList<Slot> newSlots, SlotGeneratorContext context)
         {
             newSlots.Add(InputExecutionSlotDefinition);
             newSlots.Add(OutputExecutionSlotDefinition);
