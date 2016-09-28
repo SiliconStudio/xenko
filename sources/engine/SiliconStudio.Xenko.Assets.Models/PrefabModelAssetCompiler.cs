@@ -174,7 +174,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                                     int numIndices = indices.Length / sizeof(ushort);
                                     for (var i = 0; i < numIndices; i++)
                                     {
-                                        dst[i] = (uint)src[i] + (uint)mesh.IndexOffset;
+                                        dst[i] = src[i];
                                     }
                                 }
                                 indices = uintIndices;
