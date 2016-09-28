@@ -12,6 +12,8 @@ namespace SiliconStudio.Assets.Analysis
         /// <summary>
         /// Remaps the parts identifier.
         /// </summary>
+        /// <typeparam name="TAssetPartDesign"></typeparam>
+        /// <typeparam name="TAssetPart">The underlying type of part.</typeparam>
         /// <param name="hierarchy">The hierarchy of parts.</param>
         /// <param name="idRemapping">The identifier remapping.</param>
         public static void RemapPartsId<TAssetPartDesign, TAssetPart>(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> hierarchy, IDictionary<Guid, Guid> idRemapping)
@@ -35,6 +37,38 @@ namespace SiliconStudio.Assets.Analysis
 
             // Sort again the hierarchy (since the Ids changed)
             hierarchy.Parts.Sort();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <typeparam name="TAssetPartDesign"></typeparam>
+        /// <typeparam name="TAssetPart">The underlying type of part.</typeparam>
+        /// <param name="sourceHierarchy"></param>
+        /// <param name="idRemapping">The identifier remapping.</param>
+        /// <param name="clonedHierarchy"></param>
+        // FIXME: find a better name for this method and fill the summary
+        public static void FixPartGroups<TAssetPartDesign, TAssetPart>(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> sourceHierarchy, Dictionary<Guid, Guid> idRemapping, AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> clonedHierarchy)
+            where TAssetPartDesign : IAssetPartDesign<TAssetPart>
+            where TAssetPart : IIdentifiable
+        {
+            var baseInstanceMapping = new Dictionary<Guid, Guid>();
+            foreach (var ids in idRemapping)
+            {
+                var source = sourceHierarchy.Parts[ids.Key];
+                var clone = clonedHierarchy.Parts[ids.Value];
+                if (!source.BasePartInstanceId.HasValue)
+                    continue;
+
+                Guid newInstanceId;
+                if (!baseInstanceMapping.TryGetValue(source.BasePartInstanceId.Value, out newInstanceId))
+                {
+                    newInstanceId = Guid.NewGuid();
+                    baseInstanceMapping.Add(source.BasePartInstanceId.Value, newInstanceId);
+                }
+                clone.BasePartInstanceId = newInstanceId;
+                clone.BaseId = source.BaseId;
+            }
         }
     }
 }
