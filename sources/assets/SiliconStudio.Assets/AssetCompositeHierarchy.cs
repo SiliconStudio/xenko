@@ -176,11 +176,6 @@ namespace SiliconStudio.Assets
             {
                 ClearReferences(clonedHierarchy);
             }
-            // temporary nullify the hierarchy to avoid to clone it
-            var sourceHierarchy = Hierarchy;
-            Hierarchy = null;
-            // revert the source hierarchy
-            Hierarchy = sourceHierarchy;
             // Generate part mapping
             idRemapping = new Dictionary<Guid, Guid>();
             foreach (var partDesign in clonedHierarchy.Parts)
