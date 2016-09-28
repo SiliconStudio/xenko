@@ -91,6 +91,11 @@ namespace SiliconStudio.Xenko.Assets.Materials
         /// <inheritdoc/>
         public IEnumerable<IReference> EnumerateCompileTimeDependencies(PackageSession session)
         {
+            var gameSettings = session.CurrentPackage?.Assets.Find(GameSettingsAsset.GameSettingsLocation);
+            if (gameSettings != null)
+            {
+                yield return new AssetReference<GameSettingsAsset>(gameSettings.Id, gameSettings.Location);
+            }
             foreach (var materialReference in FindMaterialReferences())
             {
                 yield return materialReference;
