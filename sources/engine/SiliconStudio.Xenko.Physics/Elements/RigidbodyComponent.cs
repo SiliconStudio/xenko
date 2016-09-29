@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Physics
 {
@@ -375,11 +376,12 @@ namespace SiliconStudio.Xenko.Physics
         {
             base.OnUpdateDraw();
 
-            if (type == RigidBodyTypes.Dynamic && !IsKinematic && BoneIndex != -1)
+            if (type == RigidBodyTypes.Dynamic && BoneIndex != -1)
             {
                 //write to ModelViewHierarchy
                 var model = Data.ModelComponent;
-                model.Skeleton.NodeTransformations[BoneIndex].WorldMatrix = BoneWorldMatrixOut;
+                model.Skeleton.NodeTransformations[BoneIndex].Flags = !IsKinematic ? ModelNodeFlags.EnableRender | ModelNodeFlags.OverrideWorldMatrix : ModelNodeFlags.Default;
+                if(!IsKinematic) model.Skeleton.NodeTransformations[BoneIndex].WorldMatrix = BoneWorldMatrixOut;
             }
         }
     

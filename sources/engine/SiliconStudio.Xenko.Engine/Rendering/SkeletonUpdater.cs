@@ -126,7 +126,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             node.RenderingEnabledRecursive = renderingEnabledRecursive;
 
-            if (renderingEnabledRecursive)
+            if (renderingEnabledRecursive && (node.Flags & ModelNodeFlags.OverrideWorldMatrix) != ModelNodeFlags.OverrideWorldMatrix)
             {
                 // Compute WorldMatrix
                 if (parentIndex != -1)
