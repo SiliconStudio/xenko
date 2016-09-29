@@ -36,6 +36,18 @@ namespace SiliconStudio.Xenko.Physics
         public Model Model;
 
         /// <userdoc>
+        /// The offset with the real graphic mesh.
+        /// </userdoc>
+        [DataMember(31)]
+        public Vector3 LocalOffset;
+
+        /// <userdoc>
+        /// The local rotation of the collider shape.
+        /// </userdoc>
+        [DataMember(32)]
+        public Quaternion LocalRotation = Quaternion.Identity;
+
+        /// <userdoc>
         /// If this is checked the following parameters are totally ignored, as only a simple convex hull of the whole model will be generated.
         /// </userdoc>
         [DataMember(40)]
@@ -101,6 +113,8 @@ namespace SiliconStudio.Xenko.Physics
         {
             var other = obj as ConvexHullColliderShapeDesc;
             if (other == null) return -1;
+
+            if (other.LocalOffset != LocalOffset || other.LocalRotation != LocalRotation) return 1;
 
             if (other.Model == Model &&
                 other.SimpleWrap == SimpleWrap &&
