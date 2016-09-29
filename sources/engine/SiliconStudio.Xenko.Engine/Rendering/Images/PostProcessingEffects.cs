@@ -258,7 +258,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     {
                         Scaler.SetInput(input);
                         Scaler.SetOutput(output);
-                        ((RendererBase)Scaler).Draw(context);
+                        Scaler.Draw(context);
                     }
                     return;
                 }
@@ -280,7 +280,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     var inputDepthTexture = GetInput(1); // Depth
                     ambientOcclusion.SetColorDepthInput(currentInput, inputDepthTexture);
                     ambientOcclusion.SetOutput(aoOutput);
-                    ((RendererBase)ambientOcclusion).Draw(context);
+                    ambientOcclusion.Draw(context);
                     currentInput = aoOutput;
                 }
 
@@ -291,7 +291,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     var inputDepthTexture = GetInput(1); // Depth
                     depthOfField.SetColorDepthInput(currentInput, inputDepthTexture);
                     depthOfField.SetOutput(dofOutput);
-                    ((RendererBase)depthOfField).Draw(context);
+                    depthOfField.Draw(context);
                     currentInput = dofOutput;
                 }
 
@@ -311,45 +311,45 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
                     luminanceEffect.SetInput(currentInput);
                     luminanceEffect.SetOutput(luminanceTexture);
-                    ((RendererBase)luminanceEffect).Draw(context);
+                    luminanceEffect.Draw(context);
 
                     // Set this parameter that will be used by the tone mapping
                     colorTransformsGroup.Parameters.Set(LuminanceEffect.LuminanceResult, new LuminanceResult(luminanceEffect.AverageLuminance, luminanceTexture));
                 }
 
-                // Bright filter pass
-                Texture brightTexture = null;
-                if (bloom.Enabled  || lightStreak.Enabled || lensFlare.Enabled)
+                if (brightFilter.Enabled && (bloom.Enabled || lightStreak.Enabled || lensFlare.Enabled))
                 {
+                    // Bright filter pass
+                    Texture brightTexture = null;
                     brightTexture = NewScopedRenderTarget2D(currentInput.Width, currentInput.Height, currentInput.Format, 1);
 
                     brightFilter.SetInput(currentInput);
                     brightFilter.SetOutput(brightTexture);
-                    ((RendererBase)brightFilter).Draw(context);
-                }
+                    brightFilter.Draw(context);
 
-                // Bloom pass
-                if (bloom.Enabled)
-                {
-                    bloom.SetInput(brightTexture);
-                    bloom.SetOutput(currentInput);
-                    ((RendererBase)bloom).Draw(context);
-                }
+                    // Bloom pass
+                    if (bloom.Enabled)
+                    {
+                        bloom.SetInput(brightTexture);
+                        bloom.SetOutput(currentInput);
+                        bloom.Draw(context);
+                    }
 
-                // Light streak pass
-                if (lightStreak.Enabled)
-                {
-                    lightStreak.SetInput(brightTexture);
-                    lightStreak.SetOutput(currentInput);
-                    ((RendererBase)lightStreak).Draw(context);
-                }
+                    // Light streak pass
+                    if (lightStreak.Enabled)
+                    {
+                        lightStreak.SetInput(brightTexture);
+                        lightStreak.SetOutput(currentInput);
+                        lightStreak.Draw(context);
+                    }
 
-                // Lens flare pass
-                if (lensFlare.Enabled)
-                {
-                    lensFlare.SetInput(brightTexture);
-                    lensFlare.SetOutput(currentInput);
-                    ((RendererBase)lensFlare).Draw(context);
+                    // Lens flare pass
+                    if (lensFlare.Enabled)
+                    {
+                        lensFlare.SetInput(brightTexture);
+                        lensFlare.SetOutput(currentInput);
+                        lensFlare.Draw(context);
+                    }
                 }
 
                 var outputForLastEffectBeforeAntiAliasing = output;
@@ -382,7 +382,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 var lastEffect = colorTransformsGroup.Enabled ? (ImageEffect)colorTransformsGroup: Scaler;
                 lastEffect.SetInput(currentInput);
                 lastEffect.SetOutput(outputForLastEffectBeforeAntiAliasing);
-                ((RendererBase)lastEffect).Draw(context);
+                lastEffect.Draw(context);
 
                 if (ssaa != null && ssaa.Enabled)
                 {

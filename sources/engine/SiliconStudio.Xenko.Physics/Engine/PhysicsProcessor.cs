@@ -40,6 +40,7 @@ namespace SiliconStudio.Xenko.Physics
         public PhysicsProcessor()
             : base(typeof(TransformComponent))
         {
+            Order = 0xFFFF;
         }
 
         public Simulation Simulation { get; private set; }
