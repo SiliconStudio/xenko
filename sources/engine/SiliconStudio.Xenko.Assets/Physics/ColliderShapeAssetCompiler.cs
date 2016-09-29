@@ -89,7 +89,9 @@ namespace SiliconStudio.Xenko.Assets.Physics
                     
                     if (modelAsset.Skeleton == null)
                     {
-                        nodeTransforms.Add(Matrix.Identity);
+                        Matrix baseMatrix;
+                        TransformComponent.CreateMatrixTRS(ref convexHullDesc.LocalOffset, ref convexHullDesc.LocalRotation, ref convexHullDesc.Scaling, out baseMatrix);
+                        nodeTransforms.Add(baseMatrix);
                     }
                     else
                     {
@@ -113,7 +115,16 @@ namespace SiliconStudio.Xenko.Assets.Physics
                                 worldMatrix = localMatrix;
                             }
 
-                            nodeTransforms.Add(worldMatrix);
+                            if (i == 0)
+                            {
+                                Matrix baseMatrix;
+                                TransformComponent.CreateMatrixTRS(ref convexHullDesc.LocalOffset, ref convexHullDesc.LocalRotation, ref convexHullDesc.Scaling, out baseMatrix);
+                                nodeTransforms.Add(baseMatrix*worldMatrix);
+                            }
+                            else
+                            {
+                                nodeTransforms.Add(worldMatrix); 
+                            }                           
                         }
                     }
 
