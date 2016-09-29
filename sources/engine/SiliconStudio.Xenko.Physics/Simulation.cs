@@ -639,15 +639,14 @@ namespace SiliconStudio.Xenko.Physics
         /// <param name="from">From.</param>
         /// <param name="to">To.</param>
         /// <returns></returns>
-        public List<HitResult> RaycastPenetrating(Vector3 from, Vector3 to)
+        public FastList<HitResult> RaycastPenetrating(Vector3 from, Vector3 to)
         {
-            var result = new List<HitResult>();
-
             using (var rcb = new BulletSharp.AllHitsRayResultCallback(from, to))
             {
                 collisionWorld.RayTest(ref from, ref to, rcb);
 
                 var count = rcb.CollisionObjects.Count;
+                var result = new FastList<HitResult>(count);
 
                 for (var i = 0; i < count; i++)
                 {
@@ -661,9 +660,46 @@ namespace SiliconStudio.Xenko.Physics
 
                     result.Add(singleResult);
                 }
-            }
 
-            return result;
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Raycasts penetrating any shape the ray encounters.
+        /// Filtering by CollisionGroup
+        /// </summary>
+        /// <param name="from">From.</param>
+        /// <param name="to">To.</param>
+        /// <param name="groupFilters">The PhysicsCompoenet CollisionGroup(s) that we intend to filter in.</param>
+        /// <returns></returns>
+        public FastList<HitResult> RaycastPenetrating(Vector3 from, Vector3 to, IReadOnlyCollection<CollisionFilterGroups> groupFilters)
+        {
+            using (var rcb = new BulletSharp.AllHitsRayResultCallback(from, to))
+            {
+                collisionWorld.RayTest(ref from, ref to, rcb);
+
+                var count = rcb.CollisionObjects.Count;
+                var result = new FastList<HitResult>(count);
+
+                for (var i = 0; i < count; i++)
+                {
+                    var component = (PhysicsComponent)rcb.CollisionObjects[i].UserObject;
+                    if(!groupFilters.Contains(component.CollisionGroup)) continue;
+
+                    var singleResult = new HitResult
+                    {
+                        Succeeded = true,
+                        Collider = (PhysicsComponent)rcb.CollisionObjects[i].UserObject,
+                        Normal = rcb.HitNormalWorld[i],
+                        Point = rcb.HitPointWorld[i]
+                    };
+
+                    result.Add(singleResult);
+                }
+
+                return result;
+            }
         }
 
         /// <summary>

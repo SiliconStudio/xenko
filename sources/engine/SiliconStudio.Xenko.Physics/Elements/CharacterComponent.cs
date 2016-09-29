@@ -105,13 +105,13 @@ namespace SiliconStudio.Xenko.Physics
         private float jumpSpeed = 5.0f;
 
         /// <summary>
-        /// Gets or sets if this character element max slope
+        /// Gets or sets if this character jump speed
         /// </summary>
         /// <value>
         /// true, false
         /// </value>
         /// <userdoc>
-        /// The max slope this character can climb
+        /// The speed of the jump
         /// </userdoc>
         [DataMember(90)]
         public float JumpSpeed
