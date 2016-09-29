@@ -130,7 +130,7 @@ extern "C" {
 	ovrMatrix4f_ProjectionPtr ovrMatrix4f_ProjectionFunc = NULL;
 	ovr_GetAudioDeviceOutGuidStrPtr ovr_GetAudioDeviceOutGuidStrFunc = NULL;
 
-	DLL_EXPORT_API bool xnOvrStartup()
+	DLL_EXPORT_API npBool xnOvrStartup()
 	{
 		if(!__libOvr)
 		{
@@ -305,7 +305,7 @@ extern "C" {
 		ovr_DestroyFunc(session->Session);
 	}
 
-	DLL_EXPORT_API bool xnOvrCreateTexturesDx(xnOvrSession* session, void* dxDevice, int* outTextureCount, float pixelPerDisplayPixel, int mirrorBufferWidth, int mirrorBufferHeight)
+	DLL_EXPORT_API npBool xnOvrCreateTexturesDx(xnOvrSession* session, void* dxDevice, int* outTextureCount, float pixelPerDisplayPixel, int mirrorBufferWidth, int mirrorBufferHeight)
 	{
 		session->HmdDesc = ovr_GetHmdDescFunc(session->Session);
 		ovrSizei sizel = ovr_GetFovTextureSizeFunc(session->Session, ovrEye_Left, session->HmdDesc.DefaultEyeFov[0], pixelPerDisplayPixel);
@@ -378,7 +378,7 @@ extern "C" {
 		ovrLayerQuad Layer;
 	};
 
-	DLL_EXPORT_API xnOvrQuadLayer* xnOvrCreateQuadLayerTexturesDx(xnOvrSession* session, void* dxDevice, int* outTextureCount, int width, int height, bool headLocked)
+	DLL_EXPORT_API xnOvrQuadLayer* xnOvrCreateQuadLayerTexturesDx(xnOvrSession* session, void* dxDevice, int* outTextureCount, int width, int height)
 	{
 		auto layer = new xnOvrQuadLayer;
 
@@ -405,7 +405,7 @@ extern "C" {
 		*outTextureCount = count;
 
 		layer->Layer.Header.Type = ovrLayerType_Quad;
-		layer->Layer.Header.Flags = headLocked ? ovrLayerFlag_HeadLocked | ovrLayerFlag_HighQuality : ovrLayerFlag_HighQuality;
+		layer->Layer.Header.Flags = ovrLayerFlag_HighQuality;
 		layer->Layer.ColorTexture = layer->SwapChain;
 		layer->Layer.Viewport.Pos.x = 0;
 		layer->Layer.Viewport.Pos.y = 0;
@@ -424,11 +424,12 @@ extern "C" {
 		return layer;
 	}
 
-	DLL_EXPORT_API void xnOvrSetQuadLayerParams(xnOvrQuadLayer* layer, float* position, float* orientation, float* size)
+	DLL_EXPORT_API void xnOvrSetQuadLayerParams(xnOvrQuadLayer* layer, float* position, float* orientation, float* size, npBool headLocked)
 	{
 		memcpy(&layer->Layer.QuadPoseCenter.Orientation, orientation, sizeof(float) * 4);
 		memcpy(&layer->Layer.QuadPoseCenter.Position, position, sizeof(float) * 3);
 		memcpy(&layer->Layer.QuadSize, size, sizeof(float) * 2);
+		layer->Layer.Header.Flags = headLocked ? ovrLayerFlag_HeadLocked | ovrLayerFlag_HighQuality : ovrLayerFlag_HighQuality;
 	}
 
 	DLL_EXPORT_API void* xnOvrGetTextureAtIndexDx(xnOvrSession* session, GUID textureGuid, int index)
@@ -515,7 +516,7 @@ extern "C" {
 		memcpy(properties->RotRight, &session->Layer.RenderPose[1].Orientation, sizeof(float) * 4);
 	}
 
-	DLL_EXPORT_API bool xnOvrCommitFrame(xnOvrSession* session, xnOvrQuadLayer** extraLayers, int numberOfExtraLayers)
+	DLL_EXPORT_API npBool xnOvrCommitFrame(xnOvrSession* session, xnOvrQuadLayer** extraLayers, int numberOfExtraLayers)
 	{
 		ovrLayerHeader* layers[1 + numberOfExtraLayers];
 		//add the default layer first
@@ -601,7 +602,7 @@ extern "C" {
 		unsigned char  Data4[8];
 	} GUID;
 
-	DLL_EXPORT_API bool xnOvrStartup()
+	DLL_EXPORT_API npBool xnOvrStartup()
 	{
 		return true;
 	}
@@ -626,7 +627,7 @@ extern "C" {
 		
 	}
 
-	DLL_EXPORT_API bool xnOvrCreateTexturesDx(void* session, void* dxDevice, int* outTextureCount)
+	DLL_EXPORT_API npBool xnOvrCreateTexturesDx(void* session, void* dxDevice, int* outTextureCount)
 	{
 		return true;
 	}
@@ -655,7 +656,7 @@ extern "C" {
 		
 	}
 
-	DLL_EXPORT_API bool xnOvrCommitFrame(void* session)
+	DLL_EXPORT_API npBool xnOvrCommitFrame(void* session)
 	{
 		return true;
 	}
@@ -684,7 +685,7 @@ extern "C" {
 	{
 	}
 
-	DLL_EXPORT_API void* xnOvrCreateQuadLayerTexturesDx(void* session, void* dxDevice, int* outTextureCount, int width, int height, bool headLocked)
+	DLL_EXPORT_API void* xnOvrCreateQuadLayerTexturesDx(void* session, void* dxDevice, int* outTextureCount, int width, int height, npBool headLocked)
 	{
 		return NULL;
 	}

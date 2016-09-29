@@ -38,7 +38,7 @@ namespace SiliconStudio
         /// <summary>
         /// The .NET current assembly version as text, not including pre-release (alpha, beta...) information.
         /// </summary>
-        public const string CurrentAssemblyAsText = "1.8.1";
+        public const string CurrentAssemblyAsText = "1.8.2";
 
         /// <summary>
         /// The Store current version as text, including pre-release (alpha, beta...) information

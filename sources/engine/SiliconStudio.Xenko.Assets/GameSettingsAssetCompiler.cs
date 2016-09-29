@@ -17,14 +17,15 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets
 {
-    public class GameSettingsAssetCompiler : AssetCompilerBase<GameSettingsAsset>
+    public class GameSettingsAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, GameSettingsAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
+            var asset = (GameSettingsAsset)assetItem.Asset;
             // TODO: We should ignore game settings stored in dependencies
             result.BuildSteps = new AssetBuildStep(assetItem)
             {
-                new GameSettingsCompileCommand(assetItem.Location, assetItem.Package, context.Platform, context.GetCompilationMode(), asset),
+                new GameSettingsCompileCommand(targetUrlInStorage, assetItem.Package, context.Platform, context.GetCompilationMode(), asset),
             };
         }
 

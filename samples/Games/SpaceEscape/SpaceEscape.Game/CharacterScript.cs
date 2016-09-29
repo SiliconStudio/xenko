@@ -98,7 +98,7 @@ namespace SpaceEscape
         /// Script Function which awaits each frame and update the CharacterScript.
         /// </summary>
         /// <returns></returns>
-        public async override Task Execute()
+        public override async Task Execute()
         {
             Start();
 

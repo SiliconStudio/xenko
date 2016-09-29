@@ -17,8 +17,8 @@ namespace MaterialSample
         private float pitch = -(float)(Math.PI * 0.25f);
         private Vector3 position = new Vector3(10, 10, 10);
 
-        private float moveSpeed;
-        private float rotationSpeed;
+        private readonly float moveSpeed;
+        private readonly float rotationSpeed;
 
         private CameraComponent CameraComponent { get { return Entity.Get<CameraComponent>(); } }
 

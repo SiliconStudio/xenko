@@ -23,18 +23,19 @@ using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Assets.Physics
 {
-    internal class ColliderShapeAssetCompiler : AssetCompilerBase<ColliderShapeAsset>
+    internal class ColliderShapeAssetCompiler : AssetCompilerBase
     {
         static ColliderShapeAssetCompiler()
         {
             NativeLibrary.PreloadLibrary("VHACD.dll");
         }
 
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, ColliderShapeAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
+            var asset = (ColliderShapeAsset)assetItem.Asset;
             result.BuildSteps = new AssetBuildStep(assetItem)
             {
-                new ColliderShapeCombineCommand(assetItem.Location, asset, assetItem.Package),
+                new ColliderShapeCombineCommand(targetUrlInStorage, asset, assetItem.Package),
             };
 
             result.ShouldWaitForPreviousBuilds = asset.ColliderShapes.Any(shape => shape != null && shape.GetType() == typeof(ConvexHullColliderShapeDesc));

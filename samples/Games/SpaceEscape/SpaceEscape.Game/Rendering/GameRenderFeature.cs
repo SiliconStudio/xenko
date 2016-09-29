@@ -75,7 +75,7 @@ namespace SpaceEscape.Rendering
         }
 
         /// <inheritdoc/>
-        public unsafe override void Prepare(RenderDrawContext context)
+        public override unsafe void Prepare(RenderDrawContext context)
         {
             foreach (var renderNode in ((RootEffectRenderFeature)RootRenderFeature).RenderNodes)
             {
