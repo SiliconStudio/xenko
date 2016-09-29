@@ -4,12 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using NuGet;
 using SiliconStudio.Core;
+using SiliconStudio.PackageManager;
 
 namespace SiliconStudio.Assets
 {
     /// <summary>
-    /// Metadata for a <see cref="Package"/> accessible from <see cref="Package.Meta"/>.
+    /// Metadata for a <see cref="Package"/> accessible from <see cref="PackageMeta"/>.
     /// </summary>
     [DataContract("PackageMeta")]
     [NonIdentifiable]
@@ -242,7 +244,7 @@ namespace SiliconStudio.Assets
         /// Initializes from a nuget package.
         /// </summary>
         /// <param name="metadata">The nuget metadata.</param>
-        private void InitializeFrom(NuGet.IPackageMetadata metadata)
+        private void InitializeFrom(NugetPackage metadata)
         {
             Name = metadata.Id;
             Version = new PackageVersion(metadata.Version.ToString());
@@ -273,7 +275,7 @@ namespace SiliconStudio.Assets
             {
                 foreach (var dependency in dependencySet.Dependencies)
                 {
-                    var packageDependency = new PackageDependency(dependency.Id, PackageVersionRange.FromVersionSpec(dependency.VersionSpec));
+                    var packageDependency = new PackageDependency(dependency.Id, PackageVersionRange.FromVersionSpec(new NugetVersionSpec(dependency.VersionSpec)));
                     Dependencies.Add(packageDependency);
                 }
             }
@@ -285,7 +287,7 @@ namespace SiliconStudio.Assets
                 DownloadCount = serverMetaData.DownloadCount;
             }
 
-            var package = metadata as NuGet.IPackage;
+            var package = metadata as NugetPackage;
             if (package != null)
             {
                 IsAbsoluteLatestVersion = package.IsAbsoluteLatestVersion;
@@ -295,21 +297,14 @@ namespace SiliconStudio.Assets
             }
         }
 
-        public static PackageMeta FromNuGet(NuGet.IPackageMetadata metadata)
+        public static PackageMeta FromNuGet(NugetPackage metadata)
         {
             var packageMeta = new PackageMeta();
             packageMeta.InitializeFrom(metadata);
             return packageMeta;
         }
 
-        public NuGet.Manifest ToNugetManifest()
-        {
-            var manifestMeta = new NuGet.ManifestMetadata();
-            ToNugetManifest(manifestMeta);
-            return new NuGet.Manifest() { Metadata = manifestMeta };
-        }
-
-        public void ToNugetManifest(NuGet.ManifestMetadata manifestMeta)
+        public void ToNugetManifest(NugetManifestMetadata manifestMeta)
         {
             manifestMeta.Id = this.Name;
             manifestMeta.Version = this.Version.ToString();

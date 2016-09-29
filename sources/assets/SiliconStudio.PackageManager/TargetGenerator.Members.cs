@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using NuGet;
-using SiliconStudio.Assets;
 
 namespace SiliconStudio.PackageManager
 {

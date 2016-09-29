@@ -15,6 +15,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.PackageManager;
 
 namespace SiliconStudio.Assets
 {

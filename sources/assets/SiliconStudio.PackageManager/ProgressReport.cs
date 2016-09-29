@@ -3,10 +3,9 @@ using System.Linq;
 
 using NuGet;
 
-using SiliconStudio.Assets;
 using SiliconStudio.PackageManager;
 
-namespace SiliconStudio.LauncherApp.ViewModels
+namespace SiliconStudio.PackageManager
 {
     public class ProgressReport : IDisposable
     {

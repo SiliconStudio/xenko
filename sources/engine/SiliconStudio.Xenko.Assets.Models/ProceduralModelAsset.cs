@@ -11,6 +11,7 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.PackageManager;
 using SiliconStudio.Xenko.Rendering.ProceduralModels;
 
 namespace SiliconStudio.Xenko.Assets.Models

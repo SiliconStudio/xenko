@@ -10,6 +10,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.PackageManager;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Physics;
 using SiliconStudio.Xenko.Rendering.Lights;

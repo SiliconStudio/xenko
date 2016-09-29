@@ -10,7 +10,7 @@ using NuGet;
 using SiliconStudio.Core.Windows;
 using SiliconStudio.PackageManager;
 
-namespace SiliconStudio.Assets
+namespace SiliconStudio.PackageManager
 {
     /// <summary>
     /// Internal class to store nuget objects
@@ -318,6 +318,11 @@ namespace SiliconStudio.Assets
         public string GetPackageDirectory(NugetPackage xenkoPackage)
         {
             return PathResolver.GetPackageDirectory(xenkoPackage.IPackage);
+        }
+
+        public string GetPackageDirectory(string packageId, NugetSemanticVersion version)
+        {
+            return PathResolver.GetPackageDirectory(packageId, version.SemanticVersion);
         }
 
         public string GetMainExecutables()

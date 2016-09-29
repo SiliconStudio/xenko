@@ -15,8 +15,9 @@ using System.Text.RegularExpressions;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
+using SiliconStudio.PackageManager;
 
-namespace SiliconStudio.Assets
+namespace SiliconStudio.PackageManager
 {
     /// <summary>
     /// A hybrid implementation of SemVer that supports semantic versioning as described at http://semver.org while not strictly enforcing it to 
@@ -381,7 +382,7 @@ namespace SiliconStudio.Assets
             }
         }
 
-        internal static PackageVersion FromSemanticVersion(NuGet.SemanticVersion semanticVersion)
+        internal static PackageVersion FromSemanticVersion(NugetSemanticVersion semanticVersion)
         {
             if (semanticVersion == null)
             {
@@ -389,5 +390,11 @@ namespace SiliconStudio.Assets
             }
             return new PackageVersion(semanticVersion.ToString());
         }
+
+        public NugetSemanticVersion ToSemanticVersion()
+        {
+            return new NugetSemanticVersion(ToString());
+        }
+
     }
 }

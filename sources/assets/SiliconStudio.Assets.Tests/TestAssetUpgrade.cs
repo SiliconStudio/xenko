@@ -12,6 +12,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.PackageManager;
 
 namespace SiliconStudio.Assets.Tests
 {

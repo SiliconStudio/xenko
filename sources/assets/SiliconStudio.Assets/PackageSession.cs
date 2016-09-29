@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
-using NuGet;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
@@ -15,6 +14,7 @@ using ILogger = SiliconStudio.Core.Diagnostics.ILogger;
 using Microsoft.Build.Evaluation;
 using SiliconStudio.Assets.Tracking;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.PackageManager;
 
 namespace SiliconStudio.Assets
 {
@@ -23,7 +23,7 @@ namespace SiliconStudio.Assets
     /// </summary>
     public sealed class PackageSession : IDisposable
     {
-        private readonly DefaultConstraintProvider constraintProvider = new DefaultConstraintProvider();
+        private readonly NugetConstraintProvider constraintProvider = new NugetConstraintProvider();
         private readonly PackageCollection packagesCopy;
         private readonly object dependenciesLock = new object();
         private Package currentPackage;
@@ -44,7 +44,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         public PackageSession(Package package)
         {
-            constraintProvider.AddConstraint(PackageStore.Instance.DefaultPackageName, new VersionSpec(PackageStore.Instance.DefaultPackageVersion.ToSemanticVersion()));
+            constraintProvider.AddConstraint(PackageStore.Instance.DefaultPackageName, new NugetVersionSpec(PackageStore.Instance.DefaultPackageVersion.ToSemanticVersion()));
 
             Packages = new PackageCollection();
             packagesCopy = new PackageCollection();
@@ -846,7 +846,7 @@ namespace SiliconStudio.Assets
                 loadedPackages.Add(package);
 
                 // Package has been loaded, register it in constraints so that we force each subsequent loads to use this one (or fails if version doesn't match)
-                session.constraintProvider.AddConstraint(package.Meta.Name, new VersionSpec(package.Meta.Version.ToSemanticVersion()));
+                session.constraintProvider.AddConstraint(package.Meta.Name, new NugetVersionSpec(package.Meta.Version.ToSemanticVersion()));
 
                 // Load package dependencies
                 // This will perform necessary asset upgrades

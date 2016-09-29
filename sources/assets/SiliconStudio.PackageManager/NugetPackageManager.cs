@@ -4,14 +4,43 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using NuGet;
 
 namespace SiliconStudio.PackageManager
 {
-    public class NugetPackageManager : IPackageManager
+    public class NugetPackageManager
     {
         private NuGet.PackageManager _manager;
+
+        protected bool Equals(NugetPackageManager other)
+        {
+            return Equals(_manager, other._manager);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((NugetPackageManager)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return (_manager != null ? _manager.GetHashCode() : 0);
+        }
+
+        public static bool operator ==(NugetPackageManager left, NugetPackageManager right)
+        {
+            return Equals(left, right);
+        }
+
+        public static bool operator !=(NugetPackageManager left, NugetPackageManager right)
+        {
+            return !Equals(left, right);
+        }
 
         public NugetPackageManager(NuGet.PackageManager manager)
         {
@@ -98,11 +127,6 @@ namespace SiliconStudio.PackageManager
             }
         }
 
-        public event EventHandler<PackageOperationEventArgs> PackageInstalled;
-        public event EventHandler<PackageOperationEventArgs> PackageInstalling;
-        public event EventHandler<PackageOperationEventArgs> PackageUninstalled;
-        public event EventHandler<PackageOperationEventArgs> PackageUninstalling;
-
         public event EventHandler<NugetPackageOperationEventArgs> NugetPackageInstalled;
         public event EventHandler<NugetPackageOperationEventArgs> NugetPackageInstalling;
         public event EventHandler<NugetPackageOperationEventArgs> NugetPackageUninstalled;
@@ -172,6 +196,12 @@ namespace SiliconStudio.PackageManager
             return ToNugetPackages(LocalRepository.FindPackages(packageIds));
         }
 
+        public NugetPackage FindLocalPackage(string packageId, NugetVersionSpec versionSpec, NugetConstraintProvider constraintProvider, bool allowPrereleaseVersions, bool allowUnlisted)
+        {
+            var package = LocalRepository.FindPackage(packageId, versionSpec.VersionSpec, (IPackageConstraintProvider) constraintProvider?.Provider ?? NullConstraintProvider.Instance, allowPrereleaseVersions, allowUnlisted);
+            return package != null ? new NugetPackage(package) : null;
+        }
+
         public void UninstallPackage(string packageId, SemanticVersion version, bool forceRemove, bool removeDependencies)
         {
             _manager.UninstallPackage(packageId, version, forceRemove, removeDependencies);
@@ -180,6 +210,11 @@ namespace SiliconStudio.PackageManager
         public void UpdatePackage(IPackage newPackage, bool updateDependencies, bool allowPrereleaseVersions)
         {
             _manager.UpdatePackage(newPackage, updateDependencies, allowPrereleaseVersions);
+        }
+
+        public IQueryable<NugetPackage> SourceSearch(string searchTerm, bool allowPrereleaseVersions)
+        {
+            return ToNugetPackages(SourceRepository.Search(searchTerm, allowPrereleaseVersions)).AsQueryable();
         }
 
         public void UpdatePackage(string packageId, IVersionSpec versionSpec, bool updateDependencies, bool allowPrereleaseVersions)
@@ -195,6 +230,11 @@ namespace SiliconStudio.PackageManager
         internal void UninstallPackage(IPackage package)
         {
             _manager.UninstallPackage(package);
+        }
+
+        public IQueryable<NugetPackage> GetLocalPackages()
+        {
+            return ToNugetPackages(LocalRepository.GetPackages()).AsQueryable();
         }
 
     }

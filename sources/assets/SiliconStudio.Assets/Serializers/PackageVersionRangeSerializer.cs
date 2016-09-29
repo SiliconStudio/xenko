@@ -6,6 +6,7 @@ using SharpYaml.Events;
 using SharpYaml.Serialization;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.PackageManager;
 
 namespace SiliconStudio.Assets.Serializers
 {

@@ -94,6 +94,9 @@ namespace SiliconStudio.PackageManager
             return version1.SemanticVersion >= version2.SemanticVersion;
         }
 
-
+        public override string ToString()
+        {
+            return SemanticVersion.ToString();
+        }
     }
 }

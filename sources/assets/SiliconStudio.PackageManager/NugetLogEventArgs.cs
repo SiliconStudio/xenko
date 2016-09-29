@@ -4,7 +4,7 @@
 using System;
 using NuGet;
 
-namespace SiliconStudio.Assets
+namespace SiliconStudio.PackageManager
 {
     internal class NugetLogEventArgs : EventArgs
     {

@@ -13,7 +13,6 @@ namespace SiliconStudio.PackageManager
     using System.Text;
     using System.Collections.Generic;
     using NuGet;
-    using SiliconStudio.Assets;
     using System;
     
     /// <summary>
@@ -34,7 +33,7 @@ namespace SiliconStudio.PackageManager
                     "//schemas.microsoft.com/developer/msbuild/2003\" InitialTargets=\"CheckPackages\">\r" +
                     "\n");
             
-            #line 10 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 9 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
   foreach (var package in packages)
 	{
         if (package.Tags != null && package.Tags.Contains("internal"))
@@ -53,56 +52,56 @@ namespace SiliconStudio.PackageManager
             #line hidden
             this.Write("  <PropertyGroup>\r\n    <");
             
-            #line 24 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 23 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(packageVar));
             
             #line default
             #line hidden
             this.Write(" Condition=\"\'$(");
             
-            #line 24 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 23 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(packageVar));
             
             #line default
             #line hidden
             this.Write("Override)\' != \'\'\">$(");
             
-            #line 24 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 23 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(packageVar));
             
             #line default
             #line hidden
             this.Write("Override)</");
             
-            #line 24 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 23 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(packageVar));
             
             #line default
             #line hidden
             this.Write(">\r\n    <");
             
-            #line 25 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 24 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(packageVar));
             
             #line default
             #line hidden
             this.Write("Saved>$(");
             
-            #line 25 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 24 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(packageVar));
             
             #line default
             #line hidden
             this.Write(")</");
             
-            #line 25 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 24 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(packageVar));
             
             #line default
             #line hidden
             this.Write("Saved>\r\n");
             
-            #line 26 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 25 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
       // List all the correspondances: Major.minor -> latest installed explicit version
 
         // Get all the related versions of the same package also installed, and order by Major.Minor
@@ -119,49 +118,49 @@ namespace SiliconStudio.PackageManager
             #line hidden
             this.Write("    <");
             
-            #line 37 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 36 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(packageVar));
             
             #line default
             #line hidden
             this.Write("Revision Condition=\"\'$(");
             
-            #line 37 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 36 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(packageVar));
             
             #line default
             #line hidden
             this.Write(")\' == \'");
             
-            #line 37 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 36 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(majorVersion));
             
             #line default
             #line hidden
             this.Write(".");
             
-            #line 37 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 36 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(minor.Key));
             
             #line default
             #line hidden
             this.Write("\'\">");
             
-            #line 37 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 36 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(latestPackage.Version.ToString()));
             
             #line default
             #line hidden
             this.Write("</");
             
-            #line 37 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 36 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(packageVar));
             
             #line default
             #line hidden
             this.Write("Revision>\r\n");
             
-            #line 38 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 37 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
           }
         }
             
@@ -169,91 +168,91 @@ namespace SiliconStudio.PackageManager
             #line hidden
             this.Write("    <");
             
-            #line 40 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 39 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(packageVar));
             
             #line default
             #line hidden
             this.Write(">$(");
             
-            #line 40 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 39 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(packageVar));
             
             #line default
             #line hidden
             this.Write("Revision)</");
             
-            #line 40 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 39 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(packageVar));
             
             #line default
             #line hidden
             this.Write(">\r\n    <");
             
-            #line 41 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 40 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(packageVar));
             
             #line default
             #line hidden
             this.Write("Invalid Condition=\"\'$(");
             
-            #line 41 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 40 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(packageVar));
             
             #line default
             #line hidden
             this.Write(")\' == \'\' or !Exists(\'");
             
-            #line 41 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 40 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(packageTarget));
             
             #line default
             #line hidden
             this.Write("\')\">true</");
             
-            #line 41 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 40 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(packageVar));
             
             #line default
             #line hidden
             this.Write("Invalid>\r\n    <");
             
-            #line 42 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 41 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(packageVar));
             
             #line default
             #line hidden
             this.Write(" Condition=\"\'$(");
             
-            #line 42 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 41 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(packageVar));
             
             #line default
             #line hidden
             this.Write("Invalid)\' == \'true\'\">");
             
-            #line 42 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 41 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(defaultPackageVersion));
             
             #line default
             #line hidden
             this.Write("</");
             
-            #line 42 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 41 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(packageVar));
             
             #line default
             #line hidden
             this.Write(">\r\n  </PropertyGroup>\r\n");
             
-            #line 44 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 43 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
   } 
             
             #line default
             #line hidden
             this.Write("  <Target Name=\"CheckPackages\">\r\n");
             
-            #line 46 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 45 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
   foreach (var package in packages)
 	{
 		var packageVar = NugetStore.GetPackageVersionVariable(package.Id);
@@ -262,42 +261,42 @@ namespace SiliconStudio.PackageManager
             #line hidden
             this.Write("    <Message Condition=\"\'$(");
             
-            #line 49 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 48 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(packageVar));
             
             #line default
             #line hidden
             this.Write("Invalid)\' == \'true\'\" Text=\"Package ");
             
-            #line 49 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 48 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(package.Id));
             
             #line default
             #line hidden
             this.Write(" with version [$(");
             
-            #line 49 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 48 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(packageVar));
             
             #line default
             #line hidden
             this.Write("Saved)] not found. Use version $(");
             
-            #line 49 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 48 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(packageVar));
             
             #line default
             #line hidden
             this.Write(") instead\" />\r\n");
             
-            #line 50 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 49 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
   } 
             
             #line default
             #line hidden
             this.Write("  </Target>\r\n");
             
-            #line 52 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 51 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
   foreach (var package in packages)
 	{
         var packageVar = NugetStore.GetPackageVersionVariable(package.Id);
@@ -307,21 +306,21 @@ namespace SiliconStudio.PackageManager
             #line hidden
             this.Write("  <Import Project=\"");
             
-            #line 56 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 55 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(packageTarget));
             
             #line default
             #line hidden
             this.Write("\" Condition=\"Exists(\'");
             
-            #line 56 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 55 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
             this.Write(this.ToStringHelper.ToStringWithCulture(packageTarget));
             
             #line default
             #line hidden
             this.Write("\')\" />\r\n");
             
-            #line 57 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
+            #line 56 "G:\work\Stash\Xenko\sources\assets\SiliconStudio.PackageManager\TargetGenerator.tt"
   } 
             
             #line default

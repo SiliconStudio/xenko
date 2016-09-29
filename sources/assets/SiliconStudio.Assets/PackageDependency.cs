@@ -4,6 +4,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.PackageManager;
 
 namespace SiliconStudio.Assets
 {

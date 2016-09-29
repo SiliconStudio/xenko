@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.PackageManager;
 
 namespace SiliconStudio.Assets
 {

@@ -4,9 +4,7 @@
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Physics;
 using System;
@@ -16,6 +14,7 @@ using System.Linq;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.PackageManager;
 
 namespace SiliconStudio.Xenko.Assets.Physics
 {

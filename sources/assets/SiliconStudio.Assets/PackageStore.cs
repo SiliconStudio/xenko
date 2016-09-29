@@ -5,10 +5,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 
-using NuGet;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
+using SiliconStudio.PackageManager;
 
 namespace SiliconStudio.Assets
 {
@@ -155,7 +155,7 @@ namespace SiliconStudio.Assets
                 return Enumerable.Empty<PackageMeta>().AsQueryable();
             }
 
-            var packages = store.Manager.SourceRepository.Search(null, false);
+            var packages = store.Manager.SourceSearch(null, false);
 
             // Order by download count and Id to allow collapsing 
             var orderedPackages = packages.OrderByDescending(p => p.DownloadCount).ThenBy(p => p.Id);
@@ -178,10 +178,10 @@ namespace SiliconStudio.Assets
             {
                 var log = new LoggerResult();
 
-                var metas = store.Manager.LocalRepository.GetPackages();
+                var metas = store.Manager.GetLocalPackages();
                 foreach (var meta in metas)
                 {
-                    var path = store.PathResolver.GetPackageDirectory(meta.Id, meta.Version);
+                    var path = store.GetPackageDirectory(meta.Id, meta.Version);
 
                     var package = Package.Load(log, path, GetDefaultPackageLoadParameters());
                     if (package != null && packages.All(packageRegistered => packageRegistered.Meta.Name != defaultPackage.Meta.Name))
@@ -216,7 +216,7 @@ namespace SiliconStudio.Assets
         /// <param name="allowUnlisted">if set to <c>true</c> [allow unlisted].</param>
         /// <returns>A location on the disk to the specified package or null if not found.</returns>
         /// <exception cref="System.ArgumentNullException">packageName</exception>
-        public UFile GetPackageFileName(string packageName, PackageVersionRange versionRange = null, IPackageConstraintProvider constraintProvider = null, bool allowPreleaseVersion = true, bool allowUnlisted = false)
+        public UFile GetPackageFileName(string packageName, PackageVersionRange versionRange = null, NugetConstraintProvider constraintProvider = null, bool allowPreleaseVersion = true, bool allowUnlisted = false)
         {
             if (packageName == null) throw new ArgumentNullException("packageName");
             var directory = GetPackageDirectory(packageName, versionRange, constraintProvider, allowPreleaseVersion, allowUnlisted);
@@ -241,19 +241,19 @@ namespace SiliconStudio.Assets
             return new PackageLoadParameters { AutoLoadTemporaryAssets = false, LoadAssemblyReferences = false, AutoCompileProjects = false };
         }
 
-        private UDirectory GetPackageDirectory(string packageName, PackageVersionRange versionRange, IPackageConstraintProvider constraintProvider = null, bool allowPreleaseVersion = false, bool allowUnlisted = false)
+        private UDirectory GetPackageDirectory(string packageName, PackageVersionRange versionRange, NugetConstraintProvider constraintProvider = null, bool allowPreleaseVersion = false, bool allowUnlisted = false)
         {
             if (packageName == null) throw new ArgumentNullException("packageName");
 
             if (store != null)
             {
                 var versionSpec = versionRange.ToVersionSpec();
-                var package = store.Manager.LocalRepository.FindPackage(packageName, versionSpec, constraintProvider ?? NullConstraintProvider.Instance, allowPreleaseVersion, allowUnlisted);
+                var package = store.Manager.FindLocalPackage(packageName, versionSpec, constraintProvider, allowPreleaseVersion, allowUnlisted);
 
                 // If package was not found, 
                 if (package != null)
                 {
-                    var directory = store.PathResolver.GetPackageDirectory(package);
+                    var directory = store.GetPackageDirectory(package);
                     if (directory != null)
                     {
                         return directory;

@@ -15,8 +15,9 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using SiliconStudio.Core;
+using SiliconStudio.PackageManager;
 
-namespace SiliconStudio.Assets
+namespace SiliconStudio.PackageManager
 {
     /// <summary>
     /// A dependency to a range of version.
@@ -333,7 +334,7 @@ namespace SiliconStudio.Assets
             return versionBuilder.ToString();
         }
 
-        internal static PackageVersionRange FromVersionSpec(NuGet.IVersionSpec spec)
+        public static PackageVersionRange FromVersionSpec(NugetVersionSpec spec)
         {
             if (spec == null)
             {
@@ -347,6 +348,56 @@ namespace SiliconStudio.Assets
                     MaxVersion = PackageVersion.FromSemanticVersion(spec.MaxVersion),
                     IsMaxInclusive = spec.IsMaxInclusive
                 };
+        }
+
+        public NugetVersionSpec ToVersionSpec()
+        {
+            return new NugetVersionSpec()
+                {
+                    MinVersion = MinVersion != null ? MinVersion.ToSemanticVersion() : null,
+                    IsMinInclusive = IsMinInclusive,
+                    MaxVersion = MaxVersion != null ? MaxVersion.ToSemanticVersion() : null,
+                    IsMaxInclusive = IsMaxInclusive
+                };
+        }
+
+        public Func<T, bool> ToFilter<T>(Func<T, PackageVersion> extractor)
+        {
+            if (extractor == null)
+            {
+                throw new ArgumentNullException("extractor");
+            }
+
+            return p =>
+            {
+                PackageVersion version = extractor(p);
+                bool condition = true;
+                if (MinVersion != null)
+                {
+                    if (IsMinInclusive)
+                    {
+                        condition = version >= MinVersion;
+                    }
+                    else
+                    {
+                        condition = version > MinVersion;
+                    }
+                }
+
+                if (MaxVersion != null)
+                {
+                    if (IsMaxInclusive)
+                    {
+                        condition = condition && version <= MaxVersion;
+                    }
+                    else
+                    {
+                        condition = condition && version < MaxVersion;
+                    }
+                }
+
+                return condition;
+            };
         }
     }
 }

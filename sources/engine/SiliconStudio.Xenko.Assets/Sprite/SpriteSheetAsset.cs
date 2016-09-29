@@ -11,6 +11,7 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.PackageManager;
 using SiliconStudio.Xenko.Assets.Textures;
 
 namespace SiliconStudio.Xenko.Assets.Sprite

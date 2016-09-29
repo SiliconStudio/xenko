@@ -8,6 +8,7 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.PackageManager;
 
 namespace SiliconStudio.Xenko.Assets.Textures
 {

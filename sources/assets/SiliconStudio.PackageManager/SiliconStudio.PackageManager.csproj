@@ -18,6 +18,8 @@
       <HintPath>..\..\..\deps\Nuget\NuGet.core.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -25,9 +27,13 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="INugetLogger.cs" />
+    <Compile Include="NugetConstraintProvider.cs" />
     <Compile Include="NugetLogEventArgs.cs" />
     <Compile Include="NugetLogger.cs" />
+    <Compile Include="NugetManifestMetadata.cs" />
+    <Compile Include="NuGetManifestFile.cs" />
     <Compile Include="NugetMessageLevel.cs" />
+    <Compile Include="NugetPackageBuilder.cs" />
     <Compile Include="NugetPackageFile.cs" />
     <Compile Include="NugetPackageManager.cs" />
     <Compile Include="NugetPackageName.cs" />
@@ -35,6 +41,10 @@
     <Compile Include="NugetStore.cs" />
     <Compile Include="NugetPackage.cs" />
     <Compile Include="NugetSemanticVersion.cs" />
+    <Compile Include="NugetVersionSpec.cs" />
+    <Compile Include="PackageManagerConstants.cs" />
+    <Compile Include="PackageVersion.cs" />
+    <Compile Include="PackageVersionRange.cs" />
     <Compile Include="ProgressReport.cs" />
     <Compile Include="TargetGenerator.cs">
       <DependentUpon>TargetGenerator.tt</DependentUpon>
@@ -47,6 +57,10 @@
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
       <Project>{66581DAD-70AD-4475-AE47-C6C0DF1EC5E2}</Project>
       <Name>SiliconStudio.Core.Design</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
+      <Name>SiliconStudio.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
