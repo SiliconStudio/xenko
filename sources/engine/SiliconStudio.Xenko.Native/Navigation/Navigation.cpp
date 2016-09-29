@@ -19,6 +19,10 @@ extern "C"
 	{
 		nav->SetSettings(*buildSettings);
 	}
+	DLL_EXPORT_API void xnNavigationSetAgentSettings(NavigationBuilder* nav, AgentSettings* agentSettings)
+	{
+		nav->SetAgentSettings(*agentSettings);
+	}
 	DLL_EXPORT_API GeneratedData* xnNavigationBuildNavmesh(NavigationBuilder* nav,
 		Vector3* vertices, int numVertices,
 		int* indices, int numIndices)

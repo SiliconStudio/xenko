@@ -28,6 +28,10 @@ namespace SiliconStudio.Xenko.Assets.Navigation
         [DataMember(2000)]
         public NavigationMeshBuildSettings BuildSettings { get; set; }
 
+        // Settings for agents used with this navigationMesh
+        [DataMember(2010)]
+        public List<NavigationAgentSettings> NavigationMeshAgentSettings = new List<NavigationAgentSettings>();
+
         [DataMember(2500)]
         public bool AutoGenerateBoundingBox { get; set; }
 

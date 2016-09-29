@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -19,6 +18,12 @@ namespace SiliconStudio.Xenko.Engine
     {
         [DataMember(10)]
         public NavigationMesh NavigationMesh { get; set; }
+
+        /// <summary>
+        /// The layer of the navigation mesh to use, corresponds to the agent setting with the same index
+        /// </summary>
+        [DataMember(20)]
+        public int NavigationMeshLayer { get; set; }
 
         [DataMemberIgnore]
         internal IntPtr nativeNavmesh;

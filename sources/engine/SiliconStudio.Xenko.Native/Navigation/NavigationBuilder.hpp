@@ -10,8 +10,8 @@ class NavigationBuilder
 	rcContourSet* m_cset = nullptr;
 	rcPolyMesh* m_pmesh = nullptr;
 	rcPolyMeshDetail* m_dmesh = nullptr;
-	rcConfig m_config;
 	BuildSettings m_buildSettings;
+	AgentSettings m_agentSettings;
 	rcContext* m_context;
 
 	// Calculated navmesh vertices
@@ -24,6 +24,7 @@ public:
 	void Cleanup();
 	GeneratedData* BuildNavmesh(Vector3* vertices, int numVertices, int* indices, int numIndices);
 	void SetSettings(BuildSettings buildSettings);
+	void SetAgentSettings(AgentSettings agentSettings);
 
 private:
 	void GenerateNavMeshVertices();

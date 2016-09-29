@@ -10,6 +10,7 @@ using NuGet;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
@@ -42,42 +43,41 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 {
                     Vector3 vert = meshData[i];
                     sw.WriteLine("v {0} {1} {2}", vert.X, vert.Y, vert.Z);
-
                 }
 
-                int numFaces = meshData.Length / 3;
+                int numFaces = meshData.Length/3;
                 for (int i = 0; i < numFaces; i++)
                 {
-                    int start = 1 + i * 3;
+                    int start = 1 + i*3;
                     sw.WriteLine("f {0} {1} {2}",
-                       start + 0,
-                       start + 1,
-                       start + 2);
+                        start + 0,
+                        start + 1,
+                        start + 2);
                 }
                 sw.Flush();
                 file.Flush();
             }
         }
+
         public static void DumpObj(string name, GeometricMeshData<VertexPositionNormalTexture> meshData)
         {
             string filePath = @"C:\Users\g-gj-waals\Desktop\" + name + ".obj";
-            using(FileStream file = File.Open(filePath, FileMode.Create, FileAccess.Write))
-            using(StreamWriter sw = new StreamWriter(file))
+            using (FileStream file = File.Open(filePath, FileMode.Create, FileAccess.Write))
+            using (StreamWriter sw = new StreamWriter(file))
             {
-                for(int i = 0; i < meshData.Vertices.Length; i++)
+                for (int i = 0; i < meshData.Vertices.Length; i++)
                 {
                     VertexPositionNormalTexture vert = meshData.Vertices[i];
                     sw.WriteLine("v {0} {1} {2}", vert.Position.X, vert.Position.Y, vert.Position.Z);
-
                 }
 
-                int numFaces = meshData.Indices.Length / 3;
-                for(int i = 0; i < numFaces; i++)
+                int numFaces = meshData.Indices.Length/3;
+                for (int i = 0; i < numFaces; i++)
                 {
                     sw.WriteLine("f {0} {1} {2}",
-                        meshData.Indices[i * 3 + 0] + 1,
-                        meshData.Indices[i * 3 + 1] + 1,
-                        meshData.Indices[i * 3 + 2] + 1);
+                        meshData.Indices[i*3 + 0] + 1,
+                        meshData.Indices[i*3 + 1] + 1,
+                        meshData.Indices[i*3 + 2] + 1);
                 }
                 sw.Flush();
                 file.Flush();
@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
         public static void DumpBinary(string name, byte[] data)
         {
             string filePath = @"C:\Users\g-gj-waals\Desktop\" + name;
-            using(FileStream file = File.OpenWrite(filePath))
+            using (FileStream file = File.OpenWrite(filePath))
             {
                 file.Write(data, 0, data.Length);
             }
@@ -112,10 +112,10 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             GenerateTangentBitangent(up, out right, out forward);
 
             points = new Vector3[4];
-            points[0] = -forward * size - right * size + up * plane.D;
-            points[1] = -forward * size + right * size + up * plane.D;
-            points[2] = forward * size - right * size + up * plane.D;
-            points[3] = forward * size + right * size + up * plane.D;
+            points[0] = -forward*size - right*size + up*plane.D;
+            points[1] = -forward*size + right*size + up*plane.D;
+            points[2] = forward*size - right*size + up*plane.D;
+            points[3] = forward*size + right*size + up*plane.D;
 
             inds = new int[6];
             // CCW
@@ -126,7 +126,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             inds[4] = 2;
             inds[5] = 3;
         }
-        
+
         private class NavmeshBuildCommand : AssetCommand<NavigationMeshAsset>
         {
             private UFile assetUrl;
@@ -148,6 +148,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 public Matrix Transform;
                 public IColliderShapeDesc Description;
             }
+
             private List<DeferredShape> deferredShapes = new List<DeferredShape>();
 
             // TODO: Remove this
@@ -183,7 +184,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                     debugVerts.Add(point);
 
                     // Calculate bounding box?
-                    if(calculateBoundingBox)
+                    if (calculateBoundingBox)
                     {
                         BoundingBox.Merge(ref boundingBox, ref point.Position, out boundingBox);
                     }
@@ -198,13 +199,18 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
-                if(asset.DefaultScene == null)
+                // No scene specified, result in failure
+                if (asset.DefaultScene == null)
                     return Task.FromResult(ResultStatus.Failed);
+
+                // No agent settings defined, we're done
+                if (asset.NavigationMeshAgentSettings.IsNullOrEmpty())
+                    return Task.FromResult(ResultStatus.Successful);
 
                 var assetManager = new ContentManager();
                 string sceneUrl = AttachedReferenceManager.GetUrl(asset.DefaultScene);
                 var sceneAsset = (SceneAsset)package.Session.FindAsset(sceneUrl)?.Asset;
-                
+
                 // Copy build settings so we can modify them
                 NavigationMeshBuildSettings buildSettings = asset.BuildSettings;
 
@@ -212,66 +218,66 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 boundingBox = calculateBoundingBox ? BoundingBox.Empty : buildSettings.BoundingBox;
 
                 // Turn the entire entity hierarchy into a single list
-                List <Entity> sceneEntities = sceneAsset.Hierarchy.Parts.Select(x => x.Entity).ToList();
+                List<Entity> sceneEntities = sceneAsset.Hierarchy.Parts.Select(x => x.Entity).ToList();
 
                 // The output object of the compilation
                 NavigationMesh generatedNavigationMesh = new NavigationMesh();
 
                 // Generate collision triangles for all static colliders
                 List<StaticColliderComponent> staticColliders = new List<StaticColliderComponent>();
-                
-                foreach(var entity in sceneEntities)
+
+                foreach (var entity in sceneEntities)
                 {
                     TransformComponent entityTransform = entity.Transform;
                     entityTransform.UpdateWorldMatrix();
                     Matrix entityWorldMatrix = entityTransform.WorldMatrix;
 
                     StaticColliderComponent collider = entity.Get<StaticColliderComponent>();
-                    if(collider != null && collider.IsBlocking && collider.Enabled)
+                    if (collider != null && collider.IsBlocking && collider.Enabled)
                     {
                         collider.ComposeShape();
-                        if(collider.ColliderShape == null)
+                        if (collider.ColliderShape == null)
                             continue; // No collider
 
                         // Interate through all the colliders shapes while queueing all shapes in compound shapes to process those as well
                         Queue<ColliderShape> shapesToProcess = new Queue<ColliderShape>();
                         shapesToProcess.Enqueue(collider.ColliderShape);
-                        while(!shapesToProcess.IsEmpty())
+                        while (!shapesToProcess.IsEmpty())
                         {
                             var shape = shapesToProcess.Dequeue();
                             var shapeType = shape.GetType();
-                            if(shapeType == typeof(BoxColliderShape))
+                            if (shapeType == typeof(BoxColliderShape))
                             {
                                 var box = (BoxColliderShape)shape;
                                 var boxDesc = (BoxColliderShapeDesc)box.Description;
-                                Matrix transform = box.PositiveCenterMatrix * entityWorldMatrix;
+                                Matrix transform = box.PositiveCenterMatrix*entityWorldMatrix;
 
                                 var meshData = GeometricPrimitive.Cube.New(boxDesc.Size);
                                 AppendInputMeshData(meshData, transform);
                             }
-                            else if(shapeType == typeof(SphereColliderShape))
+                            else if (shapeType == typeof(SphereColliderShape))
                             {
                                 var sphere = (SphereColliderShape)shape;
                                 var sphereDesc = (SphereColliderShapeDesc)sphere.Description;
-                                Matrix transform = sphere.PositiveCenterMatrix * entityWorldMatrix;
+                                Matrix transform = sphere.PositiveCenterMatrix*entityWorldMatrix;
 
                                 var meshData = GeometricPrimitive.Sphere.New(sphereDesc.Radius);
                                 AppendInputMeshData(meshData, transform);
                             }
-                            else if(shapeType == typeof(CylinderColliderShape))
+                            else if (shapeType == typeof(CylinderColliderShape))
                             {
                                 var cylinder = (CylinderColliderShape)shape;
                                 var cylinderDesc = (CylinderColliderShapeDesc)cylinder.Description;
-                                Matrix transform = cylinder.PositiveCenterMatrix * entityWorldMatrix;
+                                Matrix transform = cylinder.PositiveCenterMatrix*entityWorldMatrix;
 
                                 var meshData = GeometricPrimitive.Cylinder.New(cylinderDesc.Height, cylinderDesc.Radius);
                                 AppendInputMeshData(meshData, transform);
                             }
-                            else if(shapeType == typeof(CapsuleColliderShape))
+                            else if (shapeType == typeof(CapsuleColliderShape))
                             {
                                 var capsule = (CapsuleColliderShape)shape;
                                 var capsuleDesc = (CapsuleColliderShapeDesc)capsule.Description;
-                                Matrix transform = capsule.PositiveCenterMatrix * entityWorldMatrix;
+                                Matrix transform = capsule.PositiveCenterMatrix*entityWorldMatrix;
 
                                 var meshData = GeometricPrimitive.Capsule.New(capsuleDesc.Length, capsuleDesc.Radius);
                                 AppendInputMeshData(meshData, transform);
@@ -280,19 +286,19 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                             {
                                 var plane = (StaticPlaneColliderShape)shape;
                                 var planeDesc = (StaticPlaneColliderShapeDesc)plane.Description;
-                                Matrix transform = plane.PositiveCenterMatrix * entityWorldMatrix;
+                                Matrix transform = plane.PositiveCenterMatrix*entityWorldMatrix;
 
                                 // Defer infinite planes because their size is not defined yet
                                 deferredShapes.Add(new DeferredShape { Description = planeDesc, Transform = transform });
                             }
-                            else if(shapeType == typeof(ConvexHullColliderShape))
+                            else if (shapeType == typeof(ConvexHullColliderShape))
                             {
                                 // TODO: Fix loading of hull assets
                                 var hull = (ConvexHullColliderShape)shape;
                                 var hullDesc = (ConvexHullColliderShapeDesc)hull.Description;
-                                Matrix transform = hull.PositiveCenterMatrix * entityWorldMatrix;
-                                
-                                for(int j = 0; j < hullDesc.ConvexHulls.Count; j++)
+                                Matrix transform = hull.PositiveCenterMatrix*entityWorldMatrix;
+
+                                for (int j = 0; j < hullDesc.ConvexHulls.Count; j++)
                                 {
                                     var v0 = hullDesc.ConvexHulls[j];
                                     var i0 = hullDesc.ConvexHullsIndices[j];
@@ -302,7 +308,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                                         var inds = i0[k];
                                         VertexPositionNormalTexture[] verts2 = new VertexPositionNormalTexture[verts.Count];
                                         var inds2 = new int[inds.Count];
-                                        for(int i = 0; i < verts.Count; i++)
+                                        for (int i = 0; i < verts.Count; i++)
                                         {
                                             verts2[i] = new VertexPositionNormalTexture(verts[i], Vector3.UnitY, Vector2.Zero);
                                         }
@@ -314,20 +320,19 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                                     }
                                 }
                             }
-                            else if(shapeType == typeof(CompoundColliderShape))
+                            else if (shapeType == typeof(CompoundColliderShape))
                             {
                                 var compound = (CompoundColliderShape)shape;
-                                for(int i = 0; i < compound.Count; i++)
+                                for (int i = 0; i < compound.Count; i++)
                                 {
                                     shapesToProcess.Enqueue(compound[i]);
                                 }
                             }
                         }
                     }
-
                 }
 
-                if(calculateBoundingBox)
+                if (calculateBoundingBox)
                 {
                     // Store calculated bounding box
                     buildSettings.BoundingBox = boundingBox;
@@ -356,11 +361,11 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                     Vector3 tangent, bitangent;
                     GenerateTangentBitangent(plane.Normal, out tangent, out bitangent);
                     // Calculate plane offset so that the plane always covers the whole range of the bounding box
-                    Vector3 planeOffset = Vector3.Dot(boundingBox.Center, tangent) * tangent;
-                    planeOffset += Vector3.Dot(boundingBox.Center, bitangent) * bitangent;
+                    Vector3 planeOffset = Vector3.Dot(boundingBox.Center, tangent)*tangent;
+                    planeOffset += Vector3.Dot(boundingBox.Center, bitangent)*bitangent;
 
                     VertexPositionNormalTexture[] vertices = new VertexPositionNormalTexture[planePoints.Length];
-                    for(int i = 0; i < planePoints.Length; i++)
+                    for (int i = 0; i < planePoints.Length; i++)
                     {
                         vertices[i] = new VertexPositionNormalTexture(planePoints[i] + planeOffset, Vector3.UnitY, Vector2.Zero);
                     }
@@ -371,30 +376,30 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
                 // NOTE: Reversed winding order as input to recast
                 int[] flipIndices = { 0, 2, 1 };
-                int numSrcTriangles = meshIndices.Count / 3;
-                for(int i = 0; i < numSrcTriangles; i++)
+                int numSrcTriangles = meshIndices.Count/3;
+                for (int i = 0; i < numSrcTriangles; i++)
                 {
-                    int j = meshIndices[i * 3 + 1];
-                    meshIndices[i * 3 + 1] = meshIndices[i * 3 + 2];
-                    meshIndices[i * 3 + 2] = j;
+                    int j = meshIndices[i*3 + 1];
+                    meshIndices[i*3 + 1] = meshIndices[i*3 + 2];
+                    meshIndices[i*3 + 2] = j;
                 }
 
                 GeometricMeshData<VertexPositionNormalTexture> inputMeshData = new GeometricMeshData<VertexPositionNormalTexture>(debugVerts.ToArray(), meshIndices.ToArray(), false);
 
                 // TODO: Remove this
-                DumpObj("input", inputMeshData);
+                //DumpObj("input", inputMeshData);
 
                 // Can't generate when no bounding box is specified
-                if(boundingBox == BoundingBox.Empty)
+                if (boundingBox == BoundingBox.Empty)
                     return Task.FromResult(ResultStatus.Failed);
 
-                if(!generatedNavigationMesh.Build(buildSettings, meshVertices.ToArray(), meshIndices.ToArray()))
+                if (!generatedNavigationMesh.Build(buildSettings, asset.NavigationMeshAgentSettings.ToArray(), meshVertices.ToArray(), meshIndices.ToArray()))
                     return Task.FromResult(ResultStatus.Failed);
                 assetManager.Save(assetUrl, generatedNavigationMesh);
 
                 // TODO: Remove this
-                DumpObj("output", generatedNavigationMesh.MeshVertices);
-                DumpBinary("navigationMesh", generatedNavigationMesh.NavmeshData);
+                //DumpObj("output", generatedNavigationMesh.MeshVertices);
+                //DumpBinary("navigationMesh", generatedNavigationMesh.NavmeshData);
 
                 return Task.FromResult(ResultStatus.Successful);
             }

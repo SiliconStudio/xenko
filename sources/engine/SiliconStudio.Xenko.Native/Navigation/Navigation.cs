@@ -65,6 +65,10 @@ namespace SiliconStudio.Xenko.Native
         [DllImport(NativeInvoke.Library, EntryPoint = "xnNavigationSetSettings", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SetSettings(IntPtr builder, IntPtr settings);
 
+        // Must be called after SetSettings to set agent specific build settings
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnNavigationSetAgentSettings", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void SetAgentSettings(IntPtr builder, IntPtr settings);
 
         // Navmesh Query API
         [SuppressUnmanagedCodeSecurity]

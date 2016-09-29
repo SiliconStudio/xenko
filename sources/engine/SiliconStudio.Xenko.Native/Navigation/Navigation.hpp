@@ -11,8 +11,6 @@ struct BuildSettings
 {
 	// Bounding box for the generated navigation mesh
 	BoundingBox boundingBox;
-	// Settings for agent
-	AgentSettings agentSettings;
 	float cellHeight;
 	float cellSize;
 };
