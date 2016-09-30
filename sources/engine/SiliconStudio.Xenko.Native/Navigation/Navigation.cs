@@ -17,6 +17,16 @@ namespace SiliconStudio.Xenko.Native
     public class Navigation
     {
         [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        public struct BuildSettings
+        {
+            public BoundingBox BoundingBox;
+            public float CellHeight;
+            public float CellSize;
+            public int TileSize;
+            public Point TilePosition;
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 4)]
         public struct GeneratedData
         {
             public bool Success;

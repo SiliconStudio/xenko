@@ -60,5 +60,10 @@ namespace SiliconStudio.Xenko.Physics
 
             return 1;
         }
+
+        public override int GetHashCode()
+        {
+            return LocalOffset.GetHashCode() + LocalRotation.GetHashCode() + Height.GetHashCode() + Radius.GetHashCode() + Orientation.GetHashCode();
+        }
     }
 }

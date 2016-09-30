@@ -1,5 +1,13 @@
-﻿#pragma once
+﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+#pragma once
 #pragma pack(4)
+struct Point
+{
+	int X;
+	int Y;
+};
 struct AgentSettings
 {
 	float height;
@@ -13,6 +21,8 @@ struct BuildSettings
 	BoundingBox boundingBox;
 	float cellHeight;
 	float cellSize;
+	int tileSize;
+	Point tilePosition;
 };
 struct GeneratedData
 {

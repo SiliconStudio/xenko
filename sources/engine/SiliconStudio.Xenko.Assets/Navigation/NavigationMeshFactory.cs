@@ -20,7 +20,8 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 {
                     BoundingBox = new BoundingBox(new Vector3(-25.0f), new Vector3(25.0f)),
                     CellHeight = 0.05f,
-                    CellSize = 0.1f
+                    CellSize = 0.1f,
+                    TileSize = 2,
                 },
                 NavigationMeshAgentSettings = new List<NavigationAgentSettings>
                 {

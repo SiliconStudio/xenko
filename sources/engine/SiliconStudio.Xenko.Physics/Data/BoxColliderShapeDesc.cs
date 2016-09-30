@@ -43,5 +43,10 @@ namespace SiliconStudio.Xenko.Physics
             if (other.Size == Size && other.LocalOffset == LocalOffset && other.LocalRotation == LocalRotation) return 0;
             return 1;
         }
+
+        public override int GetHashCode()
+        {
+            return LocalOffset.GetHashCode() + LocalRotation.GetHashCode() + Size.GetHashCode() + Is2D.GetHashCode();
+        }
     }
 }

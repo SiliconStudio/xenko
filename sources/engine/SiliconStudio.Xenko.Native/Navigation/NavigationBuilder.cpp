@@ -1,4 +1,27 @@
-﻿#include "../../../../deps/Recast/include/DetourNavMeshBuilder.h"
+﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+// Build function contains a modified version of Sample_TileMesh.cpp from the recast samples
+// With the following license notification
+
+// Copyright (c) 2009-2010 Mikko Mononen memon@inside.org
+//
+// This software is provided 'as-is', without any express or implied
+// warranty.  In no event will the authors be held liable for any damages
+// arising from the use of this software.
+// Permission is granted to anyone to use this software for any purpose,
+// including commercial applications, and to alter it and redistribute it
+// freely, subject to the following restrictions:
+// 1. The origin of this software must not be misrepresented; you must not
+//    claim that you wrote the original software. If you use this software
+//    in a product, an acknowledgment in the product documentation would be
+//    appreciated but is not required.
+// 2. Altered source versions must be plainly marked as such, and must not be
+//    misrepresented as being the original software.
+// 3. This notice may not be removed or altered from any source distribution.
+//
+
+#include "../../../../deps/Recast/include/DetourNavMeshBuilder.h"
 #include "../XenkoNative.h"
 
 #include "../../../../deps/NativePath/NativePath.h"
@@ -28,6 +51,8 @@ extern "C"
 	#define stdout (__acrt_iob_func(1))
 	#define stderr (__acrt_iob_func(2))
 }
+// This is a debug class that when instantiated opens and attaches a
+//	console to the application which receives all writes to stdout from c(++) code
 class DebugConsole
 {
 	DebugConsole()
@@ -54,9 +79,6 @@ public:
 NavigationBuilder::NavigationBuilder()
 {
 	m_context = new rcContext(false);
-#ifdef _WIN32
-	DebugConsole::Get();
-#endif
 }
 NavigationBuilder::~NavigationBuilder()
 {
@@ -65,27 +87,33 @@ NavigationBuilder::~NavigationBuilder()
 }
 void NavigationBuilder::Cleanup()
 {
-	if(m_solid)
+	if(m_navmeshData)
+	{
+		dtFree(m_navmeshData);
+		m_navmeshData = nullptr;
+		m_navmeshDataLength = 0;
+	}
+	if (m_solid)
 	{
 		rcFreeHeightField(m_solid);
 		m_solid = nullptr;
 	}
-	if(m_triareas)
+	if (m_triareas)
 	{
 		delete[] m_triareas;
 		m_triareas = nullptr;
 	}
-	if(m_chf)
+	if (m_chf)
 	{
 		rcFreeCompactHeightfield(m_chf);
 		m_chf = nullptr;
 	}
-	if(m_pmesh)
+	if (m_pmesh)
 	{
 		rcFreePolyMesh(m_pmesh);
 		m_pmesh = nullptr;
 	}
-	if(m_dmesh)
+	if (m_dmesh)
 	{
 		rcFreePolyMeshDetail(m_dmesh);
 		m_dmesh = nullptr;
@@ -95,16 +123,6 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 {
 	float* bmin = &m_buildSettings.boundingBox.minimum.X;
 	float* bmax = &m_buildSettings.boundingBox.maximum.X;
-
-	printf(" -- Generating navmesh --\n");
-	printf("Input Vertices: %d\n", numVertices);
-	printf("Input Indices: %d\n", numIndices);
-	printf("CS: %f  CH: %f\n", m_buildSettings.cellSize, m_buildSettings.cellHeight);
-	printf("Bounds: \n\t{%f, %f, %f}\n\t{%f, %f, %f}\n", 
-		bmin[0], bmin[1], bmin[2],
-		bmax[0], bmax[1], bmax[2]);
-	printf("Agent Radius: %f  Height: %f\n", m_agentSettings.radius, m_agentSettings.height);
-
 
 	// Calculate input settings
 	// TODO: Expose these settings
@@ -123,11 +141,20 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 	float detailSampleDist = detailSampleDistInput < 0.9f ? 0 : m_buildSettings.cellSize * detailSampleDistInput;
 	float detailSampleMaxError = m_buildSettings.cellHeight * detailSampleMaxErrorInput;
 
-
 	//float walkableSlopeAngle = m_agentSettings.maxSlope;
 	int walkableHeight = (int)ceilf(m_agentSettings.height / m_buildSettings.cellHeight);
 	int walkableClimb = (int)floorf(m_agentSettings.maxClimb / m_buildSettings.cellHeight);
 	int walkableRadius = (int)ceilf(m_agentSettings.radius / m_buildSettings.cellSize);
+
+	// Size of the tile border
+	int borderSize = walkableRadius + 3;
+	int tileSize = m_buildSettings.tileSize;
+
+	// Expand bounding box by border size so that all required geometry is included
+	bmin[0] -= borderSize * m_buildSettings.cellSize;
+	bmin[2] -= borderSize * m_buildSettings.cellSize;
+	bmax[0] += borderSize * m_buildSettings.cellSize;
+	bmax[2] += borderSize * m_buildSettings.cellSize;
 
 	int width, height;
 	rcCalcGridSize(bmin, bmax, m_buildSettings.cellSize, &width, &height);
@@ -139,229 +166,146 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 	// Make sure state is clean
 	Cleanup();
 
-	if(numIndices == 0 || numVertices == 0)
+	if (numIndices == 0 || numVertices == 0)
 		return ret;
 
 	if (walkableClimb < 0)
 		return ret;
 
 	m_solid = rcAllocHeightfield();
-	if(!rcCreateHeightfield(m_context, *m_solid, width, height, bmin, bmax, m_buildSettings.cellSize, m_buildSettings.cellHeight))
+	if (!rcCreateHeightfield(m_context, *m_solid, width, height, bmin, bmax, m_buildSettings.cellSize, m_buildSettings.cellHeight))
 	{
 		return ret;
 	}
 
 	int numTriangles = numIndices / 3;
-
-	// Allocate array that can hold triangle area types.
-	// If you have multiple meshes you need to process, allocate
-	// and array which can hold the max number of triangles you need to process.
 	m_triareas = new uint8_t[numTriangles];
-	if(!m_triareas)
+	if (!m_triareas)
 	{
 		return ret;
 	}
-	// Find triangles which are walkable based on their slope and rasterize them.
-	// If your input data is multiple meshes, you can transform them here, calculate
-	// the are type for each of the meshes and rasterize them.
+
+	// Find walkable triangles and rasterize into heightfield
 	double rasterizationTime = npSeconds();
 	memset(m_triareas, 0, numTriangles * sizeof(unsigned char));
 	rcMarkWalkableTriangles(m_context, m_agentSettings.maxSlope, (float*)vertices, numVertices, indices, numTriangles, m_triareas);
-	if(!rcRasterizeTriangles(m_context, (float*)vertices, numVertices, indices, m_triareas, numTriangles, *m_solid, walkableClimb))
+	if (!rcRasterizeTriangles(m_context, (float*)vertices, numVertices, indices, m_triareas, numTriangles, *m_solid, walkableClimb))
 	{
 		return ret;
 	}
 	rasterizationTime = npSeconds() - rasterizationTime;
 
-	//
-	// Step 3. Filter walkables surfaces.
-	//
-
-	// Once all geoemtry is rasterized, we do initial pass of filtering to
-	// remove unwanted overhangs caused by the conservative rasterization
-	// as well as filter spans where the character cannot possibly stand.
+	// Filter walkables surfaces.
 	rcFilterLowHangingWalkableObstacles(m_context, walkableClimb, *m_solid);
 	rcFilterLedgeSpans(m_context, walkableHeight, walkableClimb, *m_solid);
 	rcFilterWalkableLowHeightSpans(m_context, walkableHeight, *m_solid);
-
-	//
-	// Step 4. Partition walkable surface to simple regions.
-	//
 
 	// Compact the heightfield so that it is faster to handle from now on.
 	// This will result more cache coherent data as well as the neighbours
 	// between walkable cells will be calculated.
 	double buildHeightFieldTime = npSeconds();
 	m_chf = rcAllocCompactHeightfield();
-	if(!m_chf)
+	if (!m_chf)
 	{
 		return ret;
 	}
-	if(!rcBuildCompactHeightfield(m_context, walkableHeight, walkableClimb, *m_solid, *m_chf))
+	if (!rcBuildCompactHeightfield(m_context, walkableHeight, walkableClimb, *m_solid, *m_chf))
 	{
 		return ret;
 	}
 
-	{
-		rcFreeHeightField(m_solid);
-		m_solid = 0;
-	}
+	// No longer need solid heightfield after compacting it
+	rcFreeHeightField(m_solid);
+	m_solid = 0;
 	buildHeightFieldTime = npSeconds() - buildHeightFieldTime;
 
 	// Erode the walkable area by agent radius.
-	if(!rcErodeWalkableArea(m_context, walkableRadius, *m_chf))
+	if (!rcErodeWalkableArea(m_context, walkableRadius, *m_chf))
 	{
 		return ret;
 	}
 
-	// (Optional) Mark areas.
+	// Mark all of the area with id 1
+	// NOTE: this needs to be done or the dtQueryFilter will filter out all geometry that does not have an area set
+	// check DetourNavMeshQuery.cpp@91
+	// in the case that the flags are 0 it will never pass
 	Vector3 rootVolume;
 	rcMarkBoxArea(m_context, bmin, bmax, 1, *m_chf);
 
-	// Partition the heightfield so that we can use simple algorithm later to triangulate the walkable areas.
-	// There are 3 partitioning methods, each with some pros and cons:
-	// 1) Watershed partitioning
-	//   - the classic Recast partitioning
-	//   - creates the nicest tessellation
-	//   - usually slowest
-	//   - partitions the heightfield into nice regions without holes or overlaps
-	//   - the are some corner cases where this method creates produces holes and overlaps
-	//      - holes may appear when a small obstacles is close to large open area (triangulation can handle this)
-	//      - overlaps may occur if you have narrow spiral corridors (i.e stairs), this make triangulation to fail
-	//   * generally the best choice if you precompute the navmesh, use this if you have large open areas
-	// 2) Monotone partioning
-	//   - fastest
-	//   - partitions the heightfield into regions without holes and overlaps (guaranteed)
-	//   - creates long thin polygons, which sometimes causes paths with detours
-	//   * use this if you want fast navmesh generation
-	// 3) Layer partitoining
-	//   - quite fast
-	//   - partitions the heighfield into non-overlapping regions
-	//   - relies on the triangulation code to cope with holes (thus slower than monotone partitioning)
-	//   - produces better triangles than monotone partitioning
-	//   - does not have the corner cases of watershed partitioning
-	//   - can be slow and create a bit ugly tessellation (still better than monotone)
-	//     if you have large open areas with small obstacles (not a problem if you use tiles)
-	//   * good choice to use for tiled navmesh with medium and small sized tiles
-
 	double regionsTime = npSeconds();
-	//if (m_partitionType == SAMPLE_PARTITION_WATERSHED)
+	// Prepare for region partitioning, by calculating distance field along the walkable surface.
+	if (!rcBuildDistanceField(m_context, *m_chf))
 	{
-		// Prepare for region partitioning, by calculating distance field along the walkable surface.
-		if(!rcBuildDistanceField(m_context, *m_chf))
-		{
-			return ret;
-		}
-
-		// Partition the walkable surface into simple regions without holes.
-		if(!rcBuildRegions(m_context, *m_chf, 0, minRegionArea, mergeRegionArea))
-		{
-			return ret;
-		}
+		return ret;
 	}
-	//else if (m_partitionType == SAMPLE_PARTITION_MONOTONE)
-	//{
-	//	// Partition the walkable surface into simple regions without holes.
-	//	// Monotone partitioning does not need distancefield.
-	//	if (!rcBuildRegionsMonotone(context, *m_chf, 0, config.minRegionArea, config.mergeRegionArea))
-	//	{
-	//		context->log(RC_LOG_ERROR, "buildNavigation: Could not build monotone regions.");
-	//		return false;
-	//	}
-	//}
-	//else // SAMPLE_PARTITION_LAYERS
-	//{
-	//	// Partition the walkable surface into simple regions without holes.
-	//	if (!rcBuildLayerRegions(context, *m_chf, 0, config.minRegionArea))
-	//	{
-	//		context->log(RC_LOG_ERROR, "buildNavigation: Could not build layer regions.");
-	//		return false;
-	//	}
-	//}
+	// Partition the walkable surface into simple regions without holes.
+	if (!rcBuildRegions(m_context, *m_chf, 0, minRegionArea, mergeRegionArea))
+	{
+		return ret;
+	}
 	regionsTime = npSeconds() - regionsTime;
 
-	//
-	// Step 5. Trace and simplify region contours.
-	//
 
 	// Create contours.
 	double contoursTime = npSeconds();
 	m_cset = rcAllocContourSet();
-	if(!m_cset)
+	if (!m_cset)
 	{
 		return ret;
 	}
-	if(!rcBuildContours(m_context, *m_chf, maxSimplificationError, maxEdgeLen, *m_cset))
+	if (!rcBuildContours(m_context, *m_chf, maxSimplificationError, maxEdgeLen, *m_cset))
 	{
 		return ret;
 	}
 	contoursTime = npSeconds() - contoursTime;
 
-	//
-	// Step 6. Build polygons mesh from contours.
-	//
-
 	// Build polygon navmesh from the contours.
 	double polyMeshTime = npSeconds();
 	m_pmesh = rcAllocPolyMesh();
-	if(!m_pmesh)
+	if (!m_pmesh)
 	{
 		return ret;
 	}
-	if(!rcBuildPolyMesh(m_context, *m_cset, maxVertsPerPoly, *m_pmesh))
+	if (!rcBuildPolyMesh(m_context, *m_cset, maxVertsPerPoly, *m_pmesh))
 	{
 		return ret;
 	}
 	polyMeshTime = npSeconds() - polyMeshTime;
 
-	//
-	// Step 7. Create detail mesh which allows to access approximate height on each polygon.
-	//
+	// Free intermediate results
+	rcFreeContourSet(m_cset);
+	m_cset = nullptr;
 
 	double detailMeshTime = npSeconds();
 	m_dmesh = rcAllocPolyMeshDetail();
-	if(!m_dmesh)
+	if (!m_dmesh)
 	{
 		return ret;
 	}
 
-	if(!rcBuildPolyMeshDetail(m_context, *m_pmesh, *m_chf, detailSampleDist, detailSampleMaxError, *m_dmesh))
+	if (!rcBuildPolyMeshDetail(m_context, *m_pmesh, *m_chf, detailSampleDist, detailSampleMaxError, *m_dmesh))
 	{
 		return ret;
 	}
 	detailMeshTime = npSeconds() - detailMeshTime;
 
-	{
-		rcFreeCompactHeightfield(m_chf);
-		m_chf = 0;
-		rcFreeContourSet(m_cset);
-		m_cset = 0;
-	}
+	// Free intermediate results
+	rcFreeCompactHeightfield(m_chf);
+	m_chf = nullptr;
 
 	// Generate native navmesh format and store the data pointers in the return structure
 	GenerateNavMeshVertices();
 	ret->navmeshVertices = m_navmeshVertices.data();
 	ret->numNavmeshVertices = m_navmeshVertices.size();
 	double createMeshTime = npSeconds();
-	if(!CreateDetourMesh())
+	if (!CreateDetourMesh())
 		return ret;
 	createMeshTime = npSeconds() - createMeshTime;
-	ret->navmeshData = m_navmeshData.data();
-	ret->navmeshDataLength = m_navmeshData.size();
+	ret->navmeshData = m_navmeshData;
+	ret->navmeshDataLength = m_navmeshDataLength;
 	ret->success = true;
 
 	totalTime = npSeconds() - totalTime;
-
-	printf("Navmesh build timings\n");
-	printf("Rasterization: %.03f\n", rasterizationTime);
-	printf("Heightfield: %.03f\n", buildHeightFieldTime);
-	printf("Regions: %.03f\n", regionsTime);
-	printf("Contours: %.03f\n", contoursTime);
-	printf("Poly Mesh: %.03f\n", polyMeshTime);
-	printf("Detail Mesh: %.03f\n", detailMeshTime);
-	printf("Create Mesh: %.03f\n", createMeshTime);
-	printf("Total Duration: %.03f\n", totalTime);
-
 	return ret;
 }
 void NavigationBuilder::SetSettings(BuildSettings buildSettings)
@@ -376,24 +320,24 @@ void NavigationBuilder::SetAgentSettings(AgentSettings agentSettings)
 void NavigationBuilder::GenerateNavMeshVertices()
 {
 	rcPolyMesh& mesh = *m_pmesh;
-	if(!m_pmesh)
+	if (!m_pmesh)
 		return;
 
 	Vector3 origin = m_buildSettings.boundingBox.minimum;
 
 	m_navmeshVertices.clear();
-	for(int i = 0; i < m_pmesh->npolys; i++)
+	for (int i = 0; i < m_pmesh->npolys; i++)
 	{
 		const unsigned short* p = &mesh.polys[i * mesh.nvp * 2];
 
 		unsigned short vi[3];
-		for(int j = 2; j < mesh.nvp; ++j)
+		for (int j = 2; j < mesh.nvp; ++j)
 		{
-			if(p[j] == RC_MESH_NULL_IDX) break;
+			if (p[j] == RC_MESH_NULL_IDX) break;
 			vi[0] = p[0];
 			vi[1] = p[j - 1];
 			vi[2] = p[j];
-			for(int k = 0; k < 3; ++k)
+			for (int k = 0; k < 3; ++k)
 			{
 				const unsigned short* v = &mesh.verts[vi[k] * 3];
 				const float x = origin.X + (float)v[0] * m_buildSettings.cellSize;
@@ -406,8 +350,7 @@ void NavigationBuilder::GenerateNavMeshVertices()
 }
 bool NavigationBuilder::CreateDetourMesh()
 {
-	dtNavMeshCreateParams params;
-	memset(&params, 0, sizeof(params));
+	dtNavMeshCreateParams params = { 0 };
 	params.verts = m_pmesh->verts;
 	params.vertCount = m_pmesh->nverts;
 	params.polys = m_pmesh->polys;
@@ -436,24 +379,15 @@ bool NavigationBuilder::CreateDetourMesh()
 	params.cs = m_buildSettings.cellSize;
 	params.ch = m_buildSettings.cellHeight;
 	params.buildBvTree = true;
+	params.tileX = m_buildSettings.tilePosition.X;
+	params.tileY = m_buildSettings.tilePosition.Y;
 
-	uint8_t* navData = nullptr;
-	int navDataLength = 0;
-
-	if(!dtCreateNavMeshData(&params, &navData, &navDataLength))
+	if (!dtCreateNavMeshData(&params, &m_navmeshData, &m_navmeshDataLength))
 	{
-		dtFree(navData);
+		dtFree(m_navmeshData);
 		return false;
 	}
-
-	if(navDataLength == 0)
+	if (m_navmeshDataLength == 0 || !m_navmeshData)
 		return false;
-
-	// Copy generated navmesh data to local array
-	m_navmeshData.resize(navDataLength);
-	memcpy(m_navmeshData.data(), navData, navDataLength);
-
-	dtFree(navData);
-
 	return true;
 }

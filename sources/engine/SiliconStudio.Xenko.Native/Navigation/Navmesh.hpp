@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+#pragma once
 #include "../../../../deps/Recast/include/DetourNavMesh.h"
 #include "../../../../deps/Recast/include/DetourNavMeshQuery.h"
 

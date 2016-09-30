@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Native;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Composers;
@@ -24,22 +25,25 @@ namespace SiliconStudio.Xenko.Engine.Processors
                 Layers = new IntPtr[navigationMesh.Layers.Length];
                 for (int i = 0; i < navigationMesh.Layers.Length; i++)
                 {
-                    Layers[i] = navigationMesh.Layers[i].NavmeshData != null ? LoadLayer(navigationMesh.Layers[i]) : IntPtr.Zero;
+                    Layers[i] = LoadLayer(navigationMesh.Layers[i]);
                 }
             }
 
             private unsafe IntPtr LoadLayer(NavigationMesh.Layer navigationMeshLayer)
             {
-                if (navigationMeshLayer.NavmeshData == null)
-                    throw new ArgumentNullException(nameof(navigationMeshLayer));
-                fixed (void* data = navigationMeshLayer.NavmeshData)
-                {
-                    return Navigation.LoadNavmesh(new IntPtr(data), navigationMeshLayer.NavmeshData.Length);
-                }
+//                if (navigationMeshLayer.NavmeshData == null)
+//                    throw new ArgumentNullException(nameof(navigationMeshLayer));
+//                fixed (void* data = navigationMeshLayer.NavmeshData)
+//                {
+//                    return Navigation.LoadNavmesh(new IntPtr(data), navigationMeshLayer.NavmeshData.Length);
+//                }
+                return IntPtr.Zero;
             }
 
             public void Dispose()
             {
+                if (Layers == null)
+                    return;
                 for (int i = 0; i < Layers.Length; i++)
                 {
                     if (Layers[i] != IntPtr.Zero)
@@ -81,19 +85,29 @@ namespace SiliconStudio.Xenko.Engine.Processors
         /// Maps navigation meshed to their natively loaded counterparts
         /// </summary>
         private Dictionary<NavigationMesh, NativeNavmesh> loadedNavigationMeshes = new Dictionary<NavigationMesh, NativeNavmesh>();
-
-        private Dictionary<NavigationMesh, Entity> debugEntities = new Dictionary<NavigationMesh, Entity>();
-
-        private bool debugOverlayEnabled = false;
-        private SceneSystem sceneSystem;
-        private Entity debugEntityScene;
-        private ISceneRenderer debugSceneRenderer;
-        private List<NavigationComponent> navigationComponents = new List<NavigationComponent>();
-        private Scene debugScene;
-
+        
         protected internal override void OnSystemAdd()
         {
-            sceneSystem = Services.GetSafeServiceAs<SceneSystem>();
+        }
+        protected internal override void OnSystemRemove()
+        {
+            // Dispose of all loaded navigation meshes
+            foreach (var pair in loadedNavigationMeshes)
+            {
+                pair.Value.Dispose();
+            }
+            loadedNavigationMeshes.Clear();
+        }
+
+        public override void Update(GameTime time)
+        {
+            foreach (var p in ComponentDatas)
+            {
+                if (p.Key.NavigationMesh != p.Value.LoadedNavigationMesh)
+                {
+                    UpdateNavigationMesh(p.Key, p.Value);
+                }
+            }
         }
 
         protected override AssociatedData GenerateComponentData(Entity entity, NavigationComponent component)
@@ -102,34 +116,30 @@ namespace SiliconStudio.Xenko.Engine.Processors
             data.Component = component;
             return data;
         }
-
         protected override void OnEntityComponentAdding(Entity entity, NavigationComponent component, AssociatedData data)
         {
-            if (component.NavigationMesh != null)
-            {
-                NativeNavmesh nativeNavmesh;
-                if(!loadedNavigationMeshes.TryGetValue(component.NavigationMesh, out nativeNavmesh))
-                {
-                    nativeNavmesh = new NativeNavmesh(component.NavigationMesh);
-                    loadedNavigationMeshes.Add(component.NavigationMesh, nativeNavmesh);
-                }
-                data.LoadedNavigationMesh = component.NavigationMesh;
-                data.NativeNavmesh = nativeNavmesh;
-                nativeNavmesh?.AddReference(component);
-
-                // Store a pointer to the native navmesh object in the navmesh component
-                component.nativeNavmesh = component.NavigationMeshLayer < nativeNavmesh.Layers.Length ? 
-                    nativeNavmesh.Layers[component.NavigationMeshLayer] : IntPtr.Zero;
-            }
+            UpdateNavigationMesh(component, data);
+        }
+        protected override void OnEntityComponentRemoved(Entity entity, NavigationComponent component, AssociatedData data)
+        {
+            RemoveReference(component, data);
         }
 
-        protected override void OnEntityComponentRemoved(Entity entity, NavigationComponent component, AssociatedData data)
+        void RemoveReference(NavigationComponent component, AssociatedData data)
         {
             // Check if loaded navigation mesh is no longer needed
             if (data.NativeNavmesh != null)
             {
-                if(data.NativeNavmesh.RemoveReference(component))
+                if (data.NativeNavmesh.RemoveReference(component))
                 {
+                    // Remove debug entity
+                    //Entity meshVizualizerEntity;
+                    //if (visualizedNavigationMeshes.TryGetValue(component.NavigationMesh, out meshVizualizerEntity))
+                    //{
+                    //    debugEntity.Transform.Children.Remove(meshVizualizerEntity.Transform);
+                    //    visualizedNavigationMeshes.Remove(component.NavigationMesh);
+                    //}
+
                     loadedNavigationMeshes.Remove(component.NavigationMesh);
                     data.NativeNavmesh.Dispose();
                 }
@@ -137,15 +147,38 @@ namespace SiliconStudio.Xenko.Engine.Processors
 
             component.nativeNavmesh = IntPtr.Zero;
         }
-        
-        protected internal override void OnSystemRemove()
+        void UpdateNavigationMesh(NavigationComponent component, AssociatedData data)
         {
-            // Dispose of all loaded navigation meshes
-            foreach(var pair in loadedNavigationMeshes)
+            // Remove old reference
+            RemoveReference(component, data);
+            
+            if (component.NavigationMesh != null)
             {
-                pair.Value.Dispose();
+                NativeNavmesh nativeNavmesh;
+                if (!loadedNavigationMeshes.TryGetValue(component.NavigationMesh, out nativeNavmesh))
+                {
+                    nativeNavmesh = new NativeNavmesh(component.NavigationMesh);
+                    loadedNavigationMeshes.Add(component.NavigationMesh, nativeNavmesh);
+                }
+                data.NativeNavmesh = nativeNavmesh;
+                nativeNavmesh.AddReference(component);
+
+                // Store a pointer to the native navmesh object in the navmesh component
+                component.nativeNavmesh = component.NavigationMeshLayer < nativeNavmesh.Layers.Length ?
+                    nativeNavmesh.Layers[component.NavigationMeshLayer] : IntPtr.Zero;
+
+                //if (!visualizedNavigationMeshes.ContainsKey(component.NavigationMesh))
+                //{
+                //    // Add debug entity
+                //    Entity meshVizualizerEntity = new Entity();
+                //    meshVizualizerEntity.Add(component.NavigationMesh.CreateDebugModelComponent(this.sceneSystem.Game.GraphicsDevice));
+                //    debugEntity.Transform.Children.Add(meshVizualizerEntity.Transform);
+                //    visualizedNavigationMeshes.Add(component.NavigationMesh, meshVizualizerEntity);
+                //}
             }
-            loadedNavigationMeshes.Clear();
+
+            // Mark new navigation mesh as loaded
+            data.LoadedNavigationMesh = component.NavigationMesh;
         }
     }
 }

@@ -1,4 +1,7 @@
-﻿#pragma once
+﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+#pragma once
 #include "../../../../deps/Recast/include/Recast.h"
 #include "../../../../deps/NativePath/TINYSTL/vector.h"
 
@@ -16,7 +19,11 @@ class NavigationBuilder
 
 	// Calculated navmesh vertices
 	tinystl::vector<Vector3> m_navmeshVertices;
-	tinystl::vector<uint8_t> m_navmeshData;
+	// Detour returned navigation mesh data
+	// free with dtFree()
+	uint8_t* m_navmeshData = nullptr;
+	int m_navmeshDataLength = 0;
+
 	GeneratedData m_result;
 public:
 	NavigationBuilder();
