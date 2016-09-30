@@ -303,6 +303,12 @@ namespace SiliconStudio.Xenko.Rendering
                 throw new InvalidOperationException("Requested RenderView|RenderStage combination doesn't exist. Please add it to RenderView.RenderStages.");
             }
 
+            // Perform updates once per change of RenderView
+            foreach (var renderFeature in RenderFeatures)
+            {
+                renderFeature.Draw(renderDrawContext, renderView, renderViewStage);
+            }
+
             // Generate and execute draw jobs
             var renderNodes = renderViewStage.SortedRenderNodes;
             var renderNodeCount = renderViewStage.RenderNodes.Count;

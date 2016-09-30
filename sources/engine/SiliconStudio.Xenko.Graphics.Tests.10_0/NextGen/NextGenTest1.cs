@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
 
         public NextGenTest1()
         {
-            GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
+            //GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
             //Profiler.EnableAll();
         }
@@ -115,7 +115,20 @@ namespace SiliconStudio.Xenko.Engine.NextGen
                     {
                         new ClearRenderFrameRenderer { Color = Color.Green, Name = "Clear frame" },
                         //new SceneCameraRenderer { Mode = new CameraRendererModeForward { Name = "Camera renderer", ModelEffect = "XenkoForwardShadingEffect" } },
-                        new SceneCameraRenderer { Mode = new CameraRendererModeForward { Name = "Camera renderer" } },
+
+                        new SceneCameraRenderer
+                        {
+                            Mode = new CameraRendererModeForward { Name = "Camera renderer", Shadows = true },
+                            IsViewportInPercentage = true,
+                            Viewport = new RectangleF(0, 0, 100, 100),
+                        },
+
+                        new SceneCameraRenderer
+                        {
+                            Mode = new CameraRendererModeForward { Name = "Camera renderer", Shadows = true },
+                            IsViewportInPercentage = true,
+                            Viewport = new RectangleF(60, 60, 35, 35)
+                        },
                     }
                 }
             };

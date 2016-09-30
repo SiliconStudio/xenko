@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         private const string DirectLightGroupsCompositionName = "directLightGroups";
         private const string EnvironmentLightsCompositionName = "environmentLights";
 
-        private LightShaderPermutationEntry ShaderPermutation = new LightShaderPermutationEntry();
+        private readonly LightShaderPermutationEntry ShaderPermutation = new LightShaderPermutationEntry();
 
         private LightProcessor lightProcessor;
 
@@ -82,6 +82,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         private static readonly string[] DirectLightGroupsCompositionNames;
         private static readonly string[] EnvironmentLightGroupsCompositionNames;
+
+        private RenderView currentRenderView;
 
         [DataMember]
         [Category]
@@ -301,7 +303,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// <inheritdoc/>
         public override void Prepare(RenderDrawContext context)
         {
-            //var renderViewObjectInfoData = RootRenderFeature.RenderData.GetData(renderViewObjectInfoKey);
             foreach (var view in RenderSystem.Views)
             {
                 var viewFeature = view.Features[RootRenderFeature.Index];
@@ -423,16 +424,45 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
         }
 
+        public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage)
+        {
+            // Update per-view resources only when view changes
+            if (currentRenderView == renderView)
+                return;
+
+            var viewFeature = renderView.Features[RootRenderFeature.Index];
+
+            RenderViewLightData renderViewData;
+            if (!renderViewDatas.TryGetValue(renderView, out renderViewData) || viewFeature.Layouts.Count == 0)
+                return;
+
+            // Update PerView resources
+            foreach (var directLightGroup in ShaderPermutation.DirectLightGroups)
+            {
+                directLightGroup.UpdateViewResources(context, renderViewData.ViewIndex, renderViewData.ViewParameters);
+            }
+
+            foreach (var environmentLight in ShaderPermutation.EnvironmentLights)
+            {
+                environmentLight.UpdateViewResources(context, renderViewData.ViewIndex, renderViewData.ViewParameters);
+            }
+
+            currentRenderView = renderView;
+        }
+
         /// <inheritdoc/>
         public override void Flush(RenderDrawContext context)
         {
             base.Flush(context);
             ShadowMapRenderer?.Flush(context);
+
+            // Invalidate per-view data
+            currentRenderView = null;
         }
 
         protected void RegisterLightGroupRenderer(LightGroupRendererBase renderer)
         {
-            if (renderer == null) throw new ArgumentNullException("renderer");
+            if (renderer == null) throw new ArgumentNullException(nameof(renderer));
             lightRenderers.Add(renderer);
             renderer.Initialize(Context);
         }

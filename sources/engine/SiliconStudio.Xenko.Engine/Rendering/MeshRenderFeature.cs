@@ -123,6 +123,15 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <inheritdoc/>
+        public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage)
+        {
+            foreach (var renderFeature in RenderFeatures)
+            {
+                renderFeature.Draw(context, renderView, renderViewStage);
+            }
+        }
+
+        /// <inheritdoc/>
         public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
             var commandList = context.CommandList;

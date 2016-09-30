@@ -103,6 +103,16 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <summary>
+        /// Performs GPU updates and/or drawing, everytime a render view changes.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="renderView"></param>
+        /// <param name="renderViewStage"></param>
+        public virtual void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage)
+        {
+        }
+
+        /// <summary>
         /// Performs GPU updates and/or draw.
         /// </summary>
         /// <param name="context"></param>
