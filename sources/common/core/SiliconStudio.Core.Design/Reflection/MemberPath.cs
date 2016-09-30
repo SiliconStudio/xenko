@@ -123,6 +123,7 @@ namespace SiliconStudio.Core.Reflection
         /// <returns>This instance.</returns>
         public MemberPath Append(MemberPath path)
         {
+            if (path == null) throw new ArgumentNullException(nameof(path));
             foreach (var item in path.items)
             {
                 AddItem(item.Clone(null));
