@@ -31,7 +31,7 @@ namespace SiliconStudio.Presentation.Quantum
             : base(ownerViewModel, index)
         {
             // ReSharper disable once DoNotCallOverridableMethodsInConstructor
-            DependentProperties.Add(nameof(Value), new[] { nameof(HasMultipleValues), nameof(IsPrimitive), nameof(HasList), nameof(HasDictionary) });
+            DependentProperties.Add(nameof(Value), new[] { nameof(HasMultipleValues), nameof(IsPrimitive), nameof(HasCollection), nameof(HasDictionary) });
             this.combinedNodes = new List<SingleObservableNode>(combinedNodes);
             Name = name;
             DisplayName = this.combinedNodes.First().DisplayName;
@@ -111,7 +111,7 @@ namespace SiliconStudio.Presentation.Quantum
                 }
             }
 
-            if (!HasList || HasDictionary)
+            if (!HasCollection || HasDictionary)
             {
                 var commonChildren = GetCommonChildren();
                 GenerateChildren(commonChildren);
@@ -167,7 +167,7 @@ namespace SiliconStudio.Presentation.Quantum
         public bool GroupByType { get; set; }
 
         /// <inheritdoc/>
-        public override sealed bool HasList => CombinedNodes.First().HasList;
+        public override sealed bool HasCollection => CombinedNodes.First().HasCollection;
 
         /// <inheritdoc/>
         public override sealed bool HasDictionary => CombinedNodes.First().HasDictionary;
@@ -190,7 +190,7 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 var parent = (CombinedObservableNode)Parent;
                 parent.NotifyPropertyChanging(Name);
-                OnPropertyChanging(nameof(HasMultipleValues), nameof(IsPrimitive), nameof(HasList), nameof(HasDictionary));
+                OnPropertyChanging(nameof(HasMultipleValues), nameof(IsPrimitive), nameof(HasCollection), nameof(HasDictionary));
                 
                 if (AreCombinable(CombinedNodes))
                 {
@@ -206,7 +206,7 @@ namespace SiliconStudio.Presentation.Quantum
                     Initialize();
                 }
 
-                OnPropertyChanged(nameof(HasMultipleValues), nameof(IsPrimitive), nameof(HasList), nameof(HasDictionary));
+                OnPropertyChanged(nameof(HasMultipleValues), nameof(IsPrimitive), nameof(HasCollection), nameof(HasDictionary));
                 parent.NotifyPropertyChanged(Name);
             }
         }

@@ -160,7 +160,7 @@ namespace SiliconStudio.Presentation.Quantum
         public sealed override bool IsPrimitive => isPrimitive;
 
         /// <inheritdoc/>
-        public sealed override bool HasList => CollectionDescriptor.IsCollection(Type);
+        public sealed override bool HasCollection => CollectionDescriptor.IsCollection(Type);
 
         /// <inheritdoc/>
         public sealed override bool HasDictionary => DictionaryDescriptor.IsDictionary(Type);
@@ -383,7 +383,7 @@ namespace SiliconStudio.Presentation.Quantum
         {
             if (Parent == null) throw new InvalidOperationException("The node to refresh can't be a root node.");
             
-            OnPropertyChanging(nameof(IsPrimitive), nameof(HasList), nameof(HasDictionary));
+            OnPropertyChanging(nameof(IsPrimitive), nameof(HasCollection), nameof(HasDictionary));
 
             // Clean the current node so it can be re-initialized (associatedData are overwritten in Initialize)
             ClearCommands();
@@ -406,7 +406,7 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 DisplayName = DisplayNameProvider();
             }
-            OnPropertyChanged(nameof(IsPrimitive), nameof(HasList), nameof(HasDictionary));
+            OnPropertyChanged(nameof(IsPrimitive), nameof(HasCollection), nameof(HasDictionary));
         }
 
         /// <summary>
@@ -539,7 +539,7 @@ namespace SiliconStudio.Presentation.Quantum
                     return Equals(e.Index, Index);
                 case ContentChangeType.CollectionAdd:
                 case ContentChangeType.CollectionRemove:
-                    return HasList || HasDictionary; // TODO: probably not sufficent
+                    return HasCollection || HasDictionary; // TODO: probably not sufficent
                 default:
                     throw new ArgumentOutOfRangeException();
             }

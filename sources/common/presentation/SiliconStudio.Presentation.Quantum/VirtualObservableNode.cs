@@ -44,7 +44,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         public override int? Order { get; }
 
-        public override bool HasList => typeof(ICollection).IsAssignableFrom(Type);
+        public override bool HasCollection => typeof(ICollection).IsAssignableFrom(Type);
 
         public override bool HasDictionary => typeof(IDictionary).IsAssignableFrom(Type);
 
