@@ -14,11 +14,6 @@ namespace SiliconStudio.Assets.Diagnostics
         RawAssetNotFound,
 
         /// <summary>
-        /// The asset not found
-        /// </summary>
-        AssetNotFound,
-
-        /// <summary>
         /// The asset required for the current package was not found
         /// </summary>
         AssetForPackageNotFound,

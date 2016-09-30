@@ -214,7 +214,7 @@ namespace SiliconStudio.Assets.Analysis
         {
             if (beingProcessed.Contains(assetItem.Id))
             {
-                log.Error(package, assetItem.Asset.Base, AssetMessageCode.AssetNotFound, assetItem.Asset.Base);
+                log.Error(package, assetItem.Asset.Base, AssetMessageCode.AssetForPackageNotFound, assetItem.Asset.Base, package.FullPath.GetFileName());
                 return false;
             }
             beingProcessed.Add(assetItem.Id);
@@ -276,7 +276,7 @@ namespace SiliconStudio.Assets.Analysis
             existingAsset = session.FindAsset(baseId);
             if (existingAsset == null)
             {
-                log.Warning(package, assetBase, AssetMessageCode.AssetNotFound, assetBase);
+                log.Warning(package, assetBase, AssetMessageCode.AssetForPackageNotFound, assetBase, package.FullPath.GetFileName());
                 return false;
             }
 
