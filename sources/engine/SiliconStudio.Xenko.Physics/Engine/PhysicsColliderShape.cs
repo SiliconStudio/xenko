@@ -91,6 +91,11 @@ namespace SiliconStudio.Xenko.Physics
                 var cylinderDesc = (CylinderColliderShapeDesc)desc;
                 shape = new CylinderColliderShape(cylinderDesc.Height, cylinderDesc.Radius, cylinderDesc.Orientation) { LocalOffset = cylinderDesc.LocalOffset, LocalRotation = cylinderDesc.LocalRotation };
             }
+            else if (type == typeof(ConeColliderShapeDesc))
+            {
+                var coneDesc = (ConeColliderShapeDesc)desc;
+                shape = new ConeColliderShape(coneDesc.Height, coneDesc.Radius, coneDesc.Orientation) { LocalOffset = coneDesc.LocalOffset, LocalRotation = coneDesc.LocalRotation };
+            }
             else if (type == typeof(SphereColliderShapeDesc))
             {
                 var sphereDesc = (SphereColliderShapeDesc)desc;
