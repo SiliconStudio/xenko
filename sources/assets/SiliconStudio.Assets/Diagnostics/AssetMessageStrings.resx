@@ -129,6 +129,12 @@
   <data name="AssetNotFound" xml:space="preserve">
     <value>Asset [{0}] not found</value>
   </data>
+  <data name="AssetForPackageNotFound" xml:space="preserve">
+    <value>Asset [{0}] not found. Required for package [{1}]</value>
+  </data>
+  <data name="AssetFoundInDifferentPackage" xml:space="preserve">
+    <value>Asset [{0}] was found in package [{1}]. Perhaps a package dependency is missing?</value>
+  </data>
   <data name="AssetReferenceChanged" xml:space="preserve">
     <value>The asset reference [{0}] id has changed to a new asset [{1}]</value>
   </data>

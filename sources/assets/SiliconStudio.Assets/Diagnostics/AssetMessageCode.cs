@@ -19,6 +19,16 @@ namespace SiliconStudio.Assets.Diagnostics
         AssetNotFound,
 
         /// <summary>
+        /// The asset required for the current package was not found
+        /// </summary>
+        AssetForPackageNotFound,
+
+        /// <summary>
+        /// The asset required for the current package was found in a different package
+        /// </summary>
+        AssetFoundInDifferentPackage,
+
+        /// <summary>
         /// The asset reference has been changed for a particular location
         /// </summary>
         AssetReferenceChanged,
