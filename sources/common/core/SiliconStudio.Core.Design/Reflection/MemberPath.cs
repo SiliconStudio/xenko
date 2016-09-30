@@ -117,6 +117,20 @@ namespace SiliconStudio.Core.Reflection
         }
 
         /// <summary>
+        /// Appends the given <paramref name="path"/> to this instance.
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns>This instance.</returns>
+        public MemberPath Append(MemberPath path)
+        {
+            foreach (var item in path.items)
+            {
+                AddItem(item.Clone(null));
+            }
+            return this;
+        }
+
+        /// <summary>
         /// Pushes a member access on the path.
         /// </summary>
         /// <param name="descriptor">The descriptor of the member.</param>
@@ -283,6 +297,7 @@ namespace SiliconStudio.Core.Reflection
                 throw new InvalidOperationException("Unable to retrieve the value of this member path on this root object.");
             return result;
         }
+
         /// <summary>
         /// Gets the value from the specified root object following this instance path.
         /// </summary>
