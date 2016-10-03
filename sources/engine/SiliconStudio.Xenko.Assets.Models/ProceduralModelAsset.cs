@@ -10,6 +10,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Rendering.ProceduralModels;
 
@@ -22,12 +23,13 @@ namespace SiliconStudio.Xenko.Assets.Models
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(ProceduralModelAssetCompiler))]
     [Display(185, "Procedural Model")]
-    [AssetFormatVersion(XenkoConfig.PackageName, "1.5.0-alpha01")]
+    [AssetFormatVersion(XenkoConfig.PackageName, "1.8.3-beta")]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 2, typeof(Upgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, 2, 3, typeof(RenameCapsuleHeight))]
     [AssetUpgrader(XenkoConfig.PackageName, 3, 4, typeof(RenameDiameters))]
     [AssetUpgrader(XenkoConfig.PackageName, 4, 5, typeof(Standardization))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.5", "1.5.0-alpha01", typeof(CapsuleRadiusDefaultChange))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha01", "1.8.3-beta", typeof(ConeOffsetChange))]
     public sealed class ProceduralModelAsset : Asset, IModelAsset
     {
         /// <summary>
@@ -174,6 +176,26 @@ namespace SiliconStudio.Xenko.Assets.Models
                     if (proceduralType.Radius == null)
                     {
                         proceduralType.Radius = 0.25f;
+                    }
+                }
+            }
+        }
+
+        class ConeOffsetChange : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                // SerializedVersion format changed during renaming upgrade. However, before this was merged back in master, some asset upgrader still with older version numbers were developed.
+                var proceduralType = asset.Type;
+                if (proceduralType.Node.Tag == "!ConeProceduralModel" && currentVersion != PackageVersion.Parse("0.0.6"))
+                {
+                    if (proceduralType.LocalOffset == null)
+                    {
+                        dynamic offset = new DynamicYamlMapping(new YamlMappingNode());
+                        offset.AddChild("X", 0.0f);
+                        offset.AddChild("Y", 0.5f);
+                        offset.AddChild("Z", 0.0f);
+                        proceduralType.AddChild("LocalOffset", offset);
                     }
                 }
             }
