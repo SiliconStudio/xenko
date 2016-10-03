@@ -120,7 +120,7 @@ namespace SiliconStudio.Assets.Analysis
             if (!ReferenceEquals(assetItem.Asset, assetItemFound.Asset))
             {
                 var assetReference = assetItem.ToReference();
-                log.Error(assetItem.Package, assetReference, AssetMessageCode.AssetNotFound, assetReference);
+                log.Error(assetItem.Package, assetReference, AssetMessageCode.AssetForPackageNotFound, assetReference, assetItem.Package.FullPath.GetFileName());
                 return baseItems;
             }
 
