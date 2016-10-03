@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.Physics
             }
         }
 
-        private float maxSlope;
+        private float maxSlope = 0.785398f; // 45 degrees
 
         /// <summary>
         /// Gets or sets if this character element max slope
@@ -85,6 +85,8 @@ namespace SiliconStudio.Xenko.Physics
         /// The max slope this character can climb
         /// </userdoc>
         [DataMember(85)]
+        [DefaultValue(0.785398f)]
+        [Display("Max Slope (radians)")]
         public float MaxSlope
         {
             get
