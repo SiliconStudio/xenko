@@ -14,6 +14,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Serialization.Serializers;
@@ -32,10 +33,6 @@ namespace SiliconStudio.Xenko.Engine
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct NavigationMeshBuildSettings
     {
-        // Bounding box for the generated navigation mesh
-        // TODO: Move this to outside the build settings
-        public BoundingBox BoundingBox;
-
         // Grid settings
         public float CellHeight;
         public float CellSize;
@@ -52,16 +49,32 @@ namespace SiliconStudio.Xenko.Engine
 
     [DataContract]
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
+    [ObjectFactory(typeof(NavigationAgentSettingsFactory))]
     public struct NavigationAgentSettings
     {
-        [DefaultValue(1.0f)] public float Height;
-        [DefaultValue(1.0f)] public float Radius;
-        [DefaultValue(0.25f)] public float MaxClimb;
-        [DataMemberRange(0.0f, 180.0f, 0.1f, 1.0f, AllowNaN = false)] [DefaultValue(45.0f)] public float MaxSlope;
+        public float Height;
+        public float Radius;
+        public float MaxClimb;
+        [DataMemberRange(0.0f, 180.0f, 0.1f, 1.0f, AllowNaN = false)]
+        public float MaxSlope;
 
         public override int GetHashCode()
         {
             return Height.GetHashCode() + Radius.GetHashCode() + MaxClimb.GetHashCode() + MaxSlope.GetHashCode();
+        }
+    }
+
+    public class NavigationAgentSettingsFactory : IObjectFactory
+    {
+        public object New(Type type)
+        {
+            return new NavigationAgentSettings
+            {
+                Height = 1.0f,
+                MaxClimb = 0.25f,
+                MaxSlope = 45.0f,
+                Radius = 0.5f
+            };
         }
     }
 
@@ -88,16 +101,20 @@ namespace SiliconStudio.Xenko.Engine
 
         public class Layer
         {
+            /// <summary>
+            /// Tiles generated for this layer
+            /// </summary>
             public Dictionary<Point, Tile> Tiles = new Dictionary<Point, Tile>();
+
+            /// <summary>
+            /// Agent settings for generating this layer
+            /// </summary>
+            internal NavigationAgentSettings agentSettings;
         }
         
         // Build settings specified while bulding (null at runtime)
         [DataMemberIgnore]
         private NavigationMeshBuildSettings buildSettings;
-
-        // Agents settings specified while building this mesh (null at runtime)
-        [DataMemberIgnore]
-        private NavigationAgentSettings[] agentSettings;
 
         // Multiple layers corresponding to multiple agent settings
         [DataMemberCustomSerializer] public Layer[] Layers;
@@ -136,6 +153,7 @@ namespace SiliconStudio.Xenko.Engine
             Model model = new Model();
             for (int l = 0; l < Layers.Length; l++)
             {
+                model.Add(CreateLayerDebugMaterial(device, l));
                 foreach (var p in Layers[l].Tiles)
                 {
                     Tile tile = p.Value;
@@ -169,7 +187,6 @@ namespace SiliconStudio.Xenko.Engine
                     };
                     mesh.BoundingBox = bb;
                     model.Add(mesh);
-                    model.Add(CreateLayerDebugMaterial(device, l));
                 }
             }
 
@@ -248,13 +265,13 @@ namespace SiliconStudio.Xenko.Engine
         public void Initialize(NavigationMeshBuildSettings buildSettings, NavigationAgentSettings[] agentSettings)
         {
             this.buildSettings = buildSettings;
-            this.agentSettings = agentSettings;
             if (agentSettings.Length > 0)
             {
-                Layers = new Layer[this.agentSettings.Length];
-                for (int i = 0; i < this.agentSettings.Length; i++)
+                Layers = new Layer[agentSettings.Length];
+                for (int i = 0; i < agentSettings.Length; i++)
                 {
                     Layers[i] = new Layer();
+                    Layers[i].agentSettings = agentSettings[i];
                 }
             }
             else
@@ -277,7 +294,7 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         /// <summary>
-        /// Build a specific navigation mesh tile
+        /// Build a specific navigation mesh tile for all layers
         /// </summary>
         /// <param name="tile">The tile to build</param>
         /// <param name="boundingBox">the bound</param>
@@ -291,7 +308,7 @@ namespace SiliconStudio.Xenko.Engine
             for (int i = 0; i < Layers.Length; i++)
             {
                 Layer layer = Layers[i];
-                Tile tile = BuildLayerTile(layer, agentSettings[i], inputVertices, inputIndices, boundingBox, tileCoordinate);
+                Tile tile = BuildTileInternal(layer, inputVertices, inputIndices, boundingBox, tileCoordinate);
 
                 if (tile != null)
                 {
@@ -311,10 +328,46 @@ namespace SiliconStudio.Xenko.Engine
             return builtTiles;
         }
 
-        private unsafe Tile BuildLayerTile(Layer layer, NavigationAgentSettings agentSettings,
+        /// <summary>
+        /// Build a single tile for a single layer
+        /// </summary>
+        /// <returns></returns>
+        public Tile BuildLayerTile(int layerIndex,
             Vector3[] inputVertices, int[] inputIndices,
             BoundingBox boundingBox, Point tileCoordinate)
         {
+            Layer layer = Layers[layerIndex];
+            Tile tile = BuildTileInternal(layer, inputVertices, inputIndices, boundingBox, tileCoordinate);
+            if (tile != null)
+            {
+                // Remove old tile
+                if (layer.Tiles.ContainsKey(tileCoordinate))
+                    layer.Tiles.Remove(tileCoordinate);
+
+                // Add
+                layer.Tiles.Add(tileCoordinate, tile);
+            }
+            
+            // Update tile hash
+            UpdateTileHash();
+
+            return tile;
+        }
+        
+        /// <summary>
+        /// Builds a single tile for a given layer without adding it
+        /// </summary>
+        /// <param name="layer"></param>
+        /// <param name="inputVertices"></param>
+        /// <param name="inputIndices"></param>
+        /// <param name="boundingBox"></param>
+        /// <param name="tileCoordinate"></param>
+        /// <returns></returns>
+        private unsafe Tile BuildTileInternal(Layer layer,
+            Vector3[] inputVertices, int[] inputIndices,
+            BoundingBox boundingBox, Point tileCoordinate)
+        {
+            NavigationAgentSettings agentSettings = layer.agentSettings;
             Tile tile = new Tile();
 
             // Initialize navigation builder

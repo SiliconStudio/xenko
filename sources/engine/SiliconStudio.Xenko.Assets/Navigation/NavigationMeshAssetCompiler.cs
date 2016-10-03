@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -300,6 +301,12 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             inds[5] = 3;
         }
 
+        public static void ExtendBoundingBox(ref BoundingBox boundingBox, Vector3 offsets)
+        {
+            boundingBox.Minimum -= offsets;
+            boundingBox.Maximum += offsets;
+        }
+
         private class NavmeshBuildCommand : AssetCommand<NavigationMeshAsset>
         {
             private NavigationMeshBuildCache buildCache;
@@ -312,7 +319,9 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             private readonly Package package;
 
             // Combined scene data to create input meshData
-            public VertexDataBuilder sceneVertexDataBuilder;
+            private VertexDataBuilder sceneVertexDataBuilder;
+            private BoundingBox globalBoundingBox;
+            private bool generateBoundingBox;
 
             List<BoundingBox> updatedAreas = new List<BoundingBox>();
             private bool fullRebuild = false;
@@ -326,6 +335,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 public Matrix Transform;
                 public IColliderShapeDesc Description;
                 public Entity Entity;
+                public VertexDataBuilder VertexDataBuilder;
             }
 
             private List<DeferredShape> deferredShapes = new List<DeferredShape>();
@@ -375,6 +385,8 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                             collider.ComposeShape();
                             if (collider.ColliderShape == null)
                                 continue; // No collider
+
+                            bool isDeferred = false;
 
                             // Interate through all the colliders shapes while queueing all shapes in compound shapes to process those as well
                             Queue<ColliderShape> shapesToProcess = new Queue<ColliderShape>();
@@ -426,7 +438,15 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                                     Matrix transform = plane.PositiveCenterMatrix*entityWorldMatrix;
 
                                     // Defer infinite planes because their size is not defined yet
-                                    deferredShapes.Add(new DeferredShape { Description = planeDesc, Transform = transform, Entity = entity });
+                                    deferredShapes.Add(new DeferredShape
+                                    {
+                                        Description = planeDesc,
+                                        Transform = transform,
+                                        Entity = entity,
+                                        VertexDataBuilder = entityVertexDataBuilder
+                                        
+                                    });
+                                    isDeferred = true;
                                 }
                                 else if (shapeType == typeof(ConvexHullColliderShape))
                                 {
@@ -445,18 +465,21 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                                     }
                                 }
                             }
-                            
-                            // Store current entity in build cache
-                            currentBuild.Add(entity, entityVertexDataBuilder);
-                            
-                            // Add (?old) and new bounding box to modified areas
-                            sceneVertexDataBuilder.AppendOther(entityVertexDataBuilder);
-                            NavigationMeshBuildCache.Build.Object oldObject = null;
-                            if (oldBuild?.Objects.TryGetValue(entity.Id, out oldObject) ?? false)
+
+                            if (!isDeferred)
                             {
-                                updatedAreas.Add(oldObject.Data.BoundingBox);
+                                // Store current entity in build cache
+                                currentBuild.Add(entity, entityVertexDataBuilder);
+
+                                // Add (?old) and new bounding box to modified areas
+                                sceneVertexDataBuilder.AppendOther(entityVertexDataBuilder);
+                                NavigationMeshBuildCache.Build.Object oldObject = null;
+                                if (oldBuild?.Objects.TryGetValue(entity.Id, out oldObject) ?? false)
+                                {
+                                    updatedAreas.Add(oldObject.Data.BoundingBox);
+                                }
+                                updatedAreas.Add(entityVertexDataBuilder.BoundingBox);
                             }
-                            updatedAreas.Add(entityVertexDataBuilder.BoundingBox);
 
                             // TODO: Remove this
                             string fullEntityName = entity.Name;
@@ -477,14 +500,13 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                         currentBuild.Add(entity, oldObject.Data);
                     }
                 }
-                
+
                 // Store calculated bounding box
-                buildSettings.BoundingBox = sceneVertexDataBuilder.BoundingBox;
+                if(generateBoundingBox)
+                    globalBoundingBox = sceneVertexDataBuilder.BoundingBox;
 
                 // Process deferred shapes
-                Vector3 bbExtent = buildSettings.BoundingBox.Extent;
-                BoundingBox boundingBox = sceneVertexDataBuilder.BoundingBox;
-                Vector3 maxSize = boundingBox.Maximum - boundingBox.Minimum;
+                Vector3 maxSize = globalBoundingBox.Maximum - globalBoundingBox.Minimum;
                 float maxDiagonal = Math.Max(maxSize.X, Math.Max(maxSize.Y, maxSize.Z));
                 foreach (DeferredShape shape in deferredShapes)
                 {
@@ -505,8 +527,8 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                     Vector3 tangent, bitangent;
                     GenerateTangentBitangent(plane.Normal, out tangent, out bitangent);
                     // Calculate plane offset so that the plane always covers the whole range of the bounding box
-                    Vector3 planeOffset = Vector3.Dot(boundingBox.Center, tangent)*tangent;
-                    planeOffset += Vector3.Dot(boundingBox.Center, bitangent)*bitangent;
+                    Vector3 planeOffset = Vector3.Dot(globalBoundingBox.Center, tangent)*tangent;
+                    planeOffset += Vector3.Dot(globalBoundingBox.Center, bitangent)*bitangent;
 
                     VertexPositionNormalTexture[] vertices = new VertexPositionNormalTexture[planePoints.Length];
                     for (int i = 0; i < planePoints.Length; i++)
@@ -515,13 +537,15 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                     }
 
                     GeometricMeshData<VertexPositionNormalTexture> meshData = new GeometricMeshData<VertexPositionNormalTexture>(vertices, planeInds, false);
+                    shape.VertexDataBuilder.AppendMeshData(meshData, Matrix.Identity);
                     sceneVertexDataBuilder.AppendMeshData(meshData, Matrix.Identity);
 
-                    if (oldBuild?.IsUpdatedOrNew(shape.Entity) ?? false)
-                    {
-                        // NOTE: Force a full rebuild when moving unbound shapes such as ininite planes
-                        fullRebuild = true;
-                    }
+                    // Store deferred shape in build cahce just like normal onesdddd
+                    currentBuild.Add(shape.Entity, shape.VertexDataBuilder);
+
+
+                    // NOTE: Force a full rebuild when moving unbound shapes such as ininite planes
+                    fullRebuild = true;
                 }
             }
 
@@ -537,6 +561,17 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 // No scene specified, result in failure
                 if (asset.DefaultScene == null)
                     return Task.FromResult(ResultStatus.Failed);
+
+                if (asset.AutoGenerateBoundingBox)
+                {
+                    generateBoundingBox = true;
+                    globalBoundingBox = BoundingBox.Empty;
+                }
+                else
+                {
+                    generateBoundingBox = false;
+                    globalBoundingBox = asset.BoundingBox;
+                }
 
                 // Copy build settings so we can modify them
                 buildSettings = asset.BuildSettings;
@@ -565,8 +600,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 CollectInputGeometry(sceneEntities);
                 List<BoundingBox> removedAreas = oldBuild?.GetRemovedAreas(sceneEntities);
                 
-                BoundingBox boundingBox = sceneVertexDataBuilder.BoundingBox;
-                buildSettings.BoundingBox = boundingBox;
+                BoundingBox boundingBox = globalBoundingBox;
                 // Can't generate when no bounding box is specified
                 if (boundingBox == BoundingBox.Empty)
                     return Task.FromResult(ResultStatus.Failed);
@@ -590,44 +624,13 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 //DumpObj("input",  meshVertices.ToArray());
 
                 // Check if settings changed to trigger a full rebuild
-                int currentSettingsHash = asset.BuildSettings.GetHashCode();
-                foreach (var agentSetting in asset.NavigationMeshAgentSettings)
-                {
-                    currentSettingsHash += agentSetting.GetHashCode();
-                }
+                int currentSettingsHash = asset.GetHashCode();
                 currentBuild.SettingsHash = currentSettingsHash;
                 if (oldBuild != null && oldBuild.SettingsHash != currentBuild.SettingsHash)
                 {
                     fullRebuild = true;
                 }
-
-                // Flag tiles to build
-                HashSet<Point> tilesToBuild = new HashSet<Point>();
-                if (fullRebuild)
-                {
-                    // For full rebuild just take the root bounding box for selecting tiles to build
-                    List<Point> newTileList = NavigationMesh.GetOverlappingTiles(buildSettings, boundingBox);
-                    foreach (Point p in newTileList)
-                        tilesToBuild.Add(p);
-
-                    generatedNavigationMesh.ClearTiles();
-                }
-                else
-                {
-                    foreach (var update in updatedAreas)
-                    {
-                        List<Point> newTileList = NavigationMesh.GetOverlappingTiles(buildSettings, update);
-                        foreach (Point p in newTileList)
-                            tilesToBuild.Add(p);
-                    }
-                    foreach (var update in removedAreas)
-                    {
-                        List<Point> newTileList = NavigationMesh.GetOverlappingTiles(buildSettings, update);
-                        foreach (Point p in newTileList)
-                            tilesToBuild.Add(p);
-                    }
-                }
-
+               
                 if (oldBuild == null || fullRebuild)
                 {
                     // Initialize navigation mesh
@@ -640,24 +643,62 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 }
                 currentBuild.NavigationMesh = generatedNavigationMesh;
 
-                // Build tiles
-                System.Diagnostics.Debug.WriteLine($"Rebuilding {tilesToBuild.Count} tiles for {asset.NavigationMeshAgentSettings.Count} agent settings for navmesh {assetUrl}");
-                foreach (var tileToBuild in tilesToBuild)
+                // Generate all the layers corresponding to the various agent settings
+                for(int layer = 0; layer < asset.NavigationMeshAgentSettings.Count; layer++)
                 {
-                    BoundingBox tileBoundingBox = NavigationMesh.ClampBoundingBoxToTile(buildSettings, boundingBox, tileToBuild);
-                    List<NavigationMesh.Tile> buildTiles = generatedNavigationMesh.BuildTile(
-                        meshVertices.ToArray(), meshIndices.ToArray(), 
-                        tileBoundingBox, tileToBuild);
+                    Stopwatch layerBuildTimer = new Stopwatch();
+                    layerBuildTimer.Start();
+                    var agentSetting = asset.NavigationMeshAgentSettings[layer];
 
-                    // TODO: Remove this
-                    //int layer = 0;
-                    //foreach (var tile in buildTiles)
-                    //{
-                    //    if(tile.MeshVertices != null)
-                    //        DumpObj($"Tiles\\tile_{tileToBuild.X}_{tileToBuild.Y}_{layer++}", tile.MeshVertices);
-                    //}
+                    // Flag tiles to build for this specific layer
+                    HashSet<Point> tilesToBuild = new HashSet<Point>();
+                    Vector3 boundingBoxOffset = new Vector3(0, 0, 0);
+                    if (fullRebuild)
+                    {
+                        // For full rebuild just take the root bounding box for selecting tiles to build
+                        List<Point> newTileList = NavigationMesh.GetOverlappingTiles(buildSettings, boundingBox);
+                        foreach (Point p in newTileList)
+                            tilesToBuild.Add(p);
+                    }
+                    else
+                    {
+                        // Apply an offset so their neighbouring tiles which are affected by the agent radius also get rebuild
+                        Vector3 agentOffset = new Vector3(agentSetting.Radius, 0, agentSetting.Radius);
+                        if(removedAreas != null)
+                            updatedAreas.AddRange(removedAreas);
+                        foreach (var update in updatedAreas)
+                        {
+                            BoundingBox agentSpecificBoundingBox = new BoundingBox
+                            {
+                                Minimum = update.Minimum - agentOffset,
+                                Maximum = update.Maximum + agentOffset,
+                            };
+                            List<Point> newTileList = NavigationMesh.GetOverlappingTiles(buildSettings, agentSpecificBoundingBox);
+                            foreach (Point p in newTileList)
+                                tilesToBuild.Add(p);
+                        }
+                    }
+
+                    // Build tiles
+                    foreach (var tileToBuild in tilesToBuild)
+                    {
+                        BoundingBox tileBoundingBox = NavigationMesh.ClampBoundingBoxToTile(buildSettings, boundingBox, tileToBuild);
+                        if (boundingBox.Contains(ref tileBoundingBox) == ContainmentType.Disjoint)
+                            continue;
+                        NavigationMesh.Tile buildTile = generatedNavigationMesh.BuildLayerTile(layer,
+                            meshVertices.ToArray(), meshIndices.ToArray(), tileBoundingBox, tileToBuild);
+
+                        // TODO: Remove this
+                        //int layer = 0;
+                        //foreach (var tile in buildTiles)
+                        //{
+                        //    if(tile.MeshVertices != null)
+                        //        DumpObj($"Tiles\\tile_{tileToBuild.X}_{tileToBuild.Y}_{layer++}", tile.MeshVertices);
+                        //}
+                    }
+                    Debug.WriteLine($"Rebuilt {tilesToBuild.Count} tiles for layer {layer} for navmesh for {sceneUrl}/{assetUrl} in {layerBuildTimer.Elapsed.TotalMilliseconds}ms"); // TODO: Remove
                 }
-                
+
                 assetManager.Save(assetUrl, generatedNavigationMesh);
                 buildCache.AddBuild(assetUrl, currentBuild);
 

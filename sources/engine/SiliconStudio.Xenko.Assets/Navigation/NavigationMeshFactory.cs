@@ -15,20 +15,20 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             // Initialize build settings
             return new NavigationMeshAsset
             {
-                AutoGenerateBoundingBox = true,
                 BuildSettings = new NavigationMeshBuildSettings
                 {
-                    BoundingBox = new BoundingBox(new Vector3(-25.0f), new Vector3(25.0f)),
                     CellHeight = 0.05f,
-                    CellSize = 0.1f,
-                    TileSize = 2,
+                    CellSize = 0.05f,
+                    TileSize = 8,
                 },
+                BoundingBox = new BoundingBox(new Vector3(-10.0f), new Vector3(10.0f)),
+                AutoGenerateBoundingBox = true,
                 NavigationMeshAgentSettings = new List<NavigationAgentSettings>
                 {
                     new NavigationAgentSettings
                     {
                         Height = 1.0f,
-                        Radius = 0.1f,
+                        Radius = 0.5f,
                         MaxSlope = 45.0f,
                         MaxClimb = 0.25f,
                     }
