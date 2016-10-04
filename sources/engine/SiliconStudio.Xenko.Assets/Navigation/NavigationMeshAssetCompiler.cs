@@ -121,10 +121,11 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             public void Add(Entity e, VertexDataBuilder data)
             {
                 StaticColliderComponent collider = e.Get<StaticColliderComponent>();
-                if (collider != null && collider.IsBlocking)
+                if (collider != null)
                 {
                     int hash = 0;
                     hash += e.Transform.WorldMatrix.GetHashCode();
+                    hash += 379 * collider.CollisionGroup.GetHashCode();
                     foreach (var shape in collider.ColliderShapes)
                     {
                         hash += shape.GetHashCode();
@@ -144,7 +145,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 StaticColliderComponent collider = newEntity.Get<StaticColliderComponent>();
                 if (Objects.TryGetValue(newEntity.Id, out existingObject))
                 {
-                    if (collider != null && collider.IsBlocking)
+                    if (collider != null)
                     {
                         int hash = 0;
                         hash += newEntity.Transform.WorldMatrix.GetHashCode();
@@ -166,7 +167,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 foreach (Entity e in entities)
                 {
                     StaticColliderComponent collider = e.Get<StaticColliderComponent>();
-                    if(collider != null && collider.IsBlocking)
+                    if(collider != null)
                         inputHashSet.Add(e.Id);
                 }
                 foreach (var p in Objects)
@@ -410,7 +411,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             {
                 // Reset state
                 updatedAreas.Clear();
-                fullRebuild = oldBuild == null ? true : false;
+                fullRebuild = oldBuild == null;
 
                 sceneVertexDataBuilder = new VertexDataBuilder();
 
@@ -419,97 +420,106 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
                 foreach (var entity in sceneEntities)
                 {
-                    if (oldBuild?.IsUpdatedOrNew(entity) ?? true)
+                    StaticColliderComponent collider = entity.Get<StaticColliderComponent>();
+                    
+                    bool colliderEnabled = collider != null && ((CollisionFilterGroupFlags)collider.CollisionGroup & asset.AllowedCollisionGroups) != 0 && collider.Enabled;
+                    if (!colliderEnabled) // Removed or disabled
+                    {
+                        // Check for old object
+                        NavigationMeshBuildCache.Build.Object oldObject = null;
+                        if (oldBuild?.Objects.TryGetValue(entity.Id, out oldObject) ?? false)
+                        {
+                            // This object has been disabled, update the area because it was removed and continue to the next object
+                            updatedAreas.Add(oldObject.Data.BoundingBox);
+                        }
+                    }
+                    else if (oldBuild?.IsUpdatedOrNew(entity) ?? true) // Updated?
                     {
                         TransformComponent entityTransform = entity.Transform;
                         Matrix entityWorldMatrix = entityTransform.WorldMatrix;
 
                         VertexDataBuilder entityVertexDataBuilder = new VertexDataBuilder();
 
-                        StaticColliderComponent collider = entity.Get<StaticColliderComponent>();
-                        if (collider != null && collider.IsBlocking && collider.Enabled)
+                        collider.ComposeShape();
+                        if (collider.ColliderShape == null)
+                            continue; // No collider
+
+                        bool isDeferred = false;
+
+                        // Interate through all the colliders shapes while queueing all shapes in compound shapes to process those as well
+                        Queue<ColliderShape> shapesToProcess = new Queue<ColliderShape>();
+                        shapesToProcess.Enqueue(collider.ColliderShape);
+                        while (!shapesToProcess.IsEmpty())
                         {
-                            collider.ComposeShape();
-                            if (collider.ColliderShape == null)
-                                continue; // No collider
-
-                            bool isDeferred = false;
-
-                            // Interate through all the colliders shapes while queueing all shapes in compound shapes to process those as well
-                            Queue<ColliderShape> shapesToProcess = new Queue<ColliderShape>();
-                            shapesToProcess.Enqueue(collider.ColliderShape);
-                            while (!shapesToProcess.IsEmpty())
+                            var shape = shapesToProcess.Dequeue();
+                            var shapeType = shape.GetType();
+                            if (shapeType == typeof(BoxColliderShape))
                             {
-                                var shape = shapesToProcess.Dequeue();
-                                var shapeType = shape.GetType();
-                                if (shapeType == typeof(BoxColliderShape))
-                                {
-                                    var box = (BoxColliderShape)shape;
-                                    var boxDesc = (BoxColliderShapeDesc)box.Description;
-                                    Matrix transform = box.PositiveCenterMatrix*entityWorldMatrix;
+                                var box = (BoxColliderShape)shape;
+                                var boxDesc = (BoxColliderShapeDesc)box.Description;
+                                Matrix transform = box.PositiveCenterMatrix*entityWorldMatrix;
 
-                                    var meshData = GeometricPrimitive.Cube.New(boxDesc.Size);
-                                    entityVertexDataBuilder.AppendMeshData(meshData, transform);
-                                }
-                                else if (shapeType == typeof(SphereColliderShape))
-                                {
-                                    var sphere = (SphereColliderShape)shape;
-                                    var sphereDesc = (SphereColliderShapeDesc)sphere.Description;
-                                    Matrix transform = sphere.PositiveCenterMatrix*entityWorldMatrix;
+                                var meshData = GeometricPrimitive.Cube.New(boxDesc.Size);
+                                entityVertexDataBuilder.AppendMeshData(meshData, transform);
+                            }
+                            else if (shapeType == typeof(SphereColliderShape))
+                            {
+                                var sphere = (SphereColliderShape)shape;
+                                var sphereDesc = (SphereColliderShapeDesc)sphere.Description;
+                                Matrix transform = sphere.PositiveCenterMatrix*entityWorldMatrix;
 
-                                    var meshData = GeometricPrimitive.Sphere.New(sphereDesc.Radius);
-                                    entityVertexDataBuilder.AppendMeshData(meshData, transform);
-                                }
-                                else if (shapeType == typeof(CylinderColliderShape))
-                                {
-                                    var cylinder = (CylinderColliderShape)shape;
-                                    var cylinderDesc = (CylinderColliderShapeDesc)cylinder.Description;
-                                    Matrix transform = cylinder.PositiveCenterMatrix*entityWorldMatrix;
+                                var meshData = GeometricPrimitive.Sphere.New(sphereDesc.Radius);
+                                entityVertexDataBuilder.AppendMeshData(meshData, transform);
+                            }
+                            else if (shapeType == typeof(CylinderColliderShape))
+                            {
+                                var cylinder = (CylinderColliderShape)shape;
+                                var cylinderDesc = (CylinderColliderShapeDesc)cylinder.Description;
+                                Matrix transform = cylinder.PositiveCenterMatrix*entityWorldMatrix;
 
-                                    var meshData = GeometricPrimitive.Cylinder.New(cylinderDesc.Height, cylinderDesc.Radius);
-                                    entityVertexDataBuilder.AppendMeshData(meshData, transform);
-                                }
-                                else if (shapeType == typeof(CapsuleColliderShape))
-                                {
-                                    var capsule = (CapsuleColliderShape)shape;
-                                    var capsuleDesc = (CapsuleColliderShapeDesc)capsule.Description;
-                                    Matrix transform = capsule.PositiveCenterMatrix*entityWorldMatrix;
+                                var meshData = GeometricPrimitive.Cylinder.New(cylinderDesc.Height, cylinderDesc.Radius);
+                                entityVertexDataBuilder.AppendMeshData(meshData, transform);
+                            }
+                            else if (shapeType == typeof(CapsuleColliderShape))
+                            {
+                                var capsule = (CapsuleColliderShape)shape;
+                                var capsuleDesc = (CapsuleColliderShapeDesc)capsule.Description;
+                                Matrix transform = capsule.PositiveCenterMatrix*entityWorldMatrix;
 
-                                    var meshData = GeometricPrimitive.Capsule.New(capsuleDesc.Length, capsuleDesc.Radius);
-                                    entityVertexDataBuilder.AppendMeshData(meshData, transform);
-                                }
-                                else if (shapeType == typeof(StaticPlaneColliderShape))
-                                {
-                                    var plane = (StaticPlaneColliderShape)shape;
-                                    var planeDesc = (StaticPlaneColliderShapeDesc)plane.Description;
-                                    Matrix transform = plane.PositiveCenterMatrix*entityWorldMatrix;
+                                var meshData = GeometricPrimitive.Capsule.New(capsuleDesc.Length, capsuleDesc.Radius);
+                                entityVertexDataBuilder.AppendMeshData(meshData, transform);
+                            }
+                            else if (shapeType == typeof(StaticPlaneColliderShape))
+                            {
+                                var plane = (StaticPlaneColliderShape)shape;
+                                var planeDesc = (StaticPlaneColliderShapeDesc)plane.Description;
+                                Matrix transform = plane.PositiveCenterMatrix*entityWorldMatrix;
 
-                                    // Defer infinite planes because their size is not defined yet
-                                    deferredShapes.Add(new DeferredShape
-                                    {
-                                        Description = planeDesc,
-                                        Transform = transform,
-                                        Entity = entity,
-                                        VertexDataBuilder = entityVertexDataBuilder
-                                        
-                                    });
-                                    isDeferred = true;
-                                }
-                                else if (shapeType == typeof(ConvexHullColliderShape))
+                                // Defer infinite planes because their size is not defined yet
+                                deferredShapes.Add(new DeferredShape
                                 {
-                                    // TODO: Fix loading of hull assets
-                                    var hull = (ConvexHullColliderShape)shape;
-                                    var hullDesc = (ConvexHullColliderShapeDesc)hull.Description;
-                                    Matrix transform = hull.PositiveCenterMatrix*entityWorldMatrix;
-                                }
-                                else if (shapeType == typeof(CompoundColliderShape))
+                                    Description = planeDesc,
+                                    Transform = transform,
+                                    Entity = entity,
+                                    VertexDataBuilder = entityVertexDataBuilder
+
+                                });
+                                isDeferred = true;
+                            }
+                            else if (shapeType == typeof(ConvexHullColliderShape))
+                            {
+                                // TODO: Fix loading of hull assets
+                                var hull = (ConvexHullColliderShape)shape;
+                                var hullDesc = (ConvexHullColliderShapeDesc)hull.Description;
+                                Matrix transform = hull.PositiveCenterMatrix*entityWorldMatrix;
+                            }
+                            else if (shapeType == typeof(CompoundColliderShape))
+                            {
+                                // Unroll compound collider shapes
+                                var compound = (CompoundColliderShape)shape;
+                                for (int i = 0; i < compound.Count; i++)
                                 {
-                                    // Unroll compound collider shapes
-                                    var compound = (CompoundColliderShape)shape;
-                                    for (int i = 0; i < compound.Count; i++)
-                                    {
-                                        shapesToProcess.Enqueue(compound[i]);
-                                    }
+                                    shapesToProcess.Enqueue(compound[i]);
                                 }
                             }
 
@@ -529,7 +539,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                             }
                         }
                     }
-                    else
+                    else // Not updated
                     {
                         // Copy old data into vertex buffer
                         NavigationMeshBuildCache.Build.Object oldObject = oldBuild.Objects[entity.Id];

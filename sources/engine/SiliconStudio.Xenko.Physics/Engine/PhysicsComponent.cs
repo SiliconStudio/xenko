@@ -96,14 +96,6 @@ namespace SiliconStudio.Xenko.Engine
         public virtual bool ProcessCollisions { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets if this element affects will act as a blocking volume in Navigation Mesh generation
-        /// </summary>
-        [Display("Is Blocking")]
-        [DataMember(46)]
-        [DefaultValue(true)]
-        public virtual bool IsBlocking { get; set; } = true;
-
-        /// <summary>
         /// Gets or sets if this element is enabled in the physics engine
         /// </summary>
         /// <value>

@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Physics;
 
 namespace SiliconStudio.Xenko.Assets.Navigation
 {
@@ -23,6 +24,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 },
                 BoundingBox = new BoundingBox(new Vector3(-10.0f), new Vector3(10.0f)),
                 AutoGenerateBoundingBox = true,
+                AllowedCollisionGroups = CollisionFilterGroupFlags.AllFilter,
                 NavigationMeshAgentSettings = new List<NavigationAgentSettings>
                 {
                     new NavigationAgentSettings
