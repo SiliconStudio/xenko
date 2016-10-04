@@ -18,9 +18,9 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             {
                 BuildSettings = new NavigationMeshBuildSettings
                 {
-                    CellHeight = 0.05f,
-                    CellSize = 0.05f,
-                    TileSize = 8,
+                    CellHeight = 0.2f,
+                    CellSize = 0.3f,
+                    TileSize = 32,
                 },
                 BoundingBox = new BoundingBox(new Vector3(-10.0f), new Vector3(10.0f)),
                 AutoGenerateBoundingBox = true,
