@@ -1,4 +1,4 @@
-// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.ComponentModel;
@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.Physics
             }
         }
 
-        private float maxSlope = 0.785398f; // 45 degrees
+        private AngleSingle maxSlope = new AngleSingle(45, AngleType.Degree);
 
         /// <summary>
         /// Gets or sets if this character element max slope
@@ -85,9 +85,7 @@ namespace SiliconStudio.Xenko.Physics
         /// The max slope this character can climb
         /// </userdoc>
         [DataMember(85)]
-        [DefaultValue(0.785398f)]
-        [Display("Max Slope (radians)")]
-        public float MaxSlope
+        public AngleSingle MaxSlope
         {
             get
             {
@@ -99,7 +97,7 @@ namespace SiliconStudio.Xenko.Physics
 
                 if (KinematicCharacter != null)
                 {
-                    KinematicCharacter.MaxSlope = value;
+                    KinematicCharacter.MaxSlope = value.Radians;
                 }
             }
         }
