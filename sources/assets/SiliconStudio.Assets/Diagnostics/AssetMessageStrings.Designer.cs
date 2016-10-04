@@ -106,15 +106,6 @@ namespace SiliconStudio.Assets.Diagnostics {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Asset [{0}] not found.
-        /// </summary>
-        internal static string AssetNotFound {
-            get {
-                return ResourceManager.GetString("AssetNotFound", resourceCulture);
-            }
-        }
-        
-        /// <summary>
         ///   Looks up a localized string similar to The asset reference [{0}] id has changed to a new asset [{1}].
         /// </summary>
         internal static string AssetReferenceChanged {

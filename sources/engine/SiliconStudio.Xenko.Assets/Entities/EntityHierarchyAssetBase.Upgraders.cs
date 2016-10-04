@@ -169,5 +169,29 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 }
             }
         }
+
+        protected class CharacterSlopeUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                var hierarchy = asset.Hierarchy;
+                var entities = (DynamicYamlArray)hierarchy.Parts;
+                foreach (dynamic entityDesign in entities)
+                {
+                    var entity = entityDesign.Entity;
+                    foreach (var component in entity.Components)
+                    {
+                        var componentTag = component.Node.Tag;
+                        if (componentTag == "!CharacterComponent")
+                        {
+                            var rads = component.MaxSlope;
+                            var angle = new DynamicYamlMapping(new YamlMappingNode());
+                            angle.AddChild("Radians", rads);
+                            component.MaxSlope = angle;
+                        }
+                    }
+                }
+            }
+        }
     }
 }
