@@ -61,7 +61,6 @@
     </None>
     <None Include="XenkoNative.h" />
     <None Include="Sprite\SpriteBatchNative.c" />
-    <None Include="symbols.def" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Audio\OpenAL.cpp" />

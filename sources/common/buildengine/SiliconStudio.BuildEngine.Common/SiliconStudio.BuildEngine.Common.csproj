@@ -35,6 +35,7 @@
     <Compile Include="FileVersionStorage.cs" />
     <Compile Include="IBuildStepProvider.cs" />
     <Compile Include="IForwardSerializableLogRemote.cs" />
+    <Compile Include="MicrothreadLocalDatabases.cs" />
     <Compile Include="OutputEnumerationBuildStep.cs" />
     <Compile Include="PathExt.cs" />
     <Compile Include="PluginResolver.cs" />

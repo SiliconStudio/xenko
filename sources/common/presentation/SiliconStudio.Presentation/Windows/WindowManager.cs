@@ -348,7 +348,7 @@ namespace SiliconStudio.Presentation.Windows
             }
 
             windowInfo.IsShown = false;
-            windowInfo.WindowClosed.SetResult(0);
+            windowInfo.WindowClosed.TrySetResult(0);
             AllWindowsList.Remove(windowInfo);
 
             if (MainWindow != null && MainWindow.Equals(windowInfo))

@@ -7,7 +7,7 @@ using System.Globalization;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Data;
 using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;

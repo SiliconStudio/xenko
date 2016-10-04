@@ -10,7 +10,7 @@ using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Extensions;
 using SiliconStudio.Xenko.Graphics;
@@ -21,12 +21,13 @@ using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
-    internal class PrefabModelAssetCompiler : AssetCompilerBase<PrefabModelAsset>
+    internal class PrefabModelAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, PrefabModelAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
+            var asset = (PrefabModelAsset)assetItem.Asset;
             var renderingSettings = context.GetGameSettingsAsset().Get<RenderingSettings>();
-            result.BuildSteps = new ListBuildStep { new PrefabModelAssetCompileCommand(urlInStorage, asset, AssetItem, renderingSettings) };
+            result.BuildSteps = new ListBuildStep { new PrefabModelAssetCompileCommand(targetUrlInStorage, asset, assetItem, renderingSettings) };
             result.ShouldWaitForPreviousBuilds = true;
         }
 
@@ -35,8 +36,8 @@ namespace SiliconStudio.Xenko.Assets.Models
             private readonly Package package;
             private readonly RenderingSettings renderingSettings;
 
-            public PrefabModelAssetCompileCommand(string url, PrefabModelAsset assetParameters, AssetItem assetItem, RenderingSettings renderingSettings) 
-                : base(url, assetParameters)
+            public PrefabModelAssetCompileCommand(string url, PrefabModelAsset parameters, AssetItem assetItem, RenderingSettings renderingSettings) 
+                : base(url, parameters)
             {
                 package = assetItem.Package;
                 this.renderingSettings = renderingSettings;
@@ -62,12 +63,12 @@ namespace SiliconStudio.Xenko.Assets.Models
             {
                 base.ComputeParameterHash(writer);
 
-                if (AssetParameters.Prefab == null) return;
+                if (Parameters.Prefab == null) return;
 
                 // We also want to serialize recursively the compile-time dependent assets
                 // (since they are not added as reference but actually embedded as part of the current asset)
                 // TODO: Ideally we would want to put that automatically in AssetCommand<>, but we would need access to package
-                ComputeCompileTimeDependenciesHash(package, writer, AssetParameters);
+                ComputeCompileTimeDependenciesHash(package, writer, Parameters);
             }
 
             private static unsafe void ProcessMaterial(ContentManager manager, ICollection<EntityChunk> chunks, MaterialInstance material, Model prefabModel)
@@ -281,19 +282,19 @@ namespace SiliconStudio.Xenko.Assets.Models
                     }
                 });
 
-                var loadSettings = new AssetManagerLoaderSettings
+                var loadSettings = new ContentManagerLoaderSettings
                 {
-                    ContentFilter = AssetManagerLoaderSettings.NewContentFilterByType(typeof(Mesh), typeof(Skeleton), typeof(Material), typeof(Prefab))
+                    ContentFilter = ContentManagerLoaderSettings.NewContentFilterByType(typeof(Mesh), typeof(Skeleton), typeof(Material), typeof(Prefab))
                 };
 
                 Prefab prefab;
-                if (AssetParameters.Prefab == null)
+                if (Parameters.Prefab == null)
                 {
                     prefab = new Prefab();
                 }
                 else
                 {
-                    prefab = contentManager.Load<Prefab>(AssetParameters.Prefab.Location, loadSettings);
+                    prefab = contentManager.Load<Prefab>(Parameters.Prefab.Location, loadSettings);
                     if (prefab == null) throw new Exception("Failed to load prefab.");
                 }
 

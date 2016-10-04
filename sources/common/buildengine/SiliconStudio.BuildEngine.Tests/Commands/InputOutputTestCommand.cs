@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Serialization.Contents;
 using System;
 using System.Collections.Generic;

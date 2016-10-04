@@ -1,7 +1,9 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Mono.Cecil;
 using NUnit.Framework;
 
@@ -9,25 +11,31 @@ namespace SiliconStudio.AssemblyProcessor.Tests
 {
     public class TestCecilExtensions
     {
-        public class Nested
+        class Nested
         {
         }
 
-        private BaseAssemblyResolver assemblyResolver = new DefaultAssemblyResolver();
+        private readonly BaseAssemblyResolver assemblyResolver = new DefaultAssemblyResolver();
 
-        public string GenerateNameCecil(Type type)
+        public TestCecilExtensions()
+        {
+            // Add location of current assembly to MonoCecil search path.
+            assemblyResolver.AddSearchDirectory(Path.GetDirectoryName(typeof(TestCecilExtensions).Assembly.Location));
+        }
+
+        private string GenerateNameCecil(Type type)
         {
             var typeReference = type.GenerateTypeCecil(assemblyResolver);
 
             return typeReference.ConvertAssemblyQualifiedName();
         }
 
-        public static string GenerateNameDotNet(Type type)
+        private static string GenerateNameDotNet(Type type)
         {
             return type.AssemblyQualifiedName;
         }
 
-        public void CheckGeneratedNames(Type type)
+        private void CheckGeneratedNames(Type type)
         {
             var nameCecil = GenerateNameCecil(type);
             var nameDotNet = GenerateNameDotNet(type);

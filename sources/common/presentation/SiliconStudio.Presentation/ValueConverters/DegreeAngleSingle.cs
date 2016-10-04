@@ -4,7 +4,7 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
-    public class DegreeAngleSingle : ValueConverterBase<DegreeAngleSingle>
+    public class AngleSingleToDegrees : ValueConverterBase<AngleSingleToDegrees>
     {
         /// <inheritdoc/>
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)

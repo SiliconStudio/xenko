@@ -5,7 +5,9 @@ namespace SiliconStudio.Core
     /// <summary>
     /// Describes the platform operating system.
     /// </summary>
-#if ASSEMBLY_PROCESSOR
+#if SILICONSTUDIO_ASSEMBLY_PROCESSOR
+    // To avoid a CS1503 error when compiling projects that are using both the AssemblyProcessor
+    // and SiliconStudio.Core.
     internal enum PlatformType
 #else
     [DataContract("PlatformType")]

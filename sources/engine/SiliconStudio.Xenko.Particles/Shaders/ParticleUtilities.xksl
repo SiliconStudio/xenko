@@ -18,6 +18,8 @@ shader ParticleUtilities
 
         // .x - Width, .y - Height, .z - Near, .w - Far
         stage float4   ViewFrustum;
+
+        stage float4 Viewport;
     }
 
     stage float GetLinearDepth(float z)

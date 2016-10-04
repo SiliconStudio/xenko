@@ -1,72 +1,70 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace SiliconStudio.Core.Serialization.Assets
+namespace SiliconStudio.Core.Serialization.Contents
 {
     partial class ContentManager
     {
         // Used internally for Garbage Collection
         // Allocate once and reuse collection for every GC
-        private Stack<AssetReference> stack = new Stack<AssetReference>();
+        private Stack<Reference> stack = new Stack<Reference>();
         private uint nextCollectIndex;
 
         /// <summary>
-        /// Increments reference count of an <see cref="AssetReference"/>.
+        /// Increments reference count of an <see cref="Reference"/>.
         /// </summary>
-        /// <param name="assetReference"></param>
+        /// <param name="referencerence"></param>
         /// <param name="publicReference"></param>
-        internal void IncrementReference(AssetReference assetReference, bool publicReference)
+        internal void IncrementReference(Reference reference, bool publicReference)
         {
             if (publicReference)
             {
-                assetReference.PublicReferenceCount++;
+                reference.PublicReferenceCount++;
             }
             else
             {
-                assetReference.PrivateReferenceCount++;
+                reference.PrivateReferenceCount++;
             }
         }
 
         /// <summary>
-        /// Decrements reference count of an <see cref="AssetReference"/>.
+        /// Decrements reference count of an <see cref="Reference"/>.
         /// </summary>
-        /// <param name="assetReference"></param>
+        /// <param name="referencerence"></param>
         /// <param name="publicReference"></param>
-        internal void DecrementReference(AssetReference assetReference, bool publicReference)
+        internal void DecrementReference(Reference reference, bool publicReference)
         {
             int referenceCount;
             if (publicReference)
             {
-                if (assetReference.PublicReferenceCount <= 0)
+                if (reference.PublicReferenceCount <= 0)
                     throw new InvalidOperationException("Cannot release an object that doesn't have active public references. Load/Unload pairs must match.");
 
-                referenceCount = --assetReference.PublicReferenceCount + assetReference.PrivateReferenceCount;
+                referenceCount = --reference.PublicReferenceCount + reference.PrivateReferenceCount;
             }
             else
             {
-                if (assetReference.PrivateReferenceCount <= 0)
+                if (reference.PrivateReferenceCount <= 0)
                     throw new InvalidOperationException("Cannot release an object that doesn't have active private references. This is either due to non-matching Load/Unload pairs or an engine internal error.");
              
-                referenceCount = --assetReference.PrivateReferenceCount + assetReference.PublicReferenceCount;
+                referenceCount = --reference.PrivateReferenceCount + reference.PublicReferenceCount;
             }
 
             if (referenceCount == 0)
             {
                 // Free the object itself
-                ReleaseAsset(assetReference);
+                ReleaseAsset(reference);
 
                 // Free all its referenced objects
-                foreach (var reference in assetReference.References)
+                foreach (var childReference in reference.References)
                 {
-                    DecrementReference(reference, false);
+                    DecrementReference(childReference, false);
                 }
             }
-            else if (publicReference && assetReference.PublicReferenceCount == 0)
+            else if (publicReference && reference.PublicReferenceCount == 0)
             {
                 // If there is no more public reference but object is still alive, let's kick a cycle GC
                 CollectUnreferencedCycles();
@@ -76,26 +74,26 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// <summary>
         /// Releases an asset.
         /// </summary>
-        /// <param name="assetReference">The asset reference.</param>
-        private void ReleaseAsset(AssetReference assetReference)
+        /// <param name="referencerence">The asset reference.</param>
+        private void ReleaseAsset(Reference reference)
         {
-            var referencable = assetReference.Object as IReferencable;
+            var referencable = reference.Object as IReferencable;
             if (referencable != null)
             {
                 referencable.Release();
             }
             else
             {
-                var disposable = assetReference.Object as IDisposable;
+                var disposable = reference.Object as IDisposable;
                 if (disposable != null)
                 {
                     disposable.Dispose();
                 }
             }
 
-            // Remove AssetReference from loaded assets.
-            var oldPrev = assetReference.Prev;
-            var oldNext = assetReference.Next;
+            // Remove Reference from loaded assets.
+            var oldPrev = reference.Prev;
+            var oldNext = reference.Next;
             if (oldPrev != null)
                 oldPrev.Next = oldNext;
             if (oldNext != null)
@@ -104,13 +102,13 @@ namespace SiliconStudio.Core.Serialization.Assets
             if (oldPrev == null)
             {
                 if (oldNext == null)
-                    LoadedAssetUrls.Remove(assetReference.Url);
+                    LoadedAssetUrls.Remove(reference.Url);
                 else
-                    LoadedAssetUrls[assetReference.Url] = oldNext;
+                    LoadedAssetUrls[reference.Url] = oldNext;
             }
-            LoadedAssetReferences.Remove(assetReference.Object);
+            LoadedAssetReferences.Remove(reference.Object);
 
-            assetReference.Object = null;
+            reference.Object = null;
         }
 
         internal void CollectUnreferencedCycles()

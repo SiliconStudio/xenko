@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 #include "../../../../deps/NativePath/NativePath.h"
+#include "../XenkoNative.h"
 
 #define HAVE_STDINT_H
 #include "../../../../deps/Celt/include/opus_custom.h"
@@ -30,7 +31,7 @@ extern "C" {
 		bool decoder_only_;
 	};
 
-	void* xnCeltCreate(int sampleRate, int bufferSize, int channels, bool decoderOnly)
+	DLL_EXPORT_API void* xnCeltCreate(int sampleRate, int bufferSize, int channels, bool decoderOnly)
 	{
 		XenkoCelt* celt = new XenkoCelt(sampleRate, bufferSize, channels, decoderOnly);
 		if(!celt->Init())
@@ -41,27 +42,27 @@ extern "C" {
 		return celt;
 	}
 
-	void xnCeltDestroy(XenkoCelt* celt)
+	DLL_EXPORT_API void xnCeltDestroy(XenkoCelt* celt)
 	{
 		delete celt;
 	}
 
-	int xnCeltEncodeFloat(XenkoCelt* celt, float* inputSamples, int numberOfInputSamples, uint8_t* outputBuffer, int maxOutputSize)
+	DLL_EXPORT_API int xnCeltEncodeFloat(XenkoCelt* celt, float* inputSamples, int numberOfInputSamples, uint8_t* outputBuffer, int maxOutputSize)
 	{
 		return opus_custom_encode_float(celt->GetEncoder(), inputSamples, numberOfInputSamples, outputBuffer, maxOutputSize);
 	}
 
-	int xnCeltDecodeFloat(XenkoCelt* celt, uint8_t* inputBuffer, int inputBufferSize, float* outputBuffer, int numberOfOutputSamples)
+	DLL_EXPORT_API int xnCeltDecodeFloat(XenkoCelt* celt, uint8_t* inputBuffer, int inputBufferSize, float* outputBuffer, int numberOfOutputSamples)
 	{
 		return opus_custom_decode_float(celt->GetDecoder(), inputBuffer, inputBufferSize, outputBuffer, numberOfOutputSamples);
 	}
 
-	int xnCeltEncodeShort(XenkoCelt* celt, int16_t* inputSamples, int numberOfInputSamples, uint8_t* outputBuffer, int maxOutputSize)
+	DLL_EXPORT_API int xnCeltEncodeShort(XenkoCelt* celt, int16_t* inputSamples, int numberOfInputSamples, uint8_t* outputBuffer, int maxOutputSize)
 	{
 		return opus_custom_encode(celt->GetEncoder(), inputSamples, numberOfInputSamples, outputBuffer, maxOutputSize);
 	}
 
-	int xnCeltDecodeShort(XenkoCelt* celt, uint8_t* inputBuffer, int inputBufferSize, int16_t* outputBuffer, int numberOfOutputSamples)
+	DLL_EXPORT_API int xnCeltDecodeShort(XenkoCelt* celt, uint8_t* inputBuffer, int inputBufferSize, int16_t* outputBuffer, int numberOfOutputSamples)
 	{
 		return opus_custom_decode(celt->GetDecoder(), inputBuffer, inputBufferSize, outputBuffer, numberOfOutputSamples);
 	}

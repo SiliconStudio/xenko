@@ -4,7 +4,6 @@
 using SiliconStudio.Core;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Assets;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -12,6 +11,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.BuildEngine
 {

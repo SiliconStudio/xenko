@@ -33,18 +33,14 @@
 */
 #pragma once
 
-#ifdef LZ4_FUNC
-	#define LZ4_compressHC LZ4_FUNC(LZ4_compressHC)
-	#define LZ4_compressHC_limitedOutput LZ4_FUNC(LZ4_compressHC_limitedOutput)
-	#define LZ4HC_Data_Structure LZ4_FUNC(LZ4HC_Data_Structure)
-#endif
+#include "../CoreNative.h"
 
 #if defined (__cplusplus)
 extern "C" {
 #endif
 
 
-int LZ4_compressHC (const char* source, char* dest, int inputSize);
+DLL_EXPORT_API int LZ4_compressHC (const char* source, char* dest, int inputSize);
 
 /*
 LZ4_compressHC :
@@ -54,7 +50,7 @@ LZ4_compressHC :
 		Worst case size evaluation is provided by function LZ4_compressBound() (see "lz4.h")
 */
 
-int LZ4_compressHC_limitedOutput (const char* source, char* dest, int inputSize, int maxOutputSize);
+DLL_EXPORT_API int LZ4_compressHC_limitedOutput (const char* source, char* dest, int inputSize, int maxOutputSize);
 
 /*
 LZ4_compress_limitedOutput() :

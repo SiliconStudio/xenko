@@ -7,7 +7,6 @@ using System.Linq;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Storage;
 
@@ -52,7 +51,7 @@ namespace SiliconStudio.Assets.CompilerApp
                     bundles.AddRange(project.Bundles);
                 }
 
-                var databaseFileProvider = new DatabaseFileProvider(objDatabase.AssetIndexMap, objDatabase);
+                var databaseFileProvider = new DatabaseFileProvider(objDatabase.ContentIndexMap, objDatabase);
                 ContentManager.GetFileProvider = () => databaseFileProvider;
 
                 // Pass1: Create ResolvedBundle from user Bundle
@@ -76,7 +75,7 @@ namespace SiliconStudio.Assets.CompilerApp
                     // This will give us a list of "root assets".
                     foreach (var assetSelector in bundle.Value.Source.Selectors)
                     {
-                        foreach (var assetLocation in assetSelector.Select(packageSession, objDatabase.AssetIndexMap))
+                        foreach (var assetLocation in assetSelector.Select(packageSession, objDatabase.ContentIndexMap))
                         {
                             bundle.Value.AssetUrls.Add(assetLocation);
                         }
@@ -85,7 +84,7 @@ namespace SiliconStudio.Assets.CompilerApp
                     // Compute asset dependencies, and fill bundleAssets with list of all assets contained in bundles (directly or indirectly).
                     foreach (var assetUrl in bundle.Value.AssetUrls)
                     {
-                        CollectReferences(bundle.Value.Source, bundleAssets, assetUrl, objDatabase.AssetIndexMap);
+                        CollectReferences(bundle.Value.Source, bundleAssets, assetUrl, objDatabase.ContentIndexMap);
                     }
                 }
 
@@ -94,7 +93,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 var resolvedDefaultBundle = new ResolvedBundle(defaultBundle);
                 bundles.Add(defaultBundle);
                 resolvedBundles.Add(defaultBundle.Name, resolvedDefaultBundle);
-                foreach (var asset in objDatabase.AssetIndexMap.GetMergedIdMap())
+                foreach (var asset in objDatabase.ContentIndexMap.GetMergedIdMap())
                 {
                     if (!bundleAssets.Contains(asset.Key))
                     {
@@ -150,7 +149,7 @@ namespace SiliconStudio.Assets.CompilerApp
                     // Those not present in dependencies will be added to this bundle
                     foreach (var assetUrl in bundle.AssetUrls)
                     {
-                        CollectBundle(bundle, assetUrl, objDatabase.AssetIndexMap);
+                        CollectBundle(bundle, assetUrl, objDatabase.ContentIndexMap);
                     }
                 }
 
@@ -327,31 +326,31 @@ namespace SiliconStudio.Assets.CompilerApp
             return references;
         }
 
-        private void CollectReferences(Bundle bundle, HashSet<string> assets, string assetUrl, IAssetIndexMap assetIndexMap)
+        private void CollectReferences(Bundle bundle, HashSet<string> assets, string assetUrl, IContentIndexMap contentIndexMap)
         {
             // Already included?
             if (!assets.Add(assetUrl))
                 return;
 
             ObjectId objectId;
-            if (!assetIndexMap.TryGetValue(assetUrl, out objectId))
+            if (!contentIndexMap.TryGetValue(assetUrl, out objectId))
                 throw new InvalidOperationException(string.Format("Could not find asset {0} for bundle {1}", assetUrl, bundle.Name));
 
             // Include references
             foreach (var reference in GetChunkReferences(ref objectId))
             {
-                CollectReferences(bundle, assets, reference, assetIndexMap);
+                CollectReferences(bundle, assets, reference, contentIndexMap);
             }
         }
 
-        private void CollectBundle(ResolvedBundle resolvedBundle, string assetUrl, IAssetIndexMap assetIndexMap)
+        private void CollectBundle(ResolvedBundle resolvedBundle, string assetUrl, IContentIndexMap contentIndexMap)
         {
             // Check if index map contains it already (that also means object id has been stored as well)
             if (resolvedBundle.DependencyIndexMap.ContainsKey(assetUrl) || resolvedBundle.IndexMap.ContainsKey(assetUrl))
                 return;
 
             ObjectId objectId;
-            if (!assetIndexMap.TryGetValue(assetUrl, out objectId))
+            if (!contentIndexMap.TryGetValue(assetUrl, out objectId))
                 throw new InvalidOperationException(string.Format("Could not find asset {0} for bundle {1}", assetUrl, resolvedBundle.Name));
 
             // Add asset to index map
@@ -364,7 +363,7 @@ namespace SiliconStudio.Assets.CompilerApp
 
             foreach (var reference in GetChunkReferences(ref objectId))
             {
-                CollectBundle(resolvedBundle, reference, assetIndexMap);
+                CollectBundle(resolvedBundle, reference, contentIndexMap);
             }
         }
 

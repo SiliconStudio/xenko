@@ -9,3 +9,5 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyProduct("SiliconStudio.Core.Native")]
 [assembly: NeutralResourcesLanguage("en")]
+
+[assembly: InternalsVisibleTo("SiliconStudio.Core")]

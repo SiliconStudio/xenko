@@ -6,7 +6,7 @@ using System.ServiceModel;
 using System.Threading.Tasks;
 
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.BuildEngine

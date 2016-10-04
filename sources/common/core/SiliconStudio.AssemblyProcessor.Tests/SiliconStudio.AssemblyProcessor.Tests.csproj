@@ -58,7 +58,7 @@
     <ProjectReference Include="..\SiliconStudio.AssemblyProcessor\SiliconStudio.AssemblyProcessor.csproj">
       <Project>{5D778003-7C87-47AC-A6C2-358CCCD8416E}</Project>
       <Name>SiliconStudio.AssemblyProcessor</Name>
-      <Private>False</Private>
+      <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

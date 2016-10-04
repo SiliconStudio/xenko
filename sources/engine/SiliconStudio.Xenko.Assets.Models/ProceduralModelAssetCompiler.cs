@@ -2,26 +2,27 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Threading.Tasks;
+using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
-using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Rendering.ProceduralModels;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
-    internal class ProceduralModelAssetCompiler : AssetCompilerBase<ProceduralModelAsset>
+    internal class ProceduralModelAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, ProceduralModelAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
-            result.BuildSteps = new ListBuildStep { new GeometricPrimitiveCompileCommand(urlInStorage, asset) };
+            var asset = (ProceduralModelAsset)assetItem.Asset;
+            result.BuildSteps = new ListBuildStep { new GeometricPrimitiveCompileCommand(targetUrlInStorage, asset) };
         }
 
         private class GeometricPrimitiveCompileCommand : AssetCommand<ProceduralModelAsset>
         {
-            public GeometricPrimitiveCompileCommand(string url, ProceduralModelAsset assetParameters)
-                : base(url, assetParameters)
+            public GeometricPrimitiveCompileCommand(string url, ProceduralModelAsset parameters)
+                : base(url, parameters)
             {
             }
 
@@ -33,7 +34,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 var assetManager = new ContentManager();
-                assetManager.Save(Url, new ProceduralModelDescriptor(AssetParameters.Type));
+                assetManager.Save(Url, new ProceduralModelDescriptor(Parameters.Type));
 
                 return Task.FromResult(ResultStatus.Successful);
             }

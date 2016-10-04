@@ -4,13 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.CompilerServices;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Core.Serialization
 {
     /// <summary>
     /// Manage object reference information externally, not stored in the object but in a separate <see cref="AttachedReference"/> object.
     /// </summary>
+    // TODO: this should be ideally moved back in Core.Design, but there are a few runtime usages to clean first
     public static class AttachedReferenceManager
     {
         private static readonly object[] EmptyObjectArray = new object[0];

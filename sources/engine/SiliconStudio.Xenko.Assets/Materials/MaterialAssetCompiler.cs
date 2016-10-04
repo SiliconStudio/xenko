@@ -7,18 +7,19 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Materials;
 
 namespace SiliconStudio.Xenko.Assets.Materials
 {
-    internal class MaterialAssetCompiler : AssetCompilerBase<MaterialAsset>
+    internal class MaterialAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, MaterialAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
+            var asset = (MaterialAsset)assetItem.Asset;
             result.ShouldWaitForPreviousBuilds = true;
-            result.BuildSteps = new AssetBuildStep(AssetItem) { new MaterialCompileCommand(urlInStorage, AssetItem, asset, context) };
+            result.BuildSteps = new AssetBuildStep(assetItem) { new MaterialCompileCommand(targetUrlInStorage, assetItem, asset, context) };
         }
 
         private class MaterialCompileCommand : AssetCommand<MaterialAsset>
@@ -60,7 +61,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
                 // We also want to serialize recursively the compile-time dependent assets
                 // (since they are not added as reference but actually embedded as part of the current asset)
                 // TODO: Ideally we would want to put that automatically in AssetCommand<>, but we would need access to package
-                ComputeCompileTimeDependenciesHash(package, writer, AssetParameters);
+                ComputeCompileTimeDependenciesHash(package, writer, Parameters);
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
@@ -101,7 +102,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
                 };
                 materialContext.AddLoadingFromSession(package);
 
-                var materialClone = (MaterialAsset)AssetCloner.Clone(AssetParameters);
+                var materialClone = (MaterialAsset)AssetCloner.Clone(Parameters);
                 var result = MaterialGenerator.Generate(new MaterialDescriptor() { MaterialId = materialClone.Id, Attributes = materialClone.Attributes, Layers = materialClone.Layers}, materialContext, string.Format("{0}:{1}", materialClone.Id, assetUrl));
 
                 if (result.HasErrors)

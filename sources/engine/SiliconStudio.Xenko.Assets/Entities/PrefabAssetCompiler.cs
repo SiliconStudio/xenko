@@ -6,14 +6,14 @@ namespace SiliconStudio.Xenko.Assets.Entities
 {
     public class PrefabAssetCompiler : EntityHierarchyCompilerBase<PrefabAsset>
     {
-        protected override EntityHierarchyCommandBase Create(string url, Package package, AssetCompilerContext context, PrefabAsset assetParameters)
+        protected override EntityHierarchyCommandBase Create(string url, PrefabAsset assetParameters)
         {
-            return new PrefabCommand(url, package, context, assetParameters);
+            return new PrefabCommand(url, assetParameters);
         }
 
         private class PrefabCommand : EntityHierarchyCommandBase
         {
-            public PrefabCommand(string url, Package package, AssetCompilerContext context, PrefabAsset assetParameters) : base(url, package, context, assetParameters)
+            public PrefabCommand(string url, PrefabAsset parameters) : base(url, parameters)
             {
             }
 

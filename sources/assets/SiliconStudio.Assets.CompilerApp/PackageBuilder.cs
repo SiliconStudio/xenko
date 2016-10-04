@@ -12,9 +12,8 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.MicroThreading;
-using SiliconStudio.Core.Serialization.Assets;
-
 using System.Threading;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Assets.Effect;
 using SiliconStudio.Xenko.Graphics;
@@ -56,7 +55,7 @@ namespace SiliconStudio.Assets.CompilerApp
 
         private static void PrepareDatabases()
         {
-            ContentManager.GetFileProvider = () => IndexFileCommand.DatabaseFileProvider;
+            ContentManager.GetFileProvider = () => MicrothreadLocalDatabases.DatabaseFileProvider;
         }
 
         private BuildResultCode BuildMaster()
@@ -315,7 +314,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 string buildPath = builderOptions.BuildDirectory;
                 string buildProfile = builderOptions.BuildProfile;
 
-                Builder.SetupBuildPath(buildPath, VirtualFileSystem.ApplicationDatabaseIndexName);
+                Builder.OpenObjectDatabase(buildPath, VirtualFileSystem.ApplicationDatabaseIndexName);
 
                 var logger = builderOptions.Logger;
                 MicroThread microthread = scheduler.Add(async () =>
@@ -329,7 +328,7 @@ namespace SiliconStudio.Assets.CompilerApp
                     var builderContext = new BuilderContext(buildPath, buildProfile, inputHashes, parameters, 0, null);
 
                     var commandContext = new RemoteCommandContext(processBuilderRemote, command, builderContext, logger);
-                    IndexFileCommand.MountDatabase(commandContext.GetOutputObjectsGroups());
+                    MicrothreadLocalDatabases.MountDatabase(commandContext.GetOutputObjectsGroups());
                     command.PreCommand(commandContext);
                     status = await command.DoCommand(commandContext);
                     command.PostCommand(commandContext, status);
