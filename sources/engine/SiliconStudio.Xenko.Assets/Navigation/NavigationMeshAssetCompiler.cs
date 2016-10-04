@@ -522,21 +522,21 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                                     shapesToProcess.Enqueue(compound[i]);
                                 }
                             }
+                        }
 
-                            if (!isDeferred)
+                        if (!isDeferred)
+                        {
+                            // Store current entity in build cache
+                            currentBuild.Add(entity, entityVertexDataBuilder);
+
+                            // Add (?old) and new bounding box to modified areas
+                            sceneVertexDataBuilder.AppendOther(entityVertexDataBuilder);
+                            NavigationMeshBuildCache.Build.Object oldObject = null;
+                            if (oldBuild?.Objects.TryGetValue(entity.Id, out oldObject) ?? false)
                             {
-                                // Store current entity in build cache
-                                currentBuild.Add(entity, entityVertexDataBuilder);
-
-                                // Add (?old) and new bounding box to modified areas
-                                sceneVertexDataBuilder.AppendOther(entityVertexDataBuilder);
-                                NavigationMeshBuildCache.Build.Object oldObject = null;
-                                if (oldBuild?.Objects.TryGetValue(entity.Id, out oldObject) ?? false)
-                                {
-                                    updatedAreas.Add(oldObject.Data.BoundingBox);
-                                }
-                                updatedAreas.Add(entityVertexDataBuilder.BoundingBox);
+                                updatedAreas.Add(oldObject.Data.BoundingBox);
                             }
+                            updatedAreas.Add(entityVertexDataBuilder.BoundingBox);
                         }
                     }
                     else // Not updated
