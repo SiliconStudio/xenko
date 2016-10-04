@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using NuGet;
+using SharpDX.Text;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
@@ -206,10 +207,10 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             result.BuildSteps = new AssetBuildStep(assetItem) { new NavmeshBuildCommand(targetUrlInStorage, assetItem, asset, context, buildCache) };
         }
 
+        // TODO: Remove this
         // DEBUG FUNCTIONS
-        public static void DumpObj(string name, Vector3[] meshData)
+        public static void DumpObj(string filePath, Vector3[] meshData, int[] indexData = null)
         {
-            string filePath = @"C:\Users\g-gj-waals\Desktop\" + name + ".obj";
             using (FileStream file = File.Open(filePath, FileMode.Create, FileAccess.Write))
             using (StreamWriter sw = new StreamWriter(file))
             {
@@ -219,24 +220,37 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                     sw.WriteLine("v {0} {1} {2}", vert.X, vert.Y, vert.Z);
                 }
 
-                int numFaces = meshData.Length/3;
-                for (int i = 0; i < numFaces; i++)
+                if (indexData == null)
                 {
-                    int start = 1 + i*3;
-                    sw.WriteLine("f {0} {1} {2}",
-                        start + 0,
-                        start + 1,
-                        start + 2);
+                    int numFaces = meshData.Length/3;
+                    for (int i = 0; i < numFaces; i++)
+                    {
+                        int start = 1 + i*3;
+                        sw.WriteLine("f {0} {1} {2}",
+                            start + 0,
+                            start + 1,
+                            start + 2);
+                    }
+                }
+                else
+                {
+                    int numFaces = indexData.Length/3;
+                    for (int i = 0; i < numFaces; i++)
+                    {
+                        sw.WriteLine("f {0} {1} {2}",
+                            indexData[i*3] + 1,
+                            indexData[i*3 + 1] + 1,
+                            indexData[i*3 + 2] + 1);
+                    }
                 }
                 sw.Flush();
                 file.Flush();
             }
         }
-
-        public static void DumpObj(string name, GeometricMeshData<VertexPositionNormalTexture> meshData)
+        
+        public static void DumpObj(string path, GeometricMeshData<VertexPositionNormalTexture> meshData)
         {
-            string filePath = @"C:\Users\g-gj-waals\Desktop\" + name + ".obj";
-            using (FileStream file = File.Open(filePath, FileMode.Create, FileAccess.Write))
+            using (FileStream file = File.Open(path, FileMode.Create, FileAccess.Write))
             using (StreamWriter sw = new StreamWriter(file))
             {
                 for (int i = 0; i < meshData.Vertices.Length; i++)
@@ -261,9 +275,42 @@ namespace SiliconStudio.Xenko.Assets.Navigation
         public static void DumpBinary(string name, byte[] data)
         {
             string filePath = @"C:\Users\g-gj-waals\Desktop\" + name;
-            using (FileStream file = File.OpenWrite(filePath))
+            using (FileStream file = File.Open(filePath, FileMode.Create, FileAccess.Write))
             {
                 file.Write(data, 0, data.Length);
+            }
+        }
+
+        public static unsafe void DumpTiles(float tileCellSize, NavigationMesh.Tile[] tiles)
+        {
+            string targetPath = "F:\\Projects\\recast\\RecastDemo\\Bin\\all_tiles_navmesh.bin";
+            using (var file = File.Open(targetPath, FileMode.Create, FileAccess.Write))
+            using (BinaryWriter stream = new BinaryWriter(file))
+            {
+                byte[] NAVMESHSET_MAGIC = Encoding.ASCII.GetBytes("MSET");
+                int version = 1;
+                stream.Write(NAVMESHSET_MAGIC);
+                stream.Write(version);
+                stream.Write(tiles.Length);
+                // Orig
+                stream.Write(0.0f);
+                stream.Write(0.0f);
+                stream.Write(0.0f);
+                stream.Write(tileCellSize); // W
+                stream.Write(tileCellSize); // H
+                int maxTiles = 1 << 14;
+                int maxPolys = 1 << (22 - 14);
+                stream.Write(maxTiles); // MaxTiles
+                stream.Write(maxPolys);
+
+                // Write tiles
+                for (int i = 0; i < tiles.Length; i++)
+                {
+                    var tile = tiles[i];
+                    stream.Write(0); // Tile Ref
+                    stream.Write(tile.NavmeshData.Length); // Data size
+                    stream.Write(tile.NavmeshData);
+                }
             }
         }
 
@@ -353,8 +400,8 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
             {
                 base.ComputeParameterHash(writer);
-                // We also want to serialize recursively the compile-time dependent assets
-                // (since they are not added as reference but actually embedded as part of the current asset)
+                // We also want to serialize the compile-time dependent assets recursively
+                // (since they are not added as a reference but are actually embedded as a part of the current asset)
                 // TODO: Ideally we would want to put that automatically in AssetCommand<>, but we would need access to package
                 ComputeCompileTimeDependenciesHash(package, writer, Parameters);
             }
@@ -480,16 +527,6 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                                 }
                                 updatedAreas.Add(entityVertexDataBuilder.BoundingBox);
                             }
-
-                            // TODO: Remove this
-                            string fullEntityName = entity.Name;
-                            Entity findParentEntity = entity.GetParent();
-                            while (findParentEntity != null)
-                            {
-                                fullEntityName = findParentEntity.Name + "/" + fullEntityName;
-                                findParentEntity = findParentEntity.GetParent();
-                            }
-                            System.Diagnostics.Debug.WriteLine($"Entity changed \"{fullEntityName}\" TL:{entityTransform.WorldMatrix.TranslationVector}");
                         }
                     }
                     else
@@ -621,7 +658,8 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
                 // Debug output input mesh
                 // TODO: Remove this
-                //DumpObj("input",  meshVertices.ToArray());
+                //string objPath = @"F:\Projects\recast\RecastDemo\Bin\Meshes\input.obj";
+                //DumpObj(objPath, meshVertices.ToArray(), meshIndices.ToArray());
 
                 // Check if settings changed to trigger a full rebuild
                 int currentSettingsHash = asset.GetHashCode();
@@ -684,19 +722,24 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                     {
                         BoundingBox tileBoundingBox = NavigationMesh.ClampBoundingBoxToTile(buildSettings, boundingBox, tileToBuild);
                         if (boundingBox.Contains(ref tileBoundingBox) == ContainmentType.Disjoint)
+                        {
+                            generatedNavigationMesh.RemoveLayerTile(layer, tileToBuild);
                             continue;
+                        }
                         NavigationMesh.Tile buildTile = generatedNavigationMesh.BuildLayerTile(layer,
                             meshVertices.ToArray(), meshIndices.ToArray(), tileBoundingBox, tileToBuild);
 
                         // TODO: Remove this
-                        //int layer = 0;
-                        //foreach (var tile in buildTiles)
-                        //{
-                        //    if(tile.MeshVertices != null)
-                        //        DumpObj($"Tiles\\tile_{tileToBuild.X}_{tileToBuild.Y}_{layer++}", tile.MeshVertices);
-                        //}
+                        //if(buildTile.MeshVertices != null)
+                        //    DumpObj($"Tiles\\layer_{layer}_tile_{tileToBuild.X}_{tileToBuild.Y}", buildTile.MeshVertices);
                     }
-                    Debug.WriteLine($"Rebuilt {tilesToBuild.Count} tiles for layer {layer} for navmesh for {sceneUrl}/{assetUrl} in {layerBuildTimer.Elapsed.TotalMilliseconds}ms"); // TODO: Remove
+                    // TODO: Remove this
+                    Debug.WriteLine($"Rebuilt {tilesToBuild.Count} tiles for layer {layer} for navmesh for {sceneUrl}/{assetUrl} in {layerBuildTimer.Elapsed.TotalMilliseconds}ms");
+
+                    // TODO: Remove
+                    // Dump layer data
+                    //NavigationMesh.Tile[] tiles = generatedNavigationMesh.Layers[layer].Tiles.Select((p) => p.Value).ToArray();
+                    //DumpTiles(buildSettings.TileSize*buildSettings.CellSize, tiles);
                 }
 
                 assetManager.Save(assetUrl, generatedNavigationMesh);

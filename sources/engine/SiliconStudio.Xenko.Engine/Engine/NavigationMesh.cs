@@ -112,9 +112,9 @@ namespace SiliconStudio.Xenko.Engine
             internal NavigationAgentSettings agentSettings;
         }
         
-        // Build settings specified while bulding (null at runtime)
+        // Build settings specified while bulding
         [DataMemberIgnore]
-        private NavigationMeshBuildSettings buildSettings;
+        internal NavigationMeshBuildSettings buildSettings;
 
         // Multiple layers corresponding to multiple agent settings
         [DataMemberCustomSerializer] public Layer[] Layers;
@@ -203,8 +203,9 @@ namespace SiliconStudio.Xenko.Engine
         public static List<Point> GetOverlappingTiles(NavigationMeshBuildSettings settings, BoundingBox boundingBox)
         {
             List<Point> ret = new List<Point>();
-            Vector2 start = boundingBox.Minimum.XZ() / settings.TileSize;
-            Vector2 end = boundingBox.Maximum.XZ() / settings.TileSize;
+            float tcs = settings.TileSize * settings.CellSize;
+            Vector2 start = boundingBox.Minimum.XZ() / tcs;
+            Vector2 end = boundingBox.Maximum.XZ() / tcs;
             Point startTile = new Point(
                 (int)Math.Floor(start.X),
                 (int)Math.Floor(start.Y));
@@ -230,8 +231,9 @@ namespace SiliconStudio.Xenko.Engine
         /// <returns></returns>
         public static BoundingBox ClampBoundingBoxToTile(NavigationMeshBuildSettings settings, BoundingBox boundingBox, Point tileCoord)
         {
-            Vector2 tileMin = new Vector2(tileCoord.X*settings.TileSize, tileCoord.Y*settings.TileSize);
-            Vector2 tileMax = tileMin +  new Vector2(settings.TileSize);
+            float tcs = settings.TileSize * settings.CellSize;
+            Vector2 tileMin = new Vector2(tileCoord.X* tcs, tileCoord.Y* tcs);
+            Vector2 tileMax = tileMin +  new Vector2(tcs);
 
             boundingBox.Minimum.X = tileMin.X;
             boundingBox.Minimum.Z = tileMin.Y;
@@ -309,13 +311,13 @@ namespace SiliconStudio.Xenko.Engine
             {
                 Layer layer = Layers[i];
                 Tile tile = BuildTileInternal(layer, inputVertices, inputIndices, boundingBox, tileCoordinate);
+                
+                // Remove old tile
+                if (layer.Tiles.ContainsKey(tileCoordinate))
+                    layer.Tiles.Remove(tileCoordinate);
 
-                if (tile != null)
+                if (tile != null && tile.NavmeshData != null)
                 {
-                    // Remove old tile
-                    if (layer.Tiles.ContainsKey(tileCoordinate))
-                        layer.Tiles.Remove(tileCoordinate);
-
                     // Add
                     layer.Tiles.Add(tileCoordinate, tile);
                     builtTiles.Add(tile);
@@ -337,13 +339,14 @@ namespace SiliconStudio.Xenko.Engine
             BoundingBox boundingBox, Point tileCoordinate)
         {
             Layer layer = Layers[layerIndex];
-            Tile tile = BuildTileInternal(layer, inputVertices, inputIndices, boundingBox, tileCoordinate);
-            if (tile != null)
-            {
-                // Remove old tile
-                if (layer.Tiles.ContainsKey(tileCoordinate))
-                    layer.Tiles.Remove(tileCoordinate);
 
+            // Remove old tile
+            if (layer.Tiles.ContainsKey(tileCoordinate))
+                layer.Tiles.Remove(tileCoordinate);
+
+            Tile tile = BuildTileInternal(layer, inputVertices, inputIndices, boundingBox, tileCoordinate);
+            if (tile != null && tile.NavmeshData != null)
+            {
                 // Add
                 layer.Tiles.Add(tileCoordinate, tile);
             }
@@ -414,60 +417,19 @@ namespace SiliconStudio.Xenko.Engine
 
             return tile;
         }
-
-        //public unsafe bool Build(NavigationMeshBuildSettings settings, NavigationAgentSettings[] agentSettings, Vector3[] inputVertices, int[] inputIndices)
-        //{
-        //    // Clear data
-        //    Layers = null;
-        //
-        //    // No agent settings
-        //    if (agentSettings.Length == 0)
-        //        return true;
-        //
-        //    Layers = new Layer[agentSettings.Length];
-        //
-        //    // Initialize navigation builder
-        //    IntPtr nav = Navigation.CreateBuilder();
-        //    Navigation.SetSettings(nav, new IntPtr(&settings));
-        //
-        //    // Generate each layer
-        //    for (int i = 0; i < agentSettings.Length; i++)
-        //    {
-        //        Layer layer = new Layer();
-        //
-        //        NavigationAgentSettings currentAgentSettings = agentSettings[i];
-        //        Navigation.SetAgentSettings(nav, new IntPtr(&currentAgentSettings));
-        //
-        //        // Generate mesh
-        //        Navigation.GeneratedData data;
-        //        IntPtr ret = Navigation.Build(nav, inputVertices.ToArray(), inputVertices.Length, inputIndices.ToArray(), inputIndices.Length);
-        //        Navigation.GeneratedData* dataPtr = (Navigation.GeneratedData*)ret;
-        //        data = *dataPtr;
-        //        if (!data.Success)
-        //            return false;
-        //
-        //        List<Vector3> outputVerts = new List<Vector3>();
-        //        if (data.NumNavmeshVertices > 0)
-        //        {
-        //            Vector3* navmeshVerts = (Vector3*)data.NavmeshVertices;
-        //            for (int j = 0; j < data.NumNavmeshVertices; j++)
-        //            {
-        //                outputVerts.Add(navmeshVerts[j]);
-        //            }
-        //
-        //            layer.MeshVertices = outputVerts.ToArray();
-        //        }
-        //
-        //        // Copy the generated navigationMesh data
-        //        layer.NavmeshData = new byte[data.NavmeshDataLength];
-        //        Marshal.Copy(data.NavmeshData, layer.NavmeshData, 0, data.NavmeshDataLength);
-        //
-        //        Layers[i] = layer;
-        //    }
-        //
-        //    Navigation.DestroyBuilder(nav);
-        //    return true;
-        //}
+        
+        /// <summary>
+        /// Removes a tile from a layer with given coordinate
+        /// </summary>
+        /// <param name="layerIndex"></param>
+        /// <param name="tileCoordinate"></param>
+        public void RemoveLayerTile(int layerIndex, Point tileCoordinate)
+        {
+            if (layerIndex < 0 || layerIndex >= Layers.Length)
+                return;
+            Layer layer = Layers[layerIndex];
+            layer.Tiles.Remove(tileCoordinate);
+        }
     }
 
     /// <summary>
@@ -520,6 +482,10 @@ namespace SiliconStudio.Xenko.Engine
         }
         public override void Serialize(ref NavigationMesh obj, ArchiveMode mode, SerializationStream stream)
         {
+            // Serialize tile size because it is needed
+            stream.Serialize(ref obj.buildSettings.TileSize);
+            stream.Serialize(ref obj.buildSettings.CellSize);
+
             int numLayers = obj.Layers?.Length ?? 0;
             stream.Serialize(ref numLayers);
             if (mode == ArchiveMode.Deserialize)

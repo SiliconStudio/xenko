@@ -19,9 +19,11 @@ namespace SiliconStudio.Xenko.Engine.Processors
         {
             public IntPtr[] Layers;
             private HashSet<object> references = new HashSet<object>();
+            private float cellTileSize;
 
             public NativeNavmesh(NavigationMesh navigationMesh)
             {
+                cellTileSize = navigationMesh.buildSettings.TileSize*navigationMesh.buildSettings.CellSize;
                 Layers = new IntPtr[navigationMesh.Layers.Length];
                 for (int i = 0; i < navigationMesh.Layers.Length; i++)
                 {
@@ -31,13 +33,22 @@ namespace SiliconStudio.Xenko.Engine.Processors
 
             private unsafe IntPtr LoadLayer(NavigationMesh.Layer navigationMeshLayer)
             {
-//                if (navigationMeshLayer.NavmeshData == null)
-//                    throw new ArgumentNullException(nameof(navigationMeshLayer));
-//                fixed (void* data = navigationMeshLayer.NavmeshData)
-//                {
-//                    return Navigation.LoadNavmesh(new IntPtr(data), navigationMeshLayer.NavmeshData.Length);
-//                }
-                return IntPtr.Zero;
+                IntPtr layer = Navigation.CreateNavmesh(cellTileSize);
+                if (layer == IntPtr.Zero)
+                    return layer;
+
+                // Add all the tiles to the navigation mesh
+                foreach (var tile in navigationMeshLayer.Tiles)
+                {
+                    if (tile.Value.NavmeshData == null)
+                        continue; // Just skip empty tiles
+                    fixed (byte* inputData = tile.Value.NavmeshData)
+                    {
+                        Navigation.AddTile(layer, tile.Key, new IntPtr(inputData), tile.Value.NavmeshData.Length);
+                    }
+                }
+
+                return layer;
             }
 
             public void Dispose()

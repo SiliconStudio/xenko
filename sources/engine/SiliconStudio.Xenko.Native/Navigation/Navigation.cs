@@ -80,18 +80,47 @@ namespace SiliconStudio.Xenko.Native
         [DllImport(NativeInvoke.Library, EntryPoint = "xnNavigationSetAgentSettings", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SetAgentSettings(IntPtr builder, IntPtr settings);
 
-        // Navmesh Query API
+        /// <summary>
+        /// Creates a new navigation mesh object
+        /// You must add tiles to it with AddTile before you can perform navigation queries using Query
+        /// </summary>
+        /// <returns></returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeInvoke.Library, EntryPoint = "xnNavigationLoadNavmesh", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr LoadNavmesh(IntPtr data, int dataLength);
-
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnNavigationCreateNavmesh", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr CreateNavmesh(float cellTileSize);
 
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnNavigationDestroyNavmesh", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr DestroyNavmesh(IntPtr navmesh);
+        public static extern IntPtr DestroyNavmesh(IntPtr query);
 
+        /// <summary>
+        /// Adds a new tile to the navigation mesh object
+        /// </summary>
+        /// <param name="navmesh"></param>
+        /// <param name="tileCoordinate">Coordinate of the tile to add</param>
+        /// <param name="data">Navigation mesh binary data in the detour format to load</param>
+        /// <param name="dataLength">Length of the binary mesh data</param>
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnNavigationAddTile", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool AddTile(IntPtr navmesh, Point tileCoordinate, IntPtr data, int dataLength);
+
+        /// <summary>
+        /// Removes a tile from the navigation mesh object
+        /// </summary>
+        /// <param name="navmesh"></param>
+        /// <param name="tileCoordinate">Coordinate of the tile to remove</param>
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnNavigationRemoveTile", CallingConvention = CallingConvention.Cdecl)]
+        public static extern bool RemoveTile(IntPtr navmesh, Point tileCoordinate);
+
+        /// <summary>
+        /// Perform a navigation query on the navigation mesh
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="navigationQuery">The query to perform</param>
+        /// <returns>A NavigationQueryResult</returns>
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnNavigationQuery", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr Query(IntPtr navmesh, NavigationQuery query);
+        public static extern IntPtr Query(IntPtr query, NavigationQuery navigationQuery);
     }
 }

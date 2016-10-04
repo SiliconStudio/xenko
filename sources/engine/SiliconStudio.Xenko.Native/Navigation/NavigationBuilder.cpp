@@ -121,8 +121,10 @@ void NavigationBuilder::Cleanup()
 }
 GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertices, int* indices, int numIndices)
 {
-	float* bmin = &m_buildSettings.boundingBox.minimum.X;
-	float* bmax = &m_buildSettings.boundingBox.maximum.X;
+	float bmin[3];
+	memcpy(bmin, &m_buildSettings.boundingBox.minimum.X, sizeof(float) * 3);
+	float bmax[3];
+	memcpy(bmax, &m_buildSettings.boundingBox.maximum.X, sizeof(float) * 3);
 
 	// Calculate input settings
 	// TODO: Expose these settings
@@ -141,7 +143,6 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 	float detailSampleDist = detailSampleDistInput < 0.9f ? 0 : m_buildSettings.cellSize * detailSampleDistInput;
 	float detailSampleMaxError = m_buildSettings.cellHeight * detailSampleMaxErrorInput;
 
-	//float walkableSlopeAngle = m_agentSettings.maxSlope;
 	int walkableHeight = (int)ceilf(m_agentSettings.height / m_buildSettings.cellHeight);
 	int walkableClimb = (int)floorf(m_agentSettings.maxClimb / m_buildSettings.cellHeight);
 	int walkableRadius = (int)ceilf(m_agentSettings.radius / m_buildSettings.cellSize);
@@ -156,8 +157,8 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 	bmax[0] += borderSize * m_buildSettings.cellSize;
 	bmax[2] += borderSize * m_buildSettings.cellSize;
 
-	int width, height;
-	rcCalcGridSize(bmin, bmax, m_buildSettings.cellSize, &width, &height);
+	int width = tileSize + borderSize * 2;
+	int height = tileSize + borderSize * 2;
 
 	double totalTime = npSeconds();
 	GeneratedData* ret = &m_result;
@@ -225,13 +226,6 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 		return ret;
 	}
 
-	// Mark all of the area with id 1
-	// NOTE: this needs to be done or the dtQueryFilter will filter out all geometry that does not have an area set
-	// check DetourNavMeshQuery.cpp@91
-	// in the case that the flags are 0 it will never pass
-	Vector3 rootVolume;
-	rcMarkBoxArea(m_context, bmin, bmax, 1, *m_chf);
-
 	double regionsTime = npSeconds();
 	// Prepare for region partitioning, by calculating distance field along the walkable surface.
 	if (!rcBuildDistanceField(m_context, *m_chf))
@@ -239,7 +233,7 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 		return ret;
 	}
 	// Partition the walkable surface into simple regions without holes.
-	if (!rcBuildRegions(m_context, *m_chf, 0, minRegionArea, mergeRegionArea))
+	if (!rcBuildRegions(m_context, *m_chf, borderSize, minRegionArea, mergeRegionArea))
 	{
 		return ret;
 	}
@@ -292,6 +286,18 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 	// Free intermediate results
 	rcFreeCompactHeightfield(m_chf);
 	m_chf = nullptr;
+
+	// Update poly flags from areas.
+	for (int i = 0; i < m_pmesh->npolys; ++i)
+	{
+		if (m_pmesh->areas[i] == RC_WALKABLE_AREA)
+			m_pmesh->areas[i] = 0;
+
+		if (m_pmesh->areas[i] == 0)
+		{
+			m_pmesh->flags[i] = 1;
+		}
+	}
 
 	// Generate native navmesh format and store the data pointers in the return structure
 	GenerateNavMeshVertices();
@@ -371,9 +377,9 @@ bool NavigationBuilder::CreateDetourMesh()
 	params.offMeshConFlags = nullptr;
 	params.offMeshConUserID = nullptr;
 	params.offMeshConCount = 0;
-	params.walkableHeight = (int)ceilf(m_agentSettings.height / m_buildSettings.cellHeight);
-	params.walkableClimb = (int)floorf(m_agentSettings.maxClimb / m_buildSettings.cellHeight);
-	params.walkableRadius = (int)ceilf(m_agentSettings.radius / m_buildSettings.cellSize);
+	params.walkableHeight = m_agentSettings.height;
+	params.walkableClimb = m_agentSettings.maxClimb;
+	params.walkableRadius = m_agentSettings.radius;
 	rcVcopy(params.bmin, m_pmesh->bmin);
 	rcVcopy(params.bmax, m_pmesh->bmax);
 	params.cs = m_buildSettings.cellSize;

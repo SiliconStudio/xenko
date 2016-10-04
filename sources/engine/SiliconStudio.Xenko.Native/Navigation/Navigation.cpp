@@ -31,19 +31,28 @@ extern "C"
 	}
 
 	// Navmesh Query
-	DLL_EXPORT_API void* xnNavigationLoadNavmesh(uint8_t* data, int dataLength)
+	DLL_EXPORT_API void* xnNavigationCreateNavmesh(float cellTileSize)
 	{
 		Navmesh* navmesh = new Navmesh();
-		if (!navmesh->Load(data, dataLength))
+		if (!navmesh->Init(cellTileSize))
 		{
 			delete navmesh;
-			return nullptr;
+			navmesh = nullptr;
 		}
 		return navmesh;
 	}
 	DLL_EXPORT_API void xnNavigationDestroyNavmesh(Navmesh* navmesh)
 	{
 		delete navmesh;
+	}
+
+	DLL_EXPORT_API bool xnNavigationAddTile(Navmesh* navmesh, Point tileCoordinate, uint8_t* data, int dataLength)
+	{
+		return navmesh->LoadTile(tileCoordinate, data, dataLength);
+	}
+	DLL_EXPORT_API bool xnNavigationRemoveTile(Navmesh* navmesh, Point tileCoordinate)
+	{
+		return navmesh->RemoveTile(tileCoordinate);
 	}
 	DLL_EXPORT_API NavmeshQueryResult* xnNavigationQuery(Navmesh* navmesh, NavmeshQuery query)
 	{
