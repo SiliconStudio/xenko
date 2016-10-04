@@ -3,38 +3,23 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Regression;
 
-
-namespace SiliconStudio.Xenko.Particles.Tests
+namespace SiliconStudio.Xenko.Physics.Tests
 {
     /// <summary>
     /// Game class for test on the Input sensors.
     /// </summary>
     public class GameTest : GameTestBase
     {
-        /// <summary>
-        /// The <see cref="ParticleTestVersion"/> is shared for all tests
-        /// </summary>
-        // Breaking changes
-        //  Please update the version number every time there is a breaking change to the particle engine and write down what has been changed
-        //        const int ParticleTestVersion = 1;  // Initial tests
-        //        const int ParticleTestVersion = 2;  // Changed the tests on purpose to check if the tests fail
-        //        const int ParticleTestVersion = 3;  // Added actual visual tests, bumping up the version since they are quite different
-        //        const int ParticleTestVersion = 4;  // Changed the default size for billboards, hexagons and quads (previous visual tests are broken)
-        //        const int ParticleTestVersion = 5;  // Changed the colliders behavior (non-uniform scales weren't supported before)
-        //        const int ParticleTestVersion = 6;  // Moved the main update from Update() to Draw() cycle
-        //        const int ParticleTestVersion = 7;  // Children Particles visual test updated
-        //        const int ParticleTestVersion = 8;  // Camera ignores scaling, due to float precision issues it renders slightly differently
-        //        const int ParticleTestVersion = 10;  // Skip 2 (to ignore colliding with tests on the master branch) + Camera ignores scaling, due to float precision issues it renders slightly differently
-        //        const int ParticleTestVersion = 11;  // Merged version between version 8 and 10
-        const int ParticleTestVersion = 12; // NUnit3 switch
+        const int ParticleTestVersion = 1; // NUnit3 switch
 
         /// <summary>
         ///  The <see cref="IndividualTestVersion"/> can be defined per test when only one of them is affected
@@ -167,11 +152,18 @@ namespace SiliconStudio.Xenko.Particles.Tests
 //                {
 //                    while (true)
 //                    {
+//
 //                        // ReSharper disable AccessToDisposedClosure
-//                        if (game.Input.HasPressedMouseButtons())
+//                        var camera = game.SceneSystem.SceneInstance.Scene.Entities.FirstOrDefault(ent => ent.Name == "Camera")?.Get<CameraComponent>();
+//                        var simulation = game.SceneSystem.SceneInstance.Scene.Entities.FirstOrDefault(ent => ent.Name == "Simulation")?.Get<StaticColliderComponent>()?.Simulation;
+//                        if (camera != null && simulation != null)
 //                        {
-//                            Console.WriteLine(game.Input.MousePosition);
-//                        }                                     
+//                            simulation.ColliderShapesRendering = true;
+//                            if (game.Input.HasPressedMouseButtons())
+//                            {
+//                                Console.WriteLine($"{game.Input.MousePosition} {ColliderShapesTest.ScreenPositionToWorldPositionRaycast(game.Input.MousePosition, camera, simulation)}");
+//                            }
+//                        }
 //                        await game.Script.NextFrame();
 //                        // ReSharper restore AccessToDisposedClosure
 //                    }

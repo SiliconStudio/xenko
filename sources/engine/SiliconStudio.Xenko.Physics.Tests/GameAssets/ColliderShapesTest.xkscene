@@ -1,6 +1,6 @@
 !SceneAsset
 Id: b98408a0-2b2d-4783-a8c2-11b0fe5bbdcc
-SerializedVersion: {Xenko: 1.7.0-beta04}
+SerializedVersion: {Xenko: 1.8.3-beta01}
 Tags: []
 SceneSettings:
     ~Id: 86dbbc16-5e33-4083-ab7b-f09cf1196358
@@ -117,7 +117,7 @@ Hierarchy:
                     - !TransformComponent
                         ~Id: bd27d041-b557-4215-a428-575bca271c7d
                         Children: []
-                        Position*: {X: 0.0, Y: 0.0, Z: -2.99999976}
+                        Position*: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
@@ -147,7 +147,7 @@ Hierarchy:
                         ~Id: aca9c32d-12b9-4bc2-8882-b0228f2b1ba7
                         Children:
                             - 778b6b5e-d65c-4f71-bc7e-d31cd20c94c5/bd27d041-b557-4215-a428-575bca271c7d
-                        Position: {X: 2.0, Y: 0.0, Z: -5.0}
+                        Position: {X: 2.0, Y: 0.0, Z: -7.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
         -   BaseId: 0e212165-0074-4a23-a37d-8e5d59cd8f90
@@ -190,7 +190,7 @@ Hierarchy:
                     - !TransformComponent
                         ~Id: 58dab5d0-f326-485f-9623-79b096eacd20
                         Children: []
-                        Position*: {X: -1.0, Y: 0.0, Z: -6.0}
+                        Position*: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
@@ -293,14 +293,14 @@ Hierarchy:
                         ~Id: 4f245241-fb0b-4085-b8fe-498a2f654c5c
                         Children:
                             - b5e8d577-cc51-44a5-b2a0-dd6a9b48933f/58dab5d0-f326-485f-9623-79b096eacd20
-                        Position: {X: -1.0, Y: 0.0, Z: -4.0}
+                        Position: {X: -1.0, Y: 0.0, Z: -6.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
 ~BaseParts:
     -   Location: CapsulePrefab1
         Asset: !PrefabAsset
             Id: e15a0385-0cfe-41c1-831f-cc2a05d9f7c1
-            SerializedVersion: {Xenko: 1.7.0-beta04}
+            SerializedVersion: {Xenko: 1.8.3-beta01}
             Tags: []
             Hierarchy:
                 ~Id: 8a8bf129-3f79-47a9-94e6-c748885be52c
@@ -340,7 +340,7 @@ Hierarchy:
     -   Location: ConePrefab1
         Asset: !PrefabAsset
             Id: 68437429-8ed3-4b1f-a873-9856b53729f3
-            SerializedVersion: {Xenko: 1.7.0-beta04}
+            SerializedVersion: {Xenko: 1.8.3-beta01}
             Tags: []
             Hierarchy:
                 ~Id: 4ae55a80-ee39-4574-b98d-0f502afcc23b
@@ -379,7 +379,7 @@ Hierarchy:
     -   Location: CubePrefab1
         Asset: !PrefabAsset
             Id: 50e8a53e-2757-4cfe-912b-f619910a704b
-            SerializedVersion: {Xenko: 1.7.0-beta04}
+            SerializedVersion: {Xenko: 1.8.3-beta01}
             Tags: []
             Hierarchy:
                 ~Id: 8528b10b-af10-46f4-be54-343d9a43028d
@@ -420,7 +420,7 @@ Hierarchy:
     -   Location: CylinderPrerab1
         Asset: !PrefabAsset
             Id: 68f7f7da-7055-4a20-8912-fa48ab1fd94b
-            SerializedVersion: {Xenko: 1.7.0-beta04}
+            SerializedVersion: {Xenko: 1.8.3-beta01}
             Tags: []
             Hierarchy:
                 ~Id: 8616392f-9438-4440-999d-c4863a5234ec
