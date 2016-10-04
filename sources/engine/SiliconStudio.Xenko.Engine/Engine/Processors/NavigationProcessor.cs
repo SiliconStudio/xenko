@@ -150,8 +150,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
                     //    debugEntity.Transform.Children.Remove(meshVizualizerEntity.Transform);
                     //    visualizedNavigationMeshes.Remove(component.NavigationMesh);
                     //}
-
-                    loadedNavigationMeshes.Remove(component.NavigationMesh);
+                    loadedNavigationMeshes.Remove(data.LoadedNavigationMesh);
                     data.NativeNavmesh.Dispose();
                 }
             }
