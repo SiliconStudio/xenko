@@ -66,6 +66,10 @@ namespace SiliconStudio.Assets
 
         public YamlAsset AsYamlAsset()
         {
+            // The asset file might have been been marked as deleted during the run of asset upgrader. In this case let's just return null.
+            if (Deleted)
+                return null;
+
             try
             {
                 return new YamlAsset(this);
