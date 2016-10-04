@@ -36,6 +36,7 @@
   <ItemGroup>
     <Compile Include="Behaviors\ToggleButtonPopupBehavior.cs" />
     <Compile Include="Controls\PopupModalWindow.cs" />
+    <Compile Include="Core\NaturalStringComparer.cs" />
     <Compile Include="Dirtiables\AnonymousDirtyingOperation.cs" />
     <Compile Include="Dirtiables\DirtiableManager.cs" />
     <Compile Include="Dirtiables\DirtiableSnapshot.cs" />
