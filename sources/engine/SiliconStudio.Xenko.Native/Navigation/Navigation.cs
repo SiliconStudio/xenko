@@ -25,6 +25,15 @@ namespace SiliconStudio.Xenko.Native
             public int TileSize;
             public Point TilePosition;
         }
+        
+        [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        public struct AgentSettings
+        {
+            public float Height;
+            public float Radius;
+            public float MaxClimb;
+            public float MaxSlope;
+        }
 
         [StructLayout(LayoutKind.Sequential, Pack = 4)]
         public struct GeneratedData

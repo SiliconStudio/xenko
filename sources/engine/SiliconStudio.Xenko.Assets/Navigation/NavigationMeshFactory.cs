@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                     {
                         Height = 1.0f,
                         Radius = 0.5f,
-                        MaxSlope = 45.0f,
+                        MaxSlope = new AngleSingle(45.0f, AngleType.Degree),
                         MaxClimb = 0.25f,
                     }
                 }

@@ -30,7 +30,6 @@ using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 namespace SiliconStudio.Xenko.Engine
 {
     [DataContract]
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct NavigationMeshBuildSettings
     {
         /// <summary>
@@ -57,21 +56,21 @@ namespace SiliconStudio.Xenko.Engine
 
 
     [DataContract]
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     [ObjectFactory(typeof(NavigationAgentSettingsFactory))]
     public struct NavigationAgentSettings
     {
         public float Height;
         public float Radius;
+
         /// <summary>
         /// Maximum vertical distance this agent can climb
         /// </summary>
         public float MaxClimb;
+
         /// <summary>
         /// Maximum slope angle this agent can climb (in degrees)
         /// </summary>
-        [DataMemberRange(0.0f, 180.0f, 0.1f, 1.0f, AllowNaN = false)]
-        public float MaxSlope;
+        public AngleSingle MaxSlope;
 
         public override int GetHashCode()
         {
@@ -87,7 +86,7 @@ namespace SiliconStudio.Xenko.Engine
             {
                 Height = 1.0f,
                 MaxClimb = 0.25f,
-                MaxSlope = 45.0f,
+                MaxSlope = new AngleSingle(45.0f, AngleType.Degree),
                 Radius = 0.5f
             };
         }
@@ -385,11 +384,21 @@ namespace SiliconStudio.Xenko.Engine
             Vector3[] inputVertices, int[] inputIndices,
             BoundingBox boundingBox, Point tileCoordinate)
         {
+            // Turn settings into native structure format
             NavigationAgentSettings agentSettings = layer.agentSettings;
+            Navigation.AgentSettings internalAgentSettings = new Navigation.AgentSettings
+            {
+                Height = agentSettings.Height,
+                Radius = agentSettings.Radius,
+                MaxClimb = agentSettings.MaxClimb,
+                MaxSlope = agentSettings.MaxSlope.Degrees
+            };
             Tile tile = new Tile();
 
             // Initialize navigation builder
             IntPtr nav = Navigation.CreateBuilder();
+
+            // Turn build settings into native structure format
             Navigation.BuildSettings internalBuildSettings = new Navigation.BuildSettings
             {
                 BoundingBox = boundingBox,
@@ -399,7 +408,7 @@ namespace SiliconStudio.Xenko.Engine
                 TileSize =  buildSettings.TileSize
             };
             Navigation.SetSettings(nav, new IntPtr(&internalBuildSettings));
-            Navigation.SetAgentSettings(nav, new IntPtr(&agentSettings));
+            Navigation.SetAgentSettings(nav, new IntPtr(&internalAgentSettings));
             
             // Generate mesh
             Navigation.GeneratedData data;
