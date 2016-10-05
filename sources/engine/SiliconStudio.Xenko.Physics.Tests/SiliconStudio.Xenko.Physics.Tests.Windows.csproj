@@ -153,6 +153,7 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CharacterTest.cs" />
     <Compile Include="ColliderShapesTest.cs" />
     <Compile Include="GameTest.cs" />
     <Compile Include="Module.cs" />

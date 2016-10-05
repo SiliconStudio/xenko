@@ -127,15 +127,15 @@ Settings:
             HiddenGizmos:
                 - Transform
         b98408a0-2b2d-4783-a8c2-11b0fe5bbdcc:
-            CamPosition: {X: -3.51783919, Y: 3.27549171, Z: 0.972295046}
-            CamPitchYaw: {X: -0.448868036, Y: -0.5387116}
+            CamPosition: {X: 0.633415461, Y: 12.9081163, Z: 11.69288}
+            CamPitchYaw: {X: -0.494329035, Y: 0.0834391862}
             CamProjection: Perspective
             CamVerticalFieldOfView: 45.0
             CamOrthographicSize: 10.0
             CamNearClipPlane: 0.1
             CamFarClipPlane: 1000.0
             CamAspectRatio: 1.77777779
-            TranslationSnapActive: true
+            TranslationSnapActive: false
             TranslationSnapValue: 1.0
             RotationSnapActive: false
             RotationSnapValue: 22.5

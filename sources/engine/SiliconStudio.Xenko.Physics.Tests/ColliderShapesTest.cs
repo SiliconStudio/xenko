@@ -50,9 +50,6 @@ namespace SiliconStudio.Xenko.Physics.Tests
             {
                 await game.Script.NextFrame();
                 await game.Script.NextFrame();
-                await game.Script.NextFrame();
-                await game.Script.NextFrame();
-                var camera = game.SceneSystem.SceneInstance.Scene.Entities.First(ent => ent.Name == "Camera").Get<CameraComponent>();
                 var simulation = game.SceneSystem.SceneInstance.Scene.Entities.First(ent => ent.Name == "Simulation").Get<StaticColliderComponent>().Simulation;
 
                 HitResult hit;
@@ -79,18 +76,123 @@ namespace SiliconStudio.Xenko.Physics.Tests
                 hit = simulation.Raycast((cube.Transform.Position - Vector3.UnitZ * 2) + new Vector3(-0.5f, 0.0f, 0.0f), cube.Transform.Position + new Vector3(-0.5f, 0.0f, 0.0f));
                 Assert.IsTrue(hit.Succeeded);
 
-                //simulation.ColliderShapesRendering = true;
-                //Cube
-                //                Assert.IsFalse(ScreenPositionToWorldPositionRaycast(new Vector2(0.35625f, 0.4347222f), camera, simulation));
-                //                Assert.IsFalse(ScreenPositionToWorldPositionRaycast(new Vector2(0.4039063f, 0.5333334f), camera, simulation));
-                //                Assert.IsFalse(ScreenPositionToWorldPositionRaycast(new Vector2(0.359375f, 0.5652778f), camera, simulation));
-                //                Assert.IsFalse(ScreenPositionToWorldPositionRaycast(new Vector2(0.3195313f, 0.5027778f), camera, simulation));
-                //                Assert.IsTrue(ScreenPositionToWorldPositionRaycast(new Vector2(0.3585938f, 0.4361111f), camera, simulation));
-                //                Assert.IsTrue(ScreenPositionToWorldPositionRaycast(new Vector2(0.403125f, 0.5069444f), camera, simulation));
-                //                Assert.IsTrue(ScreenPositionToWorldPositionRaycast(new Vector2(0.365625f, 0.5625f), camera, simulation));
-                //                Assert.IsTrue(ScreenPositionToWorldPositionRaycast(new Vector2(0.3210937f, 0.5055556f), camera, simulation));
+                var cylinder = game.SceneSystem.SceneInstance.Scene.Entities.First(ent => ent.Name == "CylinderPrefab1");
 
-                game.DebugConsoleSystem.Print("Test", new Vector2());
+                hit = simulation.Raycast((cylinder.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.0f, 0.55f, 0.0f), cylinder.Transform.Position + new Vector3(0.0f, 0.55f, 0.0f));
+                Assert.IsFalse(hit.Succeeded);
+                hit = simulation.Raycast((cylinder.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.0f, 0.5f, 0.0f), cylinder.Transform.Position + new Vector3(0.0f, 0.5f, 0.0f));
+                Assert.IsTrue(hit.Succeeded);
+
+                hit = simulation.Raycast((cylinder.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.0f, -0.55f, 0.0f), cylinder.Transform.Position + new Vector3(0.0f, -0.55f, 0.0f));
+                Assert.IsFalse(hit.Succeeded);
+                hit = simulation.Raycast((cylinder.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.0f, -0.5f, 0.0f), cylinder.Transform.Position + new Vector3(0.0f, -0.5f, 0.0f));
+                Assert.IsTrue(hit.Succeeded);
+
+                hit = simulation.Raycast((cylinder.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.55f, 0.0f, 0.0f), cylinder.Transform.Position + new Vector3(0.55f, 0.0f, 0.0f));
+                Assert.IsFalse(hit.Succeeded);
+                hit = simulation.Raycast((cylinder.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.5f, 0.0f, 0.0f), cylinder.Transform.Position + new Vector3(0.5f, 0.0f, 0.0f));
+                Assert.IsTrue(hit.Succeeded);
+
+                hit = simulation.Raycast((cylinder.Transform.Position - Vector3.UnitZ * 2) + new Vector3(-0.55f, 0.0f, 0.0f), cylinder.Transform.Position + new Vector3(-0.55f, 0.0f, 0.0f));
+                Assert.IsFalse(hit.Succeeded);
+                hit = simulation.Raycast((cylinder.Transform.Position - Vector3.UnitZ * 2) + new Vector3(-0.5f, 0.0f, 0.0f), cylinder.Transform.Position + new Vector3(-0.5f, 0.0f, 0.0f));
+                Assert.IsTrue(hit.Succeeded);
+
+                var capsule = game.SceneSystem.SceneInstance.Scene.Entities.First(ent => ent.Name == "CapsulePrefab1");
+
+                hit = simulation.Raycast((capsule.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.0f, 0.65f, 0.0f), capsule.Transform.Position + new Vector3(0.0f, 0.65f, 0.0f));
+                Assert.IsFalse(hit.Succeeded);
+                hit = simulation.Raycast((capsule.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.0f, 0.6f, 0.0f), capsule.Transform.Position + new Vector3(0.0f, 0.6f, 0.0f));
+                Assert.IsTrue(hit.Succeeded);
+
+                hit = simulation.Raycast((capsule.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.0f, -0.65f, 0.0f), capsule.Transform.Position + new Vector3(0.0f, -0.65f, 0.0f));
+                Assert.IsFalse(hit.Succeeded);
+                hit = simulation.Raycast((capsule.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.0f, -0.6f, 0.0f), capsule.Transform.Position + new Vector3(0.0f, -0.6f, 0.0f));
+                Assert.IsTrue(hit.Succeeded);
+
+                hit = simulation.Raycast((capsule.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.40f, 0.0f, 0.0f), capsule.Transform.Position + new Vector3(0.40f, 0.0f, 0.0f));
+                Assert.IsFalse(hit.Succeeded);
+                hit = simulation.Raycast((capsule.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.35f, 0.0f, 0.0f), capsule.Transform.Position + new Vector3(0.35f, 0.0f, 0.0f));
+                Assert.IsTrue(hit.Succeeded);
+
+                hit = simulation.Raycast((capsule.Transform.Position - Vector3.UnitZ * 2) + new Vector3(-0.40f, 0.0f, 0.0f), capsule.Transform.Position + new Vector3(-0.40f, 0.0f, 0.0f));
+                Assert.IsFalse(hit.Succeeded);
+                hit = simulation.Raycast((capsule.Transform.Position - Vector3.UnitZ * 2) + new Vector3(-0.35f, 0.0f, 0.0f), capsule.Transform.Position + new Vector3(-0.35f, 0.0f, 0.0f));
+                Assert.IsTrue(hit.Succeeded);
+
+                var cone = game.SceneSystem.SceneInstance.Scene.Entities.First(ent => ent.Name == "ConePrefab1");
+
+                hit = simulation.Raycast((cone.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.0f, 0.55f, 0.0f), cone.Transform.Position + new Vector3(0.0f, 0.55f, 0.0f));
+                Assert.IsFalse(hit.Succeeded);
+                hit = simulation.Raycast((cone.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.0f, 0.5f, 0.0f), cone.Transform.Position + new Vector3(0.0f, 0.5f, 0.0f));
+                Assert.IsTrue(hit.Succeeded);
+
+                hit = simulation.Raycast((cone.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.0f, -0.55f, 0.0f), cone.Transform.Position + new Vector3(0.0f, -0.55f, 0.0f));
+                Assert.IsFalse(hit.Succeeded);
+                hit = simulation.Raycast((cone.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.0f, -0.5f, 0.0f), cone.Transform.Position + new Vector3(0.0f, -0.5f, 0.0f));
+                Assert.IsTrue(hit.Succeeded);
+
+                hit = simulation.Raycast((cone.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.35f, 0.0f, 0.0f), cone.Transform.Position + new Vector3(0.35f, 0.0f, 0.0f));
+                Assert.IsFalse(hit.Succeeded);
+                hit = simulation.Raycast((cone.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.3f, 0.0f, 0.0f), cone.Transform.Position + new Vector3(0.3f, 0.0f, 0.0f));
+                Assert.IsTrue(hit.Succeeded);
+
+                hit = simulation.Raycast((cone.Transform.Position - Vector3.UnitZ * 2) + new Vector3(-0.35f, 0.0f, 0.0f), cone.Transform.Position + new Vector3(-0.35f, 0.0f, 0.0f));
+                Assert.IsFalse(hit.Succeeded);
+                hit = simulation.Raycast((cone.Transform.Position - Vector3.UnitZ * 2) + new Vector3(-0.3f, 0.0f, 0.0f), cone.Transform.Position + new Vector3(-0.3f, 0.0f, 0.0f));
+                Assert.IsTrue(hit.Succeeded);
+
+                var compound1 = game.SceneSystem.SceneInstance.Scene.Entities.First(ent => ent.Name == "Compound1");
+
+                hit = simulation.Raycast((compound1.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.0f, 1.55f, 0.0f), compound1.Transform.Position + new Vector3(0.0f, 1.55f, 0.0f));
+                Assert.IsFalse(hit.Succeeded);
+                hit = simulation.Raycast((compound1.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.0f, 1.49f, 0.0f), compound1.Transform.Position + new Vector3(0.0f, 1.49f, 0.0f)); //compound margin is different
+                Assert.IsTrue(hit.Succeeded);
+
+                hit = simulation.Raycast((compound1.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.0f, -0.55f, 0.0f), compound1.Transform.Position + new Vector3(0.0f, -0.55f, 0.0f));
+                Assert.IsFalse(hit.Succeeded);
+                hit = simulation.Raycast((compound1.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.0f, -0.5f, 0.0f), compound1.Transform.Position + new Vector3(0.0f, -0.5f, 0.0f));
+                Assert.IsTrue(hit.Succeeded);
+
+                hit = simulation.Raycast((compound1.Transform.Position - Vector3.UnitZ * 2) + new Vector3(1.55f, 0.0f, 0.0f), compound1.Transform.Position + new Vector3(1.55f, 0.0f, 0.0f));
+                Assert.IsFalse(hit.Succeeded);
+                hit = simulation.Raycast((compound1.Transform.Position - Vector3.UnitZ * 2) + new Vector3(1.49f, 0.0f, 0.0f), compound1.Transform.Position + new Vector3(1.49f, 0.0f, 0.0f));
+                Assert.IsTrue(hit.Succeeded);
+
+                hit = simulation.Raycast((compound1.Transform.Position - Vector3.UnitZ * 2) + new Vector3(-0.55f, 0.0f, 0.0f), compound1.Transform.Position + new Vector3(-0.55f, 0.0f, 0.0f));
+                Assert.IsFalse(hit.Succeeded);
+                hit = simulation.Raycast((compound1.Transform.Position - Vector3.UnitZ * 2) + new Vector3(-0.5f, 0.0f, 0.0f), compound1.Transform.Position + new Vector3(-0.5f, 0.0f, 0.0f));
+                Assert.IsTrue(hit.Succeeded);
+
+                var scaling = new Vector3(3, 2, 2);
+
+                compound1.Transform.Scale = scaling;
+                compound1.Transform.UpdateWorldMatrix();
+                compound1.Get<PhysicsComponent>().UpdatePhysicsTransformation();
+
+                await game.Script.NextFrame();
+
+                hit = simulation.Raycast((compound1.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.0f, 1.55f * 2, 0.0f), compound1.Transform.Position + new Vector3(0.0f, 1.55f * 2, 0.0f));
+                Assert.IsFalse(hit.Succeeded);
+                hit = simulation.Raycast((compound1.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.0f, 1.49f * 2, 0.0f), compound1.Transform.Position + new Vector3(0.0f, 1.49f * 2, 0.0f)); //compound margin is different
+                Assert.IsTrue(hit.Succeeded);
+
+                hit = simulation.Raycast((compound1.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.0f, -0.55f * 2, 0.0f), compound1.Transform.Position + new Vector3(0.0f, -0.55f * 2, 0.0f));
+                Assert.IsFalse(hit.Succeeded);
+                hit = simulation.Raycast((compound1.Transform.Position - Vector3.UnitZ * 2) + new Vector3(0.0f, -0.5f * 2, 0.0f), compound1.Transform.Position + new Vector3(0.0f, -0.5f * 2, 0.0f));
+                Assert.IsTrue(hit.Succeeded);
+
+                hit = simulation.Raycast((compound1.Transform.Position - Vector3.UnitZ * 2) + new Vector3(1.55f * 3, 0.0f, 0.0f), compound1.Transform.Position + new Vector3(1.55f * 3, 0.0f, 0.0f));
+                Assert.IsFalse(hit.Succeeded);
+                hit = simulation.Raycast((compound1.Transform.Position - Vector3.UnitZ * 2) + new Vector3(1.49f * 3, 0.0f, 0.0f), compound1.Transform.Position + new Vector3(1.49f * 3, 0.0f, 0.0f));
+                Assert.IsTrue(hit.Succeeded);
+
+                hit = simulation.Raycast((compound1.Transform.Position - Vector3.UnitZ * 2) + new Vector3(-0.55f * 3, 0.0f, 0.0f), compound1.Transform.Position + new Vector3(-0.55f * 3, 0.0f, 0.0f));
+                Assert.IsFalse(hit.Succeeded);
+                hit = simulation.Raycast((compound1.Transform.Position - Vector3.UnitZ * 2) + new Vector3(-0.5f * 3, 0.0f, 0.0f), compound1.Transform.Position + new Vector3(-0.5f * 3, 0.0f, 0.0f));
+                Assert.IsTrue(hit.Succeeded);
+
+                game.Exit();
             });
             RunGameTest(game);
         }

@@ -145,7 +145,8 @@ namespace SiliconStudio.Xenko.Physics.Tests
         /// </summary>
         public static void Main()
         {
-            using (var game = new ColliderShapesTest()) { game.ColliderShapesTest1(); }
+            //using (var game = new ColliderShapesTest()) { game.ColliderShapesTest1(); }
+            using (var game = new CharacterTest()) { game.CharacterTest1(); }
 //            using (var game = new ColliderShapesTest())
 //            {
 //                game.Script.AddTask(async () =>

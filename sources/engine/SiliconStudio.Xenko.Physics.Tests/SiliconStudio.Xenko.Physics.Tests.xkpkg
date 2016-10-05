@@ -59,3 +59,4 @@ Bundles: []
 TemplateFolders: []
 RootAssets:
     - b98408a0-2b2d-4783-a8c2-11b0fe5bbdcc:ColliderShapesTest
+    - c2b9bd24-3e83-4fff-b963-79f9ff5430ac:CharacterTest
