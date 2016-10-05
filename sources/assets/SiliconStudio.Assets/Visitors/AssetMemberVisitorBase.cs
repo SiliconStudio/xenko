@@ -57,6 +57,15 @@ namespace SiliconStudio.Assets.Visitors
             }
         }
 
+        /// <inheritdoc />
+        public override void VisitObject(object obj, ObjectDescriptor descriptor, bool visitMembers)
+        {
+            if (CurrentPath.Match(MemberPath))
+                VisitAssetMember(obj, descriptor);
+            else
+                base.VisitObject(obj, descriptor, visitMembers);
+        }
+
         /// <inheritdoc/>
         public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
         {
