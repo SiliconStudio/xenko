@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
 
@@ -165,7 +166,7 @@ namespace SiliconStudio.Quantum
                 return targetNode.Content.Reference as ObjectReference;
 
             var targetReference = targetNode.Content.Reference as ReferenceEnumerable;
-            return targetReference?[sourceReference.Index];
+            return targetReference != null && targetReference.Indices.Contains(sourceReference.Index) ? targetReference[sourceReference.Index] : null;
         }
     }
 }
