@@ -23,13 +23,13 @@ namespace SiliconStudio.Xenko.Assets.Models
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(ProceduralModelAssetCompiler))]
     [Display(185, "Procedural Model")]
-    [AssetFormatVersion(XenkoConfig.PackageName, "1.8.3-beta")]
+    [AssetFormatVersion(XenkoConfig.PackageName, "1.9.0-beta01")]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 2, typeof(Upgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, 2, 3, typeof(RenameCapsuleHeight))]
     [AssetUpgrader(XenkoConfig.PackageName, 3, 4, typeof(RenameDiameters))]
     [AssetUpgrader(XenkoConfig.PackageName, 4, 5, typeof(Standardization))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.5", "1.5.0-alpha01", typeof(CapsuleRadiusDefaultChange))]
-    [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha01", "1.8.3-beta", typeof(ConeOffsetChange))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha01", "1.9.0-beta01", typeof(ConeOffsetChange))]
     public sealed class ProceduralModelAsset : Asset, IModelAsset
     {
         /// <summary>
