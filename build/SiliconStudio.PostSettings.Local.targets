@@ -13,7 +13,7 @@
     <XenkoDependenciesDir Condition="'$(XenkoDependenciesDir)' != '' and !HasTrailingSlash('$(XenkoDependenciesDir)')">$(XenkoDependenciesDir)\</XenkoDependenciesDir>
     <SharpDXSdkDir Condition="'$(SharpDXSdkDir)' == ''">$(SiliconStudioDependenciesDir)SharpDX</SharpDXSdkDir>
 
-    <SiliconStudioAssemblyProcessorPath>$(MSBuildThisFileDirectory)..\Bin\Windows-Direct3D11\SiliconStudio.AssemblyProcessor.exe</SiliconStudioAssemblyProcessorPath>
+    <SiliconStudioAssemblyProcessorPath>$(MSBuildThisFileDirectory)..\deps\AssemblyProcessor\SiliconStudio.AssemblyProcessor.exe</SiliconStudioAssemblyProcessorPath>
     <SiliconStudioCoreAssemblyPath>$(MSBuildThisFileDirectory)..\Bin\$(SiliconStudioBuildDirectory)\SiliconStudio.Core.dll</SiliconStudioCoreAssemblyPath>
   </PropertyGroup>
 
