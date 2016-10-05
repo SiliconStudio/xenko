@@ -4,7 +4,7 @@ using MonoTouch.UIKit;
 using SiliconStudio.Xenko.Effects;
 using SiliconStudio.Xenko.Starter;
 
-namespace SiliconStudio.Xenko.Particles.Tests
+namespace SiliconStudio.Xenko.Physics.Tests
 {
     public class Application
     {

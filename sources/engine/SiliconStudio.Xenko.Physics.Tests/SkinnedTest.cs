@@ -10,7 +10,6 @@ namespace SiliconStudio.Xenko.Physics.Tests
     {
         public SkinnedTest() : base("SkinnedTest")
         {
-            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_3 };
         }
 
         public static bool ScreenPositionToWorldPositionRaycast(Vector2 screenPos, CameraComponent camera, Simulation simulation)

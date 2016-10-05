@@ -3,7 +3,6 @@
 
 using System;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Contents;
@@ -81,7 +80,7 @@ namespace SiliconStudio.Xenko.Physics.Tests
             // Make sure you have created a Scene with the same name (testName) in your XenkoGameStudio project.
             // The scene should be included in the build as Root and copied together with the other 
             //  assets to the /GameAssets directory contained in this assembly's directory
-            // Finally, make sure the scene is also added to the SiliconStudio.Xenko.Particles.Tests.xkpkg
+            // Finally, make sure the scene is also added to the SiliconStudio.Xenko.Physics.Tests.xkpkg
             //  and it has a proper uid. Example (for the VisualTestSpawners scene):
             //     - a9ba28ad-d83b-4957-8ed6-42863c1d903c:VisualTestSpawners
             SceneSystem.SceneInstance = new SceneInstance(Services, assetManager.Load<Scene>(testName));

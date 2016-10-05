@@ -2,9 +2,9 @@
 using Android.OS;
 using SiliconStudio.Xenko.Starter;
 
-namespace SiliconStudio.Xenko.Particles.Tests
+namespace SiliconStudio.Xenko.Physics.Tests
 {
-    [Activity(Label = "Xenko Particles", MainLauncher = true, Icon = "@drawable/icon")]
+    [Activity(Label = "Xenko Physics", MainLauncher = true, Icon = "@drawable/icon")]
     public class Activity1 : AndroidXenkoActivity
     {
         protected override void OnCreate(Bundle bundle)

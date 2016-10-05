@@ -2,8 +2,6 @@
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Particles.Tests;
 
 namespace SiliconStudio.Xenko.Physics.Tests
 {

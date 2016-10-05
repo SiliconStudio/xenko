@@ -4,7 +4,7 @@
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Xenko.Particles.Tests
+namespace SiliconStudio.Xenko.Physics.Tests
 {
     public class Module
     {

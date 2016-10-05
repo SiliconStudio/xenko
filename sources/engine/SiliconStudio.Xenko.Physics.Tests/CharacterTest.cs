@@ -1,10 +1,7 @@
-using System;
 using System.Linq;
-using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Physics.Tests
 {
