@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Physics.Tests
         private readonly string platformName;
         private int screenShots;
 
-        private GraphicsProfile overrideGraphicsProfile;
+        private readonly GraphicsProfile overrideGraphicsProfile;
 
         public GameTest(string name, GraphicsProfile profile = GraphicsProfile.Level_9_3)
         {
@@ -145,32 +145,9 @@ namespace SiliconStudio.Xenko.Physics.Tests
         /// </summary>
         public static void Main()
         {
-            //using (var game = new ColliderShapesTest()) { game.ColliderShapesTest1(); }
+            using (var game = new ColliderShapesTest()) { game.ColliderShapesTest1(); }
             using (var game = new CharacterTest()) { game.CharacterTest1(); }
-//            using (var game = new ColliderShapesTest())
-//            {
-//                game.Script.AddTask(async () =>
-//                {
-//                    while (true)
-//                    {
-//
-//                        // ReSharper disable AccessToDisposedClosure
-//                        var camera = game.SceneSystem.SceneInstance.Scene.Entities.FirstOrDefault(ent => ent.Name == "Camera")?.Get<CameraComponent>();
-//                        var simulation = game.SceneSystem.SceneInstance.Scene.Entities.FirstOrDefault(ent => ent.Name == "Simulation")?.Get<StaticColliderComponent>()?.Simulation;
-//                        if (camera != null && simulation != null)
-//                        {
-//                            simulation.ColliderShapesRendering = true;
-//                            if (game.Input.HasPressedMouseButtons())
-//                            {
-//                                Console.WriteLine($"{game.Input.MousePosition} {ColliderShapesTest.ScreenPositionToWorldPositionRaycast(game.Input.MousePosition, camera, simulation)}");
-//                            }
-//                        }
-//                        await game.Script.NextFrame();
-//                        // ReSharper restore AccessToDisposedClosure
-//                    }
-//                });
-//                game.Run();
-//            }
+            using (var game = new SkinnedTest()) { game.SkinnedTest1(); }
         }
     }
 }

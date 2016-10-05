@@ -157,6 +157,7 @@
     <Compile Include="ColliderShapesTest.cs" />
     <Compile Include="GameTest.cs" />
     <Compile Include="Module.cs" />
+    <Compile Include="SkinnedTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Label="Xenko.DoNotSync" Include="Properties\AssemblyInfo.cs" />

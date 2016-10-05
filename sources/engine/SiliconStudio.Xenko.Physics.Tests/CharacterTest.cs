@@ -33,7 +33,6 @@ namespace SiliconStudio.Xenko.Physics.Tests
             var result = simulation.RaycastPenetrating(vectorNear.XYZ(), vectorFar.XYZ());
             foreach (var hitResult in result)
             {
-                var staticBody = hitResult.Collider as StaticColliderComponent;
                 if (hitResult.Succeeded)
                 {
                     return true;

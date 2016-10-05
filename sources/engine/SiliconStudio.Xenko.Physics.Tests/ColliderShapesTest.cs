@@ -32,7 +32,6 @@ namespace SiliconStudio.Xenko.Physics.Tests
             var result = simulation.RaycastPenetrating(vectorNear.XYZ(), vectorFar.XYZ());
             foreach (var hitResult in result)
             {
-                var staticBody = hitResult.Collider as StaticColliderComponent;
                 if (hitResult.Succeeded)
                 {
                     return true;
@@ -48,6 +47,8 @@ namespace SiliconStudio.Xenko.Physics.Tests
             var game = new ColliderShapesTest();
             game.Script.AddTask(async () =>
             {
+                game.ScreenShotAutomationEnabled = false;
+
                 await game.Script.NextFrame();
                 await game.Script.NextFrame();
                 var simulation = game.SceneSystem.SceneInstance.Scene.Entities.First(ent => ent.Name == "Simulation").Get<StaticColliderComponent>().Simulation;

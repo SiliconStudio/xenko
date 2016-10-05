@@ -198,21 +198,11 @@
     </ProjectReference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Compile Include="CharacterTest.cs" />
+    <Compile Include="ColliderShapesTest.cs" />
     <Compile Include="GameTest.cs" />
     <Compile Include="Module.cs" />
-    <Compile Include="ParticleForcesTest.cs" />
-    <Compile Include="ParticlePoolTest.cs" />
-    <Compile Include="PhysicsorterLiving.cs" />
-    <Compile Include="SimpleTest.cs" />
-    <Compile Include="VisualTestChildren.cs" />
-    <Compile Include="VisualTestCurves.cs" />
-    <Compile Include="VisualTestGeneral.cs" />
-    <Compile Include="VisualTestInitializers.cs" />
-    <Compile Include="VisualTestMaterials.cs" />
-    <Compile Include="VisualTestSoftEdge.cs" />
-    <Compile Include="VisualTestSpawners.cs" />
-    <Compile Include="VisualTestsRibbons.cs" />
-    <Compile Include="VisualTestUpdaters.cs" />
+    <Compile Include="SkinnedTest.cs" />
     <None Include="SiliconStudio.Xenko.Physics.Tests.xkpkg" />
   </ItemGroup>
   <ItemGroup>
