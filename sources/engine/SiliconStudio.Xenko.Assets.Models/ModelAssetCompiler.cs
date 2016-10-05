@@ -15,27 +15,25 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets.Models
 {
-    public class ModelAssetCompiler : AssetCompilerBase<ModelAsset>
+    public class ModelAssetCompiler : AssetCompilerBase
     {
-        protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, ModelAsset asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
-            if (!EnsureSourcesExist(result, asset, assetAbsolutePath))
-                return;
-
+            var asset = (ModelAsset)assetItem.Asset;
             // Get absolute path of asset source on disk
-            var assetDirectory = assetAbsolutePath.GetParent();
+            var assetDirectory = assetItem.FullPath.GetParent();
             var assetSource = UPath.Combine(assetDirectory, asset.Source);
 
             var gameSettingsAsset = context.GetGameSettingsAsset();
             var renderingSettings = gameSettingsAsset.Get<RenderingSettings>();
             var allow32BitIndex = renderingSettings.DefaultGraphicsProfile >= GraphicsProfile.Level_9_2;
-            var allowUnsignedBlendIndices = context.GetGraphicsPlatform(AssetItem.Package) != GraphicsPlatform.OpenGLES;
+            var allowUnsignedBlendIndices = context.GetGraphicsPlatform(assetItem.Package) != GraphicsPlatform.OpenGLES;
             var extension = asset.Source.GetFileExtension();
 
             // Find skeleton asset, if any
             AssetItem skeleton = null;
             if (asset.Skeleton != null)
-                skeleton = AssetItem.Package.FindAssetFromAttachedReference(asset.Skeleton);
+                skeleton = assetItem.Package.FindAssetFromAttachedReference(asset.Skeleton);
 
             var importModelCommand = ImportModelCommand.Create(extension);
             if (importModelCommand == null)
@@ -46,7 +44,7 @@ namespace SiliconStudio.Xenko.Assets.Models
 
             importModelCommand.Mode = ImportModelCommand.ExportMode.Model;
             importModelCommand.SourcePath = assetSource;
-            importModelCommand.Location = urlInStorage;
+            importModelCommand.Location = targetUrlInStorage;
             importModelCommand.Allow32BitIndex = allow32BitIndex;
             importModelCommand.AllowUnsignedBlendIndices = allowUnsignedBlendIndices;
             importModelCommand.Materials = asset.Materials;
@@ -54,7 +52,7 @@ namespace SiliconStudio.Xenko.Assets.Models
             importModelCommand.PivotPosition = asset.PivotPosition;
             importModelCommand.SkeletonUrl = skeleton?.Location;
 
-            result.BuildSteps = new AssetBuildStep(AssetItem) { importModelCommand };
+            result.BuildSteps = new AssetBuildStep(assetItem) { importModelCommand };
         }
     }
 }

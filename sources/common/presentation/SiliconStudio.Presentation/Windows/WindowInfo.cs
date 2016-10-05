@@ -85,6 +85,9 @@ namespace SiliconStudio.Presentation.Windows
                 if (HwndHelper.HasExStyleFlag(Hwnd, NativeHelper.WS_EX_TOOLWINDOW))
                     return false;
 
+                if (HwndHelper.HasStyleFlag(Hwnd, NativeHelper.WS_CHILD))
+                    return false;
+
                 var owner = Owner;
                 return owner == null || owner.IsModal && owner.IsDisabled;
             }

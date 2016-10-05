@@ -8,6 +8,7 @@ using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets.Analysis
 {
@@ -217,7 +218,7 @@ namespace SiliconStudio.Assets.Analysis
                 // If asset was not found, remove the reference
                 if (newItemReference == null)
                 {
-                    log.Warning(package, rootAsset, AssetMessageCode.AssetNotFound, rootAsset);
+                    log.Warning(package, rootAsset, AssetMessageCode.AssetForPackageNotFound, rootAsset, package.FullPath.GetFileName());
                     rootAssets.Remove(rootAsset.Id);
                     package.IsDirty = true;
                     continue;

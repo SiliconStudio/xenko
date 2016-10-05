@@ -67,7 +67,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// Called when graphics device is inactive (put in the background and rendering is paused).
         /// It should voluntarily release objects that can be easily recreated, such as FBO and dynamic buffers.
         /// </summary>
-        /// <returns>True if item transitionned to a <see cref="GraphicsResourceLifetimeState.Paused"/> state.</returns>
+        /// <returns>True if item transitioned to a <see cref="GraphicsResourceLifetimeState.Paused"/> state.</returns>
         protected internal virtual bool OnPause()
         {
             return false;

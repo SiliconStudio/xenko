@@ -60,6 +60,9 @@
   <Choose>
     <When Condition="'$(SiliconStudioUnitTest)' != 'true'">
       <ItemGroup>
+        <Reference Include="SiliconStudio.Core.Native">
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Core.Native.dll</HintPath>
+        </Reference>
         <Reference Include="SiliconStudio.Core">
           <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Core.dll</HintPath>
         </Reference>

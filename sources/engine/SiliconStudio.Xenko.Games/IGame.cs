@@ -3,9 +3,9 @@
 using System;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Games.Time;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Core.Serialization.Assets;
 
 namespace SiliconStudio.Xenko.Games
 {

@@ -126,9 +126,6 @@
   <data name="AssetLoadingFailed" xml:space="preserve">
     <value>Failed to load asset from path [{0}]. Reason: {1}</value>
   </data>
-  <data name="AssetNotFound" xml:space="preserve">
-    <value>Asset [{0}] not found</value>
-  </data>
   <data name="AssetForPackageNotFound" xml:space="preserve">
     <value>Asset [{0}] not found. Required for package [{1}]</value>
   </data>

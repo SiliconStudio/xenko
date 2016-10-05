@@ -77,8 +77,8 @@
   <!-- Import the specific compiler targets for the selected platform/language if it exists and if `SiliconStudioWindowsOnly` is true, makes sure
   to do nothing if this is not a Windows platform -->
   <Import Condition="'$(SiliconStudioCompilerTargetsEnable)' != 'false'" Project="$(SiliconStudioCompilerTargets)" />
-  
-  <UsingTask TaskName="AssemblyProcessorTask" AssemblyFile="$(SolutionDir)\..\deps\AssemblyProcessor\SiliconStudio.AssemblyProcessor.exe"/>
+
+  <UsingTask TaskName="AssemblyProcessorTask" AssemblyFile="$(SiliconStudioAssemblyProcessorPath)"/>
   
   <Target Name="RunSiliconStudioAssemblyProcessor" AfterTargets="CoreCompile" Condition=" '$(SiliconStudioAssemblyProcessor)' == 'true' and '$(SiliconStudioAssemblyProcessorPath)' != '' and '$(SiliconStudioAssemblyProcessorGlobal)' == 'true' and '$(SiliconStudioAssemblyProcessorOptions)' != '' ">
     <PropertyGroup Condition="'$(XenkoUserBuild)' != 'true'">
@@ -99,6 +99,7 @@
     </PropertyGroup>
 
     <!-- Run assembly processor -->
+    <Message Importance="low" Text="$(SiliconStudioAssemblyProcessorOptions)"/>
     <AssemblyProcessorTask Arguments="$(SiliconStudioAssemblyProcessorOptions)"/>
   </Target>
 

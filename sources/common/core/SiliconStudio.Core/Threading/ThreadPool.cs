@@ -99,9 +99,9 @@ namespace SiliconStudio.Core.Threading
 
                             //spinWait.Reset();
                         }
-                        catch (Exception e)
+                        catch (Exception)
                         {
-
+                            // Ignoring Exception
                         }
                         finally
                         {

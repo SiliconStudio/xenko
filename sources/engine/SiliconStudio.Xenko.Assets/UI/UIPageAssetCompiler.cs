@@ -24,8 +24,8 @@ namespace SiliconStudio.Xenko.Assets.UI
             {
                 return new Engine.UIPage
                 {
-                    RootElement = AssetParameters.Hierarchy.RootPartIds.Count == 1
-                        ? AssetParameters.Hierarchy.Parts[AssetParameters.Hierarchy.RootPartIds[0]].UIElement
+                    RootElement = Parameters.Hierarchy.RootPartIds.Count == 1
+                        ? Parameters.Hierarchy.Parts[Parameters.Hierarchy.RootPartIds[0]].UIElement
                         : null,
                 };
             }

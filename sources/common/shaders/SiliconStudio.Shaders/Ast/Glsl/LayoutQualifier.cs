@@ -66,6 +66,7 @@ namespace SiliconStudio.Shaders.Ast.Glsl
                     if (i > 0) builder.Append(", ");
                     builder.Append(Layouts[i]);
                 }
+                builder.Append(")");
                 return builder.ToString();
             }
         }

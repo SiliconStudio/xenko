@@ -27,7 +27,7 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Games.Time;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Games
 {

@@ -3,21 +3,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Core.Serialization.Assets;
 
 namespace SiliconStudio.BuildEngine
 {
     internal class BuildTransaction
     {
         private readonly Dictionary<ObjectUrl, ObjectId> transactionOutputObjects = new Dictionary<ObjectUrl, ObjectId>();
-        private readonly IAssetIndexMap assetIndexMap;
+        private readonly IContentIndexMap contentIndexMap;
         private readonly IEnumerable<IDictionary<ObjectUrl, OutputObject>> outputObjectsGroups;
 
-        public BuildTransaction(IAssetIndexMap assetIndexMap, IEnumerable<IDictionary<ObjectUrl, OutputObject>> outputObjectsGroups)
+        public BuildTransaction(IContentIndexMap contentIndexMap, IEnumerable<IDictionary<ObjectUrl, OutputObject>> outputObjectsGroups)
         {
-            this.assetIndexMap = assetIndexMap;
+            this.contentIndexMap = contentIndexMap;
             this.outputObjectsGroups = outputObjectsGroups;
         }
 
@@ -59,9 +58,9 @@ namespace SiliconStudio.BuildEngine
                 }
 
                 // Check asset index map (if set)
-                if (assetIndexMap != null)
+                if (contentIndexMap != null)
                 {
-                    if (assetIndexMap.TryGetValue(url, out objectId))
+                    if (contentIndexMap.TryGetValue(url, out objectId))
                         return true;
                 }
             }
@@ -70,11 +69,11 @@ namespace SiliconStudio.BuildEngine
             return false;
         }
 
-        internal class DatabaseAssetIndexMap : IAssetIndexMap
+        internal class DatabaseContentIndexMap : IContentIndexMap
         {
             private readonly BuildTransaction buildTransaction;
 
-            public DatabaseAssetIndexMap(BuildTransaction buildTransaction)
+            public DatabaseContentIndexMap(BuildTransaction buildTransaction)
             {
                 this.buildTransaction = buildTransaction;
             }

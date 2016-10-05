@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Core.Storage
 {
@@ -21,7 +21,7 @@ namespace SiliconStudio.Core.Storage
         private readonly IVirtualFileProvider virtualFileProvider;
         private readonly string vfsRootUrl;
         private readonly string vfsTempUrl;
-        private readonly AssetIndexMap assetIndexMap;
+        private readonly ContentIndexMap contentIndexMap;
 
         public FileOdbBackend(string vfsRootUrl, string indexName, bool isReadOnly)
         {
@@ -36,8 +36,8 @@ namespace SiliconStudio.Core.Storage
 
             IsReadOnly = isReadOnly;
 
-            assetIndexMap = !string.IsNullOrEmpty(indexName) ? Serialization.Assets.AssetIndexMap.Load(vfsRootUrl + VirtualFileSystem.DirectorySeparatorChar + indexName, isReadOnly)
-                                                             : Serialization.Assets.AssetIndexMap.CreateInMemory();
+            contentIndexMap = !string.IsNullOrEmpty(indexName) ? Serialization.Contents.ContentIndexMap.Load(vfsRootUrl + VirtualFileSystem.DirectorySeparatorChar + indexName, isReadOnly)
+                                                             : Serialization.Contents.ContentIndexMap.CreateInMemory();
             if (!isReadOnly && !virtualFileProvider.DirectoryExists(vfsTempUrl))
             {
                 try
@@ -52,13 +52,13 @@ namespace SiliconStudio.Core.Storage
         }
 
         /// <inheritdoc/>
-        public IAssetIndexMap AssetIndexMap => assetIndexMap;
+        public IContentIndexMap ContentIndexMap => contentIndexMap;
 
         public bool IsReadOnly { get; }
 
         public void Dispose()
         {
-            assetIndexMap.Dispose();
+            contentIndexMap.Dispose();
         }
 
         /// <inheritdoc/>

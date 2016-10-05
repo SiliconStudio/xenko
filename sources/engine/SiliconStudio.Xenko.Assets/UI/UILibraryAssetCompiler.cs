@@ -23,9 +23,9 @@ namespace SiliconStudio.Xenko.Assets.UI
             protected override ComponentBase Create(ICommandContext commandContext)
             {
                 var uiLibrary = new Engine.UILibrary();
-                foreach (var kv in AssetParameters.PublicUIElements)
+                foreach (var kv in Parameters.PublicUIElements)
                 {
-                    if (!AssetParameters.Hierarchy.RootPartIds.Contains(kv.Key))
+                    if (!Parameters.Hierarchy.RootPartIds.Contains(kv.Key))
                     {
                         // We might want to allow that in the future.
                         commandContext.Logger.Warning($"Only root elements can be exposed publicly. Skipping [{kv.Key}].");
@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Assets.UI
 
                     // Copy Key/Value pair
                     UIElementDesign element;
-                    if (AssetParameters.Hierarchy.Parts.TryGetValue(kv.Key, out element))
+                    if (Parameters.Hierarchy.Parts.TryGetValue(kv.Key, out element))
                     {
                         uiLibrary.UIElements.Add(kv.Value, element.UIElement);
                     }

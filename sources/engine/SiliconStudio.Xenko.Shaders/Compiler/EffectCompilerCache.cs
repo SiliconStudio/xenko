@@ -12,7 +12,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Rendering;
 
@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                 // 1) Try to load latest bytecode
                 // ------------------------------------------------------------------------------------------------------------
                 ObjectId bytecodeId;
-                if (database.AssetIndexMap.TryGetValue(compiledUrl, out bytecodeId))
+                if (database.ContentIndexMap.TryGetValue(compiledUrl, out bytecodeId))
                 {
                     bytecode = LoadEffectBytecode(database, bytecodeId);
                 }
@@ -118,7 +118,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                             if (bytecode.Key != null)
                             {
                                 // If we successfully retrieved it from cache, add it to index map so that it won't be collected and available for faster lookup 
-                                database.AssetIndexMap[compiledUrl] = newBytecodeId;
+                                database.ContentIndexMap[compiledUrl] = newBytecodeId;
                             }
                         }
                     }
@@ -196,7 +196,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 
                 memoryStream.Position = 0;
                 database.ObjectDatabase.Write(memoryStream, newBytecodeId, true);
-                database.AssetIndexMap[compiledUrl] = newBytecodeId;
+                database.ContentIndexMap[compiledUrl] = newBytecodeId;
 
                 // Save bytecode Id to the database cache as well
                 memoryStream.SetLength(0);

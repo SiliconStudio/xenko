@@ -8,7 +8,7 @@ using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Updater;
 using SiliconStudio.Xenko.Animations;
 using SiliconStudio.Xenko.Engine;

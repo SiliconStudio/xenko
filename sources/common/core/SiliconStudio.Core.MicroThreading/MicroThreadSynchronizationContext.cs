@@ -5,13 +5,13 @@ using System.Threading;
 
 namespace SiliconStudio.Core.MicroThreading
 {
-    public class MicroThreadSynchronizationContext : SynchronizationContext
+    public class MicroThreadSynchronizationContext : SynchronizationContext, IMicroThreadSynchronizationContext
     {
-        internal MicroThread MicroThread;
+        private readonly MicroThread microThread;
 
         public MicroThreadSynchronizationContext(MicroThread microThread)
         {
-            this.MicroThread = microThread;
+            this.microThread = microThread;
         }
 
         public override SynchronizationContext CreateCopy()
@@ -28,18 +28,20 @@ namespace SiliconStudio.Core.MicroThreading
             // Note: As it will end up on the callstack, it might be better to Schedule it instead (to avoid overflow)?
             // 2/ Otherwise, we just received an external task continuation (i.e. TaskEx.Sleep()), or a microthread triggering another,
             // so schedule it so that it comes back in our regular scheduler.
-            if (MicroThread.Scheduler.RunningMicroThread == MicroThread)
+            if (microThread.Scheduler.RunningMicroThread == microThread)
             {
                 d(state);
             }
-            else if (MicroThread.State == MicroThreadState.Completed)
+            else if (microThread.State == MicroThreadState.Completed)
             {
                 throw new InvalidOperationException("MicroThread is already completed but still posting continuations.");
             }
             else
             {
-                MicroThread.ScheduleContinuation(MicroThread.ScheduleMode, d, state);
+                microThread.ScheduleContinuation(microThread.ScheduleMode, d, state);
             }
         }
+
+        MicroThread IMicroThreadSynchronizationContext.MicroThread => microThread;
     }
 }

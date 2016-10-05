@@ -25,6 +25,8 @@ namespace SiliconStudio.Xenko.Particles.Rendering
 
         // .x - Width, .y - Height, .z - Near, .w - Far
         public Vector4 ViewFrustum;
+
+        public Vector4 Viewport;
     }
 
     internal struct RenderAttributesPerNode
@@ -220,35 +222,6 @@ namespace SiliconStudio.Xenko.Particles.Rendering
                 resourceGroupPool[descriptorSetPoolOffset + perMaterialDescriptorSetSlot.Index] = materialInfo.Resources;
             }
 
-            // Per view
-            // TODO: Transform sub render feature?
-            for (int index = 0; index < RenderSystem.Views.Count; index++)
-            {
-                var view = RenderSystem.Views[index];
-                var viewFeature = view.Features[Index];
-
-                // TODO GRAPHICS REFACTOR: Happens in several places
-                Matrix.Multiply(ref view.View, ref view.Projection, out view.ViewProjection);
-
-                // Copy ViewProjection to PerFrame cbuffer
-                foreach (var viewLayout in viewFeature.Layouts)
-                {
-                    var resourceGroup = viewLayout.Entries[view.Index].Resources;
-                    var mappedCB = resourceGroup.ConstantBuffer.Data;
-
-                    // PerView constant buffer
-                    var perViewOffset = viewLayout.GetConstantBufferOffset(this.perViewCBufferOffset);
-                    if (perViewOffset != -1)
-                    {
-                        var perView = (ParticleUtilitiesPerView*)((byte*)mappedCB + perViewOffset);
-                        perView->ViewMatrix     = view.View;
-                        perView->ProjectionMatrix = view.Projection;
-                        perView->ViewProjectionMatrix = view.ViewProjection;
-                        perView->ViewFrustum = new Vector4(view.ViewSize.X, view.ViewSize.Y, view.NearClipPlane, view.FarClipPlane);
-                    }
-                }
-            }
-
             particleBufferContext.AllocateBuffers(context, totalVertexBufferSize, highestIndexCount);
 
             BuildParticleBuffers(context);
@@ -309,9 +282,40 @@ namespace SiliconStudio.Xenko.Particles.Rendering
         }
 
         /// <inheritdoc/>
-        public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
+        public override unsafe void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
             var commandList = context.CommandList;
+
+            // Per view - this code was moved here from Prepare(...) so that we can apply the correct Viewport
+            {
+                var view = renderView;
+                var viewFeature = view.Features[Index];
+
+                Matrix.Multiply(ref view.View, ref view.Projection, out view.ViewProjection);
+
+                // Copy ViewProjection to PerFrame cbuffer
+                foreach (var viewLayout in viewFeature.Layouts)
+                {
+                    var resourceGroup = viewLayout.Entries[view.Index].Resources;
+                    var mappedCB = resourceGroup.ConstantBuffer.Data;
+
+                    // PerView constant buffer
+                    var perViewOffset = viewLayout.GetConstantBufferOffset(this.perViewCBufferOffset);
+                    if (perViewOffset != -1)
+                    {
+                        var perView = (ParticleUtilitiesPerView*)((byte*)mappedCB + perViewOffset);
+                        perView->ViewMatrix = view.View;
+                        perView->ProjectionMatrix = view.Projection;
+                        perView->ViewProjectionMatrix = view.ViewProjection;
+                        perView->ViewFrustum = new Vector4(view.ViewSize.X, view.ViewSize.Y, view.NearClipPlane, view.FarClipPlane);
+
+                        perView->Viewport = new Vector4(0,
+                                                        0,
+                                                        ((float)context.CommandList.Viewport.Width) / ((float)context.CommandList.RenderTarget.Width),
+                                                        ((float)context.CommandList.Viewport.Height) / ((float)context.CommandList.RenderTarget.Height));
+                    }
+                }
+            }
 
             var renderParticleNodeData = RenderData.GetData(renderParticleNodeKey);
 
