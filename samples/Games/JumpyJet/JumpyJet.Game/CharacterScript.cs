@@ -42,7 +42,10 @@ namespace JumpyJet
         /// <summary>
         /// The position of the back of the character along the X axis.
         /// </summary>
-        public float PositionBack => Entity.Transform.Position.X - agentWidth / 2f;
+        public float PositionBack
+        {
+            get { return Entity.Transform.Position.X - agentWidth/2f; }
+        }
 
         public void Start()
         {

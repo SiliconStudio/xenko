@@ -55,6 +55,19 @@ namespace SiliconStudio.Xenko.Assets.Physics
         }
     }
 
+    public class ColliderShapeConeFactory : AssetFactory<ColliderShapeAsset>
+    {
+        public static ColliderShapeAsset Create()
+        {
+            return new ColliderShapeAsset { ColliderShapes = { new ConeColliderShapeDesc() } };
+        }
+
+        public override ColliderShapeAsset New()
+        {
+            return Create();
+        }
+    }
+
     public class ColliderShapePlaneFactory : AssetFactory<ColliderShapeAsset>
     {
         public static ColliderShapeAsset Create()

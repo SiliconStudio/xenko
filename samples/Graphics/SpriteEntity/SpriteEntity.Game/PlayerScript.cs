@@ -89,7 +89,7 @@ namespace SpriteEntity
                         endFrame = "shoot4";
                         break;
                     default:
-                        throw new ArgumentOutOfRangeException(nameof(value), value, null);
+                        throw new ArgumentOutOfRangeException("value", value, null);
                 }
                 SpriteAnimation.Play(agentSpriteComponent, spriteSheet.FindImageIndex(startFrame), spriteSheet.FindImageIndex(endFrame), AnimationRepeatMode.LoopInfinite, AnimationFps[currentAgentAnimation]);
             }

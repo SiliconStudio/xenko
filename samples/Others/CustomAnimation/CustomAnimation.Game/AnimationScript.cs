@@ -22,7 +22,7 @@ namespace CustomAnimation
             var colorRgbProviderName = typeof(ColorRgbProvider).AssemblyQualifiedName;
 
             animationClip.AddCurve("[TransformComponent.Key].Rotation", CreateLightRotationCurve());
-            animationClip.AddCurve($"[LightComponent.Key].Type.({colorLightBaseName})Color.({colorRgbProviderName})Value", CreateLightColorCurve());
+            animationClip.AddCurve(string.Format("[LightComponent.Key].Type.({0})Color.({1})Value", colorLightBaseName, colorRgbProviderName), CreateLightColorCurve());
 
             // Optional: Pack all animation channels into an optimized interleaved format
             animationClip.Optimize();

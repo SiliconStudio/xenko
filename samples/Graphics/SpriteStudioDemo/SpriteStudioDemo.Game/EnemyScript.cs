@@ -22,11 +22,11 @@ namespace SpriteStudioDemo
         private RigidbodyComponent rigidbodyElement;
         private AnimationComponent animationComponent;
 
-        PlayingAnimation playingAnimation = null;
+        PlayingAnimation playingAnimation;
 
         // random
-        private static int seed = Environment.TickCount;
-        private static Random enemyRandomLocal = new Random(seed);
+        private static readonly int seed = Environment.TickCount;
+        private static readonly Random enemyRandomLocal = new Random(seed);
 
         private async Task Reset()
         {

@@ -18,11 +18,17 @@ namespace ParticlesSample.Particles.ShapeBuilders
         [DataMember(100)]
         public bool FixYAxis = false;
 
+        private int quadsPerParticle = 1;
+
         //  One particle requires 1 quad = 4 vertices (6 indices)
-        public override int QuadsPerParticle { get; protected set; } = 1;
+        public override int QuadsPerParticle
+        {
+            get { return quadsPerParticle; }
+            protected set { quadsPerParticle = value; }
+        }
 
         /// <inheritdoc />
-        public unsafe override int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY,
+        public override unsafe int BuildVertexBuffer(ref ParticleBufferState bufferState, Vector3 invViewX, Vector3 invViewY,
             ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ref ParticleList sorter)
         {
             // Step 1 - get all required fields to build the particle shapes. Some fields may not exist if no initializer or updater operates on them

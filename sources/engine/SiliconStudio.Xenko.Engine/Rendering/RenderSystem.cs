@@ -452,7 +452,8 @@ namespace SiliconStudio.Xenko.Rendering
 
                 foreach (var renderViewStage in view.RenderStages)
                 {
-                    renderViewStage.RenderNodes.Clear(true);
+                    //Cannot use Clear(true), many structs have refs to objects
+                    renderViewStage.RenderNodes.Clear(false);
                 }
             }
         }
