@@ -1,6 +1,7 @@
 // Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -184,12 +185,24 @@ namespace SiliconStudio.Xenko.Physics
 
         /// <summary>
         /// Moves the character towards the specified movement vector.
-        /// Motion will stay in place unless modified or canceled passing Vector3.Zero
+        /// Motion will stay in place unless modified or canceled passing Vector3.Zero.
         /// </summary>
-        /// <param name="movement">The absolute movement vector, typically direction * delta time `var dt = this.GetSimulation().FixedTimeStep;` * speed.</param>
+        /// <param name="movement">The velocity vector, typically direction * delta time `var dt = this.GetSimulation().FixedTimeStep;` * speed.</param>
+        [Obsolete("Please use SetVelocity instead. SetVelocity internally applies this.GetSimulation().FixedTimeStep")]
         public void Move(Vector3 movement)
         {
             KinematicCharacter?.SetWalkDirection(movement);
+        }
+
+        /// <summary>
+        /// Sets the character velocity.
+        /// Velocity will be applied every frame unless modified or canceled passing Vector3.Zero.
+        /// </summary>
+        /// <remarks>The engine internally will multiply velocity with the simulation fixed time step.</remarks>
+        /// <param name="velocity">The velocity vector, typically direction * speed.</param>
+        public void SetVelocity(Vector3 velocity)
+        {
+            KinematicCharacter?.SetWalkDirection(velocity * Simulation.FixedTimeStep);
         }
 
         /// <summary>
