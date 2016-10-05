@@ -57,6 +57,7 @@
     <Compile Include="Data\BoxColliderShapeDesc.cs" />
     <Compile Include="Data\CapsuleColliderShapeDesc.cs" />
     <Compile Include="Data\ConvexHullColliderShapeDesc.cs" />
+    <Compile Include="Data\ConeColliderShapeDesc.cs" />
     <Compile Include="Data\CylinderColliderShapeDesc.cs" />
     <Compile Include="Data\IColliderShapeDesc.cs" />
     <Compile Include="Elements\CharacterComponent.cs" />
@@ -83,6 +84,7 @@
     <Compile Include="PhysicsProfilingKeys.cs" />
     <Compile Include="PhysicsScriptComponentExtensions.cs" />
     <Compile Include="Shaders.Bytecode\PhysicsDebugEffect.bytecode.Vulkan.Level_9_1.cs" />
+    <Compile Include="Shapes\ConeColliderShape.cs" />
     <Compile Include="XenkoMotionState.cs" />
     <Compile Include="ShapeOrientation.cs" />
     <Compile Include="Shapes\Box2DColliderShape.cs" />
