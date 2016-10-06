@@ -42,7 +42,7 @@ namespace SiliconStudio.Core.Reflection
                 throw new ArgumentNullException(nameof(lookInterfaceType));
 
             var typeinfo = lookInterfaceType.GetTypeInfo();
-            if (typeinfo .IsGenericTypeDefinition)
+            if (typeinfo.IsGenericTypeDefinition)
             {
                 if (typeinfo.IsInterface)
                     foreach (var interfaceType in type.GetTypeInfo().ImplementedInterfaces)

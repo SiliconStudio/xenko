@@ -151,7 +151,7 @@ namespace SiliconStudio.Core.Reflection
         public void Push(ArrayDescriptor descriptor, int index)
         {
             if (descriptor == null) throw new ArgumentNullException(nameof(descriptor));
-            AddItem(new ArrayPathItem(index));
+            AddItem(new ArrayPathItem(descriptor, index));
         }
 
         /// <summary>
@@ -289,6 +289,20 @@ namespace SiliconStudio.Core.Reflection
                 stack?.Clear();
             }
             return true;
+        }
+
+        public object GetIndex()
+        {
+            return items.LastOrDefault()?.GetIndex();
+        }
+
+        /// <summary>
+        /// Gets the type descriptor of the member or collection represented by this path, or <c>null</c> is this instance is an empty path.
+        /// </summary>
+        /// <returns>The type descriptor of the member or collection represented by this path, or <c>null</c> is this instance is an empty path.</returns>
+        public ITypeDescriptor GetTypeDescriptor()
+        {
+            return items.LastOrDefault()?.TypeDescriptor;
         }
 
         public object GetValue(object rootObject)
@@ -450,9 +464,9 @@ namespace SiliconStudio.Core.Reflection
                             if (!IdentifiableHelper.TryGetId(nextReference, out referenceId))
                                 continue;
 
-                            for (var k = 0; k < Int32.MaxValue; ++k)
+                            for (var k = 0; k < int.MaxValue; ++k)
                             {
-                                var dualItem = (referenceItem is ArrayPathItem) ? (MemberPathItem) new ArrayPathItem(k) : new CollectionPathItem(((CollectionPathItem)referenceItem).Descriptor, k);
+                                var dualItem = (referenceItem is ArrayPathItem) ? (MemberPathItem) new ArrayPathItem(((ArrayPathItem)referenceItem).Descriptor, k) : new CollectionPathItem(((CollectionPathItem)referenceItem).Descriptor, k);
                                 dualItem.Parent = dualPath.items.LastOrDefault();
 
                                 Guid dualId;
@@ -537,20 +551,19 @@ namespace SiliconStudio.Core.Reflection
             item.Parent = previousItem;
         }
 
-        public interface IMemberPathItem
-        {
-            string Name { get; }
-        }
-
         private abstract class MemberPathItem
         {
             public MemberPathItem Parent { get; set; }
 
             public abstract IMemberDescriptor MemberDescriptor { get; }
 
+            public virtual ITypeDescriptor TypeDescriptor => MemberDescriptor.TypeDescriptor;
+
             public abstract object GetValue(object thisObj);
 
             public abstract void SetValue(List<object> stack, int objectIndex, object thisObject, object value);
+
+            public virtual object GetIndex() => null;
 
             public abstract string GetName(bool isFirst);
 
@@ -688,38 +701,47 @@ namespace SiliconStudio.Core.Reflection
         
         private sealed class ArrayPathItem : SpecialMemberPathItemBase, IEquatable<ArrayPathItem>
         {
-            private readonly int index;
+            public readonly ArrayDescriptor Descriptor;
+            public readonly int Index;
 
-            public ArrayPathItem(int index)
+            public ArrayPathItem(ArrayDescriptor descriptor, int index)
             {
-                this.index = index;
+                Index = index;
+                Descriptor = descriptor;
             }
+
+            public override ITypeDescriptor TypeDescriptor => Descriptor;
 
             public override object GetValue(object thisObj)
             {
-                return ((Array)thisObj).GetValue(index);
+                return ((Array)thisObj).GetValue(Index);
             }
 
             public override void SetValue(List<object> stack, int objectIndex, object thisObject, object value)
             {
-                ((Array)thisObject).SetValue(value, index);
+                ((Array)thisObject).SetValue(value, Index);
             }
 
             public override string GetName(bool isFirst)
             {
-                return "[" + index + "]";
+                return "[" + Index + "]";
+            }
+            
+            public override object GetIndex()
+            {
+                return Index;
             }
 
             public override MemberPathItem Clone(MemberPathItem parent)
             {
-                return new ArrayPathItem(index) { Parent = parent };
+                return new ArrayPathItem(Descriptor, Index) { Parent = parent };
             }
 
             public bool Equals(ArrayPathItem other)
             {
                 if (ReferenceEquals(null, other)) return false;
                 if (ReferenceEquals(this, other)) return true;
-                return index == other.index;
+                return Equals(Descriptor, other.Descriptor) && Index == other.Index;
             }
 
             public override bool Equals(object obj)
@@ -731,7 +753,7 @@ namespace SiliconStudio.Core.Reflection
 
             public override int GetHashCode()
             {
-                return index;
+                return Index;
             }
         }
 
@@ -747,6 +769,8 @@ namespace SiliconStudio.Core.Reflection
                 Index = index;
             }
 
+            public override ITypeDescriptor TypeDescriptor => Descriptor;
+
             public override object GetValue(object thisObj)
             {
                 return Descriptor.GetValue(thisObj, Index);
@@ -760,6 +784,11 @@ namespace SiliconStudio.Core.Reflection
             public override string GetName(bool isFirst)
             {
                 return "[" + Index + "]";
+            }
+
+            public override object GetIndex()
+            {
+                return Index;
             }
 
             public override MemberPathItem Clone(MemberPathItem parent)
@@ -802,6 +831,8 @@ namespace SiliconStudio.Core.Reflection
                 Key = key;
             }
 
+            public override ITypeDescriptor TypeDescriptor => Descriptor;
+
             public override object GetValue(object thisObj)
             {
                 if (!Descriptor.ContainsKey(thisObj, Key))
@@ -818,6 +849,11 @@ namespace SiliconStudio.Core.Reflection
             public override string GetName(bool isFirst)
             {
                 return "[" + Key + "]";
+            }
+
+            public override object GetIndex()
+            {
+                return Key;
             }
 
             public override MemberPathItem Clone(MemberPathItem parent)
