@@ -987,7 +987,7 @@ namespace SiliconStudio.Assets
                         }
 
                         // Update dependency to reflect new requirement
-                        pendingPackageUpgrade.Dependency.Version = pendingPackageUpgrade.PackageUpgrader.Attribute.PackageUpdatedVersionRange;
+                        pendingPackageUpgrade.Dependency.Version = pendingPackageUpgrade.PackageUpgrader.Attribute.UpdatedVersionRange;
                     }
 
                     // Mark package as dirty
@@ -1050,7 +1050,7 @@ namespace SiliconStudio.Assets
                 if (packageUpgrader != null)
                 {
                     // Check if upgrade is necessary
-                    if (dependency.Version.MinVersion >= packageUpgrader.Attribute.PackageUpdatedVersionRange.MinVersion)
+                    if (dependency.Version.MinVersion >= packageUpgrader.Attribute.UpdatedVersionRange.MinVersion)
                     {
                         return null;
                     }

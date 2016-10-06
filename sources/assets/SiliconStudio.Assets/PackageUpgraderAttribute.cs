@@ -11,19 +11,19 @@ namespace SiliconStudio.Assets
     [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class PackageUpgraderAttribute : Attribute
     {
-        private readonly PackageVersionRange packageUpdatedVersionRange;
+        private readonly PackageVersionRange updatedVersionRange;
         
         public string PackageName { get; private set; }
 
         public PackageVersion PackageMinimumVersion { get; private set; }
 
-        public PackageVersionRange PackageUpdatedVersionRange { get { return packageUpdatedVersionRange; } }
+        public PackageVersionRange UpdatedVersionRange { get { return updatedVersionRange; } }
 
         public PackageUpgraderAttribute(string packageName, string packageMinimumVersion, string packageUpdatedVersionRange)
         {
             PackageName = packageName;
             PackageMinimumVersion = new PackageVersion(packageMinimumVersion);
-            PackageVersionRange.TryParse(packageUpdatedVersionRange, out this.packageUpdatedVersionRange);
+            PackageVersionRange.TryParse(packageUpdatedVersionRange, out this.updatedVersionRange);
         }
     }
 }
