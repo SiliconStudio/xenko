@@ -48,6 +48,12 @@ namespace SiliconStudio.Xenko.Rendering.ProceduralModels
         public Vector2 UvScale { get; set; }
 
         /// <summary>
+        /// Gets or sets the local offset that will be applied to the procedural model's vertexes.
+        /// </summary>
+        [DataMember(530)]
+        public Vector3 LocalOffset { get; set; }
+
+        /// <summary>
         /// Gets the material instance.
         /// </summary>
         /// <value>The material instance.</value>
@@ -78,6 +84,14 @@ namespace SiliconStudio.Xenko.Rendering.ProceduralModels
             if (data.Vertices.Length == 0)
             {
                 throw new InvalidOperationException("Invalid GeometricPrimitive [{0}]. Expecting non-zero Vertices array");
+            }
+
+            if (LocalOffset != Vector3.Zero)
+            {
+                for (var index = 0; index < data.Vertices.Length; index++)
+                {
+                    data.Vertices[index].Position += LocalOffset;
+                }
             }
 
             //Scale if necessary
