@@ -136,7 +136,7 @@ namespace SiliconStudio.Xenko.Engine
         // Used internally to detect tile changes
         internal int tileHash;
 
-        public Material CreateLayerDebugMaterial(GraphicsDevice device, int idx)
+        public static Material CreateLayerDebugMaterial(GraphicsDevice device, int idx)
         {
             Material navmeshMaterial = Material.New(device, new MaterialDescriptor
             {

@@ -139,24 +139,20 @@ NavmeshQueryResult* Navmesh::Query(NavmeshQuery query)
 	if (dtStatusFailed(status))
 		return res;
 
-	
+	static const size_t maxStraightPathLength = 2048;
+	Vector3 straightPath[maxStraightPathLength];
+	uint8_t straightPathFlags[maxStraightPathLength];
+	dtPolyRef straightPathRefs[maxStraightPathLength];
+	int straightPathCount = 0;
+	status = m_navQuery->findStraightPath(&startPoint.X, &endPoint.X, path, pathPointCount, &straightPath[0].X, straightPathFlags, straightPathRefs, &straightPathCount, maxStraightPathLength);
+	if (dtStatusFailed(status))
+		return res;
+
 	m_pathPoints.clear();
-	Vector3 lastPoint = startPoint;
-	m_pathPoints.push_back(startPoint);
-	for(int i = 0; i < pathPointCount; i++)
+	for(int i = 0; i < straightPathCount; i++)
 	{
-		Vector3 nextPoint;
-		bool overPoly = false;
-		status = m_navQuery->closestPointOnPoly(path[i], &lastPoint.X, &nextPoint.X, &overPoly);
-
-		// TODO: Add some sort of smoothing to the generated path, with possible user adjustment
-
-		if (dtStatusFailed(status))
-			return res; // Couldn't find next point on path
-		m_pathPoints.push_back(nextPoint);
-		lastPoint = nextPoint;
+		m_pathPoints.push_back(straightPath[i]);
 	}
-	m_pathPoints.push_back(endPoint);
 
 	m_result.pathFound = true;
 	m_result.numPathPoints = m_pathPoints.size();
