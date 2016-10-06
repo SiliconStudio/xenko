@@ -53,8 +53,7 @@ namespace SiliconStudio.Xenko.Engine
             return CellHeight.GetHashCode() + CellSize.GetHashCode() + TileSize.GetHashCode();
         }
     };
-
-
+    
     [DataContract]
     [ObjectFactory(typeof(NavigationAgentSettingsFactory))]
     public struct NavigationAgentSettings
@@ -123,19 +122,22 @@ namespace SiliconStudio.Xenko.Engine
             /// <summary>
             /// Agent settings for generating this layer
             /// </summary>
-            internal NavigationAgentSettings agentSettings;
+            internal NavigationAgentSettings AgentSettings;
         }
         
         // Build settings specified while bulding
         [DataMemberIgnore]
-        internal NavigationMeshBuildSettings buildSettings;
+        internal NavigationMeshBuildSettings BuildSettings;
 
         // Multiple layers corresponding to multiple agent settings
         [DataMemberCustomSerializer] public Layer[] Layers;
 
         // Used internally to detect tile changes
-        internal int tileHash;
+        internal int TileHash;
 
+        internal int DebugMeshTileHash;
+        internal ModelComponent DebugMesh;
+        
         public static Material CreateLayerDebugMaterial(GraphicsDevice device, int idx)
         {
             Material navmeshMaterial = Material.New(device, new MaterialDescriptor
@@ -148,7 +150,7 @@ namespace SiliconStudio.Xenko.Engine
                 }
             });
 
-            Color4 deviceSpaceColor = new ColorHSV((idx*80.0f + 90.0f)%360.0f, 0.95f, 0.75f, 1.0f).ToColor().ToColorSpace(device.ColorSpace);
+            Color4 deviceSpaceColor = new ColorHSV((idx * 80.0f + 90.0f) % 360.0f, 0.95f, 0.75f, 1.0f).ToColor().ToColorSpace(device.ColorSpace);
 
             // set the color to the material
             navmeshMaterial.Parameters.Set(MaterialKeys.DiffuseValue, deviceSpaceColor);
@@ -160,14 +162,16 @@ namespace SiliconStudio.Xenko.Engine
             return navmeshMaterial;
         }
 
-        public ModelComponent CreateDebugModelComponent(GraphicsDevice device)
+        public ModelComponent CreateDebugModelComponent(GraphicsDevice device, 
+            List<GeometricPrimitive> generatedPrimitives)
         {
             Entity entity = new Entity("Navigation Debug Entity");
 
             Model model = new Model();
             for (int l = 0; l < Layers.Length; l++)
             {
-                model.Add(CreateLayerDebugMaterial(device, l));
+                Material layerMaterial = CreateLayerDebugMaterial(device, l);
+                model.Add(layerMaterial);
                 foreach (var p in Layers[l].Tiles)
                 {
                     Tile tile = p.Value;
@@ -191,9 +195,14 @@ namespace SiliconStudio.Xenko.Engine
                         indexList.Add(i);
                     }
 
-                    var meshData = new GeometricMeshData<VertexPositionNormalTexture>(vertexList.ToArray(), indexList.ToArray(), true);
-                    GeometricPrimitive primitive = new GeometricPrimitive(device, meshData);
-                    MeshDraw draw = primitive.ToMeshDraw();
+                    MeshDraw draw;
+                    using (var meshData = new GeometricMeshData<VertexPositionNormalTexture>(vertexList.ToArray(), indexList.ToArray(), true))
+                    {
+                        GeometricPrimitive primitive = new GeometricPrimitive(device, meshData);
+                        generatedPrimitives.Add(primitive);
+                        draw = primitive.ToMeshDraw();
+                    }
+
                     Mesh mesh = new Mesh
                     {
                         Draw = draw,
@@ -280,14 +289,14 @@ namespace SiliconStudio.Xenko.Engine
 
         public void Initialize(NavigationMeshBuildSettings buildSettings, NavigationAgentSettings[] agentSettings)
         {
-            this.buildSettings = buildSettings;
+            this.BuildSettings = buildSettings;
             if (agentSettings.Length > 0)
             {
                 Layers = new Layer[agentSettings.Length];
                 for (int i = 0; i < agentSettings.Length; i++)
                 {
                     Layers[i] = new Layer();
-                    Layers[i].agentSettings = agentSettings[i];
+                    Layers[i].AgentSettings = agentSettings[i];
                 }
             }
             else
@@ -296,7 +305,7 @@ namespace SiliconStudio.Xenko.Engine
 
         internal void UpdateTileHash()
         {
-            tileHash = 0;
+            TileHash = 0;
             if (Layers == null)
                 return;
 
@@ -304,7 +313,7 @@ namespace SiliconStudio.Xenko.Engine
             {
                 foreach (var tile in layer.Tiles)
                 {
-                    tileHash += tile.GetHashCode() + tile.Value.GetHashCode();
+                    TileHash += tile.GetHashCode() + tile.Value.GetHashCode();
                 }
             }
         }
@@ -385,7 +394,7 @@ namespace SiliconStudio.Xenko.Engine
             BoundingBox boundingBox, Point tileCoordinate)
         {
             // Turn settings into native structure format
-            NavigationAgentSettings agentSettings = layer.agentSettings;
+            NavigationAgentSettings agentSettings = layer.AgentSettings;
             Navigation.AgentSettings internalAgentSettings = new Navigation.AgentSettings
             {
                 Height = agentSettings.Height,
@@ -403,9 +412,9 @@ namespace SiliconStudio.Xenko.Engine
             {
                 BoundingBox = boundingBox,
                 TilePosition = tileCoordinate,
-                CellHeight =  buildSettings.CellHeight,
-                CellSize = buildSettings.CellSize,
-                TileSize =  buildSettings.TileSize
+                CellHeight =  BuildSettings.CellHeight,
+                CellSize = BuildSettings.CellSize,
+                TileSize =  BuildSettings.TileSize
             };
             Navigation.SetSettings(nav, new IntPtr(&internalBuildSettings));
             Navigation.SetAgentSettings(nav, new IntPtr(&internalAgentSettings));
@@ -507,8 +516,8 @@ namespace SiliconStudio.Xenko.Engine
         public override void Serialize(ref NavigationMesh obj, ArchiveMode mode, SerializationStream stream)
         {
             // Serialize tile size because it is needed
-            stream.Serialize(ref obj.buildSettings.TileSize);
-            stream.Serialize(ref obj.buildSettings.CellSize);
+            stream.Serialize(ref obj.BuildSettings.TileSize);
+            stream.Serialize(ref obj.BuildSettings.CellSize);
 
             int numLayers = obj.Layers?.Length ?? 0;
             stream.Serialize(ref numLayers);

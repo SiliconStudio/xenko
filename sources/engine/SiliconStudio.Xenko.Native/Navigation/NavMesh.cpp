@@ -141,8 +141,8 @@ NavMeshPathfindResult* NavMesh::FindPath(NavMeshPathfindQuery query)
 	int straightPathCount = 0;
 	status = m_navQuery->findStraightPath(&startPoint.X, &endPoint.X, 
 		polys.data(), pathPointCount, 
-			&straightPath[0].X, straightPathFlags.data(), straightpathPolys.data(), 
-				&straightPathCount, query.maxPathPoints);
+		&straightPath[0].X, straightPathFlags.data(), straightpathPolys.data(), 
+		&straightPathCount, query.maxPathPoints);
 	if (dtStatusFailed(status))
 		return res;
 

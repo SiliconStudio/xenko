@@ -29,53 +29,6 @@
 #include "NavigationBuilder.hpp"
 #include "../../../../deps/NativePath/NativeTime.h"
 
-// TODO: Remove this
-#ifdef _WIN32
-#define WINAPI __stdcall
-#define WINBASEAPI __declspec(dllimport)
-extern "C"
-{
-	WINBASEAPI uint32_t WINAPI AllocConsole();
-	WINBASEAPI uint32_t WINAPI FreeConsole();
-	WINBASEAPI uint32_t WINAPI AttachConsole(uint32_t dwProcessId);
-	WINBASEAPI void* WINAPI GetConsoleWindow(void);
-	WINBASEAPI uint32_t WINAPI CloseWindow(void* hWnd);
-	WINBASEAPI uint32_t WINAPI GetCurrentProcessId(void);
-	WINBASEAPI void* __cdecl freopen(
-			char const* _FileName,
-			char const* _Mode,
-			void*       _Stream
-		);
-	WINBASEAPI void* __cdecl __acrt_iob_func(unsigned); 
-	#define stdin (__acrt_iob_func(0))
-	#define stdout (__acrt_iob_func(1))
-	#define stderr (__acrt_iob_func(2))
-}
-// This is a debug class that when instantiated opens and attaches a
-//	console to the application which receives all writes to stdout from c(++) code
-class DebugConsole
-{
-	DebugConsole()
-	{
-		AllocConsole();
-		AttachConsole(GetCurrentProcessId());
-		freopen("CON", "w", stdout);
-	}
-public:
-	~DebugConsole()
-	{
-		void* consoleWindow = GetConsoleWindow();
-		FreeConsole();
-		CloseWindow(consoleWindow);
-	}
-	static DebugConsole& Get()
-	{
-		static DebugConsole console;
-		return console;
-	}
-};
-#endif
-
 NavigationBuilder::NavigationBuilder()
 {
 	m_context = new rcContext(false);

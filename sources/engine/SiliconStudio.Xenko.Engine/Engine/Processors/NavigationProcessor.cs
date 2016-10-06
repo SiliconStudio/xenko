@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
 
             public NativeNavmesh(NavigationMesh navigationMesh)
             {
-                cellTileSize = navigationMesh.buildSettings.TileSize*navigationMesh.buildSettings.CellSize;
+                cellTileSize = navigationMesh.BuildSettings.TileSize*navigationMesh.BuildSettings.CellSize;
                 Layers = new IntPtr[navigationMesh.Layers.Length];
                 for (int i = 0; i < navigationMesh.Layers.Length; i++)
                 {
