@@ -1,19 +1,19 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-#include "../../../../deps/Recast/include/Recast.h"
 #include "../XenkoNative.h"
 
 #include "../../../../deps/NativePath/NativePath.h"
 #include "../../../../deps/NativePath/TINYSTL/vector.h"
+#include "../../../../deps/Recast/include/DetourCommon.h"
 #include "Navigation.hpp"
-#include "Navmesh.hpp"
+#include "NavMesh.hpp"
 
-Navmesh::Navmesh()
+NavMesh::NavMesh()
 {
 }
 
-Navmesh::~Navmesh()
+NavMesh::~NavMesh()
 {
 	// Cleanup allocated tiles
 	for(auto tile : m_tileRefs)
@@ -34,7 +34,7 @@ Navmesh::~Navmesh()
 		dtFreeNavMesh(m_navMesh);
 }
 
-bool Navmesh::Init(float cellTileSize)
+bool NavMesh::Init(float cellTileSize)
 {
 	// Allocate objects
 	m_navMesh = dtAllocNavMesh();
@@ -68,7 +68,7 @@ bool Navmesh::Init(float cellTileSize)
 	return true;
 }
 
-bool Navmesh::LoadTile(Point tileCoordinate, uint8_t* navData, int navDataLength)
+bool NavMesh::LoadTile(Point tileCoordinate, uint8_t* navData, int navDataLength)
 {
 	if (!m_navMesh || !m_navQuery)
 		return false;
@@ -90,7 +90,7 @@ bool Navmesh::LoadTile(Point tileCoordinate, uint8_t* navData, int navDataLength
 	return false;
 }
 
-bool Navmesh::RemoveTile(Point tileCoordinate)
+bool NavMesh::RemoveTile(Point tileCoordinate)
 {
 	dtTileRef tileRef = m_navMesh->getTileRefAt(tileCoordinate.X, tileCoordinate.Y, 0);
 
@@ -106,45 +106,43 @@ bool Navmesh::RemoveTile(Point tileCoordinate)
 	return false;
 }
 
-NavmeshQueryResult* Navmesh::Query(NavmeshQuery query)
+NavMeshPathfindResult* NavMesh::FindPath(NavMeshPathfindQuery query)
 {
 	// Reset result
-	m_result = NavmeshQueryResult();
-	NavmeshQueryResult* res = &m_result;
+	m_pathResult = NavMeshPathfindResult();
+	NavMeshPathfindResult* res = &m_pathResult;
 	dtPolyRef startPoly, endPoly;
 	Vector3 startPoint, endPoint;
 
 	// Find the starting polygons and point on it to start from
-	// TODO: Allow this to be user-specified
-	const Vector3 extents = {2 ,4 ,2};
 	dtQueryFilter filter;
 	dtStatus status;
-	status = m_navQuery->findNearestPoly(&query.source.X, &extents.X, &filter, &startPoly, &startPoint.X);
+	status = m_navQuery->findNearestPoly(&query.source.X, &query.findNearestPolyExtent.X, &filter, &startPoly, &startPoint.X);
 	if(dtStatusFailed(status))
 		return res;
-	status = m_navQuery->findNearestPoly(&query.target.X, &extents.X, &filter, &endPoly, &endPoint.X);
+	status = m_navQuery->findNearestPoly(&query.target.X, &query.findNearestPolyExtent.X, &filter, &endPoly, &endPoint.X);
 	if(dtStatusFailed(status))
 		return res;
 
-	const dtPoly* startPoly_, *endPoly_;
-	const dtMeshTile* startTile, *endTile;
-	m_navMesh->getTileAndPolyByRef(startPoly, &startTile, &startPoly_);
-	m_navMesh->getTileAndPolyByRef(endPoly, &endTile, &endPoly_);
-
-	// TODO: fix hardcoded limit
-	dtPolyRef path[1024];
+	tinystl::vector<dtPolyRef> polys;
+	polys.resize(query.maxPathPoints);
 	int pathPointCount = 0;
 	status = m_navQuery->findPath(startPoly, endPoly, &startPoint.X, &endPoint.X, 
-		&filter, path, &pathPointCount, 1024);
+		&filter, polys.data(), &pathPointCount, polys.size());
 	if (dtStatusFailed(status))
 		return res;
 
-	static const size_t maxStraightPathLength = 2048;
-	Vector3 straightPath[maxStraightPathLength];
-	uint8_t straightPathFlags[maxStraightPathLength];
-	dtPolyRef straightPathRefs[maxStraightPathLength];
+	tinystl::vector<Vector3> straightPath;
+	tinystl::vector<uint8_t> straightPathFlags;
+	tinystl::vector<dtPolyRef> straightpathPolys;
+	straightPath.resize(query.maxPathPoints);
+	straightPathFlags.resize(query.maxPathPoints);
+	straightpathPolys.resize(query.maxPathPoints);
 	int straightPathCount = 0;
-	status = m_navQuery->findStraightPath(&startPoint.X, &endPoint.X, path, pathPointCount, &straightPath[0].X, straightPathFlags, straightPathRefs, &straightPathCount, maxStraightPathLength);
+	status = m_navQuery->findStraightPath(&startPoint.X, &endPoint.X, 
+		polys.data(), pathPointCount, 
+			&straightPath[0].X, straightPathFlags.data(), straightpathPolys.data(), 
+				&straightPathCount, query.maxPathPoints);
 	if (dtStatusFailed(status))
 		return res;
 
@@ -154,9 +152,35 @@ NavmeshQueryResult* Navmesh::Query(NavmeshQuery query)
 		m_pathPoints.push_back(straightPath[i]);
 	}
 
-	m_result.pathFound = true;
-	m_result.numPathPoints = m_pathPoints.size();
-	m_result.pathPoints = m_pathPoints.data();
+	m_pathResult.pathFound = true;
+	m_pathResult.numPathPoints = m_pathPoints.size();
+	m_pathResult.pathPoints = m_pathPoints.data();
+
+	return res;
+}
+
+NavMeshRaycastResult* NavMesh::Raycast(NavMeshRaycastQuery query)
+{
+	// Reset result
+	m_raycastResult = NavMeshRaycastResult();
+	NavMeshRaycastResult* res = &m_raycastResult;
+	dtQueryFilter filter;
+
+	dtPolyRef startPoly;
+	dtStatus status = m_navQuery->findNearestPoly(&query.start.X, &query.findNearestPolyExtent.X, &filter, &startPoly, 0);
+	if (dtStatusFailed(status))
+		return res;
+
+	float t;
+	tinystl::vector<dtPolyRef> polys;
+	polys.resize(query.maxPathPoints);
+	int raycastPolyCount = 0;
+	status = m_navQuery->raycast(startPoly, &query.start.X, &query.end.X, &filter, &t, &m_raycastResult.normal.X, polys.data(), &raycastPolyCount, polys.size());
+	if (dtStatusFailed(status))
+		return res;
+
+	m_raycastResult.hit = true;
+	dtVlerp(&m_raycastResult.position.X, &query.start.X, &query.end.X, t);
 
 	return res;
 }

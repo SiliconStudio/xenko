@@ -46,18 +46,37 @@ namespace SiliconStudio.Xenko.Native
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 4)]
-        public struct NavigationQuery
+        public struct PathFindQuery
         {
             public Vector3 Source;
             public Vector3 Target;
+            public Vector3 FindNearestPolyExtent;
+            public int MaxPathPoints;
         };
 
         [StructLayout(LayoutKind.Sequential, Pack = 4)]
-        public struct NavigationQueryResult
+        public struct PathFindResult
         {
             public bool PathFound;
             public IntPtr PathPoints;
             public int NumPathPoints;
+        };
+
+        [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        public struct RaycastQuery
+        {
+            public Vector3 Source;
+            public Vector3 Target;
+            public Vector3 FindNearestPolyExtent;
+            public int MaxPathPoints;
+        };
+
+        [StructLayout(LayoutKind.Sequential, Pack = 4)]
+        public struct RaycastResult
+        {
+            public bool Hit;
+            public Vector3 Position;
+            public Vector3 Normal;
         };
 
         static Navigation()
@@ -123,13 +142,23 @@ namespace SiliconStudio.Xenko.Native
         public static extern bool RemoveTile(IntPtr navmesh, Point tileCoordinate);
 
         /// <summary>
-        /// Perform a navigation query on the navigation mesh
+        /// Perform a pathfinding query on the navigation mesh
         /// </summary>
         /// <param name="query"></param>
-        /// <param name="navigationQuery">The query to perform</param>
-        /// <returns>A NavigationQueryResult</returns>
+        /// <param name="pathFindQuery">The query to perform</param>
+        /// <returns>A PathFindQueryResult</returns>
         [SuppressUnmanagedCodeSecurity]
-        [DllImport(NativeInvoke.Library, EntryPoint = "xnNavigationQuery", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr Query(IntPtr query, NavigationQuery navigationQuery);
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnNavigationPathFindQuery", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr DoPathFindQuery(IntPtr query, PathFindQuery pathFindQuery);
+
+        /// <summary>
+        /// Perform a raycast on the navigation mesh
+        /// </summary>
+        /// <param name="query"></param>
+        /// <param name="pathFindQuery">The query to perform</param>
+        /// <returns>A RaycastQueryResult</returns>
+        [SuppressUnmanagedCodeSecurity]
+        [DllImport(NativeInvoke.Library, EntryPoint = "xnNavigationRaycastQuery", CallingConvention = CallingConvention.Cdecl)]
+        public static extern IntPtr DoRaycastQuery(IntPtr query, RaycastQuery pathFindQuery);
     }
 }

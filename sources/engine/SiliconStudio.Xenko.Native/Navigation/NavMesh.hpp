@@ -7,19 +7,35 @@
 #include "../../../../deps/NativePath/TINYSTL/unordered_set.h"
 
 #pragma pack(4)
-struct NavmeshQuery
+struct NavMeshPathfindQuery
 {
 	Vector3 source;
 	Vector3 target;
+	Vector3 findNearestPolyExtent;
+	int maxPathPoints;
 };
-struct NavmeshQueryResult
+struct NavMeshPathfindResult
 {
 	bool pathFound = false;
 	Vector3* pathPoints = nullptr;
 	int numPathPoints = 0;
 };
 
-class Navmesh
+struct NavMeshRaycastQuery
+{
+	Vector3 start;
+	Vector3 end;
+	Vector3 findNearestPolyExtent;
+	int maxPathPoints;
+};
+struct NavMeshRaycastResult
+{
+	bool hit = false;
+	Vector3 position;
+	Vector3 normal;
+};
+
+class NavMesh
 {
 private:
 	dtNavMesh* m_navMesh = nullptr;
@@ -28,12 +44,16 @@ private:
 	tinystl::unordered_set<dtTileRef> m_tileRefs;
 
 	// Temporary navigation result
-	NavmeshQueryResult m_result;
+	// TODO: Might be better to not use pointers to static members due to thread-safety
+	//			return result instead by storing it in a pointer passed from managed
+	NavMeshPathfindResult m_pathResult;
+	NavMeshRaycastResult m_raycastResult;
 public:
-	Navmesh();
-	~Navmesh();
+	NavMesh();
+	~NavMesh();
 	bool Init(float cellTileSize);
 	bool LoadTile(Point tileCoordinate, uint8_t* navData, int navDataLength);
 	bool RemoveTile(Point tileCoordinate);
-	NavmeshQueryResult* Query(NavmeshQuery query);
+	NavMeshPathfindResult* FindPath(NavMeshPathfindQuery query);
+	NavMeshRaycastResult* Raycast(NavMeshRaycastQuery query);
 };

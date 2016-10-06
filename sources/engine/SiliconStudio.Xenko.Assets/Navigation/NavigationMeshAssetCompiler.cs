@@ -325,7 +325,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             }
         }
 
-        public static void GenerateTangentBitangent(Vector3 normal, out Vector3 tangent, out Vector3 bitangent)
+        public static void GenerateTangentBinormal(Vector3 normal, out Vector3 tangent, out Vector3 bitangent)
         {
             if (Math.Abs(normal.Y) < 0.01f)
                 tangent = new Vector3(normal.Z, normal.Y, -normal.X);
@@ -341,7 +341,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             Vector3 up = plane.Normal;
             Vector3 right;
             Vector3 forward;
-            GenerateTangentBitangent(up, out right, out forward);
+            GenerateTangentBinormal(up, out right, out forward);
 
             points = new Vector3[4];
             points[0] = -forward*size - right*size + up*plane.D;
@@ -582,7 +582,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
                     // TODO: Cache this and use it for the BuildPlanePoints as well
                     Vector3 tangent, bitangent;
-                    GenerateTangentBitangent(plane.Normal, out tangent, out bitangent);
+                    GenerateTangentBinormal(plane.Normal, out tangent, out bitangent);
                     // Calculate plane offset so that the plane always covers the whole range of the bounding box
                     Vector3 planeOffset = Vector3.Dot(globalBoundingBox.Center, tangent)*tangent;
                     planeOffset += Vector3.Dot(globalBoundingBox.Center, bitangent)*bitangent;

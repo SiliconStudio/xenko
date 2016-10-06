@@ -2,7 +2,7 @@
 #include "../../../../deps/NativePath/NativePath.h"
 #include "Navigation.hpp"
 #include "NavigationBuilder.hpp"
-#include "Navmesh.hpp"
+#include "NavMesh.hpp"
 
 extern "C"
 {
@@ -33,7 +33,7 @@ extern "C"
 	// Navmesh Query
 	DLL_EXPORT_API void* xnNavigationCreateNavmesh(float cellTileSize)
 	{
-		Navmesh* navmesh = new Navmesh();
+		NavMesh* navmesh = new NavMesh();
 		if (!navmesh->Init(cellTileSize))
 		{
 			delete navmesh;
@@ -41,21 +41,25 @@ extern "C"
 		}
 		return navmesh;
 	}
-	DLL_EXPORT_API void xnNavigationDestroyNavmesh(Navmesh* navmesh)
+	DLL_EXPORT_API void xnNavigationDestroyNavmesh(NavMesh* navmesh)
 	{
 		delete navmesh;
 	}
 
-	DLL_EXPORT_API bool xnNavigationAddTile(Navmesh* navmesh, Point tileCoordinate, uint8_t* data, int dataLength)
+	DLL_EXPORT_API bool xnNavigationAddTile(NavMesh* navmesh, Point tileCoordinate, uint8_t* data, int dataLength)
 	{
 		return navmesh->LoadTile(tileCoordinate, data, dataLength);
 	}
-	DLL_EXPORT_API bool xnNavigationRemoveTile(Navmesh* navmesh, Point tileCoordinate)
+	DLL_EXPORT_API bool xnNavigationRemoveTile(NavMesh* navmesh, Point tileCoordinate)
 	{
 		return navmesh->RemoveTile(tileCoordinate);
 	}
-	DLL_EXPORT_API NavmeshQueryResult* xnNavigationQuery(Navmesh* navmesh, NavmeshQuery query)
+	DLL_EXPORT_API NavMeshPathfindResult* xnNavigationPathFindQuery(NavMesh* navmesh, NavMeshPathfindQuery query)
 	{
-		return navmesh->Query(query);
+		return navmesh->FindPath(query);
+	}
+	DLL_EXPORT_API NavMeshRaycastResult* xnNavigationRaycastQuery(NavMesh* navmesh, NavMeshRaycastQuery query)
+	{
+		return navmesh->Raycast(query);
 	}
 }
