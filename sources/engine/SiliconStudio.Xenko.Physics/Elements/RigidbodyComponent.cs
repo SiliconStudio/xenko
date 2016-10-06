@@ -399,19 +399,6 @@ namespace SiliconStudio.Xenko.Physics
             {
                 UpdateBoneTransformation(ref physicsTransform);
             }
-
-            if (DebugEntity == null) return;
-
-            if (ColliderShape.LocalOffset != Vector3.Zero || ColliderShape.LocalRotation != Quaternion.Identity)
-            {
-                physicsTransform = Matrix.Multiply(ColliderShape.PositiveCenterMatrix, physicsTransform);
-            }
-
-            Vector3 scale, pos;
-            Quaternion rot;
-            physicsTransform.Decompose(out scale, out rot, out pos);
-            DebugEntity.Transform.Position = pos;
-            DebugEntity.Transform.Rotation = rot;
         }
 
         //This is valid for Dynamic rigidbodies (called once at initialization)
@@ -429,14 +416,6 @@ namespace SiliconStudio.Xenko.Physics
             {
                 DeriveBonePhysicsTransformation(out physicsTransform);
             }
-
-            if (DebugEntity == null) return;
-
-            Vector3 scale, pos;
-            Quaternion rot;
-            physicsTransform.Decompose(out scale, out rot, out pos);
-            DebugEntity.Transform.Position = pos;
-            DebugEntity.Transform.Rotation = rot;
         }
 
         /// <summary>
