@@ -155,7 +155,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The temporary assets.</value>
         [DataMemberIgnore]
-        public AssetItemCollection TemporaryAssets { get; } = new AssetItemCollection();
+        public List<AssetItem> TemporaryAssets { get; } = new List<AssetItem>();
 
         /// <summary>
         /// Gets the path to the package file. May be null if the package was not loaded or saved.
@@ -838,7 +838,7 @@ namespace SiliconStudio.Assets
                 Assets.Clear();
 
                 // Get generated output items
-                var outputItems = new AssetItemCollection();
+                var outputItems = new List<AssetItem>();
 
                 // Create a resolver from the package
                 var resolver = AssetResolver.FromPackage(this);

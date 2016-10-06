@@ -96,7 +96,6 @@
     <Compile Include="AssetHash.cs" />
     <Compile Include="AssetWithSource.cs" />
     <Compile Include="AssetImporterParameters.cs" />
-    <Compile Include="AssetItemCollection.cs" />
     <Compile Include="AssetMember.cs" />
     <Compile Include="AssetMigrationContext.cs" />
     <Compile Include="AssetPart.cs" />
