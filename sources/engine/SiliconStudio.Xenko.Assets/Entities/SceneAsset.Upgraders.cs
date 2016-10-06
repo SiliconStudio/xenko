@@ -1058,5 +1058,15 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 }
             }
         }
+
+        class SceneSettingsIdentifiableUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                var sceneSettings = asset.SceneSettings;
+                sceneSettings.Id = sceneSettings["~Id"];
+                sceneSettings["~Id"] = DynamicYamlEmpty.Default;
+            }
+        }
     }
 }
