@@ -34,11 +34,6 @@ namespace SiliconStudio.PackageManager
         public const string MainExecutablesKey = "mainExecutables";
         public const string PrerequisitesInstallerKey = "prerequisitesInstaller";
 
-        private readonly PhysicalFileSystem rootFileSystem;
-        private readonly IFileSystem packagesFileSystem;
-        private readonly PackageSourceProvider packageSourceProvider;
-        private readonly DefaultPackagePathResolver pathResolver;
-        private readonly PackageRepositoryFactory repositoryFactory;
         private INugetLogger logger;
 
         public NugetStore(string rootDirectory, string configFile = DefaultConfig, string overrideFile = OverrideConfig)
@@ -63,17 +58,19 @@ namespace SiliconStudio.PackageManager
                 }
             }
 
-            rootFileSystem = new PhysicalFileSystem(rootDirectory);
+            var rootFileSystem = new PhysicalFileSystem(rootDirectory);
+            RootDirectory = rootFileSystem.Root;
             Settings = NuGet.Settings.LoadDefaultSettings(rootFileSystem, configFileName, null);
 
             string installPath = Settings.GetRepositoryPath();
-            packagesFileSystem = new PhysicalFileSystem(installPath);
-            packageSourceProvider = new PackageSourceProvider(Settings);
+            var packagesFileSystem = new PhysicalFileSystem(installPath);
+            var packageSourceProvider = new PackageSourceProvider(Settings);
 
-            repositoryFactory = new PackageRepositoryFactory();
+            var repositoryFactory = new PackageRepositoryFactory();
             SourceRepository = packageSourceProvider.CreateAggregateRepository(repositoryFactory, true);
 
-            pathResolver = new DefaultPackagePathResolver(packagesFileSystem);
+            var pathResolver = new DefaultPackagePathResolver(packagesFileSystem);
+            PathResolver = pathResolver;
 
             Manager = new NugetPackageManager(new NuGet.PackageManager(SourceRepository, pathResolver, packagesFileSystem));
 
@@ -100,7 +97,7 @@ namespace SiliconStudio.PackageManager
             Environment.SetEnvironmentVariable("NuGetCachePath", Path.Combine(rootDirectory, "Cache", RepositoryPath));
         }
 
-        public string RootDirectory => rootFileSystem.Root;
+        public string RootDirectory { get; }
 
         public IReadOnlyCollection<string> MainPackageIds { get; }
 
@@ -127,7 +124,7 @@ namespace SiliconStudio.PackageManager
 
         public ISettings Settings { get; }
 
-        public IPackagePathResolver PathResolver => pathResolver;
+        public IPackagePathResolver PathResolver { get; }
 
         public NugetPackageManager Manager { get; }
 
@@ -148,16 +145,6 @@ namespace SiliconStudio.PackageManager
         public string GetInstallPath(NugetPackage package)
         {
             return PathResolver.GetInstallPath(package.IPackage);
-        }
-
-        public IList<NugetPackage> GetPackagesInstalled(string packageId)
-        {
-            var l = new List<NugetPackage>();
-            foreach (var package in LocalRepository.GetPackages().Where(p => p.Id == packageId).OrderByDescending(p => p.Version))
-            {
-                l.Add(new NugetPackage(package));
-            }
-            return l;
         }
 
         public NugetPackage GetLatestPackageInstalled(IEnumerable<string> packageIds)
