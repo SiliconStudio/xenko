@@ -212,6 +212,9 @@ namespace SiliconStudio.Xenko.Assets.Navigation
         // DEBUG FUNCTIONS
         public static void DumpObj(string filePath, Vector3[] meshData, int[] indexData = null)
         {
+            if (!Directory.Exists(Path.GetDirectoryName(filePath)))
+                return;
+
             using (FileStream file = File.Open(filePath, FileMode.Create, FileAccess.Write))
             using (StreamWriter sw = new StreamWriter(file))
             {
@@ -249,9 +252,12 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             }
         }
         
-        public static void DumpObj(string path, GeometricMeshData<VertexPositionNormalTexture> meshData)
+        public static void DumpObj(string filePath, GeometricMeshData<VertexPositionNormalTexture> meshData)
         {
-            using (FileStream file = File.Open(path, FileMode.Create, FileAccess.Write))
+            if (!Directory.Exists(Path.GetDirectoryName(filePath)))
+                return;
+
+            using (FileStream file = File.Open(filePath, FileMode.Create, FileAccess.Write))
             using (StreamWriter sw = new StreamWriter(file))
             {
                 for (int i = 0; i < meshData.Vertices.Length; i++)
@@ -273,9 +279,10 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             }
         }
 
-        public static void DumpBinary(string name, byte[] data)
+        public static void DumpBinary(string filePath, byte[] data)
         {
-            string filePath = @"C:\Users\g-gj-waals\Desktop\" + name;
+            if (!Directory.Exists(Path.GetDirectoryName(filePath)))
+                return;
             using (FileStream file = File.Open(filePath, FileMode.Create, FileAccess.Write))
             {
                 file.Write(data, 0, data.Length);
@@ -284,8 +291,11 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
         public static unsafe void DumpTiles(float tileCellSize, NavigationMesh.Tile[] tiles)
         {
-            string targetPath = "F:\\Projects\\recast\\RecastDemo\\Bin\\all_tiles_navmesh.bin";
-            using (var file = File.Open(targetPath, FileMode.Create, FileAccess.Write))
+            string filePath = "F:\\Projects\\recast\\RecastDemo\\Bin\\all_tiles_navmesh.bin";
+            if (!Directory.Exists(Path.GetDirectoryName(filePath)))
+                return;
+
+            using (var file = File.Open(filePath, FileMode.Create, FileAccess.Write))
             using (BinaryWriter stream = new BinaryWriter(file))
             {
                 byte[] NAVMESHSET_MAGIC = Encoding.ASCII.GetBytes("MSET");
@@ -668,8 +678,8 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
                 // Debug output input mesh
                 // TODO: Remove this
-                //string objPath = @"F:\Projects\recast\RecastDemo\Bin\Meshes\input.obj";
-                //DumpObj(objPath, meshVertices.ToArray(), meshIndices.ToArray());
+                string objPath = @"F:\Projects\recast\RecastDemo\Bin\Meshes\input.obj";
+                DumpObj(objPath, meshVertices.ToArray(), meshIndices.ToArray());
 
                 // Check if settings changed to trigger a full rebuild
                 int currentSettingsHash = asset.GetHashCode();
