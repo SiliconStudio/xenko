@@ -163,7 +163,7 @@ namespace SiliconStudio.Assets
             // For some unknown reasons, we can't select directly from IQueryable<IPackage> to IQueryable<PackageMeta>, 
             // so we need to pass through a IEnumerable<PackageMeta> and translate it to IQueyable. Not sure it has
             // an implication on the original query behinds the scene 
-            return orderedPackages.Select(PackageMeta.FromNuGet);
+            return orderedPackages.Select(PackageMetaFromNugetPackage);
         }
 
         /// <summary>
@@ -267,6 +267,92 @@ namespace SiliconStudio.Assets
                 if (versionRange == null || versionRange.Contains(DefaultPackageVersion))
                 {
                     return defaultPackageDirectory;
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// New instance of <see cref="PackageMeta"/> from a nuget package <paramref name="metadata"/>.
+        /// </summary>
+        /// <param name="metadata">The nuget metadata used to initialized an instance of <see cref="PackageMeta"/>.</param>
+        public static PackageMeta PackageMetaFromNugetPackage(NugetPackage metadata)
+        {
+            var meta = new PackageMeta
+            {
+                Name = metadata.Id,
+                Version = new PackageVersion(metadata.Version.ToString()),
+                Title = metadata.Title,
+                IconUrl = metadata.IconUrl,
+                LicenseUrl = metadata.LicenseUrl,
+                ProjectUrl = metadata.ProjectUrl,
+                RequireLicenseAcceptance = metadata.RequireLicenseAcceptance,
+                Description = metadata.Description,
+                Summary = metadata.Summary,
+                ReleaseNotes = metadata.ReleaseNotes,
+                Language = metadata.Language,
+                Tags = metadata.Tags,
+                Copyright = metadata.Copyright,
+                IsAbsoluteLatestVersion = metadata.IsAbsoluteLatestVersion,
+                IsLatestVersion = metadata.IsLatestVersion,
+                Listed = metadata.Listed,
+                Published = metadata.Published,
+                ReportAbuseUrl = metadata.ReportAbuseUrl,
+                DownloadCount = metadata.DownloadCount
+            };
+
+            meta.Authors.AddRange(metadata.Authors);
+            meta.Owners.AddRange(metadata.Owners);
+
+            if (metadata.DependencySetsCount > 1)
+            {
+                throw new InvalidOperationException("Metadata loaded from nuspec cannot have more than one group of dependency");
+            }
+
+            // Load dependencies
+            meta.Dependencies.Clear();
+            foreach (var dependency in metadata.Dependencies)
+            {
+                meta.Dependencies.Add(new PackageDependency(dependency.Item1, dependency.Item2));
+            }
+
+            return meta;
+        }
+
+        public static void ToNugetManifest(PackageMeta meta, NugetManifestMetadata manifestMeta)
+        {
+            manifestMeta.Id = meta.Name;
+            manifestMeta.Version = meta.Version.ToString();
+            manifestMeta.Title = meta.Title.SafeTrim();
+            manifestMeta.Authors = string.Join(",", meta.Authors);
+            manifestMeta.Owners = string.Join(",", meta.Owners.Count == 0 ? meta.Authors : meta.Owners);
+            manifestMeta.Tags = String.IsNullOrEmpty(meta.Tags) ? null : meta.Tags.SafeTrim();
+            manifestMeta.LicenseUrl = ConvertUrlToStringSafe(meta.LicenseUrl);
+            manifestMeta.ProjectUrl = ConvertUrlToStringSafe(meta.ProjectUrl);
+            manifestMeta.IconUrl = ConvertUrlToStringSafe(meta.IconUrl);
+            manifestMeta.RequireLicenseAcceptance = meta.RequireLicenseAcceptance;
+            manifestMeta.DevelopmentDependency = false;
+            manifestMeta.Description = meta.Description.SafeTrim();
+            manifestMeta.Copyright = meta.Copyright.SafeTrim();
+            manifestMeta.Summary = meta.Summary.SafeTrim();
+            manifestMeta.ReleaseNotes = meta.ReleaseNotes.SafeTrim();
+            manifestMeta.Language = meta.Language.SafeTrim();
+
+            foreach (var dependency in meta.Dependencies)
+            {
+                manifestMeta.AddDependency(dependency.Name, dependency.Version);
+            }
+        }
+
+        private static string ConvertUrlToStringSafe(Uri url)
+        {
+            if (url != null)
+            {
+                string originalString = url.OriginalString.SafeTrim();
+                if (!string.IsNullOrEmpty(originalString))
+                {
+                    return originalString;
                 }
             }
 

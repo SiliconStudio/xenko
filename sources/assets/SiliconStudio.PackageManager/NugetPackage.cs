@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using NuGet;
 
 namespace SiliconStudio.PackageManager
@@ -76,99 +77,64 @@ namespace SiliconStudio.PackageManager
             return res;
         }
 
-        public string Title
+        public string Title => _package.Title;
+
+        public IEnumerable<string> Authors => _package.Authors;
+
+        public IEnumerable<string> Owners => _package.Owners;
+
+        public Uri IconUrl => _package.IconUrl;
+
+        public Uri LicenseUrl => _package.LicenseUrl;
+
+        public Uri ProjectUrl => _package.ProjectUrl;
+
+        public bool RequireLicenseAcceptance => _package.RequireLicenseAcceptance;
+
+        public bool DevelopmentDependency => _package.DevelopmentDependency;
+
+        public string Description => _package.Description;
+
+        public string Summary => _package.Summary;
+
+        public string ReleaseNotes => _package.ReleaseNotes;
+
+        public string Language => _package.Language;
+
+        public string Tags => _package.Tags;
+
+        public string Copyright => _package.Copyright;
+
+        public IEnumerable<FrameworkAssemblyReference> FrameworkAssemblies => _package.FrameworkAssemblies;
+
+        public ICollection<PackageReferenceSet> PackageAssemblyReferences => _package.PackageAssemblyReferences;
+
+        public IEnumerable<PackageDependencySet> DependencySets => _package.DependencySets;
+
+        public Version MinClientVersion => _package.MinClientVersion;
+        
+        public int DownloadCount => _package.DownloadCount;
+
+        public Uri ReportAbuseUrl => _package.ReportAbuseUrl;
+
+        public int DependencySetsCount => DependencySets.Count();
+
+        public IEnumerable<Tuple<string, PackageVersionRange>>  Dependencies
         {
-            get { return _package.Title; }
+            get
+            {
+                var res = new List<Tuple<string, PackageVersionRange>>();
+                var set = DependencySets.FirstOrDefault();
+                if (set != null)
+                {
+                    foreach (var dependency in set.Dependencies)
+                    {
+                        res.Add(new Tuple<string, PackageVersionRange>(dependency.Id, PackageVersionRange.FromVersionSpec(new NugetVersionSpec(dependency.VersionSpec))));
+                    }
+                }
+                return res;
+            }
         }
 
-        public IEnumerable<string> Authors
-        {
-            get { return _package.Authors; }
-        }
-
-        public IEnumerable<string> Owners
-        {
-            get { return _package.Owners; }
-        }
-
-        public Uri IconUrl
-        {
-            get { return _package.IconUrl; }
-        }
-
-        public Uri LicenseUrl
-        {
-            get { return _package.LicenseUrl; }
-        }
-
-        public Uri ProjectUrl
-        {
-            get { return _package.ProjectUrl; }
-        }
-
-        public bool RequireLicenseAcceptance
-        {
-            get { return _package.RequireLicenseAcceptance; }
-        }
-
-        public bool DevelopmentDependency
-        {
-            get { return _package.DevelopmentDependency; }
-        }
-
-        public string Description
-        {
-            get { return _package.Description; }
-        }
-
-        public string Summary
-        {
-            get { return _package.Summary; }
-        }
-
-        public string ReleaseNotes
-        {
-            get { return _package.ReleaseNotes; }
-        }
-
-        public string Language
-        {
-            get { return _package.Language; }
-        }
-
-        public string Tags
-        {
-            get { return _package.Tags; }
-        }
-
-        public string Copyright
-        {
-            get { return _package.Copyright; }
-        }
-
-        public IEnumerable<FrameworkAssemblyReference> FrameworkAssemblies
-        {
-            get { return _package.FrameworkAssemblies; }
-        }
-
-        public ICollection<PackageReferenceSet> PackageAssemblyReferences
-        {
-            get { return _package.PackageAssemblyReferences; }
-        }
-
-        public IEnumerable<PackageDependencySet> DependencySets
-        {
-            get { return _package.DependencySets; }
-        }
-
-        public Version MinClientVersion
-        {
-            get { return _package.MinClientVersion; }
-        }
-
-        public object DownloadCount
-        {
-            get { return _package.DownloadCount; } 
-        }
     }
 }

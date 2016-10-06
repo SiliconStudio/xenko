@@ -3,9 +3,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NuGet;
 
 namespace SiliconStudio.PackageManager
@@ -15,6 +12,9 @@ namespace SiliconStudio.PackageManager
         internal NugetManifestMetadata(ManifestMetadata metadata)
         {
             Metadata = metadata;
+            DependencySets = new List<ManifestDependencySet>();
+            ReferenceSets = new List<ManifestReferenceSet>();
+            FrameworkAssemblies = new List<ManifestFrameworkAssembly>();
         }
 
         protected bool Equals(NugetManifestMetadata other)
@@ -70,11 +70,44 @@ namespace SiliconStudio.PackageManager
         public string Language { get { return Metadata.Language; } set { Metadata.Language = value; } }
         public string Tags { get { return Metadata.Tags; } set { Metadata.Tags = value; } }
         public List<object> DependencySetsSerialize { get { return Metadata.DependencySetsSerialize; } set { Metadata.DependencySetsSerialize = value; } }
-        public List<ManifestDependencySet> DependencySets { get { return Metadata.DependencySets; } set { Metadata.DependencySets = value; } }
-        public List<ManifestFrameworkAssembly> FrameworkAssemblies { get { return Metadata.FrameworkAssemblies; } set { Metadata.FrameworkAssemblies = value; } }
-        public List<object> ReferenceSetsSerialize { get { return Metadata.ReferenceSetsSerialize; } set { Metadata.ReferenceSetsSerialize = value; } }
-        public List<ManifestReferenceSet> ReferenceSets { get { return Metadata.ReferenceSets; } set { Metadata.ReferenceSets = value; } }
-        public List<object> ContentFilesSerialize { get { return Metadata.ContentFilesSerialize; } set { Metadata.ContentFilesSerialize = value; } }
-        public List<ManifestContentFiles> ContentFiles { get { return Metadata.ContentFiles; } set { Metadata.ContentFiles = value; } }
+        public List<ManifestDependencySet> DependencySets
+        {
+            get { return Metadata.DependencySets; }
+            private set { Metadata.DependencySets = value; }
+        }
+
+        public List<ManifestFrameworkAssembly> FrameworkAssemblies
+        {
+            get { return Metadata.FrameworkAssemblies; }
+            private set { Metadata.FrameworkAssemblies = value; }
+        }
+
+        public List<ManifestReferenceSet> ReferenceSets
+        {
+            get { return Metadata.ReferenceSets; }
+            private set { Metadata.ReferenceSets = value; }
+        }
+
+        /// <summary>
+        /// Add new dependency to package name <paramref name="name"/> with version <paramref name="v"/> to
+        /// the first set if it exists already, otherwise create a new sets where dependency will be added to.
+        /// </summary>
+        /// <param name="name">Name of package to add to <see cref="DependencySets"/></param>
+        /// <param name="v">Version of package to add to <see cref="DependencySets"/></param>
+        public void AddDependency(string name, PackageVersionRange v)
+        {
+            ManifestDependencySet dependencySet;
+            if (DependencySets.Count == 0)
+            {
+                dependencySet = new ManifestDependencySet();
+                DependencySets.Add(dependencySet);
+            }
+            else
+            {
+                dependencySet = DependencySets[0];
+            }
+
+            dependencySet.Dependencies.Add(new ManifestDependency() { Id = name, Version = v.ToString() });
+        }
     }
 }

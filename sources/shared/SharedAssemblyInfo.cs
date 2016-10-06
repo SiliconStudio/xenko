@@ -17,8 +17,6 @@ using SiliconStudio;
 
 [assembly: AssemblyInformationalVersion(XenkoVersion.CurrentAsText)]
 
-[assembly: InternalsVisibleTo("SiliconStudio.Assets")]
-
 #if DEBUG
 [assembly:AssemblyConfiguration("Debug")]
 #else

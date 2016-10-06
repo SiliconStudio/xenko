@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Assets.Tasks
             if (package == null) throw new ArgumentNullException("package");
 
             var meta = new NugetManifestMetadata();
-            package.Meta.ToNugetManifest(meta);
+            PackageStore.ToNugetManifest(package.Meta, meta);
 
             // Override version with task SpecialVersion (if specified by user)
             if (specialVersion != null)
