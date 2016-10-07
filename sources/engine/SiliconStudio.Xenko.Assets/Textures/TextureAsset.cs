@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Collections.Generic;
 using System.ComponentModel;
 
 using SiliconStudio.Assets;
@@ -9,6 +10,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.PackageManager;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Assets.Textures
 {
@@ -25,7 +27,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
     [AssetFormatVersion(XenkoConfig.PackageName, TextureAssetVersion)]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(TransformSRgbToColorSpace))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.1", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
-    public sealed class TextureAsset : AssetWithSource
+    public sealed class TextureAsset : AssetWithSource, IAssetCompileTimeDependencies
     {
         private const string TextureAssetVersion = "1.4.0-beta";
 
@@ -172,6 +174,15 @@ namespace SiliconStudio.Xenko.Assets.Textures
         [DefaultValue(true)]
         [Display(null, "Transparency")]
         public bool PremultiplyAlpha { get; set; } = true;
+
+        public IEnumerable<IReference> EnumerateCompileTimeDependencies(PackageSession session)
+        {
+            var gameSettings = session.CurrentPackage?.Assets.Find(GameSettingsAsset.GameSettingsLocation);
+            if (gameSettings != null)
+            {
+                yield return new AssetReference<GameSettingsAsset>(gameSettings.Id, gameSettings.Location);
+            }
+        }
 
         private class TransformSRgbToColorSpace : AssetUpgraderBase
         {
