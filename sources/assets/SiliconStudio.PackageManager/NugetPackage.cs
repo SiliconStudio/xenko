@@ -2,10 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using NuGet;
 
 namespace SiliconStudio.PackageManager
 {
@@ -14,16 +12,16 @@ namespace SiliconStudio.PackageManager
     /// </summary>
     public class NugetPackage
     {
-        internal NugetPackage(IPackage package)
+        internal NugetPackage(NuGet.IPackageMetadata package)
         {
-            _package = package;
+            _packageMetadata = package;
         }
 
-        private readonly IPackage _package;
+        private readonly NuGet.IPackageMetadata _packageMetadata;
 
         protected bool Equals(NugetPackage other)
         {
-            return Equals(_package, other._package);
+            return Equals(_packageMetadata, other._packageMetadata);
         }
 
         public override bool Equals(object obj)
@@ -36,7 +34,7 @@ namespace SiliconStudio.PackageManager
 
         public override int GetHashCode()
         {
-            return (_package != null ? _package.GetHashCode() : 0);
+            return (_packageMetadata != null ? _packageMetadata.GetHashCode() : 0);
         }
 
         public static bool operator ==(NugetPackage left, NugetPackage right)
@@ -52,70 +50,93 @@ namespace SiliconStudio.PackageManager
         /// <summary>
         /// Semantic version of current package.
         /// </summary>
-        public NugetSemanticVersion Version => new NugetSemanticVersion(_package.Version);
+        public NugetSemanticVersion Version => new NugetSemanticVersion(_packageMetadata.Version);
 
         /// <summary>
-        /// Nuget package associated to current.
+        /// Nuget IPackage associated to current.
         /// </summary>
-        internal IPackage IPackage => _package;
+        internal NuGet.IPackage IPackage
+        {
+            get
+            {
+                var p = _packageMetadata as NuGet.IPackage;
+                return p;
+            }
+        }
 
-        public string Id => _package.Id;
+        /// <summary>
+        /// Nuget IPackage associated to current.
+        /// </summary>
+        internal NuGet.IServerPackageMetadata IServerPackageMetadata
+        {
+            get
+            {
+                var p = _packageMetadata as NuGet.IServerPackageMetadata;
+                return p;
+            }
+        }
 
-        public bool IsAbsoluteLatestVersion => _package.IsAbsoluteLatestVersion;
-        public bool IsLatestVersion => _package.IsLatestVersion;
-        public bool Listed => _package.Listed;
-        public DateTimeOffset? Published => _package.Published;
+        public string Id => _packageMetadata.Id;
+
+        public bool IsAbsoluteLatestVersion => IPackage?.IsAbsoluteLatestVersion ?? false;
+
+        public bool IsLatestVersion => IPackage?.IsLatestVersion ?? false;
+        public bool Listed => IPackage?.Listed ?? false;
+        public DateTimeOffset? Published => IPackage?.Published;
 
         public IEnumerable<NugetPackageFile> GetFiles()
         {
-            var files = _package.GetFiles();
             var res = new List<NugetPackageFile>();
-            foreach (var file in files)
+            var files = IPackage?.GetFiles();
+            if (files != null)
             {
-                res.Add(new NugetPackageFile(file));
+                foreach (var file in files)
+                {
+                    res.Add(new NugetPackageFile(file));
+                }
             }
             return res;
         }
 
-        public string Title => _package.Title;
+        public string Title => _packageMetadata.Title;
 
-        public IEnumerable<string> Authors => _package.Authors;
+        public IEnumerable<string> Authors => _packageMetadata.Authors;
 
-        public IEnumerable<string> Owners => _package.Owners;
+        public IEnumerable<string> Owners => _packageMetadata.Owners;
 
-        public Uri IconUrl => _package.IconUrl;
+        public Uri IconUrl => _packageMetadata.IconUrl;
 
-        public Uri LicenseUrl => _package.LicenseUrl;
+        public Uri LicenseUrl => _packageMetadata.LicenseUrl;
 
-        public Uri ProjectUrl => _package.ProjectUrl;
+        public Uri ProjectUrl => _packageMetadata.ProjectUrl;
 
-        public bool RequireLicenseAcceptance => _package.RequireLicenseAcceptance;
+        public bool RequireLicenseAcceptance => _packageMetadata.RequireLicenseAcceptance;
 
-        public bool DevelopmentDependency => _package.DevelopmentDependency;
+        public bool DevelopmentDependency => _packageMetadata.DevelopmentDependency;
 
-        public string Description => _package.Description;
+        public string Description => _packageMetadata.Description;
 
-        public string Summary => _package.Summary;
+        public string Summary => _packageMetadata.Summary;
 
-        public string ReleaseNotes => _package.ReleaseNotes;
+        public string ReleaseNotes => _packageMetadata.ReleaseNotes;
 
-        public string Language => _package.Language;
+        public string Language => _packageMetadata.Language;
 
-        public string Tags => _package.Tags;
+        public string Tags => _packageMetadata.Tags;
 
-        public string Copyright => _package.Copyright;
+        public string Copyright => _packageMetadata.Copyright;
 
-        public IEnumerable<FrameworkAssemblyReference> FrameworkAssemblies => _package.FrameworkAssemblies;
+        public IEnumerable<NuGet.FrameworkAssemblyReference> FrameworkAssemblies => _packageMetadata.FrameworkAssemblies;
 
-        public ICollection<PackageReferenceSet> PackageAssemblyReferences => _package.PackageAssemblyReferences;
+        public ICollection<NuGet.PackageReferenceSet> PackageAssemblyReferences => _packageMetadata.PackageAssemblyReferences;
 
-        public IEnumerable<PackageDependencySet> DependencySets => _package.DependencySets;
+        public IEnumerable<NuGet.PackageDependencySet> DependencySets => _packageMetadata.DependencySets;
 
-        public Version MinClientVersion => _package.MinClientVersion;
+        public Version MinClientVersion => _packageMetadata.MinClientVersion;
         
-        public int DownloadCount => _package.DownloadCount;
+        public int DownloadCount => IServerPackageMetadata?.DownloadCount ?? 0;
 
-        public Uri ReportAbuseUrl => _package.ReportAbuseUrl;
+        public Uri ReportAbuseUrl => IServerPackageMetadata?.ReportAbuseUrl;
 
         public int DependencySetsCount => DependencySets.Count();
 
