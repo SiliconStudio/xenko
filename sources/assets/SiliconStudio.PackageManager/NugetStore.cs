@@ -15,7 +15,7 @@ namespace SiliconStudio.PackageManager
     /// <summary>
     /// Internal class to store nuget objects
     /// </summary>
-    public partial class NugetStore
+    public class NugetStore
     {
         private const string RepositoryPathKey = "repositorypath";
 
