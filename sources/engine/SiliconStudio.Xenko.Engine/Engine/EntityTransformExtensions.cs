@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Extensions;
@@ -17,7 +16,6 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Adds a child Entity to the transform component of a parent Entity.
         /// </summary>
-        /// <typeparam name="T">Type of the parent Entity receiving the child.</typeparam>
         /// <param name="parentEntity">The parent Entity.</param>
         /// <param name="childEntity">The child parent Entity.</param>
         /// <returns>The this instance.</returns>
@@ -33,16 +31,34 @@ namespace SiliconStudio.Xenko.Engine
         /// Removes a child Entity to the transform component of a parent Entity. Note that the child entity is still in the <see cref="SceneInstance"/>.
         /// In order to remove it from the scene instance, you should call <see cref="SceneInstance.Remove"/>
         /// </summary>
-        /// <typeparam name="T">Type of the parent Entity to remove the child from.</typeparam>
         /// <param name="parentEntity">The parent Entity.</param>
         /// <param name="childEntity">The child Entity.</param>
-        /// <returns>The this instance.</returns>
         /// <exception cref="System.ArgumentNullException">childEntity</exception>
-        public static Entity RemoveChild(this Entity parentEntity, Entity childEntity)
+        public static void RemoveChild(this Entity parentEntity, Entity childEntity)
         {
             if (childEntity == null) throw new ArgumentNullException(nameof(childEntity));
             parentEntity.Transform.Children.Remove(childEntity.Transform);
-            return parentEntity;
+        }
+
+        /// <summary>
+        /// Removes a child entity from the transform component of a parent Entity.
+        /// </summary>
+        /// <param name="parentEntity">The parent entity.</param>
+        /// <param name="childId">The child id of the child entity.</param>
+        /// <returns>The this instance.</returns>
+        /// <exception cref="System.ArgumentNullException">childEntity</exception>
+        public static void RemoveChild(this Entity parentEntity, Guid childId)
+        {
+            if (childId == Guid.Empty) throw new ArgumentException(nameof(childId));
+            for (var i = 0; i < parentEntity.Transform.Children.Count; i++)
+            {
+                var child = parentEntity.Transform.Children[i];
+                if (child.Entity.Id == childId)
+                {
+                    parentEntity.Transform.Children.RemoveAt(i);
+                    break;
+                }
+            }
         }
 
         /// <summary>

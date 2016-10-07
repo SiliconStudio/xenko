@@ -1,18 +1,17 @@
-using System.IO;
-using NuGet;
+using System.Linq;
 using SiliconStudio.Assets;
-using SiliconStudio.Core.Serialization;
-using SiliconStudio.Shaders.Ast;
+using SiliconStudio.Core;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets
 {
     public static class GameSettingsAssetExtensions
     {
         /// <summary>
-        /// Gets the game settings asset from a package.
+        /// Retrieves the <see cref="GameSettingsAsset"/> from the given <see cref="Package"/> if available, or null otherwise.
         /// </summary>
-        /// <param name="package">The package.</param>
-        /// <returns></returns>
+        /// <param name="package">The package from which to retrieve the game settings.</param>
+        /// <returns>The <see cref="GameSettingsAsset"/> from the given <see cref="Package"/> if available. Null otherwise.</returns>
         public static GameSettingsAsset GetGameSettingsAsset(this Package package)
         {
             var gameSettingsAsset = package.Assets.Find(GameSettingsAsset.GameSettingsLocation);
@@ -23,11 +22,13 @@ namespace SiliconStudio.Xenko.Assets
             return gameSettingsAsset?.Asset as GameSettingsAsset;
         }
 
-        public static GameSettingsAsset GetGameSettingsAssetOrDefault(this AssetItem assetItem)
-        {
-            return assetItem.Package.GetGameSettingsAssetOrDefault();
-        }
-
+        /// <summary>
+        /// Retrieves the <see cref="GameSettingsAsset"/> from the given <see cref="Package"/> if available,
+        /// or otherwise attempts to retrieve it from the from the <see cref="PackageSession.CurrentPackage"/> of the session.
+        /// If none is available, this method returns a new default instance.
+        /// </summary>
+        /// <param name="package">The package from which to retrieve the game settings.</param>
+        /// <returns>The <see cref="GameSettingsAsset"/> from either the given package or the session if available. A new default instance otherwise.</returns>
         public static GameSettingsAsset GetGameSettingsAssetOrDefault(this Package package)
         {
             var gameSettings = package.GetGameSettingsAsset();
@@ -43,13 +44,27 @@ namespace SiliconStudio.Xenko.Assets
             return gameSettings ?? GameSettingsFactory.Create();
         }
 
-        public static GameSettingsAsset CloneGameSettingsAsset(this Package package)
+        /// <summary>
+        /// Retrieves the <see cref="GameSettingsAsset"/> from the <see cref="PackageSession.CurrentPackage"/> of the given session if available,
+        /// or a new default instance otherwise.
+        /// </summary>
+        /// <param name="session">The package session from which to retrieve the game settings.</param>
+        /// <returns>The <see cref="GameSettingsAsset"/> from the given session if available. A new default instance otherwise.</returns>
+        public static GameSettingsAsset GetGameSettingsAssetOrDefault(this PackageSession session)
         {
-            lock (package)
-            {
-                var gameSettings = package.GetGameSettingsAssetOrDefault();
-                return (GameSettingsAsset)AssetCloner.Clone(gameSettings);
-            }
+            return session.CurrentPackage?.GetGameSettingsAsset() ?? GameSettingsFactory.Create();
+        }
+
+        /// <summary>
+        /// Retrieves the reference <see cref="ColorSpace"/> to use according to the <see cref="PackageSession.CurrentPackage"/> of the given package.
+        /// If the current package is null, this method returns the value of <see cref="RenderingSettings.DefaultColorSpace"/>.
+        /// </summary>
+        /// <param name="session">The package session from which to retrieve the color space.</param>
+        /// <param name="platform">The platform for which to return the color space.</param>
+        /// <returns>The color space of the current package of the session, or <see cref="RenderingSettings.DefaultColorSpace"/>.</returns>
+        public static ColorSpace GetReferenceColorSpace(this PackageSession session, PlatformType platform)
+        {
+            return GetGameSettingsAssetOrDefault(session).Get<RenderingSettings>(platform).ColorSpace;
         }
     }
 }
