@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
                 }
             }
 
-            private unsafe IntPtr LoadLayer(NavigationMesh.Layer navigationMeshLayer)
+            private unsafe IntPtr LoadLayer(NavigationMeshLayer navigationMeshLayer)
             {
                 IntPtr layer = Navigation.CreateNavmesh(cellTileSize);
                 if (layer == IntPtr.Zero)

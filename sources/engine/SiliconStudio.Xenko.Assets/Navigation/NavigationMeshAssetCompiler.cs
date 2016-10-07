@@ -199,7 +199,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                     if (fullRebuild)
                     {
                         // For full rebuild just take the root bounding box for selecting tiles to build
-                        List<Point> newTileList = NavigationMesh.GetOverlappingTiles(buildSettings, boundingBox);
+                        List<Point> newTileList = NavigationMeshBuildUtils.GetOverlappingTiles(buildSettings, boundingBox);
                         foreach (Point p in newTileList)
                             tilesToBuild.Add(p);
                     }
@@ -216,7 +216,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                                 Minimum = update.Minimum - agentOffset,
                                 Maximum = update.Maximum + agentOffset,
                             };
-                            List<Point> newTileList = NavigationMesh.GetOverlappingTiles(buildSettings, agentSpecificBoundingBox);
+                            List<Point> newTileList = NavigationMeshBuildUtils.GetOverlappingTiles(buildSettings, agentSpecificBoundingBox);
                             foreach (Point p in newTileList)
                                 tilesToBuild.Add(p);
                         }
@@ -225,7 +225,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                     // Build tiles
                     foreach (var tileToBuild in tilesToBuild)
                     {
-                        BoundingBox tileBoundingBox = NavigationMesh.ClampBoundingBoxToTile(buildSettings, boundingBox, tileToBuild);
+                        BoundingBox tileBoundingBox = NavigationMeshBuildUtils.ClampBoundingBoxToTile(buildSettings, boundingBox, tileToBuild);
                         if (boundingBox.Contains(ref tileBoundingBox) == ContainmentType.Disjoint)
                         {
                             generatedNavigationMesh.RemoveLayerTile(layer, tileToBuild);

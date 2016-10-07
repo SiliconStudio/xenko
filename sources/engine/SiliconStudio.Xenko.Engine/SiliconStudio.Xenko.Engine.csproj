@@ -139,6 +139,9 @@
     <Compile Include="Engine\NavigationComponent.cs" />
     <Compile Include="Engine\NavigationDebugCameraRenderMode.cs" />
     <Compile Include="Engine\NavigationMesh.cs" />
+    <Compile Include="Engine\NavigationMeshBuildSettings.cs" />
+    <Compile Include="Engine\NavigationMeshlayer.cs" />
+    <Compile Include="Engine\NavigationMeshTile.cs" />
     <Compile Include="Engine\Network\ClientRouterMessage.cs" />
     <Compile Include="Engine\Network\ExceptionMessage.cs" />
     <Compile Include="Engine\Network\SimpleSocketException.cs" />
