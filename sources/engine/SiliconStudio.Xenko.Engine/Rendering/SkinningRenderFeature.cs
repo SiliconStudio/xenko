@@ -1,7 +1,5 @@
 using System;
-using System.Threading;
-using System.Threading.Tasks;
-using SiliconStudio.Core.Collections;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Rendering.Materials;
@@ -13,36 +11,14 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public class SkinningRenderFeature : SubRenderFeature
     {
-        private const int DefaultBufferSize = 128;
-
         private StaticObjectPropertyKey<RenderEffect> renderEffectKey;
         private StaticObjectPropertyKey<SkinningInfo> skinningInfoKey;
-        private ObjectPropertyKey<RenderModelFrameInfo> renderModelObjectInfoKey;
+        private ObjectPropertyKey<Matrix[]> renderModelObjectInfoKey;
 
         private ConstantBufferOffsetReference blendMatrices;
 
-        //private readonly FastList<NodeFrameInfo> nodeInfos = new FastList<NodeFrameInfo>();
-        private readonly object nodeInfoLock = new object();
-        private NodeFrameInfo[] nodeInfos = new NodeFrameInfo[DefaultBufferSize];
-        private int nodeInfoCount;
-
         // Good number for low profiles?
         public int MaxBones { get; set; } = 56;
-
-        struct NodeFrameInfo
-        {
-            // Copied during Extract
-            public Matrix LinkToMeshMatrix;
-
-            public Matrix NodeTransformation;
-        }
-
-        struct RenderModelFrameInfo
-        {
-            public int NodeInfoOffset;
-
-            public int NodeInfoCount;
-        }
 
         struct SkinningInfo
         {
@@ -57,7 +33,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <inheritdoc/>
         protected override void InitializeCore()
         {
-            renderModelObjectInfoKey = RootRenderFeature.RenderData.CreateObjectKey<RenderModelFrameInfo>();
+            renderModelObjectInfoKey = RootRenderFeature.RenderData.CreateObjectKey<Matrix[]>();
             skinningInfoKey = RootRenderFeature.RenderData.CreateStaticObjectKey<SkinningInfo>();
             renderEffectKey = ((RootEffectRenderFeature)RootRenderFeature).RenderEffectKey;
 
@@ -121,58 +97,13 @@ namespace SiliconStudio.Xenko.Rendering
         {
             var renderModelObjectInfo = RootRenderFeature.RenderData.GetData(renderModelObjectInfoKey);
 
-            nodeInfoCount = 0;
-
-            //foreach (var objectNodeReference in RootRenderFeature.ObjectNodeReferences)
             Dispatcher.ForEach(RootRenderFeature.ObjectNodeReferences, objectNodeReference =>
             {
                 var objectNode = RootRenderFeature.GetObjectNode(objectNodeReference);
                 var renderMesh = (RenderMesh)objectNode.RenderObject;
 
-                var skeleton = renderMesh.RenderModel.ModelComponent.Skeleton;
-                var skinning = renderMesh.Mesh.Skinning;
-
-                // Skip unskinned meshes
-                if (skinning == null)
-                {
-                    renderModelObjectInfo[objectNodeReference] = new RenderModelFrameInfo();
-                    return;
-                }
-
-                var bones = skinning.Bones;
-                var boneCount = bones.Length;
-
-                // Reserve space in the node buffer
-                var newNodeInfoCount = Interlocked.Add(ref nodeInfoCount, boneCount);
-                var nodeInfoOffset = newNodeInfoCount - boneCount;
-
-                renderModelObjectInfo[objectNodeReference] = new RenderModelFrameInfo
-                {
-                    NodeInfoOffset = nodeInfoOffset,
-                    NodeInfoCount = boneCount
-                };
-
-                // Ensure buffer capacity
-                if (nodeInfos.Length < newNodeInfoCount)
-                {
-                    lock (nodeInfoLock)
-                    {
-                        if (nodeInfos.Length < newNodeInfoCount)
-                            Array.Resize(ref nodeInfos, Math.Max(newNodeInfoCount, nodeInfos.Length * 2));
-                    }
-                }
-
-                var nodeTransformations = skeleton.NodeTransformations;
-                for (int index = 0; index < boneCount; index++)
-                {
-                    var nodeIndex = bones[index].NodeIndex;
-
-                    nodeInfos[nodeInfoOffset + index] = new NodeFrameInfo
-                    {
-                        LinkToMeshMatrix = bones[index].LinkToMeshMatrix,
-                        NodeTransformation = nodeTransformations[nodeIndex].WorldMatrix
-                    };
-                }
+                // TODO GRAPHICS REFACTOR: Extract copy of matrices
+                renderModelObjectInfo[objectNodeReference] = renderMesh.BlendMatrices;
             });
         }
 
@@ -192,14 +123,14 @@ namespace SiliconStudio.Xenko.Rendering
                     return;
 
                 var renderModelObjectInfo = renderModelObjectInfoData[renderNode.RenderObject.ObjectNode];
+                if (renderModelObjectInfo == null)
+                    return;
 
                 var mappedCB = renderNode.Resources.ConstantBuffer.Data + blendMatricesOffset;
-                var blendMatrix = (Matrix*)mappedCB;
 
-                for (int i = 0; i < renderModelObjectInfo.NodeInfoCount; i++)
+                fixed (Matrix* blendMatricesPtr = &renderModelObjectInfo[0])
                 {
-                    int boneInfoIndex = renderModelObjectInfo.NodeInfoOffset + i;
-                    Matrix.Multiply(ref nodeInfos[boneInfoIndex].LinkToMeshMatrix, ref nodeInfos[boneInfoIndex].NodeTransformation, out *blendMatrix++);
+                    Utilities.CopyMemory(mappedCB, new IntPtr(blendMatricesPtr), renderModelObjectInfo.Length * sizeof(Matrix));
                 }
             });
         }

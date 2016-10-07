@@ -24,10 +24,32 @@ namespace SiliconStudio.Xenko.Engine
     [ComponentOrder(11000)]
     public sealed class ModelComponent : ActivableEntityComponent, IModelInstance
     {
+        private readonly List<MeshInfo> meshInfos = new List<MeshInfo>();
         private Model model;
         private SkeletonUpdater skeleton;
         private bool modelViewHierarchyDirty = true;
 
+        /// <summary>
+        /// Per-entity state of each individual mesh of a model.
+        /// </summary>
+        public class MeshInfo
+        {
+            /// <summary>
+            /// The current blend matrices of a skinned meshes, transforming from mesh space to world space, for each bone.
+            /// </summary>
+            public Matrix[] BlendMatrices;
+
+            /// <summary>
+            /// The meshes current bounding box in world space.
+            /// </summary>
+            public BoundingBox BoundingBox;
+
+            /// <summary>
+            /// The meshes current sphere box in world space.
+            /// </summary>
+            public BoundingSphere BoundingSphere;
+        }
+      
         /// <summary>
         /// Initializes a new instance of the <see cref="ModelComponent"/> class.
         /// </summary>
@@ -90,6 +112,12 @@ namespace SiliconStudio.Xenko.Engine
                 return skeleton;
             }
         }
+
+        /// <summary>
+        /// Gets the current per-entity state for each mesh in the associated model.
+        /// </summary>
+        [DataMemberIgnore]
+        public IReadOnlyList<MeshInfo> MeshInfos => meshInfos;
 
         private void CheckSkeleton()
         {
@@ -172,6 +200,17 @@ namespace SiliconStudio.Xenko.Engine
         {
             if (model != null)
             {
+                // Create mesh-per-entity state
+                meshInfos.Clear();
+                foreach (var mesh in model.Meshes)
+                {
+                    var meshData = new MeshInfo();
+                    meshInfos.Add(meshData);
+
+                    if (mesh.Skinning != null)
+                        meshData.BlendMatrices = new Matrix[mesh.Skinning.Bones.Length];
+                }
+
                 if (skeleton != null)
                 {
                     // Reuse previous ModelViewHierarchy
@@ -190,17 +229,11 @@ namespace SiliconStudio.Xenko.Engine
                 return;
 
             // Check if scaling is negative
-            bool isScalingNegative = false;
-            {
-                Vector3 scale, translation;
-                Matrix rotation;
-                if (worldMatrix.Decompose(out scale, out rotation, out translation))
-                    isScalingNegative = scale.X*scale.Y*scale.Z < 0.0f;
-            }
+            var up = Vector3.Cross(worldMatrix.Right, worldMatrix.Forward);
+            bool isScalingNegative = Vector3.Dot(worldMatrix.Up, up) < 0.0f;
 
             // Make sure skeleton is up to date
             CheckSkeleton();
-
             if (skeleton != null)
             {
                 // Update model view hierarchy node matrices
@@ -210,41 +243,66 @@ namespace SiliconStudio.Xenko.Engine
             }
 
             // Update the bounding sphere / bounding box in world space
-            var meshes = Model.Meshes;
-            var modelBoundingSphere = BoundingSphere.Empty;
-            var modelBoundingBox = BoundingBox.Empty;
-            bool hasBoundingBox = false;
-            Matrix world;
-            foreach (var mesh in meshes)
+            BoundingSphere = BoundingSphere.Empty;
+            BoundingBox = BoundingBox.Empty;
+            bool modelHasBoundingBox = false;
+
+            for (int meshIndex = 0; meshIndex < Model.Meshes.Count; meshIndex++)
             {
-                var meshBoundingSphere = mesh.BoundingSphere;
+                var mesh = Model.Meshes[meshIndex];
+                var meshInfo = meshInfos[meshIndex];
+                meshInfo.BoundingSphere = BoundingSphere.Empty;
+                meshInfo.BoundingBox = BoundingBox.Empty;
 
-                if (skeleton != null)
-                    skeleton.GetWorldMatrix(mesh.NodeIndex, out world);
-                else
-                    world = worldMatrix;
-                Vector3.TransformCoordinate(ref meshBoundingSphere.Center, ref world, out meshBoundingSphere.Center);
-                BoundingSphere.Merge(ref modelBoundingSphere, ref meshBoundingSphere, out modelBoundingSphere);
-
-                var boxExt = new BoundingBoxExt(mesh.BoundingBox);
-                boxExt.Transform(world);
-                var meshBox = (BoundingBox)boxExt;
-
-                if (hasBoundingBox)
+                if (mesh.Skinning != null && skeleton != null)
                 {
-                    BoundingBox.Merge(ref modelBoundingBox, ref meshBox, out modelBoundingBox);
+                    bool meshHasBoundingBox = false;
+                    var bones = mesh.Skinning.Bones;
+
+                    // For skinned meshes, bounding box is union of the bounding boxes of the unskinned mesh, transformed by each affecting bone.
+                    for (int boneIndex = 0; boneIndex < bones.Length; boneIndex++)
+                    {
+                        var nodeIndex = bones[boneIndex].NodeIndex;
+                        Matrix.Multiply(ref bones[boneIndex].LinkToMeshMatrix, ref skeleton.NodeTransformations[nodeIndex].WorldMatrix, out meshInfos[meshIndex].BlendMatrices[boneIndex]);
+
+                        BoundingBox skinnedBoundingBox;
+                        BoundingBox.Transform(ref mesh.BoundingBox, ref meshInfos[meshIndex].BlendMatrices[boneIndex], out skinnedBoundingBox);
+                        BoundingSphere skinnedBoundingSphere;
+                        BoundingSphere.Transform(ref mesh.BoundingSphere, ref meshInfos[meshIndex].BlendMatrices[boneIndex], out skinnedBoundingSphere);
+
+                        if (meshHasBoundingBox)
+                        {
+                            BoundingBox.Merge(ref meshInfo.BoundingBox, ref skinnedBoundingBox, out meshInfo.BoundingBox);
+                            BoundingSphere.Merge(ref meshInfo.BoundingSphere, ref skinnedBoundingSphere, out meshInfo.BoundingSphere);
+                        }
+                        else
+                        {
+                            meshHasBoundingBox = true;
+                            meshInfo.BoundingSphere = skinnedBoundingSphere;
+                            meshInfo.BoundingBox = skinnedBoundingBox;
+                        }
+                    }
                 }
                 else
                 {
-                    modelBoundingBox = meshBox;
+                    // If there is a skeleton, use the corresponding node's transform. Otherwise, fall back to the model transform.
+                    var transform = skeleton != null ? skeleton.NodeTransformations[mesh.NodeIndex].WorldMatrix : worldMatrix;
+                    BoundingBox.Transform(ref mesh.BoundingBox, ref transform, out meshInfo.BoundingBox);
+                    BoundingSphere.Transform(ref mesh.BoundingSphere, ref transform, out meshInfo.BoundingSphere);
                 }
 
-                hasBoundingBox = true;
+                if (modelHasBoundingBox)
+                {
+                    BoundingBox.Merge(ref BoundingBox, ref meshInfo.BoundingBox, out BoundingBox);
+                    BoundingSphere.Merge(ref BoundingSphere, ref meshInfo.BoundingSphere, out BoundingSphere);
+                }
+                else
+                {
+                    BoundingBox = meshInfo.BoundingBox;
+                    BoundingSphere = meshInfo.BoundingSphere;
+                    modelHasBoundingBox = true;
+                }
             }
-
-            // Update the bounds
-            BoundingBox = modelBoundingBox;
-            BoundingSphere = modelBoundingSphere;
         }
     }
 }
