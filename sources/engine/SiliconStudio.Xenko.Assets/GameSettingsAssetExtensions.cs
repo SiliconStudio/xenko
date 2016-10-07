@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Assets
         /// </summary>
         /// <param name="session">The package session from which to retrieve the game settings.</param>
         /// <returns>The <see cref="GameSettingsAsset"/> from the given session if available. A new default instance otherwise.</returns>
-        public static GameSettingsAsset GetGameSettingsAssetOrDefault(this PackageSession session)
+        private static GameSettingsAsset GetGameSettingsAssetOrDefault(this PackageSession session)
         {
             return session.CurrentPackage?.GetGameSettingsAsset() ?? GameSettingsFactory.Create();
         }
