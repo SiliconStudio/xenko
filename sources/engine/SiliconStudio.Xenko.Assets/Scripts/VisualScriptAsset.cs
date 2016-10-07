@@ -27,31 +27,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         [DataMember(Mask = DataMemberAttribute.IgnoreMask)]
         [Display(Browsable = false)]
-        public string AbsoluteSourceLocation { get; set; }
-
-        [DataMember(Mask = DataMemberAttribute.IgnoreMask)]
-        [Display(Browsable = false)]
-        public string AbsoluteProjectLocation { get; set; }
-
-        [DataMember(Mask = DataMemberAttribute.IgnoreMask)]
-        [Display(Browsable = false)]
-        public string ProjectInclude { get; set; }
-
-        [DataMember(Mask = DataMemberAttribute.IgnoreMask)]
-        [Display(Browsable = false)]
-        public string ProjectName { get; set; }
-
-        [DataMember(Mask = DataMemberAttribute.IgnoreMask)]
-        [Display(Browsable = false)]
         public string Generator { get; } = "XenkoVisualScriptGenerator";
-
-        [DataMember(Mask = DataMemberAttribute.IgnoreMask)]
-        [Display(Browsable = false)]
-        public string GeneratedAbsolutePath { get; set; }
-
-        [DataMember(Mask = DataMemberAttribute.IgnoreMask)]
-        [Display(Browsable = false)]
-        public string GeneratedInclude { get; set; }
 
         #endregion
 
@@ -147,12 +123,14 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             return null;
         }
 
-        public void SaveGeneratedAsset()
+        public void SaveGeneratedAsset(AssetItem assetItem)
         {
+            var generatedAbsolutePath = assetItem.GetGeneratedAbsolutePath();
+
             var compilerOptions = new VisualScriptCompilerOptions
             {
                 Namespace = "Namespace",
-                Class = Path.GetFileNameWithoutExtension(GeneratedAbsolutePath),
+                Class = Path.GetFileNameWithoutExtension(generatedAbsolutePath),
                 BaseClass = "AsyncScript",
                 UsingDirectives =
                 {
@@ -160,7 +138,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                 },
             };
             var compilerResult = VisualScriptCompiler.Generate(this, compilerOptions);
-            File.WriteAllText(GeneratedAbsolutePath, compilerResult.GeneratedSource);
+            File.WriteAllText(generatedAbsolutePath, compilerResult.GeneratedSource);
         }
     }
 }

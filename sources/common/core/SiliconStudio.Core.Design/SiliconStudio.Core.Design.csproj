@@ -98,6 +98,7 @@
     <Compile Include="Settings\SettingsDictionarySerializer.cs" />
     <Compile Include="Settings\SettingsEntryChangeValueOperation.cs" />
     <Compile Include="Settings\SettingsProfileSerializer.cs" />
+    <Compile Include="Tasks\AsyncLazy.cs" />
     <Compile Include="Transactions\DiscardReason.cs" />
     <Compile Include="Transactions\IAsyncTransaction.cs" />
     <Compile Include="Transactions\IMergeableOperation.cs" />
