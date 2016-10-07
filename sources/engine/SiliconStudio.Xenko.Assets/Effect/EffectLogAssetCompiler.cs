@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (EffectLogAsset)assetItem.Asset;
-            var originalSourcePath = asset.AbsoluteSourceLocation;
+            var originalSourcePath = assetItem.FullPath;
             result.ShouldWaitForPreviousBuilds = true;
             result.BuildSteps = new AssetBuildStep(assetItem) { new EffectLogBuildStep(context, originalSourcePath, assetItem.Package) };
         }

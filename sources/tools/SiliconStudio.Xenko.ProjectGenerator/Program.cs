@@ -253,10 +253,11 @@ namespace SiliconStudio.Xenko.ProjectGenerator
 
             try
             {
-                using (var stream = new FileStream(Path.Combine(outputDirectory, name), FileMode.Open, FileAccess.Read))
+                var filePath = Path.Combine(outputDirectory, name);
+                using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
                 {
                     bool b;
-                    var asset = AssetSerializer.Default.Load(stream, null, null, out b) as Asset;
+                    var asset = AssetSerializer.Default.Load(stream, filePath, null, out b) as Asset;
                     if (asset != null)
                     {
                         guid = asset.Id;

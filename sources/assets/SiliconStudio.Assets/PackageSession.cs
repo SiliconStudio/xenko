@@ -560,37 +560,34 @@ namespace SiliconStudio.Assets
                                     var projectAsset = assetItem.Asset as IProjectAsset;
                                     if (projectAsset != null)
                                     {
-                                        Project project;
-                                        if (!vsProjs.TryGetValue(assetItem.SourceProject, out project))
-                                        {
-                                            project = VSProjectHelper.LoadProject(assetItem.SourceProject);
-                                            vsProjs.Add(assetItem.SourceProject, project);
-                                        }
-                                        var include = (new UFile(projectAsset.ProjectInclude)).ToWindowsPath();
-                                        var item = project.Items.FirstOrDefault(x => (x.ItemType == "Compile" || x.ItemType == "None") && x.EvaluatedInclude == include);
-                                        if (item != null)
-                                        {
-                                            project.RemoveItem(item);
-                                        }
-                                    }
-                                    //delete any generated file as well
-                                    var generatorAsset = assetItem.Asset as IProjectFileGeneratorAsset;
-                                    if (generatorAsset?.GeneratedAbsolutePath != null)
-                                    {
-                                        File.Delete((new UFile(generatorAsset.GeneratedAbsolutePath)).ToWindowsPath());
+                                        var projectInclude = assetItem.GetProjectInclude();
 
-                                        //and remove from project as well
                                         Project project;
                                         if (!vsProjs.TryGetValue(assetItem.SourceProject, out project))
                                         {
                                             project = VSProjectHelper.LoadProject(assetItem.SourceProject);
                                             vsProjs.Add(assetItem.SourceProject, project);
                                         }
-                                        var include = new UFile(new UFile(projectAsset.ProjectInclude).GetFullPathWithoutExtension() + ".cs").ToWindowsPath();
-                                        var item = project.Items.FirstOrDefault(x => (x.ItemType == "Compile" || x.ItemType == "None") && x.EvaluatedInclude == include);
-                                        if (item != null)
+                                        var projectItem = project.Items.FirstOrDefault(x => (x.ItemType == "Compile" || x.ItemType == "None") && x.EvaluatedInclude == projectInclude);
+                                        if (projectItem != null)
                                         {
-                                            project.RemoveItem(item);
+                                            project.RemoveItem(projectItem);
+                                        }
+
+                                        //delete any generated file as well
+                                        var generatorAsset = assetItem.Asset as IProjectFileGeneratorAsset;
+                                        if (generatorAsset != null)
+                                        {
+                                            var generatedAbsolutePath = assetItem.GetGeneratedAbsolutePath().ToWindowsPath();
+
+                                            File.Delete(generatedAbsolutePath);
+
+                                            var generatedInclude = assetItem.GetGeneratedInclude();
+                                            var generatedItem = project.Items.FirstOrDefault(x => (x.ItemType == "Compile" || x.ItemType == "None") && x.EvaluatedInclude == generatedInclude);
+                                            if (generatedItem != null)
+                                            {
+                                                project.RemoveItem(generatedItem);
+                                            }
                                         }
                                     }
                                 }
