@@ -508,6 +508,7 @@ namespace SiliconStudio.Assets
             //var clock = Stopwatch.StartNew();
             using (var profile = Profiler.Begin(PackageSessionProfilingKeys.Saving))
             {
+                var packagesDirty = false;
                 try
                 {
                     saveParameters = saveParameters ?? PackageSaveParameters.Default();
@@ -624,7 +625,11 @@ namespace SiliconStudio.Assets
                     foreach (var package in LocalPackages)
                     {
                         // Save the package to disk and all its assets
-                        package.Save(log);
+                        package.Save(log, saveParameters);
+
+                        // Check if everything was saved (might not be the case if things are filtered out)
+                        if (package.IsDirty || package.Assets.IsDirty)
+                            packagesDirty = true;
 
                         // Clone the package (but not all assets inside, just the structure)
                         var packageClone = package.Clone();
@@ -647,7 +652,7 @@ namespace SiliconStudio.Assets
                 }
 
                 //System.Diagnostics.Trace.WriteLine("Elapsed saved: " + clock.ElapsedMilliseconds);
-                IsDirty = false;
+                IsDirty = packagesDirty;
             }
         }
 
