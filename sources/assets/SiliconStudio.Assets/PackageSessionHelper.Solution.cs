@@ -40,7 +40,7 @@ namespace SiliconStudio.Assets
                         // Support paradox legacy projects
                         if ((string)dependency.Name == "Xenko" || (string)dependency.Name == "Paradox")
                         {
-                            dependencyVersion = new NugetSemanticVersion(dependency.Version);
+                            dependencyVersion = new NugetSemanticVersion((string) dependency.Version);
 
                             // Paradox 1.1 was having incorrect version set (1.0), read it from .props file
                             if (dependencyVersion.Version.Major == 1 && dependencyVersion.Version.Minor == 0)
