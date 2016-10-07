@@ -8,13 +8,6 @@ struct Point
 	int X;
 	int Y;
 };
-struct AgentSettings
-{
-	float height;
-	float radius;
-	float maxClimb;
-	float maxSlope;
-};
 struct BuildSettings
 {
 	// Bounding box for the generated navigation mesh
@@ -23,6 +16,16 @@ struct BuildSettings
 	float cellSize;
 	int tileSize;
 	Point tilePosition;
+	float regionMinSize;
+	float regionMergeSize;
+	float edgeMaxLen;
+	float edgeMaxError;
+	float detailSampleDistInput;
+	float detailSampleMaxErrorInput;
+	float agentHeight;
+	float agentRadius;
+	float agentMaxClimb;
+	float agentMaxSlope;
 };
 struct GeneratedData
 {

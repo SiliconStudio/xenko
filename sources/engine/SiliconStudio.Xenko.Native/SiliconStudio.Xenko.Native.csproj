@@ -86,8 +86,8 @@
     <Content Include="Navigation\Navigation.hpp" />
     <Content Include="Navigation\NavigationBuilder.cpp" />
     <Content Include="Navigation\NavigationBuilder.hpp" />
-    <Content Include="Navigation\Navmesh.cpp" />
-    <Content Include="Navigation\Navmesh.hpp" />
+    <Content Include="Navigation\NavigationMesh.cpp" />
+    <Content Include="Navigation\NavigationMesh.hpp" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -36,8 +36,8 @@ namespace SiliconStudio.Xenko.Engine
         // Used internally to detect tile changes
         internal int TileHash;
 
-        // Used internally to display the visuals in the GameStudio
-        // these values are only used by the NavigationGizmo
+        // Used internally to display the visuals in the GameStudio but only once
+        // these values are only used by the NavigationGizmo, the gizmo checks if these values are up to date and then sets them so only 1 gizmo uses this mesh at once
         internal int DebugMeshTileHash;
         internal ModelComponent DebugMesh;
         
@@ -254,13 +254,6 @@ namespace SiliconStudio.Xenko.Engine
         {
             // Turn settings into native structure format
             NavigationAgentSettings agentSettings = layer.AgentSettings;
-            Navigation.AgentSettings internalAgentSettings = new Navigation.AgentSettings
-            {
-                Height = agentSettings.Height,
-                Radius = agentSettings.Radius,
-                MaxClimb = agentSettings.MaxClimb,
-                MaxSlope = agentSettings.MaxSlope.Degrees
-            };
             NavigationMeshTile tile = new NavigationMeshTile();
 
             // Initialize navigation builder
@@ -269,14 +262,28 @@ namespace SiliconStudio.Xenko.Engine
             // Turn build settings into native structure format
             Navigation.BuildSettings internalBuildSettings = new Navigation.BuildSettings
             {
+                // Tile settings
                 BoundingBox = boundingBox,
                 TilePosition = tileCoordinate,
+                TileSize =  BuildSettings.TileSize,
+
+                // General build settings
                 CellHeight =  BuildSettings.CellHeight,
                 CellSize = BuildSettings.CellSize,
-                TileSize =  BuildSettings.TileSize
+                RegionMinSize = BuildSettings.RegionMinSize,
+                RegionMergeSize = BuildSettings.RegionMergeSize,
+                EdgeMaxLen = BuildSettings.EdgeMaxLen,
+                EdgeMaxError = BuildSettings.EdgeMaxError,
+                DetailSampleDistInput = BuildSettings.DetailSampleDistInput,
+                DetailSampleMaxErrorInput = BuildSettings.DetailSampleMaxErrorInput,
+                
+                // Agent settings
+                AgentHeight = agentSettings.Height,
+                AgentRadius = agentSettings.Radius,
+                AgentMaxClimb = agentSettings.MaxClimb,
+                AgentMaxSlope = agentSettings.MaxSlope.Degrees
             };
             Navigation.SetSettings(nav, new IntPtr(&internalBuildSettings));
-            Navigation.SetAgentSettings(nav, new IntPtr(&internalAgentSettings));
             
             // Generate mesh
             Navigation.GeneratedData data;

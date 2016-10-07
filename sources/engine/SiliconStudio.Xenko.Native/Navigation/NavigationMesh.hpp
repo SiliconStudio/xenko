@@ -35,7 +35,7 @@ struct NavMeshRaycastResult
 	Vector3 normal;
 };
 
-class NavMesh
+class NavigationMesh
 {
 private:
 	dtNavMesh* m_navMesh = nullptr;
@@ -49,8 +49,8 @@ private:
 	NavMeshPathfindResult m_pathResult;
 	NavMeshRaycastResult m_raycastResult;
 public:
-	NavMesh();
-	~NavMesh();
+	NavigationMesh();
+	~NavigationMesh();
 	bool Init(float cellTileSize);
 	bool LoadTile(Point tileCoordinate, uint8_t* navData, int navDataLength);
 	bool RemoveTile(Point tileCoordinate);

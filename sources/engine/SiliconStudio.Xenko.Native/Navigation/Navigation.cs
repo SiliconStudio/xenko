@@ -24,15 +24,16 @@ namespace SiliconStudio.Xenko.Native
             public float CellSize;
             public int TileSize;
             public Point TilePosition;
-        }
-        
-        [StructLayout(LayoutKind.Sequential, Pack = 4)]
-        public struct AgentSettings
-        {
-            public float Height;
-            public float Radius;
-            public float MaxClimb;
-            public float MaxSlope;
+            public float RegionMinSize;
+            public float RegionMergeSize;
+            public float EdgeMaxLen;
+            public float EdgeMaxError;
+            public float DetailSampleDistInput;
+            public float DetailSampleMaxErrorInput;
+            public float AgentHeight;
+            public float AgentRadius;
+            public float AgentMaxClimb;
+            public float AgentMaxSlope;
         }
 
         [StructLayout(LayoutKind.Sequential, Pack = 4)]

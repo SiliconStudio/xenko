@@ -81,21 +81,25 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
             {
                 base.ComputeParameterHash(writer);
-                
-                string sceneUrl = AttachedReferenceManager.GetUrl(asset.DefaultScene);
-                var sceneAsset = (SceneAsset)package.Session.FindAsset(sceneUrl)?.Asset;
 
-                // Turn the entire entity hierarchy into a single list
-                List<Entity> sceneEntities = sceneAsset.Hierarchy.Parts.Select(x => x.Entity).ToList();
-
-                // Update world matrices
-                foreach (Entity e in sceneEntities)
+                // Hash relevant scene objects
+                if (asset.DefaultScene != null)
                 {
-                    e.Transform.UpdateWorldMatrix();
-                }
+                    string sceneUrl = AttachedReferenceManager.GetUrl(asset.DefaultScene);
+                    var sceneAsset = (SceneAsset)package.Session.FindAsset(sceneUrl)?.Asset;
 
-                int sceneHash = CollectInputHash(sceneEntities);
-                writer.Write(sceneHash);
+                    // Turn the entire entity hierarchy into a single list
+                    List<Entity> sceneEntities = sceneAsset.Hierarchy.Parts.Select(x => x.Entity).ToList();
+
+                    // Update world matrices
+                    foreach (Entity e in sceneEntities)
+                    {
+                        e.Transform.UpdateWorldMatrix();
+                    }
+
+                    int sceneHash = CollectInputHash(sceneEntities);
+                    writer.Write(sceneHash);
+                }
             }
             
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)

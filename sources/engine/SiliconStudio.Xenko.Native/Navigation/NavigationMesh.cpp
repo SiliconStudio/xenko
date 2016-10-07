@@ -7,13 +7,13 @@
 #include "../../../../deps/NativePath/TINYSTL/vector.h"
 #include "../../../../deps/Recast/include/DetourCommon.h"
 #include "Navigation.hpp"
-#include "NavMesh.hpp"
+#include "NavigationMesh.hpp"
 
-NavMesh::NavMesh()
+NavigationMesh::NavigationMesh()
 {
 }
 
-NavMesh::~NavMesh()
+NavigationMesh::~NavigationMesh()
 {
 	// Cleanup allocated tiles
 	for(auto tile : m_tileRefs)
@@ -34,7 +34,7 @@ NavMesh::~NavMesh()
 		dtFreeNavMesh(m_navMesh);
 }
 
-bool NavMesh::Init(float cellTileSize)
+bool NavigationMesh::Init(float cellTileSize)
 {
 	// Allocate objects
 	m_navMesh = dtAllocNavMesh();
@@ -68,7 +68,7 @@ bool NavMesh::Init(float cellTileSize)
 	return true;
 }
 
-bool NavMesh::LoadTile(Point tileCoordinate, uint8_t* navData, int navDataLength)
+bool NavigationMesh::LoadTile(Point tileCoordinate, uint8_t* navData, int navDataLength)
 {
 	if (!m_navMesh || !m_navQuery)
 		return false;
@@ -90,7 +90,7 @@ bool NavMesh::LoadTile(Point tileCoordinate, uint8_t* navData, int navDataLength
 	return false;
 }
 
-bool NavMesh::RemoveTile(Point tileCoordinate)
+bool NavigationMesh::RemoveTile(Point tileCoordinate)
 {
 	dtTileRef tileRef = m_navMesh->getTileRefAt(tileCoordinate.X, tileCoordinate.Y, 0);
 
@@ -106,7 +106,7 @@ bool NavMesh::RemoveTile(Point tileCoordinate)
 	return false;
 }
 
-NavMeshPathfindResult* NavMesh::FindPath(NavMeshPathfindQuery query)
+NavMeshPathfindResult* NavigationMesh::FindPath(NavMeshPathfindQuery query)
 {
 	// Reset result
 	m_pathResult = NavMeshPathfindResult();
@@ -159,7 +159,7 @@ NavMeshPathfindResult* NavMesh::FindPath(NavMeshPathfindQuery query)
 	return res;
 }
 
-NavMeshRaycastResult* NavMesh::Raycast(NavMeshRaycastQuery query)
+NavMeshRaycastResult* NavigationMesh::Raycast(NavMeshRaycastQuery query)
 {
 	// Reset result
 	m_raycastResult = NavMeshRaycastResult();

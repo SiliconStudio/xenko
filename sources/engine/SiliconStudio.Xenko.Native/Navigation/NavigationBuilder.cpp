@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-// Build function contains a modified version of Sample_TileMesh.cpp from the recast samples
-// With the following license notification
+// Contains modified code from Sample_TileMesh.cpp from the recast/detour sample
+// With the following copyright notification:
 
 // Copyright (c) 2009-2010 Mikko Mononen memon@inside.org
 //
@@ -28,6 +28,7 @@
 #include "Navigation.hpp"
 #include "NavigationBuilder.hpp"
 #include "../../../../deps/NativePath/NativeTime.h"
+#include "../../../../deps/Recast/include/DetourStatus.h"
 
 NavigationBuilder::NavigationBuilder()
 {
@@ -74,31 +75,52 @@ void NavigationBuilder::Cleanup()
 }
 GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertices, int* indices, int numIndices)
 {
+	GeneratedData* ret = &m_result;
+	ret->success = false;
+
 	float bmin[3];
 	memcpy(bmin, &m_buildSettings.boundingBox.minimum.X, sizeof(float) * 3);
 	float bmax[3];
 	memcpy(bmax, &m_buildSettings.boundingBox.maximum.X, sizeof(float) * 3);
 
-	// Calculate input settings
-	// TODO: Expose these settings
-	float regionMinSize = 0.1f;
-	float regionMergeSize = 20;
-	float edgeMaxLen = 12.0f;
-	float edgeMaxError = 1.3f;
-	float detailSampleDistInput = 6.0f;
-	float detailSampleMaxErrorInput = 1.0f;
+	float bbSize[3];
+	rcVsub(bbSize, bmax, bmin);
+	if (bbSize[0] <= 0.0f || bbSize[1] <= 0.0f || bbSize[2] <= 0.0f)
+		return nullptr; // Negative or empty bounding box
 
-	int maxEdgeLen = (int)(edgeMaxLen / m_buildSettings.cellSize);
-	float maxSimplificationError = edgeMaxError;
-	int minRegionArea = (int)rcSqr(regionMinSize); // Note: area = size*size
-	int mergeRegionArea = (int)rcSqr(regionMergeSize); // Note: area = size*size
+	// Check input parameters
+	if (m_buildSettings.detailSampleDistInput < 1.0f)
+		return ret;
+	if (m_buildSettings.detailSampleMaxErrorInput <= 0.0f)
+		return ret;
+	if (m_buildSettings.edgeMaxError < 0.1f)
+		return ret;
+	if (m_buildSettings.edgeMaxLen < 0.0f)
+		return ret;
+	if (m_buildSettings.regionMinSize < 0.0f)
+		return ret;
+	if (m_buildSettings.regionMergeSize < 0.0f)
+		return ret;
+	if (m_buildSettings.tileSize <= 0)
+		return ret;
+
+	// Limit cell size to not freeze the process with calculating a huge amount of cells
+	if (m_buildSettings.cellSize < 0.01f)
+		m_buildSettings.cellSize = 0.01f;
+	if (m_buildSettings.cellHeight < 0.01f)
+		m_buildSettings.cellHeight = 0.01f;
+
+	int maxEdgeLen = (int)(m_buildSettings.edgeMaxLen / m_buildSettings.cellSize);
+	float maxSimplificationError = m_buildSettings.edgeMaxError;
+	int minRegionArea = (int)rcSqr(m_buildSettings.regionMinSize); // Note: area = size*size
+	int mergeRegionArea = (int)rcSqr(m_buildSettings.regionMergeSize); // Note: area = size*size
 	int maxVertsPerPoly = 6;
-	float detailSampleDist = detailSampleDistInput < 0.9f ? 0 : m_buildSettings.cellSize * detailSampleDistInput;
-	float detailSampleMaxError = m_buildSettings.cellHeight * detailSampleMaxErrorInput;
+	float detailSampleDist = m_buildSettings.cellSize * m_buildSettings.detailSampleDistInput;
+	float detailSampleMaxError = m_buildSettings.cellHeight * m_buildSettings.detailSampleMaxErrorInput;
 
-	int walkableHeight = (int)ceilf(m_agentSettings.height / m_buildSettings.cellHeight);
-	int walkableClimb = (int)floorf(m_agentSettings.maxClimb / m_buildSettings.cellHeight);
-	int walkableRadius = (int)ceilf(m_agentSettings.radius / m_buildSettings.cellSize);
+	int walkableHeight = (int)ceilf(m_buildSettings.agentHeight / m_buildSettings.cellHeight);
+	int walkableClimb = (int)floorf(m_buildSettings.agentMaxClimb / m_buildSettings.cellHeight);
+	int walkableRadius = (int)ceilf(m_buildSettings.agentRadius / m_buildSettings.cellSize);
 
 	// Size of the tile border
 	int borderSize = walkableRadius + 3;
@@ -114,8 +136,6 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 	int height = tileSize + borderSize * 2;
 
 	double totalTime = npSeconds();
-	GeneratedData* ret = &m_result;
-	ret->success = false;
 
 	// Make sure state is clean
 	Cleanup();
@@ -142,7 +162,7 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 	// Find walkable triangles and rasterize into heightfield
 	double rasterizationTime = npSeconds();
 	memset(m_triareas, 0, numTriangles * sizeof(unsigned char));
-	rcMarkWalkableTriangles(m_context, m_agentSettings.maxSlope, (float*)vertices, numVertices, indices, numTriangles, m_triareas);
+	rcMarkWalkableTriangles(m_context, m_buildSettings.agentMaxSlope, (float*)vertices, numVertices, indices, numTriangles, m_triareas);
 	if (!rcRasterizeTriangles(m_context, (float*)vertices, numVertices, indices, m_triareas, numTriangles, *m_solid, walkableClimb))
 	{
 		return ret;
@@ -272,10 +292,6 @@ void NavigationBuilder::SetSettings(BuildSettings buildSettings)
 	// Copy this to have access to original settings
 	m_buildSettings = buildSettings;
 }
-void NavigationBuilder::SetAgentSettings(AgentSettings agentSettings)
-{
-	m_agentSettings = agentSettings;
-}
 void NavigationBuilder::GenerateNavMeshVertices()
 {
 	rcPolyMesh& mesh = *m_pmesh;
@@ -330,9 +346,9 @@ bool NavigationBuilder::CreateDetourMesh()
 	params.offMeshConFlags = nullptr;
 	params.offMeshConUserID = nullptr;
 	params.offMeshConCount = 0;
-	params.walkableHeight = m_agentSettings.height;
-	params.walkableClimb = m_agentSettings.maxClimb;
-	params.walkableRadius = m_agentSettings.radius;
+	params.walkableHeight = m_buildSettings.agentHeight;
+	params.walkableClimb = m_buildSettings.agentMaxClimb;
+	params.walkableRadius = m_buildSettings.agentRadius;
 	rcVcopy(params.bmin, m_pmesh->bmin);
 	rcVcopy(params.bmax, m_pmesh->bmax);
 	params.cs = m_buildSettings.cellSize;

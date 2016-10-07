@@ -143,18 +143,13 @@ namespace SiliconStudio.Xenko.Engine.Processors
             {
                 if (data.NativeNavmesh.RemoveReference(component))
                 {
-                    // Remove debug entity
-                    //Entity meshVizualizerEntity;
-                    //if (visualizedNavigationMeshes.TryGetValue(component.NavigationMesh, out meshVizualizerEntity))
-                    //{
-                    //    debugEntity.Transform.Children.Remove(meshVizualizerEntity.Transform);
-                    //    visualizedNavigationMeshes.Remove(component.NavigationMesh);
-                    //}
                     loadedNavigationMeshes.Remove(data.LoadedNavigationMesh);
                     data.NativeNavmesh.Dispose();
                 }
             }
 
+            data.NativeNavmesh = null;
+            data.LoadedNavigationMesh = null;
             component.nativeNavmesh = IntPtr.Zero;
         }
         void UpdateNavigationMesh(NavigationComponent component, AssociatedData data)
@@ -177,18 +172,9 @@ namespace SiliconStudio.Xenko.Engine.Processors
                 component.nativeNavmesh = component.NavigationMeshLayer < nativeNavmesh.Layers.Length ?
                     nativeNavmesh.Layers[component.NavigationMeshLayer] : IntPtr.Zero;
 
-                //if (!visualizedNavigationMeshes.ContainsKey(component.NavigationMesh))
-                //{
-                //    // Add debug entity
-                //    Entity meshVizualizerEntity = new Entity();
-                //    meshVizualizerEntity.Add(component.NavigationMesh.CreateDebugModelComponent(this.sceneSystem.Game.GraphicsDevice));
-                //    debugEntity.Transform.Children.Add(meshVizualizerEntity.Transform);
-                //    visualizedNavigationMeshes.Add(component.NavigationMesh, meshVizualizerEntity);
-                //}
+                // Mark new navigation mesh as loaded
+                data.LoadedNavigationMesh = component.NavigationMesh;
             }
-
-            // Mark new navigation mesh as loaded
-            data.LoadedNavigationMesh = component.NavigationMesh;
         }
     }
 }
