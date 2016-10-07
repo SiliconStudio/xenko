@@ -19,7 +19,7 @@ namespace SiliconStudio.PackageManager
             this.store = store;
             version = package.Version.ToString();
 
-            foreach (var progressProvider in ((AggregateRepository)store.Manager.SourceRepository).Repositories.OfType<IProgressProvider>())
+            foreach (var progressProvider in store.SourceRepository.Repositories.OfType<IProgressProvider>())
             {
                 progressProvider.ProgressAvailable += OnProgressAvailable;
             }
