@@ -104,7 +104,7 @@ namespace SiliconStudio.Assets.Analysis
         internal static void UpdateAssetReferences(AssetItem assetItem, IEnumerable<AssetReferenceLink> assetReferences, ILogger log, AssetAnalysisParameters parameters)
         {
             var package = assetItem.Package;
-            var packageName = package.FullPath.GetFileName();
+            var packageName = package.FullPath?.GetFileName() ?? "(Undefined path)";
             bool shouldSetDirtyFlag = false;
 
             // Update reference
