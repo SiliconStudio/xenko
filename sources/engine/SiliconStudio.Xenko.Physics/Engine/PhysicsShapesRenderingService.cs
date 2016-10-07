@@ -108,6 +108,7 @@ namespace SiliconStudio.Xenko.Physics.Engine
                 case ColliderShapeTypes.ConvexHull:
                 case ColliderShapeTypes.Cylinder:
                 case ColliderShapeTypes.Sphere:
+                case ColliderShapeTypes.Cone:
                     {
                         var mat = triggerMaterial;
 
