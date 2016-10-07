@@ -706,6 +706,7 @@ namespace SiliconStudio.Core.Reflection
 
             public ArrayPathItem(ArrayDescriptor descriptor, int index)
             {
+                if (descriptor == null) throw new ArgumentNullException(nameof(descriptor));
                 Index = index;
                 Descriptor = descriptor;
             }
@@ -753,7 +754,7 @@ namespace SiliconStudio.Core.Reflection
 
             public override int GetHashCode()
             {
-                return Index;
+                return (Descriptor.GetHashCode() * 397) ^ Index;
             }
         }
 
