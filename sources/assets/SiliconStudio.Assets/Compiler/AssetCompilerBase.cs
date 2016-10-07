@@ -10,8 +10,7 @@ namespace SiliconStudio.Assets.Compiler
     /// <summary>
     /// Base implementation for <see cref="IAssetCompiler"/> suitable to compile a single type of <see cref="Asset"/>.
     /// </summary>
-    /// <typeparam name="T">Type of the asset</typeparam>
-    public abstract class AssetCompilerBase<T> : IAssetCompiler where T : Asset
+    public abstract class AssetCompilerBase : IAssetCompiler
     {
         public AssetCompilerResult Compile(CompilerContext context, AssetItem assetItem)
         {
@@ -33,7 +32,7 @@ namespace SiliconStudio.Assets.Compiler
             // Try to compile only if we're sure that the sources exist.
             if (EnsureSourcesExist(result, assetItem))
             {
-                Compile((AssetCompilerContext)context, assetItem, (T)assetItem.Asset, result);
+                Compile((AssetCompilerContext)context, assetItem, assetItem.Location.GetDirectoryAndFileName(), result);
             }
 
             return result;
@@ -42,23 +41,23 @@ namespace SiliconStudio.Assets.Compiler
         /// <summary>
         /// Compiles the asset from the specified package.
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="assetItem">The asset item being compiled</param>
-        /// <param name="asset">The asset.</param>
+        /// <param name="context">The context to use to compile the asset.</param>
+        /// <param name="assetItem">The asset to compile</param>
+        /// <param name="targetUrlInStorage">The absolute URL to the asset, relative to the storage.</param>
         /// <param name="result">The result where the commands and logs should be output.</param>
-        protected abstract void Compile(AssetCompilerContext context, AssetItem assetItem, T asset, AssetCompilerResult result);
+        protected abstract void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result);
 
         /// <summary>
         /// Returns the absolute path on the disk of an <see cref="UFile"/> that is relative to the asset location.
         /// </summary>
-        /// <param name="assetAbsolutePath">The absolute path of the asset on the disk.</param>
+        /// <param name="assetItem">The asset on which is based the relative path.</param>
         /// <param name="relativePath">The path relative to the asset path that must be converted to an absolute path.</param>
         /// <returns>The absolute path on the disk of the <see cref="relativePath"/> argument.</returns>
         /// <exception cref="ArgumentException">The <see cref="relativePath"/> argument is a null or empty <see cref="UFile"/>.</exception>
-        protected static UFile GetAbsolutePath(UFile assetAbsolutePath, UFile relativePath)
+        protected static UFile GetAbsolutePath(AssetItem assetItem, UFile relativePath)
         {
             if (string.IsNullOrEmpty(relativePath)) throw new ArgumentException("The relativePath argument is null or empty");
-            var assetDirectory = assetAbsolutePath.GetParent();
+            var assetDirectory = assetItem.FullPath.GetParent();
             var assetSource = UPath.Combine(assetDirectory, relativePath);
             return assetSource;
         }

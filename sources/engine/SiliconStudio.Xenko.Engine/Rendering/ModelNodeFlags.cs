@@ -23,8 +23,13 @@ namespace SiliconStudio.Xenko.Rendering
         EnableRender = 2,
 
         /// <summary>
+        /// Used by the physics engine to override the world matrix transform
+        /// </summary>
+        OverrideWorldMatrix = 4,
+
+        /// <summary>
         /// The default flags.
         /// </summary>
-        Default = EnableTransform | EnableRender,
+        Default = EnableTransform | EnableRender       
     }
 }

@@ -24,9 +24,6 @@ namespace SiliconStudio.Xenko.Engine
     public sealed class AudioListenerComponent : ActivableEntityComponent
     {
         [DataMemberIgnore]
-        internal HashSet<SoundInstance> AttachedInstances = new HashSet<SoundInstance>();
-
-        [DataMemberIgnore]
         internal AudioListener Listener;
     }
 }

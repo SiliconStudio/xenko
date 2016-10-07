@@ -112,6 +112,19 @@ namespace SiliconStudio.Xenko.Rendering
 
                     pipelineState.RasterizerState.CullMode = cullMode;
                 }
+
+                // Flip faces when geometry is inverted
+                if (renderMesh.IsScalingNegative)
+                {
+                    if (cullMode == CullMode.Front)
+                    {
+                        pipelineState.RasterizerState.CullMode = CullMode.Back;
+                    }
+                    else if (cullMode == CullMode.Back)
+                    {
+                        pipelineState.RasterizerState.CullMode = CullMode.Front;
+                    }
+                }
             });
         }
 

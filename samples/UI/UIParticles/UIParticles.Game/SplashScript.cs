@@ -193,7 +193,9 @@ namespace UIParticles
                 {
                     var clonedEntity = EntityCloner.Clone(prefabEntity);
 
-                    clonedEntity.Get<ParticleSystemComponent>()?.ParticleSystem.ResetSimulation();
+                    var component = clonedEntity.Get<ParticleSystemComponent>();
+                    if (component != null)
+                        component.ParticleSystem.ResetSimulation();
 
                     clonedEntity.Transform.Position = ToOrthographicCamera(uiPosition);
 
@@ -215,7 +217,9 @@ namespace UIParticles
                 {
                     SceneSystem.SceneInstance.Scene.Entities.Remove(clonedEntity);
 
-                    clonedEntity.Get<ParticleSystemComponent>()?.ParticleSystem.Dispose();
+                    var component = clonedEntity.Get<ParticleSystemComponent>();
+                    if (component != null)
+                        component.ParticleSystem.Dispose();
                     clonedEntity.Dispose();
                 }
 

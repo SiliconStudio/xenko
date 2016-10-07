@@ -114,7 +114,9 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
                     var projectedZ = projectedPosition.Z / projectedPosition.W;
 
                     var blendState = isPicking ? BlendStates.Default : spriteBlending;
-                    var currentEffect = isPicking ? GetOrCreatePickingSpriteEffect() : ShadowObject.IsObjectSelected(spriteState.SpriteStudioComponent) ? GetOrCreateSelectedSpriteEffect() : null;
+                    // TODO: the current impementation to determine if the sprite is selected does not work. This should be fixed later at some point
+                    //var currentEffect = isPicking ? GetOrCreatePickingSpriteEffect() : ShadowObject.IsObjectSelected(spriteState.SpriteStudioComponent) ? GetOrCreateSelectedSpriteEffect() : null;
+                    var currentEffect = isPicking ? GetOrCreatePickingSpriteEffect() : null;
                     // TODO remove this code when material are available
                     if (previousEffect != currentEffect || blendState != previousBlendState || depthStencilState != previousDepthStencilState)
                     {

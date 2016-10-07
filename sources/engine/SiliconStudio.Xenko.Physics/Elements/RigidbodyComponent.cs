@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Physics
 {
@@ -40,7 +41,6 @@ namespace SiliconStudio.Xenko.Physics
         public RigidbodyComponent()
         {
             LinkedConstraints = new List<Constraint>();
-            MotionState = new XenkoMotionState(this);
         }
 
         private bool isKinematic;
@@ -302,6 +302,8 @@ namespace SiliconStudio.Xenko.Physics
 
         protected override void OnAttach()
         {
+            MotionState = new XenkoMotionState(this);
+
             SetupBoneLink();
 
             GetWorldTransformCallback = (out Matrix transform) => RigidBodyGetWorldTransform(out transform);
@@ -345,6 +347,9 @@ namespace SiliconStudio.Xenko.Physics
 
         protected override void OnDetach()
         {
+            MotionState.Dispose();
+            MotionState.Clear();
+
             if (NativeCollisionObject == null) return;
 
             //Remove constraints safely
@@ -371,11 +376,12 @@ namespace SiliconStudio.Xenko.Physics
         {
             base.OnUpdateDraw();
 
-            if (type == RigidBodyTypes.Dynamic && BoneIndex == -1)
+            if (type == RigidBodyTypes.Dynamic && BoneIndex != -1)
             {
                 //write to ModelViewHierarchy
                 var model = Data.ModelComponent;
-                model.Skeleton.NodeTransformations[BoneIndex].WorldMatrix = BoneWorldMatrixOut;
+                model.Skeleton.NodeTransformations[BoneIndex].Flags = !IsKinematic ? ModelNodeFlags.EnableRender | ModelNodeFlags.OverrideWorldMatrix : ModelNodeFlags.Default;
+                if(!IsKinematic) model.Skeleton.NodeTransformations[BoneIndex].WorldMatrix = BoneWorldMatrixOut;
             }
         }
     
@@ -393,19 +399,6 @@ namespace SiliconStudio.Xenko.Physics
             {
                 UpdateBoneTransformation(ref physicsTransform);
             }
-
-            if (DebugEntity == null) return;
-
-            if (ColliderShape.LocalOffset != Vector3.Zero || ColliderShape.LocalRotation != Quaternion.Identity)
-            {
-                physicsTransform = Matrix.Multiply(ColliderShape.PositiveCenterMatrix, physicsTransform);
-            }
-
-            Vector3 scale, pos;
-            Quaternion rot;
-            physicsTransform.Decompose(out scale, out rot, out pos);
-            DebugEntity.Transform.Position = pos;
-            DebugEntity.Transform.Rotation = rot;
         }
 
         //This is valid for Dynamic rigidbodies (called once at initialization)
@@ -423,14 +416,6 @@ namespace SiliconStudio.Xenko.Physics
             {
                 DeriveBonePhysicsTransformation(out physicsTransform);
             }
-
-            if (DebugEntity == null) return;
-
-            Vector3 scale, pos;
-            Quaternion rot;
-            physicsTransform.Decompose(out scale, out rot, out pos);
-            DebugEntity.Transform.Position = pos;
-            DebugEntity.Transform.Rotation = rot;
         }
 
         /// <summary>

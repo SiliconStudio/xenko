@@ -84,14 +84,14 @@ namespace SiliconStudio.Xenko.Rendering
             var modelViewHierarchy = modelComponent.Skeleton;
             var nodeTransformations = modelViewHierarchy.NodeTransformations;
 
-            // TODO GRAPHICS REFACTOR compute bounding box either by Mesh, or switch to future VisibilityObject system to deal with complete models)
-            var boundingBox = new BoundingBoxExt(modelComponent.BoundingBox);
             var modelComponentMaterials = modelComponent.Materials;
             var modelMaterials = renderModel.ModelComponent.Model.Materials;
 
-            foreach (var renderMesh in renderModel.Meshes)
+            for (int meshIndex = 0; meshIndex < renderModel.Meshes.Length; meshIndex++)
             {
+                var renderMesh = renderModel.Meshes[meshIndex];
                 var mesh = renderMesh.Mesh;
+                var meshInfo = modelComponent.MeshInfos[meshIndex];
 
                 renderMesh.Enabled = modelComponent.Enabled;
 
@@ -106,8 +106,10 @@ namespace SiliconStudio.Xenko.Rendering
                     // Copy world matrix
                     var nodeIndex = mesh.NodeIndex;
                     renderMesh.World = nodeTransformations[nodeIndex].WorldMatrix;
-                    renderMesh.BoundingBox = boundingBox;
+                    renderMesh.IsScalingNegative = nodeTransformations[nodeIndex].IsScalingNegative;
+                    renderMesh.BoundingBox = new BoundingBoxExt(meshInfo.BoundingBox);
                     renderMesh.RenderGroup = modelComponent.Entity.Group;
+                    renderMesh.BlendMatrices = meshInfo.BlendMatrices;
                 }
             }
         }

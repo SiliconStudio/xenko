@@ -16,13 +16,14 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     [DataContract("SceneSettings")]
     [Display(10000, "Scene", Expand = ExpandRule.Once)]
-    public sealed class SceneSettings : ComponentBase
+    public sealed class SceneSettings : ComponentBase, IIdentifiable
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SceneSettings"/> class.
         /// </summary>
         public SceneSettings()
         {
+            Id = Guid.NewGuid();
             GraphicsCompositor = new SceneGraphicsCompositorLayers();
             EditorSettings = new SceneEditorSettings();
         }
@@ -38,12 +39,16 @@ namespace SiliconStudio.Xenko.Engine
             base.Destroy();
         }
 
+        [DataMember(10)]
+        [Display(Browsable = false)]
+        public Guid Id { get; set; }
+
         /// <summary>
         /// Gets or sets the graphics composer for this scene.
         /// </summary>
         /// <value>The graphics composer.</value>
         /// <userdoc>The compositor in charge of creating the graphic pipeline</userdoc>
-        [DataMember(10)]
+        [DataMember(20)]
         [Display("Graphics Composition", Expand = ExpandRule.Always)]
         [NotNull]
         [Category]
@@ -54,7 +59,7 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         /// <value>The editor settings.</value>
         /// <userdoc>Settings for the scene editor</userdoc>
-        [DataMember(20)]
+        [DataMember(30)]
         [Display("Editor Settings", Expand = ExpandRule.Always)]
         [Category]
         public SceneEditorSettings EditorSettings { get; set; }

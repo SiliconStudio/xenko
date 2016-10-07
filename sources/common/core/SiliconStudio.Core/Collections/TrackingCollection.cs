@@ -79,45 +79,4 @@ namespace SiliconStudio.Core.Collections
             itemAdded?.Invoke(this, new TrackingCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, oldItem, index, false));
         }
     }
-
-    /// <summary>
-    /// Represents a collection that generates events when items get added or removed.
-    /// </summary>
-    /// <typeparam name="T">The type of elements in the collection.</typeparam>
-    [DataSerializer(typeof(ListAllSerializer<,>), Mode = DataSerializerGenericMode.TypeAndGenericArguments)]
-    public abstract class TrackingCollection2<T> : FastCollection<T>
-    {
-        protected abstract void AddItem2(int index, T item);
-        protected abstract void RemoveItem2(int index, T item);
-
-        /// <inheritdoc/>
-        protected override void InsertItem(int index, T item)
-        {
-            base.InsertItem(index, item);
-            AddItem2(index, item);
-        }
-
-        /// <inheritdoc/>
-        protected override void RemoveItem(int index)
-        {
-            RemoveItem2(index, this[index]);
-            base.RemoveItem(index);
-        }
-
-        /// <inheritdoc/>
-        protected override void ClearItems()
-        {
-            for (var i = Count - 1; i >= 0; --i)
-                RemoveItem2(i, this[i]);
-            base.ClearItems();
-        }
-
-        /// <inheritdoc/>
-        protected override void SetItem(int index, T item)
-        {
-            RemoveItem2(index, this[index]);
-            base.SetItem(index, item);
-            AddItem2(index, this[index]);
-        }
-    }
 }

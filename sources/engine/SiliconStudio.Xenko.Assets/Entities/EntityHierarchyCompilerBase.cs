@@ -3,17 +3,17 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
-using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
-    public abstract class EntityHierarchyCompilerBase<T> : AssetCompilerBase<T> where T : EntityHierarchyAssetBase
+    public abstract class EntityHierarchyCompilerBase<T> : AssetCompilerBase where T : EntityHierarchyAssetBase
     {
-        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, T asset, AssetCompilerResult result)
+        protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
+            var asset = (T)assetItem.Asset;
             foreach (var entityData in asset.Hierarchy.Parts)
             {
                 // TODO: How to make this code pluggable?
@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 {
                     if (modelComponent.Model == null)
                     {
-                        result.Warning($"The entity [{assetItem.Location}:{entityData.Entity.Name}] has a model component that does not reference any model.");
+                        result.Warning($"The entity [{targetUrlInStorage}:{entityData.Entity.Name}] has a model component that does not reference any model.");
                         continue;
                     }
 
@@ -36,28 +36,25 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     var modelAssetItem = assetItem.Package.Session.FindAsset(modelId);
                     if (modelAssetItem == null)
                     {
-                        result.Error($"The entity [{assetItem.Location}:{entityData.Entity.Name}] is referencing an unreachable model.");
+                        result.Error($"The entity [{targetUrlInStorage}:{entityData.Entity.Name}] is referencing an unreachable model.");
                         continue;
                     }
                 }
                 if (spriteComponent != null && spriteComponent.SpriteProvider == null)
                 {
-                    result.Warning($"The entity [{assetItem.Location}:{entityData.Entity.Name}] has a sprite component that does not reference any sprite group.");
+                    result.Warning($"The entity [{targetUrlInStorage}:{entityData.Entity.Name}] has a sprite component that does not reference any sprite group.");
                 }
             }
 
-            result.BuildSteps = new AssetBuildStep(assetItem) { Create(assetItem.Location, assetItem.Package, context, asset) };
+            result.BuildSteps = new AssetBuildStep(assetItem) { Create(targetUrlInStorage, asset) };
         }
 
-        protected abstract EntityHierarchyCommandBase Create(string url, Package package, AssetCompilerContext context, T assetParameters);
+        protected abstract EntityHierarchyCommandBase Create(string url, T assetParameters);
 
         protected abstract class EntityHierarchyCommandBase : AssetCommand<T>
         {
-            private readonly AssetCompilerContext context;
-
-            public EntityHierarchyCommandBase(string url, Package package, AssetCompilerContext context, T parameters) : base(url, parameters)
+            protected EntityHierarchyCommandBase(string url, T parameters) : base(url, parameters)
             {
-                this.context = context;
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
