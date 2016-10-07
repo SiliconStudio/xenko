@@ -10,20 +10,10 @@ namespace SiliconStudio.Assets.Visitors
     public abstract class AssetMemberVisitorBase : AssetVisitorBase
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="AssetMemberVisitorBase"/> class.
-        /// </summary>
-        /// <param name="path">The path to check against the current member path being visited.</param>
-        protected AssetMemberVisitorBase(MemberPath path)
-        {
-            if (path == null) throw new ArgumentNullException(nameof(path));
-            MemberPath = path;
-        }
-
-        /// <summary>
         /// Gets the <see cref="Core.Reflection.MemberPath"/> that will be checked against when visiting.
         /// </summary>
         /// <seealso cref="AssetVisitorBase.CurrentPath"/>
-        protected MemberPath MemberPath { get; }
+        protected MemberPath MemberPath { get; set; }
 
         /// <inheritdoc/>
         public override void VisitArrayItem(Array array, ArrayDescriptor descriptor, int index, object item, ITypeDescriptor itemDescriptor)
