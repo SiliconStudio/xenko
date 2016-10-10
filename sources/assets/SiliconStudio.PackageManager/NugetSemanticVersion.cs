@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details
 
 using System;
+using System.ComponentModel;
 
 namespace SiliconStudio.PackageManager
 {
@@ -36,12 +37,19 @@ namespace SiliconStudio.PackageManager
 
         public int CompareTo(object obj)
         {
-            return SemanticVersion.CompareTo(obj);
+            if (ReferenceEquals(obj, null)) return 1;
+            NugetSemanticVersion semanticVersion = obj as NugetSemanticVersion;
+            if (semanticVersion == null)
+            {
+                throw new ArgumentException("Expected " + nameof(NugetSemanticVersion), nameof(obj));
+            }
+            return CompareTo(semanticVersion);
         }
 
         public int CompareTo(NugetSemanticVersion other)
         {
-            return SemanticVersion.CompareTo(other);
+            if (ReferenceEquals(other, null)) return 1;
+            return SemanticVersion.CompareTo(other.SemanticVersion);
         }
 
         public bool Equals(NugetSemanticVersion other)
@@ -66,32 +74,42 @@ namespace SiliconStudio.PackageManager
 
         public static bool operator ==(NugetSemanticVersion version1, NugetSemanticVersion version2)
         {
-            return version1.SemanticVersion == version2.SemanticVersion;
+            if (ReferenceEquals(version1, null))
+            {
+                return ReferenceEquals(version2, null);
+            }
+            if (ReferenceEquals(version2, null)) return false;
+
+            return version1.SemanticVersion.Equals(version2.SemanticVersion);
         }
 
         public static bool operator !=(NugetSemanticVersion version1, NugetSemanticVersion version2)
         {
-            return version1.SemanticVersion != version2.SemanticVersion;
+            return !(version1 == version2);
         }
 
         public static bool operator <(NugetSemanticVersion version1, NugetSemanticVersion version2)
         {
+            if (ReferenceEquals(version1, version2)) return false;
+            if (ReferenceEquals(version1, null)) return true;
+            if (ReferenceEquals(version2, null)) return false;
+
             return version1.SemanticVersion < version2.SemanticVersion;
         }
 
         public static bool operator <=(NugetSemanticVersion version1, NugetSemanticVersion version2)
         {
-            return version1.SemanticVersion <= version2.SemanticVersion;
+            return version1 == version2 || version1 < version2;
         }
 
         public static bool operator >(NugetSemanticVersion version1, NugetSemanticVersion version2)
         {
-            return version1.SemanticVersion > version2.SemanticVersion;
+            return version2 < version1;
         }
 
         public static bool operator >=(NugetSemanticVersion version1, NugetSemanticVersion version2)
         {
-            return version1.SemanticVersion >= version2.SemanticVersion;
+            return version1 == version2 || version1 > version2;
         }
 
         public override string ToString()
