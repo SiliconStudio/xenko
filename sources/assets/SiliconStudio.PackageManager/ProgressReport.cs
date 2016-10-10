@@ -29,7 +29,7 @@ namespace SiliconStudio.PackageManager
 
         public void Dispose()
         {
-            foreach (var progressProvider in ((AggregateRepository)store.Manager.SourceRepository).Repositories.OfType<IProgressProvider>())
+            foreach (var progressProvider in store.SourceRepository.Repositories.OfType<IProgressProvider>())
             {
                 progressProvider.ProgressAvailable -= OnProgressAvailable;
             }
