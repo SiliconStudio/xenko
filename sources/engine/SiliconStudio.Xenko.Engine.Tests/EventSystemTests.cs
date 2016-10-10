@@ -265,7 +265,10 @@ namespace SiliconStudio.Xenko.Engine.Tests
                 try
                 {
                     //wait until both threads have broadcasted 200 times each
-                    WaitHandle.WaitAll(waitHandles);
+                    if (!WaitHandle.WaitAll(waitHandles, TimeSpan.FromMinutes(2)))
+                    {
+                        throw new Exception("DifferentThreadBroadcast test timedout.");
+                    }
 
                     Thread.Sleep(2000);
 

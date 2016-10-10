@@ -294,6 +294,24 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
+        /// Transforms a bounding bounding sphere, yielding the bounding sphere of all points contained by the original one, transformed by the specified transform.
+        /// </summary>
+        /// <param name="value">The original bounding sphere.</param>
+        /// <param name="transform">The transform to apply to the bounding sphere.</param>
+        /// <param name="result">The transformed bounding sphere.</param>
+        public static void Transform(ref BoundingSphere value, ref Matrix transform, out BoundingSphere result)
+        {
+            Vector3.TransformCoordinate(ref value.Center, ref transform, out result.Center);
+
+            var majorAxisLengthSquared = Math.Max(
+                (transform.M11 * transform.M11) + (transform.M12 * transform.M12) + (transform.M13 * transform.M13), Math.Max(
+                (transform.M21 * transform.M21) + (transform.M22 * transform.M22) + (transform.M23 * transform.M23),
+                (transform.M31 * transform.M31) + (transform.M32 * transform.M32) + (transform.M33 * transform.M33)));
+
+            result.Radius = value.Radius * (float)Math.Sqrt(majorAxisLengthSquared);
+        }
+
+        /// <summary>
         /// Constructs a <see cref="SiliconStudio.Core.Mathematics.BoundingSphere"/> that is the as large as the total combined area of the two specified spheres.
         /// </summary>
         /// <param name="value1">The first sphere to merge.</param>
