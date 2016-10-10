@@ -31,58 +31,12 @@ namespace SiliconStudio.Core.Reflection
         public bool IsIdentifiable => isIdentifiable;
 
         /// <summary>
-        /// Gets or sets a boolean indicating whether this object is selected by an editor.
-        /// </summary>
-        public bool IsSelected { get; set; }
-
-        /// <summary>
-        /// Gets or sets a boolean indicating whether this object is being mouse hovered from an editor.
-        /// </summary>
-        public bool IsHover { get; set; }
-
-        /// <summary>
         /// Gets or sets a boolean to enable or disable shadow object. 
         /// </summary>
         /// <remarks>
         /// When disabled, method <see cref="Get"/> or <see cref="GetOrCreate"/>
         /// </remarks>
         public static bool Enable { get; set; }
-
-        /// <summary>
-        /// Checks if the following object instance is selected by an editor.
-        /// </summary>
-        /// <param name="instance">A live object instance</param>
-        /// <returns><c>true</c> if the object is selected, false otherwise</returns>
-        public static bool IsObjectSelected(object instance)
-        {
-            if (Enable)
-            {
-                var shadow = Get(instance);
-                if (shadow != null)
-                {
-                    return shadow.IsSelected;
-                }
-            }
-            return false;
-        }
-
-        /// <summary>
-        /// Checks if the following object instance is being mouse hovered from an editor.
-        /// </summary>
-        /// <param name="instance">A live object instance</param>
-        /// <returns><c>true</c> if the object is selected, false otherwise</returns>
-        public static bool IsObjectHover(object instance)
-        {
-            if (Enable)
-            {
-                var shadow = Get(instance);
-                if (shadow != null)
-                {
-                    return shadow.IsHover;
-                }
-            }
-            return false;
-        }
 
         /// <summary>
         /// Tries to get the <see cref="ShadowObject"/> instance associated.
@@ -223,8 +177,6 @@ namespace SiliconStudio.Core.Reflection
         {
             copy.id = id;
             copy.isIdentifiable = isIdentifiable;
-            copy.IsSelected = IsSelected;
-            copy.IsHover = IsHover;
 
             foreach (var keyValue in this)
             {

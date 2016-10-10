@@ -29,6 +29,8 @@ namespace SiliconStudio.Xenko.Physics
 
         Compound,
 
-        StaticPlane
+        StaticPlane,
+
+        Cone
     }
 }

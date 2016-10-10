@@ -28,7 +28,6 @@
 */
 using System;
 using System.Globalization;
-using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Core.Mathematics
 {
@@ -36,6 +35,7 @@ namespace SiliconStudio.Core.Mathematics
     /// Represents a unit independant angle using a single-precision floating-point
     /// internal representation.
     /// </summary>
+    [DataStyle(DataStyle.Compact)]
     [DataContract]
     public struct AngleSingle : IComparable, IComparable<AngleSingle>, IEquatable<AngleSingle>, IFormattable
     {
@@ -148,6 +148,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <summary>
         /// Gets or sets the total number of revolutions this SiliconStudio.Core.Mathematics.AngleSingle represents.
         /// </summary>
+        [DataMemberIgnore]
         public float Revolutions
         {
             get { return MathUtil.RadiansToRevolutions(radians); }
@@ -157,6 +158,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <summary>
         /// Gets or sets the total number of degrees this SiliconStudio.Core.Mathematics.AngleSingle represents.
         /// </summary>
+        [DataMemberIgnore]
         public float Degrees
         {
             get { return MathUtil.RadiansToDegrees(radians); }
@@ -169,6 +171,7 @@ namespace SiliconStudio.Core.Mathematics
         /// not changed; otherwise, the whole degrees may be changed. Fractional values may set
         /// the seconds component.
         /// </summary>
+        [DataMemberIgnore]
         public float Minutes
         {
             get
@@ -202,6 +205,7 @@ namespace SiliconStudio.Core.Mathematics
         /// or whole degrees are not changed; otherwise, the whole minutes or whole degrees
         /// may be changed.
         /// </summary>
+        [DataMemberIgnore]
         public float Seconds
         {
             get
@@ -254,6 +258,7 @@ namespace SiliconStudio.Core.Mathematics
         /// Gets or sets the total number of milliradians this SiliconStudio.Core.Mathematics.AngleSingle represents.
         /// One milliradian is equal to 1/(2000π).
         /// </summary>
+        [DataMemberIgnore]
         public float Milliradians
         {
             get { return radians / (Milliradian * MathUtil.TwoPi); }
@@ -263,6 +268,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <summary>
         /// Gets or sets the total number of gradians this SiliconStudio.Core.Mathematics.AngleSingle represents.
         /// </summary>
+        [DataMemberIgnore]
         public float Gradians
         {
             get { return MathUtil.RadiansToGradians(radians); }
@@ -273,6 +279,7 @@ namespace SiliconStudio.Core.Mathematics
         /// Gets a System.Boolean that determines whether this SiliconStudio.Core.Mathematics.Angle
         /// is a right angle (i.e. 90° or π/2).
         /// </summary>
+        [DataMemberIgnore]
         public bool IsRight
         {
             get { return radians == MathUtil.PiOverTwo; }
@@ -282,6 +289,7 @@ namespace SiliconStudio.Core.Mathematics
         /// Gets a System.Boolean that determines whether this SiliconStudio.Core.Mathematics.Angle
         /// is a straight angle (i.e. 180° or π).
         /// </summary>
+        [DataMemberIgnore]
         public bool IsStraight
         {
             get { return radians == MathUtil.Pi; }
@@ -291,6 +299,7 @@ namespace SiliconStudio.Core.Mathematics
         /// Gets a System.Boolean that determines whether this SiliconStudio.Core.Mathematics.Angle
         /// is a full rotation angle (i.e. 360° or 2π).
         /// </summary>
+        [DataMemberIgnore]
         public bool IsFullRotation
         {
             get { return radians == MathUtil.TwoPi; }
@@ -300,6 +309,7 @@ namespace SiliconStudio.Core.Mathematics
         /// Gets a System.Boolean that determines whether this SiliconStudio.Core.Mathematics.Angle
         /// is an oblique angle (i.e. is not 90° or a multiple of 90°).
         /// </summary>
+        [DataMemberIgnore]
         public bool IsOblique
         {
             get { return WrapPositive(this).radians != MathUtil.PiOverTwo; }
@@ -309,6 +319,7 @@ namespace SiliconStudio.Core.Mathematics
         /// Gets a System.Boolean that determines whether this SiliconStudio.Core.Mathematics.Angle
         /// is an acute angle (i.e. less than 90° but greater than 0°).
         /// </summary>
+        [DataMemberIgnore]
         public bool IsAcute
         {
             get { return radians > 0.0 && radians < MathUtil.PiOverTwo; }
@@ -318,6 +329,7 @@ namespace SiliconStudio.Core.Mathematics
         /// Gets a System.Boolean that determines whether this SiliconStudio.Core.Mathematics.Angle
         /// is an obtuse angle (i.e. greater than 90° but less than 180°).
         /// </summary>
+        [DataMemberIgnore]
         public bool IsObtuse
         {
             get { return radians > MathUtil.PiOverTwo && radians < MathUtil.Pi; }
@@ -327,6 +339,7 @@ namespace SiliconStudio.Core.Mathematics
         /// Gets a System.Boolean that determines whether this SiliconStudio.Core.Mathematics.Angle
         /// is a reflex angle (i.e. greater than 180° but less than 360°).
         /// </summary>
+        [DataMemberIgnore]
         public bool IsReflex
         {
             get { return radians > MathUtil.Pi && radians < MathUtil.TwoPi; }
@@ -335,6 +348,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <summary>
         /// Gets a SiliconStudio.Core.Mathematics.AngleSingle instance that complements this angle (i.e. the two angles add to 90°).
         /// </summary>
+        [DataMemberIgnore]
         public AngleSingle Complement
         {
             get { return new AngleSingle(MathUtil.PiOverTwo - radians, AngleType.Radian); }
@@ -343,6 +357,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <summary>
         /// Gets a SiliconStudio.Core.Mathematics.AngleSingle instance that supplements this angle (i.e. the two angles add to 180°).
         /// </summary>
+        [DataMemberIgnore]
         public AngleSingle Supplement
         {
             get { return new AngleSingle(MathUtil.Pi - radians, AngleType.Radian); }

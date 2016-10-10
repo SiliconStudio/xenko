@@ -2,9 +2,12 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Globalization;
+using System.Linq;
 using SiliconStudio.Shaders.Ast;
+using SiliconStudio.Shaders.Ast.Glsl;
 using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Writer.Hlsl;
+using InterfaceType = SiliconStudio.Shaders.Ast.Hlsl.InterfaceType;
 using LayoutQualifier = SiliconStudio.Shaders.Ast.Glsl.LayoutQualifier;
 
 namespace SiliconStudio.Shaders.Convertor
@@ -190,14 +193,18 @@ namespace SiliconStudio.Shaders.Convertor
             {
                 if (GenerateUniformBlocks)
                 {
-                    Write(constantBuffer.Qualifiers, true);
                     if (constantBuffer.Register != null)
                     {
-                        if (constantBuffer.Qualifiers != Qualifier.None)
-                            throw new NotImplementedException();
+                        var layoutQualifier = constantBuffer.Qualifiers.OfType<LayoutQualifier>().FirstOrDefault();
+                        if (layoutQualifier == null)
+                        {
+                            layoutQualifier = new SiliconStudio.Shaders.Ast.Glsl.LayoutQualifier();
+                            constantBuffer.Qualifiers |= layoutQualifier;
+                        }
 
-                        Write("layout(binding = ").Write(constantBuffer.Register.Register.Text).Write(") ");
+                        layoutQualifier.Layouts.Insert(0, new LayoutKeyValue("binding", constantBuffer.Register.Register));
                     }
+                    Write(constantBuffer.Qualifiers, true);
                     Write("uniform").Write(" ").Write(constantBuffer.Name).WriteSpace().Write("{").WriteLine();
                     Indent();
                     VisitList(constantBuffer.Members);
