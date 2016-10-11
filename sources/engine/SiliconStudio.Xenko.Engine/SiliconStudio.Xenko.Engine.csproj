@@ -138,6 +138,7 @@
     <Compile Include="Engine\ModelViewHierarchyTransformOperation.cs" />
     <Compile Include="Engine\NavigationComponent.cs" />
     <Compile Include="Engine\NavigationMesh.cs" />
+    <Compile Include="Engine\NavigationAgentSettings.cs" />
     <Compile Include="Engine\NavigationMeshBuildSettings.cs" />
     <Compile Include="Engine\NavigationMeshlayer.cs" />
     <Compile Include="Engine\NavigationMeshTile.cs" />

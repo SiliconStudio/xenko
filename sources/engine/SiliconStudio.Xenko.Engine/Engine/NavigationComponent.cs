@@ -28,8 +28,14 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     public struct NavigationQuerySettings
     {
+        public static readonly NavigationQuerySettings Default = new NavigationQuerySettings
+        {
+            FindNearestPolyExtent = new Vector3(2.0f, 4.0f, 2.0f),
+            MaxPathPoints = 1024
+        };
+
         /// <summary>
-        /// Used as the extend for the find nearest poly bounding box used when scanning for a polygon corresponding to the given starting/ending position
+        /// Used as the extend for the find nearest poly bounding box used when scanning for a polygon corresponding to the given starting/ending position. 
         /// Making this bigger will allow you to find paths that allow the entity to start further away or higher from the navigation mesh bounds for example
         /// </summary>
         public Vector3 FindNearestPolyExtent;
@@ -38,12 +44,6 @@ namespace SiliconStudio.Xenko.Engine
         /// The maximum number of path points used internally and also the maximum number of output points
         /// </summary>
         public int MaxPathPoints;
-
-        public static readonly NavigationQuerySettings Default = new NavigationQuerySettings
-        {
-            FindNearestPolyExtent = new Vector3(2.0f, 4.0f, 2.0f),
-            MaxPathPoints = 1024
-        };
     }
 
     /// <summary>
@@ -55,11 +55,14 @@ namespace SiliconStudio.Xenko.Engine
     [DefaultEntityComponentProcessor(typeof(NavigationProcessor), ExecutionMode = ExecutionMode.Runtime)]
     public class NavigationComponent : EntityComponent
     {
+        /// <summary>
+        /// The navigation mesh which is being used
+        /// </summary>
         [DataMember(10)]
         public NavigationMesh NavigationMesh { get; set; }
 
         /// <summary>
-        /// The layer of the navigation mesh to use, corresponds to the agent setting with the same index
+        /// The layer of the navigation mesh to use, corresponds to the agent setting with the same index (specified during build)
         /// </summary>
         [DataMember(20)]
         public int NavigationMeshLayer { get; set; }

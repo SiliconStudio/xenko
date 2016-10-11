@@ -29,10 +29,14 @@ namespace SiliconStudio.Xenko.Engine
     [ContentSerializer(typeof(DataContentSerializer<NavigationMesh>))]
     public class NavigationMesh
     {
-        // Multiple layers corresponding to multiple agent settings
+        /// <summary>
+        /// Multiple layers corresponding to multiple agent settings
+        /// </summary>
         [DataMemberCustomSerializer] public NavigationMeshLayer[] Layers;
 
-        // Bounding box used when building
+        /// <summary>
+        /// Bounding box used when building
+        /// </summary>
         public BoundingBox BoundingBox;
 
         // Initialized build settings, only used at build time

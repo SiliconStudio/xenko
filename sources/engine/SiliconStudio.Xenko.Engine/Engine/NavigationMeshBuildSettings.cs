@@ -1,11 +1,8 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Xenko.Engine
 {
@@ -30,21 +27,48 @@ namespace SiliconStudio.Xenko.Engine
         public float CellSize;
 
         /// <summary>
-        /// Tile size used for Navigation mesh tiles, the final size of a grid tile is CellSize*TileSize
+        /// Tile size used for Navigation mesh tiles, the final size of a tile is CellSize*TileSize
         /// </summary>
         [DataMemberRange(8,4096,1,8)]
         public int TileSize;
 
+        /// <summary>
+        /// The minimum number of cells allowed to form isolated island areas.
+        /// </summary>
         [DataMemberRange(0, float.MaxValue)]
         public float RegionMinSize;
+
+        /// <summary>
+        /// Any regions with a span count smaller than this value will, if possible, 
+        /// be merged with larger regions.
+        /// </summary>
         [DataMemberRange(0, float.MaxValue)]
         public float RegionMergeSize;
+
+        /// <summary>
+        /// The maximum allowed length for contour edges along the border of the mesh.
+        /// </summary>
         [DataMemberRange(0, float.MaxValue)]
         public float EdgeMaxLen;
+
+        /// <summary>
+        /// The maximum distance a simplfied contour's border edges should deviate 
+        /// the original raw contour.
+        /// </summary>
         [DataMemberRange(0.1, float.MaxValue)]
         public float EdgeMaxError;
+
+        /// <summary>
+        /// Sets the sampling distance to use when generating the detail mesh.
+        /// (For height detail only.)
+        /// </summary>
         [DataMemberRange(1.0, float.MaxValue)]
         public float DetailSampleDistInput;
+
+        /// <summary>
+        /// The maximum distance the detail mesh surface should deviate from heightfield. 
+        /// data. (For height detail only.)
+        /// </summary>
         [DataMemberRange(0.0, float.MaxValue)]
         public float DetailSampleMaxErrorInput;
         
@@ -74,46 +98,6 @@ namespace SiliconStudio.Xenko.Engine
                 hashCode = (hashCode*397) ^ DetailSampleMaxErrorInput.GetHashCode();
                 return hashCode;
             }
-        }
-    };
-
-    [DataContract]
-    [ObjectFactory(typeof(NavigationAgentSettingsFactory))]
-    public struct NavigationAgentSettings
-    {
-        [DataMemberRange(0, float.MaxValue)]
-        public float Height;
-        [DataMemberRange(0, float.MaxValue)]
-        public float Radius;
-
-        /// <summary>
-        /// Maximum vertical distance this agent can climb
-        /// </summary>
-        [DataMemberRange(0, float.MaxValue)]
-        public float MaxClimb;
-
-        /// <summary>
-        /// Maximum slope angle this agent can climb (in degrees)
-        /// </summary>
-        public AngleSingle MaxSlope;
-
-        public override int GetHashCode()
-        {
-            return Height.GetHashCode() + Radius.GetHashCode() + MaxClimb.GetHashCode() + MaxSlope.GetHashCode();
-        }
-    }
-
-    public class NavigationAgentSettingsFactory : IObjectFactory
-    {
-        public object New(Type type)
-        {
-            return new NavigationAgentSettings
-            {
-                Height = 1.0f,
-                MaxClimb = 0.25f,
-                MaxSlope = new AngleSingle(45.0f, AngleType.Degree),
-                Radius = 0.5f
-            };
         }
     }
 }

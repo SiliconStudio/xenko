@@ -15,8 +15,14 @@ namespace SiliconStudio.Xenko.Engine
     [DataSerializer(typeof(NavigationMeshTileSerializer))]
     public class NavigationMeshTile
     {
+        /// <summary>
+        /// Vertices of the navigation mesh, used for visualization
+        /// </summary>
         [DataMemberCustomSerializer]
         public Vector3[] MeshVertices;
+        /// <summary>
+        /// Binary data of the built navigation mesh tile
+        /// </summary>
         [DataMemberCustomSerializer]
         public byte[] NavmeshData;
 

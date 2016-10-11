@@ -110,7 +110,7 @@ namespace SiliconStudio.Xenko.Native
         public static extern void SetAgentSettings(IntPtr builder, IntPtr settings);
 
         /// <summary>
-        /// Creates a new navigation mesh object
+        /// Creates a new navigation mesh object. 
         /// You must add tiles to it with AddTile before you can perform navigation queries using Query
         /// </summary>
         /// <returns></returns>
