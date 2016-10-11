@@ -7,13 +7,12 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets.Navigation
 {
-    public class NavigationMeshInputBuilder
+    internal class NavigationMeshInputBuilder
     {
         public BoundingBox BoundingBox = BoundingBox.Empty;
         public List<Vector3> Points = new List<Vector3>();
         public List<int> Indices = new List<int>();
-
-
+        
         /// <summary>
         /// Appends another vertex data builder
         /// </summary>

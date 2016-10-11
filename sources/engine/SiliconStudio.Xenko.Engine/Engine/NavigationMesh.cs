@@ -20,150 +20,27 @@ using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 
 namespace SiliconStudio.Xenko.Engine
 {
+    /// <summary>
+    /// A Navigation Mesh, can be used for pathfinding.
+    /// </summary>
     [DataContract("NavigationMesh")]
     [DataSerializerGlobal(typeof(ReferenceSerializer<NavigationMesh>), Profile = "Content")]
     [DataSerializer(typeof(NavigationMeshSerializer))]
     [ContentSerializer(typeof(DataContentSerializer<NavigationMesh>))]
     public class NavigationMesh
     {
-        // Initialized build settings, only used at build time
-        [DataMemberIgnore]
-        internal NavigationMeshBuildSettings BuildSettings;
-
         // Multiple layers corresponding to multiple agent settings
         [DataMemberCustomSerializer] public NavigationMeshLayer[] Layers;
 
         // Bounding box used when building
         public BoundingBox BoundingBox;
 
+        // Initialized build settings, only used at build time
+        [DataMemberIgnore]
+        internal NavigationMeshBuildSettings BuildSettings;
+        
         // Used internally to detect tile changes
         internal int TileHash;
-
-        // Used internally to display the visuals in the GameStudio but only once
-        // these values are only used by the NavigationGizmo, the gizmo checks if these values are up to date and then sets them so only 1 gizmo uses this mesh at once
-        internal int DebugMeshTileHash;
-        internal ModelComponent DebugMesh;
-
-        public static Material CreateDebugMaterial(GraphicsDevice device, Color4 color)
-        {
-            Material navmeshMaterial = Material.New(device, new MaterialDescriptor
-            {
-                Attributes =
-                {
-                    Diffuse = new MaterialDiffuseMapFeature(new ComputeColor()),
-                    DiffuseModel = new MaterialDiffuseLambertModelFeature(),
-                    Emissive = new MaterialEmissiveMapFeature(new ComputeColor()),
-                }
-            });
-
-            Color4 deviceSpaceColor = color.ToColorSpace(device.ColorSpace);
-
-            // set the color to the material
-            navmeshMaterial.Parameters.Set(MaterialKeys.DiffuseValue, deviceSpaceColor);
-            navmeshMaterial.Parameters.Set(MaterialKeys.EmissiveIntensity, 1.0f);
-            navmeshMaterial.Parameters.Set(MaterialKeys.EmissiveValue, deviceSpaceColor);
-
-            return navmeshMaterial;
-        }
-        public static Material CreateLayerDebugMaterial(GraphicsDevice device, int idx)
-        {
-            return CreateDebugMaterial(device, new ColorHSV((idx*80.0f + 90.0f)%360.0f, 0.95f, 0.75f, 1.0f).ToColor());
-        }
-        public static Material CreateBoundingBoxDebugMaterial(GraphicsDevice device)
-        {
-            return CreateDebugMaterial(device, Color4.White);
-        }
-
-        public ModelComponent CreateDebugModelComponent(GraphicsDevice device, 
-            List<GeometricPrimitive> generatedPrimitives, bool useMultiColorLayers = true)
-        {
-            Entity entity = new Entity("Navigation Debug Entity");
-
-            Model model = new Model();
-            for (int l = 0; l < Layers.Length; l++)
-            {
-                if (useMultiColorLayers)
-                {
-                    Material layerMaterial = CreateLayerDebugMaterial(device, l);
-                    model.Add(layerMaterial);
-                }
-                foreach (var p in Layers[l].Tiles)
-                {
-                    NavigationMeshTile tile = p.Value;
-                    if (tile.MeshVertices == null || tile.MeshVertices.Length == 0)
-                        continue;
-
-                    Vector3 offset = new Vector3(0.0f, 0.05f*l, 0.0f);
-
-                    // Calculate mesh bounding box from navigation mesh points
-                    BoundingBox bb = BoundingBox.FromPoints(tile.MeshVertices);
-
-                    List<VertexPositionNormalTexture> vertexList = new List<VertexPositionNormalTexture>();
-                    List<int> indexList = new List<int>();
-                    for (int i = 0; i < tile.MeshVertices.Length; i++)
-                    {
-                        VertexPositionNormalTexture vert = new VertexPositionNormalTexture();
-                        vert.Position = tile.MeshVertices[i] + offset;
-                        vert.Normal = Vector3.UnitY;
-                        vert.TextureCoordinate = new Vector2(0.5f, 0.5f);
-                        vertexList.Add(vert);
-                        indexList.Add(i);
-                    }
-
-                    MeshDraw draw;
-                    using (var meshData = new GeometricMeshData<VertexPositionNormalTexture>(vertexList.ToArray(), indexList.ToArray(), true))
-                    {
-                        GeometricPrimitive primitive = new GeometricPrimitive(device, meshData);
-                        generatedPrimitives.Add(primitive);
-                        draw = primitive.ToMeshDraw();
-                    }
-
-                    Mesh mesh = new Mesh
-                    {
-                        Draw = draw,
-                        MaterialIndex = useMultiColorLayers ? l : 0,
-                    };
-                    mesh.BoundingBox = bb;
-                    model.Add(mesh);
-                }
-            }
-
-            // Single white color
-            if (!useMultiColorLayers)
-                model.Add(CreateDebugMaterial(device, Color4.White));
-
-            // Add a new model component
-            return new ModelComponent(model);
-        }
-
-        public ModelComponent CreateDebugBoundingBoxModelComponent(GraphicsDevice device, List<GeometricPrimitive> generatedPrimitives)
-        {
-            Model model = new Model();
-
-            // Visualize bounding box  
-            using (GeometricMeshData<VertexPositionNormalTexture> boundingBoxMeshData = GeometricPrimitive.Cube.New(BoundingBox.Extent * 2))
-            {
-                // Move box vertices to match bounding box
-                for (int i = 0; i < boundingBoxMeshData.Vertices.Length; i++)
-                {
-                    boundingBoxMeshData.Vertices[i].Position += BoundingBox.Center;
-                }
-
-                GeometricPrimitive boundingBoxPrimitive = new GeometricPrimitive(device, boundingBoxMeshData);
-                generatedPrimitives.Add(boundingBoxPrimitive);
-                MeshDraw draw = boundingBoxPrimitive.ToMeshDraw();
-                Mesh boundingBoxMesh = new Mesh
-                {
-                    Draw = draw,
-                };
-                boundingBoxMesh.BoundingBox = BoundingBox;
-                model.Add(CreateBoundingBoxDebugMaterial(device));
-                model.Add(boundingBoxMesh);
-            }
-            
-            // Add a new model component
-            return new ModelComponent(model);
-        }
 
         /// <summary>
         /// Tries to find a built tile inside the navigation mesh
@@ -202,25 +79,6 @@ namespace SiliconStudio.Xenko.Engine
             }
             else
                 Layers = null;
-        }
-
-        /// <summary>
-        /// Updates <see cref="TileHash"/> to be "unique" to this specific combination of navigation mesh
-        /// </summary>
-        internal void UpdateTileHash()
-        {
-            TileHash = 0;
-            if (Layers == null)
-                return;
-
-            foreach (NavigationMeshLayer layer in Layers)
-            {
-                foreach (var tile in layer.Tiles)
-                {
-                    TileHash = (TileHash * 397) ^ tile.GetHashCode();
-                    TileHash = (TileHash * 397) ^ tile.Value.GetHashCode();
-                }
-            }
         }
 
         /// <summary>
@@ -283,6 +141,38 @@ namespace SiliconStudio.Xenko.Engine
             UpdateTileHash();
 
             return tile;
+        }
+        
+        /// <summary>
+        /// Removes a tile from a layer with given coordinate
+        /// </summary>
+        /// <param name="layerIndex"></param>
+        /// <param name="tileCoordinate"></param>
+        public void RemoveLayerTile(int layerIndex, Point tileCoordinate)
+        {
+            if (layerIndex < 0 || layerIndex >= Layers.Length)
+                return;
+            NavigationMeshLayer layer = Layers[layerIndex];
+            layer.Tiles.Remove(tileCoordinate);
+        }
+
+        /// <summary>
+        /// Updates <see cref="TileHash"/> to be "unique" to this specific combination of navigation mesh
+        /// </summary>
+        internal void UpdateTileHash()
+        {
+            TileHash = 0;
+            if (Layers == null)
+                return;
+
+            foreach (NavigationMeshLayer layer in Layers)
+            {
+                foreach (var tile in layer.Tiles)
+                {
+                    TileHash = (TileHash * 397) ^ tile.GetHashCode();
+                    TileHash = (TileHash * 397) ^ tile.Value.GetHashCode();
+                }
+            }
         }
         
         /// <summary>
@@ -361,19 +251,6 @@ namespace SiliconStudio.Xenko.Engine
             Navigation.DestroyBuilder(nav);
 
             return tile;
-        }
-        
-        /// <summary>
-        /// Removes a tile from a layer with given coordinate
-        /// </summary>
-        /// <param name="layerIndex"></param>
-        /// <param name="tileCoordinate"></param>
-        public void RemoveLayerTile(int layerIndex, Point tileCoordinate)
-        {
-            if (layerIndex < 0 || layerIndex >= Layers.Length)
-                return;
-            NavigationMeshLayer layer = Layers[layerIndex];
-            layer.Tiles.Remove(tileCoordinate);
         }
     }
     

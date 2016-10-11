@@ -9,6 +9,9 @@ using SiliconStudio.Xenko.Physics;
 
 namespace SiliconStudio.Xenko.Assets.Navigation
 {
+    /// <summary>
+    /// Default factory for navigation meshes
+    /// </summary>
     public class DefaultNavigationMeshFactory : AssetFactory<NavigationMeshAsset>
     {
         public override NavigationMeshAsset New()

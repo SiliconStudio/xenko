@@ -37,18 +37,8 @@ namespace SiliconStudio.Xenko.Assets.Navigation
         
         private class NavmeshBuildCommand : AssetCommand<NavigationMeshAsset>
         {
-            public NavmeshBuildCommand(string url, AssetItem assetItem, NavigationMeshAsset value, AssetCompilerContext context, NavigationMeshBuildCache buildCache)
-                : base(url, value)
-            {
-                this.buildCache = buildCache;
-                this.asset = value;
-                this.assetItem = assetItem;
-                this.package = assetItem.Package;
-                assetUrl = url;
-            }
-
             // Deferred shapes such as infinite planes which should be added after the bounding box of the scene is generated
-            struct DeferredShape
+            private struct DeferredShape
             {
                 public Matrix Transform;
                 public IColliderShapeDesc Description;
@@ -70,13 +60,23 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             private BoundingBox globalBoundingBox;
             private bool generateBoundingBox;
 
-            List<BoundingBox> updatedAreas = new List<BoundingBox>();
+            private List<BoundingBox> updatedAreas = new List<BoundingBox>();
             private bool fullRebuild = false;
 
             // Automatically calculated bounding box
             private NavigationMeshBuildSettings buildSettings;
 
             private List<DeferredShape> deferredShapes = new List<DeferredShape>();
+
+            public NavmeshBuildCommand(string url, AssetItem assetItem, NavigationMeshAsset value, AssetCompilerContext context, NavigationMeshBuildCache buildCache)
+                : base(url, value)
+            {
+                this.buildCache = buildCache;
+                this.asset = value;
+                this.assetItem = assetItem;
+                this.package = assetItem.Package;
+                assetUrl = url;
+            }
             
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
             {
@@ -251,6 +251,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
                 return Task.FromResult(ResultStatus.Successful);
             }
+
 
             private int CollectInputHash(List<Entity> sceneEntities)
             {

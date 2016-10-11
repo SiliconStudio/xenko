@@ -8,15 +8,29 @@ using SiliconStudio.Xenko.Native;
 
 namespace SiliconStudio.Xenko.Engine.Processors
 {
+    /// <summary>
+    /// Manages the loading of the native side navigation meshes. Will only load one version of the navigation mesh if it is referenced by multiple components
+    /// </summary>
     public class NavigationProcessor : EntityProcessor<NavigationComponent, NavigationProcessor.AssociatedData>
     {
-        public class NativeNavmesh : IDisposable
+        /// <summary>
+        /// Associated data for navigation mesh components
+        /// </summary>
+        public class AssociatedData
         {
-            public IntPtr[] Layers;
-            private HashSet<object> references = new HashSet<object>();
-            private float cellTileSize;
+            public NavigationMesh LoadedNavigationMesh;
+            public NavigationComponent Component;
+            internal NavigationMeshInternal NavigationMeshInternal;
+        }
 
-            public NativeNavmesh(NavigationMesh navigationMesh)
+        internal class NavigationMeshInternal : IDisposable
+        {
+            private readonly float cellTileSize;
+            private readonly HashSet<object> references = new HashSet<object>();
+
+            public IntPtr[] Layers;
+
+            public NavigationMeshInternal(NavigationMesh navigationMesh)
             {
                 cellTileSize = navigationMesh.BuildSettings.TileSize*navigationMesh.BuildSettings.CellSize;
                 Layers = new IntPtr[navigationMesh.Layers.Length];
@@ -25,27 +39,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
                     Layers[i] = LoadLayer(navigationMesh.Layers[i]);
                 }
             }
-
-            private unsafe IntPtr LoadLayer(NavigationMeshLayer navigationMeshLayer)
-            {
-                IntPtr layer = Navigation.CreateNavmesh(cellTileSize);
-                if (layer == IntPtr.Zero)
-                    return layer;
-
-                // Add all the tiles to the navigation mesh
-                foreach (var tile in navigationMeshLayer.Tiles)
-                {
-                    if (tile.Value.NavmeshData == null)
-                        continue; // Just skip empty tiles
-                    fixed (byte* inputData = tile.Value.NavmeshData)
-                    {
-                        Navigation.AddTile(layer, tile.Key, new IntPtr(inputData), tile.Value.NavmeshData.Length);
-                    }
-                }
-
-                return layer;
-            }
-
+            
             public void Dispose()
             {
                 if (Layers == null)
@@ -77,34 +71,32 @@ namespace SiliconStudio.Xenko.Engine.Processors
                 return references.Count == 0;
             }
 
-        }
+            private unsafe IntPtr LoadLayer(NavigationMeshLayer navigationMeshLayer)
+            {
+                IntPtr layer = Navigation.CreateNavmesh(cellTileSize);
+                if (layer == IntPtr.Zero)
+                    return layer;
 
-        public class AssociatedData
-        {
-            // The original navigation mesh object
-            public NavigationComponent Component;
-            public NativeNavmesh NativeNavmesh;
-            public NavigationMesh LoadedNavigationMesh;
+                // Add all the tiles to the navigation mesh
+                foreach (var tile in navigationMeshLayer.Tiles)
+                {
+                    if (tile.Value.NavmeshData == null)
+                        continue; // Just skip empty tiles
+                    fixed (byte* inputData = tile.Value.NavmeshData)
+                    {
+                        Navigation.AddTile(layer, tile.Key, new IntPtr(inputData), tile.Value.NavmeshData.Length);
+                    }
+                }
+
+                return layer;
+            }
         }
 
         /// <summary>
         /// Maps navigation meshed to their natively loaded counterparts
         /// </summary>
-        private Dictionary<NavigationMesh, NativeNavmesh> loadedNavigationMeshes = new Dictionary<NavigationMesh, NativeNavmesh>();
+        private readonly Dictionary<NavigationMesh, NavigationMeshInternal> loadedNavigationMeshes = new Dictionary<NavigationMesh, NavigationMeshInternal>();
         
-        protected internal override void OnSystemAdd()
-        {
-        }
-        protected internal override void OnSystemRemove()
-        {
-            // Dispose of all loaded navigation meshes
-            foreach (var pair in loadedNavigationMeshes)
-            {
-                pair.Value.Dispose();
-            }
-            loadedNavigationMeshes.Clear();
-        }
-
         public override void Update(GameTime time)
         {
             foreach (var p in ComponentDatas)
@@ -114,6 +106,16 @@ namespace SiliconStudio.Xenko.Engine.Processors
                     UpdateNavigationMesh(p.Key, p.Value);
                 }
             }
+        }
+
+        protected internal override void OnSystemRemove()
+        {
+            // Dispose of all loaded navigation meshes
+            foreach (var pair in loadedNavigationMeshes)
+            {
+                pair.Value.Dispose();
+            }
+            loadedNavigationMeshes.Clear();
         }
 
         protected override AssociatedData GenerateComponentData(Entity entity, NavigationComponent component)
@@ -131,41 +133,42 @@ namespace SiliconStudio.Xenko.Engine.Processors
             RemoveReference(component, data);
         }
 
-        void RemoveReference(NavigationComponent component, AssociatedData data)
+        private void RemoveReference(NavigationComponent component, AssociatedData data)
         {
             // Check if loaded navigation mesh is no longer needed
-            if (data.NativeNavmesh != null)
+            if (data.NavigationMeshInternal != null)
             {
-                if (data.NativeNavmesh.RemoveReference(component))
+                if (data.NavigationMeshInternal.RemoveReference(component))
                 {
                     loadedNavigationMeshes.Remove(data.LoadedNavigationMesh);
-                    data.NativeNavmesh.Dispose();
+                    data.NavigationMeshInternal.Dispose();
                 }
             }
 
-            data.NativeNavmesh = null;
+            data.NavigationMeshInternal = null;
             data.LoadedNavigationMesh = null;
             component.nativeNavmesh = IntPtr.Zero;
         }
-        void UpdateNavigationMesh(NavigationComponent component, AssociatedData data)
+
+        private void UpdateNavigationMesh(NavigationComponent component, AssociatedData data)
         {
             // Remove old reference
             RemoveReference(component, data);
             
             if (component.NavigationMesh != null)
             {
-                NativeNavmesh nativeNavmesh;
-                if (!loadedNavigationMeshes.TryGetValue(component.NavigationMesh, out nativeNavmesh))
+                NavigationMeshInternal navigationMeshInternal;
+                if (!loadedNavigationMeshes.TryGetValue(component.NavigationMesh, out navigationMeshInternal))
                 {
-                    nativeNavmesh = new NativeNavmesh(component.NavigationMesh);
-                    loadedNavigationMeshes.Add(component.NavigationMesh, nativeNavmesh);
+                    navigationMeshInternal = new NavigationMeshInternal(component.NavigationMesh);
+                    loadedNavigationMeshes.Add(component.NavigationMesh, navigationMeshInternal);
                 }
-                data.NativeNavmesh = nativeNavmesh;
-                nativeNavmesh.AddReference(component);
+                data.NavigationMeshInternal = navigationMeshInternal;
+                navigationMeshInternal.AddReference(component);
 
                 // Store a pointer to the native navmesh object in the navmesh component
-                component.nativeNavmesh = component.NavigationMeshLayer < nativeNavmesh.Layers.Length ?
-                    nativeNavmesh.Layers[component.NavigationMeshLayer] : IntPtr.Zero;
+                component.nativeNavmesh = component.NavigationMeshLayer < navigationMeshInternal.Layers.Length ?
+                    navigationMeshInternal.Layers[component.NavigationMeshLayer] : IntPtr.Zero;
 
                 // Mark new navigation mesh as loaded
                 data.LoadedNavigationMesh = component.NavigationMesh;

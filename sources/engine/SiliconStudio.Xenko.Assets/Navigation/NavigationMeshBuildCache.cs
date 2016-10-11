@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SiliconStudio.Xenko.Assets.Navigation
 {
-    public class NavigationMeshBuildCache
+    internal class NavigationMeshBuildCache
     {
         /// <summary>
         /// Maximum number of scenes to keep cached
@@ -38,6 +38,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             builtScenes.Add(targetUrl, navigationMeshBuildCacheBuild);
             recentBuilds.Add(targetUrl);
         }
+
         public NavigationMeshBuildCacheBuild FindBuild(string targetUrl)
         {
             NavigationMeshBuildCacheBuild navigationMeshBuildCacheBuild;

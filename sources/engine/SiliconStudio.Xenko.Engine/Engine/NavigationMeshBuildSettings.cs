@@ -9,17 +9,21 @@ using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Xenko.Engine
 {
+    /// <summary>
+    /// Provides settings for the navigation mesh builder to control granularity and error margins 
+    /// </summary>
     [DataContract]
     public struct NavigationMeshBuildSettings
     {
         /// <summary>
-        /// The Height of a grid cell in the navigation mesh building steps using heightfields
+        /// The Height of a grid cell in the navigation mesh building steps using heightfields. 
         /// A lower number means higher resolution on the vertical axis but longer build times
         /// </summary>
         [DataMemberRange(0.01, float.MaxValue)]
         public float CellHeight;
+
         /// <summary>
-        /// The Width/Height of a grid cell in the navigation mesh building steps using heightfields
+        /// The Width/Height of a grid cell in the navigation mesh building steps using heightfields. 
         /// A lower number means higher resolution on the horizontal axes but longer build times
         /// </summary>
         [DataMemberRange(0.01, float.MaxValue)]

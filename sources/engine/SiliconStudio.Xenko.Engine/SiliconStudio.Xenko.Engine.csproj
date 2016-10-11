@@ -137,7 +137,6 @@
     <Compile Include="Engine\ModelNodeTransformLink.cs" />
     <Compile Include="Engine\ModelViewHierarchyTransformOperation.cs" />
     <Compile Include="Engine\NavigationComponent.cs" />
-    <Compile Include="Engine\NavigationDebugCameraRenderMode.cs" />
     <Compile Include="Engine\NavigationMesh.cs" />
     <Compile Include="Engine\NavigationMeshBuildSettings.cs" />
     <Compile Include="Engine\NavigationMeshlayer.cs" />

@@ -9,7 +9,10 @@ using SiliconStudio.Xenko.Physics;
 
 namespace SiliconStudio.Xenko.Assets.Navigation
 {
-    public class NavigationMeshBuildCacheBuild
+    /// <summary>
+    /// Holds the cached result of building a scene into a navigation mesh, with input vertex data to allow incremental builds.
+    /// </summary>
+    internal class NavigationMeshBuildCacheBuild
     {
         public readonly Dictionary<Guid, NavigationMeshBuildCacheObject> Objects = 
             new Dictionary<Guid, NavigationMeshBuildCacheObject>();

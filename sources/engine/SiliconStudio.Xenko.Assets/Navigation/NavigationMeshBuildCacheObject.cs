@@ -8,7 +8,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
     /// <summary>
     /// Represents cached data for a single entity and it's static colliders
     /// </summary>
-    public class NavigationMeshBuildCacheObject
+    internal class NavigationMeshBuildCacheObject
     {
         /// <summary>
         /// Guid of the entity
