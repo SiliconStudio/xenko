@@ -142,7 +142,8 @@ namespace SiliconStudio.PackageManager
 
         public NugetPackage GetLatestPackageInstalled(IEnumerable<string> packageIds)
         {
-            return new NugetPackage(manager.LocalRepository.GetPackages().Where(p => packageIds.Any(x => x == p.Id)).OrderByDescending(p => p.Version).FirstOrDefault());
+            // TODO: we return the first entry, not necessaryly the one that the callers actually want.
+            return GetPackagesInstalled(packageIds).FirstOrDefault();
         }
 
         public IList<NugetPackage> GetPackagesInstalled(IEnumerable<string> packageIds)
