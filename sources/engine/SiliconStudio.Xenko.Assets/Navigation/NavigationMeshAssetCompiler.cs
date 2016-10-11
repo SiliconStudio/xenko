@@ -260,7 +260,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 {
                     StaticColliderComponent collider = entity.Get<StaticColliderComponent>();
 
-                    bool colliderEnabled = collider != null && ((CollisionFilterGroupFlags)collider.CollisionGroup & asset.AllowedCollisionGroups) != 0 && collider.Enabled;
+                    bool colliderEnabled = collider != null && ((CollisionFilterGroupFlags)collider.CollisionGroup & asset.IncludedCollisionGroups) != 0 && collider.Enabled;
                     if (colliderEnabled) // Removed or disabled
                     {
                         hash += NavigationMeshBuildUtils.HashEntityCollider(collider);
@@ -285,7 +285,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 {
                     StaticColliderComponent collider = entity.Get<StaticColliderComponent>();
                     
-                    bool colliderEnabled = collider != null && ((CollisionFilterGroupFlags)collider.CollisionGroup & asset.AllowedCollisionGroups) != 0 && collider.Enabled;
+                    bool colliderEnabled = collider != null && ((CollisionFilterGroupFlags)collider.CollisionGroup & asset.IncludedCollisionGroups) != 0 && collider.Enabled;
                     if (!colliderEnabled) // Removed or disabled
                     {
                         // Check for old object

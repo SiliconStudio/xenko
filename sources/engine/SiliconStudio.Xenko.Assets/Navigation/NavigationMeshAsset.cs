@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
         /// Collision filter that indicates which colliders are used in navmesh generation
         /// </summary>
         [DataMember(1500)]
-        public CollisionFilterGroupFlags AllowedCollisionGroups { get; set; }
+        public CollisionFilterGroupFlags IncludedCollisionGroups { get; set; }
 
         /// <summary>
         /// Build settings used by Recast
@@ -66,7 +66,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 var hashCode = NavigationMeshAgentSettings?.GetHashCode() ?? 0;
                 hashCode = (hashCode*397) ^ BoundingBox.GetHashCode();
                 hashCode = (hashCode*397) ^ AutoGenerateBoundingBox.GetHashCode();
-                hashCode = (hashCode*397) ^ (int)AllowedCollisionGroups;
+                hashCode = (hashCode*397) ^ (int)IncludedCollisionGroups;
                 hashCode = (hashCode*397) ^ BuildSettings.GetHashCode();
                 if(Scene != null)
                     hashCode = (hashCode*397) ^ Scene.Name.GetHashCode();
