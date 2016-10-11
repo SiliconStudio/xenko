@@ -155,7 +155,7 @@ namespace SiliconStudio.Assets
                 return Enumerable.Empty<PackageMeta>().AsQueryable();
             }
 
-            var packages = store.Manager.SourceSearch(null, false);
+            var packages = store.SourceSearch(null, allowPrereleaseVersions: false);
 
             // Order by download count and Id to allow collapsing 
             var orderedPackages = packages.OrderByDescending(p => p.DownloadCount).ThenBy(p => p.Id);
@@ -178,7 +178,7 @@ namespace SiliconStudio.Assets
             {
                 var log = new LoggerResult();
 
-                var metas = store.Manager.GetLocalPackages();
+                var metas = store.GetLocalPackages();
                 foreach (var meta in metas)
                 {
                     var path = store.GetPackageDirectory(meta.Id, meta.Version);
@@ -248,7 +248,7 @@ namespace SiliconStudio.Assets
             if (store != null)
             {
                 var versionSpec = versionRange.ToVersionSpec();
-                var package = store.Manager.FindLocalPackage(packageName, versionSpec, constraintProvider, allowPreleaseVersion, allowUnlisted);
+                var package = store.FindLocalPackage(packageName, versionSpec, constraintProvider, allowPreleaseVersion, allowUnlisted);
 
                 // If package was not found, 
                 if (package != null)

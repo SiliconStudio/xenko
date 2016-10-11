@@ -17,7 +17,7 @@
 		var packageTarget = String.Format(@"$(MSBuildThisFileDirectory)..\{0}\{1}.{2}\Targets\{1}.targets", store.RepositoryPath, package.Id, "$(" + packageVar + ")");
 		
 		// Special case: if major version 1.0 still exists, use it as default (new projects should be created with props file)
-		var defaultPackageVersion = store.LocalRepository.FindPackagesById(package.Id).Select(x => x.Version).FirstOrDefault(x => x.Version.Major == 1 && x.Version.Minor == 0) ?? package.Version;
+		var defaultPackageVersion = store.FindLocalPackagesById(package.Id).Select(x => x.Version.SemanticVersion).FirstOrDefault(x => x.Version.Major == 1 && x.Version.Minor == 0) ?? package.Version;
 	#>
   <PropertyGroup>
     <<#=packageVar#> Condition="'$(<#=packageVar#>Override)' != ''">$(<#=packageVar#>Override)</<#=packageVar#>>
@@ -25,7 +25,7 @@
 <#      // List all the correspondances: Major.minor -> latest installed explicit version
 
         // Get all the related versions of the same package also installed, and order by Major.Minor
-        var allMajorVersions = store.LocalRepository.FindPackagesById(package.Id).GroupBy(p => p.Version.Version.Major, p => p);
+        var allMajorVersions = store.FindLocalPackagesById(package.Id).GroupBy(p => p.Version.Version.Major, p => p);
         foreach (var major in allMajorVersions)
         {
             var majorVersion = major.Key;

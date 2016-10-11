@@ -4,11 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Text;
 using NuGet;
 using SiliconStudio.Core.Windows;
-using SiliconStudio.PackageManager;
 
 namespace SiliconStudio.PackageManager
 {
@@ -35,6 +33,9 @@ namespace SiliconStudio.PackageManager
         public const string PrerequisitesInstallerKey = "prerequisitesInstaller";
 
         private INugetLogger logger;
+        private readonly NuGet.PackageManager manager;
+        private readonly ISettings settings;
+        private readonly IPackagePathResolver pathResolver;
 
         public NugetStore(string rootDirectory, string configFile = DefaultConfig, string overrideFile = OverrideConfig)
         {
@@ -60,34 +61,37 @@ namespace SiliconStudio.PackageManager
 
             var rootFileSystem = new PhysicalFileSystem(rootDirectory);
             RootDirectory = rootFileSystem.Root;
-            Settings = NuGet.Settings.LoadDefaultSettings(rootFileSystem, configFileName, null);
+            settings = NuGet.Settings.LoadDefaultSettings(rootFileSystem, configFileName, null);
 
-            string installPath = Settings.GetRepositoryPath();
+            string installPath = settings.GetRepositoryPath();
             var packagesFileSystem = new PhysicalFileSystem(installPath);
-            var packageSourceProvider = new PackageSourceProvider(Settings);
+            var packageSourceProvider = new PackageSourceProvider(settings);
 
             var repositoryFactory = new PackageRepositoryFactory();
             SourceRepository = packageSourceProvider.CreateAggregateRepository(repositoryFactory, true);
 
-            var pathResolver = new DefaultPackagePathResolver(packagesFileSystem);
-            PathResolver = pathResolver;
+            pathResolver = new DefaultPackagePathResolver(packagesFileSystem);
 
-            Manager = new NugetPackageManager(new NuGet.PackageManager(SourceRepository, pathResolver, packagesFileSystem));
+            manager = new NuGet.PackageManager(SourceRepository, pathResolver, packagesFileSystem);
+            manager.PackageInstalling += (sender, args) => NugetPackageInstalling?.Invoke(sender, new NugetPackageOperationEventArgs(args));
+            manager.PackageInstalled += (sender, args) => NugetPackageInstalled?.Invoke(sender, new NugetPackageOperationEventArgs(args));
+            manager.PackageUninstalling += (sender, args) => NugetPackageUninstalling?.Invoke(sender, new NugetPackageOperationEventArgs(args));
+            manager.PackageUninstalled += (sender, args) => NugetPackageUninstalled?.Invoke(sender, new NugetPackageOperationEventArgs(args));
 
-            var mainPackageList = Settings.GetConfigValue(MainPackagesKey);
+            var mainPackageList = settings.GetConfigValue(MainPackagesKey);
             if (string.IsNullOrWhiteSpace(mainPackageList))
             {
                 throw new InvalidOperationException($"Invalid configuration. Expecting [{MainPackagesKey}] in config");
             }
             MainPackageIds = mainPackageList.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-            VSIXPluginId = Settings.GetConfigValue(VsixPluginKey);
+            VSIXPluginId = settings.GetConfigValue(VsixPluginKey);
             if (string.IsNullOrWhiteSpace(VSIXPluginId))
             {
                 throw new InvalidOperationException($"Invalid configuration. Expecting [{VsixPluginKey}] in config");
             }
 
-            RepositoryPath = Settings.GetConfigValue(RepositoryPathKey);
+            RepositoryPath = settings.GetConfigValue(RepositoryPathKey);
             if (string.IsNullOrWhiteSpace(RepositoryPath))
             {
                 RepositoryPath = DefaultGamePackagesDirectory;
@@ -117,66 +121,36 @@ namespace SiliconStudio.PackageManager
             set
             {
                 logger = value;
-                Manager.Logger = new NugetLogger(logger);
+                manager.Logger = new NugetLogger(logger);
                 SourceRepository.Logger = new NugetLogger(logger);
             }
         }
 
-        public ISettings Settings { get; }
-
-        public IPackagePathResolver PathResolver { get; }
-
-        public NugetPackageManager Manager { get; }
-
-        public IPackageRepository LocalRepository => Manager.LocalRepository;
-
         public AggregateRepository SourceRepository { get; }
 
-        public bool CheckSource()
-        {
-            return SourceRepository.Repositories.Any(CheckSource);
-        }
-
-        public NugetPackage GetLatestPackageInstalled(string packageId)
-        {
-            return new NugetPackage(LocalRepository.GetPackages().Where(p => p.Id == packageId).OrderByDescending(p => p.Version).FirstOrDefault());
-        }
+        public event EventHandler<NugetPackageOperationEventArgs> NugetPackageInstalled;
+        public event EventHandler<NugetPackageOperationEventArgs> NugetPackageInstalling;
+        public event EventHandler<NugetPackageOperationEventArgs> NugetPackageUninstalled;
+        public event EventHandler<NugetPackageOperationEventArgs> NugetPackageUninstalling;
 
         public string GetInstallPath(NugetPackage package)
         {
-            return PathResolver.GetInstallPath(package.IPackage);
+            return pathResolver.GetInstallPath(package.IPackage);
         }
 
         public NugetPackage GetLatestPackageInstalled(IEnumerable<string> packageIds)
         {
-            return new NugetPackage(LocalRepository.GetPackages().Where(p => packageIds.Any(x => x == p.Id)).OrderByDescending(p => p.Version).FirstOrDefault());
+            return new NugetPackage(manager.LocalRepository.GetPackages().Where(p => packageIds.Any(x => x == p.Id)).OrderByDescending(p => p.Version).FirstOrDefault());
         }
 
         public IList<NugetPackage> GetPackagesInstalled(IEnumerable<string> packageIds)
         {
             var l = new List<NugetPackage>();
-            foreach (var package in LocalRepository.GetPackages().Where(p => packageIds.Any(x => x == p.Id)).OrderByDescending(p => p.Version))
+            foreach (var package in manager.LocalRepository.GetPackages().Where(p => packageIds.Any(x => x == p.Id)).OrderByDescending(p => p.Version))
             {
                 l.Add(new NugetPackage(package));
             }
             return l;
-        }
-
-        public static bool CheckSource(IPackageRepository repository)
-        {
-            try
-            {
-                repository.GetPackages().FirstOrDefault();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                if (!IsSourceUnavailableException(ex))
-                {
-                    throw;
-                }
-            }
-            return false;
         }
 
         public static string GetPackageVersionVariable(string packageId)
@@ -185,17 +159,10 @@ namespace SiliconStudio.PackageManager
             var newPackageId = packageId.Replace(".", String.Empty);
             return "SiliconStudioPackage" + newPackageId + "Version";
         }
-        
+
         private IDisposable GetLocalRepositoryLocker()
         {
             return FileLock.Wait("nuget.lock");
-        }
-
-        public static bool IsSourceUnavailableException(Exception ex)
-        {
-            return (((ex is WebException) ||
-                (ex.InnerException is WebException) ||
-                (ex.InnerException is InvalidOperationException)));
         }
 
         public static bool IsStoreDirectory(string directory)
@@ -203,31 +170,6 @@ namespace SiliconStudio.PackageManager
             if (directory == null) throw new ArgumentNullException(nameof(directory));
             var storeConfig = Path.Combine(directory, DefaultConfig);
             return File.Exists(storeConfig);
-        }
-
-        public void InstallPackage(string packageId, NugetSemanticVersion version)
-        {
-            using (GetLocalRepositoryLocker())
-            {
-                Manager.InstallPackage(packageId, version.SemanticVersion, false, true);
-
-                // Every time a new package is installed, we are updating the common targets
-                UpdateTargetsInternal();
-
-                // Install vsix
-                ////InstallVsix(GetLatestPackageInstalled(packageId));
-            }
-        }
-
-        public void UninstallPackage(NugetPackage package)
-        {
-            using (GetLocalRepositoryLocker())
-            {
-                Manager.UninstallPackage(package.IPackage);
-
-                // Every time a new package is installed, we are updating the common targets
-                UpdateTargetsInternal();
-            }
         }
 
         public void UpdateTargets()
@@ -265,7 +207,7 @@ namespace SiliconStudio.PackageManager
 
             // Get all packages
             var packages = new HashSet<IPackage>();
-            foreach (var package in LocalRepository.GetPackages().OrderBy(p => p.Id).ThenByDescending(p => p.Version))
+            foreach (var package in manager.LocalRepository.GetPackages().OrderBy(p => p.Id).ThenByDescending(p => p.Version))
             {
                 if (packages.All(p => p.Id != package.Id))
                 {
@@ -304,22 +246,109 @@ namespace SiliconStudio.PackageManager
 
         public string GetPackageDirectory(NugetPackage xenkoPackage)
         {
-            return PathResolver.GetPackageDirectory(xenkoPackage.IPackage);
+            return pathResolver.GetPackageDirectory(xenkoPackage.IPackage);
         }
 
         public string GetPackageDirectory(string packageId, NugetSemanticVersion version)
         {
-            return PathResolver.GetPackageDirectory(packageId, version.SemanticVersion);
+            return pathResolver.GetPackageDirectory(packageId, version.SemanticVersion);
         }
 
         public string GetMainExecutables()
         {
-            return Settings.GetConfigValue(MainExecutablesKey);
+            return settings.GetConfigValue(MainExecutablesKey);
         }
 
         public string GetPrerequisitesInstaller()
         {
-            return Settings.GetConfigValue(PrerequisitesInstallerKey);
+            return settings.GetConfigValue(PrerequisitesInstallerKey);
         }
+
+#region Manager
+        public void InstallPackage(string packageId, NugetSemanticVersion version)
+        {
+            using (GetLocalRepositoryLocker())
+            {
+                manager.InstallPackage(packageId, version.SemanticVersion, false, true);
+
+                // Every time a new package is installed, we are updating the common targets
+                UpdateTargetsInternal();
+
+                // Install vsix
+                ////InstallVsix(GetLatestPackageInstalled(packageId));
+            }
+        }
+
+        public void UninstallPackage(NugetPackage package)
+        {
+            using (GetLocalRepositoryLocker())
+            {
+                manager.UninstallPackage(package.IPackage);
+
+                // Every time a new package is installed, we are updating the common targets
+                UpdateTargetsInternal();
+            }
+        }
+
+        public IEnumerable<NugetPackage> GetLocalPackages()
+        {
+            return ToNugetPackages(manager.LocalRepository.GetPackages()).AsQueryable();
+        }
+
+        public NugetPackage FindLocalPackage(string packageId, NugetVersionSpec versionSpec, NugetConstraintProvider constraintProvider, bool allowPrereleaseVersions, bool allowUnlisted)
+        {
+            var package = manager.LocalRepository.FindPackage(packageId, versionSpec.VersionSpec, (IPackageConstraintProvider)constraintProvider?.Provider ?? NullConstraintProvider.Instance, allowPrereleaseVersions, allowUnlisted);
+            return package != null ? new NugetPackage(package) : null;
+        }
+
+        public IEnumerable<NugetPackage> FindLocalPackages(IReadOnlyCollection<string> packageIds)
+        {
+            return ToNugetPackages(manager.LocalRepository.FindPackages(packageIds));
+        }
+        public IEnumerable<NugetPackage> FindLocalPackagesById(string packageId)
+        {
+            return ToNugetPackages(manager.LocalRepository.FindPackagesById(packageId));
+        }
+
+        public IEnumerable<NugetPackage> FindSourcePackages(IReadOnlyCollection<string> packageIds)
+        {
+            return ToNugetPackages(manager.SourceRepository.FindPackages(packageIds));
+        }
+
+        public IEnumerable<NugetPackage> FindSourcePackagesById(string packageId)
+        {
+            return ToNugetPackages(manager.SourceRepository.FindPackagesById(packageId));
+        }
+        public IQueryable<NugetPackage> SourceSearch(string searchTerm, bool allowPrereleaseVersions)
+        {
+            return ToNugetPackages(manager.SourceRepository.Search(searchTerm, allowPrereleaseVersions)).AsQueryable();
+        }
+
+        public IEnumerable<NugetPackage> GetUpdates(NugetPackageName[] nugetPackageName, bool includePrerelease, bool includeAllVersions)
+        {
+            var names = new PackageName[nugetPackageName.Length];
+            for (int i = 0; i < nugetPackageName.Length; i++)
+            {
+                names[i] = nugetPackageName[i].Name;
+            }
+            var list = manager.SourceRepository.GetUpdates(names, includePrerelease, includeAllVersions);
+            var res = new List<NugetPackage>();
+            foreach (var package in list)
+            {
+                res.Add(new NugetPackage(package));
+            }
+            return res;
+        }
+
+        private IEnumerable<NugetPackage> ToNugetPackages(IEnumerable<IPackage> packages)
+        {
+            var res = new List<NugetPackage>();
+            foreach (var package in packages)
+            {
+                res.Add(new NugetPackage(package));
+            }
+            return res;
+        }
+#endregion
     }
 }
