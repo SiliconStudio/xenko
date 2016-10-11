@@ -28,7 +28,6 @@
 #include "Navigation.hpp"
 #include "NavigationBuilder.hpp"
 #include "../../../../deps/NativePath/NativeTime.h"
-#include "../../../../deps/Recast/include/DetourStatus.h"
 
 NavigationBuilder::NavigationBuilder()
 {

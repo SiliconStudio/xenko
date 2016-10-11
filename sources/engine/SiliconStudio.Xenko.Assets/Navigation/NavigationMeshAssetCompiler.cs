@@ -344,6 +344,15 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                                 var meshData = GeometricPrimitive.Capsule.New(capsuleDesc.Length, capsuleDesc.Radius);
                                 entityNavigationMeshInputBuilder.AppendMeshData(meshData, transform);
                             }
+                            else if (shapeType == typeof(ConeColliderShape))
+                            {
+                                var cone = (ConeColliderShape)shape;
+                                var coneDesc = (ConeColliderShapeDesc)cone.Description;
+                                Matrix transform = cone.PositiveCenterMatrix * entityWorldMatrix;
+
+                                var meshData = GeometricPrimitive.Cone.New(coneDesc.Radius, coneDesc.Height);
+                                entityNavigationMeshInputBuilder.AppendMeshData(meshData, transform);
+                            }
                             else if (shapeType == typeof(StaticPlaneColliderShape))
                             {
                                 var plane = (StaticPlaneColliderShape)shape;
