@@ -21,6 +21,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             public NavigationMesh LoadedNavigationMesh;
             public NavigationComponent Component;
             internal NavigationMeshInternal NavigationMeshInternal;
+            internal int SelectedLayer;
         }
 
         internal class NavigationMeshInternal : IDisposable
@@ -101,9 +102,16 @@ namespace SiliconStudio.Xenko.Engine.Processors
         {
             foreach (var p in ComponentDatas)
             {
+                // Should update selected navigation mesh?
                 if (p.Key.NavigationMesh != p.Value.LoadedNavigationMesh)
                 {
                     UpdateNavigationMesh(p.Key, p.Value);
+                }
+
+                // Should update selected layer?
+                if (p.Key.NavigationMeshLayer != p.Value.SelectedLayer)
+                {
+                    SelectLayer(p.Key, p. Value);
                 }
             }
         }
@@ -147,7 +155,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
 
             data.NavigationMeshInternal = null;
             data.LoadedNavigationMesh = null;
-            component.nativeNavmesh = IntPtr.Zero;
+            component.NavigationMeshInternal = IntPtr.Zero;
         }
 
         private void UpdateNavigationMesh(NavigationComponent component, AssociatedData data)
@@ -166,13 +174,22 @@ namespace SiliconStudio.Xenko.Engine.Processors
                 data.NavigationMeshInternal = navigationMeshInternal;
                 navigationMeshInternal.AddReference(component);
 
-                // Store a pointer to the native navmesh object in the navmesh component
-                component.nativeNavmesh = component.NavigationMeshLayer < navigationMeshInternal.Layers.Length ?
-                    navigationMeshInternal.Layers[component.NavigationMeshLayer] : IntPtr.Zero;
+                SelectLayer(component, data);
 
                 // Mark new navigation mesh as loaded
                 data.LoadedNavigationMesh = component.NavigationMesh;
             }
+        }
+
+        private void SelectLayer(NavigationComponent component, AssociatedData data)
+        {
+            if (data.NavigationMeshInternal?.Layers == null)
+                return;
+
+            // Store a pointer to the native navmesh object in the navmesh component
+            component.NavigationMeshInternal = component.NavigationMeshLayer < data.NavigationMeshInternal.Layers.Length ?
+                data.NavigationMeshInternal.Layers[component.NavigationMeshLayer] : IntPtr.Zero;
+            data.SelectedLayer = component.NavigationMeshLayer;
         }
     }
 }

@@ -46,6 +46,9 @@ namespace SiliconStudio.Xenko.Engine
         };
     }
 
+    /// <summary>
+    /// This is used to interface with the navigation mesh. Supports FindPath and Raycast
+    /// </summary>
     [DataContract("NavigationComponent")]
     [Display("Navigation", Expand = ExpandRule.Once)]
     [ComponentOrder(20000)]
@@ -62,9 +65,7 @@ namespace SiliconStudio.Xenko.Engine
         public int NavigationMeshLayer { get; set; }
 
         [DataMemberIgnore]
-        internal IntPtr nativeNavmesh;
-
-        public Vector3 DebugTarget = Vector3.Zero;
+        internal IntPtr NavigationMeshInternal;
 
         /// <summary>
         /// Finds a path from the entity's current location to <see cref="end"/>
@@ -88,7 +89,7 @@ namespace SiliconStudio.Xenko.Engine
         {
             if(!querySettings.HasValue)
                 querySettings = NavigationQuerySettings.Default;
-            if (nativeNavmesh == IntPtr.Zero)
+            if (NavigationMeshInternal == IntPtr.Zero)
                 return null;
 
             Navigation.PathFindQuery query;
@@ -96,7 +97,7 @@ namespace SiliconStudio.Xenko.Engine
             query.Target = end;
             query.MaxPathPoints = querySettings.Value.MaxPathPoints;
             query.FindNearestPolyExtent = querySettings.Value.FindNearestPolyExtent;
-            Navigation.PathFindResult* queryResult = (Navigation.PathFindResult*)Navigation.DoPathFindQuery(nativeNavmesh, query);
+            Navigation.PathFindResult* queryResult = (Navigation.PathFindResult*)Navigation.DoPathFindQuery(NavigationMeshInternal, query);
             if(!queryResult->PathFound)
                 return null;
             
@@ -123,7 +124,7 @@ namespace SiliconStudio.Xenko.Engine
 
             if (!querySettings.HasValue)
                 querySettings = NavigationQuerySettings.Default;
-            if (nativeNavmesh == IntPtr.Zero)
+            if (NavigationMeshInternal == IntPtr.Zero)
                 return result;
 
 
@@ -132,7 +133,7 @@ namespace SiliconStudio.Xenko.Engine
             query.Target = end;
             query.MaxPathPoints = querySettings.Value.MaxPathPoints;
             query.FindNearestPolyExtent = querySettings.Value.FindNearestPolyExtent;
-            Navigation.RaycastResult* queryResult = (Navigation.RaycastResult*)Navigation.DoRaycastQuery(nativeNavmesh, query);
+            Navigation.RaycastResult* queryResult = (Navigation.RaycastResult*)Navigation.DoRaycastQuery(NavigationMeshInternal, query);
             if (!queryResult->Hit)
                 return result;
 
