@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Engine
         // these values are only used by the NavigationGizmo, the gizmo checks if these values are up to date and then sets them so only 1 gizmo uses this mesh at once
         internal int DebugMeshTileHash;
         internal ModelComponent DebugMesh;
-        
+
         public static Material CreateLayerDebugMaterial(GraphicsDevice device, int idx)
         {
             Material navmeshMaterial = Material.New(device, new MaterialDescriptor

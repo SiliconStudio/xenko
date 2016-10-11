@@ -51,12 +51,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             {
                 if (collider != null)
                 {
-                    int hash = 0;
-                    hash += newEntity.Transform.WorldMatrix.GetHashCode();
-                    foreach (var shape in collider.ColliderShapes)
-                    {
-                        hash += shape.GetHashCode();
-                    }
+                    int hash = NavigationMeshBuildUtils.HashEntityCollider(collider);
                     return (hash != existingObject.ParameterHash);
                 }
             }

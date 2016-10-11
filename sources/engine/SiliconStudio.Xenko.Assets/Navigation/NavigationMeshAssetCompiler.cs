@@ -142,7 +142,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
                 // Turn the entire entity hierarchy into a single list
                 List<Entity> sceneEntities = sceneAsset.Hierarchy.Parts.Select(x => x.Entity).ToList();
-
+                
                 // Update world matrices
                 foreach (Entity e in sceneEntities)
                 {
@@ -155,88 +155,89 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 
                 BoundingBox boundingBox = globalBoundingBox;
                 // Can't generate when no bounding box is specified
-                if (boundingBox == BoundingBox.Empty)
-                    return Task.FromResult(ResultStatus.Failed);
-
-                // Turn generated data into arrays
-                Vector3[] meshVertices = sceneNavigationMeshInputBuilder.Points.ToArray();
-                int[] meshIndices = sceneNavigationMeshInputBuilder.Indices.ToArray();
-
-                // NOTE: Reversed winding order as input to recast
-                int numSrcTriangles = meshIndices.Length / 3;
-                for (int i = 0; i < numSrcTriangles; i++)
+                // this means that either the user specified bounding box is wrong or the scene does not contain any colliders
+                if (boundingBox != BoundingBox.Empty)
                 {
-                    int j = meshIndices[i * 3 + 1];
-                    meshIndices[i * 3 + 1] = meshIndices[i * 3 + 2];
-                    meshIndices[i * 3 + 2] = j;
-                }
+                    // Turn generated data into arrays
+                    Vector3[] meshVertices = sceneNavigationMeshInputBuilder.Points.ToArray();
+                    int[] meshIndices = sceneNavigationMeshInputBuilder.Indices.ToArray();
 
-                // Check if settings changed to trigger a full rebuild
-                int currentSettingsHash = asset.GetHashCode();
-                currentBuild.SettingsHash = currentSettingsHash;
-                if (oldBuild != null && oldBuild.SettingsHash != currentBuild.SettingsHash)
-                {
-                    fullRebuild = true;
-                }
-               
-                if (oldBuild == null || fullRebuild)
-                {
-                    // Initialize navigation mesh
-                    generatedNavigationMesh.Initialize(buildSettings, asset.NavigationMeshAgentSettings.ToArray());
-                }
-                else
-                {
-                    // Perform incremental build on old navigation mesh
-                    generatedNavigationMesh = oldBuild.NavigationMesh;
-                }
-                currentBuild.NavigationMesh = generatedNavigationMesh;
-
-                // Generate all the layers corresponding to the various agent settings
-                for(int layer = 0; layer < asset.NavigationMeshAgentSettings.Count; layer++)
-                {
-                    Stopwatch layerBuildTimer = new Stopwatch();
-                    layerBuildTimer.Start();
-                    var agentSetting = asset.NavigationMeshAgentSettings[layer];
-
-                    // Flag tiles to build for this specific layer
-                    HashSet<Point> tilesToBuild = new HashSet<Point>();
-                    if (fullRebuild)
+                    // NOTE: Reversed winding order as input to recast
+                    int numSrcTriangles = meshIndices.Length/3;
+                    for (int i = 0; i < numSrcTriangles; i++)
                     {
-                        // For full rebuild just take the root bounding box for selecting tiles to build
-                        List<Point> newTileList = NavigationMeshBuildUtils.GetOverlappingTiles(buildSettings, boundingBox);
-                        foreach (Point p in newTileList)
-                            tilesToBuild.Add(p);
+                        int j = meshIndices[i*3 + 1];
+                        meshIndices[i*3 + 1] = meshIndices[i*3 + 2];
+                        meshIndices[i*3 + 2] = j;
+                    }
+
+                    // Check if settings changed to trigger a full rebuild
+                    int currentSettingsHash = asset.GetHashCode();
+                    currentBuild.SettingsHash = currentSettingsHash;
+                    if (oldBuild != null && oldBuild.SettingsHash != currentBuild.SettingsHash)
+                    {
+                        fullRebuild = true;
+                    }
+
+                    if (oldBuild == null || fullRebuild)
+                    {
+                        // Initialize navigation mesh
+                        generatedNavigationMesh.Initialize(buildSettings, asset.NavigationMeshAgentSettings.ToArray());
                     }
                     else
                     {
-                        // Apply an offset so their neighbouring tiles which are affected by the agent radius also get rebuild
-                        Vector3 agentOffset = new Vector3(agentSetting.Radius, 0, agentSetting.Radius);
-                        if(removedAreas != null)
-                            updatedAreas.AddRange(removedAreas);
-                        foreach (var update in updatedAreas)
+                        // Perform incremental build on old navigation mesh
+                        generatedNavigationMesh = oldBuild.NavigationMesh;
+                    }
+                    currentBuild.NavigationMesh = generatedNavigationMesh;
+
+                    // Generate all the layers corresponding to the various agent settings
+                    for (int layer = 0; layer < asset.NavigationMeshAgentSettings.Count; layer++)
+                    {
+                        Stopwatch layerBuildTimer = new Stopwatch();
+                        layerBuildTimer.Start();
+                        var agentSetting = asset.NavigationMeshAgentSettings[layer];
+
+                        // Flag tiles to build for this specific layer
+                        HashSet<Point> tilesToBuild = new HashSet<Point>();
+                        if (fullRebuild)
                         {
-                            BoundingBox agentSpecificBoundingBox = new BoundingBox
-                            {
-                                Minimum = update.Minimum - agentOffset,
-                                Maximum = update.Maximum + agentOffset,
-                            };
-                            List<Point> newTileList = NavigationMeshBuildUtils.GetOverlappingTiles(buildSettings, agentSpecificBoundingBox);
+                            // For full rebuild just take the root bounding box for selecting tiles to build
+                            List<Point> newTileList = NavigationMeshBuildUtils.GetOverlappingTiles(buildSettings, boundingBox);
                             foreach (Point p in newTileList)
                                 tilesToBuild.Add(p);
                         }
-                    }
-
-                    // Build tiles
-                    foreach (var tileToBuild in tilesToBuild)
-                    {
-                        BoundingBox tileBoundingBox = NavigationMeshBuildUtils.ClampBoundingBoxToTile(buildSettings, boundingBox, tileToBuild);
-                        if (boundingBox.Contains(ref tileBoundingBox) == ContainmentType.Disjoint)
+                        else
                         {
-                            generatedNavigationMesh.RemoveLayerTile(layer, tileToBuild);
-                            continue;
+                            // Apply an offset so their neighbouring tiles which are affected by the agent radius also get rebuild
+                            Vector3 agentOffset = new Vector3(agentSetting.Radius, 0, agentSetting.Radius);
+                            if (removedAreas != null)
+                                updatedAreas.AddRange(removedAreas);
+                            foreach (var update in updatedAreas)
+                            {
+                                BoundingBox agentSpecificBoundingBox = new BoundingBox
+                                {
+                                    Minimum = update.Minimum - agentOffset,
+                                    Maximum = update.Maximum + agentOffset,
+                                };
+                                List<Point> newTileList = NavigationMeshBuildUtils.GetOverlappingTiles(buildSettings, agentSpecificBoundingBox);
+                                foreach (Point p in newTileList)
+                                    tilesToBuild.Add(p);
+                            }
                         }
-                        generatedNavigationMesh.BuildLayerTile(layer,
-                            meshVertices.ToArray(), meshIndices.ToArray(), tileBoundingBox, tileToBuild);
+
+                        // Build tiles
+                        foreach (var tileToBuild in tilesToBuild)
+                        {
+                            BoundingBox tileBoundingBox = NavigationMeshBuildUtils.ClampBoundingBoxToTile(buildSettings, boundingBox, tileToBuild);
+                            if (boundingBox.Contains(ref tileBoundingBox) == ContainmentType.Disjoint)
+                            {
+                                generatedNavigationMesh.RemoveLayerTile(layer, tileToBuild);
+                                continue;
+                            }
+                            generatedNavigationMesh.BuildLayerTile(layer,
+                                meshVertices.ToArray(), meshIndices.ToArray(), tileBoundingBox, tileToBuild);
+                        }
                     }
                 }
 

@@ -51,11 +51,16 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             float tcs = settings.TileSize * settings.CellSize;
             Vector2 tileMin = new Vector2(tileCoord.X * tcs, tileCoord.Y * tcs);
             Vector2 tileMax = tileMin + new Vector2(tcs);
-
+            
             boundingBox.Minimum.X = tileMin.X;
             boundingBox.Minimum.Z = tileMin.Y;
             boundingBox.Maximum.X = tileMax.X;
             boundingBox.Maximum.Z = tileMax.Y;
+
+            // Snap Y to tile height to avoid height differences between tiles
+            boundingBox.Minimum.Y = (float)Math.Floor(boundingBox.Minimum.Y/settings.CellHeight) * settings.CellHeight;
+            boundingBox.Maximum.Y = (float)Math.Ceiling(boundingBox.Maximum.Y/settings.CellHeight) * settings.CellHeight;
+
             return boundingBox;
         }
 
