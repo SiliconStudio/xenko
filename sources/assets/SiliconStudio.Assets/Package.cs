@@ -436,7 +436,7 @@ namespace SiliconStudio.Assets
             try
             {
                 // Update source folders
-                UpdateSourceFolders();
+                UpdateSourceFolders(Assets);
 
                 if (IsDirty)
                 {
@@ -488,11 +488,12 @@ namespace SiliconStudio.Assets
 
                 foreach (var asset in Assets)
                 {
+                    var assetSaved = false;
                     if (asset.IsDirty)
                     {
                         if (saveParameters.AssetFilter?.Invoke(asset) ?? true)
                         {
-                            SaveSingleAsset(asset, log);
+                            SaveSingleAsset_NoUpdateSourceFolder(asset, log);
                         }
                         else
                         {
@@ -502,7 +503,7 @@ namespace SiliconStudio.Assets
 
                     // Add new files to .csproj
                     var projectAsset = asset.Asset as IProjectAsset;
-                    if (projectAsset != null && asset.SourceProject != null)
+                    if (projectAsset != null)
                     {
                         var projectFullPath = asset.SourceProject;
                         var projectInclude = asset.GetProjectInclude();
@@ -569,16 +570,22 @@ namespace SiliconStudio.Assets
 
         public bool SaveSingleAsset(AssetItem asset, ILogger log)
         {
+            // Make sure AssetItem.SourceFolder/Project are generated if they were null
+            asset.UpdateSourceFolders();
+            return SaveSingleAsset_NoUpdateSourceFolder(asset, log);
+        }
+
+        private bool SaveSingleAsset_NoUpdateSourceFolder(AssetItem asset, ILogger log)
+        {
             var assetPath = asset.FullPath;
 
             try
             {
-                //Handle the ProjectSourceCodeAsset differently then regular assets in regards of Path
+                // Handle the ProjectSourceCodeAsset differently then regular assets in regards of Path
                 var projectAsset = asset.Asset as IProjectAsset;
                 if (projectAsset != null)
                 {
-                    asset.SourceProject = asset.FindSourceProject();
-                    asset.SourceFolder = RootDirectory.GetFullDirectory();
+                    assetPath = asset.FullPath;
                 }
 
                 // Inject a copy of the base into the current asset when saving
@@ -1142,10 +1149,13 @@ namespace SiliconStudio.Assets
             }
         }
 
-        private void UpdateSourceFolders()
+        /// <summary>
+        /// In case <see cref="AssetItem.SourceFolder"/> or <see cref="AssetItem.SourceProject"/> were null, generates them.
+        /// </summary>
+        internal void UpdateSourceFolders(IReadOnlyCollection<AssetItem> assets)
         {
             // If there are not assets, we don't need to update or create an asset folder
-            if (Assets.Count == 0)
+            if (assets.Count == 0)
             {
                 return;
             }
@@ -1161,22 +1171,37 @@ namespace SiliconStudio.Assets
             // Use by default the first asset folders if not defined on the asset item
             var defaultFolder = sharedProfile.AssetFolders.Count > 0 ? sharedProfile.AssetFolders.First().Path : UDirectory.This;
             var assetFolders = new HashSet<UDirectory>(GetDistinctAssetFolderPaths());
-            foreach (var asset in Assets)
+            foreach (var asset in assets)
             {
-                if(asset.SourceProject != null) continue; //We don't add assets that depend on a project to the asset folders
-
-                if (asset.SourceFolder == null)
+                if (asset.Asset is IProjectAsset)
                 {
-                    asset.SourceFolder = defaultFolder.IsAbsolute ? defaultFolder.MakeRelative(RootDirectory) : defaultFolder;
-                    asset.IsDirty = true;
+                    if (asset.SourceFolder == null)
+                    {
+                        //var assetProjectFolder = asset.Location.FullPath;
+                        var lib = sharedProfile.ProjectReferences.FirstOrDefault(x => x.Type == ProjectType.Library && asset.Location.FullPath.StartsWith(x.Location.GetFileName()));
+                        if (lib != null)
+                        {
+                            asset.SourceProject = UPath.Combine(asset.Package.RootDirectory, lib.Location);
+                            asset.SourceFolder = asset.SourceProject.GetFullDirectory().GetParent().MakeRelative(RootDirectory);
+                            asset.IsDirty = true;
+                        }
+                    }
                 }
-
-                var assetFolderAbsolute = UPath.Combine(RootDirectory, asset.SourceFolder);
-                if (!assetFolders.Contains(assetFolderAbsolute) && asset.SourceProject == null) //ignore assets that depend on a csproj
+                else
                 {
-                    assetFolders.Add(assetFolderAbsolute);
-                    sharedProfile.AssetFolders.Add(new AssetFolder(assetFolderAbsolute));
-                    IsDirty = true;
+                    if (asset.SourceFolder == null)
+                    {
+                        asset.SourceFolder = defaultFolder.IsAbsolute ? defaultFolder.MakeRelative(RootDirectory) : defaultFolder;
+                        asset.IsDirty = true;
+                    }
+
+                    var assetFolderAbsolute = UPath.Combine(RootDirectory, asset.SourceFolder);
+                    if (!assetFolders.Contains(assetFolderAbsolute))
+                    {
+                        assetFolders.Add(assetFolderAbsolute);
+                        sharedProfile.AssetFolders.Add(new AssetFolder(assetFolderAbsolute));
+                        IsDirty = true;
+                    }
                 }
             }
         }
@@ -1300,7 +1325,7 @@ namespace SiliconStudio.Assets
             return listFiles;
         }
 
-        public static List<string> FindAssetsInProject(string projectFullPath, out string nameSpace)
+        public static List<UFile> FindAssetsInProject(string projectFullPath, out string nameSpace)
         {
             var realFullPath = new UFile(projectFullPath);
             var project = VSProjectHelper.LoadProject(realFullPath);
@@ -1311,7 +1336,7 @@ namespace SiliconStudio.Assets
 
             var result = project.Items.Where(x => (x.ItemType == "Compile" || x.ItemType == "None") && string.IsNullOrEmpty(x.GetMetadataValue("AutoGen")))
                 .Select(x => new UFile(x.EvaluatedInclude)).Where(x => AssetRegistry.IsProjectAssetFileExtension(x.GetFileExtension()))
-                .Select(projectItem => UPath.Combine(dir, projectItem)).Select(csPath => (string)csPath).ToList();
+                .Select(projectItem => UPath.Combine(dir, projectItem)).ToList();
 
             project.ProjectCollection.UnloadAllProjects();
             project.ProjectCollection.Dispose();
