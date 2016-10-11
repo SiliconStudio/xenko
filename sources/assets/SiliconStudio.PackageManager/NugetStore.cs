@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using NuGet;
 using SiliconStudio.Core.Windows;
 
@@ -324,14 +326,9 @@ namespace SiliconStudio.PackageManager
             return ToNugetPackages(manager.SourceRepository.Search(searchTerm, allowPrereleaseVersions)).AsQueryable();
         }
 
-        public IEnumerable<NugetPackage> GetUpdates(NugetPackageName[] nugetPackageName, bool includePrerelease, bool includeAllVersions)
+        public async Task<IEnumerable<NugetPackage>> GetUpdates(NugetPackageName nugetPackageName, bool includePrerelease, bool includeAllVersions, CancellationToken cancellationToken)
         {
-            var names = new PackageName[nugetPackageName.Length];
-            for (int i = 0; i < nugetPackageName.Length; i++)
-            {
-                names[i] = nugetPackageName[i].Name;
-            }
-            var list = manager.SourceRepository.GetUpdates(names, includePrerelease, includeAllVersions);
+            var list = manager.SourceRepository.GetUpdates(new [] {nugetPackageName.Name}, includePrerelease, includeAllVersions);
             var res = new List<NugetPackage>();
             foreach (var package in list)
             {
