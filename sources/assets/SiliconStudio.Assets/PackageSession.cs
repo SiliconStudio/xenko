@@ -846,7 +846,7 @@ namespace SiliconStudio.Assets
                 loadedPackages.Add(package);
 
                 // Package has been loaded, register it in constraints so that we force each subsequent loads to use this one (or fails if version doesn't match)
-                session.constraintProvider.AddConstraint(package.Meta.Name, new NugetVersionSpec(package.Meta.Version.ToSemanticVersion()));
+                session.constraintProvider.AddConstraint(package.Meta.Name, package.Meta.Version != null ? new NugetVersionSpec(package.Meta.Version.ToSemanticVersion()) : null);
 
                 // Load package dependencies
                 // This will perform necessary asset upgrades

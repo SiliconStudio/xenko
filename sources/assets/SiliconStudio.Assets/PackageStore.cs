@@ -247,7 +247,7 @@ namespace SiliconStudio.Assets
 
             if (store != null)
             {
-                var versionSpec = versionRange.ToVersionSpec();
+                var versionSpec = versionRange?.ToVersionSpec();
                 var package = store.FindLocalPackage(packageName, versionSpec, constraintProvider, allowPreleaseVersion, allowUnlisted);
 
                 // If package was not found, 
