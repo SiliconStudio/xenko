@@ -16,7 +16,7 @@ namespace SiliconStudio.Assets
     /// </summary>
     [DebuggerTypeProxy(typeof(CollectionDebugView))]
     [DebuggerDisplay("Count = {Count}")]
-    public sealed class PackageAssetCollection : ICollection<AssetItem>, ICollection, INotifyCollectionChanged
+    public sealed class PackageAssetCollection : ICollection<AssetItem>, IReadOnlyCollection<AssetItem>, ICollection, INotifyCollectionChanged
     {
         private readonly Package package;
         private object syncRoot;

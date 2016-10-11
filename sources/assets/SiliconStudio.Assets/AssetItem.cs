@@ -314,6 +314,14 @@ namespace SiliconStudio.Assets
             return result;
         }
 
+        /// <summary>
+        /// In case <see cref="SourceFolder"/> or <see cref="SourceProject"/> were null, generates them.
+        /// </summary>
+        public void UpdateSourceFolders()
+        {
+            Package.UpdateSourceFolders(new[] { this });
+        }
+
         private void FindAssetsFromChange(MemberPath path, MemberPathAction action, object value, List<AssetItem> items)
         {
             object oldValue;
