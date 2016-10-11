@@ -107,7 +107,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 // Build cache items to build incrementally
                 currentBuild = new NavigationMeshBuildCacheBuild();
                 oldBuild = buildCache.FindBuild(assetUrl);
-
+                
                 // The output object of the compilation
                 NavigationMesh generatedNavigationMesh = new NavigationMesh();
 
@@ -265,6 +265,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             private void CollectInputGeometry(List<Entity> sceneEntities)
             {
                 // Reset state
+                fullRebuild = false;
                 updatedAreas.Clear();
                 fullRebuild = oldBuild == null;
 
