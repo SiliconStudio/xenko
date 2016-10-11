@@ -71,7 +71,16 @@ namespace SiliconStudio.Xenko.Physics
 
         public override int GetHashCode()
         {
-            return LocalOffset.GetHashCode() + LocalRotation.GetHashCode() + Length.GetHashCode() + Radius.GetHashCode() + Is2D.GetHashCode();
+            unchecked
+            {
+                var hashCode = Is2D.GetHashCode();
+                hashCode = (hashCode*397) ^ Length.GetHashCode();
+                hashCode = (hashCode*397) ^ Radius.GetHashCode();
+                hashCode = (hashCode*397) ^ (int)Orientation;
+                hashCode = (hashCode*397) ^ LocalOffset.GetHashCode();
+                hashCode = (hashCode*397) ^ LocalRotation.GetHashCode();
+                return hashCode;
+            }
         }
     }
 }

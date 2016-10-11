@@ -35,7 +35,10 @@ namespace SiliconStudio.Xenko.Physics
 
         public override int GetHashCode()
         {
-            return Offset.GetHashCode() + Normal.GetHashCode();
+            unchecked
+            {
+                return (Normal.GetHashCode()*397) ^ Offset.GetHashCode();
+            }
         }
     }
 }
