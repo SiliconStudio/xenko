@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
-using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
@@ -27,7 +26,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
         /// Scene that is used for building the navigation mesh
         /// </summary>
         [DataMember(1000)]
-        public Scene DefaultScene { get; set; }
+        public Scene Scene { get; set; }
 
         /// <summary>
         /// The bounding box used for the navigation mesh, ignored if <see cref="AutoGenerateBoundingBox"/> is set to true
@@ -62,7 +61,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
         public override int GetHashCode()
         {
-            int hash = BoundingBox.GetHashCode() + AutoGenerateBoundingBox.GetHashCode() + BuildSettings.GetHashCode() + DefaultScene.Name.GetHashCode();
+            int hash = BoundingBox.GetHashCode() + AutoGenerateBoundingBox.GetHashCode() + BuildSettings.GetHashCode() + Scene.Name.GetHashCode();
             hash += 379*AllowedCollisionGroups.GetHashCode();
             if (NavigationMeshAgentSettings != null)
             {
@@ -76,9 +75,9 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
         public IEnumerable<IReference> EnumerateCompileTimeDependencies(PackageSession session)
         {
-            if (DefaultScene != null)
+            if (Scene != null)
             {
-                var reference = AttachedReferenceManager.GetAttachedReference(DefaultScene);
+                var reference = AttachedReferenceManager.GetAttachedReference(Scene);
                 yield return new AssetReference<SceneAsset>(reference.Id, reference.Url);
             }
         }

@@ -83,9 +83,9 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 base.ComputeParameterHash(writer);
 
                 // Hash relevant scene objects
-                if (asset.DefaultScene != null)
+                if (asset.Scene != null)
                 {
-                    string sceneUrl = AttachedReferenceManager.GetUrl(asset.DefaultScene);
+                    string sceneUrl = AttachedReferenceManager.GetUrl(asset.Scene);
                     var sceneAsset = (SceneAsset)package.Session.FindAsset(sceneUrl)?.Asset;
 
                     // Turn the entire entity hierarchy into a single list
@@ -112,7 +112,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 NavigationMesh generatedNavigationMesh = new NavigationMesh();
 
                 // No scene specified, result in failure
-                if (asset.DefaultScene == null)
+                if (asset.Scene == null)
                     return Task.FromResult(ResultStatus.Failed);
 
                 if (asset.AutoGenerateBoundingBox)
@@ -134,7 +134,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                     return Task.FromResult(ResultStatus.Failed);
 
                 var assetManager = new ContentManager();
-                string sceneUrl = AttachedReferenceManager.GetUrl(asset.DefaultScene);
+                string sceneUrl = AttachedReferenceManager.GetUrl(asset.Scene);
                 var sceneAsset = (SceneAsset)package.Session.FindAsset(sceneUrl)?.Asset;
 
                 if (sceneAsset == null)
