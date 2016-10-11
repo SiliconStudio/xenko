@@ -1,15 +1,10 @@
-﻿using System;
+﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using SiliconStudio.Core;
-using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Native;
-using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Composers;
 
 namespace SiliconStudio.Xenko.Engine.Processors
 {
