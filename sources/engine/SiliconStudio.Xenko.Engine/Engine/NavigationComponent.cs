@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Engine
     [DataContract("NavigationComponent")]
     [Display("Navigation", Expand = ExpandRule.Once)]
     [ComponentOrder(20000)]
-    [DefaultEntityComponentProcessor(typeof(NavigationProcessor))]
+    [DefaultEntityComponentProcessor(typeof(NavigationProcessor), ExecutionMode = ExecutionMode.Runtime)]
     public class NavigationComponent : EntityComponent
     {
         [DataMember(10)]
