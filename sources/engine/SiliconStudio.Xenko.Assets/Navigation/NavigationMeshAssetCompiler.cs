@@ -189,6 +189,8 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                         // Perform incremental build on old navigation mesh
                         generatedNavigationMesh = oldBuild.NavigationMesh;
                     }
+
+                    // Set the new navigation mesh in the current build
                     currentBuild.NavigationMesh = generatedNavigationMesh;
 
                     // Generate all the layers corresponding to the various agent settings
@@ -240,6 +242,9 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                         }
                     }
                 }
+
+                // Store used bounding box in navigation mesh
+                generatedNavigationMesh.BoundingBox = boundingBox;
 
                 assetManager.Save(assetUrl, generatedNavigationMesh);
                 buildCache.AddBuild(assetUrl, currentBuild);

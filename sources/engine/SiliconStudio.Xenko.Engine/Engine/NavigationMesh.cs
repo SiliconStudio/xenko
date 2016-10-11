@@ -33,6 +33,9 @@ namespace SiliconStudio.Xenko.Engine
         // Multiple layers corresponding to multiple agent settings
         [DataMemberCustomSerializer] public NavigationMeshLayer[] Layers;
 
+        // Bounding box used when building
+        public BoundingBox BoundingBox;
+
         // Used internally to detect tile changes
         internal int TileHash;
 
@@ -41,7 +44,7 @@ namespace SiliconStudio.Xenko.Engine
         internal int DebugMeshTileHash;
         internal ModelComponent DebugMesh;
 
-        public static Material CreateLayerDebugMaterial(GraphicsDevice device, int idx)
+        public static Material CreateDebugMaterial(GraphicsDevice device, Color4 color)
         {
             Material navmeshMaterial = Material.New(device, new MaterialDescriptor
             {
@@ -53,28 +56,37 @@ namespace SiliconStudio.Xenko.Engine
                 }
             });
 
-            Color4 deviceSpaceColor = new ColorHSV((idx * 80.0f + 90.0f) % 360.0f, 0.95f, 0.75f, 1.0f).ToColor().ToColorSpace(device.ColorSpace);
+            Color4 deviceSpaceColor = color.ToColorSpace(device.ColorSpace);
 
             // set the color to the material
             navmeshMaterial.Parameters.Set(MaterialKeys.DiffuseValue, deviceSpaceColor);
             navmeshMaterial.Parameters.Set(MaterialKeys.EmissiveIntensity, 1.0f);
             navmeshMaterial.Parameters.Set(MaterialKeys.EmissiveValue, deviceSpaceColor);
-            navmeshMaterial.IsLightDependent = false;
-            navmeshMaterial.HasTransparency = false;
 
             return navmeshMaterial;
         }
+        public static Material CreateLayerDebugMaterial(GraphicsDevice device, int idx)
+        {
+            return CreateDebugMaterial(device, new ColorHSV((idx*80.0f + 90.0f)%360.0f, 0.95f, 0.75f, 1.0f).ToColor());
+        }
+        public static Material CreateBoundingBoxDebugMaterial(GraphicsDevice device)
+        {
+            return CreateDebugMaterial(device, Color4.White);
+        }
 
         public ModelComponent CreateDebugModelComponent(GraphicsDevice device, 
-            List<GeometricPrimitive> generatedPrimitives)
+            List<GeometricPrimitive> generatedPrimitives, bool useMultiColorLayers = true)
         {
             Entity entity = new Entity("Navigation Debug Entity");
 
             Model model = new Model();
             for (int l = 0; l < Layers.Length; l++)
             {
-                Material layerMaterial = CreateLayerDebugMaterial(device, l);
-                model.Add(layerMaterial);
+                if (useMultiColorLayers)
+                {
+                    Material layerMaterial = CreateLayerDebugMaterial(device, l);
+                    model.Add(layerMaterial);
+                }
                 foreach (var p in Layers[l].Tiles)
                 {
                     NavigationMeshTile tile = p.Value;
@@ -109,13 +121,46 @@ namespace SiliconStudio.Xenko.Engine
                     Mesh mesh = new Mesh
                     {
                         Draw = draw,
-                        MaterialIndex = l,
+                        MaterialIndex = useMultiColorLayers ? l : 0,
                     };
                     mesh.BoundingBox = bb;
                     model.Add(mesh);
                 }
             }
 
+            // Single white color
+            if (!useMultiColorLayers)
+                model.Add(CreateDebugMaterial(device, Color4.White));
+
+            // Add a new model component
+            return new ModelComponent(model);
+        }
+
+        public ModelComponent CreateDebugBoundingBoxModelComponent(GraphicsDevice device, List<GeometricPrimitive> generatedPrimitives)
+        {
+            Model model = new Model();
+
+            // Visualize bounding box  
+            using (GeometricMeshData<VertexPositionNormalTexture> boundingBoxMeshData = GeometricPrimitive.Cube.New(BoundingBox.Extent * 2))
+            {
+                // Move box vertices to match bounding box
+                for (int i = 0; i < boundingBoxMeshData.Vertices.Length; i++)
+                {
+                    boundingBoxMeshData.Vertices[i].Position += BoundingBox.Center;
+                }
+
+                GeometricPrimitive boundingBoxPrimitive = new GeometricPrimitive(device, boundingBoxMeshData);
+                generatedPrimitives.Add(boundingBoxPrimitive);
+                MeshDraw draw = boundingBoxPrimitive.ToMeshDraw();
+                Mesh boundingBoxMesh = new Mesh
+                {
+                    Draw = draw,
+                };
+                boundingBoxMesh.BoundingBox = BoundingBox;
+                model.Add(CreateBoundingBoxDebugMaterial(device));
+                model.Add(boundingBoxMesh);
+            }
+            
             // Add a new model component
             return new ModelComponent(model);
         }
@@ -334,9 +379,11 @@ namespace SiliconStudio.Xenko.Engine
     internal class NavigationMeshSerializer : DataSerializer<NavigationMesh>, IDataSerializerInitializer
     {
         private DictionarySerializer<Point, NavigationMeshTile> tilesSerializer;
+        private DataSerializer<BoundingBox> boundingBoxSerializer;
 
         public void Initialize(SerializerSelector serializerSelector)
         {
+            boundingBoxSerializer = MemberSerializer<BoundingBox>.Create(serializerSelector, false);
             tilesSerializer = new DictionarySerializer<Point, NavigationMeshTile>();
             tilesSerializer.Initialize(serializerSelector);
         }
@@ -345,6 +392,8 @@ namespace SiliconStudio.Xenko.Engine
             // Serialize tile size because it is needed
             stream.Serialize(ref obj.BuildSettings.TileSize);
             stream.Serialize(ref obj.BuildSettings.CellSize);
+
+            boundingBoxSerializer.Serialize(ref obj.BoundingBox, mode, stream);
 
             int numLayers = obj.Layers?.Length ?? 0;
             stream.Serialize(ref numLayers);
