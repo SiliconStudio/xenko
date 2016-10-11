@@ -43,12 +43,33 @@ namespace SiliconStudio.Xenko.Engine
         public float DetailSampleDistInput;
         [DataMemberRange(0.0, float.MaxValue)]
         public float DetailSampleMaxErrorInput;
+        
+        public bool Equals(NavigationMeshBuildSettings other)
+        {
+            return CellHeight.Equals(other.CellHeight) && CellSize.Equals(other.CellSize) && TileSize == other.TileSize && RegionMinSize.Equals(other.RegionMinSize) && RegionMergeSize.Equals(other.RegionMergeSize) && EdgeMaxLen.Equals(other.EdgeMaxLen) && EdgeMaxError.Equals(other.EdgeMaxError) && DetailSampleDistInput.Equals(other.DetailSampleDistInput) && DetailSampleMaxErrorInput.Equals(other.DetailSampleMaxErrorInput);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is NavigationMeshBuildSettings && Equals((NavigationMeshBuildSettings)obj);
+        }
 
         public override int GetHashCode()
         {
-            return CellHeight.GetHashCode() + CellSize.GetHashCode() + TileSize.GetHashCode() +
-                   RegionMinSize.GetHashCode() + RegionMergeSize.GetHashCode() + EdgeMaxLen.GetHashCode() + EdgeMaxError.GetHashCode() +
-                   DetailSampleMaxErrorInput.GetHashCode() + DetailSampleDistInput.GetHashCode();
+            unchecked
+            {
+                var hashCode = CellHeight.GetHashCode();
+                hashCode = (hashCode*397) ^ CellSize.GetHashCode();
+                hashCode = (hashCode*397) ^ TileSize;
+                hashCode = (hashCode*397) ^ RegionMinSize.GetHashCode();
+                hashCode = (hashCode*397) ^ RegionMergeSize.GetHashCode();
+                hashCode = (hashCode*397) ^ EdgeMaxLen.GetHashCode();
+                hashCode = (hashCode*397) ^ EdgeMaxError.GetHashCode();
+                hashCode = (hashCode*397) ^ DetailSampleDistInput.GetHashCode();
+                hashCode = (hashCode*397) ^ DetailSampleMaxErrorInput.GetHashCode();
+                return hashCode;
+            }
         }
     };
 

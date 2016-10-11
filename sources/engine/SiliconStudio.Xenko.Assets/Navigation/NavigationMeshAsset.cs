@@ -61,16 +61,17 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
         public override int GetHashCode()
         {
-            int hash = BoundingBox.GetHashCode() + AutoGenerateBoundingBox.GetHashCode() + BuildSettings.GetHashCode() + Scene.Name.GetHashCode();
-            hash += 379*AllowedCollisionGroups.GetHashCode();
-            if (NavigationMeshAgentSettings != null)
+            unchecked
             {
-                foreach (var agentSetting in NavigationMeshAgentSettings)
-                {
-                    hash += agentSetting.GetHashCode();
-                }
+                var hashCode = NavigationMeshAgentSettings?.GetHashCode() ?? 0;
+                hashCode = (hashCode*397) ^ BoundingBox.GetHashCode();
+                hashCode = (hashCode*397) ^ AutoGenerateBoundingBox.GetHashCode();
+                hashCode = (hashCode*397) ^ (int)AllowedCollisionGroups;
+                hashCode = (hashCode*397) ^ BuildSettings.GetHashCode();
+                if(Scene != null)
+                    hashCode = (hashCode*397) ^ Scene.Name.GetHashCode();
+                return hashCode;
             }
-            return hash;
         }
 
         public IEnumerable<IReference> EnumerateCompileTimeDependencies(PackageSession session)

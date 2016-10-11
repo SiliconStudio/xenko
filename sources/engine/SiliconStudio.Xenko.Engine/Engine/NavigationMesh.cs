@@ -217,7 +217,8 @@ namespace SiliconStudio.Xenko.Engine
             {
                 foreach (var tile in layer.Tiles)
                 {
-                    TileHash += tile.GetHashCode() + tile.Value.GetHashCode();
+                    TileHash = (TileHash * 397) ^ tile.GetHashCode();
+                    TileHash = (TileHash * 397) ^ tile.Value.GetHashCode();
                 }
             }
         }

@@ -20,9 +20,9 @@ namespace SiliconStudio.Xenko.Assets.Navigation
         public static List<Point> GetOverlappingTiles(NavigationMeshBuildSettings settings, BoundingBox boundingBox)
         {
             List<Point> ret = new List<Point>();
-            float tcs = settings.TileSize * settings.CellSize;
-            Vector2 start = boundingBox.Minimum.XZ() / tcs;
-            Vector2 end = boundingBox.Maximum.XZ() / tcs;
+            float tcs = settings.TileSize*settings.CellSize;
+            Vector2 start = boundingBox.Minimum.XZ()/tcs;
+            Vector2 end = boundingBox.Maximum.XZ()/tcs;
             Point startTile = new Point(
                 (int)Math.Floor(start.X),
                 (int)Math.Floor(start.Y));
@@ -48,18 +48,18 @@ namespace SiliconStudio.Xenko.Assets.Navigation
         /// <returns></returns>
         public static BoundingBox ClampBoundingBoxToTile(NavigationMeshBuildSettings settings, BoundingBox boundingBox, Point tileCoord)
         {
-            float tcs = settings.TileSize * settings.CellSize;
-            Vector2 tileMin = new Vector2(tileCoord.X * tcs, tileCoord.Y * tcs);
+            float tcs = settings.TileSize*settings.CellSize;
+            Vector2 tileMin = new Vector2(tileCoord.X*tcs, tileCoord.Y*tcs);
             Vector2 tileMax = tileMin + new Vector2(tcs);
-            
+
             boundingBox.Minimum.X = tileMin.X;
             boundingBox.Minimum.Z = tileMin.Y;
             boundingBox.Maximum.X = tileMax.X;
             boundingBox.Maximum.Z = tileMax.Y;
 
             // Snap Y to tile height to avoid height differences between tiles
-            boundingBox.Minimum.Y = (float)Math.Floor(boundingBox.Minimum.Y/settings.CellHeight) * settings.CellHeight;
-            boundingBox.Maximum.Y = (float)Math.Ceiling(boundingBox.Maximum.Y/settings.CellHeight) * settings.CellHeight;
+            boundingBox.Minimum.Y = (float)Math.Floor(boundingBox.Minimum.Y/settings.CellHeight)*settings.CellHeight;
+            boundingBox.Maximum.Y = (float)Math.Ceiling(boundingBox.Maximum.Y/settings.CellHeight)*settings.CellHeight;
 
             return boundingBox;
         }
@@ -73,9 +73,9 @@ namespace SiliconStudio.Xenko.Assets.Navigation
         /// <param name="binormal"></param>
         public static void GenerateTangentBinormal(Vector3 normal, out Vector3 tangent, out Vector3 binormal)
         {
-            tangent = Math.Abs(normal.Y) < 0.01f ? 
-                new Vector3(normal.Z, normal.Y, -normal.X) : 
-                new Vector3(-normal.Y, normal.X, normal.Z);
+            tangent = Math.Abs(normal.Y) < 0.01f
+                ? new Vector3(normal.Z, normal.Y, -normal.X)
+                : new Vector3(-normal.Y, normal.X, normal.Z);
             tangent.Normalize();
             binormal = Vector3.Cross(normal, tangent);
             tangent = Vector3.Cross(binormal, normal);
@@ -96,10 +96,10 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             GenerateTangentBinormal(up, out right, out forward);
 
             points = new Vector3[4];
-            points[0] = -forward * size - right * size + up * plane.D;
-            points[1] = -forward * size + right * size + up * plane.D;
-            points[2] = forward * size - right * size + up * plane.D;
-            points[3] = forward * size + right * size + up * plane.D;
+            points[0] = -forward*size - right*size + up*plane.D;
+            points[1] = -forward*size + right*size + up*plane.D;
+            points[2] = forward*size - right*size + up*plane.D;
+            points[3] = forward*size + right*size + up*plane.D;
 
             inds = new int[6];
             // CCW
@@ -121,7 +121,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             boundingBox.Minimum -= offsets;
             boundingBox.Maximum += offsets;
         }
-        
+
         /// <summary>
         /// Hashes and entity's transform and it's collider shape settings
         /// </summary>
@@ -130,11 +130,11 @@ namespace SiliconStudio.Xenko.Assets.Navigation
         public static int HashEntityCollider(StaticColliderComponent collider)
         {
             int hash = 0;
-            hash += collider.Entity.Transform.WorldMatrix.GetHashCode();
-            hash += 379 * collider.CollisionGroup.GetHashCode();
+            hash = (hash*397) ^ collider.Entity.Transform.WorldMatrix.GetHashCode();
+            hash = (hash*397) ^ collider.CollisionGroup.GetHashCode();
             foreach (var shape in collider.ColliderShapes)
             {
-                hash += shape.GetHashCode();
+                hash = (hash*397) ^ shape.GetHashCode();
             }
             return hash;
         }
