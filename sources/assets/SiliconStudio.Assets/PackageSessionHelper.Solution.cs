@@ -9,6 +9,7 @@ using NuGet;
 using SiliconStudio.Core.VisualStudio;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Serialization;
+using Version = System.Version;
 
 namespace SiliconStudio.Assets
 {
