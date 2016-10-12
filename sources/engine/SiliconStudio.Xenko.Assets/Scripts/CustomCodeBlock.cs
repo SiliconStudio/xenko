@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             var block = blockStatement as BlockSyntax;
             if (block != null)
             {
-                var compilationUnit = RoslynHelper.CreateCompilationUnitFromBlock(ref block);
+                RoslynHelper.CreateCompilationUnitFromBlock(ref block);
 
                 foreach (var slot in Slots.Where(x => x.Kind == SlotKind.Value))
                 {
@@ -72,16 +72,14 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                         // Input
                         // Find expression
                         var expression = context.GenerateExpression(slot);
-                        if (expression != null)
-                        {
-                            // Assign it to a local var with generated name
-                            context.AddStatement(LocalDeclarationStatement(
-                                VariableDeclaration(IdentifierName("var"))
-                                    .WithVariables(SingletonSeparatedList(
-                                        VariableDeclarator(Identifier(slotName))
-                                            .WithInitializer(
-                                                EqualsValueClause(expression))))));
-                        }
+
+                        // Assign it to a local var with generated name
+                        context.AddStatement(LocalDeclarationStatement(
+                            VariableDeclaration(IdentifierName("var"))
+                                .WithVariables(SingletonSeparatedList(
+                                    VariableDeclarator(Identifier(slotName))
+                                        .WithInitializer(
+                                            EqualsValueClause(expression))))));
                     }
                     else
                     {

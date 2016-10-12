@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                 var slot = Slots[index];
                 if (slot.Direction == SlotDirection.Input && slot.Kind == SlotKind.Value)
                 {
-                    var argument = context.GenerateExpression(slot) ?? IdentifierName("null");
+                    var argument = context.GenerateExpression(slot);
 
                     if (IsMemberCall && !memberCallProcessed)
                     {

@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                 return;
 
             // Evaluate value
-            var newValue = context.GenerateExpression(InputSlot) ?? ConvertLiteralExpression(Variable.Type, InputSlot.Value);
+            var newValue = context.GenerateExpression(InputSlot);
 
             // Generate assignment statement
             context.AddStatement(ExpressionStatement(AssignmentExpression(SyntaxKind.SimpleAssignmentExpression, IdentifierName(Variable.Name), newValue)));
@@ -39,19 +39,6 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             newSlots.Add(OutputExecutionSlotDefinition);
 
             newSlots.Add(new Slot(SlotDirection.Input, SlotKind.Value));
-        }
-
-        private LiteralExpressionSyntax ConvertLiteralExpression(string type, object value)
-        {
-            if (type == "bool")
-            {
-                return LiteralExpression(value is bool && (bool)value ? SyntaxKind.TrueLiteralExpression : SyntaxKind.FalseLiteralExpression);
-            }
-            else
-            {
-                // TODO: Support more types
-                throw new NotImplementedException($"Can't convert literal expression of type {type}");
-            }
         }
     }
 }

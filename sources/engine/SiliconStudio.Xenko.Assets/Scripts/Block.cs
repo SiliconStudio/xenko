@@ -163,6 +163,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         [RegenerateTitle]
         public string FunctionName { get; set; }
 
+        [DataMemberIgnore]
         public override Slot OutputExecution => FindSlot(SlotDirection.Output, SlotKind.Execution, SlotFlags.AutoflowExecution);
 
         public override void GenerateSlots(IList<Slot> newSlots, SlotGeneratorContext context)

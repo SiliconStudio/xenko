@@ -10,13 +10,11 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         public string Name { get; }
 
-        public object Value { get; }
-
-        public virtual object ObjectValue => null;
+        public string Value { get; }
 
         public SlotFlags Flags { get; }
 
-        protected SlotDefinition(SlotDirection direction, SlotKind kind, string name, object value, SlotFlags flags)
+        protected SlotDefinition(SlotDirection direction, SlotKind kind, string name, string value, SlotFlags flags)
         {
             Direction = direction;
             Kind = kind;
@@ -32,7 +30,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                 Direction = definition.Direction,
                 Kind = definition.Kind,
                 Name = definition.Name,
-                Value = definition.ObjectValue,
+                Value = definition.Value,
                 Flags = definition.Flags,
             };
         }
@@ -47,12 +45,12 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             return new SlotDefinition(SlotDirection.Output, SlotKind.Execution, name, null, flags);
         }
 
-        public static SlotDefinition NewValueInput(string name, object value, SlotFlags flags = SlotFlags.None)
+        public static SlotDefinition NewValueInput(string name, string value, SlotFlags flags = SlotFlags.None)
         {
             return new SlotDefinition(SlotDirection.Input, SlotKind.Value, name, value, flags);
         }
 
-        public static SlotDefinition NewValueOutput(string name, object value, SlotFlags flags = SlotFlags.None)
+        public static SlotDefinition NewValueOutput(string name, string value, SlotFlags flags = SlotFlags.None)
         {
             return new SlotDefinition(SlotDirection.Output, SlotKind.Value, name, value, flags);
         }

@@ -79,25 +79,34 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             return asset.Links.FirstOrDefault(x => x.Target == inputSlot && x.Source != null);
         }
 
-        public ExpressionSyntax GenerateExpression(Slot conditionSlot)
+        public ExpressionSyntax GenerateExpression(Slot slot)
         {
             // Automatically flow to next execution slot (if it has a null name => default behavior)
-            if (conditionSlot != null)
+            if (slot != null)
             {
-                var nextExecutionLink = asset.Links.FirstOrDefault(x => x.Target == conditionSlot);
-                if (nextExecutionLink != null)
+                var sourceLink = asset.Links.FirstOrDefault(x => x.Target == slot);
+                if (sourceLink != null)
                 {
                     string localName;
-                    if (outputSlotLocals.TryGetValue(nextExecutionLink.Source, out localName))
+                    if (outputSlotLocals.TryGetValue(sourceLink.Source, out localName))
                     {
                         return IdentifierName(localName);
                     }
 
-                    return ((IExpressionBlock)nextExecutionLink.Source.Owner).GenerateExpression(this, nextExecutionLink.Source);
+                    // Generate code
+                    var expression = ((IExpressionBlock)sourceLink.Source.Owner).GenerateExpression(this, sourceLink.Source);
+
+                    return expression;
+                }
+
+                if (slot.Value != null)
+                {
+                    return ParseExpression(slot.Value);
                 }
             }
 
-            return null;
+            // TODO: Issue an error
+            return IdentifierName("unknown");
         }
 
         public BasicBlock GetOrCreateBasicBlock(ExecutionBlock block)

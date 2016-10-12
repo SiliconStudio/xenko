@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         [DataMemberIgnore]
         public Slot ConditionSlot => FindSlot(ConditionSlotDefinition);
 
-        public static readonly SlotDefinition ConditionSlotDefinition = SlotDefinition.NewValueInput("Condition", true);
+        public static readonly SlotDefinition ConditionSlotDefinition = SlotDefinition.NewValueInput("Condition", "true");
         public static readonly SlotDefinition TrueSlotDefinition = SlotDefinition.NewExecutionOutput("True");
         public static readonly SlotDefinition FalseSlotDefinition = SlotDefinition.NewExecutionOutput("False", SlotFlags.AutoflowExecution);
 
@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             var trueBlock = context.GetOrCreateBasicBlockFromSlot(TrueSlot);
 
             // Generate condition
-            var condition = context.GenerateExpression(ConditionSlot) ?? LiteralExpression(ConditionSlot.Value is bool && (bool)ConditionSlot.Value ? SyntaxKind.TrueLiteralExpression : SyntaxKind.FalseLiteralExpression);
+            var condition = context.GenerateExpression(ConditionSlot);
 
             // if (condition) goto trueBlock;
             if (trueBlock != null)
