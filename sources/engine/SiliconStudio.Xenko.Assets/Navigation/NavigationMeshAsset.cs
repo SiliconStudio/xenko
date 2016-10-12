@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
@@ -63,7 +64,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
         {
             unchecked
             {
-                var hashCode = NavigationMeshAgentSettings?.GetHashCode() ?? 0;
+                var hashCode = NavigationMeshAgentSettings?.ComputeHash() ?? 0;
                 hashCode = (hashCode*397) ^ BoundingBox.GetHashCode();
                 hashCode = (hashCode*397) ^ AutoGenerateBoundingBox.GetHashCode();
                 hashCode = (hashCode*397) ^ (int)IncludedCollisionGroups;

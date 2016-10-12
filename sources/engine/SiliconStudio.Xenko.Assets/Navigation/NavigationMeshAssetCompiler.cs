@@ -88,14 +88,11 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                     string sceneUrl = AttachedReferenceManager.GetUrl(asset.Scene);
                     var sceneAsset = (SceneAsset)package.Session.FindAsset(sceneUrl)?.Asset;
 
-                    // Turn the entire entity hierarchy into a single list
-                    List<Entity> sceneEntities = sceneAsset.Hierarchy.Parts.Select(x => x.Entity).ToList();
+                    // Clone scene asset because we update the world transformation matrices
+                    var clonedSceneAsset = (SceneAsset)AssetCloner.Clone(sceneAsset);
 
-                    // Update world matrices
-                    foreach (Entity e in sceneEntities)
-                    {
-                        e.Transform.UpdateWorldMatrix();
-                    }
+                    // Turn the entire entity hierarchy into a single list
+                    List<Entity> sceneEntities = clonedSceneAsset.Hierarchy.Parts.Select(x => x.Entity).ToList();
 
                     int sceneHash = CollectInputHash(sceneEntities);
                     writer.Write(sceneHash);
@@ -140,14 +137,11 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 if (sceneAsset == null)
                     return Task.FromResult(ResultStatus.Failed);
 
+                // Clone scene asset because we update the world transformation matrices
+                var clonedSceneAsset = (SceneAsset)AssetCloner.Clone(sceneAsset);
+
                 // Turn the entire entity hierarchy into a single list
-                List<Entity> sceneEntities = sceneAsset.Hierarchy.Parts.Select(x => x.Entity).ToList();
-                
-                // Update world matrices
-                foreach (Entity e in sceneEntities)
-                {
-                    e.Transform.UpdateWorldMatrix();
-                }
+                List<Entity> sceneEntities = clonedSceneAsset.Hierarchy.Parts.Select(x => x.Entity).ToList();
 
                 // This collects all the input geometry, calculates the modified areas and calculates the scene bounds
                 CollectInputGeometry(sceneEntities);
@@ -262,6 +256,9 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                     bool colliderEnabled = collider != null && ((CollisionFilterGroupFlags)collider.CollisionGroup & asset.IncludedCollisionGroups) != 0 && collider.Enabled;
                     if (colliderEnabled) // Removed or disabled
                     {
+                        // Update world transform before hashing
+                        entity.Transform.UpdateWorldMatrix();
+
                         hash += NavigationMeshBuildUtils.HashEntityCollider(collider);
                     }
                 }
@@ -285,6 +282,9 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                     StaticColliderComponent collider = entity.Get<StaticColliderComponent>();
                     
                     bool colliderEnabled = collider != null && ((CollisionFilterGroupFlags)collider.CollisionGroup & asset.IncludedCollisionGroups) != 0 && collider.Enabled;
+                    if(colliderEnabled)
+                        entity.Transform.UpdateWorldMatrix(); // Update world transform so the update check uses the current world transform
+
                     if (!colliderEnabled) // Removed or disabled
                     {
                         // Check for old object
