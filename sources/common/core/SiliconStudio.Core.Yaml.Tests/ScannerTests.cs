@@ -44,7 +44,8 @@
 // SOFTWARE.
 
 using NUnit.Framework;
-using SharpYaml.Tokens;
+using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Tokens;
 
 namespace SharpYaml.Tests
 {

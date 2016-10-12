@@ -46,10 +46,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using SharpYaml;
-using SharpYaml.Events;
+using SiliconStudio.Core.Yaml.Events;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// Represents a mapping node in the YAML document.

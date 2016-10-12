@@ -21,7 +21,7 @@
 using System;
 using System.Text.RegularExpressions;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// A naming convention where all members are transformed from`CamelCase` to `camel_case`.

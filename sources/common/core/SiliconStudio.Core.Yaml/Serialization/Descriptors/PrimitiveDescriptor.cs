@@ -47,7 +47,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace SharpYaml.Serialization.Descriptors
+namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 {
     /// <summary>
     /// Describes a descriptor for a primitive (bool, char, sbyte, byte, int, uint, long, ulong, float, double, decimal, string, DateTime).

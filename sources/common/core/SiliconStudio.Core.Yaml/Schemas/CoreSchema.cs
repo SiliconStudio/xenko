@@ -46,7 +46,7 @@
 using System;
 using System.Globalization;
 
-namespace SharpYaml.Schemas
+namespace SiliconStudio.Core.Yaml.Schemas
 {
     /// <summary>
     /// Implements the Core schema. <see cref="http://www.yaml.org/spec/1.2/spec.html#id2804356" />

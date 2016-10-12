@@ -44,7 +44,7 @@
 // SOFTWARE.
 
 using System;
-using SharpYaml.Serialization;
+using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SharpYaml.Tests.Serialization
 {

@@ -43,9 +43,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// Abstract implementation of <see cref="IYamlVisitor"/> that knows how to walk a complete Yaml object model.

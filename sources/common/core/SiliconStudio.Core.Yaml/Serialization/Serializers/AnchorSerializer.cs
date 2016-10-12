@@ -45,9 +45,9 @@
 
 using System;
 using System.Collections.Generic;
-using SharpYaml.Events;
+using SiliconStudio.Core.Yaml.Events;
 
-namespace SharpYaml.Serialization.Serializers
+namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
     internal class AnchorSerializer : ChainedSerializer
     {

@@ -46,7 +46,7 @@
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     internal class IdentityEqualityComparer<T> : IEqualityComparer<T> where T : class
     {

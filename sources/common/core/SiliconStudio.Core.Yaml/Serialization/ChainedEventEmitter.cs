@@ -44,9 +44,9 @@
 // SOFTWARE.
 
 using System;
-using SharpYaml.Events;
+using SiliconStudio.Core.Yaml.Events;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// Provided the base implementation for an IEventEmitter that is a

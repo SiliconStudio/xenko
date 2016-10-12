@@ -45,12 +45,11 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using SharpYaml.Events;
-using SharpYaml.Serialization.Descriptors;
-using SharpYaml.Serialization.Logging;
+using SiliconStudio.Core.Yaml.Events;
+using SiliconStudio.Core.Yaml.Serialization.Descriptors;
+using SiliconStudio.Core.Yaml.Serialization.Logging;
 
-namespace SharpYaml.Serialization.Serializers
+namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
     /// <summary>
     /// Class for serializing a <see cref="System.Collections.Generic.ICollection{T}"/> or <see cref="System.Collections.ICollection"/>

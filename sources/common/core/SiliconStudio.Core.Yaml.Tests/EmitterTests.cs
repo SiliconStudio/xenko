@@ -46,8 +46,9 @@
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
-using SharpYaml.Events;
-using SharpYaml.Serialization;
+using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Events;
+using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SharpYaml.Tests
 {

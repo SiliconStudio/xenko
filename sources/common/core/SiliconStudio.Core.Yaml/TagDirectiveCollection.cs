@@ -43,12 +43,11 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using SharpYaml.Tokens;
+using SiliconStudio.Core.Yaml.Tokens;
 
-namespace SharpYaml
+namespace SiliconStudio.Core.Yaml
 {
     /// <summary>
     /// Collection of <see cref="TagDirective"/>.

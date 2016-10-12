@@ -45,7 +45,7 @@
 
 using System.Collections.Generic;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// Holds state that is used when emitting a stream.

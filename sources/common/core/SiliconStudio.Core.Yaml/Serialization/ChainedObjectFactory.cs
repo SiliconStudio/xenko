@@ -45,7 +45,7 @@
 
 using System;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// An <see cref="IObjectFactory"/> that can be chained with another object factory;

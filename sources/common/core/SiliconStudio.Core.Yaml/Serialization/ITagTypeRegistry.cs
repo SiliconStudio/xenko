@@ -46,7 +46,7 @@
 using System;
 using System.Reflection;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// Prodives tag discovery from a type and type discovery from a tag.

@@ -46,7 +46,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// A factory to create an instance of a <see cref="ITypeDescriptor"/>

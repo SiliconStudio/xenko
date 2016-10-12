@@ -53,9 +53,10 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
-using SharpYaml.Events;
-using SharpYaml.Serialization;
-using SharpYaml.Serialization.Serializers;
+using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Events;
+using SiliconStudio.Core.Yaml.Serialization;
+using SiliconStudio.Core.Yaml.Serialization.Serializers;
 
 namespace SharpYaml.Tests.Serialization
 {

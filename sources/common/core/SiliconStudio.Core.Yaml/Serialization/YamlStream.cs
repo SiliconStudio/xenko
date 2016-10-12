@@ -45,10 +45,9 @@
 
 using System.Collections.Generic;
 using System.IO;
-using SharpYaml;
-using SharpYaml.Events;
+using SiliconStudio.Core.Yaml.Events;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// Represents an YAML stream.

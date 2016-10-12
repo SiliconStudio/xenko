@@ -43,10 +43,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using SharpYaml.Tokens;
+using SiliconStudio.Core.Yaml.Tokens;
 
-namespace SharpYaml
+namespace SiliconStudio.Core.Yaml
 {
     /// <summary>
     /// Defines constants thar relate to the YAML specification.

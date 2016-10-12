@@ -50,8 +50,8 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using NUnit.Framework;
-using SharpYaml.Serialization;
-using SharpYaml.Serialization.Descriptors;
+using SiliconStudio.Core.Yaml.Serialization;
+using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 
 namespace SharpYaml.Tests
 {

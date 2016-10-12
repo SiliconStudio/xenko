@@ -44,9 +44,8 @@
 // SOFTWARE.
 
 using System;
-using System.Runtime.Serialization;
 
-namespace SharpYaml
+namespace SiliconStudio.Core.Yaml
 {
     /// <summary>
     /// Base exception that is thrown when the a problem occurs in the SharpYaml library.

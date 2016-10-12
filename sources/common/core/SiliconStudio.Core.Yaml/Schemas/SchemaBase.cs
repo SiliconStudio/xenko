@@ -46,9 +46,9 @@
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using SharpYaml.Events;
+using SiliconStudio.Core.Yaml.Events;
 
-namespace SharpYaml.Schemas
+namespace SiliconStudio.Core.Yaml.Schemas
 {
     /// <summary>
     /// Base implementation for a based schema.

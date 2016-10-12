@@ -45,7 +45,7 @@
 
 using System;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// The exception that is thrown when a duplicate anchor is detected.

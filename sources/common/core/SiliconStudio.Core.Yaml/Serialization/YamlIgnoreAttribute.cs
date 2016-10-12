@@ -45,7 +45,7 @@
 
 using System;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// Instructs the YamlSerializer not to serialize the public field or public read/write property value.

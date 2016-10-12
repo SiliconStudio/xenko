@@ -45,7 +45,7 @@
 
 using System;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// Creates instances of types.

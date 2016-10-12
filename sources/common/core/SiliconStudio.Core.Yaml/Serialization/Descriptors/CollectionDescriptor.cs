@@ -47,9 +47,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 
-namespace SharpYaml.Serialization.Descriptors
+namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 {
     /// <summary>
     /// Provides a descriptor for a <see cref="System.Collections.ICollection"/>.

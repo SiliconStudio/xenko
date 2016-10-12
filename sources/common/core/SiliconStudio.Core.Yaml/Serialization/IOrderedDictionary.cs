@@ -45,7 +45,7 @@
 
 using System.Collections.Generic;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     public interface IOrderedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
     {

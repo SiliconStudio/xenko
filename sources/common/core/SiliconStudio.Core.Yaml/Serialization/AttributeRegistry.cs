@@ -47,9 +47,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using SharpYaml.Serialization.Descriptors;
+using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// A default implementation for <see cref="IAttributeRegistry"/>. 

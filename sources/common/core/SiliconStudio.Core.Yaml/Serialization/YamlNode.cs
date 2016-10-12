@@ -44,11 +44,10 @@
 // SOFTWARE.
 
 using System;
-using SharpYaml;
-using SharpYaml.Events;
 using System.Collections.Generic;
+using SiliconStudio.Core.Yaml.Events;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// Represents a single node in the YAML document.

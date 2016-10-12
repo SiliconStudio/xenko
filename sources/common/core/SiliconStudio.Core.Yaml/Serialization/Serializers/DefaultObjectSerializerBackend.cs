@@ -20,9 +20,9 @@
 
 using System;
 using System.Collections.Generic;
-using SharpYaml.Serialization.Descriptors;
+using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 
-namespace SharpYaml.Serialization.Serializers
+namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
     /// <summary>
     /// Default implementation for <see cref="IObjectSerializerBackend"/>

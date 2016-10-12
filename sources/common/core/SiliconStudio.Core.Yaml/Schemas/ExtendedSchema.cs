@@ -46,7 +46,7 @@
 using System;
 using System.Globalization;
 
-namespace SharpYaml.Schemas
+namespace SiliconStudio.Core.Yaml.Schemas
 {
     /// <summary>
     /// Extension to the core schema and accept different flavor of scalars

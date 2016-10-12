@@ -46,9 +46,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using SharpYaml.Serialization.Descriptors;
+using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// Creates objects using Activator.CreateInstance.

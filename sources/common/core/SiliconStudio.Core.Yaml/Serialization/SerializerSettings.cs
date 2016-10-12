@@ -46,11 +46,11 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using SharpYaml.Schemas;
-using SharpYaml.Serialization.Descriptors;
-using SharpYaml.Serialization.Serializers;
+using SiliconStudio.Core.Yaml.Schemas;
+using SiliconStudio.Core.Yaml.Serialization.Descriptors;
+using SiliconStudio.Core.Yaml.Serialization.Serializers;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// Settings used to configure serialization and control how objects are encoded into YAML.

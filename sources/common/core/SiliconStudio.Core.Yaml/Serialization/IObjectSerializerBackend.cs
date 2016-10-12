@@ -20,9 +20,9 @@
 
 using System;
 using System.Collections.Generic;
-using SharpYaml.Serialization.Serializers;
+using SiliconStudio.Core.Yaml.Serialization.Serializers;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// This interface is used by <see cref="ObjectSerializer"/>, <see cref="DictionarySerializer"/> and <see cref="CollectionSerializer"/>

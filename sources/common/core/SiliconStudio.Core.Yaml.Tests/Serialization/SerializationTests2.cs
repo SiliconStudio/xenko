@@ -52,8 +52,9 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Policy;
 using NUnit.Framework;
-using SharpYaml.Serialization;
-using SharpYaml.Serialization.Serializers;
+using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Serialization;
+using SiliconStudio.Core.Yaml.Serialization.Serializers;
 
 namespace SharpYaml.Tests.Serialization
 {

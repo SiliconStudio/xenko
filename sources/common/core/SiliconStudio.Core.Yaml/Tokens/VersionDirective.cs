@@ -43,9 +43,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-
-namespace SharpYaml.Tokens
+namespace SiliconStudio.Core.Yaml.Tokens
 {
     /// <summary>
     /// Represents a version directive token.

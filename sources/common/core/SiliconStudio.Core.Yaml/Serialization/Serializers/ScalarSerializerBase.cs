@@ -44,9 +44,9 @@
 // SOFTWARE.
 
 using System;
-using SharpYaml.Events;
+using SiliconStudio.Core.Yaml.Events;
 
-namespace SharpYaml.Serialization.Serializers
+namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
     public abstract class ScalarSerializerBase : IYamlSerializable
     {

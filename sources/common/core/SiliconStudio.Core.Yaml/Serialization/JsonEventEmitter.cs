@@ -44,11 +44,8 @@
 // SOFTWARE.
 
 using System;
-using System.Globalization;
-using SharpYaml;
-using SharpYaml.Events;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     internal sealed class JsonEventEmitter : ChainedEventEmitter
     {

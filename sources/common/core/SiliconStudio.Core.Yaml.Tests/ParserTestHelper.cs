@@ -43,14 +43,15 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using SharpYaml.Events;
-using SharpYaml.Tokens;
-using AnchorAlias = SharpYaml.Events.AnchorAlias;
-using DocumentEnd = SharpYaml.Events.DocumentEnd;
-using DocumentStart = SharpYaml.Events.DocumentStart;
-using Scalar = SharpYaml.Events.Scalar;
-using StreamEnd = SharpYaml.Events.StreamEnd;
-using StreamStart = SharpYaml.Events.StreamStart;
+using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Events;
+using SiliconStudio.Core.Yaml.Tokens;
+using AnchorAlias = SiliconStudio.Core.Yaml.Events.AnchorAlias;
+using DocumentEnd = SiliconStudio.Core.Yaml.Events.DocumentEnd;
+using DocumentStart = SiliconStudio.Core.Yaml.Events.DocumentStart;
+using Scalar = SiliconStudio.Core.Yaml.Events.Scalar;
+using StreamEnd = SiliconStudio.Core.Yaml.Events.StreamEnd;
+using StreamStart = SiliconStudio.Core.Yaml.Events.StreamStart;
 
 namespace SharpYaml.Tests
 {

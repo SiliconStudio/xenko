@@ -46,11 +46,10 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using SharpYaml;
-using SharpYaml.Events;
 using System.Text;
+using SiliconStudio.Core.Yaml.Events;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// Represents a sequence node in the YAML document.

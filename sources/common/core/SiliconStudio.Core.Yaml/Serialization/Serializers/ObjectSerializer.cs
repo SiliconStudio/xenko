@@ -44,10 +44,10 @@
 // SOFTWARE.
 
 using System;
-using SharpYaml.Events;
-using SharpYaml.Serialization.Logging;
+using SiliconStudio.Core.Yaml.Events;
+using SiliconStudio.Core.Yaml.Serialization.Logging;
 
-namespace SharpYaml.Serialization.Serializers
+namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
     /// <summary>
     /// Base class for serializing an object that can be a Yaml !!map or !!seq.

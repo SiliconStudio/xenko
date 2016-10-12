@@ -45,7 +45,7 @@
 
 using System;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// Specify the way to store a property or field of some class or structure.

@@ -43,14 +43,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.IO;
-using SharpYaml;
 using System.Globalization;
-using Event = SharpYaml.Events.ParsingEvent;
-using SharpYaml.Events;
+using System.IO;
+using SiliconStudio.Core.Yaml.Events;
+using Event = SiliconStudio.Core.Yaml.Events.ParsingEvent;
 
-namespace SharpYaml
+namespace SiliconStudio.Core.Yaml
 {
     /// <summary>
     /// Reads events from a sequence of <see cref="Event" />.

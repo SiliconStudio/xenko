@@ -44,9 +44,9 @@
 // SOFTWARE.
 
 using System;
-using SharpYaml.Events;
+using SiliconStudio.Core.Yaml.Events;
 
-namespace SharpYaml.Schemas
+namespace SiliconStudio.Core.Yaml.Schemas
 {
     /// <summary>
     /// Provides schema information for tag resolution.

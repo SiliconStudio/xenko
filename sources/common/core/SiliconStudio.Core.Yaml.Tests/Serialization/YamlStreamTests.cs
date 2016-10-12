@@ -47,7 +47,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using NUnit.Framework;
-using SharpYaml.Serialization;
+using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SharpYaml.Tests.Serialization
 {

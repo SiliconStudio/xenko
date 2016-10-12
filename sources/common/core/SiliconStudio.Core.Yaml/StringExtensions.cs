@@ -43,7 +43,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace SharpYaml
+namespace SiliconStudio.Core.Yaml
 {
     /// <summary>
     /// Add extensions methods to <see cref="System.String"/>.

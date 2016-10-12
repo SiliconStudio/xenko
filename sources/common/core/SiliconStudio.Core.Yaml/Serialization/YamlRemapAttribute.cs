@@ -20,7 +20,7 @@
 
 using System;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// Allows to re-map a previous name to the specified property/field/enum/class/struct.

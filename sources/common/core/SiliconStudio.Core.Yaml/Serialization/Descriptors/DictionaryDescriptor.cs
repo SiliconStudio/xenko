@@ -49,7 +49,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace SharpYaml.Serialization.Descriptors
+namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 {
     /// <summary>
     /// Provides a descriptor for a <see cref="System.Collections.IDictionary"/>.

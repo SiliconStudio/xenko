@@ -44,9 +44,8 @@
 // SOFTWARE.
 
 using System;
-using System.Runtime.Serialization;
 
-namespace SharpYaml
+namespace SiliconStudio.Core.Yaml
 {
     /// <summary>
     /// Exception that is thrown when a syntax error is detected on a YAML stream.

@@ -45,7 +45,7 @@
 
 using System;
 
-namespace SharpYaml
+namespace SiliconStudio.Core.Yaml
 {
     /// <summary>
     /// Represents a location inside a file

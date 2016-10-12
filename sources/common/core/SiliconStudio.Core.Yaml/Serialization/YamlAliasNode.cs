@@ -45,9 +45,8 @@
 
 using System;
 using System.Collections.Generic;
-using SharpYaml;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// Represents an alias node in the YAML document.

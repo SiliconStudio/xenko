@@ -46,7 +46,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// Provides access members of a type.

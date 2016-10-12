@@ -48,9 +48,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using SharpYaml.Tokens;
+using SiliconStudio.Core.Yaml.Tokens;
 
-namespace SharpYaml
+namespace SiliconStudio.Core.Yaml
 {
     /// <summary>
     /// Converts a sequence of characters into a sequence of YAML tokens.

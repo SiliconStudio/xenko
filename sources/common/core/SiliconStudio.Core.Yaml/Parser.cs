@@ -44,21 +44,19 @@
 // SOFTWARE.
 
 using System;
-using System.Diagnostics;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
-using SharpYaml.Events;
-using SharpYaml.Tokens;
-using AnchorAlias = SharpYaml.Tokens.AnchorAlias;
-using DocumentEnd = SharpYaml.Tokens.DocumentEnd;
-using DocumentStart = SharpYaml.Tokens.DocumentStart;
-using Event = SharpYaml.Events.ParsingEvent;
-using YamlStyle = SharpYaml.YamlStyle;
-using Scalar = SharpYaml.Tokens.Scalar;
-using StreamEnd = SharpYaml.Tokens.StreamEnd;
-using StreamStart = SharpYaml.Tokens.StreamStart;
+using SiliconStudio.Core.Yaml.Tokens;
+using AnchorAlias = SiliconStudio.Core.Yaml.Tokens.AnchorAlias;
+using DocumentEnd = SiliconStudio.Core.Yaml.Tokens.DocumentEnd;
+using DocumentStart = SiliconStudio.Core.Yaml.Tokens.DocumentStart;
+using Event = SiliconStudio.Core.Yaml.Events.ParsingEvent;
+using Scalar = SiliconStudio.Core.Yaml.Tokens.Scalar;
+using StreamEnd = SiliconStudio.Core.Yaml.Tokens.StreamEnd;
+using StreamStart = SiliconStudio.Core.Yaml.Tokens.StreamStart;
 
-namespace SharpYaml
+namespace SiliconStudio.Core.Yaml
 {
     /// <summary>
     /// Parses YAML streams.

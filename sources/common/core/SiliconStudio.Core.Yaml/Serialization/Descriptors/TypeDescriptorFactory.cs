@@ -46,7 +46,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace SharpYaml.Serialization.Descriptors
+namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 {
     /// <summary>
     /// A default implementation for the <see cref="ITypeDescriptorFactory"/>.

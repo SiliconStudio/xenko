@@ -47,7 +47,7 @@ using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace SharpYaml.Tokens
+namespace SiliconStudio.Core.Yaml.Tokens
 {
     /// <summary>
     /// Represents a tag directive token.

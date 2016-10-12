@@ -46,7 +46,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// Describe a member of an object.

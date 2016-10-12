@@ -1,6 +1,6 @@
-using SharpYaml.Serialization.Logging;
+using SiliconStudio.Core.Yaml.Serialization.Logging;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// Some parameters that can be transmitted from caller

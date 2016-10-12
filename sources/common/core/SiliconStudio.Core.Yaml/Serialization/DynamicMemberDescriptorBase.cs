@@ -20,9 +20,9 @@
 
 using System;
 using System.Collections.Generic;
-using SharpYaml.Serialization.Descriptors;
+using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// A dynamic member to allow to add dynamic members to objects (that could store additional properties outside of the instance).

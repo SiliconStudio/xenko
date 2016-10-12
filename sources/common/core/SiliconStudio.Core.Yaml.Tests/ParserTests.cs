@@ -45,7 +45,8 @@
 
 using System.Collections;
 using NUnit.Framework;
-using SharpYaml.Events;
+using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Events;
 
 namespace SharpYaml.Tests
 {

@@ -46,9 +46,8 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using SharpYaml;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// Manages the state of a <see cref="YamlDocument" /> while it is loading.

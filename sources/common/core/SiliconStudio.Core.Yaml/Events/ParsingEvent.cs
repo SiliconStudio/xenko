@@ -43,7 +43,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-namespace SharpYaml.Events
+namespace SiliconStudio.Core.Yaml.Events
 {
     /// <summary>
     /// Base class for parsing events.

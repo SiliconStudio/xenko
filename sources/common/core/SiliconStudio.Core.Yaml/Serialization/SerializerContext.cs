@@ -44,11 +44,10 @@
 // SOFTWARE.
 
 using System;
-using SharpYaml.Events;
-using SharpYaml.Schemas;
-using SharpYaml.Serialization.Descriptors;
+using SiliconStudio.Core.Yaml.Events;
+using SiliconStudio.Core.Yaml.Schemas;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// A context used while deserializing.

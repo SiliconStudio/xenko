@@ -46,7 +46,7 @@
 using System;
 using System.IO;
 
-namespace SharpYaml
+namespace SiliconStudio.Core.Yaml
 {
     /// <summary>
     /// Provides access to a stream and allows to peek at the next characters,

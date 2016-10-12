@@ -43,9 +43,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using SharpYaml.Events;
+using SiliconStudio.Core.Yaml.Events;
 
-namespace SharpYaml.Schemas
+namespace SiliconStudio.Core.Yaml.Schemas
 {
     /// <summary>
     /// Implements the YAML failsafe schema.

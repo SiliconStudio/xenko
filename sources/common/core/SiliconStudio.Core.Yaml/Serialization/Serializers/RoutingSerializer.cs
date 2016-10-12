@@ -45,9 +45,8 @@
 
 using System;
 using System.Collections.Generic;
-using SharpYaml.Serialization.Descriptors;
 
-namespace SharpYaml.Serialization.Serializers
+namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
     /// <summary>
     /// This serializer is responsible to route to a specific serializer.

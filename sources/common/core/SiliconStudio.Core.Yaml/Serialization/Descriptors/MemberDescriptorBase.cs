@@ -47,7 +47,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace SharpYaml.Serialization.Descriptors
+namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 {
     /// <summary>
     /// Base class for <see cref="IMemberDescriptor"/> for a <see cref="MemberInfo"/>

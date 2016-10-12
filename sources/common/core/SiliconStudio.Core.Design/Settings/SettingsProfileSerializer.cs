@@ -1,5 +1,5 @@
-﻿using SharpYaml.Serialization;
-using SiliconStudio.Core.Yaml;
+﻿using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Core.Settings
 {

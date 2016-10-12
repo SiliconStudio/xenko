@@ -48,7 +48,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 
-namespace SharpYaml
+namespace SiliconStudio.Core.Yaml
 {
     [DebuggerDisplay("Count = {Count}")]
     internal class SortedDictionary<TKey, TValue> : IDictionary<TKey, TValue>, IDictionary

@@ -45,7 +45,7 @@
 
 using System;
 
-namespace SharpYaml
+namespace SiliconStudio.Core.Yaml
 {
     internal class StringLookAheadBuffer : ILookAheadBuffer
     {

@@ -21,7 +21,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace SharpYaml.Serialization.Descriptors
+namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 {
     /// <summary>
     /// Default comparer used to sort keys for object members and dictionary keys. See remarks.

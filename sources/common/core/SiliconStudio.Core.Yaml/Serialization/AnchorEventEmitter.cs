@@ -45,9 +45,9 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using SharpYaml.Events;
+using SiliconStudio.Core.Yaml.Events;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     internal class AnchorEventEmitter : ChainedEventEmitter
     {

@@ -45,11 +45,11 @@
 
 using System;
 using System.IO;
-using SharpYaml.Events;
-using SharpYaml.Serialization.Descriptors;
-using SharpYaml.Serialization.Serializers;
+using SiliconStudio.Core.Yaml.Events;
+using SiliconStudio.Core.Yaml.Serialization.Descriptors;
+using SiliconStudio.Core.Yaml.Serialization.Serializers;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// Serializes and deserializes objects into and from YAML documents.

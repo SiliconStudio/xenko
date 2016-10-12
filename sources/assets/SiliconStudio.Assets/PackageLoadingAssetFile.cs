@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using SharpYaml;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Yaml;
 

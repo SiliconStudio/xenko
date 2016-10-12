@@ -46,13 +46,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SharpYaml.Events;
-using SharpYaml.Serialization.Descriptors;
-using SharpYaml.Serialization.Logging;
-using SharpYaml.Tokens;
-using Scalar = SharpYaml.Events.Scalar;
+using SiliconStudio.Core.Yaml.Events;
+using SiliconStudio.Core.Yaml.Serialization.Descriptors;
+using SiliconStudio.Core.Yaml.Serialization.Logging;
+using Scalar = SiliconStudio.Core.Yaml.Events.Scalar;
 
-namespace SharpYaml.Serialization.Serializers
+namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
     /// <summary>
     /// Class for serializing a <see cref="IDictionary{TKey,TValue}"/> or <see cref="System.Collections.IDictionary"/>

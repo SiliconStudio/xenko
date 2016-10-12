@@ -47,7 +47,7 @@ using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace SharpYaml.Schemas
+namespace SiliconStudio.Core.Yaml.Schemas
 {
     /// <summary>
     /// Implements a JSON schema. <see cref="http://www.yaml.org/spec/1.2/spec.html#id2803231" />

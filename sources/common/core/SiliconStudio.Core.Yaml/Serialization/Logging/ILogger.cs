@@ -1,6 +1,6 @@
 using System;
 
-namespace SharpYaml.Serialization.Logging
+namespace SiliconStudio.Core.Yaml.Serialization.Logging
 {
     /// <summary>
     /// Logger interface.

@@ -45,10 +45,10 @@
 
 using System.Collections;
 using System.Collections.Generic;
-using SharpYaml.Events;
-using SharpYaml.Serialization.Descriptors;
+using SiliconStudio.Core.Yaml.Events;
+using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 
-namespace SharpYaml.Serialization.Serializers
+namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
     internal class ArraySerializer : IYamlSerializable, IYamlSerializableFactory
     {

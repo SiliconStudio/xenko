@@ -44,11 +44,10 @@
 // SOFTWARE.
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace SharpYaml.Serialization.Descriptors
+namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 {
     /// <summary>
     /// A descriptor for an array.

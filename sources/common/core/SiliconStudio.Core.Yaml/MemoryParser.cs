@@ -1,8 +1,7 @@
-using System.Collections;
 using System.Collections.Generic;
-using SharpYaml.Events;
+using SiliconStudio.Core.Yaml.Events;
 
-namespace SharpYaml
+namespace SiliconStudio.Core.Yaml
 {
     public class MemoryParser : IParser
     {

@@ -49,7 +49,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace SharpYaml
+namespace SiliconStudio.Core.Yaml
 {
     internal static class TypeExtensions
     {

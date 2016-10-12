@@ -45,7 +45,7 @@
 
 using System;
 
-namespace SharpYaml.Serialization.Serializers
+namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
     public class ChainedSerializer : IYamlSerializable
     {

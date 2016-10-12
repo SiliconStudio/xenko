@@ -46,7 +46,7 @@
 using System;
 using System.Reflection;
 
-namespace SharpYaml.Serialization.Descriptors
+namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 {
     /// <summary>
     /// A <see cref="IMemberDescriptor"/> for a <see cref="FieldInfo"/>

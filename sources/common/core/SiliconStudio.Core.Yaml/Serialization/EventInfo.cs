@@ -44,9 +44,8 @@
 // SOFTWARE.
 
 using System;
-using SharpYaml.Events;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     public abstract class EventInfo
     {

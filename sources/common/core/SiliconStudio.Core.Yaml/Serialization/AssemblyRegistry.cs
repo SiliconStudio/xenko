@@ -46,9 +46,9 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using SharpYaml.Schemas;
+using SiliconStudio.Core.Yaml.Schemas;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// Default implementation of ITagTypeRegistry.

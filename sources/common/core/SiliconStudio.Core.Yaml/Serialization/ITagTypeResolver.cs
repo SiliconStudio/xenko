@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// Provides tag discovery from a type and type discovery from a tag.

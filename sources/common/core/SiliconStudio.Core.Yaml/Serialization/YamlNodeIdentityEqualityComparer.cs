@@ -45,7 +45,7 @@
 
 using System.Collections.Generic;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// Comparer that is based on identity comparisons.

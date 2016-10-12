@@ -46,10 +46,9 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using SharpYaml;
-using SharpYaml.Events;
+using SiliconStudio.Core.Yaml.Events;
 
-namespace SharpYaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
     /// Represents a scalar node in the YAML document.
@@ -150,7 +149,7 @@ namespace SharpYaml.Serialization
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="System.String"/> to <see cref="SharpYaml.Serialization.YamlScalarNode"/>.
+        /// Performs an implicit conversion from <see cref="System.String"/> to <see cref="YamlScalarNode"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -160,7 +159,7 @@ namespace SharpYaml.Serialization
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="SharpYaml.Serialization.YamlScalarNode"/> to <see cref="System.String"/>.
+        /// Performs an explicit conversion from <see cref="YamlScalarNode"/> to <see cref="System.String"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>

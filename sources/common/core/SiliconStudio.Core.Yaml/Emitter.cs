@@ -50,11 +50,11 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using SharpYaml.Events;
-using TagDirective = SharpYaml.Tokens.TagDirective;
-using VersionDirective = SharpYaml.Tokens.VersionDirective;
+using SiliconStudio.Core.Yaml.Events;
+using TagDirective = SiliconStudio.Core.Yaml.Tokens.TagDirective;
+using VersionDirective = SiliconStudio.Core.Yaml.Tokens.VersionDirective;
 
-namespace SharpYaml
+namespace SiliconStudio.Core.Yaml
 {
     /// <summary>
     /// Emits YAML streams.
