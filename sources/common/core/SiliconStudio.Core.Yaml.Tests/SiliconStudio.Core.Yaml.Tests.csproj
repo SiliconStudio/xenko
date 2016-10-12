@@ -7,8 +7,8 @@
     <ProjectGuid>{16D8043D-C3DB-4868-BFF3-B2EBDF537AAA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SharpYaml.Tests</RootNamespace>
-    <AssemblyName>SharpYaml.Tests</AssemblyName>
+    <RootNamespace>SiliconStudio.Core.Yaml.Tests</RootNamespace>
+    <AssemblyName>SiliconStudio.Core.Yaml.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
@@ -101,9 +101,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SharpYaml\SharpYaml.csproj">
+    <ProjectReference Include="..\SiliconStudio.Core.Yaml\SiliconStudio.Core.Yaml.csproj">
       <Project>{bf32de1b-6276-4341-b212-f8862adbba7a}</Project>
-      <Name>SharpYaml</Name>
+      <Name>SiliconStudio.Core.Yaml</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
