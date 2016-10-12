@@ -5,6 +5,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
+using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Xenko.Assets.Scripts
 {
@@ -127,6 +128,14 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         {
             var generatedAbsolutePath = assetItem.GetGeneratedAbsolutePath();
 
+            var compilerResult = Compile(assetItem);
+            File.WriteAllText(generatedAbsolutePath, compilerResult.GeneratedSource);
+        }
+
+        public VisualScriptCompilerResult Compile(AssetItem assetItem)
+        {
+            var generatedAbsolutePath = assetItem.GetGeneratedAbsolutePath();
+
             var compilerOptions = new VisualScriptCompilerOptions
             {
                 Namespace = "Namespace",
@@ -138,7 +147,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                 },
             };
             var compilerResult = VisualScriptCompiler.Generate(this, compilerOptions);
-            File.WriteAllText(generatedAbsolutePath, compilerResult.GeneratedSource);
+            return compilerResult;
         }
     }
 }

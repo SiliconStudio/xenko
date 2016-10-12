@@ -96,6 +96,9 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                     // Generate code
                     var expression = ((IExpressionBlock)sourceLink.Source.Owner).GenerateExpression(this, sourceLink.Source);
 
+                    // Add annotation on both source block and link (so that we can keep track of what block/link generated what source code)
+                    expression = expression.WithAdditionalAnnotations(new SyntaxAnnotation("Block", sourceLink.Source.Owner.Id.ToString()), new SyntaxAnnotation("Link", sourceLink.Id.ToString()));
+
                     return expression;
                 }
 
@@ -130,6 +133,9 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         public void AddStatement(StatementSyntax statement)
         {
+            // Add annotation on block (so that we can keep track of what block generated what source code)
+            statement = statement.WithAdditionalAnnotations(new SyntaxAnnotation("Block", CurrentBlock.Id.ToString()));
+
             // If there is already a label with an empty statement (still no instructions), replace its inner statement
             if (CurrentBasicBlock.Label != null && CurrentBasicBlock.Statements.Count == 1 && CurrentBasicBlock.Label.Statement is EmptyStatementSyntax)
             {
