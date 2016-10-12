@@ -244,6 +244,7 @@
     <Compile Include="Scripts\RegenerateSlotsAttribute.cs" />
     <Compile Include="Scripts\RegenerateTitleAttribute.cs" />
     <Compile Include="Scripts\RoslynHelper.cs" />
+    <Compile Include="Scripts\ScriptCodeAttribute.cs" />
     <Compile Include="Scripts\SlotGeneratorContext.cs" />
     <Compile Include="UI\UIAssetCompilerBase.cs" />
     <Compile Include="UI\UIElementHierarchyData.cs" />

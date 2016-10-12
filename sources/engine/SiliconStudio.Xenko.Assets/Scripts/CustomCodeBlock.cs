@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
     {
         public string Name { get; set; }
 
-        [RegenerateSlots, RegenerateTitle]
+        [RegenerateSlots, RegenerateTitle, ScriptCodeAttribute]
         public string Code { get; set; }
 
         public override string Title => !string.IsNullOrEmpty(Name) ? Name : (!string.IsNullOrEmpty(Code) ? Code : "Custom Code");
