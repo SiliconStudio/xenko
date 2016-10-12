@@ -45,7 +45,7 @@
 
 using System.Diagnostics;
 
-namespace SharpYaml.Tests
+namespace SiliconStudio.Core.Yaml.Tests
 {
     public class Dump
     {

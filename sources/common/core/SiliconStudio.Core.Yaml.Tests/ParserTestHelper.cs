@@ -43,7 +43,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Tokens;
 using AnchorAlias = SiliconStudio.Core.Yaml.Events.AnchorAlias;
@@ -53,7 +52,7 @@ using Scalar = SiliconStudio.Core.Yaml.Events.Scalar;
 using StreamEnd = SiliconStudio.Core.Yaml.Events.StreamEnd;
 using StreamStart = SiliconStudio.Core.Yaml.Events.StreamStart;
 
-namespace SharpYaml.Tests
+namespace SiliconStudio.Core.Yaml.Tests
 {
     public class ParserTestHelper : YamlTest
     {

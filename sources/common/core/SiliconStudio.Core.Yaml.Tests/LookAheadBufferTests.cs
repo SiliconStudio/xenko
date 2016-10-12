@@ -46,9 +46,8 @@
 using System;
 using System.IO;
 using NUnit.Framework;
-using SiliconStudio.Core.Yaml;
 
-namespace SharpYaml.Tests
+namespace SiliconStudio.Core.Yaml.Tests
 {
     public class LookAheadBufferTests
     {

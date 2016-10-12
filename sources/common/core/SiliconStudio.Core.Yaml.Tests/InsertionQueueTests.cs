@@ -47,9 +47,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
-using SiliconStudio.Core.Yaml;
 
-namespace SharpYaml.Tests
+namespace SiliconStudio.Core.Yaml.Tests
 {
     public class InsertionQueueTests
     {

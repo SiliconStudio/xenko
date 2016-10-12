@@ -47,7 +47,7 @@ using System.IO;
 using NUnit.Framework;
 using SiliconStudio.Core.Yaml.Serialization;
 
-namespace SharpYaml.Tests.Serialization
+namespace SiliconStudio.Core.Yaml.Tests.Serialization
 {
     public class ExceptionWithNestedSerialization
     {

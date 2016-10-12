@@ -53,7 +53,7 @@ using NUnit.Framework;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 
-namespace SharpYaml.Tests
+namespace SiliconStudio.Core.Yaml.Tests
 {
     public class DescriptorTests
     {

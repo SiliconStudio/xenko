@@ -53,12 +53,11 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
 
-namespace SharpYaml.Tests.Serialization
+namespace SiliconStudio.Core.Yaml.Tests.Serialization
 {
     public class SerializationTests : YamlTest
     {

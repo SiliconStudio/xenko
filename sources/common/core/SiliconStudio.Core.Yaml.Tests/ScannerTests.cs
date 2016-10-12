@@ -44,10 +44,9 @@
 // SOFTWARE.
 
 using NUnit.Framework;
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Tokens;
 
-namespace SharpYaml.Tests
+namespace SiliconStudio.Core.Yaml.Tests
 {
     public class ScannerTests : ScannerTestHelper
     {

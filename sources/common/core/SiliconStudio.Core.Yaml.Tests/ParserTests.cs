@@ -45,10 +45,9 @@
 
 using System.Collections;
 using NUnit.Framework;
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Events;
 
-namespace SharpYaml.Tests
+namespace SiliconStudio.Core.Yaml.Tests
 {
     public class ParserTests : ParserTestHelper
     {

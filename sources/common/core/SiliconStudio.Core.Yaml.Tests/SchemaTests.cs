@@ -45,11 +45,10 @@
 
 using System;
 using NUnit.Framework;
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Schemas;
 
-namespace SharpYaml.Tests
+namespace SiliconStudio.Core.Yaml.Tests
 {
     public class SchemaTests
     {

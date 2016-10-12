@@ -43,10 +43,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Tokens;
 
-namespace SharpYaml.Tests
+namespace SiliconStudio.Core.Yaml.Tests
 {
     public class ScannerTestHelper : YamlTest
     {
