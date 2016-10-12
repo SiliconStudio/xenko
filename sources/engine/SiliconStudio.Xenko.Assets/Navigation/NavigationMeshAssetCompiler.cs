@@ -154,9 +154,9 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 List<BoundingBox> removedAreas = oldBuild?.GetRemovedAreas(sceneEntities);
                 
                 BoundingBox boundingBox = globalBoundingBox;
-                // Can't generate when no bounding box is specified
+                // Can't generate when no bounding box or and invalid bounding box is specified
                 // this means that either the user specified bounding box is wrong or the scene does not contain any colliders
-                if (boundingBox != BoundingBox.Empty)
+                if (boundingBox.Extent.X > 0 && boundingBox.Extent.Y > 0 && boundingBox.Extent.Z > 0)
                 {
                     // Turn generated data into arrays
                     Vector3[] meshVertices = sceneNavigationMeshInputBuilder.Points.ToArray();
@@ -251,8 +251,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
                 return Task.FromResult(ResultStatus.Successful);
             }
-
-
+            
             private int CollectInputHash(List<Entity> sceneEntities)
             {
                 int hash = 0;
