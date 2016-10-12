@@ -58,7 +58,7 @@ namespace SiliconStudio.PackageManager
 
         public void AddConstraint(string name, NugetVersionSpec nugetVersionSpec)
         {
-           Provider.AddConstraint(name, nugetVersionSpec?.VersionSpec); 
+           Provider.AddConstraint(name, nugetVersionSpec?.VersionSpec);
         }
     }
 }
