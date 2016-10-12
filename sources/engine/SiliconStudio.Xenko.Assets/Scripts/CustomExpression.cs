@@ -53,11 +53,11 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                 var expression = ParseExpression(Expression);
                 
                 // Create a block that returns this expression for further analysis
-                var block = Block(
-                    SingletonList<StatementSyntax>(
-                        ReturnStatement(ParenthesizedExpression(expression))));
-
-                RoslynHelper.AnalyzeBlockFlow(newSlots, context.Compilation, block);
+                //var block = Block(
+                //    SingletonList<StatementSyntax>(
+                //        ReturnStatement(ParenthesizedExpression(expression))));
+                //
+                //RoslynHelper.AnalyzeBlockFlow(newSlots, context.Compilation, block);
             }
         }
     }

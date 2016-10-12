@@ -207,8 +207,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                                     Identifier(variable.Name)))))
                     .WithModifiers(
                         TokenList(
-                            Token(SyntaxKind.PublicKeyword),
-                            Token(SyntaxKind.PartialKeyword)));
+                            Token(SyntaxKind.PublicKeyword)));
 
                 members.Add(field);
             }
@@ -283,7 +282,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             var @class =
                 ClassDeclaration(className)
                 .WithMembers(List(members))
-                .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)));
+                .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.PartialKeyword)));
 
             if (options.BaseClass != null)
                 @class = @class.WithBaseList(BaseList(SingletonSeparatedList<BaseTypeSyntax>(SimpleBaseType(IdentifierName(options.BaseClass)))));

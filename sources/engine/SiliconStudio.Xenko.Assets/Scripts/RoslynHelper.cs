@@ -12,26 +12,13 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 {
     internal static class RoslynHelper
     {
-        internal static void AnalyzeBlockFlow(IList<Slot> newSlots, Compilation compilation, BlockSyntax block)
+        public static void AnalyzeBlockFlow(IList<Slot> newSlots, Compilation compilation, BlockSyntax block)
         {
             const string ExpressionToReturn = nameof(ExpressionToReturn);
 
             // Create a compilation unit with our expression
-            var compilationUnit =
-                SyntaxFactory.CompilationUnit()
-                    .WithMembers(
-                        SyntaxFactory.SingletonList<MemberDeclarationSyntax>(
-                            SyntaxFactory.ClassDeclaration("C")
-                                .WithMembers(
-                                    SyntaxFactory.SingletonList<MemberDeclarationSyntax>(
-                                        SyntaxFactory.MethodDeclaration(
-                                            SyntaxFactory.PredefinedType(
-                                                SyntaxFactory.Token(SyntaxKind.VoidKeyword)),
-                                            SyntaxFactory.Identifier("M"))
-                                            .WithBody(block)))))
-                    .NormalizeWhitespace();
+            var compilationUnit = CreateCompilationUnitFromBlock(ref block);
 
-            block = compilationUnit.DescendantNodes().OfType<BlockSyntax>().First();
             compilation = compilation.AddSyntaxTrees(compilationUnit.SyntaxTree);
 
             // Detect missing variables
@@ -139,6 +126,27 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                     newSlots.Add(new Slot(SlotDirection.Output, SlotKind.Value));
                 }
             }
+        }
+
+        public static CompilationUnitSyntax CreateCompilationUnitFromBlock(ref BlockSyntax block)
+        {
+            var compilationUnit =
+                SyntaxFactory.CompilationUnit()
+                    .WithMembers(
+                        SyntaxFactory.SingletonList<MemberDeclarationSyntax>(
+                            SyntaxFactory.ClassDeclaration("C")
+                                .WithMembers(
+                                    SyntaxFactory.SingletonList<MemberDeclarationSyntax>(
+                                        SyntaxFactory.MethodDeclaration(
+                                                SyntaxFactory.PredefinedType(
+                                                    SyntaxFactory.Token(SyntaxKind.VoidKeyword)),
+                                                SyntaxFactory.Identifier("M"))
+                                            .WithBody(block)))))
+                    .NormalizeWhitespace();
+
+            block = compilationUnit.DescendantNodes().OfType<BlockSyntax>().First();
+
+            return compilationUnit;
         }
     }
 }
