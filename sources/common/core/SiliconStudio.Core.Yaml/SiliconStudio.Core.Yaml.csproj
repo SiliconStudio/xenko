@@ -186,6 +186,12 @@
     <Compile Include="YamlException.cs" />
     <Compile Include="Serialization\YamlStyleAttribute.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">
+      <Project>{0be7189b-f04e-4c0c-bbe9-f347c0a59fee}</Project>
+      <Name>SiliconStudio.Core.Reflection</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

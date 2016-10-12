@@ -410,6 +410,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core.Yaml", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core.Yaml.Tests", "..\sources\common\core\SiliconStudio.Core.Yaml.Tests\SiliconStudio.Core.Yaml.Tests.csproj", "{16D8043D-C3DB-4868-BFF3-B2EBDF537AAA}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core.Reflection", "..\sources\common\core\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj", "{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\sources\engine\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems*{c121a566-555e-42b9-9b0a-1696529a9088}*SharedItemsImports = 4
@@ -417,11 +419,11 @@ Global
 		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{5863574d-7a55-49bc-8e65-babb74d8e66e}*SharedItemsImports = 4
 		..\sources\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems*{75d71310-ecf7-4592-9e35-3fe540040982}*SharedItemsImports = 4
 		..\sources\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems*{77e2fcc0-4ca6-436c-be6f-9418cb807d45}*SharedItemsImports = 4
-		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
 		..\sources\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
+		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
 		..\sources\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems*{e8b3553f-a79f-4e50-b75b-acee771c320c}*SharedItemsImports = 4
-		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
+		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
 		..\sources\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems*{6f5b53e9-39c8-4cad-b07c-588b0968c238}*SharedItemsImports = 4
 		..\sources\engine\SiliconStudio.Xenko.Shared\Refactor\SiliconStudio.Xenko.Refactor.projitems*{b33e576f-2279-4bfc-a438-d9b84343b56b}*SharedItemsImports = 13
 		..\sources\shared\SiliconStudio.ShellHelper\SiliconStudio.ShellHelper.projitems*{3a3cb33c-64d9-4948-86c1-0d86320d23c3}*SharedItemsImports = 13
@@ -2393,6 +2395,30 @@ Global
 		{16D8043D-C3DB-4868-BFF3-B2EBDF537AAA}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
 		{16D8043D-C3DB-4868-BFF3-B2EBDF537AAA}.Testing|Win32.ActiveCfg = Release|Any CPU
 		{16D8043D-C3DB-4868-BFF3-B2EBDF537AAA}.Testing|Win32.Build.0 = Release|Any CPU
+		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}.AppStore|Any CPU.Build.0 = Release|Any CPU
+		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
+		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}.AppStore|Win32.ActiveCfg = Release|Any CPU
+		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}.AppStore|Win32.Build.0 = Release|Any CPU
+		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}.Debug|Win32.Build.0 = Debug|Any CPU
+		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}.Release|Win32.ActiveCfg = Release|Any CPU
+		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}.Release|Win32.Build.0 = Release|Any CPU
+		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}.Testing|Any CPU.ActiveCfg = Release|Any CPU
+		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}.Testing|Any CPU.Build.0 = Release|Any CPU
+		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
+		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}.Testing|Win32.ActiveCfg = Release|Any CPU
+		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}.Testing|Win32.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2503,5 +2529,6 @@ Global
 		{3A3CB33C-64D9-4948-86C1-0D86320D23C3} = {1AC70118-C90F-4EC6-9D8B-C628BDF900F7}
 		{BF32DE1B-6276-4341-B212-F8862ADBBA7A} = {A2A4342E-024B-4063-B10C-1DA96CA3046D}
 		{16D8043D-C3DB-4868-BFF3-B2EBDF537AAA} = {9D5D9861-AE68-429C-8B21-2263F9DA07A1}
+		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE} = {A2A4342E-024B-4063-B10C-1DA96CA3046D}
 	EndGlobalSection
 EndGlobal

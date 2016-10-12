@@ -182,6 +182,10 @@
       <Name>SiliconStudio.Core.Mathematics</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">
+      <Project>{0be7189b-f04e-4c0c-bbe9-f347c0a59fee}</Project>
+      <Name>SiliconStudio.Core.Reflection</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
       <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
       <Name>SiliconStudio.Core.Serialization</Name>
