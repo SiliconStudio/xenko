@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 {
     [DataContract("NavigationMeshAsset")]
     [AssetDescription(FileExtension)]
-    [Display("Navigation Mesh Asset")]
+    [Display("Navigation Mesh")]
     [AssetCompiler(typeof(NavigationMeshAssetCompiler))]
     public class NavigationMeshAsset : Asset, IAssetCompileTimeDependencies
     {
