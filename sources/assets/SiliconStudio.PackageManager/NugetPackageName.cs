@@ -42,6 +42,11 @@ namespace SiliconStudio.PackageManager
             Name = new PackageName(id, version.SemanticVersion);
         }
 
+        internal NugetPackageName(PackageName name)
+        {
+            Name = name;
+        }
+
         public NugetSemanticVersion Version => new NugetSemanticVersion(Name.Version);
     }
 }
