@@ -128,7 +128,6 @@ namespace SiliconStudio.Core.Reflection
         /// <value><c>true</c> if this instance has add; otherwise, <c>false</c>.</value>
         public bool HasAdd => CollectionAddFunction != null;
 
-
         /// <summary>
         /// Gets a value indicating whether this collection type has insert method.
         /// </summary>
