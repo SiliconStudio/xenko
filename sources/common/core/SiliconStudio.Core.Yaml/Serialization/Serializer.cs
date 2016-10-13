@@ -565,8 +565,13 @@ namespace SiliconStudio.Core.Yaml.Serialization
                 routingSerializer.AddSerializerFactory(defaultFactory);
             }
 
-            var typingSerializer = new TagTypeSerializer(routingSerializer);
-            return settings.EmitAlias ? (IYamlSerializable) new AnchorSerializer(typingSerializer) : typingSerializer;
+            IYamlSerializable serializer = routingSerializer;
+            serializer = ChainedSerializer.Prepend(new TagTypeSerializer(), serializer);
+            if (settings.EmitAlias)
+            {
+                serializer = ChainedSerializer.Prepend(new AnchorSerializer(), serializer);
+            }
+            return serializer;
         }
 
         private ITypeDescriptorFactory CreateTypeDescriptorFactory()

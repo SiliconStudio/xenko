@@ -52,10 +52,6 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
     internal class TagTypeSerializer : ChainedSerializer
     {
-        public TagTypeSerializer(IYamlSerializable next) : base(next)
-        {
-        }
-
         public override object ReadYaml(ref ObjectContext objectContext)
         {
             var parsingEvent = objectContext.Reader.Peek<ParsingEvent>();

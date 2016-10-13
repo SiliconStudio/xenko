@@ -49,12 +49,20 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
     public abstract class ChainedSerializer : IYamlSerializable
     {
-        private readonly IYamlSerializable next;
+        private IYamlSerializable next;
 
-        protected ChainedSerializer(IYamlSerializable next)
+        public void PrependTo(IYamlSerializable other)
         {
-            if (next == null) throw new ArgumentNullException(nameof(next));
-            this.next = next;
+            if (next != null)
+                throw new InvalidOperationException("This serializer already have a succeeding serializer");
+
+            next = other;
+        }
+
+        public static ChainedSerializer Prepend(ChainedSerializer first, IYamlSerializable serializer)
+        {
+            first.PrependTo(serializer);
+            return first;
         }
 
         public virtual object ReadYaml(ref ObjectContext objectContext)
