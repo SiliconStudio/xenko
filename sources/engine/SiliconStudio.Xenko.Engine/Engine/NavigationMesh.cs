@@ -194,7 +194,7 @@ namespace SiliconStudio.Xenko.Engine
         {
             // Turn settings into native structure format
             NavigationAgentSettings agentSettings = layer.AgentSettings;
-            NavigationMeshTile tile = new NavigationMeshTile();
+            NavigationMeshTile tile = new NavigationMeshTile(); 
 
             // Initialize navigation builder
             IntPtr nav = Navigation.CreateBuilder();
@@ -210,12 +210,12 @@ namespace SiliconStudio.Xenko.Engine
                 // General build settings
                 CellHeight =  BuildSettings.CellHeight,
                 CellSize = BuildSettings.CellSize,
-                RegionMinSize = BuildSettings.RegionMinSize,
-                RegionMergeSize = BuildSettings.RegionMergeSize,
+                RegionMinArea = BuildSettings.RegionMinArea,
+                RegionMergeArea = BuildSettings.RegionMergeArea,
                 EdgeMaxLen = BuildSettings.EdgeMaxLen,
                 EdgeMaxError = BuildSettings.EdgeMaxError,
-                DetailSampleDistInput = BuildSettings.DetailSampleDistInput,
-                DetailSampleMaxErrorInput = BuildSettings.DetailSampleMaxErrorInput,
+                DetailSampleDist = BuildSettings.DetailSampleDist,
+                DetailSampleMaxError = BuildSettings.DetailSampleMaxError,
                 
                 // Agent settings
                 AgentHeight = agentSettings.Height,

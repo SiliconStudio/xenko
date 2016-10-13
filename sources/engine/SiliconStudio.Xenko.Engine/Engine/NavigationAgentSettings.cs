@@ -31,12 +31,14 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Maximum vertical distance this agent can climb
         /// </summary>
+        [Display("Maximum Climb Height")]
         [DataMemberRange(0, float.MaxValue)]
         public float MaxClimb;
 
         /// <summary>
         /// Maximum slope angle this agent can climb (in degrees)
         /// </summary>
+        [Display("Maximum Slope")]
         public AngleSingle MaxSlope;
 
         public override int GetHashCode()

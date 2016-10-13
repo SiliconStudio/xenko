@@ -28,6 +28,8 @@
 #include "Navigation.hpp"
 #include "NavigationBuilder.hpp"
 #include "../../../../deps/NativePath/NativeTime.h"
+#include "../../../../deps/NativePath/NativePath.h"
+#include "../../../../deps/NativePath/NativePath.h"
 
 NavigationBuilder::NavigationBuilder()
 {
@@ -96,9 +98,9 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 		return ret;
 	if (m_buildSettings.edgeMaxLen < 0.0f)
 		return ret;
-	if (m_buildSettings.regionMinSize < 0.0f)
+	if (m_buildSettings.regionMinArea < 0.0f)
 		return ret;
-	if (m_buildSettings.regionMergeSize < 0.0f)
+	if (m_buildSettings.regionMergeArea < 0.0f)
 		return ret;
 	if (m_buildSettings.tileSize <= 0)
 		return ret;
@@ -111,8 +113,6 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 
 	int maxEdgeLen = (int)(m_buildSettings.edgeMaxLen / m_buildSettings.cellSize);
 	float maxSimplificationError = m_buildSettings.edgeMaxError;
-	int minRegionArea = (int)rcSqr(m_buildSettings.regionMinSize); // Note: area = size*size
-	int mergeRegionArea = (int)rcSqr(m_buildSettings.regionMergeSize); // Note: area = size*size
 	int maxVertsPerPoly = 6;
 	float detailSampleDist = m_buildSettings.cellSize * m_buildSettings.detailSampleDistInput;
 	float detailSampleMaxError = m_buildSettings.cellHeight * m_buildSettings.detailSampleMaxErrorInput;
@@ -205,7 +205,7 @@ GeneratedData* NavigationBuilder::BuildNavmesh(Vector3* vertices, int numVertice
 		return ret;
 	}
 	// Partition the walkable surface into simple regions without holes.
-	if (!rcBuildRegions(m_context, *m_chf, borderSize, minRegionArea, mergeRegionArea))
+	if (!rcBuildRegions(m_context, *m_chf, borderSize, m_buildSettings.regionMinArea, m_buildSettings.regionMergeArea))
 	{
 		return ret;
 	}

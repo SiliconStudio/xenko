@@ -16,8 +16,8 @@ struct BuildSettings
 	float cellSize;
 	int tileSize;
 	Point tilePosition;
-	float regionMinSize;
-	float regionMergeSize;
+	int regionMinArea;
+	int regionMergeArea;
 	float edgeMaxLen;
 	float edgeMaxError;
 	float detailSampleDistInput;

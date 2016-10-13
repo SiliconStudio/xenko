@@ -24,12 +24,12 @@ namespace SiliconStudio.Xenko.Native
             public float CellSize;
             public int TileSize;
             public Point TilePosition;
-            public float RegionMinSize;
-            public float RegionMergeSize;
+            public int RegionMinArea;
+            public int RegionMergeArea;
             public float EdgeMaxLen;
             public float EdgeMaxError;
-            public float DetailSampleDistInput;
-            public float DetailSampleMaxErrorInput;
+            public float DetailSampleDist;
+            public float DetailSampleMaxError;
             public float AgentHeight;
             public float AgentRadius;
             public float AgentMaxClimb;
