@@ -38,6 +38,10 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                     streams.matNormal = normal.xyz;
                 }
             }
+
+            // Flip along bitangent, since the bitangent points in v-direction ("down"), but the b-component of the normal map points in -v direction ("up")
+            streams.matNormal.y = -streams.matNormal.y;
+
             // Normalize after sampling it
             //streams.matNormal = normalize(streams.matNormal);
         }
