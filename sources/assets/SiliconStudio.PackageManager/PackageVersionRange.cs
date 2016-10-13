@@ -15,7 +15,6 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using SiliconStudio.Core;
-using SiliconStudio.PackageManager;
 
 namespace SiliconStudio.PackageManager
 {
@@ -46,19 +45,16 @@ namespace SiliconStudio.PackageManager
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PackageVersionRange"/> class.
+        /// Initializes a new instance of the <see cref="PackageVersionRange"/> class with only one possible version.
         /// </summary>
         /// <param name="version">The exact version.</param>
-        public PackageVersionRange(PackageVersion version)
+        public PackageVersionRange(PackageVersion version):this(version, true, version, true)
         {
-            IsMinInclusive = true;
-            IsMaxInclusive = true;
-            MinVersion = version;
-            MaxVersion = version;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PackageVersionRange" /> class.
+        /// Initializes a new instance of the <see cref="PackageVersionRange" /> class with just a lower bound 
+        /// <paramref name="minVersion"/> that can be inclusive or not depending on <paramref name="minVersionInclusive"/>.
         /// </summary>
         /// <param name="minVersion">The minimum version.</param>
         /// <param name="minVersionInclusive">if set to <c>true</c> the minimum version is inclusive</param>
@@ -66,6 +62,21 @@ namespace SiliconStudio.PackageManager
         {
             IsMinInclusive = minVersionInclusive;
             MinVersion = minVersion;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PackageVersionRange" /> class.
+        /// </summary>
+        /// <param name="minVersion">The minimum version.</param>
+        /// <param name="minVersionInclusive">if set to <c>true</c> the minimum version is inclusive</param>
+        /// <param name="maxVersion">The maximum version.</param>
+        /// <param name="maxVersionInclusive">if set to <c>true</c> the maximum version is inclusive</param>
+        public PackageVersionRange(PackageVersion minVersion, bool minVersionInclusive, PackageVersion maxVersion, bool maxVersionInclusive)
+        {
+            IsMinInclusive = minVersionInclusive;
+            IsMaxInclusive = maxVersionInclusive;
+            MinVersion = minVersion;
+            MaxVersion = maxVersion;
         }
 
         /// <summary>
@@ -160,7 +171,7 @@ namespace SiliconStudio.PackageManager
         {
             if (value == null)
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
 
             var versionSpec = new PackageVersionRange();
@@ -365,7 +376,7 @@ namespace SiliconStudio.PackageManager
         {
             if (extractor == null)
             {
-                throw new ArgumentNullException("extractor");
+                throw new ArgumentNullException(nameof(extractor));
             }
 
             return p =>

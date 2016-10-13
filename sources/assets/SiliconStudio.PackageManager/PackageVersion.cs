@@ -14,8 +14,6 @@ using System;
 using System.Text.RegularExpressions;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Serializers;
-using SiliconStudio.PackageManager;
 
 namespace SiliconStudio.PackageManager
 {

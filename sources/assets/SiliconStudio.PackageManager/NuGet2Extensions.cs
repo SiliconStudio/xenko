@@ -28,5 +28,19 @@ namespace SiliconStudio.PackageManager
                 return res;
             }
         }
+
+        public static PackageVersionRange ToPackageVersionRange(this IVersionSpec version)
+        {
+            PackageVersion min = null, max = null;
+            if (version.MinVersion?.Version != null)
+            {
+                min = new PackageVersion(version.MinVersion.Version);
+            }
+            if (version.MaxVersion?.Version != null)
+            {
+                max = new PackageVersion(version.MaxVersion.Version);
+            }
+            return new PackageVersionRange(min, version.IsMinInclusive, max, version.IsMaxInclusive);
+        }
     }
 }

@@ -150,7 +150,7 @@ namespace SiliconStudio.PackageManager
                 {
                     foreach (var dependency in set.Dependencies)
                     {
-                        res.Add(new Tuple<string, PackageVersionRange>(dependency.Id, PackageVersionRange.FromVersionSpec(new NugetVersionSpec(dependency.VersionSpec))));
+                        res.Add(new Tuple<string, PackageVersionRange>(dependency.Id, dependency.VersionSpec.ToPackageVersionRange()));
                     }
                 }
                 return res;
