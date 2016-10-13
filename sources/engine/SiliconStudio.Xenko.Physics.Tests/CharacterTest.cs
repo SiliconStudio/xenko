@@ -80,19 +80,23 @@ namespace SiliconStudio.Xenko.Physics.Tests
 
                 var currentPos = character.Transform.Position;
 
-                controller.Move(Vector3.UnitX * 3 * simulation.FixedTimeStep);
+                controller.SetVelocity(Vector3.UnitX * 3);
 
                 await game.Script.NextFrame();
 
                 Assert.AreNotEqual(currentPos, character.Transform.Position);
+                var target = currentPos + Vector3.UnitX*3*simulation.FixedTimeStep;
+                Assert.AreEqual(character.Transform.Position.X, target.X, float.Epsilon);
 
                 currentPos = character.Transform.Position;
 
                 await game.Script.NextFrame();
 
                 Assert.AreNotEqual(currentPos, character.Transform.Position);
+                target = currentPos + Vector3.UnitX * 3 * simulation.FixedTimeStep;
+                Assert.AreEqual(character.Transform.Position.X, target.X, float.Epsilon);
 
-                controller.Move(Vector3.Zero);
+                controller.SetVelocity(Vector3.Zero);
 
                 await game.Script.NextFrame();
 
@@ -114,7 +118,7 @@ namespace SiliconStudio.Xenko.Physics.Tests
                     Assert.Fail("Character controller never collided with test collider.");
                 });
 
-                controller.Move(Vector3.UnitX * 2.5f * simulation.FixedTimeStep);
+                controller.SetVelocity(Vector3.UnitX * 2.5f);
 
                 await collider.NewCollision();
 

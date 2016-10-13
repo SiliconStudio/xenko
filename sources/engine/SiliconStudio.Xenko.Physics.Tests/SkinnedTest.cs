@@ -2,7 +2,6 @@ using System.Linq;
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Physics.Tests
 {
@@ -66,18 +65,18 @@ namespace SiliconStudio.Xenko.Physics.Tests
                     await game.Script.NextFrame();
                 }
 
-                Assert.IsTrue(dynamicBody.BoneWorldMatrix == model.Skeleton.NodeTransformations[dynamicBody.BoneIndex].WorldMatrix);
-                Assert.IsTrue(pastTransform != model.Skeleton.NodeTransformations[dynamicBody.BoneIndex].WorldMatrix);
+                Assert.AreEqual(dynamicBody.BoneWorldMatrix, model.Skeleton.NodeTransformations[dynamicBody.BoneIndex].WorldMatrix);
+                Assert.AreNotEqual(pastTransform, model.Skeleton.NodeTransformations[dynamicBody.BoneIndex].WorldMatrix);
 
                 anim.Play("Run");
 
                 pastTransform = model.Skeleton.NodeTransformations[kinematicBody.BoneIndex].WorldMatrix;
 
-                Assert.IsTrue(kinematicBody.BoneWorldMatrix == pastTransform);
+                Assert.AreEqual(kinematicBody.BoneWorldMatrix, pastTransform);
 
                 await game.Script.NextFrame();
 
-                Assert.IsFalse(kinematicBody.BoneWorldMatrix == pastTransform);
+                Assert.AreNotEqual(kinematicBody.BoneWorldMatrix, pastTransform);
 
                 game.Exit();
             });

@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Physics.Tests
     /// </summary>
     public class GameTest : GameTestBase
     {
-        const int ParticleTestVersion = 1; // NUnit3 switch
+        const int PhysicsTestVersion = 1; // NUnit3 switch
 
         /// <summary>
         ///  The <see cref="IndividualTestVersion"/> can be defined per test when only one of them is affected
@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.Physics.Tests
 
         protected override async Task LoadContent()
         {
-            CurrentVersion = ParticleTestVersion + IndividualTestVersion;
+            CurrentVersion = PhysicsTestVersion + IndividualTestVersion;
 
             await base.LoadContent();
 
