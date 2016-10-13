@@ -10,33 +10,33 @@ using NuGet;
 
 namespace SiliconStudio.PackageManager
 {
-    public class NugetLogger : ILogger, INugetLogger
+    public class NugetLogger : NuGet.ILogger, IPackageManagerLogger
     {
-        private readonly INugetLogger _logger;
-        private readonly ILogger _nativeLogger;
+        private readonly IPackageManagerLogger _logger;
+        private readonly NuGet.ILogger _nativeLogger;
 
         private NugetLogger()
         {
             
         }
-        public NugetLogger(INugetLogger logger)
+        public NugetLogger(IPackageManagerLogger logger)
         {
             _logger = logger;
         }
 
-        public NugetLogger(ILogger logger)
+        public NugetLogger(NuGet.ILogger logger)
         {
             _nativeLogger = logger;
         }
 
-        public void Log(NugetMessageLevel level, string message)
+        public void Log(MessageLevel level, string message)
         {
-            _nativeLogger?.Log((MessageLevel) level, message, null);
+            _nativeLogger?.Log((NuGet.MessageLevel) level, message, null);
         }
 
-        public void Log(MessageLevel level, string message, params object[] args)
+        public void Log(NuGet.MessageLevel level, string message, params object[] args)
         {
-            _logger?.Log((NugetMessageLevel) level, message);
+            _logger?.Log((MessageLevel) level, message);
         }
 
         public FileConflictResolution ResolveFileConflict(string message)
@@ -44,6 +44,6 @@ namespace SiliconStudio.PackageManager
             return FileConflictResolution.Ignore;
         }
 
-        public static readonly INugetLogger NullInstance = new NugetLogger();
+        public static readonly IPackageManagerLogger NullInstance = new NugetLogger();
     }
 }

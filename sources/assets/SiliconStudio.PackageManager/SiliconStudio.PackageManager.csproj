@@ -26,13 +26,13 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="INugetLogger.cs" />
+    <Compile Include="IPackageManagerLogger.cs" />
     <Compile Include="ConstraintProvider.cs" />
     <Compile Include="NuGet2Extensions.cs" />
     <Compile Include="NugetLogger.cs" />
     <Compile Include="NugetManifestMetadata.cs" />
     <Compile Include="NugetManifestFile.cs" />
-    <Compile Include="NugetMessageLevel.cs" />
+    <Compile Include="MessageLevel.cs" />
     <Compile Include="NugetPackageBuilder.cs" />
     <Compile Include="NugetPackageFile.cs" />
     <Compile Include="NugetPackageName.cs" />

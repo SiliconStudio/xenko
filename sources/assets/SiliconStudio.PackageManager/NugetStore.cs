@@ -42,7 +42,7 @@ namespace SiliconStudio.PackageManager
         public const string MainExecutablesKey = "mainExecutables";
         public const string PrerequisitesInstallerKey = "prerequisitesInstaller";
 
-        private INugetLogger logger;
+        private IPackageManagerLogger logger;
         private readonly NuGet.PackageManager manager;
         private readonly ISettings settings;
 
@@ -133,7 +133,7 @@ namespace SiliconStudio.PackageManager
 
         public string TargetFile => Path.Combine(RootDirectory, DefaultTargets);
 
-        public INugetLogger Logger
+        public IPackageManagerLogger Logger
         {
             get
             {
