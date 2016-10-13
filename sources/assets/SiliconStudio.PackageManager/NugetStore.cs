@@ -10,6 +10,14 @@ using System.Threading.Tasks;
 using NuGet;
 using SiliconStudio.Core.Windows;
 
+// Nuget v2.0 types
+using ISettings = NuGet.ISettings;
+using Settings = NuGet.Settings;
+using PackagePathResolver = NuGet.IPackagePathResolver;
+using PhysicalFileSystem = NuGet.PhysicalFileSystem;
+using AggregateRepository = NuGet.AggregateRepository;
+using PackageSourceProvider = NuGet.PackageSourceProvider;
+
 namespace SiliconStudio.PackageManager
 {
     /// <summary>
@@ -37,7 +45,6 @@ namespace SiliconStudio.PackageManager
         private INugetLogger logger;
         private readonly NuGet.PackageManager manager;
         private readonly ISettings settings;
-        private readonly IPackagePathResolver pathResolver;
 
         public NugetStore(string rootDirectory, string configFile = DefaultConfig, string overrideFile = OverrideConfig)
         {
@@ -63,37 +70,40 @@ namespace SiliconStudio.PackageManager
 
             var rootFileSystem = new PhysicalFileSystem(rootDirectory);
             RootDirectory = rootFileSystem.Root;
-            settings = NuGet.Settings.LoadDefaultSettings(rootFileSystem, configFileName, null);
+            settings = Settings.LoadDefaultSettings(rootFileSystem, configFileName, null);
 
-            string installPath = settings.GetRepositoryPath();
-            var packagesFileSystem = new PhysicalFileSystem(installPath);
+            InstallPath = settings.GetValue(ConfigurationConstants.Config, RepositoryPathKey, true);
+            if (!string.IsNullOrEmpty(InstallPath))
+            {
+                InstallPath = InstallPath.Replace('/', Path.DirectorySeparatorChar);
+            }
+            var packagesFileSystem = new PhysicalFileSystem(InstallPath);
             var packageSourceProvider = new PackageSourceProvider(settings);
 
-            var repositoryFactory = new PackageRepositoryFactory();
-            SourceRepository = packageSourceProvider.CreateAggregateRepository(repositoryFactory, true);
+            SourceRepository = packageSourceProvider.CreateAggregateRepository(new PackageRepositoryFactory() , true);
 
-            pathResolver = new DefaultPackagePathResolver(packagesFileSystem);
+            PathResolver = new NuGet.DefaultPackagePathResolver(packagesFileSystem);
 
-            manager = new NuGet.PackageManager(SourceRepository, pathResolver, packagesFileSystem);
+            manager = new NuGet.PackageManager(SourceRepository, PathResolver, packagesFileSystem);
             manager.PackageInstalling += (sender, args) => NugetPackageInstalling?.Invoke(sender, new NugetPackageOperationEventArgs(args));
             manager.PackageInstalled += (sender, args) => NugetPackageInstalled?.Invoke(sender, new NugetPackageOperationEventArgs(args));
             manager.PackageUninstalling += (sender, args) => NugetPackageUninstalling?.Invoke(sender, new NugetPackageOperationEventArgs(args));
             manager.PackageUninstalled += (sender, args) => NugetPackageUninstalled?.Invoke(sender, new NugetPackageOperationEventArgs(args));
 
-            var mainPackageList = settings.GetConfigValue(MainPackagesKey);
+            var mainPackageList = settings.GetValue(ConfigurationConstants.Config, MainPackagesKey, false);
             if (string.IsNullOrWhiteSpace(mainPackageList))
             {
                 throw new InvalidOperationException($"Invalid configuration. Expecting [{MainPackagesKey}] in config");
             }
             MainPackageIds = mainPackageList.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-            VSIXPluginId = settings.GetConfigValue(VsixPluginKey);
+            VSIXPluginId = settings.GetValue(ConfigurationConstants.Config, VsixPluginKey, false);
             if (string.IsNullOrWhiteSpace(VSIXPluginId))
             {
                 throw new InvalidOperationException($"Invalid configuration. Expecting [{VsixPluginKey}] in config");
             }
 
-            RepositoryPath = settings.GetConfigValue(RepositoryPathKey);
+            RepositoryPath = settings.GetValue(ConfigurationConstants.Config, RepositoryPathKey, false);
             if (string.IsNullOrWhiteSpace(RepositoryPath))
             {
                 RepositoryPath = DefaultGamePackagesDirectory;
@@ -103,6 +113,7 @@ namespace SiliconStudio.PackageManager
             Environment.SetEnvironmentVariable("NuGetCachePath", Path.Combine(rootDirectory, "Cache", RepositoryPath));
         }
 
+        public string InstallPath { get; }
         public string RootDirectory { get; }
 
         public IReadOnlyCollection<string> MainPackageIds { get; }
@@ -129,6 +140,7 @@ namespace SiliconStudio.PackageManager
         }
 
         public AggregateRepository SourceRepository { get; }
+        private PackagePathResolver PathResolver { get; }
 
         public event EventHandler<NugetPackageOperationEventArgs> NugetPackageInstalled;
         public event EventHandler<NugetPackageOperationEventArgs> NugetPackageInstalling;
@@ -137,7 +149,7 @@ namespace SiliconStudio.PackageManager
 
         public string GetInstallPath(NugetPackage package)
         {
-            return pathResolver.GetInstallPath(package.IPackage);
+            return PathResolver.GetInstallPath(package.IPackage);
         }
 
         public NugetPackage GetLatestPackageInstalled(IEnumerable<string> packageIds)
@@ -183,7 +195,7 @@ namespace SiliconStudio.PackageManager
             }
         }
 
-        private List<IPackage> UpdateTargetsInternal()
+        private List<NuGet.IPackage> UpdateTargetsInternal()
         {
             // We don't want to polute the Common.targets file with internal packages
             var packages = GetRootPackagesInDependencyOrder().Where(package => !(package.Tags != null && package.Tags.Contains("internal"))).ToList();
@@ -204,12 +216,12 @@ namespace SiliconStudio.PackageManager
             return packages;
         }
 
-        private List<IPackage> GetRootPackagesInDependencyOrder()
+        private List<NuGet.IPackage> GetRootPackagesInDependencyOrder()
         {
-            var packagesInOrder = new List<IPackage>();
+            var packagesInOrder = new List<NuGet.IPackage>();
 
             // Get all packages
-            var packages = new HashSet<IPackage>();
+            var packages = new HashSet<NuGet.IPackage>();
             foreach (var package in manager.LocalRepository.GetPackages().OrderBy(p => p.Id).ThenByDescending(p => p.Version))
             {
                 if (packages.All(p => p.Id != package.Id))
@@ -227,7 +239,7 @@ namespace SiliconStudio.PackageManager
             return packagesInOrder;
         }
 
-        private void AddPackageRecursive(List<IPackage> packagesOut, HashSet<IPackage> packages, IPackage packageToTrack)
+        private void AddPackageRecursive(List<NuGet.IPackage> packagesOut, HashSet<NuGet.IPackage> packages, NuGet.IPackage packageToTrack)
         {
             // Go first recursively with all dependencies resolved
             var dependencies = packageToTrack.DependencySets.SelectMany(deps => deps.Dependencies);
@@ -249,22 +261,22 @@ namespace SiliconStudio.PackageManager
 
         public string GetPackageDirectory(NugetPackage xenkoPackage)
         {
-            return pathResolver.GetPackageDirectory(xenkoPackage.IPackage);
+            return PathResolver.GetPackageDirectory(xenkoPackage.IPackage);
         }
 
         public string GetPackageDirectory(string packageId, NugetSemanticVersion version)
         {
-            return pathResolver.GetPackageDirectory(packageId, version.SemanticVersion);
+            return PathResolver.GetPackageDirectory(packageId, version.SemanticVersion);
         }
 
         public string GetMainExecutables()
         {
-            return settings.GetConfigValue(MainExecutablesKey);
+            return settings.GetValue(ConfigurationConstants.Config, MainExecutablesKey, false);
         }
 
         public string GetPrerequisitesInstaller()
         {
-            return settings.GetConfigValue(PrerequisitesInstallerKey);
+            return settings.GetValue(ConfigurationConstants.Config, PrerequisitesInstallerKey, false);
         }
 
 #region Manager
@@ -338,7 +350,7 @@ namespace SiliconStudio.PackageManager
             return res;
         }
 
-        private IEnumerable<NugetPackage> ToNugetPackages(IEnumerable<IPackage> packages)
+        private IEnumerable<NugetPackage> ToNugetPackages(IEnumerable<NuGet.IPackage> packages)
         {
             var res = new List<NugetPackage>();
             foreach (var package in packages)
@@ -348,5 +360,10 @@ namespace SiliconStudio.PackageManager
             return res;
         }
 #endregion
+    }
+
+    internal class ConfigurationConstants
+    {
+        internal static readonly string Config = "config";
     }
 }
