@@ -42,6 +42,7 @@
     <Compile Include="NugetSemanticVersion.cs" />
     <Compile Include="NugetVersionSpec.cs" />
     <Compile Include="PackageManagerConstants.cs" />
+    <Compile Include="NullPackageManagerLogger.cs" />
     <Compile Include="PackageVersion.cs" />
     <Compile Include="PackageVersionRange.cs" />
     <Compile Include="ProgressReport.cs" />

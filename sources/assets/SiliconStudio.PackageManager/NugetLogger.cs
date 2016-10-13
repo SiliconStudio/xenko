@@ -2,48 +2,65 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using NuGet;
+using System.IO;
 
 namespace SiliconStudio.PackageManager
 {
-    public class NugetLogger : NuGet.ILogger, IPackageManagerLogger
+    /// <summary>
+    /// Implementation of the <see cref="NuGet.ILogger"/> interface using our <see cref="IPackagerManagerLogger"/> interface.
+    /// </summary>
+    internal class NugetLogger : NuGet.ILogger
     {
-        private readonly IPackageManagerLogger _logger;
-        private readonly NuGet.ILogger _nativeLogger;
+        private readonly IPackageManagerLogger logger;
 
-        private NugetLogger()
-        {
-            
-        }
+        /// <summary>
+        /// Initialize new instance of NugetLogger.
+        /// </summary>
+        /// <param name="logger">The <see cref="IPackageManagerLogger"/> instance to use to implement <see cref="NuGet.ILogger"/></param>
         public NugetLogger(IPackageManagerLogger logger)
         {
-            _logger = logger;
+            this.logger = logger;
         }
 
-        public NugetLogger(NuGet.ILogger logger)
+        /// <summary>
+        /// Resolution conflict decision.
+        /// </summary>
+        /// <param name="message">Message to display when there is a conflict.</param>
+        /// <returns>Our implementation always ignore conflicts.</returns>
+        public NuGet.FileConflictResolution ResolveFileConflict(string message)
         {
-            _nativeLogger = logger;
+            return NuGet.FileConflictResolution.Ignore;
         }
 
-        public void Log(MessageLevel level, string message)
+        /// <summary>
+        /// Log <paramref name="message"/> and for now ignore <paramref name="args"/>.
+        /// </summary>
+        /// <param name="level">Level of logging.</param>
+        /// <param name="message">Message to log.</param>
+        /// <param name="args">Additional arguments for the message log.</param>
+        void NuGet.ILogger.Log(NuGet.MessageLevel level, string message, params object[] args)
         {
-            _nativeLogger?.Log((NuGet.MessageLevel) level, message, null);
-        }
+            // Interpret message with args.
+            StringWriter sw = new StringWriter();
+            sw.Write(message, args);
 
-        public void Log(NuGet.MessageLevel level, string message, params object[] args)
-        {
-            _logger?.Log((MessageLevel) level, message);
+            switch (level)
+            {
+                case NuGet.MessageLevel.Debug:
+                    logger.Log(MessageLevel.Debug, sw.ToString());
+                    break;
+                case NuGet.MessageLevel.Error:
+                    logger.Log(MessageLevel.Error, sw.ToString());
+                    break;
+                case NuGet.MessageLevel.Info:
+                    logger.Log(MessageLevel.Info, sw.ToString());
+                    break;
+                case NuGet.MessageLevel.Warning:
+                    logger.Log(MessageLevel.Warning, sw.ToString());
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(level), level, null);
+            }
         }
-
-        public FileConflictResolution ResolveFileConflict(string message)
-        {
-            return FileConflictResolution.Ignore;
-        }
-
-        public static readonly IPackageManagerLogger NullInstance = new NugetLogger();
     }
 }

@@ -137,7 +137,7 @@ namespace SiliconStudio.PackageManager
         {
             get
             {
-                return logger ?? NugetLogger.NullInstance;
+                return logger ?? NullPackageManagerLogger.Instance;
             }
 
             set
