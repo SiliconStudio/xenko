@@ -3,20 +3,21 @@
 
 using System;
 using System.IO;
+using ILogger = NuGet.ILogger;
 
 namespace SiliconStudio.PackageManager
 {
     /// <summary>
-    /// Implementation of the <see cref="NuGet.ILogger"/> interface using our <see cref="IPackagerManagerLogger"/> interface.
+    /// Implementation of the <see cref="ILogger"/> interface using our <see cref="IPackagerManagerLogger"/> interface.
     /// </summary>
-    internal class NugetLogger : NuGet.ILogger
+    internal class NugetLogger : ILogger
     {
         private readonly IPackageManagerLogger logger;
 
         /// <summary>
         /// Initialize new instance of NugetLogger.
         /// </summary>
-        /// <param name="logger">The <see cref="IPackageManagerLogger"/> instance to use to implement <see cref="NuGet.ILogger"/></param>
+        /// <param name="logger">The <see cref="IPackageManagerLogger"/> instance to use to implement <see cref="ILogger"/></param>
         public NugetLogger(IPackageManagerLogger logger)
         {
             this.logger = logger;
@@ -38,7 +39,7 @@ namespace SiliconStudio.PackageManager
         /// <param name="level">Level of logging.</param>
         /// <param name="message">Message to log.</param>
         /// <param name="args">Additional arguments for the message log.</param>
-        void NuGet.ILogger.Log(NuGet.MessageLevel level, string message, params object[] args)
+        void ILogger.Log(NuGet.MessageLevel level, string message, params object[] args)
         {
             // Interpret message with args.
             StringWriter sw = new StringWriter();
