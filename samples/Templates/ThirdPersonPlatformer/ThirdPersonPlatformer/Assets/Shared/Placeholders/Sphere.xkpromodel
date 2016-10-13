@@ -1,0 +1,11 @@
+!ProceduralModelAsset
+Id: 0f22e90c-afd5-4214-bd10-d59c58d30782
+SerializedVersion: {Xenko: 1.9.0-beta01}
+Tags: []
+Type: !SphereProceduralModel
+    Scale: {X: 0.2, Y: 0.2, Z: 0.2}
+    UvScale: {X: 1.0, Y: 1.0}
+    LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
+    MaterialInstance:
+        ~Id: a569e115-f9f9-4353-a102-a5d12d454ee5
+        Material: 2eb34e42-9b63-4e0b-a320-998b04d01d0b/d502003f-d444-45bc-8092-5bf4fb85dda4:Placeholders/Material

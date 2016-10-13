@@ -1,0 +1,103 @@
+!PrefabAsset
+Id: d9515fef-cb38-4920-a580-9ba31c7d63cd
+SerializedVersion: {Xenko: 1.9.0-beta01}
+Tags: []
+Hierarchy:
+    ~Id: 9853ff3a-7cbe-4906-80c5-8f55cb56ff0f
+    RootPartIds:
+        - 25068e9a-f9ed-4439-bbeb-4816363226c8
+    Parts:
+        -   Entity:
+                Id: 25068e9a-f9ed-4439-bbeb-4816363226c8
+                Name: FootStep
+                Components:
+                    - !TransformComponent
+                        ~Id: 5dc3ff57-29f0-4456-9dae-3eefee69b50f
+                        Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ParticleSystemComponent
+                        ~Id: 1ff061c5-c0ad-43b0-989e-b3a455236c35
+                        Control:
+                            ~Id: dea1b2e7-a3fb-45dc-b22f-de5a40ecd4cb
+                            ResetSeconds: 5.0
+                            Control: Play
+                        Color: {R: 1.0, G: 0.46875, B: 0.46875, A: 1.0}
+                        Speed: 1.0
+                        ParticleSystem:
+                            ~Id: 787349d2-6153-4994-b21b-599831b85ebe
+                            Settings:
+                                ~Id: dae3b710-8be5-4589-b10f-8bbc0dc64d71
+                            BoundingShape: null
+                            Emitters:
+                                -   ~Id: bc2a39ed-eff1-4e50-b83d-6c808a3c09ae
+                                    ParticleLifetime: {X: 1.0, Y: 2.0}
+                                    ShapeBuilder: !ShapeBuilderBillboard
+                                        ~Id: 09c66c2d-743a-4d97-8886-6f54412f2f54
+                                        SamplerPosition: null
+                                        SamplerSize: null
+                                        SamplerRotation: null
+                                    Material: !ParticleMaterialComputeColor
+                                        ~Id: 675dbd6b-2429-4400-a0a2-f420e4d25cba
+                                        ComputeColor: !ComputeFloat4
+                                            Value: {X: 10.0, Y: 10.0, Z: 10.0, W: 1.0}
+                                        UVBuilder: null
+                                        ForceTexCoords: false
+                                    Spawners:
+                                        - !SpawnerPerSecond
+                                            ~Id: b74f2c13-8bba-4966-96a2-2f89954fd11f
+                                            LoopCondition: OneShot
+                                            Delay: {X: 0.0, Y: 0.0}
+                                            Duration: {X: 0.5, Y: 0.5}
+                                            SpawnCount: 50.0
+                                    Initializers:
+                                        - !InitialSizeSeed
+                                            ~Id: d5054738-bf83-45c7-b905-44c3913833de
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
+                                            SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: false
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
+                                            RandomSize: {X: 0.05, Y: 0.1}
+                                        - !InitialPositionSeed
+                                            ~Id: cb395838-1ab3-402f-be1e-afb50ad9a8ee
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
+                                            SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
+                                            PositionMin: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            PositionMax: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            Interpolate: false
+                                        - !InitialVelocitySeed
+                                            ~Id: b601065b-859c-4cb7-9ff2-68fb281fecbd
+                                            InheritPosition: true
+                                            Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                                            InheritRotation: true
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                                            InheritScale: true
+                                            Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            ScaleUniform: 1.0
+                                            SeedOffset: 0
+                                            DisplayParticlePosition: false
+                                            DisplayParticleRotation: true
+                                            DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
+                                            VelocityMin: {X: -0.05, Y: 0.1, Z: -0.05}
+                                            VelocityMax: {X: 0.05, Y: 0.3, Z: 0.05}
+                                    Updaters: []

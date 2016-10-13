@@ -1,0 +1,1331 @@
+!SceneAsset
+Id: 7b58b662-3aa5-4f3b-992a-60f0dc4ea0e8
+SerializedVersion: {Xenko: 1.9.0-beta02}
+Tags: []
+SceneSettings:
+    Id: 19ef3a4f-c32d-47f2-8ec3-64d6661eb0e7
+    GraphicsCompositor: !SceneGraphicsCompositorLayers
+        ~Id: 95af6691-7e1c-420a-a15f-7d4b1ad11e0f
+        Cameras:
+            -   ~Id: 03e6eac4-bd09-4fad-9490-3e4543f270b6
+                Name: null
+                Camera: c695070e-7e20-475f-bb01-0a31fd99b886/e8e6c7de-2a76-443e-8032-113dfc01c2df
+        Layers:
+            -   ~Id: e9459413-4971-4930-b7d8-1aec2cf7caad
+                Name: SceneGraphicsLayer
+                Output: !LocalRenderFrameProvider
+                    Descriptor:
+                        Format: HDR
+                Renderers:
+                    - !ClearRenderFrameRenderer
+                        ~Id: e6d7afc4-a5f7-40c1-964a-2960bb3f507c
+                        Color: {R: 0.392156869, G: 0.58431375, B: 0.929411769, A: 1.0}
+                        Output: !CurrentRenderFrameProvider {}
+                    - !SceneCameraRenderer
+                        ~Id: a2a27482-f384-4eb3-8b4f-87d0fbf1c885
+                        Mode: !CameraRendererModeForward
+                            ~Id: 59bd6781-e468-4bc6-906d-8593eed88ccd
+                        Camera:
+                            ~Id: 607d6b3c-b30d-4d7a-b134-e920c6e966ab
+                            Index: 0
+                        Output: !CurrentRenderFrameProvider {}
+                        Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
+                        ForceAspectRatio: false
+        Master:
+            ~Id: 6a2d5381-17ef-460f-bda7-a58e3af65d41
+            Name: SceneGraphicsLayer
+            Output: !MasterRenderFrameProvider {}
+            Renderers:
+                - !SceneEffectRenderer
+                    ~Id: f5a3d82e-707f-40da-baa6-a45db0a76a8c
+                    Input: !ImageEffectRendererInput.LayerInput {}
+                    Effect: !PostProcessingEffects
+                        ~Id: 95539190-34b5-4cb2-b9ce-a8cef777c443
+                        Camera:
+                            ~Id: 8e619843-2d92-4c3d-ba4b-0e184dfab9a6
+                            Index: 0
+                        AmbientOcclusion:
+                            ~Id: 8e1e0c64-0a71-43f7-87c8-5e1f8199f5b2
+                        DepthOfField:
+                            ~Id: 4ce044b4-d896-467a-a5ee-fdc3bdb7f570
+                            Enabled: false
+                            DOFAreas: {X: 0.5, Y: 6.0, Z: 50.0, W: 200.0}
+                        BrightFilter:
+                            ~Id: 21b1b70b-4dcf-43bb-a7e9-646d26d94e03
+                            Color: {R: 1.0, G: 1.0, B: 1.0}
+                        Bloom:
+                            ~Id: af475e2a-3fe5-42fa-a317-6e13cf5d2bd5
+                            Distortion: {X: 1.0, Y: 1.0}
+                            Afterimage:
+                                ~Id: 46663c9c-62fc-4813-ac9f-6a77e803080a
+                                Enabled: false
+                        LightStreak:
+                            ~Id: 43172215-837a-4f32-afeb-f2cf903ddadb
+                            Attenuation: 0.7
+                        LensFlare:
+                            ~Id: da721513-06bb-48f6-80a5-71900cb0be55
+                        ColorTransforms:
+                            ~Id: 0fec563b-784b-43cc-ab9e-352f99365d60
+                            Transforms:
+                                - !ToneMap
+                                    ~Id: f2326173-2585-491b-a14d-871d9458e077
+                                    Operator: !ToneMapHejl2Operator
+                                        ~Id: 857bec84-2919-4d7d-b631-63689d5db88c
+                                - !FilmGrain
+                                    ~Id: fb77422e-288c-4c32-94d7-58a2457dd8d6
+                                    Enabled: false
+                                - !Vignetting
+                                    ~Id: 1a563c63-fb1b-43e0-88b8-501242ea0ed0
+                                    Enabled: false
+                                    Color: {R: 0.0, G: 0.0, B: 0.0}
+                        Antialiasing: !FXAAEffect
+                            ~Id: c08bab61-3080-46b9-9bd2-6b54fde98ea0
+                    Output: !CurrentRenderFrameProvider {}
+    EditorSettings:
+        ~Id: a9199ea5-38e4-4a2e-87e9-4aef501f336e
+        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
+        SceneUnit: 1.0
+        Mode: !SceneEditorGraphicsModeHDRSettings
+            ~Id: e51337c9-42da-4828-a223-e03d83651b2b
+            BackgroundColor: {R: 0.470588237, G: 0.470588237, B: 0.470588237}
+            PostProcessingEffects:
+                ~Id: 60898e98-6506-4e6d-9ba7-1d06ecf2a6d4
+                Camera:
+                    ~Id: 70af76dc-1bb0-4993-8a61-64163a47c35e
+                    Index: 0
+                AmbientOcclusion:
+                    ~Id: 7a2c9ad1-e015-4a5e-a522-1df430b0724f
+                DepthOfField:
+                    ~Id: fbb79e6b-5cea-43b4-bf04-d5fc9e40374c
+                    Enabled: false
+                    DOFAreas: {X: 0.5, Y: 6.0, Z: 50.0, W: 200.0}
+                BrightFilter:
+                    ~Id: eff5a95b-b62c-401b-9a73-f3440556234b
+                    Color: {R: 1.0, G: 1.0, B: 1.0}
+                Bloom:
+                    ~Id: 96092851-bd50-4243-bcd2-811e68a9c7f6
+                    Enabled: false
+                    Distortion: {X: 1.0, Y: 1.0}
+                    Afterimage:
+                        ~Id: 6188a965-60bb-4aff-9918-4d09da9d3598
+                        Enabled: false
+                LightStreak:
+                    ~Id: 50b37c1e-ef13-42df-a32c-1ea1aa43ed18
+                    Enabled: false
+                    Attenuation: 0.7
+                LensFlare:
+                    ~Id: 5bcdcad7-940d-453e-8195-a2d045eec64d
+                    Enabled: false
+                ColorTransforms:
+                    ~Id: e95b047a-a0d1-4334-ada3-3073f2738655
+                    Transforms:
+                        - !ToneMap
+                            ~Id: ca5bab0a-efc9-4d35-a518-dff9a0b769a4
+                            Operator: !ToneMapHejl2Operator
+                                ~Id: 8e6077c5-9fb7-4ddd-964d-3413c7133c91
+                        - !FilmGrain
+                            ~Id: 9377f630-12ce-46e3-a0d7-24a53f967109
+                            Enabled: false
+                        - !Vignetting
+                            ~Id: 7c8664af-9f7d-4065-be1a-e104eb0d3623
+                            Enabled: false
+                            Color: {R: 0.0, G: 0.0, B: 0.0}
+                Antialiasing: !FXAAEffect
+                    ~Id: 5c1cf90a-d5b0-47f3-a0b3-978833a9fc23
+                    Enabled: false
+Hierarchy:
+    ~Id: 0131bea6-da86-47b8-99bb-5bb7b5c2454c
+    RootPartIds:
+        - c695070e-7e20-475f-bb01-0a31fd99b886
+        - 3ea8bc54-667f-4ff2-a9f2-9772444fb894
+        - f904ec91-c2ea-4314-a948-416852d5691a
+        - c0f89217-787f-4b03-bdb8-2e5067d82b22
+        - 51e491c2-9fa8-493d-8c95-2f529c6afb78
+        - 05295dda-3ce4-4739-8ccc-3a77f7e37a91
+        - c8c79470-d114-48f3-b4cb-7caa228d5acd
+        - db5f0998-eb9a-4992-bae5-7a23a0c2fb7f
+        - a7bf68a7-8d6c-4cda-ac28-a05c3806e92a
+        - 61371cef-afc7-40de-a973-b02afb2581d5
+        - 57828d60-5245-4f8d-b65e-e01191a1beb1
+        - 350291e2-ae76-47c8-a131-23bbbfc8babc
+        - 753b1fe8-b274-4277-95d6-f87d613573f9
+        - db514f2d-2139-4348-b1f0-401d3c81ced2
+        - 31c88b98-c569-4bb3-8d09-77b9a89fb518
+        - 8ab01e5f-ae3c-473a-b185-187ff1b9c685
+        - f6be8dcf-2d05-4d00-8c9b-614e5cd36138
+        - dab8580d-b97c-43d8-afcc-b5615574c942
+        - fbfbef6c-f7c6-4912-8050-515ceb7c90c5
+        - 8b735399-3de2-464d-9d12-5eb9c017b16a
+        - 25dd6dd6-0e26-461d-a1b6-ae3e2e003870
+        - b425e15f-e32d-4afa-b38c-d5374c49d469
+        - d2c7c87f-575c-4bef-aca0-da6503ed3a38
+        - d4c1038b-1800-480f-a8d5-9049fb3e4353
+        - e9b50efa-eb16-42ea-9282-29c7a9f459d2
+        - cf824c69-4cdd-4a3a-ae1e-d0b4c4293ad8
+        - 94bf2746-a31a-424d-9df6-4412e788361c
+        - fa6da1f5-3308-4b36-bb7c-c480c045ed88
+        - 13e2020c-2990-43b0-a43f-d9761aacdbfd
+    Parts:
+        -   Entity:
+                Id: 05295dda-3ce4-4739-8ccc-3a77f7e37a91
+                Name: Box2x1x1
+                Components:
+                    - !TransformComponent
+                        ~Id: 4b22de93-e290-4a29-896f-8bb03d0c6705
+                        Children: []
+                        Position: {X: 1.0, Y: 0.5, Z: 0.5}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: cc9c61d2-f2d5-4140-a405-add501ed26e6
+                        Model: de85a6dc-a724-4063-9621-afd507008542/922930df-514b-4eb5-8274-e427eecc434f:Models/Box2x1x1
+                        Materials:
+                            - null
+                    - !RigidbodyComponent
+                        ~Id: 5a05279d-a678-4edf-9ada-e1463a07dff6
+                        CollisionGroup: StaticFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        IsKinematic: true
+                        Mass: 1.0
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            - !BoxColliderShapeDesc
+                                ~Id: db8a45b0-8817-49e8-96d2-4e41c663d76d
+                                Is2D: false
+                                Size: {X: 2.0, Y: 1.0, Z: 1.0}
+                                LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+        -   Entity:
+                Id: 13e2020c-2990-43b0-a43f-d9761aacdbfd
+                Name: Pendilum0x2x0Ball
+                Components:
+                    - !TransformComponent
+                        ~Id: 1af0679d-6a06-48f1-a472-bf6f7c513743
+                        Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: f5110fc2-edb2-4cac-985e-72d07f0772b5
+                        Model: fe21621b-2f57-415e-94b9-a7279759a899/a4db3eeb-2715-4e8f-bba0-452eb7ca2d47:Models/Pendilum0x2x0Ball
+                        Materials:
+                            - null
+                    - !RigidbodyComponent
+                        ~Id: 55293315-64af-4b7b-bc35-c45c75d70935
+                        CollisionGroup: StaticFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        IsKinematic: true
+                        Mass: 1.0
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            - !CylinderColliderShapeDesc
+                                ~Id: f1175ef2-0ae1-4e73-961b-31e0b3404c31
+                                Height: 2.0
+                                Radius: 0.025
+                                LocalOffset: {X: 0.0, Y: -1.0, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                            - !SphereColliderShapeDesc
+                                ~Id: cc13ea51-151d-4dd0-b5e9-e97bf6d32625
+                                Is2D: false
+                                Radius: 0.25
+                                LocalOffset: {X: 0.0, Y: -2.25, Z: 0.0}
+        -   Entity:
+                Id: 25dd6dd6-0e26-461d-a1b6-ae3e2e003870
+                Name: Table1x1x1
+                Components:
+                    - !TransformComponent
+                        ~Id: 21df34d0-978f-4f0f-a828-a0756b037ec6
+                        Children: []
+                        Position: {X: 0.5, Y: 0.5, Z: 0.5000005}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: d7b6abff-9404-4935-990d-166941f486fb
+                        Model: 287bd98c-2fa0-4809-858e-9e9e5863436a/ed73e3e6-dbc9-400e-981d-6c378466fcd9:Models/Table1x1x1
+                        Materials:
+                            - null
+                    - !RigidbodyComponent
+                        ~Id: 003b32d5-62a3-4f31-8b4b-66ccb85a7088
+                        CollisionGroup: StaticFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        IsKinematic: true
+                        Mass: 1.0
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            - !BoxColliderShapeDesc
+                                ~Id: 3534145b-105e-4da9-86ff-9bc5ef5cb190
+                                Is2D: false
+                                Size: {X: 1.0, Y: 0.05, Z: 1.0}
+                                LocalOffset: {X: 0.0, Y: 0.475, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                            - !BoxColliderShapeDesc
+                                ~Id: ecf2960b-8303-4b1f-ae00-db0d42c184be
+                                Is2D: false
+                                Size: {X: 0.1, Y: 1.0, Z: 0.1}
+                                LocalOffset: {X: 0.45, Y: 0.0, Z: 0.45}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                            - !BoxColliderShapeDesc
+                                ~Id: a4c352ea-ad13-4498-b193-d37c8a0197bc
+                                Is2D: false
+                                Size: {X: 0.1, Y: 1.0, Z: 0.1}
+                                LocalOffset: {X: -0.45, Y: 0.0, Z: -0.45}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                            - !BoxColliderShapeDesc
+                                ~Id: 752070ae-d840-4342-952e-73ffbd7a7f2c
+                                Is2D: false
+                                Size: {X: 0.1, Y: 1.0, Z: 0.1}
+                                LocalOffset: {X: -0.45, Y: 0.0, Z: 0.45}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                            - !BoxColliderShapeDesc
+                                ~Id: 9b18cc7f-5cb2-461d-b034-ced46ba43056
+                                Is2D: false
+                                Size: {X: 0.1, Y: 1.0, Z: 0.1}
+                                LocalOffset: {X: 0.45, Y: 0.0, Z: -0.45}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+        -   Entity:
+                Id: 31c88b98-c569-4bb3-8d09-77b9a89fb518
+                Name: Ramp1x1x1
+                Components:
+                    - !TransformComponent
+                        ~Id: 6b4709f2-80e8-4a2a-a93c-1768358ae3c4
+                        Children: []
+                        Position: {X: 0.5, Y: 0.5, Z: 0.5}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: 1351c7f8-9a6a-43a6-afa8-8b938510189c
+                        Model: abae23b1-180e-4ed2-96f8-368c22357192/e55d79be-700a-44db-a70f-8512c67dd07d:Models/Ramp1x1x1
+                        Materials:
+                            - null
+                    - !RigidbodyComponent
+                        ~Id: 33e371ef-ba50-4170-a0b7-2c62a58ca295
+                        CollisionGroup: StaticFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        IsKinematic: true
+                        Mass: 1.0
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            - !ColliderShapeAssetDesc
+                                ~Id: c0b45983-7efa-4b89-a458-2a7bdd8e1ae6
+                                Shape: a2cc2404-9e50-4637-b726-25c4de327fea/26f14582-93fd-4080-9f17-1f4444fe2205:CollisionMeshes/Ramp1x1x1
+        -   Entity:
+                Id: 350291e2-ae76-47c8-a131-23bbbfc8babc
+                Name: Gate2x3x1
+                Components:
+                    - !TransformComponent
+                        ~Id: 3a699448-c9aa-4332-b362-fb156a3825b2
+                        Children: []
+                        Position: {X: 0.99999994, Y: 1.5, Z: 0.5}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: 59a5defc-5133-4381-9cb3-52a95df34140
+                        Model: c5eca9cb-f7a9-48d6-9d80-5dab6e108484/924c9ca7-d8b3-4966-bc05-086bb500ff85:Models/Gate2x3x1
+                        Materials:
+                            - null
+                    - !RigidbodyComponent
+                        ~Id: 6bf5e487-2a17-4fdb-897c-e1addcb0ec93
+                        CollisionGroup: StaticFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        IsKinematic: true
+                        Mass: 1.0
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            - !BoxColliderShapeDesc
+                                ~Id: 87b8c1a1-6016-4710-9e21-07a88b2b487b
+                                Is2D: false
+                                Size: {X: 0.1, Y: 3.0, Z: 1.0}
+                                LocalOffset: {X: 0.95, Y: 0.0, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                            - !BoxColliderShapeDesc
+                                ~Id: 2fde4a07-77d3-41c2-b6ae-9a90479aa04b
+                                Is2D: false
+                                Size: {X: 0.1, Y: 3.0, Z: 1.0}
+                                LocalOffset: {X: -0.95, Y: 0.0, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                            - !BoxColliderShapeDesc
+                                ~Id: 65a6e0a3-6955-4cbe-9095-6f046d42feb2
+                                Is2D: false
+                                Size: {X: 2.0, Y: 0.6, Z: 1.0}
+                                LocalOffset: {X: 0.0, Y: 1.2, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+        -   Entity:
+                Id: 3ea8bc54-667f-4ff2-a9f2-9772444fb894
+                Name: Directional light
+                Components:
+                    - !TransformComponent
+                        ~Id: 8d2cb5ac-91a9-40fa-ade2-2f809739bd90
+                        Children: []
+                        Position: {X: 0.0, Y: 2.0, Z: 0.0}
+                        Rotation: {X: -0.5540323, Y: 0.212012157, Z: 0.1484525, W: 0.7912401}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !LightComponent
+                        ~Id: 79aa7400-2bfb-435d-9114-59397c31c203
+                        Type: !LightDirectional
+                            ~Id: 1cf61c40-cbd5-482d-a149-cb9211268fa3
+                            Color: !ColorRgbProvider
+                                ~Id: 2fbd6cc1-b939-4410-8992-e9c75fb6de8b
+                                Value: {R: 1.0, G: 1.0, B: 1.0}
+                            Shadow:
+                                ~Id: 4df1fa13-d118-4a05-a311-6413c53a109a
+                                Enabled: true
+                                Filter: !LightShadowMapFilterTypePcf
+                                    ~Id: 75e0c722-5d13-4a61-912b-0f17f7b08d46
+                                    FilterSize: Filter5x5
+                                Size: XLarge
+                                DepthRange:
+                                    ~Id: 01d33074-d745-4cad-9e72-1f9653cce217
+                                PartitionMode: !LightDirectionalShadowMap.PartitionLogarithmic
+                                    ~Id: bc6eeeae-6574-40ed-9feb-76f064c66570
+                                BiasParameters:
+                                    ~Id: 7b524904-8f9a-4266-898e-9eb4e1dac7bf
+                        Intensity: 5.0
+        -   Entity:
+                Id: 51e491c2-9fa8-493d-8c95-2f529c6afb78
+                Name: Box1x1x1
+                Components:
+                    - !TransformComponent
+                        ~Id: 8ad2feca-67c2-4e8c-84c5-46d7570eabd3
+                        Children: []
+                        Position: {X: 0.5, Y: 0.5, Z: 0.5}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: f8e40778-5987-40f5-8bc7-13431dfc8978
+                        Model: 89aee43b-bb16-464e-9c2a-3a6f88edd59f/b36be3fb-1496-44c7-97ea-2d523feff017:Models/Box1x1x1
+                        Materials:
+                            - null
+                    - !StaticColliderComponent
+                        ~Id: f962a66f-1ffb-4416-8d4a-99963c7e52f9
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        ColliderShapes:
+                            - !BoxColliderShapeDesc
+                                ~Id: c9450ab2-7d20-43ea-b35e-c10c2914ce42
+                                Is2D: false
+                                Size: {X: 1.0, Y: 1.0, Z: 1.0}
+                                LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+        -   Entity:
+                Id: 57828d60-5245-4f8d-b65e-e01191a1beb1
+                Name: Gate1x2x1
+                Components:
+                    - !TransformComponent
+                        ~Id: b90064b2-8620-4e77-a0d1-243b9d099112
+                        Children: []
+                        Position: {X: 0.5, Y: 1.0, Z: 0.5}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: f6dbc59d-c6d3-47c1-a377-ea11fd11b1b2
+                        Model: 8fa2c529-657f-4d12-a543-3a0e1530404a/01019ffb-11d0-42cb-a5c1-ce55f20e5042:Models/Gate1x2x1
+                        Materials:
+                            - null
+                    - !RigidbodyComponent
+                        ~Id: c41ce7c0-3366-445b-b7cd-a9387da726a1
+                        CollisionGroup: StaticFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        IsKinematic: true
+                        Mass: 1.0
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            - !BoxColliderShapeDesc
+                                ~Id: 37a18967-7723-4a62-80df-8c1d66d47bd0
+                                Is2D: false
+                                Size: {X: 0.1, Y: 2.0, Z: 1.0}
+                                LocalOffset: {X: 0.45, Y: 0.0, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                            - !BoxColliderShapeDesc
+                                ~Id: 1a3663f0-7e0c-4b20-9c14-f31922bd5703
+                                Is2D: false
+                                Size: {X: 0.1, Y: 2.0, Z: 1.0}
+                                LocalOffset: {X: -0.45, Y: 0.0, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                            - !BoxColliderShapeDesc
+                                ~Id: cc518170-651c-46c6-a107-4de23e62c6d9
+                                Is2D: false
+                                Size: {X: 1.0, Y: 0.2, Z: 1.0}
+                                LocalOffset: {X: 0.0, Y: 0.9, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+        -   Entity:
+                Id: 61371cef-afc7-40de-a973-b02afb2581d5
+                Name: Floor3x0x1
+                Components:
+                    - !TransformComponent
+                        ~Id: 53256660-fabd-4237-9f6f-afb13c6d383f
+                        Children: []
+                        Position: {X: 1.49999988, Y: 0.0, Z: 0.49999997}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: 3cc68925-4436-4c49-91c3-58778fd622b0
+                        Model: 803c66b9-60cc-4f2c-afbd-9534b253bb1c/b64f7b95-0e8e-40bb-9b75-21e092f6abc5:Models/Floor3x0x1
+                        Materials:
+                            - null
+                    - !RigidbodyComponent
+                        ~Id: 9e702d8f-a800-4d67-8f31-b62fda1f5a47
+                        CollisionGroup: StaticFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        IsKinematic: true
+                        Mass: 1.0
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            - !BoxColliderShapeDesc
+                                ~Id: 7d719fe1-4918-4add-9ae9-27b5bc1a7e17
+                                Is2D: false
+                                Size: {X: 3.0, Y: 0.05, Z: 1.0}
+                                LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+        -   Entity:
+                Id: 753b1fe8-b274-4277-95d6-f87d613573f9
+                Name: Ramp1x1_2x1
+                Components:
+                    - !TransformComponent
+                        ~Id: 3ea2802e-d8a4-4aea-87ca-6d214bfee8c7
+                        Children: []
+                        Position: {X: 0.5, Y: 0.25, Z: 0.5}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: c4d498a3-20c5-4ad8-acc7-b79f2b721f95
+                        Model: db5ade82-09a5-489d-aede-411c8725b687/c262e230-382e-451b-8392-6c1441e58792:Models/Ramp1x1_2x1
+                        Materials:
+                            - null
+                    - !RigidbodyComponent
+                        ~Id: 90139746-5ce6-49f2-8096-105180d7a739
+                        CollisionGroup: StaticFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        IsKinematic: true
+                        Mass: 1.0
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            - !ColliderShapeAssetDesc
+                                ~Id: 6627047c-4765-48c8-a3b4-892e63c539a5
+                                Shape: ce0dc772-c7ac-4e95-82b6-df4020471713/974ee62e-4d36-4005-a27f-da07b6ae36a7:CollisionMeshes/Ramp1x1_2x1
+        -   Entity:
+                Id: 8ab01e5f-ae3c-473a-b185-187ff1b9c685
+                Name: Ramp2x2_1x1
+                Components:
+                    - !TransformComponent
+                        ~Id: 26ba3ce4-6d0f-4767-931d-b7e9fc00d84b
+                        Children: []
+                        Position: {X: 1.0, Y: 0.25, Z: 0.5}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: 92e7523b-b89d-4c64-a72d-1c2ea02c6ba7
+                        Model: 28688d2c-4c65-4c4d-b672-47ae4ea8f4c3/fe9e63cd-9e41-4e66-b66b-67d0e1f67a85:Models/Ramp2x2_1x1
+                        Materials:
+                            - null
+                    - !RigidbodyComponent
+                        ~Id: 00643923-8428-4d90-9363-abaa329d6cec
+                        CollisionGroup: StaticFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        IsKinematic: true
+                        Mass: 1.0
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            - !ColliderShapeAssetDesc
+                                ~Id: 0c8a9782-5fef-4fd8-ba6e-9e4734adb4c2
+                                Shape: 240d43cd-36a9-4da1-bc30-dd0659d9e5f3/815bd728-6629-4b0e-aa73-0dcf3435c715:CollisionMeshes/Ramp2x1_2x1
+        -   Entity:
+                Id: 8b735399-3de2-464d-9d12-5eb9c017b16a
+                Name: Stairs1x1x2
+                Components:
+                    - !TransformComponent
+                        ~Id: f64bd91f-2e11-4105-8d8b-81f8ee7c0a28
+                        Children: []
+                        Position: {X: 0.5, Y: 0.5, Z: 0.9999991}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: be029228-5050-41af-832c-e05e2d398d2c
+                        Model: 41d02eb7-298a-4c9a-8438-a572b83295c4/da028d29-e641-4020-8977-dafaaf656ad4:Models/Stairs1x1x2
+                        Materials:
+                            - null
+                    - !RigidbodyComponent
+                        ~Id: 91586301-4ed6-4d2c-98af-82259f64e540
+                        CollisionGroup: StaticFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        IsKinematic: true
+                        Mass: 1.0
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            - !ColliderShapeAssetDesc
+                                ~Id: e82509e5-996d-49e8-bde2-b006ac86de09
+                                Shape: 1bffcf0e-1568-4138-b238-66ab1715cd62/934024bf-9a3a-4e33-8fb0-fa4e14832f2b:CollisionMeshes/Stairs1x1x2
+        -   Entity:
+                Id: 94bf2746-a31a-424d-9df6-4412e788361c
+                Name: Wall0x2x5Window
+                Components:
+                    - !TransformComponent
+                        ~Id: 9e8144c4-a677-4104-a614-4bd7bd8a4a23
+                        Children: []
+                        Position: {X: 7.15255737E-07, Y: 1.0, Z: 2.49999976}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: ef379192-a4fb-4b78-b4b4-5ab26c3db478
+                        Model: 150525b9-97ee-4cd1-819a-4fe5fbc98d39/66d4458f-7fd8-452c-bb3c-c89eca9d666a:Models/Wall0x2x5Window
+                        Materials:
+                            - null
+                    - !RigidbodyComponent
+                        ~Id: 54296566-3557-4b24-a050-097255e092f8
+                        CollisionGroup: StaticFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        IsKinematic: true
+                        Mass: 1.0
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            - !BoxColliderShapeDesc
+                                ~Id: 560b9e30-c543-4ca9-aa79-9a5ea1480617
+                                Is2D: false
+                                Size: {X: 0.1, Y: 0.4, Z: 5.0}
+                                LocalOffset: {X: 0.0, Y: 0.8, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                            - !BoxColliderShapeDesc
+                                ~Id: 93c49ee0-5ed0-4604-b753-58f0e1c0fbdd
+                                Is2D: false
+                                Size: {X: 0.1, Y: 1.0, Z: 5.0}
+                                LocalOffset: {X: 0.0, Y: -0.5, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                            - !BoxColliderShapeDesc
+                                ~Id: 4df05095-e1ce-4fd2-a8a3-0e41eea71a94
+                                Is2D: false
+                                Size: {X: 0.1, Y: 2.0, Z: 0.7}
+                                LocalOffset: {X: 0.0, Y: 0.0, Z: -2.15}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                            - !BoxColliderShapeDesc
+                                ~Id: 2bf28767-5571-483b-8990-706075dcef58
+                                Is2D: false
+                                Size: {X: 0.1, Y: 2.0, Z: 0.7}
+                                LocalOffset: {X: 0.0, Y: 0.0, Z: 2.15}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                            - !BoxColliderShapeDesc
+                                ~Id: ceada81d-0c3f-44e9-9a9e-d0e48cd32f20
+                                Is2D: false
+                                Size: {X: 0.1, Y: 2.0, Z: 1.45}
+                                LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+        -   Entity:
+                Id: a7bf68a7-8d6c-4cda-ac28-a05c3806e92a
+                Name: Floor2x0x1
+                Components:
+                    - !TransformComponent
+                        ~Id: 3b7b3c98-3af1-40ac-829f-8af4045b77c1
+                        Children: []
+                        Position: {X: 0.99999994, Y: 0.0, Z: 0.49999997}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: b1ca511a-018c-4b5f-ad0f-8f83933b02cc
+                        Model: ff075bf7-3997-4b5f-b206-b4f43bc87664/6f70f12f-e8d9-467e-a4e7-7489cf967274:Models/Floor2x0x1
+                        Materials:
+                            - null
+                    - !RigidbodyComponent
+                        ~Id: 4cc80d9b-9f02-4ced-af8b-86b095c216e6
+                        CollisionGroup: StaticFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        IsKinematic: true
+                        Mass: 1.0
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            - !BoxColliderShapeDesc
+                                ~Id: 935f6069-409a-4442-9ecc-2179c0de2592
+                                Is2D: false
+                                Size: {X: 2.0, Y: 0.05, Z: 1.0}
+                                LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+        -   Entity:
+                Id: b425e15f-e32d-4afa-b38c-d5374c49d469
+                Name: Table2x2x2
+                Components:
+                    - !TransformComponent
+                        ~Id: 91d8b3fd-81ad-457d-bc9c-9a293736f0e1
+                        Children: []
+                        Position: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: 90609b00-a68c-4fb4-bfac-9f90cb43af2e
+                        Model: 9b3d6eba-8865-4aed-9222-0c11c1c928f0/a597a15e-9dec-4895-84be-99240208b6d2:Models/Table2x2x2
+                        Materials:
+                            - null
+                    - !RigidbodyComponent
+                        ~Id: 81d1d6e8-1daa-4fab-a735-3dbc6a807bd7
+                        CollisionGroup: StaticFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        IsKinematic: true
+                        Mass: 1.0
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            - !BoxColliderShapeDesc
+                                ~Id: 488a3f7d-49b1-47fd-9428-dae7c5b981cf
+                                Is2D: false
+                                Size: {X: 2.0, Y: 0.1, Z: 2.0}
+                                LocalOffset: {X: 0.0, Y: 0.975, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                            - !BoxColliderShapeDesc
+                                ~Id: d1b88d50-3c81-4ec8-b816-d5cb50e30987
+                                Is2D: false
+                                Size: {X: 0.1, Y: 2.0, Z: 0.1}
+                                LocalOffset: {X: 0.95, Y: 0.0, Z: 0.95}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                            - !BoxColliderShapeDesc
+                                ~Id: 2465f431-085a-4d01-9a4c-2eebb5cf119e
+                                Is2D: false
+                                Size: {X: 0.1, Y: 2.0, Z: 0.1}
+                                LocalOffset: {X: -0.95, Y: 0.0, Z: -0.95}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                            - !BoxColliderShapeDesc
+                                ~Id: 5908bc60-df85-4ae6-a36c-640be12ec365
+                                Is2D: false
+                                Size: {X: 0.1, Y: 2.0, Z: 0.1}
+                                LocalOffset: {X: -0.95, Y: 0.0, Z: 0.95}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                            - !BoxColliderShapeDesc
+                                ~Id: 230480e8-aebb-4764-85a2-1a15764c3f52
+                                Is2D: false
+                                Size: {X: 0.1, Y: 2.0, Z: 0.1}
+                                LocalOffset: {X: 0.95, Y: 0.0, Z: -0.95}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+        -   Entity:
+                Id: c0f89217-787f-4b03-bdb8-2e5067d82b22
+                Name: GridBase10x10
+                Components:
+                    - !TransformComponent
+                        ~Id: c2b3ec4e-ff7a-47e3-8bcc-584553d59e41
+                        Children: []
+                        Position: {X: 5.0, Y: 0.0, Z: 5.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: fe1d907c-1cd2-4286-83aa-0639481520b1
+                        Model: 45e01a9b-7a1b-4cd5-b7a5-f52c7738bba5/ee4e1a2b-82a5-4f40-9c2b-1c239dea039a:Models/GridBase10x10
+                        Materials:
+                            - null
+                    - !RigidbodyComponent
+                        ~Id: 73de92e8-e7aa-4180-aa74-ca19b0b9f867
+                        CollisionGroup: StaticFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        IsKinematic: true
+                        Mass: 1.0
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            - !BoxColliderShapeDesc
+                                ~Id: 7e4e9d6f-4751-47bf-ad51-0aa5f27d122b
+                                Is2D: false
+                                Size: {X: 10.0, Y: 0.1, Z: 10.0}
+                                LocalOffset: {X: 0.0, Y: -0.05, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+        -   Entity:
+                Id: c695070e-7e20-475f-bb01-0a31fd99b886
+                Name: Camera
+                Components:
+                    - !TransformComponent
+                        ~Id: 13f7bba5-49fd-4c23-99c1-4c2fb467284b
+                        Children: []
+                        Position: {X: -1.0, Y: 1.2, Z: 2.7}
+                        Rotation: {X: -0.08583164, Y: -0.1729874, Z: -0.0151344351, W: 0.981060266}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !CameraComponent
+                        ~Id: e8e6c7de-2a76-443e-8032-113dfc01c2df
+                        Projection: Perspective
+        -   Entity:
+                Id: c8c79470-d114-48f3-b4cb-7caa228d5acd
+                Name: Box3x1x1
+                Components:
+                    - !TransformComponent
+                        ~Id: 1acad6a2-f6dc-41ec-a4c7-d29eb46ea480
+                        Children: []
+                        Position: {X: 1.50000012, Y: 0.5, Z: 0.5}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: 6495ff8f-4e22-4b16-bfee-b200886985b1
+                        Model: af9061dd-0ce8-4319-b340-f420a928abd4/a0e0c032-4635-45cc-9d48-35525b89f1bb:Models/Box3x1x1
+                        Materials:
+                            - null
+                    - !RigidbodyComponent
+                        ~Id: 6e2b5bd8-2f07-4fba-9eac-30a89cde96ea
+                        CollisionGroup: StaticFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        IsKinematic: true
+                        Mass: 1.0
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            - !BoxColliderShapeDesc
+                                ~Id: afeb44e4-9079-4023-b6f5-2785555515ef
+                                Is2D: false
+                                Size: {X: 3.0, Y: 1.0, Z: 1.0}
+                                LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+        -   Entity:
+                Id: cf824c69-4cdd-4a3a-ae1e-d0b4c4293ad8
+                Name: Wall0x2x5
+                Components:
+                    - !TransformComponent
+                        ~Id: c9be07db-8cb8-4eb8-9f8d-6d3511eb10f2
+                        Children: []
+                        Position: {X: 0.0, Y: 1.0, Z: 2.5}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: d3e68565-27aa-4f88-8d14-790bf65b8607
+                        Model: b0e6f1ae-d020-4f99-81e7-b1270949a1f7/96e9623a-d160-4e9d-b153-dce865e0dcd5:Models/Wall0x2x5
+                        Materials:
+                            - null
+                    - !RigidbodyComponent
+                        ~Id: f09a2974-5742-46e7-be4d-cca2e071c23f
+                        CollisionGroup: StaticFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        IsKinematic: true
+                        Mass: 1.0
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            - !BoxColliderShapeDesc
+                                ~Id: b14b3ac4-0a93-42da-a165-1c91b5317898
+                                Is2D: false
+                                Size: {X: 0.1, Y: 2.0, Z: 5.0}
+                                LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+        -   Entity:
+                Id: d2c7c87f-575c-4bef-aca0-da6503ed3a38
+                Name: Wall0x1x2
+                Components:
+                    - !TransformComponent
+                        ~Id: b7e9dd28-50de-4d40-a171-4927c7316a8a
+                        Children: []
+                        Position: {X: 0.0, Y: 0.5, Z: 1.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: 0a7a9526-6182-45b8-b71c-5ac294d1fd69
+                        Model: 368c8caf-7fb0-4e16-bfb2-fe22f4624cd9/a6a24fab-caf5-4344-8bc0-e29860ea3dbd:Models/Wall0x1x2
+                        Materials:
+                            - null
+                    - !RigidbodyComponent
+                        ~Id: 02053520-cb97-4279-b2b1-f5e2f2ca07b5
+                        CollisionGroup: StaticFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        IsKinematic: true
+                        Mass: 1.0
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            - !BoxColliderShapeDesc
+                                ~Id: 5cab67e0-3962-47c9-9111-bac33509f19a
+                                Is2D: false
+                                Size: {X: 0.1, Y: 1.0, Z: 2.0}
+                                LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+        -   Entity:
+                Id: d4c1038b-1800-480f-a8d5-9049fb3e4353
+                Name: Wall0x2x2
+                Components:
+                    - !TransformComponent
+                        ~Id: 1fdd4f67-51b2-413d-ab88-936773660929
+                        Children: []
+                        Position: {X: -2.38418579E-07, Y: 1.0, Z: 1.00000024}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: 0105b31e-5f75-48c3-875a-c99fdd5672d7
+                        Model: 31c33f51-7836-4d08-9172-850a4662c167/ea5bbb6a-d2b7-4181-81e1-5d9708a7782a:Models/Wall0x2x2
+                        Materials:
+                            - null
+                    - !RigidbodyComponent
+                        ~Id: 1c535be1-6a13-41ed-9022-27e77c631556
+                        CollisionGroup: StaticFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        IsKinematic: true
+                        Mass: 1.0
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            - !BoxColliderShapeDesc
+                                ~Id: ef9bf49d-3d00-4f02-a22c-1f610efca013
+                                Is2D: false
+                                Size: {X: 0.1, Y: 2.0, Z: 2.0}
+                                LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+        -   Entity:
+                Id: dab8580d-b97c-43d8-afcc-b5615574c942
+                Name: Stairs1x1x1_25
+                Components:
+                    - !TransformComponent
+                        ~Id: deb79242-fd85-4748-9bb9-156dc6413501
+                        Children: []
+                        Position: {X: 0.499999046, Y: 0.5, Z: 0.625}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: 981c98d7-15da-40b5-be8f-d89a04a982f0
+                        Model: 44bade37-3d10-4b03-8a62-41ffa0f024d0/4c293323-c1b7-4b6f-8cdd-a240f179e5f5:Models/Stairs1x1x1_25
+                        Materials:
+                            - null
+                    - !RigidbodyComponent
+                        ~Id: df56193f-9c04-4e7a-a6bb-02ca241d9c1e
+                        CollisionGroup: StaticFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        IsKinematic: true
+                        Mass: 1.0
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            - !ColliderShapeAssetDesc
+                                ~Id: 31884eac-b8ea-457b-ac8f-9d9e46be95dd
+                                Shape: 710e7cf2-2950-4ef9-9f24-671e781099bf/99e92203-3bfa-4947-a970-cf3c3b94fb84:CollisionMeshes/Stairs1x1x1_25
+        -   Entity:
+                Id: db514f2d-2139-4348-b1f0-401d3c81ced2
+                Name: Ramp1x1_2x2
+                Components:
+                    - !TransformComponent
+                        ~Id: d375cecf-668d-4fe2-ae42-6d1f40aa4f8a
+                        Children: []
+                        Position: {X: 0.5, Y: 0.25, Z: 1.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: fdc57bf3-61fb-445b-9c53-b27bf6cd774c
+                        Model: 3f3d156f-35cb-4794-b508-0d4fe33decfb/898b8f2c-6cd6-4320-9dad-418fdb30e20d:Models/Ramp1x1_2x2
+                        Materials:
+                            - null
+                    - !RigidbodyComponent
+                        ~Id: a2c014dc-c2cf-483c-88d6-90b32f62969d
+                        CollisionGroup: StaticFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        IsKinematic: true
+                        Mass: 1.0
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            - !ColliderShapeAssetDesc
+                                ~Id: d7c6bad3-5ae4-4554-88eb-d5170d5258b4
+                                Shape: 968c8ba7-6147-4c32-bb8c-d69adc6dbe1d/ae62d5af-0efc-40e2-af1d-02af859774a1:CollisionMeshes/Ramp1x1_2x2
+        -   Entity:
+                Id: db5f0998-eb9a-4992-bae5-7a23a0c2fb7f
+                Name: Floor1x0x1
+                Components:
+                    - !TransformComponent
+                        ~Id: 1c80c010-ddc1-4341-933c-bc13534ebf54
+                        Children: []
+                        Position: {X: 0.49999997, Y: 0.0, Z: 0.49999997}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: 2e70504b-938d-4433-b17a-530059aebafc
+                        Model: 14da3ac6-66c4-4469-ab70-c1381e780dbe/2cb2f455-2bc0-40c0-bd1c-ed5f5ec5a851:Models/Floor1x0x1
+                        Materials:
+                            - null
+                    - !RigidbodyComponent
+                        ~Id: 144ad09f-0167-4317-87eb-f7ca57fcecc3
+                        CollisionGroup: StaticFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        IsKinematic: true
+                        Mass: 1.0
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            - !BoxColliderShapeDesc
+                                ~Id: 6020e1d2-7f3d-48a5-8247-697dbd90f469
+                                Is2D: false
+                                Size: {X: 1.0, Y: 0.05, Z: 1.0}
+                                LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+        -   Entity:
+                Id: e9b50efa-eb16-42ea-9282-29c7a9f459d2
+                Name: Wall0x2x2Window
+                Components:
+                    - !TransformComponent
+                        ~Id: 82c2d69b-2269-4bc2-a23d-41e3a7a958f6
+                        Children: []
+                        Position: {X: 0.0, Y: 1.0, Z: 0.999999762}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: 78a9584d-778f-4c72-8234-18b8b7f17537
+                        Model: 6f78ddf4-47b3-4331-8f9e-4dcc8cf5abee/6582abd6-3c78-4242-96be-4fe6e77c056e:Models/Wall0x2x2Window
+                        Materials:
+                            - null
+                    - !RigidbodyComponent
+                        ~Id: 2ab98877-c34e-43be-bb96-17ff231cfb59
+                        CollisionGroup: StaticFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        IsKinematic: true
+                        Mass: 1.0
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            - !BoxColliderShapeDesc
+                                ~Id: d93fc002-c247-46e1-8d3e-1fe2ca768387
+                                Is2D: false
+                                Size: {X: 0.1, Y: 2.0, Z: 0.6}
+                                LocalOffset: {X: 0.0, Y: 0.0, Z: 0.7}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                            - !BoxColliderShapeDesc
+                                ~Id: 30fb82f9-7a99-41c9-a73e-5c7767ed01f9
+                                Is2D: false
+                                Size: {X: 0.1, Y: 1.0, Z: 2.0}
+                                LocalOffset: {X: 0.0, Y: -0.5, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                            - !BoxColliderShapeDesc
+                                ~Id: 0dcea4af-d496-4f09-8b41-3d52efe7b5f9
+                                Is2D: false
+                                Size: {X: 0.1, Y: 2.0, Z: 0.6}
+                                LocalOffset: {X: 0.0, Y: 0.0, Z: -0.7}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                            - !BoxColliderShapeDesc
+                                ~Id: e9ad06d3-921c-44ed-945f-b556fc585898
+                                Is2D: false
+                                Size: {X: 0.1, Y: 0.4, Z: 2.0}
+                                LocalOffset: {X: 0.0, Y: 0.8, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+        -   Entity:
+                Id: f6be8dcf-2d05-4d00-8c9b-614e5cd36138
+                Name: Stairs1x1x1
+                Components:
+                    - !TransformComponent
+                        ~Id: 7d3514b4-4a02-4123-aeb2-cdcbb9f81f63
+                        Children: []
+                        Position: {X: 0.5, Y: 0.5, Z: 0.5}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: adf21fec-b13c-4211-97d1-de90b07959c2
+                        Model: c056f0f3-3fee-4e63-9bb9-952877a78e04/ef7ac5ee-fbc4-4990-aa48-a7e60f283326:Models/Stairs1x1x1
+                        Materials:
+                            - null
+                    - !RigidbodyComponent
+                        ~Id: 2d9563f8-79a4-4582-8055-29b566863076
+                        CollisionGroup: StaticFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        IsKinematic: true
+                        Mass: 1.0
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            - !ColliderShapeAssetDesc
+                                ~Id: 8cacd351-8112-4522-9d4b-17b727672d6d
+                                Shape: 4fa67c0f-a9a2-4bee-80bb-115743146b23/f1034796-324c-4a40-a626-3d57b1d87fbf:CollisionMeshes/Stairs1x1x1
+        -   Entity:
+                Id: f904ec91-c2ea-4314-a948-416852d5691a
+                Name: Skybox
+                Components:
+                    - !TransformComponent
+                        ~Id: bf72121e-3c3b-4c8f-a323-b57371c825e0
+                        Children: []
+                        Position: {X: 0.0, Y: 2.0, Z: -2.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !SkyboxComponent
+                        ~Id: 08f09e2f-56d3-498d-ac05-bfe2765ec7c3
+                        Intensity: 3.0
+                    - !LightComponent
+                        ~Id: f66e550e-c4f3-4a85-ac6c-d26a1415b6f1
+                        Type: !LightSkybox
+                            ~Id: 7a185e38-3823-4c4b-a017-fb3850a68391
+                        Intensity: 0.25
+        -   Entity:
+                Id: fa6da1f5-3308-4b36-bb7c-c480c045ed88
+                Name: Pillar0x5x0
+                Components:
+                    - !TransformComponent
+                        ~Id: ae0f6fe9-32a3-4799-a94a-ed18021d4112
+                        Children: []
+                        Position: {X: 0.0, Y: 2.5, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: 4ebe2498-0157-4113-9527-810ca0e59df5
+                        Model: 760b9726-84bf-4eb1-830c-55a25b075028/15707c44-e178-4460-b5ac-3012ce507687:Models/Pillar0x5x0
+                        Materials:
+                            - null
+                    - !RigidbodyComponent
+                        ~Id: a18dc223-b616-4893-aa23-606dcc7b416f
+                        CollisionGroup: StaticFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        IsKinematic: true
+                        Mass: 1.0
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            - !BoxColliderShapeDesc
+                                ~Id: b7aa110c-da1b-44ff-8b09-74b597a6f84f
+                                Is2D: false
+                                Size: {X: 0.1, Y: 5.0, Z: 0.1}
+                                LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+        -   Entity:
+                Id: fbfbef6c-f7c6-4912-8050-515ceb7c90c5
+                Name: Stairs1x1x1_50
+                Components:
+                    - !TransformComponent
+                        ~Id: be3ebe8f-ebba-48a6-ad66-f1522376dd74
+                        Children: []
+                        Position: {X: 0.50000006, Y: 0.5, Z: 0.75}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: 7660331d-f3de-466f-87a3-432e32ce5f8f
+                        Model: a5d07cec-0611-4c60-a705-d62279f76a96/026c2dd9-6f56-47d4-a4cc-c80a1a69d8a8:Models/Stairs1x1x1_50
+                        Materials:
+                            - null
+                    - !RigidbodyComponent
+                        ~Id: d0279e89-ffee-4331-885e-a8f5ece8b6bd
+                        CollisionGroup: StaticFilter
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        IsKinematic: true
+                        Mass: 1.0
+                        LinearDamping: 0.0
+                        AngularDamping: 0.0
+                        OverrideGravity: false
+                        Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
+                        NodeName: null
+                        ColliderShapes:
+                            - !ColliderShapeAssetDesc
+                                ~Id: d3f1448e-348f-447d-b834-7a504a3f5a48
+                                Shape: acca7e30-fe66-4b41-8578-44581d7918c3/0bbcc6fe-9120-44e5-b6e8-6976bfa64b2c:CollisionMeshes/Stairs1x1x1_50

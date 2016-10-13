@@ -1,0 +1,33 @@
+!Model
+Id: 62b3d41a-e8f5-49e6-a5f3-c7ed9cae2c64
+SerializedVersion: {Xenko: 1.5.0-alpha02}
+Tags: []
+Source: ../../../Resources/Models/mannequinModelTest.fbx
+PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
+Materials:
+    -   ~Id: 34a24473-cca5-db1f-1e39-e7371e39e737
+        Name: MatteMT
+        MaterialInstance:
+            ~Id: 9c1ef0ed-8513-4978-a585-c6842e209d37
+            Material: d1097d24-68bf-4d9c-89c0-2dbf5cd95c7b/e90cd67b-0eb7-441c-a67d-50e192918d3a:Models/MattBlack
+    -   ~Id: a3800032-3b13-e885-4f5c-5af64f5c5af6
+        Name: GlossMT
+        MaterialInstance:
+            ~Id: 0ab5ae1e-0705-4e9e-b4a7-fe48845c3c90
+            Material: d641b9f3-73cd-4a6e-a3da-ca8006454ba0/1b322c92-9a75-4b10-bd65-8104175c5f00:Models/BodyWhite
+    -   ~Id: cf1da726-d9eb-2e1d-64e0-16eb64e016eb
+        Name: GlowMT
+        MaterialInstance:
+            ~Id: 4fcb4248-870c-4d38-86d0-7ba46db8e11d
+            Material: 1492dc1a-c916-4412-8326-a6828340eb3e/0f499298-b91f-4273-9bf6-002dede230de:Models/Emissive
+    -   ~Id: 87d8706a-ca29-326a-a5bb-95c95bade139
+        Name: SemiglossMT
+        MaterialInstance:
+            ~Id: c0d7b3c7-77d2-4bc6-8870-6b088abbaa29
+            Material: 901e23f1-fc31-45ff-8143-fa9c3b0343a2/9d50f321-04f3-48ab-b49c-c414ef358343:Models/BodyGray
+    -   ~Id: 98fabee3-23ad-cfd3-a847-08dda84708dd
+        Name: lambert1
+        MaterialInstance:
+            ~Id: ca581e72-9384-4544-8229-9ae5d4f5f843
+            Material: null
+Skeleton: ae51704b-3fa1-40c0-841d-b029b35b5092/a0d324bd-326a-4fd8-88a9-fc5e4dcc62e5:Models/mannequinModel Skeleton

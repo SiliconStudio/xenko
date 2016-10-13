@@ -1,0 +1,18 @@
+!Model
+Id: d6eb9b8a-c70a-4d55-8da5-9dc32528d6bd
+SerializedVersion: {Xenko: 1.5.0-alpha02}
+Tags: []
+Source: ../../../Resources/MTball/Models/MTball.fbx
+PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
+Materials:
+    -   ~Id: eccfc0eb-6f02-47fd-0b81-9cfcb1ca2cbf
+        Name: MaterialA
+        MaterialInstance:
+            ~Id: 35dcf760-880c-4a55-849c-8bffb69d7d14
+            Material: 266aa0f1-82cd-4b1b-9250-b232615414d3/adf8fc52-f54b-48d8-b883-e4b78e774d99:MTball/MaterialA
+    -   ~Id: a54cd807-783b-d823-fcdf-7c46dab24576
+        Name: MaterialB
+        MaterialInstance:
+            ~Id: 986aa967-1aa1-4715-88d0-d60e980bd70d
+            Material: 4433ee40-f26f-489e-b93b-b96620d3a7f8/bf37ab1b-21d6-4ebc-a644-70166ff957d9:MTball/MaterialB
+Skeleton: null
