@@ -2,7 +2,7 @@
 Id: 66d4458f-7fd8-452c-bb3c-c89eca9d666a
 SerializedVersion: {Xenko: 1.5.0-alpha02}
 Tags: []
-Source: ../../../../Resources/Models/Wall0x2x5Window.fbx
+Source: ../../../Resources/Models/Wall0x2x5Window.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 Materials:
     -   ~Id: 50624c2a-842d-2c61-d0bc-56d6d0bc56d6
