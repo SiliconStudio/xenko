@@ -51,9 +51,6 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
                 foreach (var slot in Slots.Where(x => x.Kind == SlotKind.Value))
                 {
-                    var slotName = context.GenerateLocalVariableName(slot.Name);
-
-                    // Replace every reference of slot.Name into generated slotName
                     var symbolsToReplace = block.DescendantNodes()
                         .OfType<IdentifierNameSyntax>()
                         .Where(x => x.Identifier.Text == slot.Name)
@@ -65,25 +62,21 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                         })
                         .ToArray();
 
-                    block = block.ReplaceNodes(symbolsToReplace, (x1, x2) => x1.WithIdentifier(Identifier(slotName)));
-
                     if (slot.Direction == SlotDirection.Input)
                     {
                         // Input
                         // Find expression
                         var expression = context.GenerateExpression(slot);
-
-                        // Assign it to a local var with generated name
-                        context.AddStatement(LocalDeclarationStatement(
-                            VariableDeclaration(IdentifierName("var"))
-                                .WithVariables(SingletonSeparatedList(
-                                    VariableDeclarator(Identifier(slotName))
-                                        .WithInitializer(
-                                            EqualsValueClause(expression))))));
+                        block = block.ReplaceNodes(symbolsToReplace, (x1, x2) => expression);
                     }
                     else
                     {
                         // Output
+
+                        // Replace every reference of slot.Name into generated slotName
+                        var slotName = context.GenerateLocalVariableName(slot.Name);
+                        block = block.ReplaceNodes(symbolsToReplace, (x1, x2) => x1.WithIdentifier(Identifier(slotName)));
+
                         // Register a local var with generated name
                         context.RegisterLocalVariable(slot, slotName);
                     }
