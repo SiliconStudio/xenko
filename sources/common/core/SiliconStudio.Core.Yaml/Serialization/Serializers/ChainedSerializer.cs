@@ -47,14 +47,13 @@ using System;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
-    public class ChainedSerializer : IYamlSerializable
+    public abstract class ChainedSerializer : IYamlSerializable
     {
         private readonly IYamlSerializable next;
 
-        public ChainedSerializer(IYamlSerializable next)
+        protected ChainedSerializer(IYamlSerializable next)
         {
-            if (next == null)
-                throw new ArgumentNullException("next");
+            if (next == null) throw new ArgumentNullException(nameof(next));
             this.next = next;
         }
 
