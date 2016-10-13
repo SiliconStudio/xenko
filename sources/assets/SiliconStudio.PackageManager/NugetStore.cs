@@ -319,9 +319,9 @@ namespace SiliconStudio.PackageManager
             return ToNugetPackages(manager.LocalRepository.GetPackages()).AsQueryable();
         }
 
-        public NugetPackage FindLocalPackage(string packageId, NugetVersionSpec versionSpec, NugetConstraintProvider constraintProvider, bool allowPrereleaseVersions, bool allowUnlisted)
+        public NugetPackage FindLocalPackage(string packageId, NugetVersionSpec versionSpec, ConstraintProvider constraintProvider, bool allowPrereleaseVersions, bool allowUnlisted)
         {
-            var package = manager.LocalRepository.FindPackage(packageId, versionSpec?.VersionSpec, (IPackageConstraintProvider)constraintProvider?.Provider ?? NullConstraintProvider.Instance, allowPrereleaseVersions, allowUnlisted);
+            var package = manager.LocalRepository.FindPackage(packageId, versionSpec?.VersionSpec, constraintProvider.Provider(), allowPrereleaseVersions, allowUnlisted);
             return package != null ? new NugetPackage(package) : null;
         }
 

@@ -216,7 +216,7 @@ namespace SiliconStudio.Assets
         /// <param name="allowUnlisted">if set to <c>true</c> [allow unlisted].</param>
         /// <returns>A location on the disk to the specified package or null if not found.</returns>
         /// <exception cref="System.ArgumentNullException">packageName</exception>
-        public UFile GetPackageFileName(string packageName, PackageVersionRange versionRange = null, NugetConstraintProvider constraintProvider = null, bool allowPreleaseVersion = true, bool allowUnlisted = false)
+        public UFile GetPackageFileName(string packageName, PackageVersionRange versionRange = null, ConstraintProvider constraintProvider = null, bool allowPreleaseVersion = true, bool allowUnlisted = false)
         {
             if (packageName == null) throw new ArgumentNullException("packageName");
             var directory = GetPackageDirectory(packageName, versionRange, constraintProvider, allowPreleaseVersion, allowUnlisted);
@@ -241,7 +241,7 @@ namespace SiliconStudio.Assets
             return new PackageLoadParameters { AutoLoadTemporaryAssets = false, LoadAssemblyReferences = false, AutoCompileProjects = false };
         }
 
-        private UDirectory GetPackageDirectory(string packageName, PackageVersionRange versionRange, NugetConstraintProvider constraintProvider = null, bool allowPreleaseVersion = false, bool allowUnlisted = false)
+        private UDirectory GetPackageDirectory(string packageName, PackageVersionRange versionRange, ConstraintProvider constraintProvider = null, bool allowPreleaseVersion = false, bool allowUnlisted = false)
         {
             if (packageName == null) throw new ArgumentNullException("packageName");
 

@@ -23,7 +23,7 @@ namespace SiliconStudio.Assets
     /// </summary>
     public sealed class PackageSession : IDisposable
     {
-        private readonly NugetConstraintProvider constraintProvider = new NugetConstraintProvider();
+        private readonly ConstraintProvider constraintProvider = new ConstraintProvider();
         private readonly PackageCollection packagesCopy;
         private readonly object dependenciesLock = new object();
         private Package currentPackage;
@@ -44,7 +44,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         public PackageSession(Package package)
         {
-            constraintProvider.AddConstraint(PackageStore.Instance.DefaultPackageName, new NugetVersionSpec(PackageStore.Instance.DefaultPackageVersion.ToSemanticVersion()));
+            constraintProvider.AddConstraint(PackageStore.Instance.DefaultPackageName, new PackageVersionRange(PackageStore.Instance.DefaultPackageVersion));
 
             Packages = new PackageCollection();
             packagesCopy = new PackageCollection();
@@ -846,7 +846,10 @@ namespace SiliconStudio.Assets
                 loadedPackages.Add(package);
 
                 // Package has been loaded, register it in constraints so that we force each subsequent loads to use this one (or fails if version doesn't match)
-                session.constraintProvider.AddConstraint(package.Meta.Name, package.Meta.Version != null ? new NugetVersionSpec(package.Meta.Version.ToSemanticVersion()) : null);
+                if (package.Meta.Version != null)
+                {
+                    session.constraintProvider.AddConstraint(package.Meta.Name, new PackageVersionRange(package.Meta.Version));
+                }
 
                 // Load package dependencies
                 // This will perform necessary asset upgrades

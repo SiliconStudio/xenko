@@ -27,7 +27,8 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="INugetLogger.cs" />
-    <Compile Include="NugetConstraintProvider.cs" />
+    <Compile Include="ConstraintProvider.cs" />
+    <Compile Include="NuGet2Extensions.cs" />
     <Compile Include="NugetLogEventArgs.cs" />
     <Compile Include="NugetLogger.cs" />
     <Compile Include="NugetManifestMetadata.cs" />
