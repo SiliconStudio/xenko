@@ -47,10 +47,21 @@ using System;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
+    /// <summary>
+    /// An implementation of <see cref="IYamlSerializable"/> that will call the <see cref="ReadYaml"/> and <see cref="WriteYaml"/> methods
+    /// of another serializer when invoked.
+    /// </summary>
     public abstract class ChainedSerializer : IYamlSerializable
     {
+        /// <summary>
+        /// The chained serializer.
+        /// </summary>
         private IYamlSerializable next;
 
+        /// <summary>
+        /// Sets the serializer to chain with this instance.
+        /// </summary>
+        /// <param name="other">The serializer to chain with this instance.</param>
         public void PrependTo(IYamlSerializable other)
         {
             if (next != null)
@@ -59,17 +70,25 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             next = other;
         }
 
-        public static ChainedSerializer Prepend(ChainedSerializer first, IYamlSerializable serializer)
+        /// <summary>
+        /// Sets the serializer to chain with an instance of <see cref="ChainedSerializer"/>.
+        /// </summary>
+        /// <param name="chained">The chained serializer.</param>
+        /// <param name="serializer">The serializer to chain.</param>
+        /// <returns>The chained argument passed in the <paramref name="chained"/> parameter.</returns>
+        public static ChainedSerializer Prepend(ChainedSerializer chained, IYamlSerializable serializer)
         {
-            first.PrependTo(serializer);
-            return first;
+            chained.PrependTo(serializer);
+            return chained;
         }
 
+        /// <inheritdoc/>
         public virtual object ReadYaml(ref ObjectContext objectContext)
         {
             return next.ReadYaml(ref objectContext);
         }
 
+        /// <inheritdoc/>
         public virtual void WriteYaml(ref ObjectContext objectContext)
         {
             next.WriteYaml(ref objectContext);
