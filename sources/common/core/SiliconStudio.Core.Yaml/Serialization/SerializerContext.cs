@@ -54,11 +54,6 @@ namespace SiliconStudio.Core.Yaml.Serialization
     /// </summary>
     public class SerializerContext : ITagTypeResolver
     {
-        private readonly SerializerSettings settings;
-        private readonly ITagTypeRegistry tagTypeRegistry;
-        private readonly ITypeDescriptorFactory typeDescriptorFactory;
-        private IEmitter emitter;
-        private readonly SerializerContextSettings contextSettings;
         internal int AnchorCount;
 
         /// <summary>
@@ -69,21 +64,16 @@ namespace SiliconStudio.Core.Yaml.Serialization
         internal SerializerContext(Serializer serializer, SerializerContextSettings serializerContextSettings)
         {
             Serializer = serializer;
-            settings = serializer.Settings;
-            tagTypeRegistry = settings.AssemblyRegistry;
-            ObjectFactory = settings.ObjectFactory;
-            ObjectSerializerBackend = settings.ObjectSerializerBackend;
-            Schema = Settings.Schema;
-            ObjectSerializer = serializer.ObjectSerializer;
-            typeDescriptorFactory = serializer.TypeDescriptorFactory;
-            contextSettings = serializerContextSettings ?? SerializerContextSettings.Default;
+            ObjectFactory = serializer.Settings.ObjectFactory;
+            ObjectSerializerBackend = serializer.Settings.ObjectSerializerBackend;
+            ContextSettings = serializerContextSettings ?? SerializerContextSettings.Default;
         }
 
         /// <summary>
         /// Gets a value indicating whether we are in the context of serializing.
         /// </summary>
         /// <value><c>true</c> if we are in the context of serializing; otherwise, <c>false</c>.</value>
-        public bool IsSerializing { get { return Writer != null; } }
+        public bool IsSerializing => Writer != null;
 
         /// <summary>
         /// Gets the context settings.
@@ -91,25 +81,25 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <value>
         /// The context settings.
         /// </value>
-        public SerializerContextSettings ContextSettings { get { return contextSettings; } }
+        public SerializerContextSettings ContextSettings { get; }
 
         /// <summary>
         /// Gets the settings.
         /// </summary>
         /// <value>The settings.</value>
-        public SerializerSettings Settings { get { return settings; } }
+        public SerializerSettings Settings => Serializer.Settings;
 
         /// <summary>
         /// Gets the schema.
         /// </summary>
         /// <value>The schema.</value>
-        public IYamlSchema Schema { get; private set; }
+        public IYamlSchema Schema => Settings.Schema;
 
         /// <summary>
         /// Gets the serializer.
         /// </summary>
         /// <value>The serializer.</value>
-        public Serializer Serializer { get; private set; }
+        public Serializer Serializer { get; }
 
         /// <summary>
         /// Gets or sets the reader used while deserializing.
@@ -122,8 +112,6 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// </summary>
         /// <value>The object serializer backend.</value>
         public IObjectSerializerBackend ObjectSerializerBackend { get; private set; }
-
-        private IYamlSerializable ObjectSerializer { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether errors are allowed.
@@ -145,7 +133,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <value>
         /// The member mask.
         /// </value>
-        public uint MemberMask { get { return contextSettings.MemberMask; } }
+        public uint MemberMask => ContextSettings.MemberMask;
 
         /// <summary>
         /// The default function to read an object from the current Yaml stream.
@@ -159,7 +147,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
             try
             {
                 var objectContext = new ObjectContext(this, value, FindTypeDescriptor(expectedType));
-                return ObjectSerializer.ReadYaml(ref objectContext);
+                return Serializer.ObjectSerializer.ReadYaml(ref objectContext);
             }
             catch (YamlException)
             {
@@ -187,7 +175,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// Gets the emitter.
         /// </summary>
         /// <value>The emitter.</value>
-        public IEmitter Emitter { get { return emitter; } internal set { emitter = value; } }
+        public IEmitter Emitter { get; internal set; }
 
         /// <summary>
         /// The default function to write an object to Yaml
@@ -195,7 +183,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         public void WriteYaml(object value, Type expectedType, YamlStyle style = YamlStyle.Any)
         {
             var objectContext = new ObjectContext(this, value, FindTypeDescriptor(expectedType)) {Style = style};
-            ObjectSerializer.WriteYaml(ref objectContext);
+            Serializer.ObjectSerializer.WriteYaml(ref objectContext);
         }
 
         /// <summary>
@@ -205,7 +193,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <returns>An instance of <see cref="ITypeDescriptor"/>.</returns>
         public ITypeDescriptor FindTypeDescriptor(Type type)
         {
-            return typeDescriptorFactory.Find(type, Settings.ComparerForKeySorting);
+            return Serializer.TypeDescriptorFactory.Find(type, Settings.ComparerForKeySorting);
         }
 
         /// <summary>
@@ -216,7 +204,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <returns>Type.</returns>
         public Type TypeFromTag(string tagName, out bool isAlias)
         {
-            return tagTypeRegistry.TypeFromTag(tagName, out isAlias);
+            return Serializer.Settings.AssemblyRegistry.TypeFromTag(tagName, out isAlias);
         }
 
         /// <summary>
@@ -226,7 +214,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <returns>The associated tag</returns>
         public string TagFromType(Type type)
         {
-            return tagTypeRegistry.TagFromType(type);
+            return Serializer.Settings.AssemblyRegistry.TagFromType(type);
         }
 
         /// <summary>
@@ -236,7 +224,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <returns>The type of null if not found</returns>
         public Type ResolveType(string typeFullName)
         {
-            return tagTypeRegistry.ResolveType(typeFullName);
+            return Serializer.Settings.AssemblyRegistry.ResolveType(typeFullName);
         }
 
         /// <summary>
