@@ -3,11 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SharpYaml;
-using SharpYaml.Events;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Events;
 
 namespace SiliconStudio.Core.Settings
 {

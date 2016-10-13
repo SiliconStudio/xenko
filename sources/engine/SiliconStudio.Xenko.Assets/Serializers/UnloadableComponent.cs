@@ -3,12 +3,12 @@
 
 using System;
 using System.Collections.Generic;
-using SharpYaml.Events;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Serializers
