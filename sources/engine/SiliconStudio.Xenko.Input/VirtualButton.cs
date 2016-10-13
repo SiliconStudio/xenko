@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 
@@ -12,6 +13,7 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// Describes a virtual button (a key from a keyboard, a mouse button, an axis of a joystick...etc.).
     /// </summary>
+    [DataContract]
     public abstract partial class VirtualButton : IVirtualButton
     {
         private static readonly Dictionary<int, VirtualButton> mapIp = new Dictionary<int, VirtualButton>();
@@ -38,21 +40,25 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Unique Id for a particular button <see cref="Type"/>.
         /// </summary>
+        [DataMember]
         public readonly int Id;
 
         /// <summary>
         /// Name of this button.
         /// </summary>
+        [DataMember]
         public readonly string Name;
 
         /// <summary>
         /// Type of this button.
         /// </summary>
+        [DataMember]
         public readonly VirtualButtonType Type;
 
         /// <summary>
         /// A boolean indicating whether this button supports positive and negative value.
         /// </summary>
+        [DataMember]
         public readonly bool IsPositiveAndNegative;
 
         public override string ToString()
