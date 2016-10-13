@@ -76,8 +76,6 @@ namespace TopDownRPG.Player
         {
             base.Start();
 
-            this.GetSimulation().ColliderShapesRendering = true;
-
             // Will search for an CharacterComponent within the same entity as this script
             character = Entity.Get<CharacterComponent>();
             if (character == null) throw new ArgumentException("Please add a CharacterComponent to the entity containing PlayerController!");
