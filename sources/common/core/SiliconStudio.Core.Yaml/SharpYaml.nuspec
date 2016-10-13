@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package>
+  <metadata>
+	<id>SharpYaml</id>
+	<version>1.5.3</version>
+	<authors>Alexandre Mutel</authors>
+	<description>A YAML portable .NET library. providing parsing and serialization of object graphs.</description>
+	<summary>This package contains the YAML parser and serializer/deserializer.</summary>
+	<language>en-US</language>
+	<licenseUrl>https://github.com/xoofx/SharpYaml/blob/master/LICENSE.txt</licenseUrl>
+	<projectUrl>https://github.com/xoofx/SharpYaml</projectUrl>
+	<tags>yaml parser development library</tags>
+  </metadata>
+  <files>
+    <file src="bin\Release\SharpYaml.dll" target="lib\SharpYaml.dll" />
+    <file src="bin\Release\SharpYaml.pdb" target="lib\SharpYaml.pdb" />
+    <file src="bin\Release\SharpYaml.xml" target="lib\SharpYaml.xml" />
+    <file src="..\LICENSE.txt" target="LICENSE.txt" />
+    <file src="**\*.cs" target="src" />
+  </files>
+</package>
