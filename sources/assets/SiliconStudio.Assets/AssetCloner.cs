@@ -1,10 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
+using System.Runtime.CompilerServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
@@ -245,6 +244,19 @@ namespace SiliconStudio.Assets
                 }
             }
             return newObject;
+        }
+
+        /// <summary>
+        /// Clones the specified asset using asset serialization.
+        /// </summary>
+        /// <typeparam name="T">The type of the asset.</typeparam>
+        /// <param name="asset">The asset.</param>
+        /// <param name="flags">Flags used to control the cloning process</param>
+        /// <returns>A clone of the asset.</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static T Clone<T>(T asset, AssetClonerFlags flags = AssetClonerFlags.None)
+        {
+            return (T)Clone((object)asset, flags);
         }
 
         /// <summary>
