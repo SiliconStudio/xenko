@@ -46,6 +46,15 @@ namespace SiliconStudio.PackageManager
         private readonly NuGet.PackageManager manager;
         private readonly ISettings settings;
 
+        /// <summary>
+        /// Initialize NugetStore using <paramref name="rootDirectory"/> as location of the local copies,
+        /// and a configuration file <paramref name="configFile"/> as well as an override configuration
+        /// file <paramref name="overrideFile"/> where all settings of <paramref name="overrideFile"/> also
+        /// presents in <paramref name="configFile"/> take precedence. 
+        /// </summary>
+        /// <param name="rootDirectory">The location of the Nuget store.</param>
+        /// <param name="configFile">The configuration file name for the Nuget store, or <see cref="DefaultConfig"/> if not specified.</param>
+        /// <param name="overrideFile">The override configuration file name for the Nuget store, or <see cref="OverrideConfig"/> if not specified.</param>
         public NugetStore(string rootDirectory, string configFile = DefaultConfig, string overrideFile = OverrideConfig)
         {
             if (rootDirectory == null) throw new ArgumentNullException(nameof(rootDirectory));
@@ -77,18 +86,6 @@ namespace SiliconStudio.PackageManager
             {
                 InstallPath = InstallPath.Replace('/', Path.DirectorySeparatorChar);
             }
-            var packagesFileSystem = new PhysicalFileSystem(InstallPath);
-            var packageSourceProvider = new PackageSourceProvider(settings);
-
-            SourceRepository = packageSourceProvider.CreateAggregateRepository(new PackageRepositoryFactory() , true);
-
-            PathResolver = new NuGet.DefaultPackagePathResolver(packagesFileSystem);
-
-            manager = new NuGet.PackageManager(SourceRepository, PathResolver, packagesFileSystem);
-            manager.PackageInstalling += (sender, args) => NugetPackageInstalling?.Invoke(sender, new NugetPackageOperationEventArgs(args));
-            manager.PackageInstalled += (sender, args) => NugetPackageInstalled?.Invoke(sender, new NugetPackageOperationEventArgs(args));
-            manager.PackageUninstalling += (sender, args) => NugetPackageUninstalling?.Invoke(sender, new NugetPackageOperationEventArgs(args));
-            manager.PackageUninstalled += (sender, args) => NugetPackageUninstalled?.Invoke(sender, new NugetPackageOperationEventArgs(args));
 
             var mainPackageList = settings.GetValue(ConfigurationConstants.Config, MainPackagesKey, false);
             if (string.IsNullOrWhiteSpace(mainPackageList))
@@ -111,6 +108,18 @@ namespace SiliconStudio.PackageManager
 
             // Setup NugetCachePath in the cache folder
             Environment.SetEnvironmentVariable("NuGetCachePath", Path.Combine(rootDirectory, "Cache", RepositoryPath));
+
+            var packagesFileSystem = new PhysicalFileSystem(InstallPath);
+            PathResolver = new NuGet.DefaultPackagePathResolver(packagesFileSystem);
+
+            var packageSourceProvider = new PackageSourceProvider(settings);
+            SourceRepository = packageSourceProvider.CreateAggregateRepository(new PackageRepositoryFactory() , true);
+
+            manager = new NuGet.PackageManager(SourceRepository, PathResolver, packagesFileSystem);
+            manager.PackageInstalling += (sender, args) => NugetPackageInstalling?.Invoke(sender, new NugetPackageOperationEventArgs(args));
+            manager.PackageInstalled += (sender, args) => NugetPackageInstalled?.Invoke(sender, new NugetPackageOperationEventArgs(args));
+            manager.PackageUninstalling += (sender, args) => NugetPackageUninstalling?.Invoke(sender, new NugetPackageOperationEventArgs(args));
+            manager.PackageUninstalled += (sender, args) => NugetPackageUninstalled?.Invoke(sender, new NugetPackageOperationEventArgs(args));
         }
 
         public string InstallPath { get; }
