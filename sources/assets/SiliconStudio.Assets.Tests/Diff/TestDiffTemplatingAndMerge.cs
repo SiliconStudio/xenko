@@ -108,7 +108,7 @@ namespace SiliconStudio.Assets.Tests.Diff
         public void TestNoChanges()
         {
             var baseAsset = new TestDiffAsset() { Name = "Red", Value = 1, Dynamic = new DiffValueTypeA() { Text = "Test1" } };
-            var newBaseAsset = (TestDiffAsset)AssetCloner.Clone(baseAsset);
+            var newBaseAsset = AssetCloner.Clone(baseAsset);
             var baseItem = new AssetItem("/base", baseAsset);
             var childAsset = (TestDiffAsset)baseItem.CreateChildAsset();
 
@@ -129,7 +129,7 @@ namespace SiliconStudio.Assets.Tests.Diff
         public void TestWithNewTypeFromNewBase()
         {
             var baseAsset = new TestDiffAsset() { Name = "Red", Value = 1, Dynamic = new DiffValueTypeA() { Text = "Test1"} };
-            var newBaseAsset = (TestDiffAsset)AssetCloner.Clone(baseAsset);
+            var newBaseAsset = AssetCloner.Clone(baseAsset);
             newBaseAsset.Dynamic = new DiffValueTypeB() { Value = 1 };
 
             var baseItem = new AssetItem("/base", baseAsset);
@@ -154,7 +154,7 @@ namespace SiliconStudio.Assets.Tests.Diff
         public void TestWithNewTypeFromChild()
         {
             var baseAsset = new TestDiffAsset() { Name = "Red", Value = 1, Dynamic = new DiffValueTypeA() { Text = "Test1" } };
-            var newBaseAsset = (TestDiffAsset)AssetCloner.Clone(baseAsset);
+            var newBaseAsset = AssetCloner.Clone(baseAsset);
 
             var baseItem = new AssetItem("/base", baseAsset);
             var childAsset = (TestDiffAsset)baseItem.CreateChildAsset();
@@ -184,7 +184,7 @@ namespace SiliconStudio.Assets.Tests.Diff
         public void TestChangeOverrideToBaseSealed()
         {
             var baseAsset = new TestDiffAsset() { Name = "Red", Value = 1 };
-            var newBaseAsset = (TestDiffAsset)AssetCloner.Clone(baseAsset);
+            var newBaseAsset = AssetCloner.Clone(baseAsset);
             newBaseAsset.Value = 3;
 
             var baseItem = new AssetItem("/base", baseAsset);
@@ -219,7 +219,7 @@ namespace SiliconStudio.Assets.Tests.Diff
             baseAsset.List.Add(new DiffComponent() { Name = "Test2", Position = new Vector4(1, 0, 0, 0) });
             baseAsset.List.Add(new DiffComponent() { Name = "Test3", Position = new Vector4(1, 0, 0, 0) });
 
-            var newBaseAsset = (TestDiffAsset)AssetCloner.Clone(baseAsset);
+            var newBaseAsset = AssetCloner.Clone(baseAsset);
 
             var baseItem = new AssetItem("/base", baseAsset);
 
@@ -268,7 +268,7 @@ namespace SiliconStudio.Assets.Tests.Diff
             baseAsset.List.Add(new DiffComponent() { Name = "Test3", Position = new Vector4(1, 0, 0, 0) });
 
             // Change type of 2nd element in newBase list
-            var newBaseAsset = (TestDiffAsset)AssetCloner.Clone(baseAsset);
+            var newBaseAsset = AssetCloner.Clone(baseAsset);
             newBaseAsset.List[1] = new DiffComponentSub() { Value = 1 };
 
             var baseItem = new AssetItem("/base", baseAsset);
@@ -306,7 +306,7 @@ namespace SiliconStudio.Assets.Tests.Diff
             baseAsset.List.Add(new DiffComponent() { Name = "Test2", Position = new Vector4(1, 0, 0, 0) });
             baseAsset.List.Add(new DiffComponent() { Name = "Test3", Position = new Vector4(1, 0, 0, 0) });
 
-            var newBaseAsset = (TestDiffAsset)AssetCloner.Clone(baseAsset);
+            var newBaseAsset = AssetCloner.Clone(baseAsset);
 
             var baseItem = new AssetItem("/base", baseAsset);
 
@@ -524,7 +524,7 @@ namespace SiliconStudio.Assets.Tests.Diff
             var childAsset = (TestDiffAsset)baseItem.CreateChildAsset();
             var childItem = new AssetItem("child", childAsset);
 
-            var newBaseAsset = (TestDiffAsset)AssetCloner.Clone(baseAsset);
+            var newBaseAsset = AssetCloner.Clone(baseAsset);
             newBaseAsset.Name = "Green";
             var newBaseItem = new AssetItem("base", newBaseAsset);
 

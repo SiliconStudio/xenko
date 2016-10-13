@@ -325,7 +325,7 @@ namespace SiliconStudio.Assets
         {
             // Use a new ShadowRegistry to copy override parameters
             // Clone this asset
-            var package = (Package)AssetCloner.Clone(this); 
+            var package = AssetCloner.Clone(this); 
             package.FullPath = FullPath;
             foreach (var asset in Assets)
             {
@@ -625,7 +625,7 @@ namespace SiliconStudio.Assets
             var assetBaseItem = session != null ? session.FindAsset(assetBase.Id) : Assets.Find(assetBase.Id);
             if (assetBaseItem != null)
             {
-                var newBase = (Asset)AssetCloner.Clone(assetBaseItem.Asset);
+                var newBase = AssetCloner.Clone(assetBaseItem.Asset);
                 return new AssetBase(assetBase.Location, newBase);
             }
             // TODO: If we don't find it, should we log an error instead?

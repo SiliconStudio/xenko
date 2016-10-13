@@ -167,7 +167,7 @@ namespace SiliconStudio.Assets
                     subTreeHierarchy.Parts.Add(Hierarchy.Parts[subTreePart.Id]);
             }
             // clone the parts of the sub-tree
-            var clonedHierarchy = (AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart>)AssetCloner.Clone(subTreeHierarchy);
+            var clonedHierarchy = AssetCloner.Clone(subTreeHierarchy);
             foreach (var rootEntity in clonedHierarchy.RootPartIds)
             {
                 PostClonePart(clonedHierarchy.Parts[rootEntity].Part);

@@ -480,7 +480,7 @@ namespace SiliconStudio.Assets.Analysis
                 // No need to clone assets from readonly package 
                 var assetItemCloned = assetItem.Package.IsSystem
                     ? assetItem
-                    : new AssetItem(assetItem.Location, (Asset)AssetCloner.Clone(assetItem.Asset, AssetClonerFlags.KeepBases), assetItem.Package)
+                    : new AssetItem(assetItem.Location, AssetCloner.Clone(assetItem.Asset, AssetClonerFlags.KeepBases), assetItem.Package)
                         {
                             SourceFolder = assetItem.SourceFolder,
                             SourceProject = assetItem.SourceProject
@@ -670,7 +670,7 @@ namespace SiliconStudio.Assets.Analysis
                     AssetDependencies dependencies;
                     if (Dependencies.TryGetValue(asset.Id, out dependencies))
                     {
-                        dependencies.Item.Asset = (Asset)AssetCloner.Clone(asset, AssetClonerFlags.KeepBases);
+                        dependencies.Item.Asset = AssetCloner.Clone(asset, AssetClonerFlags.KeepBases);
                         UpdateAssetDependencies(dependencies);
 
                         // Notify an asset changed

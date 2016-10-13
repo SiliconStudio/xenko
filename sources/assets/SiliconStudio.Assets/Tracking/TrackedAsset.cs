@@ -50,7 +50,7 @@ namespace SiliconStudio.Assets.Tracking
         /// <remarks>This method will trigger the re-evaluation of properties containing the path to a source file.</remarks>
         public void NotifyAssetChanged()
         {
-            clonedAsset = (Asset)AssetCloner.Clone(sessionAsset, AssetClonerFlags.KeepBases);
+            clonedAsset = AssetCloner.Clone(sessionAsset, AssetClonerFlags.KeepBases);
             UpdateAssetImportPathsTracked(true);
         }
 

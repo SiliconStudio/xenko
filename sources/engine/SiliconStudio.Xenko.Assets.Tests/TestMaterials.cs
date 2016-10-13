@@ -82,7 +82,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             }
 
             // Test cloning
-            var newPrefabClone = (PrefabAsset)AssetCloner.Clone(prefab);
+            var newPrefabClone = AssetCloner.Clone(prefab);
             checkPrefab(newPrefabClone);
 
             // Test runtime serialization (runtime serialization is removing MaterialNull and replacing it by a null)

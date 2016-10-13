@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
         public void TestClone()
         {
             var originAsset = CreateOriginAsset();
-            var newAsset = (PrefabAsset)AssetCloner.Clone(originAsset);
+            var newAsset = AssetCloner.Clone(originAsset);
             CheckAsset(originAsset, newAsset);
         }
 

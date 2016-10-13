@@ -246,9 +246,9 @@ namespace SiliconStudio.Assets.Diff
                 return result;
             }
 
-            var assetBase = (Asset)AssetCloner.Clone(assetBase0);
-            var asset1 = (Asset)AssetCloner.Clone(assetFrom1);
-            var asset2 = (Asset)AssetCloner.Clone(assetFrom2);
+            var assetBase = AssetCloner.Clone(assetBase0);
+            var asset1 = AssetCloner.Clone(assetFrom1);
+            var asset2 = AssetCloner.Clone(assetFrom2);
 
             // Clears base as we are not expecting to work with them directly
             // The real base must be passed by the assetBase0 parameter

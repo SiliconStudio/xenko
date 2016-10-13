@@ -48,7 +48,7 @@ namespace SiliconStudio.Assets.Tests
             obj.SetOverride(memberDesc, OverrideType.New);
             obj.SubObject.SetOverride(memberDesc, OverrideType.Sealed);
 
-            var newInstance = (TestAssetClonerObject)AssetCloner.Clone(obj);
+            var newInstance = AssetCloner.Clone(obj);
 
             // Check that we are getting shadow objects
             Assert.AreEqual(OverrideType.New, newInstance.GetOverride(memberDesc));
@@ -77,7 +77,7 @@ namespace SiliconStudio.Assets.Tests
             obj.SetOverride(memberDesc, OverrideType.New);
             obj.SubObject.SetOverride(memberDesc, OverrideType.Sealed);
 
-            var newInstance = (TestAssetClonerObject)AssetCloner.Clone(obj, AssetClonerFlags.RemoveOverrides);
+            var newInstance = AssetCloner.Clone(obj, AssetClonerFlags.RemoveOverrides);
 
             // Check that we are not overriding anything
             Assert.AreEqual(OverrideType.Base, newInstance.GetOverride(memberDesc));
@@ -103,7 +103,7 @@ namespace SiliconStudio.Assets.Tests
             IdentifiableHelper.SetId(obj1, new Guid("EC86143E-896F-45C5-9A4D-627317D22955"));
             IdentifiableHelper.SetId(obj1.SubObject, new Guid("34E160CD-1D94-468E-8BFD-F82FF96013FC"));
 
-            var obj2 = (TestAssetClonerObject)AssetCloner.Clone(obj1);
+            var obj2 = AssetCloner.Clone(obj1);
 
             var hash1 = AssetHash.Compute(obj1);
             var hash2 = AssetHash.Compute(obj2);
@@ -123,7 +123,7 @@ namespace SiliconStudio.Assets.Tests
             obj1.SetOverride(memberDesc, OverrideType.New);
             obj1.SubObject.SetOverride(memberDesc, OverrideType.Sealed);
 
-            obj2 = (TestAssetClonerObject)AssetCloner.Clone(obj1);
+            obj2 = AssetCloner.Clone(obj1);
 
             var hash1WithOverrides = AssetHash.Compute(obj1);
             var hash2WithOverrides = AssetHash.Compute(obj2);
