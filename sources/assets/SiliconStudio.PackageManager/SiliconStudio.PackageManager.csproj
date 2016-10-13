@@ -31,7 +31,7 @@
     <Compile Include="NugetLogEventArgs.cs" />
     <Compile Include="NugetLogger.cs" />
     <Compile Include="NugetManifestMetadata.cs" />
-    <Compile Include="NuGetManifestFile.cs" />
+    <Compile Include="NugetManifestFile.cs" />
     <Compile Include="NugetMessageLevel.cs" />
     <Compile Include="NugetPackageBuilder.cs" />
     <Compile Include="NugetPackageFile.cs" />
