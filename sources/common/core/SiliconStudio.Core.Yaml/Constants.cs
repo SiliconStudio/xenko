@@ -42,26 +42,27 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System;
 using SharpYaml.Tokens;
 
 namespace SharpYaml
 {
-	/// <summary>
-	/// Defines constants thar relate to the YAML specification.
-	/// </summary>
-	internal static class Constants
-	{
-		public static readonly TagDirective[] DefaultTagDirectives = new[]
-		{
-			new TagDirective("!", "!"),
-			new TagDirective("!!", "tag:yaml.org,2002:"),
-		};
-		
-		public const int MajorVersion = 1;
-		public const int MinorVersion = 1;
-		
-		public const char HandleCharacter = '!';
-		public const string DefaultHandle = "!";
-	}
+    /// <summary>
+    /// Defines constants thar relate to the YAML specification.
+    /// </summary>
+    internal static class Constants
+    {
+        public static readonly TagDirective[] DefaultTagDirectives = new[]
+        {
+            new TagDirective("!", "!"),
+            new TagDirective("!!", "tag:yaml.org,2002:"),
+        };
+
+        public const int MajorVersion = 1;
+        public const int MinorVersion = 1;
+
+        public const char HandleCharacter = '!';
+        public const string DefaultHandle = "!";
+    }
 }

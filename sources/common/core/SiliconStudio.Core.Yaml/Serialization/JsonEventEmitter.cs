@@ -42,6 +42,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System;
 using System.Globalization;
 using SharpYaml;
@@ -49,53 +50,53 @@ using SharpYaml.Events;
 
 namespace SharpYaml.Serialization
 {
-	internal sealed class JsonEventEmitter : ChainedEventEmitter
-	{
-		public JsonEventEmitter(IEventEmitter nextEmitter)
-			: base(nextEmitter)
-		{
-		}
+    internal sealed class JsonEventEmitter : ChainedEventEmitter
+    {
+        public JsonEventEmitter(IEventEmitter nextEmitter)
+            : base(nextEmitter)
+        {
+        }
 
-		public override void Emit(AliasEventInfo eventInfo)
-		{
-			throw new NotSupportedException("Aliases are not supported in JSON");
-		}
+        public override void Emit(AliasEventInfo eventInfo)
+        {
+            throw new NotSupportedException("Aliases are not supported in JSON");
+        }
 
-		public override void Emit(ScalarEventInfo eventInfo)
-		{
-			eventInfo.IsPlainImplicit = true;
-			eventInfo.Style = ScalarStyle.Plain;
+        public override void Emit(ScalarEventInfo eventInfo)
+        {
+            eventInfo.IsPlainImplicit = true;
+            eventInfo.Style = ScalarStyle.Plain;
 
-			var typeCode = eventInfo.SourceValue != null
-				? Type.GetTypeCode(eventInfo.SourceType)
-				: TypeCode.Empty;
+            var typeCode = eventInfo.SourceValue != null
+                ? Type.GetTypeCode(eventInfo.SourceType)
+                : TypeCode.Empty;
 
-			switch (typeCode)
-			{
-				case TypeCode.String:
-				case TypeCode.Char:
-					eventInfo.Style = ScalarStyle.DoubleQuoted;
-					break;
-				case TypeCode.Empty:
-					eventInfo.RenderedValue = "null";
-					break;
-			}
+            switch (typeCode)
+            {
+                case TypeCode.String:
+                case TypeCode.Char:
+                    eventInfo.Style = ScalarStyle.DoubleQuoted;
+                    break;
+                case TypeCode.Empty:
+                    eventInfo.RenderedValue = "null";
+                    break;
+            }
 
-			base.Emit(eventInfo);
-		}
+            base.Emit(eventInfo);
+        }
 
-		public override void Emit(MappingStartEventInfo eventInfo)
-		{
-			eventInfo.Style = YamlStyle.Flow;
+        public override void Emit(MappingStartEventInfo eventInfo)
+        {
+            eventInfo.Style = YamlStyle.Flow;
 
-			base.Emit(eventInfo);
-		}
+            base.Emit(eventInfo);
+        }
 
-		public override void Emit(SequenceStartEventInfo eventInfo)
-		{
-			eventInfo.Style = YamlStyle.Flow;
+        public override void Emit(SequenceStartEventInfo eventInfo)
+        {
+            eventInfo.Style = YamlStyle.Flow;
 
-			base.Emit(eventInfo);
-		}
-	}
+            base.Emit(eventInfo);
+        }
+    }
 }

@@ -17,6 +17,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Collections.Generic;
 using SharpYaml.Serialization.Descriptors;
@@ -30,8 +31,10 @@ namespace SharpYaml.Serialization
     {
         protected DynamicMemberDescriptorBase(string name, Type type)
         {
-            if (name == null) throw new ArgumentNullException("name");
-            if (type == null) throw new ArgumentNullException("type");
+            if (name == null)
+                throw new ArgumentNullException("name");
+            if (type == null)
+                throw new ArgumentNullException("type");
             Name = name;
             Type = type;
             OriginalName = Name;
@@ -56,15 +59,9 @@ namespace SharpYaml.Serialization
 
         public abstract void Set(object thisObject, object value);
 
-        public abstract bool HasSet
-        {
-            get;
-        }
+        public abstract bool HasSet { get; }
 
-        public bool IsPublic
-        {
-            get { return true; }
-        }
+        public bool IsPublic { get { return true; } }
 
         public uint Mask { get; set; }
 

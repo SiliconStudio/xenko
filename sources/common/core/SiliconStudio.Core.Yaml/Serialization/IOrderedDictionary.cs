@@ -42,15 +42,16 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System.Collections.Generic;
 
 namespace SharpYaml.Serialization
 {
-	public interface IOrderedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
-	{
-		void Insert(int index, TKey key, TValue value);
-		void RemoveAt(int index);
-		int IndexOf(TKey key);
-		KeyValuePair<TKey, TValue> this[int index] { get; set; }
-	}
+    public interface IOrderedDictionary<TKey, TValue> : IDictionary<TKey, TValue>
+    {
+        void Insert(int index, TKey key, TValue value);
+        void RemoveAt(int index);
+        int IndexOf(TKey key);
+        KeyValuePair<TKey, TValue> this[int index] { get; set; }
+    }
 }

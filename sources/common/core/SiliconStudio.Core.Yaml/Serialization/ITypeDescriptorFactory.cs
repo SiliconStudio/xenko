@@ -42,22 +42,23 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System;
 using System.Collections.Generic;
 
 namespace SharpYaml.Serialization
 {
-	/// <summary>
-	/// A factory to create an instance of a <see cref="ITypeDescriptor"/>
-	/// </summary>
-	internal interface ITypeDescriptorFactory
-	{
-	    /// <summary>
-	    /// Tries to create an instance of a <see cref="ITypeDescriptor"/> from the type. Return null if this factory is not handling this type.
-	    /// </summary>
-	    /// <param name="type">The type.</param>
-	    /// <param name="memberComparer"></param>
-	    /// <returns>ITypeDescriptor.</returns>
-	    ITypeDescriptor Find(Type type, IComparer<object> memberComparer);
-	}
+    /// <summary>
+    /// A factory to create an instance of a <see cref="ITypeDescriptor"/>
+    /// </summary>
+    internal interface ITypeDescriptorFactory
+    {
+        /// <summary>
+        /// Tries to create an instance of a <see cref="ITypeDescriptor"/> from the type. Return null if this factory is not handling this type.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <param name="memberComparer"></param>
+        /// <returns>ITypeDescriptor.</returns>
+        ITypeDescriptor Find(Type type, IComparer<object> memberComparer);
+    }
 }

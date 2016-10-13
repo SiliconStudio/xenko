@@ -42,24 +42,25 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using SharpYaml.Events;
 
 namespace SharpYaml
 {
-	/// <summary>
-	/// Represents a YAML stream paser.
-	/// </summary>
-	public interface IParser
-	{
-		/// <summary>
-		/// Gets the current event.
-		/// </summary>
-		ParsingEvent Current { get; }
+    /// <summary>
+    /// Represents a YAML stream paser.
+    /// </summary>
+    public interface IParser
+    {
+        /// <summary>
+        /// Gets the current event.
+        /// </summary>
+        ParsingEvent Current { get; }
 
-		/// <summary>
-		/// Moves to the next event.
-		/// </summary>
-		/// <returns>Returns true if there are more events available, otherwise returns false.</returns>
-		bool MoveNext();
-	}
+        /// <summary>
+        /// Moves to the next event.
+        /// </summary>
+        /// <returns>Returns true if there are more events available, otherwise returns false.</returns>
+        bool MoveNext();
+    }
 }

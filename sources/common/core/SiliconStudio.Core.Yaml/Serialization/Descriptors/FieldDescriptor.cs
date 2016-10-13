@@ -42,17 +42,18 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System;
 using System.Reflection;
 
 namespace SharpYaml.Serialization.Descriptors
 {
-	/// <summary>
-	/// A <see cref="IMemberDescriptor"/> for a <see cref="FieldInfo"/>
-	/// </summary>
-	public class FieldDescriptor : MemberDescriptorBase
-	{
-		private readonly FieldInfo fieldInfo;
+    /// <summary>
+    /// A <see cref="IMemberDescriptor"/> for a <see cref="FieldInfo"/>
+    /// </summary>
+    public class FieldDescriptor : MemberDescriptorBase
+    {
+        private readonly FieldInfo fieldInfo;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FieldDescriptor" /> class.
@@ -62,53 +63,42 @@ namespace SharpYaml.Serialization.Descriptors
         /// <exception cref="System.ArgumentNullException">fieldInfo</exception>
         public FieldDescriptor(FieldInfo fieldInfo, StringComparer defaultNameComparer)
             : base(fieldInfo, defaultNameComparer)
-		{
-			if (fieldInfo == null) throw new ArgumentNullException("fieldInfo");
+        {
+            if (fieldInfo == null)
+                throw new ArgumentNullException("fieldInfo");
 
-			this.fieldInfo = fieldInfo;
-		}
+            this.fieldInfo = fieldInfo;
+        }
 
-		/// <summary>
-		/// Gets the property information attached to this instance.
-		/// </summary>
-		/// <value>The property information.</value>
-		public FieldInfo FieldInfo
-		{
-			get { return fieldInfo; }
-		}
+        /// <summary>
+        /// Gets the property information attached to this instance.
+        /// </summary>
+        /// <value>The property information.</value>
+        public FieldInfo FieldInfo { get { return fieldInfo; } }
 
-		public override Type Type
-		{
-			get { return fieldInfo.FieldType; }
-		}
+        public override Type Type { get { return fieldInfo.FieldType; } }
 
-		public override object Get(object thisObject)
-		{
-			return fieldInfo.GetValue(thisObject);
-		}
+        public override object Get(object thisObject)
+        {
+            return fieldInfo.GetValue(thisObject);
+        }
 
-		public override void Set(object thisObject, object value)
-		{
-			fieldInfo.SetValue(thisObject, value);
-		}
+        public override void Set(object thisObject, object value)
+        {
+            fieldInfo.SetValue(thisObject, value);
+        }
 
-		public override bool HasSet
-		{
-			get { return true; }
-		}
+        public override bool HasSet { get { return true; } }
 
-		public override bool IsPublic
-		{
-			get { return fieldInfo.IsPublic; }
-		}
+        public override bool IsPublic { get { return fieldInfo.IsPublic; } }
 
-		/// <summary>
-		/// Returns a <see cref="System.String" /> that represents this instance.
-		/// </summary>
-		/// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-		public override string ToString()
-		{
-			return string.Format("Field [{0}] from Type [{1}]", OriginalName, FieldInfo.DeclaringType != null ? FieldInfo.DeclaringType.FullName : string.Empty);
-		}
-	}
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        public override string ToString()
+        {
+            return string.Format("Field [{0}] from Type [{1}]", OriginalName, FieldInfo.DeclaringType != null ? FieldInfo.DeclaringType.FullName : string.Empty);
+        }
+    }
 }

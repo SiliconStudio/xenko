@@ -43,9 +43,6 @@ namespace SharpYaml.Serialization
         /// Gets the previous name.
         /// </summary>
         /// <value>The previous name.</value>
-        public string Name
-        {
-            get { return name; }
-        }
+        public string Name { get { return name; } }
     }
 }

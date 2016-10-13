@@ -42,19 +42,20 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System;
 using System.Reflection;
 
 namespace SharpYaml.Serialization.Descriptors
 {
-	/// <summary>
-	/// A <see cref="IMemberDescriptor"/> for a <see cref="PropertyInfo"/>
-	/// </summary>
-	public class PropertyDescriptor : MemberDescriptorBase
-	{
-		private readonly PropertyInfo propertyInfo;
-		private readonly MethodInfo getMethod;
-		private readonly MethodInfo setMethod;
+    /// <summary>
+    /// A <see cref="IMemberDescriptor"/> for a <see cref="PropertyInfo"/>
+    /// </summary>
+    public class PropertyDescriptor : MemberDescriptorBase
+    {
+        private readonly PropertyInfo propertyInfo;
+        private readonly MethodInfo getMethod;
+        private readonly MethodInfo setMethod;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PropertyDescriptor" /> class.
@@ -64,60 +65,49 @@ namespace SharpYaml.Serialization.Descriptors
         /// <exception cref="System.ArgumentNullException">propertyInfo</exception>
         public PropertyDescriptor(PropertyInfo propertyInfo, StringComparer defaultNameComparer)
             : base(propertyInfo, defaultNameComparer)
-		{
-			if (propertyInfo == null) throw new ArgumentNullException("propertyInfo");
+        {
+            if (propertyInfo == null)
+                throw new ArgumentNullException("propertyInfo");
 
-			this.propertyInfo = propertyInfo;
+            this.propertyInfo = propertyInfo;
 
-			getMethod = propertyInfo.GetGetMethod(true);
-			if (propertyInfo.CanWrite && propertyInfo.GetSetMethod(!IsPublic) != null)
-			{
-				setMethod = propertyInfo.GetSetMethod(!IsPublic);
-			}
-		}
+            getMethod = propertyInfo.GetGetMethod(true);
+            if (propertyInfo.CanWrite && propertyInfo.GetSetMethod(!IsPublic) != null)
+            {
+                setMethod = propertyInfo.GetSetMethod(!IsPublic);
+            }
+        }
 
-		/// <summary>
-		/// Gets the property information attached to this instance.
-		/// </summary>
-		/// <value>The property information.</value>
-		public PropertyInfo PropertyInfo
-		{
-			get { return propertyInfo; }
-		}
+        /// <summary>
+        /// Gets the property information attached to this instance.
+        /// </summary>
+        /// <value>The property information.</value>
+        public PropertyInfo PropertyInfo { get { return propertyInfo; } }
 
-		public override Type Type
-		{
-			get { return propertyInfo.PropertyType; }
-		}
+        public override Type Type { get { return propertyInfo.PropertyType; } }
 
-		public override object Get(object thisObject)
-		{
-			return getMethod.Invoke(thisObject, null);
-		}
+        public override object Get(object thisObject)
+        {
+            return getMethod.Invoke(thisObject, null);
+        }
 
-		public override void Set(object thisObject, object value)
-		{
-			if (HasSet)
-				setMethod.Invoke(thisObject, new [] {value});
-		}
+        public override void Set(object thisObject, object value)
+        {
+            if (HasSet)
+                setMethod.Invoke(thisObject, new[] {value});
+        }
 
-		public override bool HasSet
-		{
-			get { return setMethod != null; }
-		}
+        public override bool HasSet { get { return setMethod != null; } }
 
-		public override bool IsPublic
-		{
-			get { return getMethod.IsPublic; }
-		}
+        public override bool IsPublic { get { return getMethod.IsPublic; } }
 
-		/// <summary>
-		/// Returns a <see cref="System.String" /> that represents this instance.
-		/// </summary>
-		/// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-		public override string ToString()
-		{
-			return string.Format("Property [{0}] from Type [{1}]", OriginalName,  PropertyInfo.DeclaringType != null ? PropertyInfo.DeclaringType.FullName : string.Empty);
-		}
-	}
+        /// <summary>
+        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// </summary>
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        public override string ToString()
+        {
+            return string.Format("Property [{0}] from Type [{1}]", OriginalName, PropertyInfo.DeclaringType != null ? PropertyInfo.DeclaringType.FullName : string.Empty);
+        }
+    }
 }

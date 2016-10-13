@@ -42,72 +42,74 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using SharpYaml;
 using SharpYaml.Events;
 
 namespace SharpYaml.Serialization
 {
-	internal sealed class WriterEventEmitter : IEventEmitter
-	{
-		private readonly IEmitter emitter;
+    internal sealed class WriterEventEmitter : IEventEmitter
+    {
+        private readonly IEmitter emitter;
 
-		public WriterEventEmitter(IEmitter emitter)
-		{
-			this.emitter = emitter;
-		}
+        public WriterEventEmitter(IEmitter emitter)
+        {
+            this.emitter = emitter;
+        }
 
-		void IEventEmitter.StreamStart()
-		{
-			emitter.Emit(new StreamStart());
-		}
-		void IEventEmitter.DocumentStart()
-		{
-			emitter.Emit(new DocumentStart());
-		}
+        void IEventEmitter.StreamStart()
+        {
+            emitter.Emit(new StreamStart());
+        }
 
-		void IEventEmitter.Emit(AliasEventInfo eventInfo)
-		{
-			emitter.Emit(new AnchorAlias(eventInfo.Alias));
-		}
+        void IEventEmitter.DocumentStart()
+        {
+            emitter.Emit(new DocumentStart());
+        }
 
-		void IEventEmitter.Emit(ScalarEventInfo eventInfo)
-		{
-			emitter.Emit(new Scalar(eventInfo.Anchor, eventInfo.Tag, eventInfo.RenderedValue, eventInfo.Style, eventInfo.IsPlainImplicit, eventInfo.IsQuotedImplicit));
-		}
+        void IEventEmitter.Emit(AliasEventInfo eventInfo)
+        {
+            emitter.Emit(new AnchorAlias(eventInfo.Alias));
+        }
 
-		void IEventEmitter.Emit(MappingStartEventInfo eventInfo)
-		{
-			emitter.Emit(new MappingStart(eventInfo.Anchor, eventInfo.Tag, eventInfo.IsImplicit, eventInfo.Style));
-		}
+        void IEventEmitter.Emit(ScalarEventInfo eventInfo)
+        {
+            emitter.Emit(new Scalar(eventInfo.Anchor, eventInfo.Tag, eventInfo.RenderedValue, eventInfo.Style, eventInfo.IsPlainImplicit, eventInfo.IsQuotedImplicit));
+        }
 
-		void IEventEmitter.Emit(MappingEndEventInfo eventInfo)
-		{
-			emitter.Emit(new MappingEnd());
-		}
+        void IEventEmitter.Emit(MappingStartEventInfo eventInfo)
+        {
+            emitter.Emit(new MappingStart(eventInfo.Anchor, eventInfo.Tag, eventInfo.IsImplicit, eventInfo.Style));
+        }
 
-		void IEventEmitter.Emit(SequenceStartEventInfo eventInfo)
-		{
-			emitter.Emit(new SequenceStart(eventInfo.Anchor, eventInfo.Tag, eventInfo.IsImplicit, eventInfo.Style));
-		}
+        void IEventEmitter.Emit(MappingEndEventInfo eventInfo)
+        {
+            emitter.Emit(new MappingEnd());
+        }
 
-		void IEventEmitter.Emit(SequenceEndEventInfo eventInfo)
-		{
-			emitter.Emit(new SequenceEnd());
-		}
+        void IEventEmitter.Emit(SequenceStartEventInfo eventInfo)
+        {
+            emitter.Emit(new SequenceStart(eventInfo.Anchor, eventInfo.Tag, eventInfo.IsImplicit, eventInfo.Style));
+        }
 
-		public void Emit(ParsingEvent parsingEvent)
-		{
-			emitter.Emit(parsingEvent);
-		}
+        void IEventEmitter.Emit(SequenceEndEventInfo eventInfo)
+        {
+            emitter.Emit(new SequenceEnd());
+        }
 
-		void IEventEmitter.DocumentEnd()
-		{
-			emitter.Emit(new DocumentEnd(true));
-		}
+        public void Emit(ParsingEvent parsingEvent)
+        {
+            emitter.Emit(parsingEvent);
+        }
 
-		void IEventEmitter.StreamEnd()
-		{
-			emitter.Emit(new StreamEnd());
-		}
-	}
+        void IEventEmitter.DocumentEnd()
+        {
+            emitter.Emit(new DocumentEnd(true));
+        }
+
+        void IEventEmitter.StreamEnd()
+        {
+            emitter.Emit(new StreamEnd());
+        }
+    }
 }

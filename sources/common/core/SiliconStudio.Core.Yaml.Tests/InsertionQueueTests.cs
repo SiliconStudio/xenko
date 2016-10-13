@@ -42,6 +42,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,113 +50,113 @@ using NUnit.Framework;
 
 namespace SharpYaml.Tests
 {
-	public class InsertionQueueTests
-	{
-		[Test]
-		public void ShouldThrowExceptionWhenDequeuingEmptyContainer()
-		{
-			var queue = CreateQueue();
+    public class InsertionQueueTests
+    {
+        [Test]
+        public void ShouldThrowExceptionWhenDequeuingEmptyContainer()
+        {
+            var queue = CreateQueue();
 
-		    Assert.Throws<InvalidOperationException>(() => queue.Dequeue());
-		}
-
-		[Test]
-		public void ShouldThrowExceptionWhenDequeuingContainerThatBecomesEmpty()
-		{
-			var queue = new InsertionQueue<int>();
-
-			queue.Enqueue(1);
-			queue.Dequeue();
-		
             Assert.Throws<InvalidOperationException>(() => queue.Dequeue());
         }
 
-		[Test]
-		public void ShouldCorrectlyDequeueElementsAfterEnqueuing()
-		{
-			var queue = CreateQueue();
+        [Test]
+        public void ShouldThrowExceptionWhenDequeuingContainerThatBecomesEmpty()
+        {
+            var queue = new InsertionQueue<int>();
 
-			WithTheRange(0, 10).Perform(queue.Enqueue);
-
-			Assert.AreEqual(new List<int>() {0, 1, 2, 3, 4, 5, 6, 7, 8, 9 }, OrderOfElementsIn(queue));
-		}
-
-		[Test]
-		public void ShouldCorrectlyDequeueElementsWhenIntermixingEnqueuing()
-		{
-			var queue = CreateQueue();
-			
-			WithTheRange(0, 10).Perform(queue.Enqueue);
-			PerformTimes(5, queue.Dequeue);
-			WithTheRange(10, 15).Perform(queue.Enqueue);
-
-			Assert.AreEqual(new List<int>() {5, 6, 7, 8, 9, 10, 11, 12, 13, 14}, OrderOfElementsIn(queue));
-		}
-
-		[Test]
-		public void ShouldThrowExceptionWhenDequeuingAfterInserting()
-		{
-			var queue = CreateQueue();
-
-			queue.Enqueue(1);
-			queue.Insert(0, 99);
-			PerformTimes(2, queue.Dequeue);
+            queue.Enqueue(1);
+            queue.Dequeue();
 
             Assert.Throws<InvalidOperationException>(() => queue.Dequeue());
-		}
-
-		[Test]
-		public void ShouldCorrectlyDequeueElementsWhenInserting()
-		{
-			var queue = CreateQueue();
-
-			WithTheRange(0, 10).Perform(queue.Enqueue);
-			queue.Insert(5, 99);
-
-            Assert.AreEqual(new List<int>() { 0, 1, 2, 3, 4, 99, 5, 6, 7, 8, 9 }, OrderOfElementsIn(queue));
         }
 
-		private static InsertionQueue<int> CreateQueue()
-		{
-			return new InsertionQueue<int>();
-		}
+        [Test]
+        public void ShouldCorrectlyDequeueElementsAfterEnqueuing()
+        {
+            var queue = CreateQueue();
 
-		private IEnumerable<int> WithTheRange(int from, int to)
-		{
-			return Enumerable.Range(@from, to - @from);
-		}
+            WithTheRange(0, 10).Perform(queue.Enqueue);
 
-		private IEnumerable<int> OrderOfElementsIn(InsertionQueue<int> queue)
-		{
-			while (true)
-			{
-				if (queue.Count == 0)
-				{
-					yield break;
-				}
-				yield return queue.Dequeue();
-			}
-		}
+            Assert.AreEqual(new List<int>() {0, 1, 2, 3, 4, 5, 6, 7, 8, 9}, OrderOfElementsIn(queue));
+        }
 
-		public void PerformTimes(int times, Func<int> func)
-		{
-			WithTheRange(0, times).Perform(func);
-		}
-	}
+        [Test]
+        public void ShouldCorrectlyDequeueElementsWhenIntermixingEnqueuing()
+        {
+            var queue = CreateQueue();
 
-	public static class EnumerableExtensions
-	{
-		public static void Perform<T>(this IEnumerable<T> withRange, Func<int> func)
-		{
-			withRange.Perform(x => func());
-		}
+            WithTheRange(0, 10).Perform(queue.Enqueue);
+            PerformTimes(5, queue.Dequeue);
+            WithTheRange(10, 15).Perform(queue.Enqueue);
 
-		public static void Perform<T>(this IEnumerable<T> withRange, Action<T> action)
-		{
-			foreach (var element in withRange)
-			{
-				action(element);
-			}
-		}
-	}
+            Assert.AreEqual(new List<int>() {5, 6, 7, 8, 9, 10, 11, 12, 13, 14}, OrderOfElementsIn(queue));
+        }
+
+        [Test]
+        public void ShouldThrowExceptionWhenDequeuingAfterInserting()
+        {
+            var queue = CreateQueue();
+
+            queue.Enqueue(1);
+            queue.Insert(0, 99);
+            PerformTimes(2, queue.Dequeue);
+
+            Assert.Throws<InvalidOperationException>(() => queue.Dequeue());
+        }
+
+        [Test]
+        public void ShouldCorrectlyDequeueElementsWhenInserting()
+        {
+            var queue = CreateQueue();
+
+            WithTheRange(0, 10).Perform(queue.Enqueue);
+            queue.Insert(5, 99);
+
+            Assert.AreEqual(new List<int>() {0, 1, 2, 3, 4, 99, 5, 6, 7, 8, 9}, OrderOfElementsIn(queue));
+        }
+
+        private static InsertionQueue<int> CreateQueue()
+        {
+            return new InsertionQueue<int>();
+        }
+
+        private IEnumerable<int> WithTheRange(int from, int to)
+        {
+            return Enumerable.Range(@from, to - @from);
+        }
+
+        private IEnumerable<int> OrderOfElementsIn(InsertionQueue<int> queue)
+        {
+            while (true)
+            {
+                if (queue.Count == 0)
+                {
+                    yield break;
+                }
+                yield return queue.Dequeue();
+            }
+        }
+
+        public void PerformTimes(int times, Func<int> func)
+        {
+            WithTheRange(0, times).Perform(func);
+        }
+    }
+
+    public static class EnumerableExtensions
+    {
+        public static void Perform<T>(this IEnumerable<T> withRange, Func<int> func)
+        {
+            withRange.Perform(x => func());
+        }
+
+        public static void Perform<T>(this IEnumerable<T> withRange, Action<T> action)
+        {
+            foreach (var element in withRange)
+            {
+                action(element);
+            }
+        }
+    }
 }

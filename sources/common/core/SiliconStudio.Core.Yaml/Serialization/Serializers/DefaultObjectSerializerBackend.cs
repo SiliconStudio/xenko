@@ -64,7 +64,7 @@ namespace SharpYaml.Serialization.Serializers
                     if (arrayDescriptor != null)
                     {
                         isPrimitiveElementType = PrimitiveDescriptor.IsPrimitive(arrayDescriptor.ElementType);
-                        count = objectContext.Instance != null ? ((Array)objectContext.Instance).Length : -1;
+                        count = objectContext.Instance != null ? ((Array) objectContext.Instance).Length : -1;
                     }
                 }
 

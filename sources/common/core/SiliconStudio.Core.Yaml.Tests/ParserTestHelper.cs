@@ -42,6 +42,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using SharpYaml.Events;
 using SharpYaml.Tokens;
 using AnchorAlias = SharpYaml.Events.AnchorAlias;
@@ -53,130 +54,107 @@ using StreamStart = SharpYaml.Events.StreamStart;
 
 namespace SharpYaml.Tests
 {
-	public class ParserTestHelper : YamlTest
-	{
-		protected const bool Explicit = false;
-		protected const bool Implicit = true;
-		protected const string TagYaml = "tag:yaml.org,2002:";
+    public class ParserTestHelper : YamlTest
+    {
+        protected const bool Explicit = false;
+        protected const bool Implicit = true;
+        protected const string TagYaml = "tag:yaml.org,2002:";
 
-		protected static readonly TagDirective[] DefaultTags = new[] {
-			new TagDirective("!", "!"),
-			new TagDirective("!!", TagYaml)
-		};
+        protected static readonly TagDirective[] DefaultTags = new[]
+        {
+            new TagDirective("!", "!"),
+            new TagDirective("!!", TagYaml)
+        };
 
-		protected static StreamStart StreamStart
-		{
-			get { return new StreamStart(); }
-		}
+        protected static StreamStart StreamStart { get { return new StreamStart(); } }
 
-		protected static StreamEnd StreamEnd
-		{
-			get { return new StreamEnd(); }
-		}
+        protected static StreamEnd StreamEnd { get { return new StreamEnd(); } }
 
-		protected DocumentStart DocumentStart(bool isImplicit)
-		{
-			return DocumentStart(isImplicit, null, DefaultTags);
-		}
+        protected DocumentStart DocumentStart(bool isImplicit)
+        {
+            return DocumentStart(isImplicit, null, DefaultTags);
+        }
 
-		protected DocumentStart DocumentStart(bool isImplicit, VersionDirective version, params TagDirective[] tags)
-		{
-			return new DocumentStart(version, new TagDirectiveCollection(tags), isImplicit);
-		}
+        protected DocumentStart DocumentStart(bool isImplicit, VersionDirective version, params TagDirective[] tags)
+        {
+            return new DocumentStart(version, new TagDirectiveCollection(tags), isImplicit);
+        }
 
-		protected VersionDirective Version(int major, int minor)
-		{
-			return new VersionDirective(new Version(major, minor));
-		}
+        protected VersionDirective Version(int major, int minor)
+        {
+            return new VersionDirective(new Version(major, minor));
+        }
 
-		protected TagDirective TagDirective(string handle, string prefix)
-		{
-			return new TagDirective(handle, prefix);
-		}
+        protected TagDirective TagDirective(string handle, string prefix)
+        {
+            return new TagDirective(handle, prefix);
+        }
 
-		protected DocumentEnd DocumentEnd(bool isImplicit)
-		{
-			return new DocumentEnd(isImplicit);
-		}
+        protected DocumentEnd DocumentEnd(bool isImplicit)
+        {
+            return new DocumentEnd(isImplicit);
+        }
 
-		protected Scalar PlainScalar(string text)
-		{
-			return new Scalar(null, null, text, ScalarStyle.Plain, true, false);
-		}
+        protected Scalar PlainScalar(string text)
+        {
+            return new Scalar(null, null, text, ScalarStyle.Plain, true, false);
+        }
 
-		protected Scalar SingleQuotedScalar(string text)
-		{
-			return new Scalar(null, null, text, ScalarStyle.SingleQuoted, false, true);
-		}
+        protected Scalar SingleQuotedScalar(string text)
+        {
+            return new Scalar(null, null, text, ScalarStyle.SingleQuoted, false, true);
+        }
 
-		protected Scalar DoubleQuotedScalar(string text)
-		{
-			return DoubleQuotedScalar(null, text);
-		}
+        protected Scalar DoubleQuotedScalar(string text)
+        {
+            return DoubleQuotedScalar(null, text);
+        }
 
-		protected Scalar ExplicitDoubleQuotedScalar(string tag, string text)
-		{
-			return DoubleQuotedScalar(tag, text, false);
-		}
+        protected Scalar ExplicitDoubleQuotedScalar(string tag, string text)
+        {
+            return DoubleQuotedScalar(tag, text, false);
+        }
 
-		protected Scalar DoubleQuotedScalar(string tag, string text, bool quotedImplicit = true)
-		{
-			return new Scalar(null, tag, text, ScalarStyle.DoubleQuoted, false, quotedImplicit);
-		}
+        protected Scalar DoubleQuotedScalar(string tag, string text, bool quotedImplicit = true)
+        {
+            return new Scalar(null, tag, text, ScalarStyle.DoubleQuoted, false, quotedImplicit);
+        }
 
-		protected Scalar LiteralScalar(string text)
-		{
-			return new Scalar(null, null, text, ScalarStyle.Literal, false, true);
-		}
+        protected Scalar LiteralScalar(string text)
+        {
+            return new Scalar(null, null, text, ScalarStyle.Literal, false, true);
+        }
 
-		protected Scalar FoldedScalar(string text)
-		{
-			return new Scalar(null, null, text, ScalarStyle.Folded, false, true);
-		}
+        protected Scalar FoldedScalar(string text)
+        {
+            return new Scalar(null, null, text, ScalarStyle.Folded, false, true);
+        }
 
-		protected SequenceStart BlockSequenceStart
-		{
-			get { return new SequenceStart(null, null, true, YamlStyle.Block); }
-		}
+        protected SequenceStart BlockSequenceStart { get { return new SequenceStart(null, null, true, YamlStyle.Block); } }
 
-		protected SequenceStart FlowSequenceStart
-		{
-			get { return new SequenceStart(null, null, true, YamlStyle.Flow); }
-		}
+        protected SequenceStart FlowSequenceStart { get { return new SequenceStart(null, null, true, YamlStyle.Flow); } }
 
-		protected SequenceStart AnchoredFlowSequenceStart(string anchor)
-		{
-			return new SequenceStart(anchor, null, true, YamlStyle.Flow);
-		}
+        protected SequenceStart AnchoredFlowSequenceStart(string anchor)
+        {
+            return new SequenceStart(anchor, null, true, YamlStyle.Flow);
+        }
 
-		protected SequenceEnd SequenceEnd
-		{
-			get { return new SequenceEnd(); }
-		}
+        protected SequenceEnd SequenceEnd { get { return new SequenceEnd(); } }
 
-		protected MappingStart BlockMappingStart
-		{
-			get { return new MappingStart(null, null, true, YamlStyle.Block); }
-		}
+        protected MappingStart BlockMappingStart { get { return new MappingStart(null, null, true, YamlStyle.Block); } }
 
-		protected MappingStart TaggedBlockMappingStart(string tag)
-		{
-			return new MappingStart(null, tag, false, YamlStyle.Block);
-		}
+        protected MappingStart TaggedBlockMappingStart(string tag)
+        {
+            return new MappingStart(null, tag, false, YamlStyle.Block);
+        }
 
-		protected MappingStart FlowMappingStart
-		{
-			get { return new MappingStart(null, null, true, YamlStyle.Flow); }
-		}
+        protected MappingStart FlowMappingStart { get { return new MappingStart(null, null, true, YamlStyle.Flow); } }
 
-		protected MappingEnd MappingEnd
-		{
-			get { return new MappingEnd(); }
-		}
+        protected MappingEnd MappingEnd { get { return new MappingEnd(); } }
 
-		protected AnchorAlias AnchorAlias(string alias)
-		{
-			return new AnchorAlias(alias);
-		}
-	}
+        protected AnchorAlias AnchorAlias(string alias)
+        {
+            return new AnchorAlias(alias);
+        }
+    }
 }

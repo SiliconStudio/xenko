@@ -50,23 +50,23 @@ using SharpYaml.Serialization.Logging;
 namespace SharpYaml.Serialization.Serializers
 {
     /// <summary>
-	/// Base class for serializing an object that can be a Yaml !!map or !!seq.
-	/// </summary>
-	public class ObjectSerializer : IYamlSerializable, IYamlSerializableFactory
-	{
-		/// <summary>
-		/// Initializes a new instance of the <see cref="ObjectSerializer"/> class.
-		/// </summary>
-		public ObjectSerializer()
-		{
-		}
+    /// Base class for serializing an object that can be a Yaml !!map or !!seq.
+    /// </summary>
+    public class ObjectSerializer : IYamlSerializable, IYamlSerializableFactory
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ObjectSerializer"/> class.
+        /// </summary>
+        public ObjectSerializer()
+        {
+        }
 
         /// <inheritdoc/>
-		public virtual IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
-		{
-			// always accept
-			return this;
-		}
+        public virtual IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
+        {
+            // always accept
+            return this;
+        }
 
         /// <summary>
         /// Checks if a type is a sequence.
@@ -74,10 +74,10 @@ namespace SharpYaml.Serialization.Serializers
         /// <param name="objectContext"></param>
         /// <returns><c>true</c> if a type is a sequence, <c>false</c> otherwise.</returns>
         protected virtual bool CheckIsSequence(ref ObjectContext objectContext)
-		{
-			// By default an object serializer is a mapping
-			return false;
-		}
+        {
+            // By default an object serializer is a mapping
+            return false;
+        }
 
         /// <summary>
         /// Gets the style that will be used to serialized the object.
@@ -89,30 +89,30 @@ namespace SharpYaml.Serialization.Serializers
             return objectContext.ObjectSerializerBackend.GetStyle(ref objectContext);
         }
 
-		public virtual object ReadYaml(ref ObjectContext objectContext)
-		{
+        public virtual object ReadYaml(ref ObjectContext objectContext)
+        {
             // Create or transform the value to deserialize
             // If the new value to serialize is not the same as the one we were expecting to serialize
-		    if (CreateOrTransformObjectInternal(ref objectContext))
-		    {
+            if (CreateOrTransformObjectInternal(ref objectContext))
+            {
                 // Route to serializer for converted type
                 objectContext.SerializerContext.Serializer.RoutingSerializer.ReadYaml(ref objectContext);
-		    }
-		    // Get the object accessor for the corresponding class
-		    else if (CheckIsSequence(ref objectContext))
-		    {
-		        ReadMembers<SequenceStart, SequenceEnd>(ref objectContext);
-		    }
-		    else
-		    {
-		        ReadMembers<MappingStart, MappingEnd>(ref objectContext);
-		    }
+            }
+            // Get the object accessor for the corresponding class
+            else if (CheckIsSequence(ref objectContext))
+            {
+                ReadMembers<SequenceStart, SequenceEnd>(ref objectContext);
+            }
+            else
+            {
+                ReadMembers<MappingStart, MappingEnd>(ref objectContext);
+            }
 
             TransformObjectAfterRead(ref objectContext);
 
             // Process members
             return objectContext.Instance;
-		}
+        }
 
 
         private bool CreateOrTransformObjectInternal(ref ObjectContext objectContext)
@@ -136,12 +136,12 @@ namespace SharpYaml.Serialization.Serializers
         /// <param name="objectContext">The object context.</param>
         /// <returns>A new instance of the object or <see cref="ObjectContext.Instance" /> if not null</returns>
         protected virtual void CreateOrTransformObject(ref ObjectContext objectContext)
-	    {
+        {
             if (objectContext.Instance == null)
             {
                 objectContext.Instance = objectContext.SerializerContext.ObjectFactory.Create(objectContext.Descriptor.Type);
             }
-	    }
+        }
 
         /// <summary>
         /// Transforms the object after it has been read. This method is called after an object has been read and before returning the object to
@@ -166,12 +166,12 @@ namespace SharpYaml.Serialization.Serializers
         /// <typeparam name="TEnd">The type of the t end.</typeparam>
         /// <param name="objectContext"></param>
         /// <returns>Return the object being read, by default thisObject passed by argument.</returns>
-        protected virtual void ReadMembers<TStart, TEnd>(ref ObjectContext objectContext) 
-			where TStart : NodeEvent
-			where TEnd : ParsingEvent
-		{
+        protected virtual void ReadMembers<TStart, TEnd>(ref ObjectContext objectContext)
+            where TStart : NodeEvent
+            where TEnd : ParsingEvent
+        {
             var reader = objectContext.Reader;
-			var start = reader.Expect<TStart>();
+            var start = reader.Expect<TStart>();
 
             // throws an exception while deserializing
             if (objectContext.Instance == null)
@@ -179,12 +179,12 @@ namespace SharpYaml.Serialization.Serializers
                 throw new YamlException(start.Start, start.End, "Cannot instantiate an object for type [{0}]".DoFormat(objectContext.Descriptor));
             }
 
-			while (!reader.Accept<TEnd>())
-			{
+            while (!reader.Accept<TEnd>())
+            {
                 ReadMember(ref objectContext);
-			}
-			reader.Expect<TEnd>();
-		}
+            }
+            reader.Expect<TEnd>();
+        }
 
         /// <summary>
         /// Reads an item of the object from the YAML flow (either a sequence item or mapping key/value item).
@@ -343,10 +343,10 @@ namespace SharpYaml.Serialization.Serializers
         }
 
         /// <inheritdoc/>
-		public virtual void WriteYaml(ref ObjectContext objectContext)
-		{
+        public virtual void WriteYaml(ref ObjectContext objectContext)
+        {
             var value = objectContext.Instance;
-			var typeOfValue = value.GetType();
+            var typeOfValue = value.GetType();
 
             var isSequence = CheckIsSequence(ref objectContext);
 
@@ -362,19 +362,19 @@ namespace SharpYaml.Serialization.Serializers
             var style = GetStyle(ref objectContext);
 
             var context = objectContext.SerializerContext;
-			if (isSequence)
-			{
-                context.Writer.Emit(new SequenceStartEventInfo(value, typeOfValue) { Tag = objectContext.Tag, Anchor = objectContext.Anchor, Style = style });
+            if (isSequence)
+            {
+                context.Writer.Emit(new SequenceStartEventInfo(value, typeOfValue) {Tag = objectContext.Tag, Anchor = objectContext.Anchor, Style = style});
                 WriteMembers(ref objectContext);
-				context.Writer.Emit(new SequenceEndEventInfo(value, typeOfValue));
-			}
-			else
-			{
-                context.Writer.Emit(new MappingStartEventInfo(value, typeOfValue) { Tag = objectContext.Tag, Anchor = objectContext.Anchor, Style = style });
+                context.Writer.Emit(new SequenceEndEventInfo(value, typeOfValue));
+            }
+            else
+            {
+                context.Writer.Emit(new MappingStartEventInfo(value, typeOfValue) {Tag = objectContext.Tag, Anchor = objectContext.Anchor, Style = style});
                 WriteMembers(ref objectContext);
-				context.Writer.Emit(new MappingEndEventInfo(value, typeOfValue));
-			}
-		}
+                context.Writer.Emit(new MappingEndEventInfo(value, typeOfValue));
+            }
+        }
 
         /// <summary>
         /// Writes the members of the object to serialize. By default this method is iterating on the <see cref="ITypeDescriptor.Members"/> and
@@ -382,12 +382,12 @@ namespace SharpYaml.Serialization.Serializers
         /// </summary>
         /// <param name="objectContext"></param>
         protected virtual void WriteMembers(ref ObjectContext objectContext)
-		{
+        {
             foreach (var member in objectContext.Descriptor.Members)
-			{
+            {
                 WriteMember(ref objectContext, member);
-			}
-		}
+            }
+        }
 
         /// <summary>
         /// Writes a member.
@@ -397,10 +397,12 @@ namespace SharpYaml.Serialization.Serializers
         protected virtual void WriteMember(ref ObjectContext objectContext, IMemberDescriptor member)
         {
             // Filter members by mask
-            if ((member.Mask & objectContext.SerializerContext.MemberMask) == 0) return;
+            if ((member.Mask & objectContext.SerializerContext.MemberMask) == 0)
+                return;
 
             // Skip any member that we won't serialize
-            if (!member.ShouldSerialize(objectContext.Instance)) return;
+            if (!member.ShouldSerialize(objectContext.Instance))
+                return;
 
             // Emit the key name
             WriteMemberName(ref objectContext, member, member.Name);
@@ -433,5 +435,5 @@ namespace SharpYaml.Serialization.Serializers
         {
             objectContext.ObjectSerializerBackend.WriteMemberValue(ref objectContext, member, memberValue, memberType);
         }
-	}
+    }
 }

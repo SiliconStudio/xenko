@@ -42,21 +42,22 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System;
 
 namespace SharpYaml.Serialization
 {
-	/// <summary>
-	/// Creates instances of types.
-	/// </summary>
-	/// <remarks>
-	/// This interface allows to provide a custom logic for creating instances during deserialization.
-	/// </remarks>
-	public interface IObjectFactory
-	{
-		/// <summary>
-		/// Creates an instance of the specified type. Returns null if instance cannot be created.
-		/// </summary>
-		object Create(Type type);
-	}
+    /// <summary>
+    /// Creates instances of types.
+    /// </summary>
+    /// <remarks>
+    /// This interface allows to provide a custom logic for creating instances during deserialization.
+    /// </remarks>
+    public interface IObjectFactory
+    {
+        /// <summary>
+        /// Creates an instance of the specified type. Returns null if instance cannot be created.
+        /// </summary>
+        object Create(Type type);
+    }
 }

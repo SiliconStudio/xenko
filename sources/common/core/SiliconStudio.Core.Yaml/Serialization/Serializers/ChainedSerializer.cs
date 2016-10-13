@@ -42,28 +42,30 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System;
 
 namespace SharpYaml.Serialization.Serializers
 {
-	public class ChainedSerializer : IYamlSerializable
-	{
-		private readonly IYamlSerializable next;
+    public class ChainedSerializer : IYamlSerializable
+    {
+        private readonly IYamlSerializable next;
 
-		public ChainedSerializer(IYamlSerializable next)
-		{
-			if (next == null) throw new ArgumentNullException("next");
-			this.next = next;
-		}
+        public ChainedSerializer(IYamlSerializable next)
+        {
+            if (next == null)
+                throw new ArgumentNullException("next");
+            this.next = next;
+        }
 
-		public virtual object ReadYaml(ref ObjectContext objectContext)
-		{
-			return next.ReadYaml(ref objectContext);
-		}
+        public virtual object ReadYaml(ref ObjectContext objectContext)
+        {
+            return next.ReadYaml(ref objectContext);
+        }
 
-		public virtual void WriteYaml(ref ObjectContext objectContext)
-		{
-			next.WriteYaml(ref objectContext);
-		}
-	}
+        public virtual void WriteYaml(ref ObjectContext objectContext)
+        {
+            next.WriteYaml(ref objectContext);
+        }
+    }
 }

@@ -42,71 +42,72 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System;
 using System.Collections.Generic;
 using SharpYaml.Serialization.Descriptors;
 
 namespace SharpYaml.Serialization.Serializers
 {
-	/// <summary>
-	/// This serializer is responsible to route to a specific serializer.
-	/// </summary>
-	internal class RoutingSerializer : IYamlSerializable
-	{
-		private readonly Dictionary<Type, IYamlSerializable> serializers = new Dictionary<Type, IYamlSerializable>();
-		private readonly List<IYamlSerializableFactory> factories = new List<IYamlSerializableFactory>();
+    /// <summary>
+    /// This serializer is responsible to route to a specific serializer.
+    /// </summary>
+    internal class RoutingSerializer : IYamlSerializable
+    {
+        private readonly Dictionary<Type, IYamlSerializable> serializers = new Dictionary<Type, IYamlSerializable>();
+        private readonly List<IYamlSerializableFactory> factories = new List<IYamlSerializableFactory>();
 
-		public RoutingSerializer()
-		{
-		}
+        public RoutingSerializer()
+        {
+        }
 
-		public void AddSerializer(Type type, IYamlSerializable serializer)
-		{
-			serializers[type] = serializer;
-		}
+        public void AddSerializer(Type type, IYamlSerializable serializer)
+        {
+            serializers[type] = serializer;
+        }
 
-		public void AddSerializerFactory(IYamlSerializableFactory factory)
-		{
-			factories.Add(factory);
-		}
+        public void AddSerializerFactory(IYamlSerializableFactory factory)
+        {
+            factories.Add(factory);
+        }
 
-		public object ReadYaml(ref ObjectContext objectContext)
-		{
-			// If value is not null, use its TypeDescriptor otherwise use expected type descriptor
-		    var instance = objectContext.Instance;
+        public object ReadYaml(ref ObjectContext objectContext)
+        {
+            // If value is not null, use its TypeDescriptor otherwise use expected type descriptor
+            var instance = objectContext.Instance;
             var typeDescriptorOfValue = instance != null ? objectContext.SerializerContext.FindTypeDescriptor(instance.GetType()) : objectContext.Descriptor;
 
-			var serializer = GetSerializer(objectContext.SerializerContext, typeDescriptorOfValue);
-			return serializer.ReadYaml(ref objectContext);
-		}
+            var serializer = GetSerializer(objectContext.SerializerContext, typeDescriptorOfValue);
+            return serializer.ReadYaml(ref objectContext);
+        }
 
-		public void WriteYaml(ref ObjectContext objectContext)
-		{
-			var serializer = GetSerializer(objectContext.SerializerContext, objectContext.Descriptor);
-			serializer.WriteYaml(ref objectContext);
-		}
+        public void WriteYaml(ref ObjectContext objectContext)
+        {
+            var serializer = GetSerializer(objectContext.SerializerContext, objectContext.Descriptor);
+            serializer.WriteYaml(ref objectContext);
+        }
 
-		private IYamlSerializable GetSerializer(SerializerContext context, ITypeDescriptor typeDescriptor)
-		{
-			IYamlSerializable serializer;
-			if (!serializers.TryGetValue(typeDescriptor.Type, out serializer))
-			{
-				foreach (var factory in factories)
-				{
-					serializer = factory.TryCreate(context, typeDescriptor);
-					if (serializer != null)
-					{
-						break;
-					}
-				}
-			}
+        private IYamlSerializable GetSerializer(SerializerContext context, ITypeDescriptor typeDescriptor)
+        {
+            IYamlSerializable serializer;
+            if (!serializers.TryGetValue(typeDescriptor.Type, out serializer))
+            {
+                foreach (var factory in factories)
+                {
+                    serializer = factory.TryCreate(context, typeDescriptor);
+                    if (serializer != null)
+                    {
+                        break;
+                    }
+                }
+            }
 
-			if (serializer == null)
-			{
-				throw new InvalidOperationException("Unable to find a serializer for the type [{0}]".DoFormat(typeDescriptor.Type));
-			}
+            if (serializer == null)
+            {
+                throw new InvalidOperationException("Unable to find a serializer for the type [{0}]".DoFormat(typeDescriptor.Type));
+            }
 
-			return serializer;
-		}
-	}
+            return serializer;
+        }
+    }
 }

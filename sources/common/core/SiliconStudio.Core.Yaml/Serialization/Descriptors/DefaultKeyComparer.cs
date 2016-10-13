@@ -58,7 +58,7 @@ namespace SharpYaml.Serialization.Descriptors
 
             if (x is string && y is string)
             {
-                return string.CompareOrdinal((string)x, (string)y);
+                return string.CompareOrdinal((string) x, (string) y);
             }
 
             var leftComparable = x as IComparable;

@@ -42,28 +42,29 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System;
 
 namespace SharpYaml
 {
-	/// <summary>
-	/// Specifies the style of a sequence or mapping.
-	/// </summary>
-	public enum YamlStyle
-	{
-		/// <summary>
-		/// Let the emitter choose the style.
-		/// </summary>
-		Any,
+    /// <summary>
+    /// Specifies the style of a sequence or mapping.
+    /// </summary>
+    public enum YamlStyle
+    {
+        /// <summary>
+        /// Let the emitter choose the style.
+        /// </summary>
+        Any,
 
-		/// <summary>
-		/// The block style.
-		/// </summary>
-		Block,
+        /// <summary>
+        /// The block style.
+        /// </summary>
+        Block,
 
-		/// <summary>
-		/// The flow style.
-		/// </summary>
-		Flow
-	}
+        /// <summary>
+        /// The flow style.
+        /// </summary>
+        Flow
+    }
 }

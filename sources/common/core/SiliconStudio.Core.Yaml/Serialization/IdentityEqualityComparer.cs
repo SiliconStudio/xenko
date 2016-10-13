@@ -42,21 +42,22 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace SharpYaml.Serialization
 {
-	internal class IdentityEqualityComparer<T> : IEqualityComparer<T> where T : class
-	{
-		public bool Equals(T left, T right)
-		{
-			return ReferenceEquals(left, right);
-		}
+    internal class IdentityEqualityComparer<T> : IEqualityComparer<T> where T : class
+    {
+        public bool Equals(T left, T right)
+        {
+            return ReferenceEquals(left, right);
+        }
 
-		public int GetHashCode(T value)
-		{
-			return RuntimeHelpers.GetHashCode(value);
-		}
-	}
+        public int GetHashCode(T value)
+        {
+            return RuntimeHelpers.GetHashCode(value);
+        }
+    }
 }

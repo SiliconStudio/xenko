@@ -32,10 +32,7 @@ namespace SharpYaml.Serialization
         private readonly Regex regex1 = new Regex(@"([A-Z]+)([A-Z][a-z])");
         private readonly Regex regex2 = new Regex(@"([a-z\d])([A-Z])");
 
-        public StringComparer Comparer
-        {
-            get { return StringComparer.OrdinalIgnoreCase; }
-        }
+        public StringComparer Comparer { get { return StringComparer.OrdinalIgnoreCase; } }
 
         public string Convert(string name)
         {

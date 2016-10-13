@@ -42,6 +42,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -49,14 +50,14 @@ using System.Reflection;
 
 namespace SharpYaml.Serialization.Descriptors
 {
-	/// <summary>
-	/// A descriptor for an array.
-	/// </summary>
-	public class ArrayDescriptor : ObjectDescriptor
-	{
-		private readonly Type elementType;
-		private readonly Type listType;
-		private readonly MethodInfo toArrayMethod;
+    /// <summary>
+    /// A descriptor for an array.
+    /// </summary>
+    public class ArrayDescriptor : ObjectDescriptor
+    {
+        private readonly Type elementType;
+        private readonly Type listType;
+        private readonly MethodInfo toArrayMethod;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectDescriptor" /> class.
@@ -65,39 +66,37 @@ namespace SharpYaml.Serialization.Descriptors
         /// <param name="type">The type.</param>
         /// <param name="namingConvention">The naming convention.</param>
         /// <exception cref="System.ArgumentException">Expecting arrat type;type</exception>
-		public ArrayDescriptor(IAttributeRegistry attributeRegistry, Type type, IMemberNamingConvention namingConvention)
+        public ArrayDescriptor(IAttributeRegistry attributeRegistry, Type type, IMemberNamingConvention namingConvention)
             : base(attributeRegistry, type, false, namingConvention)
-		{
-			if (!type.IsArray) throw new ArgumentException("Expecting array type", "type");
+        {
+            if (!type.IsArray)
+                throw new ArgumentException("Expecting array type", "type");
 
-			if (type.GetArrayRank() != 1)
-			{
-				throw new ArgumentException("Cannot support dimension [{0}] for type [{1}]. Only supporting dimension of 1".DoFormat(type.GetArrayRank(), type.FullName));
-			}
+            if (type.GetArrayRank() != 1)
+            {
+                throw new ArgumentException("Cannot support dimension [{0}] for type [{1}]. Only supporting dimension of 1".DoFormat(type.GetArrayRank(), type.FullName));
+            }
 
-			elementType = type.GetElementType();
-			listType = typeof(List<>).MakeGenericType(ElementType);
-			toArrayMethod = listType.GetMethod("ToArray");
-		}
+            elementType = type.GetElementType();
+            listType = typeof(List<>).MakeGenericType(ElementType);
+            toArrayMethod = listType.GetMethod("ToArray");
+        }
 
-		public override DescriptorCategory Category
-		{
-			get { return DescriptorCategory.Array; }
-		}
+        public override DescriptorCategory Category { get { return DescriptorCategory.Array; } }
 
-		/// <summary>
-		/// Gets the type of the array element.
-		/// </summary>
-		/// <value>The type of the element.</value>
-		public Type ElementType { get { return elementType; } }
+        /// <summary>
+        /// Gets the type of the array element.
+        /// </summary>
+        /// <value>The type of the element.</value>
+        public Type ElementType { get { return elementType; } }
 
-		/// <summary>
-		/// Creates the equivalent of list type for this array.
-		/// </summary>
-		/// <returns>A list type with same element type than this array.</returns>
-		public Array CreateArray(int dimension)
-		{
-			return Array.CreateInstance(ElementType, dimension);
-		}
-	}
+        /// <summary>
+        /// Creates the equivalent of list type for this array.
+        /// </summary>
+        /// <returns>A list type with same element type than this array.</returns>
+        public Array CreateArray(int dimension)
+        {
+            return Array.CreateInstance(ElementType, dimension);
+        }
+    }
 }

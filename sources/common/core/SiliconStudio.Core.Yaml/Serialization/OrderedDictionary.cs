@@ -42,6 +42,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -49,146 +50,130 @@ using System.Linq;
 
 namespace SharpYaml.Serialization
 {
-	class OrderedDictionary<TKey, TValue> : IOrderedDictionary<TKey, TValue>, IList<KeyValuePair<TKey, TValue>>
-	{
-		private readonly KeyedCollection items = new KeyedCollection();
+    class OrderedDictionary<TKey, TValue> : IOrderedDictionary<TKey, TValue>, IList<KeyValuePair<TKey, TValue>>
+    {
+        private readonly KeyedCollection items = new KeyedCollection();
 
-		IEnumerator IEnumerable.GetEnumerator()
-		{
-			return GetEnumerator();
-		}
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
 
-		public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
-		{
-			return items.GetEnumerator();
-		}
+        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
+        {
+            return items.GetEnumerator();
+        }
 
-		public void Add(KeyValuePair<TKey, TValue> item)
-		{
-			items.Add(item);
-		}
+        public void Add(KeyValuePair<TKey, TValue> item)
+        {
+            items.Add(item);
+        }
 
-		public void Clear()
-		{
-			items.Clear();
-		}
+        public void Clear()
+        {
+            items.Clear();
+        }
 
-		public bool Contains(KeyValuePair<TKey, TValue> item)
-		{
-			return items.Contains(item);
-		}
+        public bool Contains(KeyValuePair<TKey, TValue> item)
+        {
+            return items.Contains(item);
+        }
 
-		public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
-		{
-			items.CopyTo(array, arrayIndex);
-		}
+        public void CopyTo(KeyValuePair<TKey, TValue>[] array, int arrayIndex)
+        {
+            items.CopyTo(array, arrayIndex);
+        }
 
-		public bool Remove(KeyValuePair<TKey, TValue> item)
-		{
-			return items.Remove(item);
-		}
+        public bool Remove(KeyValuePair<TKey, TValue> item)
+        {
+            return items.Remove(item);
+        }
 
-		public int Count
-		{
-			get { return items.Count; }
-		}
+        public int Count { get { return items.Count; } }
 
-		public bool IsReadOnly
-		{
-			get { return false; }
-		}
+        public bool IsReadOnly { get { return false; } }
 
-		public void Add(TKey key, TValue value)
-		{
-			items.Add(new KeyValuePair<TKey, TValue>(key, value));
-		}
+        public void Add(TKey key, TValue value)
+        {
+            items.Add(new KeyValuePair<TKey, TValue>(key, value));
+        }
 
-		public bool ContainsKey(TKey key)
-		{
-			return items.Contains(key);
-		}
+        public bool ContainsKey(TKey key)
+        {
+            return items.Contains(key);
+        }
 
-		public bool Remove(TKey key)
-		{
-			return items.Remove(key);
-		}
+        public bool Remove(TKey key)
+        {
+            return items.Remove(key);
+        }
 
-		public bool TryGetValue(TKey key, out TValue value)
-		{
-			if (!items.Contains(key))
-			{
-				value = default(TValue);
-				return false;
-			}
+        public bool TryGetValue(TKey key, out TValue value)
+        {
+            if (!items.Contains(key))
+            {
+                value = default(TValue);
+                return false;
+            }
 
-			value = items[key].Value;
-			return true;
-		}
+            value = items[key].Value;
+            return true;
+        }
 
-		public void Insert(int index, TKey key, TValue value)
-		{
-			items.Insert(index, new KeyValuePair<TKey, TValue>(key, value));
-		}
+        public void Insert(int index, TKey key, TValue value)
+        {
+            items.Insert(index, new KeyValuePair<TKey, TValue>(key, value));
+        }
 
-		public void RemoveAt(int index)
-		{
-			items.RemoveAt(index);
-		}
+        public void RemoveAt(int index)
+        {
+            items.RemoveAt(index);
+        }
 
-		public int IndexOf(KeyValuePair<TKey, TValue> item)
-		{
-			return items.IndexOf(item);
-		}
+        public int IndexOf(KeyValuePair<TKey, TValue> item)
+        {
+            return items.IndexOf(item);
+        }
 
-		public void Insert(int index, KeyValuePair<TKey, TValue> item)
-		{
-			items.Insert(index, item);
-		}
+        public void Insert(int index, KeyValuePair<TKey, TValue> item)
+        {
+            items.Insert(index, item);
+        }
 
-		public int IndexOf(TKey key)
-		{
-			if (!items.Contains(key))
-				return -1;
+        public int IndexOf(TKey key)
+        {
+            if (!items.Contains(key))
+                return -1;
 
-			return items.IndexOf(items[key]);
-		}
+            return items.IndexOf(items[key]);
+        }
 
-		public KeyValuePair<TKey, TValue> this[int index]
-		{
-			get { return items[index]; }
-			set { items[index] = value; }
-		}
+        public KeyValuePair<TKey, TValue> this[int index] { get { return items[index]; } set { items[index] = value; } }
 
-		public TValue this[TKey key]
-		{
-			get { return items[key].Value; }
-			set
-			{
-				var item = new KeyValuePair<TKey, TValue>(key, value);
-				var index = IndexOf(key);
-				if (index != -1)
-					items[index] = item;
-				else
-					items.Add(item);
-			}
-		}
+        public TValue this[TKey key]
+        {
+            get { return items[key].Value; }
+            set
+            {
+                var item = new KeyValuePair<TKey, TValue>(key, value);
+                var index = IndexOf(key);
+                if (index != -1)
+                    items[index] = item;
+                else
+                    items.Add(item);
+            }
+        }
 
-		public ICollection<TKey> Keys
-		{
-			get { return items.Select(x => x.Key).ToList(); }
-		}
+        public ICollection<TKey> Keys { get { return items.Select(x => x.Key).ToList(); } }
 
-		public ICollection<TValue> Values
-		{
-			get { return items.Select(x => x.Value).ToList(); }
-		}
+        public ICollection<TValue> Values { get { return items.Select(x => x.Value).ToList(); } }
 
-		class KeyedCollection : KeyedCollection<TKey, KeyValuePair<TKey, TValue>>
-		{
-			protected override TKey GetKeyForItem(KeyValuePair<TKey, TValue> item)
-			{
-				return item.Key;
-			}
-		}
-	}
+        class KeyedCollection : KeyedCollection<TKey, KeyValuePair<TKey, TValue>>
+        {
+            protected override TKey GetKeyForItem(KeyValuePair<TKey, TValue> item)
+            {
+                return item.Key;
+            }
+        }
+    }
 }

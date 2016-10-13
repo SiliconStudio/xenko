@@ -42,17 +42,18 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System;
 using System.Collections.Generic;
 
 namespace SharpYaml.Serialization.Descriptors
 {
-	/// <summary>
-	/// Describes a descriptor for a nullable type <see cref="Nullable{T}"/>.
-	/// </summary>
-	internal class NullableDescriptor : ObjectDescriptor
-	{
-		private static readonly List<IMemberDescriptor> EmptyMembers = new List<IMemberDescriptor>();
+    /// <summary>
+    /// Describes a descriptor for a nullable type <see cref="Nullable{T}"/>.
+    /// </summary>
+    internal class NullableDescriptor : ObjectDescriptor
+    {
+        private static readonly List<IMemberDescriptor> EmptyMembers = new List<IMemberDescriptor>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectDescriptor" /> class.
@@ -63,37 +64,34 @@ namespace SharpYaml.Serialization.Descriptors
         /// <exception cref="System.ArgumentException">Type [{0}] is not a primitive</exception>
         public NullableDescriptor(IAttributeRegistry attributeRegistry, Type type, IMemberNamingConvention namingConvention)
             : base(attributeRegistry, type, false, namingConvention)
-		{
-			if (!IsNullable(type))
-				throw new ArgumentException("Type [{0}] is not a primitive");
+        {
+            if (!IsNullable(type))
+                throw new ArgumentException("Type [{0}] is not a primitive");
 
-			UnderlyingType = Nullable.GetUnderlyingType(type);
-		}
+            UnderlyingType = Nullable.GetUnderlyingType(type);
+        }
 
-		public override DescriptorCategory Category
-		{
-			get { return DescriptorCategory.Nullable; }
-		}
+        public override DescriptorCategory Category { get { return DescriptorCategory.Nullable; } }
 
-		/// <summary>
-		/// Gets the type underlying type T of the nullable <see cref="Nullable{T}"/>
-		/// </summary>
-		/// <value>The type of the element.</value>
-		public Type UnderlyingType { get; private set;}
+        /// <summary>
+        /// Gets the type underlying type T of the nullable <see cref="Nullable{T}"/>
+        /// </summary>
+        /// <value>The type of the element.</value>
+        public Type UnderlyingType { get; private set; }
 
-		/// <summary>
-		/// Determines whether the specified type is nullable.
-		/// </summary>
-		/// <param name="type">The type.</param>
-		/// <returns><c>true</c> if the specified type is nullable; otherwise, <c>false</c>.</returns>
-		public static bool IsNullable(Type type)
-		{
-			return type.IsNullable();
-		}
+        /// <summary>
+        /// Determines whether the specified type is nullable.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns><c>true</c> if the specified type is nullable; otherwise, <c>false</c>.</returns>
+        public static bool IsNullable(Type type)
+        {
+            return type.IsNullable();
+        }
 
-		protected override System.Collections.Generic.List<IMemberDescriptor> PrepareMembers()
-		{
-			return EmptyMembers;
-		}
-	}
+        protected override System.Collections.Generic.List<IMemberDescriptor> PrepareMembers()
+        {
+            return EmptyMembers;
+        }
+    }
 }

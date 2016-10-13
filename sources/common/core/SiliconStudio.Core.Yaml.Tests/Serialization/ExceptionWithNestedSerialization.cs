@@ -42,66 +42,69 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System.IO;
 using NUnit.Framework;
 using SharpYaml.Serialization;
 
 namespace SharpYaml.Tests.Serialization
 {
-	public class ExceptionWithNestedSerialization
-	{
-		[Test]
-		public void NestedDocumentShouldDeserializeProperly()
-		{
-			var serializer = new Serializer(new SerializerSettings() { EmitDefaultValues =  true});
+    public class ExceptionWithNestedSerialization
+    {
+        [Test]
+        public void NestedDocumentShouldDeserializeProperly()
+        {
+            var serializer = new Serializer(new SerializerSettings() {EmitDefaultValues = true});
 
-			// serialize AMessage
-			var tw = new StringWriter();
-			serializer.Serialize(tw, new AMessage { Payload = new PayloadA { X = 5, Y = 6 } });
-			Dump.WriteLine(tw);
+            // serialize AMessage
+            var tw = new StringWriter();
+            serializer.Serialize(tw, new AMessage {Payload = new PayloadA {X = 5, Y = 6}});
+            Dump.WriteLine(tw);
 
-			// stick serialized AMessage in envelope and serialize it
-			var e = new Env { Type = "some-type", Payload = tw.ToString() };
+            // stick serialized AMessage in envelope and serialize it
+            var e = new Env {Type = "some-type", Payload = tw.ToString()};
 
-			tw = new StringWriter();
-			serializer.Serialize(tw, e);
-			Dump.WriteLine(tw);
+            tw = new StringWriter();
+            serializer.Serialize(tw, e);
+            Dump.WriteLine(tw);
 
-			Dump.WriteLine("${0}$", e.Payload);
+            Dump.WriteLine("${0}$", e.Payload);
 
-			var settings = new SerializerSettings();
-			settings.RegisterAssembly(typeof(Env).Assembly);
-			var deserializer = new Serializer(settings);
-			// deserialize envelope
-			var e2 = deserializer.Deserialize<Env>(new StringReader(tw.ToString()));
+            var settings = new SerializerSettings();
+            settings.RegisterAssembly(typeof(Env).Assembly);
+            var deserializer = new Serializer(settings);
+            // deserialize envelope
+            var e2 = deserializer.Deserialize<Env>(new StringReader(tw.ToString()));
 
-			Dump.WriteLine("${0}$", e2.Payload);
+            Dump.WriteLine("${0}$", e2.Payload);
 
-			// deserialize payload - fails if EmitDefaults is set
-			var message = deserializer.Deserialize<AMessage>(e2.Payload);
-			Assert.NotNull(message.Payload);
-			Assert.AreEqual(message.Payload.X, 5);
-			Assert.AreEqual(message.Payload.Y, 6);
-		}
+            // deserialize payload - fails if EmitDefaults is set
+            var message = deserializer.Deserialize<AMessage>(e2.Payload);
+            Assert.NotNull(message.Payload);
+            Assert.AreEqual(message.Payload.X, 5);
+            Assert.AreEqual(message.Payload.Y, 6);
+        }
 
-		public class Env
-		{
-			public string Type { get; set; }
-			public string Payload { get; set; }
-		}
+        public class Env
+        {
+            public string Type { get; set; }
+            public string Payload { get; set; }
+        }
 
-		public class Message<TPayload>
-		{
-			public int id { get; set; }
-			public TPayload Payload { get; set; }
-		}
+        public class Message<TPayload>
+        {
+            public int id { get; set; }
+            public TPayload Payload { get; set; }
+        }
 
-		public class PayloadA
-		{
-			public int X { get; set; }
-			public int Y { get; set; }
-		}
+        public class PayloadA
+        {
+            public int X { get; set; }
+            public int Y { get; set; }
+        }
 
-		public class AMessage : Message<PayloadA> { }
-	}
+        public class AMessage : Message<PayloadA>
+        {
+        }
+    }
 }

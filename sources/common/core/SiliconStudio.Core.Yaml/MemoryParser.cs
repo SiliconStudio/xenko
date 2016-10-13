@@ -13,10 +13,7 @@ namespace SharpYaml
             this.parsingEvents = parsingEvents.GetEnumerator();
         }
 
-        public ParsingEvent Current
-        {
-            get { return parsingEvents.Current; }
-        }
+        public ParsingEvent Current { get { return parsingEvents.Current; } }
 
         public bool MoveNext()
         {

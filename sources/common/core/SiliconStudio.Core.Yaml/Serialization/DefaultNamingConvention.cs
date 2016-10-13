@@ -27,10 +27,7 @@ namespace SharpYaml.Serialization
     /// </summary>
     public class DefaultNamingConvention : IMemberNamingConvention
     {
-        public StringComparer Comparer
-        {
-            get { return StringComparer.Ordinal; }
-        }
+        public StringComparer Comparer { get { return StringComparer.Ordinal; } }
 
         public string Convert(string name)
         {

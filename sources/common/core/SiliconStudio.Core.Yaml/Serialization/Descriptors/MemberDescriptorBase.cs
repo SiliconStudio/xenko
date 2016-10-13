@@ -42,64 +42,67 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 
 namespace SharpYaml.Serialization.Descriptors
 {
-	/// <summary>
-	/// Base class for <see cref="IMemberDescriptor"/> for a <see cref="MemberInfo"/>
-	/// </summary>
-	public abstract class MemberDescriptorBase : IMemberDescriptor
-	{
+    /// <summary>
+    /// Base class for <see cref="IMemberDescriptor"/> for a <see cref="MemberInfo"/>
+    /// </summary>
+    public abstract class MemberDescriptorBase : IMemberDescriptor
+    {
         /// <summary>
         /// Initializes a new instance of the <see cref="MemberDescriptorBase"/> class.
         /// </summary>
         /// <param name="memberInfo">The member information.</param>
         /// <param name="defaultNameComparer">The default name comparer.</param>
         /// <exception cref="System.ArgumentNullException">memberInfo</exception>
-		protected MemberDescriptorBase(MemberInfo memberInfo, StringComparer defaultNameComparer)
-		{
-			if (memberInfo == null) throw new ArgumentNullException("memberInfo");
-            if (defaultNameComparer == null) throw new ArgumentNullException("defaultNameComparer");
+        protected MemberDescriptorBase(MemberInfo memberInfo, StringComparer defaultNameComparer)
+        {
+            if (memberInfo == null)
+                throw new ArgumentNullException("memberInfo");
+            if (defaultNameComparer == null)
+                throw new ArgumentNullException("defaultNameComparer");
 
             MemberInfo = memberInfo;
             Name = MemberInfo.Name;
-		    OriginalName = Name;
-			DeclaringType = memberInfo.DeclaringType;
+            OriginalName = Name;
+            DeclaringType = memberInfo.DeclaringType;
             DefaultNameComparer = defaultNameComparer;
-		}
+        }
 
-		public string Name { get; internal set; }
-	    public string OriginalName { get; private set; }
-	    public StringComparer DefaultNameComparer { get; private set; }
-	    public abstract Type Type { get; }
-		public int? Order { get; internal set; }
+        public string Name { get; internal set; }
+        public string OriginalName { get; private set; }
+        public StringComparer DefaultNameComparer { get; private set; }
+        public abstract Type Type { get; }
+        public int? Order { get; internal set; }
 
-		/// <summary>
-		/// Gets the type of the declaring this member.
-		/// </summary>
-		/// <value>The type of the declaring.</value>
-		public Type DeclaringType { get; private set; }
+        /// <summary>
+        /// Gets the type of the declaring this member.
+        /// </summary>
+        /// <value>The type of the declaring.</value>
+        public Type DeclaringType { get; private set; }
 
-		public SerializeMemberMode SerializeMemberMode { get; internal set; }
-		public abstract object Get(object thisObject);
-		public abstract void Set(object thisObject, object value);
-		public abstract bool HasSet { get; }
-		public abstract bool IsPublic { get; }
-		public uint Mask { get; internal set; }
-		public YamlStyle Style { get; internal set; }
-		public Func<object, bool> ShouldSerialize { get; internal set; }
+        public SerializeMemberMode SerializeMemberMode { get; internal set; }
+        public abstract object Get(object thisObject);
+        public abstract void Set(object thisObject, object value);
+        public abstract bool HasSet { get; }
+        public abstract bool IsPublic { get; }
+        public uint Mask { get; internal set; }
+        public YamlStyle Style { get; internal set; }
+        public Func<object, bool> ShouldSerialize { get; internal set; }
 
-	    public List<string> AlternativeNames { get; set; }
+        public List<string> AlternativeNames { get; set; }
 
-	    public object Tag { get; set; }
+        public object Tag { get; set; }
 
-	    /// <summary>
-		/// Gets the member information.
-		/// </summary>
-		/// <value>The member information.</value>
-		public MemberInfo MemberInfo { get; private set; }
-	}
+        /// <summary>
+        /// Gets the member information.
+        /// </summary>
+        /// <value>The member information.</value>
+        public MemberInfo MemberInfo { get; private set; }
+    }
 }

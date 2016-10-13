@@ -42,6 +42,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System;
 using System.IO;
 using NUnit.Framework;
@@ -49,28 +50,28 @@ using SharpYaml.Serialization;
 
 namespace SharpYaml.Tests.Serialization
 {
-	public class Program
-	{
-		[Test]
-		public void LoadYamlStream()
-		{
-			// Setup the input
-			var input = new StringReader(Document);
+    public class Program
+    {
+        [Test]
+        public void LoadYamlStream()
+        {
+            // Setup the input
+            var input = new StringReader(Document);
 
-			// Load the stream
-			var yaml = new YamlStream();
-			yaml.Load(input);
+            // Load the stream
+            var yaml = new YamlStream();
+            yaml.Load(input);
 
-			// Examine the stream
-			var mapping = (YamlMappingNode)yaml.Documents[0].RootNode;
+            // Examine the stream
+            var mapping = (YamlMappingNode) yaml.Documents[0].RootNode;
 
-			foreach (var entry in mapping.Children)
-			{
-				Console.WriteLine(((YamlScalarNode)entry.Key).Value);
-			}
-		}
+            foreach (var entry in mapping.Children)
+            {
+                Console.WriteLine(((YamlScalarNode) entry.Key).Value);
+            }
+        }
 
-		private const string Document = @"---
+        private const string Document = @"---
             receipt:    Oz-Ware Purchase Invoice
             date:        2007-08-06
             customer:
@@ -103,5 +104,5 @@ namespace SharpYaml.Tests.Serialization
                 Pay no attention to the
                 man behind the curtain.
 ...";
-	}
+    }
 }

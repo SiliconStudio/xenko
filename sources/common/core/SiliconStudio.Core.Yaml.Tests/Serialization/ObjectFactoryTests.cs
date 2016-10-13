@@ -42,47 +42,48 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System.IO;
 using NUnit.Framework;
 using SharpYaml.Serialization;
 
 namespace SharpYaml.Tests.Serialization
 {
-	public class ObjectFactoryTests
-	{
-		public class FooBase
-		{
-		}
+    public class ObjectFactoryTests
+    {
+        public class FooBase
+        {
+        }
 
-		public class FooDerived : FooBase
-		{
-		}
+        public class FooDerived : FooBase
+        {
+        }
 
-		[Test]
-		public void NotSpecifyingObjectFactoryUsesDefault()
-		{
-			var settings = new SerializerSettings();
-			settings.RegisterTagMapping("!foo", typeof(FooBase));
-			var serializer = new Serializer(settings);
-			var result = serializer.Deserialize(new StringReader("!foo {}"));
+        [Test]
+        public void NotSpecifyingObjectFactoryUsesDefault()
+        {
+            var settings = new SerializerSettings();
+            settings.RegisterTagMapping("!foo", typeof(FooBase));
+            var serializer = new Serializer(settings);
+            var result = serializer.Deserialize(new StringReader("!foo {}"));
 
-			Assert.IsInstanceOf<FooBase>(result);
-		}
+            Assert.IsInstanceOf<FooBase>(result);
+        }
 
-		[Test]
-		public void ObjectFactoryIsInvoked()
-		{
-			var settings = new SerializerSettings()
-				{
-					ObjectFactory = new LambdaObjectFactory(t => new FooDerived(), new DefaultObjectFactory())
-				};
-			settings.RegisterTagMapping("!foo", typeof(FooBase));
+        [Test]
+        public void ObjectFactoryIsInvoked()
+        {
+            var settings = new SerializerSettings()
+            {
+                ObjectFactory = new LambdaObjectFactory(t => new FooDerived(), new DefaultObjectFactory())
+            };
+            settings.RegisterTagMapping("!foo", typeof(FooBase));
 
-			var serializer = new Serializer(settings);
+            var serializer = new Serializer(settings);
 
-			var result = serializer.Deserialize(new StringReader("!foo {}"));
+            var result = serializer.Deserialize(new StringReader("!foo {}"));
 
             Assert.IsInstanceOf<FooDerived>(result);
-		}
-	}
+        }
+    }
 }

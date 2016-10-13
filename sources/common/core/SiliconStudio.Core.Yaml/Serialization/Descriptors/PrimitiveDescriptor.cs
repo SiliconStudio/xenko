@@ -42,20 +42,21 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System;
 using System.Collections.Generic;
 using System.Reflection;
 
 namespace SharpYaml.Serialization.Descriptors
 {
-	/// <summary>
-	/// Describes a descriptor for a primitive (bool, char, sbyte, byte, int, uint, long, ulong, float, double, decimal, string, DateTime).
-	/// </summary>
-	public class PrimitiveDescriptor : ObjectDescriptor
-	{
-		private static readonly List<IMemberDescriptor> EmptyMembers = new List<IMemberDescriptor>();
+    /// <summary>
+    /// Describes a descriptor for a primitive (bool, char, sbyte, byte, int, uint, long, ulong, float, double, decimal, string, DateTime).
+    /// </summary>
+    public class PrimitiveDescriptor : ObjectDescriptor
+    {
+        private static readonly List<IMemberDescriptor> EmptyMembers = new List<IMemberDescriptor>();
 
-	    private readonly Dictionary<string, object> enumRemap;
+        private readonly Dictionary<string, object> enumRemap;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectDescriptor" /> class.
@@ -65,15 +66,15 @@ namespace SharpYaml.Serialization.Descriptors
         /// <param name="namingConvention">The naming convention.</param>
         /// <exception cref="System.ArgumentException">Type [{0}] is not a primitive</exception>
         public PrimitiveDescriptor(IAttributeRegistry attributeRegistry, Type type, IMemberNamingConvention namingConvention)
-			: base(attributeRegistry, type, false, namingConvention)
-		{
-			if (!IsPrimitive(type))
-				throw new ArgumentException("Type [{0}] is not a primitive");
+            : base(attributeRegistry, type, false, namingConvention)
+        {
+            if (!IsPrimitive(type))
+                throw new ArgumentException("Type [{0}] is not a primitive");
 
             // Handle remap for enum items
             if (type.IsEnum)
             {
-                foreach (var member in type.GetFields(BindingFlags.Public|BindingFlags.Static))
+                foreach (var member in type.GetFields(BindingFlags.Public | BindingFlags.Static))
                 {
                     var attributes = attributeRegistry.GetAttributes(member);
                     foreach (var attribute in attributes)
@@ -90,28 +91,25 @@ namespace SharpYaml.Serialization.Descriptors
                     }
                 }
             }
-		}
+        }
 
-		public override DescriptorCategory Category
-		{
-			get { return DescriptorCategory.Primitive; }
-		}
+        public override DescriptorCategory Category { get { return DescriptorCategory.Primitive; } }
 
-		/// <summary>
-		/// Determines whether the specified type is a primitive.
-		/// </summary>
-		/// <param name="type">The type.</param>
-		/// <returns><c>true</c> if the specified type is primitive; otherwise, <c>false</c>.</returns>
-		public static bool IsPrimitive(Type type)
-		{
-			switch (Type.GetTypeCode(type))
-			{
-				case TypeCode.Object:
-				case TypeCode.Empty:
-					return type == typeof (object) || type == typeof(TimeSpan);
-			}
-			return true;
-		}
+        /// <summary>
+        /// Determines whether the specified type is a primitive.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns><c>true</c> if the specified type is primitive; otherwise, <c>false</c>.</returns>
+        public static bool IsPrimitive(Type type)
+        {
+            switch (Type.GetTypeCode(type))
+            {
+                case TypeCode.Object:
+                case TypeCode.Empty:
+                    return type == typeof(object) || type == typeof(TimeSpan);
+            }
+            return true;
+        }
 
         /// <summary>
         /// Parses the enum and trying to use remap if any declared.
@@ -119,9 +117,9 @@ namespace SharpYaml.Serialization.Descriptors
         /// <param name="enumAsText">The enum as text.</param>
         /// <param name="remapped">if set to <c>true</c> the enum was remapped.</param>
         /// <returns>System.Object.</returns>
-	    public object ParseEnum(string enumAsText, out bool remapped)
-	    {
-	        object value;
+        public object ParseEnum(string enumAsText, out bool remapped)
+        {
+            object value;
             remapped = false;
             if (enumRemap != null && enumRemap.TryGetValue(enumAsText, out value))
             {
@@ -129,12 +127,12 @@ namespace SharpYaml.Serialization.Descriptors
                 return value;
             }
 
-	        return Enum.Parse(Type, enumAsText, true);
-	    }
+            return Enum.Parse(Type, enumAsText, true);
+        }
 
-		protected override System.Collections.Generic.List<IMemberDescriptor> PrepareMembers()
-		{
-			return EmptyMembers;
-		}
-	}
+        protected override System.Collections.Generic.List<IMemberDescriptor> PrepareMembers()
+        {
+            return EmptyMembers;
+        }
+    }
 }

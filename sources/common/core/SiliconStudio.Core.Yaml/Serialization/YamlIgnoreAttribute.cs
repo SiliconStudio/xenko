@@ -42,16 +42,16 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System;
 
 namespace SharpYaml.Serialization
 {
-	/// <summary>
-	/// Instructs the YamlSerializer not to serialize the public field or public read/write property value.
-	/// </summary>
-	[AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
-	public sealed class YamlIgnoreAttribute : Attribute
-	{
-	}
+    /// <summary>
+    /// Instructs the YamlSerializer not to serialize the public field or public read/write property value.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property, AllowMultiple = false)]
+    public sealed class YamlIgnoreAttribute : Attribute
+    {
+    }
 }
-

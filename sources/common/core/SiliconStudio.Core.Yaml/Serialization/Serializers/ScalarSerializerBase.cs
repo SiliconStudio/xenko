@@ -42,53 +42,54 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System;
 using SharpYaml.Events;
 
 namespace SharpYaml.Serialization.Serializers
 {
-	public abstract class ScalarSerializerBase : IYamlSerializable
-	{
-		public object ReadYaml(ref ObjectContext objectContext)
-		{
+    public abstract class ScalarSerializerBase : IYamlSerializable
+    {
+        public object ReadYaml(ref ObjectContext objectContext)
+        {
             var scalar = objectContext.Reader.Expect<Scalar>();
             return ConvertFrom(ref objectContext, scalar);
-		}
+        }
 
-		public abstract object ConvertFrom(ref ObjectContext context, Scalar fromScalar);
+        public abstract object ConvertFrom(ref ObjectContext context, Scalar fromScalar);
 
-		public void WriteYaml(ref ObjectContext objectContext)
-		{
+        public void WriteYaml(ref ObjectContext objectContext)
+        {
             var value = objectContext.Instance;
-			var typeOfValue = value.GetType();
+            var typeOfValue = value.GetType();
 
-		    var context = objectContext.SerializerContext;
+            var context = objectContext.SerializerContext;
 
             var isSchemaImplicitTag = context.Schema.IsTagImplicit(objectContext.Tag);
-			var scalar = new ScalarEventInfo(value, typeOfValue)
-				{
-					IsPlainImplicit = isSchemaImplicitTag,
-					Style = ScalarStyle.Plain,
-					Anchor = objectContext.Anchor,
-                    Tag = objectContext.Tag,
-				};
+            var scalar = new ScalarEventInfo(value, typeOfValue)
+            {
+                IsPlainImplicit = isSchemaImplicitTag,
+                Style = ScalarStyle.Plain,
+                Anchor = objectContext.Anchor,
+                Tag = objectContext.Tag,
+            };
 
 
-			// Parse default types 
-			switch (Type.GetTypeCode(typeOfValue))
-			{
-				case TypeCode.Object:
-				case TypeCode.String:
-				case TypeCode.Char:
-					scalar.Style = ScalarStyle.Any;
-					break;
-			}
+            // Parse default types 
+            switch (Type.GetTypeCode(typeOfValue))
+            {
+                case TypeCode.Object:
+                case TypeCode.String:
+                case TypeCode.Char:
+                    scalar.Style = ScalarStyle.Any;
+                    break;
+            }
 
             scalar.RenderedValue = ConvertTo(ref objectContext);
 
-		    // Emit the scalar
-			WriteScalar(ref objectContext, scalar);
-		}
+            // Emit the scalar
+            WriteScalar(ref objectContext, scalar);
+        }
 
         /// <summary>
         /// Writes the scalar to the <see cref="SerializerContext.Writer"/>. See remarks.
@@ -98,12 +99,12 @@ namespace SharpYaml.Serialization.Serializers
         /// <remarks>
         /// This method can be overloaded to replace the converted scalar just before writing it.
         /// </remarks>
-	    protected virtual void WriteScalar(ref ObjectContext objectContext, ScalarEventInfo scalar)
-	    {
+        protected virtual void WriteScalar(ref ObjectContext objectContext, ScalarEventInfo scalar)
+        {
             // Emit the scalar
             objectContext.SerializerContext.Writer.Emit(scalar);
         }
 
-		public abstract string ConvertTo(ref ObjectContext objectContext);
-	}
+        public abstract string ConvertTo(ref ObjectContext objectContext);
+    }
 }

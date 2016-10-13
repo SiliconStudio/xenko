@@ -42,6 +42,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+
 using System.Collections;
 using System.Collections.Generic;
 using SharpYaml.Events;
@@ -49,78 +50,77 @@ using SharpYaml.Serialization.Descriptors;
 
 namespace SharpYaml.Serialization.Serializers
 {
-	internal class ArraySerializer : IYamlSerializable, IYamlSerializableFactory
-	{
-		public IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
-		{
-			return typeDescriptor is ArrayDescriptor ? this : null;
-		}
+    internal class ArraySerializer : IYamlSerializable, IYamlSerializableFactory
+    {
+        public IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
+        {
+            return typeDescriptor is ArrayDescriptor ? this : null;
+        }
 
-		public virtual object ReadYaml(ref ObjectContext objectContext)
-		{
+        public virtual object ReadYaml(ref ObjectContext objectContext)
+        {
             var reader = objectContext.Reader;
-            var arrayDescriptor = (ArrayDescriptor)objectContext.Descriptor;
+            var arrayDescriptor = (ArrayDescriptor) objectContext.Descriptor;
 
             bool isArray = objectContext.Instance != null && objectContext.Instance.GetType().IsArray;
-            var arrayList = (IList)objectContext.Instance;
+            var arrayList = (IList) objectContext.Instance;
 
-			reader.Expect<SequenceStart>();
-			int index = 0;
-			if (isArray)
-			{
-				while (!reader.Accept<SequenceEnd>())
-				{
-					var node = reader.Peek<ParsingEvent>();
-					if (index >= arrayList.Count)
-					{
-						throw new YamlException(node.Start, node.End, "Unable to deserialize array. Current number of elements [{0}] exceeding array size [{1}]".DoFormat(index, arrayList.Count));
-					}
+            reader.Expect<SequenceStart>();
+            int index = 0;
+            if (isArray)
+            {
+                while (!reader.Accept<SequenceEnd>())
+                {
+                    var node = reader.Peek<ParsingEvent>();
+                    if (index >= arrayList.Count)
+                    {
+                        throw new YamlException(node.Start, node.End, "Unable to deserialize array. Current number of elements [{0}] exceeding array size [{1}]".DoFormat(index, arrayList.Count));
+                    }
 
-					// Handle aliasing
-					arrayList[index++] = objectContext.SerializerContext.ReadYaml(null, arrayDescriptor.ElementType);
-				}
-			}
-			else
-			{
-				var results = new List<object>();
-				while (!reader.Accept<SequenceEnd>())
-				{
+                    // Handle aliasing
+                    arrayList[index++] = objectContext.SerializerContext.ReadYaml(null, arrayDescriptor.ElementType);
+                }
+            }
+            else
+            {
+                var results = new List<object>();
+                while (!reader.Accept<SequenceEnd>())
+                {
+                    results.Add(objectContext.SerializerContext.ReadYaml(null, arrayDescriptor.ElementType));
+                }
 
-					results.Add(objectContext.SerializerContext.ReadYaml(null, arrayDescriptor.ElementType));
-				}
-
-				// Handle aliasing
-				arrayList = arrayDescriptor.CreateArray(results.Count);
-				foreach (var arrayItem in results)
-				{
+                // Handle aliasing
+                arrayList = arrayDescriptor.CreateArray(results.Count);
+                foreach (var arrayItem in results)
+                {
                     arrayList[index++] = arrayItem;
-				}
-			}
-			reader.Expect<SequenceEnd>();
+                }
+            }
+            reader.Expect<SequenceEnd>();
 
-			return arrayList;
-		}
+            return arrayList;
+        }
 
-		public void WriteYaml(ref ObjectContext objectContext)
-		{
-		    var value = objectContext.Instance;
-		    var arrayDescriptor = (ArrayDescriptor) objectContext.Descriptor;
+        public void WriteYaml(ref ObjectContext objectContext)
+        {
+            var value = objectContext.Instance;
+            var arrayDescriptor = (ArrayDescriptor) objectContext.Descriptor;
 
-			var valueType = value.GetType();
-			var arrayList = (IList) value;
+            var valueType = value.GetType();
+            var arrayList = (IList) value;
 
-			// Emit a Flow sequence or block sequence depending on settings 
+            // Emit a Flow sequence or block sequence depending on settings 
             objectContext.Writer.Emit(new SequenceStartEventInfo(value, valueType)
-				{
-                    Tag = objectContext.Tag,
-					Style = objectContext.Style != YamlStyle.Any ? objectContext.Style : (arrayList.Count < objectContext.Settings.LimitPrimitiveFlowSequence ? YamlStyle.Flow : YamlStyle.Block)
-				});
+            {
+                Tag = objectContext.Tag,
+                Style = objectContext.Style != YamlStyle.Any ? objectContext.Style : (arrayList.Count < objectContext.Settings.LimitPrimitiveFlowSequence ? YamlStyle.Flow : YamlStyle.Block)
+            });
 
-			foreach (var element in arrayList)
-			{
+            foreach (var element in arrayList)
+            {
                 objectContext.SerializerContext.WriteYaml(element, arrayDescriptor.ElementType);
-			}
+            }
             objectContext.Writer.Emit(new SequenceEndEventInfo(value, valueType));
-		}
-	}
+        }
+    }
 }
