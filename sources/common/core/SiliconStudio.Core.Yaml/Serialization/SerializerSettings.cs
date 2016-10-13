@@ -103,6 +103,11 @@ namespace SiliconStudio.Core.Yaml.Serialization
         }
 
         /// <summary>
+        /// Gets or sets a serializer that is executed just before the <see cref="RoutingSerializer"/>.
+        /// </summary>
+        public ChainedSerializer PreSerializer { get; set; }
+
+        /// <summary>
         /// Gets or sets the preferred indentation. Default is 2.
         /// </summary>
         /// <value>The preferred indentation.</value>

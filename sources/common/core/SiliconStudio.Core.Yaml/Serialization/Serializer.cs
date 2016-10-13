@@ -566,6 +566,10 @@ namespace SiliconStudio.Core.Yaml.Serialization
             }
 
             IYamlSerializable serializer = routingSerializer;
+            if (settings.PreSerializer != null)
+            {
+                serializer = ChainedSerializer.Prepend(settings.PreSerializer, routingSerializer);
+            }
             serializer = ChainedSerializer.Prepend(new TagTypeSerializer(), serializer);
             if (settings.EmitAlias)
             {
