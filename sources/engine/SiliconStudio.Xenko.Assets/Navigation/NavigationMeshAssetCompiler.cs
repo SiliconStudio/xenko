@@ -456,6 +456,9 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                     GeometricMeshData<VertexPositionNormalTexture> meshData = new GeometricMeshData<VertexPositionNormalTexture>(vertices, planeInds, false);
                     shape.NavigationMeshInputBuilder.AppendMeshData(meshData, Matrix.Identity);
                     sceneNavigationMeshInputBuilder.AppendMeshData(meshData, Matrix.Identity);
+                    // Update bounding box after plane generation
+                    if (generateBoundingBox)
+                        globalBoundingBox = sceneNavigationMeshInputBuilder.BoundingBox;
 
                     // Store deferred shape in build cahce just like normal onesdddd
                     currentBuild.Add(shape.Entity, shape.NavigationMeshInputBuilder);
