@@ -8,17 +8,26 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         public SlotKind Kind { get; }
 
+        /// <summary>
+        /// The name of this slot.
+        /// </summary>
         public string Name { get; }
+
+        /// <summary>
+        /// The type of this slot, only used as hint for input slots.
+        /// </summary>
+        public string Type { get; }
 
         public string Value { get; }
 
         public SlotFlags Flags { get; }
 
-        protected SlotDefinition(SlotDirection direction, SlotKind kind, string name, string value, SlotFlags flags)
+        protected SlotDefinition(SlotDirection direction, SlotKind kind, string name, string type, string value, SlotFlags flags)
         {
             Direction = direction;
             Kind = kind;
             Name = name;
+            Type = type;
             Value = value;
             Flags = flags;
         }
@@ -30,6 +39,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                 Direction = definition.Direction,
                 Kind = definition.Kind,
                 Name = definition.Name,
+                Type = definition.Type,
                 Value = definition.Value,
                 Flags = definition.Flags,
             };
@@ -37,22 +47,22 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         public static SlotDefinition NewExecutionInput(string name, SlotFlags flags = SlotFlags.None)
         {
-            return new SlotDefinition(SlotDirection.Input, SlotKind.Execution, name, null, flags);
+            return new SlotDefinition(SlotDirection.Input, SlotKind.Execution, name, null, null, flags);
         }
 
         public static SlotDefinition NewExecutionOutput(string name, SlotFlags flags = SlotFlags.None)
         {
-            return new SlotDefinition(SlotDirection.Output, SlotKind.Execution, name, null, flags);
+            return new SlotDefinition(SlotDirection.Output, SlotKind.Execution, name, null, null, flags);
         }
 
-        public static SlotDefinition NewValueInput(string name, string value, SlotFlags flags = SlotFlags.None)
+        public static SlotDefinition NewValueInput(string name, string type, string value, SlotFlags flags = SlotFlags.None)
         {
-            return new SlotDefinition(SlotDirection.Input, SlotKind.Value, name, value, flags);
+            return new SlotDefinition(SlotDirection.Input, SlotKind.Value, name, type, value, flags);
         }
 
         public static SlotDefinition NewValueOutput(string name, string value, SlotFlags flags = SlotFlags.None)
         {
-            return new SlotDefinition(SlotDirection.Output, SlotKind.Value, name, value, flags);
+            return new SlotDefinition(SlotDirection.Output, SlotKind.Value, name, null, value, flags);
         }
     }
 }

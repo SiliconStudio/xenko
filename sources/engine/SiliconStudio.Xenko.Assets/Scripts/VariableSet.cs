@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 {
     public class VariableSet : ExecutionBlock
     {
-        [RegenerateTitle]
+        [RegenerateTitle, RegenerateSlots]
         public Variable Variable { get; set; }
 
         public override string Title => Variable != null ? $"Set {Variable.Name}" : "Set";
@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             newSlots.Add(InputExecutionSlotDefinition);
             newSlots.Add(OutputExecutionSlotDefinition);
 
-            newSlots.Add(new Slot(SlotDirection.Input, SlotKind.Value));
+            newSlots.Add(new Slot(SlotDirection.Input, SlotKind.Value, type: Variable?.Type));
         }
     }
 }

@@ -13,12 +13,13 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             Id = Guid.NewGuid();
         }
 
-        public Slot(SlotDirection direction, SlotKind kind, string name = null, SlotFlags flags = SlotFlags.None, string value = null) : this()
+        public Slot(SlotDirection direction, SlotKind kind, string name = null, SlotFlags flags = SlotFlags.None, string type = null, string value = null) : this()
         {
             Direction = direction;
             Kind = kind;
             Name = name;
             Flags = flags;
+            Type = type;
             Value = value;
         }
 
@@ -38,10 +39,21 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         public SlotKind Kind { get; set; }
 
         // TODO: Internal setter when serialization supports it
+        /// <summary>
+        /// The name of this slot.
+        /// </summary>
         [DataMember(20)]
         [DefaultValue(null)]
         public string Name { get; set; }
 
+
+        // TODO: Internal setter when serialization supports it
+        /// <summary>
+        /// The type of this slot, only used as hint for input slots.
+        /// </summary>
+        [DataMember(30)]
+        [DefaultValue(null)]
+        public string Type { get; set; }
 
         // TODO: Internal setter when serialization supports it
         [DataMember(40)]
