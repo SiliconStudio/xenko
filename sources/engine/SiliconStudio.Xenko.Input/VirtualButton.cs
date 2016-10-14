@@ -33,23 +33,15 @@ namespace SiliconStudio.Xenko.Input
         public readonly VirtualButtonType Type;
 
         /// <summary>
-        /// A boolean indicating whether this button supports positive and negative value.
-        /// </summary>
-        [DataMember]
-        public readonly bool IsPositiveAndNegative;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="VirtualButton" /> class.
         /// </summary>
-        /// <param name="name">The name.</param>
         /// <param name="type">The type.</param>
         /// <param name="id">The id.</param>
-        /// <param name="isPositiveAndNegative">if set to <c>true</c> [is positive and negative].</param>
-        private VirtualButton(VirtualButtonType type, int id, bool isPositiveAndNegative = false)
+        /// <param name="name">The name.</param>
+        private VirtualButton(VirtualButtonType type, int id)
         {
             Id = (int)type | id;
             Type = type;
-            IsPositiveAndNegative = isPositiveAndNegative;
         }
 
         /// <summary>

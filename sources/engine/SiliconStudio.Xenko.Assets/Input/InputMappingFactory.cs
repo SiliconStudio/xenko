@@ -13,7 +13,6 @@ namespace SiliconStudio.Xenko.Assets.Input
         {
             return new InputMappingAsset
             {
-                Bindings = new List<InputMappingBinding>()
             };
         }
     }

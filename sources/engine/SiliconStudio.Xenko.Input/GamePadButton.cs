@@ -9,77 +9,77 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// PadUp button.
         /// </summary>
-        PadUp = 1 << 0,
+        PadUp = 0,
 
         /// <summary>
         /// PadDown button.
         /// </summary>
-        PadDown = 1 << 1,
+        PadDown,
 
         /// <summary>	
         /// PadLeft button.
         /// </summary>	
-        PadLeft = 1 << 2,
+        PadLeft,
 
         /// <summary>	
         /// PadRight button.
         /// </summary>	
-        PadRight = 1 << 3,
+        PadRight,
 
         /// <summary>	
         /// Start button.
         /// </summary>	
-        Start = 1 << 4,
+        Start ,
 
         /// <summary>	
         /// Back button.
         /// </summary>	
-        Back = 1 << 5,
+        Back,
 
         /// <summary>
         /// Left thumb button.
         /// </summary>
-        LeftThumb = 1 << 6,
+        LeftThumb,
 
         /// <summary>
         /// Right thumb button.
         /// </summary>
-        RightThumb = 1 << 7,
+        RightThumb ,
 
         /// <summary>
         /// Left shoulder button.
         /// </summary>
-        LeftShoulder = 1 << 8,
+        LeftShoulder,
 
         /// <summary>
         /// Right shoulder button.
         /// </summary>
-        RightShoulder = 1 << 9,
+        RightShoulder,
 
         /// <summary>
         /// A button.
         /// </summary>
-        A = 1 << 12,
+        A,
 
         /// <summary>
         /// B button.
         /// </summary>
-        B = 1 << 13,
+        B ,
 
         /// <summary>
         /// X button.
         /// </summary>
-        X = 1 << 14,
+        X,
 
         /// <summary>
         /// Y button.
         /// </summary>
-        Y = 1 << 15,
+        Y,
 
         /// <summary>	
         /// No buttons.	
         /// </summary>	
-        None = 0,
+        None,
     }
 
     /// <summary>

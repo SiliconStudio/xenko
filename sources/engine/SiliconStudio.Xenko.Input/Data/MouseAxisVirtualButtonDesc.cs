@@ -2,20 +2,21 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Input.Data
 {
-    [ContentSerializer(typeof(DataContentSerializer<MouseVirtualButtonDesc>))]
+    [ContentSerializer(typeof(DataContentSerializer<MouseAxisVirtualButtonDesc>))]
     [DataContract]
-    public class MouseVirtualButtonDesc : VirtualButtonDescBase, IVirtualButtonDesc
+    public class MouseAxisVirtualButtonDesc : VirtualButtonDescBase, IVirtualButtonDesc
     {
         [DataMember]
-        public MouseButton MouseButton;
+        public MouseAxis MouseAxis;
 
         public IVirtualButton Create()
         {
-            return new VirtualButton.Mouse(VirtualButtonType.Mouse, (int)MouseButton);
+            return new VirtualButton.Mouse(VirtualButtonType.Mouse, (int)MouseAxis + 5);
         }
     }
 }

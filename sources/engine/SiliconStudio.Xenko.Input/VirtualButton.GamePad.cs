@@ -122,18 +122,27 @@ namespace SiliconStudio.Xenko.Input
             /// </summary>
             public readonly int PadIndex;
 
-            public GamePad(VirtualButtonType type, int id, bool isPositiveAndNegative = false) : base(type, id, isPositiveAndNegative)
+            public GamePad(VirtualButtonType type, int id, bool isPositiveAndNegative = false) : base(type, id)
             {
                 PadIndex = -1;
             }
 
-            public GamePad(GamePad parentPad, int index) : base(parentPad.Type, parentPad.Id, parentPad.IsPositiveAndNegative)
+            public GamePad(GamePad parentPad, int index) : base(parentPad.Type, parentPad.Id)
             {
                 PadIndex = index;
             }
-            
-            public override string Name => $"Gamepad.{((Keys)Id)}";
-            
+
+            public override string Name
+            {
+                get
+                {
+                    int id2 = Id ^ (int)VirtualButtonType.GamePad;
+                    if(id2 <= 15)
+                        return $"GamePad.{(GamePadButtonSingle)id2}";
+                    return $"GamePad.Axis.{(GamePadAxis)(id2-16)}";
+                }
+            }
+
             /// <summary>
             /// Return an instance of a particular GamePad.
             /// </summary>

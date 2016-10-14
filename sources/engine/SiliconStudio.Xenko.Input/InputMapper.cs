@@ -3,9 +3,40 @@
 
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Input
 {
+    [DataContract]
+    public struct InputMapperKeyType
+    {
+        public bool Equals(InputMapperKeyType other)
+        {
+            return string.Equals(AssemblyName, other.AssemblyName) && string.Equals(FullName, other.FullName);
+        }
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is InputMapperKeyType && Equals((InputMapperKeyType)obj);
+        }
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                return ((AssemblyName != null ? AssemblyName.GetHashCode() : 0)*397) ^ (FullName != null ? FullName.GetHashCode() : 0);
+            }
+        }
+        public override string ToString()
+        {
+            return FullName;
+        }
+
+        [DataMember]
+        public string AssemblyName;
+        [DataMember]
+        public string FullName;
+    }
+
     /// <summary>
     /// A class that contains event bindings for responding to certain input events
     /// </summary>

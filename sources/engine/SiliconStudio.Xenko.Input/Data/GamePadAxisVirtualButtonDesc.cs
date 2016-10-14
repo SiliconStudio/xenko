@@ -6,16 +6,16 @@ using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Input.Data
 {
-    [ContentSerializer(typeof(DataContentSerializer<MouseVirtualButtonDesc>))]
+    [ContentSerializer(typeof(DataContentSerializer<GamePadAxisVirtualButtonDesc>))]
     [DataContract]
-    public class MouseVirtualButtonDesc : VirtualButtonDescBase, IVirtualButtonDesc
+    public class GamePadAxisVirtualButtonDesc : VirtualButtonDescBase, IVirtualButtonDesc
     {
         [DataMember]
-        public MouseButton MouseButton;
+        public GamePadAxis GamePadAxis;
 
         public IVirtualButton Create()
         {
-            return new VirtualButton.Mouse(VirtualButtonType.Mouse, (int)MouseButton);
+            return new VirtualButton.GamePad(VirtualButtonType.GamePad, (int)GamePadAxis + 16);
         }
     }
 }

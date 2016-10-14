@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Input.Data;
 
 namespace SiliconStudio.Xenko.Engine.Processors
 {
@@ -28,7 +29,9 @@ namespace SiliconStudio.Xenko.Engine.Processors
         protected override AssociatedData GenerateComponentData(Entity entity, InputComponent component)
         {
             AssociatedData data = new AssociatedData();
-            data.inputMapper = GetOrCreateInputMapper(component.InputMapping);
+            if(component.InputMapping != null)
+                data.inputMapper = GetOrCreateInputMapper(component.InputMapping);
+            component.InputMapper = data.inputMapper;
             return data;
 
         }
@@ -41,6 +44,23 @@ namespace SiliconStudio.Xenko.Engine.Processors
             {
                 // Create and initialize a new input mapper
                 foundInputMapper = new InputMapper(inputManager);
+
+                // Bind the virtual buttons
+                int i = 0;
+                foreach (var binding in mapping.Bindings)
+                {
+                    foreach (var defaultMapping in binding.DefaultMappings)
+                    {
+                        IVirtualButton button = defaultMapping.Create();
+                        VirtualButtonDescBase baseDesc = defaultMapping as VirtualButtonDescBase;
+                        if(baseDesc != null)
+                            foundInputMapper.AddBinding(i, new Input.InputBinding(button, baseDesc.Sensitivity, baseDesc.Inverted));
+                        else
+                            foundInputMapper.AddBinding(i, new Input.InputBinding(button));
+                    }
+                    i++;
+                }
+
                 inputMappers.Add(mapping, foundInputMapper);
             }
 

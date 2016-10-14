@@ -59,10 +59,13 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AccelerometerSensor.cs" />
-    <Compile Include="Data\GamepadVirtualButtonDesc.cs" />
+    <Compile Include="Data\GamePadAxisVirtualButtonDesc.cs" />
+    <Compile Include="Data\GamePadVirtualButtonDesc.cs" />
     <Compile Include="Data\IVirtualButtonDesc.cs" />
     <Compile Include="Data\KeyboardVirtualButtonDesc.cs" />
+    <Compile Include="Data\MouseAxisVirtualButtonDesc.cs" />
     <Compile Include="Data\MouseVirtualButtonDesc.cs" />
+    <Compile Include="GamePadAxis.cs" />
     <Compile Include="GestureConfigCollection.cs" />
     <Compile Include="GestureConfigDrag.cs" />
     <Compile Include="GestureConfigFlick.cs" />
@@ -108,6 +111,7 @@
     <Compile Include="GestureConfigLongPress.cs" />
     <Compile Include="CompassSensor.cs" />
     <Compile Include="Module.cs" />
+    <Compile Include="MouseAxis.cs" />
     <Compile Include="MouseButton.cs" />
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="OrientationSensor.cs" />

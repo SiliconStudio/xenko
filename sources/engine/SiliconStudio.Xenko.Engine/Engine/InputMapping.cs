@@ -20,6 +20,7 @@ namespace SiliconStudio.Xenko.Engine
 
     [DataContract]
     [DataSerializerGlobal(typeof(ReferenceSerializer<InputMapping>), Profile = "Content")]
+    [ContentSerializer(typeof(DataContentSerializer<InputMapping>))]
     public class InputMapping : ComponentBase
     {
         [DataMember(0)]

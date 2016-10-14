@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Assets.Input
         [DataMember(0)]
         public string MappingName;
         [DataMember(0)]
-        public List<IVirtualButtonDesc> DefaultMappings { get; set; }
+        public List<IVirtualButtonDesc> DefaultMappings { get; } = new List<IVirtualButtonDesc>();
     }
 
     public class InputMappingBindingFactory : IObjectFactory
@@ -27,19 +27,22 @@ namespace SiliconStudio.Xenko.Assets.Input
         {
             return new InputMappingBinding
             {
-                DefaultMappings = new List<IVirtualButtonDesc>()
             };
         }
     }
 
     [DataContract("InputMappingAsset")]
     [AssetDescription(FileExtension, AlwaysMarkAsRoot = true)]
+    [AssetCompiler(typeof(InputMappingAssetCompiler))]
     [Display("Input Mapping")]
-    public class InputMappingAsset : AssetWithSource
+    public class InputMappingAsset : Asset
     {
         public const string FileExtension = ".xkimap";
 
         [DataMember(0)]
-        public InputMappingBinding[] Bindings;
+        public string EnumType;
+
+        [DataMember(0)]
+        public List<InputMappingBinding> Bindings { get; } = new List<InputMappingBinding>();
     }
 }

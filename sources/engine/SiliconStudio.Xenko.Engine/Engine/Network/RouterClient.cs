@@ -122,7 +122,7 @@ namespace SiliconStudio.Xenko.Engine.Network
                 catch (Exception e)
                 {
                     Log.Error("Could not connect to connection router using mode {0}: {1}", ConnectionMode, e.Message);
-                    throw;
+                        throw;
                 }
             },
                 CancellationToken.None,

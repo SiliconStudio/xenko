@@ -903,11 +903,11 @@ namespace SiliconStudio.Xenko.Input
             public static readonly VirtualButton OemClear = new Keyboard(VirtualButtonType.Keyboard, (int)Keys.OemClear);
           
             public Keyboard(VirtualButtonType type, int id, bool isPositiveAndNegative = false)
-                : base(type, id, isPositiveAndNegative)
+                : base(type, id)
             {
             }
 
-            public override string Name => $"Keyboard.{((Keys)Id)}";
+            public override string Name => $"Keyboard.{(Keys)(Id ^ (int)VirtualButtonType.Keyboard)}";
 
             public override float GetValue(InputManager manager)
             {

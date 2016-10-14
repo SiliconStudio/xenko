@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Input
@@ -15,7 +16,7 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         [DataContract("MouseVirtualButton")]
         [Display("Mouse")]
-        public class Mouse : VirtualButton, IVirtualButton
+        public class Mouse : VirtualButton
         {
             /// <summary>
             /// Equivalent to <see cref="MouseButton.Left"/>.
@@ -52,11 +53,26 @@ namespace SiliconStudio.Xenko.Input
             /// </summary>
             public static readonly Mouse PositionY = new Mouse(VirtualButtonType.Mouse, 6, true);
 
-            public Mouse(VirtualButtonType type, int id, bool isPositiveAndNegative = false) : base(type, id, isPositiveAndNegative)
+
+            /// <summary>
+            /// Equivalent to <see cref="InputManager.MouseWheelDelta"/>.
+            /// </summary>
+            public static readonly Mouse Wheel = new Mouse(VirtualButtonType.Mouse, 7, true);
+
+            public Mouse(VirtualButtonType type, int id, bool isPositiveAndNegative = false) : base(type, id)
             {
             }
-            
-            public override string Name => $"Mouse.{((Keys)Id)}";
+
+            public override string Name
+            {
+                get
+                {
+                    int id2 = Id ^ (int)VirtualButtonType.Mouse;
+                    if(id2 < 5)
+                        return $"Mouse.{(MouseButton)id2}";
+                    return $"Mouse.Axis.{(MouseAxis)(id2-5)}";
+                }
+            }
 
             public override float GetValue(InputManager manager)
             {
@@ -70,11 +86,15 @@ namespace SiliconStudio.Xenko.Input
                 }
                 else if (index == 5)
                 {
-                    return manager.MousePosition.X;
+                    return manager.MouseDelta.X;
                 }
                 else if (index == 6)
                 {
-                    return manager.MousePosition.Y;
+                    return manager.MouseDelta.Y;
+                }
+                else if (index == 7)
+                {
+                    return manager.MouseWheelDelta;
                 }
 
                 return 0.0f;

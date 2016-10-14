@@ -14,12 +14,29 @@ using SiliconStudio.Xenko.Input;
 namespace SiliconStudio.Xenko.Engine
 {
     [DataContract("InputComponent")]
-    [Display("Input Component", Expand = ExpandRule.Once)]
+    [Display("Input Mapper", Expand = ExpandRule.Once)]
     [DefaultEntityComponentProcessor(typeof(InputProcessor))]
     [ComponentOrder(11200)]
     public class InputComponent : EntityComponent
     {
+        internal struct MadeBinding
+        {
+            public int Key;
+            public InputEventHandler Handler;
+        }
+
         public InputMapping InputMapping;
         internal InputMapper InputMapper;
+
+        internal readonly List<MadeBinding> entityBindings = new List<MadeBinding>();
+
+        public InputEventHandler AddHandler(int key, InputEventHandler handler)
+        {
+            if (InputMapper == null)
+                throw new NullReferenceException("InputMapper not initialized");
+            var ret = InputMapper.AddHandler(key, handler);
+            entityBindings.Add(new MadeBinding { Key = key, Handler = handler });
+            return ret;
+        }
     }
 }
