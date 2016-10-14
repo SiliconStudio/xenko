@@ -1,5 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using SiliconStudio.Core;
+
 namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
@@ -10,46 +13,50 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Mouse virtual button.
         /// </summary>
-        public class Mouse : VirtualButton
+        [DataContract("MouseVirtualButton")]
+        [Display("Mouse")]
+        public class Mouse : VirtualButton, IVirtualButton
         {
-            private Mouse(string name, VirtualButtonType type, int id, bool isPositiveAndNegative = false) : base(name, type, id, isPositiveAndNegative)
-            {
-            }
-
             /// <summary>
             /// Equivalent to <see cref="MouseButton.Left"/>.
             /// </summary>
-            public static readonly Mouse Left = new Mouse("Mouse.Left", VirtualButtonType.Mouse, 0);
+            public static readonly Mouse Left = new Mouse(VirtualButtonType.Mouse, 0);
 
             /// <summary>
             /// Equivalent to <see cref="MouseButton.Middle"/>.
             /// </summary>
-            public static readonly Mouse Middle = new Mouse("Mouse.Middle", VirtualButtonType.Mouse, 1);
+            public static readonly Mouse Middle = new Mouse(VirtualButtonType.Mouse, 1);
 
             /// <summary>
             /// Equivalent to <see cref="MouseButton.Right"/>.
             /// </summary>
-            public static readonly Mouse Right = new Mouse("Mouse.Right", VirtualButtonType.Mouse, 2);
+            public static readonly Mouse Right = new Mouse(VirtualButtonType.Mouse, 2);
 
             /// <summary>
             /// Equivalent to <see cref="MouseButton.Extended1"/>.
             /// </summary>
-            public static readonly Mouse Extended1 = new Mouse("Mouse.Extended1", VirtualButtonType.Mouse, 3);
+            public static readonly Mouse Extended1 = new Mouse(VirtualButtonType.Mouse, 3);
 
             /// <summary>
             /// Equivalent to <see cref="MouseButton.Extended2"/>.
             /// </summary>
-            public static readonly Mouse Extended2 = new Mouse("Mouse.Extended2", VirtualButtonType.Mouse, 4);
+            public static readonly Mouse Extended2 = new Mouse(VirtualButtonType.Mouse, 4);
 
             /// <summary>
             /// Equivalent to X Axis of <see cref="InputManager.MousePosition"/>.
             /// </summary>
-            public static readonly Mouse PositionX = new Mouse("Mouse.PositionX", VirtualButtonType.Mouse, 5, true);
+            public static readonly Mouse PositionX = new Mouse(VirtualButtonType.Mouse, 5, true);
 
             /// <summary>
             /// Equivalent to Y Axis of <see cref="InputManager.MousePosition"/>.
             /// </summary>
-            public static readonly Mouse PositionY = new Mouse("Mouse.PositionY", VirtualButtonType.Mouse, 6, true);
+            public static readonly Mouse PositionY = new Mouse(VirtualButtonType.Mouse, 6, true);
+
+            public Mouse(VirtualButtonType type, int id, bool isPositiveAndNegative = false) : base(type, id, isPositiveAndNegative)
+            {
+            }
+            
+            public override string Name => $"Mouse.{((Keys)Id)}";
 
             public override float GetValue(InputManager manager)
             {

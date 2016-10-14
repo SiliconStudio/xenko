@@ -12,7 +12,7 @@
     <AssemblyName>SiliconStudio.Xenko.Input</AssemblyName>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
-    <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer</SiliconStudioAssemblyProcessorOptions>
+    <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization --parameter-key</SiliconStudioAssemblyProcessorOptions>
     <XenkoProjectPlatformDependentWindows>true</XenkoProjectPlatformDependentWindows>
     <FileAlignment>512</FileAlignment>
     <XenkoBuildTags>*</XenkoBuildTags>
@@ -25,7 +25,7 @@
       </ItemGroup>
     </When>
   </Choose>
-  <Import Condition="$(SiliconStudioUI.Contains('SDL'))" Project="..\..\common\targets\SDL.targets"/> 
+  <Import Condition="$(SiliconStudioUI.Contains('SDL'))" Project="..\..\common\targets\SDL.targets" />
   <Choose>
     <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
       <ItemGroup>
@@ -59,6 +59,10 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AccelerometerSensor.cs" />
+    <Compile Include="Data\GamepadVirtualButtonDesc.cs" />
+    <Compile Include="Data\IVirtualButtonDesc.cs" />
+    <Compile Include="Data\KeyboardVirtualButtonDesc.cs" />
+    <Compile Include="Data\MouseVirtualButtonDesc.cs" />
     <Compile Include="GestureConfigCollection.cs" />
     <Compile Include="GestureConfigDrag.cs" />
     <Compile Include="GestureConfigFlick.cs" />
@@ -79,6 +83,7 @@
     <Compile Include="GestureType.cs" />
     <Compile Include="GravitySensor.cs" />
     <Compile Include="GyroscopeSensor.cs" />
+    <Compile Include="InputBinding.cs" />
     <Compile Include="InputManager.Android.cs" />
     <Compile Include="InputManager.cs" />
     <Compile Include="InputManager.iOS.cs" />
@@ -95,12 +100,14 @@
     <Compile Include="InputManager.Windows.XInput.cs" />
     <Compile Include="InputManagerExtensions.cs" />
     <Compile Include="InputManagerFactory.cs" />
+    <Compile Include="InputMapper.cs" />
     <Compile Include="IVirtualButton.cs" />
     <Compile Include="KeyEvent.cs" />
     <Compile Include="KeyEventType.cs" />
     <Compile Include="Keys.cs" />
     <Compile Include="GestureConfigLongPress.cs" />
     <Compile Include="CompassSensor.cs" />
+    <Compile Include="Module.cs" />
     <Compile Include="MouseButton.cs" />
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="OrientationSensor.cs" />
@@ -125,6 +132,7 @@
     <Compile Include="VirtualButtonConfig.cs" />
     <Compile Include="VirtualButtonConfigSet.cs" />
     <Compile Include="VirtualButtonGroup.cs" />
+    <Compile Include="Data\VirtualButtonDescBase.cs" />
     <Compile Include="VirtualButtonTwoWay.cs" />
     <Compile Include="VirtualButtonType.cs" />
   </ItemGroup>
@@ -133,6 +141,10 @@
       <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
       <Name>SiliconStudio.Core.Mathematics</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
+      <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
+      <Name>SiliconStudio.Core.Serialization</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
@@ -157,6 +169,7 @@
   <ItemGroup>
     <Reference Include="SharpDX, Version=3.0.2.0, Culture=neutral, PublicKeyToken=b4dcf0f35e5521f1, processorArchitecture=MSIL" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

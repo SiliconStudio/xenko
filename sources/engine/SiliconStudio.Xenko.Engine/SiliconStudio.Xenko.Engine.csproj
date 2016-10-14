@@ -133,6 +133,8 @@
     <Compile Include="Engine\Events\EventTaskScheduler.cs" />
     <Compile Include="Engine\GameSystem.cs" />
     <Compile Include="Engine\IEntityComponentNotify.cs" />
+    <Compile Include="Engine\InputComponent.cs" />
+    <Compile Include="Engine\InputMapping.cs" />
     <Compile Include="Engine\LightComponentExtensions.cs" />
     <Compile Include="Engine\ModelNodeTransformLink.cs" />
     <Compile Include="Engine\ModelViewHierarchyTransformOperation.cs" />
@@ -156,6 +158,7 @@
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketClient.cs" />
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketListener.cs" />
     <Compile Include="Engine\PrefabExtensions.cs" />
+    <Compile Include="Engine\Processors\InputProcessor.cs" />
     <Compile Include="Engine\Processors\ModelTransformProcessor.cs" />
     <Compile Include="Engine\Prefab.cs" />
     <Compile Include="Engine\PrefabBase.cs" />

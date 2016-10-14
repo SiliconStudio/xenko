@@ -18,6 +18,7 @@
     <TargetFrameworkProfile />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ISymWrapper" />
     <Reference Include="Microsoft.Build, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Build.Framework, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
     <Reference Include="Microsoft.Build.Utilities.Core, Version=14.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -245,6 +246,8 @@
     <Compile Include="Entities\SceneAsset.Upgraders.cs" />
     <Compile Include="Entities\SceneAssetFactories.cs" />
     <Compile Include="Input\InputMappingAsset.cs" />
+    <Compile Include="Input\InputMappingAssetCompiler.cs" />
+    <Compile Include="Input\InputMappingEnumImporter.cs" />
     <Compile Include="Input\InputMappingFactory.cs" />
     <Compile Include="UI\UIAssetCompilerBase.cs" />
     <Compile Include="UI\UIElementHierarchyData.cs" />

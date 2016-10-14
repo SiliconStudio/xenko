@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 
 
@@ -13,7 +12,6 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// Describes a virtual button (a key from a keyboard, a mouse button, an axis of a joystick...etc.).
     /// </summary>
-    [DataContract]
     public abstract partial class VirtualButton : IVirtualButton
     {
         private static readonly Dictionary<int, VirtualButton> mapIp = new Dictionary<int, VirtualButton>();
@@ -23,31 +21,10 @@ namespace SiliconStudio.Xenko.Input
         internal const int TypeIdMask = 0x0FFFFFFF;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="VirtualButton" /> class.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <param name="type">The type.</param>
-        /// <param name="id">The id.</param>
-        /// <param name="isPositiveAndNegative">if set to <c>true</c> [is positive and negative].</param>
-        private VirtualButton(string name, VirtualButtonType type, int id, bool isPositiveAndNegative = false)
-        {
-            Id = (int)type | id;
-            Name = name;
-            Type = type;
-            IsPositiveAndNegative = isPositiveAndNegative;
-        }
-
-        /// <summary>
         /// Unique Id for a particular button <see cref="Type"/>.
         /// </summary>
         [DataMember]
         public readonly int Id;
-
-        /// <summary>
-        /// Name of this button.
-        /// </summary>
-        [DataMember]
-        public readonly string Name;
 
         /// <summary>
         /// Type of this button.
@@ -61,10 +38,24 @@ namespace SiliconStudio.Xenko.Input
         [DataMember]
         public readonly bool IsPositiveAndNegative;
 
-        public override string ToString()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="VirtualButton" /> class.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <param name="type">The type.</param>
+        /// <param name="id">The id.</param>
+        /// <param name="isPositiveAndNegative">if set to <c>true</c> [is positive and negative].</param>
+        private VirtualButton(VirtualButtonType type, int id, bool isPositiveAndNegative = false)
         {
-            return string.Format("{0}", Name);
+            Id = (int)type | id;
+            Type = type;
+            IsPositiveAndNegative = isPositiveAndNegative;
         }
+
+        /// <summary>
+        /// Name of this button.
+        /// </summary>
+        public abstract string Name { get; }
 
         /// <summary>
         /// Implements the + operator to combine to <see cref="VirtualButton"/>.
@@ -141,6 +132,7 @@ namespace SiliconStudio.Xenko.Input
                 {
                     RegisterFromType(typeof(Keyboard));
                     RegisterFromType(typeof(GamePad));
+                    RegisterFromType(typeof(Mouse));
                     registeredReadOnly = registered;
                 }
             }
@@ -155,7 +147,7 @@ namespace SiliconStudio.Xenko.Input
         {
             foreach (var fieldInfo in type.GetTypeInfo().DeclaredFields)
             {
-                if (fieldInfo.IsStatic && fieldInfo.FieldType == typeof(VirtualButton))
+                if (fieldInfo.IsStatic && typeof(VirtualButton).IsAssignableFrom(fieldInfo.FieldType))
                 {
                     Register((VirtualButton)fieldInfo.GetValue(null));
                 }
