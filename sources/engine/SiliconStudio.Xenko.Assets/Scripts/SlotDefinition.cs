@@ -60,9 +60,9 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             return new SlotDefinition(SlotDirection.Input, SlotKind.Value, name, type, value, flags);
         }
 
-        public static SlotDefinition NewValueOutput(string name, string value, SlotFlags flags = SlotFlags.None)
+        public static SlotDefinition NewValueOutput(string name, SlotFlags flags = SlotFlags.None)
         {
-            return new SlotDefinition(SlotDirection.Output, SlotKind.Value, name, null, value, flags);
+            return new SlotDefinition(SlotDirection.Output, SlotKind.Value, name, null, null, flags);
         }
     }
 }

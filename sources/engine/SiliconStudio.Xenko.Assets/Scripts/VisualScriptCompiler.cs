@@ -41,11 +41,13 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         public Dictionary<Block, BasicBlock> BlockMapping { get; } = new Dictionary<Block, BasicBlock>();
 
-        public List<BasicBlock> Blocks { get; } = new List<BasicBlock>();
+        public List<BasicBlock> Blocks { get; private set; } = new List<BasicBlock>();
 
         public BasicBlock CurrentBasicBlock { get; internal set; }
 
         public Block CurrentBlock { get; internal set; }
+
+        public bool IsInsideLoop { get; set; }
 
         internal VisualScriptCompilerContext(VisualScriptAsset asset, Logger log)
         {
@@ -54,12 +56,11 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             Log = log;
         }
 
-        public BasicBlock GetOrCreateBasicBlockFromSlot(Slot nextExecutionSlot)
+        public BasicBlock GetOrCreateBasicBlockFromSlot(Slot executionSlot)
         {
-            // Automatically flow to next execution slot (if it has a null name => default behavior)
-            if (nextExecutionSlot != null)
+            if (executionSlot != null)
             {
-                var nextExecutionLink = asset.Links.FirstOrDefault(x => x.Source == nextExecutionSlot && x.Target != null);
+                var nextExecutionLink = asset.Links.FirstOrDefault(x => x.Source == executionSlot && x.Target != null);
                 if (nextExecutionLink != null)
                 {
                     return GetOrCreateBasicBlock((ExecutionBlock)nextExecutionLink.Target.Owner);
@@ -98,13 +99,16 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                     else
                     {
                         // Generate code
-                        expression = ((IExpressionBlock)sourceLink.Source.Owner).GenerateExpression(this, sourceLink.Source);
+                        expression = (sourceLink.Source.Owner as IExpressionBlock)?.GenerateExpression(this, sourceLink.Source);
                     }
 
-                    // Add annotation on both source block and link (so that we can keep track of what block/link generated what source code)
-                    expression = expression.WithAdditionalAnnotations(GenerateAnnotation(sourceLink.Source.Owner), GenerateAnnotation(sourceLink));
+                    if (expression != null)
+                    {
+                        // Add annotation on both source block and link (so that we can keep track of what block/link generated what source code)
+                        expression = expression.WithAdditionalAnnotations(GenerateAnnotation(sourceLink.Source.Owner), GenerateAnnotation(sourceLink));
 
-                    return expression;
+                        return expression;
+                    }
                 }
 
                 // 2. If a custom value is set, use it
@@ -121,18 +125,74 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             return IdentifierName("unknown").WithAdditionalAnnotations(GenerateAnnotation(CurrentBlock));
         }
 
+        public List<StatementSyntax> ProcessInnerLoop(Slot executionSlot)
+        {
+            if (executionSlot != null)
+            {
+                var nextExecutionLink = asset.Links.FirstOrDefault(x => x.Source == executionSlot && x.Target != null);
+                if (nextExecutionLink != null)
+                {
+                    return ProcessInnerLoop((ExecutionBlock)nextExecutionLink.Target.Owner);
+                }
+            }
+
+            return null;
+        }
+
+
+        public List<StatementSyntax> ProcessInnerLoop(ExecutionBlock block)
+        {
+            // TODO: Some analysis before running it that there is no impossible execution links between inner loop and outer code
+            if (BlockMapping.ContainsKey(block))
+            {
+                throw new InvalidOperationException("Inner block can only be used once");
+            }
+
+            // Save states (might be necssary if processing immediatly)
+            var currentBlock = CurrentBlock;
+            var currentBasicBlock = CurrentBasicBlock;
+            var codeToGenerate = CodeToGenerate;
+            var blocks = Blocks;
+
+            // Start with empty state for the inner block
+            CodeToGenerate = new Queue<Tuple<BasicBlock, ExecutionBlock>>();
+            Blocks = new List<BasicBlock>();
+
+            // Process right now the current queue
+            BasicBlock newBasicBlock;
+            CreateAndEnqueueBasicBlock(block, out newBasicBlock);
+            ProcessCodeToGenerate();
+
+            var result = Blocks;
+
+            // Restore states
+            CodeToGenerate = codeToGenerate;
+            CurrentBlock = currentBlock;
+            CurrentBasicBlock = currentBasicBlock;
+            Blocks = blocks;
+
+            return result.SelectMany(x => x.Statements).ToList();
+        }
+
         public BasicBlock GetOrCreateBasicBlock(ExecutionBlock block)
         {
             BasicBlock newBasicBlock;
             if (!BlockMapping.TryGetValue(block, out newBasicBlock))
             {
-                newBasicBlock = new BasicBlock(Blocks.Count);
-                Blocks.Add(newBasicBlock);
-                BlockMapping.Add(block, newBasicBlock);
-                GenerateCode(newBasicBlock, block);
+                CreateAndEnqueueBasicBlock(block, out newBasicBlock);
             }
 
             return newBasicBlock;
+        }
+
+        private void CreateAndEnqueueBasicBlock(ExecutionBlock block, out BasicBlock newBasicBlock)
+        {
+            newBasicBlock = new BasicBlock(Blocks.Count);
+            Blocks.Add(newBasicBlock);
+            BlockMapping.Add(block, newBasicBlock);
+
+            // Enqueue it for processing
+            CodeToGenerate.Enqueue(Tuple.Create(newBasicBlock, (ExecutionBlock)block));
         }
 
         public GotoStatementSyntax CreateGotoStatement(BasicBlock target)
@@ -157,11 +217,6 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             }
         }
 
-        public void GenerateCode(BasicBlock basicBlock, Block block)
-        {
-            CodeToGenerate.Enqueue(Tuple.Create(basicBlock, (ExecutionBlock)block));
-        }
-
         private LabeledStatementSyntax GetOrCreateLabel(BasicBlock basicBlock)
         {
             if (basicBlock.Label == null)
@@ -179,9 +234,9 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         }
 
 
-        public void RegisterLocalVariable(Slot returnSlot, string localVariableName)
+        public void RegisterLocalVariable(Slot slot, string localVariableName)
         {
-            outputSlotLocals.Add(returnSlot, localVariableName);
+            outputSlotLocals.Add(slot, localVariableName);
         }
 
         private SyntaxAnnotation GenerateAnnotation(Block block)
@@ -192,6 +247,58 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         private SyntaxAnnotation GenerateAnnotation(Link link)
         {
             return new SyntaxAnnotation("Link", link.Id.ToString());
+        }
+
+        internal void ProcessCodeToGenerate()
+        {
+            // Process blocks to generate statements
+            while (CodeToGenerate.Count > 0)
+            {
+                var codeToGenerate = CodeToGenerate.Dequeue();
+                CurrentBasicBlock = codeToGenerate.Item1;
+                CurrentBlock = codeToGenerate.Item2;
+                var currentBlock = codeToGenerate.Item2;
+
+                // Generate code for current node
+                currentBlock.GenerateCode(this);
+
+                // Automatically flow to next execution slot (if it has a null name => default behavior)
+                var nextExecutionSlot = currentBlock.Slots.FirstOrDefault(x => x.Kind == SlotKind.Execution && x.Direction == SlotDirection.Output && x.Flags == SlotFlags.AutoflowExecution);
+                if (nextExecutionSlot != null)
+                {
+                    var nextExecutionLink = asset.Links.FirstOrDefault(x => x.Source == nextExecutionSlot && x.Target != null);
+                    if (nextExecutionLink == null)
+                    {
+                        // Nothing connected, no need to generate a goto to an empty return
+                        goto InterruptFlow;
+                    }
+
+                    var nextBasicBlock = GetOrCreateBasicBlock((ExecutionBlock)nextExecutionLink.Target.Owner);
+                    CurrentBasicBlock.NextBlock = nextBasicBlock;
+                }
+
+                // Is there a next block to flow to?
+                if (CurrentBasicBlock.NextBlock != null)
+                {
+                    var nextBlock = CurrentBasicBlock.NextBlock;
+
+                    // Do we need a goto? (in case there is some intermediary block in between)
+                    if (nextBlock.Index != CurrentBasicBlock.Index + 1)
+                    {
+                        AddStatement(CreateGotoStatement(nextBlock));
+                    }
+
+                    continue;
+                }
+
+            InterruptFlow:
+                // If there's some unrelated code (that we shouldn't flow into) after current node,
+                // let's put a return to not automatically go into it
+                if (CodeToGenerate.Count > 0)
+                {
+                    AddStatement(IsInsideLoop ? (StatementSyntax)ContinueStatement() : ReturnStatement());
+                }
+            }
         }
     }
 
@@ -254,50 +361,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                 // Force generation of start block
                 context.GetOrCreateBasicBlock(functionStartBlock);
 
-                // Process blocks to generate statements
-                while (context.CodeToGenerate.Count > 0)
-                {
-                    var codeToGenerate = context.CodeToGenerate.Dequeue();
-                    context.CurrentBasicBlock = codeToGenerate.Item1;
-                    context.CurrentBlock = codeToGenerate.Item2;
-                    var currentBlock = codeToGenerate.Item2;
-
-                    // Generate code for current node
-                    currentBlock.GenerateCode(context);
-
-                    // Automatically flow to next execution slot (if it has a null name => default behavior)
-                    var nextExecutionSlot = currentBlock.Slots.FirstOrDefault(x => x.Kind == SlotKind.Execution && x.Direction == SlotDirection.Output && x.Flags == SlotFlags.AutoflowExecution);
-                    if (nextExecutionSlot != null)
-                    {
-                        var nextExecutionLink = visualScriptAsset.Links.FirstOrDefault(x => x.Source == nextExecutionSlot && x.Target != null);
-                        if (nextExecutionLink == null)
-                        {
-                            // Nothing connected, no need to generate a goto to an empty return
-                            goto GenerateReturn;
-                        }
-
-                        var nextBasicBlock = context.GetOrCreateBasicBlock((ExecutionBlock)nextExecutionLink.Target.Owner);
-                        context.CurrentBasicBlock.NextBlock = nextBasicBlock;
-                    }
-
-                    // Is there a next block to flow to?
-                    if (context.CurrentBasicBlock.NextBlock != null)
-                    {
-                        var nextBlock = context.CurrentBasicBlock.NextBlock;
-
-                        // Do we need a goto? (in case there is some intermediary block in between)
-                        if (nextBlock.Index != context.CurrentBasicBlock.Index + 1)
-                        {
-                            context.AddStatement(context.CreateGotoStatement(nextBlock));
-                        }
-
-                        continue;
-                    }
-
-                GenerateReturn:
-                    // No next node, let's put a return so that we don't flow into any basic blocks that were after this one
-                    context.AddStatement(ReturnStatement());
-                }
+                context.ProcessCodeToGenerate();
 
                 // Generate method
                 var method =
