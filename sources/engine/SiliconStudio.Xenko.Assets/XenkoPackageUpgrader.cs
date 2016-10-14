@@ -17,14 +17,16 @@ using Microsoft.CodeAnalysis.Host.Mef;
 using Microsoft.CodeAnalysis.MSBuild;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Xenko.Assets.Effect;
 
 namespace SiliconStudio.Xenko.Assets
 {
-    [PackageUpgrader(XenkoConfig.PackageName, "1.0.0-beta01", "1.8.0-beta")]
+    [PackageUpgrader(XenkoConfig.PackageName, "1.0.0-beta01", "1.9.0-alpha01")]
     public class XenkoPackageUpgrader : PackageUpgrader
     {
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
@@ -325,7 +327,69 @@ namespace SiliconStudio.Xenko.Assets
                 }
             }
 
+            if (dependency.Version.MinVersion < new PackageVersion("1.9.0-alpha01"))
+            {
+                var files = assetFiles.Where(f => f.FilePath.GetFileExtension() != ".xkpkg" && f.FilePath.GetFileExtension() != ".xktpl");
+                foreach (var assetFile in files.Select(x => x.AsYamlAsset()).NotNull().ToList())
+                {
+                    using (var assetYaml = assetFile)
+                    {
+                        UpdateCollectionNodes(assetYaml.RootNode);
+                    }
+                }
+            }
+
             return true;
+        }
+
+        private static YamlNode UpdateCollectionNodes(YamlNode node)
+        {
+            var mapping = node as YamlMappingNode;
+            if (mapping != null)
+            {
+                foreach (var child in mapping.ToList())
+                {
+                    var newNode = UpdateCollectionNodes(child.Value);
+                    if (newNode != child.Value)
+                        mapping.Children[child.Key] = newNode;
+                }
+            }
+
+            var sequence = node as YamlSequenceNode;
+            if (sequence != null)
+            {
+                var idMapping = new YamlMappingNode();
+
+                foreach (var child in sequence)
+                {
+                    UpdateCollectionNodes(child);
+                    var mappingChild = child as YamlMappingNode;
+                    if (mappingChild != null)
+                    {
+                        YamlNode idNode;
+                        var idKey = mappingChild.Children.FirstOrDefault(x => (x.Key as YamlScalarNode)?.Value == "~Id").Key;
+                        if (idKey != null)
+                        {
+                            idNode = mappingChild.Children[idKey];
+                            mappingChild.Children.Remove(idKey);
+                        }
+                        else
+                        {
+                            idNode = new YamlScalarNode(Guid.NewGuid().ToString());
+                        }
+                        idMapping.Children.Add(idNode, child);
+                    }
+                    else
+                    {
+                        var idNode = new YamlScalarNode(Guid.NewGuid().ToString());
+                        idMapping.Children.Add(idNode, child);
+                    }
+                }
+
+                return idMapping;
+            }
+
+            return node;
         }
 
         private void RunAssetUpgradersUntilVersion(ILogger log, Package dependentPackage, string dependencyName, IList<PackageLoadingAssetFile> assetFiles, PackageVersion maxVersion)
