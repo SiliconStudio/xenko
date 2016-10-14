@@ -348,9 +348,9 @@ namespace SiliconStudio.PackageManager
             return ToNugetPackages(manager.SourceRepository.Search(searchTerm, allowPrereleaseVersions)).AsQueryable();
         }
 
-        public async Task<IEnumerable<NugetPackage>> GetUpdates(NugetPackageName nugetPackageName, bool includePrerelease, bool includeAllVersions, CancellationToken cancellationToken)
+        public async Task<IEnumerable<NugetPackage>> GetUpdates(PackageName packageName, bool includePrerelease, bool includeAllVersions, CancellationToken cancellationToken)
         {
-            var list = manager.SourceRepository.GetUpdates(new [] {nugetPackageName.Name}, includePrerelease, includeAllVersions);
+            var list = manager.SourceRepository.GetUpdates(new [] {new NuGet.PackageName(packageName.Id, new SemanticVersion(packageName.Version.Version, packageName.Version.SpecialVersion))}, includePrerelease, includeAllVersions);
             var res = new List<NugetPackage>();
             foreach (var package in list)
             {
