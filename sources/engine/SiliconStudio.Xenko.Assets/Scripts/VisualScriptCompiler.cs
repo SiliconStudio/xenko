@@ -88,17 +88,21 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                 var sourceLink = asset.Links.FirstOrDefault(x => x.Target == slot);
                 if (sourceLink != null)
                 {
+                    ExpressionSyntax expression;
+
                     string localName;
                     if (outputSlotLocals.TryGetValue(sourceLink.Source, out localName))
                     {
-                        return IdentifierName(localName);
+                        expression = IdentifierName(localName);
+                    }
+                    else
+                    {
+                        // Generate code
+                        expression = ((IExpressionBlock)sourceLink.Source.Owner).GenerateExpression(this, sourceLink.Source);
                     }
 
-                    // Generate code
-                    var expression = ((IExpressionBlock)sourceLink.Source.Owner).GenerateExpression(this, sourceLink.Source);
-
                     // Add annotation on both source block and link (so that we can keep track of what block/link generated what source code)
-                    expression = expression.WithAdditionalAnnotations(new SyntaxAnnotation("Block", sourceLink.Source.Owner.Id.ToString()), new SyntaxAnnotation("Link", sourceLink.Id.ToString()));
+                    expression = expression.WithAdditionalAnnotations(GenerateAnnotation(sourceLink.Source.Owner), GenerateAnnotation(sourceLink));
 
                     return expression;
                 }
@@ -106,15 +110,15 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                 // 2. If a custom value is set, use it
                 if (slot.Value != null)
                 {
-                    return ParseExpression(slot.Value);
+                    return ParseExpression(slot.Value).WithAdditionalAnnotations(GenerateAnnotation(slot.Owner));
                 }
 
                 // 3. Fallback: use slot name
-                return IdentifierName(slot.Name);
+                return IdentifierName(slot.Name).WithAdditionalAnnotations(GenerateAnnotation(slot.Owner));
             }
 
             // TODO: Issue an error
-            return IdentifierName("unknown");
+            return IdentifierName("unknown").WithAdditionalAnnotations(GenerateAnnotation(CurrentBlock));
         }
 
         public BasicBlock GetOrCreateBasicBlock(ExecutionBlock block)
@@ -139,7 +143,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         public void AddStatement(StatementSyntax statement)
         {
             // Add annotation on block (so that we can keep track of what block generated what source code)
-            statement = statement.WithAdditionalAnnotations(new SyntaxAnnotation("Block", CurrentBlock.Id.ToString()));
+            statement = statement.WithAdditionalAnnotations(GenerateAnnotation(CurrentBlock));
 
             // If there is already a label with an empty statement (still no instructions), replace its inner statement
             if (CurrentBasicBlock.Label != null && CurrentBasicBlock.Statements.Count == 1 && CurrentBasicBlock.Label.Statement is EmptyStatementSyntax)
@@ -178,6 +182,16 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         public void RegisterLocalVariable(Slot returnSlot, string localVariableName)
         {
             outputSlotLocals.Add(returnSlot, localVariableName);
+        }
+
+        private SyntaxAnnotation GenerateAnnotation(Block block)
+        {
+            return new SyntaxAnnotation("Block", block.Id.ToString());
+        }
+
+        private SyntaxAnnotation GenerateAnnotation(Link link)
+        {
+            return new SyntaxAnnotation("Link", link.Id.ToString());
         }
     }
 
