@@ -44,6 +44,7 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Schemas;
 
@@ -134,6 +135,11 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// The member mask.
         /// </value>
         public uint MemberMask => ContextSettings.MemberMask;
+
+        /// <summary>
+        /// Gets the dictionary of custom properties associated to this context.
+        /// </summary>
+        public Dictionary<object, object> Properties { get; } = new Dictionary<object, object>();
 
         /// <summary>
         /// The default function to read an object from the current Yaml stream.
