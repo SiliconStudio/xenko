@@ -6,6 +6,7 @@ using System.ComponentModel;
 using System.Diagnostics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets.Templates
 {
@@ -13,6 +14,7 @@ namespace SiliconStudio.Assets.Templates
     /// Description of a template generator that can be displayed in the GameStudio.
     /// </summary>
     [DataContract("Template")]
+    [NonIdentifiableCollectionItems]
     [DebuggerDisplay("Id: {Id}, Name: {Name}")]
     public class TemplateDescription : IFileSynchronizable
     {

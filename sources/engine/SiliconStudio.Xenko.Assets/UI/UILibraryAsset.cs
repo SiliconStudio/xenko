@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.UI;
 
 namespace SiliconStudio.Xenko.Assets.UI
@@ -28,6 +29,7 @@ namespace SiliconStudio.Xenko.Assets.UI
         /// Gets the dictionary of publicly exposed controls.
         /// </summary>
         [DataMember(20)]
+        [NonIdentifiableCollectionItems]
         public Dictionary<Guid, string> PublicUIElements { get; } = new Dictionary<Guid, string>();
 
         /// <summary>

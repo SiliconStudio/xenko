@@ -7,6 +7,7 @@ using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets
 {
@@ -122,6 +123,7 @@ namespace SiliconStudio.Assets
         [DataMember(-900)]
         [Display(Browsable = false)]
         [NotNullItems]
+        [NonIdentifiableCollectionItems]
         public TagCollection Tags { get; private set; }
 
         /// <summary>

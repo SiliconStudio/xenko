@@ -299,6 +299,7 @@ namespace SiliconStudio.Core.Yaml
                         PreferredIndent = 4,
                         EmitShortTypeName = true,
                         ComparerForKeySorting = MemberComparer.Default,
+                        PreSerializer = new ContextAttributeSerializer(),
                     };
 
                     if (generateIds)

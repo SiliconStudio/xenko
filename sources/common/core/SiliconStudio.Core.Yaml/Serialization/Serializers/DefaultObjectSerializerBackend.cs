@@ -124,11 +124,11 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             });
         }
 
-        public virtual void WriteMemberValue(ref ObjectContext objectContext, IMemberDescriptor member, object memberValue,
+        public virtual void WriteMemberValue(ref ObjectContext objectContext, IMemberDescriptor memberDescriptor, object memberValue,
             Type memberType)
         {
             // Push the style of the current member
-            objectContext.SerializerContext.WriteYaml(memberValue, memberType, member.Style);
+            objectContext.SerializerContext.WriteYaml(memberValue, memberType, memberDescriptor.Style);
         }
 
         public virtual void WriteCollectionItem(ref ObjectContext objectContext, object item, Type itemType, int index)

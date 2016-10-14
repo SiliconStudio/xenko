@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Reflection;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
@@ -20,8 +21,47 @@ namespace SiliconStudio.Core.Yaml
 
         public CustomObjectSerializerBackend(ITypeDescriptorFactory typeDescriptorFactory)
         {
-            if (typeDescriptorFactory == null) throw new ArgumentNullException("typeDescriptorFactory");
+            if (typeDescriptorFactory == null) throw new ArgumentNullException(nameof(typeDescriptorFactory));
             this.typeDescriptorFactory = typeDescriptorFactory;
+        }
+
+        public override object ReadMemberValue(ref ObjectContext objectContext, Serialization.IMemberDescriptor memberDescriptor, object memberValue, Type memberType)
+        {
+            var nonIdentifiable = false;
+            var member = memberDescriptor as Serialization.Descriptors.MemberDescriptorBase;
+            
+            if (member != null && objectContext.Settings.Attributes.GetAttribute<NonIdentifiableCollectionItemsAttribute>(member.MemberInfo) != null)
+            {
+                if (!objectContext.Properties.ContainsKey(NonIdentifiableCollectionItemsAttribute.Key))
+                {
+                    nonIdentifiable = true;
+                    objectContext.Properties.Add(NonIdentifiableCollectionItemsAttribute.Key, true);
+                }
+            }
+            var result = base.ReadMemberValue(ref objectContext, memberDescriptor, memberValue, memberType);
+            if (nonIdentifiable)
+            {
+                objectContext.Properties.Remove(NonIdentifiableCollectionItemsAttribute.Key);
+            }
+            return result;
+        }
+
+        public override void WriteMemberValue(ref ObjectContext objectContext, Serialization.IMemberDescriptor memberDescriptor, object memberValue, Type memberType)
+        {
+            var nonIdentifiable = false;
+            if (memberDescriptor.Type.GetCustomAttribute<NonIdentifiableCollectionItemsAttribute>() != null)
+            {
+                if (!objectContext.Properties.ContainsKey(NonIdentifiableCollectionItemsAttribute.Key))
+                {
+                    nonIdentifiable = true;
+                    objectContext.Properties.Add(NonIdentifiableCollectionItemsAttribute.Key, true);
+                }
+            }
+            base.WriteMemberValue(ref objectContext, memberDescriptor, memberValue, memberType);
+            if (nonIdentifiable)
+            {
+                objectContext.Properties.Remove(NonIdentifiableCollectionItemsAttribute.Key);
+            }
         }
 
         public override void WriteMemberName(ref ObjectContext objectContext, Serialization.IMemberDescriptor member, string memberName)

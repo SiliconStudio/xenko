@@ -19,6 +19,7 @@ namespace SiliconStudio.ProjectTemplating
     /// Defines a project template that allows automated creation of a project structure with files.
     /// </summary>
     [DataContract("ProjectTemplate")]
+    [NonIdentifiableCollectionItems]
     public class ProjectTemplate
     {
         /// <summary>

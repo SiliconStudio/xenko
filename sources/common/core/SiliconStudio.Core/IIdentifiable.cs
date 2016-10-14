@@ -18,7 +18,9 @@ namespace SiliconStudio.Core
     /// <summary>
     /// Tag a class that should not have an attached unique identifier.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class)]
+    // TODO: this attribute is obsolete
+    [AttributeUsage(AttributeTargets.Class | AttributeTargets.Property | AttributeTargets.Field)]
+    [Obsolete]
     public class NonIdentifiableAttribute : Attribute
     {
     }
