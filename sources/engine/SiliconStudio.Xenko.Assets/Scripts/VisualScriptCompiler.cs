@@ -84,6 +84,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             // Automatically flow to next execution slot (if it has a null name => default behavior)
             if (slot != null)
             {
+                // 1. First check if there is a link and use its expression
                 var sourceLink = asset.Links.FirstOrDefault(x => x.Target == slot);
                 if (sourceLink != null)
                 {
@@ -102,10 +103,14 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                     return expression;
                 }
 
+                // 2. If a custom value is set, use it
                 if (slot.Value != null)
                 {
                     return ParseExpression(slot.Value);
                 }
+
+                // 3. Fallback: use slot name
+                return IdentifierName(slot.Name);
             }
 
             // TODO: Issue an error
