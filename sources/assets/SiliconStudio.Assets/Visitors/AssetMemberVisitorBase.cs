@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets.Visitors
@@ -38,8 +39,10 @@ namespace SiliconStudio.Assets.Visitors
         {
             if (CurrentPath.Match(MemberPath))
             {
-                Visit(key, keyDescriptor);
-                VisitAssetMember(value, valueDescriptor);
+                var keyValueType = typeof(KeyValuePair<,>).MakeGenericType(keyDescriptor.Type, valueDescriptor.Type);
+                var keyValueDescriptor = TypeDescriptorFactory.Find(keyValueType);
+                var keyValuePair = Activator.CreateInstance(keyValueType, key, value);
+                VisitAssetMember(keyValuePair, keyValueDescriptor);
             }
             else
             {
