@@ -4,15 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using SharpYaml;
-using SharpYaml.Events;
-using SharpYaml.Serialization;
-
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
-using AttributeRegistry = SharpYaml.Serialization.AttributeRegistry;
-using IMemberDescriptor = SharpYaml.Serialization.IMemberDescriptor;
-using MemberDescriptorBase = SharpYaml.Serialization.Descriptors.MemberDescriptorBase;
+using SiliconStudio.Core.Yaml.Events;
+using SiliconStudio.Core.Yaml.Serialization;
+using AttributeRegistry = SiliconStudio.Core.Yaml.Serialization.AttributeRegistry;
+using IMemberDescriptor = SiliconStudio.Core.Yaml.Serialization.IMemberDescriptor;
+using MemberDescriptorBase = SiliconStudio.Core.Yaml.Serialization.Descriptors.MemberDescriptorBase;
+using ObjectDescriptor = SiliconStudio.Core.Yaml.Serialization.Descriptors.ObjectDescriptor;
 
 namespace SiliconStudio.Core.Yaml
 {
@@ -22,7 +21,7 @@ namespace SiliconStudio.Core.Yaml
     public static class YamlSerializer
     {
         private static readonly Logger Log = GlobalLogger.GetLogger(typeof(YamlSerializer).Name);
-        private static event Action<SharpYaml.Serialization.Descriptors.ObjectDescriptor, List<IMemberDescriptor>> PrepareMembersEvent;
+        private static event Action<ObjectDescriptor, List<IMemberDescriptor>> PrepareMembersEvent;
 
         // TODO: This code is not robust in case of reloading assemblies into the same process
         private static readonly List<Assembly> RegisteredAssemblies = new List<Assembly>();
@@ -30,7 +29,7 @@ namespace SiliconStudio.Core.Yaml
         private static Serializer globalSerializer;
         private static Serializer globalSerializerWithoutId;
 
-        public static event Action<SharpYaml.Serialization.Descriptors.ObjectDescriptor, List<IMemberDescriptor>> PrepareMembers
+        public static event Action<ObjectDescriptor, List<IMemberDescriptor>> PrepareMembers
         {
             add
             {
@@ -322,7 +321,7 @@ namespace SiliconStudio.Core.Yaml
             return localSerializer;
         }
 
-        private static void PrepareMembersCallback(SharpYaml.Serialization.Descriptors.ObjectDescriptor objDesc, List<IMemberDescriptor> memberDescriptors)
+        private static void PrepareMembersCallback(ObjectDescriptor objDesc, List<IMemberDescriptor> memberDescriptors)
         {
             var type = objDesc.Type;
 
@@ -359,7 +358,7 @@ namespace SiliconStudio.Core.Yaml
         /// <summary>
         /// Filters attributes to replace <see cref="DataMemberAttribute"/> by <see cref="YamlMemberAttribute"/>
         /// </summary>
-        private class AtributeRegistryFilter : AttributeRegistry
+        private class AtributeRegistryFilter : Serialization.AttributeRegistry
         {
             public AtributeRegistryFilter()
             {

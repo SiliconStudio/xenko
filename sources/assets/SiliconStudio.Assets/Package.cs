@@ -7,7 +7,6 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using Microsoft.Build.Evaluation;
-using SharpYaml;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.Assets.Templates;
@@ -15,6 +14,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Yaml;
 
 namespace SiliconStudio.Assets
 {

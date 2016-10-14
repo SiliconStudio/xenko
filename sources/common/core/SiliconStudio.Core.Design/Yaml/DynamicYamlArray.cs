@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
-using SharpYaml.Serialization;
+using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Core.Yaml
 {

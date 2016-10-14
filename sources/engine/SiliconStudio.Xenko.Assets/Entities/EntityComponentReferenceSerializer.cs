@@ -1,10 +1,9 @@
 ﻿using System;
-using SharpYaml;
-using SharpYaml.Events;
-using SharpYaml.Serialization;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Events;
+using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
