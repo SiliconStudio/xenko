@@ -82,12 +82,12 @@
     <None Include="Audio\Common.h" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Navigation\Navigation.cpp" />
-    <Content Include="Navigation\Navigation.hpp" />
-    <Content Include="Navigation\NavigationBuilder.cpp" />
-    <Content Include="Navigation\NavigationBuilder.hpp" />
-    <Content Include="Navigation\NavigationMesh.cpp" />
-    <Content Include="Navigation\NavigationMesh.hpp" />
+    <None Include="Navigation\Navigation.cpp" />
+    <None Include="Navigation\Navigation.hpp" />
+    <None Include="Navigation\NavigationBuilder.cpp" />
+    <None Include="Navigation\NavigationBuilder.hpp" />
+    <None Include="Navigation\NavigationMesh.cpp" />
+    <None Include="Navigation\NavigationMesh.hpp" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

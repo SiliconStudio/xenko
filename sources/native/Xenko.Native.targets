@@ -140,8 +140,8 @@
   </Target>
 
   <PropertyGroup Condition="Exists('$(ANDROID_NDK_PATH)\RELEASE.TXT')">
-    <XenkoNativeAndroidIs64Bit Condition="'$([System.Text.RegularExpressions.Regex]::Match($([System.IO.File]::ReadAllText(`$(ANDROID_NDK_PATH)\RELEASE.TXT`)), `r\d\d\w\s\(64-bit\)`).Success)' == 'true'">-x86_64</XenkoNativeAndroidIs64Bit>
-    <XenkoNativeAndroidIs64Bit Condition="'$([System.Text.RegularExpressions.Regex]::Match($([System.IO.File]::ReadAllText(`$(ANDROID_NDK_PATH)\RELEASE.TXT`)), `r\d\d\w\s\(64-bit\)`).Success)' == 'false'"></XenkoNativeAndroidIs64Bit>
+    <XenkoNativeAndroidIs64Bit Condition="'$([System.Text.RegularExpressions.Regex]::Match($([System.IO.File]::ReadAllText(`$(ANDROID_NDK_PATH)\RELEASE.TXT`)), `r\d\d\w?\s\(64-bit\)`).Success)' == 'true'">-x86_64</XenkoNativeAndroidIs64Bit>
+    <XenkoNativeAndroidIs64Bit Condition="'$([System.Text.RegularExpressions.Regex]::Match($([System.IO.File]::ReadAllText(`$(ANDROID_NDK_PATH)\RELEASE.TXT`)), `r\d\d\w?\s\(64-bit\)`).Success)' == 'false'"></XenkoNativeAndroidIs64Bit>
   </PropertyGroup>
   
   <Target Name="CompileNativeClang_Android" Inputs="@(XenkoNativeCFiles);@(XenkoNativeHFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\arm64-v8a\$(XenkoNativeOutputName).so;$(SiliconStudioXenkoSdkBinDir)\armeabi\$(XenkoNativeOutputName).so;$(SiliconStudioXenkoSdkBinDir)\armeabi-v7a\$(XenkoNativeOutputName).so;$(SiliconStudioXenkoSdkBinDir)\x86\$(XenkoNativeOutputName).so;$(SiliconStudioXenkoSdkBinDir)\x86_64\$(XenkoNativeOutputName).so" Condition="'$(SiliconStudioPlatform)' == 'Android'" BeforeTargets="Build">
