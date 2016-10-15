@@ -33,9 +33,9 @@ using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 using System.IO;
 using System.Text.RegularExpressions;
-using SharpYaml;
-using SharpYaml.Schemas;
-using SharpYaml.Tokens;
+using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Schemas;
+using SiliconStudio.Core.Yaml.Tokens;
 
 namespace SiliconStudio.Xenko.VisualStudio.Assets
 {
@@ -175,7 +175,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Assets
 						{
 							// Decode the scalar
 							var scalarToken = (Scalar) scanner.Current;
-							var scalar = new SharpYaml.Events.Scalar(scalarToken.Value);
+							var scalar = new Core.Yaml.Events.Scalar(scalarToken.Value);
 							switch (schema.GetDefaultTag(scalar))
 							{
 								case JsonSchema.BoolShortTag:

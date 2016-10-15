@@ -2,10 +2,10 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using SharpYaml.Serialization;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.PackageManager;
+using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {

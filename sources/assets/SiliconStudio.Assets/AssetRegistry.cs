@@ -4,17 +4,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using SharpYaml.Serialization;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Diff;
-using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.VisualStudio;
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.PackageManager;
+using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Assets
 {

@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using System.ComponentModel;
-using SharpYaml.Serialization;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
@@ -14,6 +13,7 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.PackageManager;
+using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Assets.Models

@@ -96,9 +96,6 @@
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.10.0" />
     <Reference Include="Microsoft.VisualStudio.Shell.Immutable.11.0" />
     <Reference Include="Microsoft.VisualStudio.TextManager.Interop.8.0, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
-    <Reference Include="SharpYaml">
-      <HintPath>..\..\common\deps\SharpYaml\SharpYaml.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
@@ -334,6 +331,10 @@
     <ProjectReference Include="..\..\assets\SiliconStudio.PackageManager\SiliconStudio.PackageManager.csproj">
       <Project>{acd2c831-bda2-4512-b4cc-75e8e1804f73}</Project>
       <Name>SiliconStudio.PackageManager</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Yaml\SiliconStudio.Core.Yaml.csproj">
+      <Project>{bf32de1b-6276-4341-b212-f8862adbba7a}</Project>
+      <Name>SiliconStudio.Core.Yaml</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>

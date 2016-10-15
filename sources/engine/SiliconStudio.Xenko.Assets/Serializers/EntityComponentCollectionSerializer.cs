@@ -4,14 +4,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
-using SharpYaml;
-using SharpYaml.Events;
-using SharpYaml.Serialization;
-using SharpYaml.Serialization.Descriptors;
-using SharpYaml.Serialization.Logging;
-using SharpYaml.Serialization.Serializers;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Events;
+using SiliconStudio.Core.Yaml.Serialization;
+using SiliconStudio.Core.Yaml.Serialization.Descriptors;
+using SiliconStudio.Core.Yaml.Serialization.Logging;
+using SiliconStudio.Core.Yaml.Serialization.Serializers;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Serializers
