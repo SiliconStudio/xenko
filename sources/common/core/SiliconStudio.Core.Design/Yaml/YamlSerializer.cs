@@ -4,10 +4,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
+using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Reflection;
 using AttributeRegistry = SiliconStudio.Core.Yaml.Serialization.AttributeRegistry;
 using IMemberDescriptor = SiliconStudio.Core.Yaml.Serialization.IMemberDescriptor;
 using MemberDescriptorBase = SiliconStudio.Core.Yaml.Serialization.Descriptors.MemberDescriptorBase;
@@ -172,7 +172,7 @@ namespace SiliconStudio.Core.Yaml
         /// <param name="type">The type.</param>
         public static void Serialize(IEmitter emitter, object instance, Type type)
         {
-            var serializer = GetYamlSerializer();
+            var serializer = GetYamlSerializer(false);
             serializer.Serialize(emitter, instance, type);
         }
 
@@ -185,7 +185,7 @@ namespace SiliconStudio.Core.Yaml
         /// <param name="contextSettings">The context settings.</param>
         public static void Serialize(IEmitter emitter, object instance, Type type, SerializerContextSettings contextSettings)
         {
-            var serializer = GetYamlSerializer();
+            var serializer = GetYamlSerializer(false);
             serializer.Serialize(emitter, instance, type, contextSettings);
         }
 
@@ -197,7 +197,7 @@ namespace SiliconStudio.Core.Yaml
         /// <param name="generateIds"><c>true</c> to generate ~Id for class objects</param>
         public static void Serialize(Stream stream, object instance, bool generateIds = true)
         {
-            var serializer = GetYamlSerializer(generateIds);
+            var serializer = GetYamlSerializer(false);
             serializer.Serialize(stream, instance);
         }
 
@@ -211,7 +211,7 @@ namespace SiliconStudio.Core.Yaml
         /// <param name="generateIds"><c>true</c> to generate ~Id for class objects</param>
         public static void Serialize(Stream stream, object instance, Type type, SerializerContextSettings contextSettings, bool generateIds = true)
         {
-            var serializer = GetYamlSerializer();
+            var serializer = GetYamlSerializer(false);
             serializer.Serialize(stream, instance, type, contextSettings);
         }
 
@@ -225,7 +225,7 @@ namespace SiliconStudio.Core.Yaml
         /// <returns>a string in YAML format</returns>
         public static string Serialize(object instance, Type type, SerializerContextSettings contextSettings, bool generateIds = true)
         {
-            var serializer = GetYamlSerializer(generateIds);
+            var serializer = GetYamlSerializer(false);
             using (var stream = new MemoryStream())
             {
                 serializer.Serialize(stream, instance, type ?? typeof(object), contextSettings);
@@ -243,7 +243,7 @@ namespace SiliconStudio.Core.Yaml
         /// <returns>a string in YAML format</returns>
         public static string Serialize(object instance, bool generateIds = true)
         {
-            return Serialize(instance, null, null, generateIds);
+            return Serialize(instance, null, null, false);
         }
 
         /// <summary>
@@ -336,7 +336,7 @@ namespace SiliconStudio.Core.Yaml
         }
 
         private static readonly CustomDynamicMember CustomDynamicMemberDescriptor = new CustomDynamicMember();
-        
+
         private class CustomDynamicMember : DynamicMemberDescriptorBase
         {
             public CustomDynamicMember() : base(IdentifiableHelper.YamlSpecialId, typeof(Guid))
@@ -359,7 +359,7 @@ namespace SiliconStudio.Core.Yaml
         /// <summary>
         /// Filters attributes to replace <see cref="DataMemberAttribute"/> by <see cref="YamlMemberAttribute"/>
         /// </summary>
-        private class AtributeRegistryFilter : Serialization.AttributeRegistry
+        private class AtributeRegistryFilter : AttributeRegistry
         {
             public AtributeRegistryFilter()
             {

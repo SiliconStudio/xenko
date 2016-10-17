@@ -114,6 +114,8 @@
     <Compile Include="Transactions\TransactionStackFactory.cs" />
     <Compile Include="Windows\FileLock.cs" />
     <Compile Include="Windows\GlobalMutex.cs" />
+    <Compile Include="Yaml\CollectionItemIdHelper.cs" />
+    <Compile Include="Yaml\CollectionWithIdsSerializer.cs" />
     <Compile Include="Yaml\ContextAttributeSerializer.cs" />
     <Compile Include="Yaml\DynamicYaml.cs" />
     <Compile Include="Yaml\DynamicYamlExtensions.cs" />
