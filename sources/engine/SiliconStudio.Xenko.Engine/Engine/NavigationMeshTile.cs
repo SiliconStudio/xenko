@@ -18,13 +18,12 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Vertices of the navigation mesh, used for visualization
         /// </summary>
-        [DataMemberCustomSerializer]
-        public Vector3[] MeshVertices;
+        [DataMemberCustomSerializer] public Vector3[] MeshVertices;
+
         /// <summary>
         /// Binary data of the built navigation mesh tile
         /// </summary>
-        [DataMemberCustomSerializer]
-        public byte[] NavmeshData;
+        [DataMemberCustomSerializer] public byte[] Data;
 
         public override int GetHashCode()
         {
@@ -43,6 +42,7 @@ namespace SiliconStudio.Xenko.Engine
         {
             pointSerializer = MemberSerializer<Vector3>.Create(serializerSelector);
         }
+
         public override void Serialize(ref NavigationMeshTile tile, ArchiveMode mode, SerializationStream stream)
         {
             if (mode == ArchiveMode.Deserialize)
@@ -58,13 +58,13 @@ namespace SiliconStudio.Xenko.Engine
                 pointSerializer.Serialize(ref tile.MeshVertices[i], mode, stream);
             }
 
-            int dataLength = tile.NavmeshData?.Length ?? 0;
+            int dataLength = tile.Data?.Length ?? 0;
             stream.Serialize(ref dataLength);
             if (mode == ArchiveMode.Deserialize)
-                tile.NavmeshData = new byte[dataLength];
+                tile.Data = new byte[dataLength];
 
             if (dataLength > 0)
-                stream.Serialize(tile.NavmeshData, 0, tile.NavmeshData.Length);
+                stream.Serialize(tile.Data, 0, tile.Data.Length);
         }
     }
 }

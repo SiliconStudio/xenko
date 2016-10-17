@@ -53,12 +53,12 @@ extern "C"
 	{
 		return navmesh->RemoveTile(tileCoordinate);
 	}
-	DLL_EXPORT_API NavMeshPathfindResult* xnNavigationPathFindQuery(NavigationMesh* navmesh, NavMeshPathfindQuery query)
+	DLL_EXPORT_API void xnNavigationPathFindQuery(NavigationMesh* navmesh, NavMeshPathfindQuery query, NavMeshPathfindResult* result)
 	{
-		return navmesh->FindPath(query);
+		navmesh->FindPath(query, result);
 	}
-	DLL_EXPORT_API NavMeshRaycastResult* xnNavigationRaycastQuery(NavigationMesh* navmesh, NavMeshRaycastQuery query)
+	DLL_EXPORT_API void xnNavigationRaycastQuery(NavigationMesh* navmesh, NavMeshRaycastQuery query, NavMeshRaycastResult* result)
 	{
-		return navmesh->Raycast(query);
+		navmesh->Raycast(query, result);
 	}
 }

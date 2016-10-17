@@ -226,13 +226,16 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                         foreach (var tileToBuild in tilesToBuild)
                         {
                             BoundingBox tileBoundingBox = NavigationMeshBuildUtils.ClampBoundingBoxToTile(buildSettings, boundingBox, tileToBuild);
+                            // Check if tile bounding box is contained withing the navigation mesh bounding box
                             if (boundingBox.Contains(ref tileBoundingBox) == ContainmentType.Disjoint)
                             {
-                                generatedNavigationMesh.RemoveLayerTile(layer, tileToBuild);
+                                // Remove this tile
+                                generatedNavigationMesh.Layers[layer].RemoveLayerTile(tileToBuild);
                                 continue;
                             }
-                            generatedNavigationMesh.BuildLayerTile(layer,
-                                meshVertices.ToArray(), meshIndices.ToArray(), tileBoundingBox, tileToBuild);
+
+                            // Build the tile for the current layer being processed
+                            generatedNavigationMesh.Layers[layer].BuildTile(meshVertices.ToArray(), meshIndices.ToArray(), tileBoundingBox, tileToBuild);
                         }
                     }
                 }

@@ -2,6 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Design;
@@ -10,42 +12,6 @@ using SiliconStudio.Xenko.Native;
 
 namespace SiliconStudio.Xenko.Engine
 {
-    /// <summary>
-    /// Result for a raycast query on a navigation mesh
-    /// </summary>
-    public struct NavigationRaycastResult
-    {
-        /// <summary>
-        /// true if the raycast hit something
-        /// </summary>
-        public bool Hit;
-        public Vector3 Position;
-        public Vector3 Normal;
-    }
-
-    /// <summary>
-    /// Provides advanced settings to be passed to navigation mesh queries
-    /// </summary>
-    public struct NavigationQuerySettings
-    {
-        public static readonly NavigationQuerySettings Default = new NavigationQuerySettings
-        {
-            FindNearestPolyExtent = new Vector3(2.0f, 4.0f, 2.0f),
-            MaxPathPoints = 1024
-        };
-
-        /// <summary>
-        /// Used as the extend for the find nearest poly bounding box used when scanning for a polygon corresponding to the given starting/ending position. 
-        /// Making this bigger will allow you to find paths that allow the entity to start further away or higher from the navigation mesh bounds for example
-        /// </summary>
-        public Vector3 FindNearestPolyExtent;
-
-        /// <summary>
-        /// The maximum number of path points used internally and also the maximum number of output points
-        /// </summary>
-        public int MaxPathPoints;
-    }
-
     /// <summary>
     /// This is used to interface with the navigation mesh. Supports FindPath and Raycast
     /// </summary>
@@ -67,51 +33,112 @@ namespace SiliconStudio.Xenko.Engine
         [DataMember(20)]
         public int NavigationMeshLayer { get; set; }
 
-        [DataMemberIgnore]
-        internal IntPtr NavigationMeshInternal;
+        [DataMemberIgnore] internal IntPtr NavigationMeshInternal;
 
         /// <summary>
         /// Finds a path from the entity's current location to <see cref="end"/>
         /// </summary>
-        /// <param name="end"></param>
-        /// <param name="querySettings">Advanced settings to be provided to the navigation mesh query</param>
+        /// <param name="end">The ending location of the pathfinding query</param>
+        /// <param name="path">The waypoints for the found path, if any (at least 2 if a path was found)</param>
         /// <returns>The found path points or null</returns>
-        public Vector3[] FindPath(Vector3 end, NavigationQuerySettings? querySettings = null)
+        public bool TryFindPath(Vector3 end, ICollection<Vector3> path)
         {
-            return FindPath(Entity.Transform.WorldMatrix.TranslationVector, end, querySettings);
+            return TryFindPath(Entity.Transform.WorldMatrix.TranslationVector, end, path, NavigationQuerySettings.Default);
+        }
+
+        /// <summary>
+        /// Finds a path from the entity's current location to <see cref="end"/>
+        /// </summary>
+        /// <param name="end">The ending location of the pathfinding query</param>
+        /// <param name="querySettings">Advanced settings to be provided to the navigation mesh query</param>
+        /// <param name="path">The waypoints for the found path, if any (at least 2 if a path was found)</param>
+        /// <returns>The found path points or null</returns>
+        public bool TryFindPath(Vector3 end, ICollection<Vector3> path, NavigationQuerySettings querySettings)
+        {
+            return TryFindPath(Entity.Transform.WorldMatrix.TranslationVector, end, path, querySettings);
         }
 
         /// <summary>
         /// Finds a path from point <see cref="start"/> to <see cref="end"/>
         /// </summary>
-        /// <param name="start"></param>
-        /// <param name="end"></param>
-        /// <param name="querySettings">Advanced settings to be provided to the navigation mesh query</param>
+        /// <param name="start">The starting location of the pathfinding query</param>
+        /// <param name="end">The ending location of the pathfinding query</param>
+        /// <param name="path">The waypoints for the found path, if any (at least 2 if a path was found)</param>
         /// <returns>The found path points or null</returns>
-        public unsafe Vector3[] FindPath(Vector3 start, Vector3 end, NavigationQuerySettings? querySettings = null)
+        public bool TryFindPath(Vector3 start, Vector3 end, ICollection<Vector3> path)
         {
-            if(!querySettings.HasValue)
-                querySettings = NavigationQuerySettings.Default;
+            return TryFindPath(start, end, path, NavigationQuerySettings.Default);
+        }
+
+        /// <summary>
+        /// Finds a path from point <see cref="start"/> to <see cref="end"/>
+        /// </summary>
+        /// <param name="start">The starting location of the pathfinding query</param>
+        /// <param name="end">The ending location of the pathfinding query</param>
+        /// <param name="querySettings">Advanced settings to be provided to the navigation mesh query</param>
+        /// <param name="path">The waypoints for the found path, if any (at least 2 if a path was found)</param>
+        /// <returns>The found path points or null</returns>
+        public unsafe bool TryFindPath(Vector3 start, Vector3 end, ICollection<Vector3> path, NavigationQuerySettings querySettings)
+        {
+            if (path == null)
+                throw new ArgumentNullException(nameof(path));
             if (NavigationMeshInternal == IntPtr.Zero)
-                return null;
+                throw new InvalidOperationException("Navigation mesh was not initialized");
 
             Navigation.PathFindQuery query;
             query.Source = start;
             query.Target = end;
-            query.MaxPathPoints = querySettings.Value.MaxPathPoints;
-            query.FindNearestPolyExtent = querySettings.Value.FindNearestPolyExtent;
-            Navigation.PathFindResult* queryResult = (Navigation.PathFindResult*)Navigation.DoPathFindQuery(NavigationMeshInternal, query);
-            if(!queryResult->PathFound)
-                return null;
-            
-            Vector3[] ret = new Vector3[queryResult->NumPathPoints];
-            // Unsafe copy
-            Vector3* points = (Vector3*)queryResult->PathPoints;
-            for(int i = 0; i < queryResult->NumPathPoints; i++)
+            query.MaxPathPoints = querySettings.MaxPathPoints;
+            query.FindNearestPolyExtent = querySettings.FindNearestPolyExtent;
+            Navigation.PathFindResult queryResult;
+            Vector3[] generatedPathPoints = new Vector3[querySettings.MaxPathPoints];
+            fixed (Vector3* generatedPathPointsPtr = generatedPathPoints)
             {
-                ret[i] = points[i];
+                queryResult.PathPoints = new IntPtr(generatedPathPointsPtr);
+                Navigation.DoPathFindQuery(NavigationMeshInternal, query, new IntPtr(&queryResult));
+                if (!queryResult.PathFound)
+                    return false;
             }
-            return ret;
+
+            // Read path from unsafe result
+            Vector3* points = (Vector3*)queryResult.PathPoints;
+            for (int i = 0; i < queryResult.NumPathPoints; i++)
+            {
+                path.Add(points[i]);
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Performs a raycast on the navigation mesh to perform line of sight or similar checks. Starts from the entity's current world position
+        /// </summary>
+        /// <param name="end">Ending point</param>
+        /// <returns>The found raycast hit if <see cref="NavigationRaycastResult.Hit"/> is true</returns>
+        public NavigationRaycastResult Raycast(Vector3 end)
+        {
+            return Raycast(Entity.Transform.WorldMatrix.TranslationVector, end, NavigationQuerySettings.Default);
+        }
+
+        /// <summary>
+        /// Performs a raycast on the navigation mesh to perform line of sight or similar checks.  Starts from the entity's current world position
+        /// </summary>
+        /// <param name="end">Ending point</param>
+        /// <param name="querySettings">Advanced settings to be provided to the navigation mesh query</param>
+        /// <returns>The found raycast hit if <see cref="NavigationRaycastResult.Hit"/> is true</returns>
+        public NavigationRaycastResult Raycast(Vector3 end, NavigationQuerySettings querySettings)
+        {
+            return Raycast(Entity.Transform.WorldMatrix.TranslationVector, end, querySettings);
+        }
+
+        /// <summary>
+        /// Performs a raycast on the navigation mesh to perform line of sight or similar checks.
+        /// </summary>
+        /// <param name="start">Starting point</param>
+        /// <param name="end">Ending point</param>
+        /// <returns>The found raycast hit if <see cref="NavigationRaycastResult.Hit"/> is true</returns>
+        public NavigationRaycastResult Raycast(Vector3 start, Vector3 end)
+        {
+            return Raycast(start, end, NavigationQuerySettings.Default);
         }
 
         /// <summary>
@@ -121,28 +148,26 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="end">Ending point</param>
         /// <param name="querySettings">Advanced settings to be provided to the navigation mesh query</param>
         /// <returns>The found raycast hit if <see cref="NavigationRaycastResult.Hit"/> is true</returns>
-        public unsafe NavigationRaycastResult Raycast(Vector3 start, Vector3 end, NavigationQuerySettings? querySettings = null)
+        public unsafe NavigationRaycastResult Raycast(Vector3 start, Vector3 end, NavigationQuerySettings querySettings)
         {
             NavigationRaycastResult result = new NavigationRaycastResult { Hit = false };
 
-            if (!querySettings.HasValue)
-                querySettings = NavigationQuerySettings.Default;
             if (NavigationMeshInternal == IntPtr.Zero)
                 return result;
-
 
             Navigation.RaycastQuery query;
             query.Source = start;
             query.Target = end;
-            query.MaxPathPoints = querySettings.Value.MaxPathPoints;
-            query.FindNearestPolyExtent = querySettings.Value.FindNearestPolyExtent;
-            Navigation.RaycastResult* queryResult = (Navigation.RaycastResult*)Navigation.DoRaycastQuery(NavigationMeshInternal, query);
-            if (!queryResult->Hit)
+            query.MaxPathPoints = querySettings.MaxPathPoints;
+            query.FindNearestPolyExtent = querySettings.FindNearestPolyExtent;
+            Navigation.RaycastResult queryResult;
+            Navigation.DoRaycastQuery(NavigationMeshInternal, query, new IntPtr(&queryResult));
+            if (!queryResult.Hit)
                 return result;
 
             result.Hit = true;
-            result.Position = queryResult->Position;
-            result.Normal = queryResult->Normal;
+            result.Position = queryResult.Position;
+            result.Normal = queryResult.Normal;
             return result;
         }
     }

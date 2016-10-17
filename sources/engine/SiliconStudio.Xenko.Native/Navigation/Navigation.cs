@@ -59,6 +59,9 @@ namespace SiliconStudio.Xenko.Native
         public struct PathFindResult
         {
             public bool PathFound;
+            /// <summary>
+            /// Should point to a preallocated array of <see cref="Vector3"/>'s matching the amount in <see cref="PathFindQuery.MaxPathPoints"/>
+            /// </summary>
             public IntPtr PathPoints;
             public int NumPathPoints;
         };
@@ -147,19 +150,21 @@ namespace SiliconStudio.Xenko.Native
         /// </summary>
         /// <param name="query"></param>
         /// <param name="pathFindQuery">The query to perform</param>
+        /// <param name="resultStructure">A structure of type PathFindResult, should have the PathPoints field initialized to point to an array of Vector3's with the appropriate size</param>
         /// <returns>A PathFindQueryResult</returns>
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnNavigationPathFindQuery", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr DoPathFindQuery(IntPtr query, PathFindQuery pathFindQuery);
+        public static extern void DoPathFindQuery(IntPtr query, PathFindQuery pathFindQuery, IntPtr resultStructure);
 
         /// <summary>
         /// Perform a raycast on the navigation mesh
         /// </summary>
         /// <param name="query"></param>
         /// <param name="pathFindQuery">The query to perform</param>
+        /// <param name="resultStructure">A structure of type PathFindResult</param>
         /// <returns>A RaycastQueryResult</returns>
         [SuppressUnmanagedCodeSecurity]
         [DllImport(NativeInvoke.Library, EntryPoint = "xnNavigationRaycastQuery", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr DoRaycastQuery(IntPtr query, RaycastQuery pathFindQuery);
+        public static extern void DoRaycastQuery(IntPtr query, RaycastQuery pathFindQuery, IntPtr resultStructure);
     }
 }

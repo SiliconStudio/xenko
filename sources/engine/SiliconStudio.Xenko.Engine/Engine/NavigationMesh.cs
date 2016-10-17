@@ -10,13 +10,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Serialization.Serializers;
-using SiliconStudio.Xenko.Extensions;
-using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Graphics.GeometricPrimitives;
-using SiliconStudio.Xenko.Native;
-using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Materials;
-using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
+
 
 namespace SiliconStudio.Xenko.Engine
 {
@@ -32,7 +26,12 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Multiple layers corresponding to multiple agent settings
         /// </summary>
-        [DataMemberCustomSerializer] public NavigationMeshLayer[] Layers;
+        public IReadOnlyList<NavigationMeshLayer> Layers => LayersInternal;
+
+        /// <summary>
+        /// Number of layers
+        /// </summary>
+        public int NumLayers => LayersInternal.Count;
 
         /// <summary>
         /// Bounding box used when building
@@ -40,29 +39,14 @@ namespace SiliconStudio.Xenko.Engine
         public BoundingBox BoundingBox;
 
         // Initialized build settings, only used at build time
-        [DataMemberIgnore]
-        internal NavigationMeshBuildSettings BuildSettings;
-        
+        [DataMemberIgnore] internal NavigationMeshBuildSettings BuildSettings;
+
+        // Backing value of Layers and NumLayers
+        [DataMemberCustomSerializer] internal readonly List<NavigationMeshLayer> LayersInternal = new List<NavigationMeshLayer>();
+
         // Used internally to detect tile changes
         internal int TileHash;
 
-        /// <summary>
-        /// Tries to find a built tile inside the navigation mesh
-        /// </summary>
-        /// <param name="layerIndex">The layer on which you want to search</param>
-        /// <param name="tileCoordinate"></param>
-        /// <returns>The found tile or null</returns>
-        public NavigationMeshTile FindTile(int layerIndex, Point tileCoordinate)
-        {
-            if (layerIndex < 0 || layerIndex >= Layers.Length)
-                return null;
-            NavigationMeshLayer layer = Layers[layerIndex];
-            NavigationMeshTile foundTile;
-            if (layer.Tiles.TryGetValue(tileCoordinate, out foundTile))
-                return foundTile;
-            return null;
-        }
-        
         /// <summary>
         /// Used to initialize the navigation mesh so it will allow building tiles
         /// This will store the build settings and create the amount of layers corresponding to the number of NavigationAgentSettings
@@ -71,47 +55,35 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="agentSettings">Agent setting to use</param>
         public void Initialize(NavigationMeshBuildSettings buildSettings, NavigationAgentSettings[] agentSettings)
         {
-            this.BuildSettings = buildSettings;
-            if (agentSettings.Length > 0)
+            BuildSettings = buildSettings;
+            LayersInternal.Clear();
+            for (int i = 0; i < agentSettings.Length; i++)
             {
-                Layers = new NavigationMeshLayer[agentSettings.Length];
-                for (int i = 0; i < agentSettings.Length; i++)
-                {
-                    Layers[i] = new NavigationMeshLayer();
-                    Layers[i].AgentSettings = agentSettings[i];
-                }
+                var newLayer = new NavigationMeshLayer();
+                newLayer.AgentSettings = agentSettings[i];
+                newLayer.BuildSettings = buildSettings;
+                LayersInternal.Add(newLayer);
             }
-            else
-                Layers = null;
         }
 
         /// <summary>
-        /// Build a specific navigation mesh tile for all layers
+        /// Build a single tile for all layers
+        /// Initialize should have been called before calling this
         /// </summary>
-        /// <param name="tile">The tile to build</param>
-        /// <param name="boundingBox">the bound</param>
-        /// <param name="buildSettings"></param>
+        /// <param name="inputVertices">Input vertex data for the input mesh</param>
+        /// <param name="inputIndices">Input index data for the input mesh</param>
+        /// <param name="boundingBox">Bounding box of the tile</param>
+        /// <param name="tileCoordinate">Tile coordinate to of the tile to build</param>
         /// <returns>A list of built tiles</returns>
-        public List<NavigationMeshTile> BuildTile(Vector3[] inputVertices, int[] inputIndices,
+        public List<NavigationMeshTile> BuildAllLayers(Vector3[] inputVertices, int[] inputIndices,
             BoundingBox boundingBox, Point tileCoordinate)
         {
             List<NavigationMeshTile> builtTiles = new List<NavigationMeshTile>();
 
-            for (int i = 0; i < Layers.Length; i++)
+            for (int i = 0; i < LayersInternal.Count; i++)
             {
                 NavigationMeshLayer layer = Layers[i];
-                NavigationMeshTile tile = BuildTileInternal(layer, inputVertices, inputIndices, boundingBox, tileCoordinate);
-                
-                // Remove old tile
-                if (layer.Tiles.ContainsKey(tileCoordinate))
-                    layer.Tiles.Remove(tileCoordinate);
-
-                if (tile != null && tile.NavmeshData != null)
-                {
-                    // Add
-                    layer.Tiles.Add(tileCoordinate, tile);
-                    builtTiles.Add(tile);
-                }
+                layer.BuildTile(inputVertices, inputIndices, boundingBox, tileCoordinate);
             }
 
             // Update tile hash
@@ -121,47 +93,7 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         /// <summary>
-        /// Build a single tile for a single layer
-        /// </summary>
-        /// <returns></returns>
-        public NavigationMeshTile BuildLayerTile(int layerIndex,
-            Vector3[] inputVertices, int[] inputIndices,
-            BoundingBox boundingBox, Point tileCoordinate)
-        {
-            NavigationMeshLayer layer = Layers[layerIndex];
-
-            // Remove old tile
-            if (layer.Tiles.ContainsKey(tileCoordinate))
-                layer.Tiles.Remove(tileCoordinate);
-
-            NavigationMeshTile tile = BuildTileInternal(layer, inputVertices, inputIndices, boundingBox, tileCoordinate);
-            if (tile != null && tile.NavmeshData != null)
-            {
-                // Add
-                layer.Tiles.Add(tileCoordinate, tile);
-            }
-            
-            // Update tile hash
-            UpdateTileHash();
-
-            return tile;
-        }
-        
-        /// <summary>
-        /// Removes a tile from a layer with given coordinate
-        /// </summary>
-        /// <param name="layerIndex"></param>
-        /// <param name="tileCoordinate"></param>
-        public void RemoveLayerTile(int layerIndex, Point tileCoordinate)
-        {
-            if (layerIndex < 0 || layerIndex >= Layers.Length)
-                return;
-            NavigationMeshLayer layer = Layers[layerIndex];
-            layer.Tiles.Remove(tileCoordinate);
-        }
-
-        /// <summary>
-        /// Updates <see cref="TileHash"/> to be "unique" to this specific combination of navigation mesh
+        /// Updates <see cref="TileHash"/> to be "unique" to this specific combination of navigation mesh tiles and layers
         /// </summary>
         internal void UpdateTileHash()
         {
@@ -173,91 +105,13 @@ namespace SiliconStudio.Xenko.Engine
             {
                 foreach (var tile in layer.Tiles)
                 {
-                    TileHash = (TileHash * 397) ^ tile.GetHashCode();
-                    TileHash = (TileHash * 397) ^ tile.Value.GetHashCode();
+                    TileHash = (TileHash*397) ^ tile.GetHashCode();
+                    TileHash = (TileHash*397) ^ tile.Value.GetHashCode();
                 }
             }
-        }
-        
-        /// <summary>
-        /// Builds a single tile for a given layer without adding it
-        /// </summary>
-        /// <param name="layer"></param>
-        /// <param name="inputVertices"></param>
-        /// <param name="inputIndices"></param>
-        /// <param name="boundingBox"></param>
-        /// <param name="tileCoordinate"></param>
-        /// <returns></returns>
-        private unsafe NavigationMeshTile BuildTileInternal(NavigationMeshLayer layer,
-            Vector3[] inputVertices, int[] inputIndices,
-            BoundingBox boundingBox, Point tileCoordinate)
-        {
-            // Turn settings into native structure format
-            NavigationAgentSettings agentSettings = layer.AgentSettings;
-            NavigationMeshTile tile = new NavigationMeshTile(); 
-
-            // Initialize navigation builder
-            IntPtr nav = Navigation.CreateBuilder();
-
-            // Turn build settings into native structure format
-            Navigation.BuildSettings internalBuildSettings = new Navigation.BuildSettings
-            {
-                // Tile settings
-                BoundingBox = boundingBox,
-                TilePosition = tileCoordinate,
-                TileSize =  BuildSettings.TileSize,
-
-                // General build settings
-                CellHeight =  BuildSettings.CellHeight,
-                CellSize = BuildSettings.CellSize,
-                RegionMinArea = BuildSettings.RegionMinArea,
-                RegionMergeArea = BuildSettings.RegionMergeArea,
-                EdgeMaxLen = BuildSettings.EdgeMaxLen,
-                EdgeMaxError = BuildSettings.EdgeMaxError,
-                DetailSampleDist = BuildSettings.DetailSampleDist,
-                DetailSampleMaxError = BuildSettings.DetailSampleMaxError,
-                
-                // Agent settings
-                AgentHeight = agentSettings.Height,
-                AgentRadius = agentSettings.Radius,
-                AgentMaxClimb = agentSettings.MaxClimb,
-                AgentMaxSlope = agentSettings.MaxSlope.Degrees
-            };
-            Navigation.SetSettings(nav, new IntPtr(&internalBuildSettings));
-            
-            // Generate mesh
-            Navigation.GeneratedData data;
-            IntPtr ret = Navigation.Build(nav, inputVertices.ToArray(), inputVertices.Length, inputIndices.ToArray(), inputIndices.Length);
-            Navigation.GeneratedData* dataPtr = (Navigation.GeneratedData*)ret;
-            data = *dataPtr;
-
-            // Copy output data on success
-            if (data.Success)
-            {
-                List<Vector3> outputVerts = new List<Vector3>();
-                if (data.NumNavmeshVertices > 0)
-                {
-                    Vector3* navmeshVerts = (Vector3*)data.NavmeshVertices;
-                    for (int j = 0; j < data.NumNavmeshVertices; j++)
-                    {
-                        outputVerts.Add(navmeshVerts[j]);
-                    }
-
-                    tile.MeshVertices = outputVerts.ToArray();
-                }
-
-                // Copy the generated navigationMesh data
-                tile.NavmeshData = new byte[data.NavmeshDataLength];
-                Marshal.Copy(data.NavmeshData, tile.NavmeshData, 0, data.NavmeshDataLength);
-            }
-
-            // Cleanup builder
-            Navigation.DestroyBuilder(nav);
-
-            return tile;
         }
     }
-    
+
     internal class NavigationMeshSerializer : DataSerializer<NavigationMesh>, IDataSerializerInitializer
     {
         private DictionarySerializer<Point, NavigationMeshTile> tilesSerializer;
@@ -269,6 +123,7 @@ namespace SiliconStudio.Xenko.Engine
             tilesSerializer = new DictionarySerializer<Point, NavigationMeshTile>();
             tilesSerializer.Initialize(serializerSelector);
         }
+
         public override void Serialize(ref NavigationMesh obj, ArchiveMode mode, SerializationStream stream)
         {
             // Serialize tile size because it is needed
@@ -277,23 +132,27 @@ namespace SiliconStudio.Xenko.Engine
 
             boundingBoxSerializer.Serialize(ref obj.BoundingBox, mode, stream);
 
-            int numLayers = obj.Layers?.Length ?? 0;
+            int numLayers = obj.Layers.Count;
             stream.Serialize(ref numLayers);
             if (mode == ArchiveMode.Deserialize)
-                obj.Layers = new NavigationMeshLayer[numLayers];
+                obj.LayersInternal.Clear();
 
             for (int l = 0; l < numLayers; l++)
             {
                 NavigationMeshLayer layer;
                 if (mode == ArchiveMode.Deserialize)
-                    layer = obj.Layers[l] = new NavigationMeshLayer();
+                {
+                    // Create a new layer
+                    layer = new NavigationMeshLayer();
+                    obj.LayersInternal.Add(layer);
+                }
                 else
-                    layer = obj.Layers[l];
-                
-                tilesSerializer.Serialize(ref layer.Tiles, mode, stream);
+                    layer = obj.LayersInternal[l];
+
+                tilesSerializer.Serialize(ref layer.TilesInternal, mode, stream);
             }
 
-            if(mode == ArchiveMode.Deserialize)
+            if (mode == ArchiveMode.Deserialize)
                 obj.UpdateTileHash();
         }
     }

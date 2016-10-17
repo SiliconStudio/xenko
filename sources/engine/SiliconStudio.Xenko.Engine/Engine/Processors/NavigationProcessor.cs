@@ -34,13 +34,13 @@ namespace SiliconStudio.Xenko.Engine.Processors
             public NavigationMeshInternal(NavigationMesh navigationMesh)
             {
                 cellTileSize = navigationMesh.BuildSettings.TileSize*navigationMesh.BuildSettings.CellSize;
-                Layers = new IntPtr[navigationMesh.Layers.Length];
-                for (int i = 0; i < navigationMesh.Layers.Length; i++)
+                Layers = new IntPtr[navigationMesh.NumLayers];
+                for (int i = 0; i < navigationMesh.NumLayers; i++)
                 {
                     Layers[i] = LoadLayer(navigationMesh.Layers[i]);
                 }
             }
-            
+
             public void Dispose()
             {
                 if (Layers == null)
@@ -61,6 +61,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             {
                 references.Add(reference);
             }
+
             /// <summary>
             ///  Removes a reference to this object
             /// </summary>
@@ -81,11 +82,11 @@ namespace SiliconStudio.Xenko.Engine.Processors
                 // Add all the tiles to the navigation mesh
                 foreach (var tile in navigationMeshLayer.Tiles)
                 {
-                    if (tile.Value.NavmeshData == null)
+                    if (tile.Value.Data == null)
                         continue; // Just skip empty tiles
-                    fixed (byte* inputData = tile.Value.NavmeshData)
+                    fixed (byte* inputData = tile.Value.Data)
                     {
-                        Navigation.AddTile(layer, tile.Key, new IntPtr(inputData), tile.Value.NavmeshData.Length);
+                        Navigation.AddTile(layer, tile.Key, new IntPtr(inputData), tile.Value.Data.Length);
                     }
                 }
 
@@ -97,7 +98,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
         /// Maps navigation meshed to their natively loaded counterparts
         /// </summary>
         private readonly Dictionary<NavigationMesh, NavigationMeshInternal> loadedNavigationMeshes = new Dictionary<NavigationMesh, NavigationMeshInternal>();
-        
+
         public override void Update(GameTime time)
         {
             foreach (var p in ComponentDatas)
@@ -111,7 +112,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
                 // Should update selected layer?
                 if (p.Key.NavigationMeshLayer != p.Value.SelectedLayer)
                 {
-                    SelectLayer(p.Key, p. Value);
+                    SelectLayer(p.Key, p.Value);
                 }
             }
         }
@@ -132,10 +133,12 @@ namespace SiliconStudio.Xenko.Engine.Processors
             data.Component = component;
             return data;
         }
+
         protected override void OnEntityComponentAdding(Entity entity, NavigationComponent component, AssociatedData data)
         {
             UpdateNavigationMesh(component, data);
         }
+
         protected override void OnEntityComponentRemoved(Entity entity, NavigationComponent component, AssociatedData data)
         {
             RemoveReference(component, data);
@@ -162,7 +165,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
         {
             // Remove old reference
             RemoveReference(component, data);
-            
+
             if (component.NavigationMesh != null)
             {
                 NavigationMeshInternal navigationMeshInternal;
@@ -187,8 +190,9 @@ namespace SiliconStudio.Xenko.Engine.Processors
                 return;
 
             // Store a pointer to the native navmesh object in the navmesh component
-            component.NavigationMeshInternal = component.NavigationMeshLayer < data.NavigationMeshInternal.Layers.Length ?
-                data.NavigationMeshInternal.Layers[component.NavigationMeshLayer] : IntPtr.Zero;
+            component.NavigationMeshInternal = component.NavigationMeshLayer < data.NavigationMeshInternal.Layers.Length
+                ? data.NavigationMeshInternal.Layers[component.NavigationMeshLayer]
+                : IntPtr.Zero;
             data.SelectedLayer = component.NavigationMeshLayer;
         }
     }
