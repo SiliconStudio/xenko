@@ -92,8 +92,8 @@ Objects:
             var yaml = @"!SiliconStudio.Core.Design.Tests.TestCollectionIds+Container,SiliconStudio.Core.Design.Tests
 Name: Root
 Strings:
-    00000001-0001-0000-0100-000001000000: aaa
-    00000002-0002-0000-0200-000002000000: bbb
+    00000002-0002-0000-0200-000002000000: aaa
+    00000001-0001-0000-0100-000001000000: bbb
 Objects:
     00000003-0003-0000-0300-000003000000:
         Name: obj1
@@ -139,10 +139,12 @@ Strings:
     - aaa
     - bbb
 Objects:
-    -   Name: obj1
+    -   ~Id: 00000004-0004-0000-0400-000004000000
+        Name: obj1
         Strings: {}
         Objects: {}
-    -   Name: obj2
+    -   ~Id: 00000003-0003-0000-0300-000003000000
+        Name: obj2
         Strings: {}
         Objects: {}
 ";
@@ -165,12 +167,14 @@ Objects:
             Assert.AreEqual("obj2", obj.Objects[1].Name);
             var stringIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Strings);
             var objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects);
-            //Assert.AreEqual(2, stringIds.KeyToIdMap.Count);
-            //Assert.IsTrue(stringIds.KeyToIdMap.ContainsKey(0));
-            //Assert.IsTrue(stringIds.KeyToIdMap.ContainsKey(1));
-            //Assert.AreEqual(2, objectIds.KeyToIdMap.Count);
-            //Assert.IsTrue(objectIds.KeyToIdMap.ContainsKey(0));
-            //Assert.IsTrue(objectIds.KeyToIdMap.ContainsKey(1));
+            Assert.AreEqual(2, stringIds.KeyToIdMap.Count);
+            Assert.IsTrue(stringIds.KeyToIdMap.ContainsKey(0));
+            Assert.IsTrue(stringIds.KeyToIdMap.ContainsKey(1));
+            Assert.AreEqual(2, objectIds.KeyToIdMap.Count);
+            Assert.IsTrue(objectIds.KeyToIdMap.ContainsKey(0));
+            Assert.IsTrue(objectIds.KeyToIdMap.ContainsKey(1));
+            Assert.AreEqual(GuidGenerator.Get(4), objectIds.KeyToIdMap[(object)0]);
+            Assert.AreEqual(GuidGenerator.Get(3), objectIds.KeyToIdMap[(object)1]);
         }
     }
 }

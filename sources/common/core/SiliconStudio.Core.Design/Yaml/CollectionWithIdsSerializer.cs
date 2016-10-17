@@ -1,7 +1,11 @@
+using System;
+using System.Collections;
 using System.Reflection;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
+using ITypeDescriptor = SiliconStudio.Core.Yaml.Serialization.ITypeDescriptor;
 
 namespace SiliconStudio.Core.Yaml
 {
@@ -52,6 +56,7 @@ namespace SiliconStudio.Core.Yaml
             {
                 objectContext.Instance = CollectionItemIdHelper.CreatEmptyContainer(objectContext.Descriptor);
             }
+
             //objectContext.Instance = CollectionItemIdHelper.ToTypedDictionary(ids, info.Descriptor.ElementType);
         }
 
@@ -61,6 +66,18 @@ namespace SiliconStudio.Core.Yaml
             if (!objectContext.Properties.TryGetValue("InstanceInfo", out infoObject))
             {
                 base.TransformObjectAfterRead(ref objectContext);
+                var enumerable = objectContext.Instance as IEnumerable;
+                if (enumerable != null)
+                {
+                    var ids = CollectionItemIdHelper.GetCollectionItemIds(objectContext.Instance);
+                    int i = 0;
+                    foreach (var item in enumerable)
+                    {
+                        var id = IdentifiableHelper.GetId(item);
+                        ids.KeyToIdMap[(object)i] = id != Guid.Empty ? id : Guid.NewGuid();
+                        ++i;
+                    }
+                }
                 return;
             }
             var info = (InstanceInfo)infoObject;
