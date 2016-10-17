@@ -50,5 +50,10 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         public string Type { get; set; }
 
         Variable IAssetPartDesign<Variable>.Part => this;
+
+        public override string ToString()
+        {
+            return $"{Type} {Name}";
+        }
     }
 }

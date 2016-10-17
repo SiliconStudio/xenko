@@ -241,6 +241,7 @@
     <Compile Include="Entities\SceneAsset.Upgraders.cs" />
     <Compile Include="Entities\SceneAssetFactories.cs" />
     <Compile Include="Scripts\CustomExpression.cs" />
+    <Compile Include="Scripts\BlockDropTargetAttribute.cs" />
     <Compile Include="Scripts\ForeachBlock.cs" />
     <Compile Include="Scripts\RegenerateSlotsAttribute.cs" />
     <Compile Include="Scripts\RegenerateTitleAttribute.cs" />

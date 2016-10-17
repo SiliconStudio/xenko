@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 {
     public class VariableSet : ExecutionBlock
     {
-        [RegenerateTitle, RegenerateSlots]
+        [RegenerateTitle, RegenerateSlots, BlockDropTarget]
         public Variable Variable { get; set; }
 
         public override string Title => Variable != null ? $"Set {Variable.Name}" : "Set";

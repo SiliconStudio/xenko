@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 {
     public class VariableGet : ExpressionBlock
     {
-        [RegenerateTitle]
+        [RegenerateTitle, BlockDropTarget]
         public Variable Variable { get; set; }
 
         public override string Title => Variable != null ? $"Get {Variable.Name}" : "Get";
