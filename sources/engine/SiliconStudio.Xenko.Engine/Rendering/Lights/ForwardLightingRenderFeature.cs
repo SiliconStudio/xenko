@@ -267,7 +267,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             var directLightShaders = GetReadonlyShaderSources(ShaderPermutation.DirectLightShaders);
             var environmentLightShaders = GetReadonlyShaderSources(ShaderPermutation.EnvironmentLightShaders);
 
-            //foreach (var renderObject in RootRenderFeature.RenderObjects)
             Dispatcher.ForEach(RootRenderFeature.RenderObjects, renderObject =>
             {
                 var renderMesh = (RenderMesh)renderObject;
