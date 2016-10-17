@@ -39,26 +39,54 @@ namespace SiliconStudio.Core.Design.Tests
     [TestFixture]
     public class TestCollectionIds
     {
-        public class Container
+        public class ContainerCollection
         {
-            public Container() { }
-            public Container(string name)
+            public ContainerCollection() { }
+            public ContainerCollection(string name)
             {
                 Name = name;
             }
             public string Name { get; set; }
             public List<string> Strings { get; set; } = new List<string>();
-            public List<Container> Objects { get; set; } = new List<Container>();
+            public List<ContainerCollection> Objects { get; set; } = new List<ContainerCollection>();
         }
+
+        public class ContainerDictionary
+        {
+            public ContainerDictionary() { }
+            public ContainerDictionary(string name)
+            {
+                Name = name;
+            }
+            public string Name { get; set; }
+            public Dictionary<string, string> Strings { get; set; } = new Dictionary<string, string>();
+            public Dictionary<string, ContainerCollection> Objects { get; set; } = new Dictionary<string, ContainerCollection>();
+        }
+
+        private const string YamlCollection = @"!SiliconStudio.Core.Design.Tests.TestCollectionIds+ContainerCollection,SiliconStudio.Core.Design.Tests
+Name: Root
+Strings:
+    00000002-0002-0000-0200-000002000000: aaa
+    00000001-0001-0000-0100-000001000000: bbb
+Objects:
+    00000003-0003-0000-0300-000003000000:
+        Name: obj1
+        Strings: {}
+        Objects: {}
+    00000004-0004-0000-0400-000004000000:
+        Name: obj2
+        Strings: {}
+        Objects: {}
+";
 
         [Test]
         public void TestCollectionSerialization()
         {
             ShadowObject.Enable = true;
-            var obj = new Container("Root")
+            var obj = new ContainerCollection("Root")
             {
                 Strings = { "aaa", "bbb" },
-                Objects = { new Container("obj1"), new Container("obj2") }
+                Objects = { new ContainerCollection("obj1"), new ContainerCollection("obj2") }
             };
 
             var stringIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Strings);
@@ -68,52 +96,22 @@ namespace SiliconStudio.Core.Design.Tests
             objectIds.KeyToIdMap[(object)0] = GuidGenerator.Get(3);
             objectIds.KeyToIdMap[(object)1] = GuidGenerator.Get(4);
             var yaml = YamlSerializer.Serialize(obj);
-            var expected = @"!SiliconStudio.Core.Design.Tests.TestCollectionIds+Container,SiliconStudio.Core.Design.Tests
-Name: Root
-Strings:
-    00000002-0002-0000-0200-000002000000: aaa
-    00000001-0001-0000-0100-000001000000: bbb
-Objects:
-    00000003-0003-0000-0300-000003000000:
-        Name: obj1
-        Strings: {}
-        Objects: {}
-    00000004-0004-0000-0400-000004000000:
-        Name: obj2
-        Strings: {}
-        Objects: {}
-";
-            Assert.AreEqual(expected, yaml);
+            Assert.AreEqual(YamlCollection, yaml);
         }
+
         [Test]
         public void TestCollectionDeserialization()
         {
             ShadowObject.Enable = true;
-            var yaml = @"!SiliconStudio.Core.Design.Tests.TestCollectionIds+Container,SiliconStudio.Core.Design.Tests
-Name: Root
-Strings:
-    00000002-0002-0000-0200-000002000000: aaa
-    00000001-0001-0000-0100-000001000000: bbb
-Objects:
-    00000003-0003-0000-0300-000003000000:
-        Name: obj1
-        Strings: {}
-        Objects: {}
-    00000004-0004-0000-0400-000004000000:
-        Name: obj2
-        Strings: {}
-        Objects: {}
-";
-
             var stream = new MemoryStream();
             var writer = new StreamWriter(stream);
-            writer.Write(yaml);
+            writer.Write(YamlCollection);
             writer.Flush();
             stream.Position = 0;
             var instance = YamlSerializer.Deserialize(stream);
             Assert.NotNull(instance);
-            Assert.AreEqual(typeof(Container), instance.GetType());
-            var obj = (Container)instance;
+            Assert.AreEqual(typeof(ContainerCollection), instance.GetType());
+            var obj = (ContainerCollection)instance;
             Assert.AreEqual("Root", obj.Name);
             Assert.AreEqual(2, obj.Strings.Count);
             Assert.AreEqual("aaa", obj.Strings[0]);
@@ -133,7 +131,7 @@ Objects:
         public void TestCollectionDeserializationOldWay()
         {
             ShadowObject.Enable = true;
-            var yaml = @"!SiliconStudio.Core.Design.Tests.TestCollectionIds+Container,SiliconStudio.Core.Design.Tests
+            var yaml = @"!SiliconStudio.Core.Design.Tests.TestCollectionIds+ContainerCollection,SiliconStudio.Core.Design.Tests
 Name: Root
 Strings:
     - aaa
@@ -156,8 +154,8 @@ Objects:
             stream.Position = 0;
             var instance = YamlSerializer.Deserialize(stream);
             Assert.NotNull(instance);
-            Assert.AreEqual(typeof(Container), instance.GetType());
-            var obj = (Container)instance;
+            Assert.AreEqual(typeof(ContainerCollection), instance.GetType());
+            var obj = (ContainerCollection)instance;
             Assert.AreEqual("Root", obj.Name);
             Assert.AreEqual(2, obj.Strings.Count);
             Assert.AreEqual("aaa", obj.Strings[0]);
@@ -176,5 +174,26 @@ Objects:
             Assert.AreEqual(GuidGenerator.Get(4), objectIds.KeyToIdMap[(object)0]);
             Assert.AreEqual(GuidGenerator.Get(3), objectIds.KeyToIdMap[(object)1]);
         }
+
+        [Test]
+        public void TestDictionarySerialization()
+        {
+            ShadowObject.Enable = true;
+            var obj = new ContainerDictionary("Root")
+            {
+                Strings = { { "key2", "aaa" }, { "key1", "bbb" } },
+                Objects = { { "key3", new ContainerCollection("obj1") }, { "key4", new ContainerCollection("obj2") } },
+            };
+
+            var stringIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Strings);
+            stringIds.KeyToIdMap[(object)0] = GuidGenerator.Get(2);
+            stringIds.KeyToIdMap[(object)1] = GuidGenerator.Get(1);
+            var objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects);
+            objectIds.KeyToIdMap[(object)0] = GuidGenerator.Get(3);
+            objectIds.KeyToIdMap[(object)1] = GuidGenerator.Get(4);
+            var yaml = YamlSerializer.Serialize(obj);
+            Assert.AreEqual(YamlCollection, yaml);
+        }
+
     }
 }

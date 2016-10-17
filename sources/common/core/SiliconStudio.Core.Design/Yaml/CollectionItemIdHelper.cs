@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
 using DictionaryDescriptor = SiliconStudio.Core.Yaml.Serialization.Descriptors.DictionaryDescriptor;
@@ -41,7 +42,7 @@ namespace SiliconStudio.Core.Yaml
     }
 
     [DataContract]
-    public class DictionaryWithItemIds<TKey, TValue> : OrderedDictionary<KeyWithId, TValue>
+    public class DictionaryWithItemIds<TKey, TValue> : OrderedDictionary<KeyWithId<TKey>, TValue>
     {
 
     }
@@ -53,15 +54,41 @@ namespace SiliconStudio.Core.Yaml
         public List<Guid> DeletedItems { get; } = new List<Guid>();
     }
 
-    public struct KeyWithId
+    public interface IKeyWithId
     {
-        public KeyWithId(Guid id, object key)
+        Guid Id { get; }
+        object Key { get; }
+    }
+
+    public struct KeyWithId<TKey> : IKeyWithId
+    {
+        public KeyWithId(Guid id, TKey key)
         {
             Id = id;
             Key = key;
         }
         public readonly Guid Id;
-        public object Key;
+        public TKey Key;
+        Guid IKeyWithId.Id => Id;
+        object IKeyWithId.Key => Key;
+    }
+
+    public class KeyWithIdSerializer : ScalarSerializerBase, IYamlSerializableFactory
+    {
+        public override object ConvertFrom(ref ObjectContext context, Scalar fromScalar)
+        {
+            return null;
+        }
+
+        public override string ConvertTo(ref ObjectContext objectContext)
+        {
+            return "";
+        }
+
+        public IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
+        {
+            return typeDescriptor.Type.IsGenericType && typeDescriptor.Type.GetGenericTypeDefinition() == typeof(KeyWithId<>) ? this : null;
+        }
     }
 
     public static class CollectionItemIdHelper
@@ -136,17 +163,16 @@ namespace SiliconStudio.Core.Yaml
                     throw new InvalidOperationException("The type of dictionary does not have a parameterless constructor.");
                 var instance = (IDictionary)Activator.CreateInstance(type);
                 var identifier = GetCollectionItemIds(collection);
-                var i = 0;
+                var keyWithIdType = typeof(KeyWithId<>).MakeGenericType(dictionaryDescriptor.KeyType);
                 foreach (var item in dictionaryDescriptor.GetEnumerator(collection))
                 {
                     Guid id;
-                    if (!identifier.KeyToIdMap.TryGetValue(i, out id))
+                    if (!identifier.KeyToIdMap.TryGetValue(item.Key, out id))
                     {
                         id = Guid.NewGuid();
                     }
-                    var keyWithId = new KeyWithId(id, item.Key);
+                    var keyWithId = Activator.CreateInstance(keyWithIdType, id, item.Key);
                     instance.Add(keyWithId, item.Value);
-                    ++i;
                 }
 
                 return instance;
@@ -205,7 +231,7 @@ namespace SiliconStudio.Core.Yaml
                 var enumerator = ((IDictionary)container).GetEnumerator();
                 while (enumerator.MoveNext())
                 {
-                    var keyWithId = (KeyWithId)enumerator.Key;
+                    var keyWithId = (IKeyWithId)enumerator.Key;
                     dictionaryDescriptor.AddToDictionary(targetCollection, keyWithId.Key, enumerator.Value);
                     identifier.KeyToIdMap.Add(keyWithId.Key, keyWithId.Id);
                 }
