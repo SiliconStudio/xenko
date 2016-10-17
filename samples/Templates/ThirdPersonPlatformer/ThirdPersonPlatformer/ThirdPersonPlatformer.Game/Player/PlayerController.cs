@@ -59,16 +59,6 @@ namespace ThirdPersonPlatformer.Player
         }
 
         /// <summary>
-        /// Called when the script is about to be deleted
-        /// </summary>
-        public override void Cancel()
-        {
-            // TODO: Release any resources
-
-            base.Cancel();
-        }
-
-        /// <summary>
         /// Called on every frame update
         /// </summary>
         public override void Update()
@@ -134,9 +124,6 @@ namespace ThirdPersonPlatformer.Player
 
         private void Move(float speed)
         {
-            // Use the delta time from physics
-            var dt = this.GetSimulation().FixedTimeStep;
-
             // Character speed
             Vector3 newMoveDirection;
             moveDirectionEvent.TryReceive(out newMoveDirection);
@@ -144,7 +131,7 @@ namespace ThirdPersonPlatformer.Player
             // Allow very simple inertia to the character to make animation transitions more fluid
             moveDirection = moveDirection*0.85f + newMoveDirection *0.15f;
 
-            character.Move(moveDirection * speed * dt);
+            character.SetVelocity(moveDirection * speed);
 
             // Broadcast speed as per cent of the max speed
             RunSpeedEventKey.Broadcast(moveDirection.Length());

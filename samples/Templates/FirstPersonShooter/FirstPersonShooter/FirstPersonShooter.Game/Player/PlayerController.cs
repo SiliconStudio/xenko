@@ -36,19 +36,16 @@ namespace FirstPersonShooter.Player
         /// </summary>
         public override void Update()
         {
-            Move(MaxRunSpeed);
+            Move();
         }
 
-        private void Move(float speed)
+        private void Move()
         {
-            // Use the delta time from physics
-            var dt = this.GetSimulation().FixedTimeStep;
-
             // Character speed
-            Vector3 moveDirection;
+            Vector3 moveDirection = Vector3.Zero;
             moveDirectionEvent.TryReceive(out moveDirection);
 
-            character.Move(moveDirection * speed * dt);
+            character.SetVelocity(moveDirection * MaxRunSpeed);
 
             // Broadcast normalized speed
             RunSpeedEventKey.Broadcast(moveDirection.Length());

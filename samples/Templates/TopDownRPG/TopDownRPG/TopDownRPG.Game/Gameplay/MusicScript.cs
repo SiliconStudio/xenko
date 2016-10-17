@@ -20,7 +20,7 @@ namespace TopDownRPG.Gameplay
             if (!IsLiveReloading)
             {
                 // start ambient music
-                music.IsLooped = true;
+                music.IsLooping = true;
                 music.Play();
             }
 

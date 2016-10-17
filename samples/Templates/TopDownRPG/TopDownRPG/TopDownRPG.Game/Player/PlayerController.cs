@@ -132,7 +132,7 @@ namespace TopDownRPG.Player
         {
             isRunning = false;
             moveDirection = Vector3.Zero;
-            character.Move(Vector3.Zero);
+            character.SetVelocity(Vector3.Zero);
             moveDestination = modelChildEntity.Transform.WorldMatrix.TranslationVector;
         }
 
@@ -140,9 +140,6 @@ namespace TopDownRPG.Player
         {
             if (attackCooldown > 0)
                 return;
-
-            // Use the delta time from physics
-            var dt = this.GetSimulation().FixedTimeStep;
 
             // Character speed
             ClickResult clickResult;
@@ -182,10 +179,10 @@ namespace TopDownRPG.Player
             if (lengthSqr > 1)
                 direction.Normalize();
 
-            // Allow very simple inertia to the character to make animation transitions more fluid
+            // Allow a very simple inertia to the character to make animation transitions more fluid
             moveDirection = moveDirection*0.85f + direction * 0.15f;
 
-            character.Move(moveDirection * speed * dt);
+            character.SetVelocity(moveDirection * speed);
 
             // Broadcast speed as per cent of the max speed
             RunSpeedEventKey.Broadcast(moveDirection.Length());

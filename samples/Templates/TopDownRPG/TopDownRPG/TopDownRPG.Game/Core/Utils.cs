@@ -14,37 +14,31 @@ namespace TopDownRPG.Core
             if (source == null)
                 return;
 
-            Func<Task> spawnTask = async () =>
+            // Clone
+            var spawnedEntities = source.Instantiate();
+
+            // Add
+            foreach (var prefabEntity in spawnedEntities)
             {
-                // Clone
-                var spawnedEntities = source.Instantiate();
+                prefabEntity.Transform.UpdateLocalMatrix();
+                var entityMatrix = prefabEntity.Transform.LocalMatrix * localMatrix;
+                entityMatrix.Decompose(out prefabEntity.Transform.Scale, out prefabEntity.Transform.Rotation, out prefabEntity.Transform.Position);
 
-                // Add
-                foreach (var prefabEntity in spawnedEntities)
+                if (attachEntity != null)
                 {
-                    prefabEntity.Transform.UpdateLocalMatrix();
-                    var entityMatrix = prefabEntity.Transform.LocalMatrix * localMatrix;
-                    entityMatrix.Decompose(out prefabEntity.Transform.Scale, out prefabEntity.Transform.Rotation, out prefabEntity.Transform.Position);
-
-                    if (attachEntity != null)
-                    {
-                        attachEntity.AddChild(prefabEntity);
-                    }
-                    else
-                    {
-                        script.SceneSystem.SceneInstance.Scene.Entities.Add(prefabEntity);
-                    }
-
-                    var physComp = prefabEntity.Get<RigidbodyComponent>();
-                    if (physComp != null)
-                    {
-                        physComp.ApplyImpulse(forceImpulse);
-                    }
-
+                    attachEntity.AddChild(prefabEntity);
                 }
-            };
+                else
+                {
+                    script.SceneSystem.SceneInstance.Scene.Entities.Add(prefabEntity);
+                }
 
-            script.Script.AddTask(spawnTask);
+                var physComp = prefabEntity.Get<RigidbodyComponent>();
+                if (physComp != null)
+                {
+                    physComp.ApplyImpulse(forceImpulse);
+                }
+            }
         }
 
         public static void SpawnPrefabInstance(this ScriptComponent script, Prefab source, Entity attachEntity, float timeout, Matrix localMatrix)

@@ -17,7 +17,6 @@ namespace TopDownRPG.Player
         public static readonly EventKey<ClickResult> MoveDestinationEventKey = new EventKey<ClickResult>();
 
         public static readonly EventKey<bool> JumpEventKey = new EventKey<bool>();
-        private bool jumpButtonDown = false;
 
         public int ControllerIndex { get; set; }
 

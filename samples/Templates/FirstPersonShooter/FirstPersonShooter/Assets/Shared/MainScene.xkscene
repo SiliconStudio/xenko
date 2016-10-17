@@ -5017,7 +5017,7 @@ Hierarchy:
                         Children:
                             - 49a3257d-dfbc-4a64-a8eb-cb4dfe647e67/9a0b53e7-e26b-477e-b405-f3991f670c13
                             - 3e1c23f8-cb70-4fe4-ba44-044e132cac95/520f60eb-ceb1-4bfe-be82-9c7e6dcd818a
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Position: {X: -14.999999, Y: 0.0, Z: 14.999999}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !CharacterComponent
