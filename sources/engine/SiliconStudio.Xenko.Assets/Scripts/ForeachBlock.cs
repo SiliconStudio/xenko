@@ -33,6 +33,8 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         [DataMemberIgnore]
         public override Slot OutputExecution => CompletedSlot;
 
+        public override string Title => "Foreach";
+
         public override void GenerateSlots(IList<Slot> newSlots, SlotGeneratorContext context)
         {
             newSlots.Add(InputExecutionSlotDefinition);
