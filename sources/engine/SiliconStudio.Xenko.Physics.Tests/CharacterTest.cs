@@ -87,6 +87,8 @@ namespace SiliconStudio.Xenko.Physics.Tests
                 Assert.AreNotEqual(currentPos, character.Transform.Position);
                 var target = currentPos + Vector3.UnitX*3*simulation.FixedTimeStep;
                 Assert.AreEqual(character.Transform.Position.X, target.X, float.Epsilon);
+                Assert.AreEqual(character.Transform.Position.Y, target.Y, float.Epsilon);
+                Assert.AreEqual(character.Transform.Position.Z, target.Z, float.Epsilon);
 
                 currentPos = character.Transform.Position;
 
@@ -95,6 +97,8 @@ namespace SiliconStudio.Xenko.Physics.Tests
                 Assert.AreNotEqual(currentPos, character.Transform.Position);
                 target = currentPos + Vector3.UnitX * 3 * simulation.FixedTimeStep;
                 Assert.AreEqual(character.Transform.Position.X, target.X, float.Epsilon);
+                Assert.AreEqual(character.Transform.Position.Y, target.Y, float.Epsilon);
+                Assert.AreEqual(character.Transform.Position.Z, target.Z, float.Epsilon);
 
                 controller.SetVelocity(Vector3.Zero);
 
