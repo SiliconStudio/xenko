@@ -1,12 +1,38 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Serialization;
+using SiliconStudio.Core.Yaml.Serialization.Serializers;
+using DictionaryDescriptor = SiliconStudio.Core.Yaml.Serialization.Descriptors.DictionaryDescriptor;
 using ITypeDescriptor = SiliconStudio.Core.Yaml.Serialization.ITypeDescriptor;
 
 namespace SiliconStudio.Core.Yaml
 {
+    public class CollectionWithItemIdsSerializer : DictionarySerializer
+    {
+        public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
+        {
+            return typeDescriptor.Type.IsGenericType && typeDescriptor.Type.GetGenericTypeDefinition() == typeof(CollectionWithItemIds<>) ? this : null;
+        }
+
+        protected override void WriteDictionaryItems(ref ObjectContext objectContext)
+        {
+            var dictionaryDescriptor = (DictionaryDescriptor)objectContext.Descriptor;
+            var keyValues = dictionaryDescriptor.GetEnumerator(objectContext.Instance).ToList();
+            
+            // Not sorting the keys here, they should be already properly sorted when we arrive here
+
+            var keyValueType = new KeyValuePair<Type, Type>(dictionaryDescriptor.KeyType, dictionaryDescriptor.ValueType);
+
+            foreach (var keyValue in keyValues)
+            {
+                WriteDictionaryItem(ref objectContext, keyValue, keyValueType);
+            }
+        }
+    }
+
     [DataContract]
     public class CollectionWithItemIds<TItem> : OrderedDictionary<Guid, TItem>
     {
