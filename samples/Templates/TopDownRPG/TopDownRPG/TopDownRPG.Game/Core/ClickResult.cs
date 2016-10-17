@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SiliconStudio.Core.Mathematics;
+﻿using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Physics;
 
@@ -47,6 +42,9 @@ namespace TopDownRPG.Core
         /// </summary>
         public ClickType    Type;
 
+        /// <summary>
+        /// The HitResult received from the physics simulation
+        /// </summary>
         public HitResult    HitResult;
     }
 }

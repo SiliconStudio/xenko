@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine.Events;
 
-namespace TopDownRPG
+namespace TopDownRPG.Gameplay
 {
     public enum CollisionEventType
     {

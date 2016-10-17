@@ -844,13 +844,13 @@ Hierarchy:
                                 Size: {X: 1.0, Y: 1.0, Z: 1.0}
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                    - !TopDownRPG.CrateScript,TopDownRPG.Game
+                    - !TopDownRPG.Gameplay.CrateScript,TopDownRPG.Game
                         ~Id: aad2934e-7cca-4ed6-9e2c-db87b6dea8c1
                         CoinGetEffect: a8040251-641d-4526-80f6-ac437c8b7d55/b47b93a7-878c-45ec-9e19-2406e896e8ab:VFXPrefabs/vfx-Dustcloud
                         CoinSpawnModel: ddcb5368-bcb8-479e-b63d-0b6d18d38771/6064f3e4-a929-424b-abea-688419f05265:LootGoldCoin
                         SoundEffect: 9407502c-34cf-4dfc-b7b8-1af69a201dd1/e1a8c617-1968-4eec-b523-ff0fd94cfd72:Audio/crate_breaking
                         Trigger: 1240d22d-4788-4cbb-b25c-44e831a2ba1b/1fe9cb28-1e2b-4afd-8650-67a932c54649
-                    - !TopDownRPG.Trigger,TopDownRPG.Game
+                    - !TopDownRPG.Gameplay.Trigger,TopDownRPG.Game
                         ~Id: 1fe9cb28-1e2b-4afd-8650-67a932c54649
                         TriggerCondition: StartOnly
         -   BaseId: dcbcec6d-0b9a-404a-87ee-0a0f69fc314e
@@ -1134,13 +1134,13 @@ Hierarchy:
                                 Size: {X: 1.0, Y: 1.0, Z: 1.0}
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                    - !TopDownRPG.CrateScript,TopDownRPG.Game
+                    - !TopDownRPG.Gameplay.CrateScript,TopDownRPG.Game
                         ~Id: aad2934e-7cca-4ed6-9e2c-db87b6dea8c1
                         CoinGetEffect: a8040251-641d-4526-80f6-ac437c8b7d55/b47b93a7-878c-45ec-9e19-2406e896e8ab:VFXPrefabs/vfx-Dustcloud
                         CoinSpawnModel: ddcb5368-bcb8-479e-b63d-0b6d18d38771/6064f3e4-a929-424b-abea-688419f05265:LootGoldCoin
                         SoundEffect: 9407502c-34cf-4dfc-b7b8-1af69a201dd1/e1a8c617-1968-4eec-b523-ff0fd94cfd72:Audio/crate_breaking
                         Trigger: 2147e1d1-f4f1-4a88-a785-14a69df0402f/1fe9cb28-1e2b-4afd-8650-67a932c54649
-                    - !TopDownRPG.Trigger,TopDownRPG.Game
+                    - !TopDownRPG.Gameplay.Trigger,TopDownRPG.Game
                         ~Id: 1fe9cb28-1e2b-4afd-8650-67a932c54649
                         TriggerCondition: StartOnly
         -   Folder: Platform/Walls
@@ -1799,7 +1799,7 @@ Hierarchy:
                         Model: 6f56e7ba-b707-435d-b563-afef606d543a/43497f30-bb62-46d4-8a9c-6dedead0cad8:VRcoin/CoinGold
                         Materials:
                             - null
-                    - !TopDownRPG.CoinScript,TopDownRPG.Game
+                    - !TopDownRPG.Gameplay.CoinScript,TopDownRPG.Game
                         ~Id: 2bdfde2b-b536-47ac-a5dd-b46bc1d762f5
                         CoinGetEffect: 45194082-f838-4aee-864c-60026cf4fa56/48c406d2-677a-4a3b-90a0-4c0094894935:VFXPrefabs/vfx-GetCoin
                         Trigger: 3acba833-e365-43f6-be83-265d856c7d4f/0f987c5d-9f63-4567-9b68-a76d9fcdd82c
@@ -1821,7 +1821,7 @@ Hierarchy:
                                 Is2D: false
                                 Radius: 0.025
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
-                    - !TopDownRPG.Trigger,TopDownRPG.Game
+                    - !TopDownRPG.Gameplay.Trigger,TopDownRPG.Game
                         ~Id: 0f987c5d-9f63-4567-9b68-a76d9fcdd82c
                         TriggerCondition: StartOnly
         -   BaseId: b86036f4-0ce3-4794-9947-a61378390d41
@@ -2327,7 +2327,7 @@ Hierarchy:
                         Model: 6f56e7ba-b707-435d-b563-afef606d543a/43497f30-bb62-46d4-8a9c-6dedead0cad8:VRcoin/CoinGold
                         Materials:
                             - null
-                    - !TopDownRPG.CoinScript,TopDownRPG.Game
+                    - !TopDownRPG.Gameplay.CoinScript,TopDownRPG.Game
                         ~Id: 2bdfde2b-b536-47ac-a5dd-b46bc1d762f5
                         CoinGetEffect: 45194082-f838-4aee-864c-60026cf4fa56/48c406d2-677a-4a3b-90a0-4c0094894935:VFXPrefabs/vfx-GetCoin
                         Trigger: 4b759cf3-4a2d-4a86-a4a5-5a61b639b437/0f987c5d-9f63-4567-9b68-a76d9fcdd82c
@@ -2349,7 +2349,7 @@ Hierarchy:
                                 Is2D: false
                                 Radius: 0.025
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
-                    - !TopDownRPG.Trigger,TopDownRPG.Game
+                    - !TopDownRPG.Gameplay.Trigger,TopDownRPG.Game
                         ~Id: 0f987c5d-9f63-4567-9b68-a76d9fcdd82c
                         TriggerCondition: StartOnly
         -   BaseId: 7482eb0c-78ea-4a3c-8d85-8133ed9d63b2
@@ -2388,13 +2388,13 @@ Hierarchy:
                                 Size: {X: 1.0, Y: 1.0, Z: 1.0}
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                    - !TopDownRPG.CrateScript,TopDownRPG.Game
+                    - !TopDownRPG.Gameplay.CrateScript,TopDownRPG.Game
                         ~Id: aad2934e-7cca-4ed6-9e2c-db87b6dea8c1
                         CoinGetEffect: a8040251-641d-4526-80f6-ac437c8b7d55/b47b93a7-878c-45ec-9e19-2406e896e8ab:VFXPrefabs/vfx-Dustcloud
                         CoinSpawnModel: ddcb5368-bcb8-479e-b63d-0b6d18d38771/6064f3e4-a929-424b-abea-688419f05265:LootGoldCoin
                         SoundEffect: 9407502c-34cf-4dfc-b7b8-1af69a201dd1/e1a8c617-1968-4eec-b523-ff0fd94cfd72:Audio/crate_breaking
                         Trigger: 4e2bee59-86f0-46af-ba2a-32b395331444/1fe9cb28-1e2b-4afd-8650-67a932c54649
-                    - !TopDownRPG.Trigger,TopDownRPG.Game
+                    - !TopDownRPG.Gameplay.Trigger,TopDownRPG.Game
                         ~Id: 1fe9cb28-1e2b-4afd-8650-67a932c54649
                         TriggerCondition: StartOnly
         -   BaseId: dcbcec6d-0b9a-404a-87ee-0a0f69fc314e
@@ -2596,7 +2596,7 @@ Hierarchy:
                             - null
                             - null
                             - null
-                    - !TopDownRPG.AnimationController,TopDownRPG.Game
+                    - !TopDownRPG.Player.AnimationController,TopDownRPG.Game
                         ~Id: faab8e97-45ac-4d3f-9375-495d32bc299f
                         AnimationComponent: 51a86f4d-298c-4fc4-964b-de29f9a624fc/c0b24758-fcad-47f3-a100-f94d96c5d325
                         AnimationIdle: 401e5ab2-c9b9-4912-a742-0668c81b3a87/5f286f7e-7d38-44cf-9bc1-3aad7be4f0fa:Animation/Idle
@@ -2725,7 +2725,7 @@ Hierarchy:
                         Model: 6f56e7ba-b707-435d-b563-afef606d543a/43497f30-bb62-46d4-8a9c-6dedead0cad8:VRcoin/CoinGold
                         Materials:
                             - null
-                    - !TopDownRPG.CoinScript,TopDownRPG.Game
+                    - !TopDownRPG.Gameplay.CoinScript,TopDownRPG.Game
                         ~Id: 2bdfde2b-b536-47ac-a5dd-b46bc1d762f5
                         CoinGetEffect: 45194082-f838-4aee-864c-60026cf4fa56/48c406d2-677a-4a3b-90a0-4c0094894935:VFXPrefabs/vfx-GetCoin
                         Trigger: 57968218-7184-484f-ad6c-e63606678260/0f987c5d-9f63-4567-9b68-a76d9fcdd82c
@@ -2747,7 +2747,7 @@ Hierarchy:
                                 Is2D: false
                                 Radius: 0.025
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
-                    - !TopDownRPG.Trigger,TopDownRPG.Game
+                    - !TopDownRPG.Gameplay.Trigger,TopDownRPG.Game
                         ~Id: 0f987c5d-9f63-4567-9b68-a76d9fcdd82c
                         TriggerCondition: StartOnly
         -   BaseId: b86036f4-0ce3-4794-9947-a61378390d41
@@ -3805,13 +3805,13 @@ Hierarchy:
                                 Size: {X: 1.0, Y: 1.0, Z: 1.0}
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                    - !TopDownRPG.CrateScript,TopDownRPG.Game
+                    - !TopDownRPG.Gameplay.CrateScript,TopDownRPG.Game
                         ~Id: aad2934e-7cca-4ed6-9e2c-db87b6dea8c1
                         CoinGetEffect: a8040251-641d-4526-80f6-ac437c8b7d55/b47b93a7-878c-45ec-9e19-2406e896e8ab:VFXPrefabs/vfx-Dustcloud
                         CoinSpawnModel: ddcb5368-bcb8-479e-b63d-0b6d18d38771/6064f3e4-a929-424b-abea-688419f05265:LootGoldCoin
                         SoundEffect: 9407502c-34cf-4dfc-b7b8-1af69a201dd1/e1a8c617-1968-4eec-b523-ff0fd94cfd72:Audio/crate_breaking
                         Trigger: 75c6062f-6a4d-4c61-8465-84152ffc6cd4/1fe9cb28-1e2b-4afd-8650-67a932c54649
-                    - !TopDownRPG.Trigger,TopDownRPG.Game
+                    - !TopDownRPG.Gameplay.Trigger,TopDownRPG.Game
                         ~Id: 1fe9cb28-1e2b-4afd-8650-67a932c54649
                         TriggerCondition: StartOnly
         -   BaseId: b86036f4-0ce3-4794-9947-a61378390d41
@@ -4925,7 +4925,7 @@ Hierarchy:
                         Model: 6f56e7ba-b707-435d-b563-afef606d543a/43497f30-bb62-46d4-8a9c-6dedead0cad8:VRcoin/CoinGold
                         Materials:
                             - null
-                    - !TopDownRPG.CoinScript,TopDownRPG.Game
+                    - !TopDownRPG.Gameplay.CoinScript,TopDownRPG.Game
                         ~Id: 2bdfde2b-b536-47ac-a5dd-b46bc1d762f5
                         CoinGetEffect: 45194082-f838-4aee-864c-60026cf4fa56/48c406d2-677a-4a3b-90a0-4c0094894935:VFXPrefabs/vfx-GetCoin
                         Trigger: a1b33618-e63a-42ca-8e2a-1cd75654108d/0f987c5d-9f63-4567-9b68-a76d9fcdd82c
@@ -4947,7 +4947,7 @@ Hierarchy:
                                 Is2D: false
                                 Radius: 0.025
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
-                    - !TopDownRPG.Trigger,TopDownRPG.Game
+                    - !TopDownRPG.Gameplay.Trigger,TopDownRPG.Game
                         ~Id: 0f987c5d-9f63-4567-9b68-a76d9fcdd82c
                         TriggerCondition: StartOnly
         -   Folder: Platform/Walls
@@ -5302,13 +5302,13 @@ Hierarchy:
                                 Size: {X: 1.0, Y: 1.0, Z: 1.0}
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                    - !TopDownRPG.CrateScript,TopDownRPG.Game
+                    - !TopDownRPG.Gameplay.CrateScript,TopDownRPG.Game
                         ~Id: aad2934e-7cca-4ed6-9e2c-db87b6dea8c1
                         CoinGetEffect: a8040251-641d-4526-80f6-ac437c8b7d55/b47b93a7-878c-45ec-9e19-2406e896e8ab:VFXPrefabs/vfx-Dustcloud
                         CoinSpawnModel: ddcb5368-bcb8-479e-b63d-0b6d18d38771/6064f3e4-a929-424b-abea-688419f05265:LootGoldCoin
                         SoundEffect: 9407502c-34cf-4dfc-b7b8-1af69a201dd1/e1a8c617-1968-4eec-b523-ff0fd94cfd72:Audio/crate_breaking
                         Trigger: aecf0c8f-3fdd-47a6-ac2b-da09947365a0/1fe9cb28-1e2b-4afd-8650-67a932c54649
-                    - !TopDownRPG.Trigger,TopDownRPG.Game
+                    - !TopDownRPG.Gameplay.Trigger,TopDownRPG.Game
                         ~Id: 1fe9cb28-1e2b-4afd-8650-67a932c54649
                         TriggerCondition: StartOnly
         -   BaseId: b045349c-565e-4488-9130-a795b0e3b229
@@ -6748,13 +6748,13 @@ Hierarchy:
                                 Size: {X: 1.0, Y: 1.0, Z: 1.0}
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                    - !TopDownRPG.CrateScript,TopDownRPG.Game
+                    - !TopDownRPG.Gameplay.CrateScript,TopDownRPG.Game
                         ~Id: aad2934e-7cca-4ed6-9e2c-db87b6dea8c1
                         CoinGetEffect: a8040251-641d-4526-80f6-ac437c8b7d55/b47b93a7-878c-45ec-9e19-2406e896e8ab:VFXPrefabs/vfx-Dustcloud
                         CoinSpawnModel: ddcb5368-bcb8-479e-b63d-0b6d18d38771/6064f3e4-a929-424b-abea-688419f05265:LootGoldCoin
                         SoundEffect: 9407502c-34cf-4dfc-b7b8-1af69a201dd1/e1a8c617-1968-4eec-b523-ff0fd94cfd72:Audio/crate_breaking
                         Trigger: e4b4af34-78c7-447f-9938-c02ddb15534c/1fe9cb28-1e2b-4afd-8650-67a932c54649
-                    - !TopDownRPG.Trigger,TopDownRPG.Game
+                    - !TopDownRPG.Gameplay.Trigger,TopDownRPG.Game
                         ~Id: 1fe9cb28-1e2b-4afd-8650-67a932c54649
                         TriggerCondition: StartOnly
         -   BaseId: 496dab69-b03b-4272-a196-8e81329ce249
@@ -7419,7 +7419,7 @@ Hierarchy:
                                     Model: 6f56e7ba-b707-435d-b563-afef606d543a/43497f30-bb62-46d4-8a9c-6dedead0cad8:VRcoin/CoinGold
                                     Materials:
                                         - null
-                                - !TopDownRPG.CoinScript,TopDownRPG.Game
+                                - !TopDownRPG.Gameplay.CoinScript,TopDownRPG.Game
                                     ~Id: 2bdfde2b-b536-47ac-a5dd-b46bc1d762f5
                                     CoinGetEffect: 45194082-f838-4aee-864c-60026cf4fa56/48c406d2-677a-4a3b-90a0-4c0094894935:VFXPrefabs/vfx-GetCoin
                                     Trigger: 867ee466-6e19-4df6-b805-6b1a8f5dbee5/0f987c5d-9f63-4567-9b68-a76d9fcdd82c
@@ -7441,7 +7441,7 @@ Hierarchy:
                                             Is2D: false
                                             Radius: 0.025
                                             LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
-                                - !TopDownRPG.Trigger,TopDownRPG.Game
+                                - !TopDownRPG.Gameplay.Trigger,TopDownRPG.Game
                                     ~Id: 0f987c5d-9f63-4567-9b68-a76d9fcdd82c
                                     TriggerCondition: StartOnly
                     -   Entity:
@@ -7512,13 +7512,13 @@ Hierarchy:
                                             Size: {X: 1.0, Y: 1.0, Z: 1.0}
                                             LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                             LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                                - !TopDownRPG.CrateScript,TopDownRPG.Game
+                                - !TopDownRPG.Gameplay.CrateScript,TopDownRPG.Game
                                     ~Id: aad2934e-7cca-4ed6-9e2c-db87b6dea8c1
                                     CoinGetEffect: a8040251-641d-4526-80f6-ac437c8b7d55/b47b93a7-878c-45ec-9e19-2406e896e8ab:VFXPrefabs/vfx-Dustcloud
                                     CoinSpawnModel: ddcb5368-bcb8-479e-b63d-0b6d18d38771/6064f3e4-a929-424b-abea-688419f05265:LootGoldCoin
                                     SoundEffect: 9407502c-34cf-4dfc-b7b8-1af69a201dd1/e1a8c617-1968-4eec-b523-ff0fd94cfd72:Audio/crate_breaking
                                     Trigger: 7482eb0c-78ea-4a3c-8d85-8133ed9d63b2/1fe9cb28-1e2b-4afd-8650-67a932c54649
-                                - !TopDownRPG.Trigger,TopDownRPG.Game
+                                - !TopDownRPG.Gameplay.Trigger,TopDownRPG.Game
                                     ~Id: 1fe9cb28-1e2b-4afd-8650-67a932c54649
                                     TriggerCondition: StartOnly
                     -   Entity:

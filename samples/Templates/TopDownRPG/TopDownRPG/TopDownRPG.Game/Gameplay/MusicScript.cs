@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SiliconStudio.Core.Mathematics;
+﻿using System.Threading.Tasks;
 using SiliconStudio.Xenko.Audio;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Input;
 
 namespace TopDownRPG.Gameplay
 {

@@ -23,7 +23,7 @@ Hierarchy:
                         Model: 6f56e7ba-b707-435d-b563-afef606d543a/43497f30-bb62-46d4-8a9c-6dedead0cad8:VRcoin/CoinGold
                         Materials:
                             - null
-                    - !TopDownRPG.CoinScript,TopDownRPG.Game
+                    - !TopDownRPG.Gameplay.CoinScript,TopDownRPG.Game
                         ~Id: 2bdfde2b-b536-47ac-a5dd-b46bc1d762f5
                         CoinGetEffect: 45194082-f838-4aee-864c-60026cf4fa56/48c406d2-677a-4a3b-90a0-4c0094894935:VFXPrefabs/vfx-GetCoin
                         Trigger: 867ee466-6e19-4df6-b805-6b1a8f5dbee5/0f987c5d-9f63-4567-9b68-a76d9fcdd82c
@@ -45,7 +45,7 @@ Hierarchy:
                                 Is2D: false
                                 Radius: 0.025
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
-                    - !TopDownRPG.Trigger,TopDownRPG.Game
+                    - !TopDownRPG.Gameplay.Trigger,TopDownRPG.Game
                         ~Id: 0f987c5d-9f63-4567-9b68-a76d9fcdd82c
                         TriggerCondition: StartOnly
         -   Entity:

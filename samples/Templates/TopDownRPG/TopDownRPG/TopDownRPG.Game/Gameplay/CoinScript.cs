@@ -7,7 +7,7 @@ using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Events;
 using TopDownRPG.Core;
 
-namespace TopDownRPG
+namespace TopDownRPG.Gameplay
 {
     public class CoinScript : SyncScript
     {

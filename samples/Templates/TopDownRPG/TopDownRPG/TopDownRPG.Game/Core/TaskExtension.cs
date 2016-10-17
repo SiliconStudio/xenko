@@ -1,7 +1,5 @@
 using System;
 using System.Threading.Tasks;
-using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Games;
 
 namespace TopDownRPG.Core
 {
