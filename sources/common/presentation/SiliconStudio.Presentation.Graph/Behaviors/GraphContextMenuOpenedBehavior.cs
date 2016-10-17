@@ -92,11 +92,17 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         private void ContextMenuEventHandler(object sender, ContextMenuEventArgs e)
         {
             // Convert position from zoomcontrol space to graph space
-            var mousePosition = zoomControl.TranslatePoint(MouseHelper.GetMousePosition(zoomControl), AssociatedObject);
+            var mousePosition = GetMousePosition(zoomControl, AssociatedObject);
 
             var cmd = Command;
             if (cmd != null && cmd.CanExecute(mousePosition))
                 cmd.Execute(mousePosition);
+        }
+
+        public static Point GetMousePosition(UIElement zoomControl, UIElement area)
+        {
+            // Convert position from zoomcontrol space to graph space
+            return zoomControl.TranslatePoint(MouseHelper.GetMousePosition(zoomControl), area);
         }
     }
 }
