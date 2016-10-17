@@ -5,6 +5,7 @@ using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
+using DictionaryDescriptor = SiliconStudio.Core.Yaml.Serialization.Descriptors.DictionaryDescriptor;
 using ITypeDescriptor = SiliconStudio.Core.Yaml.Serialization.ITypeDescriptor;
 
 namespace SiliconStudio.Core.Yaml
@@ -64,6 +65,7 @@ namespace SiliconStudio.Core.Yaml
 
                 if (AreCollectionItemsIdentifiable(ref objectContext))
                 {
+                    // This is to be backward compatible with previous serialization. We fetch ids from the ~Id member of each item
                     var enumerable = objectContext.Instance as IEnumerable;
                     if (enumerable != null)
                     {
@@ -156,34 +158,36 @@ namespace SiliconStudio.Core.Yaml
 
         protected override void TransformObjectAfterRead(ref ObjectContext objectContext)
         {
-            object infoObject;
-            if (!objectContext.Properties.TryGetValue("InstanceInfo", out infoObject))
+            if (!AreCollectionItemsIdentifiable(ref objectContext))
             {
                 base.TransformObjectAfterRead(ref objectContext);
-
-                if (AreCollectionItemsIdentifiable(ref objectContext))
-                {
-                    var descriptor = (Serialization.Descriptors.DictionaryDescriptor)objectContext.Descriptor;
-                    var enumerable = objectContext.Instance as IEnumerable;
-                    if (enumerable != null)
-                    {
-                        var ids = CollectionItemIdHelper.GetCollectionItemIds(objectContext.Instance);
-                        foreach (var item in descriptor.GetEnumerator(objectContext.Instance))
-                        {
-                            var id = IdentifiableHelper.GetId(item.Value);
-                            ids.KeyToIdMap[item.Key] = id != Guid.Empty ? id : Guid.NewGuid();
-                        }
-                    }
-                }
                 return;
             }
-            var info = (InstanceInfo)infoObject;
+            
+            var info = (InstanceInfo)objectContext.Properties["InstanceInfo"];
 
+            // This is to be backward compatible with previous serialization. We fetch ids from the ~Id member of each item
             if (info.Instance != null)
             {
                 CollectionItemIdHelper.TransformAfterDeserialization(objectContext.Instance, info.Descriptor, info.Instance);
             }
             objectContext.Instance = info.Instance;
+
+            var enumerable = objectContext.Instance as IEnumerable;
+            if (enumerable != null)
+            {
+                var ids = CollectionItemIdHelper.GetCollectionItemIds(objectContext.Instance);
+                foreach (var item in info.Descriptor.GetEnumerator(objectContext.Instance))
+                {
+                    Guid id;
+                    if (ids.KeyToIdMap.TryGetValue(item.Key, out id) && id != Guid.Empty)
+                        continue;
+
+                    id = IdentifiableHelper.GetId(item.Value);
+                    ids.KeyToIdMap[item.Key] = id != Guid.Empty ? id : Guid.NewGuid();
+                }
+            }
+
             base.TransformObjectAfterRead(ref objectContext);
         }
 

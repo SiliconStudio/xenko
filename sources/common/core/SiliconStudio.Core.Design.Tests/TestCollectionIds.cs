@@ -239,5 +239,54 @@ Objects:
             Assert.AreEqual(GuidGenerator.Get(4), objectIds.KeyToIdMap["key4"]);
         }
 
+        [Test]
+        public void TestDictionaryDeserializationOldWay()
+        {
+            ShadowObject.Enable = true;
+            var yaml = @"!SiliconStudio.Core.Design.Tests.TestCollectionIds+ContainerDictionary,SiliconStudio.Core.Design.Tests
+Name: Root
+Strings:
+    000000c8-00c8-0000-c800-0000c8000000: aaa
+    00000064-0064-0000-6400-000064000000: bbb
+Objects:
+    key3:
+        ~Id: 00000003-0003-0000-0300-000003000000
+        Name: obj1
+        Strings: {}
+        Objects: {}
+    key4:
+        ~Id: 00000004-0004-0000-0400-000004000000
+        Name: obj2
+        Strings: {}
+        Objects: {}
+";
+
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            writer.Write(yaml);
+            writer.Flush();
+            stream.Position = 0;
+            var instance = YamlSerializer.Deserialize(stream);
+            Assert.NotNull(instance);
+            Assert.AreEqual(typeof(ContainerDictionary), instance.GetType());
+            var obj = (ContainerDictionary)instance;
+            Assert.AreEqual("Root", obj.Name);
+            Assert.AreEqual(2, obj.Strings.Count);
+            Assert.AreEqual("aaa", obj.Strings[GuidGenerator.Get(200)]);
+            Assert.AreEqual("bbb", obj.Strings[GuidGenerator.Get(100)]);
+            Assert.AreEqual(2, obj.Objects.Count);
+            Assert.AreEqual("obj1", obj.Objects["key3"].Name);
+            Assert.AreEqual("obj2", obj.Objects["key4"].Name);
+            var stringIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Strings);
+            var objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects);
+            Assert.AreEqual(2, stringIds.KeyToIdMap.Count);
+            Assert.IsTrue(stringIds.KeyToIdMap.ContainsKey(GuidGenerator.Get(200)));
+            Assert.IsTrue(stringIds.KeyToIdMap.ContainsKey(GuidGenerator.Get(100)));
+            Assert.AreEqual(2, objectIds.KeyToIdMap.Count);
+            Assert.IsTrue(objectIds.KeyToIdMap.ContainsKey("key3"));
+            Assert.IsTrue(objectIds.KeyToIdMap.ContainsKey("key4"));
+            Assert.AreEqual(GuidGenerator.Get(3), objectIds.KeyToIdMap["key3"]);
+            Assert.AreEqual(GuidGenerator.Get(4), objectIds.KeyToIdMap["key4"]);
+        }
     }
 }
