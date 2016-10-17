@@ -3,7 +3,7 @@
 using System;
 using System.Dynamic;
 using System.Globalization;
-using SharpYaml.Serialization;
+using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Core.Yaml
 {

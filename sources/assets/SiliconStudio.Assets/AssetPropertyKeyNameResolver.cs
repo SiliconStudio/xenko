@@ -2,10 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Text;
-
-using SharpYaml.Serialization;
-
 using SiliconStudio.Core;
+using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Assets
 {
