@@ -45,19 +45,14 @@ namespace SiliconStudio.Core.Yaml
 
             var info = new InstanceInfo { Instance = objectContext.Instance, Descriptor = (Serialization.Descriptors.CollectionDescriptor)objectContext.Descriptor };
             objectContext.Properties.Add("InstanceInfo", info);
-            //IDictionary<Guid, object> ids;
             if (objectContext.SerializerContext.IsSerializing && objectContext.Instance != null)
             {
-                //var collection = (ICollection)objectContext.Instance;
-                //ids = CollectionItemIdHelper.GetItemIds(objectContext.Instance);
                 objectContext.Instance = CollectionItemIdHelper.TransformForSerialization(objectContext.Descriptor, objectContext.Instance);
             }
             else
             {
                 objectContext.Instance = CollectionItemIdHelper.CreatEmptyContainer(objectContext.Descriptor);
             }
-
-            //objectContext.Instance = CollectionItemIdHelper.ToTypedDictionary(ids, info.Descriptor.ElementType);
         }
 
         protected override void TransformObjectAfterRead(ref ObjectContext objectContext)
@@ -66,16 +61,20 @@ namespace SiliconStudio.Core.Yaml
             if (!objectContext.Properties.TryGetValue("InstanceInfo", out infoObject))
             {
                 base.TransformObjectAfterRead(ref objectContext);
-                var enumerable = objectContext.Instance as IEnumerable;
-                if (enumerable != null)
+
+                if (AreCollectionItemsIdentifiable(ref objectContext))
                 {
-                    var ids = CollectionItemIdHelper.GetCollectionItemIds(objectContext.Instance);
-                    int i = 0;
-                    foreach (var item in enumerable)
+                    var enumerable = objectContext.Instance as IEnumerable;
+                    if (enumerable != null)
                     {
-                        var id = IdentifiableHelper.GetId(item);
-                        ids.KeyToIdMap[(object)i] = id != Guid.Empty ? id : Guid.NewGuid();
-                        ++i;
+                        var ids = CollectionItemIdHelper.GetCollectionItemIds(objectContext.Instance);
+                        int i = 0;
+                        foreach (var item in enumerable)
+                        {
+                            var id = IdentifiableHelper.GetId(item);
+                            ids.KeyToIdMap[(object)i] = id != Guid.Empty ? id : Guid.NewGuid();
+                            ++i;
+                        }
                     }
                 }
                 return;
@@ -84,14 +83,6 @@ namespace SiliconStudio.Core.Yaml
 
             if (info.Instance != null)
             {
-                //var dictionary = CollectionItemIdHelper.GetItemIds(info.Instance);
-                //dictionary.Clear();
-                //var ids = CollectionItemIdHelper.ToObjectDictionary((IDictionary)objectContext.Instance);
-                //foreach (var id in ids)
-                //{
-                //    info.Descriptor.CollectionAdd(info.Instance, id.Value);
-                //    dictionary.Add(id.Key, id.Value);
-                //}
                 CollectionItemIdHelper.TransformAfterDeserialization(objectContext.Instance, info.Descriptor, info.Instance);
             }
             objectContext.Instance = info.Instance;
@@ -169,16 +160,19 @@ namespace SiliconStudio.Core.Yaml
             if (!objectContext.Properties.TryGetValue("InstanceInfo", out infoObject))
             {
                 base.TransformObjectAfterRead(ref objectContext);
-                var enumerable = objectContext.Instance as IEnumerable;
-                if (enumerable != null)
+
+                if (AreCollectionItemsIdentifiable(ref objectContext))
                 {
-                    var ids = CollectionItemIdHelper.GetCollectionItemIds(objectContext.Instance);
-                    int i = 0;
-                    foreach (var item in enumerable)
+                    var descriptor = (Serialization.Descriptors.DictionaryDescriptor)objectContext.Descriptor;
+                    var enumerable = objectContext.Instance as IEnumerable;
+                    if (enumerable != null)
                     {
-                        var id = IdentifiableHelper.GetId(item);
-                        ids.KeyToIdMap[(object)i] = id != Guid.Empty ? id : Guid.NewGuid();
-                        ++i;
+                        var ids = CollectionItemIdHelper.GetCollectionItemIds(objectContext.Instance);
+                        foreach (var item in descriptor.GetEnumerator(objectContext.Instance))
+                        {
+                            var id = IdentifiableHelper.GetId(item.Value);
+                            ids.KeyToIdMap[item.Key] = id != Guid.Empty ? id : Guid.NewGuid();
+                        }
                     }
                 }
                 return;

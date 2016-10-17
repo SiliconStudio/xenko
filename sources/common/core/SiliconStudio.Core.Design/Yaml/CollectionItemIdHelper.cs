@@ -104,9 +104,29 @@ namespace SiliconStudio.Core.Yaml
 
     public class KeyWithIdSerializer : ScalarSerializerBase, IYamlSerializableFactory
     {
-        public override object ConvertFrom(ref ObjectContext context, Scalar fromScalar)
+        public override object ConvertFrom(ref ObjectContext objectContext, Scalar fromScalar)
         {
-            return null;
+            var idIndex = fromScalar.Value.IndexOf('~');
+            var id = Guid.Empty;
+            var keyString = fromScalar.Value;
+            if (idIndex >= 0)
+            {
+                var idString = fromScalar.Value.Substring(0, idIndex);
+                keyString = fromScalar.Value.Substring(idIndex + 1);
+                id = Guid.Parse(idString);
+            }
+            var keyType = objectContext.Descriptor.Type.GetGenericArguments()[0];
+            var keyDescriptor = objectContext.SerializerContext.FindTypeDescriptor(keyType);
+            var keySerializer = objectContext.SerializerContext.Serializer.GetSerializer(objectContext.SerializerContext, keyDescriptor);
+            var scalarKeySerializer = keySerializer as ScalarSerializerBase;
+            // TODO: deserialize non-scalar keys!
+            if (scalarKeySerializer == null)
+                throw new InvalidOperationException("Non-scalar key not yet supported!");
+
+            var context = new ObjectContext(objectContext.SerializerContext, null, keyDescriptor);
+            var key = scalarKeySerializer.ConvertFrom(ref context, new Scalar(keyString));
+            var result = Activator.CreateInstance(typeof(KeyWithId<>).MakeGenericType(keyType), id, key);
+            return result;
         }
 
         public override string ConvertTo(ref ObjectContext objectContext)

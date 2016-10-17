@@ -211,5 +211,33 @@ Objects:
             Assert.AreEqual(YamlDictionary, yaml);
         }
 
+        [Test]
+        public void TestDictionaryDeserialization()
+        {
+            ShadowObject.Enable = true;
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            writer.Write(YamlDictionary);
+            writer.Flush();
+            stream.Position = 0;
+            var instance = YamlSerializer.Deserialize(stream);
+            Assert.NotNull(instance);
+            Assert.AreEqual(typeof(ContainerDictionary), instance.GetType());
+            var obj = (ContainerDictionary)instance;
+            Assert.AreEqual("Root", obj.Name);
+            Assert.AreEqual(2, obj.Strings.Count);
+            Assert.AreEqual("aaa", obj.Strings[GuidGenerator.Get(200)]);
+            Assert.AreEqual("bbb", obj.Strings[GuidGenerator.Get(100)]);
+            Assert.AreEqual(2, obj.Objects.Count);
+            Assert.AreEqual("obj1", obj.Objects["key3"].Name);
+            Assert.AreEqual("obj2", obj.Objects["key4"].Name);
+            var stringIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Strings);
+            Assert.AreEqual(GuidGenerator.Get(2), stringIds.KeyToIdMap[GuidGenerator.Get(200)]);
+            Assert.AreEqual(GuidGenerator.Get(1), stringIds.KeyToIdMap[GuidGenerator.Get(100)]);
+            var objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects);
+            Assert.AreEqual(GuidGenerator.Get(3), objectIds.KeyToIdMap["key3"]);
+            Assert.AreEqual(GuidGenerator.Get(4), objectIds.KeyToIdMap["key4"]);
+        }
+
     }
 }
