@@ -59,7 +59,7 @@ namespace SiliconStudio.Core.Design.Tests
                 Name = name;
             }
             public string Name { get; set; }
-            public Dictionary<string, string> Strings { get; set; } = new Dictionary<string, string>();
+            public Dictionary<Guid, string> Strings { get; set; } = new Dictionary<Guid, string>();
             public Dictionary<string, ContainerCollection> Objects { get; set; } = new Dictionary<string, ContainerCollection>();
         }
 
@@ -74,6 +74,22 @@ Objects:
         Strings: {}
         Objects: {}
     00000004-0004-0000-0400-000004000000:
+        Name: obj2
+        Strings: {}
+        Objects: {}
+";
+
+        private const string YamlDictionary = @"!SiliconStudio.Core.Design.Tests.TestCollectionIds+ContainerDictionary,SiliconStudio.Core.Design.Tests
+Name: Root
+Strings:
+    00000002-0002-0000-0200-000002000000~000000c8-00c8-0000-c800-0000c8000000: aaa
+    00000001-0001-0000-0100-000001000000~00000064-0064-0000-6400-000064000000: bbb
+Objects:
+    00000003-0003-0000-0300-000003000000~key3:
+        Name: obj1
+        Strings: {}
+        Objects: {}
+    00000004-0004-0000-0400-000004000000~key4:
         Name: obj2
         Strings: {}
         Objects: {}
@@ -120,8 +136,8 @@ Objects:
             Assert.AreEqual("obj1", obj.Objects[0].Name);
             Assert.AreEqual("obj2", obj.Objects[1].Name);
             var stringIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Strings);
-            Assert.AreEqual(GuidGenerator.Get(1), stringIds.KeyToIdMap[(object)0]);
-            Assert.AreEqual(GuidGenerator.Get(2), stringIds.KeyToIdMap[(object)1]);
+            Assert.AreEqual(GuidGenerator.Get(2), stringIds.KeyToIdMap[(object)0]);
+            Assert.AreEqual(GuidGenerator.Get(1), stringIds.KeyToIdMap[(object)1]);
             var objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects);
             Assert.AreEqual(GuidGenerator.Get(3), objectIds.KeyToIdMap[(object)0]);
             Assert.AreEqual(GuidGenerator.Get(4), objectIds.KeyToIdMap[(object)1]);
@@ -181,18 +197,18 @@ Objects:
             ShadowObject.Enable = true;
             var obj = new ContainerDictionary("Root")
             {
-                Strings = { { "key2", "aaa" }, { "key1", "bbb" } },
+                Strings = { { GuidGenerator.Get(200), "aaa" }, { GuidGenerator.Get(100), "bbb" } },
                 Objects = { { "key3", new ContainerCollection("obj1") }, { "key4", new ContainerCollection("obj2") } },
             };
 
             var stringIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Strings);
-            stringIds.KeyToIdMap[(object)0] = GuidGenerator.Get(2);
-            stringIds.KeyToIdMap[(object)1] = GuidGenerator.Get(1);
+            stringIds.KeyToIdMap[GuidGenerator.Get(200)] = GuidGenerator.Get(2);
+            stringIds.KeyToIdMap[GuidGenerator.Get(100)] = GuidGenerator.Get(1);
             var objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects);
-            objectIds.KeyToIdMap[(object)0] = GuidGenerator.Get(3);
-            objectIds.KeyToIdMap[(object)1] = GuidGenerator.Get(4);
+            objectIds.KeyToIdMap["key3"] = GuidGenerator.Get(3);
+            objectIds.KeyToIdMap["key4"] = GuidGenerator.Get(4);
             var yaml = YamlSerializer.Serialize(obj);
-            Assert.AreEqual(YamlCollection, yaml);
+            Assert.AreEqual(YamlDictionary, yaml);
         }
 
     }

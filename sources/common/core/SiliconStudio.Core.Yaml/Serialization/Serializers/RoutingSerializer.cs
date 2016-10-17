@@ -56,10 +56,6 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         private readonly Dictionary<Type, IYamlSerializable> serializers = new Dictionary<Type, IYamlSerializable>();
         private readonly List<IYamlSerializableFactory> factories = new List<IYamlSerializableFactory>();
 
-        public RoutingSerializer()
-        {
-        }
-
         public void AddSerializer(Type type, IYamlSerializable serializer)
         {
             serializers[type] = serializer;
@@ -86,7 +82,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             serializer.WriteYaml(ref objectContext);
         }
 
-        private IYamlSerializable GetSerializer(SerializerContext context, ITypeDescriptor typeDescriptor)
+        internal IYamlSerializable GetSerializer(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
             IYamlSerializable serializer;
             if (!serializers.TryGetValue(typeDescriptor.Type, out serializer))
@@ -96,6 +92,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
                     serializer = factory.TryCreate(context, typeDescriptor);
                     if (serializer != null)
                     {
+                        serializers.Add(typeDescriptor.Type, serializer);
                         break;
                     }
                 }

@@ -126,6 +126,9 @@ namespace SiliconStudio.Core.Yaml
         {
             if (typeDescriptor is Serialization.Descriptors.DictionaryDescriptor)
             {
+                if (DictionaryWithItemIdsSerializer.TryCreate(typeDescriptor))
+                    return null;
+
                 var dataStyle = typeDescriptor.Type.GetCustomAttribute<DataStyleAttribute>();
                 if (dataStyle == null || dataStyle.Style != DataStyle.Compact)
                     return this;

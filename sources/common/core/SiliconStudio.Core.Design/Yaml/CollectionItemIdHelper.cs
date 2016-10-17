@@ -35,6 +35,35 @@ namespace SiliconStudio.Core.Yaml
         }
     }
 
+    public class DictionaryWithItemIdsSerializer : DictionarySerializer
+    {
+        public static bool TryCreate(ITypeDescriptor descriptor)
+        {
+            return descriptor.Type.IsGenericType && descriptor.Type.GetGenericTypeDefinition() == typeof(DictionaryWithItemIds<,>);
+        }
+
+        public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
+        {
+            return TryCreate(typeDescriptor) ? this : null;
+        }
+
+        protected override void WriteDictionaryItems(ref ObjectContext objectContext)
+        {
+            var dictionaryDescriptor = (DictionaryDescriptor)objectContext.Descriptor;
+            var keyValues = dictionaryDescriptor.GetEnumerator(objectContext.Instance).ToList();
+
+            // Not sorting the keys here, they should be already properly sorted when we arrive here
+            // TODO: Allow to disable sorting externally, to avoid creating this serializer. NOTE: tampering with Settings.SortKeyForMapping is not an option, it is not local but applied to all children. (ParameterKeyDictionarySerializer is doing that and is buggy)
+
+            var keyValueType = new KeyValuePair<Type, Type>(dictionaryDescriptor.KeyType, dictionaryDescriptor.ValueType);
+
+            foreach (var keyValue in keyValues)
+            {
+                WriteDictionaryItem(ref objectContext, keyValue, keyValueType);
+            }
+        }
+    }
+
     [DataContract]
     public class CollectionWithItemIds<TItem> : OrderedDictionary<Guid, TItem>
     {
@@ -82,7 +111,22 @@ namespace SiliconStudio.Core.Yaml
 
         public override string ConvertTo(ref ObjectContext objectContext)
         {
-            return "";
+            var key = (IKeyWithId)objectContext.Instance;
+            var keyDescriptor = objectContext.SerializerContext.FindTypeDescriptor(key.Key.GetType());
+            var keySerializer = objectContext.SerializerContext.Serializer.GetSerializer(objectContext.SerializerContext, keyDescriptor);
+
+            // TODO: serialize non-scalar keys!
+            // Guid:
+            //     Key: {Key}
+            //     Value: {Value}
+
+            var scalarKeySerializer = keySerializer as ScalarSerializerBase;
+            if (scalarKeySerializer == null)
+                throw new InvalidOperationException("Non-scalar key not yet supported!");
+
+            var context = new ObjectContext(objectContext.SerializerContext, key.Key, keyDescriptor);
+            var keyString = scalarKeySerializer.ConvertTo(ref context);
+            return $"{key.Id}~{keyString}";
         }
 
         public IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
