@@ -1,13 +1,13 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using SharpYaml.Serialization.Logging;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Yaml.Serialization.Logging;
 using ILogger = SiliconStudio.Core.Diagnostics.ILogger;
 
 namespace SiliconStudio.Assets.Serializers
 {
-    public class YamlForwardLogger : SharpYaml.Serialization.Logging.ILogger
+    public class YamlForwardLogger : Core.Yaml.Serialization.Logging.ILogger
     {
         private readonly ILogger logger;
 

@@ -5,11 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using SharpYaml.Serialization;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Physics;
 using SiliconStudio.Xenko.Rendering.Lights;
@@ -1055,6 +1055,19 @@ namespace SiliconStudio.Xenko.Assets.Entities
                             }
                         }
                     }
+                }
+            }
+        }
+
+        class SceneSettingsIdentifiableUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile, OverrideUpgraderHint overrideHint)
+            {
+                if (overrideHint != OverrideUpgraderHint.Base)
+                {
+                    var sceneSettings = asset.SceneSettings;
+                    sceneSettings.Id = sceneSettings["~Id"];
+                    sceneSettings["~Id"] = DynamicYamlEmpty.Default;
                 }
             }
         }
