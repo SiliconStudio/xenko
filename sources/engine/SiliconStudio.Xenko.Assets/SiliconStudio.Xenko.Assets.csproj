@@ -323,7 +323,7 @@
     <Compile Include="Textures\Packing\AtlasTextureFactory.cs" />
     <Compile Include="Textures\Packing\TexturePackingMethod.cs" />
     <Compile Include="Textures\TextureQuality.cs" />
-    <Compile Include="Serializers\GenericDictionarySerializer.cs" />
+    <Compile Include="Serializers\ComputeColorParametersSerializer.cs" />
     <Compile Include="Serializers\ParameterKeySerializer.cs" />
     <Compile Include="SpriteFont\CharacterRegion.cs" />
     <Compile Include="SpriteFont\Compiler\BitmapImporter.cs" />
