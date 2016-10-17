@@ -6,10 +6,6 @@ Attributes:
     MicroSurface: !MaterialGlossinessMapFeature
         GlossinessMap: !ComputeFloat
             Value: 0.0
-    Diffuse: !MaterialDiffuseMapFeature
-        DiffuseMap: !ComputeColor
-            Value: {R: 0.72525, G: 0.718224168, B: 0.444215626, A: 1.0}
-    DiffuseModel: !MaterialDiffuseLambertModelFeature {}
     Specular: !MaterialMetalnessMapFeature
         MetalnessMap: !ComputeFloat
             Value: 0.07
@@ -20,6 +16,11 @@ Attributes:
             ~Id: 3a3cda69-ae3a-4b52-8942-76cb4a4a474b
         NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionGGX
             ~Id: 0f13cb04-9eee-468c-a0c5-5c7ded8b09b9
+    Emissive: !MaterialEmissiveMapFeature
+        EmissiveMap: !ComputeColor
+            Value: {R: 1.0, G: 0.0, B: 0.7874999, A: 1.0}
+        Intensity: !ComputeFloat
+            Value: 10.0
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
 Layers: []

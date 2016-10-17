@@ -1886,7 +1886,7 @@ Hierarchy:
                         Scale: {X: 0.106747746, Y: 0.2, Z: 0.2}
                     - !ModelComponent
                         ~Id: 7c69e7a3-350b-4677-a3bc-a7d8193e97e9
-                        Model: aad6ed71-54e9-4973-82e2-e57d7f37374c/9712b995-58c7-45b5-9abf-995207e79eed:Cube
+                        Model: aad6ed71-54e9-4973-82e2-e57d7f37374c/9712b995-58c7-45b5-9abf-995207e79eed:CameraCube
                         Materials:
                             - null
         -   Entity:
@@ -2531,7 +2531,7 @@ Hierarchy:
                             - null
                             - null
                             - null
-                    - !ThirdPersonPlatformer.AnimationController,ThirdPersonPlatformer.Game
+                    - !ThirdPersonPlatformer.Player.AnimationController,ThirdPersonPlatformer.Game
                         ~Id: faab8e97-45ac-4d3f-9375-495d32bc299f
                         AnimationComponent: 51a86f4d-298c-4fc4-964b-de29f9a624fc/c0b24758-fcad-47f3-a100-f94d96c5d325
                         AnimationIdle: 401e5ab2-c9b9-4912-a742-0668c81b3a87/5f286f7e-7d38-44cf-9bc1-3aad7be4f0fa:Animation/Idle
@@ -4536,7 +4536,7 @@ Hierarchy:
                         Scale: {X: 0.1, Y: 0.1, Z: 0.500064135}
                     - !ModelComponent
                         ~Id: 7c69e7a3-350b-4677-a3bc-a7d8193e97e9
-                        Model: aad6ed71-54e9-4973-82e2-e57d7f37374c/9712b995-58c7-45b5-9abf-995207e79eed:Cube
+                        Model: aad6ed71-54e9-4973-82e2-e57d7f37374c/9712b995-58c7-45b5-9abf-995207e79eed:CameraCube
                         Materials:
                             - null
         -   Entity:
@@ -6837,7 +6837,7 @@ Hierarchy:
                         Scale: {X: 0.2, Y: 0.2, Z: 0.2}
                     - !ModelComponent
                         ~Id: 7c69e7a3-350b-4677-a3bc-a7d8193e97e9
-                        Model: aad6ed71-54e9-4973-82e2-e57d7f37374c/9712b995-58c7-45b5-9abf-995207e79eed:Cube
+                        Model: aad6ed71-54e9-4973-82e2-e57d7f37374c/9712b995-58c7-45b5-9abf-995207e79eed:CameraCube
                         Materials:
                             - null
         -   Folder: Platform

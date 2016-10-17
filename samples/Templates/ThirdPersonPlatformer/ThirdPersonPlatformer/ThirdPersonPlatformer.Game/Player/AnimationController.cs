@@ -6,9 +6,8 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Animations;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Events;
-using ThirdPersonPlatformer.Player;
 
-namespace ThirdPersonPlatformer
+namespace ThirdPersonPlatformer.Player
 {
     public class AnimationController : SyncScript, IBlendTreeBuilder
     {
