@@ -334,7 +334,7 @@ namespace SiliconStudio.Xenko.Assets
                 {
                     using (var assetYaml = assetFile)
                     {
-                        UpdateCollectionNodes(assetYaml.RootNode);
+                        //UpdateCollectionNodes(assetYaml.RootNode);
                     }
                 }
             }
