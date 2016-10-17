@@ -97,20 +97,33 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         public virtual object ReadMemberValue(ref ObjectContext objectContext, IMemberDescriptor memberDescriptor, object memberValue,
             Type memberType)
         {
-            return objectContext.SerializerContext.ReadYaml(memberValue, memberType);
+            var memberObjectContext = new ObjectContext(objectContext.SerializerContext, memberValue, objectContext.SerializerContext.FindTypeDescriptor(memberType));
+            return ReadYaml(ref memberObjectContext);
         }
 
         public virtual object ReadCollectionItem(ref ObjectContext objectContext, object value, Type itemType, int index)
         {
-            return objectContext.SerializerContext.ReadYaml(value, itemType);
+            var itemObjectContext = new ObjectContext(objectContext.SerializerContext, value, objectContext.SerializerContext.FindTypeDescriptor(itemType));
+            return ReadYaml(ref itemObjectContext);
         }
 
         public virtual KeyValuePair<object, object> ReadDictionaryItem(ref ObjectContext objectContext, KeyValuePair<Type, Type> keyValueType)
         {
-            var keyResult = objectContext.SerializerContext.ReadYaml(null, keyValueType.Key);
-            var valueResult = objectContext.SerializerContext.ReadYaml(null, keyValueType.Value);
-
+            var keyResult = ReadDictionaryKey(ref objectContext, keyValueType.Key);
+            var valueResult = ReadDictionaryValue(ref objectContext, keyValueType.Value);
             return new KeyValuePair<object, object>(keyResult, valueResult);
+        }
+
+        public virtual object ReadDictionaryKey(ref ObjectContext objectContext, Type keyType)
+        {
+            var keyObjectContext = new ObjectContext(objectContext.SerializerContext, null, objectContext.SerializerContext.FindTypeDescriptor(keyType));
+            return ReadYaml(ref keyObjectContext);
+        }
+
+        public virtual object ReadDictionaryValue(ref ObjectContext objectContext, Type valueType)
+        {
+            var valueObjectContext = new ObjectContext(objectContext.SerializerContext, null, objectContext.SerializerContext.FindTypeDescriptor(valueType));
+            return ReadYaml(ref valueObjectContext);
         }
 
         public virtual void WriteMemberName(ref ObjectContext objectContext, IMemberDescriptor member, string name)
@@ -124,22 +137,54 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             });
         }
 
-        public virtual void WriteMemberValue(ref ObjectContext objectContext, IMemberDescriptor memberDescriptor, object memberValue,
-            Type memberType)
+        public virtual void WriteMemberValue(ref ObjectContext objectContext, IMemberDescriptor memberDescriptor, object memberValue, Type memberType)
         {
             // Push the style of the current member
-            objectContext.SerializerContext.WriteYaml(memberValue, memberType, memberDescriptor.Style);
+            var memberObjectContext = new ObjectContext(objectContext.SerializerContext, memberValue, objectContext.SerializerContext.FindTypeDescriptor(memberType)) { Style = memberDescriptor.Style };
+            WriteYaml(ref memberObjectContext);
         }
 
         public virtual void WriteCollectionItem(ref ObjectContext objectContext, object item, Type itemType, int index)
         {
-            objectContext.SerializerContext.WriteYaml(item, itemType);
+            var itemObjectcontext = new ObjectContext(objectContext.SerializerContext, item, objectContext.SerializerContext.FindTypeDescriptor(itemType));
+            WriteYaml(ref itemObjectcontext);
         }
 
         public virtual void WriteDictionaryItem(ref ObjectContext objectContext, KeyValuePair<object, object> keyValue, KeyValuePair<Type, Type> types)
         {
-            objectContext.SerializerContext.WriteYaml(keyValue.Key, types.Key);
-            objectContext.SerializerContext.WriteYaml(keyValue.Value, types.Value);
+            WriteDictionaryKey(ref objectContext, keyValue.Key, types.Key);
+            WriteDictionaryValue(ref objectContext, keyValue.Value, types.Value);
         }
+
+        public virtual void WriteDictionaryKey(ref ObjectContext objectContext, object value, Type keyType)
+        {
+            var itemObjectcontext = new ObjectContext(objectContext.SerializerContext, value, objectContext.SerializerContext.FindTypeDescriptor(keyType));
+            WriteYaml(ref itemObjectcontext);
+        }
+
+        public virtual void WriteDictionaryValue(ref ObjectContext objectContext, object value, Type valueType)
+        {
+            var itemObjectcontext = new ObjectContext(objectContext.SerializerContext, value, objectContext.SerializerContext.FindTypeDescriptor(valueType));
+            WriteYaml(ref itemObjectcontext);
+        }
+
+        protected object ReadYaml(ref ObjectContext objectContext)
+        {
+            var node = objectContext.SerializerContext.Reader.Parser.Current;
+            try
+            {
+                return objectContext.SerializerContext.Serializer.ObjectSerializer.ReadYaml(ref objectContext);
+            }
+            catch (Exception ex)
+            {
+                throw new YamlException(node.Start, node.End, "Error while deserializing node [{0}]".DoFormat(node), ex);
+            }
+        }
+
+        protected void WriteYaml(ref ObjectContext objectContext)
+        {
+            objectContext.SerializerContext.Serializer.ObjectSerializer.WriteYaml(ref objectContext);
+        }
+
     }
 }

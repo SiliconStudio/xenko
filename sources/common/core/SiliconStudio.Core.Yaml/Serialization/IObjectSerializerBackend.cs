@@ -81,6 +81,11 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <returns>The dictionary item (key,value) read from YAML stream.</returns>
         KeyValuePair<object, object> ReadDictionaryItem(ref ObjectContext objectContext, KeyValuePair<Type, Type> keyValueType);
 
+
+        object ReadDictionaryKey(ref ObjectContext objectContext, Type keyType);
+
+        object ReadDictionaryValue(ref ObjectContext objectContext, Type valueType);
+
         /// <summary>
         /// Writes the name of the member.
         /// </summary>
@@ -114,5 +119,9 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <param name="keyValue">The key value.</param>
         /// <param name="types">The types.</param>
         void WriteDictionaryItem(ref ObjectContext objectContext, KeyValuePair<object, object> keyValue, KeyValuePair<Type, Type> types);
+
+        void WriteDictionaryKey(ref ObjectContext objectContext, object value, Type keyType);
+
+        void WriteDictionaryValue(ref ObjectContext objectContext, object value, Type valueType);
     }
 }

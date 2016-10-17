@@ -43,6 +43,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using SiliconStudio.Core.Yaml.Events;
@@ -78,7 +79,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
                     }
 
                     // Handle aliasing
-                    arrayList[index++] = objectContext.SerializerContext.ReadYaml(null, arrayDescriptor.ElementType);
+                    arrayList[index++] = ReadYaml(objectContext.SerializerContext, arrayDescriptor.ElementType);
                 }
             }
             else
@@ -86,7 +87,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
                 var results = new List<object>();
                 while (!reader.Accept<SequenceEnd>())
                 {
-                    results.Add(objectContext.SerializerContext.ReadYaml(null, arrayDescriptor.ElementType));
+                    results.Add(ReadYaml(objectContext.SerializerContext, arrayDescriptor.ElementType));
                 }
 
                 // Handle aliasing
@@ -118,9 +119,33 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 
             foreach (var element in arrayList)
             {
-                objectContext.SerializerContext.WriteYaml(element, arrayDescriptor.ElementType);
+                WriteYaml(objectContext.SerializerContext, element, arrayDescriptor.ElementType);
             }
             objectContext.Writer.Emit(new SequenceEndEventInfo(value, valueType));
         }
+
+        private static object ReadYaml(SerializerContext context, Type expectedType)
+        {
+            var node = context.Reader.Parser.Current;
+            try
+            {
+                var objectContext = new ObjectContext(context, null, context.FindTypeDescriptor(expectedType));
+                // TODO: we should go through the ObjectSerializerBackend, not directly use the ObjectSerializer!
+                return context.Serializer.ObjectSerializer.ReadYaml(ref objectContext);
+            }
+            catch (Exception ex)
+            {
+                throw new YamlException(node.Start, node.End, "Error while deserializing node [{0}]".DoFormat(node), ex);
+            }
+        }
+
+        private static void WriteYaml(SerializerContext context, object value, Type expectedType)
+        {
+            var objectContext = new ObjectContext(context, value, context.FindTypeDescriptor(expectedType));
+            // TODO: we should go through the ObjectSerializerBackend, not directly use the ObjectSerializer!
+            context.Serializer.ObjectSerializer.WriteYaml(ref objectContext);
+        }
+
+
     }
 }

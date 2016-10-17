@@ -34,19 +34,19 @@ namespace SiliconStudio.Xenko.Assets.Serializers
         protected override void WriteDictionaryItem(ref ObjectContext objectContext, KeyValuePair<object, object> keyValue, KeyValuePair<Type, Type> types)
         {
             var propertyKey = (PropertyKey)keyValue.Key;
-            objectContext.SerializerContext.WriteYaml(propertyKey, types.Key);
+            objectContext.SerializerContext.ObjectSerializerBackend.WriteDictionaryKey(ref objectContext, propertyKey, types.Key);
 
             // Deduce expected value type from PropertyKey
-            objectContext.SerializerContext.WriteYaml(keyValue.Value, propertyKey.PropertyType);
+            objectContext.SerializerContext.ObjectSerializerBackend.WriteDictionaryKey(ref objectContext, keyValue.Value, propertyKey.PropertyType);
         }
 
         protected override KeyValuePair<object, object> ReadDictionaryItem(ref ObjectContext objectContext, KeyValuePair<Type, Type> keyValueType)
         {
             // Read PropertyKey
-            var keyResult = (PropertyKey)objectContext.SerializerContext.ReadYaml(null, keyValueType.Key);
+            var keyResult = (PropertyKey)objectContext.SerializerContext.ObjectSerializerBackend.ReadDictionaryKey(ref objectContext, keyValueType.Key);
 
             // Deduce expected value type from PropertyKey
-            var valueResult = objectContext.SerializerContext.ReadYaml(null, keyResult.PropertyType);
+            var valueResult = (PropertyKey)objectContext.SerializerContext.ObjectSerializerBackend.ReadDictionaryKey(ref objectContext, keyResult.PropertyType);
 
             return new KeyValuePair<object, object>(keyResult, valueResult);
         }

@@ -218,12 +218,13 @@ namespace SiliconStudio.Core.Yaml.Serialization
                 defaultEmitter.ForceIndentLess = settings.IndentLess;
             }
 
-            var context = new SerializerContext(this, contextSettings) {Emitter = emitter, Writer = CreateEmitter(emitter)};
+            var context = new SerializerContext(this, contextSettings) { Emitter = emitter, Writer = CreateEmitter(emitter) };
 
             // Serialize the document
             context.Writer.StreamStart();
             context.Writer.DocumentStart();
-            context.WriteYaml(graph, type);
+            var objectContext = new ObjectContext(context, graph, context.FindTypeDescriptor(type)) { Style = YamlStyle.Any };
+            context.Serializer.ObjectSerializer.WriteYaml(ref objectContext);
             context.Writer.DocumentEnd();
             context.Writer.StreamEnd();
         }
@@ -526,7 +527,16 @@ namespace SiliconStudio.Core.Yaml.Serialization
             if (!reader.Accept<DocumentEnd>() && !reader.Accept<StreamEnd>())
             {
                 context = new SerializerContext(this, contextSettings) {Reader = reader};
-                result = context.ReadYaml(existingObject, expectedType);
+                var node = context.Reader.Parser.Current;
+                try
+                {
+                    var objectContext = new ObjectContext(context, existingObject, context.FindTypeDescriptor(expectedType));
+                    result = context.Serializer.ObjectSerializer.ReadYaml(ref objectContext);
+                }
+                catch (Exception ex)
+                {
+                    throw new YamlException(node.Start, node.End, "Error while deserializing node [{0}]".DoFormat(node), ex);
+                }
             }
 
             if (hasDocumentStart)

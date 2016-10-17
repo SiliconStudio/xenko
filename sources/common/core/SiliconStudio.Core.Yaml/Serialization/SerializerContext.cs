@@ -44,7 +44,6 @@
 // SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Schemas;
 
@@ -139,30 +138,6 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <summary>
         /// Gets the dictionary of custom properties associated to this context.
         /// </summary>
-
-        /// <summary>
-        /// The default function to read an object from the current Yaml stream.
-        /// </summary>
-        /// <param name="value">The value of the receiving object, may be null.</param>
-        /// <param name="expectedType">The expected type.</param>
-        /// <returns>System.Object.</returns>
-        public object ReadYaml(object value, Type expectedType)
-        {
-            var node = Reader.Parser.Current;
-            try
-            {
-                var objectContext = new ObjectContext(this, value, FindTypeDescriptor(expectedType));
-                return Serializer.ObjectSerializer.ReadYaml(ref objectContext);
-            }
-            catch (YamlException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                throw new YamlException(node.Start, node.End, "Error while deserializing node [{0}]".DoFormat(node), ex);
-            }
-        }
         public ContextPropertyCollection Properties { get; } = new ContextPropertyCollection();
 
         /// <summary>
@@ -182,15 +157,6 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// </summary>
         /// <value>The emitter.</value>
         public IEmitter Emitter { get; internal set; }
-
-        /// <summary>
-        /// The default function to write an object to Yaml
-        /// </summary>
-        public void WriteYaml(object value, Type expectedType, YamlStyle style = YamlStyle.Any)
-        {
-            var objectContext = new ObjectContext(this, value, FindTypeDescriptor(expectedType)) {Style = style};
-            Serializer.ObjectSerializer.WriteYaml(ref objectContext);
-        }
 
         /// <summary>
         /// Finds the type descriptor for the specified type.
