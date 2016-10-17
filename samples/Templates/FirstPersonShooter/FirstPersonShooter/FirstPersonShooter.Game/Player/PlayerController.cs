@@ -12,12 +12,12 @@ namespace FirstPersonShooter.Player
         [Display("Run Speed")]
         public float MaxRunSpeed { get; set; } = 5;
 
+        public static readonly EventKey<float> RunSpeedEventKey = new EventKey<float>();
+
         // This component is the physics representation of a controllable character
         private CharacterComponent character;
 
         private readonly EventReceiver<Vector3> moveDirectionEvent = new EventReceiver<Vector3>(PlayerInput.MoveDirectionEventKey);
-
-        public static readonly EventKey<float>  RunSpeedEventKey = new EventKey<float>();
 
         /// <summary>
         /// Called when the script is first initialized

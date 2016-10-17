@@ -1,15 +1,15 @@
 using System;
 using System.Threading.Tasks;
 using FirstPersonShooter.Player;
-using FirstPersonShooter.Trigger;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Events;
 using SiliconStudio.Xenko.Physics;
 
 namespace FirstPersonShooter
 {
+    /// <summary>
+    /// Will spawn some visual effects when the gun shoots
+    /// </summary>
     public class EffectController : TriggerScript
     {      
         private readonly EventReceiver<WeaponFiredResult> weaponFiredEvent = new EventReceiver<WeaponFiredResult>(WeaponScript.WeaponFired);

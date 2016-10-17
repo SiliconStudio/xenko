@@ -998,7 +998,7 @@ Hierarchy:
                         Children: []
                         Position: {X: -16.0, Y: 1.0, Z: -12.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 0.8, Y: 0.8, Z: 0.8}
+                        Scale: {X: 0.5, Y: 0.5, Z: 0.5}
                     - !ModelComponent
                         ~Id: 3116cafa-b3e9-49a2-97a6-e1832c02baf6
                         Model: 86c3321f-d097-4945-ad79-7de6858251b6/c61e9996-a1b6-4e59-83e8-a1842c1b4888:VRBox/BoxA
@@ -1015,7 +1015,7 @@ Hierarchy:
                         CcdSweptSphereRadius: 0.0
                         IsTrigger: false
                         IsKinematic: false
-                        Mass: 1.0
+                        Mass: 2.0
                         LinearDamping: 0.0
                         AngularDamping: 0.0
                         OverrideGravity: false
@@ -1344,7 +1344,7 @@ Hierarchy:
                         Children: []
                         Position: {X: 9.0, Y: 1.0, Z: -12.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 1.2, Y: 1.2, Z: 1.2}
+                        Scale: {X: 1.5, Y: 1.5, Z: 1.5}
                     - !ModelComponent
                         ~Id: 3116cafa-b3e9-49a2-97a6-e1832c02baf6
                         Model: 86c3321f-d097-4945-ad79-7de6858251b6/c61e9996-a1b6-4e59-83e8-a1842c1b4888:VRBox/BoxA
@@ -1361,7 +1361,7 @@ Hierarchy:
                         CcdSweptSphereRadius: 0.0
                         IsTrigger: false
                         IsKinematic: false
-                        Mass: 3.5
+                        Mass: 8.0
                         LinearDamping: 0.0
                         AngularDamping: 0.0
                         OverrideGravity: false
@@ -2542,7 +2542,7 @@ Hierarchy:
                         ~Id: cc66f4e3-fab7-4e4a-816d-3113bb7c953a
                         MaxShootDistance: 50.0
                         ShootImpulse: 12.0
-                        Cooldown: 0.3
+                        Cooldown: 0.4
                         ReloadCooldown: 2.0
                         RemainingBullets: a9b8bf4f-39f5-4569-88e0-3c68fdbb5be9/722ddea3-2ffa-4dc2-83c3-44dedd18fc64
         -   BaseId: f73cb16c-30b9-4200-b872-56885e7023e2
@@ -3657,7 +3657,7 @@ Hierarchy:
                         CcdSweptSphereRadius: 0.0
                         IsTrigger: false
                         IsKinematic: false
-                        Mass: 2.0
+                        Mass: 4.0
                         LinearDamping: 0.0
                         AngularDamping: 0.0
                         OverrideGravity: false
@@ -4157,7 +4157,7 @@ Hierarchy:
                         Children: []
                         Position: {X: 3.000001, Y: 4.0, Z: -3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 2.0, Y: 2.0, Z: 2.0}
+                        Scale: {X: 1.5, Y: 1.5, Z: 1.5}
                     - !ModelComponent
                         ~Id: 5a93fbc5-3ffd-4600-b45d-05fdc2409d10
                         Model: b4b79a21-0724-4f4e-a736-c714f5b8bf43/e51b50db-d4e0-45c1-bf2e-47440aab2217:VRBox/BoxE
@@ -4174,7 +4174,7 @@ Hierarchy:
                         CcdSweptSphereRadius: 0.0
                         IsTrigger: false
                         IsKinematic: false
-                        Mass: 16.0
+                        Mass: 8.0
                         LinearDamping: 0.0
                         AngularDamping: 0.0
                         OverrideGravity: false
@@ -4475,7 +4475,7 @@ Hierarchy:
                         CcdSweptSphereRadius: 0.0
                         IsTrigger: false
                         IsKinematic: false
-                        Mass: 2.0
+                        Mass: 4.0
                         LinearDamping: 0.0
                         AngularDamping: 0.0
                         OverrideGravity: false
@@ -5061,6 +5061,9 @@ Hierarchy:
                         KeysDown:
                             - Down
                             - S
+                        KeysReload:
+                            - E
+                            - R
         -   BaseId: fbdff817-df62-4a56-83f8-19a9d12589b8
             BasePartInstanceId: d0907d88-5b87-4f54-8122-72e391baaedc
             Entity:
@@ -5364,7 +5367,7 @@ Hierarchy:
                         CcdSweptSphereRadius: 0.0
                         IsTrigger: false
                         IsKinematic: false
-                        Mass: 0.8
+                        Mass: 2.0
                         LinearDamping: 0.0
                         AngularDamping: 0.0
                         OverrideGravity: false
@@ -5906,7 +5909,7 @@ Hierarchy:
                         CcdSweptSphereRadius: 0.0
                         IsTrigger: false
                         IsKinematic: false
-                        Mass: 2.0
+                        Mass: 4.0
                         LinearDamping: 0.0
                         AngularDamping: 0.0
                         OverrideGravity: false
@@ -6725,7 +6728,7 @@ Hierarchy:
                         CcdSweptSphereRadius: 0.0
                         IsTrigger: false
                         IsKinematic: false
-                        Mass: 6.75
+                        Mass: 8.0
                         LinearDamping: 0.0
                         AngularDamping: 0.0
                         OverrideGravity: false
@@ -7366,7 +7369,7 @@ Hierarchy:
                         Children: []
                         Position: {X: 15.0, Y: 1.0, Z: 3.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-                        Scale: {X: 0.8, Y: 0.8, Z: 0.8}
+                        Scale: {X: 0.5, Y: 0.5, Z: 0.5}
                     - !ModelComponent
                         ~Id: 83c8a7a2-8317-4a43-9a49-e615d0aa9897
                         Model: 857abbde-f849-4fd8-ac97-3b2e183eb337/0097702b-6bb2-46a2-891a-c4a7beeb7329:VRBox/BoxF
@@ -7383,7 +7386,7 @@ Hierarchy:
                         CcdSweptSphereRadius: 0.0
                         IsTrigger: false
                         IsKinematic: false
-                        Mass: 1.0
+                        Mass: 2.0
                         LinearDamping: 0.0
                         AngularDamping: 0.0
                         OverrideGravity: false

@@ -1,8 +1,4 @@
-﻿// Copyright (C) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed as part of the Xenko Game Studio Samples
-// Detailed license can be found at: http://xenko.com/legal/eula/
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
@@ -17,13 +13,13 @@ namespace FirstPersonShooter.Player
         /// <summary>
         /// Raised every frame with the intended direction of movement from the player.
         /// </summary>
-        // TODO Should not be static, but allow binding between player and controller
-        public static readonly EventKey<Vector3> MoveDirectionEventKey = new EventKey<Vector3>();
+        public static readonly EventKey<Vector3> MoveDirectionEventKey = new EventKey<Vector3>();       // This can be made non-static and require specific binding to the scripts instead
 
-        public static readonly EventKey<Vector2> CameraDirectionEventKey = new EventKey<Vector2>();
+        public static readonly EventKey<Vector2> CameraDirectionEventKey = new EventKey<Vector2>();     // This can be made non-static and require specific binding to the scripts instead
 
-        public static readonly EventKey<bool> ShootEventKey = new EventKey<bool>();
-        private bool shootButtonDown = false;
+        public static readonly EventKey<bool> ShootEventKey = new EventKey<bool>();                     // This can be made non-static and require specific binding to the scripts instead
+
+        public static readonly EventKey<bool> ReloadEventKey = new EventKey<bool>();                    // This can be made non-static and require specific binding to the scripts instead
 
         public int ControllerIndex { get; set; }
 
@@ -44,11 +40,16 @@ namespace FirstPersonShooter.Player
 
         public List<Keys> KeysDown { get; } = new List<Keys>();
 
+        public List<Keys> KeysReload { get; } = new List<Keys>();
+
         public override void Update()
         {
-            // Character movement: should be camera-aware
+            // Character movement
+            //  The character movement can be controlled by a game controller or a keyboard
+            //  The character receives input in 3D world space, so that it can be controlled by an AI script as well
+            //  For this reason we map the 2D user input to a 3D movement using the current camera
             {
-                // Left stick: movement
+                // Game controller: left stick
                 var moveDirection = Input.GetLeftThumb(ControllerIndex);
                 var isDeadZoneLeft = moveDirection.Length() < DeadZone;
                 if (isDeadZoneLeft)
@@ -56,7 +57,7 @@ namespace FirstPersonShooter.Player
                 else
                     moveDirection.Normalize();
 
-                // Keyboard: movement
+                // Keyboard
                 if (KeysLeft.Any(key => Input.IsKeyDown(key)))
                     moveDirection += -Vector2.UnitX;
                 if (KeysRight.Any(key => Input.IsKeyDown(key)))
@@ -69,14 +70,15 @@ namespace FirstPersonShooter.Player
                 // Broadcast the movement vector as a world-space Vector3 to allow characters to be controlled
                 var worldSpeed = (Camera != null)
                     ? Utils.LogicDirectionToWorldDirection(moveDirection, Camera, Vector3.UnitY)
-                    : new Vector3(moveDirection.X, 0, moveDirection.Y);
+                    : new Vector3(moveDirection.X, 0, moveDirection.Y); // If we don't have the correct camera attached we can send the directions anyway, but they probably won't match
 
                 MoveDirectionEventKey.Broadcast(worldSpeed);
             }
 
-            // Camera rotation: left-right rotates the camera horizontally while up-down controls its altitude
+            // Camera rotation
+            //  Camera rotation is ALWAYS in camera space, so we don't need to account for View or Projection matrices
             {
-                // Right stick: camera rotation
+                // Game controller: right stick
                 var cameraDirection = Input.GetRightThumb(ControllerIndex);
                 var isDeadZoneRight = cameraDirection.Length() < DeadZone;
                 if (isDeadZoneRight)
@@ -84,7 +86,8 @@ namespace FirstPersonShooter.Player
                 else
                     cameraDirection.Normalize();
 
-                // Mouse-based camera rotation. Only enabled after you click the screen to lock your cursor, pressing escape cancels this
+                // Mouse-based camera rotation.
+                //  Only enabled after you click the screen to lock your cursor, pressing escape will cancel it.
                 if (Input.IsMouseButtonDown(MouseButton.Left))
                     Input.LockMousePosition(true);
                 if (Input.IsKeyPressed(Keys.Escape))
@@ -99,15 +102,26 @@ namespace FirstPersonShooter.Player
             }
 
             {
-                // Controller: shooting
-                var isShootDown = Input.GetRightTrigger(ControllerIndex) > 0.2f;
-                var didShoot = (!shootButtonDown && isShootDown);
-                shootButtonDown = isShootDown;
+                // Controller: Right trigger
+                // Mouse: Left button, Tap events
+                var didShoot = Input.GetRightTrigger(ControllerIndex) > 0.2f;   // This will allow for continuous shooting
 
                 if (Input.PointerEvents.Any(x => x.State == PointerState.Down))
                     didShoot = true;
+                    
+                if (Input.HasMouse && Input.IsMouseButtonDown(MouseButton.Left))                  // This will allow for continuous shooting
+                    didShoot = true;
 
                 ShootEventKey.Broadcast(didShoot);
+            }
+
+            {
+                // Reload weapon
+                var isReloading = Input.IsGamePadButtonDown(GamePadButton.X, ControllerIndex);
+                if (KeysReload.Any(key => Input.IsKeyDown(key)))
+                    isReloading = true;
+
+                ReloadEventKey.Broadcast(isReloading);
             }
         }
     }

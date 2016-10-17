@@ -119,9 +119,8 @@ namespace FirstPersonShooter.Player
             isReloading |= didReload;
 
             // Update current animation
-            var speedFactor = 1;
             var currentTicks = TimeSpan.FromTicks((long)(currentTime * currentClip.Duration.Ticks));
-            var updatedTicks = currentTicks.Ticks + (long)(Game.DrawTime.Elapsed.Ticks * TimeFactor * speedFactor);
+            var updatedTicks = currentTicks.Ticks + (long)(Game.DrawTime.Elapsed.Ticks * TimeFactor);
 
             var currentClipFinished = (updatedTicks >= currentClip.Duration.Ticks);
 

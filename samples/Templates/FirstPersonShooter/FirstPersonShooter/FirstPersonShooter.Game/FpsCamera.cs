@@ -1,8 +1,5 @@
-using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Engine.Processors;
-using SiliconStudio.Xenko.Input;
 using System;
 using System.Threading.Tasks;
 using FirstPersonShooter.Player;

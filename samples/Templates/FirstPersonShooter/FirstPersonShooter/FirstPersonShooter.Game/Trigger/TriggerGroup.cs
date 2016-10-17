@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Rendering.Materials;
 
 namespace FirstPersonShooter.Trigger
 {
@@ -22,8 +19,6 @@ namespace FirstPersonShooter.Trigger
 
         public List<TriggerEvent> FindAll(Predicate<TriggerEvent> match)
         {
-            //TriggerEvents.
-
             return TriggerEvents.FindAll(match);
         }
 

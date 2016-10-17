@@ -23,6 +23,8 @@ namespace FirstPersonShooter.Player
 
         private readonly EventReceiver<bool> shootEvent = new EventReceiver<bool>(PlayerInput.ShootEventKey);
 
+        private readonly EventReceiver<bool> reloadEvent = new EventReceiver<bool>(PlayerInput.ReloadEventKey);
+
         public float MaxShootDistance { get; set; } = 100f;
 
         public float ShootImpulse { get; set; } = 5f;
@@ -67,20 +69,24 @@ namespace FirstPersonShooter.Player
         /// </summary>
         public override void Update()
         {
+            bool didShoot;
+            shootEvent.TryReceive(out didShoot);
+
+            bool didReload;
+            reloadEvent.TryReceive(out didReload);
+
             cooldownRemaining = (cooldownRemaining > 0) ? (cooldownRemaining - this.GetSimulation().FixedTimeStep) : 0f;
             if (cooldownRemaining > 0)
                 return; // Can't shoot yet
 
-            bool didShoot;
-            shootEvent.TryReceive(out didShoot);
-            if (!didShoot)
-                return;
-
-            if (remainingBullets == 0)
+            if ((remainingBullets == 0 && didShoot) || (remainingBullets < 9 && didReload))
             {
                 ReloadWeapon();
                 return;
             }
+
+            if (!didShoot)
+                return;
 
             remainingBullets--;
             UpdateBulletsLED();
