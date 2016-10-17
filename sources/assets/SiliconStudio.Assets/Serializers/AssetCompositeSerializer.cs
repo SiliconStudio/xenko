@@ -4,11 +4,11 @@
 using System;
 using System.Linq;
 using System.Threading;
-using SharpYaml.Serialization;
-using SharpYaml.Serialization.Serializers;
 using SiliconStudio.Core.Reflection;
-using ITypeDescriptor = SharpYaml.Serialization.ITypeDescriptor;
-using SerializerContext = SharpYaml.Serialization.SerializerContext;
+using SiliconStudio.Core.Yaml.Serialization;
+using SiliconStudio.Core.Yaml.Serialization.Serializers;
+using ITypeDescriptor = SiliconStudio.Core.Yaml.Serialization.ITypeDescriptor;
+using SerializerContext = SiliconStudio.Core.Yaml.Serialization.SerializerContext;
 
 namespace SiliconStudio.Assets.Serializers
 {

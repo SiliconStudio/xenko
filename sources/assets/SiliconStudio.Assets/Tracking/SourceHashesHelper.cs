@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using SharpYaml.Serialization;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Storage;
+using SiliconStudio.Core.Yaml.Serialization;
+using IMemberDescriptor = SiliconStudio.Core.Yaml.Serialization.IMemberDescriptor;
+using ObjectDescriptor = SiliconStudio.Core.Yaml.Serialization.Descriptors.ObjectDescriptor;
 
 namespace SiliconStudio.Assets.Tracking
 {
@@ -108,7 +110,7 @@ namespace SiliconStudio.Assets.Tracking
             shadow[key] = dictionary;
         }
 
-        internal static void AddSourceHashesMember(SharpYaml.Serialization.Descriptors.ObjectDescriptor objectDescriptor, List<SharpYaml.Serialization.IMemberDescriptor> memberDescriptors)
+        internal static void AddSourceHashesMember(ObjectDescriptor objectDescriptor, List<IMemberDescriptor> memberDescriptors)
         {
             var type = objectDescriptor.Type;
             if (!typeof(Asset).IsAssignableFrom(type))
