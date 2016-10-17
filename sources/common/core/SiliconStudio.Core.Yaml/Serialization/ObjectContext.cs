@@ -44,8 +44,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
             SerializerContext = serializerContext;
             Instance = instance;
             Descriptor = descriptor;
-            // TODO: switch to PropertyContainer!
-            Properties = new Dictionary<object, object>();
+            Properties = new ContextPropertyCollection();
         }
 
         /// <summary>
@@ -105,6 +104,6 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <summary>
         /// The dictionary containing custom properties for this context.
         /// </summary>
-        public Dictionary<object, object> Properties { get; set; }
+        public ContextPropertyCollection Properties { get; }
     }
 }

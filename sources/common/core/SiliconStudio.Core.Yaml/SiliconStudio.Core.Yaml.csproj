@@ -44,6 +44,7 @@
     <Compile Include="Events\SequenceStart.cs" />
     <Compile Include="MemoryParser.cs" />
     <Compile Include="Serialization\AnchorEventEmitter.cs" />
+    <Compile Include="Serialization\ContextPropertyCollection.cs" />
     <Compile Include="Serialization\DefaultNamingConvention.cs" />
     <Compile Include="Serialization\DescriptorCategory.cs" />
     <Compile Include="Serialization\Descriptors\DefaultKeyComparer.cs" />

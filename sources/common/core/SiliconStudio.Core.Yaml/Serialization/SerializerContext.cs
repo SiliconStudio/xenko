@@ -139,7 +139,6 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <summary>
         /// Gets the dictionary of custom properties associated to this context.
         /// </summary>
-        public Dictionary<object, object> Properties { get; } = new Dictionary<object, object>();
 
         /// <summary>
         /// The default function to read an object from the current Yaml stream.
@@ -164,6 +163,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
                 throw new YamlException(node.Start, node.End, "Error while deserializing node [{0}]".DoFormat(node), ex);
             }
         }
+        public ContextPropertyCollection Properties { get; } = new ContextPropertyCollection();
 
         /// <summary>
         /// Gets or sets the type of the create.
