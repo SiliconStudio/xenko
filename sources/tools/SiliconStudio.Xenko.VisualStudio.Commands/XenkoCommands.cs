@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands
     {
         public void Initialize(string xenkoSdkDir)
         {
-            DirectoryHelper.packageDirectoryOverride = xenkoSdkDir;
+            DirectoryHelper.PackageDirectoryOverride = xenkoSdkDir;
             // Don't necessarely initialize the shaders
             //XenkoShaderParser.Initialize();
         }
