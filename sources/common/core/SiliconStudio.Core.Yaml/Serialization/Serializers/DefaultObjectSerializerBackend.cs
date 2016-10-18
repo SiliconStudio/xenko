@@ -107,13 +107,6 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             return ReadYaml(ref itemObjectContext);
         }
 
-        public virtual KeyValuePair<object, object> ReadDictionaryItem(ref ObjectContext objectContext, KeyValuePair<Type, Type> keyValueType)
-        {
-            var keyResult = ReadDictionaryKey(ref objectContext, keyValueType.Key);
-            var valueResult = ReadDictionaryValue(ref objectContext, keyValueType.Value);
-            return new KeyValuePair<object, object>(keyResult, valueResult);
-        }
-
         public virtual object ReadDictionaryKey(ref ObjectContext objectContext, Type keyType)
         {
             var keyObjectContext = new ObjectContext(objectContext.SerializerContext, null, objectContext.SerializerContext.FindTypeDescriptor(keyType));
@@ -150,15 +143,9 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             WriteYaml(ref itemObjectcontext);
         }
 
-        public virtual void WriteDictionaryItem(ref ObjectContext objectContext, KeyValuePair<object, object> keyValue, KeyValuePair<Type, Type> types)
+        public virtual void WriteDictionaryKey(ref ObjectContext objectContext, object key, Type keyType)
         {
-            WriteDictionaryKey(ref objectContext, keyValue.Key, types.Key);
-            WriteDictionaryValue(ref objectContext, keyValue.Value, types.Value);
-        }
-
-        public virtual void WriteDictionaryKey(ref ObjectContext objectContext, object value, Type keyType)
-        {
-            var itemObjectcontext = new ObjectContext(objectContext.SerializerContext, value, objectContext.SerializerContext.FindTypeDescriptor(keyType));
+            var itemObjectcontext = new ObjectContext(objectContext.SerializerContext, key, objectContext.SerializerContext.FindTypeDescriptor(keyType));
             WriteYaml(ref itemObjectcontext);
         }
 

@@ -184,7 +184,9 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         /// <returns>KeyValuePair{System.ObjectSystem.Object}.</returns>
         protected virtual KeyValuePair<object, object> ReadDictionaryItem(ref ObjectContext objectContext, KeyValuePair<Type, Type> keyValueType)
         {
-            return objectContext.ObjectSerializerBackend.ReadDictionaryItem(ref objectContext, keyValueType);
+            var keyResult = objectContext.ObjectSerializerBackend.ReadDictionaryKey(ref objectContext, keyValueType.Key);
+            var valueResult = objectContext.ObjectSerializerBackend.ReadDictionaryValue(ref objectContext, keyValueType.Value);
+            return new KeyValuePair<object, object>(keyResult, valueResult);
         }
 
         /// <summary>
@@ -218,7 +220,8 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         /// <param name="keyValue">The key value.</param>
         protected virtual void WriteDictionaryItem(ref ObjectContext objectContext, KeyValuePair<object, object> keyValue, KeyValuePair<Type, Type> types)
         {
-            objectContext.ObjectSerializerBackend.WriteDictionaryItem(ref objectContext, keyValue, types);
+            objectContext.ObjectSerializerBackend.WriteDictionaryKey(ref objectContext, keyValue.Key, types.Key);
+            objectContext.ObjectSerializerBackend.WriteDictionaryValue(ref objectContext, keyValue.Value, types.Value);
         }
     }
 }

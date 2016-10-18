@@ -19,7 +19,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
 
 namespace SiliconStudio.Core.Yaml.Serialization
@@ -74,16 +73,19 @@ namespace SiliconStudio.Core.Yaml.Serialization
         object ReadCollectionItem(ref ObjectContext objectContext, object value, Type itemType, int index);
 
         /// <summary>
-        /// Reads the dictionary item from the current YAML stream.
+        /// Reads the key of the dictionary item from the current YAML stream.
         /// </summary>
         /// <param name="objectContext">The object context.</param>
-        /// <param name="keyValueType">Type of the key value.</param>
-        /// <returns>The dictionary item (key,value) read from YAML stream.</returns>
-        KeyValuePair<object, object> ReadDictionaryItem(ref ObjectContext objectContext, KeyValuePair<Type, Type> keyValueType);
-
-
+        /// <param name="keyType">Type of the key.</param>
+        /// <returns>The key of the dictionary item read from YAML stream.</returns>
         object ReadDictionaryKey(ref ObjectContext objectContext, Type keyType);
 
+        /// <summary>
+        /// Reads the value of the dictionary item from the current YAML stream.
+        /// </summary>
+        /// <param name="objectContext">The object context.</param>
+        /// <param name="valueType">Type of the value.</param>
+        /// <returns>The value of the dictionary item read from YAML stream.</returns>
         object ReadDictionaryValue(ref ObjectContext objectContext, Type valueType);
 
         /// <summary>
@@ -113,15 +115,19 @@ namespace SiliconStudio.Core.Yaml.Serialization
         void WriteCollectionItem(ref ObjectContext objectContext, object item, Type itemType, int index);
 
         /// <summary>
-        /// Writes the dictionary item.
+        /// Writes the key of the dictionary item.
         /// </summary>
         /// <param name="objectContext">The object context.</param>
-        /// <param name="keyValue">The key value.</param>
-        /// <param name="types">The types.</param>
-        void WriteDictionaryItem(ref ObjectContext objectContext, KeyValuePair<object, object> keyValue, KeyValuePair<Type, Type> types);
+        /// <param name="key">The key of the dictionary item.</param>
+        /// <param name="keyType">Type of the key.</param>
+        void WriteDictionaryKey(ref ObjectContext objectContext, object key, Type keyType);
 
-        void WriteDictionaryKey(ref ObjectContext objectContext, object value, Type keyType);
-
+        /// <summary>
+        /// Writes the value of the dictionary item.
+        /// </summary>
+        /// <param name="objectContext">The object context.</param>
+        /// <param name="value">The value of the dictionary item.</param>
+        /// <param name="valueType">Type of the value.</param>
         void WriteDictionaryValue(ref ObjectContext objectContext, object value, Type valueType);
     }
 }

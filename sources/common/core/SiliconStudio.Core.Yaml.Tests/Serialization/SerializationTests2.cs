@@ -1062,29 +1062,25 @@ G_ListCustom: {Name: name4, ~Items: [1, 2, 3, 4, 5, 6, 7]}";
                 return memberName;
             }
 
-            public override KeyValuePair<object, object> ReadDictionaryItem(ref ObjectContext objectContext, KeyValuePair<Type, Type> keyValueType)
+            public override object ReadDictionaryKey(ref ObjectContext objectContext, Type keyType)
             {
-                var item = base.ReadDictionaryItem(ref objectContext, keyValueType);
-                var itemKey = item.Key as string;
+                var itemKey = base.ReadDictionaryKey(ref objectContext, keyType) as string;
                 if (itemKey != null && itemKey.EndsWith("!"))
                 {
                     itemKey = itemKey.Substring(0, itemKey.Length - 1);
                     SpecialKeys.Add(new Tuple<object, object>(objectContext.Instance, itemKey));
-                    return new KeyValuePair<object, object>(itemKey, item.Value);
                 }
-                return item;
+                return itemKey;
             }
 
-
-            public override void WriteDictionaryItem(ref ObjectContext objectContext, KeyValuePair<object, object> keyValue, KeyValuePair<Type, Type> types)
+            public override void WriteDictionaryKey(ref ObjectContext objectContext, object key, Type keyType)
             {
-                var itemKey = keyValue.Key as string;
+                var itemKey = key as string;
                 if (itemKey != null && (itemKey.Contains("Name") || itemKey.Contains("Test")))
                 {
-                    keyValue = new KeyValuePair<object, object>(itemKey + "!", keyValue.Value);
+                    itemKey = itemKey + "!";
                 }
-
-                base.WriteDictionaryItem(ref objectContext, keyValue, types);
+                base.WriteDictionaryKey(ref objectContext, itemKey, keyType);
             }
 
             public override void WriteMemberName(ref ObjectContext objectContext, IMemberDescriptor member, string name)
