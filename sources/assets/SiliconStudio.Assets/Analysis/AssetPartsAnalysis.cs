@@ -38,14 +38,14 @@ namespace SiliconStudio.Assets.Analysis
             // Sort again the hierarchy (since the Ids changed)
             hierarchy.Parts.Sort();
         }
-        
+
         /// <summary>
-        /// 
+        /// Assigns new unique identifiers for part groups in the given <paramref name="hierarchy"/>.
         /// </summary>
+        /// <seealso cref="IAssetPartDesign{T}.BasePartInstanceId"/>.
         /// <typeparam name="TAssetPartDesign"></typeparam>
         /// <typeparam name="TAssetPart">The underlying type of part.</typeparam>
-        /// <param name="hierarchy"></param>
-        // FIXME: find a better name for this method and fill the summary
+        /// <param name="hierarchy">The hierarchy which part groups should have new identifiers.</param>
         public static void FixPartGroups<TAssetPartDesign, TAssetPart>(AssetCompositeHierarchyData<TAssetPartDesign, TAssetPart> hierarchy)
             where TAssetPartDesign : class, IAssetPartDesign<TAssetPart>
             where TAssetPart : IIdentifiable
