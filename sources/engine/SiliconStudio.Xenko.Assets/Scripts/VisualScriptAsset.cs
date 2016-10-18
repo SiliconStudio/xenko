@@ -5,6 +5,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Xenko.Assets.Scripts
@@ -16,7 +17,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
     public class VisualScriptAsset : AssetComposite, IProjectFileGeneratorAsset
     {
         [DataMember(0)]
-        public List<Variable> Variables { get; } = new List<Variable>();
+        public TrackingCollection<Variable> Variables { get; } = new TrackingCollection<Variable>();
 
         [DataMember(10)]
         public AssetPartCollection<Block> Blocks { get; } = new AssetPartCollection<Block>();
