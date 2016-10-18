@@ -116,6 +116,25 @@ Objects:
     00000006-0006-0000-0600-000006000000: ~(Deleted)
 ";
 
+        private const string YamlDictionaryWithDeleted = @"!SiliconStudio.Core.Design.Tests.TestCollectionIds+ContainerDictionary,SiliconStudio.Core.Design.Tests
+Name: Root
+Strings:
+    00000008-0008-0000-0800-000008000000~000000c8-00c8-0000-c800-0000c8000000: aaa
+    00000005-0005-0000-0500-000005000000~00000064-0064-0000-6400-000064000000: bbb
+    00000001-0001-0000-0100-000001000000~: ~(Deleted)
+    00000003-0003-0000-0300-000003000000~: ~(Deleted)
+Objects:
+    00000003-0003-0000-0300-000003000000~key3:
+        Name: obj1
+        Strings: {}
+        Objects: {}
+    00000004-0004-0000-0400-000004000000~key4:
+        Name: obj2
+        Strings: {}
+        Objects: {}
+    00000001-0001-0000-0100-000001000000~: ~(Deleted)
+    00000006-0006-0000-0600-000006000000~: ~(Deleted)
+";
 
         [Test]
         public void TestCollectionSerialization()
@@ -369,6 +388,66 @@ Objects:
             objectIds.MarkAsDeleted(GuidGenerator.Get(6));
             var yaml = YamlSerializer.Serialize(obj);
             Assert.AreEqual(YamlCollectionWithDeleted, yaml);
+        }
+
+        [Test]
+        public void TestDictionaryDeserializationWithDeleted()
+        {
+            ShadowObject.Enable = true;
+            var stream = new MemoryStream();
+            var writer = new StreamWriter(stream);
+            writer.Write(YamlDictionaryWithDeleted);
+            writer.Flush();
+            stream.Position = 0;
+            var instance = YamlSerializer.Deserialize(stream);
+            Assert.NotNull(instance);
+            Assert.AreEqual(typeof(ContainerDictionary), instance.GetType());
+            var obj = (ContainerDictionary)instance;
+            Assert.AreEqual("Root", obj.Name);
+            Assert.AreEqual(2, obj.Strings.Count);
+            Assert.AreEqual("aaa", obj.Strings[GuidGenerator.Get(200)]);
+            Assert.AreEqual("bbb", obj.Strings[GuidGenerator.Get(100)]);
+            Assert.AreEqual(2, obj.Objects.Count);
+            Assert.AreEqual("obj1", obj.Objects["key3"].Name);
+            Assert.AreEqual("obj2", obj.Objects["key4"].Name);
+            var stringIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Strings);
+            Assert.AreEqual(GuidGenerator.Get(8), stringIds[GuidGenerator.Get(200)]);
+            Assert.AreEqual(GuidGenerator.Get(5), stringIds[GuidGenerator.Get(100)]);
+            var objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects);
+            Assert.AreEqual(GuidGenerator.Get(3), objectIds["key3"]);
+            Assert.AreEqual(GuidGenerator.Get(4), objectIds["key4"]);
+            var deletedItems = stringIds.DeletedItems.ToList();
+            Assert.AreEqual(2, deletedItems.Count);
+            Assert.AreEqual(GuidGenerator.Get(1), deletedItems[0]);
+            Assert.AreEqual(GuidGenerator.Get(3), deletedItems[1]);
+            deletedItems = objectIds.DeletedItems.ToList();
+            Assert.AreEqual(2, deletedItems.Count);
+            Assert.AreEqual(GuidGenerator.Get(1), deletedItems[0]);
+            Assert.AreEqual(GuidGenerator.Get(6), deletedItems[1]);
+        }
+
+        [Test]
+        public void TestDictionarySerializationWithDeleted()
+        {
+            ShadowObject.Enable = true;
+            var obj = new ContainerDictionary("Root")
+            {
+                Strings = { { GuidGenerator.Get(200), "aaa" }, { GuidGenerator.Get(100), "bbb" } },
+                Objects = { { "key3", new ContainerCollection("obj1") }, { "key4", new ContainerCollection("obj2") } },
+            };
+
+            var stringIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Strings);
+            stringIds[GuidGenerator.Get(200)] = GuidGenerator.Get(8);
+            stringIds[GuidGenerator.Get(100)] = GuidGenerator.Get(5);
+            stringIds.MarkAsDeleted(GuidGenerator.Get(3));
+            stringIds.MarkAsDeleted(GuidGenerator.Get(1));
+            var objectIds = CollectionItemIdHelper.GetCollectionItemIds(obj.Objects);
+            objectIds["key3"] = GuidGenerator.Get(3);
+            objectIds["key4"] = GuidGenerator.Get(4);
+            objectIds.MarkAsDeleted(GuidGenerator.Get(1));
+            objectIds.MarkAsDeleted(GuidGenerator.Get(6));
+            var yaml = YamlSerializer.Serialize(obj);
+            Assert.AreEqual(YamlDictionaryWithDeleted, yaml);
         }
     }
 }

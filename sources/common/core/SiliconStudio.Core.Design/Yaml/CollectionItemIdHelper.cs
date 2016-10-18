@@ -176,9 +176,6 @@ namespace SiliconStudio.Core.Yaml
 
     public static class CollectionItemIdHelper
     {
-        // TODO: move to Asset level
-        public const string YamlDeletedKey = "~(Deleted)";
-
         public static readonly object DeletedKey = new object();
 
         // TODO: do we really need to pass an object to this constructor?

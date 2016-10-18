@@ -16,6 +16,10 @@ namespace SiliconStudio.Core.Yaml
     public abstract class CollectionWithIdsSerializerBase : DictionarySerializer
     {
         /// <summary>
+        /// A string token to identify deleted items in a collection.
+        /// </summary>
+        public const string YamlDeletedKey = "~(Deleted)";
+        /// <summary>
         /// A key that identifies the information about the instance that we need the store in the <see cref="ObjectContext.Properties"/> dictionary.
         /// </summary>
         protected static readonly object InstanceInfoKey = new object();
@@ -103,6 +107,11 @@ namespace SiliconStudio.Core.Yaml
 
             if (objectContext.SerializerContext.IsSerializing && objectContext.Instance != null)
             {
+                // Store deleted items in the context
+                var identifier = CollectionItemIdHelper.GetCollectionItemIds(objectContext.Instance);
+                var deletedItems = identifier.DeletedItems.ToList();
+                deletedItems.Sort();
+                objectContext.Properties.Add(DeletedItemsKey, deletedItems);
                 // We're serializing, transform the collection to a dictionary of <id, items>
                 objectContext.Instance = TransformForSerialization(objectContext.Descriptor, objectContext.Instance);
             }
@@ -132,7 +141,7 @@ namespace SiliconStudio.Core.Yaml
                 {
                     // Read key and value
                     var keyValue = ReadDictionaryItem(ref objectContext, new KeyValuePair<Type, Type>(dictionaryDescriptor.KeyType, dictionaryDescriptor.ValueType));
-                    if (!Equals(keyValue.Value, CollectionItemIdHelper.YamlDeletedKey) || !(keyValue.Key is Guid))
+                    if (!Equals(keyValue.Value, YamlDeletedKey) || !(keyValue.Key is Guid))
                     {
                         dictionaryDescriptor.AddToDictionary(objectContext.Instance, keyValue.Key, keyValue.Value);
                     }
@@ -170,16 +179,20 @@ namespace SiliconStudio.Core.Yaml
             {
                 WriteDictionaryItem(ref objectContext, keyValue, keyValueType);
             }
+
+            // Store deleted items in the context
+            WriteDeletedItems(ref objectContext);
         }
 
         protected override KeyValuePair<object, object> ReadDictionaryItem(ref ObjectContext objectContext, KeyValuePair<Type, Type> keyValueTypes)
         {
             var keyResult = objectContext.ObjectSerializerBackend.ReadDictionaryKey(ref objectContext, keyValueTypes.Key);
             var peek = objectContext.SerializerContext.Reader.Peek<Scalar>();
-            if (Equals(peek?.Value, CollectionItemIdHelper.YamlDeletedKey))
+            if (Equals(peek?.Value, YamlDeletedKey))
             {
                 var valueResult = objectContext.ObjectSerializerBackend.ReadDictionaryValue(ref objectContext, typeof(string));
-                return new KeyValuePair<object, object>(keyResult, valueResult);
+                var id = ((IKeyWithId)keyResult).Id; // When there is no ~ on the key, the value read from Yaml is loaded as Key, not as Id.
+                return new KeyValuePair<object, object>(id, valueResult);
             }
             else
             {
@@ -238,6 +251,8 @@ namespace SiliconStudio.Core.Yaml
         /// <param name="targetCollection">The instance of the actual collection to fill.</param>
         /// <param name="deletedItems">A collection of items that are marked as deleted. Can be null.</param>
         protected abstract void TransformAfterDeserialization(IDictionary container, ITypeDescriptor targetDescriptor, object targetCollection, ICollection<Guid> deletedItems = null);
+
+        protected abstract void WriteDeletedItems(ref ObjectContext objectContext);
 
         protected static bool AreCollectionItemsIdentifiable(ref ObjectContext objectContext)
         {

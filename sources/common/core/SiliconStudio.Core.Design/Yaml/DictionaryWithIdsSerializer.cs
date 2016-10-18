@@ -121,5 +121,21 @@ namespace SiliconStudio.Core.Yaml
                 }
             }
         }
+
+        protected override void WriteDeletedItems(ref ObjectContext objectContext)
+        {
+            object property;
+            var deletedItems = objectContext.Properties.TryGetValue(DeletedItemsKey, out property) ? (ICollection<Guid>)property : null;
+            if (deletedItems != null)
+            {
+                var keyValueType = new KeyValuePair<Type, Type>(typeof(string), typeof(string));
+                foreach (var deletedItem in deletedItems)
+                {
+                    // Add a ~ to allow to parse it back as a KeyWithId.
+                    var entry = new KeyValuePair<object, object>($"{deletedItem}~", YamlDeletedKey);
+                    WriteDictionaryItem(ref objectContext, entry, keyValueType);
+                }
+            }
+        }
     }
 }
