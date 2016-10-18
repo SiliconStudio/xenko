@@ -4923,6 +4923,7 @@ Hierarchy:
                             - df706ef2-23e6-472a-a25f-7abe6d8ce798/6a9d8c86-630b-4fab-8502-6abab861d441
                             - 321e8a39-dee1-47c5-b25e-bb200b170e89/6a9d8c86-630b-4fab-8502-6abab861d441
                             - 8d12d230-d2de-4202-b7eb-5db871ce1640/6a9d8c86-630b-4fab-8502-6abab861d441
+                            - f341034f-bf28-4d75-9204-661ac043732e/4f8a947f-fdf4-4633-940f-f1e70397b177
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
@@ -5274,6 +5275,8 @@ Hierarchy:
                     - !ThirdPersonPlatformer.Camera.ThirdPersonCamera,ThirdPersonPlatformer.Game
                         ~Id: ddc9fbcf-5ff9-4485-a284-e04ea2d27d8a
                         DefaultDistance: 6.0
+                        MinimumDistance: 0.4
+                        ConeRadius: 1.25
                         InvertX: false
                         MinVerticalAngle: -20.0
                         MaxVerticalAngle: 70.0
@@ -7230,6 +7233,21 @@ Hierarchy:
                                 Size: {X: 0.1, Y: 2.0, Z: 5.0}
                                 LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                 LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+        -   Entity:
+                Id: f341034f-bf28-4d75-9204-661ac043732e
+                Name: CameraCone
+                Components:
+                    - !TransformComponent
+                        ~Id: 4f8a947f-fdf4-4633-940f-f1e70397b177
+                        Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: -3.0}
+                        Rotation: {X: 0.707106769, Y: 0.0, Z: 0.0, W: 0.707106769}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: c60bd827-5077-4402-8aab-98217cee90b5
+                        Model: a45be318-c5a0-4d63-8d5f-454ce72fb5c7/ba78e71b-c10d-4585-99ba-7f9c84d2d760:CameraCone
+                        Materials:
+                            - null
         -   Entity:
                 Id: f59ba0c6-c5af-42db-a3d9-9aed569d2af0
                 Name: Wall0x2x5Window (7)

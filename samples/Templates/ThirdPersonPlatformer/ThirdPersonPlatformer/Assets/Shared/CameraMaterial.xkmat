@@ -18,9 +18,14 @@ Attributes:
             ~Id: 0f13cb04-9eee-468c-a0c5-5c7ded8b09b9
     Emissive: !MaterialEmissiveMapFeature
         EmissiveMap: !ComputeColor
-            Value: {R: 1.0, G: 0.0, B: 0.7874999, A: 1.0}
+            Value: {R: 0.0, G: 1.0, B: 0.4375, A: 1.0}
         Intensity: !ComputeFloat
-            Value: 10.0
+            Value: 1.0
+    Transparency: !MaterialTransparencyBlendFeature
+        Alpha: !ComputeFloat
+            Value: 0.5
+        Tint: !ComputeColor
+            Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
 Layers: []
