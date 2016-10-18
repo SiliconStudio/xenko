@@ -175,6 +175,10 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             {
                 return objectContext.SerializerContext.Serializer.ObjectSerializer.ReadYaml(ref objectContext);
             }
+            catch (YamlException)
+            {
+                throw;
+            }
             catch (Exception ex)
             {
                 throw new YamlException(node.Start, node.End, "Error while deserializing node [{0}]".DoFormat(node), ex);
