@@ -16,6 +16,10 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         {
             const string ExpressionToReturn = nameof(ExpressionToReturn);
 
+            // Nothing to analyze
+            if (block.Statements.Count == 0)
+                return;
+
             // Create a compilation unit with our expression
             var compilationUnit = CreateCompilationUnitFromBlock(ref block);
 
