@@ -1,69 +1,13 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
-using DictionaryDescriptor = SiliconStudio.Core.Yaml.Serialization.Descriptors.DictionaryDescriptor;
 using ITypeDescriptor = SiliconStudio.Core.Yaml.Serialization.ITypeDescriptor;
 
 namespace SiliconStudio.Core.Yaml
 {
-    public class CollectionWithItemIdsSerializer : DictionarySerializer
-    {
-        public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
-        {
-            return typeDescriptor.Type.IsGenericType && typeDescriptor.Type.GetGenericTypeDefinition() == typeof(CollectionWithItemIds<>) ? this : null;
-        }
-
-        protected override void WriteDictionaryItems(ref ObjectContext objectContext)
-        {
-            var dictionaryDescriptor = (DictionaryDescriptor)objectContext.Descriptor;
-            var keyValues = dictionaryDescriptor.GetEnumerator(objectContext.Instance).ToList();
-
-            // Not sorting the keys here, they should be already properly sorted when we arrive here
-            // TODO: Allow to disable sorting externally, to avoid creating this serializer. NOTE: tampering with Settings.SortKeyForMapping is not an option, it is not local but applied to all children. (ParameterKeyDictionarySerializer is doing that and is buggy)
-
-            var keyValueType = new KeyValuePair<Type, Type>(dictionaryDescriptor.KeyType, dictionaryDescriptor.ValueType);
-
-            foreach (var keyValue in keyValues)
-            {
-                WriteDictionaryItem(ref objectContext, keyValue, keyValueType);
-            }
-        }
-    }
-
-    public class DictionaryWithItemIdsSerializer : DictionarySerializer
-    {
-        public static bool TryCreate(ITypeDescriptor descriptor)
-        {
-            return descriptor.Type.IsGenericType && descriptor.Type.GetGenericTypeDefinition() == typeof(DictionaryWithItemIds<,>);
-        }
-
-        public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
-        {
-            return TryCreate(typeDescriptor) ? this : null;
-        }
-
-        protected override void WriteDictionaryItems(ref ObjectContext objectContext)
-        {
-            var dictionaryDescriptor = (DictionaryDescriptor)objectContext.Descriptor;
-            var keyValues = dictionaryDescriptor.GetEnumerator(objectContext.Instance).ToList();
-
-            // Not sorting the keys here, they should be already properly sorted when we arrive here
-            // TODO: Allow to disable sorting externally, to avoid creating this serializer. NOTE: tampering with Settings.SortKeyForMapping is not an option, it is not local but applied to all children. (ParameterKeyDictionarySerializer is doing that and is buggy)
-
-            var keyValueType = new KeyValuePair<Type, Type>(dictionaryDescriptor.KeyType, dictionaryDescriptor.ValueType);
-
-            foreach (var keyValue in keyValues)
-            {
-                WriteDictionaryItem(ref objectContext, keyValue, keyValueType);
-            }
-        }
-    }
-
     [DataContract]
     public class CollectionWithItemIds<TItem> : OrderedDictionary<Guid, TItem>
     {
@@ -193,117 +137,6 @@ namespace SiliconStudio.Core.Yaml
             var itemIds = new CollectionItemIdentifiers();
             shadow.Add(CollectionItemIdKey, itemIds);
             return itemIds;
-        }
-
-        public static object TransformForSerialization(ITypeDescriptor descriptor, object collection)
-        {
-            var collectionDescriptor = descriptor as Serialization.Descriptors.CollectionDescriptor;
-            var dictionaryDescriptor = descriptor as Serialization.Descriptors.DictionaryDescriptor;
-            if (collectionDescriptor != null)
-            {
-                var type = typeof(CollectionWithItemIds<>).MakeGenericType(collectionDescriptor.ElementType);
-                if (type.GetConstructor(Type.EmptyTypes) == null)
-                    throw new InvalidOperationException("The type of collection does not have a parameterless constructor.");
-                var instance = (IDictionary)Activator.CreateInstance(type);
-                var identifier = GetCollectionItemIds(collection);
-                var i = 0;
-                foreach (var item in (IEnumerable)collection)
-                {
-                    Guid id;
-                    if (!identifier.KeyToIdMap.TryGetValue(i, out id))
-                    {
-                        id = Guid.NewGuid();
-                    }
-                    instance.Add(id, item);
-                    ++i;
-                }
-
-                return instance;
-            }
-            if (dictionaryDescriptor != null)
-            {
-                var type = typeof(DictionaryWithItemIds<,>).MakeGenericType(dictionaryDescriptor.KeyType, dictionaryDescriptor.ValueType);
-                if (type.GetConstructor(Type.EmptyTypes) == null)
-                    throw new InvalidOperationException("The type of dictionary does not have a parameterless constructor.");
-                var instance = (IDictionary)Activator.CreateInstance(type);
-                var identifier = GetCollectionItemIds(collection);
-                var keyWithIdType = typeof(KeyWithId<>).MakeGenericType(dictionaryDescriptor.KeyType);
-                foreach (var item in dictionaryDescriptor.GetEnumerator(collection))
-                {
-                    Guid id;
-                    if (!identifier.KeyToIdMap.TryGetValue(item.Key, out id))
-                    {
-                        id = Guid.NewGuid();
-                    }
-                    var keyWithId = Activator.CreateInstance(keyWithIdType, id, item.Key);
-                    instance.Add(keyWithId, item.Value);
-                }
-
-                return instance;
-            }
-
-            throw new InvalidOperationException("The given object is not a collection or a dictionary");
-        }
-
-        public static object CreatEmptyContainer(ITypeDescriptor descriptor)
-        {
-            var collectionDescriptor = descriptor as Serialization.Descriptors.CollectionDescriptor;
-            var dictionaryDescriptor = descriptor as Serialization.Descriptors.DictionaryDescriptor;
-            if (collectionDescriptor != null)
-            {
-                var type = typeof(CollectionWithItemIds<>).MakeGenericType(collectionDescriptor.ElementType);
-                if (type.GetConstructor(Type.EmptyTypes) == null) throw new InvalidOperationException("The type of collection does not have a parameterless constructor.");
-                return (IDictionary)Activator.CreateInstance(type);
-            }
-            if (dictionaryDescriptor != null)
-            {
-                var type = typeof(DictionaryWithItemIds<,>).MakeGenericType(dictionaryDescriptor.KeyType, dictionaryDescriptor.ValueType);
-                if (type.GetConstructor(Type.EmptyTypes) == null) throw new InvalidOperationException("The type of dictionary does not have a parameterless constructor.");
-                return (IDictionary)Activator.CreateInstance(type);
-            }
-
-            throw new InvalidOperationException("The given object is not a collection or a dictionary");
-        }
-
-        public static void TransformAfterDeserialization(object container, ITypeDescriptor targetDescriptor, object targetCollection)
-        {
-            var collectionDescriptor = targetDescriptor as Serialization.Descriptors.CollectionDescriptor;
-            var dictionaryDescriptor = targetDescriptor as Serialization.Descriptors.DictionaryDescriptor;
-            if (collectionDescriptor != null)
-            {
-                var type = typeof(CollectionWithItemIds<>).MakeGenericType(collectionDescriptor.ElementType);
-                if (!type.IsInstanceOfType(container))
-                    throw new InvalidOperationException("The given container does not match the expected type.");
-                var identifier = GetCollectionItemIds(targetCollection);
-                identifier.KeyToIdMap.Clear();
-                var i = 0;
-                var enumerator = ((IDictionary)container).GetEnumerator();
-                while (enumerator.MoveNext())
-                {
-                    collectionDescriptor.CollectionAdd(targetCollection, enumerator.Value);
-                    identifier.KeyToIdMap.Add(i, (Guid)enumerator.Key);
-                    ++i;
-                }
-            }
-            else if (dictionaryDescriptor != null)
-            {
-                var type = typeof(DictionaryWithItemIds<,>).MakeGenericType(dictionaryDescriptor.KeyType, dictionaryDescriptor.ValueType);
-                if (!type.IsInstanceOfType(container))
-                    throw new InvalidOperationException("The given container does not match the expected type.");
-                var identifier = GetCollectionItemIds(targetCollection);
-                identifier.KeyToIdMap.Clear();
-                var enumerator = ((IDictionary)container).GetEnumerator();
-                while (enumerator.MoveNext())
-                {
-                    var keyWithId = (IKeyWithId)enumerator.Key;
-                    dictionaryDescriptor.AddToDictionary(targetCollection, keyWithId.Key, enumerator.Value);
-                    identifier.KeyToIdMap.Add(keyWithId.Key, keyWithId.Id);
-                }
-            }
-            else
-            {
-                throw new InvalidOperationException("The given object is not a collection or a dictionary");
-            }
         }
     }
 }

@@ -2,25 +2,27 @@ using System;
 using System.Collections;
 using System.Reflection;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
-using DictionaryDescriptor = SiliconStudio.Core.Yaml.Serialization.Descriptors.DictionaryDescriptor;
+using CollectionDescriptor = SiliconStudio.Core.Yaml.Serialization.Descriptors.CollectionDescriptor;
 using ITypeDescriptor = SiliconStudio.Core.Yaml.Serialization.ITypeDescriptor;
 
 namespace SiliconStudio.Core.Yaml
 {
-    public class CollectionWithIdsSerializer : CollectionSerializer
+    /// <summary>
+    /// An implementation of <see cref="CollectionWithIdsSerializerBase"/> for actual collections.
+    /// </summary>
+    public class CollectionWithIdsSerializer : CollectionWithIdsSerializerBase
     {
-        private struct InstanceInfo
-        {
-            public object Instance;
-            public Serialization.Descriptors.CollectionDescriptor Descriptor;
-        }
+        /// <summary>
+        /// A collection serializer used in case we determine that the given collection should not be serialized with ids.
+        /// </summary>
+        private readonly CollectionSerializer collectionSerializer = new CollectionSerializer();
 
+        /// <inheritdoc/>
         public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
-            if (typeDescriptor is Serialization.Descriptors.CollectionDescriptor)
+            if (typeDescriptor is CollectionDescriptor)
             {
                 var dataStyle = typeDescriptor.Type.GetCustomAttribute<DataStyleAttribute>();
                 if (dataStyle == null || dataStyle.Style != DataStyle.Compact)
@@ -29,37 +31,29 @@ namespace SiliconStudio.Core.Yaml
             return null;
         }
 
-        protected override void CreateOrTransformObject(ref ObjectContext objectContext)
+        /// <inheritdoc/>
+        protected override void ReadYamlAfterTransform(ref ObjectContext objectContext, bool transformed)
         {
-            // Allow to deserialize the old way
-            if (!objectContext.SerializerContext.IsSerializing && objectContext.Reader.Accept<SequenceStart>())
-            {
-                base.CreateOrTransformObject(ref objectContext);
-                return;
-            }
-
-            if (!AreCollectionItemsIdentifiable(ref objectContext))
-            {
-                base.CreateOrTransformObject(ref objectContext);
-                return;
-            }
-
-            var info = new InstanceInfo { Instance = objectContext.Instance, Descriptor = (Serialization.Descriptors.CollectionDescriptor)objectContext.Descriptor };
-            objectContext.Properties.Add("InstanceInfo", info);
-            if (objectContext.SerializerContext.IsSerializing && objectContext.Instance != null)
-            {
-                objectContext.Instance = CollectionItemIdHelper.TransformForSerialization(objectContext.Descriptor, objectContext.Instance);
-            }
+            if (transformed)
+                base.ReadYamlAfterTransform(ref objectContext, true);
             else
-            {
-                objectContext.Instance = CollectionItemIdHelper.CreatEmptyContainer(objectContext.Descriptor);
-            }
+                collectionSerializer.ReadYaml(ref objectContext);
         }
 
+        /// <inheritdoc/>
+        protected override void WriteYamlAfterTransform(ref ObjectContext objectContext, bool transformed)
+        {
+            if (transformed)
+                base.WriteYamlAfterTransform(ref objectContext, true);
+            else
+                collectionSerializer.WriteYaml(ref objectContext);
+        }
+
+        /// <inheritdoc/>
         protected override void TransformObjectAfterRead(ref ObjectContext objectContext)
         {
             object infoObject;
-            if (!objectContext.Properties.TryGetValue("InstanceInfo", out infoObject))
+            if (!objectContext.Properties.TryGetValue(InstanceInfoKey, out infoObject))
             {
                 base.TransformObjectAfterRead(ref objectContext);
 
@@ -70,7 +64,7 @@ namespace SiliconStudio.Core.Yaml
                     if (enumerable != null)
                     {
                         var ids = CollectionItemIdHelper.GetCollectionItemIds(objectContext.Instance);
-                        int i = 0;
+                        var i = 0;
                         foreach (var item in enumerable)
                         {
                             var id = IdentifiableHelper.GetId(item);
@@ -85,125 +79,60 @@ namespace SiliconStudio.Core.Yaml
 
             if (info.Instance != null)
             {
-                CollectionItemIdHelper.TransformAfterDeserialization(objectContext.Instance, info.Descriptor, info.Instance);
+                TransformAfterDeserialization((IDictionary)objectContext.Instance, info.Descriptor, info.Instance);
             }
             objectContext.Instance = info.Instance;
+
             base.TransformObjectAfterRead(ref objectContext);
         }
 
-        private static bool AreCollectionItemsIdentifiable(ref ObjectContext objectContext)
+        /// <inheritdoc/>
+        protected override object TransformForSerialization(ITypeDescriptor descriptor, object collection)
         {
-            object nonIdentifiableItems;
-
-            // Check in the serializer context first, for disabling of item identifiers at parent type level
-            if (objectContext.SerializerContext.Properties.TryGetValue(NonIdentifiableCollectionItemsAttribute.Key, out nonIdentifiableItems) && (bool)nonIdentifiableItems)
-                return false;
-
-            // Then check locally for disabling of item identifiers at member level
-            if (objectContext.Properties.TryGetValue(NonIdentifiableCollectionItemsAttribute.Key, out nonIdentifiableItems) && (bool)nonIdentifiableItems)
-                return false;
-
-            return true;
-        }
-    }
-
-    public class DictionaryWithIdsSerializer : DictionarySerializer
-    {
-        private struct InstanceInfo
-        {
-            public object Instance;
-            public Serialization.Descriptors.DictionaryDescriptor Descriptor;
-        }
-
-        public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
-        {
-            if (typeDescriptor is Serialization.Descriptors.DictionaryDescriptor)
+            var instance = CreatEmptyContainer(descriptor);
+            var identifier = CollectionItemIdHelper.GetCollectionItemIds(collection);
+            var i = 0;
+            foreach (var item in (IEnumerable)collection)
             {
-                if (DictionaryWithItemIdsSerializer.TryCreate(typeDescriptor))
-                    return null;
-
-                var dataStyle = typeDescriptor.Type.GetCustomAttribute<DataStyleAttribute>();
-                if (dataStyle == null || dataStyle.Style != DataStyle.Compact)
-                    return this;
-            }
-            return null;
-        }
-
-        protected override void CreateOrTransformObject(ref ObjectContext objectContext)
-        {
-            // Allow to deserialize the old way
-            //if (!objectContext.SerializerContext.IsSerializing && objectContext.Reader.Accept<SequenceStart>())
-            //{
-            //    base.CreateOrTransformObject(ref objectContext);
-            //    return;
-            //}
-
-            if (!AreCollectionItemsIdentifiable(ref objectContext))
-            {
-                base.CreateOrTransformObject(ref objectContext);
-                return;
-            }
-
-            var info = new InstanceInfo { Instance = objectContext.Instance, Descriptor = (Serialization.Descriptors.DictionaryDescriptor)objectContext.Descriptor };
-            objectContext.Properties.Add("InstanceInfo", info);
-            if (objectContext.SerializerContext.IsSerializing && objectContext.Instance != null)
-            {
-                objectContext.Instance = CollectionItemIdHelper.TransformForSerialization(objectContext.Descriptor, objectContext.Instance);
-            }
-            else
-            {
-                objectContext.Instance = CollectionItemIdHelper.CreatEmptyContainer(objectContext.Descriptor);
-            }
-        }
-
-        protected override void TransformObjectAfterRead(ref ObjectContext objectContext)
-        {
-            if (!AreCollectionItemsIdentifiable(ref objectContext))
-            {
-                base.TransformObjectAfterRead(ref objectContext);
-                return;
-            }
-            
-            var info = (InstanceInfo)objectContext.Properties["InstanceInfo"];
-
-            // This is to be backward compatible with previous serialization. We fetch ids from the ~Id member of each item
-            if (info.Instance != null)
-            {
-                CollectionItemIdHelper.TransformAfterDeserialization(objectContext.Instance, info.Descriptor, info.Instance);
-            }
-            objectContext.Instance = info.Instance;
-
-            var enumerable = objectContext.Instance as IEnumerable;
-            if (enumerable != null)
-            {
-                var ids = CollectionItemIdHelper.GetCollectionItemIds(objectContext.Instance);
-                foreach (var item in info.Descriptor.GetEnumerator(objectContext.Instance))
+                Guid id;
+                if (!identifier.KeyToIdMap.TryGetValue(i, out id))
                 {
-                    Guid id;
-                    if (ids.KeyToIdMap.TryGetValue(item.Key, out id) && id != Guid.Empty)
-                        continue;
-
-                    id = IdentifiableHelper.GetId(item.Value);
-                    ids.KeyToIdMap[item.Key] = id != Guid.Empty ? id : Guid.NewGuid();
+                    id = Guid.NewGuid();
                 }
+                instance.Add(id, item);
+                ++i;
             }
 
-            base.TransformObjectAfterRead(ref objectContext);
+            return instance;
         }
 
-        private static bool AreCollectionItemsIdentifiable(ref ObjectContext objectContext)
+        /// <inheritdoc/>
+        protected override IDictionary CreatEmptyContainer(ITypeDescriptor descriptor)
         {
-            object nonIdentifiableItems;
+            var collectionDescriptor = (CollectionDescriptor)descriptor;
+            var type = typeof(CollectionWithItemIds<>).MakeGenericType(collectionDescriptor.ElementType);
+            if (type.GetConstructor(Type.EmptyTypes) == null)
+                throw new InvalidOperationException("The type of collection does not have a parameterless constructor.");
+            return (IDictionary)Activator.CreateInstance(type);
+        }
 
-            // Check in the serializer context first, for disabling of item identifiers at parent type level
-            if (objectContext.SerializerContext.Properties.TryGetValue(NonIdentifiableCollectionItemsAttribute.Key, out nonIdentifiableItems) && (bool)nonIdentifiableItems)
-                return false;
-
-            // Then check locally for disabling of item identifiers at member level
-            if (objectContext.Properties.TryGetValue(NonIdentifiableCollectionItemsAttribute.Key, out nonIdentifiableItems) && (bool)nonIdentifiableItems)
-                return false;
-
-            return true;
+        /// <inheritdoc/>
+        protected override void TransformAfterDeserialization(IDictionary container, ITypeDescriptor targetDescriptor, object targetCollection)
+        {
+            var collectionDescriptor = (CollectionDescriptor)targetDescriptor;
+            var type = typeof(CollectionWithItemIds<>).MakeGenericType(collectionDescriptor.ElementType);
+            if (!type.IsInstanceOfType(container))
+                throw new InvalidOperationException("The given container does not match the expected type.");
+            var identifier = CollectionItemIdHelper.GetCollectionItemIds(targetCollection);
+            identifier.KeyToIdMap.Clear();
+            var i = 0;
+            var enumerator = container.GetEnumerator();
+            while (enumerator.MoveNext())
+            {
+                collectionDescriptor.CollectionAdd(targetCollection, enumerator.Value);
+                identifier.KeyToIdMap.Add(i, (Guid)enumerator.Key);
+                ++i;
+            }
         }
     }
 }
