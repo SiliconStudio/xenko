@@ -2,15 +2,10 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections.Generic;
 using System.Threading;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Rendering.Images;
 using ComponentBase = SiliconStudio.Core.ComponentBase;
 using IServiceRegistry = SiliconStudio.Core.IServiceRegistry;
 
@@ -22,7 +17,7 @@ namespace SiliconStudio.Xenko.Rendering
     public sealed class RenderContext : ComponentBase
     {
         private const string SharedImageEffectContextKey = "__SharedRenderContext__";
-        private readonly ThreadLocal<RenderDrawContext> threadContext = new ThreadLocal<RenderDrawContext>(true);
+        private readonly ThreadLocal<RenderDrawContext> threadContext;
 
         // Used for API that don't support multiple command lists
         internal CommandList SharedCommandList;
@@ -39,6 +34,8 @@ namespace SiliconStudio.Xenko.Rendering
             Effects = services.GetSafeServiceAs<EffectSystem>();
             GraphicsDevice = services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
             Allocator = services.GetServiceAs<GraphicsContext>().Allocator ?? new GraphicsResourceAllocator(GraphicsDevice).DisposeBy(GraphicsDevice);
+
+            threadContext = new ThreadLocal<RenderDrawContext>(() => new RenderDrawContext(Services, this, new GraphicsContext(GraphicsDevice, Allocator)), true);
         }
 
         /// <summary>
@@ -90,22 +87,13 @@ namespace SiliconStudio.Xenko.Rendering
             return graphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, SharedImageEffectContextKey, d => new RenderContext(services));
         }
 
-        public RenderDrawContext GetThreadContext()
-        {
-            if (!threadContext.IsValueCreated)
-            {
-                var graphicsContext = new GraphicsContext(GraphicsDevice, Allocator);
-                threadContext.Value = new RenderDrawContext(Services, this, graphicsContext);
-            }
-
-            return threadContext.Value;
-        }
+        public RenderDrawContext GetThreadContext() => threadContext.Value;
 
         public void Reset()
         {
             foreach (var context in threadContext.Values)
             {
-                context.GraphicsContext.ResourceGroupAllocator.Reset(context.CommandList);
+                context.ResourceGroupAllocator.Reset(context.CommandList);
             }
         }
 
@@ -113,7 +101,7 @@ namespace SiliconStudio.Xenko.Rendering
         {
             foreach (var context in threadContext.Values)
             {
-                context.GraphicsContext.ResourceGroupAllocator.Flush();
+                context.ResourceGroupAllocator.Flush();
             }
         }
 

@@ -14,9 +14,6 @@ namespace SiliconStudio.Xenko.Rendering
         /// <returns>True if state changed (object was not mark as used during this frame until now), otherwise false.</returns>
         public bool MarkAsUsed(RenderSystem renderSystem)
         {
-            if (LastFrameUsed == renderSystem.FrameCounter)
-                return false;
-
             return Interlocked.Exchange(ref LastFrameUsed, renderSystem.FrameCounter) != renderSystem.FrameCounter;
         }
     }
