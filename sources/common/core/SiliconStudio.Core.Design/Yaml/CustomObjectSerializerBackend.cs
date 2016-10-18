@@ -50,36 +50,6 @@ namespace SiliconStudio.Core.Yaml
             WriteYaml(ref memberObjectContext);
         }
 
-        public override void WriteMemberName(ref ObjectContext objectContext, Serialization.IMemberDescriptor member, string memberName)
-        {
-            // Replace the key with SiliconStudio.Core.Reflection IMemberDescriptor
-            // Cache previous 
-            if (member != null)
-            {
-                var customDescriptor = (IMemberDescriptor)member.Tag;
-                if (customDescriptor == null)
-                {
-                    customDescriptor = typeDescriptorFactory.Find(objectContext.Instance.GetType())[memberName];
-                    member.Tag = customDescriptor;
-                }
-
-                if (customDescriptor != null)
-                {
-                    var overrideType = objectContext.Instance.GetOverride(customDescriptor);
-                    if ((overrideType & OverrideType.New) != 0)
-                    {
-                        memberName += Override.PostFixNew;
-                    }
-                    if ((overrideType & OverrideType.Sealed) != 0)
-                    {
-                        memberName += Override.PostFixSealed;
-                    }
-                }
-            }
-
-            base.WriteMemberName(ref objectContext, member, memberName);
-        }
-
         public override string ReadMemberName(ref ObjectContext objectContext, string memberName, out bool skipMember)
         {
             var newMemberName = memberName.Trim(Override.PostFixSealed, Override.PostFixNew);
@@ -121,5 +91,35 @@ namespace SiliconStudio.Core.Yaml
             }
             return resultMemberName;
         }
+
+        public override void WriteMemberName(ref ObjectContext objectContext, Serialization.IMemberDescriptor member, string memberName)
+        {
+            // Replace the key with SiliconStudio.Core.Reflection IMemberDescriptor
+            // Cache previous 
+            if (member != null)
+            {
+                var customDescriptor = (IMemberDescriptor)member.Tag;
+                if (customDescriptor == null)
+                {
+                    customDescriptor = typeDescriptorFactory.Find(objectContext.Instance.GetType())[memberName];
+                    member.Tag = customDescriptor;
+                }
+
+                if (customDescriptor != null)
+                {
+                    var overrideType = objectContext.Instance.GetOverride(customDescriptor);
+                    if ((overrideType & OverrideType.New) != 0)
+                    {
+                        memberName += Override.PostFixNew;
+                    }
+                    if ((overrideType & OverrideType.Sealed) != 0)
+                    {
+                        memberName += Override.PostFixSealed;
+                    }
+                }
+            }
+
+            base.WriteMemberName(ref objectContext, member, memberName);
+        }       
     }
 }
