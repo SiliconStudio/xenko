@@ -27,10 +27,6 @@ namespace SiliconStudio.Assets
 
         private readonly UDirectory globalInstallationPath;
 
-        private readonly UDirectory packagesDirectory;
-
-        private readonly bool isDev;
-
         private readonly UDirectory defaultPackageDirectory;
 
         private readonly NugetStore store;
@@ -81,12 +77,11 @@ namespace SiliconStudio.Assets
             defaultPackage.IsSystem = true;
 
             // A flag variable just to know if it is a bare bone development directory
-            isDev = defaultPackageDirectory != null && DirectoryHelper.IsRootDevDirectory(defaultPackageDirectory);
+            var isDev = defaultPackageDirectory != null && DirectoryHelper.IsRootDevDirectory(defaultPackageDirectory);
 
             // Check if we are in a root directory with store/packages facilities
             if (NugetStore.IsStoreDirectory(globalInstallationPath))
             {
-                packagesDirectory = UPath.Combine(globalInstallationPath, (UDirectory)NugetStore.DefaultGamePackagesDirectory);
                 store = new NugetStore(globalInstallationPath);
             }
             else
