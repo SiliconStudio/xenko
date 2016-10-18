@@ -90,7 +90,7 @@ namespace ThirdPersonPlatformer.Camera
 
                 resultsOutput.Clear();
                 var cfg = CollisionFilterGroups.DefaultFilter;
-                var cfgf = CollisionFilterGroupFlags.DefaultFilter | CollisionFilterGroupFlags.StaticFilter;
+                var cfgf = CollisionFilterGroupFlags.DefaultFilter; // Intentionally ignoring the CollisionFilterGroupFlags.StaticFilter; to avoid collision with poles
 
                 this.GetSimulation().ShapeSweepPenetrating(coneShape, fromMatrix, toMatrix, resultsOutput, cfg, cfgf);
 

@@ -24,6 +24,7 @@ Hierarchy:
                             - 1be25b37-b917-4831-9b70-75f15158cba7/ad74e5da-cb10-46b7-9c34-3d65a478df12:Materials/GridMTHazard
                     - !StaticColliderComponent
                         ~Id: 55293315-64af-4b7b-bc35-c45c75d70935
+                        CollisionGroup: StaticFilter
                         CanSleep: false
                         Restitution: 0.0
                         Friction: 0.5
