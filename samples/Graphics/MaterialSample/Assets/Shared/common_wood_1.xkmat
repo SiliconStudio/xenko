@@ -5,12 +5,13 @@ Tags: []
 Attributes:
     Surface: !MaterialNormalMapFeature
         NormalMap: !ComputeTextureColor
+            Swizzle: null
             Texture: 90ddecc3-5a68-445f-8e6a-1aca52a1cff1/81c245fe-a1be-465b-9715-4020e477df9a:wood1_nml
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.5, Y: 1.5}
             Offset: {X: 0.0, Y: 0.0}
-            Swizzle: null
+        InvertY: false
     MicroSurface: !MaterialGlossinessMapFeature
         GlossinessMap: !ComputeTextureScalar
             Texture: 596be086-47be-43f2-8c8a-3df4f80b7263/c46170c7-177b-4394-9ea7-2693198e1f3e:wood1_gls
@@ -20,12 +21,12 @@ Attributes:
             Offset: {X: 0.0, Y: 0.0}
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
+            Swizzle: null
             Texture: 3719b7ec-8589-42d3-8a7d-641247e2cb9e/666771ea-1f32-4ed3-be45-de8e32b567e0:wood1_dif
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.5, Y: 1.5}
             Offset: {X: 0.0, Y: 0.0}
-            Swizzle: null
     DiffuseModel: !MaterialDiffuseLambertModelFeature {}
     Specular: !MaterialMetalnessMapFeature
         MetalnessMap: !ComputeFloat
