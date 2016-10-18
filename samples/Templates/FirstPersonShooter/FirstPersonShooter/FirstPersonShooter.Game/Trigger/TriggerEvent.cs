@@ -45,57 +45,7 @@ namespace FirstPersonShooter.Trigger
 
         private void UpdateMatrix()
         {
-            // Rotation
-            float xx = rotation.X * rotation.X;
-            float yy = rotation.Y * rotation.Y;
-            float zz = rotation.Z * rotation.Z;
-            float xy = rotation.X * rotation.Y;
-            float zw = rotation.Z * rotation.W;
-            float zx = rotation.Z * rotation.X;
-            float yw = rotation.Y * rotation.W;
-            float yz = rotation.Y * rotation.Z;
-            float xw = rotation.X * rotation.W;
-
-            LocalMatrix.M11 = 1.0f - (2.0f * (yy + zz));
-            LocalMatrix.M12 = 2.0f * (xy + zw);
-            LocalMatrix.M13 = 2.0f * (zx - yw);
-            LocalMatrix.M21 = 2.0f * (xy - zw);
-            LocalMatrix.M22 = 1.0f - (2.0f * (zz + xx));
-            LocalMatrix.M23 = 2.0f * (yz + xw);
-            LocalMatrix.M31 = 2.0f * (zx + yw);
-            LocalMatrix.M32 = 2.0f * (yz - xw);
-            LocalMatrix.M33 = 1.0f - (2.0f * (yy + xx));
-
-            // Position
-            LocalMatrix.M41 = translation.X;
-            LocalMatrix.M42 = translation.Y;
-            LocalMatrix.M43 = translation.Z;
-
-            // Scale
-            if (scaling.X != 1.0f)
-            {
-                LocalMatrix.M11 *= scaling.X;
-                LocalMatrix.M12 *= scaling.X;
-                LocalMatrix.M13 *= scaling.X;
-            }
-            if (scaling.Y != 1.0f)
-            {
-                LocalMatrix.M21 *= scaling.Y;
-                LocalMatrix.M22 *= scaling.Y;
-                LocalMatrix.M23 *= scaling.Y;
-            }
-            if (scaling.Z != 1.0f)
-            {
-                LocalMatrix.M31 *= scaling.Z;
-                LocalMatrix.M32 *= scaling.Z;
-                LocalMatrix.M33 *= scaling.Z;
-            }
-
-            LocalMatrix.M14 = 0.0f;
-            LocalMatrix.M24 = 0.0f;
-            LocalMatrix.M34 = 0.0f;
-            LocalMatrix.M44 = 1.0f;
+            Matrix.CreateMatrixTRS(ref translation, ref rotation, ref scaling, out LocalMatrix);
         }
-
     }
 }

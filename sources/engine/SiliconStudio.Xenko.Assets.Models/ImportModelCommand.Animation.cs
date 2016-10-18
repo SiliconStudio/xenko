@@ -173,7 +173,7 @@ namespace SiliconStudio.Xenko.Assets.Models
                                     }
 
                                     Matrix localMatrix;
-                                    TransformComponent.CreateMatrixTRS(ref modelNodeDefinition.Transform.Position, ref modelNodeDefinition.Transform.Rotation, ref modelNodeDefinition.Transform.Scale,
+                                    Matrix.CreateMatrixTRS(ref modelNodeDefinition.Transform.Position, ref modelNodeDefinition.Transform.Rotation, ref modelNodeDefinition.Transform.Scale,
                                         out localMatrix);
                                     matrix = Matrix.Multiply(localMatrix, matrix);
                                 }

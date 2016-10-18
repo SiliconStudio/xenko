@@ -91,7 +91,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
                     if (modelAsset.Skeleton == null)
                     {
                         Matrix baseMatrix;
-                        TransformComponent.CreateMatrixTRS(ref convexHullDesc.LocalOffset, ref convexHullDesc.LocalRotation, ref convexHullDesc.Scaling, out baseMatrix);
+                        Matrix.CreateMatrixTRS(ref convexHullDesc.LocalOffset, ref convexHullDesc.LocalRotation, ref convexHullDesc.Scaling, out baseMatrix);
                         nodeTransforms.Add(baseMatrix);
                     }
                     else
@@ -100,7 +100,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
                         for (var i = 0; i < nodesLength; i++)
                         {
                             Matrix localMatrix;
-                            TransformComponent.CreateMatrixTRS(
+                            Matrix.CreateMatrixTRS(
                                 ref modelAsset.Skeleton.Nodes[i].Transform.Position,
                                 ref modelAsset.Skeleton.Nodes[i].Transform.Rotation,
                                 ref modelAsset.Skeleton.Nodes[i].Transform.Scale, out localMatrix);
@@ -119,7 +119,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
                             if (i == 0)
                             {
                                 Matrix baseMatrix;
-                                TransformComponent.CreateMatrixTRS(ref convexHullDesc.LocalOffset, ref convexHullDesc.LocalRotation, ref convexHullDesc.Scaling, out baseMatrix);
+                                Matrix.CreateMatrixTRS(ref convexHullDesc.LocalOffset, ref convexHullDesc.LocalRotation, ref convexHullDesc.Scaling, out baseMatrix);
                                 nodeTransforms.Add(baseMatrix*worldMatrix);
                             }
                             else
