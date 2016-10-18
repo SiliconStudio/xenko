@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Serialization;
@@ -39,7 +40,9 @@ namespace SiliconStudio.Core.Yaml
             // This is to be backward compatible with previous serialization. We fetch ids from the ~Id member of each item
             if (info.Instance != null)
             {
-                TransformAfterDeserialization((IDictionary)objectContext.Instance, info.Descriptor, info.Instance);
+                object property;
+                var deletedItems = objectContext.Properties.TryGetValue(DeletedItemsKey, out property) ? (ICollection<Guid>)property : null;
+                TransformAfterDeserialization((IDictionary)objectContext.Instance, info.Descriptor, info.Instance, deletedItems);
             }
             objectContext.Instance = info.Instance;
 
@@ -51,11 +54,11 @@ namespace SiliconStudio.Core.Yaml
                 foreach (var item in descriptor.GetEnumerator(objectContext.Instance))
                 {
                     Guid id;
-                    if (ids.KeyToIdMap.TryGetValue(item.Key, out id) && id != Guid.Empty)
+                    if (ids.TryGet(item.Key, out id) && id != Guid.Empty)
                         continue;
 
                     id = IdentifiableHelper.GetId(item.Value);
-                    ids.KeyToIdMap[item.Key] = id != Guid.Empty ? id : Guid.NewGuid();
+                    ids[item.Key] = id != Guid.Empty ? id : Guid.NewGuid();
                 }
             }
 
@@ -73,7 +76,7 @@ namespace SiliconStudio.Core.Yaml
             foreach (var item in dictionaryDescriptor.GetEnumerator(collection))
             {
                 Guid id;
-                if (!identifier.KeyToIdMap.TryGetValue(item.Key, out id))
+                if (!identifier.TryGet(item.Key, out id))
                 {
                     id = Guid.NewGuid();
                 }
@@ -95,20 +98,27 @@ namespace SiliconStudio.Core.Yaml
         }
 
         /// <inheritdoc/>
-        protected override void TransformAfterDeserialization(IDictionary container, ITypeDescriptor targetDescriptor, object targetCollection)
+        protected override void TransformAfterDeserialization(IDictionary container, ITypeDescriptor targetDescriptor, object targetCollection, ICollection<Guid> deletedItems = null)
         {
             var dictionaryDescriptor = (DictionaryDescriptor)targetDescriptor;
             var type = typeof(DictionaryWithItemIds<,>).MakeGenericType(dictionaryDescriptor.KeyType, dictionaryDescriptor.ValueType);
             if (!type.IsInstanceOfType(container))
                 throw new InvalidOperationException("The given container does not match the expected type.");
             var identifier = CollectionItemIdHelper.GetCollectionItemIds(targetCollection);
-            identifier.KeyToIdMap.Clear();
+            identifier.Clear();
             var enumerator = container.GetEnumerator();
             while (enumerator.MoveNext())
             {
                 var keyWithId = (IKeyWithId)enumerator.Key;
                 dictionaryDescriptor.AddToDictionary(targetCollection, keyWithId.Key, enumerator.Value);
-                identifier.KeyToIdMap.Add(keyWithId.Key, keyWithId.Id);
+                identifier.Add(keyWithId.Key, keyWithId.Id);
+            }
+            if (deletedItems != null)
+            {
+                foreach (var deletedItem in deletedItems)
+                {
+                    identifier.MarkAsDeleted(deletedItem);
+                }
             }
         }
     }

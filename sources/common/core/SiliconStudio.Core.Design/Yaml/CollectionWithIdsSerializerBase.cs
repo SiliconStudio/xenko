@@ -5,6 +5,7 @@ using System.Linq;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Descriptors;
+using SiliconStudio.Core.Yaml.Serialization.Logging;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
 
 namespace SiliconStudio.Core.Yaml
@@ -18,6 +19,10 @@ namespace SiliconStudio.Core.Yaml
         /// A key that identifies the information about the instance that we need the store in the <see cref="ObjectContext.Properties"/> dictionary.
         /// </summary>
         protected static readonly object InstanceInfoKey = new object();
+        /// <summary>
+        /// A key that identifies deleted items during deserialization.
+        /// </summary>
+        protected static readonly object DeletedItemsKey = new object();
 
         /// <summary>
         /// A structure containing the information about the instance that we need the store in the <see cref="ObjectContext.Properties"/> dictionary. 
@@ -75,23 +80,6 @@ namespace SiliconStudio.Core.Yaml
             WriteYamlAfterTransform(ref objectContext, transformed);
         }
 
-        protected virtual void ReadYamlAfterTransform(ref ObjectContext objectContext, bool transformed)
-        {
-            ReadMembers<MappingStart, MappingEnd>(ref objectContext);
-        }
-
-        protected virtual void WriteYamlAfterTransform(ref ObjectContext objectContext, bool transformed)
-        {
-            var type = objectContext.Instance.GetType();
-            var context = objectContext.SerializerContext;
-
-            // Resolve the style, use default style if not defined.
-            var style = GetStyle(ref objectContext);
-
-            context.Writer.Emit(new MappingStartEventInfo(objectContext.Instance, type) { Tag = objectContext.Tag, Anchor = objectContext.Anchor, Style = style });
-            WriteMembers(ref objectContext);
-            context.Writer.Emit(new MappingEndEventInfo(objectContext.Instance, type));
-        }
         /// <inheritdoc/>
         protected override void CreateOrTransformObject(ref ObjectContext objectContext)
         {
@@ -125,6 +113,49 @@ namespace SiliconStudio.Core.Yaml
             }
         }
 
+        /// <summary>
+        /// Reads the dictionary items key-values.
+        /// </summary>
+        /// <param name="objectContext"></param>
+        protected override void ReadDictionaryItems(ref ObjectContext objectContext)
+        {
+            var dictionaryDescriptor = (DictionaryDescriptor)objectContext.Descriptor;
+
+            var deletedItems = new HashSet<Guid>();
+
+            var reader = objectContext.Reader;
+            while (!reader.Accept<MappingEnd>())
+            {
+                var currentDepth = objectContext.Reader.CurrentDepth;
+
+                try
+                {
+                    // Read key and value
+                    var keyValue = ReadDictionaryItem(ref objectContext, new KeyValuePair<Type, Type>(dictionaryDescriptor.KeyType, dictionaryDescriptor.ValueType));
+                    if (!Equals(keyValue.Value, CollectionItemIdHelper.YamlDeletedKey) || !(keyValue.Key is Guid))
+                    {
+                        dictionaryDescriptor.AddToDictionary(objectContext.Instance, keyValue.Key, keyValue.Value);
+                    }
+                    else
+                    {
+                        deletedItems.Add((Guid)keyValue.Key);
+                    }
+                }
+                catch (YamlException ex)
+                {
+                    if (objectContext.SerializerContext.AllowErrors)
+                    {
+                        var logger = objectContext.SerializerContext.ContextSettings.Logger;
+                        logger?.Log(LogLevel.Warning, ex, "Ignored dictionary item that could not be deserialized");
+                        objectContext.Reader.Skip(currentDepth);
+                    }
+                    else throw;
+                }
+            }
+
+            objectContext.Properties.Add(DeletedItemsKey, deletedItems);
+        }
+
         protected override void WriteDictionaryItems(ref ObjectContext objectContext)
         {
             var dictionaryDescriptor = (DictionaryDescriptor)objectContext.Descriptor;
@@ -141,19 +172,20 @@ namespace SiliconStudio.Core.Yaml
             }
         }
 
-        protected static bool AreCollectionItemsIdentifiable(ref ObjectContext objectContext)
+        protected override KeyValuePair<object, object> ReadDictionaryItem(ref ObjectContext objectContext, KeyValuePair<Type, Type> keyValueTypes)
         {
-            object nonIdentifiableItems;
-
-            // Check in the serializer context first, for disabling of item identifiers at parent type level
-            if (objectContext.SerializerContext.Properties.TryGetValue(NonIdentifiableCollectionItemsAttribute.Key, out nonIdentifiableItems) && (bool)nonIdentifiableItems)
-                return false;
-
-            // Then check locally for disabling of item identifiers at member level
-            if (objectContext.Properties.TryGetValue(NonIdentifiableCollectionItemsAttribute.Key, out nonIdentifiableItems) && (bool)nonIdentifiableItems)
-                return false;
-
-            return true;
+            var keyResult = objectContext.ObjectSerializerBackend.ReadDictionaryKey(ref objectContext, keyValueTypes.Key);
+            var peek = objectContext.SerializerContext.Reader.Peek<Scalar>();
+            if (Equals(peek?.Value, CollectionItemIdHelper.YamlDeletedKey))
+            {
+                var valueResult = objectContext.ObjectSerializerBackend.ReadDictionaryValue(ref objectContext, typeof(string));
+                return new KeyValuePair<object, object>(keyResult, valueResult);
+            }
+            else
+            {
+                var valueResult = objectContext.ObjectSerializerBackend.ReadDictionaryValue(ref objectContext, keyValueTypes.Value);
+                return new KeyValuePair<object, object>(keyResult, valueResult);
+            }
         }
 
         protected override bool CheckIsSequence(ref ObjectContext objectContext)
@@ -162,6 +194,25 @@ namespace SiliconStudio.Core.Yaml
 
             // If the dictionary is pure, we can directly output a sequence instead of a mapping
             return collectionDescriptor != null && collectionDescriptor.IsPureCollection;
+        }
+
+        protected virtual void ReadYamlAfterTransform(ref ObjectContext objectContext, bool transformed)
+        {
+            ReadMembers<MappingStart, MappingEnd>(ref objectContext);
+        }
+
+        protected virtual void WriteYamlAfterTransform(ref ObjectContext objectContext, bool transformed)
+        {
+            var type = objectContext.Instance.GetType();
+            var context = objectContext.SerializerContext;
+
+            // Resolve the style, use default style if not defined.
+            var style = GetStyle(ref objectContext);
+
+            context.Writer.Emit(new MappingStartEventInfo(objectContext.Instance, type) { Tag = objectContext.Tag, Anchor = objectContext.Anchor, Style = style });
+            WriteMembers(ref objectContext);
+            //WriteDeleted(ref objectContext);
+            context.Writer.Emit(new MappingEndEventInfo(objectContext.Instance, type));
         }
 
         /// <summary>
@@ -185,6 +236,22 @@ namespace SiliconStudio.Core.Yaml
         /// <param name="container">The dictionary mapping ids to item.</param>
         /// <param name="targetDescriptor">The type descriptor of the actual collection to fill.</param>
         /// <param name="targetCollection">The instance of the actual collection to fill.</param>
-        protected abstract void TransformAfterDeserialization(IDictionary container, ITypeDescriptor targetDescriptor, object targetCollection);
+        /// <param name="deletedItems">A collection of items that are marked as deleted. Can be null.</param>
+        protected abstract void TransformAfterDeserialization(IDictionary container, ITypeDescriptor targetDescriptor, object targetCollection, ICollection<Guid> deletedItems = null);
+
+        protected static bool AreCollectionItemsIdentifiable(ref ObjectContext objectContext)
+        {
+            object nonIdentifiableItems;
+
+            // Check in the serializer context first, for disabling of item identifiers at parent type level
+            if (objectContext.SerializerContext.Properties.TryGetValue(NonIdentifiableCollectionItemsAttribute.Key, out nonIdentifiableItems) && (bool)nonIdentifiableItems)
+                return false;
+
+            // Then check locally for disabling of item identifiers at member level
+            if (objectContext.Properties.TryGetValue(NonIdentifiableCollectionItemsAttribute.Key, out nonIdentifiableItems) && (bool)nonIdentifiableItems)
+                return false;
+
+            return true;
+        }
     }
 }

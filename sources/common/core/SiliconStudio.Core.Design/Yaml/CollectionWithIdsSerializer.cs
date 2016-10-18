@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Serialization;
@@ -52,8 +53,8 @@ namespace SiliconStudio.Core.Yaml
         /// <inheritdoc/>
         protected override void TransformObjectAfterRead(ref ObjectContext objectContext)
         {
-            object infoObject;
-            if (!objectContext.Properties.TryGetValue(InstanceInfoKey, out infoObject))
+            object property;
+            if (!objectContext.Properties.TryGetValue(InstanceInfoKey, out property))
             {
                 base.TransformObjectAfterRead(ref objectContext);
 
@@ -68,18 +69,19 @@ namespace SiliconStudio.Core.Yaml
                         foreach (var item in enumerable)
                         {
                             var id = IdentifiableHelper.GetId(item);
-                            ids.KeyToIdMap[(object)i] = id != Guid.Empty ? id : Guid.NewGuid();
+                            ids[i] = id != Guid.Empty ? id : Guid.NewGuid();
                             ++i;
                         }
                     }
                 }
                 return;
             }
-            var info = (InstanceInfo)infoObject;
+            var info = (InstanceInfo)property;
 
             if (info.Instance != null)
             {
-                TransformAfterDeserialization((IDictionary)objectContext.Instance, info.Descriptor, info.Instance);
+                var deletedItems = objectContext.Properties.TryGetValue(DeletedItemsKey, out property) ? (ICollection<Guid>)property : null;
+                TransformAfterDeserialization((IDictionary)objectContext.Instance, info.Descriptor, info.Instance, deletedItems);
             }
             objectContext.Instance = info.Instance;
 
@@ -95,7 +97,7 @@ namespace SiliconStudio.Core.Yaml
             foreach (var item in (IEnumerable)collection)
             {
                 Guid id;
-                if (!identifier.KeyToIdMap.TryGetValue(i, out id))
+                if (!identifier.TryGet(i, out id))
                 {
                     id = Guid.NewGuid();
                 }
@@ -117,21 +119,28 @@ namespace SiliconStudio.Core.Yaml
         }
 
         /// <inheritdoc/>
-        protected override void TransformAfterDeserialization(IDictionary container, ITypeDescriptor targetDescriptor, object targetCollection)
+        protected override void TransformAfterDeserialization(IDictionary container, ITypeDescriptor targetDescriptor, object targetCollection, ICollection<Guid> deletedItems = null)
         {
             var collectionDescriptor = (CollectionDescriptor)targetDescriptor;
             var type = typeof(CollectionWithItemIds<>).MakeGenericType(collectionDescriptor.ElementType);
             if (!type.IsInstanceOfType(container))
                 throw new InvalidOperationException("The given container does not match the expected type.");
             var identifier = CollectionItemIdHelper.GetCollectionItemIds(targetCollection);
-            identifier.KeyToIdMap.Clear();
+            identifier.Clear();
             var i = 0;
             var enumerator = container.GetEnumerator();
             while (enumerator.MoveNext())
             {
                 collectionDescriptor.CollectionAdd(targetCollection, enumerator.Value);
-                identifier.KeyToIdMap.Add(i, (Guid)enumerator.Key);
+                identifier.Add(i, (Guid)enumerator.Key);
                 ++i;
+            }
+            if (deletedItems != null)
+            {
+                foreach (var deletedItem in deletedItems)
+                {
+                    identifier.MarkAsDeleted(deletedItem);
+                }
             }
         }
     }

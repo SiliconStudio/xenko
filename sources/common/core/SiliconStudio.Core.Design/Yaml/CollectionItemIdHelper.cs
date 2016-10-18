@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
+using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
 using ITypeDescriptor = SiliconStudio.Core.Yaml.Serialization.ITypeDescriptor;
 
@@ -22,9 +23,83 @@ namespace SiliconStudio.Core.Yaml
 
     public class CollectionItemIdentifiers
     {
-        public OrderedDictionary<object, Guid> KeyToIdMap { get; } = new OrderedDictionary<object, Guid>();
+        // TODO: we could sort only at serialization
+        private readonly SortedList<object, Guid> keyToIdMap = new SortedList<object, Guid>(new DefaultKeyComparer());
+        private readonly HashSet<Guid> deletedItems = new HashSet<Guid>();
 
-        public List<Guid> DeletedItems { get; } = new List<Guid>();
+        public Guid this[object key] { get { return keyToIdMap[key]; } set { keyToIdMap[key] = value; } }
+
+        public IEnumerable<Guid> DeletedItems => deletedItems;
+
+        public int KeyCount => keyToIdMap.Count;
+
+        public int DeletedCount => deletedItems.Count;
+
+        public int Count => KeyCount + DeletedCount;
+
+        public void Add(object key, Guid id)
+        {
+            keyToIdMap.Add(key, id);
+        }
+
+        public void Insert(int index, Guid id)
+        {
+            for (var i = keyToIdMap.Count; i > index; --i)
+            {
+                keyToIdMap[i] = keyToIdMap[i-1];
+
+            }
+            keyToIdMap.Add(index, id);
+        }
+
+        public void Clear()
+        {
+            keyToIdMap.Clear();
+            deletedItems.Clear();
+        }
+
+        public bool ContainsKey(object key)
+        {
+            return keyToIdMap.ContainsKey(key);
+        }
+
+        public bool TryGet(object key, out Guid id)
+        {
+            return keyToIdMap.TryGetValue(key, out id);
+        }
+
+        public void Delete(object key, bool markAsDeleted = true)
+        {
+            var id = keyToIdMap[key];
+            keyToIdMap.Remove(key);
+            if (markAsDeleted)
+            {
+                MarkAsDeleted(id);
+            }
+        }
+
+        public void MarkAsDeleted(Guid id)
+        {
+            deletedItems.Add(id);
+        }
+
+        public void UnmarkAsDeleted(Guid id)
+        {
+            deletedItems.Remove(id);
+        }
+
+        public void Validate(bool isList)
+        {
+            var ids = new HashSet<Guid>(keyToIdMap.Values);
+            if (ids.Count != keyToIdMap.Count)
+                throw new InvalidOperationException("Two elements of the collection have the same id");
+
+            foreach (var deleted in deletedItems)
+                ids.Add(deleted);
+
+            if (ids.Count != keyToIdMap.Count + deletedItems.Count)
+                throw new InvalidOperationException("An id is both marked as deleted and associated to a key of the collection.");
+        }
     }
 
     public interface IKeyWithId
@@ -102,9 +177,7 @@ namespace SiliconStudio.Core.Yaml
     public static class CollectionItemIdHelper
     {
         // TODO: move to Asset level
-        public const string YamlSpecialId = "~ItemId";
-
-        public const string YamlDeletedKey = "(~Deleted)";
+        public const string YamlDeletedKey = "~(Deleted)";
 
         public static readonly object DeletedKey = new object();
 

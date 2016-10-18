@@ -120,6 +120,6 @@ namespace SiliconStudio.Core.Yaml
             }
 
             base.WriteMemberName(ref objectContext, member, memberName);
-        }       
+        }
     }
 }
