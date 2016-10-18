@@ -172,8 +172,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
                         logger?.Log(LogLevel.Warning, ex, "Ignored collection item that could not be deserialized");
                         objectContext.Reader.Skip(currentDepth);
                     }
-                    else
-                        throw;
+                    else throw;
                 }
                 index++;
             }

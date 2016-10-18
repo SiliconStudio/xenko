@@ -31,19 +31,19 @@ namespace SiliconStudio.Xenko.Assets.Serializers
             objectContext.Settings.SortKeyForMapping = savedSettings;
         }
 
-        protected override void WriteDictionaryItem(ref ObjectContext objectContext, KeyValuePair<object, object> keyValue, KeyValuePair<Type, Type> types)
+        protected override void WriteDictionaryItem(ref ObjectContext objectContext, KeyValuePair<object, object> keyValue, KeyValuePair<Type, Type> keyValueTypes)
         {
             var propertyKey = (PropertyKey)keyValue.Key;
-            objectContext.SerializerContext.ObjectSerializerBackend.WriteDictionaryKey(ref objectContext, propertyKey, types.Key);
+            objectContext.SerializerContext.ObjectSerializerBackend.WriteDictionaryKey(ref objectContext, propertyKey, keyValueTypes.Key);
 
             // Deduce expected value type from PropertyKey
             objectContext.SerializerContext.ObjectSerializerBackend.WriteDictionaryKey(ref objectContext, keyValue.Value, propertyKey.PropertyType);
         }
 
-        protected override KeyValuePair<object, object> ReadDictionaryItem(ref ObjectContext objectContext, KeyValuePair<Type, Type> keyValueType)
+        protected override KeyValuePair<object, object> ReadDictionaryItem(ref ObjectContext objectContext, KeyValuePair<Type, Type> keyValueTypes)
         {
             // Read PropertyKey
-            var keyResult = (PropertyKey)objectContext.SerializerContext.ObjectSerializerBackend.ReadDictionaryKey(ref objectContext, keyValueType.Key);
+            var keyResult = (PropertyKey)objectContext.SerializerContext.ObjectSerializerBackend.ReadDictionaryKey(ref objectContext, keyValueTypes.Key);
 
             // Deduce expected value type from PropertyKey
             var valueResult = (PropertyKey)objectContext.SerializerContext.ObjectSerializerBackend.ReadDictionaryKey(ref objectContext, keyResult.PropertyType);
