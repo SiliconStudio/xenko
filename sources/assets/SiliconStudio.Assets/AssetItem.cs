@@ -163,13 +163,13 @@ namespace SiliconStudio.Assets
         /// <param name="newAsset">The new asset that will be used in the cloned <see cref="AssetItem" />. If this parameter
         /// is null, it clones the original asset. otherwise, the specified asset is used as-is in the new <see cref="AssetItem" />
         /// (no clone on newAsset is performed)</param>
-        /// <param name="copyPackage">if set to <c>true</c> copy package information, only used by the <see cref="AssetDependencyManager" />.</param>
+        /// <param name="keepPackage">if set to <c>true</c> copy package information, only used by the <see cref="AssetDependencyManager" />.</param>
         /// <returns>A clone of this instance.</returns>
-        internal AssetItem Clone(bool copyPackage, UFile newLocation = null, Asset newAsset = null)
+        public AssetItem Clone(bool keepPackage, UFile newLocation = null, Asset newAsset = null)
         {
             // Set the package after the new AssetItem(), to make sure that isDirty is not going to call a notification on the
             // package
-            var item = new AssetItem(newLocation ?? location, newAsset ?? (Asset)AssetCloner.Clone(Asset, AssetClonerFlags.KeepBases), copyPackage ? Package : null)
+            var item = new AssetItem(newLocation ?? location, newAsset ?? (Asset)AssetCloner.Clone(Asset, AssetClonerFlags.KeepBases), keepPackage ? Package : null)
                 {
                     isDirty = isDirty,
                     SourceFolder = SourceFolder,
