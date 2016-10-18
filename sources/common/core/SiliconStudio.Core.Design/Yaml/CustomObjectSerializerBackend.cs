@@ -1,9 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using SharpYaml.Serialization;
-using SharpYaml.Serialization.Serializers;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Yaml.Serialization;
+using SiliconStudio.Core.Yaml.Serialization.Serializers;
 using IMemberDescriptor = SiliconStudio.Core.Reflection.IMemberDescriptor;
 using ITypeDescriptor = SiliconStudio.Core.Reflection.ITypeDescriptor;
 
@@ -24,7 +24,7 @@ namespace SiliconStudio.Core.Yaml
             this.typeDescriptorFactory = typeDescriptorFactory;
         }
 
-        public override void WriteMemberName(ref ObjectContext objectContext, SharpYaml.Serialization.IMemberDescriptor member, string memberName)
+        public override void WriteMemberName(ref ObjectContext objectContext, Serialization.IMemberDescriptor member, string memberName)
         {
             // Replace the key with SiliconStudio.Core.Reflection IMemberDescriptor
             // Cache previous 

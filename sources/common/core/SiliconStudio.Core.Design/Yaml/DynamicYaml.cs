@@ -4,8 +4,7 @@
 using System;
 using System.IO;
 using System.Text;
-using SharpYaml;
-using SharpYaml.Serialization;
+using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Core.Yaml
 {

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using SharpYaml.Events;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Yaml.Events;
 
 namespace SiliconStudio.Core.Settings
 {

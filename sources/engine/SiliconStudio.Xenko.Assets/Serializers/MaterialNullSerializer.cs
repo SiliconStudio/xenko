@@ -1,9 +1,8 @@
 ﻿using System;
-using SharpYaml;
-using SharpYaml.Events;
-using SharpYaml.Serialization;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Events;
+using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Assets.Serializers

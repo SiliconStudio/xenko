@@ -609,6 +609,50 @@ namespace SiliconStudio.Xenko.Physics
             constraint.Simulation = null;
         }
 
+        private class XenkoAllHitsConvexResultCallback : BulletSharp.AllHitsConvexResultCallback
+        {
+            private IList<HitResult> resultsList;
+
+            public XenkoAllHitsConvexResultCallback(IList<HitResult> results)
+            {
+                resultsList = results;
+            }
+
+            public override void AddSingleResult(BulletSharp.CollisionObject collisionObject, ref Vector3 point, ref Vector3 normal, float hitFraction)
+            {
+                resultsList.Add(new HitResult
+                {
+                    Succeeded = true,
+                    Collider = collisionObject.UserObject as PhysicsComponent,
+                    Point = point,
+                    Normal = normal,
+                    HitFraction = hitFraction
+                });
+            }
+        }
+
+        private class XenkoAllHitsRayResultCallback : BulletSharp.AllHitsRayResultCallback
+        {
+            private IList<HitResult> resultsList;
+
+            public XenkoAllHitsRayResultCallback(ref Vector3 from, ref Vector3 to, IList<HitResult> results) : base(ref from, ref to)
+            {
+                resultsList = results;
+            }
+
+            public override void AddSingleResult(BulletSharp.CollisionObject collisionObject, ref Vector3 point, ref Vector3 normal, float hitFraction)
+            {
+                resultsList.Add(new HitResult
+                {
+                    Succeeded = true,
+                    Collider = collisionObject.UserObject as PhysicsComponent,
+                    Point = point,
+                    Normal = normal,
+                    HitFraction = hitFraction
+                });
+            }
+        }
+
         /// <summary>
         /// Raycasts and stops at the first hit.
         /// </summary>
@@ -617,9 +661,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <returns></returns>
         public HitResult Raycast(Vector3 from, Vector3 to)
         {
-            var result = new HitResult(); //result.Succeded is false by default
-
-            var fullDistance = (to - from).LengthSquared();
+            var result = new HitResult(); //result.Succeeded is false by default
 
             using (var rcb = new BulletSharp.ClosestRayResultCallback(from, to))
             {
@@ -630,9 +672,38 @@ namespace SiliconStudio.Xenko.Physics
                 result.Collider = (PhysicsComponent)rcb.CollisionObject.UserObject;
                 result.Normal = rcb.HitNormalWorld;
                 result.Point = rcb.HitPointWorld;
-                result.FullLength = fullDistance;
-                result.NormalizedDistance = -1.0f;
-                result.StartPoint = from;
+                result.HitFraction = rcb.ClosestHitFraction;
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Raycasts and stops at the first hit.
+        /// </summary>
+        /// <param name="from">From.</param>
+        /// <param name="to">To.</param>
+        /// <param name="collisionFilterGroups">The collision group of this shape sweep</param>
+        /// <param name="collisionFilterGroupFlags">The collision group that this shape sweep can collide with</param>
+        /// <returns>The list with hit results.</returns>
+        public HitResult Raycast(Vector3 from, Vector3 to, CollisionFilterGroups collisionFilterGroups, CollisionFilterGroupFlags collisionFilterGroupFlags)
+        {
+            var result = new HitResult(); //result.Succeeded is false by default
+
+            using (var rcb = new BulletSharp.ClosestRayResultCallback(from, to)
+            {
+                CollisionFilterGroup = (short)collisionFilterGroups,
+                CollisionFilterMask = (short)collisionFilterGroupFlags
+            })
+            {
+                collisionWorld.RayTest(ref from, ref to, rcb);
+
+                if (rcb.CollisionObject == null) return result;
+                result.Succeeded = true;
+                result.Collider = (PhysicsComponent)rcb.CollisionObject.UserObject;
+                result.Normal = rcb.HitNormalWorld;
+                result.Point = rcb.HitPointWorld;
+                result.HitFraction = rcb.ClosestHitFraction;
             }
 
             return result;
@@ -643,36 +714,26 @@ namespace SiliconStudio.Xenko.Physics
         /// </summary>
         /// <param name="from">From.</param>
         /// <param name="to">To.</param>
-        /// <returns></returns>
-        public FastList<HitResult> RaycastPenetrating(Vector3 from, Vector3 to)
+        /// <param name="resultsOutput">The list to fill with results.</param>
+        public void RaycastPenetrating(Vector3 from, Vector3 to, IList<HitResult> resultsOutput)
         {
-            using (var rcb = new BulletSharp.AllHitsRayResultCallback(from, to))
+            using (var rcb = new XenkoAllHitsRayResultCallback(ref from, ref to, resultsOutput))
             {
                 collisionWorld.RayTest(ref from, ref to, rcb);
-
-                var fullDistance = (to - from).LengthSquared();
-
-                var count = rcb.CollisionObjects.Count;
-                var result = new FastList<HitResult>(count);
-
-                for (var i = 0; i < count; i++)
-                {
-                    var singleResult = new HitResult
-                    {
-                        Succeeded = true,
-                        Collider = (PhysicsComponent)rcb.CollisionObjects[i].UserObject,
-                        Normal = rcb.HitNormalWorld[i],
-                        Point = rcb.HitPointWorld[i],
-                        FullLength = fullDistance,
-                        StartPoint = from,
-                        NormalizedDistance = -1.0f //lazily computed
-                    };
-
-                    result.Add(singleResult);
-                }
-
-                return result;
             }
+        }
+
+        /// <summary>
+        /// Raycasts penetrating any shape the ray encounters.
+        /// </summary>
+        /// <param name="from">From.</param>
+        /// <param name="to">To.</param>
+        /// <returns>The list with hit results.</returns>
+        public FastList<HitResult> RaycastPenetrating(Vector3 from, Vector3 to)
+        {
+            var results = new FastList<HitResult>();
+            RaycastPenetrating(from, to, results);
+            return results;
         }
 
         /// <summary>
@@ -681,44 +742,38 @@ namespace SiliconStudio.Xenko.Physics
         /// </summary>
         /// <param name="from">From.</param>
         /// <param name="to">To.</param>
-        /// <param name="groupFilters">The PhysicsCompoenet CollisionGroup(s) that we intend to filter in.</param>
-        /// <returns></returns>
-        public FastList<HitResult> RaycastPenetrating(Vector3 from, Vector3 to, IReadOnlyCollection<CollisionFilterGroups> groupFilters)
+        /// <param name="resultsOutput">The list to fill with results.</param>
+        /// <param name="collisionFilterGroups">The collision group of this shape sweep</param>
+        /// <param name="collisionFilterGroupFlags">The collision group that this shape sweep can collide with</param>
+        public void RaycastPenetrating(Vector3 from, Vector3 to, IList<HitResult> resultsOutput, CollisionFilterGroups collisionFilterGroups, CollisionFilterGroupFlags collisionFilterGroupFlags)
         {
-            using (var rcb = new BulletSharp.AllHitsRayResultCallback(from, to))
+            using (var rcb = new XenkoAllHitsRayResultCallback(ref from, ref to, resultsOutput)
+            {
+                CollisionFilterGroup = (short)collisionFilterGroups,
+                CollisionFilterMask = (short)collisionFilterGroupFlags
+            })
             {
                 collisionWorld.RayTest(ref from, ref to, rcb);
-
-                var fullDistance = (to - from).LengthSquared();
-
-                var count = rcb.CollisionObjects.Count;
-                var result = new FastList<HitResult>(count);
-
-                for (var i = 0; i < count; i++)
-                {
-                    var component = (PhysicsComponent)rcb.CollisionObjects[i].UserObject;
-                    if(!groupFilters.Contains(component.CollisionGroup)) continue;
-
-                    var singleResult = new HitResult
-                    {
-                        Succeeded = true,
-                        Collider = (PhysicsComponent)rcb.CollisionObjects[i].UserObject,
-                        Normal = rcb.HitNormalWorld[i],
-                        Point = rcb.HitPointWorld[i],
-                        FullLength = fullDistance,
-                        StartPoint = from,
-                        NormalizedDistance = -1.0f //lazily computed
-                    };
-
-                    result.Add(singleResult);
-                }
-
-                return result;
             }
         }
 
         /// <summary>
-        /// Pefrorms a sweep test using a collider shape and stops at the first hit
+        /// Raycasts penetrating any shape the ray encounters.
+        /// </summary>
+        /// <param name="from">From.</param>
+        /// <param name="to">To.</param>
+        /// <param name="collisionFilterGroups">The collision group of this shape sweep</param>
+        /// <param name="collisionFilterGroupFlags">The collision group that this shape sweep can collide with</param>
+        /// <returns>The list with hit results.</returns>
+        public FastList<HitResult> RaycastPenetrating(Vector3 from, Vector3 to, CollisionFilterGroups collisionFilterGroups, CollisionFilterGroupFlags collisionFilterGroupFlags)
+        {
+            var results = new FastList<HitResult>();
+            RaycastPenetrating(from, to, results, collisionFilterGroups, collisionFilterGroupFlags);
+            return results;
+        }
+
+        /// <summary>
+        /// Performs a sweep test using a collider shape and stops at the first hit
         /// </summary>
         /// <param name="shape">The shape.</param>
         /// <param name="from">From.</param>
@@ -730,9 +785,7 @@ namespace SiliconStudio.Xenko.Physics
             var sh = shape.InternalShape as BulletSharp.ConvexShape;
             if (sh == null) throw new Exception("This kind of shape cannot be used for a ShapeSweep.");
 
-            var result = new HitResult(); //result.Succeded is false by default
-
-            var fullDistance = (to.TranslationVector - from.TranslationVector).LengthSquared();
+            var result = new HitResult(); //result.Succeeded is false by default
 
             using (var rcb = new BulletSharp.ClosestConvexResultCallback(from.TranslationVector, to.TranslationVector))
             {
@@ -743,100 +796,122 @@ namespace SiliconStudio.Xenko.Physics
                 result.Collider = (PhysicsComponent)rcb.HitCollisionObject.UserObject;
                 result.Normal = rcb.HitNormalWorld;
                 result.Point = rcb.HitPointWorld;
-                result.FullLength = fullDistance;
-                result.StartPoint = from.TranslationVector;
-                result.NormalizedDistance = -1.0f;
+                result.HitFraction = rcb.ClosestHitFraction;
             }
 
             return result;
         }
 
         /// <summary>
-        /// Pefrorms a sweep test using a collider shape and never stops until "to"
+        /// Performs a sweep test using a collider shape and stops at the first hit
         /// </summary>
         /// <param name="shape">The shape.</param>
         /// <param name="from">From.</param>
         /// <param name="to">To.</param>
+        /// <param name="collisionFilterGroups">The collision group of this shape sweep</param>
+        /// <param name="collisionFilterGroupFlags">The collision group that this shape sweep can collide with</param>
         /// <returns></returns>
         /// <exception cref="System.Exception">This kind of shape cannot be used for a ShapeSweep.</exception>
-        public FastList<HitResult> ShapeSweepPenetrating(ColliderShape shape, Matrix from, Matrix to)
+        public HitResult ShapeSweep(ColliderShape shape, Matrix from, Matrix to, CollisionFilterGroups collisionFilterGroups, CollisionFilterGroupFlags collisionFilterGroupFlags)
         {
             var sh = shape.InternalShape as BulletSharp.ConvexShape;
             if (sh == null) throw new Exception("This kind of shape cannot be used for a ShapeSweep.");
 
-            var fullDistance = (to.TranslationVector - from.TranslationVector).LengthSquared();
+            var result = new HitResult(); //result.Succeeded is false by default
 
-            using (var rcb = new BulletSharp.AllHitsConvexResultCallback())
+            using (var rcb = new BulletSharp.ClosestConvexResultCallback(from.TranslationVector, to.TranslationVector)
+            {
+                CollisionFilterGroup = (BulletSharp.CollisionFilterGroups)collisionFilterGroups,
+                CollisionFilterMask = (BulletSharp.CollisionFilterGroups)collisionFilterGroupFlags
+            })
             {
                 collisionWorld.ConvexSweepTest(sh, from, to, rcb);
 
-                var count = rcb.CollisionObjects.Count;
-                var result = new FastList<HitResult>(count);
+                if (rcb.HitCollisionObject == null) return result;
+                result.Succeeded = true;
+                result.Collider = (PhysicsComponent)rcb.HitCollisionObject.UserObject;
+                result.Normal = rcb.HitNormalWorld;
+                result.Point = rcb.HitPointWorld;
+                result.HitFraction = rcb.ClosestHitFraction;
+            }
 
-                for (var i = 0; i < count; i++)
-                {
-                    var singleResult = new HitResult
-                    {
-                        Succeeded = true,
-                        Collider = (PhysicsComponent)rcb.CollisionObjects[i].UserObject,
-                        Normal = rcb.HitNormalWorld[i],
-                        Point = rcb.HitPointWorld[i],
-                        FullLength = fullDistance,
-                        StartPoint = from.TranslationVector,
-                        NormalizedDistance = -1.0f //lazily computed
-                    };
+            return result;
+        }
 
-                    result.Add(singleResult);
-                }
+        /// <summary>
+        /// Performs a sweep test using a collider shape and never stops until "to"
+        /// </summary>
+        /// <param name="shape">The shape.</param>
+        /// <param name="from">From.</param>
+        /// <param name="to">To.</param>
+        /// <param name="resultsOutput">The list to fill with results.</param>
+        /// <exception cref="System.Exception">This kind of shape cannot be used for a ShapeSweep.</exception>
+        public void ShapeSweepPenetrating(ColliderShape shape, Matrix from, Matrix to, IList<HitResult> resultsOutput)
+        {
+            var sh = shape.InternalShape as BulletSharp.ConvexShape;
+            if (sh == null) throw new Exception("This kind of shape cannot be used for a ShapeSweep.");
 
-                return result;
+            using (var rcb = new XenkoAllHitsConvexResultCallback(resultsOutput))
+            {
+                collisionWorld.ConvexSweepTest(sh, from, to, rcb);
             }
         }
 
         /// <summary>
-        /// Pefrorms a sweep test using a collider shape and never stops until "to"
+        /// Performs a sweep test using a collider shape and never stops until "to"
         /// </summary>
         /// <param name="shape">The shape.</param>
         /// <param name="from">From.</param>
         /// <param name="to">To.</param>
-        /// <param name="groupFilters">The PhysicsCompoenet CollisionGroup(s) that we intend to filter in.</param>
-        /// <returns></returns>
+        /// <returns>The list with hit results.</returns>
         /// <exception cref="System.Exception">This kind of shape cannot be used for a ShapeSweep.</exception>
-        public FastList<HitResult> ShapeSweepPenetrating(ColliderShape shape, Matrix from, Matrix to, IReadOnlyCollection<CollisionFilterGroups> groupFilters)
+        public FastList<HitResult> ShapeSweepPenetrating(ColliderShape shape, Matrix from, Matrix to)
+        {
+            var results = new FastList<HitResult>();
+            ShapeSweepPenetrating(shape, from, to, results);
+            return results;
+        }
+
+        /// <summary>
+        /// Performs a sweep test using a collider shape and never stops until "to"
+        /// </summary>
+        /// <param name="shape">The shape.</param>
+        /// <param name="from">From.</param>
+        /// <param name="to">To.</param>
+        /// <param name="resultsOutput">The list to fill with results.</param>
+        /// <param name="collisionFilterGroups">The collision group of this shape sweep</param>
+        /// <param name="collisionFilterGroupFlags">The collision group that this shape sweep can collide with</param>
+        /// <exception cref="System.Exception">This kind of shape cannot be used for a ShapeSweep.</exception>
+        public void ShapeSweepPenetrating(ColliderShape shape, Matrix from, Matrix to, IList<HitResult> resultsOutput, CollisionFilterGroups collisionFilterGroups, CollisionFilterGroupFlags collisionFilterGroupFlags)
         {
             var sh = shape.InternalShape as BulletSharp.ConvexShape;
             if (sh == null) throw new Exception("This kind of shape cannot be used for a ShapeSweep.");
 
-            var fullDistance = (to.TranslationVector - from.TranslationVector).LengthSquared();
-
-            using (var rcb = new BulletSharp.AllHitsConvexResultCallback())
+            using (var rcb = new XenkoAllHitsConvexResultCallback(resultsOutput)
+            {
+                CollisionFilterGroup = (BulletSharp.CollisionFilterGroups)collisionFilterGroups,
+                CollisionFilterMask = (BulletSharp.CollisionFilterGroups)collisionFilterGroupFlags
+            })
             {
                 collisionWorld.ConvexSweepTest(sh, from, to, rcb);
-
-                var count = rcb.CollisionObjects.Count;
-                var result = new FastList<HitResult>(count);
-
-                for (var i = 0; i < count; i++)
-                {
-                    var component = (PhysicsComponent)rcb.CollisionObjects[i].UserObject;
-                    if (!groupFilters.Contains(component.CollisionGroup)) continue;
-
-                    var singleResult = new HitResult
-                    {
-                        Succeeded = true,
-                        Collider = (PhysicsComponent)rcb.CollisionObjects[i].UserObject,
-                        Normal = rcb.HitNormalWorld[i],
-                        Point = rcb.HitPointWorld[i],
-                        FullLength = fullDistance,
-                        StartPoint = from.TranslationVector,
-                        NormalizedDistance = -1.0f //lazily computed
-                    };
-
-                    result.Add(singleResult);
-                }
-
-                return result;
             }
+        }
+
+        /// <summary>
+        /// Performs a sweep test using a collider shape and never stops until "to"
+        /// </summary>
+        /// <param name="shape">The shape.</param>
+        /// <param name="from">From.</param>
+        /// <param name="to">To.</param>
+        /// <param name="collisionFilterGroups">The collision group of this shape sweep</param>
+        /// <param name="collisionFilterGroupFlags">The collision group that this shape sweep can collide with</param>
+        /// <returns>The list with hit results.</returns>
+        /// <exception cref="System.Exception">This kind of shape cannot be used for a ShapeSweep.</exception>
+        public FastList<HitResult> ShapeSweepPenetrating(ColliderShape shape, Matrix from, Matrix to, CollisionFilterGroups collisionFilterGroups, CollisionFilterGroupFlags collisionFilterGroupFlags)
+        {
+            var results = new FastList<HitResult>();
+            ShapeSweepPenetrating(shape, from, to, results, collisionFilterGroups, collisionFilterGroupFlags);
+            return results;
         }
 
         /// <summary>
