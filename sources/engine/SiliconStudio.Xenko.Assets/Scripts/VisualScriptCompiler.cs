@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -28,12 +29,23 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
     public class VisualScriptCompilerContext
     {
-        private int labelCount;
-        private int localCount;
-        private VisualScriptAsset asset;
+        private readonly VisualScriptAsset asset;
+
+        // Store execution connectivity information
+        private readonly Dictionary<ExecutionBlock, List<ExecutionBlock>> executionOutputs = new Dictionary<ExecutionBlock, List<ExecutionBlock>>();
+        private readonly Dictionary<ExecutionBlock, List<ExecutionBlock>> executionInputs = new Dictionary<ExecutionBlock, List<ExecutionBlock>>();
+
+        /// <summary>
+        /// Specifies if a specific ExecutionBlock is executed or not before <see cref="CurrentBlock"/>, and if yes, is it executed in all path or not.
+        /// </summary>
+        private readonly Dictionary<ExecutionBlock, ExecutionBlockLinkState> connectivityToCurrentBlock = new Dictionary<ExecutionBlock, ExecutionBlockLinkState>();
 
         // If a specific output Slot was stored in a local variable, this will store its name
-        private Dictionary<Slot, string> outputSlotLocals = new Dictionary<Slot, string>();
+        private readonly Dictionary<Slot, string> outputSlotLocals = new Dictionary<Slot, string>();
+
+        private int labelCount;
+        private int localCount;
+        private ExecutionBlock functionStartBlock;
 
         internal Queue<Tuple<BasicBlock, ExecutionBlock>> CodeToGenerate = new Queue<Tuple<BasicBlock, ExecutionBlock>>();
 
@@ -45,7 +57,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         public BasicBlock CurrentBasicBlock { get; internal set; }
 
-        public Block CurrentBlock { get; internal set; }
+        public ExecutionBlock CurrentBlock { get; internal set; }
 
         public bool IsInsideLoop { get; set; }
 
@@ -91,23 +103,57 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                 {
                     ExpressionSyntax expression;
 
-                    string localName;
-                    if (outputSlotLocals.TryGetValue(sourceLink.Source, out localName))
+                    // Generate code
+                    var sourceBlock = sourceLink.Source.Owner;
+
+                    var sourceExecutionBlock = sourceBlock as ExecutionBlock;
+                    if (sourceExecutionBlock != null)
                     {
-                        expression = IdentifierName(localName);
-                    }
-                    else
-                    {
-                        // Generate code
-                        expression = (sourceLink.Source.Owner as IExpressionBlock)?.GenerateExpression(this, sourceLink.Source);
+                        // If block is execution block, it must have been executed in all path until now
+                        // Note: We don't care about non execution block, since we do a full expression evaluation on them.
+                        ExecutionBlockLinkState sourceExecutionState;
+                        if (!connectivityToCurrentBlock.TryGetValue(sourceExecutionBlock, out sourceExecutionState))
+                            sourceExecutionState = ExecutionBlockLinkState.Never;
+
+                        switch (sourceExecutionState)
+                        {
+                            case ExecutionBlockLinkState.Never:
+                                Log.Error(nameof(VisualScriptCompiler), $"{slot} in block {slot.Owner} uses a value from execution block {sourceBlock}, however it is never executed. Slot will take default value instead.");
+                                sourceBlock = null;
+                                break;
+                            case ExecutionBlockLinkState.Sometimes:
+                                Log.Error(nameof(VisualScriptCompiler), $"{slot} in block {slot.Owner} uses a value from execution block {sourceBlock}, however it is executed but not in all cases. Are you using result from a conditional branch? Slot will take default value instead.");
+                                // Note: we still let it generate code, so that the user can also see the error in the generated source code
+                                //sourceBlock = null;
+                                break;
+                            case ExecutionBlockLinkState.Always:
+                                // We're good, this value is always defined when we reach CurrentBlock
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
                     }
 
-                    if (expression != null)
+                    // Only proceed if sourceBlock has not been nulled by previous checks
+                    if (sourceBlock != null)
                     {
-                        // Add annotation on both source block and link (so that we can keep track of what block/link generated what source code)
-                        expression = expression.WithAdditionalAnnotations(GenerateAnnotation(sourceLink.Source.Owner), GenerateAnnotation(sourceLink));
+                        string localName;
+                        if (outputSlotLocals.TryGetValue(sourceLink.Source, out localName))
+                        {
+                            expression = IdentifierName(localName);
+                        }
+                        else
+                        {
+                            expression = (sourceBlock as IExpressionBlock)?.GenerateExpression(this, sourceLink.Source);
+                        }
 
-                        return expression;
+                        if (expression != null)
+                        {
+                            // Add annotation on both source block and link (so that we can keep track of what block/link generated what source code)
+                            expression = expression.WithAdditionalAnnotations(GenerateAnnotation(sourceLink.Source.Owner), GenerateAnnotation(sourceLink));
+
+                            return expression;
+                        }
                     }
                 }
 
@@ -118,10 +164,12 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                 }
 
                 // 3. Fallback: use slot name
-                return IdentifierName(slot.Name).WithAdditionalAnnotations(GenerateAnnotation(slot.Owner));
+                if (slot.Name != null)
+                    return IdentifierName(slot.Name).WithAdditionalAnnotations(GenerateAnnotation(slot.Owner));
             }
 
             // TODO: Issue an error
+            Log.Error(nameof(VisualScriptCompiler), $"{slot} in block {slot.Owner} could not be resolved.");
             return IdentifierName("unknown").WithAdditionalAnnotations(GenerateAnnotation(CurrentBlock));
         }
 
@@ -259,6 +307,9 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                 CurrentBlock = codeToGenerate.Item2;
                 var currentBlock = codeToGenerate.Item2;
 
+                // Build list of what was executed so far
+                BuildCurrentBlockConnectivityCache();
+
                 // Generate code for current node
                 currentBlock.GenerateCode(this);
 
@@ -299,6 +350,121 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                     AddStatement(IsInsideLoop ? (StatementSyntax)ContinueStatement() : ReturnStatement());
                 }
             }
+        }
+
+        public void ProcessEntryBlock(ExecutionBlock functionStartBlock)
+        {
+            BuildGlobalConnectivityCache();
+
+            this.functionStartBlock = functionStartBlock;
+
+            // Force generation of start block
+            GetOrCreateBasicBlock(functionStartBlock);
+
+            // Keep processing
+            ProcessCodeToGenerate();
+
+            // Clear states
+            executionInputs.Clear();
+            executionOutputs.Clear();
+        }
+
+        private void BuildGlobalConnectivityCache()
+        {
+            // Collect execution connectivity information from links
+            foreach (var link in asset.Links)
+            {
+                if (link.Source.Kind == SlotKind.Execution)
+                {
+                    var sourceBlock = (ExecutionBlock)link.Source.Owner;
+                    var targetBlock = (ExecutionBlock)link.Target.Owner;
+
+                    List<ExecutionBlock> sourceOutputs, targetInputs;
+
+                    // Store target in source
+                    if (!executionOutputs.TryGetValue(sourceBlock, out sourceOutputs))
+                        executionOutputs.Add(sourceBlock, sourceOutputs = new List<ExecutionBlock>());
+                    if (!sourceOutputs.Contains(targetBlock))
+                        sourceOutputs.Add(targetBlock);
+
+                    // Store source in target
+                    if (!executionInputs.TryGetValue(targetBlock, out targetInputs))
+                        executionInputs.Add(targetBlock, targetInputs = new List<ExecutionBlock>());
+                    if (!targetInputs.Contains(sourceBlock))
+                        targetInputs.Add(sourceBlock);
+                }
+            }
+        }
+
+        private void BuildCurrentBlockConnectivityCache()
+        {
+            // Possible optimization: build this list incrementally by reusing previous state results?
+            // this could become quite complex though
+            connectivityToCurrentBlock.Clear();
+
+            // Build list of all paths between start and current block
+            var paths = new List<ImmutableStack<ExecutionBlock>>();
+            FindAllPaths(paths, ImmutableStack.Create(functionStartBlock), functionStartBlock, CurrentBlock);
+
+            // Let's check which blocks are reached, and if yes, are they reached in all paths
+            var reachedBlockCounts = new Dictionary<ExecutionBlock, int>();
+            foreach (var path in paths)
+            {
+                foreach (var block in path)
+                {
+                    int count;
+                    if (reachedBlockCounts.TryGetValue(block, out count))
+                        reachedBlockCounts[block] = count + 1;
+                    else
+                        reachedBlockCounts.Add(block, 1);
+                }
+            }
+
+            foreach (var reachedBlockCount in reachedBlockCounts)
+            {
+                // Reached once per path => this is always executed before current block
+                // If less than once per path => this is reached but not in all cases
+                connectivityToCurrentBlock[reachedBlockCount.Key] = (reachedBlockCount.Value == paths.Count) ? ExecutionBlockLinkState.Always : ExecutionBlockLinkState.Sometimes;
+            }
+        }
+
+        private void FindAllPaths(List<ImmutableStack<ExecutionBlock>> paths, ImmutableStack<ExecutionBlock> currentPath, ExecutionBlock sourceBlock, ExecutionBlock targetBlock)
+        {
+            List<ExecutionBlock> nextBlocks;
+            if (!executionOutputs.TryGetValue(sourceBlock, out nextBlocks))
+                return;
+
+            foreach (var nextBlock in nextBlocks)
+            {
+                if (nextBlock == targetBlock)
+                {
+                    // We've reached our target, record this path
+                    paths.Add(currentPath);
+                }
+                else if (!currentPath.Contains(nextBlock)) // avoid cycles
+                {
+                    // Recurse
+                    FindAllPaths(paths, currentPath.Push(nextBlock), nextBlock, targetBlock);
+                }
+            }
+        }
+
+        enum ExecutionBlockLinkState
+        {
+            /// <summary>
+            /// Never executed.
+            /// </summary>
+            Never = 0,
+
+            /// <summary>
+            /// Executed but not all the time.
+            /// </summary>
+            Sometimes = 1,
+
+            /// <summary>
+            /// Always executed.
+            /// </summary>
+            Always = 2,
         }
     }
 
@@ -358,10 +524,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             {
                 var context = new VisualScriptCompilerContext(visualScriptAsset, result);
 
-                // Force generation of start block
-                context.GetOrCreateBasicBlock(functionStartBlock);
-
-                context.ProcessCodeToGenerate();
+                context.ProcessEntryBlock(functionStartBlock);
 
                 // Generate method
                 var method =

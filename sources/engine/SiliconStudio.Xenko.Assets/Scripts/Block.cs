@@ -123,6 +123,11 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                     throw new NotSupportedException();
             }
         }
+
+        public override string ToString()
+        {
+            return Title ?? base.ToString();
+        }
     }
 
     public abstract class ExecutionBlock : Block

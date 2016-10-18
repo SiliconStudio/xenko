@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.CodeAnalysis;
@@ -11,12 +11,14 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 {
     public class CustomCodeBlock : ExecutionBlock
     {
+        private const int CodeAsTitleMaxLength = 40;
+
         public string Name { get; set; }
 
         [RegenerateSlots, RegenerateTitle, ScriptCodeAttribute]
         public string Code { get; set; }
 
-        public override string Title => !string.IsNullOrEmpty(Name) ? Name : (!string.IsNullOrEmpty(Code) ? Code : "Custom Code");
+        public override string Title => !string.IsNullOrEmpty(Name) ? Name : GetTitleFromCode();
 
         public override void GenerateCode(VisualScriptCompilerContext context)
         {
@@ -102,6 +104,22 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                     RoslynHelper.AnalyzeBlockFlow(newSlots, context.Compilation, block);
                 }
             }
+        }
+
+        private string GetTitleFromCode()
+        {
+            if (string.IsNullOrEmpty(Code))
+                return "Custom Code";
+
+            var firstLineLength = Code.IndexOfAny(new[] { '\r', '\n' });
+            if (firstLineLength == -1)
+                firstLineLength = Code.Length;
+
+            // Too long?
+            if (firstLineLength > CodeAsTitleMaxLength)
+                return Code.Substring(0, CodeAsTitleMaxLength) + "…";
+
+            return Code;
         }
     }
 }

@@ -35,7 +35,9 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         {
             // TODO: Out/ref
             // Other cases should have been handled by context.RegisterLocalVariable during code generation
-            throw new System.NotImplementedException("out/ref are not implemented yet");
+            // It's also possible that this block is actually not executed and used as input, so we issue a warning anyway
+            context.Log.Error(nameof(MethodCallBlock), $"No value found for slot {slot}. Note that out/ref slots are not implemented yet.");
+            return null;
         }
 
         public override void GenerateCode(VisualScriptCompilerContext context)

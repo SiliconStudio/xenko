@@ -64,5 +64,10 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         [DataMember(50)]
         [DefaultValue(null)]
         public string Value { get; set; }
+
+        public override string ToString()
+        {
+            return $"[{Direction}/{Kind}] {Name ?? "Unnamed"}";
+        }
     }
 }
