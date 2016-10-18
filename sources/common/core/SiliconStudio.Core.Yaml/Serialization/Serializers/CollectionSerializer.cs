@@ -158,25 +158,22 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             var index = 0;
             while (!reader.Accept<SequenceEnd>())
             {
-                if (objectContext.SerializerContext.AllowErrors)
-                {
                     var currentDepth = objectContext.Reader.CurrentDepth;
 
-                    try
-                    {
-                        ReadAddCollectionItem(ref objectContext, elementType, collectionDescriptor, thisObject, index);
-                    }
-                    catch (YamlException ex)
-                    {
-                        var logger = objectContext.SerializerContext.ContextSettings.Logger;
-                        if (logger != null)
-                            logger.Log(LogLevel.Warning, ex, "Ignored collection item that could not be deserialized");
-                        objectContext.Reader.Skip(currentDepth);
-                    }
-                }
-                else
+                try
                 {
                     ReadAddCollectionItem(ref objectContext, elementType, collectionDescriptor, thisObject, index);
+                }
+                catch (YamlException ex)
+                {
+                    if (objectContext.SerializerContext.AllowErrors)
+                    {
+                        var logger = objectContext.SerializerContext.ContextSettings.Logger;
+                        logger?.Log(LogLevel.Warning, ex, "Ignored collection item that could not be deserialized");
+                        objectContext.Reader.Skip(currentDepth);
+                    }
+                    else
+                        throw;
                 }
                 index++;
             }

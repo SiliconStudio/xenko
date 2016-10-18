@@ -54,13 +54,6 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
     /// </summary>
     public class ObjectSerializer : IYamlSerializable, IYamlSerializableFactory
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ObjectSerializer"/> class.
-        /// </summary>
-        public ObjectSerializer()
-        {
-        }
-
         /// <inheritdoc/>
         public virtual IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
@@ -254,14 +247,10 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
                 if (objectContext.SerializerContext.AllowErrors)
                 {
                     var logger = objectContext.SerializerContext.ContextSettings.Logger;
-                    if (logger != null)
-                        logger.Log(LogLevel.Warning, ex, "Ignored object member that could not be deserialized");
+                    logger?.Log(LogLevel.Warning, ex, "Ignored object member that could not be deserialized");
                     skipMember = true;
                 }
-                else
-                {
-                    throw;
-                }
+                else throw;
             }
 
             if (skipMember)
