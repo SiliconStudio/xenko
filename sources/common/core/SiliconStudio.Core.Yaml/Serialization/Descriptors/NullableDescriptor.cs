@@ -45,6 +45,7 @@
 
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 {
@@ -71,7 +72,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             UnderlyingType = Nullable.GetUnderlyingType(type);
         }
 
-        public override DescriptorCategory Category { get { return DescriptorCategory.Nullable; } }
+        public override DescriptorCategory Category => DescriptorCategory.Nullable;
 
         /// <summary>
         /// Gets the type underlying type T of the nullable <see cref="Nullable{T}"/>
@@ -89,7 +90,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             return type.IsNullable();
         }
 
-        protected override System.Collections.Generic.List<IMemberDescriptor> PrepareMembers()
+        protected override List<IMemberDescriptor> PrepareMembers()
         {
             return EmptyMembers;
         }

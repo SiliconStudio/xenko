@@ -46,6 +46,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 {
@@ -93,7 +94,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             }
         }
 
-        public override DescriptorCategory Category { get { return DescriptorCategory.Primitive; } }
+        public override DescriptorCategory Category => DescriptorCategory.Primitive;
 
         /// <summary>
         /// Determines whether the specified type is a primitive.
@@ -130,7 +131,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             return Enum.Parse(Type, enumAsText, true);
         }
 
-        protected override System.Collections.Generic.List<IMemberDescriptor> PrepareMembers()
+        protected override List<IMemberDescriptor> PrepareMembers()
         {
             return EmptyMembers;
         }

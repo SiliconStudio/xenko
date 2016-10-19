@@ -48,6 +48,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 {
@@ -58,8 +59,6 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
     {
         private static readonly List<string> ListOfMembersToRemove = new List<string> {"Comparer", "Keys", "Values", "Capacity"};
 
-        private readonly Type keyType;
-        private readonly Type valueType;
         private readonly MethodInfo getEnumeratorGeneric;
         private readonly MethodInfo addMethod;
 
@@ -75,23 +74,23 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             : base(attributeRegistry, type, emitDefaultValues, namingConvention)
         {
             if (!IsDictionary(type))
-                throw new ArgumentException("Expecting a type inheriting from System.Collections.IDictionary", "type");
+                throw new ArgumentException(@"Expecting a type inheriting from System.Collections.IDictionary", nameof(type));
 
             // extract Key, Value types from IDictionary<??, ??>
             var interfaceType = type.GetInterface(typeof(IDictionary<,>));
             if (interfaceType != null)
             {
-                keyType = interfaceType.GetGenericArguments()[0];
-                valueType = interfaceType.GetGenericArguments()[1];
+                KeyType = interfaceType.GetGenericArguments()[0];
+                ValueType = interfaceType.GetGenericArguments()[1];
                 IsGenericDictionary = true;
-                getEnumeratorGeneric = typeof(DictionaryDescriptor).GetMethod("GetGenericEnumerable").MakeGenericMethod(keyType, valueType);
-                addMethod = interfaceType.GetMethod("Add", new[] {keyType, valueType});
+                getEnumeratorGeneric = typeof(DictionaryDescriptor).GetMethod("GetGenericEnumerable").MakeGenericMethod(KeyType, ValueType);
+                addMethod = interfaceType.GetMethod("Add", new[] {KeyType, ValueType});
             }
             else
             {
-                keyType = typeof(object);
-                valueType = typeof(object);
-                addMethod = type.GetMethod("Add", new[] {keyType, valueType});
+                KeyType = typeof(object);
+                ValueType = typeof(object);
+                addMethod = type.GetMethod("Add", new[] {KeyType, ValueType});
             }
         }
 
@@ -103,25 +102,25 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             IsPureDictionary = Count == 0;
         }
 
-        public override DescriptorCategory Category { get { return DescriptorCategory.Dictionary; } }
+        public override DescriptorCategory Category => DescriptorCategory.Dictionary;
 
         /// <summary>
         /// Gets a value indicating whether this instance is generic dictionary.
         /// </summary>
         /// <value><c>true</c> if this instance is generic dictionary; otherwise, <c>false</c>.</value>
-        public bool IsGenericDictionary { get; private set; }
+        public bool IsGenericDictionary { get; }
 
         /// <summary>
         /// Gets the type of the key.
         /// </summary>
         /// <value>The type of the key.</value>
-        public Type KeyType { get { return keyType; } }
+        public Type KeyType { get; }
 
         /// <summary>
         /// Gets the type of the value.
         /// </summary>
         /// <value>The type of the value.</value>
-        public Type ValueType { get { return valueType; } }
+        public Type ValueType { get; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is pure dictionary.
@@ -149,7 +148,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         public IEnumerable<KeyValuePair<object, object>> GetEnumerator(object dictionary)
         {
             if (dictionary == null)
-                throw new ArgumentNullException("dictionary");
+                throw new ArgumentNullException(nameof(dictionary));
             if (IsGenericDictionary)
             {
                 foreach (var item in (IEnumerable<KeyValuePair<object, object>>) getEnumeratorGeneric.Invoke(null, new[] {dictionary}))
@@ -182,7 +181,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         public void AddToDictionary(object dictionary, object key, object value)
         {
             if (dictionary == null)
-                throw new ArgumentNullException("dictionary");
+                throw new ArgumentNullException(nameof(dictionary));
             var simpleDictionary = dictionary as IDictionary;
             if (simpleDictionary != null)
             {
@@ -195,7 +194,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
                 {
                     throw new InvalidOperationException($"No Add() method found on dictionary [{Type}]");
                 }
-                addMethod.Invoke(dictionary, new object[] {key, value});
+                addMethod.Invoke(dictionary, new[] {key, value});
             }
         }
 

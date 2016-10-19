@@ -65,7 +65,6 @@
     <Compile Include="Reflection\AttributeRegistry.cs" />
     <Compile Include="Reflection\CollectionDescriptor.cs" />
     <Compile Include="Reflection\DataVisitorBase.cs" />
-    <Compile Include="Reflection\DescriptorCategory.cs" />
     <Compile Include="Reflection\DictionaryDescriptor.cs" />
     <Compile Include="Reflection\FieldDescriptor.cs" />
     <Compile Include="Reflection\IDataCustomVisitor.cs" />

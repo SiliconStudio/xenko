@@ -46,7 +46,6 @@
     <Compile Include="Serialization\AnchorEventEmitter.cs" />
     <Compile Include="Serialization\ContextPropertyCollection.cs" />
     <Compile Include="Serialization\DefaultNamingConvention.cs" />
-    <Compile Include="Serialization\DescriptorCategory.cs" />
     <Compile Include="Serialization\Descriptors\DefaultKeyComparer.cs" />
     <Compile Include="Serialization\DynamicMemberDescriptorBase.cs" />
     <Compile Include="Serialization\FlatNamingConvention.cs" />

@@ -49,6 +49,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 {
@@ -62,11 +63,9 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         protected static readonly string SystemCollectionsNamespace = typeof(int).Namespace;
 
         private readonly static object[] EmptyObjectArray = new object[0];
-        private readonly Type type;
         private List<IMemberDescriptor> members;
         private Dictionary<string, IMemberDescriptor> mapMembers;
         private readonly bool emitDefaultValues;
-        private DataStyle style;
         private bool isSorted;
         private readonly IMemberNamingConvention memberNamingConvention;
         private HashSet<string> remapMembers;
@@ -93,17 +92,17 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             this.memberNamingConvention = namingConvention;
             this.emitDefaultValues = emitDefaultValues;
             this.AttributeRegistry = attributeRegistry;
-            this.type = type;
+            this.Type = type;
 
             attributes = AttributeRegistry.GetAttributes(type);
 
-            this.style = DataStyle.Any;
+            this.Style = DataStyle.Any;
             foreach (var attribute in attributes)
             {
                 var styleAttribute = attribute as DataStyleAttribute;
                 if (styleAttribute != null)
                 {
-                    style = styleAttribute.Style;
+                    Style = styleAttribute.Style;
                     continue;
                 }
                 if (attribute is CompilerGeneratedAttribute)
@@ -148,7 +147,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
                 IMemberDescriptor existingMember;
                 if (mapMembers.TryGetValue(member.Name, out existingMember))
                 {
-                    throw new YamlException($"Failed to get ObjectDescriptor for type [{type.FullName}]. The member [{member}] cannot be registered as a member with the same name is already registered [{existingMember}]");
+                    throw new YamlException($"Failed to get ObjectDescriptor for type [{Type.FullName}]. The member [{member}] cannot be registered as a member with the same name is already registered [{existingMember}]");
                 }
 
                 mapMembers.Add(member.Name, member);
@@ -160,7 +159,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
                     {
                         if (mapMembers.TryGetValue(alternateName, out existingMember))
                         {
-                            throw new YamlException($"Failed to get ObjectDescriptor for type [{type.FullName}]. The member [{member}] cannot be registered as a member with the same name [{alternateName}] is already registered [{existingMember}]");
+                            throw new YamlException($"Failed to get ObjectDescriptor for type [{Type.FullName}]. The member [{member}] cannot be registered as a member with the same name [{alternateName}] is already registered [{existingMember}]");
                         }
                         else
                         {
@@ -177,19 +176,19 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             }
         }
 
-        protected IAttributeRegistry AttributeRegistry { get; private set; }
+        protected IAttributeRegistry AttributeRegistry { get; }
 
-        public Type Type { get { return type; } }
+        public Type Type { get; }
 
-        public IEnumerable<IMemberDescriptor> Members { get { return members; } }
+        public IEnumerable<IMemberDescriptor> Members => members;
 
-        public int Count { get { return members == null ? 0 : members.Count; } }
+        public int Count => members?.Count ?? 0;
 
-        public virtual DescriptorCategory Category { get { return DescriptorCategory.Object; } }
+        public virtual DescriptorCategory Category => DescriptorCategory.Object;
 
-        public bool HasMembers { get { return members.Count > 0; } }
+        public bool HasMembers => members.Count > 0;
 
-        public DataStyle Style { get { return style; } }
+        public DataStyle Style { get; }
 
         /// <summary>
         /// Sorts the members of this instance with the specified instance.
@@ -235,7 +234,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
                 bindingFlags |= BindingFlags.NonPublic;
 
             // Add all public properties with a readable get method
-            var memberList = (from propertyInfo in type.GetProperties(bindingFlags)
+            var memberList = (from propertyInfo in Type.GetProperties(bindingFlags)
                 where
                     propertyInfo.CanRead && propertyInfo.GetIndexParameters().Length == 0
                 select new PropertyDescriptor(propertyInfo, NamingConvention.Comparer)
@@ -244,7 +243,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
                 select member).Cast<IMemberDescriptor>().ToList();
 
             // Add all public fields
-            memberList.AddRange((from fieldInfo in type.GetFields(bindingFlags)
+            memberList.AddRange((from fieldInfo in Type.GetFields(bindingFlags)
                 select new FieldDescriptor(fieldInfo, NamingConvention.Comparer)
                 into member
                 where PrepareMember(member)
@@ -323,7 +322,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             else
             {
                 // Else we cannot only assign its content if it is a class
-                member.SerializeMemberMode = (memberType != typeof(string) && memberType.IsClass) || memberType.IsInterface || type.IsAnonymous() ? DataMemberMode.Content : DataMemberMode.Never;
+                member.SerializeMemberMode = (memberType != typeof(string) && memberType.IsClass) || memberType.IsInterface || Type.IsAnonymous() ? DataMemberMode.Content : DataMemberMode.Never;
             }
 
             // If it's a private member, check it has a YamlMemberAttribute on it
@@ -358,9 +357,9 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             if (member.SerializeMemberMode == DataMemberMode.Binary)
             {
                 if (!memberType.IsArray)
-                    throw new InvalidOperationException($"{memberType.FullName} {member.OriginalName} of {type.FullName} is not an array. Can not be serialized as binary.");
+                    throw new InvalidOperationException($"{memberType.FullName} {member.OriginalName} of {Type.FullName} is not an array. Can not be serialized as binary.");
                 if (!memberType.GetElementType().IsPureValueType())
-                    throw new InvalidOperationException($"{memberType.GetElementType()} is not a pure ValueType. {memberType.FullName} {member.OriginalName} of {type.FullName} can not serialize as binary.");
+                    throw new InvalidOperationException($"{memberType.GetElementType()} is not a pure ValueType. {memberType.FullName} {member.OriginalName} of {Type.FullName} can not serialize as binary.");
             }
 
             // If this member cannot be serialized, remove it from the list
@@ -374,7 +373,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             //	  ShouldSerializeSomeProperty => call it
             //	  DefaultValueAttribute(default) => compare to it
             //	  otherwise => true
-            var shouldSerialize = type.GetMethod("ShouldSerialize" + member.OriginalName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            var shouldSerialize = Type.GetMethod("ShouldSerialize" + member.OriginalName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
             if (shouldSerialize != null && shouldSerialize.ReturnType == typeof(bool) && member.ShouldSerialize == null)
                 member.ShouldSerialize = obj => (bool) shouldSerialize.Invoke(obj, EmptyObjectArray);
 
@@ -404,7 +403,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 
         public override string ToString()
         {
-            return type.ToString();
+            return Type.ToString();
         }
     }
 }

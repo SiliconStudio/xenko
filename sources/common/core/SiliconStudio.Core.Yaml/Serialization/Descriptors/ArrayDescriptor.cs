@@ -46,6 +46,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 {
@@ -54,7 +55,6 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
     /// </summary>
     public class ArrayDescriptor : ObjectDescriptor
     {
-        private readonly Type elementType;
         private readonly Type listType;
         private readonly MethodInfo toArrayMethod;
 
@@ -69,25 +69,25 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             : base(attributeRegistry, type, false, namingConvention)
         {
             if (!type.IsArray)
-                throw new ArgumentException("Expecting array type", "type");
+                throw new ArgumentException(@"Expecting array type", nameof(type));
 
             if (type.GetArrayRank() != 1)
             {
                 throw new ArgumentException($"Cannot support dimension [{type.GetArrayRank()}] for type [{type.FullName}]. Only supporting dimension of 1");
             }
 
-            elementType = type.GetElementType();
+            ElementType = type.GetElementType();
             listType = typeof(List<>).MakeGenericType(ElementType);
             toArrayMethod = listType.GetMethod("ToArray");
         }
 
-        public override DescriptorCategory Category { get { return DescriptorCategory.Array; } }
+        public override DescriptorCategory Category => DescriptorCategory.Array;
 
         /// <summary>
         /// Gets the type of the array element.
         /// </summary>
         /// <value>The type of the element.</value>
-        public Type ElementType { get { return elementType; } }
+        public Type ElementType { get; }
 
         /// <summary>
         /// Creates the equivalent of list type for this array.
