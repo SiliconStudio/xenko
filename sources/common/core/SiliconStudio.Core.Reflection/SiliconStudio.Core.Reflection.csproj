@@ -24,9 +24,11 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="AttributeRegistry.cs" />
     <Compile Include="DescriptorCategory.cs" />
     <Compile Include="IAttributeRegistry.cs" />
     <Compile Include="IMemberDescriptor.cs" />
+    <Compile Include="IMemberDescriptorBase.cs" />
     <Compile Include="ITypeDescriptor.cs" />
     <Compile Include="ITypeDescriptorFactory.cs" />
   </ItemGroup>

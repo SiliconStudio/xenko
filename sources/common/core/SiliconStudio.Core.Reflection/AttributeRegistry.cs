@@ -14,6 +14,7 @@ namespace SiliconStudio.Core.Reflection
     /// </summary>
     public class AttributeRegistry : IAttributeRegistry
     {
+        private readonly object lockObject = new object();
         private readonly Dictionary<MemberInfoKey, List<Attribute>> cachedAttributes = new Dictionary<MemberInfoKey, List<Attribute>>();
         private readonly Dictionary<MemberInfo, List<Attribute>> registeredAttributes = new Dictionary<MemberInfo, List<Attribute>>();
 
@@ -29,7 +30,7 @@ namespace SiliconStudio.Core.Reflection
 
             // Use a cache of attributes
             List<Attribute> attributes;
-            lock (cachedAttributes)
+            lock (lockObject)
             {
                 if (cachedAttributes.TryGetValue(key, out attributes))
                 {
@@ -64,7 +65,7 @@ namespace SiliconStudio.Core.Reflection
         /// <param name="attribute">The attribute.</param>
         public void Register(MemberInfo memberInfo, Attribute attribute)
         {
-            lock (cachedAttributes)
+            lock (lockObject)
             {
                 List<Attribute> attributes;
                 if (!registeredAttributes.TryGetValue(memberInfo, out attributes))

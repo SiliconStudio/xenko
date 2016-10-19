@@ -92,7 +92,6 @@
     <Compile Include="Serialization\DocumentLoadingState.cs" />
     <Compile Include="Serialization\DuplicateAnchorException.cs" />
     <Compile Include="Serialization\EmitterState.cs" />
-    <Compile Include="Serialization\IYamlAttributeRegistry.cs" />
     <Compile Include="Serialization\IYamlMemberDescriptor.cs" />
     <Compile Include="Serialization\IObjectFactory.cs" />
     <Compile Include="Serialization\ITagTypeRegistry.cs" />

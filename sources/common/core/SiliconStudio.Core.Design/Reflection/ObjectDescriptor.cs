@@ -274,10 +274,6 @@ namespace SiliconStudio.Core.Reflection
                 member.Mode = (memberType != typeof(string) && memberType.IsClass) || memberType.IsInterface || type.IsAnonymous() ? DataMemberMode.Content : DataMemberMode.Never;
             }
 
-            // Gets the style
-            var styleAttribute = AttributeRegistry.GetAttribute<DataStyleAttribute>(member.MemberInfo);
-            member.Style = styleAttribute != null ? styleAttribute.Style : DataStyle.Any;
-
             // Handle member attribute
             var memberAttribute = AttributeRegistry.GetAttribute<DataMemberAttribute>(member.MemberInfo);
             if (memberAttribute != null)

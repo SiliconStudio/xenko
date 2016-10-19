@@ -80,7 +80,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// <param name="namingConvention">The naming convention.</param>
         /// <exception cref="System.ArgumentNullException">type</exception>
         /// <exception cref="YamlException">type</exception>
-        public YamlObjectDescriptor(IYamlAttributeRegistry attributeRegistry, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
+        public YamlObjectDescriptor(IAttributeRegistry attributeRegistry, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
         {
             if (attributeRegistry == null)
                 throw new ArgumentNullException("attributeRegistry");
@@ -176,7 +176,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             }
         }
 
-        protected IYamlAttributeRegistry AttributeRegistry { get; }
+        protected IAttributeRegistry AttributeRegistry { get; }
 
         public Type Type { get; }
 
@@ -250,10 +250,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
                 select member));
 
             // Allow to add dynamic members per type
-            if (AttributeRegistry.PrepareMembersCallback != null)
-            {
-                AttributeRegistry.PrepareMembersCallback(this, memberList);
-            }
+            (AttributeRegistry as YamlAttributeRegistry)?.PrepareMembersCallback?.Invoke(this, memberList);
 
             return memberList;
         }

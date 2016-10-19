@@ -300,7 +300,7 @@ namespace SiliconStudio.Core.Yaml
                     };
 
                     if (generateIds)
-                        config.Attributes.PrepareMembersCallback += PrepareMembersCallback;
+                        ((YamlAttributeRegistry)config.Attributes).PrepareMembersCallback += PrepareMembersCallback;
 
                     for (int index = RegisteredAssemblies.Count - 1; index >= 0; index--)
                     {

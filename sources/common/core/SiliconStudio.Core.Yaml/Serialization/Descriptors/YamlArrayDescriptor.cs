@@ -65,7 +65,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// <param name="type">The type.</param>
         /// <param name="namingConvention">The naming convention.</param>
         /// <exception cref="System.ArgumentException">Expecting arrat type;type</exception>
-        public YamlArrayDescriptor(IYamlAttributeRegistry attributeRegistry, Type type, IMemberNamingConvention namingConvention)
+        public YamlArrayDescriptor(IAttributeRegistry attributeRegistry, Type type, IMemberNamingConvention namingConvention)
             : base(attributeRegistry, type, false, namingConvention)
         {
             if (!type.IsArray)

@@ -45,8 +45,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 
 namespace SiliconStudio.Core.Yaml.Serialization
@@ -56,113 +55,9 @@ namespace SiliconStudio.Core.Yaml.Serialization
     /// This implementation allows to retrieve default attributes for a member or 
     /// to attach an attribute to a specific type/member.
     /// </summary>
-    public class YamlAttributeRegistry : IYamlAttributeRegistry
+    public class YamlAttributeRegistry : AttributeRegistry
     {
-        private readonly object globalLock = new object();
-        private readonly Dictionary<MemberInfoKey, List<Attribute>> cachedAttributes = new Dictionary<MemberInfoKey, List<Attribute>>();
-        private readonly Dictionary<MemberInfo, List<Attribute>> registeredAttributes = new Dictionary<MemberInfo, List<Attribute>>();
-
+        // TODO: move this in a different location and remove this class
         public Action<YamlObjectDescriptor, List<IYamlMemberDescriptor>> PrepareMembersCallback { get; set; }
-
-        /// <summary>
-        /// Gets or sets the attribute remapper. May be null
-        /// </summary>
-        /// <value>The remap attribute.</value>
-        public Func<Attribute, Attribute> AttributeRemap { get; set; }
-
-        /// <summary>
-        /// Gets the attributes associated with the specified member.
-        /// </summary>
-        /// <param name="memberInfo">The reflection member.</param>
-        /// <param name="inherit">if set to <c>true</c> includes inherited attributes.</param>
-        /// <returns>An enumeration of <see cref="Attribute"/>.</returns>
-        public virtual List<Attribute> GetAttributes(MemberInfo memberInfo, bool inherit = true)
-        {
-            var key = new MemberInfoKey(memberInfo, inherit);
-
-            lock (globalLock)
-            {
-                // Use a cache of attributes
-                List<Attribute> attributes;
-                if (cachedAttributes.TryGetValue(key, out attributes))
-                {
-                    return attributes;
-                }
-
-                // Else retrieve all default attributes
-                var defaultAttributes = Attribute.GetCustomAttributes(memberInfo, inherit);
-                attributes = defaultAttributes.ToList();
-
-                // And add registered attributes
-                List<Attribute> registered;
-                if (registeredAttributes.TryGetValue(memberInfo, out registered))
-                {
-                    attributes.AddRange(registered);
-                }
-
-                // Add to the cache
-                cachedAttributes.Add(key, attributes);
-                return attributes;
-            }
-        }
-
-
-        /// <summary>
-        /// Registers an attribute for the specified member. Restriction: Attributes registered this way cannot be listed in inherited attributes.
-        /// </summary>
-        /// <param name="memberInfo">The member information.</param>
-        /// <param name="attribute">The attribute.</param>
-        public void Register(MemberInfo memberInfo, Attribute attribute)
-        {
-            lock (globalLock)
-            {
-                // Use a cache of attributes
-                List<Attribute> attributes;
-
-                if (!cachedAttributes.TryGetValue(new MemberInfoKey(memberInfo, false), out attributes))
-                {
-                    if (!registeredAttributes.TryGetValue(memberInfo, out attributes))
-                    {
-                        attributes = new List<Attribute>();
-                        registeredAttributes.Add(memberInfo, attributes);
-                    }
-                }
-
-                attributes.Add(attribute);
-            }
-        }
-
-        private struct MemberInfoKey : IEquatable<MemberInfoKey>
-        {
-            private readonly MemberInfo memberInfo;
-
-            private readonly bool inherit;
-
-            public MemberInfoKey(MemberInfo memberInfo, bool inherit)
-            {
-                this.memberInfo = memberInfo;
-                this.inherit = inherit;
-            }
-
-            public bool Equals(MemberInfoKey other)
-            {
-                return memberInfo.Equals(other.memberInfo) && inherit.Equals(other.inherit);
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (ReferenceEquals(null, obj))
-                    return false;
-                return obj is MemberInfoKey && Equals((MemberInfoKey) obj);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-                    return (memberInfo.GetHashCode()*397) ^ inherit.GetHashCode();
-                }
-            }
-        }
     }
 }

@@ -70,7 +70,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// <param name="emitDefaultValues">if set to <c>true</c> [emit default values].</param>
         /// <param name="namingConvention">The naming convention.</param>
         /// <exception cref="System.ArgumentException">Expecting a type inheriting from System.Collections.IDictionary;type</exception>
-        public YamlDictionaryDescriptor(IYamlAttributeRegistry attributeRegistry, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
+        public YamlDictionaryDescriptor(IAttributeRegistry attributeRegistry, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
             : base(attributeRegistry, type, emitDefaultValues, namingConvention)
         {
             if (!IsDictionary(type))

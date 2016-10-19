@@ -46,6 +46,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Schemas;
 using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
@@ -59,7 +60,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
     {
         internal readonly Dictionary<Type, IYamlSerializable> serializers = new Dictionary<Type, IYamlSerializable>();
         internal readonly AssemblyRegistry AssemblyRegistry;
-        private IYamlAttributeRegistry attributeRegistry;
+        private IAttributeRegistry attributeRegistry;
         private readonly IYamlSchema schema;
         private IObjectFactory objectFactory;
         private int preferredIndent;
@@ -260,7 +261,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// Gets the attribute registry.
         /// </summary>
         /// <value>The attribute registry.</value>
-        public IYamlAttributeRegistry Attributes
+        public IAttributeRegistry Attributes
         {
             get { return attributeRegistry; }
             set

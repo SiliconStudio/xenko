@@ -286,7 +286,7 @@ UInt64: 8
 
             var dynamicMember = new MyDynamicMember();
 
-            settings.Attributes.PrepareMembersCallback = (typeDesc, list) =>
+            ((YamlAttributeRegistry)settings.Attributes).PrepareMembersCallback = (typeDesc, list) =>
             {
                 if (typeof(MyObject) == typeDesc.Type)
                 {
