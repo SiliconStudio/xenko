@@ -2,14 +2,8 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security;
-using System.Text;
-using System.Threading.Tasks;
-using SiliconStudio.Core;
-using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Native
@@ -59,10 +53,12 @@ namespace SiliconStudio.Xenko.Native
         public struct PathFindResult
         {
             public bool PathFound;
+
             /// <summary>
             /// Should point to a preallocated array of <see cref="Vector3"/>'s matching the amount in <see cref="PathFindQuery.MaxPathPoints"/>
             /// </summary>
             public IntPtr PathPoints;
+
             public int NumPathPoints;
         };
 
