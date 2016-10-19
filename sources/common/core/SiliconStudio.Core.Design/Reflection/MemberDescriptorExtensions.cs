@@ -8,18 +8,8 @@ namespace SiliconStudio.Core.Reflection
     /// <summary>
     /// Extension methods for <see cref="IMemberDescriptor"/>
     /// </summary>
-    public static class MemberDescriptiorExtensions
+    public static class MemberDescriptorExtensions
     {
-        /// <summary>
-        /// Determines whether a member is readonly.
-        /// </summary>
-        /// <param name="memberDescriptor">The member descriptor.</param>
-        /// <returns><c>true</c> if a member is readonly; otherwise, <c>false</c>.</returns>
-        public static bool IsReadOnly(this IMemberDescriptor memberDescriptor)
-        {
-            return memberDescriptor.Mode == DataMemberMode.ReadOnly;
-        }
-
         public static int CompareMetadataTokenWith(this MemberInfo leftMember, MemberInfo rightMember)
         {
             if (leftMember == null)

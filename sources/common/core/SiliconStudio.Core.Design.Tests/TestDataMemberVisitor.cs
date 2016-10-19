@@ -19,7 +19,7 @@ namespace SiliconStudio.Core.Design.Tests
         /// </summary>
         public class PrimitiveGrabber : DataVisitorBase
         {
-            public List<object> Collected { get; private set; }
+            public List<object> Collected { get; }
 
             public PrimitiveGrabber()
             {
@@ -57,7 +57,6 @@ namespace SiliconStudio.Core.Design.Tests
                 FourthValue = fourthValue;
                 Collection = new List<object>();
                 Dictionary = new Dictionary<object, object>();
-                ReadOnlyValue = 1234;
             }
 
             [DataMember(0)]
@@ -83,9 +82,6 @@ namespace SiliconStudio.Core.Design.Tests
 
             [DataMember(6)]
             public Dictionary<object, object> Dictionary { get; set; }
-
-            [DataMember(7, DataMemberMode.ReadOnly)]
-            public int ReadOnlyValue { get; private set; }
 
             public SimpleObject SubObject { get; set; }
         }
@@ -199,10 +195,10 @@ namespace SiliconStudio.Core.Design.Tests
         [Test]
         public void TestArray()
         {
-            var customArray = new int[] {1, 2, 3, 4};
+            var customArray = new[] {1, 2, 3, 4};
             var primitiveGrabber = new PrimitiveGrabber();
             primitiveGrabber.Visit(customArray);
-            Assert.AreEqual(new List<object>()
+            Assert.AreEqual(new List<object>
                 {
                     1,2,3,4
                 }, primitiveGrabber.Collected);
