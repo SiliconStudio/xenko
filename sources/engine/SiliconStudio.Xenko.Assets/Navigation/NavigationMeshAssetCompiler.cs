@@ -4,15 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using NuGet;
-using SharpDX.Text;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
@@ -34,7 +30,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             var asset = (NavigationMeshAsset)assetItem.Asset;
             result.BuildSteps = new AssetBuildStep(assetItem) { new NavmeshBuildCommand(targetUrlInStorage, assetItem, asset, context, buildCache) };
         }
-        
+
         private class NavmeshBuildCommand : AssetCommand<NavigationMeshAsset>
         {
             // Deferred shapes such as infinite planes which should be added after the bounding box of the scene is generated
@@ -51,7 +47,6 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             private NavigationMeshBuildCacheBuild currentBuild;
 
             private UFile assetUrl;
-            private readonly AssetItem assetItem;
             private NavigationMeshAsset asset;
             private readonly Package package;
 
@@ -72,12 +67,11 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 : base(url, value)
             {
                 this.buildCache = buildCache;
-                this.asset = value;
-                this.assetItem = assetItem;
-                this.package = assetItem.Package;
+                asset = value;
+                package = assetItem.Package;
                 assetUrl = url;
             }
-            
+
             protected override void ComputeParameterHash(BinarySerializationWriter writer)
             {
                 base.ComputeParameterHash(writer);
@@ -98,13 +92,13 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                     writer.Write(sceneHash);
                 }
             }
-            
+
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
                 // Build cache items to build incrementally
                 currentBuild = new NavigationMeshBuildCacheBuild();
                 oldBuild = buildCache.FindBuild(assetUrl);
-                
+
                 // The output object of the compilation
                 NavigationMesh generatedNavigationMesh = new NavigationMesh();
 
@@ -146,7 +140,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 // This collects all the input geometry, calculates the modified areas and calculates the scene bounds
                 CollectInputGeometry(sceneEntities);
                 List<BoundingBox> removedAreas = oldBuild?.GetRemovedAreas(sceneEntities);
-                
+
                 BoundingBox boundingBox = globalBoundingBox;
                 // Can't generate when no bounding box or and invalid bounding box is specified
                 // this means that either the user specified bounding box is wrong or the scene does not contain any colliders
@@ -248,7 +242,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
                 return Task.FromResult(ResultStatus.Successful);
             }
-            
+
             private int CollectInputHash(List<Entity> sceneEntities)
             {
                 int hash = 0;
@@ -277,15 +271,12 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
                 sceneNavigationMeshInputBuilder = new NavigationMeshInputBuilder();
 
-                // Generate collision triangles for all static colliders
-                List<StaticColliderComponent> staticColliders = new List<StaticColliderComponent>();
-
                 foreach (var entity in sceneEntities)
                 {
                     StaticColliderComponent collider = entity.Get<StaticColliderComponent>();
-                    
+
                     bool colliderEnabled = collider != null && ((CollisionFilterGroupFlags)collider.CollisionGroup & asset.IncludedCollisionGroups) != 0 && collider.Enabled;
-                    if(colliderEnabled)
+                    if (colliderEnabled)
                         entity.Transform.UpdateWorldMatrix(); // Update world transform so the update check uses the current world transform
 
                     if (!colliderEnabled) // Removed or disabled
@@ -314,7 +305,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                         // Interate through all the colliders shapes while queueing all shapes in compound shapes to process those as well
                         Queue<ColliderShape> shapesToProcess = new Queue<ColliderShape>();
                         shapesToProcess.Enqueue(collider.ColliderShape);
-                        while (!shapesToProcess.IsEmpty())
+                        while (shapesToProcess.Count > 0)
                         {
                             var shape = shapesToProcess.Dequeue();
                             var shapeType = shape.GetType();
@@ -358,7 +349,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                             {
                                 var cone = (ConeColliderShape)shape;
                                 var coneDesc = (ConeColliderShapeDesc)cone.Description;
-                                Matrix transform = cone.PositiveCenterMatrix * entityWorldMatrix;
+                                Matrix transform = cone.PositiveCenterMatrix*entityWorldMatrix;
 
                                 var meshData = GeometricPrimitive.Cone.New(coneDesc.Radius, coneDesc.Height);
                                 entityNavigationMeshInputBuilder.AppendMeshData(meshData, transform);
@@ -376,7 +367,6 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                                     Transform = transform,
                                     Entity = entity,
                                     NavigationMeshInputBuilder = entityNavigationMeshInputBuilder
-
                                 });
                                 isDeferred = true;
                             }
@@ -423,7 +413,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 }
 
                 // Store calculated bounding box
-                if(generateBoundingBox)
+                if (generateBoundingBox)
                     globalBoundingBox = sceneNavigationMeshInputBuilder.BoundingBox;
 
                 // Process deferred shapes
@@ -443,7 +433,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                     Vector3[] planePoints;
                     int[] planeInds;
                     NavigationMeshBuildUtils.BuildPlanePoints(ref plane, maxDiagonal, out planePoints, out planeInds);
-                    
+
                     Vector3 tangent, bitangent;
                     NavigationMeshBuildUtils.GenerateTangentBinormal(plane.Normal, out tangent, out bitangent);
                     // Calculate plane offset so that the plane always covers the whole range of the bounding box
@@ -465,7 +455,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
                     // Store deferred shape in build cahce just like normal onesdddd
                     currentBuild.Add(shape.Entity, shape.NavigationMeshInputBuilder);
-                    
+
                     // NOTE: Force a full rebuild when moving unbound shapes such as ininite planes
                     // the alternative is to intersect the old and new plane with the tiles to see which ones changed
                     // although in most cases it will be a horizontal plane and all tiles will be affected anyways
