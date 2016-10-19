@@ -53,7 +53,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
     /// </summary>
     internal class TypeDescriptorFactory : IYamlTypeDescriptorFactory
     {
-        private readonly IAttributeRegistry attributeRegistry;
+        private readonly IYamlAttributeRegistry attributeRegistry;
         private readonly Dictionary<Type, IYamlTypeDescriptor> registeredDescriptors = new Dictionary<Type, IYamlTypeDescriptor>();
         private readonly bool emitDefaultValues;
         private readonly IMemberNamingConvention namingConvention;
@@ -65,7 +65,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// <param name="emitDefaultValues">if set to <c>true</c> [emit default values].</param>
         /// <param name="namingConvention">The naming convention.</param>
         /// <exception cref="System.ArgumentNullException">attributeRegistry</exception>
-        public TypeDescriptorFactory(IAttributeRegistry attributeRegistry, bool emitDefaultValues, IMemberNamingConvention namingConvention)
+        public TypeDescriptorFactory(IYamlAttributeRegistry attributeRegistry, bool emitDefaultValues, IMemberNamingConvention namingConvention)
         {
             if (attributeRegistry == null)
                 throw new ArgumentNullException("attributeRegistry");
@@ -109,7 +109,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// Gets the settings.
         /// </summary>
         /// <value>The settings.</value>
-        protected IAttributeRegistry AttributeRegistry { get { return attributeRegistry; } }
+        protected IYamlAttributeRegistry AttributeRegistry { get { return attributeRegistry; } }
 
         /// <summary>
         /// Creates a type descriptor for the specified type.

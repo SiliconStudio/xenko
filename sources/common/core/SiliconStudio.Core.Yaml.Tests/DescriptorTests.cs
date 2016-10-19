@@ -100,7 +100,7 @@ namespace SiliconStudio.Core.Yaml.Tests
         [Test]
         public void TestObjectDescriptor()
         {
-            var attributeRegistry = new AttributeRegistry();
+            var attributeRegistry = new YamlAttributeRegistry();
 
             // Rename ItemRenamed2 to Item2
             attributeRegistry.Register(typeof(TestObject).GetProperty("ItemRenamed2"), new DataMemberAttribute("Item2"));
@@ -167,7 +167,7 @@ namespace SiliconStudio.Core.Yaml.Tests
         [Test]
         public void TestObjectWithCustomNamingConvention()
         {
-            var attributeRegistry = new AttributeRegistry();
+            var attributeRegistry = new YamlAttributeRegistry();
             var descriptor = new YamlObjectDescriptor(attributeRegistry, typeof(TestObjectNamingConvention), false, new FlatNamingConvention());
             descriptor.Initialize();
 
@@ -193,7 +193,7 @@ namespace SiliconStudio.Core.Yaml.Tests
         [Test]
         public void TestCollectionDescriptor()
         {
-            var attributeRegistry = new AttributeRegistry();
+            var attributeRegistry = new YamlAttributeRegistry();
             var descriptor = new YamlCollectionDescriptor(attributeRegistry, typeof(List<string>), false, new DefaultNamingConvention());
             descriptor.Initialize();
 
@@ -231,7 +231,7 @@ namespace SiliconStudio.Core.Yaml.Tests
         [Test]
         public void TestDictionaryDescriptor()
         {
-            var attributeRegistry = new AttributeRegistry();
+            var attributeRegistry = new YamlAttributeRegistry();
             var descriptor = new YamlDictionaryDescriptor(attributeRegistry, typeof(Dictionary<int, string>), false,
                 new DefaultNamingConvention());
             descriptor.Initialize();
@@ -253,7 +253,7 @@ namespace SiliconStudio.Core.Yaml.Tests
         [Test]
         public void TestArrayDescriptor()
         {
-            var attributeRegistry = new AttributeRegistry();
+            var attributeRegistry = new YamlAttributeRegistry();
             var descriptor = new YamlArrayDescriptor(attributeRegistry, typeof(int[]), new DefaultNamingConvention());
             descriptor.Initialize();
 
@@ -270,7 +270,7 @@ namespace SiliconStudio.Core.Yaml.Tests
         [Test]
         public void TestPrimitiveDescriptor()
         {
-            var attributeRegistry = new AttributeRegistry();
+            var attributeRegistry = new YamlAttributeRegistry();
             var descriptor = new YamlPrimitiveDescriptor(attributeRegistry, typeof(int), new DefaultNamingConvention());
             Assert.AreEqual(0, descriptor.Count);
 

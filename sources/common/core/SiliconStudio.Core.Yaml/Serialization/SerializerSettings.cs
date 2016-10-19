@@ -59,7 +59,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
     {
         internal readonly Dictionary<Type, IYamlSerializable> serializers = new Dictionary<Type, IYamlSerializable>();
         internal readonly AssemblyRegistry AssemblyRegistry;
-        private IAttributeRegistry attributeRegistry;
+        private IYamlAttributeRegistry attributeRegistry;
         private readonly IYamlSchema schema;
         private IObjectFactory objectFactory;
         private int preferredIndent;
@@ -91,7 +91,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
             DefaultStyle = DataStyle.Normal;
             this.schema = schema ?? new CoreSchema();
             AssemblyRegistry = new AssemblyRegistry(Schema);
-            attributeRegistry = new AttributeRegistry();
+            attributeRegistry = new YamlAttributeRegistry();
             ObjectFactory = new DefaultObjectFactory();
             ObjectSerializerBackend = new DefaultObjectSerializerBackend();
             ComparerForKeySorting = new DefaultKeyComparer();
@@ -260,7 +260,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// Gets the attribute registry.
         /// </summary>
         /// <value>The attribute registry.</value>
-        public IAttributeRegistry Attributes
+        public IYamlAttributeRegistry Attributes
         {
             get { return attributeRegistry; }
             set

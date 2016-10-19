@@ -9,7 +9,6 @@ using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Serialization.Descriptors;
-using AttributeRegistry = SiliconStudio.Core.Yaml.Serialization.AttributeRegistry;
 
 namespace SiliconStudio.Core.Yaml
 {
@@ -293,7 +292,7 @@ namespace SiliconStudio.Core.Yaml
                     {
                         EmitAlias = false,
                         LimitPrimitiveFlowSequence = 0,
-                        Attributes = new AttributeRegistry(),
+                        Attributes = new YamlAttributeRegistry(),
                         PreferredIndent = 4,
                         EmitShortTypeName = true,
                         ComparerForKeySorting = MemberComparer.Default,

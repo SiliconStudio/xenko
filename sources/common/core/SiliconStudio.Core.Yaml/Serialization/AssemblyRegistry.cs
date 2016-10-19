@@ -92,7 +92,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <value><c>true</c> if [use short type name]; otherwise, <c>false</c>.</value>
         public bool UseShortTypeName { get; set; }
 
-        public void RegisterAssembly(Assembly assembly, IAttributeRegistry attributeRegistry)
+        public void RegisterAssembly(Assembly assembly, IYamlAttributeRegistry attributeRegistry)
         {
             if (assembly == null)
                 throw new ArgumentNullException("assembly");

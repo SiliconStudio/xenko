@@ -60,7 +60,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// </summary>
         /// <param name="assembly">The assembly.</param>
         /// <param name="attributeRegistry">The attribute registry to use when quering for <see cref="DataMemberAttribute"/>.</param>
-        void RegisterAssembly(Assembly assembly, IAttributeRegistry attributeRegistry);
+        void RegisterAssembly(Assembly assembly, IYamlAttributeRegistry attributeRegistry);
 
         /// <summary>
         /// Register a mapping between a tag and a type.

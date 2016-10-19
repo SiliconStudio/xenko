@@ -92,7 +92,7 @@
     <Compile Include="Serialization\DocumentLoadingState.cs" />
     <Compile Include="Serialization\DuplicateAnchorException.cs" />
     <Compile Include="Serialization\EmitterState.cs" />
-    <Compile Include="Serialization\IAttributeRegistry.cs" />
+    <Compile Include="Serialization\IYamlAttributeRegistry.cs" />
     <Compile Include="Serialization\IYamlMemberDescriptor.cs" />
     <Compile Include="Serialization\IObjectFactory.cs" />
     <Compile Include="Serialization\ITagTypeRegistry.cs" />
@@ -127,7 +127,7 @@
     <Compile Include="Serialization\Serializers\PrimitiveSerializer.cs" />
     <Compile Include="Serialization\Serializers\RoutingSerializer.cs" />
     <Compile Include="Serialization\SerializerContext.cs" />
-    <Compile Include="Serialization\AttributeRegistry.cs" />
+    <Compile Include="Serialization\YamlAttributeRegistry.cs" />
     <Compile Include="Serialization\AssemblyRegistry.cs" />
     <Compile Include="Serialization\WriterEventEmitter.cs">
       <SubType>Code</SubType>

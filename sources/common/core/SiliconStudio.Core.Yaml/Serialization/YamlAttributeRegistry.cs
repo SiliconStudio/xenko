@@ -52,11 +52,11 @@ using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
-    /// A default implementation for <see cref="IAttributeRegistry"/>. 
+    /// A default implementation for <see cref="IYamlAttributeRegistry"/>. 
     /// This implementation allows to retrieve default attributes for a member or 
     /// to attach an attribute to a specific type/member.
     /// </summary>
-    public class AttributeRegistry : IAttributeRegistry
+    public class YamlAttributeRegistry : IYamlAttributeRegistry
     {
         private readonly object globalLock = new object();
         private readonly Dictionary<MemberInfoKey, List<Attribute>> cachedAttributes = new Dictionary<MemberInfoKey, List<Attribute>>();

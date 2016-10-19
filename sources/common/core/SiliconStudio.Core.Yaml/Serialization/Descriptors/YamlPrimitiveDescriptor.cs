@@ -66,7 +66,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// <param name="type">The type.</param>
         /// <param name="namingConvention">The naming convention.</param>
         /// <exception cref="System.ArgumentException">Type [{0}] is not a primitive</exception>
-        public YamlPrimitiveDescriptor(IAttributeRegistry attributeRegistry, Type type, IMemberNamingConvention namingConvention)
+        public YamlPrimitiveDescriptor(IYamlAttributeRegistry attributeRegistry, Type type, IMemberNamingConvention namingConvention)
             : base(attributeRegistry, type, false, namingConvention)
         {
             if (!IsPrimitive(type))

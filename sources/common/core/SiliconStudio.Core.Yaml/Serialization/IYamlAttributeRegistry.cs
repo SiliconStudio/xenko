@@ -45,8 +45,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 
 namespace SiliconStudio.Core.Yaml.Serialization
@@ -54,7 +53,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
     /// <summary>
     /// A registry for all attributes.
     /// </summary>
-    public interface IAttributeRegistry : Reflection.IAttributeRegistry
+    public interface IYamlAttributeRegistry : IAttributeRegistry
     {
         /// <summary>
         /// Gets or sets the prepare member callback.

@@ -80,7 +80,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// <param name="namingConvention">The naming convention.</param>
         /// <exception cref="System.ArgumentNullException">type</exception>
         /// <exception cref="YamlException">type</exception>
-        public YamlObjectDescriptor(IAttributeRegistry attributeRegistry, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
+        public YamlObjectDescriptor(IYamlAttributeRegistry attributeRegistry, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
         {
             if (attributeRegistry == null)
                 throw new ArgumentNullException("attributeRegistry");
@@ -176,7 +176,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             }
         }
 
-        protected IAttributeRegistry AttributeRegistry { get; }
+        protected IYamlAttributeRegistry AttributeRegistry { get; }
 
         public Type Type { get; }
 
