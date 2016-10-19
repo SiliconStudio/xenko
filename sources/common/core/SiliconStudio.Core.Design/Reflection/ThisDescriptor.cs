@@ -15,7 +15,7 @@ namespace SiliconStudio.Core.Reflection
         public static readonly ThisDescriptor Default = new ThisDescriptor(TypeDescriptorFactory.Default, "this");
 
         public ThisDescriptor(ITypeDescriptorFactory factory, string name)
-            : base(factory, name)
+            : base(name)
         {
         }
 

@@ -18,12 +18,12 @@ namespace SiliconStudio.Core.Reflection
         /// </summary>
         /// <param name="fieldInfo">The property information.</param>
         public FieldDescriptor(ITypeDescriptorFactory factory, FieldInfo fieldInfo)
-            : base(factory, fieldInfo)
+            : base(fieldInfo)
         {
             if (fieldInfo == null) throw new ArgumentNullException("fieldInfo");
 
             this.fieldInfo = fieldInfo;
-            this.TypeDescriptor = Factory.Find(fieldInfo.FieldType);
+            this.TypeDescriptor = factory.Find(fieldInfo.FieldType);
         }
 
         /// <summary>

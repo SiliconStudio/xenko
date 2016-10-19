@@ -225,7 +225,6 @@
     <Compile Include="Effect\EffectLogStore.cs" />
     <Compile Include="Effect\EffectShaderAssetCompiler.cs" />
     <Compile Include="Effect\EffectShaderAsset.cs" />
-    <Compile Include="Entities\ConvertedDescriptor.cs" />
     <Compile Include="Entities\EntityComponentReferenceSerializer.cs" />
     <Compile Include="Entities\EntityDesign.cs" />
     <Compile Include="Entities\EntityHierarchyAssetBase.Upgraders.cs" />

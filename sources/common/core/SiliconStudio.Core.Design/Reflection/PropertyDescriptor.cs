@@ -22,7 +22,7 @@ namespace SiliconStudio.Core.Reflection
         /// <param name="propertyInfo">The property information.</param>
         /// <exception cref="System.ArgumentNullException">propertyInfo</exception>
         public PropertyDescriptor(ITypeDescriptorFactory factory, PropertyInfo propertyInfo)
-            : base(factory, propertyInfo)
+            : base(propertyInfo)
         {
             if (propertyInfo == null) throw new ArgumentNullException("propertyInfo");
 
@@ -33,7 +33,7 @@ namespace SiliconStudio.Core.Reflection
             {
                 setMethod = propertyInfo.GetSetMethod(false);
             }
-            this.TypeDescriptor = Factory.Find(propertyInfo.PropertyType);
+            this.TypeDescriptor = factory.Find(propertyInfo.PropertyType);
         }
 
         /// <summary>

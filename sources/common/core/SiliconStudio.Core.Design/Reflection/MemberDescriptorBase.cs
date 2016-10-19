@@ -11,21 +11,17 @@ namespace SiliconStudio.Core.Reflection
     /// </summary>
     public abstract class MemberDescriptorBase : IMemberDescriptor
     {
-        protected MemberDescriptorBase(ITypeDescriptorFactory factory, string name)
+        protected MemberDescriptorBase(string name)
         {
-            if (factory == null) throw new ArgumentNullException("factory");
-            if (name == null) throw new ArgumentNullException("name");
+            if (name == null) throw new ArgumentNullException(nameof(name));
 
-            Factory = factory;
             Name = name;
         }
 
-        protected MemberDescriptorBase(ITypeDescriptorFactory factory, MemberInfo memberInfo)
+        protected MemberDescriptorBase(MemberInfo memberInfo)
         {
-            if (factory == null) throw new ArgumentNullException("factory");
-            if (memberInfo == null) throw new ArgumentNullException("memberInfo");
+            if (memberInfo == null) throw new ArgumentNullException(nameof(memberInfo));
 
-            Factory = factory;
             MemberInfo = memberInfo;
             Name = MemberInfo.Name;
             DeclaringType = memberInfo.DeclaringType;
@@ -39,11 +35,10 @@ namespace SiliconStudio.Core.Reflection
         /// Gets the type of the declaring this member.
         /// </summary>
         /// <value>The type of the declaring.</value>
-        public Type DeclaringType { get; private set; }
+        public Type DeclaringType { get; }
 
         public ITypeDescriptor TypeDescriptor { get; protected set; }
 
-        public ITypeDescriptorFactory Factory { get; private set; }
         public DataMemberMode Mode { get; internal set; }
         public abstract object Get(object thisObject);
         public abstract void Set(object thisObject, object value);
@@ -55,6 +50,6 @@ namespace SiliconStudio.Core.Reflection
         /// Gets the member information.
         /// </summary>
         /// <value>The member information.</value>
-        public MemberInfo MemberInfo { get; private set; }
+        public MemberInfo MemberInfo { get; }
     }
 }

@@ -11,8 +11,6 @@ namespace SiliconStudio.Core.Reflection
     /// </summary>
     public interface IMemberDescriptor
     {
-        ITypeDescriptorFactory Factory { get; }
-
         /// <summary>
         /// Gets the name.
         /// </summary>
@@ -20,11 +18,14 @@ namespace SiliconStudio.Core.Reflection
         string Name { get; }
 
         /// <summary>
-        /// Gets the type.
+        /// Gets the type of the member.
         /// </summary>
         /// <value>The type.</value>
         Type Type { get; }
 
+        /// <summary>
+        /// Gets the type descriptor of the member.
+        /// </summary>
         ITypeDescriptor TypeDescriptor { get; }
 
         /// <summary>
