@@ -48,7 +48,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
@@ -56,15 +55,11 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
     /// <summary>
     /// Default implementation of a <see cref="IYamlTypeDescriptor"/>.
     /// </summary>
-    public class YamlObjectDescriptor : IYamlTypeDescriptor
+    public class YamlObjectDescriptor : ObjectDescriptorBase, IYamlTypeDescriptor
     {
         public static readonly Func<object, bool> ShouldSerializeDefault = o => true;
 
-        protected static readonly string SystemCollectionsNamespace = typeof(int).Namespace;
-
-        private readonly static object[] EmptyObjectArray = new object[0];
-        private List<IYamlMemberDescriptor> members;
-        private Dictionary<string, IYamlMemberDescriptor> mapMembers;
+        private static readonly object[] EmptyObjectArray = new object[0];
         private readonly bool emitDefaultValues;
         private bool isSorted;
         private readonly IMemberNamingConvention memberNamingConvention;
@@ -81,33 +76,27 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// <exception cref="System.ArgumentNullException">type</exception>
         /// <exception cref="YamlException">type</exception>
         public YamlObjectDescriptor(IAttributeRegistry attributeRegistry, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
+            : base(attributeRegistry, type)
         {
             if (attributeRegistry == null)
-                throw new ArgumentNullException("attributeRegistry");
+                throw new ArgumentNullException(nameof(attributeRegistry));
             if (type == null)
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             if (namingConvention == null)
-                throw new ArgumentNullException("namingConvention");
+                throw new ArgumentNullException(nameof(namingConvention));
 
-            this.memberNamingConvention = namingConvention;
+            memberNamingConvention = namingConvention;
             this.emitDefaultValues = emitDefaultValues;
-            this.AttributeRegistry = attributeRegistry;
-            this.Type = type;
 
             attributes = AttributeRegistry.GetAttributes(type);
 
-            this.Style = DataStyle.Any;
+            Style = DataStyle.Any;
             foreach (var attribute in attributes)
             {
                 var styleAttribute = attribute as DataStyleAttribute;
                 if (styleAttribute != null)
                 {
                     Style = styleAttribute.Style;
-                    continue;
-                }
-                if (attribute is CompilerGeneratedAttribute)
-                {
-                    this.IsCompilerGenerated = true;
                 }
             }
         }
@@ -127,24 +116,24 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// Initializes this instance.
         /// </summary>
         /// <exception cref="YamlException">Failed to get ObjectDescriptor for type [{0}]. The member [{1}] cannot be registered as a member with the same name is already registered [{2}].DoFormat(type.FullName, member, existingMember)</exception>
-        public virtual void Initialize()
+        public override void Initialize()
         {
             if (members != null)
             {
                 return;
             }
 
-            members = PrepareMembers();
+            members = PrepareMembers().ToArray();
 
             // If no members found, we don't need to build a dictionary map
-            if (members.Count <= 0)
+            if (members.Length <= 0)
                 return;
 
-            mapMembers = new Dictionary<string, IYamlMemberDescriptor>((int) (members.Count*1.2));
+            mapMembers = new Dictionary<string, IMemberDescriptorBase>((int) (members.Length*1.2));
 
-            foreach (var member in members)
+            foreach (var member in members.Cast<IYamlMemberDescriptor>())
             {
-                IYamlMemberDescriptor existingMember;
+                IMemberDescriptorBase existingMember;
                 if (mapMembers.TryGetValue(member.Name, out existingMember))
                 {
                     throw new YamlException($"Failed to get ObjectDescriptor for type [{Type.FullName}]. The member [{member}] cannot be registered as a member with the same name is already registered [{existingMember}]");
@@ -176,17 +165,8 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             }
         }
 
-        protected IAttributeRegistry AttributeRegistry { get; }
+        public override DescriptorCategory Category => DescriptorCategory.Object;
 
-        public Type Type { get; }
-
-        public IEnumerable<IMemberDescriptorBase> Members => members;
-
-        public int Count => members?.Count ?? 0;
-
-        public virtual DescriptorCategory Category => DescriptorCategory.Object;
-
-        public bool HasMembers => members.Count > 0;
 
         public DataStyle Style { get; }
 
@@ -198,7 +178,10 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         {
             if (keyComparer != null && !isSorted)
             {
-                members.Sort(keyComparer.Compare);
+                // TODO: avoid converting through a list
+                var list = members.ToList();
+                list.Sort(keyComparer.Compare);
+                members = list.ToArray();
                 isSorted = true;
             }
         }
@@ -209,7 +192,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             {
                 if (mapMembers == null)
                     throw new KeyNotFoundException(name);
-                IYamlMemberDescriptor member;
+                IMemberDescriptorBase member;
                 mapMembers.TryGetValue(name, out member);
                 return member;
             }
@@ -220,14 +203,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             return remapMembers != null && remapMembers.Contains(name);
         }
 
-        public bool IsCompilerGenerated { get; private set; }
-
-        public bool Contains(string memberName)
-        {
-            return mapMembers != null && mapMembers.ContainsKey(memberName);
-        }
-
-        protected virtual List<IYamlMemberDescriptor> PrepareMembers()
+        protected override List<IMemberDescriptorBase> PrepareMembers()
         {
             var bindingFlags = BindingFlags.Instance | BindingFlags.Public;
             if (Category == DescriptorCategory.Object)
@@ -240,7 +216,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
                 select new YamlPropertyDescriptor(propertyInfo, NamingConvention.Comparer)
                 into member
                 where PrepareMember(member)
-                select member).Cast<IYamlMemberDescriptor>().ToList();
+                select member).Cast<IMemberDescriptorBase>().ToList();
 
             // Add all public fields
             memberList.AddRange((from fieldInfo in Type.GetFields(bindingFlags)

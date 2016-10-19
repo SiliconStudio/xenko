@@ -58,6 +58,6 @@ namespace SiliconStudio.Core.Yaml.Serialization
     public class YamlAttributeRegistry : AttributeRegistry
     {
         // TODO: move this in a different location and remove this class
-        public Action<YamlObjectDescriptor, List<IYamlMemberDescriptor>> PrepareMembersCallback { get; set; }
+        public Action<YamlObjectDescriptor, List<IMemberDescriptorBase>> PrepareMembersCallback { get; set; }
     }
 }

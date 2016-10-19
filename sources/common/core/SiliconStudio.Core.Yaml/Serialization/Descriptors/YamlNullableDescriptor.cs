@@ -54,7 +54,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
     /// </summary>
     internal class YamlNullableDescriptor : YamlObjectDescriptor
     {
-        private static readonly List<IYamlMemberDescriptor> EmptyMembers = new List<IYamlMemberDescriptor>();
+        private static readonly List<IMemberDescriptorBase> EmptyMembers = new List<IMemberDescriptorBase>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="YamlObjectDescriptor" /> class.
@@ -90,7 +90,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             return type.IsNullable();
         }
 
-        protected override List<IYamlMemberDescriptor> PrepareMembers()
+        protected override List<IMemberDescriptorBase> PrepareMembers()
         {
             return EmptyMembers;
         }

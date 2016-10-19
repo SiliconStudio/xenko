@@ -139,15 +139,15 @@ namespace SiliconStudio.Core.Yaml.Tests
             Assert.AreEqual("property1", instance.Property);
 
             // Check ShouldSerialize
-            Assert.True(descriptor["Name"].ShouldSerialize(instance));
+            Assert.True(((IYamlMemberDescriptor)descriptor["Name"]).ShouldSerialize(instance));
 
-            Assert.False(descriptor["Value"].ShouldSerialize(instance));
+            Assert.False(((IYamlMemberDescriptor)descriptor["Value"]).ShouldSerialize(instance));
             instance.Value = 1;
-            Assert.True(descriptor["Value"].ShouldSerialize(instance));
+            Assert.True(((IYamlMemberDescriptor)descriptor["Value"]).ShouldSerialize(instance));
 
-            Assert.False(descriptor["DefaultValue"].ShouldSerialize(instance));
+            Assert.False(((IYamlMemberDescriptor)descriptor["DefaultValue"]).ShouldSerialize(instance));
             instance.DefaultValue++;
-            Assert.True(descriptor["DefaultValue"].ShouldSerialize(instance));
+            Assert.True(((IYamlMemberDescriptor)descriptor["DefaultValue"]).ShouldSerialize(instance));
 
             // Check HasSet
             Assert.True(descriptor["Collection"].HasSet);

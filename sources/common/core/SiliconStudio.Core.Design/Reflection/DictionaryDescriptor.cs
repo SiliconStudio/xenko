@@ -37,8 +37,6 @@ namespace SiliconStudio.Core.Reflection
             if (!IsDictionary(type))
                 throw new ArgumentException(@"Expecting a type inheriting from System.Collections.IDictionary", "type");
 
-            Category = DescriptorCategory.Dictionary;
-
             // extract Key, Value types from IDictionary<??, ??>
             var interfaceType = type.GetInterface(typeof(IDictionary<,>));
             if (interfaceType != null)
@@ -70,6 +68,8 @@ namespace SiliconStudio.Core.Reflection
             // Only Keys and Values
             IsPureDictionary = Count == 0;
         }
+
+        public override DescriptorCategory Category => DescriptorCategory.Dictionary;
 
         /// <summary>
         /// Gets a value indicating whether this instance is generic dictionary.

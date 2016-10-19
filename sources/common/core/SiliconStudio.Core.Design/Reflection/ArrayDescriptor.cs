@@ -11,9 +11,7 @@ namespace SiliconStudio.Core.Reflection
     /// </summary>
     public class ArrayDescriptor : ObjectDescriptor
     {
-        private readonly Type elementType;
         private readonly Type listType;
-        private readonly MethodInfo toArrayMethod;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectDescriptor" /> class.
@@ -31,23 +29,17 @@ namespace SiliconStudio.Core.Reflection
                 throw new ArgumentException("Cannot support dimension [{0}] for type [{1}]. Only supporting dimension of 1".ToFormat(type.GetArrayRank(), type.FullName));
             }
 
-            Category = DescriptorCategory.Array;
-            elementType = type.GetElementType();
+            ElementType = type.GetElementType();
             listType = typeof(List<>).MakeGenericType(ElementType);
-            toArrayMethod = listType.GetMethod("ToArray");
         }
+
+        public override DescriptorCategory Category => DescriptorCategory.Array;
 
         /// <summary>
         /// Gets the type of the array element.
         /// </summary>
         /// <value>The type of the element.</value>
-        public Type ElementType
-        {
-            get
-            {
-                return elementType;
-            }
-        }
+        public Type ElementType { get; }
 
         /// <summary>
         /// Creates the equivalent of list type for this array.

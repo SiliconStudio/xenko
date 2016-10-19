@@ -256,7 +256,7 @@ UInt64: 8
 
         private class MyDynamicMember : DynamicMemberDescriptorBase
         {
-            public MyDynamicMember() : base("~Id", typeof(int))
+            public MyDynamicMember() : base("~Id", typeof(int), typeof(object))
             {
                 DynamicIds = new Dictionary<object, int>();
                 Order = -1000;

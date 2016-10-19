@@ -109,7 +109,7 @@ namespace SiliconStudio.Assets.Tracking
             shadow[key] = dictionary;
         }
 
-        internal static void AddSourceHashesMember(YamlObjectDescriptor objectDescriptor, List<IYamlMemberDescriptor> memberDescriptors)
+        internal static void AddSourceHashesMember(YamlObjectDescriptor objectDescriptor, List<IMemberDescriptorBase> memberDescriptors)
         {
             var type = objectDescriptor.Type;
             if (!typeof(Asset).IsAssignableFrom(type))

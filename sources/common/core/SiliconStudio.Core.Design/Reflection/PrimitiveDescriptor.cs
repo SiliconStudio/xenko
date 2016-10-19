@@ -10,7 +10,7 @@ namespace SiliconStudio.Core.Reflection
     /// </summary>
     public class PrimitiveDescriptor : ObjectDescriptor
     {
-        private static readonly List<IMemberDescriptor> EmptyMembers = new List<IMemberDescriptor>();
+        private static readonly List<IMemberDescriptorBase> EmptyMembers = new List<IMemberDescriptorBase>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectDescriptor" /> class.
@@ -22,9 +22,9 @@ namespace SiliconStudio.Core.Reflection
         {
             if (!IsPrimitive(type))
                 throw new ArgumentException("Type [{0}] is not a primitive");
-
-            Category = DescriptorCategory.Primitive;
         }
+
+        public override DescriptorCategory Category => DescriptorCategory.Primitive;
 
         /// <summary>
         /// Determines whether the specified type is a primitive.
@@ -42,7 +42,7 @@ namespace SiliconStudio.Core.Reflection
             return true;
         }
 
-        protected override System.Collections.Generic.List<IMemberDescriptor> PrepareMembers()
+        protected override List<IMemberDescriptorBase> PrepareMembers()
         {
             return EmptyMembers;
         }

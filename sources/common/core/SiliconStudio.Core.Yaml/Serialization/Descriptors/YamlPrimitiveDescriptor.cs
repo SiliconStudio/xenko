@@ -55,7 +55,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
     /// </summary>
     public class YamlPrimitiveDescriptor : YamlObjectDescriptor
     {
-        private static readonly List<IYamlMemberDescriptor> EmptyMembers = new List<IYamlMemberDescriptor>();
+        private static readonly List<IMemberDescriptorBase> EmptyMembers = new List<IMemberDescriptorBase>();
 
         private readonly Dictionary<string, object> enumRemap;
 
@@ -131,7 +131,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             return Enum.Parse(Type, enumAsText, true);
         }
 
-        protected override List<IYamlMemberDescriptor> PrepareMembers()
+        protected override List<IMemberDescriptorBase> PrepareMembers()
         {
             return EmptyMembers;
         }

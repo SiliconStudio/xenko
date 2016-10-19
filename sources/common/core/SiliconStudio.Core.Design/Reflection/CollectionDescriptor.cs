@@ -38,7 +38,6 @@ namespace SiliconStudio.Core.Reflection
             // Gets the element type
             var collectionType = type.GetInterface(typeof(IEnumerable<>));
             ElementType = (collectionType != null) ? collectionType.GetGenericArguments()[0] : typeof(object);
-            Category = DescriptorCategory.Collection;
             bool typeSupported = false;
 
             // implements IList
@@ -115,6 +114,8 @@ namespace SiliconStudio.Core.Reflection
                 throw new ArgumentException("Type [{0}] is not supported as a modifiable collection".ToFormat(type), nameof(type));
             }
         }
+
+        public override DescriptorCategory Category => DescriptorCategory.Collection;
 
         /// <summary>
         /// Gets or sets the type of the element.

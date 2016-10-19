@@ -99,13 +99,11 @@ namespace SiliconStudio.Core.Design.Tests
                     3, 
                     4, 
                     "Test", 
-                    1234, // SimpleObject.ReadOnlyValue
                     5, // simpleObject.SubObject
                     6, 
                     7, 
                     8,
                     null, // simpleObject.SubObject.Name
-                    1234, // SimpleObject.ReadOnlyValue
                     null // simpleObject.SubObject.SubObject
                 }, primitiveGrabber.Collected);
 
@@ -126,13 +124,11 @@ namespace SiliconStudio.Core.Design.Tests
                     "Test", 
                     "Item1", "Item2", // simpleObject.Collection
                     "Key1", "Value1", "Key2", "Value2", // simpleObject.Dictionary
-                    1234, // SimpleObject.ReadOnlyValue
                     5, // simpleObject.SubObject
                     6, 
                     7, 
                     8, 
                     null, // simpleObject.SubObject.Name
-                    1234, // SimpleObject.ReadOnlyValue
                     null // simpleObject.SubObject.SubObject
                 }, primitiveGrabber.Collected);
         }

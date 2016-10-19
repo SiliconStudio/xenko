@@ -10,7 +10,7 @@ namespace SiliconStudio.Core.Reflection
     /// </summary>
     public class NullableDescriptor : ObjectDescriptor
     {
-        private static readonly List<IMemberDescriptor> EmptyMembers = new List<IMemberDescriptor>();
+        private static readonly List<IMemberDescriptorBase> EmptyMembers = new List<IMemberDescriptorBase>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectDescriptor" /> class.
@@ -24,9 +24,10 @@ namespace SiliconStudio.Core.Reflection
             if (!IsNullable(type))
                 throw new ArgumentException("Type [{0}] is not a primitive");
 
-            Category = DescriptorCategory.Nullable;
             UnderlyingType = Nullable.GetUnderlyingType(type);
         }
+
+        public override DescriptorCategory Category => DescriptorCategory.Nullable;
 
         /// <summary>
         /// Gets the type underlying type T of the nullable <see cref="Nullable{T}"/>
@@ -44,7 +45,7 @@ namespace SiliconStudio.Core.Reflection
             return type.IsNullable();
         }
 
-        protected override System.Collections.Generic.List<IMemberDescriptor> PrepareMembers()
+        protected override List<IMemberDescriptorBase> PrepareMembers()
         {
             return EmptyMembers;
         }
