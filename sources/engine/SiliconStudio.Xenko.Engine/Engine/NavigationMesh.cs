@@ -56,13 +56,26 @@ namespace SiliconStudio.Xenko.Engine
         public void Initialize(NavigationMeshBuildSettings buildSettings, NavigationAgentSettings[] agentSettings)
         {
             BuildSettings = buildSettings;
-            LayersInternal.Clear();
+
+            // Remove layers that are no longer needed
+            if(LayersInternal.Count > agentSettings.Length)
+                LayersInternal.RemoveRange(agentSettings.Length, LayersInternal.Count-agentSettings.Length);
+
+            // Initialize layers
             for (int i = 0; i < agentSettings.Length; i++)
             {
-                var newLayer = new NavigationMeshLayer();
-                newLayer.AgentSettings = agentSettings[i];
-                newLayer.BuildSettings = buildSettings;
-                LayersInternal.Add(newLayer);
+                NavigationMeshLayer layer;
+                if (LayersInternal.Count <= i)
+                {
+                    layer = new NavigationMeshLayer();
+                    LayersInternal.Add(layer);
+                }
+                else
+                {
+                    layer = LayersInternal[i];
+                }
+                layer.AgentSettings = agentSettings[i];
+                layer.BuildSettings = buildSettings;
             }
         }
 
@@ -122,6 +135,16 @@ namespace SiliconStudio.Xenko.Engine
             boundingBoxSerializer = MemberSerializer<BoundingBox>.Create(serializerSelector, false);
             tilesSerializer = new DictionarySerializer<Point, NavigationMeshTile>();
             tilesSerializer.Initialize(serializerSelector);
+        }
+
+        public override void PreSerialize(ref NavigationMesh obj, ArchiveMode mode, SerializationStream stream)
+        {
+            base.PreSerialize(ref obj, mode, stream);
+            if (mode == ArchiveMode.Deserialize)
+            {
+                if(obj == null)
+                    obj = new NavigationMesh();
+            }
         }
 
         public override void Serialize(ref NavigationMesh obj, ArchiveMode mode, SerializationStream stream)

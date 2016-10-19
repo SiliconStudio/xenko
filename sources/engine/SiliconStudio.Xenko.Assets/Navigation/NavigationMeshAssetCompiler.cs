@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
@@ -13,6 +14,7 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Assets.Entities;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
@@ -23,12 +25,10 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 {
     class NavigationMeshAssetCompiler : AssetCompilerBase
     {
-        private NavigationMeshBuildCache buildCache = new NavigationMeshBuildCache();
-
         protected override void Compile(AssetCompilerContext context, AssetItem assetItem, string targetUrlInStorage, AssetCompilerResult result)
         {
             var asset = (NavigationMeshAsset)assetItem.Asset;
-            result.BuildSteps = new AssetBuildStep(assetItem) { new NavmeshBuildCommand(targetUrlInStorage, assetItem, asset, context, buildCache) };
+            result.BuildSteps = new AssetBuildStep(assetItem) { new NavmeshBuildCommand(targetUrlInStorage, assetItem, asset, context) };
         }
 
         private class NavmeshBuildCommand : AssetCommand<NavigationMeshAsset>
@@ -41,10 +41,9 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 public Entity Entity;
                 public NavigationMeshInputBuilder NavigationMeshInputBuilder;
             }
-
-            private NavigationMeshBuildCache buildCache;
-            private NavigationMeshBuildCacheBuild oldBuild;
-            private NavigationMeshBuildCacheBuild currentBuild;
+            
+            private NavigationMeshCachedBuild oldBuild;
+            private NavigationMeshCachedBuild currentBuild;
 
             private UFile assetUrl;
             private NavigationMeshAsset asset;
@@ -63,10 +62,9 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
             private List<DeferredShape> deferredShapes = new List<DeferredShape>();
 
-            public NavmeshBuildCommand(string url, AssetItem assetItem, NavigationMeshAsset value, AssetCompilerContext context, NavigationMeshBuildCache buildCache)
+            public NavmeshBuildCommand(string url, AssetItem assetItem, NavigationMeshAsset value, AssetCompilerContext context)
                 : base(url, value)
             {
-                this.buildCache = buildCache;
                 asset = value;
                 package = assetItem.Package;
                 assetUrl = url;
@@ -95,9 +93,11 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
+                var intermediateDataId = ComputeAssetIntermediateDataId();
+
                 // Build cache items to build incrementally
-                currentBuild = new NavigationMeshBuildCacheBuild();
-                oldBuild = buildCache.FindBuild(assetUrl);
+                currentBuild = new NavigationMeshCachedBuild();
+                oldBuild = LoadIntermediateData(intermediateDataId);
 
                 // The output object of the compilation
                 NavigationMesh generatedNavigationMesh = new NavigationMesh();
@@ -167,16 +167,14 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                         fullRebuild = true;
                     }
 
-                    if (oldBuild == null || fullRebuild)
-                    {
-                        // Initialize navigation mesh
-                        generatedNavigationMesh.Initialize(buildSettings, asset.NavigationMeshAgentSettings.ToArray());
-                    }
-                    else
+                    if (oldBuild != null && !fullRebuild)
                     {
                         // Perform incremental build on old navigation mesh
                         generatedNavigationMesh = oldBuild.NavigationMesh;
                     }
+
+                    // Initialize navigation mesh for building
+                    generatedNavigationMesh.Initialize(buildSettings, asset.NavigationMeshAgentSettings.ToArray());
 
                     // Set the new navigation mesh in the current build
                     currentBuild.NavigationMesh = generatedNavigationMesh;
@@ -238,9 +236,72 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 generatedNavigationMesh.BoundingBox = boundingBox;
 
                 assetManager.Save(assetUrl, generatedNavigationMesh);
-                buildCache.AddBuild(assetUrl, currentBuild);
+                SaveIntermediateData(intermediateDataId, currentBuild);
 
                 return Task.FromResult(ResultStatus.Successful);
+            }
+            
+            /// <summary>
+            /// Computes a unique Id for this asset used to store intermediate / build cache data
+            /// </summary>
+            /// <returns>The object id for asset intermediate data</returns>
+            private ObjectId ComputeAssetIntermediateDataId()
+            {
+                var stream = new DigestStream(Stream.Null);
+                var writer = new BinarySerializationWriter(stream);
+                writer.Context.SerializerSelector = SerializerSelector.AssetWithReuse;
+                writer.Write(CommandCacheVersion);
+
+                // Write binary format version
+                writer.Write(DataSerializer.BinaryFormatVersion);
+
+                // Compute assembly hash
+                ComputeAssemblyHash(writer);
+
+                // Write asset Id
+                writer.Write(asset.Id);
+
+                return stream.CurrentHash;
+            }
+
+            /// <summary>
+            /// Loads intermediate data used for building a navigation mesh
+            /// </summary>
+            /// <param name="objectId">The unique Id for this data in the object database</param>
+            /// <returns>The found cached build or null if there is no previous build</returns>
+            private NavigationMeshCachedBuild LoadIntermediateData(ObjectId objectId)
+            {
+                try
+                {
+                    var objectDatabase = ContentManager.FileProvider.ObjectDatabase;
+                    using (var stream = objectDatabase.OpenStream(objectId))
+                    {
+                        var reader = new BinarySerializationReader(stream);
+                        NavigationMeshCachedBuild result = new NavigationMeshCachedBuild();
+                        reader.Serialize(ref result, ArchiveMode.Deserialize);
+                        return result;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    return null;
+                }
+            }
+
+            /// <summary>
+            /// Saves intermediate data used for building a navigation mesh
+            /// </summary>
+            /// <param name="objectId">The unique Id for this data in the object database</param>
+            /// <param name="build">The build data to save</param>
+            private void SaveIntermediateData(ObjectId objectId, NavigationMeshCachedBuild build)
+            {
+                var objectDatabase = ContentManager.FileProvider.ObjectDatabase;
+                using (var stream = objectDatabase.OpenStream(objectId, VirtualFileMode.Create, VirtualFileAccess.Write))
+                {
+                    var writer = new BinarySerializationWriter(stream);
+                    writer.Serialize(ref build, ArchiveMode.Serialize);
+                    writer.Flush();
+                }
             }
 
             private int CollectInputHash(List<Entity> sceneEntities)
@@ -282,7 +343,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                     if (!colliderEnabled) // Removed or disabled
                     {
                         // Check for old object
-                        NavigationMeshBuildCacheObject oldObject = null;
+                        NavigationMeshCachedBuildObject oldObject = null;
                         if (oldBuild?.Objects.TryGetValue(entity.Id, out oldObject) ?? false)
                         {
                             // This object has been disabled, update the area because it was removed and continue to the next object
@@ -395,7 +456,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
                             // Add (?old) and new bounding box to modified areas
                             sceneNavigationMeshInputBuilder.AppendOther(entityNavigationMeshInputBuilder);
-                            NavigationMeshBuildCacheObject oldObject = null;
+                            NavigationMeshCachedBuildObject oldObject = null;
                             if (oldBuild?.Objects.TryGetValue(entity.Id, out oldObject) ?? false)
                             {
                                 updatedAreas.Add(oldObject.Data.BoundingBox);
@@ -406,7 +467,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                     else // Not updated
                     {
                         // Copy old data into vertex buffer
-                        NavigationMeshBuildCacheObject oldObject = oldBuild.Objects[entity.Id];
+                        NavigationMeshCachedBuildObject oldObject = oldBuild.Objects[entity.Id];
                         sceneNavigationMeshInputBuilder.AppendOther(oldObject.Data);
                         currentBuild.Add(entity, oldObject.Data);
                     }

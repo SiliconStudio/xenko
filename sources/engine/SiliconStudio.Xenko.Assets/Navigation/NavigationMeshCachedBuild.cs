@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Physics;
@@ -12,13 +13,14 @@ namespace SiliconStudio.Xenko.Assets.Navigation
     /// <summary>
     /// Holds the cached result of building a scene into a navigation mesh, with input vertex data to allow incremental builds.
     /// </summary>
-    internal class NavigationMeshBuildCacheBuild
+    [DataContract]
+    internal class NavigationMeshCachedBuild
     {
-        public readonly Dictionary<Guid, NavigationMeshBuildCacheObject> Objects = 
-            new Dictionary<Guid, NavigationMeshBuildCacheObject>();
-
+        public Dictionary<Guid, NavigationMeshCachedBuildObject> Objects = 
+            new Dictionary<Guid, NavigationMeshCachedBuildObject>();
+        
         public NavigationMesh NavigationMesh;
-
+        
         public int SettingsHash = 0;
 
         /// <summary>
@@ -32,7 +34,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
             if (collider != null)
             {
                 int hash = NavigationMeshBuildUtils.HashEntityCollider(collider);
-                Objects.Add(entity.Id, new NavigationMeshBuildCacheObject()
+                Objects.Add(entity.Id, new NavigationMeshCachedBuildObject()
                 {
                     Guid = entity.Id,
                     ParameterHash = hash,
@@ -48,7 +50,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
         /// <returns>true if entity is new, or one of its settings changed affecting the collider's shape</returns>
         public bool IsUpdatedOrNew(Entity newEntity)
         {
-            NavigationMeshBuildCacheObject existingObject;
+            NavigationMeshCachedBuildObject existingObject;
             StaticColliderComponent collider = newEntity.Get<StaticColliderComponent>();
             if (Objects.TryGetValue(newEntity.Id, out existingObject))
             {

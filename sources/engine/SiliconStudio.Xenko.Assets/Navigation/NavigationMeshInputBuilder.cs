@@ -2,11 +2,13 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets.Navigation
 {
+    [DataContract]
     internal class NavigationMeshInputBuilder
     {
         public BoundingBox BoundingBox = BoundingBox.Empty;
