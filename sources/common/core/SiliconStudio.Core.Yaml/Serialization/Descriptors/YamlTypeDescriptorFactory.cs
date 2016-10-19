@@ -50,109 +50,75 @@ using SiliconStudio.Core.Reflection;
 namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 {
     /// <summary>
-    /// A default implementation for the <see cref="IYamlTypeDescriptorFactory"/>.
+    /// A default implementation for the <see cref="ITypeDescriptorFactory"/>.
     /// </summary>
-    internal class TypeDescriptorFactory : IYamlTypeDescriptorFactory
+    internal class YamlTypeDescriptorFactory : TypeDescriptorFactoryBase
     {
-        private readonly IAttributeRegistry attributeRegistry;
-        private readonly Dictionary<Type, IYamlTypeDescriptor> registeredDescriptors = new Dictionary<Type, IYamlTypeDescriptor>();
         private readonly bool emitDefaultValues;
         private readonly IMemberNamingConvention namingConvention;
+        private readonly IComparer<object> memberComparer;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TypeDescriptorFactory" /> class.
+        /// Initializes a new instance of the <see cref="YamlTypeDescriptorFactory" /> class.
         /// </summary>
         /// <param name="attributeRegistry">The attribute registry.</param>
         /// <param name="emitDefaultValues">if set to <c>true</c> [emit default values].</param>
         /// <param name="namingConvention">The naming convention.</param>
+        /// <param name="memberComparer">The comparer used to sort members</param>
         /// <exception cref="System.ArgumentNullException">attributeRegistry</exception>
-        public TypeDescriptorFactory(IAttributeRegistry attributeRegistry, bool emitDefaultValues, IMemberNamingConvention namingConvention)
+        public YamlTypeDescriptorFactory(YamlAttributeRegistry attributeRegistry, bool emitDefaultValues, IMemberNamingConvention namingConvention, IComparer<object> memberComparer)
+            : base(attributeRegistry)
         {
-            if (attributeRegistry == null)
-                throw new ArgumentNullException("attributeRegistry");
-            if (namingConvention == null)
-                throw new ArgumentNullException("namingConvention");
+            if (attributeRegistry == null) throw new ArgumentNullException(nameof(attributeRegistry));
+            if (namingConvention == null) throw new ArgumentNullException(nameof(namingConvention));
             this.namingConvention = namingConvention;
+            this.memberComparer = memberComparer;
             this.emitDefaultValues = emitDefaultValues;
-            this.attributeRegistry = attributeRegistry;
         }
-
-        public IYamlTypeDescriptor Find(Type type, IComparer<object> memberComparer)
-        {
-            if (type == null)
-                return null;
-
-            lock (registeredDescriptors)
-            {
-                // Caching is integrated in this class, avoiding a ChainedTypeDescriptorFactory
-                IYamlTypeDescriptor descriptor;
-                if (registeredDescriptors.TryGetValue(type, out descriptor))
-                {
-                    return descriptor;
-                }
-
-                descriptor = Create(type);
-
-                var objectDescriptor = descriptor as YamlObjectDescriptor;
-                if (objectDescriptor != null)
-                {
-                    objectDescriptor.SortMembers(memberComparer);
-                }
-
-                // Register this descriptor
-                registeredDescriptors.Add(type, descriptor);
-
-                return descriptor;
-            }
-        }
-
-        /// <summary>
-        /// Gets the settings.
-        /// </summary>
-        /// <value>The settings.</value>
-        protected IAttributeRegistry AttributeRegistry { get { return attributeRegistry; } }
 
         /// <summary>
         /// Creates a type descriptor for the specified type.
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns>An instance of type descriptor.</returns>
-        protected virtual IYamlTypeDescriptor Create(Type type)
+        protected override ITypeDescriptor Create(Type type)
         {
             YamlObjectDescriptor descriptor;
             // The order of the descriptors here is important
 
             if (YamlPrimitiveDescriptor.IsPrimitive(type))
             {
-                descriptor = new YamlPrimitiveDescriptor(attributeRegistry, type, namingConvention);
+                descriptor = new YamlPrimitiveDescriptor(AttributeRegistry, type, namingConvention);
             }
             else if (YamlDictionaryDescriptor.IsDictionary(type)) // resolve dictionary before collections, as they are also collections
             {
                 // IDictionary
-                descriptor = new YamlDictionaryDescriptor(attributeRegistry, type, emitDefaultValues, namingConvention);
+                descriptor = new YamlDictionaryDescriptor(AttributeRegistry, type, emitDefaultValues, namingConvention);
             }
             else if (YamlCollectionDescriptor.IsCollection(type))
             {
                 // ICollection
-                descriptor = new YamlCollectionDescriptor(attributeRegistry, type, emitDefaultValues, namingConvention);
+                descriptor = new YamlCollectionDescriptor(AttributeRegistry, type, emitDefaultValues, namingConvention);
             }
             else if (type.IsArray)
             {
                 // array[]
-                descriptor = new YamlArrayDescriptor(attributeRegistry, type, namingConvention);
+                descriptor = new YamlArrayDescriptor(AttributeRegistry, type, namingConvention);
             }
             else if (YamlNullableDescriptor.IsNullable(type))
             {
-                descriptor = new YamlNullableDescriptor(attributeRegistry, type, namingConvention);
+                descriptor = new YamlNullableDescriptor(AttributeRegistry, type, namingConvention);
             }
             else
             {
                 // standard object (class or value type)
-                descriptor = new YamlObjectDescriptor(attributeRegistry, type, emitDefaultValues, namingConvention);
+                descriptor = new YamlObjectDescriptor(AttributeRegistry, type, emitDefaultValues, namingConvention);
             }
 
             // Initialize the descriptor
             descriptor.Initialize();
+            descriptor.SortMembers(memberComparer);
+
             return descriptor;
         }
     }

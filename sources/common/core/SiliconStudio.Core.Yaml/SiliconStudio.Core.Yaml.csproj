@@ -88,7 +88,7 @@
     <Compile Include="Serialization\Descriptors\YamlObjectDescriptor.cs" />
     <Compile Include="Serialization\Descriptors\YamlPrimitiveDescriptor.cs" />
     <Compile Include="Serialization\Descriptors\YamlPropertyDescriptor.cs" />
-    <Compile Include="Serialization\Descriptors\TypeDescriptorFactory.cs" />
+    <Compile Include="Serialization\Descriptors\YamlTypeDescriptorFactory.cs" />
     <Compile Include="Serialization\DocumentLoadingState.cs" />
     <Compile Include="Serialization\DuplicateAnchorException.cs" />
     <Compile Include="Serialization\EmitterState.cs" />
@@ -96,7 +96,6 @@
     <Compile Include="Serialization\IObjectFactory.cs" />
     <Compile Include="Serialization\ITagTypeRegistry.cs" />
     <Compile Include="Serialization\IYamlTypeDescriptor.cs" />
-    <Compile Include="Serialization\IYamlTypeDescriptorFactory.cs" />
     <Compile Include="Serialization\IYamlVisitor.cs" />
     <Compile Include="Serialization\LambdaObjectFactory.cs" />
     <Compile Include="Serialization\Serializers\AnchorSerializer.cs" />

@@ -32,6 +32,7 @@
     <Compile Include="ITypeDescriptor.cs" />
     <Compile Include="ITypeDescriptorFactory.cs" />
     <Compile Include="ObjectDescriptorBase.cs" />
+    <Compile Include="TypeDescriptorFactoryBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SiliconStudio.Core\SiliconStudio.Core.csproj">

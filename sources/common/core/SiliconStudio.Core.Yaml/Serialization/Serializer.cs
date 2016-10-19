@@ -45,6 +45,7 @@
 
 using System;
 using System.IO;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
@@ -60,7 +61,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
 
         internal readonly IYamlSerializable ObjectSerializer;
         internal readonly RoutingSerializer RoutingSerializer;
-        internal readonly IYamlTypeDescriptorFactory TypeDescriptorFactory;
+        internal readonly ITypeDescriptorFactory TypeDescriptorFactory;
 
         private static readonly IYamlSerializableFactory[] DefaultFactories = new IYamlSerializableFactory[]
         {
@@ -596,9 +597,9 @@ namespace SiliconStudio.Core.Yaml.Serialization
             return serializer;
         }
 
-        private IYamlTypeDescriptorFactory CreateTypeDescriptorFactory()
+        private ITypeDescriptorFactory CreateTypeDescriptorFactory()
         {
-            return new TypeDescriptorFactory(Settings.Attributes, Settings.EmitDefaultValues, Settings.NamingConvention);
+            return new YamlTypeDescriptorFactory((YamlAttributeRegistry)Settings.Attributes, Settings.EmitDefaultValues, Settings.NamingConvention, Settings.ComparerForKeySorting);
         }
 
         private IEventEmitter CreateEmitter(IEmitter emitter)

@@ -62,9 +62,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         private static readonly object[] EmptyObjectArray = new object[0];
         private readonly bool emitDefaultValues;
         private bool isSorted;
-        private readonly IMemberNamingConvention memberNamingConvention;
         private HashSet<string> remapMembers;
-        private List<Attribute> attributes;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="YamlObjectDescriptor" /> class.
@@ -85,13 +83,13 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             if (namingConvention == null)
                 throw new ArgumentNullException(nameof(namingConvention));
 
-            memberNamingConvention = namingConvention;
+            NamingConvention = namingConvention;
             this.emitDefaultValues = emitDefaultValues;
 
-            attributes = AttributeRegistry.GetAttributes(type);
+            Attributes = AttributeRegistry.GetAttributes(type);
 
             Style = DataStyle.Any;
-            foreach (var attribute in attributes)
+            foreach (var attribute in Attributes)
             {
                 var styleAttribute = attribute as DataStyleAttribute;
                 if (styleAttribute != null)
@@ -104,13 +102,13 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// <summary>
         /// Gets attributes attached to this type.
         /// </summary>
-        public List<Attribute> Attributes { get { return attributes; } }
+        public List<Attribute> Attributes { get; }
 
         /// <summary>
         /// Gets the naming convention.
         /// </summary>
         /// <value>The naming convention.</value>
-        public IMemberNamingConvention NamingConvention { get { return memberNamingConvention; } }
+        public IMemberNamingConvention NamingConvention { get; }
 
         /// <summary>
         /// Initializes this instance.
@@ -186,18 +184,6 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             }
         }
 
-        public IMemberDescriptorBase this[string name]
-        {
-            get
-            {
-                if (mapMembers == null)
-                    throw new KeyNotFoundException(name);
-                IMemberDescriptorBase member;
-                mapMembers.TryGetValue(name, out member);
-                return member;
-            }
-        }
-
         public bool IsMemberRemapped(string name)
         {
             return remapMembers != null && remapMembers.Contains(name);
@@ -255,21 +241,24 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
                     return false;
                 }
 
-                if (attribute is DataMemberAttribute)
+                var dataMemberAttribute = attribute as DataMemberAttribute;
+                if (dataMemberAttribute != null)
                 {
-                    memberAttribute = (DataMemberAttribute) attribute;
+                    memberAttribute = dataMemberAttribute;
                     continue;
                 }
 
-                if (attribute is DefaultValueAttribute)
+                var valueAttribute = attribute as DefaultValueAttribute;
+                if (valueAttribute != null)
                 {
-                    defaultValueAttribute = (DefaultValueAttribute) attribute;
+                    defaultValueAttribute = valueAttribute;
                     continue;
                 }
 
-                if (attribute is DataStyleAttribute)
+                var dataStyleAttribute = attribute as DataStyleAttribute;
+                if (dataStyleAttribute != null)
                 {
-                    styleAttribute = (DataStyleAttribute) attribute;
+                    styleAttribute = dataStyleAttribute;
                     continue;
                 }
 
@@ -306,7 +295,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             }
 
             // Gets the style
-            member.Style = styleAttribute != null ? styleAttribute.Style : DataStyle.Any;
+            member.Style = styleAttribute?.Style ?? DataStyle.Any;
             member.Mask = 1;
 
             // Handle member attribute
@@ -353,7 +342,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             if (defaultValueAttribute != null && member.ShouldSerialize == null && !emitDefaultValues)
             {
                 object defaultValue = defaultValueAttribute.Value;
-                Type defaultType = defaultValue == null ? null : defaultValue.GetType();
+                Type defaultType = defaultValue?.GetType();
                 if (defaultType.IsNumeric() && defaultType != memberType)
                     defaultValue = memberType.CastToNumericType(defaultValue);
                 member.ShouldSerialize = obj => !TypeExtensions.AreEqual(defaultValue, member.Get(obj));
@@ -362,14 +351,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             if (member.ShouldSerialize == null)
                 member.ShouldSerialize = ShouldSerializeDefault;
 
-            if (memberAttribute != null && !string.IsNullOrEmpty(memberAttribute.Name))
-            {
-                member.Name = memberAttribute.Name;
-            }
-            else
-            {
-                member.Name = NamingConvention.Convert(member.OriginalName);
-            }
+            member.Name = !string.IsNullOrEmpty(memberAttribute?.Name) ? memberAttribute.Name : NamingConvention.Convert(member.OriginalName);
 
             return true;
         }
