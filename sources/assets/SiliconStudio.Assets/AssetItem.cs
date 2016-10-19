@@ -9,7 +9,6 @@ using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets
 {
-
     /// <summary>
     /// An asset item part of a <see cref="Package"/> accessible through <see cref="SiliconStudio.Assets.Package.Assets"/>.
     /// </summary>
