@@ -2553,15 +2553,16 @@ Hierarchy:
                             - null
                             - null
                             - null
+                            - null
                     - !ThirdPersonPlatformer.Player.AnimationController,ThirdPersonPlatformer.Game
                         ~Id: faab8e97-45ac-4d3f-9375-495d32bc299f
                         AnimationComponent: 51a86f4d-298c-4fc4-964b-de29f9a624fc/c0b24758-fcad-47f3-a100-f94d96c5d325
-                        AnimationIdle: 401e5ab2-c9b9-4912-a742-0668c81b3a87/5f286f7e-7d38-44cf-9bc1-3aad7be4f0fa:Animation/Idle
-                        AnimationWalk: 2b07017f-62cc-4f9e-80d6-001fa2331a45/9d61b261-66aa-40ed-88ed-3cc448f890c0:Animation/Walk
-                        AnimationRun: aeb6db08-6b1b-4247-8090-2ac63019ed05/448ca260-c8b7-4f63-9bf6-e58a5970a830:Animation/Run
-                        AnimationJumpStart: 2504f96b-28e0-4c0d-9732-af5590a29dd1/8e192377-a8d5-4e4d-8b88-21f921be0683:Animation/Jump_Start
-                        AnimationJumpMid: fa842db8-2a4b-47a3-a4d4-03a28189474f/94d6acea-a230-438d-83b3-b99c99a41a53:Animation/Jump_Loop
-                        AnimationJumpEnd: 06ab6d4a-7b1f-4b6e-9fb4-e1430d7274bb/f5d57cf5-c062-4e82-abcc-3ca315f86363:Animation/Jump_End
+                        AnimationIdle: 401e5ab2-c9b9-4912-a742-0668c81b3a87/5f286f7e-7d38-44cf-9bc1-3aad7be4f0fa:Animations/Idle
+                        AnimationWalk: 2b07017f-62cc-4f9e-80d6-001fa2331a45/9d61b261-66aa-40ed-88ed-3cc448f890c0:Animations/Walk
+                        AnimationRun: aeb6db08-6b1b-4247-8090-2ac63019ed05/448ca260-c8b7-4f63-9bf6-e58a5970a830:Animations/Run
+                        AnimationJumpStart: 2504f96b-28e0-4c0d-9732-af5590a29dd1/8e192377-a8d5-4e4d-8b88-21f921be0683:Animations/Jump_Start
+                        AnimationJumpMid: fa842db8-2a4b-47a3-a4d4-03a28189474f/94d6acea-a230-438d-83b3-b99c99a41a53:Animations/Jump_Loop
+                        AnimationJumpEnd: 06ab6d4a-7b1f-4b6e-9fb4-e1430d7274bb/f5d57cf5-c062-4e82-abcc-3ca315f86363:Animations/Jump_End
                         WalkThreshold: 0.25
                         TimeFactor: 1.0
                     - !AnimationComponent

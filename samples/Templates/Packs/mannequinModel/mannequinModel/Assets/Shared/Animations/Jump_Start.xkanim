@@ -1,10 +1,10 @@
 !Animation
-Id: f5d57cf5-c062-4e82-abcc-3ca315f86363
+Id: 8e192377-a8d5-4e4d-8b88-21f921be0683
 SerializedVersion: {Xenko: 1.5.0-alpha02}
 Tags: []
-Source: ../../../Resources/Animation/Jump_End.fbx
+Source: ../../../Resources/Animation/Jump_Start.fbx
 PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
 RepeatMode: LoopInfinite
 Skeleton: 818788e4-763b-4e70-bfb0-e62991ca542b/a0d324bd-326a-4fd8-88a9-fc5e4dcc62e5:Models/mannequinModel Skeleton
 RootMotion: false
-PreviewModel: 1127bb8d-a334-4884-9bfb-7ee916a2b886/62b3d41a-e8f5-49e6-a5f3-c7ed9cae2c64:Models/mannequinModelTest
+PreviewModel: dc909e89-b1f1-4b51-8fc2-07d1e6a1a714/f68ea240-695a-4de5-9884-60d77544fcd6:Models/mannequinModel

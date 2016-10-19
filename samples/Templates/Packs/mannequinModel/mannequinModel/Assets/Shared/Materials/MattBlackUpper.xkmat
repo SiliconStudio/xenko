@@ -1,12 +1,12 @@
 !MaterialAsset
-Id: 41b54c7a-d61c-4c02-9d5d-f3a2e6e688ab
+Id: b4152531-11a9-4174-8ec9-c1d0a3561714
 SerializedVersion: {Xenko: 1.4.0-beta}
 Tags: []
 Attributes:
     Surface: !MaterialNormalMapFeature
         NormalMap: !ComputeTextureColor
             Swizzle: null
-            Texture: c7b3433f-254a-4137-bec4-e700537fc0a1/fb00449b-3472-4f9f-9713-dc96fabe2f8c:Models/Lower [Normal]
+            Texture: 7fa5160c-2303-4fad-90e6-cecd5e7592e6/f58eebb2-12f7-460a-9523-7a3f27fadab1:Materials/Upper [Normal]
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
