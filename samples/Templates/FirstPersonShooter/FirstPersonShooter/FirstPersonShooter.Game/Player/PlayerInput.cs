@@ -21,8 +21,6 @@ namespace FirstPersonShooter.Player
 
         public static readonly EventKey<bool> ReloadEventKey = new EventKey<bool>();                    // This can be made non-static and require specific binding to the scripts instead
 
-        public int ControllerIndex { get; set; }
-
         public float DeadZone { get; set; } = 0.25f;
 
         public CameraComponent Camera { get; set; }
@@ -50,7 +48,7 @@ namespace FirstPersonShooter.Player
             //  For this reason we map the 2D user input to a 3D movement using the current camera
             {
                 // Game controller: left stick
-                var moveDirection = Input.GetLeftThumb(ControllerIndex);
+                var moveDirection = Input.GetLeftThumbAny(DeadZone);
                 var isDeadZoneLeft = moveDirection.Length() < DeadZone;
                 if (isDeadZoneLeft)
                     moveDirection = Vector2.Zero;
@@ -79,7 +77,7 @@ namespace FirstPersonShooter.Player
             //  Camera rotation is ALWAYS in camera space, so we don't need to account for View or Projection matrices
             {
                 // Game controller: right stick
-                var cameraDirection = Input.GetRightThumb(ControllerIndex);
+                var cameraDirection = Input.GetRightThumbAny(DeadZone);
                 var isDeadZoneRight = cameraDirection.Length() < DeadZone;
                 if (isDeadZoneRight)
                     cameraDirection = Vector2.Zero;
@@ -104,7 +102,7 @@ namespace FirstPersonShooter.Player
             {
                 // Controller: Right trigger
                 // Mouse: Left button, Tap events
-                var didShoot = Input.GetRightTrigger(ControllerIndex) > 0.2f;   // This will allow for continuous shooting
+                var didShoot = Input.GetRightTriggerAny(0.2f) > 0.2f;   // This will allow for continuous shooting
 
                 if (Input.PointerEvents.Any(x => x.State == PointerState.Down))
                     didShoot = true;
@@ -117,7 +115,7 @@ namespace FirstPersonShooter.Player
 
             {
                 // Reload weapon
-                var isReloading = Input.IsGamePadButtonDown(GamePadButton.X, ControllerIndex);
+                var isReloading = Input.IsGamePadButtonDownAny(GamePadButton.X);
                 if (KeysReload.Any(key => Input.IsKeyDown(key)))
                     isReloading = true;
 

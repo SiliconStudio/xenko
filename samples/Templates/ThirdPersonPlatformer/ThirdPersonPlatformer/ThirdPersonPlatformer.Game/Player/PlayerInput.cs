@@ -21,8 +21,6 @@ namespace ThirdPersonPlatformer.Player
         public static readonly EventKey<bool> JumpEventKey = new EventKey<bool>();
         private bool jumpButtonDown = false;
 
-        public int ControllerIndex { get; set; }
-
         public float DeadZone { get; set; } = 0.25f;
 
         public CameraComponent Camera { get; set; }
@@ -47,7 +45,7 @@ namespace ThirdPersonPlatformer.Player
             // Character movement: should be camera-aware
             {
                 // Left stick: movement
-                var moveDirection = Input.GetLeftThumb(ControllerIndex);
+                var moveDirection = Input.GetLeftThumbAny(DeadZone);
 
                 // Keyboard: movement
                 if (KeysLeft.Any(key => Input.IsKeyDown(key)))
@@ -91,7 +89,7 @@ namespace ThirdPersonPlatformer.Player
             // Camera rotation: left-right rotates the camera horizontally while up-down controls its altitude
             {
                 // Right stick: camera rotation
-                var cameraDirection = Input.GetRightThumb(ControllerIndex);
+                var cameraDirection = Input.GetRightThumbAny(DeadZone);
                 var isDeadZoneRight = cameraDirection.Length() < DeadZone;
                 if (isDeadZoneRight)
                     cameraDirection = Vector2.Zero;
@@ -115,7 +113,7 @@ namespace ThirdPersonPlatformer.Player
             // Jumping: don't bother with jump restrictions here, just pass the button states
             {
                 // Controller: jumping
-                var isJumpDown = Input.IsGamePadButtonDown(GamePadButton.A, ControllerIndex);
+                var isJumpDown = Input.IsGamePadButtonDownAny(GamePadButton.A);
                 var didJump = (!jumpButtonDown && isJumpDown);
                 jumpButtonDown = isJumpDown;
 
