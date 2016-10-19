@@ -24,11 +24,11 @@ namespace SiliconStudio.Core.Yaml
             this.typeDescriptorFactory = typeDescriptorFactory;
         }
 
-        public override object ReadMemberValue(ref ObjectContext objectContext, Serialization.IMemberDescriptor memberDescriptor, object memberValue, Type memberType)
+        public override object ReadMemberValue(ref ObjectContext objectContext, Serialization.IYamlMemberDescriptor memberDescriptor, object memberValue, Type memberType)
         {
             var memberObjectContext = new ObjectContext(objectContext.SerializerContext, memberValue, objectContext.SerializerContext.FindTypeDescriptor(memberType));
 
-            var member = memberDescriptor as Serialization.Descriptors.MemberDescriptorBase;
+            var member = memberDescriptor as Serialization.Descriptors.YamlMemberDescriptorBase;
             if (member != null && objectContext.Settings.Attributes.GetAttribute<NonIdentifiableCollectionItemsAttribute>(member.MemberInfo) != null)
             {
                 memberObjectContext.Properties.Add(NonIdentifiableCollectionItemsAttribute.Key, true);
@@ -37,11 +37,11 @@ namespace SiliconStudio.Core.Yaml
             return ReadYaml(ref memberObjectContext);
         }
 
-        public override void WriteMemberValue(ref ObjectContext objectContext, Serialization.IMemberDescriptor memberDescriptor, object memberValue, Type memberType)
+        public override void WriteMemberValue(ref ObjectContext objectContext, Serialization.IYamlMemberDescriptor memberDescriptor, object memberValue, Type memberType)
         {
             var memberObjectContext = new ObjectContext(objectContext.SerializerContext, memberValue, objectContext.SerializerContext.FindTypeDescriptor(memberType));
 
-            var member = memberDescriptor as Serialization.Descriptors.MemberDescriptorBase;
+            var member = memberDescriptor as Serialization.Descriptors.YamlMemberDescriptorBase;
             if (member != null && objectContext.Settings.Attributes.GetAttribute<NonIdentifiableCollectionItemsAttribute>(member.MemberInfo) != null)
             {
                 memberObjectContext.Properties.Add(NonIdentifiableCollectionItemsAttribute.Key, true);
@@ -92,7 +92,7 @@ namespace SiliconStudio.Core.Yaml
             return resultMemberName;
         }
 
-        public override void WriteMemberName(ref ObjectContext objectContext, Serialization.IMemberDescriptor member, string memberName)
+        public override void WriteMemberName(ref ObjectContext objectContext, Serialization.IYamlMemberDescriptor member, string memberName)
         {
             // Replace the key with SiliconStudio.Core.Reflection IMemberDescriptor
             // Cache previous 

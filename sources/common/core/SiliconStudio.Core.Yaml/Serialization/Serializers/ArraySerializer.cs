@@ -53,15 +53,15 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
     internal class ArraySerializer : IYamlSerializable, IYamlSerializableFactory
     {
-        public IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
+        public IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
         {
-            return typeDescriptor is ArrayDescriptor ? this : null;
+            return typeDescriptor is YamlArrayDescriptor ? this : null;
         }
 
         public virtual object ReadYaml(ref ObjectContext objectContext)
         {
             var reader = objectContext.Reader;
-            var arrayDescriptor = (ArrayDescriptor) objectContext.Descriptor;
+            var arrayDescriptor = (YamlArrayDescriptor) objectContext.Descriptor;
 
             bool isArray = objectContext.Instance != null && objectContext.Instance.GetType().IsArray;
             var arrayList = (IList) objectContext.Instance;
@@ -105,7 +105,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         public void WriteYaml(ref ObjectContext objectContext)
         {
             var value = objectContext.Instance;
-            var arrayDescriptor = (ArrayDescriptor) objectContext.Descriptor;
+            var arrayDescriptor = (YamlArrayDescriptor) objectContext.Descriptor;
 
             var valueType = value.GetType();
             var arrayList = (IList) value;

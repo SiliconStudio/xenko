@@ -49,57 +49,48 @@ using System.Reflection;
 namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 {
     /// <summary>
-    /// A <see cref="IMemberDescriptor"/> for a <see cref="PropertyInfo"/>
+    /// A <see cref="IYamlMemberDescriptor"/> for a <see cref="FieldInfo"/>
     /// </summary>
-    public class PropertyDescriptor : MemberDescriptorBase
+    public class YamlFieldDescriptor : YamlMemberDescriptorBase
     {
-        private readonly PropertyInfo propertyInfo;
-        private readonly MethodInfo getMethod;
-        private readonly MethodInfo setMethod;
+        private readonly FieldInfo fieldInfo;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PropertyDescriptor" /> class.
+        /// Initializes a new instance of the <see cref="YamlFieldDescriptor" /> class.
         /// </summary>
-        /// <param name="propertyInfo">The property information.</param>
+        /// <param name="fieldInfo">The property information.</param>
         /// <param name="defaultNameComparer">The default name comparer.</param>
-        /// <exception cref="System.ArgumentNullException">propertyInfo</exception>
-        public PropertyDescriptor(PropertyInfo propertyInfo, StringComparer defaultNameComparer)
-            : base(propertyInfo, defaultNameComparer)
+        /// <exception cref="System.ArgumentNullException">fieldInfo</exception>
+        public YamlFieldDescriptor(FieldInfo fieldInfo, StringComparer defaultNameComparer)
+            : base(fieldInfo, defaultNameComparer)
         {
-            if (propertyInfo == null)
-                throw new ArgumentNullException("propertyInfo");
+            if (fieldInfo == null)
+                throw new ArgumentNullException("fieldInfo");
 
-            this.propertyInfo = propertyInfo;
-
-            getMethod = propertyInfo.GetGetMethod(true);
-            if (propertyInfo.CanWrite && propertyInfo.GetSetMethod(!IsPublic) != null)
-            {
-                setMethod = propertyInfo.GetSetMethod(!IsPublic);
-            }
+            this.fieldInfo = fieldInfo;
         }
 
         /// <summary>
         /// Gets the property information attached to this instance.
         /// </summary>
         /// <value>The property information.</value>
-        public PropertyInfo PropertyInfo { get { return propertyInfo; } }
+        public FieldInfo FieldInfo { get { return fieldInfo; } }
 
-        public override Type Type { get { return propertyInfo.PropertyType; } }
+        public override Type Type { get { return fieldInfo.FieldType; } }
 
         public override object Get(object thisObject)
         {
-            return getMethod.Invoke(thisObject, null);
+            return fieldInfo.GetValue(thisObject);
         }
 
         public override void Set(object thisObject, object value)
         {
-            if (HasSet)
-                setMethod.Invoke(thisObject, new[] {value});
+            fieldInfo.SetValue(thisObject, value);
         }
 
-        public override bool HasSet { get { return setMethod != null; } }
+        public override bool HasSet { get { return true; } }
 
-        public override bool IsPublic { get { return getMethod.IsPublic; } }
+        public override bool IsPublic { get { return fieldInfo.IsPublic; } }
 
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.
@@ -107,7 +98,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         public override string ToString()
         {
-            return string.Format("Property [{0}] from Type [{1}]", OriginalName, PropertyInfo.DeclaringType != null ? PropertyInfo.DeclaringType.FullName : string.Empty);
+            return string.Format("Field [{0}] from Type [{1}]", OriginalName, FieldInfo.DeclaringType != null ? FieldInfo.DeclaringType.FullName : string.Empty);
         }
     }
 }

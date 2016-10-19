@@ -60,7 +60,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
 
         internal readonly IYamlSerializable ObjectSerializer;
         internal readonly RoutingSerializer RoutingSerializer;
-        internal readonly ITypeDescriptorFactory TypeDescriptorFactory;
+        internal readonly IYamlTypeDescriptorFactory TypeDescriptorFactory;
 
         private static readonly IYamlSerializableFactory[] DefaultFactories = new IYamlSerializableFactory[]
         {
@@ -556,7 +556,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
             return result;
         }
 
-        public IYamlSerializable GetSerializer(SerializerContext context, ITypeDescriptor typeDescriptor)
+        public IYamlSerializable GetSerializer(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
         {
             return RoutingSerializer.GetSerializer(context, typeDescriptor);
         }
@@ -596,7 +596,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
             return serializer;
         }
 
-        private ITypeDescriptorFactory CreateTypeDescriptorFactory()
+        private IYamlTypeDescriptorFactory CreateTypeDescriptorFactory()
         {
             return new TypeDescriptorFactory(Settings.Attributes, Settings.EmitDefaultValues, Settings.NamingConvention);
         }

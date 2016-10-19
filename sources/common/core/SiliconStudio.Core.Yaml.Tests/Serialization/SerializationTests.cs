@@ -360,7 +360,7 @@ namespace SiliconStudio.Core.Yaml.Tests.Serialization
 
         public class CustomTypeConverter : ScalarSerializerBase, IYamlSerializableFactory
         {
-            public IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
+            public IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
             {
                 return typeDescriptor.Type == typeof(SomeCustomType) ? this : null;
             }

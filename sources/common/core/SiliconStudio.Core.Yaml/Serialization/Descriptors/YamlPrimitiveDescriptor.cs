@@ -45,52 +45,93 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 {
     /// <summary>
-    /// Describes a descriptor for a nullable type <see cref="Nullable{T}"/>.
+    /// Describes a descriptor for a primitive (bool, char, sbyte, byte, int, uint, long, ulong, float, double, decimal, string, DateTime).
     /// </summary>
-    internal class NullableDescriptor : ObjectDescriptor
+    public class YamlPrimitiveDescriptor : YamlObjectDescriptor
     {
-        private static readonly List<IMemberDescriptor> EmptyMembers = new List<IMemberDescriptor>();
+        private static readonly List<IYamlMemberDescriptor> EmptyMembers = new List<IYamlMemberDescriptor>();
+
+        private readonly Dictionary<string, object> enumRemap;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ObjectDescriptor" /> class.
+        /// Initializes a new instance of the <see cref="YamlObjectDescriptor" /> class.
         /// </summary>
         /// <param name="attributeRegistry">The attribute registry.</param>
         /// <param name="type">The type.</param>
         /// <param name="namingConvention">The naming convention.</param>
         /// <exception cref="System.ArgumentException">Type [{0}] is not a primitive</exception>
-        public NullableDescriptor(IAttributeRegistry attributeRegistry, Type type, IMemberNamingConvention namingConvention)
+        public YamlPrimitiveDescriptor(IAttributeRegistry attributeRegistry, Type type, IMemberNamingConvention namingConvention)
             : base(attributeRegistry, type, false, namingConvention)
         {
-            if (!IsNullable(type))
+            if (!IsPrimitive(type))
                 throw new ArgumentException("Type [{0}] is not a primitive");
 
-            UnderlyingType = Nullable.GetUnderlyingType(type);
+            // Handle remap for enum items
+            if (type.IsEnum)
+            {
+                foreach (var member in type.GetFields(BindingFlags.Public | BindingFlags.Static))
+                {
+                    var attributes = attributeRegistry.GetAttributes(member);
+                    foreach (var attribute in attributes)
+                    {
+                        var yamlRemap = attribute as DataAliasAttribute;
+                        if (yamlRemap != null)
+                        {
+                            if (enumRemap == null)
+                            {
+                                enumRemap = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+                            }
+                            enumRemap[yamlRemap.Name] = member.GetValue(null);
+                        }
+                    }
+                }
+            }
         }
 
-        public override DescriptorCategory Category => DescriptorCategory.Nullable;
+        public override DescriptorCategory Category => DescriptorCategory.Primitive;
 
         /// <summary>
-        /// Gets the type underlying type T of the nullable <see cref="Nullable{T}"/>
-        /// </summary>
-        /// <value>The type of the element.</value>
-        public Type UnderlyingType { get; private set; }
-
-        /// <summary>
-        /// Determines whether the specified type is nullable.
+        /// Determines whether the specified type is a primitive.
         /// </summary>
         /// <param name="type">The type.</param>
-        /// <returns><c>true</c> if the specified type is nullable; otherwise, <c>false</c>.</returns>
-        public static bool IsNullable(Type type)
+        /// <returns><c>true</c> if the specified type is primitive; otherwise, <c>false</c>.</returns>
+        public static bool IsPrimitive(Type type)
         {
-            return type.IsNullable();
+            switch (Type.GetTypeCode(type))
+            {
+                case TypeCode.Object:
+                case TypeCode.Empty:
+                    return type == typeof(object) || type == typeof(TimeSpan);
+            }
+            return true;
         }
 
-        protected override List<IMemberDescriptor> PrepareMembers()
+        /// <summary>
+        /// Parses the enum and trying to use remap if any declared.
+        /// </summary>
+        /// <param name="enumAsText">The enum as text.</param>
+        /// <param name="remapped">if set to <c>true</c> the enum was remapped.</param>
+        /// <returns>System.Object.</returns>
+        public object ParseEnum(string enumAsText, out bool remapped)
+        {
+            object value;
+            remapped = false;
+            if (enumRemap != null && enumRemap.TryGetValue(enumAsText, out value))
+            {
+                remapped = true;
+                return value;
+            }
+
+            return Enum.Parse(Type, enumAsText, true);
+        }
+
+        protected override List<IYamlMemberDescriptor> PrepareMembers()
         {
             return EmptyMembers;
         }

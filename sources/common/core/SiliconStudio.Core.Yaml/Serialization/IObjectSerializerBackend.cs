@@ -46,7 +46,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <param name="objectContext">The object context to which the member name.</param>
         /// <param name="memberName">Name of the member read from the current yaml stream.</param>
         /// <param name="skipMember"></param>
-        /// <returns>The name that will be used to get the <see cref="IMemberDescriptor"/> from the current object context.</returns>
+        /// <returns>The name that will be used to get the <see cref="IYamlMemberDescriptor"/> from the current object context.</returns>
         string ReadMemberName(ref ObjectContext objectContext, string memberName, out bool skipMember);
 
         /// <summary>
@@ -60,7 +60,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <remarks>
         /// TODO: Explain memberValue when can be not null
         /// </remarks>
-        object ReadMemberValue(ref ObjectContext objectContext, IMemberDescriptor member, object memberValue, Type memberType);
+        object ReadMemberValue(ref ObjectContext objectContext, IYamlMemberDescriptor member, object memberValue, Type memberType);
 
         /// <summary>
         /// Reads the collection item from the current YAML stream.
@@ -94,7 +94,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <param name="objectContext">The object context.</param>
         /// <param name="member">The member.</param>
         /// <param name="memberName">Name of the member.</param>
-        void WriteMemberName(ref ObjectContext objectContext, IMemberDescriptor member, string memberName);
+        void WriteMemberName(ref ObjectContext objectContext, IYamlMemberDescriptor member, string memberName);
 
         /// <summary>
         /// Writes the member value.
@@ -103,7 +103,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <param name="member">The member.</param>
         /// <param name="memberValue">The member value.</param>
         /// <param name="memberType">Type of the member.</param>
-        void WriteMemberValue(ref ObjectContext objectContext, IMemberDescriptor member, object memberValue, Type memberType);
+        void WriteMemberValue(ref ObjectContext objectContext, IYamlMemberDescriptor member, object memberValue, Type memberType);
 
         /// <summary>
         /// Writes the collection item.

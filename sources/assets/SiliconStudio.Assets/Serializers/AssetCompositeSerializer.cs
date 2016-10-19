@@ -7,7 +7,6 @@ using System.Threading;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
-using ITypeDescriptor = SiliconStudio.Core.Yaml.Serialization.ITypeDescriptor;
 using SerializerContext = SiliconStudio.Core.Yaml.Serialization.SerializerContext;
 
 namespace SiliconStudio.Assets.Serializers
@@ -23,7 +22,7 @@ namespace SiliconStudio.Assets.Serializers
         private readonly ThreadLocal<AssetCompositeVisitorContext> localContext = new ThreadLocal<AssetCompositeVisitorContext>();
 
         /// <inheritdoc/>
-        public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
+        public override IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
         {
             return CanVisit(typeDescriptor.Type) ? this : null;
         }

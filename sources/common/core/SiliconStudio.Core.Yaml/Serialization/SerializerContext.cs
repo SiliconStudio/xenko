@@ -162,8 +162,8 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// Finds the type descriptor for the specified type.
         /// </summary>
         /// <param name="type">The type.</param>
-        /// <returns>An instance of <see cref="ITypeDescriptor"/>.</returns>
-        public ITypeDescriptor FindTypeDescriptor(Type type)
+        /// <returns>An instance of <see cref="IYamlTypeDescriptor"/>.</returns>
+        public IYamlTypeDescriptor FindTypeDescriptor(Type type)
         {
             return Serializer.TypeDescriptorFactory.Find(type, Settings.ComparerForKeySorting);
         }

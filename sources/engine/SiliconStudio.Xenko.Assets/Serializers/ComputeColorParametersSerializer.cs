@@ -7,14 +7,12 @@ using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
 using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 
-using ITypeDescriptor = SiliconStudio.Core.Yaml.Serialization.ITypeDescriptor;
-
 namespace SiliconStudio.Xenko.Assets.Serializers
 {
     [YamlSerializerFactory]
     internal class ComputeColorParametersSerializer : DictionarySerializer, IDataCustomVisitor
     {
-        public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
+        public override IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
         {
             var type = typeDescriptor.Type;
             return CanVisit(type) ? this : null;

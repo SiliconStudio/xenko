@@ -21,13 +21,13 @@ namespace SiliconStudio.Xenko.Assets.Serializers
     [YamlSerializerFactory]
     internal class EntityComponentCollectionSerializer : CollectionSerializer
     {
-        public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
+        public override IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
         {
             var type = typeDescriptor.Type;
             return type == typeof(EntityComponentCollection) ? this : null;
         }
 
-        protected override void ReadAddCollectionItem(ref ObjectContext objectContext, Type elementType, CollectionDescriptor collectionDescriptor, object thisObject, int index)
+        protected override void ReadAddCollectionItem(ref ObjectContext objectContext, Type elementType, YamlCollectionDescriptor collectionDescriptor, object thisObject, int index)
         {
             var scriptCollection = (EntityComponentCollection)objectContext.Instance;
 

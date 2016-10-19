@@ -62,7 +62,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         private readonly Dictionary<MemberInfoKey, List<Attribute>> cachedAttributes = new Dictionary<MemberInfoKey, List<Attribute>>();
         private readonly Dictionary<MemberInfo, List<Attribute>> registeredAttributes = new Dictionary<MemberInfo, List<Attribute>>();
 
-        public Action<ObjectDescriptor, List<IMemberDescriptor>> PrepareMembersCallback { get; set; }
+        public Action<YamlObjectDescriptor, List<IYamlMemberDescriptor>> PrepareMembersCallback { get; set; }
 
         /// <summary>
         /// Gets or sets the attribute remapper. May be null

@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Debugger.Target
         /// </summary>
         [ThreadStatic] internal static List<object> References;
 
-        public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
+        public override IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
         {
             if (CanVisit(typeDescriptor.Type))
                 return this;

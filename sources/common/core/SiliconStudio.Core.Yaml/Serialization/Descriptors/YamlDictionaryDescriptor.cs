@@ -55,7 +55,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
     /// <summary>
     /// Provides a descriptor for a <see cref="System.Collections.IDictionary"/>.
     /// </summary>
-    public class DictionaryDescriptor : ObjectDescriptor
+    public class YamlDictionaryDescriptor : YamlObjectDescriptor
     {
         private static readonly List<string> ListOfMembersToRemove = new List<string> {"Comparer", "Keys", "Values", "Capacity"};
 
@@ -63,14 +63,14 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         private readonly MethodInfo addMethod;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DictionaryDescriptor" /> class.
+        /// Initializes a new instance of the <see cref="YamlDictionaryDescriptor" /> class.
         /// </summary>
         /// <param name="attributeRegistry">The attribute registry.</param>
         /// <param name="type">The type.</param>
         /// <param name="emitDefaultValues">if set to <c>true</c> [emit default values].</param>
         /// <param name="namingConvention">The naming convention.</param>
         /// <exception cref="System.ArgumentException">Expecting a type inheriting from System.Collections.IDictionary;type</exception>
-        public DictionaryDescriptor(IAttributeRegistry attributeRegistry, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
+        public YamlDictionaryDescriptor(IAttributeRegistry attributeRegistry, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
             : base(attributeRegistry, type, emitDefaultValues, namingConvention)
         {
             if (!IsDictionary(type))
@@ -83,7 +83,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
                 KeyType = interfaceType.GetGenericArguments()[0];
                 ValueType = interfaceType.GetGenericArguments()[1];
                 IsGenericDictionary = true;
-                getEnumeratorGeneric = typeof(DictionaryDescriptor).GetMethod("GetGenericEnumerable").MakeGenericMethod(KeyType, ValueType);
+                getEnumeratorGeneric = typeof(YamlDictionaryDescriptor).GetMethod("GetGenericEnumerable").MakeGenericMethod(KeyType, ValueType);
                 addMethod = interfaceType.GetMethod("Add", new[] {KeyType, ValueType});
             }
             else
@@ -213,10 +213,10 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             return dictionary.Select(keyValue => new KeyValuePair<object, object>(keyValue.Key, keyValue.Value));
         }
 
-        protected override bool PrepareMember(MemberDescriptorBase member)
+        protected override bool PrepareMember(YamlMemberDescriptorBase member)
         {
             // Filter members
-            if (member is PropertyDescriptor && ListOfMembersToRemove.Contains(member.OriginalName))
+            if (member is YamlPropertyDescriptor && ListOfMembersToRemove.Contains(member.OriginalName))
                 //if (member is PropertyDescriptor && (member.DeclaringType.Namespace ?? string.Empty).StartsWith(SystemCollectionsNamespace) && ListOfMembersToRemove.Contains(member.Name))
             {
                 return false;

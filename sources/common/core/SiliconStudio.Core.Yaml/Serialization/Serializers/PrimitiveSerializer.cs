@@ -52,14 +52,14 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
     internal class PrimitiveSerializer : ScalarSerializerBase, IYamlSerializableFactory
     {
-        public IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
+        public IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
         {
-            return typeDescriptor is PrimitiveDescriptor ? this : null;
+            return typeDescriptor is YamlPrimitiveDescriptor ? this : null;
         }
 
         public override object ConvertFrom(ref ObjectContext context, Scalar scalar)
         {
-            var primitiveType = (PrimitiveDescriptor) context.Descriptor;
+            var primitiveType = (YamlPrimitiveDescriptor) context.Descriptor;
             var type = primitiveType.Type;
             var text = scalar.Value;
 

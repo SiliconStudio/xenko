@@ -44,61 +44,58 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 {
     /// <summary>
-    /// A <see cref="IMemberDescriptor"/> for a <see cref="FieldInfo"/>
+    /// A descriptor for an array.
     /// </summary>
-    public class FieldDescriptor : MemberDescriptorBase
+    public class YamlArrayDescriptor : YamlObjectDescriptor
     {
-        private readonly FieldInfo fieldInfo;
+        private readonly Type listType;
+        private readonly MethodInfo toArrayMethod;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="FieldDescriptor" /> class.
+        /// Initializes a new instance of the <see cref="YamlObjectDescriptor" /> class.
         /// </summary>
-        /// <param name="fieldInfo">The property information.</param>
-        /// <param name="defaultNameComparer">The default name comparer.</param>
-        /// <exception cref="System.ArgumentNullException">fieldInfo</exception>
-        public FieldDescriptor(FieldInfo fieldInfo, StringComparer defaultNameComparer)
-            : base(fieldInfo, defaultNameComparer)
+        /// <param name="attributeRegistry">The attribute registry.</param>
+        /// <param name="type">The type.</param>
+        /// <param name="namingConvention">The naming convention.</param>
+        /// <exception cref="System.ArgumentException">Expecting arrat type;type</exception>
+        public YamlArrayDescriptor(IAttributeRegistry attributeRegistry, Type type, IMemberNamingConvention namingConvention)
+            : base(attributeRegistry, type, false, namingConvention)
         {
-            if (fieldInfo == null)
-                throw new ArgumentNullException("fieldInfo");
+            if (!type.IsArray)
+                throw new ArgumentException(@"Expecting array type", nameof(type));
 
-            this.fieldInfo = fieldInfo;
+            if (type.GetArrayRank() != 1)
+            {
+                throw new ArgumentException($"Cannot support dimension [{type.GetArrayRank()}] for type [{type.FullName}]. Only supporting dimension of 1");
+            }
+
+            ElementType = type.GetElementType();
+            listType = typeof(List<>).MakeGenericType(ElementType);
+            toArrayMethod = listType.GetMethod("ToArray");
         }
+
+        public override DescriptorCategory Category => DescriptorCategory.Array;
 
         /// <summary>
-        /// Gets the property information attached to this instance.
+        /// Gets the type of the array element.
         /// </summary>
-        /// <value>The property information.</value>
-        public FieldInfo FieldInfo { get { return fieldInfo; } }
-
-        public override Type Type { get { return fieldInfo.FieldType; } }
-
-        public override object Get(object thisObject)
-        {
-            return fieldInfo.GetValue(thisObject);
-        }
-
-        public override void Set(object thisObject, object value)
-        {
-            fieldInfo.SetValue(thisObject, value);
-        }
-
-        public override bool HasSet { get { return true; } }
-
-        public override bool IsPublic { get { return fieldInfo.IsPublic; } }
+        /// <value>The type of the element.</value>
+        public Type ElementType { get; }
 
         /// <summary>
-        /// Returns a <see cref="System.String" /> that represents this instance.
+        /// Creates the equivalent of list type for this array.
         /// </summary>
-        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
-        public override string ToString()
+        /// <returns>A list type with same element type than this array.</returns>
+        public Array CreateArray(int dimension)
         {
-            return string.Format("Field [{0}] from Type [{1}]", OriginalName, FieldInfo.DeclaringType != null ? FieldInfo.DeclaringType.FullName : string.Empty);
+            return Array.CreateInstance(ElementType, dimension);
         }
     }
 }

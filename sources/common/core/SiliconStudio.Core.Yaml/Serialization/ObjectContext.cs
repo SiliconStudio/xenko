@@ -39,7 +39,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <param name="serializerContext">The serializer context.</param>
         /// <param name="instance">The instance.</param>
         /// <param name="descriptor">The descriptor.</param>
-        public ObjectContext(SerializerContext serializerContext, object instance, ITypeDescriptor descriptor) : this()
+        public ObjectContext(SerializerContext serializerContext, object instance, IYamlTypeDescriptor descriptor) : this()
         {
             SerializerContext = serializerContext;
             Instance = instance;
@@ -84,7 +84,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <summary>
         /// The expected type descriptor.
         /// </summary>
-        public ITypeDescriptor Descriptor { get; set; }
+        public IYamlTypeDescriptor Descriptor { get; set; }
 
         /// <summary>
         /// The tag used when serializing.

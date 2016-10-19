@@ -4,8 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Serialization;
-using DictionaryDescriptor = SiliconStudio.Core.Yaml.Serialization.Descriptors.DictionaryDescriptor;
-using ITypeDescriptor = SiliconStudio.Core.Yaml.Serialization.ITypeDescriptor;
+using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 
 namespace SiliconStudio.Core.Yaml
 {
@@ -15,9 +14,9 @@ namespace SiliconStudio.Core.Yaml
     public class DictionaryWithIdsSerializer : CollectionWithIdsSerializerBase
     {
         /// <inheritdoc/>
-        public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
+        public override IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
         {
-            if (typeDescriptor is DictionaryDescriptor)
+            if (typeDescriptor is YamlDictionaryDescriptor)
             {
                 var dataStyle = typeDescriptor.Type.GetCustomAttribute<DataStyleAttribute>();
                 if (dataStyle == null || dataStyle.Style != DataStyle.Compact)
@@ -50,7 +49,7 @@ namespace SiliconStudio.Core.Yaml
             if (enumerable != null)
             {
                 var ids = CollectionItemIdHelper.GetCollectionItemIds(objectContext.Instance);
-                var descriptor = (DictionaryDescriptor)info.Descriptor;
+                var descriptor = (YamlDictionaryDescriptor)info.Descriptor;
                 foreach (var item in descriptor.GetEnumerator(objectContext.Instance))
                 {
                     Guid id;
@@ -66,9 +65,9 @@ namespace SiliconStudio.Core.Yaml
         }
 
         /// <inheritdoc/>
-        protected override object TransformForSerialization(ITypeDescriptor descriptor, object collection)
+        protected override object TransformForSerialization(IYamlTypeDescriptor descriptor, object collection)
         {
-            var dictionaryDescriptor = (DictionaryDescriptor)descriptor;
+            var dictionaryDescriptor = (YamlDictionaryDescriptor)descriptor;
             var instance = CreatEmptyContainer(descriptor);
 
             var identifier = CollectionItemIdHelper.GetCollectionItemIds(collection);
@@ -88,9 +87,9 @@ namespace SiliconStudio.Core.Yaml
         }
 
         /// <inheritdoc/>
-        protected override IDictionary CreatEmptyContainer(ITypeDescriptor descriptor)
+        protected override IDictionary CreatEmptyContainer(IYamlTypeDescriptor descriptor)
         {
-            var dictionaryDescriptor = (DictionaryDescriptor)descriptor;
+            var dictionaryDescriptor = (YamlDictionaryDescriptor)descriptor;
             var type = typeof(DictionaryWithItemIds<,>).MakeGenericType(dictionaryDescriptor.KeyType, dictionaryDescriptor.ValueType);
             if (type.GetConstructor(Type.EmptyTypes) == null)
                 throw new InvalidOperationException("The type of dictionary does not have a parameterless constructor.");
@@ -98,9 +97,9 @@ namespace SiliconStudio.Core.Yaml
         }
 
         /// <inheritdoc/>
-        protected override void TransformAfterDeserialization(IDictionary container, ITypeDescriptor targetDescriptor, object targetCollection, ICollection<Guid> deletedItems = null)
+        protected override void TransformAfterDeserialization(IDictionary container, IYamlTypeDescriptor targetDescriptor, object targetCollection, ICollection<Guid> deletedItems = null)
         {
-            var dictionaryDescriptor = (DictionaryDescriptor)targetDescriptor;
+            var dictionaryDescriptor = (YamlDictionaryDescriptor)targetDescriptor;
             var type = typeof(DictionaryWithItemIds<,>).MakeGenericType(dictionaryDescriptor.KeyType, dictionaryDescriptor.ValueType);
             if (!type.IsInstanceOfType(container))
                 throw new InvalidOperationException("The given container does not match the expected type.");

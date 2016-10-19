@@ -104,7 +104,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
             type = GetDefaultImplementation(type);
 
             // We can't instantiate primitive or arrays
-            if (PrimitiveDescriptor.IsPrimitive(type) || type.IsArray)
+            if (YamlPrimitiveDescriptor.IsPrimitive(type) || type.IsArray)
                 return null;
 
             return type.GetConstructor(EmptyTypes) != null || type.IsValueType ? Activator.CreateInstance(type) : null;

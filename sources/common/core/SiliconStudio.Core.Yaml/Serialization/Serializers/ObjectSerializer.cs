@@ -55,7 +55,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
     public class ObjectSerializer : IYamlSerializable, IYamlSerializableFactory
     {
         /// <inheritdoc/>
-        public virtual IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
+        public virtual IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
         {
             // always accept
             return this;
@@ -76,7 +76,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         /// Gets the style that will be used to serialized the object.
         /// </summary>
         /// <param name="objectContext"></param>
-        /// <returns>The <see cref="DataStyle"/> to use. Default is <see cref="ITypeDescriptor.Style"/>.</returns>
+        /// <returns>The <see cref="DataStyle"/> to use. Default is <see cref="IYamlTypeDescriptor.Style"/>.</returns>
         protected virtual DataStyle GetStyle(ref ObjectContext objectContext)
         {
             return objectContext.ObjectSerializerBackend.GetStyle(ref objectContext);
@@ -324,7 +324,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             return objectContext.ObjectSerializerBackend.ReadMemberName(ref objectContext, memberName, out skipMember);
         }
 
-        protected virtual object ReadMemberValue(ref ObjectContext objectContext, IMemberDescriptor member,
+        protected virtual object ReadMemberValue(ref ObjectContext objectContext, IYamlMemberDescriptor member,
             object memberValue,
             Type memberType)
         {
@@ -366,7 +366,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         }
 
         /// <summary>
-        /// Writes the members of the object to serialize. By default this method is iterating on the <see cref="ITypeDescriptor.Members"/> and
+        /// Writes the members of the object to serialize. By default this method is iterating on the <see cref="IYamlTypeDescriptor.Members"/> and
         /// calling <see cref="WriteMember"/> on each member.
         /// </summary>
         /// <param name="objectContext"></param>
@@ -383,7 +383,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         /// </summary>
         /// <param name="objectContext"></param>
         /// <param name="member">The member.</param>
-        protected virtual void WriteMember(ref ObjectContext objectContext, IMemberDescriptor member)
+        protected virtual void WriteMember(ref ObjectContext objectContext, IYamlMemberDescriptor member)
         {
             // Filter members by mask
             if ((member.Mask & objectContext.SerializerContext.MemberMask) == 0)
@@ -414,12 +414,12 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             WriteMemberValue(ref objectContext, member, memberValue, memberType);
         }
 
-        protected virtual void WriteMemberName(ref ObjectContext objectContext, IMemberDescriptor member, string name)
+        protected virtual void WriteMemberName(ref ObjectContext objectContext, IYamlMemberDescriptor member, string name)
         {
             objectContext.ObjectSerializerBackend.WriteMemberName(ref objectContext, member, name);
         }
 
-        protected virtual void WriteMemberValue(ref ObjectContext objectContext, IMemberDescriptor member, object memberValue,
+        protected virtual void WriteMemberValue(ref ObjectContext objectContext, IYamlMemberDescriptor member, object memberValue,
             Type memberType)
         {
             objectContext.ObjectSerializerBackend.WriteMemberValue(ref objectContext, member, memberValue, memberType);

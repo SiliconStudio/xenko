@@ -45,20 +45,64 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
-namespace SiliconStudio.Core.Yaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 {
     /// <summary>
-    /// A factory to create an instance of a <see cref="ITypeDescriptor"/>
+    /// Base class for <see cref="IYamlMemberDescriptor"/> for a <see cref="MemberInfo"/>
     /// </summary>
-    internal interface ITypeDescriptorFactory
+    public abstract class YamlMemberDescriptorBase : IYamlMemberDescriptor
     {
         /// <summary>
-        /// Tries to create an instance of a <see cref="ITypeDescriptor"/> from the type. Return null if this factory is not handling this type.
+        /// Initializes a new instance of the <see cref="YamlMemberDescriptorBase"/> class.
         /// </summary>
-        /// <param name="type">The type.</param>
-        /// <param name="memberComparer"></param>
-        /// <returns>ITypeDescriptor.</returns>
-        ITypeDescriptor Find(Type type, IComparer<object> memberComparer);
+        /// <param name="memberInfo">The member information.</param>
+        /// <param name="defaultNameComparer">The default name comparer.</param>
+        /// <exception cref="System.ArgumentNullException">memberInfo</exception>
+        protected YamlMemberDescriptorBase(MemberInfo memberInfo, StringComparer defaultNameComparer)
+        {
+            if (memberInfo == null)
+                throw new ArgumentNullException("memberInfo");
+            if (defaultNameComparer == null)
+                throw new ArgumentNullException("defaultNameComparer");
+
+            MemberInfo = memberInfo;
+            Name = MemberInfo.Name;
+            OriginalName = Name;
+            DeclaringType = memberInfo.DeclaringType;
+            DefaultNameComparer = defaultNameComparer;
+        }
+
+        public string Name { get; internal set; }
+        public string OriginalName { get; private set; }
+        public StringComparer DefaultNameComparer { get; private set; }
+        public abstract Type Type { get; }
+        public int? Order { get; internal set; }
+
+        /// <summary>
+        /// Gets the type of the declaring this member.
+        /// </summary>
+        /// <value>The type of the declaring.</value>
+        public Type DeclaringType { get; private set; }
+
+        public DataMemberMode SerializeMemberMode { get; internal set; }
+        public abstract object Get(object thisObject);
+        public abstract void Set(object thisObject, object value);
+        public abstract bool HasSet { get; }
+        public abstract bool IsPublic { get; }
+        public uint Mask { get; internal set; }
+        public DataStyle Style { get; internal set; }
+        public Func<object, bool> ShouldSerialize { get; internal set; }
+
+        public List<string> AlternativeNames { get; set; }
+
+        public object Tag { get; set; }
+
+        /// <summary>
+        /// Gets the member information.
+        /// </summary>
+        /// <value>The member information.</value>
+        public MemberInfo MemberInfo { get; private set; }
     }
 }

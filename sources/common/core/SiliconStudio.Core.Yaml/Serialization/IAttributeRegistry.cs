@@ -59,6 +59,6 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <summary>
         /// Gets or sets the prepare member callback.
         /// </summary>
-        Action<ObjectDescriptor, List<IMemberDescriptor>> PrepareMembersCallback { get; set; }
+        Action<YamlObjectDescriptor, List<IYamlMemberDescriptor>> PrepareMembersCallback { get; set; }
     }
 }

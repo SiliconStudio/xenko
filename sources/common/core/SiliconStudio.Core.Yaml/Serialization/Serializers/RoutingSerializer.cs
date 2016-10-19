@@ -82,7 +82,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             serializer.WriteYaml(ref objectContext);
         }
 
-        internal IYamlSerializable GetSerializer(SerializerContext context, ITypeDescriptor typeDescriptor)
+        internal IYamlSerializable GetSerializer(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
         {
             IYamlSerializable serializer;
             if (!serializers.TryGetValue(typeDescriptor.Type, out serializer))

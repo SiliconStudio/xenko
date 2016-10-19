@@ -54,17 +54,17 @@ using SiliconStudio.Core.Reflection;
 namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 {
     /// <summary>
-    /// Default implementation of a <see cref="ITypeDescriptor"/>.
+    /// Default implementation of a <see cref="IYamlTypeDescriptor"/>.
     /// </summary>
-    public class ObjectDescriptor : ITypeDescriptor
+    public class YamlObjectDescriptor : IYamlTypeDescriptor
     {
         public static readonly Func<object, bool> ShouldSerializeDefault = o => true;
 
         protected static readonly string SystemCollectionsNamespace = typeof(int).Namespace;
 
         private readonly static object[] EmptyObjectArray = new object[0];
-        private List<IMemberDescriptor> members;
-        private Dictionary<string, IMemberDescriptor> mapMembers;
+        private List<IYamlMemberDescriptor> members;
+        private Dictionary<string, IYamlMemberDescriptor> mapMembers;
         private readonly bool emitDefaultValues;
         private bool isSorted;
         private readonly IMemberNamingConvention memberNamingConvention;
@@ -72,7 +72,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         private List<Attribute> attributes;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ObjectDescriptor" /> class.
+        /// Initializes a new instance of the <see cref="YamlObjectDescriptor" /> class.
         /// </summary>
         /// <param name="attributeRegistry">The attribute registry.</param>
         /// <param name="type">The type.</param>
@@ -80,7 +80,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// <param name="namingConvention">The naming convention.</param>
         /// <exception cref="System.ArgumentNullException">type</exception>
         /// <exception cref="YamlException">type</exception>
-        public ObjectDescriptor(IAttributeRegistry attributeRegistry, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
+        public YamlObjectDescriptor(IAttributeRegistry attributeRegistry, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
         {
             if (attributeRegistry == null)
                 throw new ArgumentNullException("attributeRegistry");
@@ -140,11 +140,11 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             if (members.Count <= 0)
                 return;
 
-            mapMembers = new Dictionary<string, IMemberDescriptor>((int) (members.Count*1.2));
+            mapMembers = new Dictionary<string, IYamlMemberDescriptor>((int) (members.Count*1.2));
 
             foreach (var member in members)
             {
-                IMemberDescriptor existingMember;
+                IYamlMemberDescriptor existingMember;
                 if (mapMembers.TryGetValue(member.Name, out existingMember))
                 {
                     throw new YamlException($"Failed to get ObjectDescriptor for type [{Type.FullName}]. The member [{member}] cannot be registered as a member with the same name is already registered [{existingMember}]");
@@ -180,7 +180,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 
         public Type Type { get; }
 
-        public IEnumerable<IMemberDescriptor> Members => members;
+        public IEnumerable<IYamlMemberDescriptor> Members => members;
 
         public int Count => members?.Count ?? 0;
 
@@ -203,13 +203,13 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             }
         }
 
-        public IMemberDescriptor this[string name]
+        public IYamlMemberDescriptor this[string name]
         {
             get
             {
                 if (mapMembers == null)
                     throw new KeyNotFoundException(name);
-                IMemberDescriptor member;
+                IYamlMemberDescriptor member;
                 mapMembers.TryGetValue(name, out member);
                 return member;
             }
@@ -227,7 +227,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             return mapMembers != null && mapMembers.ContainsKey(memberName);
         }
 
-        protected virtual List<IMemberDescriptor> PrepareMembers()
+        protected virtual List<IYamlMemberDescriptor> PrepareMembers()
         {
             var bindingFlags = BindingFlags.Instance | BindingFlags.Public;
             if (Category == DescriptorCategory.Object)
@@ -237,14 +237,14 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             var memberList = (from propertyInfo in Type.GetProperties(bindingFlags)
                 where
                     propertyInfo.CanRead && propertyInfo.GetIndexParameters().Length == 0
-                select new PropertyDescriptor(propertyInfo, NamingConvention.Comparer)
+                select new YamlPropertyDescriptor(propertyInfo, NamingConvention.Comparer)
                 into member
                 where PrepareMember(member)
-                select member).Cast<IMemberDescriptor>().ToList();
+                select member).Cast<IYamlMemberDescriptor>().ToList();
 
             // Add all public fields
             memberList.AddRange((from fieldInfo in Type.GetFields(bindingFlags)
-                select new FieldDescriptor(fieldInfo, NamingConvention.Comparer)
+                select new YamlFieldDescriptor(fieldInfo, NamingConvention.Comparer)
                 into member
                 where PrepareMember(member)
                 select member));
@@ -258,12 +258,12 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             return memberList;
         }
 
-        protected virtual bool PrepareMember(MemberDescriptorBase member)
+        protected virtual bool PrepareMember(YamlMemberDescriptorBase member)
         {
             var memberType = member.Type;
 
             // Remove all SyncRoot from members
-            if (member is PropertyDescriptor && member.OriginalName == "SyncRoot" &&
+            if (member is YamlPropertyDescriptor && member.OriginalName == "SyncRoot" &&
                 (member.DeclaringType.Namespace ?? string.Empty).StartsWith(SystemCollectionsNamespace))
             {
                 return false;

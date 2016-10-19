@@ -45,57 +45,20 @@
 
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using SiliconStudio.Core.Reflection;
 
-namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
+namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
-    /// A descriptor for an array.
+    /// A factory to create an instance of a <see cref="IYamlTypeDescriptor"/>
     /// </summary>
-    public class ArrayDescriptor : ObjectDescriptor
+    internal interface IYamlTypeDescriptorFactory
     {
-        private readonly Type listType;
-        private readonly MethodInfo toArrayMethod;
-
         /// <summary>
-        /// Initializes a new instance of the <see cref="ObjectDescriptor" /> class.
+        /// Tries to create an instance of a <see cref="IYamlTypeDescriptor"/> from the type. Return null if this factory is not handling this type.
         /// </summary>
-        /// <param name="attributeRegistry">The attribute registry.</param>
         /// <param name="type">The type.</param>
-        /// <param name="namingConvention">The naming convention.</param>
-        /// <exception cref="System.ArgumentException">Expecting arrat type;type</exception>
-        public ArrayDescriptor(IAttributeRegistry attributeRegistry, Type type, IMemberNamingConvention namingConvention)
-            : base(attributeRegistry, type, false, namingConvention)
-        {
-            if (!type.IsArray)
-                throw new ArgumentException(@"Expecting array type", nameof(type));
-
-            if (type.GetArrayRank() != 1)
-            {
-                throw new ArgumentException($"Cannot support dimension [{type.GetArrayRank()}] for type [{type.FullName}]. Only supporting dimension of 1");
-            }
-
-            ElementType = type.GetElementType();
-            listType = typeof(List<>).MakeGenericType(ElementType);
-            toArrayMethod = listType.GetMethod("ToArray");
-        }
-
-        public override DescriptorCategory Category => DescriptorCategory.Array;
-
-        /// <summary>
-        /// Gets the type of the array element.
-        /// </summary>
-        /// <value>The type of the element.</value>
-        public Type ElementType { get; }
-
-        /// <summary>
-        /// Creates the equivalent of list type for this array.
-        /// </summary>
-        /// <returns>A list type with same element type than this array.</returns>
-        public Array CreateArray(int dimension)
-        {
-            return Array.CreateInstance(ElementType, dimension);
-        }
+        /// <param name="memberComparer"></param>
+        /// <returns>ITypeDescriptor.</returns>
+        IYamlTypeDescriptor Find(Type type, IComparer<object> memberComparer);
     }
 }

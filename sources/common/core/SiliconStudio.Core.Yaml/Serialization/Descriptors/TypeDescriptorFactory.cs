@@ -49,12 +49,12 @@ using System.Collections.Generic;
 namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 {
     /// <summary>
-    /// A default implementation for the <see cref="ITypeDescriptorFactory"/>.
+    /// A default implementation for the <see cref="IYamlTypeDescriptorFactory"/>.
     /// </summary>
-    internal class TypeDescriptorFactory : ITypeDescriptorFactory
+    internal class TypeDescriptorFactory : IYamlTypeDescriptorFactory
     {
         private readonly IAttributeRegistry attributeRegistry;
-        private readonly Dictionary<Type, ITypeDescriptor> registeredDescriptors = new Dictionary<Type, ITypeDescriptor>();
+        private readonly Dictionary<Type, IYamlTypeDescriptor> registeredDescriptors = new Dictionary<Type, IYamlTypeDescriptor>();
         private readonly bool emitDefaultValues;
         private readonly IMemberNamingConvention namingConvention;
 
@@ -76,7 +76,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             this.attributeRegistry = attributeRegistry;
         }
 
-        public ITypeDescriptor Find(Type type, IComparer<object> memberComparer)
+        public IYamlTypeDescriptor Find(Type type, IComparer<object> memberComparer)
         {
             if (type == null)
                 return null;
@@ -84,7 +84,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             lock (registeredDescriptors)
             {
                 // Caching is integrated in this class, avoiding a ChainedTypeDescriptorFactory
-                ITypeDescriptor descriptor;
+                IYamlTypeDescriptor descriptor;
                 if (registeredDescriptors.TryGetValue(type, out descriptor))
                 {
                     return descriptor;
@@ -92,7 +92,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 
                 descriptor = Create(type);
 
-                var objectDescriptor = descriptor as ObjectDescriptor;
+                var objectDescriptor = descriptor as YamlObjectDescriptor;
                 if (objectDescriptor != null)
                 {
                     objectDescriptor.SortMembers(memberComparer);
@@ -116,38 +116,38 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns>An instance of type descriptor.</returns>
-        protected virtual ITypeDescriptor Create(Type type)
+        protected virtual IYamlTypeDescriptor Create(Type type)
         {
-            ObjectDescriptor descriptor;
+            YamlObjectDescriptor descriptor;
             // The order of the descriptors here is important
 
-            if (PrimitiveDescriptor.IsPrimitive(type))
+            if (YamlPrimitiveDescriptor.IsPrimitive(type))
             {
-                descriptor = new PrimitiveDescriptor(attributeRegistry, type, namingConvention);
+                descriptor = new YamlPrimitiveDescriptor(attributeRegistry, type, namingConvention);
             }
-            else if (DictionaryDescriptor.IsDictionary(type)) // resolve dictionary before collections, as they are also collections
+            else if (YamlDictionaryDescriptor.IsDictionary(type)) // resolve dictionary before collections, as they are also collections
             {
                 // IDictionary
-                descriptor = new DictionaryDescriptor(attributeRegistry, type, emitDefaultValues, namingConvention);
+                descriptor = new YamlDictionaryDescriptor(attributeRegistry, type, emitDefaultValues, namingConvention);
             }
-            else if (CollectionDescriptor.IsCollection(type))
+            else if (YamlCollectionDescriptor.IsCollection(type))
             {
                 // ICollection
-                descriptor = new CollectionDescriptor(attributeRegistry, type, emitDefaultValues, namingConvention);
+                descriptor = new YamlCollectionDescriptor(attributeRegistry, type, emitDefaultValues, namingConvention);
             }
             else if (type.IsArray)
             {
                 // array[]
-                descriptor = new ArrayDescriptor(attributeRegistry, type, namingConvention);
+                descriptor = new YamlArrayDescriptor(attributeRegistry, type, namingConvention);
             }
-            else if (NullableDescriptor.IsNullable(type))
+            else if (YamlNullableDescriptor.IsNullable(type))
             {
-                descriptor = new NullableDescriptor(attributeRegistry, type, namingConvention);
+                descriptor = new YamlNullableDescriptor(attributeRegistry, type, namingConvention);
             }
             else
             {
                 // standard object (class or value type)
-                descriptor = new ObjectDescriptor(attributeRegistry, type, emitDefaultValues, namingConvention);
+                descriptor = new YamlObjectDescriptor(attributeRegistry, type, emitDefaultValues, namingConvention);
             }
 
             // Initialize the descriptor

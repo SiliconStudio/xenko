@@ -51,19 +51,19 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             if (style == DataStyle.Any)
             {
                 bool isPrimitiveElementType = false;
-                var collectionDescriptor = objectContext.Descriptor as CollectionDescriptor;
+                var collectionDescriptor = objectContext.Descriptor as YamlCollectionDescriptor;
                 int count = 0;
                 if (collectionDescriptor != null)
                 {
-                    isPrimitiveElementType = PrimitiveDescriptor.IsPrimitive(collectionDescriptor.ElementType);
+                    isPrimitiveElementType = YamlPrimitiveDescriptor.IsPrimitive(collectionDescriptor.ElementType);
                     count = collectionDescriptor.GetCollectionCount(objectContext.Instance);
                 }
                 else
                 {
-                    var arrayDescriptor = objectContext.Descriptor as ArrayDescriptor;
+                    var arrayDescriptor = objectContext.Descriptor as YamlArrayDescriptor;
                     if (arrayDescriptor != null)
                     {
-                        isPrimitiveElementType = PrimitiveDescriptor.IsPrimitive(arrayDescriptor.ElementType);
+                        isPrimitiveElementType = YamlPrimitiveDescriptor.IsPrimitive(arrayDescriptor.ElementType);
                         count = objectContext.Instance != null ? ((Array) objectContext.Instance).Length : -1;
                     }
                 }
@@ -94,7 +94,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             return memberName;
         }
 
-        public virtual object ReadMemberValue(ref ObjectContext objectContext, IMemberDescriptor memberDescriptor, object memberValue,
+        public virtual object ReadMemberValue(ref ObjectContext objectContext, IYamlMemberDescriptor memberDescriptor, object memberValue,
             Type memberType)
         {
             var memberObjectContext = new ObjectContext(objectContext.SerializerContext, memberValue, objectContext.SerializerContext.FindTypeDescriptor(memberType));
@@ -119,7 +119,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             return ReadYaml(ref valueObjectContext);
         }
 
-        public virtual void WriteMemberName(ref ObjectContext objectContext, IMemberDescriptor member, string name)
+        public virtual void WriteMemberName(ref ObjectContext objectContext, IYamlMemberDescriptor member, string name)
         {
             // Emit the key name
             objectContext.Writer.Emit(new ScalarEventInfo(name, typeof(string))
@@ -130,7 +130,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             });
         }
 
-        public virtual void WriteMemberValue(ref ObjectContext objectContext, IMemberDescriptor memberDescriptor, object memberValue, Type memberType)
+        public virtual void WriteMemberValue(ref ObjectContext objectContext, IYamlMemberDescriptor memberDescriptor, object memberValue, Type memberType)
         {
             // Push the style of the current member
             var memberObjectContext = new ObjectContext(objectContext.SerializerContext, memberValue, objectContext.SerializerContext.FindTypeDescriptor(memberType)) { Style = memberDescriptor.Style };

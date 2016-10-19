@@ -33,13 +33,13 @@ namespace SiliconStudio.Core.Yaml
         /// </summary>
         protected class InstanceInfo
         {
-            public InstanceInfo(object instance, ITypeDescriptor typeDescriptor)
+            public InstanceInfo(object instance, IYamlTypeDescriptor typeDescriptor)
             {               
                 Instance = instance;
                 Descriptor = typeDescriptor;
             }
             public readonly object Instance;
-            public readonly ITypeDescriptor Descriptor;
+            public readonly IYamlTypeDescriptor Descriptor;
         }
 
         public override object ReadYaml(ref ObjectContext objectContext)
@@ -128,7 +128,7 @@ namespace SiliconStudio.Core.Yaml
         /// <param name="objectContext"></param>
         protected override void ReadDictionaryItems(ref ObjectContext objectContext)
         {
-            var dictionaryDescriptor = (DictionaryDescriptor)objectContext.Descriptor;
+            var dictionaryDescriptor = (YamlDictionaryDescriptor)objectContext.Descriptor;
 
             var deletedItems = new HashSet<Guid>();
 
@@ -167,7 +167,7 @@ namespace SiliconStudio.Core.Yaml
 
         protected override void WriteDictionaryItems(ref ObjectContext objectContext)
         {
-            var dictionaryDescriptor = (DictionaryDescriptor)objectContext.Descriptor;
+            var dictionaryDescriptor = (YamlDictionaryDescriptor)objectContext.Descriptor;
             var keyValues = dictionaryDescriptor.GetEnumerator(objectContext.Instance).ToList();
 
             // Not sorting the keys here, they should be already properly sorted when we arrive here
@@ -203,7 +203,7 @@ namespace SiliconStudio.Core.Yaml
 
         protected override bool CheckIsSequence(ref ObjectContext objectContext)
         {
-            var collectionDescriptor = objectContext.Descriptor as CollectionDescriptor;
+            var collectionDescriptor = objectContext.Descriptor as YamlCollectionDescriptor;
 
             // If the dictionary is pure, we can directly output a sequence instead of a mapping
             return collectionDescriptor != null && collectionDescriptor.IsPureCollection;
@@ -234,14 +234,14 @@ namespace SiliconStudio.Core.Yaml
         /// <param name="descriptor">The type descriptor of the collection.</param>
         /// <param name="collection">The collection for which to create the mapping dictionary.</param>
         /// <returns>A dictionary mapping the id to the element of the initial collection.</returns>
-        protected abstract object TransformForSerialization(ITypeDescriptor descriptor, object collection);
+        protected abstract object TransformForSerialization(IYamlTypeDescriptor descriptor, object collection);
 
         /// <summary>
         /// Creates an empty dictionary that can store the mapping of ids to items of the collection.
         /// </summary>
         /// <param name="descriptor">The type descriptor of the collection for which to create the dictionary.</param>
         /// <returns>An empty dictionary for mapping ids to elements.</returns>
-        protected abstract IDictionary CreatEmptyContainer(ITypeDescriptor descriptor);
+        protected abstract IDictionary CreatEmptyContainer(IYamlTypeDescriptor descriptor);
 
         /// <summary>
         /// Transforms a dictionary containing the mapping of ids to items into the actual collection, and store the ids in the <see cref="Reflection.ShadowObject"/>.
@@ -250,7 +250,7 @@ namespace SiliconStudio.Core.Yaml
         /// <param name="targetDescriptor">The type descriptor of the actual collection to fill.</param>
         /// <param name="targetCollection">The instance of the actual collection to fill.</param>
         /// <param name="deletedItems">A collection of items that are marked as deleted. Can be null.</param>
-        protected abstract void TransformAfterDeserialization(IDictionary container, ITypeDescriptor targetDescriptor, object targetCollection, ICollection<Guid> deletedItems = null);
+        protected abstract void TransformAfterDeserialization(IDictionary container, IYamlTypeDescriptor targetDescriptor, object targetCollection, ICollection<Guid> deletedItems = null);
 
         protected abstract void WriteDeletedItems(ref ObjectContext objectContext);
 

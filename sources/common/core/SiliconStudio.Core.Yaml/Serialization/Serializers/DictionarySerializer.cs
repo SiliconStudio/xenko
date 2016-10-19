@@ -59,14 +59,14 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
     public class DictionarySerializer : ObjectSerializer
     {
         /// <inheritdoc/>
-        public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
+        public override IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
         {
-            return typeDescriptor is DictionaryDescriptor ? this : null;
+            return typeDescriptor is YamlDictionaryDescriptor ? this : null;
         }
 
         protected override void ReadMember(ref ObjectContext objectContext)
         {
-            var dictionaryDescriptor = (DictionaryDescriptor)objectContext.Descriptor;
+            var dictionaryDescriptor = (YamlDictionaryDescriptor)objectContext.Descriptor;
 
             if (dictionaryDescriptor.IsPureDictionary)
             {
@@ -102,7 +102,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 
         protected override void WriteMembers(ref ObjectContext objectContext)
         {
-            var dictionaryDescriptor = (DictionaryDescriptor)objectContext.Descriptor;
+            var dictionaryDescriptor = (YamlDictionaryDescriptor)objectContext.Descriptor;
             if (dictionaryDescriptor.IsPureDictionary)
             {
                 WriteDictionaryItems(ref objectContext);
@@ -138,7 +138,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         /// <param name="objectContext"></param>
         protected virtual void ReadDictionaryItems(ref ObjectContext objectContext)
         {
-            var dictionaryDescriptor = (DictionaryDescriptor)objectContext.Descriptor;
+            var dictionaryDescriptor = (YamlDictionaryDescriptor)objectContext.Descriptor;
 
             var reader = objectContext.Reader;
             while (!reader.Accept<MappingEnd>())
@@ -183,7 +183,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         /// <param name="objectContext">The object context.</param>
         protected virtual void WriteDictionaryItems(ref ObjectContext objectContext)
         {
-            var dictionaryDescriptor = (DictionaryDescriptor) objectContext.Descriptor;
+            var dictionaryDescriptor = (YamlDictionaryDescriptor) objectContext.Descriptor;
             var keyValues = dictionaryDescriptor.GetEnumerator(objectContext.Instance).ToList();
 
             var settings = objectContext.Settings;

@@ -40,8 +40,8 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
     {
         public virtual int Compare(object x, object y)
         {
-            var left = x as IMemberDescriptor;
-            var right = y as IMemberDescriptor;
+            var left = x as IYamlMemberDescriptor;
+            var right = y as IYamlMemberDescriptor;
             if (left != null && right != null)
             {
                 // If order is defined, first order by order

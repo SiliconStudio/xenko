@@ -6,7 +6,7 @@ namespace SiliconStudio.Core.Settings
     [YamlSerializerFactory]
     internal class SettingsProfileSerializer : SettingsDictionarySerializer
     {
-        public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
+        public override IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
         {
             var type = typeDescriptor.Type;
             return type == typeof(SettingsProfile) ? this : null;

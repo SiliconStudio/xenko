@@ -44,77 +44,70 @@
 // SOFTWARE.
 
 using System;
-using System.Collections.Generic;
-using SiliconStudio.Core.Reflection;
+using System.Reflection;
 
-namespace SiliconStudio.Core.Yaml.Serialization
+namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 {
     /// <summary>
-    /// Provides access members of a type.
+    /// A <see cref="IYamlMemberDescriptor"/> for a <see cref="PropertyInfo"/>
     /// </summary>
-    public interface ITypeDescriptor
+    public class YamlPropertyDescriptor : YamlMemberDescriptorBase
     {
-        /// <summary>
-        /// Gets the type described by this instance.
-        /// </summary>
-        /// <value>The type.</value>
-        Type Type { get; }
+        private readonly PropertyInfo propertyInfo;
+        private readonly MethodInfo getMethod;
+        private readonly MethodInfo setMethod;
 
         /// <summary>
-        /// Gets the members of this type.
+        /// Initializes a new instance of the <see cref="YamlPropertyDescriptor" /> class.
         /// </summary>
-        /// <value>The members.</value>
-        IEnumerable<IMemberDescriptor> Members { get; }
+        /// <param name="propertyInfo">The property information.</param>
+        /// <param name="defaultNameComparer">The default name comparer.</param>
+        /// <exception cref="System.ArgumentNullException">propertyInfo</exception>
+        public YamlPropertyDescriptor(PropertyInfo propertyInfo, StringComparer defaultNameComparer)
+            : base(propertyInfo, defaultNameComparer)
+        {
+            if (propertyInfo == null)
+                throw new ArgumentNullException("propertyInfo");
+
+            this.propertyInfo = propertyInfo;
+
+            getMethod = propertyInfo.GetGetMethod(true);
+            if (propertyInfo.CanWrite && propertyInfo.GetSetMethod(!IsPublic) != null)
+            {
+                setMethod = propertyInfo.GetSetMethod(!IsPublic);
+            }
+        }
 
         /// <summary>
-        /// Gets the member count.
+        /// Gets the property information attached to this instance.
         /// </summary>
-        /// <value>The member count.</value>
-        int Count { get; }
+        /// <value>The property information.</value>
+        public PropertyInfo PropertyInfo { get { return propertyInfo; } }
+
+        public override Type Type { get { return propertyInfo.PropertyType; } }
+
+        public override object Get(object thisObject)
+        {
+            return getMethod.Invoke(thisObject, null);
+        }
+
+        public override void Set(object thisObject, object value)
+        {
+            if (HasSet)
+                setMethod.Invoke(thisObject, new[] {value});
+        }
+
+        public override bool HasSet { get { return setMethod != null; } }
+
+        public override bool IsPublic { get { return getMethod.IsPublic; } }
 
         /// <summary>
-        /// Gets the category of this descriptor.
+        /// Returns a <see cref="System.String" /> that represents this instance.
         /// </summary>
-        /// <value>The category.</value>
-        DescriptorCategory Category { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance has members.
-        /// </summary>
-        /// <value><c>true</c> if this instance has members; otherwise, <c>false</c>.</value>
-        bool HasMembers { get; }
-
-        /// <summary>
-        /// Gets the <see cref="IMemberDescriptor"/> with the specified name. Return null if not found
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns>The member.</returns>
-        IMemberDescriptor this[string name] { get; }
-
-        /// <summary>
-        /// Determines whether the named member is remmaped.
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns><c>true</c> if the named member is remmaped; otherwise, <c>false</c>.</returns>
-        bool IsMemberRemapped(string name);
-
-        /// <summary>
-        /// Gets a value indicating whether this instance is a compiler generated type.
-        /// </summary>
-        /// <value><c>true</c> if this instance is a compiler generated type; otherwise, <c>false</c>.</value>
-        bool IsCompilerGenerated { get; }
-
-        /// <summary>
-        /// Gets the style.
-        /// </summary>
-        /// <value>The style.</value>
-        DataStyle Style { get; }
-
-        /// <summary>
-        /// Determines whether this instance contains a member with the specified member name.
-        /// </summary>
-        /// <param name="memberName">Name of the member.</param>
-        /// <returns><c>true</c> if this instance contains a member with the specified member name; otherwise, <c>false</c>.</returns>
-        bool Contains(string memberName);
+        /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
+        public override string ToString()
+        {
+            return string.Format("Property [{0}] from Type [{1}]", OriginalName, PropertyInfo.DeclaringType != null ? PropertyInfo.DeclaringType.FullName : string.Empty);
+        }
     }
 }

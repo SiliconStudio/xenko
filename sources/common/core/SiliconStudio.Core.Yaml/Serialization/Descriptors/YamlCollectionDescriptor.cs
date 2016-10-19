@@ -53,7 +53,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
     /// <summary>
     /// Provides a descriptor for a <see cref="System.Collections.ICollection"/>.
     /// </summary>
-    public class CollectionDescriptor : ObjectDescriptor
+    public class YamlCollectionDescriptor : YamlObjectDescriptor
     {
         private static readonly object[] EmptyObjects = new object[0];
         private static readonly List<string> ListOfMembersToRemove = new List<string> {"Capacity", "Count", "IsReadOnly", "IsFixedSize", "IsSynchronized", "SyncRoot", "Comparer"};
@@ -70,14 +70,14 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         private readonly bool isKeyedCollection = false;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CollectionDescriptor" /> class.
+        /// Initializes a new instance of the <see cref="YamlCollectionDescriptor" /> class.
         /// </summary>
         /// <param name="attributeRegistry">The attribute registry.</param>
         /// <param name="type">The type.</param>
         /// <param name="emitDefaultValues">if set to <c>true</c> [emit default values].</param>
         /// <param name="namingConvention">The naming convention.</param>
         /// <exception cref="System.ArgumentException">Expecting a type inheriting from System.Collections.ICollection;type</exception>
-        public CollectionDescriptor(IAttributeRegistry attributeRegistry, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
+        public YamlCollectionDescriptor(IAttributeRegistry attributeRegistry, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
             : base(attributeRegistry, type, emitDefaultValues, namingConvention)
         {
             if (!IsCollection(type))
@@ -337,10 +337,10 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         }
 
         /// <inheritdoc/>
-        protected override bool PrepareMember(MemberDescriptorBase member)
+        protected override bool PrepareMember(YamlMemberDescriptorBase member)
         {
             // Filter members
-            if (member is PropertyDescriptor && ListOfMembersToRemove.Contains(member.OriginalName))
+            if (member is YamlPropertyDescriptor && ListOfMembersToRemove.Contains(member.OriginalName))
                 //if (member is PropertyDescriptor && (member.DeclaringType.Namespace ?? string.Empty).StartsWith(SystemCollectionsNamespace) && ListOfMembersToRemove.Contains(member.Name))
             {
                 return false;

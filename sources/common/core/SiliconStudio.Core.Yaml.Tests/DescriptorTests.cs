@@ -105,7 +105,7 @@ namespace SiliconStudio.Core.Yaml.Tests
             // Rename ItemRenamed2 to Item2
             attributeRegistry.Register(typeof(TestObject).GetProperty("ItemRenamed2"), new DataMemberAttribute("Item2"));
 
-            var descriptor = new ObjectDescriptor(attributeRegistry, typeof(TestObject), false, new DefaultNamingConvention());
+            var descriptor = new YamlObjectDescriptor(attributeRegistry, typeof(TestObject), false, new DefaultNamingConvention());
             descriptor.Initialize();
 
             // Verify members
@@ -168,7 +168,7 @@ namespace SiliconStudio.Core.Yaml.Tests
         public void TestObjectWithCustomNamingConvention()
         {
             var attributeRegistry = new AttributeRegistry();
-            var descriptor = new ObjectDescriptor(attributeRegistry, typeof(TestObjectNamingConvention), false, new FlatNamingConvention());
+            var descriptor = new YamlObjectDescriptor(attributeRegistry, typeof(TestObjectNamingConvention), false, new FlatNamingConvention());
             descriptor.Initialize();
 
             descriptor.SortMembers(new DefaultKeyComparer());
@@ -194,7 +194,7 @@ namespace SiliconStudio.Core.Yaml.Tests
         public void TestCollectionDescriptor()
         {
             var attributeRegistry = new AttributeRegistry();
-            var descriptor = new CollectionDescriptor(attributeRegistry, typeof(List<string>), false, new DefaultNamingConvention());
+            var descriptor = new YamlCollectionDescriptor(attributeRegistry, typeof(List<string>), false, new DefaultNamingConvention());
             descriptor.Initialize();
 
             // No Capacity as a member
@@ -202,7 +202,7 @@ namespace SiliconStudio.Core.Yaml.Tests
             Assert.True(descriptor.IsPureCollection);
             Assert.AreEqual(typeof(string), descriptor.ElementType);
 
-            descriptor = new CollectionDescriptor(attributeRegistry, typeof(NonPureCollection), false,
+            descriptor = new YamlCollectionDescriptor(attributeRegistry, typeof(NonPureCollection), false,
                 new DefaultNamingConvention());
             descriptor.Initialize();
 
@@ -211,7 +211,7 @@ namespace SiliconStudio.Core.Yaml.Tests
             Assert.False(descriptor.IsPureCollection);
             Assert.AreEqual(typeof(int), descriptor.ElementType);
 
-            descriptor = new CollectionDescriptor(attributeRegistry, typeof(ArrayList), false, new DefaultNamingConvention());
+            descriptor = new YamlCollectionDescriptor(attributeRegistry, typeof(ArrayList), false, new DefaultNamingConvention());
             descriptor.Initialize();
 
             // No Capacity
@@ -232,7 +232,7 @@ namespace SiliconStudio.Core.Yaml.Tests
         public void TestDictionaryDescriptor()
         {
             var attributeRegistry = new AttributeRegistry();
-            var descriptor = new DictionaryDescriptor(attributeRegistry, typeof(Dictionary<int, string>), false,
+            var descriptor = new YamlDictionaryDescriptor(attributeRegistry, typeof(Dictionary<int, string>), false,
                 new DefaultNamingConvention());
             descriptor.Initialize();
 
@@ -241,7 +241,7 @@ namespace SiliconStudio.Core.Yaml.Tests
             Assert.AreEqual(typeof(int), descriptor.KeyType);
             Assert.AreEqual(typeof(string), descriptor.ValueType);
 
-            descriptor = new DictionaryDescriptor(attributeRegistry, typeof(NonPureDictionary), false,
+            descriptor = new YamlDictionaryDescriptor(attributeRegistry, typeof(NonPureDictionary), false,
                 new DefaultNamingConvention());
             descriptor.Initialize();
             Assert.AreEqual(1, descriptor.Count);
@@ -254,7 +254,7 @@ namespace SiliconStudio.Core.Yaml.Tests
         public void TestArrayDescriptor()
         {
             var attributeRegistry = new AttributeRegistry();
-            var descriptor = new ArrayDescriptor(attributeRegistry, typeof(int[]), new DefaultNamingConvention());
+            var descriptor = new YamlArrayDescriptor(attributeRegistry, typeof(int[]), new DefaultNamingConvention());
             descriptor.Initialize();
 
             Assert.AreEqual(0, descriptor.Count);
@@ -271,14 +271,14 @@ namespace SiliconStudio.Core.Yaml.Tests
         public void TestPrimitiveDescriptor()
         {
             var attributeRegistry = new AttributeRegistry();
-            var descriptor = new PrimitiveDescriptor(attributeRegistry, typeof(int), new DefaultNamingConvention());
+            var descriptor = new YamlPrimitiveDescriptor(attributeRegistry, typeof(int), new DefaultNamingConvention());
             Assert.AreEqual(0, descriptor.Count);
 
-            Assert.True(PrimitiveDescriptor.IsPrimitive(typeof(MyEnum)));
-            Assert.True(PrimitiveDescriptor.IsPrimitive(typeof(object)));
-            Assert.True(PrimitiveDescriptor.IsPrimitive(typeof(DateTime)));
-            Assert.True(PrimitiveDescriptor.IsPrimitive(typeof(TimeSpan)));
-            Assert.False(PrimitiveDescriptor.IsPrimitive(typeof(IList)));
+            Assert.True(YamlPrimitiveDescriptor.IsPrimitive(typeof(MyEnum)));
+            Assert.True(YamlPrimitiveDescriptor.IsPrimitive(typeof(object)));
+            Assert.True(YamlPrimitiveDescriptor.IsPrimitive(typeof(DateTime)));
+            Assert.True(YamlPrimitiveDescriptor.IsPrimitive(typeof(TimeSpan)));
+            Assert.False(YamlPrimitiveDescriptor.IsPrimitive(typeof(IList)));
         }
     }
 }
