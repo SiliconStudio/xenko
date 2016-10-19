@@ -18,21 +18,5 @@ namespace SiliconStudio.Xenko.Rendering
         public static readonly PermutationParameterKey<ShaderSourceCollection> DirectLightGroups = ParameterKeys.NewPermutation((ShaderSourceCollection)null);
 
         public static readonly PermutationParameterKey<ShaderSourceCollection> EnvironmentLights = ParameterKeys.NewPermutation((ShaderSourceCollection)null);
-       
-        private static readonly ShaderSourceCollection DefaultAmbientLighting = new ShaderSourceCollection() { new ShaderClassSource("LightSimpleAmbient"), };
-
-        public static void EnableFixedAmbientLight(ParameterCollection parameters, bool enable)
-        {
-            if (parameters == null) throw new ArgumentNullException("parameters");
-
-            if (enable)
-            {
-                parameters.Set(EnvironmentLights, DefaultAmbientLighting);
-            }
-            else
-            {
-                parameters.Remove(EnvironmentLights);
-            }
-        }
     }
 }
