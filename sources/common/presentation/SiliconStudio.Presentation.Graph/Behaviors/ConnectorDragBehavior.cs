@@ -76,13 +76,15 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
             var element = e.Source as FrameworkElement;
             var draggedItem = new Tuple<NodeVertex, object>(Node, Slot);
 
-            if (uiElement == null || draggedItem == null) { return; }
+            if (uiElement == null || draggedItem.Item1 == null || draggedItem.Item2 == null) { return; }
 
             DragStartPoint = AssociatedObject.PointToScreen(e.GetPosition(AssociatedObject));
             DraggedItem = draggedItem;
             DraggedUIElement = uiElement;
 
             mouse_down_before_all_ = true;
+
+            e.Handled = true;
         }
         
         /// <summary>

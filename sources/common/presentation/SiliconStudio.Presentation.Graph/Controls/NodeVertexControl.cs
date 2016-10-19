@@ -208,36 +208,6 @@ namespace SiliconStudio.Presentation.Graph.Controls
                     throw new ArgumentOutOfRangeException();
             }
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnConnectorMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            DragBehaviour.SetIsDragEnabled(this, false);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnConnectorMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            DragBehaviour.SetIsDragEnabled(this, true);
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnConnectorMouseLeave(object sender, MouseEventArgs e)
-        {
-            DragBehaviour.SetIsDragEnabled(this, true);
-        }
         #endregion
         
         #region ConnectorDropBehavior Drop Handlers
@@ -310,13 +280,6 @@ namespace SiliconStudio.Presentation.Graph.Controls
                         continue;
                     }
 
-                    if (DragBehaviour.GetIsDragEnabled(this))
-                    {
-                        (slot as UIElement).MouseLeftButtonDown += OnConnectorMouseLeftButtonDown;
-                        (slot as UIElement).MouseLeftButtonUp += OnConnectorMouseLeftButtonUp;
-                        (slot as UIElement).MouseLeave += OnConnectorMouseLeave;
-                    }
-
                     object key = inputItemControl.ItemsSource.Cast<object>().ElementAt(i);
                     input_connectors_.Add(key, slot);
                 }
@@ -353,13 +316,6 @@ namespace SiliconStudio.Presentation.Graph.Controls
                     {
                         Debug.WriteLine("TODO");
                         continue;
-                    }
-
-                    if (DragBehaviour.GetIsDragEnabled(this))
-                    {
-                        (slot as UIElement).MouseLeftButtonDown += OnConnectorMouseLeftButtonDown;
-                        (slot as UIElement).MouseLeftButtonUp += OnConnectorMouseLeftButtonUp;
-                        (slot as UIElement).MouseLeave += OnConnectorMouseLeave;
                     }
 
                     object key = outputItemControl.ItemsSource.Cast<object>().ElementAt(i);
