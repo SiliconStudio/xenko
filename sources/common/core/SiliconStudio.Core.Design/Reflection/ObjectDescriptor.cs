@@ -45,7 +45,6 @@ namespace SiliconStudio.Core.Reflection
         private readonly Type type;
         private IMemberDescriptor[] members;
         private Dictionary<string, IMemberDescriptor> mapMembers;
-        private DataStyle style;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectDescriptor" /> class.
@@ -64,7 +63,6 @@ namespace SiliconStudio.Core.Reflection
             this.AttributeRegistry = factory.AttributeRegistry;
             this.type = type;
             var styleAttribute = AttributeRegistry.GetAttribute<DataStyleAttribute>(type);
-            this.style = styleAttribute != null ? styleAttribute.Style : DataStyle.Any;
             this.IsCompilerGenerated = AttributeRegistry.GetAttribute<CompilerGeneratedAttribute>(type) != null;
         }
 
@@ -160,14 +158,6 @@ namespace SiliconStudio.Core.Reflection
         {
             get;
             protected set;
-        }
-
-        public DataStyle Style
-        {
-            get
-            {
-                return style;
-            }
         }
 
         public IMemberDescriptor this[string name]

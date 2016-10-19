@@ -58,12 +58,6 @@ namespace SiliconStudio.Core.Reflection
         bool IsCompilerGenerated { get; }
 
         /// <summary>
-        /// Gets the style.
-        /// </summary>
-        /// <value>The style.</value>
-        DataStyle Style { get; }
-
-        /// <summary>
         /// Determines whether this instance contains a member with the specified member name.
         /// </summary>
         /// <param name="memberName">Name of the member.</param>

@@ -62,10 +62,8 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// <exception cref="System.ArgumentNullException">memberInfo</exception>
         protected YamlMemberDescriptorBase(MemberInfo memberInfo, StringComparer defaultNameComparer)
         {
-            if (memberInfo == null)
-                throw new ArgumentNullException("memberInfo");
-            if (defaultNameComparer == null)
-                throw new ArgumentNullException("defaultNameComparer");
+            if (memberInfo == null) throw new ArgumentNullException(nameof(memberInfo));
+            if (defaultNameComparer == null) throw new ArgumentNullException(nameof(defaultNameComparer));
 
             MemberInfo = memberInfo;
             Name = MemberInfo.Name;
@@ -91,6 +89,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         public abstract void Set(object thisObject, object value);
         public abstract bool HasSet { get; }
         public abstract bool IsPublic { get; }
+        public abstract IEnumerable<T> GetCustomAttributes<T>(bool inherit) where T : Attribute;
         public uint Mask { get; internal set; }
         public DataStyle Style { get; internal set; }
         public Func<object, bool> ShouldSerialize { get; internal set; }

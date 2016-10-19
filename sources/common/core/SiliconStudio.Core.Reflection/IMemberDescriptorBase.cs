@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SiliconStudio.Core.Reflection
 {
@@ -18,6 +19,12 @@ namespace SiliconStudio.Core.Reflection
         /// </summary>
         /// <value>The type.</value>
         Type Type { get; }
+
+        /// <summary>
+        /// Gets the type that is declaring this member.
+        /// </summary>
+        /// <value>The type that is declaring this member.</value>
+        Type DeclaringType { get; }
 
         /// <summary>
         /// Gets the order of this member. 
@@ -52,5 +59,13 @@ namespace SiliconStudio.Core.Reflection
         /// </summary>
         /// <value><c>true</c> if this instance has set method; otherwise, <c>false</c>.</value>
         bool HasSet { get; }
+
+        /// <summary>
+        /// Gets the custom attributes.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="inherit">if set to <c>true</c> [inherited].</param>
+        /// <returns></returns>
+        IEnumerable<T> GetCustomAttributes<T>(bool inherit) where T : Attribute;
     }
 }

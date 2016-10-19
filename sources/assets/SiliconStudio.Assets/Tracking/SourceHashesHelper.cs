@@ -163,7 +163,7 @@ namespace SiliconStudio.Assets.Tracking
                     throw new InvalidOperationException("The order of the Asset.Id property must be lower than the order of the SourceHashes property.");
             }
 
-            public SourceHashesDynamicMember() : base(MemberName, typeof(Dictionary<UFile, ObjectId>))
+            public SourceHashesDynamicMember() : base(MemberName, typeof(Dictionary<UFile, ObjectId>), typeof(Asset))
             {
                 Order = DefaultOrder;
             }

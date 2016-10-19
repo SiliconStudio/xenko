@@ -336,7 +336,7 @@ namespace SiliconStudio.Core.Yaml
 
         private class CustomDynamicMember : DynamicMemberDescriptorBase
         {
-            public CustomDynamicMember() : base(IdentifiableHelper.YamlSpecialId, typeof(Guid))
+            public CustomDynamicMember() : base(IdentifiableHelper.YamlSpecialId, typeof(Guid), typeof(object))
             {
                 Order = -int.MaxValue;
             }

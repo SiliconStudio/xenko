@@ -82,18 +82,13 @@ namespace SiliconStudio.Core.Reflection
 
             for(int i = items.Count - 1; i >= 0; i--)
             {
-                var descriptor = items[i].MemberDescriptor as MemberDescriptorBase;
+                var descriptor = items[i].MemberDescriptor;
                 if (descriptor == null)
                 {
                     continue;
                 }
-                var attributes = descriptor.MemberInfo.GetCustomAttributes(typeof(T), false);
-                if (attributes.Length > 0)
-                {
-                    return (T)attributes[0];
-                }
-
-                break;
+                var attributes = descriptor.GetCustomAttributes<T>(false);
+                return attributes.FirstOrDefault();
             }
             return null;
         }

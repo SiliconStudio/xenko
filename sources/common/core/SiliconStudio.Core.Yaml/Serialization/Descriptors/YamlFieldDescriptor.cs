@@ -44,6 +44,7 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
@@ -91,6 +92,11 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         public override bool HasSet { get { return true; } }
 
         public override bool IsPublic { get { return fieldInfo.IsPublic; } }
+
+        public override IEnumerable<T> GetCustomAttributes<T>(bool inherit)
+        {
+            return fieldInfo.GetCustomAttributes<T>(inherit);
+        }
 
         /// <summary>
         /// Returns a <see cref="System.String" /> that represents this instance.

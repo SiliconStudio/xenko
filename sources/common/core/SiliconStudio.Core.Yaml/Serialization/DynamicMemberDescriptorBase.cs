@@ -29,7 +29,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
     /// </summary>
     public abstract class DynamicMemberDescriptorBase : IYamlMemberDescriptor
     {
-        protected DynamicMemberDescriptorBase(string name, Type type)
+        protected DynamicMemberDescriptorBase(string name, Type type, Type declaringType)
         {
             if (name == null)
                 throw new ArgumentNullException("name");
@@ -37,6 +37,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
                 throw new ArgumentNullException("type");
             Name = name;
             Type = type;
+            DeclaringType = declaringType;
             OriginalName = Name;
             Mask = 1;
             ShouldSerialize = YamlObjectDescriptor.ShouldSerializeDefault;
@@ -49,7 +50,9 @@ namespace SiliconStudio.Core.Yaml.Serialization
 
         public StringComparer DefaultNameComparer { get; set; }
 
-        public Type Type { get; set; }
+        public Type Type { get; }
+
+        public Type DeclaringType { get; }
 
         public int? Order { get; set; }
 
@@ -72,5 +75,10 @@ namespace SiliconStudio.Core.Yaml.Serialization
         public List<string> AlternativeNames { get; set; }
 
         public object Tag { get; set; }
+
+        public IEnumerable<T> GetCustomAttributes<T>(bool inherit) where T : Attribute
+        {
+            yield break;
+        }
     }
 }
