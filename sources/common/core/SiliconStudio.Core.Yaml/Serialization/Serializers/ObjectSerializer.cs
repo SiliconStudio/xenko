@@ -297,7 +297,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             }
 
             // Read the value according to the type
-            var memberValue = memberAccessor.SerializeMemberMode == DataMemberMode.Content ? memberAccessor.Get(objectContext.Instance) : null;
+            var memberValue = memberAccessor.Mode == DataMemberMode.Content ? memberAccessor.Get(objectContext.Instance) : null;
             var memberType = memberAccessor.Type;
 
             // In case of serializing a property/field which is not writeable
@@ -311,7 +311,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 
             // Handle late binding
             // Value types need to be reassigned even if it was a Content
-            if (memberAccessor.HasSet && (memberAccessor.SerializeMemberMode != DataMemberMode.Content || memberAccessor.Type.IsValueType || memberValue != oldMemberValue))
+            if (memberAccessor.HasSet && (memberAccessor.Mode != DataMemberMode.Content || memberAccessor.Type.IsValueType || memberValue != oldMemberValue))
             {
                 memberAccessor.Set(objectContext.Instance, memberValue);
             }
@@ -402,7 +402,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             // In case of serializing a property/field which is not writeable
             // we need to change the expected type to the actual type of the 
             // content value
-            if (member.SerializeMemberMode == DataMemberMode.Content && !member.HasSet)
+            if (member.Mode == DataMemberMode.Content && !member.HasSet)
             {
                 if (memberValue != null)
                 {

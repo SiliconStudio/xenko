@@ -317,12 +317,12 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             // If the member has a set, this is a conventional assign method
             if (member.HasSet)
             {
-                member.SerializeMemberMode = DataMemberMode.Content;
+                member.Mode = DataMemberMode.Content;
             }
             else
             {
                 // Else we cannot only assign its content if it is a class
-                member.SerializeMemberMode = (memberType != typeof(string) && memberType.IsClass) || memberType.IsInterface || Type.IsAnonymous() ? DataMemberMode.Content : DataMemberMode.Never;
+                member.Mode = (memberType != typeof(string) && memberType.IsClass) || memberType.IsInterface || Type.IsAnonymous() ? DataMemberMode.Content : DataMemberMode.Never;
             }
 
             // If it's a private member, check it has a YamlMemberAttribute on it
@@ -343,18 +343,18 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
                 if (!member.HasSet)
                 {
                     if (memberAttribute.Mode == DataMemberMode.Assign ||
-                        (memberType.IsValueType && member.SerializeMemberMode == DataMemberMode.Content))
+                        (memberType.IsValueType && member.Mode == DataMemberMode.Content))
                         throw new ArgumentException($"{memberType.FullName} {member.OriginalName} is not writeable by {memberAttribute.Mode.ToString()}.");
                 }
 
                 if (memberAttribute.Mode != DataMemberMode.Default)
                 {
-                    member.SerializeMemberMode = memberAttribute.Mode;
+                    member.Mode = memberAttribute.Mode;
                 }
                 member.Order = memberAttribute.Order;
             }
 
-            if (member.SerializeMemberMode == DataMemberMode.Binary)
+            if (member.Mode == DataMemberMode.Binary)
             {
                 if (!memberType.IsArray)
                     throw new InvalidOperationException($"{memberType.FullName} {member.OriginalName} of {Type.FullName} is not an array. Can not be serialized as binary.");
@@ -363,7 +363,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             }
 
             // If this member cannot be serialized, remove it from the list
-            if (member.SerializeMemberMode == DataMemberMode.Never)
+            if (member.Mode == DataMemberMode.Never)
             {
                 return false;
             }
