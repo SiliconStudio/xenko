@@ -838,7 +838,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             assetItems.Add(new AssetItem("a1", a1));
 
-            var member = TypeDescriptorFactory.Default.Find(typeof(Entity))["Name"];
+            var member = (IMemberDescriptor)TypeDescriptorFactory.Default.Find(typeof(Entity))["Name"];
             
             var a2 = new PrefabAsset();
             var a2PartInstance1 = a1.CreatePrefabInstance(a2, "a1");

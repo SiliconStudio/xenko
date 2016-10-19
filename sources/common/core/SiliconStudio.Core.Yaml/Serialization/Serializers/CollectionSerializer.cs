@@ -45,6 +45,7 @@
 
 using System;
 using System.Collections;
+using System.Linq;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization.Descriptors;
@@ -113,7 +114,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             else
             {
                 // Serialize Dictionary members
-                foreach (var member in objectContext.Descriptor.Members)
+                foreach (var member in objectContext.Descriptor.Members.Cast<IYamlMemberDescriptor>())
                 {
                     if (member.OriginalName == "Capacity" && !objectContext.Settings.EmitCapacityForList)
                     {

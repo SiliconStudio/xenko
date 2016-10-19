@@ -172,7 +172,7 @@ namespace SiliconStudio.Core.Reflection
         {
             if (!obj.GetType().IsArray && visitMembers)
             {
-                foreach (var member in descriptor.Members)
+                foreach (var member in descriptor.Members.Cast<IMemberDescriptor>())
                 {
                     CurrentPath.Push(member);
                     VisitObjectMember(obj, descriptor, member, member.Get(obj));

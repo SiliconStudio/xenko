@@ -110,7 +110,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             else if (objectContext.Settings.SerializeDictionaryItemsAsMembers && dictionaryDescriptor.KeyType == typeof(string))
             {
                 // Serialize Dictionary members and items together
-                foreach (var member in dictionaryDescriptor.Members)
+                foreach (var member in dictionaryDescriptor.Members.Cast<IYamlMemberDescriptor>())
                 {
                     WriteMember(ref objectContext, member);
                 }
@@ -119,7 +119,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             else
             {
                 // Serialize Dictionary members
-                foreach (var member in dictionaryDescriptor.Members)
+                foreach (var member in dictionaryDescriptor.Members.Cast<IYamlMemberDescriptor>())
                 {
                     WriteMember(ref objectContext, member);
                 }

@@ -44,6 +44,7 @@
 // SOFTWARE.
 
 using System;
+using System.Linq;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Yaml.Events;
 
@@ -282,7 +283,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
                 return ReadMemberState.Skip;
             }
 
-            var memberAccessor = objectContext.Descriptor[memberName];
+            var memberAccessor = (IYamlMemberDescriptor)objectContext.Descriptor[memberName];
 
             // If the member was remapped, store this in the context
             if (objectContext.Descriptor.IsMemberRemapped(memberName))
@@ -372,7 +373,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         /// <param name="objectContext"></param>
         protected virtual void WriteMembers(ref ObjectContext objectContext)
         {
-            foreach (var member in objectContext.Descriptor.Members)
+            foreach (var member in objectContext.Descriptor.Members.Cast<IYamlMemberDescriptor>())
             {
                 WriteMember(ref objectContext, member);
             }

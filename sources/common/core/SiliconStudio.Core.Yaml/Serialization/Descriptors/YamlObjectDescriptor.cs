@@ -180,7 +180,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 
         public Type Type { get; }
 
-        public IEnumerable<IYamlMemberDescriptor> Members => members;
+        public IEnumerable<IMemberDescriptorBase> Members => members;
 
         public int Count => members?.Count ?? 0;
 
@@ -203,7 +203,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             }
         }
 
-        public IYamlMemberDescriptor this[string name]
+        public IMemberDescriptorBase this[string name]
         {
             get
             {

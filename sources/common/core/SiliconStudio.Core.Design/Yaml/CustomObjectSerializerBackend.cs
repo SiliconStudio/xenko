@@ -77,7 +77,7 @@ namespace SiliconStudio.Core.Yaml
                     {
                         cachedDescriptor = typeDescriptorFactory.Find(objectType);
                     }
-                    var memberDescriptor = cachedDescriptor[newMemberName];
+                    var memberDescriptor = (IMemberDescriptor)cachedDescriptor[newMemberName];
                     objectContext.Instance.SetOverride(memberDescriptor, overrideType);
                 }
             }
@@ -101,7 +101,7 @@ namespace SiliconStudio.Core.Yaml
                 var customDescriptor = (IMemberDescriptor)member.Tag;
                 if (customDescriptor == null)
                 {
-                    customDescriptor = typeDescriptorFactory.Find(objectContext.Instance.GetType())[memberName];
+                    customDescriptor = (IMemberDescriptor)typeDescriptorFactory.Find(objectContext.Instance.GetType())[memberName];
                     member.Tag = customDescriptor;
                 }
 

@@ -43,8 +43,6 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using System;
-using System.Collections.Generic;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Yaml.Serialization
@@ -52,45 +50,8 @@ namespace SiliconStudio.Core.Yaml.Serialization
     /// <summary>
     /// Provides access members of a type.
     /// </summary>
-    public interface IYamlTypeDescriptor
+    public interface IYamlTypeDescriptor : ITypeDescriptorBase
     {
-        /// <summary>
-        /// Gets the type described by this instance.
-        /// </summary>
-        /// <value>The type.</value>
-        Type Type { get; }
-
-        /// <summary>
-        /// Gets the members of this type.
-        /// </summary>
-        /// <value>The members.</value>
-        IEnumerable<IYamlMemberDescriptor> Members { get; }
-
-        /// <summary>
-        /// Gets the member count.
-        /// </summary>
-        /// <value>The member count.</value>
-        int Count { get; }
-
-        /// <summary>
-        /// Gets the category of this descriptor.
-        /// </summary>
-        /// <value>The category.</value>
-        DescriptorCategory Category { get; }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance has members.
-        /// </summary>
-        /// <value><c>true</c> if this instance has members; otherwise, <c>false</c>.</value>
-        bool HasMembers { get; }
-
-        /// <summary>
-        /// Gets the <see cref="IYamlMemberDescriptor"/> with the specified name. Return null if not found
-        /// </summary>
-        /// <param name="name">The name.</param>
-        /// <returns>The member.</returns>
-        IYamlMemberDescriptor this[string name] { get; }
-
         /// <summary>
         /// Determines whether the named member is remmaped.
         /// </summary>
@@ -99,22 +60,9 @@ namespace SiliconStudio.Core.Yaml.Serialization
         bool IsMemberRemapped(string name);
 
         /// <summary>
-        /// Gets a value indicating whether this instance is a compiler generated type.
-        /// </summary>
-        /// <value><c>true</c> if this instance is a compiler generated type; otherwise, <c>false</c>.</value>
-        bool IsCompilerGenerated { get; }
-
-        /// <summary>
         /// Gets the style.
         /// </summary>
         /// <value>The style.</value>
         DataStyle Style { get; }
-
-        /// <summary>
-        /// Determines whether this instance contains a member with the specified member name.
-        /// </summary>
-        /// <param name="memberName">Name of the member.</param>
-        /// <returns><c>true</c> if this instance contains a member with the specified member name; otherwise, <c>false</c>.</returns>
-        bool Contains(string memberName);
     }
 }

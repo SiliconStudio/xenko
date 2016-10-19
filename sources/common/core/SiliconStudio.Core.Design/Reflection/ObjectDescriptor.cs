@@ -130,7 +130,7 @@ namespace SiliconStudio.Core.Reflection
             }
         }
 
-        public IEnumerable<IMemberDescriptor> Members
+        public IEnumerable<IMemberDescriptorBase> Members
         {
             get
             {
@@ -160,7 +160,7 @@ namespace SiliconStudio.Core.Reflection
             protected set;
         }
 
-        public IMemberDescriptor this[string name]
+        public IMemberDescriptorBase this[string name]
         {
             get
             {
