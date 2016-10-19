@@ -114,14 +114,14 @@ namespace SiliconStudio.Core.Yaml.Serialization
                     {
                         string name = null;
                         bool isAlias = false;
-                        var tagAttribute = attribute as YamlTagAttribute;
-                        if (tagAttribute != null)
+                        var tagAttribute = attribute as DataContractAttribute;
+                        if (!string.IsNullOrWhiteSpace(tagAttribute?.Alias))
                         {
-                            name = tagAttribute.Tag;
+                            name = tagAttribute.Alias;
                         }
                         else
                         {
-                            var yamlRemap = attribute as YamlRemapAttribute;
+                            var yamlRemap = attribute as DataAliasAttribute;
                             if (yamlRemap != null)
                             {
                                 name = yamlRemap.Name;

@@ -88,7 +88,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
             EmitCapacityForList = false;
             SpecialCollectionMember = "~Items";
             LimitPrimitiveFlowSequence = 0;
-            DefaultStyle = YamlStyle.Block;
+            DefaultStyle = DataStyle.Normal;
             this.schema = schema ?? new CoreSchema();
             AssemblyRegistry = new AssemblyRegistry(Schema);
             attributeRegistry = new AttributeRegistry();
@@ -219,10 +219,10 @@ namespace SiliconStudio.Core.Yaml.Serialization
         public ITagTypeRegistry TagTypeRegistry { get { return AssemblyRegistry; } }
 
         /// <summary>
-        /// Gets or sets the default <see cref="YamlStyle"/>. Default is <see cref="YamlStyle.Block"/>. See <see cref="DynamicStyleFormat"/> to understand the resolution of styles.
+        /// Gets or sets the default <see cref="DataStyle"/>. Default is <see cref="DataStyle.Normal"/>. See <see cref="DynamicStyleFormat"/> to understand the resolution of styles.
         /// </summary>
         /// <value>The default style.</value>
-        public YamlStyle DefaultStyle { get; set; }
+        public DataStyle DefaultStyle { get; set; }
 
         /// <summary>
         /// Gets or sets the prefix used to serialize items for a non pure <see cref="System.Collections.IDictionary" /> or

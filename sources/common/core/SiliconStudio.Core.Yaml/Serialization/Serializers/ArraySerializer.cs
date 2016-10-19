@@ -114,7 +114,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             objectContext.Writer.Emit(new SequenceStartEventInfo(value, valueType)
             {
                 Tag = objectContext.Tag,
-                Style = objectContext.Style != YamlStyle.Any ? objectContext.Style : (arrayList.Count < objectContext.Settings.LimitPrimitiveFlowSequence ? YamlStyle.Flow : YamlStyle.Block)
+                Style = objectContext.Style != DataStyle.Any ? objectContext.Style : (arrayList.Count < objectContext.Settings.LimitPrimitiveFlowSequence ? DataStyle.Compact : DataStyle.Normal)
             });
 
             foreach (var element in arrayList)

@@ -12,18 +12,19 @@
     <RootNamespace>SiliconStudio.Core.Reflection</RootNamespace>
     <AssemblyName>SiliconStudio.Core.Reflection</AssemblyName>
     <SiliconStudioAssemblyProcessor>false</SiliconStudioAssemblyProcessor>
-<!-- 
+    <!-- 
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
     <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions)</SiliconStudioAssemblyProcessorOptions>
     <XenkoProjectPlatformDependentWindows>true</XenkoProjectPlatformDependentWindows>
     <XenkoBuildTags>*</XenkoBuildTags>
  -->
- <RestorePackages>true</RestorePackages>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="IAttributeRegistry.cs" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(XenkoEffectCompiler)' == 'true'">

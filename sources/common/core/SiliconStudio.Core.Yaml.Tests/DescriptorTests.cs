@@ -79,10 +79,10 @@ namespace SiliconStudio.Core.Yaml.Tests
 
             public ICollection<string> CollectionReadOnly { get; private set; }
 
-            [YamlIgnore]
+            [DataMemberIgnore]
             public string DontSerialize { get; set; }
 
-            [YamlMember("Item1")]
+            [DataMember("Item1")]
             public string ItemRenamed1 { get; set; }
 
             // This property is renamed to Item2 by an external attribute
@@ -103,7 +103,7 @@ namespace SiliconStudio.Core.Yaml.Tests
             var attributeRegistry = new AttributeRegistry();
 
             // Rename ItemRenamed2 to Item2
-            attributeRegistry.Register(typeof(TestObject).GetProperty("ItemRenamed2"), new YamlMemberAttribute("Item2"));
+            attributeRegistry.Register(typeof(TestObject).GetProperty("ItemRenamed2"), new DataMemberAttribute("Item2"));
 
             var descriptor = new ObjectDescriptor(attributeRegistry, typeof(TestObject), false, new DefaultNamingConvention());
             descriptor.Initialize();
@@ -160,7 +160,7 @@ namespace SiliconStudio.Core.Yaml.Tests
 
             public string ThisIsCamelName { get; set; }
 
-            [YamlMember("myname")]
+            [DataMember("myname")]
             public string CustomName { get; set; }
         }
 

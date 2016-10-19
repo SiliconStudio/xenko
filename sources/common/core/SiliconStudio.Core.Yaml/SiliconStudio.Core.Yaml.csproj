@@ -60,8 +60,6 @@
     <Compile Include="Serialization\SerializerContextSettings.cs" />
     <Compile Include="Serialization\Serializers\DefaultObjectSerializerBackend.cs" />
     <Compile Include="Serialization\IObjectSerializerBackend.cs" />
-    <Compile Include="Serialization\YamlRemapAttribute.cs" />
-    <Compile Include="YamlStyle.cs" />
     <Compile Include="Events\StreamEnd.cs" />
     <Compile Include="Events\StreamStart.cs" />
     <Compile Include="FakeList.cs" />
@@ -139,18 +137,14 @@
     </Compile>
     <Compile Include="Serialization\YamlAliasNode.cs" />
     <Compile Include="Serialization\YamlDocument.cs" />
-    <Compile Include="Serialization\YamlIgnoreAttribute.cs" />
     <Compile Include="Serialization\YamlMappingNode.cs" />
-    <Compile Include="Serialization\YamlMemberAttribute.cs" />
     <Compile Include="Serialization\YamlNode.cs" />
     <Compile Include="Serialization\YamlNodeIdentityEqualityComparer.cs" />
     <Compile Include="Serialization\YamlScalarNode.cs" />
     <Compile Include="Serialization\YamlSequenceNode.cs" />
-    <Compile Include="Serialization\YamlSerializableMethod.cs" />
     <Compile Include="Serialization\Serializer.cs" />
     <Compile Include="Serialization\SerializerSettings.cs" />
     <Compile Include="Serialization\YamlStream.cs" />
-    <Compile Include="Serialization\YamlTagAttribute.cs" />
     <Compile Include="Serialization\YamlVisitor.cs" />
     <Compile Include="SimpleKey.cs" />
     <Compile Include="SortedDictionary.cs" />
@@ -184,12 +178,15 @@
     <Compile Include="TypeExtensions.cs" />
     <Compile Include="Version.cs" />
     <Compile Include="YamlException.cs" />
-    <Compile Include="Serialization\YamlStyleAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj">
       <Project>{0be7189b-f04e-4c0c-bbe9-f347c0a59fee}</Project>
       <Name>SiliconStudio.Core.Reflection</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
+      <Name>SiliconStudio.Core</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />

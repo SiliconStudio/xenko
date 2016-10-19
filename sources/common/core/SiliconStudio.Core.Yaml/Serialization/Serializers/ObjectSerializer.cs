@@ -76,8 +76,8 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         /// Gets the style that will be used to serialized the object.
         /// </summary>
         /// <param name="objectContext"></param>
-        /// <returns>The <see cref="YamlStyle"/> to use. Default is <see cref="ITypeDescriptor.Style"/>.</returns>
-        protected virtual YamlStyle GetStyle(ref ObjectContext objectContext)
+        /// <returns>The <see cref="DataStyle"/> to use. Default is <see cref="ITypeDescriptor.Style"/>.</returns>
+        protected virtual DataStyle GetStyle(ref ObjectContext objectContext)
         {
             return objectContext.ObjectSerializerBackend.GetStyle(ref objectContext);
         }
@@ -297,7 +297,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             }
 
             // Read the value according to the type
-            var memberValue = memberAccessor.SerializeMemberMode == SerializeMemberMode.Content ? memberAccessor.Get(objectContext.Instance) : null;
+            var memberValue = memberAccessor.SerializeMemberMode == DataMemberMode.Content ? memberAccessor.Get(objectContext.Instance) : null;
             var memberType = memberAccessor.Type;
 
             // In case of serializing a property/field which is not writeable
@@ -311,7 +311,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 
             // Handle late binding
             // Value types need to be reassigned even if it was a Content
-            if (memberAccessor.HasSet && (memberAccessor.SerializeMemberMode != SerializeMemberMode.Content || memberAccessor.Type.IsValueType || memberValue != oldMemberValue))
+            if (memberAccessor.HasSet && (memberAccessor.SerializeMemberMode != DataMemberMode.Content || memberAccessor.Type.IsValueType || memberValue != oldMemberValue))
             {
                 memberAccessor.Set(objectContext.Instance, memberValue);
             }
@@ -402,7 +402,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             // In case of serializing a property/field which is not writeable
             // we need to change the expected type to the actual type of the 
             // content value
-            if (member.SerializeMemberMode == SerializeMemberMode.Content && !member.HasSet)
+            if (member.SerializeMemberMode == DataMemberMode.Content && !member.HasSet)
             {
                 if (memberValue != null)
                 {

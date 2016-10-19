@@ -86,13 +86,13 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// <value>The type of the declaring.</value>
         public Type DeclaringType { get; private set; }
 
-        public SerializeMemberMode SerializeMemberMode { get; internal set; }
+        public DataMemberMode SerializeMemberMode { get; internal set; }
         public abstract object Get(object thisObject);
         public abstract void Set(object thisObject, object value);
         public abstract bool HasSet { get; }
         public abstract bool IsPublic { get; }
         public uint Mask { get; internal set; }
-        public YamlStyle Style { get; internal set; }
+        public DataStyle Style { get; internal set; }
         public Func<object, bool> ShouldSerialize { get; internal set; }
 
         public List<string> AlternativeNames { get; set; }

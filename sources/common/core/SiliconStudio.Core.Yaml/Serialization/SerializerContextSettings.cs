@@ -14,7 +14,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// </summary>
         public SerializerContextSettings()
         {
-            MemberMask = YamlMemberAttribute.DefaultMask;
+            MemberMask = DataMemberAttribute.DefaultMask;
         }
 
         /// <summary>

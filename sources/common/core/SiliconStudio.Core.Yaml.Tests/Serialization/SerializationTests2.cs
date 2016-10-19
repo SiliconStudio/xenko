@@ -596,13 +596,13 @@ Value: 0
             /// <summary>
             /// Sets an explicit order
             /// </summary>
-            [YamlMember(1)]
+            [DataMember(1)]
             public int Second { get; set; }
 
             /// <summary>
             /// Sets an explicit order
             /// </summary>
-            [YamlMember(0)]
+            [DataMember(0)]
             public int First { get; set; }
 
             /// <summary>
@@ -621,7 +621,7 @@ Value: 0
             /// <summary>
             /// Sets an explicit order
             /// </summary>
-            [YamlMember(2)]
+            [DataMember(2)]
             public int BeforeName { get; set; }
         }
 
@@ -881,9 +881,9 @@ Value: 0
 
         public class ClassWithChars
         {
-            [YamlMember(0)] public char Start;
+            [DataMember(0)] public char Start;
 
-            [YamlMember(1)] public char End;
+            [DataMember(1)] public char End;
         }
 
         [Test]
@@ -912,7 +912,7 @@ Value: 0
         }
 
 
-        [YamlStyle(YamlStyle.Flow)]
+        [DataStyle(DataStyle.Compact)]
         public class ClassWithStyle
         {
             public string Name { get; set; }
@@ -932,12 +932,12 @@ Value: 0
                 G_ListCustom = new CustomList();
             }
 
-            [YamlStyle(YamlStyle.Flow)]
+            [DataStyle(DataStyle.Compact)]
             public List<string> A_ListWithCustomStyle { get; set; }
 
             public ClassWithStyle B_ClassWithStyle { get; set; }
 
-            [YamlStyle(YamlStyle.Block)]
+            [DataStyle(DataStyle.Normal)]
             public ClassWithStyle C_ClassWithStyleOverridenByLocalYamlStyle { get; set; }
 
             public List<object> D_ListHandleByDynamicStyleFormat { get; set; }
@@ -951,7 +951,7 @@ Value: 0
             public CustomList G_ListCustom { get; set; }
         }
 
-        [YamlStyle(YamlStyle.Flow)]
+        [DataStyle(DataStyle.Compact)]
         public class CustomList : List<object>
         {
             public string Name { get; set; }
@@ -960,9 +960,9 @@ Value: 0
 
         private class FormatListObject : DefaultObjectSerializerBackend
         {
-            public override YamlStyle GetStyle(ref ObjectContext objectContext)
+            public override DataStyle GetStyle(ref ObjectContext objectContext)
             {
-                return objectContext.Instance is List<object> ? YamlStyle.Flow : base.GetStyle(ref objectContext);
+                return objectContext.Instance is List<object> ? DataStyle.Compact : base.GetStyle(ref objectContext);
             }
         }
 
@@ -1035,10 +1035,10 @@ G_ListCustom: {Name: name4, ~Items: [1, 2, 3, 4, 5, 6, 7]}";
                 KeyValues = new Dictionary<string, object>();
             }
 
-            [YamlMember(0)]
+            [DataMember(0)]
             public string Name { get; set; }
 
-            [YamlMember(1)]
+            [DataMember(1)]
             public Dictionary<string, object> KeyValues { get; set; }
         }
 
@@ -1159,22 +1159,22 @@ Enum: Value2");
             }
         }
 
-        [YamlTag("TestRemapObject")]
-        [YamlRemap("TestRemapObjectOld")]
+        [DataContract("TestRemapObject")]
+        [DataAlias("TestRemapObjectOld")]
         public class TestRemapObject
         {
-            [YamlRemap("OldName")]
+            [DataAlias("OldName")]
             public string Name { get; set; }
 
             public MyRemapEnum Enum { get; set; }
         }
 
-        [YamlTag("MyRemapEnum")]
+        [DataContract("MyRemapEnum")]
         public enum MyRemapEnum
         {
-            [YamlRemap("OldValue1")] Value1,
+            [DataAlias("OldValue1")] Value1,
 
-            [YamlRemap("OldValue2")] Value2
+            [DataAlias("OldValue2")] Value2
         }
 
         [Test]
@@ -1226,10 +1226,10 @@ Enum: OldValue2
             Assert.IsTrue(context.HasRemapOccurred);
         }
 
-        [YamlTag("TestWithMemberRenamed")]
+        [DataContract("TestWithMemberRenamed")]
         public sealed class TestWithMemberRenamed
         {
-            [YamlMember("~Base")]
+            [DataMember("~Base")]
             [DefaultValue(null)]
             public string Base { get; set; }
         }
@@ -1420,10 +1420,10 @@ Enum: OldValue2
         {
             public int Int1 { get; set; }
 
-            [YamlMember(Mask = 4)]
+            [DataMember(Mask = 4)]
             public int Int2 { get; set; }
 
-            [YamlMember(Mask = 4)]
+            [DataMember(Mask = 4)]
             internal int Int3 { get; set; }
         }
 

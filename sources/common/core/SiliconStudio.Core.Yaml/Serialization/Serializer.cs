@@ -223,7 +223,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
             // Serialize the document
             context.Writer.StreamStart();
             context.Writer.DocumentStart();
-            var objectContext = new ObjectContext(context, graph, context.FindTypeDescriptor(type)) { Style = YamlStyle.Any };
+            var objectContext = new ObjectContext(context, graph, context.FindTypeDescriptor(type)) { Style = DataStyle.Any };
             context.Serializer.ObjectSerializer.WriteYaml(ref objectContext);
             context.Writer.DocumentEnd();
             context.Writer.StreamEnd();

@@ -100,15 +100,6 @@ namespace SiliconStudio.Core.Yaml.Serialization
                     attributes.AddRange(registered);
                 }
 
-                // Allow to remap attributes
-                if (AttributeRemap != null)
-                {
-                    for (int i = 0; i < attributes.Count; i++)
-                    {
-                        attributes[i] = AttributeRemap(attributes[i]);
-                    }
-                }
-
                 // Add to the cache
                 cachedAttributes.Add(key, attributes);
                 return attributes;

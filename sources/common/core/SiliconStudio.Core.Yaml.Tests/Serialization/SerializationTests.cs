@@ -514,7 +514,7 @@ namespace SiliconStudio.Core.Yaml.Tests.Serialization
 
         class ContainsIgnore
         {
-            [YamlIgnore]
+            [DataMemberIgnore]
             public String IgnoreMe { get { throw new NotImplementedException("Accessing a [YamlIgnore] property"); } set { throw new NotImplementedException("Accessing a [YamlIgnore] property"); } }
         }
 
@@ -582,10 +582,10 @@ namespace SiliconStudio.Core.Yaml.Tests.Serialization
             [DefaultValue(null)]
             public string ThirdTest { get; set; }
 
-            [YamlMember("fourthTest")]
+            [DataMember("fourthTest")]
             public string AliasTest { get; set; }
 
-            [YamlIgnore]
+            [DataMemberIgnore]
             public string fourthTest { get; set; }
         }
 

@@ -68,7 +68,6 @@
     <Compile Include="Reflection\DescriptorCategory.cs" />
     <Compile Include="Reflection\DictionaryDescriptor.cs" />
     <Compile Include="Reflection\FieldDescriptor.cs" />
-    <Compile Include="Reflection\IAttributeRegistry.cs" />
     <Compile Include="Reflection\IDataCustomVisitor.cs" />
     <Compile Include="Reflection\IDataVisitor.cs" />
     <Compile Include="Reflection\IMemberDescriptor.cs" />

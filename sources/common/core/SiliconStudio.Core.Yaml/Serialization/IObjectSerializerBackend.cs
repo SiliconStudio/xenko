@@ -37,8 +37,8 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// Gets the style that will be used to serialize the object provided by <see cref="ObjectContext.Instance"/>.
         /// </summary>
         /// <param name="objectContext">The object context which contains the object instance to serialize.</param>
-        /// <returns>The <see cref="YamlStyle"/> to use when serializing the object instance.</returns>
-        YamlStyle GetStyle(ref ObjectContext objectContext);
+        /// <returns>The <see cref="DataStyle"/> to use when serializing the object instance.</returns>
+        DataStyle GetStyle(ref ObjectContext objectContext);
 
         /// <summary>
         /// Allows to transform the name of the member while reading for the specified object context.

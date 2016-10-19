@@ -53,7 +53,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
 
         public int? Order { get; set; }
 
-        public SerializeMemberMode SerializeMemberMode { get; set; }
+        public DataMemberMode SerializeMemberMode { get; set; }
 
         public abstract object Get(object thisObject);
 
@@ -65,7 +65,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
 
         public uint Mask { get; set; }
 
-        public YamlStyle Style { get; set; }
+        public DataStyle Style { get; set; }
 
         public Func<object, bool> ShouldSerialize { get; set; }
 

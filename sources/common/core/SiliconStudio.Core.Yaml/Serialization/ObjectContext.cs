@@ -99,7 +99,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <summary>
         /// The style used when serializing.
         /// </summary>
-        public YamlStyle Style { get; set; }
+        public DataStyle Style { get; set; }
 
         /// <summary>
         /// The dictionary containing custom properties for this context.

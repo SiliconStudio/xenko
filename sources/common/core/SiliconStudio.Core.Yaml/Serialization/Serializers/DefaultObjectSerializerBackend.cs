@@ -29,7 +29,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
     /// </summary>
     public class DefaultObjectSerializerBackend : IObjectSerializerBackend
     {
-        public virtual YamlStyle GetStyle(ref ObjectContext objectContext)
+        public virtual DataStyle GetStyle(ref ObjectContext objectContext)
         {
             var context = objectContext.SerializerContext;
 
@@ -38,7 +38,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             var style = objectContext.Style;
 
             // If no style yet defined
-            if (style != YamlStyle.Any)
+            if (style != DataStyle.Any)
             {
                 return style;
             }
@@ -48,7 +48,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 
             // In case of any style, allow to emit a flow sequence depending on Settings LimitPrimitiveFlowSequence.
             // Apply this only for primitives
-            if (style == YamlStyle.Any)
+            if (style == DataStyle.Any)
             {
                 bool isPrimitiveElementType = false;
                 var collectionDescriptor = objectContext.Descriptor as CollectionDescriptor;
@@ -69,19 +69,19 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
                 }
 
                 style = objectContext.Instance == null || count >= objectContext.SerializerContext.Settings.LimitPrimitiveFlowSequence || !isPrimitiveElementType
-                    ? YamlStyle.Block
-                    : YamlStyle.Flow;
+                    ? DataStyle.Normal
+                    : DataStyle.Compact;
             }
 
             // If not defined, get the default style
-            if (style == YamlStyle.Any)
+            if (style == DataStyle.Any)
             {
                 style = context.Settings.DefaultStyle;
 
                 // If default style is set to Any, set it to Block by default.
-                if (style == YamlStyle.Any)
+                if (style == DataStyle.Any)
                 {
-                    style = YamlStyle.Block;
+                    style = DataStyle.Normal;
                 }
             }
 

@@ -79,7 +79,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
                     var attributes = attributeRegistry.GetAttributes(member);
                     foreach (var attribute in attributes)
                     {
-                        var yamlRemap = attribute as YamlRemapAttribute;
+                        var yamlRemap = attribute as DataAliasAttribute;
                         if (yamlRemap != null)
                         {
                             if (enumRemap == null)

@@ -66,7 +66,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         private List<IMemberDescriptor> members;
         private Dictionary<string, IMemberDescriptor> mapMembers;
         private readonly bool emitDefaultValues;
-        private YamlStyle style;
+        private DataStyle style;
         private bool isSorted;
         private readonly IMemberNamingConvention memberNamingConvention;
         private HashSet<string> remapMembers;
@@ -97,10 +97,10 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 
             attributes = AttributeRegistry.GetAttributes(type);
 
-            this.style = YamlStyle.Any;
+            this.style = DataStyle.Any;
             foreach (var attribute in attributes)
             {
-                var styleAttribute = attribute as YamlStyleAttribute;
+                var styleAttribute = attribute as DataStyleAttribute;
                 if (styleAttribute != null)
                 {
                     style = styleAttribute.Style;
@@ -189,7 +189,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 
         public bool HasMembers { get { return members.Count > 0; } }
 
-        public YamlStyle Style { get { return style; } }
+        public DataStyle Style { get { return style; } }
 
         /// <summary>
         /// Sorts the members of this instance with the specified instance.
@@ -272,20 +272,20 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 
             // Process all attributes just once instead of getting them one by one
             var attributes = AttributeRegistry.GetAttributes(member.MemberInfo);
-            YamlStyleAttribute styleAttribute = null;
-            YamlMemberAttribute memberAttribute = null;
+            DataStyleAttribute styleAttribute = null;
+            DataMemberAttribute memberAttribute = null;
             DefaultValueAttribute defaultValueAttribute = null;
             foreach (var attribute in attributes)
             {
                 // Member is not displayed if there is a YamlIgnore attribute on it
-                if (attribute is YamlIgnoreAttribute)
+                if (attribute is DataMemberIgnoreAttribute)
                 {
                     return false;
                 }
 
-                if (attribute is YamlMemberAttribute)
+                if (attribute is DataMemberAttribute)
                 {
-                    memberAttribute = (YamlMemberAttribute) attribute;
+                    memberAttribute = (DataMemberAttribute) attribute;
                     continue;
                 }
 
@@ -295,13 +295,13 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
                     continue;
                 }
 
-                if (attribute is YamlStyleAttribute)
+                if (attribute is DataStyleAttribute)
                 {
-                    styleAttribute = (YamlStyleAttribute) attribute;
+                    styleAttribute = (DataStyleAttribute) attribute;
                     continue;
                 }
 
-                var yamlRemap = attribute as YamlRemapAttribute;
+                var yamlRemap = attribute as DataAliasAttribute;
                 if (yamlRemap != null)
                 {
                     if (member.AlternativeNames == null)
@@ -318,12 +318,12 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             // If the member has a set, this is a conventional assign method
             if (member.HasSet)
             {
-                member.SerializeMemberMode = SerializeMemberMode.Content;
+                member.SerializeMemberMode = DataMemberMode.Content;
             }
             else
             {
                 // Else we cannot only assign its content if it is a class
-                member.SerializeMemberMode = (memberType != typeof(string) && memberType.IsClass) || memberType.IsInterface || type.IsAnonymous() ? SerializeMemberMode.Content : SerializeMemberMode.Never;
+                member.SerializeMemberMode = (memberType != typeof(string) && memberType.IsClass) || memberType.IsInterface || type.IsAnonymous() ? DataMemberMode.Content : DataMemberMode.Never;
             }
 
             // If it's a private member, check it has a YamlMemberAttribute on it
@@ -334,7 +334,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             }
 
             // Gets the style
-            member.Style = styleAttribute != null ? styleAttribute.Style : YamlStyle.Any;
+            member.Style = styleAttribute != null ? styleAttribute.Style : DataStyle.Any;
             member.Mask = 1;
 
             // Handle member attribute
@@ -343,19 +343,19 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
                 member.Mask = memberAttribute.Mask;
                 if (!member.HasSet)
                 {
-                    if (memberAttribute.SerializeMethod == SerializeMemberMode.Assign ||
-                        (memberType.IsValueType && member.SerializeMemberMode == SerializeMemberMode.Content))
-                        throw new ArgumentException("{0} {1} is not writeable by {2}.".DoFormat(memberType.FullName, member.OriginalName, memberAttribute.SerializeMethod.ToString()));
+                    if (memberAttribute.Mode == DataMemberMode.Assign ||
+                        (memberType.IsValueType && member.SerializeMemberMode == DataMemberMode.Content))
+                        throw new ArgumentException("{0} {1} is not writeable by {2}.".DoFormat(memberType.FullName, member.OriginalName, memberAttribute.Mode.ToString()));
                 }
 
-                if (memberAttribute.SerializeMethod != SerializeMemberMode.Default)
+                if (memberAttribute.Mode != DataMemberMode.Default)
                 {
-                    member.SerializeMemberMode = memberAttribute.SerializeMethod;
+                    member.SerializeMemberMode = memberAttribute.Mode;
                 }
                 member.Order = memberAttribute.Order;
             }
 
-            if (member.SerializeMemberMode == SerializeMemberMode.Binary)
+            if (member.SerializeMemberMode == DataMemberMode.Binary)
             {
                 if (!memberType.IsArray)
                     throw new InvalidOperationException("{0} {1} of {2} is not an array. Can not be serialized as binary."
@@ -365,7 +365,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             }
 
             // If this member cannot be serialized, remove it from the list
-            if (member.SerializeMemberMode == SerializeMemberMode.Never)
+            if (member.SerializeMemberMode == DataMemberMode.Never)
             {
                 return false;
             }

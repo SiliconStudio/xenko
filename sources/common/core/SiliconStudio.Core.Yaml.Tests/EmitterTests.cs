@@ -166,7 +166,7 @@ namespace SiliconStudio.Core.Yaml.Tests
         private string EmitScalar(Scalar scalar)
         {
             return Emit(
-                new SequenceStart(null, null, false, YamlStyle.Block),
+                new SequenceStart(null, null, false, DataStyle.Normal),
                 scalar,
                 new SequenceEnd()
                 );

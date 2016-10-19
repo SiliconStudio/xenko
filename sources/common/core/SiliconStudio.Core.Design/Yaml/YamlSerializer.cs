@@ -291,11 +291,11 @@ namespace SiliconStudio.Core.Yaml
                 {
                     // var clock = Stopwatch.StartNew();
 
-                    var config = new SerializerSettings()
+                    var config = new SerializerSettings
                     {
                         EmitAlias = false,
                         LimitPrimitiveFlowSequence = 0,
-                        Attributes = new AtributeRegistryFilter(),
+                        Attributes = new AttributeRegistry(),
                         PreferredIndent = 4,
                         EmitShortTypeName = true,
                         ComparerForKeySorting = MemberComparer.Default,
@@ -354,83 +354,6 @@ namespace SiliconStudio.Core.Yaml
                 IdentifiableHelper.SetId(thisObject, (Guid)value);
             }
             public override bool HasSet => true;
-        }
-
-        /// <summary>
-        /// Filters attributes to replace <see cref="DataMemberAttribute"/> by <see cref="YamlMemberAttribute"/>
-        /// </summary>
-        private class AtributeRegistryFilter : AttributeRegistry
-        {
-            public AtributeRegistryFilter()
-            {
-                AttributeRemap = RemapToYaml;
-            }
-
-            private Attribute RemapToYaml(Attribute originalAttribute)
-            {
-                Attribute attribute = null;
-                var memberAttribute = originalAttribute as DataMemberAttribute;
-                if (memberAttribute != null)
-                {
-                    SerializeMemberMode mode;
-                    switch (memberAttribute.Mode)
-                    {
-                        case DataMemberMode.Default:
-                        case DataMemberMode.ReadOnly: // ReadOnly is better as default or content?
-                            mode = SerializeMemberMode.Default;
-                            break;
-                        case DataMemberMode.Assign:
-                            mode = SerializeMemberMode.Assign;
-                            break;
-                        case DataMemberMode.Content:
-                            mode = SerializeMemberMode.Content;
-                            break;
-                        case DataMemberMode.Binary:
-                            mode = SerializeMemberMode.Binary;
-                            break;
-                        case DataMemberMode.Never:
-                            mode = SerializeMemberMode.Never;
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                    attribute = new YamlMemberAttribute(memberAttribute.Name, mode) { Order = memberAttribute.Order, Mask = memberAttribute.Mask };
-                    //Trace.WriteLine(string.Format("Attribute remapped {0}", memberAttribute.Name));
-                }
-                else if (originalAttribute is DataMemberIgnoreAttribute)
-                {
-                    attribute = new YamlIgnoreAttribute();
-                }
-                else if (originalAttribute is DataContractAttribute)
-                {
-                    var alias = ((DataContractAttribute)originalAttribute).Alias;
-                    if (!string.IsNullOrWhiteSpace(alias))
-                    {
-                        attribute = new YamlTagAttribute(alias);
-                    }
-                }
-                else if (originalAttribute is DataStyleAttribute)
-                {
-                    switch (((DataStyleAttribute)originalAttribute).Style)
-                    {
-                        case DataStyle.Any:
-                            attribute = new YamlStyleAttribute(YamlStyle.Any);
-                            break;
-                        case DataStyle.Compact:
-                            attribute = new YamlStyleAttribute(YamlStyle.Flow);
-                            break;
-                        case DataStyle.Normal:
-                            attribute = new YamlStyleAttribute(YamlStyle.Block);
-                            break;
-                    }
-                }
-                else if (originalAttribute is DataAliasAttribute)
-                {
-                    attribute = new YamlRemapAttribute(((DataAliasAttribute)originalAttribute).Name);
-                }
-
-                return attribute ?? originalAttribute;
-            }
         }
 
         [ModuleInitializer]

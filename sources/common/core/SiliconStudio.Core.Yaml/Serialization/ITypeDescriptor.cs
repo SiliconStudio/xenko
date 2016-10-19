@@ -107,7 +107,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// Gets the style.
         /// </summary>
         /// <value>The style.</value>
-        YamlStyle Style { get; }
+        DataStyle Style { get; }
 
         /// <summary>
         /// Determines whether this instance contains a member with the specified member name.

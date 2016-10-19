@@ -89,7 +89,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// Gets the mode of serialization for this member.
         /// </summary>
         /// <value>The mode.</value>
-        SerializeMemberMode SerializeMemberMode { get; }
+        DataMemberMode SerializeMemberMode { get; }
 
         /// <summary>
         /// Gets the value of this memeber for the specified instance.
@@ -131,7 +131,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// Gets the default style attached to this member.
         /// </summary>
         /// <value>The style.</value>
-        YamlStyle Style { get; }
+        DataStyle Style { get; }
 
         /// <summary>
         /// Gets a value indicating whether this member should be serialized.
