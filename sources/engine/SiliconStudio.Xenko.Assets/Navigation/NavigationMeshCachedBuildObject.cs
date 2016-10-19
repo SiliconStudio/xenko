@@ -16,10 +16,12 @@ namespace SiliconStudio.Xenko.Assets.Navigation
         /// Guid of the entity
         /// </summary>
         public Guid Guid;
+
         /// <summary>
         /// Hash obtained with <see cref="NavigationMeshBuildUtils.HashEntityCollider"/>
         /// </summary>
         public int ParameterHash;
+
         /// <summary>
         /// Cached vertex data
         /// </summary>

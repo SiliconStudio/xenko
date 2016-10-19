@@ -7,13 +7,6 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Native;
-using SiliconStudio.Xenko.Extensions;
-using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Graphics.GeometricPrimitives;
-using SiliconStudio.Xenko.Native;
-using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Materials;
-using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 
 namespace SiliconStudio.Xenko.Engine
 {

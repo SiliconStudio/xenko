@@ -1,16 +1,12 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Serialization.Serializers;
-
 
 namespace SiliconStudio.Xenko.Engine
 {
@@ -58,8 +54,8 @@ namespace SiliconStudio.Xenko.Engine
             BuildSettings = buildSettings;
 
             // Remove layers that are no longer needed
-            if(LayersInternal.Count > agentSettings.Length)
-                LayersInternal.RemoveRange(agentSettings.Length, LayersInternal.Count-agentSettings.Length);
+            if (LayersInternal.Count > agentSettings.Length)
+                LayersInternal.RemoveRange(agentSettings.Length, LayersInternal.Count - agentSettings.Length);
 
             // Initialize layers
             for (int i = 0; i < agentSettings.Length; i++)
@@ -142,7 +138,7 @@ namespace SiliconStudio.Xenko.Engine
             base.PreSerialize(ref obj, mode, stream);
             if (mode == ArchiveMode.Deserialize)
             {
-                if(obj == null)
+                if (obj == null)
                     obj = new NavigationMesh();
             }
         }

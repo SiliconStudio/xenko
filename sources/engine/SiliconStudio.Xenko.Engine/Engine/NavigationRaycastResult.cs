@@ -11,10 +11,12 @@ namespace SiliconStudio.Xenko.Engine
         /// true if the raycast hit something
         /// </summary>
         public bool Hit;
+
         /// <summary>
         /// Position where the ray hit a non-walkable area boundary
         /// </summary>
         public Vector3 Position;
+
         /// <summary>
         /// Normal of the non-walkable area boundary that was hit
         /// </summary>

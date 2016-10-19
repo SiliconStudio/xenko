@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 public Entity Entity;
                 public NavigationMeshInputBuilder NavigationMeshInputBuilder;
             }
-            
+
             private NavigationMeshCachedBuild oldBuild;
             private NavigationMeshCachedBuild currentBuild;
 
@@ -240,7 +240,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
 
                 return Task.FromResult(ResultStatus.Successful);
             }
-            
+
             /// <summary>
             /// Computes a unique Id for this asset used to store intermediate / build cache data
             /// </summary>

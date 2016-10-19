@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
         /// </summary>
         [DataMember(1205)]
         public bool AutoGenerateBoundingBox { get; set; }
-        
+
         /// <summary>
         /// Collision filter that indicates which colliders are used in navmesh generation
         /// </summary>
@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.Assets.Navigation
                 hashCode = (hashCode*397) ^ AutoGenerateBoundingBox.GetHashCode();
                 hashCode = (hashCode*397) ^ (int)IncludedCollisionGroups;
                 hashCode = (hashCode*397) ^ BuildSettings.GetHashCode();
-                if(Scene != null)
+                if (Scene != null)
                     hashCode = (hashCode*397) ^ Scene.Name.GetHashCode();
                 return hashCode;
             }

@@ -16,11 +16,11 @@ namespace SiliconStudio.Xenko.Assets.Navigation
     [DataContract]
     internal class NavigationMeshCachedBuild
     {
-        public Dictionary<Guid, NavigationMeshCachedBuildObject> Objects = 
+        public Dictionary<Guid, NavigationMeshCachedBuildObject> Objects =
             new Dictionary<Guid, NavigationMeshCachedBuildObject>();
-        
+
         public NavigationMesh NavigationMesh;
-        
+
         public int SettingsHash = 0;
 
         /// <summary>
