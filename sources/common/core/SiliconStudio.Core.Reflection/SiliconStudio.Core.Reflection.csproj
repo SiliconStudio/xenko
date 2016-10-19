@@ -26,6 +26,15 @@
     </Compile>
     <Compile Include="DescriptorCategory.cs" />
     <Compile Include="IAttributeRegistry.cs" />
+    <Compile Include="IMemberDescriptor.cs" />
+    <Compile Include="ITypeDescriptor.cs" />
+    <Compile Include="ITypeDescriptorFactory.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
+      <Name>SiliconStudio.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Choose>
     <When Condition="'$(XenkoEffectCompiler)' == 'true'">
