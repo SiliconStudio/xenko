@@ -26,7 +26,6 @@ namespace SiliconStudio.Core.Reflection
 
             Category = DescriptorCategory.Nullable;
             UnderlyingType = Nullable.GetUnderlyingType(type);
-            UnderlyingDescriptor = Factory.Find(UnderlyingType);
         }
 
         /// <summary>
@@ -34,12 +33,6 @@ namespace SiliconStudio.Core.Reflection
         /// </summary>
         /// <value>The type of the element.</value>
         public Type UnderlyingType { get; private set; }
-
-        /// <summary>
-        /// Gets the type underlying type T of the nullable <see cref="Nullable{T}"/>
-        /// </summary>
-        /// <value>The type of the element.</value>
-        public ITypeDescriptor UnderlyingDescriptor { get; private set; }
 
         /// <summary>
         /// Determines whether the specified type is nullable.
