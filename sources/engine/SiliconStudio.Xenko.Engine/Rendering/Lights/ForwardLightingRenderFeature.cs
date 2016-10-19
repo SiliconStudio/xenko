@@ -267,7 +267,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             var directLightShaders = GetReadonlyShaderSources(ShaderPermutation.DirectLightShaders);
             var environmentLightShaders = GetReadonlyShaderSources(ShaderPermutation.EnvironmentLightShaders);
 
-            //foreach (var renderObject in RootRenderFeature.RenderObjects)
             Dispatcher.ForEach(RootRenderFeature.RenderObjects, renderObject =>
             {
                 var renderMesh = (RenderMesh)renderObject;
@@ -479,12 +478,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 if (renderView.GetType() != typeof(RenderView))
                     continue;
 
-                lightProcessor = renderView.SceneInstance.GetProcessor<LightProcessor>();
-
-                // No light processors means no light in the scene, so we can early exit
-                if (lightProcessor == null)
-                    continue;
-
                 RenderViewLightData renderViewLightData;
                 if (!renderViewDatas.TryGetValue(renderView, out renderViewLightData))
                 {
@@ -499,6 +492,12 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
                 renderViewLightData.VisibleLights.Clear();
                 renderViewLightData.VisibleLightsWithShadows.Clear();
+
+                lightProcessor = renderView.SceneInstance.GetProcessor<LightProcessor>();
+
+                // No light processors means no light in the scene, so we can early exit
+                if (lightProcessor == null)
+                    continue;
 
                 // TODO GRAPHICS REFACTOR
                 var sceneCullingMask = renderView.CullingMask;
