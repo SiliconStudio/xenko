@@ -166,7 +166,16 @@ namespace SiliconStudio.Assets
         /// <param name="clearMissingReferences"></param>
         public virtual void FixupReferences(bool clearMissingReferences = true)
         {
-            // default implementation does nothing
+            // Fixup base
+            Base?.Asset.FixupReferences(clearMissingReferences);
+            // Fixup base parts
+            if (BaseParts != null)
+            {
+                foreach (var basePart in BaseParts)
+                {
+                    basePart.Asset.FixupReferences(clearMissingReferences);
+                }
+            }
         }
 
         /// <summary>

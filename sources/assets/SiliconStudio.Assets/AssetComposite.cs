@@ -45,16 +45,7 @@ namespace SiliconStudio.Assets
         /// <inheritdoc />
         public override void FixupReferences(bool clearMissingReferences = true)
         {
-            // Fixup base
-            Base?.Asset.FixupReferences(clearMissingReferences);
-            // Fixup base parts
-            if (BaseParts != null)
-            {
-                foreach (var basePart in BaseParts)
-                {
-                    basePart.Asset.FixupReferences(clearMissingReferences);
-                }
-            }
+            base.FixupReferences(clearMissingReferences);
 
             var visitor = new AssetCompositePartReferenceCollector();
             visitor.VisitAsset(this);
