@@ -2,10 +2,10 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Descriptors;
-using SiliconStudio.Core.Yaml.Serialization.Logging;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
 
 namespace SiliconStudio.Core.Yaml
@@ -155,7 +155,7 @@ namespace SiliconStudio.Core.Yaml
                     if (objectContext.SerializerContext.AllowErrors)
                     {
                         var logger = objectContext.SerializerContext.ContextSettings.Logger;
-                        logger?.Log(LogLevel.Warning, ex, "Ignored dictionary item that could not be deserialized");
+                        logger?.Warning("Ignored dictionary item that could not be deserialized", ex);
                         objectContext.Reader.Skip(currentDepth);
                     }
                     else throw;

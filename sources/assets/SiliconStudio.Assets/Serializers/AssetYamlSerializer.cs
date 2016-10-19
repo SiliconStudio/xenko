@@ -15,12 +15,12 @@ namespace SiliconStudio.Assets.Serializers
     {
         public object Load(Stream stream, string assetFileExtension, ILogger log, out bool aliasOccurred)
         {
-            return YamlSerializer.Deserialize(stream, null, log != null ? new SerializerContextSettings() { Logger = new YamlForwardLogger(log) } : null, out aliasOccurred);
+            return YamlSerializer.Deserialize(stream, null, log != null ? new SerializerContextSettings { Logger = log } : null, out aliasOccurred);
         }
 
         public void Save(Stream stream, object asset, ILogger log)
         {
-            YamlSerializer.Serialize(stream, asset, null, log != null ? new SerializerContextSettings() { Logger = new YamlForwardLogger(log) } : null);
+            YamlSerializer.Serialize(stream, asset, null, log != null ? new SerializerContextSettings { Logger = log } : null);
         }
 
         public IAssetSerializer TryCreate(string assetFileExtension)

@@ -1,4 +1,4 @@
-using SiliconStudio.Core.Yaml.Serialization.Logging;
+using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Core.Yaml.Serialization
 {

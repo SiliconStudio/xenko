@@ -44,8 +44,8 @@
 // SOFTWARE.
 
 using System;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Yaml.Events;
-using SiliconStudio.Core.Yaml.Serialization.Logging;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
@@ -247,7 +247,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
                 if (objectContext.SerializerContext.AllowErrors)
                 {
                     var logger = objectContext.SerializerContext.ContextSettings.Logger;
-                    logger?.Log(LogLevel.Warning, ex, "Ignored object member that could not be deserialized");
+                    logger?.Warning("Ignored dictionary item that could not be deserialized", ex);
                     skipMember = true;
                 }
                 else throw;

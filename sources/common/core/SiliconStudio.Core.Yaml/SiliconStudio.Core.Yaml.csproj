@@ -53,8 +53,6 @@
     <Compile Include="Serialization\IMemberNamingConvention.cs" />
     <Compile Include="Serialization\IOrderedDictionary.cs" />
     <Compile Include="Serialization\ITagTypeResolver.cs" />
-    <Compile Include="Serialization\Logging\ILogger.cs" />
-    <Compile Include="Serialization\Logging\LogLevel.cs" />
     <Compile Include="Serialization\ObjectContext.cs" />
     <Compile Include="Serialization\OrderedDictionary.cs" />
     <Compile Include="Serialization\SerializerContextSettings.cs" />

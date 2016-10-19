@@ -4,11 +4,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Descriptors;
-using SiliconStudio.Core.Yaml.Serialization.Logging;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
 using SiliconStudio.Xenko.Engine;
 
@@ -76,8 +76,7 @@ namespace SiliconStudio.Xenko.Assets.Serializers
                 string typeName = startEvent != null && !string.IsNullOrEmpty(startEvent.Tag) ? startEvent.Tag.Substring(1) : null;
 
                 var log = objectContext.SerializerContext.ContextSettings.Logger;
-                if (log != null)
-                    log.Log(LogLevel.Warning, ex, $"Could not deserialize script {typeName}");
+                log?.Warning($"Could not deserialize script {typeName}", ex);
 
                 return new UnloadableComponent(parsingEvents, typeName);
             }
