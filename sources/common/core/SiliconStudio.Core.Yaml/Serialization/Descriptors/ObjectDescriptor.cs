@@ -148,7 +148,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
                 IMemberDescriptor existingMember;
                 if (mapMembers.TryGetValue(member.Name, out existingMember))
                 {
-                    throw new YamlException("Failed to get ObjectDescriptor for type [{0}]. The member [{1}] cannot be registered as a member with the same name is already registered [{2}]".DoFormat(type.FullName, member, existingMember));
+                    throw new YamlException($"Failed to get ObjectDescriptor for type [{type.FullName}]. The member [{member}] cannot be registered as a member with the same name is already registered [{existingMember}]");
                 }
 
                 mapMembers.Add(member.Name, member);
@@ -160,7 +160,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
                     {
                         if (mapMembers.TryGetValue(alternateName, out existingMember))
                         {
-                            throw new YamlException("Failed to get ObjectDescriptor for type [{0}]. The member [{1}] cannot be registered as a member with the same name [{2}] is already registered [{3}]".DoFormat(type.FullName, member, alternateName, existingMember));
+                            throw new YamlException($"Failed to get ObjectDescriptor for type [{type.FullName}]. The member [{member}] cannot be registered as a member with the same name [{alternateName}] is already registered [{existingMember}]");
                         }
                         else
                         {
@@ -345,7 +345,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
                 {
                     if (memberAttribute.Mode == DataMemberMode.Assign ||
                         (memberType.IsValueType && member.SerializeMemberMode == DataMemberMode.Content))
-                        throw new ArgumentException("{0} {1} is not writeable by {2}.".DoFormat(memberType.FullName, member.OriginalName, memberAttribute.Mode.ToString()));
+                        throw new ArgumentException($"{memberType.FullName} {member.OriginalName} is not writeable by {memberAttribute.Mode.ToString()}.");
                 }
 
                 if (memberAttribute.Mode != DataMemberMode.Default)
@@ -358,10 +358,9 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             if (member.SerializeMemberMode == DataMemberMode.Binary)
             {
                 if (!memberType.IsArray)
-                    throw new InvalidOperationException("{0} {1} of {2} is not an array. Can not be serialized as binary."
-                        .DoFormat(memberType.FullName, member.OriginalName, type.FullName));
+                    throw new InvalidOperationException($"{memberType.FullName} {member.OriginalName} of {type.FullName} is not an array. Can not be serialized as binary.");
                 if (!memberType.GetElementType().IsPureValueType())
-                    throw new InvalidOperationException("{0} is not a pure ValueType. {1} {2} of {3} can not serialize as binary.".DoFormat(memberType.GetElementType(), memberType.FullName, member.OriginalName, type.FullName));
+                    throw new InvalidOperationException($"{memberType.GetElementType()} is not a pure ValueType. {memberType.FullName} {member.OriginalName} of {type.FullName} can not serialize as binary.");
             }
 
             // If this member cannot be serialized, remove it from the list

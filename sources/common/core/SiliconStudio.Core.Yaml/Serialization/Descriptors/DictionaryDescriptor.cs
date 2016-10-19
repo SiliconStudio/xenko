@@ -164,7 +164,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
                 {
                     if (!(keyValueObject is DictionaryEntry))
                     {
-                        throw new NotSupportedException("Key value-pair type [{0}] is not supported for IDictionary. Only DictionaryEntry".DoFormat(keyValueObject));
+                        throw new NotSupportedException($"Key value-pair type [{keyValueObject}] is not supported for IDictionary. Only DictionaryEntry");
                     }
                     var entry = (DictionaryEntry) keyValueObject;
                     yield return new KeyValuePair<object, object>(entry.Key, entry.Value);
@@ -193,7 +193,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
                 // Only throw an exception if the addMethod is not accessible when adding to a dictionary
                 if (addMethod == null)
                 {
-                    throw new InvalidOperationException("No Add() method found on dictionary [{0}]".DoFormat(Type));
+                    throw new InvalidOperationException($"No Add() method found on dictionary [{Type}]");
                 }
                 addMethod.Invoke(dictionary, new object[] {key, value});
             }

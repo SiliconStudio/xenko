@@ -539,7 +539,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
                 }
                 catch (Exception ex)
                 {
-                    throw new YamlException(node.Start, node.End, "Error while deserializing node [{0}]".DoFormat(node), ex);
+                    throw new YamlException(node.Start, node.End, $"Error while deserializing node [{node}]", ex);
                 }
             }
 

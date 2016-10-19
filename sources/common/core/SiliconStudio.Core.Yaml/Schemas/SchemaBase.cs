@@ -133,7 +133,7 @@ namespace SiliconStudio.Core.Yaml.Schemas
                 return tag;
             }
 
-            throw new NotSupportedException("NodeEvent [{0}] not supported".DoFormat(nodeEvent.GetType().FullName));
+            throw new NotSupportedException($"NodeEvent [{nodeEvent.GetType().FullName}] not supported");
         }
 
         public string GetDefaultTag(Type type)

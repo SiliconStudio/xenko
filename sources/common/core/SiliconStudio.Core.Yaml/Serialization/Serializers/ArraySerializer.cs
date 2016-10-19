@@ -75,7 +75,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
                     var node = reader.Peek<ParsingEvent>();
                     if (index >= arrayList.Count)
                     {
-                        throw new YamlException(node.Start, node.End, "Unable to deserialize array. Current number of elements [{0}] exceeding array size [{1}]".DoFormat(index, arrayList.Count));
+                        throw new YamlException(node.Start, node.End, $"Unable to deserialize array. Current number of elements [{index}] exceeding array size [{arrayList.Count}]");
                     }
 
                     // Handle aliasing
@@ -135,7 +135,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             }
             catch (Exception ex)
             {
-                throw new YamlException(node.Start, node.End, "Error while deserializing node [{0}]".DoFormat(node), ex);
+                throw new YamlException(node.Start, node.End, $"Error while deserializing node [{node}]", ex);
             }
         }
 

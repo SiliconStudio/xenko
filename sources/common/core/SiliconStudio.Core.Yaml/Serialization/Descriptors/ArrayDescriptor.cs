@@ -73,7 +73,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 
             if (type.GetArrayRank() != 1)
             {
-                throw new ArgumentException("Cannot support dimension [{0}] for type [{1}]. Only supporting dimension of 1".DoFormat(type.GetArrayRank(), type.FullName));
+                throw new ArgumentException($"Cannot support dimension [{type.GetArrayRank()}] for type [{type.FullName}]. Only supporting dimension of 1");
             }
 
             elementType = type.GetElementType();

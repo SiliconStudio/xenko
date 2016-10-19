@@ -148,7 +148,6 @@
     <Compile Include="Serialization\YamlVisitor.cs" />
     <Compile Include="SimpleKey.cs" />
     <Compile Include="SortedDictionary.cs" />
-    <Compile Include="StringExtensions.cs" />
     <Compile Include="StringLookAheadBuffer.cs" />
     <Compile Include="SyntaxErrorException.cs" />
     <Compile Include="TagDirectiveCollection.cs" />

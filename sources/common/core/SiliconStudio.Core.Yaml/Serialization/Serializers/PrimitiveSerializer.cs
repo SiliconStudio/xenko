@@ -117,7 +117,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
                 case TypeCode.Char:
                     if (text.Length != 1)
                     {
-                        throw new YamlException(scalar.Start, scalar.End, "Unable to decode char from [{0}]. Expecting a string of length == 1".DoFormat(text));
+                        throw new YamlException(scalar.Start, scalar.End, $"Unable to decode char from [{text}]. Expecting a string of length == 1");
                     }
                     return text.ToCharArray()[0];
                     break;
@@ -159,7 +159,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
                 return text;
             }
 
-            throw new YamlException(scalar.Start, scalar.End, "Unable to decode scalar [{0}] not supported by current schema".DoFormat(scalar));
+            throw new YamlException(scalar.Start, scalar.End, $"Unable to decode scalar [{scalar}] not supported by current schema");
         }
 
         /// <summary>
@@ -267,7 +267,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 
             if (text == null)
             {
-                throw new YamlException("Unable to serialize scalar [{0}] not supported".DoFormat(value));
+                throw new YamlException($"Unable to serialize scalar [{value}] not supported");
             }
 
             return text;
