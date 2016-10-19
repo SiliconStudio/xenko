@@ -26,11 +26,7 @@ namespace SiliconStudio.Presentation.Graph.Controls
     /// </summary>
     [TemplatePart(Name = "PART_inputItemsControl", Type = typeof(ItemsControl))]
     [TemplatePart(Name = "PART_outputItemsControl", Type = typeof(ItemsControl))]
-    [TemplatePart(Name = "PART_inputSlot", Type = typeof(DependencyObject))]        
-    [TemplatePart(Name = "PART_outputSlot", Type = typeof(DependencyObject))]        
-    [TemplatePart(Name = "PART_inputConnector", Type = typeof(DependencyObject))]
-    [TemplatePart(Name = "PART_outputConnector", Type = typeof(DependencyObject))]        
-    public class NodeVertexControl : VertexControl, INotifyPropertyChanged, ConnectorDropBehavior.IDropHandler
+    public class NodeVertexControl : VertexControl, INotifyPropertyChanged, ConnectorDropBehavior.IDropHandler, ActiveConnectorBehavior.IActiveConnectorHandler
     {
         #region Dependency Properties
         public static DependencyProperty InputSlotsProperty = DependencyProperty.Register("InputSlots", typeof(IEnumerable), typeof(NodeVertexControl), new PropertyMetadata(OnInputSlotsChanged));
@@ -57,8 +53,7 @@ namespace SiliconStudio.Presentation.Graph.Controls
         #endregion
 
         #region Members
-        private Dictionary<object, DependencyObject> input_connectors_ = new Dictionary<object, DependencyObject>();
-        private Dictionary<object, DependencyObject> output_connectors_ = new Dictionary<object, DependencyObject>();
+        private Dictionary<object, DependencyObject> connectors_ = new Dictionary<object, DependencyObject>();
         #endregion
 
         #region Static Dependency Property Event Handler
@@ -70,17 +65,7 @@ namespace SiliconStudio.Presentation.Graph.Controls
         private static void OnInputSlotsChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
             var control = (NodeVertexControl)obj;
-
-            var oldList = e.OldValue as INotifyCollectionChanged;
-            if (oldList != null) { oldList.CollectionChanged -= control.OnInputSlotsCollectionChanged; }
-
-            control.InputConnectors.Clear();
-
-            var newList = e.NewValue as INotifyCollectionChanged;
-            if (newList != null) { newList.CollectionChanged += control.OnInputSlotsCollectionChanged; }
-
             control.InputSlots = e.NewValue as IEnumerable;
-            control.PopulateInputSlots_();                       
         }
 
         /// <summary>
@@ -91,22 +76,12 @@ namespace SiliconStudio.Presentation.Graph.Controls
         private static void OnOutputSlotsChanged(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
             var control = (NodeVertexControl)obj;
-
-            var oldList = e.OldValue as INotifyCollectionChanged;
-            if (oldList != null) { oldList.CollectionChanged -= control.OnOutputSlotsCollectionChanged; }
-
-            control.OutputConnectors.Clear();
-
-            var newList = e.NewValue as INotifyCollectionChanged;
-            if (newList != null) { newList.CollectionChanged += control.OnOutputSlotsCollectionChanged; }
-
             control.OutputSlots = e.NewValue as IEnumerable;
-            control.PopulateOutputSlots_();
         }
         #endregion
 
         #region Members
-        public event PropertyChangedEventHandler PropertyChanged;   
+        public event PropertyChangedEventHandler PropertyChanged;
         #endregion
 
         #region Constructor
@@ -119,97 +94,35 @@ namespace SiliconStudio.Presentation.Graph.Controls
         public NodeVertexControl(object vertexData, bool tracePositionChange = true, bool bindToDataObject = true)
             : base(vertexData, tracePositionChange, bindToDataObject)
         {
-            this.Loaded += OnLoaded;
         }
         #endregion
 
         #region Event Handlers
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        public void OnLoaded(object sender, RoutedEventArgs e)
+        public void DisableDrag()
         {
-            if (Template != null)
-            {
-                // Retrieve all the input slot
-                PopulateInputSlots_();
-
-                // Retrieve all the output slot
-                PopulateOutputSlots_();                      
-            }
+            DragBehaviour.SetIsDragEnabled(this, false);
         }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnInputSlotsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        public void EnableDrag()
         {
-            // TODO Need to handle existing links that are still connected to removed slot
-
-            switch (e.Action)
-            {
-                case NotifyCollectionChangedAction.Add:
-                    foreach (var newItem in e.NewItems)
-                    {                       
-                        // TODO
-                    }                        
-                    break;
-                case NotifyCollectionChangedAction.Remove:
-                    foreach (var oldItem in e.OldItems)
-                    {
-                        // TODO
-                    }                        
-                    break;
-                case NotifyCollectionChangedAction.Replace:
-                    break;
-                case NotifyCollectionChangedAction.Move:
-                    break;
-                case NotifyCollectionChangedAction.Reset:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void OnOutputSlotsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-        {
-            // TODO Need to handle existing links that are still connected to removed slot
-
-            switch (e.Action)
-            {
-                case NotifyCollectionChangedAction.Add:
-                    foreach (var newItem in e.NewItems)
-                    {
-                        // TODO
-                    }
-                    break;
-                case NotifyCollectionChangedAction.Remove:
-                    foreach (var oldItem in e.OldItems)
-                    {
-                        // TODO
-                    }
-                    break;
-                case NotifyCollectionChangedAction.Replace:
-                    break;
-                case NotifyCollectionChangedAction.Move:
-                    break;
-                case NotifyCollectionChangedAction.Reset:
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
+            DragBehaviour.SetIsDragEnabled(this, true);
         }
         #endregion
-        
+
+        #region ActiveConnectorBehavior Handlers
+
+        void ActiveConnectorBehavior.IActiveConnectorHandler.OnAttached(FrameworkElement slot)
+        {
+            connectors_.Add(slot.DataContext, slot);
+        }
+
+        void ActiveConnectorBehavior.IActiveConnectorHandler.OnDetached(FrameworkElement slot)
+        {
+            connectors_.Remove(slot.DataContext);
+        }
+
+        #endregion
+
         #region ConnectorDropBehavior Drop Handlers
         /// <summary>
         /// On drag over event handling
@@ -248,83 +161,6 @@ namespace SiliconStudio.Presentation.Graph.Controls
         }
         #endregion
 
-        #region Protected Methods
-        /// <summary>
-        /// 
-        /// </summary>
-        protected void PopulateInputSlots_()
-        {
-            if (Template == null) { return; }
-
-            // Retrieve all the input slot
-            ItemsControl inputItemControl = Template.FindName("PART_inputItemsControl", this) as ItemsControl;
-            if (inputItemControl == null)
-            {
-                Debug.WriteLine("TODO");
-                return;
-            }
-
-            //
-            input_connectors_.Clear();
-
-            //
-            for (int i = 0; i < inputItemControl.Items.Count; ++i)
-            {
-                var item = inputItemControl.ItemContainerGenerator.ContainerFromIndex(i);
-                if (item != null)
-                {
-                    DependencyObject slot = UIHelper.FindChild<DependencyObject>(item, "PART_inputConnector");
-                    if (slot == null)
-                    {
-                        Debug.WriteLine("TODO");
-                        continue;
-                    }
-
-                    object key = inputItemControl.ItemsSource.Cast<object>().ElementAt(i);
-                    input_connectors_.Add(key, slot);
-                }
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        protected void PopulateOutputSlots_()
-        {
-            //
-            if (Template == null) { return; }
-
-            // Retrieve all the input slot
-            ItemsControl outputItemControl = Template.FindName("PART_outputItemsControl", this) as ItemsControl;
-            if (outputItemControl == null)
-            {
-                Debug.WriteLine("TODO");
-                return;
-            }
-
-            //
-            output_connectors_.Clear();
-
-            //
-            for (int i = 0; i < outputItemControl.Items.Count; ++i)
-            {
-                var item = outputItemControl.ItemContainerGenerator.ContainerFromIndex(i);
-                if (item != null)
-                {
-                    DependencyObject slot = UIHelper.FindChild<DependencyObject>(item, "PART_outputConnector");
-                    if (slot == null)
-                    {
-                        Debug.WriteLine("TODO");
-                        continue;
-                    }
-
-                    object key = outputItemControl.ItemsSource.Cast<object>().ElementAt(i);
-                    output_connectors_.Add(key, slot);
-                }
-            }
-        }
-        #endregion
-
         #region Properties
         public IEnumerable InputSlots { get { return (IEnumerable)GetValue(InputSlotsProperty); } set { SetValue(InputSlotsProperty, value); } }
         public IEnumerable OutputSlots { get { return (IEnumerable)GetValue(OutputSlotsProperty); } set { SetValue(OutputSlotsProperty, value); } }
@@ -348,8 +184,7 @@ namespace SiliconStudio.Presentation.Graph.Controls
         public Brush ConnectorFill { get { return (Brush)GetValue(ConnectorFillProperty); } set { SetValue(ConnectorFillProperty, value); } }
         public Brush MouseOverConnectorFill { get { return (Brush)GetValue(MouseOverConnectorFillProperty); } set { SetValue(MouseOverConnectorFillProperty, value); } }
 
-        public Dictionary<object, DependencyObject> InputConnectors { get { return input_connectors_; } }
-        public Dictionary<object, DependencyObject> OutputConnectors { get { return output_connectors_; } }
+        public Dictionary<object, DependencyObject> Connectors { get { return connectors_; } }
         #endregion
 
         #region Notify Property Changed Callbacks

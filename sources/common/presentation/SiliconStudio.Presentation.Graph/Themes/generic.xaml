@@ -51,25 +51,26 @@
                                 <ItemsControl Grid.Column="0" x:Name="PART_inputItemsControl" ItemsSource="{TemplateBinding InputSlots}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <Grid x:Name="PART_inputSlot">
+                                            <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto" />
                                                     <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
 
-                                                <Ellipse Grid.Column="0" x:Name="PART_inputConnector" DataContext="{Binding}" AllowDrop="True"
+                                                <Ellipse Grid.Column="0" x:Name="connector" DataContext="{Binding}" AllowDrop="True"
                                                              Stroke="{Binding ConnectorStroke, RelativeSource={RelativeSource AncestorType={x:Type ctrl:NodeVertexControl}}}" 
                                                              Fill="{Binding ConnectorFill, RelativeSource={RelativeSource AncestorType={x:Type ctrl:NodeVertexControl}}}"
                                                              VerticalAlignment="Center" HorizontalAlignment="Left" Width="15" Height="15">
                                                     <i:Interaction.Behaviors>
+                                                        <behavior:ActiveConnectorBehavior ActiveConnectorHandler="{Binding RelativeSource={RelativeSource AncestorType={x:Type ctrl:NodeVertexControl}}}" Slot="{Binding}" />
                                                         <behavior:ConnectorDropBehavior DropHandler="{Binding RelativeSource={RelativeSource AncestorType={x:Type ctrl:NodeVertexControl}}}" />
                                                     </i:Interaction.Behaviors>
                                                 </Ellipse>
                                                 <ContentPresenter Grid.Column="1" Content="{Binding}" Margin="2,0,10,0" VerticalAlignment="Center" HorizontalAlignment="Left"/>
                                             </Grid>
                                             <DataTemplate.Triggers>
-                                                <Trigger SourceName="PART_inputConnector" Property="IsMouseOver" Value="True">
-                                                    <Setter TargetName="PART_inputConnector" Property="Fill" Value="{Binding MouseOverConnectorFill, RelativeSource={RelativeSource AncestorType={x:Type ctrl:NodeVertexControl}}}" />
+                                                <Trigger SourceName="connector" Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="connector" Property="Fill" Value="{Binding MouseOverConnectorFill, RelativeSource={RelativeSource AncestorType={x:Type ctrl:NodeVertexControl}}}" />
                                                 </Trigger>
                                             </DataTemplate.Triggers>
                                         </DataTemplate>
@@ -79,25 +80,26 @@
                                 <ItemsControl Grid.Column="1" x:Name="PART_outputItemsControl" ItemsSource="{TemplateBinding OutputSlots}">
                                     <ItemsControl.ItemTemplate>
                                         <DataTemplate>
-                                            <Grid x:Name="PART_outputSlot">
+                                            <Grid>
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="*" MinWidth="50"/>
                                                     <ColumnDefinition Width="Auto" />
                                                 </Grid.ColumnDefinitions>
 
                                                 <ContentPresenter Grid.Column="0" Content="{Binding}" Margin="10,0,2,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                                                <Ellipse Grid.Column="1" x:Name="PART_outputConnector" DataContext="{Binding}" AllowDrop="True" 
+                                                <Ellipse Grid.Column="1" x:Name="connector" DataContext="{Binding}" AllowDrop="True" 
                                                              Stroke="{Binding ConnectorStroke, RelativeSource={RelativeSource AncestorType={x:Type ctrl:NodeVertexControl}}}" 
                                                              Fill="{Binding ConnectorFill, RelativeSource={RelativeSource AncestorType={x:Type ctrl:NodeVertexControl}}}"
                                                              VerticalAlignment="Center" HorizontalAlignment="Left" Width="15" Height="15">
                                                     <i:Interaction.Behaviors>
+                                                        <behavior:ActiveConnectorBehavior ActiveConnectorHandler="{Binding RelativeSource={RelativeSource AncestorType={x:Type ctrl:NodeVertexControl}}}" Slot="{Binding}" />
                                                         <behavior:ConnectorDragBehavior Node="{Binding Vertex, RelativeSource={RelativeSource AncestorType={x:Type ctrl:NodeVertexControl}}}" Slot="{Binding}"/>
                                                     </i:Interaction.Behaviors>
                                                 </Ellipse>
                                             </Grid>
                                             <DataTemplate.Triggers>
-                                                <Trigger SourceName="PART_outputConnector" Property="IsMouseOver" Value="True">
-                                                    <Setter TargetName="PART_outputConnector" Property="Fill" Value="{Binding MouseOverConnectorFill, RelativeSource={RelativeSource AncestorType={x:Type ctrl:NodeVertexControl}}}" />
+                                                <Trigger SourceName="connector" Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="connector" Property="Fill" Value="{Binding MouseOverConnectorFill, RelativeSource={RelativeSource AncestorType={x:Type ctrl:NodeVertexControl}}}" />
                                                 </Trigger>
                                             </DataTemplate.Triggers>
                                         </DataTemplate>

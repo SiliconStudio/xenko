@@ -129,7 +129,7 @@ namespace SiliconStudio.Presentation.Graph.Controls
 
             // Find the output slot 
             DependencyObject slot = null;
-            if (SourceSlot != null && (Source as NodeVertexControl).OutputConnectors.TryGetValue(SourceSlot, out slot))
+            if (SourceSlot != null && (Source as NodeVertexControl).Connectors.TryGetValue(SourceSlot, out slot))
             {
                 var container = VisualTreeHelper.GetChild(Source, 0) as UIElement;
                 var offset = (slot as UIElement).TransformToAncestor(container).Transform(new Point(0, 0));
@@ -142,7 +142,7 @@ namespace SiliconStudio.Presentation.Graph.Controls
             }
 
             // Find input slot
-            if (TargetSlot != null && (Target as NodeVertexControl).InputConnectors.TryGetValue(TargetSlot, out slot))
+            if (TargetSlot != null && (Target as NodeVertexControl).Connectors.TryGetValue(TargetSlot, out slot))
             {
                 var container = VisualTreeHelper.GetChild(Target, 0) as UIElement;
                 var offset = (slot as UIElement).TransformToAncestor(container).Transform(new Point(0, 0));

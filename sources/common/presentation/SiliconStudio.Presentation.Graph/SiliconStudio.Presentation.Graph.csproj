@@ -43,6 +43,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Behaviors\ActiveConnectorBehavior.cs" />
     <Compile Include="Behaviors\ConnectorDragBehavior.cs" />
     <Compile Include="Behaviors\ConnectorDropBehavior.cs" />
     <Compile Include="Behaviors\GraphSelectionBehavior.cs" />
