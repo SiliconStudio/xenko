@@ -196,7 +196,7 @@ namespace SiliconStudio.Core.Reflection
 
         public virtual void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
         {
-            Visit(value, member.TypeDescriptor);
+            Visit(value, (ITypeDescriptor)member.TypeDescriptor);
         }
 
         public virtual void VisitArray(Array array, ArrayDescriptor descriptor)

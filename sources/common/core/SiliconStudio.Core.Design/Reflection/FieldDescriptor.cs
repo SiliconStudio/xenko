@@ -17,13 +17,13 @@ namespace SiliconStudio.Core.Reflection
         /// Initializes a new instance of the <see cref="FieldDescriptor"/> class.
         /// </summary>
         /// <param name="fieldInfo">The property information.</param>
-        public FieldDescriptor(ITypeDescriptorFactory factory, FieldInfo fieldInfo)
+        public FieldDescriptor(ITypeDescriptor typeDescriptor, FieldInfo fieldInfo)
             : base(fieldInfo)
         {
             if (fieldInfo == null) throw new ArgumentNullException("fieldInfo");
 
             this.fieldInfo = fieldInfo;
-            this.TypeDescriptor = factory.Find(fieldInfo.FieldType);
+            this.TypeDescriptor = typeDescriptor;
         }
 
         /// <summary>

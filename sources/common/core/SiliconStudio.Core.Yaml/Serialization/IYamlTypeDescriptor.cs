@@ -50,7 +50,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
     /// <summary>
     /// Provides access members of a type.
     /// </summary>
-    public interface IYamlTypeDescriptor : ITypeDescriptorBase
+    public interface IYamlTypeDescriptor : ITypeDescriptor
     {
         /// <summary>
         /// Determines whether the named member is remmaped.

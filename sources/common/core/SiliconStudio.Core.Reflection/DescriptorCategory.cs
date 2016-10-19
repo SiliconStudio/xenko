@@ -3,7 +3,7 @@
 namespace SiliconStudio.Core.Reflection
 {
     /// <summary>
-    /// A category used by <see cref="ITypeDescriptor"/>.
+    /// A category used by <see cref="ITypeDescriptorBase"/>.
     /// </summary>
     public enum DescriptorCategory
     {

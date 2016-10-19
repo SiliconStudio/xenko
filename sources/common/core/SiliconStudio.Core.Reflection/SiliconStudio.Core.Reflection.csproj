@@ -30,7 +30,6 @@
     <Compile Include="IMemberDescriptor.cs" />
     <Compile Include="IMemberDescriptorBase.cs" />
     <Compile Include="ITypeDescriptor.cs" />
-    <Compile Include="ITypeDescriptorBase.cs" />
     <Compile Include="ITypeDescriptorFactory.cs" />
   </ItemGroup>
   <ItemGroup>

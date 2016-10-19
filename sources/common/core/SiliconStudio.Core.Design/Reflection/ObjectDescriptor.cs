@@ -114,14 +114,6 @@ namespace SiliconStudio.Core.Reflection
 
         protected IAttributeRegistry AttributeRegistry { get; private set; }
 
-        public ITypeDescriptorFactory Factory
-        {
-            get
-            {
-                return factory;
-            }
-        }
-
         public Type Type
         {
             get
@@ -193,7 +185,7 @@ namespace SiliconStudio.Core.Reflection
                                   propertyInfo.CanRead && propertyInfo.GetGetMethod(false) != null &&
                                   propertyInfo.GetIndexParameters().Length == 0 &&
                                   IsMemberToVisit(propertyInfo)
-                              select new PropertyDescriptor(Factory, propertyInfo)
+                              select new PropertyDescriptor(factory.Find(propertyInfo.PropertyType), propertyInfo)
                               into member
                               where PrepareMember(member)
                               select member).Cast<IMemberDescriptor>().ToList();
@@ -202,7 +194,7 @@ namespace SiliconStudio.Core.Reflection
             memberList.AddRange((from fieldInfo in type.GetFields(BindingFlags.Instance | BindingFlags.Public)
                                  where fieldInfo.IsPublic &&
                                   IsMemberToVisit(fieldInfo)
-                                 select new FieldDescriptor(Factory, fieldInfo)
+                                 select new FieldDescriptor(factory.Find(fieldInfo.FieldType), fieldInfo)
                                  into member
                                  where PrepareMember(member)
                                  select member));

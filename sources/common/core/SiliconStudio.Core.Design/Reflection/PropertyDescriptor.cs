@@ -18,10 +18,9 @@ namespace SiliconStudio.Core.Reflection
         /// <summary>
         /// Initializes a new instance of the <see cref="PropertyDescriptor" /> class.
         /// </summary>
-        /// <param name="factory">The factory.</param>
         /// <param name="propertyInfo">The property information.</param>
         /// <exception cref="System.ArgumentNullException">propertyInfo</exception>
-        public PropertyDescriptor(ITypeDescriptorFactory factory, PropertyInfo propertyInfo)
+        public PropertyDescriptor(ITypeDescriptor typeDescriptor, PropertyInfo propertyInfo)
             : base(propertyInfo)
         {
             if (propertyInfo == null) throw new ArgumentNullException("propertyInfo");
@@ -33,7 +32,7 @@ namespace SiliconStudio.Core.Reflection
             {
                 setMethod = propertyInfo.GetSetMethod(false);
             }
-            this.TypeDescriptor = factory.Find(propertyInfo.PropertyType);
+            this.TypeDescriptor = typeDescriptor;
         }
 
         /// <summary>
