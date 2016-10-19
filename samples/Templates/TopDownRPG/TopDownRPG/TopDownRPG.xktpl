@@ -5,7 +5,7 @@ Scope: Session
 Description: A top-down view RPG template.
 FullDescription: This template implements a top-down camera, event triggers via collision listeners and prefab entity instancing.
 Group: Templates
-Icon: ../../.xktpl/IconRPG.png
+Icon: ../../.xktpl/Icon2RPG.png
 DefaultOutputName: TopDownRPG
 Screenshots:
     - .xktpl/screenshot_small.jpg
