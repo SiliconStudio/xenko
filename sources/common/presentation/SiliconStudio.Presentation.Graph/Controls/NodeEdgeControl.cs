@@ -156,7 +156,7 @@ namespace SiliconStudio.Presentation.Graph.Controls
                 //bezier.Point3 = location + halfsize;   
             }
 
-            var length = bezier.Point3.X - figure.StartPoint.X;
+            var length = Math.Max(Math.Abs(bezier.Point3.X - figure.StartPoint.X), 120.0f);
             var curvature = length * 0.4;
 
             bezier.SetCurrentValue(BezierSegment.Point1Property, new Point(figure.StartPoint.X + curvature, figure.StartPoint.Y));
