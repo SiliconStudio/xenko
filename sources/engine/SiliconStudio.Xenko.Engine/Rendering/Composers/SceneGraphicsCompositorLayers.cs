@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         /// <userdoc>The list of cameras used in the graphic pipeline</userdoc>
         [DataMember(10)]
         [Category]
-        [NotNullItems]
+        [MemberCollection(NotNullItems = true)]
         public SceneCameraSlotCollection Cameras { get; private set; }
 
         protected override void InitializeCore()

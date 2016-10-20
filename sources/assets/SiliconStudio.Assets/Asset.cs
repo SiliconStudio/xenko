@@ -95,7 +95,7 @@ namespace SiliconStudio.Assets
         /// <value>The part assets.</value>
         [DataMember(int.MaxValue - 1000, BasePartsProperty), DefaultValue(null)]
         [Display(Browsable = false)]
-        [NotNullItems]
+        [MemberCollection(NotNullItems = true)]
         public List<AssetBase> BaseParts { get; set; }
 
         /// <summary>
@@ -121,7 +121,7 @@ namespace SiliconStudio.Assets
         /// </value>
         [DataMember(-900)]
         [Display(Browsable = false)]
-        [NotNullItems]
+        [MemberCollection(NotNullItems = true)]
         public TagCollection Tags { get; private set; }
 
         /// <summary>
