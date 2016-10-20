@@ -83,7 +83,6 @@
     <Compile Include="Serialization\Descriptors\YamlCollectionDescriptor.cs" />
     <Compile Include="Serialization\Descriptors\YamlDictionaryDescriptor.cs" />
     <Compile Include="Serialization\Descriptors\YamlFieldDescriptor.cs" />
-    <Compile Include="Serialization\Descriptors\YamlMemberDescriptorBase.cs" />
     <Compile Include="Serialization\Descriptors\YamlNullableDescriptor.cs" />
     <Compile Include="Serialization\Descriptors\YamlObjectDescriptor.cs" />
     <Compile Include="Serialization\Descriptors\YamlPrimitiveDescriptor.cs" />

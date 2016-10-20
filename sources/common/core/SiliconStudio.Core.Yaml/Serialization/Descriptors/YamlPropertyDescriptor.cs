@@ -53,25 +53,19 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
     /// <summary>
     /// A <see cref="IYamlMemberDescriptor"/> for a <see cref="PropertyInfo"/>
     /// </summary>
-    public class YamlPropertyDescriptor : YamlMemberDescriptorBase
+    public class YamlPropertyDescriptor : MemberDescriptorBase, IYamlMemberDescriptor
     {
-        private readonly PropertyInfo propertyInfo;
         private readonly MethodInfo getMethod;
         private readonly MethodInfo setMethod;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="YamlPropertyDescriptor" /> class.
-        /// </summary>
-        /// <param name="propertyInfo">The property information.</param>
-        /// <param name="defaultNameComparer">The default name comparer.</param>
-        /// <exception cref="System.ArgumentNullException">propertyInfo</exception>
         public YamlPropertyDescriptor(ITypeDescriptor typeDescriptor, PropertyInfo propertyInfo, StringComparer defaultNameComparer)
-            : base(typeDescriptor, propertyInfo, defaultNameComparer)
+            : base(propertyInfo, defaultNameComparer)
         {
             if (propertyInfo == null)
-                throw new ArgumentNullException("propertyInfo");
+                throw new ArgumentNullException(nameof(propertyInfo));
 
-            this.propertyInfo = propertyInfo;
+            PropertyInfo = propertyInfo;
+            TypeDescriptor = typeDescriptor;
 
             getMethod = propertyInfo.GetGetMethod(true);
             if (propertyInfo.CanWrite && propertyInfo.GetSetMethod(!IsPublic) != null)
@@ -84,9 +78,17 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// Gets the property information attached to this instance.
         /// </summary>
         /// <value>The property information.</value>
-        public PropertyInfo PropertyInfo { get { return propertyInfo; } }
+        public PropertyInfo PropertyInfo { get; }
 
-        public override Type Type { get { return propertyInfo.PropertyType; } }
+        public override Type Type => PropertyInfo.PropertyType;
+
+        public override bool HasSet => setMethod != null;
+
+        public sealed override bool IsPublic => getMethod.IsPublic;
+
+        public uint Mask { get; set; }
+
+        public DataStyle Style { get; set; }
 
         public override object Get(object thisObject)
         {
@@ -99,13 +101,9 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
                 setMethod.Invoke(thisObject, new[] {value});
         }
 
-        public override bool HasSet { get { return setMethod != null; } }
-
-        public override bool IsPublic { get { return getMethod.IsPublic; } }
-
         public override IEnumerable<T> GetCustomAttributes<T>(bool inherit)
         {
-            return propertyInfo.GetCustomAttributes<T>(inherit);
+            return PropertyInfo.GetCustomAttributes<T>(inherit);
         }
 
         /// <summary>
@@ -114,7 +112,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         public override string ToString()
         {
-            return string.Format("Property [{0}] from Type [{1}]", OriginalName, PropertyInfo.DeclaringType != null ? PropertyInfo.DeclaringType.FullName : string.Empty);
+            return $"Property [{OriginalName}] from Type [{(PropertyInfo.DeclaringType != null ? PropertyInfo.DeclaringType.FullName : string.Empty)}]";
         }
     }
 }

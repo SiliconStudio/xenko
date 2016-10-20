@@ -11,62 +11,40 @@ namespace SiliconStudio.Core.Reflection
     /// </summary>
     public class FieldDescriptor : MemberDescriptorBase
     {
-        private readonly FieldInfo fieldInfo;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="FieldDescriptor"/> class.
-        /// </summary>
-        /// <param name="fieldInfo">The property information.</param>
-        public FieldDescriptor(ITypeDescriptor typeDescriptor, FieldInfo fieldInfo)
-            : base(fieldInfo)
+        public FieldDescriptor(ITypeDescriptor typeDescriptor, FieldInfo fieldInfo, StringComparer defaultNameComparer)
+            : base(fieldInfo, defaultNameComparer)
         {
-            if (fieldInfo == null) throw new ArgumentNullException("fieldInfo");
+            if (fieldInfo == null) throw new ArgumentNullException(nameof(fieldInfo));
 
-            this.fieldInfo = fieldInfo;
-            this.TypeDescriptor = typeDescriptor;
+            FieldInfo = fieldInfo;
+            TypeDescriptor = typeDescriptor;
         }
 
         /// <summary>
         /// Gets the property information attached to this instance.
         /// </summary>
         /// <value>The property information.</value>
-        public FieldInfo FieldInfo
-        {
-            get
-            {
-                return fieldInfo;
-            }
-        }
+        public FieldInfo FieldInfo { get; }
 
-        public override Type Type
-        {
-            get
-            {
-                return fieldInfo.FieldType;
-            }
-        }
+        public override Type Type => FieldInfo.FieldType;
+
+        public override bool IsPublic => FieldInfo.IsPublic;
+
+        public override bool HasSet => true;
 
         public override object Get(object thisObject)
         {
-            return fieldInfo.GetValue(thisObject);
+            return FieldInfo.GetValue(thisObject);
         }
 
         public override void Set(object thisObject, object value)
         {
-            fieldInfo.SetValue(thisObject, value);
+            FieldInfo.SetValue(thisObject, value);
         }
 
         public override IEnumerable<T> GetCustomAttributes<T>(bool inherit)
         {
-            return fieldInfo.GetCustomAttributes<T>(inherit);
-        }
-
-        public override bool HasSet
-        {
-            get
-            {
-                return true;
-            }
+            return FieldInfo.GetCustomAttributes<T>(inherit);
         }
 
         /// <summary>
@@ -75,7 +53,7 @@ namespace SiliconStudio.Core.Reflection
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         public override string ToString()
         {
-            return string.Format("Field [{0}] from Type [{1}]", Name, FieldInfo.DeclaringType != null ? FieldInfo.DeclaringType.FullName : string.Empty);
+            return $"Field [{Name}] from Type [{(FieldInfo.DeclaringType != null ? FieldInfo.DeclaringType.FullName : string.Empty)}]";
         }
     }
 }

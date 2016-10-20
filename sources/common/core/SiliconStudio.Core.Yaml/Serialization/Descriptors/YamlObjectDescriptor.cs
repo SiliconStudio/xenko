@@ -181,7 +181,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             return memberList;
         }
 
-        protected virtual bool PrepareMember(YamlMemberDescriptorBase member)
+        protected virtual bool PrepareMember(MemberDescriptorBase member)
         {
             var memberType = member.Type;
 
@@ -259,13 +259,13 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             }
 
             // Gets the style
-            member.Style = styleAttribute?.Style ?? DataStyle.Any;
-            member.Mask = 1;
+            ((IYamlMemberDescriptor)member).Style = styleAttribute?.Style ?? DataStyle.Any;
+            ((IYamlMemberDescriptor)member).Mask = 1;
 
             // Handle member attribute
             if (memberAttribute != null)
             {
-                member.Mask = memberAttribute.Mask;
+                ((IYamlMemberDescriptor)member).Mask = memberAttribute.Mask;
                 if (!member.HasSet)
                 {
                     if (memberAttribute.Mode == DataMemberMode.Assign ||

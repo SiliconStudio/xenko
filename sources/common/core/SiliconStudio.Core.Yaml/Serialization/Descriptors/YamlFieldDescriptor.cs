@@ -53,10 +53,8 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
     /// <summary>
     /// A <see cref="IYamlMemberDescriptor"/> for a <see cref="FieldInfo"/>
     /// </summary>
-    public class YamlFieldDescriptor : YamlMemberDescriptorBase
+    public class YamlFieldDescriptor : MemberDescriptorBase, IYamlMemberDescriptor
     {
-        private readonly FieldInfo fieldInfo;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="YamlFieldDescriptor" /> class.
         /// </summary>
@@ -65,39 +63,44 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// <param name="defaultNameComparer">The default name comparer.</param>
         /// <exception cref="System.ArgumentNullException">fieldInfo</exception>
         public YamlFieldDescriptor(ITypeDescriptor typeDescriptor, FieldInfo fieldInfo, StringComparer defaultNameComparer)
-            : base(typeDescriptor, fieldInfo, defaultNameComparer)
+            : base(fieldInfo, defaultNameComparer)
         {
             if (fieldInfo == null)
-                throw new ArgumentNullException("fieldInfo");
+                throw new ArgumentNullException(nameof(fieldInfo));
 
-            this.fieldInfo = fieldInfo;
+            FieldInfo = fieldInfo;
+            TypeDescriptor = typeDescriptor;
         }
 
         /// <summary>
         /// Gets the property information attached to this instance.
         /// </summary>
         /// <value>The property information.</value>
-        public FieldInfo FieldInfo { get { return fieldInfo; } }
+        public FieldInfo FieldInfo { get; }
 
-        public override Type Type { get { return fieldInfo.FieldType; } }
+        public override Type Type => FieldInfo.FieldType;
+
+        public override bool HasSet => true;
+
+        public override bool IsPublic => FieldInfo.IsPublic;
+
+        public uint Mask { get; set; }
+
+        public DataStyle Style { get; set; }
 
         public override object Get(object thisObject)
         {
-            return fieldInfo.GetValue(thisObject);
+            return FieldInfo.GetValue(thisObject);
         }
 
         public override void Set(object thisObject, object value)
         {
-            fieldInfo.SetValue(thisObject, value);
+            FieldInfo.SetValue(thisObject, value);
         }
-
-        public override bool HasSet { get { return true; } }
-
-        public override bool IsPublic { get { return fieldInfo.IsPublic; } }
 
         public override IEnumerable<T> GetCustomAttributes<T>(bool inherit)
         {
-            return fieldInfo.GetCustomAttributes<T>(inherit);
+            return FieldInfo.GetCustomAttributes<T>(inherit);
         }
 
         /// <summary>
@@ -106,7 +109,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         public override string ToString()
         {
-            return string.Format("Field [{0}] from Type [{1}]", OriginalName, FieldInfo.DeclaringType != null ? FieldInfo.DeclaringType.FullName : string.Empty);
+            return $"Field [{OriginalName}] from Type [{(FieldInfo.DeclaringType != null ? FieldInfo.DeclaringType.FullName : string.Empty)}]";
         }
     }
 }

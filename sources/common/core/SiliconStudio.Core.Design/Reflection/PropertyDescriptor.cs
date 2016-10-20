@@ -11,49 +11,35 @@ namespace SiliconStudio.Core.Reflection
     /// </summary>
     public class PropertyDescriptor : MemberDescriptorBase
     {
-        private readonly PropertyInfo propertyInfo;
         private readonly MethodInfo getMethod;
         private readonly MethodInfo setMethod;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PropertyDescriptor" /> class.
-        /// </summary>
-        /// <param name="propertyInfo">The property information.</param>
-        /// <exception cref="System.ArgumentNullException">propertyInfo</exception>
-        public PropertyDescriptor(ITypeDescriptor typeDescriptor, PropertyInfo propertyInfo)
-            : base(propertyInfo)
+        public PropertyDescriptor(ITypeDescriptor typeDescriptor, PropertyInfo propertyInfo, StringComparer defaultNameComparer)
+            : base(propertyInfo, defaultNameComparer)
         {
-            if (propertyInfo == null) throw new ArgumentNullException("propertyInfo");
+            if (propertyInfo == null) throw new ArgumentNullException(nameof(propertyInfo));
 
-            this.propertyInfo = propertyInfo;
+            PropertyInfo = propertyInfo;
 
             getMethod = propertyInfo.GetGetMethod(false);
             if (propertyInfo.CanWrite && propertyInfo.GetSetMethod(false) != null)
             {
                 setMethod = propertyInfo.GetSetMethod(false);
             }
-            this.TypeDescriptor = typeDescriptor;
+            TypeDescriptor = typeDescriptor;
         }
 
         /// <summary>
         /// Gets the property information attached to this instance.
         /// </summary>
         /// <value>The property information.</value>
-        public PropertyInfo PropertyInfo
-        {
-            get
-            {
-                return propertyInfo;
-            }
-        }
+        public PropertyInfo PropertyInfo { get; }
 
-        public override Type Type
-        {
-            get
-            {
-                return propertyInfo.PropertyType;
-            }
-        }
+        public override Type Type => PropertyInfo.PropertyType;
+
+        public override bool IsPublic => getMethod.IsPublic;
+
+        public override bool HasSet => setMethod != null;
 
         public override object Get(object thisObject)
         {
@@ -68,15 +54,7 @@ namespace SiliconStudio.Core.Reflection
 
         public override IEnumerable<T> GetCustomAttributes<T>(bool inherit)
         {
-            return propertyInfo.GetCustomAttributes<T>(inherit);
-        }
-
-        public override bool HasSet
-        {
-            get
-            {
-                return setMethod != null;
-            }
+            return PropertyInfo.GetCustomAttributes<T>(inherit);
         }
 
         /// <summary>

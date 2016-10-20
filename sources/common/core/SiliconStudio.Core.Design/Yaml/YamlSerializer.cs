@@ -410,8 +410,8 @@ namespace SiliconStudio.Core.Yaml
                     }
 
                     // try to order by class hierarchy + token (same as declaration order)
-                    var leftMember = (x as YamlMemberDescriptorBase)?.MemberInfo;
-                    var rightMember = (y as YamlMemberDescriptorBase)?.MemberInfo;
+                    var leftMember = (x as MemberDescriptorBase)?.MemberInfo;
+                    var rightMember = (y as MemberDescriptorBase)?.MemberInfo;
                     if (leftMember != null || rightMember != null)
                     {
                         var comparison = leftMember.CompareMetadataTokenWith(rightMember);

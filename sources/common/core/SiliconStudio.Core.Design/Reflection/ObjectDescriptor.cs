@@ -69,7 +69,7 @@ namespace SiliconStudio.Core.Reflection
                                   propertyInfo.CanRead && propertyInfo.GetGetMethod(false) != null &&
                                   propertyInfo.GetIndexParameters().Length == 0 &&
                                   IsMemberToVisit(propertyInfo)
-                              select new PropertyDescriptor(factory.Find(propertyInfo.PropertyType), propertyInfo)
+                              select new PropertyDescriptor(factory.Find(propertyInfo.PropertyType), propertyInfo, StringComparer.Ordinal)
                               into member
                               where PrepareMember(member)
                               select member).Cast<IMemberDescriptor>().ToList();
@@ -78,7 +78,7 @@ namespace SiliconStudio.Core.Reflection
             memberList.AddRange((from fieldInfo in Type.GetFields(BindingFlags.Instance | BindingFlags.Public)
                                  where fieldInfo.IsPublic &&
                                   IsMemberToVisit(fieldInfo)
-                                 select new FieldDescriptor(factory.Find(fieldInfo.FieldType), fieldInfo)
+                                 select new FieldDescriptor(factory.Find(fieldInfo.FieldType), fieldInfo, StringComparer.Ordinal)
                                  into member
                                  where PrepareMember(member)
                                  select member));

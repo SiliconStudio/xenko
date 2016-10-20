@@ -213,7 +213,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             return dictionary.Select(keyValue => new KeyValuePair<object, object>(keyValue.Key, keyValue.Value));
         }
 
-        protected override bool PrepareMember(YamlMemberDescriptorBase member)
+        protected override bool PrepareMember(MemberDescriptorBase member)
         {
             // Filter members
             if (member is YamlPropertyDescriptor && ListOfMembersToRemove.Contains(member.OriginalName))

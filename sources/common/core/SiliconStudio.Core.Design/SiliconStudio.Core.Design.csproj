@@ -70,7 +70,6 @@
     <Compile Include="Reflection\IDataVisitor.cs" />
     <Compile Include="Reflection\MemberDescriptorExtensions.cs" />
     <Compile Include="Reflection\MemberPathAction.cs" />
-    <Compile Include="Reflection\MemberDescriptorBase.cs" />
     <Compile Include="Reflection\MemberPathExtensions.cs" />
     <Compile Include="Reflection\MemberPathNode.cs" />
     <Compile Include="Reflection\NullableDescriptor.cs" />

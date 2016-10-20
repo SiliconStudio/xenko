@@ -11,25 +11,34 @@ namespace SiliconStudio.Core.Reflection
     /// </summary>
     public abstract class MemberDescriptorBase : IMemberDescriptor
     {
+        private MemberInfo memberInfo;
+        private StringComparer defaultNameComparer;
+
         protected MemberDescriptorBase(string name)
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
 
             Name = name;
+            OriginalName = name;
         }
 
-        protected MemberDescriptorBase(MemberInfo memberInfo)
+        protected MemberDescriptorBase(MemberInfo memberInfo, StringComparer defaultNameComparer)
         {
             if (memberInfo == null) throw new ArgumentNullException(nameof(memberInfo));
 
             MemberInfo = memberInfo;
             Name = MemberInfo.Name;
             DeclaringType = memberInfo.DeclaringType;
+            DefaultNameComparer = defaultNameComparer;
         }
 
-        public string Name { get; internal set; }
+        // TODO: turn the public setters internal or protected
+
+        public string Name { get; set; }
+        public string OriginalName { get; }
+        public StringComparer DefaultNameComparer { get; }
         public abstract Type Type { get; }
-        public int? Order { get; internal set; }
+        public int? Order { get; set; }
 
         /// <summary>
         /// Gets the type of the declaring this member.
@@ -37,19 +46,28 @@ namespace SiliconStudio.Core.Reflection
         /// <value>The type of the declaring.</value>
         public Type DeclaringType { get; }
 
-        public ITypeDescriptor TypeDescriptor { get; protected set; }
+        public ITypeDescriptor TypeDescriptor { get; set; }
 
-        public DataMemberMode Mode { get; internal set; }
+        public DataMemberMode Mode { get; set; }
         public abstract object Get(object thisObject);
         public abstract void Set(object thisObject, object value);
+        /// <summary>
+        /// Gets whether this member has a public getter.
+        /// </summary>
+        public abstract bool IsPublic { get; }
         public abstract bool HasSet { get; }
         public abstract IEnumerable<T> GetCustomAttributes<T>(bool inherit) where T : Attribute;
-        public DataStyle Style { get; internal set; }
 
         /// <summary>
         /// Gets the member information.
         /// </summary>
         /// <value>The member information.</value>
         public MemberInfo MemberInfo { get; }
+
+        public Func<object, bool> ShouldSerialize { get; set; }
+
+        public List<string> AlternativeNames { get; set; }
+
+        public object Tag { get; set; }
     }
 }

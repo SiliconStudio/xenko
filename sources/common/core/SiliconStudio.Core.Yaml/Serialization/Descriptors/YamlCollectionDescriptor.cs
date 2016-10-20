@@ -337,7 +337,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         }
 
         /// <inheritdoc/>
-        protected override bool PrepareMember(YamlMemberDescriptorBase member)
+        protected override bool PrepareMember(MemberDescriptorBase member)
         {
             // Filter members
             if (member is YamlPropertyDescriptor && ListOfMembersToRemove.Contains(member.OriginalName))

@@ -15,6 +15,18 @@ namespace SiliconStudio.Core.Reflection
         string Name { get; }
 
         /// <summary>
+        /// Gets the name.
+        /// </summary>
+        /// <value>The name.</value>
+        string OriginalName { get; }
+
+        /// <summary>
+        /// Gets the default name comparer.
+        /// </summary>
+        /// <value>The default name comparer.</value>
+        StringComparer DefaultNameComparer { get; }
+
+        /// <summary>
         /// Gets the type of the member.
         /// </summary>
         /// <value>The type.</value>
@@ -60,17 +72,31 @@ namespace SiliconStudio.Core.Reflection
         void Set(object thisObject, object value);
 
         /// <summary>
-        /// Gets a value indicating whether this instance has set method.
+        /// Gets a value indicating whether this member is public.
         /// </summary>
-        /// <value><c>true</c> if this instance has set method; otherwise, <c>false</c>.</value>
-        bool HasSet { get; }
+        bool IsPublic { get; }
 
         /// <summary>
-        /// Gets the custom attributes.
+        /// Gets a value indicating whether this instance has set method.
         /// </summary>
-        /// <typeparam name="T"></typeparam>
-        /// <param name="inherit">if set to <c>true</c> [inherited].</param>
-        /// <returns></returns>
+        bool HasSet { get; }
+
         IEnumerable<T> GetCustomAttributes<T>(bool inherit) where T : Attribute;
+
+
+        /// <summary>
+        /// Gets a value indicating whether this member should be serialized.
+        /// </summary>
+        Func<object, bool> ShouldSerialize { get; }
+
+        /// <summary>
+        /// Gets the alternative names that will map back to this member (may be null).
+        /// </summary>
+        List<string> AlternativeNames { get; }
+
+        /// <summary>
+        /// Gets or sets a custom tag to associate with this object.
+        /// </summary>
+        object Tag { get; set; }
     }
 }

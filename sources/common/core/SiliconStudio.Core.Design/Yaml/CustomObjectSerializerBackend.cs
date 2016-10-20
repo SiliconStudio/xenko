@@ -28,7 +28,7 @@ namespace SiliconStudio.Core.Yaml
         {
             var memberObjectContext = new ObjectContext(objectContext.SerializerContext, memberValue, objectContext.SerializerContext.FindTypeDescriptor(memberType));
 
-            var member = memberDescriptor as Serialization.Descriptors.YamlMemberDescriptorBase;
+            var member = memberDescriptor as MemberDescriptorBase;
             if (member != null && objectContext.Settings.Attributes.GetAttribute<NonIdentifiableCollectionItemsAttribute>(member.MemberInfo) != null)
             {
                 memberObjectContext.Properties.Add(NonIdentifiableCollectionItemsAttribute.Key, true);
@@ -41,7 +41,7 @@ namespace SiliconStudio.Core.Yaml
         {
             var memberObjectContext = new ObjectContext(objectContext.SerializerContext, memberValue, objectContext.SerializerContext.FindTypeDescriptor(memberType));
 
-            var member = memberDescriptor as Serialization.Descriptors.YamlMemberDescriptorBase;
+            var member = memberDescriptor as MemberDescriptorBase;
             if (member != null && objectContext.Settings.Attributes.GetAttribute<NonIdentifiableCollectionItemsAttribute>(member.MemberInfo) != null)
             {
                 memberObjectContext.Properties.Add(NonIdentifiableCollectionItemsAttribute.Key, true);
