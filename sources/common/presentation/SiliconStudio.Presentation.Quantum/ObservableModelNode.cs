@@ -365,7 +365,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         protected void Refresh()
         {
-            if (Parent == null) throw new InvalidOperationException("The node to refresh can't be a root node.");
+            //if (Parent == null) throw new InvalidOperationException("The node to refresh can't be a root node.");
             
             OnPropertyChanging(nameof(IsPrimitive), nameof(HasList), nameof(HasDictionary));
 

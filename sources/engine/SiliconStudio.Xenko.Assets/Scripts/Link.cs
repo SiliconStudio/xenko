@@ -41,6 +41,13 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             Target = target.InputExecution;
         }
 
+        /// <summary>
+        /// The function that contains this link.
+        /// </summary>
+        [DataMemberIgnore]
+        public Function Function { get; internal set; }
+
+
         [DataMember(-100), Display(Browsable = false)]
         public Guid Id { get; set; }
 

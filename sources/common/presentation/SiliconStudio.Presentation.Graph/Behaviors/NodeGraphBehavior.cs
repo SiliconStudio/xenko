@@ -73,7 +73,6 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
             var newList = e.NewValue as INotifyCollectionChanged;
             if (newList != null) { newList.CollectionChanged += behavior.OnVerticesCollectionChanged; }
 
-            behavior.Vertices = e.NewValue as IEnumerable;
             behavior.RecreateGraph(behavior);
             behavior.RelayoutGraph();
         }
@@ -93,7 +92,6 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
             var newList = e.NewValue as INotifyCollectionChanged;
             if (newList != null) { newList.CollectionChanged += behavior.OnEdgesCollectionChanged; }
 
-            behavior.Edges = e.NewValue as IEnumerable;
             behavior.RecreateGraph(behavior);
             behavior.RelayoutGraph();
         }
@@ -243,27 +241,22 @@ namespace SiliconStudio.Presentation.Graph.Behaviors
         private void RecreateGraph(NodeGraphBehavior behavior)
         {
             // Disconnect all controls
-            foreach (NodeVertex node in behavior.Vertices)
+            foreach (var node in AssociatedObject.VertexList)
             {
                 // Disconnect control
-                VertexControl vertexControl;
-                if (AssociatedObject.VertexList.TryGetValue(node, out vertexControl))
-                    node.DisconnectControl(vertexControl);
+                node.Key.DisconnectControl(node.Value);
             }
 
             // Loop through all the root nodes and add them
             behavior.graph.Clear();
             AssociatedObject.RemoveAllEdges();
             AssociatedObject.RemoveAllVertices();
-            if (behavior.Vertices != null)
+            if (behavior.Vertices != null && behavior.Edges != null)
             {
                 foreach (var item in behavior.Vertices)
                 {
                     AddNode(item as NodeVertex);
                 }
-            }
-            if (behavior.Edges != null)
-            {
                 foreach (var item in behavior.Edges)
                 {
                     AddEdge(item as NodeEdge);

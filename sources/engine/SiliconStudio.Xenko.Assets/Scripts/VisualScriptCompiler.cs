@@ -30,6 +30,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
     public class VisualScriptCompilerContext
     {
         private readonly VisualScriptAsset asset;
+        private readonly Function function;
 
         // Store execution connectivity information
         private readonly Dictionary<ExecutionBlock, List<ExecutionBlock>> executionOutputs = new Dictionary<ExecutionBlock, List<ExecutionBlock>>();
@@ -61,10 +62,11 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         public bool IsInsideLoop { get; set; }
 
-        internal VisualScriptCompilerContext(VisualScriptAsset asset, Logger log)
+        internal VisualScriptCompilerContext(VisualScriptAsset asset, Function function, Logger log)
         {
             // Create first block
             this.asset = asset;
+            this.function = function;
             Log = log;
         }
 
@@ -72,7 +74,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         {
             if (executionSlot != null)
             {
-                var nextExecutionLink = asset.Links.FirstOrDefault(x => x.Source == executionSlot && x.Target != null);
+                var nextExecutionLink = function.Links.FirstOrDefault(x => x.Source == executionSlot && x.Target != null);
                 if (nextExecutionLink != null)
                 {
                     return GetOrCreateBasicBlock((ExecutionBlock)nextExecutionLink.Target.Owner);
@@ -84,12 +86,12 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
         public IEnumerable<Link> FindOutputLinks(Slot outputSlot)
         {
-            return asset.Links.Where(x => x.Source == outputSlot && x.Target != null);
+            return function.Links.Where(x => x.Source == outputSlot && x.Target != null);
         }
 
         public Link FindInputLink(Slot inputSlot)
         {
-            return asset.Links.FirstOrDefault(x => x.Target == inputSlot && x.Source != null);
+            return function.Links.FirstOrDefault(x => x.Target == inputSlot && x.Source != null);
         }
 
         public ExpressionSyntax GenerateExpression(Slot slot)
@@ -98,7 +100,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             if (slot != null)
             {
                 // 1. First check if there is a link and use its expression
-                var sourceLink = asset.Links.FirstOrDefault(x => x.Target == slot);
+                var sourceLink = function.Links.FirstOrDefault(x => x.Target == slot);
                 if (sourceLink != null)
                 {
                     ExpressionSyntax expression;
@@ -177,7 +179,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         {
             if (executionSlot != null)
             {
-                var nextExecutionLink = asset.Links.FirstOrDefault(x => x.Source == executionSlot && x.Target != null);
+                var nextExecutionLink = function.Links.FirstOrDefault(x => x.Source == executionSlot && x.Target != null);
                 if (nextExecutionLink != null)
                 {
                     return ProcessInnerLoop((ExecutionBlock)nextExecutionLink.Target.Owner);
@@ -317,7 +319,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
                 var nextExecutionSlot = currentBlock.Slots.FirstOrDefault(x => x.Kind == SlotKind.Execution && x.Direction == SlotDirection.Output && x.Flags == SlotFlags.AutoflowExecution);
                 if (nextExecutionSlot != null)
                 {
-                    var nextExecutionLink = asset.Links.FirstOrDefault(x => x.Source == nextExecutionSlot && x.Target != null);
+                    var nextExecutionLink = function.Links.FirstOrDefault(x => x.Source == nextExecutionSlot && x.Target != null);
                     if (nextExecutionLink == null)
                     {
                         // Nothing connected, no need to generate a goto to an empty return
@@ -372,7 +374,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
         private void BuildGlobalConnectivityCache()
         {
             // Collect execution connectivity information from links
-            foreach (var link in asset.Links)
+            foreach (var link in function.Links)
             {
                 if (link.Source.Kind == SlotKind.Execution)
                 {
@@ -520,19 +522,26 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             }
 
             // Process each function
-            foreach (var functionStartBlock in visualScriptAsset.Blocks.OfType<FunctionStartBlock>())
+            foreach (var function in visualScriptAsset.Functions)
             {
-                var context = new VisualScriptCompilerContext(visualScriptAsset, result);
+                var functionStartBlock = function.Blocks.OfType<FunctionStartBlock>().FirstOrDefault();
+                if (functionStartBlock == null)
+                    continue;
+
+                var context = new VisualScriptCompilerContext(visualScriptAsset, function, result);
 
                 context.ProcessEntryBlock(functionStartBlock);
+
+                var methodAccessibility = ConvertAccessibility(function.Accessibility);
+                if (function.IsStatic)
+                    methodAccessibility = methodAccessibility.Add(Token(SyntaxKind.StaticKeyword));
 
                 // Generate method
                 var method =
                     MethodDeclaration(
-                        PredefinedType(
-                            Token(SyntaxKind.VoidKeyword)),
+                        ParseTypeName(function.ReturnType),
                         Identifier(functionStartBlock.FunctionName))
-                    .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword)))
+                    .WithModifiers(methodAccessibility)
                     .WithBody(
                         Block(context.Blocks.SelectMany(x => x.Statements)));
 
@@ -540,10 +549,14 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             }
 
             // Generate class
+            var classAccessibility = ConvertAccessibility(visualScriptAsset.Accessibility).Add(Token(SyntaxKind.PartialKeyword));
+            if (visualScriptAsset.IsStatic)
+                classAccessibility = classAccessibility.Add(Token(SyntaxKind.StaticKeyword));
+
             var @class =
                 ClassDeclaration(className)
                 .WithMembers(List(members))
-                .WithModifiers(TokenList(Token(SyntaxKind.PublicKeyword), Token(SyntaxKind.PartialKeyword)));
+                .WithModifiers(classAccessibility);
 
             if (options.BaseClass != null)
                 @class = @class.WithBaseList(BaseList(SingletonSeparatedList<BaseTypeSyntax>(SimpleBaseType(IdentifierName(options.BaseClass)))));
@@ -575,6 +588,25 @@ namespace SiliconStudio.Xenko.Assets.Scripts
             result.SyntaxTree = SyntaxTree(compilationUnit);
 
             return result;
+        }
+
+        private static SyntaxTokenList ConvertAccessibility(Accessibility accessibity)
+        {
+            switch (accessibity)
+            {
+                case Accessibility.Public:
+                    return TokenList(Token(SyntaxKind.PublicKeyword));
+                case Accessibility.Private:
+                    return TokenList(Token(SyntaxKind.PrivateKeyword));
+                case Accessibility.Protected:
+                    return TokenList(Token(SyntaxKind.ProtectedKeyword));
+                case Accessibility.Internal:
+                    return TokenList(Token(SyntaxKind.InternalKeyword));
+                case Accessibility.ProtectedOrInternal:
+                    return TokenList(Token(SyntaxKind.ProtectedKeyword), Token(SyntaxKind.InternalKeyword));
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(accessibity), accessibity, null);
+            }
         }
     }
 }

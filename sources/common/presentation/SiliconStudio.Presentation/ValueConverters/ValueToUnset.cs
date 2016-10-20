@@ -6,15 +6,15 @@ using System.Windows;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
-    public class FormatString : OneWayValueConverter<FormatString>
+    /// <summary>
+    /// This converter will convert a specific value to a <see cref="DependencyProperty.UnsetValue"/>.
+    /// </summary>
+    public class ValueToUnset : OneWayValueConverter<ValueToUnset>
     {
+        /// <inheritdoc/>
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value == DependencyProperty.UnsetValue)
-                return value;
-
-            var format = parameter as string;
-            return string.Format(format ?? "{0}", value);
+            return Equals(value, parameter) ? DependencyProperty.UnsetValue : value;
         }
     }
 }
