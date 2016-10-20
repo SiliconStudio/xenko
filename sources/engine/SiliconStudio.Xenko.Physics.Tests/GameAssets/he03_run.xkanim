@@ -1,0 +1,10 @@
+!Animation
+Id: 44641587-07eb-470f-be5c-002137592b54
+SerializedVersion: {Xenko: 1.5.0-alpha02}
+Tags: []
+Source: ../../../data/tests/knight/scenes/he03_run.fbx
+PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
+RepeatMode: LoopInfinite
+Skeleton: d259bc87-962a-49f7-b2a7-134a3166c0e6/75bd17ea-ca0f-4281-bf94-12ce8d08b2fe:knight Skeleton
+RootMotion: false
+PreviewModel: null
