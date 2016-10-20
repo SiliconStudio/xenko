@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// The list of sprites.
         /// </summary>
-        [NotNullItems]
+        [MemberCollection(NotNullItems = true)]
         public List<Sprite> Sprites { get; } = new List<Sprite>();
 
         /// <summary>

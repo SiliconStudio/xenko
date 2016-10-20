@@ -51,8 +51,8 @@ namespace SiliconStudio.Xenko.Animations
         // TODO This class will hold an AnimationCurve<T> later
         //[DataMemberIgnore]
         //public AnimationCurve<T> Animation { get; set; } = new AnimationCurve<T>();
-        
-        [NotNullItems]
+
+        [MemberCollection(NotNullItems = true)]
         public TrackingCollection<AnimationKeyFrame<T>> KeyFrames { get; set; } = new TrackingCollection<AnimationKeyFrame<T>>();
 
         // TODO This list will become AnimationCurve<T>

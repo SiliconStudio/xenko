@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
         /// </userdoc>
         [DataMember(10)]
         [Category]
-        [NotNullItems]
+        [MemberCollection(NotNullItems = true)]
         public List<IAssetColliderShapeDesc> ColliderShapes { get; set; } = new List<IAssetColliderShapeDesc>();
 
         private class UpgraderShapeDescriptions : AssetUpgraderBase

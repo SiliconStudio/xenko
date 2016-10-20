@@ -112,8 +112,7 @@ namespace SiliconStudio.Xenko.Engine
         /// The components stored in this entity.
         /// </summary>
         [DataMember(100, DataMemberMode.Content)]
-        [NotNullItems]
-        [MemberCollection(CanReorderItems = true)]
+        [MemberCollection(CanReorderItems = true, NotNullItems = true)]
         public EntityComponentCollection Components { get; }
 
         /// <summary>

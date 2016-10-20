@@ -22,5 +22,11 @@ namespace SiliconStudio.Core.Annotations
         /// this collection should provide users a way to reorder items.
         /// </summary>
         public bool CanReorderItems { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the items of this collection can be null. If <c>true</c>, applications using
+        /// this collection should prevent user to add null items to the collection.
+        /// </summary>
+        public bool NotNullItems { get; set; }
     }
 }

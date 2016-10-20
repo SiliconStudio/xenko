@@ -85,8 +85,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         /// </userdoc>
         [DataMember(50)]
         [Category]
-        [NotNullItems]
-        [MemberCollection(CanReorderItems = true)]
+        [MemberCollection(CanReorderItems = true, NotNullItems = true)]
         public SceneRendererCollection Renderers { get; private set; }
 
         internal bool IsMaster { get; set; }
