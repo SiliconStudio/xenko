@@ -14,11 +14,12 @@ namespace SiliconStudio.Core.Reflection
 
         protected IMemberDescriptor[] members;
         protected Dictionary<string, IMemberDescriptor> mapMembers;
+        private HashSet<string> remapMembers;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectDescriptorBase" /> class.
         /// </summary>
-        public ObjectDescriptorBase(IAttributeRegistry attributeRegistry, Type type)
+        protected ObjectDescriptorBase(IAttributeRegistry attributeRegistry, Type type)
         {
             if (attributeRegistry == null) throw new ArgumentNullException(nameof(attributeRegistry));
             if (type == null) throw new ArgumentNullException(nameof(type));
@@ -39,6 +40,11 @@ namespace SiliconStudio.Core.Reflection
         public bool HasMembers => members?.Length > 0;
 
         public abstract DescriptorCategory Category { get; }
+
+        public bool IsMemberRemapped(string name)
+        {
+            return remapMembers != null && remapMembers.Contains(name);
+        }
 
         public IMemberDescriptor this[string name]
         {
@@ -85,6 +91,25 @@ namespace SiliconStudio.Core.Reflection
                 }
 
                 mapMembers.Add(member.Name, member);
+
+                // If there is any alternative names, register them
+                if (member.AlternativeNames != null)
+                {
+                    foreach (var alternateName in member.AlternativeNames)
+                    {
+                        if (mapMembers.TryGetValue(alternateName, out existingMember))
+                        {
+                            throw new InvalidOperationException($"Failed to get ObjectDescriptor for type [{Type.FullName}]. The member [{member}] cannot be registered as a member with the same name [{alternateName}] is already registered [{existingMember}]");
+                        }
+                        if (remapMembers == null)
+                        {
+                            remapMembers = new HashSet<string>();
+                        }
+
+                        mapMembers[alternateName] = member;
+                        remapMembers.Add(alternateName);
+                    }
+                }
             }
         }
 

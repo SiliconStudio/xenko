@@ -42,6 +42,9 @@
       <Name>SiliconStudio.Core</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
   <Choose>
     <When Condition="'$(XenkoEffectCompiler)' == 'true'">
       <ItemGroup Condition="'$(XenkoEffectCompiler)' == 'true'">

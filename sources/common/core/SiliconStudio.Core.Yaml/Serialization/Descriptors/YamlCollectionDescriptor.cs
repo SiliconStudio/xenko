@@ -340,7 +340,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         protected override bool PrepareMember(MemberDescriptorBase member)
         {
             // Filter members
-            if (member is YamlPropertyDescriptor && ListOfMembersToRemove.Contains(member.OriginalName))
+            if (member is PropertyDescriptor && ListOfMembersToRemove.Contains(member.OriginalName))
                 //if (member is PropertyDescriptor && (member.DeclaringType.Namespace ?? string.Empty).StartsWith(SystemCollectionsNamespace) && ListOfMembersToRemove.Contains(member.Name))
             {
                 return false;

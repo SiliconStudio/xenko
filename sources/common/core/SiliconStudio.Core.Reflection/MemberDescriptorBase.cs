@@ -57,6 +57,16 @@ namespace SiliconStudio.Core.Reflection
         public abstract IEnumerable<T> GetCustomAttributes<T>(bool inherit) where T : Attribute;
 
         /// <summary>
+        /// Gets the serialization mask, that will be checked against the context to know if this field needs to be serialized.
+        /// </summary>
+        public uint Mask { get; set; }
+
+        /// <summary>
+        /// Gets the default style attached to this member.
+        /// </summary>
+        public DataStyle Style { get; set; }
+
+        /// <summary>
         /// Gets the member information.
         /// </summary>
         /// <value>The member information.</value>

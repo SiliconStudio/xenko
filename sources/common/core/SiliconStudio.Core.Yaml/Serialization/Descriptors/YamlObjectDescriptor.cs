@@ -49,6 +49,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Reflection;
 using SiliconStudio.Core.Reflection;
+using PropertyDescriptor = SiliconStudio.Core.Reflection.PropertyDescriptor;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 {
@@ -62,7 +63,6 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         private static readonly object[] EmptyObjectArray = new object[0];
         private readonly ITypeDescriptorFactory factory;
         private readonly bool emitDefaultValues;
-        private HashSet<string> remapMembers;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="YamlObjectDescriptor" /> class.
@@ -111,47 +111,9 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// <value>The naming convention.</value>
         public IMemberNamingConvention NamingConvention { get; }
 
-        /// <summary>
-        /// Initializes this instance.
-        /// </summary>
-        /// <param name="keyComparer"></param>
-        /// <exception cref="YamlException">Failed to get ObjectDescriptor for type [{0}]. The member [{1}] cannot be registered as a member with the same name is already registered [{2}].DoFormat(type.FullName, member, existingMember)</exception>
-        public override void Initialize(IComparer<object> keyComparer)
-        {
-            base.Initialize(keyComparer);
-
-            foreach (var member in members.Cast<IYamlMemberDescriptor>())
-            {
-                // If there is any alternative names, register them
-                if (member.AlternativeNames != null)
-                {
-                    foreach (var alternateName in member.AlternativeNames)
-                    {
-                        IMemberDescriptor existingMember;
-                        if (mapMembers.TryGetValue(alternateName, out existingMember))
-                        {
-                            throw new YamlException($"Failed to get ObjectDescriptor for type [{Type.FullName}]. The member [{member}] cannot be registered as a member with the same name [{alternateName}] is already registered [{existingMember}]");
-                        }
-                        if (remapMembers == null)
-                        {
-                            remapMembers = new HashSet<string>();
-                        }
-
-                        mapMembers[alternateName] = member;
-                        remapMembers.Add(alternateName);
-                    }
-                }
-            }
-        }
-
         public override DescriptorCategory Category => DescriptorCategory.Object;
 
         public DataStyle Style { get; }
-
-        public bool IsMemberRemapped(string name)
-        {
-            return remapMembers != null && remapMembers.Contains(name);
-        }
 
         protected override List<IMemberDescriptor> PrepareMembers()
         {
@@ -163,14 +125,14 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             var memberList = (from propertyInfo in Type.GetProperties(bindingFlags)
                 where
                     propertyInfo.CanRead && propertyInfo.GetIndexParameters().Length == 0
-                select new YamlPropertyDescriptor(factory.Find(propertyInfo.PropertyType), propertyInfo, NamingConvention.Comparer)
+                select new PropertyDescriptor(factory.Find(propertyInfo.PropertyType), propertyInfo, NamingConvention.Comparer)
                 into member
                 where PrepareMember(member)
                 select member).Cast<IMemberDescriptor>().ToList();
 
             // Add all public fields
             memberList.AddRange((from fieldInfo in Type.GetFields(bindingFlags)
-                select new YamlFieldDescriptor(factory.Find(fieldInfo.FieldType), fieldInfo, NamingConvention.Comparer)
+                select new FieldDescriptor(factory.Find(fieldInfo.FieldType), fieldInfo, NamingConvention.Comparer)
                 into member
                 where PrepareMember(member)
                 select member));
@@ -186,7 +148,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             var memberType = member.Type;
 
             // Remove all SyncRoot from members
-            if (member is YamlPropertyDescriptor && member.OriginalName == "SyncRoot" &&
+            if (member is PropertyDescriptor && member.OriginalName == "SyncRoot" &&
                 (member.DeclaringType.Namespace ?? string.Empty).StartsWith(SystemCollectionsNamespace))
             {
                 return false;

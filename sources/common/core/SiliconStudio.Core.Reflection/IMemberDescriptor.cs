@@ -58,20 +58,6 @@ namespace SiliconStudio.Core.Reflection
         DataMemberMode Mode { get; }
 
         /// <summary>
-        /// Gets the value of this member for the specified instance.
-        /// </summary>
-        /// <param name="thisObject">The this object to get the value from.</param>
-        /// <returns>Value of the member.</returns>
-        object Get(object thisObject);
-
-        /// <summary>
-        /// Sets a value of this member for the specified instance.
-        /// </summary>
-        /// <param name="thisObject">The this object.</param>
-        /// <param name="value">The value.</param>
-        void Set(object thisObject, object value);
-
-        /// <summary>
         /// Gets a value indicating whether this member is public.
         /// </summary>
         bool IsPublic { get; }
@@ -82,7 +68,6 @@ namespace SiliconStudio.Core.Reflection
         bool HasSet { get; }
 
         IEnumerable<T> GetCustomAttributes<T>(bool inherit) where T : Attribute;
-
 
         /// <summary>
         /// Gets a value indicating whether this member should be serialized.
@@ -98,5 +83,29 @@ namespace SiliconStudio.Core.Reflection
         /// Gets or sets a custom tag to associate with this object.
         /// </summary>
         object Tag { get; set; }
+
+        /// <summary>
+        /// Gets the serialization mask, that will be checked against the context to know if this field needs to be serialized.
+        /// </summary>
+        uint Mask { get; set; }
+
+        /// <summary>
+        /// Gets the default style attached to this member.
+        /// </summary>
+        DataStyle Style { get; set; }
+
+        /// <summary>
+        /// Gets the value of this member for the specified instance.
+        /// </summary>
+        /// <param name="thisObject">The this object to get the value from.</param>
+        /// <returns>Value of the member.</returns>
+        object Get(object thisObject);
+
+        /// <summary>
+        /// Sets a value of this member for the specified instance.
+        /// </summary>
+        /// <param name="thisObject">The this object.</param>
+        /// <param name="value">The value.</param>
+        void Set(object thisObject, object value);
     }
 }
