@@ -301,7 +301,7 @@ namespace SiliconStudio.Xenko.Engine
             // ---------------------------------------------------------
 
             // Add the input manager
-            Input = InputManagerFactory.NewInputManager(Services, Context);
+            Input = new InputManager(Services);// InputManagerFactory.NewInputManager(Services, Context);
             GameSystems.Add(Input);
 
             // Add the scheduler system

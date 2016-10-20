@@ -100,13 +100,13 @@ namespace SiliconStudio.Xenko.Input
             UiControl.FocusGainedActions += e => OnUiControlGotFocus();
             UiControl.FocusLostActions += e => OnUiControlLostFocus();
             UiControl.MouseMoveActions += OnMouseMoveEvent;
-            UiControl.PointerButtonPressActions += e => { OnMouseInputEvent(new Vector2(e.x, e.y), ConvertMouseButton(e.button), InputEventType.Down); };
-            UiControl.PointerButtonReleaseActions += e => OnMouseInputEvent(new Vector2(e.x, e.y), ConvertMouseButton(e.button), InputEventType.Up);
+            UiControl.PointerButtonPressActions += e => { OnMouseInputEvent(new Vector2(e.x, e.y), ConvertMouseButton(e.button), KeyboardWinforms.InputEventType.Down); };
+            UiControl.PointerButtonReleaseActions += e => OnMouseInputEvent(new Vector2(e.x, e.y), ConvertMouseButton(e.button), KeyboardWinforms.InputEventType.Up);
             UiControl.MouseWheelActions += e =>
             {
                 Point pos = Cursor.Position;
                 // Only use `e.y` on SDL as this will be where the deltas will be.
-                OnMouseInputEvent(new Vector2(pos.X, pos.Y), MouseButton.Middle, InputEventType.Wheel, e.y);
+                OnMouseInputEvent(new Vector2(pos.X, pos.Y), MouseButton.Middle, KeyboardWinforms.InputEventType.Wheel, e.y);
             };
             UiControl.ResizeEndActions += UiWindowOnSizeChanged;
 
@@ -121,8 +121,8 @@ namespace SiliconStudio.Xenko.Input
                 Keys key;
                 if (SDLKeys.mapKeys.TryGetValue(e.keysym.sym, out key) && key != Keys.None)
                 {
-                    var type = isKeyUp ? InputEventType.Up : InputEventType.Down;
-                    KeyboardInputEvents.Add(new KeyboardInputEvent { Key = key, Type = type });
+                    var type = isKeyUp ? KeyboardWinforms.InputEventType.Up : KeyboardWinforms.InputEventType.Down;
+                    KeyboardInputEvents.Add(new KeyboardWinforms.KeyboardInputEvent { Key = key, Type = type });
                 }
             }
         }
@@ -133,14 +133,14 @@ namespace SiliconStudio.Xenko.Input
             ControlHeight = UiControl.ClientSize.Height;
         }
 
-        private void OnMouseInputEvent(Vector2 pixelPosition, MouseButton button, InputEventType type, float value = 0)
+        private void OnMouseInputEvent(Vector2 pixelPosition, MouseButton button, KeyboardWinforms.InputEventType type, float value = 0)
         {
             // The mouse wheel event are still received even when the mouse cursor is out of the Window boundaries. Discard the event in this case.
-            if (type == InputEventType.Wheel && !UiControl.ClientRectangle.Contains(UiControl.RelativeCursorPosition))
+            if (type == KeyboardWinforms.InputEventType.Wheel && !UiControl.ClientRectangle.Contains(UiControl.RelativeCursorPosition))
                 return;
 
             // the mouse events series has been interrupted because out of the window.
-            if (type == InputEventType.Up && !MouseButtonCurrentlyDown[(int)button])
+            if (type == KeyboardWinforms.InputEventType.Up && !MouseButtonCurrentlyDown[(int)button])
                 return;
 
             CurrentMousePosition = NormalizeScreenPosition(pixelPosition);
@@ -149,10 +149,10 @@ namespace SiliconStudio.Xenko.Input
             lock (MouseInputEvents)
                 MouseInputEvents.Add(mouseInputEvent);
 
-            if (type != InputEventType.Wheel)
+            if (type != KeyboardWinforms.InputEventType.Wheel)
             {
                 var buttonId = (int)button;
-                MouseButtonCurrentlyDown[buttonId] = type == InputEventType.Down;
+                MouseButtonCurrentlyDown[buttonId] = type == KeyboardWinforms.InputEventType.Down;
                 HandlePointerEvents(buttonId, CurrentMousePosition, InputEventTypeToPointerState(type), PointerType.Mouse);
             }
         }
@@ -200,10 +200,10 @@ namespace SiliconStudio.Xenko.Input
                         Keys key;
                         if (SDLKeys.mapKeys.TryGetValue(keyCode, out key) && key != Keys.None)
                         {
-                            KeyboardInputEvents.Add(new KeyboardInputEvent
+                            KeyboardInputEvents.Add(new KeyboardWinforms.KeyboardInputEvent
                             {
                                 Key = key,
-                                Type = InputEventType.Down,
+                                Type = KeyboardWinforms.InputEventType.Down,
                                 OutOfFocus = true
                             });
                         }
@@ -235,13 +235,13 @@ namespace SiliconStudio.Xenko.Input
             return (MouseButton)(-1);
         }
 
-        private static PointerState InputEventTypeToPointerState(InputEventType type)
+        private static PointerState InputEventTypeToPointerState(KeyboardWinforms.InputEventType type)
         {
             switch (type)
             {
-                case InputEventType.Up:
+                case KeyboardWinforms.InputEventType.Up:
                     return PointerState.Up;
-                case InputEventType.Down:
+                case KeyboardWinforms.InputEventType.Down:
                     return PointerState.Down;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(type));

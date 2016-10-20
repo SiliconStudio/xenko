@@ -51,9 +51,9 @@ namespace SiliconStudio.Xenko.Input
 
             private readonly DirectInput directInput;
 
-            private Joystick instance;
+            private CustomGamePad instance;
 
-            private JoystickState joystickState;
+            private CustomGamePadState joystickState;
 
             #endregion
 
@@ -61,8 +61,17 @@ namespace SiliconStudio.Xenko.Input
             {
                 this.key = key;
                 this.directInput = directInput;
-                this.instance = new Joystick(directInput, key.Guid);
-                joystickState = new JoystickState();
+                this.instance = new CustomGamePad(directInput, key.Guid);
+                var objects = this.instance.GetObjects();
+                joystickState = new CustomGamePadState();
+
+                int numAxes = Math.Min(instance.Capabilities.AxeCount, 32);
+                int numButtons = Math.Min(instance.Capabilities.ButtonCount, 32);
+                int numHats = Math.Min(instance.Capabilities.PovCount, 4);
+
+                joystickState.Axes = new float[numAxes];
+                joystickState.Buttons = new bool[numButtons];
+                joystickState.Hats = new int[numHats];
             }
 
             public override void Dispose()
@@ -85,7 +94,7 @@ namespace SiliconStudio.Xenko.Input
                     {
                         if (directInput.IsDeviceAttached(key.Guid))
                         {
-                            instance = new Joystick(directInput, key.Guid);
+                            instance = new CustomGamePad(directInput, key.Guid);
                         }
                         else
                         {
@@ -123,8 +132,11 @@ namespace SiliconStudio.Xenko.Input
 
                 //Console.WriteLine(joystickState);
                 gamePadState.IsConnected = true;
+                gamePadState.AllAxes = joystickState.Axes;
+                gamePadState.AllButtons = joystickState.Buttons;
+                gamePadState.AllHats = joystickState.Hats;
 
-                gamePadState.Buttons = GamePadButton.None;
+                /*gamePadState.Buttons = GamePadButton.None;
                 if (joystickState.Buttons[0])
                 {
                     gamePadState.Buttons |= GamePadButton.X;
@@ -221,7 +233,7 @@ namespace SiliconStudio.Xenko.Input
                 // Right Thumb
                 gamePadState.RightThumb = new Vector2(2.0f * (joystickState.Z / 65535.0f - 0.5f), -2.0f * (joystickState.RotationZ / 65535.0f - 0.5f));
                 gamePadState.RightThumb.X = ClampDeadZone(gamePadState.RightThumb.X, GamePadAxisDeadZone);
-                gamePadState.RightThumb.Y = ClampDeadZone(gamePadState.RightThumb.Y, GamePadAxisDeadZone);
+                gamePadState.RightThumb.Y = ClampDeadZone(gamePadState.RightThumb.Y, GamePadAxisDeadZone);*/
 
                 return gamePadState;
             }

@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Engine
     [DataContract("InputComponent")]
     [Display("Input Mapper", Expand = ExpandRule.Once)]
     [DefaultEntityComponentProcessor(typeof(InputProcessor))]
-    [ComponentOrder(11200)]
+    [ComponentOrder(11330)]
     public class InputComponent : EntityComponent
     {
         internal struct MadeBinding

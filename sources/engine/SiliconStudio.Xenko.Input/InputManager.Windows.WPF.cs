@@ -85,9 +85,9 @@ namespace SiliconStudio.Xenko.Input
             UiControl.LostFocus += (_, e) => OnUiControlLostFocus();
             UiControl.Deactivated += (_, e) => OnUiControlLostFocus();
             UiControl.MouseMove += (_, e) => OnMouseMoveEvent(PointToVector2(e.GetPosition(UiControl)));
-            UiControl.MouseDown += (_, e) => OnMouseInputEvent(PointToVector2(e.GetPosition(UiControl)), ConvertMouseButton(e.ChangedButton), InputEventType.Down);
-            UiControl.MouseUp += (_, e) => OnMouseInputEvent(PointToVector2(e.GetPosition(UiControl)), ConvertMouseButton(e.ChangedButton), InputEventType.Up);
-            UiControl.MouseWheel += (_, e) => OnMouseInputEvent(PointToVector2(e.GetPosition(UiControl)), MouseButton.Middle, InputEventType.Wheel, e.Delta);
+            UiControl.MouseDown += (_, e) => OnMouseInputEvent(PointToVector2(e.GetPosition(UiControl)), ConvertMouseButton(e.ChangedButton), KeyboardWinforms.InputEventType.Down);
+            UiControl.MouseUp += (_, e) => OnMouseInputEvent(PointToVector2(e.GetPosition(UiControl)), ConvertMouseButton(e.ChangedButton), KeyboardWinforms.InputEventType.Up);
+            UiControl.MouseWheel += (_, e) => OnMouseInputEvent(PointToVector2(e.GetPosition(UiControl)), MouseButton.Middle, KeyboardWinforms.InputEventType.Wheel, e.Delta);
             UiControl.SizeChanged += OnWpfSizeChanged;
 
             ControlWidth = (float)UiControl.ActualWidth;
@@ -130,14 +130,14 @@ namespace SiliconStudio.Xenko.Input
             ControlHeight = (float)e.NewSize.Height;
         }
 
-        private void OnMouseInputEvent(Vector2 pixelPosition, MouseButton button, InputEventType type, float value = 0)
+        private void OnMouseInputEvent(Vector2 pixelPosition, MouseButton button, KeyboardWinforms.InputEventType type, float value = 0)
         {
             // The mouse wheel event are still received even when the mouse cursor is out of the control boundaries. Discard the event in this case.
-            if (type == InputEventType.Wheel && !UiControl.IsMouseOver)
+            if (type == KeyboardWinforms.InputEventType.Wheel && !UiControl.IsMouseOver)
                 return;
 
             // the mouse events series has been interrupted because out of the window.
-            if (type == InputEventType.Up && !MouseButtonCurrentlyDown[(int)button])
+            if (type == KeyboardWinforms.InputEventType.Up && !MouseButtonCurrentlyDown[(int)button])
                 return;
 
             CurrentMousePosition = NormalizeScreenPosition(pixelPosition);
@@ -146,10 +146,10 @@ namespace SiliconStudio.Xenko.Input
             lock (MouseInputEvents)
                 MouseInputEvents.Add(mouseInputEvent);
 
-            if (type != InputEventType.Wheel)
+            if (type != KeyboardWinforms.InputEventType.Wheel)
             {
                 var buttonId = (int)button;
-                MouseButtonCurrentlyDown[buttonId] = type == InputEventType.Down;
+                MouseButtonCurrentlyDown[buttonId] = type == KeyboardWinforms.InputEventType.Down;
                 HandlePointerEvents(buttonId, CurrentMousePosition, InputEventTypeToPointerState(type), PointerType.Mouse);
             }
         }
@@ -201,13 +201,13 @@ namespace SiliconStudio.Xenko.Input
             return (MouseButton)(-1);
         }
 
-        private static PointerState InputEventTypeToPointerState(InputEventType type)
+        private static PointerState InputEventTypeToPointerState(KeyboardWinforms.InputEventType type)
         {
             switch (type)
             {
-                case InputEventType.Up:
+                case KeyboardWinforms.InputEventType.Up:
                     return PointerState.Up;
-                case InputEventType.Down:
+                case KeyboardWinforms.InputEventType.Down:
                     return PointerState.Down;
                 default:
                     throw new ArgumentOutOfRangeException("type");

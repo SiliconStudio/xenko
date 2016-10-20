@@ -59,6 +59,8 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="AccelerometerSensor.cs" />
+    <Compile Include="CustomGamePad.cs" />
+    <Compile Include="CustomGamePadState.cs" />
     <Compile Include="Data\GamePadAxisVirtualButtonDesc.cs" />
     <Compile Include="Data\GamePadVirtualButtonDesc.cs" />
     <Compile Include="Data\IVirtualButtonDesc.cs" />
@@ -86,24 +88,22 @@
     <Compile Include="GestureType.cs" />
     <Compile Include="GravitySensor.cs" />
     <Compile Include="GyroscopeSensor.cs" />
+    <Compile Include="IInputDevice.cs" />
+    <Compile Include="IInputSource.cs" />
+    <Compile Include="IKeyboardDevice.cs" />
+    <Compile Include="InputSource.cs" />
+    <Compile Include="InputSourceWindowsRawInput.cs" />
+    <Compile Include="IPointerDevice.cs" />
     <Compile Include="InputBinding.cs" />
-    <Compile Include="InputManager.Android.cs" />
     <Compile Include="InputManager.cs" />
-    <Compile Include="InputManager.iOS.cs" />
-    <Compile Include="InputManager.SDL.cs" />
-    <Compile Include="InputManager.Windows.cs" />
-    <Compile Include="InputManager.Windows.Desktop.cs" />
-    <Compile Include="InputManager.Windows.DirectInput.cs" />
-    <Compile Include="InputManager.Windows.OpenTK.cs" />
-    <Compile Include="InputManager.Windows.RawInput.Keyboard.cs" />
-    <Compile Include="InputManager.Windows.Store.cs" />
-    <Compile Include="InputManager.Windows.Store.Keys.cs" />
-    <Compile Include="InputManager.Windows.WPF.cs" />
-    <Compile Include="InputManager.SDL.SDLInput.cs" />
-    <Compile Include="InputManager.Windows.XInput.cs" />
     <Compile Include="InputManagerExtensions.cs" />
-    <Compile Include="InputManagerFactory.cs" />
     <Compile Include="InputMapper.cs" />
+    <Compile Include="KeyboardDeviceBase.cs" />
+    <Compile Include="MouseDeviceBase.cs" />
+    <Compile Include="PointerDeviceBase.cs" />
+    <Compile Include="PointerDeviceType.cs" />
+    <Compile Include="TypeBasedRegistry.cs" />
+    <Compile Include="InputSourceWindows.cs" />
     <Compile Include="IVirtualButton.cs" />
     <Compile Include="KeyEvent.cs" />
     <Compile Include="KeyEventType.cs" />
@@ -139,6 +139,7 @@
     <Compile Include="Data\VirtualButtonDescBase.cs" />
     <Compile Include="VirtualButtonTwoWay.cs" />
     <Compile Include="VirtualButtonType.cs" />
+    <Compile Include="WinKeys.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">

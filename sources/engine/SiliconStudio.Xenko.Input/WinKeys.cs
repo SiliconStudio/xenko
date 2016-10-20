@@ -1,131 +1,13 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
-using System;
+
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System.Windows.Forms;
-using System.Windows.Interop;
-
-using SharpDX.Multimedia;
-using SharpDX.RawInput;
-using WinFormsKeys = System.Windows.Forms.Keys;
 
 namespace SiliconStudio.Xenko.Input
 {
-    internal partial class InputManagerWindows<TK>
-    {
-        protected internal void BindRawInputKeyboard(Control winformControl)
-        {
-            if (winformControl.Handle == IntPtr.Zero)
-            {
-                winformControl.HandleCreated += (sender, args) =>
-                    {
-                        if (winformControl.Handle != IntPtr.Zero)
-                        {
-                            BindRawInputKeyboard(winformControl);
-                        }
-                    };
-            }
-            else
-            {
-                SharpDX.RawInput.Device.RegisterDevice(UsagePage.Generic, UsageId.GenericKeyboard, DeviceFlags.None, winformControl.Handle);
-                SharpDX.RawInput.Device.KeyboardInput += DeviceOnKeyboardInput;
-            }
-        }
-
-        protected internal void BindRawInputKeyboard(System.Windows.Window winformControl)
-        {
-            var interopHelper = new WindowInteropHelper(winformControl);
-            interopHelper.EnsureHandle();
-            SharpDX.RawInput.Device.RegisterDevice(UsagePage.Generic, UsageId.GenericKeyboard, DeviceFlags.None, interopHelper.Handle);
-            SharpDX.RawInput.Device.KeyboardInput += DeviceOnKeyboardInput;
-        }
-
-        private void DeviceOnKeyboardInput(object sender, KeyboardInputEventArgs rawKb)
-        {
-            // Code partially from: http://molecularmusings.wordpress.com/2011/09/05/properly-handling-keyboard-input/
-            var key = Keys.None;
-
-            var virtualKey = rawKb.Key;
-            var scanCode = rawKb.MakeCode;
-            var flags = rawKb.ScanCodeFlags;
-
-            if ((int)virtualKey == 255)
-            {
-                // discard "fake keys" which are part of an escaped sequence
-                return;
-            }
-
-            if (virtualKey == WinFormsKeys.ShiftKey)
-            {
-                // correct left-hand / right-hand SHIFT
-                virtualKey = (WinFormsKeys) WinKeys.MapVirtualKey(scanCode, WinKeys.MAPVK_VSC_TO_VK_EX);
-            }
-            else if (virtualKey == WinFormsKeys.NumLock)
-            {
-                // correct PAUSE/BREAK and NUM LOCK silliness, and set the extended bit
-                scanCode = WinKeys.MapVirtualKey((int)virtualKey, WinKeys.MAPVK_VK_TO_VSC) | 0x100;
-            }
-
-            // e0 and e1 are escape sequences used for certain special keys, such as PRINT and PAUSE/BREAK.
-            // see http://www.win.tue.nl/~aeb/linux/kbd/scancodes-1.html
-            bool isE0 = ((flags & ScanCodeFlags.E0) != 0);
-            bool isE1 = ((flags & ScanCodeFlags.E1) != 0);
-
-            if (isE1)
-            {
-                // for escaped sequences, turn the virtual key into the correct scan code using MapVirtualKey.
-                // however, MapVirtualKey is unable to map VK_PAUSE (this is a known bug), hence we map that by hand.
-                scanCode = virtualKey == WinFormsKeys.Pause ? 0x45 : WinKeys.MapVirtualKey((int)virtualKey, WinKeys.MAPVK_VK_TO_VSC);
-            }
-
-            switch (virtualKey)
-            {
-                    // right-hand CONTROL and ALT have their e0 bit set
-                case WinFormsKeys.ControlKey:
-                    virtualKey = isE0 ? WinFormsKeys.RControlKey : WinFormsKeys.LControlKey;
-                    break;
-
-                case WinFormsKeys.Menu:
-                    virtualKey = isE0 ? WinFormsKeys.RMenu : WinFormsKeys.LMenu;
-                    break;
-
-                    // NUMPAD ENTER has its e0 bit set
-                case WinFormsKeys.Return:
-                    if (isE0)
-                        key = Keys.NumPadEnter;
-                    break;
-            }
-
-
-            if (key == Keys.None)
-            {
-                WinKeys.mapKeys.TryGetValue(virtualKey, out key);
-            }
-
-
-            if (key != Keys.None)
-            {
-                bool isKeyUp = (flags & ScanCodeFlags.Break) != 0;
-
-                if (isKeyUp)
-                {
-                    lock (KeyboardInputEvents)
-                    {
-                        KeyboardInputEvents.Add(new KeyboardWinforms.KeyboardInputEvent { Key = key, Type = KeyboardWinforms.InputEventType.Up });
-                    }
-                }
-                else
-                {
-                    lock (KeyboardInputEvents)
-                    {
-                        KeyboardInputEvents.Add(new KeyboardWinforms.KeyboardInputEvent { Key = key, Type = KeyboardWinforms.InputEventType.Down });
-                    }
-                }
-            }
-        }
-    }
+    using WinFormsKeys = System.Windows.Forms.Keys;
 
     /// <summary>
     /// Mapping between <see cref="WinFormsKeys"/> and <see cref="SiliconStudio.Xenko.Input.Keys"/> needed for
@@ -335,4 +217,5 @@ namespace SiliconStudio.Xenko.Input
         }
     }
 }
+
 #endif

@@ -58,6 +58,7 @@ namespace SiliconStudio.Xenko.Input
                 case AppContextType.iOS:
                     res = NewInputManageriOS(registry);
                     break;
+
             }
             if (res == null)
             {

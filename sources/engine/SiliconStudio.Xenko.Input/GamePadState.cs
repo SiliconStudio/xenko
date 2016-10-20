@@ -50,6 +50,10 @@ namespace SiliconStudio.Xenko.Input
         /// </remarks>
         public float RightTrigger;
 
+        public float[] AllAxes;
+        public bool[] AllButtons;
+        public int[] AllHats;
+
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
         /// </summary>

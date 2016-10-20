@@ -25,6 +25,7 @@ namespace SiliconStudio.Xenko.Profiling
             registry.AddService(typeof(DebugConsoleSystem), this);
 
             Visible = true;
+            Enabled = true;
 
             DrawOrder = 0xffffff;
             UpdateOrder = -100100; //before script
