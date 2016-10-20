@@ -50,6 +50,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using NUnit.Framework;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
 
@@ -1083,7 +1084,7 @@ G_ListCustom: {Name: name4, ~Items: [1, 2, 3, 4, 5, 6, 7]}";
                 base.WriteDictionaryKey(ref objectContext, itemKey, keyType);
             }
 
-            public override void WriteMemberName(ref ObjectContext objectContext, IYamlMemberDescriptor member, string name)
+            public override void WriteMemberName(ref ObjectContext objectContext, IMemberDescriptor member, string name)
             {
                 name = (name.Contains("Name") || name.Contains("Test")) ? name + "!" : name;
                 base.WriteMemberName(ref objectContext, member, name);
@@ -1122,9 +1123,9 @@ G_ListCustom: {Name: name4, ~Items: [1, 2, 3, 4, 5, 6, 7]}";
             Assert.AreEqual("Test2", specialTransform.SpecialKeys[2].Item2);
 
             Assert.AreEqual(myCustomObject2, specialTransform.SpecialKeys[0].Item1);
-            Assert.IsInstanceOf<IYamlMemberDescriptor>(specialTransform.SpecialKeys[0].Item2);
+            Assert.IsInstanceOf<IMemberDescriptor>(specialTransform.SpecialKeys[0].Item2);
 
-            Assert.AreEqual("Name", ((IYamlMemberDescriptor) specialTransform.SpecialKeys[0].Item2).Name);
+            Assert.AreEqual("Name", ((IMemberDescriptor) specialTransform.SpecialKeys[0].Item2).Name);
         }
 
 

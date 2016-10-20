@@ -47,6 +47,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 using Scalar = SiliconStudio.Core.Yaml.Events.Scalar;
@@ -110,7 +111,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             else if (objectContext.Settings.SerializeDictionaryItemsAsMembers && dictionaryDescriptor.KeyType == typeof(string))
             {
                 // Serialize Dictionary members and items together
-                foreach (var member in dictionaryDescriptor.Members.Cast<IYamlMemberDescriptor>())
+                foreach (var member in dictionaryDescriptor.Members)
                 {
                     WriteMember(ref objectContext, member);
                 }
@@ -119,7 +120,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             else
             {
                 // Serialize Dictionary members
-                foreach (var member in dictionaryDescriptor.Members.Cast<IYamlMemberDescriptor>())
+                foreach (var member in dictionaryDescriptor.Members)
                 {
                     WriteMember(ref objectContext, member);
                 }

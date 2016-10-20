@@ -50,6 +50,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using NUnit.Framework;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 
@@ -138,15 +139,15 @@ namespace SiliconStudio.Core.Yaml.Tests
             Assert.AreEqual("property1", instance.Property);
 
             // Check ShouldSerialize
-            Assert.True(((IYamlMemberDescriptor)descriptor["Name"]).ShouldSerialize(instance));
+            Assert.True(((IMemberDescriptor)descriptor["Name"]).ShouldSerialize(instance));
 
-            Assert.False(((IYamlMemberDescriptor)descriptor["Value"]).ShouldSerialize(instance));
+            Assert.False(((IMemberDescriptor)descriptor["Value"]).ShouldSerialize(instance));
             instance.Value = 1;
-            Assert.True(((IYamlMemberDescriptor)descriptor["Value"]).ShouldSerialize(instance));
+            Assert.True(((IMemberDescriptor)descriptor["Value"]).ShouldSerialize(instance));
 
-            Assert.False(((IYamlMemberDescriptor)descriptor["DefaultValue"]).ShouldSerialize(instance));
+            Assert.False(((IMemberDescriptor)descriptor["DefaultValue"]).ShouldSerialize(instance));
             instance.DefaultValue++;
-            Assert.True(((IYamlMemberDescriptor)descriptor["DefaultValue"]).ShouldSerialize(instance));
+            Assert.True(((IMemberDescriptor)descriptor["DefaultValue"]).ShouldSerialize(instance));
 
             // Check HasSet
             Assert.True(descriptor["Collection"].HasSet);

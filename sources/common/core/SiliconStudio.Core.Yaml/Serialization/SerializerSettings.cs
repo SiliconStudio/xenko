@@ -179,7 +179,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         public bool EmitDefaultValues { get; set; }
 
         /// <summary>
-        /// Gets or sets the default key comparer used to sort members (<see cref="IYamlMemberDescriptor"/>) or
+        /// Gets or sets the default key comparer used to sort members (<see cref="IMemberDescriptor"/>) or
         /// dictionary keys, when serializing objects as YAML mappings. Default is <see cref="DefaultKeyComparer"/>. 
         /// To disable the default comparer, this value can be set to null.
         /// </summary>

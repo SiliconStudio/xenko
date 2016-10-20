@@ -395,8 +395,8 @@ namespace SiliconStudio.Core.Yaml
             /// <inheritdoc/>
             public virtual int Compare(object x, object y)
             {
-                var left = x as IYamlMemberDescriptor;
-                var right = y as IYamlMemberDescriptor;
+                var left = x as IMemberDescriptor;
+                var right = y as IMemberDescriptor;
                 if (left != null && right != null)
                 {
                     // If order is defined, first order by order

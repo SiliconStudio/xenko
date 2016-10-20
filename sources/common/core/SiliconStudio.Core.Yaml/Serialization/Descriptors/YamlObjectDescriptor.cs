@@ -221,13 +221,13 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             }
 
             // Gets the style
-            ((IYamlMemberDescriptor)member).Style = styleAttribute?.Style ?? DataStyle.Any;
-            ((IYamlMemberDescriptor)member).Mask = 1;
+            ((IMemberDescriptor)member).Style = styleAttribute?.Style ?? DataStyle.Any;
+            ((IMemberDescriptor)member).Mask = 1;
 
             // Handle member attribute
             if (memberAttribute != null)
             {
-                ((IYamlMemberDescriptor)member).Mask = memberAttribute.Mask;
+                ((IMemberDescriptor)member).Mask = memberAttribute.Mask;
                 if (!member.HasSet)
                 {
                     if (memberAttribute.Mode == DataMemberMode.Assign ||

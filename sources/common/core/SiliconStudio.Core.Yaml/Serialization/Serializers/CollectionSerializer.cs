@@ -45,7 +45,6 @@
 
 using System;
 using System.Collections;
-using System.Linq;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization.Descriptors;
@@ -57,13 +56,6 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
     /// </summary>
     public class CollectionSerializer : ObjectSerializer
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="CollectionSerializer"/> class.
-        /// </summary>
-        public CollectionSerializer()
-        {
-        }
-
         public override IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
         {
             return typeDescriptor is YamlCollectionDescriptor ? this : null;
@@ -114,7 +106,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             else
             {
                 // Serialize Dictionary members
-                foreach (var member in objectContext.Descriptor.Members.Cast<IYamlMemberDescriptor>())
+                foreach (var member in objectContext.Descriptor.Members)
                 {
                     if (member.OriginalName == "Capacity" && !objectContext.Settings.EmitCapacityForList)
                     {

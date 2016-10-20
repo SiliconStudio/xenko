@@ -28,7 +28,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
     /// <summary>
     /// A dynamic member to allow to add dynamic members to objects (that could store additional properties outside of the instance).
     /// </summary>
-    public abstract class DynamicMemberDescriptorBase : IYamlMemberDescriptor
+    public abstract class DynamicMemberDescriptorBase : IMemberDescriptor
     {
         protected DynamicMemberDescriptorBase(string name, Type type, Type declaringType)
         {

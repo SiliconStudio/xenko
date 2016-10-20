@@ -20,6 +20,7 @@
 
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Serializers
@@ -64,7 +65,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
                     if (arrayDescriptor != null)
                     {
                         isPrimitiveElementType = YamlPrimitiveDescriptor.IsPrimitive(arrayDescriptor.ElementType);
-                        count = objectContext.Instance != null ? ((Array) objectContext.Instance).Length : -1;
+                        count = ((Array)objectContext.Instance)?.Length ?? -1;
                     }
                 }
 
@@ -94,7 +95,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             return memberName;
         }
 
-        public virtual object ReadMemberValue(ref ObjectContext objectContext, IYamlMemberDescriptor memberDescriptor, object memberValue,
+        public virtual object ReadMemberValue(ref ObjectContext objectContext, IMemberDescriptor memberDescriptor, object memberValue,
             Type memberType)
         {
             var memberObjectContext = new ObjectContext(objectContext.SerializerContext, memberValue, objectContext.SerializerContext.FindTypeDescriptor(memberType));
@@ -119,7 +120,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             return ReadYaml(ref valueObjectContext);
         }
 
-        public virtual void WriteMemberName(ref ObjectContext objectContext, IYamlMemberDescriptor member, string name)
+        public virtual void WriteMemberName(ref ObjectContext objectContext, IMemberDescriptor member, string name)
         {
             // Emit the key name
             objectContext.Writer.Emit(new ScalarEventInfo(name, typeof(string))
@@ -130,7 +131,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             });
         }
 
-        public virtual void WriteMemberValue(ref ObjectContext objectContext, IYamlMemberDescriptor memberDescriptor, object memberValue, Type memberType)
+        public virtual void WriteMemberValue(ref ObjectContext objectContext, IMemberDescriptor memberDescriptor, object memberValue, Type memberType)
         {
             // Push the style of the current member
             var memberObjectContext = new ObjectContext(objectContext.SerializerContext, memberValue, objectContext.SerializerContext.FindTypeDescriptor(memberType)) { Style = memberDescriptor.Style };

@@ -21,14 +21,14 @@
 using System;
 using System.Collections.Generic;
 
-namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
+namespace SiliconStudio.Core.Reflection
 {
     /// <summary>
     /// Default comparer used to sort keys for object members and dictionary keys. See remarks.
     /// </summary>
     /// <remarks><ul>
     ///   <li>For members of an object, this comparer will first try to use an explicit order defined by
-    /// using <see cref="YamlMemberAttribute.Order" /> otherwise It will use the name of the field/property.
+    /// using <see cref="DataMemberAttribute.Order" /> otherwise It will use the name of the field/property.
     ///   </li>
     ///   <li>If both objects are string, use <see cref="string.CompareOrdinal(string,int,string,int,int)"/></li>
     ///   <li>
@@ -40,15 +40,15 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
     {
         public virtual int Compare(object x, object y)
         {
-            var left = x as IYamlMemberDescriptor;
-            var right = y as IYamlMemberDescriptor;
+            var left = x as IMemberDescriptor;
+            var right = y as IMemberDescriptor;
             if (left != null && right != null)
             {
                 // If order is defined, first order by order
                 if (left.Order.HasValue | right.Order.HasValue)
                 {
-                    var leftOrder = left.Order.HasValue ? left.Order.Value : int.MaxValue;
-                    var rightOrder = right.Order.HasValue ? right.Order.Value : int.MaxValue;
+                    var leftOrder = left.Order ?? int.MaxValue;
+                    var rightOrder = right.Order ?? int.MaxValue;
                     return leftOrder.CompareTo(rightOrder);
                 }
 
@@ -56,9 +56,11 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
                 return left.DefaultNameComparer.Compare(left.Name, right.Name);
             }
 
-            if (x is string && y is string)
+            var sx = x as string;
+            var sy = y as string;
+            if (sx != null && sy != null)
             {
-                return string.CompareOrdinal((string) x, (string) y);
+                return string.CompareOrdinal(sx, sy);
             }
 
             var leftComparable = x as IComparable;
@@ -68,7 +70,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             }
 
             var rightComparable = y as IComparable;
-            return rightComparable != null ? rightComparable.CompareTo(y) : 0;
+            return rightComparable?.CompareTo(y) ?? 0;
         }
     }
 }

@@ -44,8 +44,8 @@
 // SOFTWARE.
 
 using System;
-using System.Linq;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Serializers
@@ -283,7 +283,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
                 return ReadMemberState.Skip;
             }
 
-            var memberAccessor = (IYamlMemberDescriptor)objectContext.Descriptor[memberName];
+            var memberAccessor = objectContext.Descriptor[memberName];
 
             // If the member was remapped, store this in the context
             if (objectContext.Descriptor.IsMemberRemapped(memberName))
@@ -325,7 +325,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             return objectContext.ObjectSerializerBackend.ReadMemberName(ref objectContext, memberName, out skipMember);
         }
 
-        protected virtual object ReadMemberValue(ref ObjectContext objectContext, IYamlMemberDescriptor member,
+        protected virtual object ReadMemberValue(ref ObjectContext objectContext, IMemberDescriptor member,
             object memberValue,
             Type memberType)
         {
@@ -373,7 +373,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         /// <param name="objectContext"></param>
         protected virtual void WriteMembers(ref ObjectContext objectContext)
         {
-            foreach (var member in objectContext.Descriptor.Members.Cast<IYamlMemberDescriptor>())
+            foreach (var member in objectContext.Descriptor.Members)
             {
                 WriteMember(ref objectContext, member);
             }
@@ -384,7 +384,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         /// </summary>
         /// <param name="objectContext"></param>
         /// <param name="member">The member.</param>
-        protected virtual void WriteMember(ref ObjectContext objectContext, IYamlMemberDescriptor member)
+        protected virtual void WriteMember(ref ObjectContext objectContext, IMemberDescriptor member)
         {
             // Filter members by mask
             if ((member.Mask & objectContext.SerializerContext.MemberMask) == 0)
@@ -415,12 +415,12 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             WriteMemberValue(ref objectContext, member, memberValue, memberType);
         }
 
-        protected virtual void WriteMemberName(ref ObjectContext objectContext, IYamlMemberDescriptor member, string name)
+        protected virtual void WriteMemberName(ref ObjectContext objectContext, IMemberDescriptor member, string name)
         {
             objectContext.ObjectSerializerBackend.WriteMemberName(ref objectContext, member, name);
         }
 
-        protected virtual void WriteMemberValue(ref ObjectContext objectContext, IYamlMemberDescriptor member, object memberValue,
+        protected virtual void WriteMemberValue(ref ObjectContext objectContext, IMemberDescriptor member, object memberValue,
             Type memberType)
         {
             objectContext.ObjectSerializerBackend.WriteMemberValue(ref objectContext, member, memberValue, memberType);

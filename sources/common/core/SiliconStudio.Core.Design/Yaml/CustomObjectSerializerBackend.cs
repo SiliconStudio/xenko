@@ -24,7 +24,7 @@ namespace SiliconStudio.Core.Yaml
             this.typeDescriptorFactory = typeDescriptorFactory;
         }
 
-        public override object ReadMemberValue(ref ObjectContext objectContext, Serialization.IYamlMemberDescriptor memberDescriptor, object memberValue, Type memberType)
+        public override object ReadMemberValue(ref ObjectContext objectContext, IMemberDescriptor memberDescriptor, object memberValue, Type memberType)
         {
             var memberObjectContext = new ObjectContext(objectContext.SerializerContext, memberValue, objectContext.SerializerContext.FindTypeDescriptor(memberType));
 
@@ -37,7 +37,7 @@ namespace SiliconStudio.Core.Yaml
             return ReadYaml(ref memberObjectContext);
         }
 
-        public override void WriteMemberValue(ref ObjectContext objectContext, Serialization.IYamlMemberDescriptor memberDescriptor, object memberValue, Type memberType)
+        public override void WriteMemberValue(ref ObjectContext objectContext, IMemberDescriptor memberDescriptor, object memberValue, Type memberType)
         {
             var memberObjectContext = new ObjectContext(objectContext.SerializerContext, memberValue, objectContext.SerializerContext.FindTypeDescriptor(memberType));
 
@@ -77,7 +77,7 @@ namespace SiliconStudio.Core.Yaml
                     {
                         cachedDescriptor = typeDescriptorFactory.Find(objectType);
                     }
-                    var memberDescriptor = (IMemberDescriptor)cachedDescriptor[newMemberName];
+                    var memberDescriptor = cachedDescriptor[newMemberName];
                     objectContext.Instance.SetOverride(memberDescriptor, overrideType);
                 }
             }
@@ -92,7 +92,7 @@ namespace SiliconStudio.Core.Yaml
             return resultMemberName;
         }
 
-        public override void WriteMemberName(ref ObjectContext objectContext, Serialization.IYamlMemberDescriptor member, string memberName)
+        public override void WriteMemberName(ref ObjectContext objectContext, IMemberDescriptor member, string memberName)
         {
             // Replace the key with SiliconStudio.Core.Reflection IMemberDescriptor
             // Cache previous 
@@ -101,7 +101,7 @@ namespace SiliconStudio.Core.Yaml
                 var customDescriptor = (IMemberDescriptor)member.Tag;
                 if (customDescriptor == null)
                 {
-                    customDescriptor = (IMemberDescriptor)typeDescriptorFactory.Find(objectContext.Instance.GetType())[memberName];
+                    customDescriptor = typeDescriptorFactory.Find(objectContext.Instance.GetType())[memberName];
                     member.Tag = customDescriptor;
                 }
 

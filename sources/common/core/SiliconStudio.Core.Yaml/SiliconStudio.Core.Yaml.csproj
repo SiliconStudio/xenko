@@ -46,7 +46,6 @@
     <Compile Include="Serialization\AnchorEventEmitter.cs" />
     <Compile Include="Serialization\ContextPropertyCollection.cs" />
     <Compile Include="Serialization\DefaultNamingConvention.cs" />
-    <Compile Include="Serialization\Descriptors\DefaultKeyComparer.cs" />
     <Compile Include="Serialization\DynamicMemberDescriptorBase.cs" />
     <Compile Include="Serialization\FlatNamingConvention.cs" />
     <Compile Include="Serialization\IMemberNamingConvention.cs" />
@@ -89,7 +88,6 @@
     <Compile Include="Serialization\DocumentLoadingState.cs" />
     <Compile Include="Serialization\DuplicateAnchorException.cs" />
     <Compile Include="Serialization\EmitterState.cs" />
-    <Compile Include="Serialization\IYamlMemberDescriptor.cs" />
     <Compile Include="Serialization\IObjectFactory.cs" />
     <Compile Include="Serialization\ITagTypeRegistry.cs" />
     <Compile Include="Serialization\IYamlTypeDescriptor.cs" />
