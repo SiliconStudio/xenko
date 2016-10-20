@@ -14,42 +14,43 @@ namespace SiliconStudio.Xenko.Input
         private const DeviceObjectTypeFlags TypePovOpt = DeviceObjectTypeFlags.PointOfViewController | DeviceObjectTypeFlags.AnyInstance | DeviceObjectTypeFlags.Optional;
         private const DeviceObjectTypeFlags TypeButtonOpt = DeviceObjectTypeFlags.PushButton | DeviceObjectTypeFlags.ToggleButton | DeviceObjectTypeFlags.AnyInstance | DeviceObjectTypeFlags.Optional;
 
-        [DataObjectFormat(ArrayCount = 32, TypeFlags = TypeRelativeAxisOpt)]
-        public fixed int Axes[32];
-        [DataObjectFormat(ArrayCount = 32, TypeFlags = TypeButtonOpt)]
-        public fixed bool Buttons[32];
-        [DataObjectFormat(ArrayCount = 4, TypeFlags = TypePovOpt)]
-        public fixed int Hats[4];
+        public const int MaxSupportedButtons = 32;
+        public const int MaxSupportedAxes = 32;
+        public const int MaxSupportedPovControllers = 4;
+
+        [DataObjectFormat(ArrayCount = MaxSupportedButtons, TypeFlags = TypeButtonOpt)] public fixed bool Buttons [32];
+        [DataObjectFormat(ArrayCount = MaxSupportedAxes, TypeFlags = TypeRelativeAxisOpt)] public fixed int Axes [32];
+        [DataObjectFormat(ArrayCount = MaxSupportedPovControllers, TypeFlags = TypePovOpt)] public fixed int PovControllers [4];
     }
 
     public class CustomGamePadState : IDeviceState<CustomGamePadStateRaw, JoystickUpdate>
     {
-        public float[] Axes;
         public bool[] Buttons;
-        public int[] Hats;
+        public float[] Axes;
+        public float[] PovControllers;
 
         public unsafe void MarshalFrom(ref CustomGamePadStateRaw value)
         {
-            if(Axes.Length > 32)
+            if (Axes.Length > CustomGamePadStateRaw.MaxSupportedAxes)
                 throw new IndexOutOfRangeException("Axes are limited to 32 max");
-            if (Buttons.Length > 32)
+            if (Buttons.Length > CustomGamePadStateRaw.MaxSupportedButtons)
                 throw new IndexOutOfRangeException("Buttons are limited to 32 max");
-            if (Hats.Length > 4)
+            if (PovControllers.Length > CustomGamePadStateRaw.MaxSupportedPovControllers)
                 throw new IndexOutOfRangeException("Point of view hats are limited to 32 max");
             fixed (int* axesPtr = value.Axes)
             {
                 for (int i = 0; i < Axes.Length; i++)
-                    Axes[i] = 2.0f * (axesPtr[i] / 65535.0f - 0.5f);
+                    Axes[i] = 2.0f*(axesPtr[i]/65535.0f - 0.5f);
             }
             fixed (bool* buttonsPtr = value.Buttons)
             {
                 for (int i = 0; i < Buttons.Length; i++)
                     Buttons[i] = buttonsPtr[i];
             }
-            fixed (int* hatsPtr = value.Hats)
+            fixed (int* hatsPtr = value.PovControllers)
             {
-                for (int i = 0; i < Hats.Length; i++)
-                    Hats[i] = hatsPtr[i];
+                for (int i = 0; i < PovControllers.Length; i++)
+                    PovControllers[i] = hatsPtr[i]/65535.0f;
             }
         }
 

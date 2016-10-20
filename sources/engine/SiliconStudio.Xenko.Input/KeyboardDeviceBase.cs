@@ -12,8 +12,11 @@ namespace SiliconStudio.Xenko.Input
     public abstract class KeyboardDeviceBase : IKeyboardDevice
     {
         public abstract string DeviceName { get; }
+        public abstract Guid Id { get; }
+
         public EventHandler<KeyEvent> OnKey { get; set; }
         public readonly HashSet<Keys> DownKeys = new HashSet<Keys>();
+
         protected List<KeyEvent> KeyboardInputEvents = new List<KeyEvent>();
 
         public virtual void Update()

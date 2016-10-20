@@ -1,4 +1,7 @@
-﻿using System;
+﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,72 +10,9 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public enum ScrollWheelDirection
-    {
-        Vertical,
-        Horizontal,
-    }
-
-    public enum MouseButtonState
-    {
-        Pressed,
-        Released
-    }
-
-    public class MouseButtonEvent : EventArgs
-    {
-        public MouseButton Button;
-        public MouseButtonState State;
-    }
-
-    public class MouseWheelEvent : EventArgs
-    {
-        public ScrollWheelDirection Direction;
-        public int WheelDelta;
-    }
-
-    public interface IMouseDevice
-    {
-        /// <summary>
-        /// Raised when a mouse/pen button is pressed/released
-        /// </summary>
-        EventHandler<MouseButtonEvent> OnMouseButton { get; set; }
-
-        /// <summary>
-        /// Raised when a scroll wheel is used
-        /// </summary>
-        EventHandler<MouseWheelEvent> OnMouseWheel { get; set; }
-
-        /// <summary>
-        /// Gets or sets if the mouse is locked to the screen
-        /// </summary>
-        bool IsMousePositionLocked { get; }
-
-        /// <summary>
-        /// Locks the mouse position to the screen
-        /// </summary>
-        /// <param name="forceCenter">Force the mouse position to the center of the screen</param>
-        void LockMousePosition(bool forceCenter = false);
-
-        /// <summary>
-        /// Unlocks the mouse position if it was locked
-        /// </summary>
-        void UnlockMousePosition();
-
-        /// <summary>
-        /// Determines whether the specified button is being pressed down
-        /// </summary>
-        /// <param name="button">The button</param>
-        /// <returns><c>true</c> if the specified button is being pressed down; otherwise, <c>false</c>.</returns>
-        bool IsMouseButtonDown(MouseButton button);
-
-        /// <summary>
-        /// Attempts to set the pointer position, this only makes sense for mouse pointers
-        /// </summary>
-        /// <param name="absolutePosition">The desired position</param>
-        void SetMousePosition(Vector2 absolutePosition);
-    }
-
+    /// <summary>
+    /// Base class for mouse devices, implements some common functionality of <see cref="IMouseDevice"/>, inherits from <see cref="PointerDeviceBase"/>
+    /// </summary>
     public abstract class MouseDeviceBase : PointerDeviceBase, IMouseDevice
     {
         public EventHandler<MouseButtonEvent> OnMouseButton { get; set; }
@@ -81,8 +21,6 @@ namespace SiliconStudio.Xenko.Input
         public override PointerType Type => PointerType.Mouse;
 
         public readonly HashSet<MouseButton> DownButtons = new HashSet<MouseButton>();
-        public readonly HashSet<MouseButton> PressedButtons = new HashSet<MouseButton>();
-        public readonly HashSet<MouseButton> ReleasedButtons = new HashSet<MouseButton>();
 
         private readonly List<MouseInputEvent> mouseInputEvents = new List<MouseInputEvent>();
 
@@ -90,26 +28,20 @@ namespace SiliconStudio.Xenko.Input
         {
             base.Update();
 
-            // Clear collection of pressed/released buttons
-            PressedButtons.Clear();
-            ReleasedButtons.Clear();
-
             // Fire events
             foreach (var evt in mouseInputEvents)
             {
                 if (evt.Type == InputEventType.Down)
                 {
-                    PressedButtons.Add(evt.Button);
                     OnMouseButton?.Invoke(this, new MouseButtonEvent { Button = evt.Button, State = MouseButtonState.Pressed });
                 }
                 else if (evt.Type == InputEventType.Up)
                 {
-                    ReleasedButtons.Add(evt.Button);
                     OnMouseButton?.Invoke(this, new MouseButtonEvent { Button = evt.Button, State = MouseButtonState.Released });
                 }
                 else if (evt.Type == InputEventType.Scroll)
                 {
-                    OnMouseWheel?.Invoke(this, new MouseWheelEvent { Direction = evt.ScrollDirection, WheelDelta = evt.WheelDelta });
+                    OnMouseWheel?.Invoke(this, new MouseWheelEvent { WheelDelta = evt.WheelDelta });
                 }
             }
             mouseInputEvents.Clear();
@@ -142,9 +74,9 @@ namespace SiliconStudio.Xenko.Input
                 HandlePointerUp();
         }
 
-        public void HandleMouseWheel(ScrollWheelDirection direction, int wheelDelta)
+        public void HandleMouseWheel(int wheelDelta)
         {
-            mouseInputEvents.Add(new MouseInputEvent { Type = InputEventType.Scroll, ScrollDirection = direction, WheelDelta = wheelDelta });
+            mouseInputEvents.Add(new MouseInputEvent { Type = InputEventType.Scroll, WheelDelta = wheelDelta });
         }
 
         public abstract void LockMousePosition(bool forceCenter = false);
@@ -155,14 +87,12 @@ namespace SiliconStudio.Xenko.Input
             public MouseButton Button;
             public InputEventType Type;
             public int WheelDelta;
-            public ScrollWheelDirection ScrollDirection;
         }
 
         protected enum InputEventType
         {
             Up,
             Down,
-            Move,
             Scroll,
         }
     }

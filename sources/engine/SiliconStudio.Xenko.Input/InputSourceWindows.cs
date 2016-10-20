@@ -20,6 +20,7 @@ namespace SiliconStudio.Xenko.Input
     public class KeyboardWinforms : KeyboardDeviceBase
     {
         public override string DeviceName => "Windows Keyboard";
+        public override Guid Id => new Guid("027cf994-681f-4ed5-b38f-ce34fc295b8f");
 
         internal void HandleKeyDown(WinFormsKeys winFormsKey)
         {
@@ -44,6 +45,7 @@ namespace SiliconStudio.Xenko.Input
     public class MouseWinforms : MouseDeviceBase
     {
         public override string DeviceName => "Windows Mouse";
+        public override Guid Id => new Guid("699e35c5-c363-4bb0-8e8b-0474ea1a5cf1");
         public override bool IsMousePositionLocked => isMousePositionLocked;
         public override PointerType Type => PointerType.Mouse;
         public override Vector2 SurfaceSize => surfaceSize;
@@ -70,7 +72,7 @@ namespace SiliconStudio.Xenko.Input
                 HandleButtonDown(ConvertMouseButton(e.Button));
             };
             uiControl.MouseUp += (_, e) => HandleButtonUp(ConvertMouseButton(e.Button));
-            uiControl.MouseWheel += (_, e) => HandleMouseWheel(ScrollWheelDirection.Vertical, e.Delta);
+            uiControl.MouseWheel += (_, e) => HandleMouseWheel(e.Delta);
             uiControl.MouseCaptureChanged += (_, e) => OnLostMouseCaptureWinForms();
             uiControl.SizeChanged += UiControlOnSizeChanged;
         }

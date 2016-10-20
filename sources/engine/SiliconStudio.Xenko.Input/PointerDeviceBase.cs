@@ -14,18 +14,20 @@ namespace SiliconStudio.Xenko.Input
     /// </summary>
     public abstract class PointerDeviceBase : IPointerDevice
     {
+        public abstract string DeviceName { get; }
+        public abstract Guid Id { get; }
+
         public EventHandler<PointerEvent> OnPointer { get; set; }
         public IReadOnlyList<PointerEvent> PointerEvents => currentPointerEvents;
 
         public Vector2 AbsolutePosition { get; protected set; }
         public Vector2 Delta { get; protected set; }
 
-        public abstract string DeviceName { get; }
         public abstract PointerType Type { get; }
         public abstract Vector2 SurfaceSize { get; }
-        
+
         public readonly Stopwatch PointerClock = new Stopwatch();
-        
+
         private readonly List<PointerEvent> currentPointerEvents = new List<PointerEvent>();
         private readonly List<PointerInputEvent> pointerInputEvents = new List<PointerInputEvent>();
 
@@ -61,10 +63,12 @@ namespace SiliconStudio.Xenko.Input
         {
             pointerInputEvents.Add(new PointerInputEvent { Type = InputEventType.Down });
         }
+
         public void HandlePointerUp()
         {
             pointerInputEvents.Add(new PointerInputEvent { Type = InputEventType.Up });
         }
+
         public void HandleMove(Vector2 newPosition)
         {
             pointerInputEvents.Add(new PointerInputEvent { Type = InputEventType.Move, Position = newPosition });
@@ -74,13 +78,13 @@ namespace SiliconStudio.Xenko.Input
         {
             // Clear pointer events
             lock (PointerEvent.Pool)
-            lock (currentPointerEvents)
-            {
-                // Insert back into pool
-                foreach (var pointerEvent in currentPointerEvents)
-                    PointerEvent.Pool.Enqueue(pointerEvent);
-                currentPointerEvents.Clear();
-            }
+                lock (currentPointerEvents)
+                {
+                    // Insert back into pool
+                    foreach (var pointerEvent in currentPointerEvents)
+                        PointerEvent.Pool.Enqueue(pointerEvent);
+                    currentPointerEvents.Clear();
+                }
         }
 
         internal void HandlePointerEvents(PointerState pState)
@@ -102,7 +106,7 @@ namespace SiliconStudio.Xenko.Input
 
             lock (currentPointerEvents)
                 currentPointerEvents.Add(pointerEvent);
-            
+
             OnPointer?.Invoke(this, pointerEvent);
             PointerClock.Restart();
         }
@@ -116,6 +120,7 @@ namespace SiliconStudio.Xenko.Input
             public InputEventType Type;
             public Vector2 Position;
         }
+
         protected enum InputEventType
         {
             Up,

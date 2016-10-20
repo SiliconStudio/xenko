@@ -27,12 +27,27 @@ namespace SiliconStudio.Xenko.Input
         public List<IInputSource> InputSources = new List<IInputSource>();
         public Dictionary<IInputDevice, IInputSource> InputDevices = new Dictionary<IInputDevice, IInputSource>();
 
+        // Mapping of device guid to device
+        private readonly Dictionary<Guid, IInputDevice> inputDevicesById = new Dictionary<Guid, IInputDevice>();
+
+        // Sparse list mapping GamePad index to the guid of the device
+        private readonly List<Guid> gamepadIds = new List<Guid>();
+
+        private readonly HashSet<Keys> downKeysSet = new HashSet<Keys>();
+        private readonly HashSet<Keys> pressedKeysSet = new HashSet<Keys>();
+        private readonly HashSet<Keys> releasedKeysSet = new HashSet<Keys>();
+
+        private readonly HashSet<MouseButton> downButtonSet = new HashSet<MouseButton>();
+        private readonly HashSet<MouseButton> pressedButtonsSet = new HashSet<MouseButton>();
+        private readonly HashSet<MouseButton> releasedButtonsSet = new HashSet<MouseButton>();
+        
         public readonly List<PointerEvent> PointerEvents = new List<PointerEvent>();
         public readonly List<KeyEvent> KeyEvents = new List<KeyEvent>();
 
         private List<IKeyboardDevice> keyboardDevices = new List<IKeyboardDevice>();
         private List<IPointerDevice> pointerDevices = new List<IPointerDevice>();
-        
+        private List<IGamePadDevice> gamePadDevices = new List<IGamePadDevice>();
+
         private readonly List<SensorBase> sensors = new List<SensorBase>();
 
         internal const float DesiredSensorUpdateRate = 60;
@@ -47,26 +62,7 @@ namespace SiliconStudio.Xenko.Input
 
         private readonly GamePadState[] gamePadStates;
 
-        private readonly GamePad[] gamePads;
-
         private int gamePadCount;
-
-        private readonly HashSet<Keys> downKeysSet = new HashSet<Keys>();
-        private readonly HashSet<Keys> pressedKeysSet = new HashSet<Keys>();
-        private readonly HashSet<Keys> releasedKeysSet = new HashSet<Keys>();
-
-
-        private readonly HashSet<MouseButton> downButtonSet = new HashSet<MouseButton>();
-        private readonly HashSet<MouseButton> pressedButtonsSet = new HashSet<MouseButton>();
-        private readonly HashSet<MouseButton> releasedButtonsSet = new HashSet<MouseButton>();
-
-        private readonly HashSet<GamePadButton>[] pressedGamePadButtonsSet = new HashSet<GamePadButton>[MaximumGamePadCount];
-
-        private readonly HashSet<GamePadButton>[] releasedGamePadButtonsSet = new HashSet<GamePadButton>[MaximumGamePadCount];
-
-        private readonly HashSet<GamePadButton>[] currentGamePadButtonsSet = new HashSet<GamePadButton>[MaximumGamePadCount];
-
-        private readonly HashSet<GamePadButton>[] activeGamePadButtonsSet = new HashSet<GamePadButton>[MaximumGamePadCount];
 
         private readonly List<GamePadButton> supportedGamePadButtons = new List<GamePadButton>();
 
@@ -272,9 +268,6 @@ namespace SiliconStudio.Xenko.Input
         {
             Enabled = true;
             
-            gamePads = new GamePad[MaximumGamePadCount];
-            gamePadStates = new GamePadState[MaximumGamePadCount];
-            
             KeyEvents = new List<KeyEvent>();
             PointerEvents = currentPointerEvents;
             GestureEvents = currentGestureEvents;
@@ -298,28 +291,28 @@ namespace SiliconStudio.Xenko.Input
             sensors.Add(Gravity);
             sensors.Add(Orientation);
 
-            supportedGamePadButtons.Add(GamePadButton.A);
-            supportedGamePadButtons.Add(GamePadButton.B);
-            supportedGamePadButtons.Add(GamePadButton.X);
-            supportedGamePadButtons.Add(GamePadButton.Y);
-            supportedGamePadButtons.Add(GamePadButton.Start);
-            supportedGamePadButtons.Add(GamePadButton.Back);
-            supportedGamePadButtons.Add(GamePadButton.LeftShoulder);
-            supportedGamePadButtons.Add(GamePadButton.RightShoulder);
-            supportedGamePadButtons.Add(GamePadButton.RightThumb);
-            supportedGamePadButtons.Add(GamePadButton.LeftThumb);
-            supportedGamePadButtons.Add(GamePadButton.PadUp);
-            supportedGamePadButtons.Add(GamePadButton.PadDown);
-            supportedGamePadButtons.Add(GamePadButton.PadLeft);
-            supportedGamePadButtons.Add(GamePadButton.PadRight);
-
-            for (var i = 0; i < MaximumGamePadCount; i++)
-            {
-                pressedGamePadButtonsSet[i] = new HashSet<GamePadButton>();
-                releasedGamePadButtonsSet[i] = new HashSet<GamePadButton>();
-                currentGamePadButtonsSet[i] = new HashSet<GamePadButton>();
-                activeGamePadButtonsSet[i] = new HashSet<GamePadButton>();
-            }
+            //supportedGamePadButtons.Add(GamePadButton.A);
+            //supportedGamePadButtons.Add(GamePadButton.B);
+            //supportedGamePadButtons.Add(GamePadButton.X);
+            //supportedGamePadButtons.Add(GamePadButton.Y);
+            //supportedGamePadButtons.Add(GamePadButton.Start);
+            //supportedGamePadButtons.Add(GamePadButton.Back);
+            //supportedGamePadButtons.Add(GamePadButton.LeftShoulder);
+            //supportedGamePadButtons.Add(GamePadButton.RightShoulder);
+            //supportedGamePadButtons.Add(GamePadButton.RightThumb);
+            //supportedGamePadButtons.Add(GamePadButton.LeftThumb);
+            //supportedGamePadButtons.Add(GamePadButton.PadUp);
+            //supportedGamePadButtons.Add(GamePadButton.PadDown);
+            //supportedGamePadButtons.Add(GamePadButton.PadLeft);
+            //supportedGamePadButtons.Add(GamePadButton.PadRight);
+            //
+            //for (var i = 0; i < MaximumGamePadCount; i++)
+            //{
+            //    pressedGamePadButtonsSet[i] = new HashSet<GamePadButton>();
+            //    releasedGamePadButtonsSet[i] = new HashSet<GamePadButton>();
+            //    currentGamePadButtonsSet[i] = new HashSet<GamePadButton>();
+            //    activeGamePadButtonsSet[i] = new HashSet<GamePadButton>();
+            //}
         }
 
         public override void Initialize()
@@ -361,6 +354,7 @@ namespace SiliconStudio.Xenko.Input
         private void OnInputDeviceAdded(object sender, IInputDevice device)
         {
             InputDevices.Add(device, (IInputSource)sender);
+            inputDevicesById.Add(device.Id, device);
             
             if (device is IKeyboardDevice)
             {
@@ -370,11 +364,16 @@ namespace SiliconStudio.Xenko.Input
             {
                 RegisterPointer(device as IPointerDevice);
             }
+            else if (device is IGamePadDevice)
+            {
+                RegisterGamePad(device as IGamePadDevice);
+            }
         }
 
         private void OnInputDeviceRemoved(object sender, IInputDevice device)
         {
             InputDevices.Remove(device);
+            inputDevicesById.Remove(device.Id);
 
             if (device is IKeyboardDevice)
             {
@@ -383,6 +382,10 @@ namespace SiliconStudio.Xenko.Input
             else if (device is IPointerDevice)
             {
                 UnregisterPointer(device as IPointerDevice);
+            }
+            else if (device is IGamePadDevice)
+            {
+                UnregisterGamePad(device as IGamePadDevice);
             }
         }
 
@@ -423,11 +426,8 @@ namespace SiliconStudio.Xenko.Input
 
                 mouse.OnMouseWheel += (sender, evt) =>
                 {
-                    if (evt.Direction == ScrollWheelDirection.Vertical)
-                    {
-                        if(Math.Abs(evt.WheelDelta) > Math.Abs(MouseWheelDelta))
-                            MouseWheelDelta = evt.WheelDelta;
-                    }
+                    if(Math.Abs(evt.WheelDelta) > Math.Abs(MouseWheelDelta))
+                        MouseWheelDelta = evt.WheelDelta;
                 };
             }
         }
@@ -469,6 +469,51 @@ namespace SiliconStudio.Xenko.Input
         {
             keyboardDevices.Remove(keyboard);
             keyboard.OnKey = null;
+        }
+        
+        void RegisterGamePad(IGamePadDevice gamePad)
+        {
+            gamePadDevices.Add(gamePad);
+            
+            // Find a new index for this gamepad
+            int targetIndex = 0;
+            for (int i = 0; i < gamepadIds.Count; i++)
+            {
+                if (gamepadIds[i] == Guid.Empty)
+                {
+                    targetIndex = i;
+                    break;
+                }
+                targetIndex++;
+            }
+
+            if (targetIndex >= gamepadIds.Count)
+            {
+                gamepadIds.Add(gamePad.Id);
+            }
+            else
+            {
+                gamepadIds[targetIndex] = gamePad.Id;
+            }
+
+            var gamepadBase = gamePad as GamePadDeviceBase;
+            if(gamepadBase == null)
+                throw new InvalidOperationException("Cannot register GamePad id, because it does not inherit from GamePadDeviceBase");
+            gamepadBase.IndexInternal = targetIndex;
+        }
+
+        void UnregisterGamePad(IGamePadDevice gamePad)
+        {
+            // Free the gamepad index in the gamepad list
+            // this will allow another gamepad to use this index again
+            if(gamepadIds.Count <= gamePad.Index || gamePad.Index < 0)
+                throw new IndexOutOfRangeException("Gamepad index was out of range");
+            gamepadIds[gamePad.Index] = Guid.Empty;
+
+            gamePadDevices.Remove(gamePad);
+            gamePad.OnButton = null;
+            gamePad.OnAxisChanged = null;
+            gamePad.OnPovControllerChanged = null;
         }
 
         /// <summary>
@@ -537,130 +582,7 @@ namespace SiliconStudio.Xenko.Input
                 Mouse.SetMousePosition(normalizedPosition * pointerDevices[0].SurfaceSize);
             }
         }
-
-        /// <summary>
-        /// Gets a binding value for the specified name and the specified config extract from the current <see cref="VirtualButtonConfigSet"/>.
-        /// </summary>
-        /// <param name="configIndex">An index to a <see cref="VirtualButtonConfig"/> stored in the <see cref="VirtualButtonConfigSet"/></param>
-        /// <param name="bindingName">Name of the binding.</param>
-        /// <returns>The value of the binding.</returns>
-        public virtual float GetVirtualButton(int configIndex, object bindingName)
-        {
-            if (VirtualButtonConfigSet == null || configIndex < 0 || configIndex >= virtualButtonValues.Count)
-            {
-                return 0.0f;
-            }
-
-            float value;
-            virtualButtonValues[configIndex].TryGetValue(bindingName, out value);
-            return value;
-        }
-
-        /// <summary>
-        /// Gets the state of the specified gamepad.
-        /// </summary>
-        /// <param name="gamepadIndex">Index of the gamepad. -1 to return the first connected gamepad</param>
-        /// <returns>The state of the gamepad.</returns>
-        public virtual GamePadState GetGamePad(int gamepadIndex)
-        {
-            // If the game pad index is negative or larger, take the first connected gamepad
-            if (gamepadIndex < 0)
-            {
-                gamepadIndex = 0;
-                for (int i = 0; i < gamePadStates.Length; i++)
-                {
-                    if (gamePadStates[i].IsConnected)
-                    {
-                        gamepadIndex = i;
-                        break;
-                    }
-                }
-            }
-            else if (gamepadIndex >= gamePadStates.Length)
-            {
-                for (gamepadIndex = gamePadStates.Length - 1; gamepadIndex >= 0; gamepadIndex--)
-                {
-                    if (gamePadStates[gamepadIndex].IsConnected)
-                    {
-                        break;
-                    }
-                }
-            }
-
-            return gamePadStates[gamepadIndex];
-        }
-
-        /// <summary>
-        /// Sets the vibration state of the gamepad
-        /// </summary>
-        /// <param name="gamepadIndex">Index of the gamepad. -1 to use the first connected gamepad</param>
-        /// <param name="leftMotor">A value from 0.0 to 1.0 where 0.0 is no vibration and 1.0 is full vibration power; applies to the left motor.</param>
-        /// <param name="rightMotor">A value from 0.0 to 1.0 where 0.0 is no vibration and 1.0 is full vibration power; applies to the right motor.</param>
-        public void SetGamePadVibration(int gamepadIndex, float leftMotor, float rightMotor)
-        {
-            // If the game pad index is negative or larger, take the first connected gamepad
-            if (gamepadIndex < 0)
-            {
-                gamepadIndex = 0;
-                for (int i = 0; i < gamePadStates.Length; i++)
-                {
-                    if (gamePadStates[i].IsConnected)
-                    {
-                        gamepadIndex = i;
-                        break;
-                    }
-                }
-            }
-            else if (gamepadIndex >= gamePadStates.Length)
-            {
-                for (gamepadIndex = gamePadStates.Length - 1; gamepadIndex >= 0; gamepadIndex--)
-                {
-                    if (gamePadStates[gamepadIndex].IsConnected)
-                    {
-                        break;
-                    }
-                }
-            }
-
-            if (gamePadStates[gamepadIndex].IsConnected)
-            {
-                gamePads[gamepadIndex].SetVibration(leftMotor, rightMotor);
-            }
-        }
-
-        /// <summary>
-        /// Determines whether the specified game pad button is being pressed down.
-        /// </summary>
-        /// <param name="gamepadIndex">A valid game pad index</param>
-        /// <param name="button">The button to check</param>
-        /// <returns></returns>
-        public bool IsPadButtonDown(int gamepadIndex, GamePadButton button)
-        {
-            return activeGamePadButtonsSet[gamepadIndex].Contains(button);
-        }
-
-        /// <summary>
-        /// Determines whether the specified game pad button is pressed since the previous update.
-        /// </summary>
-        /// <param name="gamepadIndex">A valid game pad index</param>
-        /// <param name="button">The button to check</param>
-        /// <returns></returns>
-        public bool IsPadButtonPressed(int gamepadIndex, GamePadButton button)
-        {
-            return pressedGamePadButtonsSet[gamepadIndex].Contains(button);
-        }
-
-        /// <summary>
-        /// Determines whether the specified game pad button is released since the previous update.
-        /// </summary>
-        /// <param name="gamepadIndex">A valid game pad index</param>
-        /// <param name="button">The button to check</param>
-        /// <returns></returns>
-        public bool IsPadButtonReleased(int gamepadIndex, GamePadButton button)
-        {
-            return releasedGamePadButtonsSet[gamepadIndex].Contains(button);
-        }
-
+        
         /// <summary>
         /// Determines whether the specified key is being pressed down.
         /// </summary>
@@ -1093,76 +1015,6 @@ namespace SiliconStudio.Xenko.Input
             }
         }*/
 
-        internal static float ClampDeadZone(float value, float deadZone)
-        {
-            if (value > 0.0f)
-            {
-                value -= deadZone;
-                if (value < 0.0f)
-                {
-                    value = 0.0f;
-                }
-            }
-            else
-            {
-                value += deadZone;
-                if (value > 0.0f)
-                {
-                    value = 0.0f;
-                }
-            }
-
-            // Renormalize the value according to the dead zone
-            value = value/(1.0f - deadZone);
-            return value < -1.0f ? -1.0f : value > 1.0f ? 1.0f : value;
-        }
-
-        internal struct GamePadKey : IEquatable<GamePadKey>
-        {
-            #region Constants and Fields
-
-            public readonly GamePadFactory Factory;
-
-            public readonly Guid Guid;
-
-            #endregion
-
-            public GamePadKey(Guid guid, GamePadFactory factory)
-            {
-                Guid = guid;
-                Factory = factory;
-            }
-
-            public bool Equals(GamePadKey other)
-            {
-                return Guid.Equals(other.Guid) && Factory.Equals(other.Factory);
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (ReferenceEquals(null, obj)) return false;
-                return obj is GamePadKey && Equals((GamePadKey)obj);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-                    return (Guid.GetHashCode()*397) ^ Factory.GetHashCode();
-                }
-            }
-
-            public static bool operator ==(GamePadKey left, GamePadKey right)
-            {
-                return left.Equals(right);
-            }
-
-            public static bool operator !=(GamePadKey left, GamePadKey right)
-            {
-                return !left.Equals(right);
-            }
-        }
-
         /// <summary>
         /// Gets or sets the value indicating if simultaneous multiple finger touches are enabled or not.
         /// If not enabled only the events of one finger at a time are triggered.
@@ -1175,47 +1027,6 @@ namespace SiliconStudio.Xenko.Input
 
         public virtual void OnApplicationResumed(object sender, EventArgs e)
         {
-        }
-
-        /// <summary>
-        /// Base class used to track the state of a gamepad (XInput or DirectInput).
-        /// </summary>
-        internal abstract class GamePad : IDisposable
-        {
-            #region Constants and Fields
-
-            /// <summary>
-            /// Unique identifier of the gamepad.
-            /// </summary>
-            public GamePadKey Key;
-
-            #endregion
-
-            protected GamePad(GamePadKey key)
-            {
-                Key = key;
-            }
-
-            public virtual void Dispose()
-            {
-            }
-
-            public abstract GamePadState GetState();
-
-            public virtual void SetVibration(float leftMotor, float rightMotor)
-            {
-
-            }
-        }
-
-        /// <summary>
-        /// Base class used to track the state of a gamepad (XInput or DirectInput).
-        /// </summary>
-        internal abstract class GamePadFactory
-        {
-            public abstract IEnumerable<GamePadKey> GetConnectedPads();
-
-            public abstract VirtualButton.GamePad GetGamePad(Guid guid);
         }
 
         /// <summary>

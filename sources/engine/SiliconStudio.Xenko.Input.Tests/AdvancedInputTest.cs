@@ -81,9 +81,12 @@ namespace SiliconStudio.Xenko.Input.Tests
             GraphicsDeviceManager.PreferredDepthStencilFormat = PixelFormat.D24_UNorm_S8_UInt;
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.None;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_1 };
+            //GraphicsDeviceManager.SynchronizeWithVerticalRetrace = false;
 
             fontColor = Color.Black;
             mouseColor = Color.Gray;
+
+            this.IsDrawDesynchronized = true;
 
             displayPointerDuration = TimeSpan.FromSeconds(1.5f);
             displayGestureDuration = TimeSpan.FromSeconds(1f);

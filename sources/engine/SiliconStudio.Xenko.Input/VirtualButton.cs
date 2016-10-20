@@ -123,7 +123,6 @@ namespace SiliconStudio.Xenko.Input
                 if (mapIp.Count == 0)
                 {
                     RegisterFromType(typeof(Keyboard));
-                    RegisterFromType(typeof(GamePad));
                     RegisterFromType(typeof(Mouse));
                     registeredReadOnly = registered;
                 }

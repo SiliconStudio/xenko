@@ -9,6 +9,8 @@ namespace SiliconStudio.Xenko.Input
     {
         string DeviceName { get; }
 
+        Guid Id { get; }
+
         // TODO: Move to a more specific subclass?
         void Update();
     }

@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -23,6 +23,9 @@ namespace SiliconStudio.Xenko.Input
             // Does nothing by default
         }
 
+        /// <summary>
+        /// Unregisters all devices registered with <see cref="RegisterDevice"/> which have not been unregistered yet
+        /// </summary>
         public virtual void Dispose()
         {
             // Unregister all devices
@@ -55,8 +58,8 @@ namespace SiliconStudio.Xenko.Input
             if (!registeredInputDevices.Contains(device))
                 throw new InvalidOperationException("Tried to use UnregisterDevice on an unregistered input device");
 
-            OnInputDeviceAdded?.Invoke(this, device);
-            registeredInputDevices.Add(device);
+            OnInputDeviceRemoved?.Invoke(this, device);
+            registeredInputDevices.Remove(device);
         }
     }
 }
