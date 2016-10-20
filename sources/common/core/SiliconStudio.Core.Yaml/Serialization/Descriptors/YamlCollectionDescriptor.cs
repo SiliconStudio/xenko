@@ -333,7 +333,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// <returns><c>true</c> if the specified type is collection; otherwise, <c>false</c>.</returns>
         public static bool IsCollection(Type type)
         {
-            return !type.IsArray && (typeof(ICollection).IsAssignableFrom(type) || type.HasInterface(typeof(ICollection<>)));
+            return !type.IsArray && (typeof(IList).IsAssignableFrom(type) || type.HasInterface(typeof(ICollection<>)));
         }
 
         /// <inheritdoc/>
