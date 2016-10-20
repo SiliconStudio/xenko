@@ -55,7 +55,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
     /// </summary>
     public class YamlPrimitiveDescriptor : YamlObjectDescriptor
     {
-        private static readonly List<IMemberDescriptorBase> EmptyMembers = new List<IMemberDescriptorBase>();
+        private static readonly List<IMemberDescriptor> EmptyMembers = new List<IMemberDescriptor>();
 
         private readonly Dictionary<string, object> enumRemap;
 
@@ -66,8 +66,8 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// <param name="type">The type.</param>
         /// <param name="namingConvention">The naming convention.</param>
         /// <exception cref="System.ArgumentException">Type [{0}] is not a primitive</exception>
-        public YamlPrimitiveDescriptor(IAttributeRegistry attributeRegistry, Type type, IMemberNamingConvention namingConvention)
-            : base(attributeRegistry, type, false, namingConvention)
+        public YamlPrimitiveDescriptor(ITypeDescriptorFactory factory, Type type, IMemberNamingConvention namingConvention)
+            : base(factory, type, false, namingConvention)
         {
             if (!IsPrimitive(type))
                 throw new ArgumentException("Type [{0}] is not a primitive");
@@ -77,7 +77,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             {
                 foreach (var member in type.GetFields(BindingFlags.Public | BindingFlags.Static))
                 {
-                    var attributes = attributeRegistry.GetAttributes(member);
+                    var attributes = AttributeRegistry.GetAttributes(member);
                     foreach (var attribute in attributes)
                     {
                         var yamlRemap = attribute as DataAliasAttribute;
@@ -131,7 +131,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             return Enum.Parse(Type, enumAsText, true);
         }
 
-        protected override List<IMemberDescriptorBase> PrepareMembers()
+        protected override List<IMemberDescriptor> PrepareMembers()
         {
             return EmptyMembers;
         }

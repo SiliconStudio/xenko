@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 
 namespace SiliconStudio.Core.Reflection
 {
@@ -27,7 +28,7 @@ namespace SiliconStudio.Core.Reflection
         /// <param name="attributeRegistry">The attribute registry.</param>
         /// <exception cref="System.ArgumentNullException">attributeRegistry</exception>
         public TypeDescriptorFactory(IAttributeRegistry attributeRegistry)
-            : base(attributeRegistry)
+            : base(new KeyComparer(), attributeRegistry)
         {
         }
 
@@ -70,10 +71,27 @@ namespace SiliconStudio.Core.Reflection
                 descriptor = new ObjectDescriptor(this, type);
             }
 
-            // Make sure the descriptor is initialized
-            descriptor.Initialize();
-
             return descriptor;
+        }
+
+        // TODO: Replace this by DefaultKeyComparer once this class has been moved to Core.Reflection
+        private class KeyComparer : IComparer<object>
+        {
+            public int Compare(object x, object y)
+            {
+                IMemberDescriptor left = (IMemberDescriptor)x;
+                IMemberDescriptor right = (IMemberDescriptor)y;
+                // If order is defined, first order by order
+                if (left.Order.HasValue || right.Order.HasValue)
+                {
+                    var leftOrder = left.Order ?? int.MaxValue;
+                    var rightOrder = right.Order ?? int.MaxValue;
+                    return leftOrder.CompareTo(rightOrder);
+                }
+
+                // else order by name
+                return string.CompareOrdinal(left.Name, right.Name);
+            }
         }
     }
 }

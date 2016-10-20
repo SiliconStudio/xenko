@@ -52,7 +52,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
     /// <summary>
     /// Describe a member of an object.
     /// </summary>
-    public interface IYamlMemberDescriptor : IMemberDescriptorBase
+    public interface IYamlMemberDescriptor : IMemberDescriptor
     {
         /// <summary>
         /// Gets the name.

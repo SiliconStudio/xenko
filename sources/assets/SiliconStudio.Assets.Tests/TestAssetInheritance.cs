@@ -20,7 +20,7 @@ namespace SiliconStudio.Assets.Tests
             var assetItems = new List<AssetItem>();
 
             var objDesc = TypeDescriptorFactory.Default.Find(typeof(TestAssetWithParts));
-            var memberDesc = objDesc.Members.First(t => t.Name == "Name");
+            var memberDesc = (IMemberDescriptor)objDesc.Members.First(t => t.Name == "Name");
 
             assets.Add(new TestAssetWithParts()
             {

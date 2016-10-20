@@ -46,6 +46,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 {
@@ -57,10 +58,11 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// <summary>
         /// Initializes a new instance of the <see cref="YamlMemberDescriptorBase"/> class.
         /// </summary>
+        /// <param name="typeDescriptor">The type descriptor of this member.</param>
         /// <param name="memberInfo">The member information.</param>
         /// <param name="defaultNameComparer">The default name comparer.</param>
         /// <exception cref="System.ArgumentNullException">memberInfo</exception>
-        protected YamlMemberDescriptorBase(MemberInfo memberInfo, StringComparer defaultNameComparer)
+        protected YamlMemberDescriptorBase(ITypeDescriptor typeDescriptor, MemberInfo memberInfo, StringComparer defaultNameComparer)
         {
             if (memberInfo == null) throw new ArgumentNullException(nameof(memberInfo));
             if (defaultNameComparer == null) throw new ArgumentNullException(nameof(defaultNameComparer));
@@ -70,19 +72,21 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             OriginalName = Name;
             DeclaringType = memberInfo.DeclaringType;
             DefaultNameComparer = defaultNameComparer;
+            TypeDescriptor = typeDescriptor;
         }
 
         public string Name { get; internal set; }
-        public string OriginalName { get; private set; }
-        public StringComparer DefaultNameComparer { get; private set; }
+        public string OriginalName { get; }
+        public StringComparer DefaultNameComparer { get; }
         public abstract Type Type { get; }
+        public ITypeDescriptor TypeDescriptor { get; }
         public int? Order { get; internal set; }
 
         /// <summary>
         /// Gets the type of the declaring this member.
         /// </summary>
         /// <value>The type of the declaring.</value>
-        public Type DeclaringType { get; private set; }
+        public Type DeclaringType { get; }
 
         public DataMemberMode Mode { get; internal set; }
         public abstract object Get(object thisObject);
@@ -102,6 +106,6 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// Gets the member information.
         /// </summary>
         /// <value>The member information.</value>
-        public MemberInfo MemberInfo { get; private set; }
+        public MemberInfo MemberInfo { get; }
     }
 }

@@ -46,6 +46,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 {
@@ -64,8 +65,8 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// <param name="propertyInfo">The property information.</param>
         /// <param name="defaultNameComparer">The default name comparer.</param>
         /// <exception cref="System.ArgumentNullException">propertyInfo</exception>
-        public YamlPropertyDescriptor(PropertyInfo propertyInfo, StringComparer defaultNameComparer)
-            : base(propertyInfo, defaultNameComparer)
+        public YamlPropertyDescriptor(ITypeDescriptor typeDescriptor, PropertyInfo propertyInfo, StringComparer defaultNameComparer)
+            : base(typeDescriptor, propertyInfo, defaultNameComparer)
         {
             if (propertyInfo == null)
                 throw new ArgumentNullException("propertyInfo");

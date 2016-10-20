@@ -12,8 +12,8 @@ namespace SiliconStudio.Core.Reflection
     {
         protected static readonly string SystemCollectionsNamespace = typeof(int).Namespace;
 
-        protected IMemberDescriptorBase[] members;
-        protected Dictionary<string, IMemberDescriptorBase> mapMembers;
+        protected IMemberDescriptor[] members;
+        protected Dictionary<string, IMemberDescriptor> mapMembers;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectDescriptorBase" /> class.
@@ -32,7 +32,7 @@ namespace SiliconStudio.Core.Reflection
 
         public Type Type { get; }
 
-        public IEnumerable<IMemberDescriptorBase> Members => members;
+        public IEnumerable<IMemberDescriptor> Members => members;
 
         public int Count => members?.Length ?? 0;
 
@@ -40,19 +40,53 @@ namespace SiliconStudio.Core.Reflection
 
         public abstract DescriptorCategory Category { get; }
 
-        public IMemberDescriptorBase this[string name]
+        public IMemberDescriptor this[string name]
         {
             get
             {
                 if (mapMembers == null)
                     throw new KeyNotFoundException(name);
-                IMemberDescriptorBase member;
+                IMemberDescriptor member;
                 mapMembers.TryGetValue(name, out member);
                 return member;
             }
         }
 
-        public abstract void Initialize();
+        public virtual void Initialize(IComparer<object> keyComparer)
+        {
+            if (members != null)
+                return;
+
+            var memberList = PrepareMembers();
+
+            // Sort members by name
+            // This is to make sure that properties/fields for an object 
+            // are always displayed in the same order
+            if (keyComparer != null)
+            {
+                memberList.Sort(keyComparer);
+            }
+
+            // Free the member list
+            members = memberList.ToArray();
+
+            // If no members found, we don't need to build a dictionary map
+            if (members.Length <= 0)
+                return;
+
+            mapMembers = new Dictionary<string, IMemberDescriptor>(members.Length);
+
+            foreach (var member in members)
+            {
+                IMemberDescriptor existingMember;
+                if (mapMembers.TryGetValue(member.Name, out existingMember))
+                {
+                    throw new InvalidOperationException("Failed to get ObjectDescriptor for type [{0}]. The member [{1}] cannot be registered as a member with the same name is already registered [{2}]".ToFormat(Type.FullName, member, existingMember));
+                }
+
+                mapMembers.Add(member.Name, member);
+            }
+        }
 
         public bool IsCompilerGenerated { get; }
 
@@ -61,7 +95,7 @@ namespace SiliconStudio.Core.Reflection
             return mapMembers != null && mapMembers.ContainsKey(memberName);
         }
 
-        protected abstract List<IMemberDescriptorBase> PrepareMembers();
+        protected abstract List<IMemberDescriptor> PrepareMembers();
 
         protected bool IsMemberToVisit(MemberInfo memberInfo)
         {

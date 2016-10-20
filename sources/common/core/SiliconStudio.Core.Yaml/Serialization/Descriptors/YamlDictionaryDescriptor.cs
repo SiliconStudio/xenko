@@ -70,8 +70,8 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// <param name="emitDefaultValues">if set to <c>true</c> [emit default values].</param>
         /// <param name="namingConvention">The naming convention.</param>
         /// <exception cref="System.ArgumentException">Expecting a type inheriting from System.Collections.IDictionary;type</exception>
-        public YamlDictionaryDescriptor(IAttributeRegistry attributeRegistry, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
-            : base(attributeRegistry, type, emitDefaultValues, namingConvention)
+        public YamlDictionaryDescriptor(ITypeDescriptorFactory factory, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
+            : base(factory, type, emitDefaultValues, namingConvention)
         {
             if (!IsDictionary(type))
                 throw new ArgumentException(@"Expecting a type inheriting from System.Collections.IDictionary", nameof(type));
@@ -94,9 +94,9 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             }
         }
 
-        public override void Initialize()
+        public override void Initialize(IComparer<object> keyComparer)
         {
-            base.Initialize();
+            base.Initialize(keyComparer);
 
             // Only Keys and Values
             IsPureDictionary = Count == 0;

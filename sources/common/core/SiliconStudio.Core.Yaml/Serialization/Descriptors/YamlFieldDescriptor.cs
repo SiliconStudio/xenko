@@ -46,6 +46,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 {
@@ -59,11 +60,12 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// <summary>
         /// Initializes a new instance of the <see cref="YamlFieldDescriptor" /> class.
         /// </summary>
+        /// <param name="typeDescriptor">The type descriptor.</param>
         /// <param name="fieldInfo">The property information.</param>
         /// <param name="defaultNameComparer">The default name comparer.</param>
         /// <exception cref="System.ArgumentNullException">fieldInfo</exception>
-        public YamlFieldDescriptor(FieldInfo fieldInfo, StringComparer defaultNameComparer)
-            : base(fieldInfo, defaultNameComparer)
+        public YamlFieldDescriptor(ITypeDescriptor typeDescriptor, FieldInfo fieldInfo, StringComparer defaultNameComparer)
+            : base(typeDescriptor, fieldInfo, defaultNameComparer)
         {
             if (fieldInfo == null)
                 throw new ArgumentNullException("fieldInfo");

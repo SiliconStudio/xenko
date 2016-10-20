@@ -18,7 +18,7 @@ namespace SiliconStudio.Core.Yaml
     public static class YamlSerializer
     {
         private static readonly Logger Log = GlobalLogger.GetLogger(typeof(YamlSerializer).Name);
-        private static event Action<YamlObjectDescriptor, List<IMemberDescriptorBase>> PrepareMembersEvent;
+        private static event Action<YamlObjectDescriptor, List<IMemberDescriptor>> PrepareMembersEvent;
 
         // TODO: This code is not robust in case of reloading assemblies into the same process
         private static readonly List<Assembly> RegisteredAssemblies = new List<Assembly>();
@@ -26,7 +26,7 @@ namespace SiliconStudio.Core.Yaml
         private static Serializer globalSerializer;
         private static Serializer globalSerializerWithoutId;
 
-        public static event Action<YamlObjectDescriptor, List<IMemberDescriptorBase>> PrepareMembers
+        public static event Action<YamlObjectDescriptor, List<IMemberDescriptor>> PrepareMembers
         {
             add
             {
@@ -319,7 +319,7 @@ namespace SiliconStudio.Core.Yaml
             return localSerializer;
         }
 
-        private static void PrepareMembersCallback(YamlObjectDescriptor objDesc, List<IMemberDescriptorBase> memberDescriptors)
+        private static void PrepareMembersCallback(YamlObjectDescriptor objDesc, List<IMemberDescriptor> memberDescriptors)
         {
             var type = objDesc.Type;
 

@@ -44,7 +44,7 @@ namespace SiliconStudio.Assets.Tests
             };
 
             var objDesc = TypeDescriptorFactory.Default.Find(typeof(TestAssetClonerObject));
-            var memberDesc = objDesc.Members.First(t => t.Name == "Name");
+            var memberDesc = (IMemberDescriptor)objDesc.Members.First(t => t.Name == "Name");
             obj.SetOverride(memberDesc, OverrideType.New);
             obj.SubObject.SetOverride(memberDesc, OverrideType.Sealed);
 
@@ -73,7 +73,7 @@ namespace SiliconStudio.Assets.Tests
             };
 
             var objDesc = TypeDescriptorFactory.Default.Find(typeof(TestAssetClonerObject));
-            var memberDesc = objDesc.Members.First(t => t.Name == "Name");
+            var memberDesc = (IMemberDescriptor)objDesc.Members.First(t => t.Name == "Name");
             obj.SetOverride(memberDesc, OverrideType.New);
             obj.SubObject.SetOverride(memberDesc, OverrideType.Sealed);
 
@@ -119,7 +119,7 @@ namespace SiliconStudio.Assets.Tests
 
             // Test the same with overrides
             var objDesc = TypeDescriptorFactory.Default.Find(typeof(TestAssetClonerObject));
-            var memberDesc = objDesc.Members.First(t => t.Name == "Name");
+            var memberDesc = (IMemberDescriptor)objDesc.Members.First(t => t.Name == "Name");
             obj1.SetOverride(memberDesc, OverrideType.New);
             obj1.SubObject.SetOverride(memberDesc, OverrideType.Sealed);
 

@@ -60,30 +60,31 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         public static readonly Func<object, bool> ShouldSerializeDefault = o => true;
 
         private static readonly object[] EmptyObjectArray = new object[0];
+        private readonly ITypeDescriptorFactory factory;
         private readonly bool emitDefaultValues;
-        private bool isSorted;
         private HashSet<string> remapMembers;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="YamlObjectDescriptor" /> class.
         /// </summary>
-        /// <param name="attributeRegistry">The attribute registry.</param>
+        /// <param name="factory">The type descriptor factory.</param>
         /// <param name="type">The type.</param>
         /// <param name="emitDefaultValues">if set to <c>true</c> [emit default values].</param>
         /// <param name="namingConvention">The naming convention.</param>
         /// <exception cref="System.ArgumentNullException">type</exception>
         /// <exception cref="YamlException">type</exception>
-        public YamlObjectDescriptor(IAttributeRegistry attributeRegistry, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
-            : base(attributeRegistry, type)
+        public YamlObjectDescriptor(ITypeDescriptorFactory factory, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
+            : base(factory?.AttributeRegistry, type)
         {
-            if (attributeRegistry == null)
-                throw new ArgumentNullException(nameof(attributeRegistry));
+            if (factory == null)
+                throw new ArgumentNullException(nameof(factory));
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
             if (namingConvention == null)
                 throw new ArgumentNullException(nameof(namingConvention));
 
             NamingConvention = namingConvention;
+            this.factory = factory;
             this.emitDefaultValues = emitDefaultValues;
 
             Attributes = AttributeRegistry.GetAttributes(type);
@@ -113,51 +114,31 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// <summary>
         /// Initializes this instance.
         /// </summary>
+        /// <param name="keyComparer"></param>
         /// <exception cref="YamlException">Failed to get ObjectDescriptor for type [{0}]. The member [{1}] cannot be registered as a member with the same name is already registered [{2}].DoFormat(type.FullName, member, existingMember)</exception>
-        public override void Initialize()
+        public override void Initialize(IComparer<object> keyComparer)
         {
-            if (members != null)
-            {
-                return;
-            }
-
-            members = PrepareMembers().ToArray();
-
-            // If no members found, we don't need to build a dictionary map
-            if (members.Length <= 0)
-                return;
-
-            mapMembers = new Dictionary<string, IMemberDescriptorBase>((int) (members.Length*1.2));
+            base.Initialize(keyComparer);
 
             foreach (var member in members.Cast<IYamlMemberDescriptor>())
             {
-                IMemberDescriptorBase existingMember;
-                if (mapMembers.TryGetValue(member.Name, out existingMember))
-                {
-                    throw new YamlException($"Failed to get ObjectDescriptor for type [{Type.FullName}]. The member [{member}] cannot be registered as a member with the same name is already registered [{existingMember}]");
-                }
-
-                mapMembers.Add(member.Name, member);
-
                 // If there is any alternative names, register them
                 if (member.AlternativeNames != null)
                 {
                     foreach (var alternateName in member.AlternativeNames)
                     {
+                        IMemberDescriptor existingMember;
                         if (mapMembers.TryGetValue(alternateName, out existingMember))
                         {
                             throw new YamlException($"Failed to get ObjectDescriptor for type [{Type.FullName}]. The member [{member}] cannot be registered as a member with the same name [{alternateName}] is already registered [{existingMember}]");
                         }
-                        else
+                        if (remapMembers == null)
                         {
-                            if (remapMembers == null)
-                            {
-                                remapMembers = new HashSet<string>();
-                            }
-
-                            mapMembers[alternateName] = member;
-                            remapMembers.Add(alternateName);
+                            remapMembers = new HashSet<string>();
                         }
+
+                        mapMembers[alternateName] = member;
+                        remapMembers.Add(alternateName);
                     }
                 }
             }
@@ -165,31 +146,14 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 
         public override DescriptorCategory Category => DescriptorCategory.Object;
 
-
         public DataStyle Style { get; }
-
-        /// <summary>
-        /// Sorts the members of this instance with the specified instance.
-        /// </summary>
-        /// <param name="keyComparer">The key comparer.</param>
-        public void SortMembers(IComparer<object> keyComparer)
-        {
-            if (keyComparer != null && !isSorted)
-            {
-                // TODO: avoid converting through a list
-                var list = members.ToList();
-                list.Sort(keyComparer.Compare);
-                members = list.ToArray();
-                isSorted = true;
-            }
-        }
 
         public bool IsMemberRemapped(string name)
         {
             return remapMembers != null && remapMembers.Contains(name);
         }
 
-        protected override List<IMemberDescriptorBase> PrepareMembers()
+        protected override List<IMemberDescriptor> PrepareMembers()
         {
             var bindingFlags = BindingFlags.Instance | BindingFlags.Public;
             if (Category == DescriptorCategory.Object)
@@ -199,14 +163,14 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             var memberList = (from propertyInfo in Type.GetProperties(bindingFlags)
                 where
                     propertyInfo.CanRead && propertyInfo.GetIndexParameters().Length == 0
-                select new YamlPropertyDescriptor(propertyInfo, NamingConvention.Comparer)
+                select new YamlPropertyDescriptor(factory.Find(propertyInfo.PropertyType), propertyInfo, NamingConvention.Comparer)
                 into member
                 where PrepareMember(member)
-                select member).Cast<IMemberDescriptorBase>().ToList();
+                select member).Cast<IMemberDescriptor>().ToList();
 
             // Add all public fields
             memberList.AddRange((from fieldInfo in Type.GetFields(bindingFlags)
-                select new YamlFieldDescriptor(fieldInfo, NamingConvention.Comparer)
+                select new YamlFieldDescriptor(factory.Find(fieldInfo.FieldType), fieldInfo, NamingConvention.Comparer)
                 into member
                 where PrepareMember(member)
                 select member));

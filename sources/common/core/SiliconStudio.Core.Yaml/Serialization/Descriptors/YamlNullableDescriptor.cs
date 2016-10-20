@@ -54,7 +54,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
     /// </summary>
     internal class YamlNullableDescriptor : YamlObjectDescriptor
     {
-        private static readonly List<IMemberDescriptorBase> EmptyMembers = new List<IMemberDescriptorBase>();
+        private static readonly List<IMemberDescriptor> EmptyMembers = new List<IMemberDescriptor>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="YamlObjectDescriptor" /> class.
@@ -63,8 +63,8 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// <param name="type">The type.</param>
         /// <param name="namingConvention">The naming convention.</param>
         /// <exception cref="System.ArgumentException">Type [{0}] is not a primitive</exception>
-        public YamlNullableDescriptor(IAttributeRegistry attributeRegistry, Type type, IMemberNamingConvention namingConvention)
-            : base(attributeRegistry, type, false, namingConvention)
+        public YamlNullableDescriptor(ITypeDescriptorFactory factory, Type type, IMemberNamingConvention namingConvention)
+            : base(factory, type, false, namingConvention)
         {
             if (!IsNullable(type))
                 throw new ArgumentException("Type [{0}] is not a primitive");
@@ -90,7 +90,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             return type.IsNullable();
         }
 
-        protected override List<IMemberDescriptorBase> PrepareMembers()
+        protected override List<IMemberDescriptor> PrepareMembers()
         {
             return EmptyMembers;
         }

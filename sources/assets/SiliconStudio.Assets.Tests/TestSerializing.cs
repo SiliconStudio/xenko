@@ -71,14 +71,14 @@ namespace SiliconStudio.Assets.Tests
 
             // Put a New Sealed on the Description
             //assetObject.SetDynamicProperty(myAssetDescriptor["Description"], Override.Key, OverrideType.New | OverrideType.Sealed);
-            assetObject.SetOverride(myAssetDescriptor["Description"], OverrideType.New | OverrideType.Sealed);
+            assetObject.SetOverride((IMemberDescriptor)myAssetDescriptor["Description"], OverrideType.New | OverrideType.Sealed);
 
             // First store the file on the disk and compare it to the reference
             GenerateAndCompare("Test Serialization 1", testGenerated1, referenceFilePath, assetObject);
 
             // Deserialize it
             var newAssetObject = AssetSerializer.Load<MyAsset>(testGenerated1);
-            var overrideKey = newAssetObject.GetOverride(myAssetDescriptor["Description"]);
+            var overrideKey = newAssetObject.GetOverride((IMemberDescriptor)myAssetDescriptor["Description"]);
             Assert.AreEqual(overrideKey, OverrideType.New | OverrideType.Sealed);
 
             // Restore the deserialize version and compare it with the reference

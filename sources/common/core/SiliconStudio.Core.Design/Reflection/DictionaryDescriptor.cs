@@ -61,9 +61,9 @@ namespace SiliconStudio.Core.Reflection
             removeMethod = type.GetMethod("Remove", new[] { keyType });
         }
 
-        public override void Initialize()
+        public override void Initialize(IComparer<object> keyComparer)
         {
-            base.Initialize();
+            base.Initialize(keyComparer);
 
             // Only Keys and Values
             IsPureDictionary = Count == 0;

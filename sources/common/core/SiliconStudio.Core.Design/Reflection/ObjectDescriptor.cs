@@ -35,7 +35,7 @@ namespace SiliconStudio.Core.Reflection
     /// </summary>
     public class ObjectDescriptor : ObjectDescriptorBase
     {
-        private static readonly List<IMemberDescriptorBase> EmptyMembers = new List<IMemberDescriptorBase>();
+        private static readonly List<IMemberDescriptor> EmptyMembers = new List<IMemberDescriptor>();
 
         private readonly ITypeDescriptorFactory factory;
 
@@ -56,53 +56,7 @@ namespace SiliconStudio.Core.Reflection
 
         public override DescriptorCategory Category => DescriptorCategory.Object;
 
-        public override void Initialize()
-        {
-            if (members != null)
-                return;
-
-            var memberList = PrepareMembers();
-
-            // Sort members by name
-            // This is to make sure that properties/fields for an object 
-            // are always displayed in the same order
-            memberList.Sort(SortMembers);
-
-            // Free the member list
-            members = memberList.ToArray();
-
-            // If no members found, we don't need to build a dictionary map
-            if (members.Length <= 0) return;
-
-            mapMembers = new Dictionary<string, IMemberDescriptorBase>(members.Length);
-
-            foreach (var member in members)
-            {
-                IMemberDescriptorBase existingMember;
-                if (mapMembers.TryGetValue(member.Name, out existingMember))
-                {
-                    throw new InvalidOperationException("Failed to get ObjectDescriptor for type [{0}]. The member [{1}] cannot be registered as a member with the same name is already registered [{2}]".ToFormat(Type.FullName, member, existingMember));
-                }
-
-                mapMembers.Add(member.Name, member);
-            }
-        }
-
-        private static int SortMembers(IMemberDescriptorBase left, IMemberDescriptorBase right)
-        {
-            // If order is defined, first order by order
-            if (left.Order.HasValue || right.Order.HasValue)
-            {
-                var leftOrder = left.Order ?? int.MaxValue;
-                var rightOrder = right.Order ?? int.MaxValue;
-                return leftOrder.CompareTo(rightOrder);
-            }
-
-            // else order by name
-            return string.CompareOrdinal(left.Name, right.Name);
-        }
-
-        protected override List<IMemberDescriptorBase> PrepareMembers()
+        protected override List<IMemberDescriptor> PrepareMembers()
         {
             if (Type == typeof(Type))
             {
@@ -118,7 +72,7 @@ namespace SiliconStudio.Core.Reflection
                               select new PropertyDescriptor(factory.Find(propertyInfo.PropertyType), propertyInfo)
                               into member
                               where PrepareMember(member)
-                              select member).Cast<IMemberDescriptorBase>().ToList();
+                              select member).Cast<IMemberDescriptor>().ToList();
 
             // Add all public fields
             memberList.AddRange((from fieldInfo in Type.GetFields(BindingFlags.Instance | BindingFlags.Public)

@@ -77,8 +77,8 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// <param name="emitDefaultValues">if set to <c>true</c> [emit default values].</param>
         /// <param name="namingConvention">The naming convention.</param>
         /// <exception cref="System.ArgumentException">Expecting a type inheriting from System.Collections.ICollection;type</exception>
-        public YamlCollectionDescriptor(IAttributeRegistry attributeRegistry, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
-            : base(attributeRegistry, type, emitDefaultValues, namingConvention)
+        public YamlCollectionDescriptor(ITypeDescriptorFactory factory, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
+            : base(factory, type, emitDefaultValues, namingConvention)
         {
             if (!IsCollection(type))
                 throw new ArgumentException(@"Expecting a type inheriting from System.Collections.ICollection", nameof(type));
@@ -163,9 +163,9 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             }
         }
 
-        public override void Initialize()
+        public override void Initialize(IComparer<object> keyComparer)
         {
-            base.Initialize();
+            base.Initialize(keyComparer);
 
             IsPureCollection = Count == 0;
         }

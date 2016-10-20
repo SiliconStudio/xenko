@@ -8,23 +8,27 @@ namespace SiliconStudio.Core.Reflection
     /// </summary>
     public abstract class TypeDescriptorFactoryBase : ITypeDescriptorFactory
     {
+        private readonly IComparer<object> keyComparer;
         private readonly Dictionary<Type, ITypeDescriptor> registeredDescriptors = new Dictionary<Type, ITypeDescriptor>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TypeDescriptorFactoryBase"/> class.
         /// </summary>
-        protected TypeDescriptorFactoryBase() : this(new AttributeRegistry())
+        /// <param name="keyComparer">The comparer used to sort keys</param>
+        protected TypeDescriptorFactoryBase(IComparer<object> keyComparer) : this(keyComparer, new AttributeRegistry())
         {
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TypeDescriptorFactoryBase" /> class.
         /// </summary>
+        /// <param name="keyComparer">The comparer used to sort keys</param>
         /// <param name="attributeRegistry">The attribute registry.</param>
         /// <exception cref="System.ArgumentNullException">attributeRegistry</exception>
-        protected TypeDescriptorFactoryBase(IAttributeRegistry attributeRegistry)
+        protected TypeDescriptorFactoryBase(IComparer<object> keyComparer, IAttributeRegistry attributeRegistry)
         {
             if (attributeRegistry == null) throw new ArgumentNullException(nameof(attributeRegistry));
+            this.keyComparer = keyComparer;
             AttributeRegistry = attributeRegistry;
         }
 
@@ -43,7 +47,11 @@ namespace SiliconStudio.Core.Reflection
                 {
                     descriptor = Create(type);
 
-                    registeredDescriptors.Add(type, descriptor);  // Register this descriptor
+                    // Register this descriptor (before initializing!)
+                    registeredDescriptors.Add(type, descriptor);
+
+                    // Make sure the descriptor is initialized
+                    descriptor.Initialize(keyComparer);
                 }
             }
 

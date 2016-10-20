@@ -21,7 +21,7 @@ namespace SiliconStudio.Core.Reflection
         /// Gets the members of this type.
         /// </summary>
         /// <value>The members.</value>
-        IEnumerable<IMemberDescriptorBase> Members { get; }
+        IEnumerable<IMemberDescriptor> Members { get; }
 
         /// <summary>
         /// Gets the member count.
@@ -42,11 +42,11 @@ namespace SiliconStudio.Core.Reflection
         bool HasMembers { get; }
 
         /// <summary>
-        /// Gets the <see cref="IMemberDescriptorBase"/> with the specified name.
+        /// Gets the <see cref="IMemberDescriptor"/> with the specified name.
         /// </summary>
         /// <param name="name">The name.</param>
         /// <returns>The member.</returns>
-        IMemberDescriptorBase this[string name] { get; }
+        IMemberDescriptor this[string name] { get; }
 
         /// <summary>
         /// Gets a value indicating whether this instance is a compiler generated type.
@@ -57,7 +57,8 @@ namespace SiliconStudio.Core.Reflection
         /// <summary>
         /// Initializes the type descriptor.
         /// </summary>
-        void Initialize();
+        /// <param name="keyComparer"></param>
+        void Initialize(IComparer<object> keyComparer);
 
         /// <summary>
         /// Determines whether this instance contains a member with the specified member name.

@@ -162,7 +162,7 @@ namespace SiliconStudio.Assets.Tests.Diff
             // Make New on Name value on first element
             var objDesc = TypeDescriptorFactory.Default.Find(typeof(TestDiffAsset));
             var memberDesc = objDesc.Members.First(t => t.Name == "Dynamic");
-            childAsset.SetOverride(memberDesc, OverrideType.New); // Override Dynamic and change type
+            childAsset.SetOverride((IMemberDescriptor)memberDesc, OverrideType.New); // Override Dynamic and change type
             childAsset.Dynamic = new DiffValueTypeB() { Value = 2 };
 
             var diff = new AssetDiff(baseAsset, childAsset, newBaseAsset) { UseOverrideMode = true };
@@ -196,7 +196,7 @@ namespace SiliconStudio.Assets.Tests.Diff
             // Make New on Name value on first element
             var objDesc = TypeDescriptorFactory.Default.Find(typeof(TestDiffAsset));
             var memberDesc = objDesc.Members.First(t => t.Name == "Value");
-            newBaseAsset.SetOverride(memberDesc, OverrideType.Base|OverrideType.Sealed);
+            newBaseAsset.SetOverride((IMemberDescriptor)memberDesc, OverrideType.Base|OverrideType.Sealed);
 
             var diff = new AssetDiff(baseAsset, childAsset, newBaseAsset) { UseOverrideMode = true };
 
@@ -205,7 +205,7 @@ namespace SiliconStudio.Assets.Tests.Diff
             // Check that merged result on Dynamic property is instance from asset2
             var mergeResult = AssetMerge.Merge(diff, AssetMergePolicies.MergePolicyAsset2AsNewBaseOfAsset1);
             Assert.AreEqual(3, childAsset.Value); // Value is coming from base
-            Assert.AreEqual(OverrideType.Base|OverrideType.Sealed, childAsset.GetOverride(memberDesc)); // Value is coming from base
+            Assert.AreEqual(OverrideType.Base|OverrideType.Sealed, childAsset.GetOverride((IMemberDescriptor)memberDesc)); // Value is coming from base
         }
 
         /// <summary>
@@ -321,7 +321,7 @@ namespace SiliconStudio.Assets.Tests.Diff
             // Make New on Name value on first element
             var objDesc = TypeDescriptorFactory.Default.Find(typeof(DiffComponent));
             var memberDesc = objDesc.Members.First(t => t.Name == "Name");
-            childAsset.List[0].SetOverride(memberDesc, OverrideType.New);
+            childAsset.List[0].SetOverride((IMemberDescriptor)memberDesc, OverrideType.New);
 
             // Perform the diff
             var diff = new AssetDiff(baseAsset, childAsset, newBaseAsset) { UseOverrideMode = true };

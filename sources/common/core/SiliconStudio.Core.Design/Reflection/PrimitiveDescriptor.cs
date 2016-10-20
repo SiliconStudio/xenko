@@ -10,7 +10,7 @@ namespace SiliconStudio.Core.Reflection
     /// </summary>
     public class PrimitiveDescriptor : ObjectDescriptor
     {
-        private static readonly List<IMemberDescriptorBase> EmptyMembers = new List<IMemberDescriptorBase>();
+        private static readonly List<IMemberDescriptor> EmptyMembers = new List<IMemberDescriptor>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectDescriptor" /> class.
@@ -42,7 +42,7 @@ namespace SiliconStudio.Core.Reflection
             return true;
         }
 
-        protected override List<IMemberDescriptorBase> PrepareMembers()
+        protected override List<IMemberDescriptor> PrepareMembers()
         {
             return EmptyMembers;
         }

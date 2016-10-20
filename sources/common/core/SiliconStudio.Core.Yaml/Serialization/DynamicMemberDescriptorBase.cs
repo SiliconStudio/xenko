@@ -20,6 +20,7 @@
 
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 
 namespace SiliconStudio.Core.Yaml.Serialization
@@ -53,6 +54,9 @@ namespace SiliconStudio.Core.Yaml.Serialization
         public Type Type { get; }
 
         public Type DeclaringType { get; }
+
+        // TODO: store the proper type descriptor here
+        public ITypeDescriptor TypeDescriptor => null;
 
         public int? Order { get; set; }
 
