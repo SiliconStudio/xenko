@@ -20,7 +20,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 271da092-aab6-492e-b6f4-555de61f78e4
-                        Model: 589be271-1f23-4918-a6b9-983855f0771a/0097702b-6bb2-46a2-891a-c4a7beeb7329:VRBox/BoxF
+                        Model: 589be271-1f23-4918-a6b9-983855f0771a/0097702b-6bb2-46a2-891a-c4a7beeb7329:Models/BoxF
                         Materials:
                             - null
                             - null

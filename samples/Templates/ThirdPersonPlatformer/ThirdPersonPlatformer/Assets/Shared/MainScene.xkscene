@@ -3094,7 +3094,6 @@ Hierarchy:
                     - !ThirdPersonPlatformer.Player.PlayerInput,ThirdPersonPlatformer.Game
                         ~Id: 6af69b80-69ef-4626-891c-293be4ca17b2
                         MouseSensitivity: 100.0
-                        ControllerIndex: 0
                         DeadZone: 0.25
                         Camera: a7b68422-0fb4-45c9-b853-8e17a08a3953/65d1b71f-4862-4efc-b7c1-3c9d933979c7
                         KeysLeft:
@@ -7743,7 +7742,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
 ~BaseParts:
-    -   Location: GridBase10x10
+    -   Location: BlocksPrefabs/GridBase10x10
         Asset: !PrefabAsset
             Id: faca3ec7-598e-40b0-bdd4-7a6dfd9635b0
             SerializedVersion: {Xenko: 1.9.0-beta01}
@@ -7784,7 +7783,7 @@ Hierarchy:
                                             Size: {X: 10.0, Y: 0.3, Z: 10.0}
                                             LocalOffset: {X: 0.0, Y: -0.15, Z: 0.0}
                                             LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-    -   Location: Wall0x2x5
+    -   Location: BlocksPrefabs/Wall0x2x5
         Asset: !PrefabAsset
             Id: b459d7d8-b0db-4862-8579-6a511f4a9fe5
             SerializedVersion: {Xenko: 1.9.0-beta01}
@@ -7825,7 +7824,7 @@ Hierarchy:
                                             Size: {X: 0.1, Y: 2.0, Z: 5.0}
                                             LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                             LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-    -   Location: Wall0x2x5Window
+    -   Location: BlocksPrefabs/Wall0x2x5Window
         Asset: !PrefabAsset
             Id: 38c97eef-f5cc-4eda-b18c-fbbf3d71a505
             SerializedVersion: {Xenko: 1.9.0-beta01}
@@ -7890,7 +7889,7 @@ Hierarchy:
                                             Size: {X: 0.1, Y: 2.0, Z: 1.45}
                                             LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                             LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-    -   Location: Table2x2x2
+    -   Location: BlocksPrefabs/Table2x2x2
         Asset: !PrefabAsset
             Id: 225fba76-f4cb-489d-8bb6-0f7e13a54931
             SerializedVersion: {Xenko: 1.9.0-beta01}
@@ -7966,7 +7965,7 @@ Hierarchy:
                                             Size: {X: 2.0, Y: 0.2, Z: 2.0}
                                             LocalOffset: {X: 0.0, Y: 0.975, Z: 0.0}
                                             LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-    -   Location: Floor3x0x1
+    -   Location: BlocksPrefabs/Floor3x0x1
         Asset: !PrefabAsset
             Id: 5a92b94b-cd30-43c1-bcd5-303e6d400eeb
             SerializedVersion: {Xenko: 1.9.0-beta01}
@@ -8007,7 +8006,7 @@ Hierarchy:
                                             Size: {X: 3.0, Y: 0.05, Z: 1.0}
                                             LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                             LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-    -   Location: Pillar0x5x0
+    -   Location: BlocksPrefabs/Pillar0x5x0
         Asset: !PrefabAsset
             Id: d8129849-afba-407e-8513-281a12d11b44
             SerializedVersion: {Xenko: 1.9.0-beta01}
@@ -8049,7 +8048,7 @@ Hierarchy:
                                             Size: {X: 0.1, Y: 5.0, Z: 0.1}
                                             LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                             LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-    -   Location: Floor1x0x1
+    -   Location: BlocksPrefabs/Floor1x0x1
         Asset: !PrefabAsset
             Id: 1792404e-9c40-4ba1-b738-2a6d4ebcd2fb
             SerializedVersion: {Xenko: 1.9.0-beta01}
@@ -8090,7 +8089,7 @@ Hierarchy:
                                             Size: {X: 1.0, Y: 0.05, Z: 1.0}
                                             LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                             LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-    -   Location: Ramp1x1_2x2
+    -   Location: BlocksPrefabs/Ramp1x1_2x2
         Asset: !PrefabAsset
             Id: 5a32965c-893e-4f1c-acd5-9eeceb4ebddd
             SerializedVersion: {Xenko: 1.9.0-beta01}
@@ -8128,7 +8127,7 @@ Hierarchy:
                                         - !ColliderShapeAssetDesc
                                             ~Id: d7c6bad3-5ae4-4554-88eb-d5170d5258b4
                                             Shape: 968c8ba7-6147-4c32-bb8c-d69adc6dbe1d/ae62d5af-0efc-40e2-af1d-02af859774a1:CollisionMeshes/Ramp1x1_2x2
-    -   Location: Stairs1x1x2
+    -   Location: BlocksPrefabs/Stairs1x1x2
         Asset: !PrefabAsset
             Id: d74cc744-2324-4e4b-ad1b-577d83087eea
             SerializedVersion: {Xenko: 1.9.0-beta01}
@@ -8166,7 +8165,7 @@ Hierarchy:
                                         - !ColliderShapeAssetDesc
                                             ~Id: e82509e5-996d-49e8-bde2-b006ac86de09
                                             Shape: 1bffcf0e-1568-4138-b238-66ab1715cd62/934024bf-9a3a-4e33-8fb0-fa4e14832f2b:CollisionMeshes/Stairs1x1x2
-    -   Location: Ramp1x1x1
+    -   Location: BlocksPrefabs/Ramp1x1x1
         Asset: !PrefabAsset
             Id: ecf8a905-6220-499c-9d8a-47876d7fbee5
             SerializedVersion: {Xenko: 1.9.0-beta01}
@@ -8204,7 +8203,7 @@ Hierarchy:
                                         - !ColliderShapeAssetDesc
                                             ~Id: c0b45983-7efa-4b89-a458-2a7bdd8e1ae6
                                             Shape: a2cc2404-9e50-4637-b726-25c4de327fea/26f14582-93fd-4080-9f17-1f4444fe2205:CollisionMeshes/Ramp1x1x1
-    -   Location: Box3x1x1
+    -   Location: BlocksPrefabs/Box3x1x1
         Asset: !PrefabAsset
             Id: 2f747deb-a3df-4160-beca-5b0706068d86
             SerializedVersion: {Xenko: 1.9.0-beta01}
@@ -8245,7 +8244,7 @@ Hierarchy:
                                             Size: {X: 3.0, Y: 1.0, Z: 1.0}
                                             LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                             LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-    -   Location: Box2x1x1
+    -   Location: BlocksPrefabs/Box2x1x1
         Asset: !PrefabAsset
             Id: 08f3be96-87f9-4eb4-b8cb-564eef48da03
             SerializedVersion: {Xenko: 1.9.0-beta01}
@@ -8286,7 +8285,7 @@ Hierarchy:
                                             Size: {X: 2.0, Y: 1.0, Z: 1.0}
                                             LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                             LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-    -   Location: Gate2x3x1
+    -   Location: BlocksPrefabs/Gate2x3x1
         Asset: !PrefabAsset
             Id: 59ad96a2-d7b6-4353-9564-4223fe886b46
             SerializedVersion: {Xenko: 1.9.0-beta01}
@@ -8339,7 +8338,7 @@ Hierarchy:
                                             Size: {X: 2.0, Y: 0.6, Z: 1.0}
                                             LocalOffset: {X: 0.0, Y: 1.2, Z: 0.0}
                                             LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-    -   Location: Gate1x2x1
+    -   Location: BlocksPrefabs/Gate1x2x1
         Asset: !PrefabAsset
             Id: db12c212-61b8-4647-836d-a76e0adf1cb9
             SerializedVersion: {Xenko: 1.9.0-beta01}
@@ -8392,7 +8391,7 @@ Hierarchy:
                                             Size: {X: 1.0, Y: 0.2, Z: 1.0}
                                             LocalOffset: {X: 0.0, Y: 0.9, Z: 0.0}
                                             LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-    -   Location: Wall0x2x2Window
+    -   Location: BlocksPrefabs/Wall0x2x2Window
         Asset: !PrefabAsset
             Id: 72e62362-2ac6-4e0f-bd42-5178d9a2d196
             SerializedVersion: {Xenko: 1.9.0-beta01}
@@ -8451,7 +8450,7 @@ Hierarchy:
                                             Size: {X: 0.1, Y: 0.4, Z: 2.0}
                                             LocalOffset: {X: 0.0, Y: 0.8, Z: 0.0}
                                             LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-    -   Location: Wall0x1x2
+    -   Location: BlocksPrefabs/Wall0x1x2
         Asset: !PrefabAsset
             Id: 7ff74fb7-a003-402c-a6dc-3b64845f0051
             SerializedVersion: {Xenko: 1.9.0-beta01}
@@ -8492,7 +8491,7 @@ Hierarchy:
                                             Size: {X: 0.1, Y: 1.0, Z: 2.0}
                                             LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                             LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-    -   Location: Wall0x2x2
+    -   Location: BlocksPrefabs/Wall0x2x2
         Asset: !PrefabAsset
             Id: 3cc3c21e-b26c-443d-80bb-cb82044d3220
             SerializedVersion: {Xenko: 1.9.0-beta01}
@@ -8533,7 +8532,7 @@ Hierarchy:
                                             Size: {X: 0.1, Y: 2.0, Z: 2.0}
                                             LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                             LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-    -   Location: Floor2x0x1
+    -   Location: BlocksPrefabs/Floor2x0x1
         Asset: !PrefabAsset
             Id: 3724e4ed-4cb5-447d-a3ea-86ee8bfec3e5
             SerializedVersion: {Xenko: 1.9.0-beta01}

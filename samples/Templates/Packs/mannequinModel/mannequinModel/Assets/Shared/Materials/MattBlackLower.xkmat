@@ -6,7 +6,7 @@ Attributes:
     Surface: !MaterialNormalMapFeature
         NormalMap: !ComputeTextureColor
             Swizzle: null
-            Texture: c7b3433f-254a-4137-bec4-e700537fc0a1/fb00449b-3472-4f9f-9713-dc96fabe2f8c:Materials/Lower [Normal]
+            Texture: c7b3433f-254a-4137-bec4-e700537fc0a1/fb00449b-3472-4f9f-9713-dc96fabe2f8c:Textures/Lower [Normal]
             FallbackValue:
                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}

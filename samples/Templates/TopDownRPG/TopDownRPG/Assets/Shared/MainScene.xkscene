@@ -823,7 +823,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 271da092-aab6-492e-b6f4-555de61f78e4
-                        Model: 589be271-1f23-4918-a6b9-983855f0771a/0097702b-6bb2-46a2-891a-c4a7beeb7329:VRBox/BoxF
+                        Model: 589be271-1f23-4918-a6b9-983855f0771a/0097702b-6bb2-46a2-891a-c4a7beeb7329:Models/BoxF
                         Materials:
                             - null
                             - null
@@ -1113,7 +1113,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 271da092-aab6-492e-b6f4-555de61f78e4
-                        Model: 589be271-1f23-4918-a6b9-983855f0771a/0097702b-6bb2-46a2-891a-c4a7beeb7329:VRBox/BoxF
+                        Model: 589be271-1f23-4918-a6b9-983855f0771a/0097702b-6bb2-46a2-891a-c4a7beeb7329:Models/BoxF
                         Materials:
                             - null
                             - null
@@ -1796,7 +1796,7 @@ Hierarchy:
                         Scale: {X: 10.0, Y: 10.0, Z: 10.0}
                     - !ModelComponent
                         ~Id: 48b3ee76-ae56-4880-8daf-19410ab51cf5
-                        Model: 6f56e7ba-b707-435d-b563-afef606d543a/43497f30-bb62-46d4-8a9c-6dedead0cad8:VRcoin/CoinGold
+                        Model: 6f56e7ba-b707-435d-b563-afef606d543a/43497f30-bb62-46d4-8a9c-6dedead0cad8:Models/CoinGold
                         Materials:
                             - null
                     - !TopDownRPG.Gameplay.CoinScript,TopDownRPG.Game
@@ -2324,7 +2324,7 @@ Hierarchy:
                         Scale: {X: 10.0, Y: 10.0, Z: 10.0}
                     - !ModelComponent
                         ~Id: 48b3ee76-ae56-4880-8daf-19410ab51cf5
-                        Model: 6f56e7ba-b707-435d-b563-afef606d543a/43497f30-bb62-46d4-8a9c-6dedead0cad8:VRcoin/CoinGold
+                        Model: 6f56e7ba-b707-435d-b563-afef606d543a/43497f30-bb62-46d4-8a9c-6dedead0cad8:Models/CoinGold
                         Materials:
                             - null
                     - !TopDownRPG.Gameplay.CoinScript,TopDownRPG.Game
@@ -2367,7 +2367,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 271da092-aab6-492e-b6f4-555de61f78e4
-                        Model: 589be271-1f23-4918-a6b9-983855f0771a/0097702b-6bb2-46a2-891a-c4a7beeb7329:VRBox/BoxF
+                        Model: 589be271-1f23-4918-a6b9-983855f0771a/0097702b-6bb2-46a2-891a-c4a7beeb7329:Models/BoxF
                         Materials:
                             - null
                             - null
@@ -2723,7 +2723,7 @@ Hierarchy:
                         Scale: {X: 10.0, Y: 10.0, Z: 10.0}
                     - !ModelComponent
                         ~Id: 48b3ee76-ae56-4880-8daf-19410ab51cf5
-                        Model: 6f56e7ba-b707-435d-b563-afef606d543a/43497f30-bb62-46d4-8a9c-6dedead0cad8:VRcoin/CoinGold
+                        Model: 6f56e7ba-b707-435d-b563-afef606d543a/43497f30-bb62-46d4-8a9c-6dedead0cad8:Models/CoinGold
                         Materials:
                             - null
                     - !TopDownRPG.Gameplay.CoinScript,TopDownRPG.Game
@@ -3785,7 +3785,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 271da092-aab6-492e-b6f4-555de61f78e4
-                        Model: 589be271-1f23-4918-a6b9-983855f0771a/0097702b-6bb2-46a2-891a-c4a7beeb7329:VRBox/BoxF
+                        Model: 589be271-1f23-4918-a6b9-983855f0771a/0097702b-6bb2-46a2-891a-c4a7beeb7329:Models/BoxF
                         Materials:
                             - null
                             - null
@@ -4923,7 +4923,7 @@ Hierarchy:
                         Scale: {X: 10.0, Y: 10.0, Z: 10.0}
                     - !ModelComponent
                         ~Id: 48b3ee76-ae56-4880-8daf-19410ab51cf5
-                        Model: 6f56e7ba-b707-435d-b563-afef606d543a/43497f30-bb62-46d4-8a9c-6dedead0cad8:VRcoin/CoinGold
+                        Model: 6f56e7ba-b707-435d-b563-afef606d543a/43497f30-bb62-46d4-8a9c-6dedead0cad8:Models/CoinGold
                         Materials:
                             - null
                     - !TopDownRPG.Gameplay.CoinScript,TopDownRPG.Game
@@ -5282,7 +5282,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 271da092-aab6-492e-b6f4-555de61f78e4
-                        Model: 589be271-1f23-4918-a6b9-983855f0771a/0097702b-6bb2-46a2-891a-c4a7beeb7329:VRBox/BoxF
+                        Model: 589be271-1f23-4918-a6b9-983855f0771a/0097702b-6bb2-46a2-891a-c4a7beeb7329:Models/BoxF
                         Materials:
                             - null
                             - null
@@ -6728,7 +6728,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 271da092-aab6-492e-b6f4-555de61f78e4
-                        Model: 589be271-1f23-4918-a6b9-983855f0771a/0097702b-6bb2-46a2-891a-c4a7beeb7329:VRBox/BoxF
+                        Model: 589be271-1f23-4918-a6b9-983855f0771a/0097702b-6bb2-46a2-891a-c4a7beeb7329:Models/BoxF
                         Materials:
                             - null
                             - null
@@ -7274,7 +7274,7 @@ Hierarchy:
                         Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
 ~BaseParts:
-    -   Location: GridBase10x10
+    -   Location: BlocksPrefabs/GridBase10x10
         Asset: !PrefabAsset
             Id: faca3ec7-598e-40b0-bdd4-7a6dfd9635b0
             SerializedVersion: {Xenko: 1.9.0-beta01}
@@ -7315,7 +7315,7 @@ Hierarchy:
                                             Size: {X: 10.0, Y: 0.3, Z: 10.0}
                                             LocalOffset: {X: 0.0, Y: -0.15, Z: 0.0}
                                             LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-    -   Location: Box3x1x1
+    -   Location: BlocksPrefabs/Box3x1x1
         Asset: !PrefabAsset
             Id: 2f747deb-a3df-4160-beca-5b0706068d86
             SerializedVersion: {Xenko: 1.9.0-beta01}
@@ -7356,7 +7356,7 @@ Hierarchy:
                                             Size: {X: 3.0, Y: 1.0, Z: 1.0}
                                             LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                             LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-    -   Location: Ramp1x1_2x1
+    -   Location: BlocksPrefabs/Ramp1x1_2x1
         Asset: !PrefabAsset
             Id: 80a8680c-b826-4513-828a-67d3162d1da0
             SerializedVersion: {Xenko: 1.9.0-beta01}
@@ -7417,7 +7417,7 @@ Hierarchy:
                                     Scale: {X: 10.0, Y: 10.0, Z: 10.0}
                                 - !ModelComponent
                                     ~Id: 48b3ee76-ae56-4880-8daf-19410ab51cf5
-                                    Model: 6f56e7ba-b707-435d-b563-afef606d543a/43497f30-bb62-46d4-8a9c-6dedead0cad8:VRcoin/CoinGold
+                                    Model: 6f56e7ba-b707-435d-b563-afef606d543a/43497f30-bb62-46d4-8a9c-6dedead0cad8:Models/CoinGold
                                     Materials:
                                         - null
                                 - !TopDownRPG.Gameplay.CoinScript,TopDownRPG.Game
@@ -7492,7 +7492,7 @@ Hierarchy:
                                     Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                 - !ModelComponent
                                     ~Id: 271da092-aab6-492e-b6f4-555de61f78e4
-                                    Model: 589be271-1f23-4918-a6b9-983855f0771a/0097702b-6bb2-46a2-891a-c4a7beeb7329:VRBox/BoxF
+                                    Model: 589be271-1f23-4918-a6b9-983855f0771a/0097702b-6bb2-46a2-891a-c4a7beeb7329:Models/BoxF
                                     Materials:
                                         - null
                                         - null
@@ -7549,7 +7549,7 @@ Hierarchy:
                                             Size: {X: 1.0, Y: 1.0, Z: 1.0}
                                             LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                             LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-    -   Location: Box2x1x1
+    -   Location: BlocksPrefabs/Box2x1x1
         Asset: !PrefabAsset
             Id: 08f3be96-87f9-4eb4-b8cb-564eef48da03
             SerializedVersion: {Xenko: 1.9.0-beta01}
@@ -7590,7 +7590,7 @@ Hierarchy:
                                             Size: {X: 2.0, Y: 1.0, Z: 1.0}
                                             LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
                                             LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
-    -   Location: Box1x1x1
+    -   Location: BlocksPrefabs/Box1x1x1
         Asset: !PrefabAsset
             Id: 796c6be9-120a-4185-bfe5-c72f889a4580
             SerializedVersion: {Xenko: 1.9.0-beta01}

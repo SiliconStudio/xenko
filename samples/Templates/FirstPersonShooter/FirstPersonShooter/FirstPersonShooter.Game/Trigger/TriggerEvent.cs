@@ -45,7 +45,7 @@ namespace FirstPersonShooter.Trigger
 
         private void UpdateMatrix()
         {
-            Matrix.CreateMatrixTRS(ref translation, ref rotation, ref scaling, out LocalMatrix);
+            Matrix.Transformation(ref scaling, ref rotation, ref translation, out LocalMatrix);
         }
     }
 }

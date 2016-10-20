@@ -56,7 +56,7 @@ Hierarchy:
                         Scale: {X: 10.0, Y: 10.0, Z: 10.0}
                     - !ModelComponent
                         ~Id: 48b3ee76-ae56-4880-8daf-19410ab51cf5
-                        Model: 6f56e7ba-b707-435d-b563-afef606d543a/43497f30-bb62-46d4-8a9c-6dedead0cad8:VRcoin/CoinGold
+                        Model: 6f56e7ba-b707-435d-b563-afef606d543a/43497f30-bb62-46d4-8a9c-6dedead0cad8:Models/CoinGold
                         Materials:
                             - null
                     - !TopDownRPG.Gameplay.Trigger,TopDownRPG.Game

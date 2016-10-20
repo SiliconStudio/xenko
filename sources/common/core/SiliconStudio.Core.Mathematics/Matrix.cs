@@ -2734,7 +2734,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="rotation">Angle of rotation in radians. Angles are measured clockwise when looking along the rotation axis toward the origin.</param>
         /// <param name="scaling">The scaling.</param>
         /// <param name="result">When the method completes, contains the created rotation matrix.</param>
-        public static void CreateMatrixTRS(ref Vector3 translation, ref Quaternion rotation, ref Vector3 scaling, out Matrix result)
+        public static void Transformation(ref Vector3 scaling, ref Quaternion rotation, ref Vector3 translation, out Matrix result)
         {
             // Equivalent to:
             //result =

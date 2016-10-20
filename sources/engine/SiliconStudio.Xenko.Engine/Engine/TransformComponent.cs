@@ -221,7 +221,7 @@ namespace SiliconStudio.Xenko.Engine
         {
             if (UseTRS)
             {
-                Matrix.CreateMatrixTRS(ref Position, ref Rotation, ref Scale, out LocalMatrix);
+                Matrix.Transformation(ref Scale, ref Rotation, ref Position, out LocalMatrix);
             }
         }
 
