@@ -6,12 +6,11 @@ using System.Collections.Generic;
 using System.IO;
 
 using NUnit.Framework;
-
-using SharpYaml.Serialization;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Assets.Tests
 {

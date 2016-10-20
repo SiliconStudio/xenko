@@ -6,9 +6,10 @@ using System.IO;
 using System.Linq;
 using System.Xml;
 using NuGet;
-using SharpYaml.Serialization;
 using SiliconStudio.Core.VisualStudio;
 using SiliconStudio.Core.Yaml;
+using SiliconStudio.Core.Yaml.Serialization;
+using Version = System.Version;
 
 namespace SiliconStudio.Assets
 {

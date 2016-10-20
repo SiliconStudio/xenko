@@ -23,21 +23,23 @@ namespace SiliconStudio.Xenko.Extensions
         public static unsafe void TransformBuffer(this VertexBufferBinding vertexBufferBinding, byte[] bufferData, ref Matrix matrix)
         {
             // List of items that need to be transformed by the matrix
-            var vertexElementsToTransform1 = vertexBufferBinding.Declaration
-                .EnumerateWithOffsets()
-                .Where(x => x.VertexElement.SemanticName == VertexElementUsage.Position
-                         && (x.VertexElement.Format == PixelFormat.R32G32B32A32_Float
-                          || x.VertexElement.Format == PixelFormat.R32G32B32_Float))
-                .ToArray();
+            var vertexElementsToTransform1 = vertexBufferBinding.Declaration.EnumerateWithOffsets()
+                .Where(x => x.VertexElement.SemanticName == VertexElementUsage.Position &&
+                           (x.VertexElement.Format == PixelFormat.R32G32B32A32_Float ||
+                            x.VertexElement.Format == PixelFormat.R32G32B32_Float)).ToArray();
 
             // List of items that need to be transformed by the inverse transpose matrix
-            var vertexElementsToTransform2 = vertexBufferBinding.Declaration
-                .EnumerateWithOffsets()
-                .Where(x => (x.VertexElement.SemanticName == VertexElementUsage.Normal
-                          || x.VertexElement.SemanticName == VertexElementUsage.Tangent
-                          || x.VertexElement.SemanticName == VertexElementUsage.BiTangent)
-                         && x.VertexElement.Format == PixelFormat.R32G32B32_Float)
-                .ToArray();
+            var vertexElementsToTransform2 = vertexBufferBinding.Declaration.EnumerateWithOffsets()
+                .Where(x => ((x.VertexElement.SemanticName == VertexElementUsage.Normal ||
+                              x.VertexElement.SemanticName == VertexElementUsage.Tangent ||
+                              x.VertexElement.SemanticName == VertexElementUsage.BiTangent)) &&
+                             (x.VertexElement.Format == PixelFormat.R32G32B32_Float ||
+                              x.VertexElement.Format == PixelFormat.R32G32B32A32_Float)).ToArray();
+
+            // List the items that have handedness encoded in the W component
+            var vertexElementsWithHandedness = vertexElementsToTransform2
+                .Where(x => x.VertexElement.SemanticName == VertexElementUsage.Tangent &&
+                            x.VertexElement.Format == PixelFormat.R32G32B32A32_Float).ToArray();
 
             // If needed, compute matrix inverse transpose
             Matrix inverseTransposeMatrix;
@@ -49,6 +51,13 @@ namespace SiliconStudio.Xenko.Extensions
             else
             {
                 inverseTransposeMatrix = Matrix.Identity;
+            }
+
+            // Check if handedness is inverted
+            bool flipHandedness = false;
+            if (vertexElementsWithHandedness.Length > 0)
+            {
+                flipHandedness = Vector3.Dot(Vector3.Cross(matrix.Right, matrix.Forward), matrix.Up) < 0.0f;
             }
 
             // Transform buffer data
@@ -79,6 +88,17 @@ namespace SiliconStudio.Xenko.Extensions
                     {
                         var elementPointer = bufferPointer + vertexElement.Offset;
                         Vector3.TransformNormal(ref *(Vector3*)elementPointer, ref inverseTransposeMatrix, out *(Vector3*)elementPointer);
+                    }
+
+                    // Correct handedness
+                    if (flipHandedness)
+                    {
+                        foreach (var vertexElement in vertexElementsWithHandedness)
+                        {
+                            var elementPointer = bufferPointer + vertexElement.Offset;
+                            var handednessPointer = (float*)elementPointer + 3;
+                            *handednessPointer = -*handednessPointer;
+                        }
                     }
 
                     bufferPointer += vertexStride;
