@@ -239,6 +239,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     var light = pointGroupRenderer.spotGroup.Lights[i].Light;
                     var spotLight = (LightSpot)light.Type;
 
+                    if (spotLight.Shadow != null)
+                        continue;
+
                     // Create spot light data
                     var spotLightData = new SpotLightData
                     {
