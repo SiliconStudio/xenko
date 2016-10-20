@@ -91,8 +91,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <value>The transforms.</value>
         [DataMember(10)]
         [Display("Transforms", Expand = ExpandRule.Always)]
-        [NotNullItems]
-        [MemberCollection(CanReorderItems = true)]
+        [MemberCollection(CanReorderItems = true, NotNullItems = true)]
         public ColorTransformCollection Transforms
         {
             get

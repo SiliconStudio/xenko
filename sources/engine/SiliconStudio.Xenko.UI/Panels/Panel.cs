@@ -73,8 +73,7 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// Gets the <see cref="UIElementCollection"/> of child elements of this Panel.
         /// </summary>
         [DataMember(DataMemberMode.Content)]
-        [NotNullItems]
-        [MemberCollection(CanReorderItems = true)]
+        [MemberCollection(CanReorderItems = true, NotNullItems = true)]
         public UIElementCollection Children { get; }
 
         /// <inheritdoc/>
