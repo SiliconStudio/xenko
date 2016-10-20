@@ -27,12 +27,19 @@ namespace SiliconStudio.Assets
 
         public PackageLoadParameters()
         {
+            LoadMissingDependencies = true;
             LoadAssemblyReferences = true;
             AutoCompileProjects = true;
             AutoLoadTemporaryAssets = true;
             ConvertUPathToAbsolute = true;
             BuildConfiguration = "Debug";
         }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether [load missing dependencies].
+        /// </summary>
+        /// <value><c>true</c> if [load missing dependencies]; otherwise, <c>false</c>.</value>
+        public bool LoadMissingDependencies { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether [load assembly references].
