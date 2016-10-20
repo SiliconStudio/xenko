@@ -26,12 +26,14 @@
     </Compile>
     <Compile Include="AttributeRegistry.cs" />
     <Compile Include="DescriptorCategory.cs" />
+    <Compile Include="FieldDescriptor.cs" />
     <Compile Include="IAttributeRegistry.cs" />
     <Compile Include="IMemberDescriptor.cs" />
     <Compile Include="ITypeDescriptor.cs" />
     <Compile Include="ITypeDescriptorFactory.cs" />
     <Compile Include="MemberDescriptorBase.cs" />
     <Compile Include="ObjectDescriptorBase.cs" />
+    <Compile Include="PropertyDescriptor.cs" />
     <Compile Include="TypeDescriptorFactoryBase.cs" />
   </ItemGroup>
   <ItemGroup>

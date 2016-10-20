@@ -65,7 +65,6 @@
     <Compile Include="Reflection\CollectionDescriptor.cs" />
     <Compile Include="Reflection\DataVisitorBase.cs" />
     <Compile Include="Reflection\DictionaryDescriptor.cs" />
-    <Compile Include="Reflection\FieldDescriptor.cs" />
     <Compile Include="Reflection\IDataCustomVisitor.cs" />
     <Compile Include="Reflection\IDataVisitor.cs" />
     <Compile Include="Reflection\MemberDescriptorExtensions.cs" />
@@ -77,7 +76,6 @@
     <Compile Include="Reflection\Override.cs" />
     <Compile Include="Reflection\OverrideType.cs" />
     <Compile Include="Reflection\PrimitiveDescriptor.cs" />
-    <Compile Include="Reflection\PropertyDescriptor.cs" />
     <Compile Include="Reflection\MemberPath.cs" />
     <Compile Include="Reflection\ShadowObjectExtensions.cs" />
     <Compile Include="Reflection\ThisDescriptor.cs" />

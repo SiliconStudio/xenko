@@ -11,9 +11,6 @@ namespace SiliconStudio.Core.Reflection
     /// </summary>
     public abstract class MemberDescriptorBase : IMemberDescriptor
     {
-        private MemberInfo memberInfo;
-        private StringComparer defaultNameComparer;
-
         protected MemberDescriptorBase(string name)
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
@@ -28,6 +25,7 @@ namespace SiliconStudio.Core.Reflection
 
             MemberInfo = memberInfo;
             Name = MemberInfo.Name;
+            OriginalName = Name;
             DeclaringType = memberInfo.DeclaringType;
             DefaultNameComparer = defaultNameComparer;
         }
@@ -46,7 +44,7 @@ namespace SiliconStudio.Core.Reflection
         /// <value>The type of the declaring.</value>
         public Type DeclaringType { get; }
 
-        public ITypeDescriptor TypeDescriptor { get; set; }
+        public ITypeDescriptor TypeDescriptor { get; protected set; }
 
         public DataMemberMode Mode { get; set; }
         public abstract object Get(object thisObject);

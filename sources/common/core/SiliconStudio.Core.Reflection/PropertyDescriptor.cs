@@ -21,10 +21,10 @@ namespace SiliconStudio.Core.Reflection
 
             PropertyInfo = propertyInfo;
 
-            getMethod = propertyInfo.GetGetMethod(false);
-            if (propertyInfo.CanWrite && propertyInfo.GetSetMethod(false) != null)
+            getMethod = propertyInfo.GetGetMethod(false) ?? propertyInfo.GetGetMethod(true);
+            if (propertyInfo.CanWrite && propertyInfo.GetSetMethod(!IsPublic) != null)
             {
-                setMethod = propertyInfo.GetSetMethod(false);
+                setMethod = propertyInfo.GetSetMethod(!IsPublic);
             }
             TypeDescriptor = typeDescriptor;
         }
@@ -37,7 +37,7 @@ namespace SiliconStudio.Core.Reflection
 
         public override Type Type => PropertyInfo.PropertyType;
 
-        public override bool IsPublic => getMethod.IsPublic;
+        public sealed override bool IsPublic => getMethod?.IsPublic ?? false;
 
         public override bool HasSet => setMethod != null;
 
@@ -63,7 +63,7 @@ namespace SiliconStudio.Core.Reflection
         /// <returns>A <see cref="System.String" /> that represents this instance.</returns>
         public override string ToString()
         {
-            return string.Format("Property [{0}] from Type [{1}]", Name, PropertyInfo.DeclaringType != null ? PropertyInfo.DeclaringType.FullName : string.Empty);
+            return $"Property [{Name}] from Type [{(PropertyInfo.DeclaringType != null ? PropertyInfo.DeclaringType.FullName : string.Empty)}]";
         }
     }
 }
