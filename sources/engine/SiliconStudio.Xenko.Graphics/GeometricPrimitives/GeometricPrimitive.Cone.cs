@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Graphics.GeometricPrimitives
                     for (var j = 0; j < tessellation; ++j)
                     {
                         var sectionRatio = j / (float)tessellation;
-                        var sectionHeight = (sectionRatio * topHeight) - 0.5f;
+                        var sectionHeight = (sectionRatio * topHeight) - height * 0.5f;
                         var sectionRadius = (1 - sectionRatio) * radius;
 
                         for (var i = 0; i <= tessellation; ++i)
@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.Graphics.GeometricPrimitives
                     // the extremity points
                     for (var i = 0; i <= tessellation; ++i)
                     {
-                        var position = new Vector3(0, topHeight - 0.5f, 0);
+                        var position = new Vector3(0, topHeight - height * 0.5f, 0);
                         var angle = (i + 0.5) / tessellation * 2.0 * Math.PI;
                         var textureCoordinate = new Vector2((i + 0.5f) / tessellation, 0);
                         textureCoordinate.X *= uScale;

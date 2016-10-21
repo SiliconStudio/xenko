@@ -1,0 +1,6 @@
+!Texture
+Id: 163e7dce-4f33-419a-b03b-c592204a8a65
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Source: ../../../Resources/Textures/LensFlare01.png
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
