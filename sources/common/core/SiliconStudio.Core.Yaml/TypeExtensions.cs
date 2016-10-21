@@ -44,67 +44,13 @@
 // SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text;
 
 namespace SiliconStudio.Core.Yaml
 {
     internal static class TypeExtensions
     {
-        public static bool HasInterface(this Type type, Type lookInterfaceType)
-        {
-            return type.GetInterface(lookInterfaceType) != null;
-        }
-
-        public static bool ExtendsGeneric(this Type type, Type genericType)
-        {
-            if (genericType == null)
-                throw new ArgumentNullException("genericType");
-            if (!genericType.IsGenericTypeDefinition)
-                throw new ArgumentException("Expecting a generic type definition", "genericType");
-
-            var nextType = type;
-            while (nextType != null)
-            {
-                var checkType = nextType.IsGenericType ? nextType.GetGenericTypeDefinition() : nextType;
-                if (checkType == genericType)
-                {
-                    return true;
-                }
-                nextType = nextType.BaseType;
-            }
-            return false;
-        }
-
-        public static Type GetInterface(this Type type, Type lookInterfaceType)
-        {
-            if (type == null)
-                throw new ArgumentNullException("type");
-            if (lookInterfaceType == null)
-                throw new ArgumentNullException("lookInterfaceType");
-
-            if (lookInterfaceType.IsGenericTypeDefinition)
-            {
-                if (lookInterfaceType.IsInterface)
-                    foreach (var interfaceType in type.GetInterfaces())
-                        if (interfaceType.IsGenericType
-                            && interfaceType.GetGenericTypeDefinition() == lookInterfaceType)
-                            return interfaceType;
-
-                for (Type t = type; t != null; t = t.BaseType)
-                    if (t.IsGenericType && t.GetGenericTypeDefinition() == lookInterfaceType)
-                        return t;
-            }
-            else
-            {
-                if (lookInterfaceType.IsAssignableFrom(type))
-                    return lookInterfaceType;
-            }
-
-            return null;
-        }
 
         /// <summary>
         /// Gets the assembly qualified name of the type, but without the assembly version or public token.
@@ -204,21 +150,6 @@ namespace SiliconStudio.Core.Yaml
         public static bool IsStruct(this Type type)
         {
             return type != null && type.IsValueType && !type.IsPrimitive;
-        }
-
-        /// <summary>
-        /// Compare two objects to see if they are equal or not. Null is acceptable.
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
-        public static bool AreEqual(object a, object b)
-        {
-            if (a == null)
-                return b == null;
-            if (b == null)
-                return false;
-            return a.Equals(b) || b.Equals(a);
         }
     }
 }

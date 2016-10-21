@@ -24,19 +24,24 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="TypeDescriptors\ArrayDescriptor.cs" />
     <Compile Include="AttributeRegistry.cs" />
+    <Compile Include="TypeDescriptors\CollectionDescriptor.cs" />
     <Compile Include="DefaultKeyComparer.cs" />
     <Compile Include="DefaultNamingConvention.cs" />
-    <Compile Include="DescriptorCategory.cs" />
-    <Compile Include="FieldDescriptor.cs" />
+    <Compile Include="TypeDescriptors\DescriptorCategory.cs" />
+    <Compile Include="TypeDescriptors\DictionaryDescriptor.cs" />
+    <Compile Include="MemberDescriptors\FieldDescriptor.cs" />
     <Compile Include="IAttributeRegistry.cs" />
-    <Compile Include="IMemberDescriptor.cs" />
+    <Compile Include="MemberDescriptors\IMemberDescriptor.cs" />
     <Compile Include="IMemberNamingConvention.cs" />
-    <Compile Include="ITypeDescriptor.cs" />
+    <Compile Include="TypeDescriptors\ITypeDescriptor.cs" />
     <Compile Include="ITypeDescriptorFactory.cs" />
-    <Compile Include="MemberDescriptorBase.cs" />
-    <Compile Include="ObjectDescriptor.cs" />
-    <Compile Include="PropertyDescriptor.cs" />
+    <Compile Include="MemberDescriptors\MemberDescriptorBase.cs" />
+    <Compile Include="TypeDescriptors\NullableDescriptor.cs" />
+    <Compile Include="TypeDescriptors\ObjectDescriptor.cs" />
+    <Compile Include="TypeDescriptors\PrimitiveDescriptor.cs" />
+    <Compile Include="MemberDescriptors\PropertyDescriptor.cs" />
     <Compile Include="TypeDescriptorFactoryBase.cs" />
     <Compile Include="TypeExtensions.cs" />
   </ItemGroup>

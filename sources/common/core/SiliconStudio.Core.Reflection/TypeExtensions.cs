@@ -12,6 +12,40 @@ namespace SiliconStudio.Core.Reflection
     {
         private static readonly Dictionary<Type, bool> AnonymousTypes = new Dictionary<Type, bool>();
 
+        public static bool HasInterface(this Type type, Type lookInterfaceType)
+        {
+            return type.GetInterface(lookInterfaceType) != null;
+        }
+
+        public static Type GetInterface(this Type type, Type lookInterfaceType)
+        {
+            if (type == null)
+                throw new ArgumentNullException(nameof(type));
+            if (lookInterfaceType == null)
+                throw new ArgumentNullException(nameof(lookInterfaceType));
+
+            var typeinfo = lookInterfaceType.GetTypeInfo();
+            if (typeinfo.IsGenericTypeDefinition)
+            {
+                if (typeinfo.IsInterface)
+                    foreach (var interfaceType in type.GetTypeInfo().ImplementedInterfaces)
+                        if (interfaceType.GetTypeInfo().IsGenericType
+                            && interfaceType.GetGenericTypeDefinition() == lookInterfaceType)
+                            return interfaceType;
+
+                for (Type t = type; t != null; t = t.GetTypeInfo().BaseType)
+                    if (t.GetTypeInfo().IsGenericType && t.GetGenericTypeDefinition() == lookInterfaceType)
+                        return t;
+            }
+            else
+            {
+                if (lookInterfaceType.GetTypeInfo().IsAssignableFrom(type.GetTypeInfo()))
+                    return lookInterfaceType;
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Determines whether the specified type is an anonymous type.
         /// </summary>
@@ -50,13 +84,33 @@ namespace SiliconStudio.Core.Reflection
         }
 
         /// <summary>
+        /// Determines whether the specified type is nullable <see cref="Nullable{T}.Nullable{T}"/>.
+        /// </summary>
+        /// <param name="type">The type.</param>
+        /// <returns><c>true</c> if the specified type is nullable; otherwise, <c>false</c>.</returns>
+        public static bool IsNullable(this Type type)
+        {
+            return Nullable.GetUnderlyingType(type) != null;
+        }
+
+        /// <summary>
+        /// Indicates whether the specified <paramref name="type"/> is a non-primitive struct type.
+        /// </summary>
+        /// <param name="type">The <see cref="Type.Type"/> to be analyzed.</param>
+        /// <returns><c>True</c> if the specified <paramref name="type"/> is a non-primitive struct type; otehrwise <c>False</c>.</returns>
+        public static bool IsStruct(this Type type)
+        {
+            return type != null && type.GetTypeInfo().IsValueType && !type.GetTypeInfo().IsPrimitive && !type.GetTypeInfo().IsEnum;
+        }
+
+        /// <summary>
         /// Casts boxed numeric value to double
         /// </summary>
         /// <param name="obj">boxed numeric value</param>
         /// <returns>Numeric value in double. Double.Nan if obj is not a numeric value.</returns>
         internal static double CastToDouble(object obj)
         {
-            var result = double.NaN;
+            var result = Double.NaN;
             var type = obj?.GetType();
             if (type == typeof(sbyte))
                 result = (sbyte)obj;
@@ -91,7 +145,7 @@ namespace SiliconStudio.Core.Reflection
         public static object CastToNumericType(this Type type, object obj)
         {
             var doubleValue = CastToDouble(obj);
-            if (double.IsNaN(doubleValue))
+            if (Double.IsNaN(doubleValue))
                 return null;
 
             if (obj is decimal && type == typeof(decimal))
