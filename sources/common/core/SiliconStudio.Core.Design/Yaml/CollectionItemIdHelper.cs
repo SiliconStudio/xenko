@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
-using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
 
 namespace SiliconStudio.Core.Yaml

@@ -21,7 +21,6 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 
 namespace SiliconStudio.Core.Yaml.Serialization
 {

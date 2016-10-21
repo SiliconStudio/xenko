@@ -73,7 +73,6 @@
     <Compile Include="Reflection\MemberPath.cs" />
     <Compile Include="Reflection\ShadowObjectExtensions.cs" />
     <Compile Include="Reflection\ThisDescriptor.cs" />
-    <Compile Include="Reflection\TypeDescriptorFactory.cs" />
     <Compile Include="Reflection\TypeExtensions.cs" />
     <Compile Include="Reflection\VisitorContext.cs" />
     <Compile Include="Settings\ChangesValidatedEventArgs.cs" />

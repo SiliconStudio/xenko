@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Serialization;
-using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
 
 namespace SiliconStudio.Core.Yaml
@@ -22,7 +21,7 @@ namespace SiliconStudio.Core.Yaml
         /// <inheritdoc/>
         public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
-            if (typeDescriptor is YamlCollectionDescriptor)
+            if (typeDescriptor is CollectionDescriptor)
             {
                 var dataStyle = typeDescriptor.Type.GetCustomAttribute<DataStyleAttribute>();
                 if (dataStyle == null || dataStyle.Style != DataStyle.Compact)
@@ -110,7 +109,7 @@ namespace SiliconStudio.Core.Yaml
         /// <inheritdoc/>
         protected override IDictionary CreatEmptyContainer(ITypeDescriptor descriptor)
         {
-            var collectionDescriptor = (YamlCollectionDescriptor)descriptor;
+            var collectionDescriptor = (CollectionDescriptor)descriptor;
             var type = typeof(CollectionWithItemIds<>).MakeGenericType(collectionDescriptor.ElementType);
             if (type.GetConstructor(Type.EmptyTypes) == null)
                 throw new InvalidOperationException("The type of collection does not have a parameterless constructor.");
@@ -120,7 +119,7 @@ namespace SiliconStudio.Core.Yaml
         /// <inheritdoc/>
         protected override void TransformAfterDeserialization(IDictionary container, ITypeDescriptor targetDescriptor, object targetCollection, ICollection<Guid> deletedItems = null)
         {
-            var collectionDescriptor = (YamlCollectionDescriptor)targetDescriptor;
+            var collectionDescriptor = (CollectionDescriptor)targetDescriptor;
             var type = typeof(CollectionWithItemIds<>).MakeGenericType(collectionDescriptor.ElementType);
             if (!type.IsInstanceOfType(container))
                 throw new InvalidOperationException("The given container does not match the expected type.");
@@ -130,7 +129,7 @@ namespace SiliconStudio.Core.Yaml
             var enumerator = container.GetEnumerator();
             while (enumerator.MoveNext())
             {
-                collectionDescriptor.CollectionAdd(targetCollection, enumerator.Value);
+                collectionDescriptor.Add(targetCollection, enumerator.Value);
                 identifier.Add(i, (Guid)enumerator.Key);
                 ++i;
             }

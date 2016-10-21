@@ -40,7 +40,7 @@ namespace SiliconStudio.Core.Reflection
             // Gets the element type
             var collectionType = type.GetInterface(typeof(IEnumerable<>));
             ElementType = (collectionType != null) ? collectionType.GetGenericArguments()[0] : typeof(object);
-            bool typeSupported = false;
+            var typeSupported = false;
 
             // implements IList
             if (typeof(IList).IsAssignableFrom(type))
@@ -113,8 +113,15 @@ namespace SiliconStudio.Core.Reflection
 
             if (!typeSupported)
             {
-                throw new ArgumentException("Type [{0}] is not supported as a modifiable collection".ToFormat(type), nameof(type));
+                throw new ArgumentException($"Type [{(type)}] is not supported as a modifiable collection");
             }
+        }
+
+        public override void Initialize(IComparer<object> keyComparer)
+        {
+            base.Initialize(keyComparer);
+
+            IsPureCollection = Count == 0;
         }
 
         public override DescriptorCategory Category => DescriptorCategory.Collection;
@@ -124,6 +131,12 @@ namespace SiliconStudio.Core.Reflection
         /// </summary>
         /// <value>The type of the element.</value>
         public Type ElementType { get; }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is a pure collection (no public property/field)
+        /// </summary>
+        /// <value><c>true</c> if this instance is pure collection; otherwise, <c>false</c>.</value>
+        public bool IsPureCollection { get; private set; }
 
         /// <summary>
         /// Gets a value indicating whether this collection type has add method.
@@ -280,7 +293,7 @@ namespace SiliconStudio.Core.Reflection
         protected override bool PrepareMember(MemberDescriptorBase member)
         {
             // Filter members
-            if (member is PropertyDescriptor && ListOfMembersToRemove.Contains(member.Name))
+            if (member is PropertyDescriptor && ListOfMembersToRemove.Contains(member.OriginalName))
             //if (member is PropertyDescriptor && (member.DeclaringType.Namespace ?? string.Empty).StartsWith(SystemCollectionsNamespace) && ListOfMembersToRemove.Contains(member.Name))
             {
                 return false;

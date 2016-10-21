@@ -47,7 +47,6 @@ using System;
 using System.IO;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
-using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
 
 namespace SiliconStudio.Core.Yaml.Serialization
@@ -599,7 +598,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
 
         private ITypeDescriptorFactory CreateTypeDescriptorFactory()
         {
-            return new YamlTypeDescriptorFactory(Settings.Attributes, Settings.EmitDefaultValues, Settings.NamingConvention, Settings.ComparerForKeySorting);
+            return new TypeDescriptorFactory(Settings.Attributes, Settings.EmitDefaultValues, Settings.NamingConvention, Settings.ComparerForKeySorting);
         }
 
         private IEventEmitter CreateEmitter(IEmitter emitter)

@@ -8,7 +8,6 @@ using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 
 namespace SiliconStudio.Core.Yaml
 {

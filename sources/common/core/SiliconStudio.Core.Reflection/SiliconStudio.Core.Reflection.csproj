@@ -24,6 +24,7 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="TypeDescriptorFactory.cs" />
     <Compile Include="TypeDescriptors\ArrayDescriptor.cs" />
     <Compile Include="AttributeRegistry.cs" />
     <Compile Include="TypeDescriptors\CollectionDescriptor.cs" />

@@ -16,8 +16,6 @@ namespace SiliconStudio.Core.Reflection
     {
         private static readonly List<string> ListOfMembersToRemove = new List<string> {"Comparer", "Keys", "Values", "Capacity" };
 
-        private readonly Type keyType;
-        private readonly Type valueType;
         private readonly MethodInfo getEnumeratorGeneric;
         private readonly PropertyInfo getKeysMethod;
         private readonly PropertyInfo getValuesMethod;
@@ -25,41 +23,38 @@ namespace SiliconStudio.Core.Reflection
         private readonly MethodInfo indexerSetter;
         private readonly MethodInfo removeMethod;
         private readonly MethodInfo containsKeyMethod;
+        private readonly MethodInfo addMethod;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DictionaryDescriptor" /> class.
-        /// </summary>
-        /// <param name="factory">The factory.</param>
-        /// <param name="type">The type.</param>
-        /// <exception cref="System.ArgumentException">Expecting a type inheriting from System.Collections.IDictionary;type</exception>
         public DictionaryDescriptor(ITypeDescriptorFactory factory, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
             : base(factory, type, emitDefaultValues, namingConvention)
         {
             if (!IsDictionary(type))
-                throw new ArgumentException(@"Expecting a type inheriting from System.Collections.IDictionary", "type");
+                throw new ArgumentException(@"Expecting a type inheriting from System.Collections.IDictionary", nameof(type));
 
             // extract Key, Value types from IDictionary<??, ??>
             var interfaceType = type.GetInterface(typeof(IDictionary<,>));
             if (interfaceType != null)
             {
-                keyType = interfaceType.GetGenericArguments()[0];
-                valueType = interfaceType.GetGenericArguments()[1];
+                KeyType = interfaceType.GetGenericArguments()[0];
+                ValueType = interfaceType.GetGenericArguments()[1];
                 IsGenericDictionary = true;
-                getEnumeratorGeneric = typeof(DictionaryDescriptor).GetMethod("GetGenericEnumerable").MakeGenericMethod(keyType, valueType);
-                containsKeyMethod = type.GetMethod("ContainsKey", new[] { keyType });
+                getEnumeratorGeneric = typeof(DictionaryDescriptor).GetMethod("GetGenericEnumerable").MakeGenericMethod(KeyType, ValueType);
+                containsKeyMethod = type.GetMethod("ContainsKey", new[] { KeyType });
+                addMethod = interfaceType.GetMethod("Add", new[] { KeyType, ValueType });
             }
             else
             {
-                keyType = typeof(object);
-                valueType = typeof(object);
-                containsKeyMethod = type.GetMethod("Contains", new[] { keyType });
+                KeyType = typeof(object);
+                ValueType = typeof(object);
+                containsKeyMethod = type.GetMethod("Contains", new[] { KeyType });
+                addMethod = type.GetMethod("Add", new[] { KeyType, ValueType });
             }
 
             getKeysMethod = type.GetProperty("Keys");
             getValuesMethod = type.GetProperty("Values");
-            indexerProperty = type.GetProperty("Item", valueType, new[] { keyType });
+            indexerProperty = type.GetProperty("Item", ValueType, new[] { KeyType });
             indexerSetter = indexerProperty.SetMethod;
-            removeMethod = type.GetMethod("Remove", new[] { keyType });
+            removeMethod = type.GetMethod("Remove", new[] { KeyType });
         }
 
         public override void Initialize(IComparer<object> keyComparer)
@@ -76,31 +71,19 @@ namespace SiliconStudio.Core.Reflection
         /// Gets a value indicating whether this instance is generic dictionary.
         /// </summary>
         /// <value><c>true</c> if this instance is generic dictionary; otherwise, <c>false</c>.</value>
-        public bool IsGenericDictionary { get; private set; }
+        public bool IsGenericDictionary { get; }
 
         /// <summary>
         /// Gets the type of the key.
         /// </summary>
         /// <value>The type of the key.</value>
-        public Type KeyType
-        {
-            get
-            {
-                return keyType;
-            }
-        }
+        public Type KeyType { get; }
 
         /// <summary>
         /// Gets the type of the value.
         /// </summary>
         /// <value>The type of the value.</value>
-        public Type ValueType
-        {
-            get
-            {
-                return valueType;
-            }
-        }
+        public Type ValueType { get; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance is pure dictionary.
@@ -124,10 +107,9 @@ namespace SiliconStudio.Core.Reflection
         /// <param name="dictionary">The dictionary.</param>
         /// <returns>A generic enumerator.</returns>
         /// <exception cref="System.ArgumentNullException">dictionary</exception>
-        /// <exception cref="System.NotSupportedException">Key value-pair [{0}] is not supported for IDictionary. Only DictionaryEntry.ToFormat(keyValueObject)</exception>
         public IEnumerable<KeyValuePair<object, object>> GetEnumerator(object dictionary)
         {
-            if (dictionary == null) throw new ArgumentNullException("dictionary");
+            if (dictionary == null) throw new ArgumentNullException(nameof(dictionary));
             if (IsGenericDictionary)
             {
                 foreach (var item in (IEnumerable<KeyValuePair<object, object>>)getEnumeratorGeneric.Invoke(null, new[] {dictionary}))
@@ -142,7 +124,7 @@ namespace SiliconStudio.Core.Reflection
                 {
                     if (!(keyValueObject is DictionaryEntry))
                     {
-                        throw new NotSupportedException("Key value-pair type [{0}] is not supported for IDictionary. Only DictionaryEntry".ToFormat(keyValueObject));
+                        throw new NotSupportedException($"Key value-pair type [{keyValueObject}] is not supported for IDictionary. Only DictionaryEntry");
                     }
                     var entry = (DictionaryEntry)keyValueObject;
                     yield return new KeyValuePair<object, object>(entry.Key, entry.Value);
@@ -159,7 +141,7 @@ namespace SiliconStudio.Core.Reflection
         /// <exception cref="System.InvalidOperationException">No Add() method found on dictionary [{0}].ToFormat(Type)</exception>
         public void SetValue(object dictionary, object key, object value)
         {
-            if (dictionary == null) throw new ArgumentNullException("dictionary");
+            if (dictionary == null) throw new ArgumentNullException(nameof(dictionary));
             var simpleDictionary = dictionary as IDictionary;
             if (simpleDictionary != null)
             {
@@ -177,13 +159,40 @@ namespace SiliconStudio.Core.Reflection
         }
 
         /// <summary>
+        /// Adds a a key-value to a dictionary.
+        /// </summary>
+        /// <param name="dictionary">The dictionary.</param>
+        /// <param name="key">The key.</param>
+        /// <param name="value">The value.</param>
+        /// <exception cref="System.InvalidOperationException">No Add() method found on dictionary [{0}].DoFormat(Type)</exception>
+        public void AddToDictionary(object dictionary, object key, object value)
+        {
+            if (dictionary == null)
+                throw new ArgumentNullException(nameof(dictionary));
+            var simpleDictionary = dictionary as IDictionary;
+            if (simpleDictionary != null)
+            {
+                simpleDictionary.Add(key, value);
+            }
+            else
+            {
+                // Only throw an exception if the addMethod is not accessible when adding to a dictionary
+                if (addMethod == null)
+                {
+                    throw new InvalidOperationException($"No Add() method found on dictionary [{Type}]");
+                }
+                addMethod.Invoke(dictionary, new[] { key, value });
+            }
+        }
+
+        /// <summary>
         /// Remove a key-value from a dictionary
         /// </summary>
         /// <param name="dictionary">The dictionary.</param>
         /// <param name="key">The key.</param>
         public void Remove(object dictionary, object key)
         {
-            if (dictionary == null) throw new ArgumentNullException("dictionary");
+            if (dictionary == null) throw new ArgumentNullException(nameof(dictionary));
             var simpleDictionary = dictionary as IDictionary;
             if (simpleDictionary != null)
             {
@@ -208,7 +217,7 @@ namespace SiliconStudio.Core.Reflection
         /// <param name="key">The key.</param>
         public bool ContainsKey(object dictionary, object key)
         {
-            if (dictionary == null) throw new ArgumentNullException("dictionary");
+            if (dictionary == null) throw new ArgumentNullException(nameof(dictionary));
             var simpleDictionary = dictionary as IDictionary;
             if (simpleDictionary != null)
             {
@@ -273,7 +282,7 @@ namespace SiliconStudio.Core.Reflection
         protected override bool PrepareMember(MemberDescriptorBase member)
         {
             // Filter members
-            if (member is PropertyDescriptor && ListOfMembersToRemove.Contains(member.Name))
+            if (member is PropertyDescriptor && ListOfMembersToRemove.Contains(member.OriginalName))
             //if (member is PropertyDescriptor && (member.DeclaringType.Namespace ?? string.Empty).StartsWith(SystemCollectionsNamespace) && ListOfMembersToRemove.Contains(member.Name))
             {
                 return false;

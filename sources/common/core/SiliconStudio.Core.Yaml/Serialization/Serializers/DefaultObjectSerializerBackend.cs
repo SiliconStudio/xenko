@@ -19,9 +19,7 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
@@ -52,19 +50,19 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             if (style == DataStyle.Any)
             {
                 bool isPrimitiveElementType = false;
-                var collectionDescriptor = objectContext.Descriptor as YamlCollectionDescriptor;
+                var collectionDescriptor = objectContext.Descriptor as CollectionDescriptor;
                 int count = 0;
                 if (collectionDescriptor != null)
                 {
-                    isPrimitiveElementType = YamlPrimitiveDescriptor.IsPrimitive(collectionDescriptor.ElementType);
+                    isPrimitiveElementType = PrimitiveDescriptor.IsPrimitive(collectionDescriptor.ElementType);
                     count = collectionDescriptor.GetCollectionCount(objectContext.Instance);
                 }
                 else
                 {
-                    var arrayDescriptor = objectContext.Descriptor as YamlArrayDescriptor;
+                    var arrayDescriptor = objectContext.Descriptor as ArrayDescriptor;
                     if (arrayDescriptor != null)
                     {
-                        isPrimitiveElementType = YamlPrimitiveDescriptor.IsPrimitive(arrayDescriptor.ElementType);
+                        isPrimitiveElementType = PrimitiveDescriptor.IsPrimitive(arrayDescriptor.ElementType);
                         count = ((Array)objectContext.Instance)?.Length ?? -1;
                     }
                 }

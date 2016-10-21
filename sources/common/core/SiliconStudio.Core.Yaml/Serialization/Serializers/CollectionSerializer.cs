@@ -48,7 +48,6 @@ using System.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
-using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
@@ -59,12 +58,12 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
     {
         public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
-            return typeDescriptor is YamlCollectionDescriptor ? this : null;
+            return typeDescriptor is CollectionDescriptor ? this : null;
         }
 
         protected override bool CheckIsSequence(ref ObjectContext objectContext)
         {
-            var collectionDescriptor = (YamlCollectionDescriptor) objectContext.Descriptor;
+            var collectionDescriptor = (CollectionDescriptor) objectContext.Descriptor;
 
             // If the dictionary is pure, we can directly output a sequence instead of a mapping
             return collectionDescriptor.IsPureCollection;
@@ -134,7 +133,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         /// Cannot deserialize list to readonly collection type [{0}]..DoFormat(thisObject.GetType())</exception>
         protected virtual void ReadCollectionItems(ref ObjectContext objectContext)
         {
-            var collectionDescriptor = (YamlCollectionDescriptor) objectContext.Descriptor;
+            var collectionDescriptor = (CollectionDescriptor) objectContext.Descriptor;
             var thisObject = objectContext.Instance;
 
             if (!collectionDescriptor.HasAdd)
@@ -180,10 +179,10 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         /// <param name="collectionDescriptor">The collection descriptor.</param>
         /// <param name="thisObject">The this object.</param>
         /// <param name="index">The index.</param>
-        protected virtual void ReadAddCollectionItem(ref ObjectContext objectContext, Type elementType, YamlCollectionDescriptor collectionDescriptor, object thisObject, int index)
+        protected virtual void ReadAddCollectionItem(ref ObjectContext objectContext, Type elementType, CollectionDescriptor collectionDescriptor, object thisObject, int index)
         {
             var value = ReadCollectionItem(ref objectContext, null, elementType, index);
-            collectionDescriptor.CollectionAdd(thisObject, value);
+            collectionDescriptor.Add(thisObject, value);
         }
 
         /// <summary>
@@ -205,7 +204,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         /// <param name="objectContext">The object context.</param>
         protected virtual void WriteCollectionItems(ref ObjectContext objectContext)
         {
-            var collectionDescriptor = (YamlCollectionDescriptor) objectContext.Descriptor;
+            var collectionDescriptor = (CollectionDescriptor) objectContext.Descriptor;
             var collection = (IEnumerable) objectContext.Instance;
             int index = 0;
             foreach (var item in collection)

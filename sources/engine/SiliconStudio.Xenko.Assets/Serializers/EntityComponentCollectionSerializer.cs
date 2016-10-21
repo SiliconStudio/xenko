@@ -9,7 +9,6 @@ using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
-using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
 using SiliconStudio.Xenko.Engine;
 
@@ -28,7 +27,7 @@ namespace SiliconStudio.Xenko.Assets.Serializers
             return type == typeof(EntityComponentCollection) ? this : null;
         }
 
-        protected override void ReadAddCollectionItem(ref ObjectContext objectContext, Type elementType, YamlCollectionDescriptor collectionDescriptor, object thisObject, int index)
+        protected override void ReadAddCollectionItem(ref ObjectContext objectContext, Type elementType, CollectionDescriptor collectionDescriptor, object thisObject, int index)
         {
             var scriptCollection = (EntityComponentCollection)objectContext.Instance;
 

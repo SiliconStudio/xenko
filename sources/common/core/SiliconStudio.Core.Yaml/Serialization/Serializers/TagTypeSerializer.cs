@@ -47,7 +47,6 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
-using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
@@ -146,9 +145,9 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             objectContext.Descriptor = objectContext.SerializerContext.FindTypeDescriptor(type);
 
             // If this is a nullable descriptor, use its underlying type directly
-            if (objectContext.Descriptor is YamlNullableDescriptor)
+            if (objectContext.Descriptor is NullableDescriptor)
             {
-                objectContext.Descriptor = objectContext.SerializerContext.FindTypeDescriptor(((YamlNullableDescriptor) objectContext.Descriptor).UnderlyingType);
+                objectContext.Descriptor = objectContext.SerializerContext.FindTypeDescriptor(((NullableDescriptor) objectContext.Descriptor).UnderlyingType);
             }
             return base.ReadYaml(ref objectContext);
         }
@@ -168,9 +167,9 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 
 
             // If we have a nullable value, get its type directly and replace the descriptor
-            if (objectContext.Descriptor is YamlNullableDescriptor)
+            if (objectContext.Descriptor is NullableDescriptor)
             {
-                objectContext.Descriptor = objectContext.SerializerContext.FindTypeDescriptor(((YamlNullableDescriptor) objectContext.Descriptor).UnderlyingType);
+                objectContext.Descriptor = objectContext.SerializerContext.FindTypeDescriptor(((NullableDescriptor) objectContext.Descriptor).UnderlyingType);
             }
 
             // Expected type 

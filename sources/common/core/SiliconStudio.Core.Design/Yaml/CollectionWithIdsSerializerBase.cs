@@ -6,7 +6,6 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
-using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
 
 namespace SiliconStudio.Core.Yaml
@@ -129,7 +128,7 @@ namespace SiliconStudio.Core.Yaml
         /// <param name="objectContext"></param>
         protected override void ReadDictionaryItems(ref ObjectContext objectContext)
         {
-            var dictionaryDescriptor = (YamlDictionaryDescriptor)objectContext.Descriptor;
+            var dictionaryDescriptor = (DictionaryDescriptor)objectContext.Descriptor;
 
             var deletedItems = new HashSet<Guid>();
 
@@ -168,7 +167,7 @@ namespace SiliconStudio.Core.Yaml
 
         protected override void WriteDictionaryItems(ref ObjectContext objectContext)
         {
-            var dictionaryDescriptor = (YamlDictionaryDescriptor)objectContext.Descriptor;
+            var dictionaryDescriptor = (DictionaryDescriptor)objectContext.Descriptor;
             var keyValues = dictionaryDescriptor.GetEnumerator(objectContext.Instance).ToList();
 
             // Not sorting the keys here, they should be already properly sorted when we arrive here
@@ -201,7 +200,7 @@ namespace SiliconStudio.Core.Yaml
 
         protected override bool CheckIsSequence(ref ObjectContext objectContext)
         {
-            var collectionDescriptor = objectContext.Descriptor as YamlCollectionDescriptor;
+            var collectionDescriptor = objectContext.Descriptor as CollectionDescriptor;
 
             // If the dictionary is pure, we can directly output a sequence instead of a mapping
             return collectionDescriptor != null && collectionDescriptor.IsPureCollection;

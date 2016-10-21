@@ -47,7 +47,6 @@ using System;
 using System.Globalization;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
-using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
@@ -55,12 +54,12 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
     {
         public IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
-            return typeDescriptor is YamlPrimitiveDescriptor ? this : null;
+            return typeDescriptor is PrimitiveDescriptor ? this : null;
         }
 
         public override object ConvertFrom(ref ObjectContext context, Scalar scalar)
         {
-            var primitiveType = (YamlPrimitiveDescriptor) context.Descriptor;
+            var primitiveType = (PrimitiveDescriptor) context.Descriptor;
             var type = primitiveType.Type;
             var text = scalar.Value;
 

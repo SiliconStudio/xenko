@@ -51,7 +51,6 @@ namespace SiliconStudio.Core.Yaml
 {
     internal static class TypeExtensions
     {
-
         /// <summary>
         /// Gets the assembly qualified name of the type, but without the assembly version or public token.
         /// </summary>
@@ -121,7 +120,7 @@ namespace SiliconStudio.Core.Yaml
         /// </summary>
         /// <param name="assembly">The assembly.</param>
         /// <returns>The qualified name of the assembly, but without the assembly version or public token.</returns>
-        public static string GetShortAssemblyName(this Assembly assembly)
+        private static string GetShortAssemblyName(this Assembly assembly)
         {
             var assemblyName = assembly.FullName;
             var indexAfterAssembly = assemblyName.IndexOf(',');
@@ -130,26 +129,6 @@ namespace SiliconStudio.Core.Yaml
                 assemblyName = assemblyName.Substring(0, indexAfterAssembly);
             }
             return assemblyName;
-        }
-
-        /// <summary>
-        /// Determines whether the specified type is nullable <see cref="Nullable{T}"/>.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <returns><c>true</c> if the specified type is nullable; otherwise, <c>false</c>.</returns>
-        public static bool IsNullable(this Type type)
-        {
-            return Nullable.GetUnderlyingType(type) != null;
-        }
-
-        /// <summary>
-        /// Returnes true if the specified <paramref name="type"/> is a struct type.
-        /// </summary>
-        /// <param name="type"><see cref="Type"/> to be analyzed.</param>
-        /// <returns>true if the specified <paramref name="type"/> is a struct type; otehrwise false.</returns>
-        public static bool IsStruct(this Type type)
-        {
-            return type != null && type.IsValueType && !type.IsPrimitive;
         }
     }
 }

@@ -46,7 +46,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using SiliconStudio.Core.Yaml.Serialization.Descriptors;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Yaml.Serialization
 {
@@ -104,7 +104,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
             type = GetDefaultImplementation(type);
 
             // We can't instantiate primitive or arrays
-            if (YamlPrimitiveDescriptor.IsPrimitive(type) || type.IsArray)
+            if (PrimitiveDescriptor.IsPrimitive(type) || type.IsArray)
                 return null;
 
             return type.GetConstructor(EmptyTypes) != null || type.IsValueType ? Activator.CreateInstance(type) : null;

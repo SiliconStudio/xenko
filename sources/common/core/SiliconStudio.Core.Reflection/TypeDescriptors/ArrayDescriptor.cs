@@ -1,8 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
-using System.Reflection;
 using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Core.Reflection
@@ -12,18 +10,10 @@ namespace SiliconStudio.Core.Reflection
     /// </summary>
     public class ArrayDescriptor : ObjectDescriptor
     {
-        private readonly Type listType;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ObjectDescriptor" /> class.
-        /// </summary>
-        /// <param name="factory">The factory.</param>
-        /// <param name="type">The type.</param>
-        /// <exception cref="System.ArgumentException">Expecting arrat type;type</exception>
         public ArrayDescriptor(ITypeDescriptorFactory factory, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
             : base(factory, type, emitDefaultValues, namingConvention)
         {
-            if (!type.IsArray) throw new ArgumentException("Expecting array type", "type");
+            if (!type.IsArray) throw new ArgumentException(@"Expecting array type", nameof(type));
 
             if (type.GetArrayRank() != 1)
             {
@@ -31,7 +21,6 @@ namespace SiliconStudio.Core.Reflection
             }
 
             ElementType = type.GetElementType();
-            listType = typeof(List<>).MakeGenericType(ElementType);
         }
 
         public override DescriptorCategory Category => DescriptorCategory.Array;

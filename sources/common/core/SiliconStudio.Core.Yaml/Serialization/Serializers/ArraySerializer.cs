@@ -48,7 +48,6 @@ using System.Collections;
 using System.Collections.Generic;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
-using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
@@ -56,13 +55,13 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
     {
         public IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
-            return typeDescriptor is YamlArrayDescriptor ? this : null;
+            return typeDescriptor is ArrayDescriptor ? this : null;
         }
 
         public virtual object ReadYaml(ref ObjectContext objectContext)
         {
             var reader = objectContext.Reader;
-            var arrayDescriptor = (YamlArrayDescriptor) objectContext.Descriptor;
+            var arrayDescriptor = (ArrayDescriptor) objectContext.Descriptor;
 
             bool isArray = objectContext.Instance != null && objectContext.Instance.GetType().IsArray;
             var arrayList = (IList) objectContext.Instance;
@@ -106,7 +105,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         public void WriteYaml(ref ObjectContext objectContext)
         {
             var value = objectContext.Instance;
-            var arrayDescriptor = (YamlArrayDescriptor) objectContext.Descriptor;
+            var arrayDescriptor = (ArrayDescriptor) objectContext.Descriptor;
 
             var valueType = value.GetType();
             var arrayList = (IList) value;

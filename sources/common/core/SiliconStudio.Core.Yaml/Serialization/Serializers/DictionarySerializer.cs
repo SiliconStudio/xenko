@@ -49,7 +49,6 @@ using System.Linq;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
-using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 using Scalar = SiliconStudio.Core.Yaml.Events.Scalar;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Serializers
@@ -62,12 +61,12 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         /// <inheritdoc/>
         public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
-            return typeDescriptor is YamlDictionaryDescriptor ? this : null;
+            return typeDescriptor is DictionaryDescriptor ? this : null;
         }
 
         protected override void ReadMember(ref ObjectContext objectContext)
         {
-            var dictionaryDescriptor = (YamlDictionaryDescriptor)objectContext.Descriptor;
+            var dictionaryDescriptor = (DictionaryDescriptor)objectContext.Descriptor;
 
             if (dictionaryDescriptor.IsPureDictionary)
             {
@@ -103,7 +102,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 
         protected override void WriteMembers(ref ObjectContext objectContext)
         {
-            var dictionaryDescriptor = (YamlDictionaryDescriptor)objectContext.Descriptor;
+            var dictionaryDescriptor = (DictionaryDescriptor)objectContext.Descriptor;
             if (dictionaryDescriptor.IsPureDictionary)
             {
                 WriteDictionaryItems(ref objectContext);
@@ -139,7 +138,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         /// <param name="objectContext"></param>
         protected virtual void ReadDictionaryItems(ref ObjectContext objectContext)
         {
-            var dictionaryDescriptor = (YamlDictionaryDescriptor)objectContext.Descriptor;
+            var dictionaryDescriptor = (DictionaryDescriptor)objectContext.Descriptor;
 
             var reader = objectContext.Reader;
             while (!reader.Accept<MappingEnd>())
@@ -184,7 +183,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         /// <param name="objectContext">The object context.</param>
         protected virtual void WriteDictionaryItems(ref ObjectContext objectContext)
         {
-            var dictionaryDescriptor = (YamlDictionaryDescriptor) objectContext.Descriptor;
+            var dictionaryDescriptor = (DictionaryDescriptor) objectContext.Descriptor;
             var keyValues = dictionaryDescriptor.GetEnumerator(objectContext.Instance).ToList();
 
             var settings = objectContext.Settings;
