@@ -1,17 +1,15 @@
 !SceneAsset
 Id: 67a9eb30-7686-4b8c-89c3-19f12755774e
-SerializedVersion: {Xenko: 1.7.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta02}
 Tags: []
 SceneSettings:
-    ~Id: 8dfe4154-403a-48cb-9020-dbc029d08503
+    Id: 8dfe4154-403a-48cb-9020-dbc029d08503
     GraphicsCompositor: !SceneGraphicsCompositorLayers
         ~Id: 750f0b40-c963-4032-ab5a-75ad76b6e446
         Cameras:
             -   ~Id: b60169a3-8403-4551-a598-391b2a68c9ea
                 Name: null
-                Camera:
-                    Entity: {Id: d9876ddf-0675-4113-8dc5-5d363fbae7f6}
-                    Id: 2f657057-5b7b-4b74-a75d-9271f7f7d086
+                Camera: d9876ddf-0675-4113-8dc5-5d363fbae7f6/2f657057-5b7b-4b74-a75d-9271f7f7d086
         Layers: []
         Master:
             ~Id: d7f24a45-9ba3-4362-8b93-fea4cdcd55f3
@@ -54,10 +52,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 917ed4cc-0d99-4ae6-9674-13dd648728a8
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !BackgroundComponent
                         ~Id: 032155b1-b423-4db5-b4cd-4538259e1123
                         Texture: 08e2fd46-3506-4012-b826-6b9bc485c5e1/16a0b153-2f28-481b-a88d-732348e47464:XenkoBackground
@@ -67,33 +65,28 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: d1313ed3-e46a-46e1-90b5-edfc813c3604
-                        Position: {X: -110.0, Y: -83.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children:
-                            -   Entity: {Id: ef08d60e-261c-480b-abf4-c7b8ba929ca6}
-                                Id: b2dea873-1850-4918-9f67-a5f9322ae8ef
-                            -   Entity: {Id: 98d284d2-cf3d-4f34-a7e8-009146c3d708}
-                                Id: a08345b4-9f50-45ef-9a6f-3a2c09d17047
-                            -   Entity: {Id: d2d6bd43-72ac-4cbc-99bc-5e0ea20663e4}
-                                Id: 735c728e-8cbf-4ac1-aa3c-11a07720791b
+                            - ef08d60e-261c-480b-abf4-c7b8ba929ca6/b2dea873-1850-4918-9f67-a5f9322ae8ef
+                            - 98d284d2-cf3d-4f34-a7e8-009146c3d708/a08345b4-9f50-45ef-9a6f-3a2c09d17047
+                            - d2d6bd43-72ac-4cbc-99bc-5e0ea20663e4/735c728e-8cbf-4ac1-aa3c-11a07720791b
+                        Position: {X: -110.0, Y: -83.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !UIElementLinkComponent
                         ~Id: 976b8f85-ac92-4ccb-8fad-a41701ea56d0
+                        Target: 820d34a8-2971-4381-abfa-2965d94ec672/a8b1b6f6-8ad4-4580-bd94-0370455f3450
                         Camera: null
                         NodeName: ElementName
-                        Target:
-                            Entity: {Id: 820d34a8-2971-4381-abfa-2965d94ec672}
-                            Id: a8b1b6f6-8ad4-4580-bd94-0370455f3450
         -   Entity:
                 Id: 5b9322e4-89dd-4d55-b459-87ad6966eda1
                 Name: Directional light
                 Components:
                     - !TransformComponent
                         ~Id: 9413f55f-657d-4277-8852-0ff5b1ea7cf8
-                        Position: {X: 0.0, Y: 2.0, Z: 0.0}
-                        Rotation: {W: 0.819152057, X: -0.57357645, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 2.0, Z: 0.0}
+                        Rotation: {X: -0.57357645, Y: 0.0, Z: 0.0, W: 0.819152057}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !LightComponent
                         ~Id: f3b7d9cb-d855-40e8-9024-a0296ff2c465
                         Type: !LightDirectional
@@ -116,16 +109,17 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 6bdc33bf-ffb7-4ec2-9a05-e50a0f025227
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !UIElementLink.SplashScript,UIElementLink.Game
                         ~Id: 802787a7-fdee-42c5-b488-0d3c4b46f129
-                        NextScene: TiltedScreen
                         SplashScreenImages: feefd366-28b9-404c-80e5-a083cd45e7d8/e8e2f386-e79e-4875-993f-8bdaf0ef72c5:SplashScreenImages
+                        NextScene: TiltedScreen
                     - !UIComponent
                         ~Id: a8b1b6f6-8ad4-4580-bd94-0370455f3450
+                        Page: null
                         Resolution: {X: 1280.0, Y: 720.0, Z: 1000.0}
                         Size: {X: 1.0, Y: 1.0, Z: 1.0}
         -   Entity:
@@ -134,10 +128,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: a08345b4-9f50-45ef-9a6f-3a2c09d17047
-                        Position: {X: -0.6729453, Y: 137.63002, Z: -0.6720371}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 10.0, Y: 10.0, Z: 10.0}
                         Children: []
+                        Position: {X: -0.6729453, Y: 137.63002, Z: -0.6720371}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 10.0, Y: 10.0, Z: 10.0}
                     - !ParticleSystemComponent
                         ~Id: f82922f3-44a6-4ac5-aba1-ccfda0e0022c
                         Control:
@@ -162,12 +156,12 @@ Hierarchy:
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: d75d7932-4af0-4aeb-beaa-02ebee54ca1e
                                         ComputeColor: !ComputeTextureColor
+                                            Swizzle: null
                                             Texture: a366ca98-e5de-4667-9dfe-b347ab206772/73b27696-e29d-4f96-bd5d-bac6fa523214:Particles/smoke
                                             FallbackValue:
                                                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                             Scale: {X: 1.0, Y: 1.0}
                                             Offset: {X: 0.0, Y: 0.0}
-                                            Swizzle: null
                                         UVBuilder: !UVBuilderFlipbook
                                             ~Id: 3b0d3156-9631-46e9-91e1-2d10c5442f89
                                             XDivisions: 8
@@ -188,7 +182,7 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
@@ -203,15 +197,15 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticleScaleUniform: true
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             PositionMin: {X: -0.2, Y: 0.0, Z: -0.2}
                                             PositionMax: {X: 0.2, Y: 0.0, Z: 0.2}
                                             Interpolate: false
@@ -220,15 +214,15 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticleScaleUniform: true
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             VelocityMin: {X: -0.5, Y: 0.5, Z: -0.5}
                                             VelocityMax: {X: 0.5, Y: 1.0, Z: 0.5}
                                         - !InitialRotationSeed
@@ -236,7 +230,7 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
@@ -253,10 +247,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 735c728e-8cbf-4ac1-aa3c-11a07720791b
-                        Position: {X: -0.47021246, Y: 135.641357, Z: -1.57608986}
-                        Rotation: {W: 0.707106769, X: 0.0, Y: 0.707106769, Z: 0.0}
-                        Scale: {X: 40.0, Y: 40.0, Z: 40.0}
                         Children: []
+                        Position: {X: -0.47021246, Y: 135.641357, Z: -1.57608986}
+                        Rotation: {X: 0.0, Y: 0.707106769, Z: 0.0, W: 0.707106769}
+                        Scale: {X: 40.0, Y: 40.0, Z: 40.0}
                     - !ModelComponent
                         ~Id: d676a1e3-287f-44e1-bccf-44d85bbd6588
                         Model: 6cbe2eda-e519-4e6c-902d-8dc8519bd9c4/55733c87-8e99-4d26-8eac-32a172399d18:Knight/knight
@@ -281,10 +275,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 54e455fc-6899-4ac1-a6fd-6308e9d1ba14
-                        Position: {X: 0.0, Y: 0.0, Z: 1000.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 1000.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !CameraComponent
                         ~Id: 2f657057-5b7b-4b74-a75d-9271f7f7d086
                         Projection: Orthographic
@@ -299,10 +293,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: b2dea873-1850-4918-9f67-a5f9322ae8ef
-                        Position: {X: 0.0, Y: 86.0750656, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 100.0, Y: 100.0, Z: 100.0}
                         Children: []
+                        Position: {X: 0.0, Y: 86.0750656, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 100.0, Y: 100.0, Z: 100.0}
                     - !ModelComponent
                         ~Id: fd224e85-5f77-4126-b662-a616b9d8ef3d
                         Model: 3029de5d-637f-41a3-9d3d-00ae6d26ea65/be1aa9c8-4b3f-48d4-a759-d3b28603cb41:ProceduralModel

@@ -1,15 +1,15 @@
 !SceneAsset
 Id: 71292a97-5a05-4865-9ac8-e113ffad9561
-SerializedVersion: {Xenko: 1.7.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta02}
 Tags: []
 SceneSettings:
-    ~Id: 2b632eac-33e9-4d59-91cd-410162839997
+    Id: 2b632eac-33e9-4d59-91cd-410162839997
     GraphicsCompositor: !SceneGraphicsCompositorLayers
         ~Id: f432b587-afc7-44af-b40c-7fb51c772124
         Cameras:
             -   ~Id: 73c46b86-68f1-4f1b-8223-54878150666b
                 Name: null
-                Camera: {Entity: {Id: a41aa685-3271-4e96-a72c-639c52070011}, Id: 2d3c6f87-3797-4988-95bd-0c6964dd3579}
+                Camera: a41aa685-3271-4e96-a72c-639c52070011/2d3c6f87-3797-4988-95bd-0c6964dd3579
         Layers: []
         Master:
             ~Id: cba63263-aa0d-4b80-9d57-d44b94f4b703
@@ -46,7 +46,6 @@ SceneSettings:
                     ~Id: 45478bf4-0222-4474-9cb0-98b2067a21a3
                     ParamIntensity: 0.5
                     ParamRadius: 1.5
-                    NumberOfBounces: 2
                     BlurScale: 1.75
                     EdgeSharpness: 8.0
                 DepthOfField:
@@ -113,10 +112,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 5b26ebe2-73a6-4758-9059-55d84c1d995d
                         Model: 40f061ef-7c24-49da-8559-6468e7668f39/c46f9ef1-3f08-4541-b48a-d577621cb434:Stand/ProceduralCylinder
@@ -128,10 +127,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 54550fef-1b7c-4a35-8c9c-acf8f7656118
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 78090820-3cf0-4094-a47f-ed7b8201fcb2
                         Model: 6d1ebe93-9f1f-4449-a14f-0696552e4d34/14c15ac5-dd16-4bec-8250-9a837f09f283:Stand/ProceduralTorus
@@ -143,10 +142,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 54550fef-1b7c-4a35-8c9c-acf8f7656118
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 78090820-3cf0-4094-a47f-ed7b8201fcb2
                         Model: 6d1ebe93-9f1f-4449-a14f-0696552e4d34/14c15ac5-dd16-4bec-8250-9a837f09f283:Stand/ProceduralTorus
@@ -158,10 +157,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 1d600213-5ae4-48ce-bd5d-ec37ec0f9e0b
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !BackgroundComponent
                         ~Id: 98864749-098e-4590-8cd0-319867a3b541
                         Texture: 57095419-b6d2-4885-9942-fb3c6f9a8be5/a92a0e5c-6f9f-4d1d-bff8-38b596819274:XenkoBackground
@@ -171,10 +170,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 5b26ebe2-73a6-4758-9059-55d84c1d995d
                         Model: 40f061ef-7c24-49da-8559-6468e7668f39/c46f9ef1-3f08-4541-b48a-d577621cb434:Stand/ProceduralCylinder
@@ -186,10 +185,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 5b26ebe2-73a6-4758-9059-55d84c1d995d
                         Model: 40f061ef-7c24-49da-8559-6468e7668f39/c46f9ef1-3f08-4541-b48a-d577621cb434:Stand/ProceduralCylinder
@@ -201,10 +200,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 54550fef-1b7c-4a35-8c9c-acf8f7656118
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 78090820-3cf0-4094-a47f-ed7b8201fcb2
                         Model: 6d1ebe93-9f1f-4449-a14f-0696552e4d34/14c15ac5-dd16-4bec-8250-9a837f09f283:Stand/ProceduralTorus
@@ -216,10 +215,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 1aa10762-3923-4668-806a-2edab0170f25
-                        Position: {X: -3.0, Y: 0.463807225, Z: 3.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 0.918370843, Y: 0.918370843, Z: 0.918370843}
                         Children: []
+                        Position: {X: -3.0, Y: 0.463807225, Z: 3.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 0.918370843, Y: 0.918370843, Z: 0.918370843}
                     - !ParticleSystemComponent
                         ~Id: e5e6b626-0fba-438d-9c6d-11529e21df91
                         Control:
@@ -252,12 +251,12 @@ Hierarchy:
                                                 Stream: !ColorVertexStreamDefinition
                                                     ~Id: 1dae090e-face-458c-9eee-f01f55838cb9
                                             RightChild: !ComputeTextureColor
+                                                Swizzle: null
                                                 Texture: 228153c1-4273-4f51-9ad8-f88eecd55c26/10eb4d2e-1538-4ae6-9924-bf7156c271ce:dot
                                                 FallbackValue:
                                                     Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                                 Scale: {X: 1.0, Y: 1.0}
                                                 Offset: {X: 0.0, Y: 0.0}
-                                                Swizzle: null
                                         UVBuilder: null
                                         ForceTexCoords: false
                                     Spawners:
@@ -273,7 +272,7 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
@@ -288,15 +287,15 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticleScaleUniform: true
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             PositionMin: {X: -2.0, Y: 0.0, Z: 0.0}
                                             PositionMax: {X: -2.0, Y: 0.0, Z: 0.0}
                                             Interpolate: false
@@ -305,7 +304,7 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
@@ -318,7 +317,7 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
@@ -335,14 +334,14 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
-                                            DisplayParticleScaleUniform: false
                                             DisplayParticlePosition: true
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: true
+                                            DisplayParticleScaleUniform: false
                                             FieldShape: !FieldShapeTorus
                                                 ~Id: 5caef56f-3585-4094-8336-68fb8496ce13
                                                 BigRadius: 2.0
@@ -386,12 +385,12 @@ Hierarchy:
                                                 RightChild: !ComputeFloat4
                                                     Value: {X: 2.0, Y: 2.0, Z: 2.0, W: 1.0}
                                             RightChild: !ComputeTextureColor
+                                                Swizzle: null
                                                 Texture: 228153c1-4273-4f51-9ad8-f88eecd55c26/10eb4d2e-1538-4ae6-9924-bf7156c271ce:dot
                                                 FallbackValue:
                                                     Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                                 Scale: {X: 1.0, Y: 0.2}
                                                 Offset: {X: 0.0, Y: 0.4}
-                                                Swizzle: null
                                         UVBuilder: null
                                         ForceTexCoords: false
                                     Spawners:
@@ -413,14 +412,14 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
-                                            DisplayParticleScaleUniform: true
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             ParentName: Parent
                                             ParentSeedOffset: 0
                                             ParentControlFlag: Group00
@@ -432,7 +431,7 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
@@ -448,15 +447,15 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticleScaleUniform: true
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             VelocityMin: {X: -0.1, Y: -0.1, Z: -0.1}
                                             VelocityMax: {X: 0.1, Y: 0.1, Z: 0.1}
                                         - !InitialColorParent
@@ -464,14 +463,14 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
-                                            DisplayParticleScaleUniform: false
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: false
                                             DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: false
                                             ParentName: Parent
                                             ParentSeedOffset: 0
                                             ParentControlFlag: Group00
@@ -484,7 +483,7 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
@@ -517,10 +516,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: ca6746df-9948-4ab1-a823-3099b697ba41
-                        Position: {X: -3.0, Y: -0.182317838, Z: -3.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: -3.0, Y: -0.182317838, Z: -3.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ParticleSystemComponent
                         ~Id: b1e41fbf-7338-4601-8406-2641dc83069a
                         Control:
@@ -549,12 +548,12 @@ Hierarchy:
                                     Material: !ParticleMaterialComputeColor
                                         ~Id: 3a2f4d08-f75b-4c30-83c0-10cbf47b8c5f
                                         ComputeColor: !ComputeTextureColor
+                                            Swizzle: null
                                             Texture: 886511aa-0183-4aef-a18a-ed96fdae6d2b/72741f20-0066-47e9-a73d-c5ac24900e47:smoke
                                             FallbackValue:
                                                 Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                             Scale: {X: 1.0, Y: 1.0}
                                             Offset: {X: 0.0, Y: 0.0}
-                                            Swizzle: null
                                         UVBuilder: !UVBuilderFlipbook
                                             ~Id: 2db42a11-4e78-48a1-a91e-0ec2768bb05a
                                             XDivisions: 8
@@ -579,15 +578,15 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticleScaleUniform: true
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             VelocityMin: {X: -0.3, Y: 0.0, Z: -0.3}
                                             VelocityMax: {X: 0.3, Y: 0.0, Z: 0.3}
                                         - !InitialSizeSeed
@@ -595,7 +594,7 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
@@ -610,15 +609,15 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 222
-                                            DisplayParticleScaleUniform: true
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             PositionMin: {X: 0.0, Y: -0.1, Z: 0.0}
                                             PositionMax: {X: 0.0, Y: -0.2, Z: 0.0}
                                             Interpolate: false
@@ -627,7 +626,7 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
@@ -642,14 +641,14 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
-                                            DisplayParticleScaleUniform: true
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             ParentName: Stone
                                             ParentSeedOffset: 0
                                             ParentControlFlag: Group00
@@ -672,12 +671,12 @@ Hierarchy:
                                         ComputeColor: !ComputeBinaryColor
                                             Operator: Multiply
                                             LeftChild: !ComputeTextureColor
+                                                Swizzle: null
                                                 Texture: 83e1573d-204d-48cb-9605-34c0d5e923c5/10eb4d2e-1538-4ae6-9924-bf7156c271ce:dot
                                                 FallbackValue:
                                                     Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                                 Scale: {X: 1.0, Y: 1.0}
                                                 Offset: {X: 0.0, Y: 0.0}
-                                                Swizzle: null
                                             RightChild: !ComputeFloat4
                                                 Value: {X: 2.0, Y: 2.0, Z: 1.0, W: 1.0}
                                         UVBuilder: null
@@ -695,15 +694,15 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticleScaleUniform: true
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             PositionMin: {X: 0.0, Y: 3.0, Z: 2.0}
                                             PositionMax: {X: 0.0, Y: 3.0, Z: 2.0}
                                             Interpolate: false
@@ -712,7 +711,7 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
@@ -727,15 +726,15 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 444
-                                            DisplayParticleScaleUniform: true
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             VelocityMin: {X: -3.0, Y: -1.0, Z: -2.0}
                                             VelocityMax: {X: 3.0, Y: -0.5, Z: -2.0}
                                     Updaters:
@@ -744,29 +743,29 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
-                                            GravitationalAcceleration: {X: 0.0, Y: -9.80665, Z: 0.0}
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
+                                            GravitationalAcceleration: {X: 0.0, Y: -9.80665, Z: 0.0}
                                         - !UpdaterCollider
                                             ~Id: 3a8a6015-df8d-4a8e-a0f7-c34f17b5ad13
                                             DebugDraw: true
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: -0.6, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
-                                            DisplayParticleScaleUniform: false
                                             DisplayParticlePosition: true
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: true
+                                            DisplayParticleScaleUniform: false
                                             FieldShape: !FieldShapeCylinder
                                                 ~Id: 4b998646-54e8-4eba-b1b3-d60a28dc68de
                                                 HalfHeight: 0.5
@@ -780,7 +779,7 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
@@ -794,10 +793,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 37e8cc7e-388f-446c-af40-41de6ec2b3f3
-                        Position: {X: -2.0, Y: 2.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: -2.0, Y: 2.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !LightComponent
                         ~Id: 93cbf39c-32ad-402a-9e00-4926cc8038a3
                         Type: !LightAmbient
@@ -812,22 +811,22 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 8b67d219-bc49-4bdc-8169-c5728024595a
-                        Position: {X: 3.0, Y: 0.0, Z: 3.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 2.0, Y: 2.0, Z: 2.0}
                         Children:
-                            - {Entity: {Id: 2571f0bf-c6ea-4cc7-b300-615d83b8d48f}, Id: dfcbe55b-d196-4696-8a11-e2ecdc3a3d59}
-                            - {Entity: {Id: 50bbd3e2-78a5-4f2f-bac3-dbde01315dd6}, Id: 54550fef-1b7c-4a35-8c9c-acf8f7656118}
+                            - 2571f0bf-c6ea-4cc7-b300-615d83b8d48f/dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
+                            - 50bbd3e2-78a5-4f2f-bac3-dbde01315dd6/54550fef-1b7c-4a35-8c9c-acf8f7656118
+                        Position: {X: 3.0, Y: 0.0, Z: 3.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 2.0, Y: 2.0, Z: 2.0}
         -   Entity:
                 Id: 79735979-e91a-4eae-b702-070a873dfa9c
                 Name: Directional light
                 Components:
                     - !TransformComponent
                         ~Id: be759b77-9ba5-49fe-818d-2885cb29b306
-                        Position: {X: 0.0, Y: 2.0, Z: 0.0}
-                        Rotation: {W: 0.7912401, X: -0.5540323, Y: 0.212012157, Z: 0.1484525}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 2.0, Z: 0.0}
+                        Rotation: {X: -0.5540323, Y: 0.212012157, Z: 0.1484525, W: 0.7912401}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !LightComponent
                         ~Id: 906c9e8d-ca95-434f-9f62-1a07b0dc40fd
                         Type: !LightDirectional
@@ -855,10 +854,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 54550fef-1b7c-4a35-8c9c-acf8f7656118
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 78090820-3cf0-4094-a47f-ed7b8201fcb2
                         Model: 6d1ebe93-9f1f-4449-a14f-0696552e4d34/14c15ac5-dd16-4bec-8250-9a837f09f283:Stand/ProceduralTorus
@@ -870,10 +869,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: d719501e-2e96-4fe6-b6dc-1425efb29de3
-                        Position: {X: 0.0, Y: 4.0, Z: 12.0}
-                        Rotation: {W: 0.9961947, X: -0.08715574, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 4.0, Z: 12.0}
+                        Rotation: {X: -0.08715574, Y: 0.0, Z: 0.0, W: 0.9961947}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !CameraComponent
                         ~Id: 2d3c6f87-3797-4988-95bd-0c6964dd3579
                         Projection: Perspective
@@ -888,10 +887,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 19be2238-ea0f-45da-ae77-fabbd57dc799
-                        Position: {X: 2.0, Y: 0.5, Z: 2.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 0.5, Y: 0.5, Z: 0.5}
                         Children: []
+                        Position: {X: 2.0, Y: 0.5, Z: 2.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 0.5, Y: 0.5, Z: 0.5}
                     - !SpriteComponent
                         ~Id: f28b01ff-f0aa-44c0-8fa2-5b879141de31
                         SpriteProvider: !SpriteFromTexture
@@ -907,10 +906,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 0bfcb7a6-28f3-48c6-b196-2eab92610f8a
-                        Position: {X: 3.0, Y: 0.0, Z: -3.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 3.0, Y: 0.0, Z: -3.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ParticleSystemComponent
                         ~Id: 524fd7e7-fdb7-432e-b56c-0c3d9e2cc0b4
                         Control:
@@ -939,12 +938,12 @@ Hierarchy:
                                         ComputeColor: !ComputeBinaryColor
                                             Operator: Multiply
                                             LeftChild: !ComputeTextureColor
+                                                Swizzle: null
                                                 Texture: 19a89fe4-7a93-41ea-b24e-a935d90f4146/10eb4d2e-1538-4ae6-9924-bf7156c271ce:dot
                                                 FallbackValue:
                                                     Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                                 Scale: {X: 1.0, Y: 1.0}
                                                 Offset: {X: 0.0, Y: 0.0}
-                                                Swizzle: null
                                             RightChild: !ComputeVertexStreamColor
                                                 Stream: !ColorVertexStreamDefinition
                                                     ~Id: c789da85-eda4-408b-b456-85a538f6ef22
@@ -963,7 +962,7 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
@@ -978,15 +977,15 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticleScaleUniform: true
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             VelocityMin: {X: -1.5, Y: 5.0, Z: -1.5}
                                             VelocityMax: {X: 1.5, Y: 3.0, Z: 1.5}
                                         - !InitialColorSeed
@@ -994,7 +993,7 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
@@ -1021,12 +1020,12 @@ Hierarchy:
                                         ComputeColor: !ComputeBinaryColor
                                             Operator: Multiply
                                             LeftChild: !ComputeTextureColor
+                                                Swizzle: null
                                                 Texture: 886511aa-0183-4aef-a18a-ed96fdae6d2b/72741f20-0066-47e9-a73d-c5ac24900e47:smoke
                                                 FallbackValue:
                                                     Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                                 Scale: {X: 1.0, Y: 1.0}
                                                 Offset: {X: 0.0, Y: 0.0}
-                                                Swizzle: null
                                             RightChild: !ComputeBinaryColor
                                                 Operator: Multiply
                                                 LeftChild: !ComputeVertexStreamColor
@@ -1054,14 +1053,14 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
-                                            DisplayParticleScaleUniform: true
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             ParentName: Parent
                                             ParentSeedOffset: 0
                                             ParentControlFlag: None
@@ -1073,7 +1072,7 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
@@ -1088,15 +1087,15 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticleScaleUniform: true
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             VelocityMin: {X: -0.25, Y: -0.25, Z: -0.25}
                                             VelocityMax: {X: 0.25, Y: 0.25, Z: 0.25}
                                         - !InitialRotationSeed
@@ -1104,7 +1103,7 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
@@ -1119,14 +1118,14 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
-                                            DisplayParticleScaleUniform: false
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: false
                                             DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: false
                                             ParentName: Parent
                                             ParentSeedOffset: 0
                                             ParentControlFlag: None
@@ -1169,12 +1168,12 @@ Hierarchy:
                                                 Stream: !ColorVertexStreamDefinition
                                                     ~Id: e22965c3-0b59-468a-b847-72facf5608fd
                                             RightChild: !ComputeTextureColor
+                                                Swizzle: null
                                                 Texture: 19a89fe4-7a93-41ea-b24e-a935d90f4146/10eb4d2e-1538-4ae6-9924-bf7156c271ce:dot
                                                 FallbackValue:
                                                     Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                                 Scale: {X: 1.0, Y: 1.0}
                                                 Offset: {X: 0.0, Y: 0.0}
-                                                Swizzle: null
                                         UVBuilder: null
                                         ForceTexCoords: false
                                     Spawners:
@@ -1194,14 +1193,14 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
-                                            DisplayParticleScaleUniform: true
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             ParentName: Parent
                                             ParentSeedOffset: 0
                                             ParentControlFlag: Group00
@@ -1213,15 +1212,15 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticleScaleUniform: true
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             VelocityMin: {X: -2.0, Y: 0.0, Z: -2.0}
                                             VelocityMax: {X: 2.0, Y: 3.0, Z: 2.0}
                                         - !InitialSizeSeed
@@ -1229,7 +1228,7 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
@@ -1244,14 +1243,14 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
-                                            DisplayParticleScaleUniform: false
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: false
                                             DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: false
                                             ParentName: Parent
                                             ParentSeedOffset: 0
                                             ParentControlFlag: Group00
@@ -1264,7 +1263,7 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
@@ -1277,25 +1276,25 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
-                                            GravitationalAcceleration: {X: 0.0, Y: -4.0, Z: 0.0}
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
+                                            GravitationalAcceleration: {X: 0.0, Y: -4.0, Z: 0.0}
         -   Entity:
                 Id: c392f952-51b2-4dde-aad9-9449a33be394
                 Name: Sign01
                 Components:
                     - !TransformComponent
                         ~Id: e0f04d2e-236e-424b-8114-0abc09feed02
-                        Position: {X: 2.0, Y: 0.5, Z: -2.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 0.5, Y: 0.5, Z: 0.5}
                         Children: []
+                        Position: {X: 2.0, Y: 0.5, Z: -2.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 0.5, Y: 0.5, Z: 0.5}
                     - !SpriteComponent
                         ~Id: a6f1a47a-56d3-4794-8de4-4f0d2c320406
                         SpriteProvider: !SpriteFromTexture
@@ -1311,22 +1310,22 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 8b67d219-bc49-4bdc-8169-c5728024595a
-                        Position: {X: -3.0, Y: 0.0, Z: 3.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 2.0, Y: 2.0, Z: 2.0}
                         Children:
-                            - {Entity: {Id: 4e6f902c-15ae-4263-99a4-fffb61c3b407}, Id: dfcbe55b-d196-4696-8a11-e2ecdc3a3d59}
-                            - {Entity: {Id: 85cc27c5-b70a-4419-a0ce-51f11dbc695d}, Id: 54550fef-1b7c-4a35-8c9c-acf8f7656118}
+                            - 4e6f902c-15ae-4263-99a4-fffb61c3b407/dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
+                            - 85cc27c5-b70a-4419-a0ce-51f11dbc695d/54550fef-1b7c-4a35-8c9c-acf8f7656118
+                        Position: {X: -3.0, Y: 0.0, Z: 3.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 2.0, Y: 2.0, Z: 2.0}
         -   Entity:
                 Id: dbf4ae4f-162b-486c-9db5-4ba9bfb2d775
                 Name: Colliding Particles
                 Components:
                     - !TransformComponent
                         ~Id: ca6746df-9948-4ab1-a823-3099b697ba41
-                        Position: {X: 1.0, Y: 0.0, Z: 3.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 1.0, Y: 0.0, Z: 3.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ParticleSystemComponent
                         ~Id: b1e41fbf-7338-4601-8406-2641dc83069a
                         Control:
@@ -1361,12 +1360,12 @@ Hierarchy:
                                                 Stream: !ColorVertexStreamDefinition
                                                     ~Id: 8bc36822-a6f3-431d-8bba-de244dff1bbe
                                             RightChild: !ComputeTextureColor
+                                                Swizzle: null
                                                 Texture: 9f9c6aa0-4492-4514-891a-0c9b6a68e319/3eca7314-84a5-4fb2-9d16-8cf7eab99572:dota
                                                 FallbackValue:
                                                     Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
                                                 Scale: {X: 1.0, Y: 1.0}
                                                 Offset: {X: 0.0, Y: 0.0}
-                                                Swizzle: null
                                         UVBuilder: null
                                         ForceTexCoords: false
                                     Spawners:
@@ -1392,15 +1391,15 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticleScaleUniform: true
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             VelocityMin: {X: 2.0, Y: 3.0, Z: -0.4}
                                             VelocityMax: {X: 3.0, Y: 4.0, Z: 0.4}
                                         - !InitialSizeSeed
@@ -1408,7 +1407,7 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
@@ -1423,15 +1422,15 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
                                             SeedOffset: 0
-                                            DisplayParticleScaleUniform: true
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             PositionMin: {X: -0.2, Y: 0.2, Z: 0.0}
                                             PositionMax: {X: -0.2, Y: 0.25, Z: 0.0}
                                             Interpolate: false
@@ -1440,7 +1439,7 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
@@ -1456,14 +1455,14 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
-                                            DisplayParticleScaleUniform: true
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             ParentName: Self
                                             ParentSeedOffset: 0
                                             ParentControlFlag: Group00
@@ -1475,14 +1474,14 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: false
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: false
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
-                                            DisplayParticleScaleUniform: true
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: false
+                                            DisplayParticleScaleUniform: true
                                             ParentName: Self
                                             ParentSeedOffset: 0
                                             ParentControlFlag: Group00
@@ -1496,29 +1495,29 @@ Hierarchy:
                                             InheritPosition: true
                                             Position: {X: 0.0, Y: 0.0, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
-                                            GravitationalAcceleration: {X: 0.0, Y: -9.80665, Z: 0.0}
                                             DisplayParticlePosition: false
                                             DisplayParticleRotation: false
                                             DisplayParticleScale: false
                                             DisplayParticleScaleUniform: false
+                                            GravitationalAcceleration: {X: 0.0, Y: -9.80665, Z: 0.0}
                                         - !UpdaterCollider
                                             ~Id: c694e594-1958-459c-b840-899989258a55
                                             DebugDraw: true
                                             InheritPosition: true
                                             Position: {X: 2.0, Y: -0.07, Z: 0.0}
                                             InheritRotation: true
-                                            Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                            Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                                             InheritScale: true
                                             Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             ScaleUniform: 1.0
-                                            DisplayParticleScaleUniform: false
                                             DisplayParticlePosition: true
                                             DisplayParticleRotation: true
                                             DisplayParticleScale: true
+                                            DisplayParticleScaleUniform: false
                                             FieldShape: !FieldShapeCylinder
                                                 ~Id: 6df76ce4-44dd-4150-83b3-30b2aa8f1403
                                                 HalfHeight: 0.15
@@ -1533,34 +1532,34 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 8b67d219-bc49-4bdc-8169-c5728024595a
-                        Position: {X: 3.0, Y: 0.0, Z: -3.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 2.0, Y: 2.0, Z: 2.0}
                         Children:
-                            - {Entity: {Id: 37f3d857-c364-4b0b-9f47-203c76b707b0}, Id: dfcbe55b-d196-4696-8a11-e2ecdc3a3d59}
-                            - {Entity: {Id: 2ac9ec66-567f-478f-a6b1-7846d5d95d76}, Id: 54550fef-1b7c-4a35-8c9c-acf8f7656118}
+                            - 37f3d857-c364-4b0b-9f47-203c76b707b0/dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
+                            - 2ac9ec66-567f-478f-a6b1-7846d5d95d76/54550fef-1b7c-4a35-8c9c-acf8f7656118
+                        Position: {X: 3.0, Y: 0.0, Z: -3.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 2.0, Y: 2.0, Z: 2.0}
         -   Entity:
                 Id: f195ae7e-31de-4754-a8b8-3658ea3629bb
                 Name: Stand (4)
                 Components:
                     - !TransformComponent
                         ~Id: 8b67d219-bc49-4bdc-8169-c5728024595a
-                        Position: {X: -3.0, Y: 0.0, Z: -3.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 2.0, Y: 2.0, Z: 2.0}
                         Children:
-                            - {Entity: {Id: fc8d67af-0cc5-4c76-b926-9fd081f745ef}, Id: dfcbe55b-d196-4696-8a11-e2ecdc3a3d59}
-                            - {Entity: {Id: 2a699cb7-2468-45e6-be28-2f0c1b11d0a5}, Id: 54550fef-1b7c-4a35-8c9c-acf8f7656118}
+                            - fc8d67af-0cc5-4c76-b926-9fd081f745ef/dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
+                            - 2a699cb7-2468-45e6-be28-2f0c1b11d0a5/54550fef-1b7c-4a35-8c9c-acf8f7656118
+                        Position: {X: -3.0, Y: 0.0, Z: -3.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 2.0, Y: 2.0, Z: 2.0}
         -   Entity:
                 Id: f1abb6b2-1dfd-414e-831c-7972150839d4
                 Name: Sign04
                 Components:
                     - !TransformComponent
                         ~Id: a286d9be-3736-49cc-8453-1d22af9ae555
-                        Position: {X: -2.0, Y: 0.5, Z: -2.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 0.5, Y: 0.5, Z: 0.5}
                         Children: []
+                        Position: {X: -2.0, Y: 0.5, Z: -2.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 0.5, Y: 0.5, Z: 0.5}
                     - !SpriteComponent
                         ~Id: a60ff0ac-c420-485f-a64c-cd2373b531d3
                         SpriteProvider: !SpriteFromTexture
@@ -1576,10 +1575,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 7bb1c77c-ace7-4be3-8f83-4fcc4c5abcb3
-                        Position: {X: -2.0, Y: 0.5, Z: 2.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 0.5, Y: 0.5, Z: 0.5}
                         Children: []
+                        Position: {X: -2.0, Y: 0.5, Z: 2.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 0.5, Y: 0.5, Z: 0.5}
                     - !SpriteComponent
                         ~Id: e1312fe4-73cf-4ceb-ab89-3ba67f1b4481
                         SpriteProvider: !SpriteFromTexture
@@ -1595,10 +1594,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: dfcbe55b-d196-4696-8a11-e2ecdc3a3d59
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !ModelComponent
                         ~Id: 5b26ebe2-73a6-4758-9059-55d84c1d995d
                         Model: 40f061ef-7c24-49da-8559-6468e7668f39/c46f9ef1-3f08-4541-b48a-d577621cb434:Stand/ProceduralCylinder
