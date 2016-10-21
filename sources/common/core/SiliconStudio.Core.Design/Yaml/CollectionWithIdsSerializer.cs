@@ -67,7 +67,7 @@ namespace SiliconStudio.Core.Yaml
                         var i = 0;
                         foreach (var item in enumerable)
                         {
-                            var id = IdentifiableHelper.GetId(item);
+                            var id = item != null ? IdentifiableHelper.GetId(item) : Guid.NewGuid();
                             ids[i] = id != Guid.Empty ? id : Guid.NewGuid();
                             ++i;
                         }

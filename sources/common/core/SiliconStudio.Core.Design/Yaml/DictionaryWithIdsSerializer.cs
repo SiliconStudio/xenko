@@ -56,7 +56,7 @@ namespace SiliconStudio.Core.Yaml
                     if (ids.TryGet(item.Key, out id) && id != Guid.Empty)
                         continue;
 
-                    id = IdentifiableHelper.GetId(item.Value);
+                    id = item.Value != null ? IdentifiableHelper.GetId(item.Value) : Guid.NewGuid();
                     ids[item.Key] = id != Guid.Empty ? id : Guid.NewGuid();
                 }
             }
