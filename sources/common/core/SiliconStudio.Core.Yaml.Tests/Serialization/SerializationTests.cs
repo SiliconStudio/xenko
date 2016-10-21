@@ -53,6 +53,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
@@ -360,7 +361,7 @@ namespace SiliconStudio.Core.Yaml.Tests.Serialization
 
         public class CustomTypeConverter : ScalarSerializerBase, IYamlSerializableFactory
         {
-            public IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
+            public IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
             {
                 return typeDescriptor.Type == typeof(SomeCustomType) ? this : null;
             }

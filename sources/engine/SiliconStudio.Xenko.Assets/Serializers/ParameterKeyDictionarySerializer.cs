@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Assets.Serializers
     [YamlSerializerFactory]
     internal class ParameterKeyDictionarySerializer : DictionarySerializer, IDataCustomVisitor
     {
-        public override IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
+        public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
             var type = typeDescriptor.Type;
             return CanVisit(type) ? this : null;

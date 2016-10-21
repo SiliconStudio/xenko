@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
@@ -21,7 +22,7 @@ namespace SiliconStudio.Xenko.Assets.Serializers
     [YamlSerializerFactory]
     internal class EntityComponentCollectionSerializer : CollectionSerializer
     {
-        public override IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
+        public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
             var type = typeDescriptor.Type;
             return type == typeof(EntityComponentCollection) ? this : null;

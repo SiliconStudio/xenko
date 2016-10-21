@@ -46,6 +46,7 @@
 using System;
 using System.Collections;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 
@@ -56,7 +57,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
     /// </summary>
     public class CollectionSerializer : ObjectSerializer
     {
-        public override IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
+        public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
             return typeDescriptor is YamlCollectionDescriptor ? this : null;
         }

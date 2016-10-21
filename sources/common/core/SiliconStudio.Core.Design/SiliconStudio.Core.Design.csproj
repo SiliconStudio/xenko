@@ -72,7 +72,6 @@
     <Compile Include="Reflection\MemberPathExtensions.cs" />
     <Compile Include="Reflection\MemberPathNode.cs" />
     <Compile Include="Reflection\NullableDescriptor.cs" />
-    <Compile Include="Reflection\ObjectDescriptor.cs" />
     <Compile Include="Reflection\Override.cs" />
     <Compile Include="Reflection\OverrideType.cs" />
     <Compile Include="Reflection\PrimitiveDescriptor.cs" />

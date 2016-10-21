@@ -167,7 +167,7 @@ namespace SiliconStudio.Core.Yaml
             return $"{key.Id}~{keyString}";
         }
 
-        public IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
+        public IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
             return typeDescriptor.Type.IsGenericType && typeDescriptor.Type.GetGenericTypeDefinition() == typeof(KeyWithId<>) ? this : null;
         }

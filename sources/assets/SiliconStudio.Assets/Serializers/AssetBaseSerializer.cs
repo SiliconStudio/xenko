@@ -18,7 +18,7 @@ namespace SiliconStudio.Assets.Serializers
     [YamlSerializerFactory]
     internal class AssetBaseSerializer : ObjectSerializer, IDataCustomVisitor
     {
-        public override IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
+        public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
             return CanVisit(typeDescriptor.Type) ? this : null;
         }

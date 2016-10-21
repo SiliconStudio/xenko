@@ -44,6 +44,7 @@
 // SOFTWARE.
 
 using System;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Schemas;
 
@@ -163,9 +164,9 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns>An instance of <see cref="IYamlTypeDescriptor"/>.</returns>
-        public IYamlTypeDescriptor FindTypeDescriptor(Type type)
+        public ITypeDescriptor FindTypeDescriptor(Type type)
         {
-            return (IYamlTypeDescriptor)Serializer.TypeDescriptorFactory.Find(type);
+            return Serializer.TypeDescriptorFactory.Find(type);
         }
 
         /// <summary>

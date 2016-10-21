@@ -41,7 +41,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
             DeclaringType = declaringType;
             OriginalName = Name;
             Mask = 1;
-            ShouldSerialize = YamlObjectDescriptor.ShouldSerializeDefault;
+            ShouldSerialize = ObjectDescriptor.ShouldSerializeDefault;
             DefaultNameComparer = StringComparer.OrdinalIgnoreCase;
         }
 

@@ -60,7 +60,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
     public class DictionarySerializer : ObjectSerializer
     {
         /// <inheritdoc/>
-        public override IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
+        public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
             return typeDescriptor is YamlDictionaryDescriptor ? this : null;
         }

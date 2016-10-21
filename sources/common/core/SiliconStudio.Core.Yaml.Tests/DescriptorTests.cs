@@ -101,13 +101,13 @@ namespace SiliconStudio.Core.Yaml.Tests
         [Test]
         public void TestObjectDescriptor()
         {
-            var attributeRegistry = new YamlAttributeRegistry();
+            var attributeRegistry = new AttributeRegistry();
             var factory = new YamlTypeDescriptorFactory(attributeRegistry);
 
             // Rename ItemRenamed2 to Item2
             attributeRegistry.Register(typeof(TestObject).GetProperty("ItemRenamed2"), new DataMemberAttribute("Item2"));
 
-            var descriptor = new YamlObjectDescriptor(factory, typeof(TestObject), false, new DefaultNamingConvention());
+            var descriptor = new ObjectDescriptor(factory, typeof(TestObject), false, new DefaultNamingConvention());
             descriptor.Initialize(new DefaultKeyComparer());
 
             // Verify members
@@ -167,9 +167,9 @@ namespace SiliconStudio.Core.Yaml.Tests
         [Test]
         public void TestObjectWithCustomNamingConvention()
         {
-            var attributeRegistry = new YamlAttributeRegistry();
+            var attributeRegistry = new AttributeRegistry();
             var factory = new YamlTypeDescriptorFactory(attributeRegistry);
-            var descriptor = new YamlObjectDescriptor(factory, typeof(TestObjectNamingConvention), false, new FlatNamingConvention());
+            var descriptor = new ObjectDescriptor(factory, typeof(TestObjectNamingConvention), false, new FlatNamingConvention());
             descriptor.Initialize(new DefaultKeyComparer());
 
             // Check names and their orders
@@ -192,7 +192,7 @@ namespace SiliconStudio.Core.Yaml.Tests
         [Test]
         public void TestCollectionDescriptor()
         {
-            var attributeRegistry = new YamlAttributeRegistry();
+            var attributeRegistry = new AttributeRegistry();
             var factory = new YamlTypeDescriptorFactory(attributeRegistry);
             var descriptor = new YamlCollectionDescriptor(factory, typeof(List<string>), false, new DefaultNamingConvention());
             descriptor.Initialize(new DefaultKeyComparer());
@@ -231,7 +231,7 @@ namespace SiliconStudio.Core.Yaml.Tests
         [Test]
         public void TestDictionaryDescriptor()
         {
-            var attributeRegistry = new YamlAttributeRegistry();
+            var attributeRegistry = new AttributeRegistry();
             var factory = new YamlTypeDescriptorFactory(attributeRegistry);
             var descriptor = new YamlDictionaryDescriptor(factory, typeof(Dictionary<int, string>), false,
                 new DefaultNamingConvention());
@@ -254,7 +254,7 @@ namespace SiliconStudio.Core.Yaml.Tests
         [Test]
         public void TestArrayDescriptor()
         {
-            var attributeRegistry = new YamlAttributeRegistry();
+            var attributeRegistry = new AttributeRegistry();
             var factory = new YamlTypeDescriptorFactory(attributeRegistry);
             var descriptor = new YamlArrayDescriptor(factory, typeof(int[]), new DefaultNamingConvention());
             descriptor.Initialize(new DefaultKeyComparer());
@@ -272,7 +272,7 @@ namespace SiliconStudio.Core.Yaml.Tests
         [Test]
         public void TestPrimitiveDescriptor()
         {
-            var attributeRegistry = new YamlAttributeRegistry();
+            var attributeRegistry = new AttributeRegistry();
             var factory = new YamlTypeDescriptorFactory(attributeRegistry);
             var descriptor = new YamlPrimitiveDescriptor(factory, typeof(int), new DefaultNamingConvention());
             Assert.AreEqual(0, descriptor.Count);

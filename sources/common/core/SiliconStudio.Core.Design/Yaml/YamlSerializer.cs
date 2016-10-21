@@ -18,7 +18,7 @@ namespace SiliconStudio.Core.Yaml
     public static class YamlSerializer
     {
         private static readonly Logger Log = GlobalLogger.GetLogger(typeof(YamlSerializer).Name);
-        private static event Action<YamlObjectDescriptor, List<IMemberDescriptor>> PrepareMembersEvent;
+        private static event Action<ObjectDescriptor, List<IMemberDescriptor>> PrepareMembersEvent;
 
         // TODO: This code is not robust in case of reloading assemblies into the same process
         private static readonly List<Assembly> RegisteredAssemblies = new List<Assembly>();
@@ -26,7 +26,7 @@ namespace SiliconStudio.Core.Yaml
         private static Serializer globalSerializer;
         private static Serializer globalSerializerWithoutId;
 
-        public static event Action<YamlObjectDescriptor, List<IMemberDescriptor>> PrepareMembers
+        public static event Action<ObjectDescriptor, List<IMemberDescriptor>> PrepareMembers
         {
             add
             {
@@ -292,7 +292,7 @@ namespace SiliconStudio.Core.Yaml
                     {
                         EmitAlias = false,
                         LimitPrimitiveFlowSequence = 0,
-                        Attributes = new YamlAttributeRegistry(),
+                        Attributes = new AttributeRegistry(),
                         PreferredIndent = 4,
                         EmitShortTypeName = true,
                         ComparerForKeySorting = MemberComparer.Default,
@@ -300,7 +300,7 @@ namespace SiliconStudio.Core.Yaml
                     };
 
                     if (generateIds)
-                        ((YamlAttributeRegistry)config.Attributes).PrepareMembersCallback += PrepareMembersCallback;
+                        config.Attributes.PrepareMembersCallback += PrepareMembersCallback;
 
                     for (int index = RegisteredAssemblies.Count - 1; index >= 0; index--)
                     {
@@ -319,7 +319,7 @@ namespace SiliconStudio.Core.Yaml
             return localSerializer;
         }
 
-        private static void PrepareMembersCallback(YamlObjectDescriptor objDesc, List<IMemberDescriptor> memberDescriptors)
+        private static void PrepareMembersCallback(ObjectDescriptor objDesc, List<IMemberDescriptor> memberDescriptors)
         {
             var type = objDesc.Type;
 

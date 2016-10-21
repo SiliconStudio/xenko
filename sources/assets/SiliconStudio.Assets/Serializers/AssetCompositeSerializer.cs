@@ -22,7 +22,7 @@ namespace SiliconStudio.Assets.Serializers
         private readonly ThreadLocal<AssetCompositeVisitorContext> localContext = new ThreadLocal<AssetCompositeVisitorContext>();
 
         /// <inheritdoc/>
-        public override IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
+        public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
             return CanVisit(typeDescriptor.Type) ? this : null;
         }

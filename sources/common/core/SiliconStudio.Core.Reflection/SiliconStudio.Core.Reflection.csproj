@@ -35,7 +35,7 @@
     <Compile Include="ITypeDescriptor.cs" />
     <Compile Include="ITypeDescriptorFactory.cs" />
     <Compile Include="MemberDescriptorBase.cs" />
-    <Compile Include="ObjectDescriptorBase.cs" />
+    <Compile Include="ObjectDescriptor.cs" />
     <Compile Include="PropertyDescriptor.cs" />
     <Compile Include="TypeDescriptorFactoryBase.cs" />
     <Compile Include="TypeExtensions.cs" />

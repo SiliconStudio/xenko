@@ -18,6 +18,9 @@ namespace SiliconStudio.Core.Reflection
         private readonly Dictionary<MemberInfoKey, List<Attribute>> cachedAttributes = new Dictionary<MemberInfoKey, List<Attribute>>();
         private readonly Dictionary<MemberInfo, List<Attribute>> registeredAttributes = new Dictionary<MemberInfo, List<Attribute>>();
 
+        // TODO: move this in a different location
+        public Action<ObjectDescriptor, List<IMemberDescriptor>> PrepareMembersCallback { get; set; }
+
         /// <summary>
         /// Gets the attributes associated with the specified member.
         /// </summary>

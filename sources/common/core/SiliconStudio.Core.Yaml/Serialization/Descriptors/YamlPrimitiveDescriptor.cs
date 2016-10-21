@@ -53,7 +53,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
     /// <summary>
     /// Describes a descriptor for a primitive (bool, char, sbyte, byte, int, uint, long, ulong, float, double, decimal, string, DateTime).
     /// </summary>
-    public class YamlPrimitiveDescriptor : YamlObjectDescriptor
+    public class YamlPrimitiveDescriptor : ObjectDescriptor
     {
         private static readonly List<IMemberDescriptor> EmptyMembers = new List<IMemberDescriptor>();
 

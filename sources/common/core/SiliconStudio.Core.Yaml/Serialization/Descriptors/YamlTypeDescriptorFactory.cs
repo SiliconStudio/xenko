@@ -65,7 +65,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// <param name="namingConvention">The naming convention.</param>
         /// <param name="memberComparer">The comparer used to sort members</param>
         /// <exception cref="System.ArgumentNullException">attributeRegistry</exception>
-        public YamlTypeDescriptorFactory(YamlAttributeRegistry attributeRegistry, bool emitDefaultValues, IMemberNamingConvention namingConvention, IComparer<object> memberComparer)
+        public YamlTypeDescriptorFactory(IAttributeRegistry attributeRegistry, bool emitDefaultValues, IMemberNamingConvention namingConvention, IComparer<object> memberComparer)
             : base(memberComparer, attributeRegistry)
         {
             if (attributeRegistry == null) throw new ArgumentNullException(nameof(attributeRegistry));
@@ -79,7 +79,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// </summary>
         /// <param name="attributeRegistry">The attribute registry.</param>
         /// <exception cref="System.ArgumentNullException">attributeRegistry</exception>
-        public YamlTypeDescriptorFactory(YamlAttributeRegistry attributeRegistry)
+        public YamlTypeDescriptorFactory(IAttributeRegistry attributeRegistry)
             : base(new DefaultKeyComparer(), attributeRegistry)
         {
             namingConvention = new DefaultNamingConvention();
@@ -92,7 +92,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// <returns>An instance of type descriptor.</returns>
         protected override ITypeDescriptor Create(Type type)
         {
-            YamlObjectDescriptor descriptor;
+            ObjectDescriptor descriptor;
             // The order of the descriptors here is important
 
             if (YamlPrimitiveDescriptor.IsPrimitive(type))
@@ -121,7 +121,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             else
             {
                 // standard object (class or value type)
-                descriptor = new YamlObjectDescriptor(this, type, emitDefaultValues, namingConvention);
+                descriptor = new ObjectDescriptor(this, type, emitDefaultValues, namingConvention);
             }
 
             return descriptor;

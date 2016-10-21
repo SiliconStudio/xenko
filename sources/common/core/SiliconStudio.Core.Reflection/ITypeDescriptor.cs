@@ -55,6 +55,19 @@ namespace SiliconStudio.Core.Reflection
         bool IsCompilerGenerated { get; }
 
         /// <summary>
+        /// Determines whether the named member is remmaped.
+        /// </summary>
+        /// <param name="name">The name.</param>
+        /// <returns><c>true</c> if the named member is remmaped; otherwise, <c>false</c>.</returns>
+        bool IsMemberRemapped(string name);
+
+        /// <summary>
+        /// Gets the style.
+        /// </summary>
+        /// <value>The style.</value>
+        DataStyle Style { get; }
+
+        /// <summary>
         /// Initializes the type descriptor.
         /// </summary>
         /// <param name="keyComparer"></param>

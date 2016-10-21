@@ -53,7 +53,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
     /// <summary>
     /// Provides a descriptor for a <see cref="System.Collections.ICollection"/>.
     /// </summary>
-    public class YamlCollectionDescriptor : YamlObjectDescriptor
+    public class YamlCollectionDescriptor : ObjectDescriptor
     {
         private static readonly object[] EmptyObjects = new object[0];
         private static readonly List<string> ListOfMembersToRemove = new List<string> {"Capacity", "Count", "IsReadOnly", "IsFixedSize", "IsSynchronized", "SyncRoot", "Comparer"};

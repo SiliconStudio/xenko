@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
@@ -13,7 +14,7 @@ namespace SiliconStudio.Core.Settings
     [YamlSerializerFactory]
     internal class SettingsDictionarySerializer : DictionarySerializer
     {
-        public override IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
+        public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
             var type = typeDescriptor.Type;
             return type == typeof(SettingsDictionary) ? this : null;

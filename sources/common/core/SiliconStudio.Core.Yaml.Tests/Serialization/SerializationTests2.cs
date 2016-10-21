@@ -287,7 +287,7 @@ UInt64: 8
 
             var dynamicMember = new MyDynamicMember();
 
-            ((YamlAttributeRegistry)settings.Attributes).PrepareMembersCallback = (typeDesc, list) =>
+            settings.Attributes.PrepareMembersCallback = (typeDesc, list) =>
             {
                 if (typeof(MyObject) == typeDesc.Type)
                 {
@@ -1288,7 +1288,7 @@ Enum: OldValue2
 
         public class MyClassImmutableSerializer : ObjectSerializer
         {
-            public override IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
+            public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
             {
                 return typeDescriptor.Type == typeof(MyClassImmutable) ? this : null;
             }

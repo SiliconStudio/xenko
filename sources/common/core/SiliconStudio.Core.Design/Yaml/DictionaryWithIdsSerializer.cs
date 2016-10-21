@@ -14,7 +14,7 @@ namespace SiliconStudio.Core.Yaml
     public class DictionaryWithIdsSerializer : CollectionWithIdsSerializerBase
     {
         /// <inheritdoc/>
-        public override IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
+        public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
             if (typeDescriptor is YamlDictionaryDescriptor)
             {
@@ -65,7 +65,7 @@ namespace SiliconStudio.Core.Yaml
         }
 
         /// <inheritdoc/>
-        protected override object TransformForSerialization(IYamlTypeDescriptor descriptor, object collection)
+        protected override object TransformForSerialization(ITypeDescriptor descriptor, object collection)
         {
             var dictionaryDescriptor = (YamlDictionaryDescriptor)descriptor;
             var instance = CreatEmptyContainer(descriptor);
@@ -87,7 +87,7 @@ namespace SiliconStudio.Core.Yaml
         }
 
         /// <inheritdoc/>
-        protected override IDictionary CreatEmptyContainer(IYamlTypeDescriptor descriptor)
+        protected override IDictionary CreatEmptyContainer(ITypeDescriptor descriptor)
         {
             var dictionaryDescriptor = (YamlDictionaryDescriptor)descriptor;
             var type = typeof(DictionaryWithItemIds<,>).MakeGenericType(dictionaryDescriptor.KeyType, dictionaryDescriptor.ValueType);
@@ -97,7 +97,7 @@ namespace SiliconStudio.Core.Yaml
         }
 
         /// <inheritdoc/>
-        protected override void TransformAfterDeserialization(IDictionary container, IYamlTypeDescriptor targetDescriptor, object targetCollection, ICollection<Guid> deletedItems = null)
+        protected override void TransformAfterDeserialization(IDictionary container, ITypeDescriptor targetDescriptor, object targetCollection, ICollection<Guid> deletedItems = null)
         {
             var dictionaryDescriptor = (YamlDictionaryDescriptor)targetDescriptor;
             var type = typeof(DictionaryWithItemIds<,>).MakeGenericType(dictionaryDescriptor.KeyType, dictionaryDescriptor.ValueType);

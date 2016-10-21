@@ -19,6 +19,7 @@
 // THE SOFTWARE.
 
 using System.Collections.Generic;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Yaml.Serialization
 {
@@ -39,7 +40,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <param name="serializerContext">The serializer context.</param>
         /// <param name="instance">The instance.</param>
         /// <param name="descriptor">The descriptor.</param>
-        public ObjectContext(SerializerContext serializerContext, object instance, IYamlTypeDescriptor descriptor) : this()
+        public ObjectContext(SerializerContext serializerContext, object instance, ITypeDescriptor descriptor) : this()
         {
             SerializerContext = serializerContext;
             Instance = instance;
@@ -84,7 +85,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <summary>
         /// The expected type descriptor.
         /// </summary>
-        public IYamlTypeDescriptor Descriptor { get; set; }
+        public ITypeDescriptor Descriptor { get; set; }
 
         /// <summary>
         /// The tag used when serializing.

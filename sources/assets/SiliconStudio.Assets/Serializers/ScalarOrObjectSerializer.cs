@@ -20,7 +20,7 @@ namespace SiliconStudio.Assets.Serializers
             scalarRedirectSerializer = new YamlRedirectSerializer(this);
         }
 
-        public IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
+        public IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
             return CanVisit(typeDescriptor.Type) ? this : null;
         }

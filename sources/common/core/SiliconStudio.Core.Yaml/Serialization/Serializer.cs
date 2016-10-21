@@ -557,7 +557,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
             return result;
         }
 
-        public IYamlSerializable GetSerializer(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
+        public IYamlSerializable GetSerializer(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
             return RoutingSerializer.GetSerializer(context, typeDescriptor);
         }
@@ -599,7 +599,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
 
         private ITypeDescriptorFactory CreateTypeDescriptorFactory()
         {
-            return new YamlTypeDescriptorFactory((YamlAttributeRegistry)Settings.Attributes, Settings.EmitDefaultValues, Settings.NamingConvention, Settings.ComparerForKeySorting);
+            return new YamlTypeDescriptorFactory(Settings.Attributes, Settings.EmitDefaultValues, Settings.NamingConvention, Settings.ComparerForKeySorting);
         }
 
         private IEventEmitter CreateEmitter(IEmitter emitter)

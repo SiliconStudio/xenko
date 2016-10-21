@@ -92,7 +92,7 @@ namespace SiliconStudio.Core.Yaml.Serialization
             DefaultStyle = DataStyle.Normal;
             this.schema = schema ?? new CoreSchema();
             AssemblyRegistry = new AssemblyRegistry(Schema);
-            attributeRegistry = new YamlAttributeRegistry();
+            attributeRegistry = new AttributeRegistry();
             ObjectFactory = new DefaultObjectFactory();
             ObjectSerializerBackend = new DefaultObjectSerializerBackend();
             ComparerForKeySorting = new DefaultKeyComparer();

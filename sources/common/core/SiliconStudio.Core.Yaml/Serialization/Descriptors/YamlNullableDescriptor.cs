@@ -52,7 +52,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
     /// <summary>
     /// Describes a descriptor for a nullable type <see cref="Nullable{T}"/>.
     /// </summary>
-    internal class YamlNullableDescriptor : YamlObjectDescriptor
+    internal class YamlNullableDescriptor : ObjectDescriptor
     {
         private static readonly List<IMemberDescriptor> EmptyMembers = new List<IMemberDescriptor>();
 

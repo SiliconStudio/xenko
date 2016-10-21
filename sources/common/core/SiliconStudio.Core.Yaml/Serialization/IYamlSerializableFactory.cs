@@ -43,6 +43,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using SiliconStudio.Core.Reflection;
+
 namespace SiliconStudio.Core.Yaml.Serialization
 {
     /// <summary>
@@ -56,6 +58,6 @@ namespace SiliconStudio.Core.Yaml.Serialization
         /// <param name="context"></param>
         /// <param name="typeDescriptor">The typeDescriptor.</param>
         /// <returns>If supported, return an instance of <see cref="IYamlSerializable"/> else return <c>null</c>.</returns>
-        IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor);
+        IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor);
     }
 }

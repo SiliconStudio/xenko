@@ -20,7 +20,7 @@ namespace SiliconStudio.Core.Yaml
         private readonly CollectionSerializer collectionSerializer = new CollectionSerializer();
 
         /// <inheritdoc/>
-        public override IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
+        public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
             if (typeDescriptor is YamlCollectionDescriptor)
             {
@@ -88,7 +88,7 @@ namespace SiliconStudio.Core.Yaml
         }
 
         /// <inheritdoc/>
-        protected override object TransformForSerialization(IYamlTypeDescriptor descriptor, object collection)
+        protected override object TransformForSerialization(ITypeDescriptor descriptor, object collection)
         {
             var instance = CreatEmptyContainer(descriptor);
             var identifier = CollectionItemIdHelper.GetCollectionItemIds(collection);
@@ -108,7 +108,7 @@ namespace SiliconStudio.Core.Yaml
         }
 
         /// <inheritdoc/>
-        protected override IDictionary CreatEmptyContainer(IYamlTypeDescriptor descriptor)
+        protected override IDictionary CreatEmptyContainer(ITypeDescriptor descriptor)
         {
             var collectionDescriptor = (YamlCollectionDescriptor)descriptor;
             var type = typeof(CollectionWithItemIds<>).MakeGenericType(collectionDescriptor.ElementType);
@@ -118,7 +118,7 @@ namespace SiliconStudio.Core.Yaml
         }
 
         /// <inheritdoc/>
-        protected override void TransformAfterDeserialization(IDictionary container, IYamlTypeDescriptor targetDescriptor, object targetCollection, ICollection<Guid> deletedItems = null)
+        protected override void TransformAfterDeserialization(IDictionary container, ITypeDescriptor targetDescriptor, object targetCollection, ICollection<Guid> deletedItems = null)
         {
             var collectionDescriptor = (YamlCollectionDescriptor)targetDescriptor;
             var type = typeof(CollectionWithItemIds<>).MakeGenericType(collectionDescriptor.ElementType);

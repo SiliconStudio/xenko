@@ -53,7 +53,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
     /// <summary>
     /// A descriptor for an array.
     /// </summary>
-    public class YamlArrayDescriptor : YamlObjectDescriptor
+    public class YamlArrayDescriptor : ObjectDescriptor
     {
         private readonly Type listType;
         private readonly MethodInfo toArrayMethod;

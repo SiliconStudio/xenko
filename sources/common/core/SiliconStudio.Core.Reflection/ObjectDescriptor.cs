@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using SiliconStudio.Core.Yaml.Serialization;
@@ -10,11 +11,13 @@ namespace SiliconStudio.Core.Reflection
     /// <summary>
     /// Default implementation of a <see cref="ITypeDescriptor"/>.
     /// </summary>
-    public abstract class ObjectDescriptorBase : ITypeDescriptor
+    public class ObjectDescriptor : ITypeDescriptor
     {
         protected static readonly string SystemCollectionsNamespace = typeof(int).Namespace;
-        private static readonly Func<object, bool> ShouldSerializeDefault = o => true;
+        public static readonly Func<object, bool> ShouldSerializeDefault = o => true;
+        private static readonly List<IMemberDescriptor> EmptyMembers = new List<IMemberDescriptor>();
 
+        private readonly ITypeDescriptorFactory factory;
         private IMemberDescriptor[] members;
         private Dictionary<string, IMemberDescriptor> mapMembers;
         private HashSet<string> remapMembers;
@@ -22,22 +25,34 @@ namespace SiliconStudio.Core.Reflection
         private readonly bool emitDefaultValues;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ObjectDescriptorBase" /> class.
+        /// Initializes a new instance of the <see cref="ObjectDescriptor" /> class.
         /// </summary>
-        protected ObjectDescriptorBase(IAttributeRegistry attributeRegistry, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
+        public ObjectDescriptor(ITypeDescriptorFactory factory, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
         {
-            if (attributeRegistry == null) throw new ArgumentNullException(nameof(attributeRegistry));
+            if (factory == null) throw new ArgumentNullException(nameof(factory));
             if (type == null) throw new ArgumentNullException(nameof(type));
             if (namingConvention == null) throw new ArgumentNullException(nameof(namingConvention));
 
-            AttributeRegistry = attributeRegistry;
+            this.factory = factory;
             Type = type;
             IsCompilerGenerated = AttributeRegistry.GetAttribute<CompilerGeneratedAttribute>(type) != null;
             this.emitDefaultValues = emitDefaultValues;
             NamingConvention = namingConvention;
+
+            Attributes = AttributeRegistry.GetAttributes(type);
+
+            Style = DataStyle.Any;
+            foreach (var attribute in Attributes)
+            {
+                var styleAttribute = attribute as DataStyleAttribute;
+                if (styleAttribute != null)
+                {
+                    Style = styleAttribute.Style;
+                }
+            }
         }
 
-        protected IAttributeRegistry AttributeRegistry { get; }
+        protected IAttributeRegistry AttributeRegistry => factory.AttributeRegistry;
 
         public Type Type { get; }
 
@@ -55,6 +70,15 @@ namespace SiliconStudio.Core.Reflection
         /// <value>The naming convention.</value>
         public IMemberNamingConvention NamingConvention { get; }
 
+        /// <summary>
+        /// Gets attributes attached to this type.
+        /// </summary>
+        public List<Attribute> Attributes { get; }
+
+        public DataStyle Style { get; }
+
+        public bool IsCompilerGenerated { get; }
+
         public bool IsMemberRemapped(string name)
         {
             return remapMembers != null && remapMembers.Contains(name);
@@ -70,6 +94,11 @@ namespace SiliconStudio.Core.Reflection
                 mapMembers.TryGetValue(name, out member);
                 return member;
             }
+        }
+
+        public override string ToString()
+        {
+            return Type.ToString();
         }
 
         public virtual void Initialize(IComparer<object> keyComparer)
@@ -127,14 +156,43 @@ namespace SiliconStudio.Core.Reflection
             }
         }
 
-        public bool IsCompilerGenerated { get; }
-
         public bool Contains(string memberName)
         {
             return mapMembers != null && mapMembers.ContainsKey(memberName);
         }
 
-        protected abstract List<IMemberDescriptor> PrepareMembers();
+        protected virtual List<IMemberDescriptor> PrepareMembers()
+        {
+            if (Type == typeof(Type))
+            {
+                return EmptyMembers;
+            }
+
+            var bindingFlags = BindingFlags.Instance | BindingFlags.Public;
+            // TODO: we might want an option to disable non-public.
+            if (Category == DescriptorCategory.Object)
+                bindingFlags |= BindingFlags.NonPublic;
+
+            var memberList = (from propertyInfo in Type.GetProperties(bindingFlags)
+                              where propertyInfo.CanRead && propertyInfo.GetIndexParameters().Length == 0 && IsMemberToVisit(propertyInfo)
+                              select new PropertyDescriptor(factory.Find(propertyInfo.PropertyType), propertyInfo, NamingConvention.Comparer)
+                              into member
+                              where PrepareMember(member)
+                              select member).Cast<IMemberDescriptor>().ToList();
+
+            // Add all public fields
+            memberList.AddRange(from fieldInfo in Type.GetFields(bindingFlags)
+                                where fieldInfo.IsPublic && IsMemberToVisit(fieldInfo)
+                                select new FieldDescriptor(factory.Find(fieldInfo.FieldType), fieldInfo, NamingConvention.Comparer)
+                                into member
+                                where PrepareMember(member)
+                                select member);
+
+            // Allow to add dynamic members per type
+            (AttributeRegistry as AttributeRegistry)?.PrepareMembersCallback?.Invoke(this, memberList);
+
+            return memberList;
+        }
 
         protected virtual bool PrepareMember(MemberDescriptorBase member)
         {
@@ -149,7 +207,7 @@ namespace SiliconStudio.Core.Reflection
             }
 
             // Gets the style
-            var styleAttribute = AttributeRegistry.GetAttribute<DataStyleAttribute>(member.MemberInfo); ;
+            var styleAttribute = AttributeRegistry.GetAttribute<DataStyleAttribute>(member.MemberInfo);
             member.Style = styleAttribute?.Style ?? DataStyle.Any;
             member.Mask = 1;
 

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Descriptors;
@@ -33,13 +34,13 @@ namespace SiliconStudio.Core.Yaml
         /// </summary>
         protected class InstanceInfo
         {
-            public InstanceInfo(object instance, IYamlTypeDescriptor typeDescriptor)
+            public InstanceInfo(object instance, ITypeDescriptor typeDescriptor)
             {               
                 Instance = instance;
                 Descriptor = typeDescriptor;
             }
             public readonly object Instance;
-            public readonly IYamlTypeDescriptor Descriptor;
+            public readonly ITypeDescriptor Descriptor;
         }
 
         public override object ReadYaml(ref ObjectContext objectContext)
@@ -231,14 +232,14 @@ namespace SiliconStudio.Core.Yaml
         /// <param name="descriptor">The type descriptor of the collection.</param>
         /// <param name="collection">The collection for which to create the mapping dictionary.</param>
         /// <returns>A dictionary mapping the id to the element of the initial collection.</returns>
-        protected abstract object TransformForSerialization(IYamlTypeDescriptor descriptor, object collection);
+        protected abstract object TransformForSerialization(ITypeDescriptor descriptor, object collection);
 
         /// <summary>
         /// Creates an empty dictionary that can store the mapping of ids to items of the collection.
         /// </summary>
         /// <param name="descriptor">The type descriptor of the collection for which to create the dictionary.</param>
         /// <returns>An empty dictionary for mapping ids to elements.</returns>
-        protected abstract IDictionary CreatEmptyContainer(IYamlTypeDescriptor descriptor);
+        protected abstract IDictionary CreatEmptyContainer(ITypeDescriptor descriptor);
 
         /// <summary>
         /// Transforms a dictionary containing the mapping of ids to items into the actual collection, and store the ids in the <see cref="Reflection.ShadowObject"/>.
@@ -247,7 +248,7 @@ namespace SiliconStudio.Core.Yaml
         /// <param name="targetDescriptor">The type descriptor of the actual collection to fill.</param>
         /// <param name="targetCollection">The instance of the actual collection to fill.</param>
         /// <param name="deletedItems">A collection of items that are marked as deleted. Can be null.</param>
-        protected abstract void TransformAfterDeserialization(IDictionary container, IYamlTypeDescriptor targetDescriptor, object targetCollection, ICollection<Guid> deletedItems = null);
+        protected abstract void TransformAfterDeserialization(IDictionary container, ITypeDescriptor targetDescriptor, object targetCollection, ICollection<Guid> deletedItems = null);
 
         protected abstract void WriteDeletedItems(ref ObjectContext objectContext);
 

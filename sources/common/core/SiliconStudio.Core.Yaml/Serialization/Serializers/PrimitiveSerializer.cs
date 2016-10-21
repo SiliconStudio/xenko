@@ -45,6 +45,7 @@
 
 using System;
 using System.Globalization;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization.Descriptors;
 
@@ -52,7 +53,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
     internal class PrimitiveSerializer : ScalarSerializerBase, IYamlSerializableFactory
     {
-        public IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
+        public IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
             return typeDescriptor is YamlPrimitiveDescriptor ? this : null;
         }

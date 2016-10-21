@@ -12,6 +12,9 @@ namespace SiliconStudio.Core.Reflection
     /// </summary>
     public interface IAttributeRegistry
     {
+        // TODO: move this in a different location
+        Action<ObjectDescriptor, List<IMemberDescriptor>> PrepareMembersCallback { get; set; }
+
         /// <summary>
         /// Gets the attributes associated with the specified member.
         /// </summary>

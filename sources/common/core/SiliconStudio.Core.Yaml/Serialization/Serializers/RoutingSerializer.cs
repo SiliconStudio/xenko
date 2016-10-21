@@ -46,6 +46,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
@@ -84,7 +85,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
             serializer.WriteYaml(ref objectContext);
         }
 
-        internal IYamlSerializable GetSerializer(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
+        internal IYamlSerializable GetSerializer(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
             IYamlSerializable serializer;
 

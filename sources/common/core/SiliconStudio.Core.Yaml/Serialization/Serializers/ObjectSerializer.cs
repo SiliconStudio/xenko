@@ -56,7 +56,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
     public class ObjectSerializer : IYamlSerializable, IYamlSerializableFactory
     {
         /// <inheritdoc/>
-        public virtual IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
+        public virtual IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
             // always accept
             return this;

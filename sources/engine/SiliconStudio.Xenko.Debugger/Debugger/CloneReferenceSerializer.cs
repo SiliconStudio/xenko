@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Yaml;
@@ -31,7 +32,7 @@ namespace SiliconStudio.Xenko.Debugger.Target
         /// </summary>
         [ThreadStatic] internal static List<object> References;
 
-        public override IYamlSerializable TryCreate(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
+        public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
             if (CanVisit(typeDescriptor.Type))
                 return this;

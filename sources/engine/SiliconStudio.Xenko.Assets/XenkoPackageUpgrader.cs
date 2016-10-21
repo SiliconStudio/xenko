@@ -327,17 +327,17 @@ namespace SiliconStudio.Xenko.Assets
                 }
             }
 
-            if (dependency.Version.MinVersion < new PackageVersion("1.9.0-alpha01"))
-            {
-                var files = assetFiles.Where(f => f.FilePath.GetFileExtension() != ".xkpkg" && f.FilePath.GetFileExtension() != ".xktpl");
-                foreach (var assetFile in files.Select(x => x.AsYamlAsset()).NotNull().ToList())
-                {
-                    using (var assetYaml = assetFile)
-                    {
-                        //UpdateCollectionNodes(assetYaml.RootNode);
-                    }
-                }
-            }
+            //if (dependency.Version.MinVersion < new PackageVersion("1.9.0-alpha01"))
+            //{
+            //    var files = assetFiles.Where(f => f.FilePath.GetFileExtension() != ".xkpkg" && f.FilePath.GetFileExtension() != ".xktpl");
+            //    foreach (var assetFile in files.Select(x => x.AsYamlAsset()).NotNull().ToList())
+            //    {
+            //        using (var assetYaml = assetFile)
+            //        {
+            //            //UpdateCollectionNodes(assetYaml.RootNode);
+            //        }
+            //    }
+            //}
 
             return true;
         }

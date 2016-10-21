@@ -80,7 +80,6 @@
     <Compile Include="Serialization\Descriptors\YamlCollectionDescriptor.cs" />
     <Compile Include="Serialization\Descriptors\YamlDictionaryDescriptor.cs" />
     <Compile Include="Serialization\Descriptors\YamlNullableDescriptor.cs" />
-    <Compile Include="Serialization\Descriptors\YamlObjectDescriptor.cs" />
     <Compile Include="Serialization\Descriptors\YamlPrimitiveDescriptor.cs" />
     <Compile Include="Serialization\Descriptors\YamlTypeDescriptorFactory.cs" />
     <Compile Include="Serialization\DocumentLoadingState.cs" />
@@ -88,7 +87,6 @@
     <Compile Include="Serialization\EmitterState.cs" />
     <Compile Include="Serialization\IObjectFactory.cs" />
     <Compile Include="Serialization\ITagTypeRegistry.cs" />
-    <Compile Include="Serialization\IYamlTypeDescriptor.cs" />
     <Compile Include="Serialization\IYamlVisitor.cs" />
     <Compile Include="Serialization\LambdaObjectFactory.cs" />
     <Compile Include="Serialization\Serializers\AnchorSerializer.cs" />
@@ -118,7 +116,6 @@
     <Compile Include="Serialization\Serializers\PrimitiveSerializer.cs" />
     <Compile Include="Serialization\Serializers\RoutingSerializer.cs" />
     <Compile Include="Serialization\SerializerContext.cs" />
-    <Compile Include="Serialization\YamlAttributeRegistry.cs" />
     <Compile Include="Serialization\AssemblyRegistry.cs" />
     <Compile Include="Serialization\WriterEventEmitter.cs">
       <SubType>Code</SubType>
