@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Core.Reflection
 {
@@ -18,7 +19,8 @@ namespace SiliconStudio.Core.Reflection
         /// <param name="factory">The factory.</param>
         /// <param name="type">The type.</param>
         /// <exception cref="System.ArgumentException">Type [{0}] is not a primitive</exception>
-        public PrimitiveDescriptor(ITypeDescriptorFactory factory, Type type) : base(factory, type)
+        public PrimitiveDescriptor(ITypeDescriptorFactory factory, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
+            : base(factory, type, emitDefaultValues, namingConvention)
         {
             if (!IsPrimitive(type))
                 throw new ArgumentException("Type [{0}] is not a primitive");

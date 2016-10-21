@@ -103,21 +103,6 @@ namespace SiliconStudio.Core.Reflection
                 return false;
             return a.Equals(b) || b.Equals(a);
         }
-        
-        /// <summary>
-        /// Determines whether the specified type is an anonymous type.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <returns><c>true</c> if the specified type is anonymous; otherwise, <c>false</c>.</returns>
-        public static bool IsAnonymous(this Type type)
-        {
-            if (type == null)
-                return false;
-
-            return type.GetTypeInfo().GetCustomAttributes(typeof(CompilerGeneratedAttribute), false).Any()
-                   && type.Namespace == null
-                   && type.FullName.Contains("AnonymousType");
-        }
 
         /// <summary>
         /// Determines whether the specified type is nullable <see cref="Nullable{T}"/>.
@@ -130,27 +115,6 @@ namespace SiliconStudio.Core.Reflection
         }
 
         /// <summary>
-        /// Check if the type is a ValueType and does not contain any non ValueType members.
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public static bool IsPureValueType(this Type type)
-        {
-            if (type == null)
-                return false;
-            if (type == typeof(IntPtr))
-                return false;
-            if (type.GetTypeInfo().IsPrimitive)
-                return true;
-            if (type.GetTypeInfo().IsEnum)
-                return true;
-            if (!type.GetTypeInfo().IsValueType)
-                return false;
-            // struct
-            return type.GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance).All(f => IsPureValueType(f.FieldType));
-        }
-
-        /// <summary>
         /// Indicates whether the specified <paramref name="type"/> is a non-primitive struct type.
         /// </summary>
         /// <param name="type">The <see cref="Type"/> to be analyzed.</param>
@@ -158,18 +122,6 @@ namespace SiliconStudio.Core.Reflection
         public static bool IsStruct(this Type type)
         {
             return type != null && type.GetTypeInfo().IsValueType && !type.GetTypeInfo().IsPrimitive && !type.GetTypeInfo().IsEnum;
-        }
-
-        /// <summary>
-        /// Indicates whether the given type represents a numeric value.
-        /// </summary>
-        /// <param name="type">The type.</param>
-        /// <returns>True if object is a numeric value.</returns>
-        public static bool IsNumeric(this Type type)
-        {
-            return type != null && (type == typeof(sbyte) || type == typeof(short) || type == typeof(int) || type == typeof(long) ||
-                                    type == typeof(byte) || type == typeof(ushort) || type == typeof(uint) || type == typeof(ulong) ||
-                                    type == typeof(float) || type == typeof(double) || type == typeof(decimal));
         }
 
         /// <summary>
@@ -252,81 +204,6 @@ namespace SiliconStudio.Core.Reflection
                 return decimal.MaxValue;
 
             throw new ArgumentException("Numeric type expected");
-        }
-
-        /// <summary>
-        /// Casts an object to a specified numeric type.
-        /// </summary>
-        /// <param name="obj">Any object</param>
-        /// <param name="type">Numric type</param>
-        /// <returns>Numeric value or null if the object is not a numeric value.</returns>
-        public static object CastToNumericType(this Type type, object obj)
-        {
-            var doubleValue = CastToDouble(obj);
-            if (double.IsNaN(doubleValue))
-                return null;
-
-            if (obj is decimal && type == typeof(decimal))
-                return obj; // do not convert into double
-
-            object result = null;
-            if (type == typeof(sbyte))
-                result = (sbyte)doubleValue;
-            if (type == typeof(byte))
-                result = (byte)doubleValue;
-            if (type == typeof(short))
-                result = (short)doubleValue;
-            if (type == typeof(ushort))
-                result = (ushort)doubleValue;
-            if (type == typeof(int))
-                result = (int)doubleValue;
-            if (type == typeof(uint))
-                result = (uint)doubleValue;
-            if (type == typeof(long))
-                result = (long)doubleValue;
-            if (type == typeof(ulong))
-                result = (ulong)doubleValue;
-            if (type == typeof(float))
-                result = (float)doubleValue;
-            if (type == typeof(double))
-                result = doubleValue;
-            if (type == typeof(decimal))
-                result = (decimal)doubleValue;
-            return result;
-        }
-
-        /// <summary>
-        /// Casts boxed numeric value to double
-        /// </summary>
-        /// <param name="obj">boxed numeric value</param>
-        /// <returns>Numeric value in double. Double.Nan if obj is not a numeric value.</returns>
-        internal static double CastToDouble(object obj)
-        {
-            var result = double.NaN;
-            var type = obj?.GetType();
-            if (type == typeof(sbyte))
-                result = (sbyte)obj;
-            if (type == typeof(byte))
-                result = (byte)obj;
-            if (type == typeof(short))
-                result = (short)obj;
-            if (type == typeof(ushort))
-                result = (ushort)obj;
-            if (type == typeof(int))
-                result = (int)obj;
-            if (type == typeof(uint))
-                result = (uint)obj;
-            if (type == typeof(long))
-                result = (long)obj;
-            if (type == typeof(ulong))
-                result = (ulong)obj;
-            if (type == typeof(float))
-                result = (float)obj;
-            if (type == typeof(double))
-                result = (double)obj;
-            if (type == typeof(decimal))
-                result = (double)(decimal)obj;
-            return result;
         }
     }
 }

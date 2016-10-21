@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Core.Reflection
 {
@@ -19,8 +20,8 @@ namespace SiliconStudio.Core.Reflection
         /// <param name="factory">The factory.</param>
         /// <param name="type">The type.</param>
         /// <exception cref="System.ArgumentException">Expecting arrat type;type</exception>
-        public ArrayDescriptor(ITypeDescriptorFactory factory, Type type)
-            : base(factory, type)
+        public ArrayDescriptor(ITypeDescriptorFactory factory, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
+            : base(factory, type, emitDefaultValues, namingConvention)
         {
             if (!type.IsArray) throw new ArgumentException("Expecting array type", "type");
 

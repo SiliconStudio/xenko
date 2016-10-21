@@ -74,7 +74,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// <exception cref="System.ArgumentNullException">type</exception>
         /// <exception cref="YamlException">type</exception>
         public YamlObjectDescriptor(ITypeDescriptorFactory factory, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
-            : base(factory?.AttributeRegistry, type)
+            : base(factory?.AttributeRegistry, type, emitDefaultValues, namingConvention)
         {
             if (factory == null)
                 throw new ArgumentNullException(nameof(factory));
@@ -83,7 +83,6 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
             if (namingConvention == null)
                 throw new ArgumentNullException(nameof(namingConvention));
 
-            NamingConvention = namingConvention;
             this.factory = factory;
             this.emitDefaultValues = emitDefaultValues;
 
@@ -105,14 +104,6 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
         /// </summary>
         public List<Attribute> Attributes { get; }
 
-        /// <summary>
-        /// Gets the naming convention.
-        /// </summary>
-        /// <value>The naming convention.</value>
-        public IMemberNamingConvention NamingConvention { get; }
-
-        public override DescriptorCategory Category => DescriptorCategory.Object;
-
         public DataStyle Style { get; }
 
         protected override List<IMemberDescriptor> PrepareMembers()
@@ -123,163 +114,24 @@ namespace SiliconStudio.Core.Yaml.Serialization.Descriptors
 
             // Add all public properties with a readable get method
             var memberList = (from propertyInfo in Type.GetProperties(bindingFlags)
-                where
-                    propertyInfo.CanRead && propertyInfo.GetIndexParameters().Length == 0
+                where propertyInfo.CanRead && propertyInfo.GetIndexParameters().Length == 0 && IsMemberToVisit(propertyInfo)
                 select new PropertyDescriptor(factory.Find(propertyInfo.PropertyType), propertyInfo, NamingConvention.Comparer)
                 into member
                 where PrepareMember(member)
                 select member).Cast<IMemberDescriptor>().ToList();
 
             // Add all public fields
-            memberList.AddRange((from fieldInfo in Type.GetFields(bindingFlags)
+            memberList.AddRange(from fieldInfo in Type.GetFields(bindingFlags)
+                where fieldInfo.IsPublic && IsMemberToVisit(fieldInfo)
                 select new FieldDescriptor(factory.Find(fieldInfo.FieldType), fieldInfo, NamingConvention.Comparer)
                 into member
                 where PrepareMember(member)
-                select member));
+                select member);
 
             // Allow to add dynamic members per type
             (AttributeRegistry as YamlAttributeRegistry)?.PrepareMembersCallback?.Invoke(this, memberList);
 
             return memberList;
-        }
-
-        protected virtual bool PrepareMember(MemberDescriptorBase member)
-        {
-            var memberType = member.Type;
-
-            // Remove all SyncRoot from members
-            if (member is PropertyDescriptor && member.OriginalName == "SyncRoot" &&
-                (member.DeclaringType.Namespace ?? string.Empty).StartsWith(SystemCollectionsNamespace))
-            {
-                return false;
-            }
-
-            // Process all attributes just once instead of getting them one by one
-            var attributes = AttributeRegistry.GetAttributes(member.MemberInfo);
-            DataStyleAttribute styleAttribute = null;
-            DataMemberAttribute memberAttribute = null;
-            DefaultValueAttribute defaultValueAttribute = null;
-            foreach (var attribute in attributes)
-            {
-                // Member is not displayed if there is a YamlIgnore attribute on it
-                if (attribute is DataMemberIgnoreAttribute)
-                {
-                    return false;
-                }
-
-                var dataMemberAttribute = attribute as DataMemberAttribute;
-                if (dataMemberAttribute != null)
-                {
-                    memberAttribute = dataMemberAttribute;
-                    continue;
-                }
-
-                var valueAttribute = attribute as DefaultValueAttribute;
-                if (valueAttribute != null)
-                {
-                    defaultValueAttribute = valueAttribute;
-                    continue;
-                }
-
-                var dataStyleAttribute = attribute as DataStyleAttribute;
-                if (dataStyleAttribute != null)
-                {
-                    styleAttribute = dataStyleAttribute;
-                    continue;
-                }
-
-                var yamlRemap = attribute as DataAliasAttribute;
-                if (yamlRemap != null)
-                {
-                    if (member.AlternativeNames == null)
-                    {
-                        member.AlternativeNames = new List<string>();
-                    }
-                    if (!string.IsNullOrWhiteSpace(yamlRemap.Name))
-                    {
-                        member.AlternativeNames.Add(yamlRemap.Name);
-                    }
-                }
-            }
-
-            // If the member has a set, this is a conventional assign method
-            if (member.HasSet)
-            {
-                member.Mode = DataMemberMode.Content;
-            }
-            else
-            {
-                // Else we cannot only assign its content if it is a class
-                member.Mode = (memberType != typeof(string) && memberType.IsClass) || memberType.IsInterface || Type.IsAnonymous() ? DataMemberMode.Content : DataMemberMode.Never;
-            }
-
-            // If it's a private member, check it has a YamlMemberAttribute on it
-            if (!member.IsPublic)
-            {
-                if (memberAttribute == null)
-                    return false;
-            }
-
-            // Gets the style
-            ((IMemberDescriptor)member).Style = styleAttribute?.Style ?? DataStyle.Any;
-            ((IMemberDescriptor)member).Mask = 1;
-
-            // Handle member attribute
-            if (memberAttribute != null)
-            {
-                ((IMemberDescriptor)member).Mask = memberAttribute.Mask;
-                if (!member.HasSet)
-                {
-                    if (memberAttribute.Mode == DataMemberMode.Assign ||
-                        (memberType.IsValueType && member.Mode == DataMemberMode.Content))
-                        throw new ArgumentException($"{memberType.FullName} {member.OriginalName} is not writeable by {memberAttribute.Mode.ToString()}.");
-                }
-
-                if (memberAttribute.Mode != DataMemberMode.Default)
-                {
-                    member.Mode = memberAttribute.Mode;
-                }
-                member.Order = memberAttribute.Order;
-            }
-
-            if (member.Mode == DataMemberMode.Binary)
-            {
-                if (!memberType.IsArray)
-                    throw new InvalidOperationException($"{memberType.FullName} {member.OriginalName} of {Type.FullName} is not an array. Can not be serialized as binary.");
-                if (!memberType.GetElementType().IsPureValueType())
-                    throw new InvalidOperationException($"{memberType.GetElementType()} is not a pure ValueType. {memberType.FullName} {member.OriginalName} of {Type.FullName} can not serialize as binary.");
-            }
-
-            // If this member cannot be serialized, remove it from the list
-            if (member.Mode == DataMemberMode.Never)
-            {
-                return false;
-            }
-
-            // ShouldSerialize
-            //	  YamlSerializeAttribute(Never) => false
-            //	  ShouldSerializeSomeProperty => call it
-            //	  DefaultValueAttribute(default) => compare to it
-            //	  otherwise => true
-            var shouldSerialize = Type.GetMethod("ShouldSerialize" + member.OriginalName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
-            if (shouldSerialize != null && shouldSerialize.ReturnType == typeof(bool) && member.ShouldSerialize == null)
-                member.ShouldSerialize = obj => (bool) shouldSerialize.Invoke(obj, EmptyObjectArray);
-
-            if (defaultValueAttribute != null && member.ShouldSerialize == null && !emitDefaultValues)
-            {
-                object defaultValue = defaultValueAttribute.Value;
-                Type defaultType = defaultValue?.GetType();
-                if (defaultType.IsNumeric() && defaultType != memberType)
-                    defaultValue = memberType.CastToNumericType(defaultValue);
-                member.ShouldSerialize = obj => !TypeExtensions.AreEqual(defaultValue, member.Get(obj));
-            }
-
-            if (member.ShouldSerialize == null)
-                member.ShouldSerialize = ShouldSerializeDefault;
-
-            member.Name = !string.IsNullOrEmpty(memberAttribute?.Name) ? memberAttribute.Name : NamingConvention.Convert(member.OriginalName);
-
-            return true;
         }
 
         public override string ToString()

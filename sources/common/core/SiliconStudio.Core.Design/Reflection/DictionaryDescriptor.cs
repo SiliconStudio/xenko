@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Core.Reflection
 {
@@ -31,8 +32,8 @@ namespace SiliconStudio.Core.Reflection
         /// <param name="factory">The factory.</param>
         /// <param name="type">The type.</param>
         /// <exception cref="System.ArgumentException">Expecting a type inheriting from System.Collections.IDictionary;type</exception>
-        public DictionaryDescriptor(ITypeDescriptorFactory factory, Type type)
-            : base(factory, type)
+        public DictionaryDescriptor(ITypeDescriptorFactory factory, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
+            : base(factory, type, emitDefaultValues, namingConvention)
         {
             if (!IsDictionary(type))
                 throw new ArgumentException(@"Expecting a type inheriting from System.Collections.IDictionary", "type");

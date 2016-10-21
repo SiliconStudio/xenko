@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Core.Reflection
 {
@@ -46,15 +47,13 @@ namespace SiliconStudio.Core.Reflection
         /// <param name="type">The type.</param>
         /// <exception cref="System.ArgumentNullException">type</exception>
         /// <exception cref="System.InvalidOperationException">Failed to get ObjectDescriptor for type [{0}]. The member [{1}] cannot be registered as a member with the same name is already registered [{2}].ToFormat(type.FullName, member, existingMember)</exception>
-        public ObjectDescriptor(ITypeDescriptorFactory factory, Type type)
-            : base(factory.AttributeRegistry, type)
+        public ObjectDescriptor(ITypeDescriptorFactory factory, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
+            : base(factory?.AttributeRegistry, type, emitDefaultValues, namingConvention)
         {
             if (factory == null) throw new ArgumentNullException(nameof(factory));
             if (type == null) throw new ArgumentNullException(nameof(type));
             this.factory = factory;
         }
-
-        public override DescriptorCategory Category => DescriptorCategory.Object;
 
         protected override List<IMemberDescriptor> PrepareMembers()
         {
@@ -63,11 +62,15 @@ namespace SiliconStudio.Core.Reflection
                 return EmptyMembers;
             }
 
+            var bindingFlags = BindingFlags.Instance | BindingFlags.Public;
+            // TODO: we might want an option to disable non-public.
+            if (Category == DescriptorCategory.Object)
+                bindingFlags |= BindingFlags.NonPublic;
+
             // Add all public properties with a readable get method
-            var memberList = (from propertyInfo in Type.GetProperties(BindingFlags.Instance | BindingFlags.Public)
+            var memberList = (from propertyInfo in Type.GetProperties(bindingFlags)
                               where
-                                  propertyInfo.CanRead && propertyInfo.GetGetMethod(false) != null &&
-                                  propertyInfo.GetIndexParameters().Length == 0 &&
+                                  propertyInfo.CanRead && propertyInfo.GetIndexParameters().Length == 0 &&
                                   IsMemberToVisit(propertyInfo)
                               select new PropertyDescriptor(factory.Find(propertyInfo.PropertyType), propertyInfo, StringComparer.Ordinal)
                               into member
@@ -75,7 +78,7 @@ namespace SiliconStudio.Core.Reflection
                               select member).Cast<IMemberDescriptor>().ToList();
 
             // Add all public fields
-            memberList.AddRange((from fieldInfo in Type.GetFields(BindingFlags.Instance | BindingFlags.Public)
+            memberList.AddRange((from fieldInfo in Type.GetFields(bindingFlags)
                                  where fieldInfo.IsPublic &&
                                   IsMemberToVisit(fieldInfo)
                                  select new FieldDescriptor(factory.Find(fieldInfo.FieldType), fieldInfo, StringComparer.Ordinal)
@@ -84,62 +87,6 @@ namespace SiliconStudio.Core.Reflection
                                  select member));
 
             return memberList;
-        }
-
-        protected virtual bool PrepareMember(MemberDescriptorBase member)
-        {
-            var memberType = member.Type;
-
-            // If the member has a set, this is a conventional assign method
-            if (member.HasSet)
-            {
-                member.Mode = DataMemberMode.Assign;
-            }
-            else
-            {
-                // Else we cannot only assign its content if it is a class
-                member.Mode = (memberType != typeof(string) && memberType.IsClass) || memberType.IsInterface || Type.IsAnonymous() ? DataMemberMode.Content : DataMemberMode.Never;
-            }
-
-            // Handle member attribute
-            var memberAttribute = AttributeRegistry.GetAttribute<DataMemberAttribute>(member.MemberInfo);
-            if (memberAttribute != null)
-            {
-                if (!member.HasSet)
-                {
-                    if (memberAttribute.Mode == DataMemberMode.Assign ||
-                        (memberType.IsValueType && member.Mode == DataMemberMode.Content))
-                        throw new ArgumentException("{0} {1} is not writeable by {2}.".ToFormat(memberType.FullName, member.Name, memberAttribute.Mode.ToString()));
-                }
-
-                if (memberAttribute.Mode != DataMemberMode.Default)
-                {
-                    member.Mode = memberAttribute.Mode;
-                }
-                member.Order = memberAttribute.Order;
-            }
-
-            if (member.Mode == DataMemberMode.Binary)
-            {
-                if (!memberType.IsArray)
-                    throw new InvalidOperationException("{0} {1} of {2} is not an array. Can not be serialized as binary."
-                                                            .ToFormat(memberType.FullName, member.Name, Type.FullName));
-                if (!memberType.GetElementType().IsPureValueType())
-                    throw new InvalidOperationException("{0} is not a pure ValueType. {1} {2} of {3} can not serialize as binary.".ToFormat(memberType.GetElementType(), memberType.FullName, member.Name, Type.FullName));
-            }
-
-            // If this member cannot be serialized, remove it from the list
-            if (member.Mode == DataMemberMode.Never)
-            {
-                return false;
-            }
-
-            if (!string.IsNullOrEmpty(memberAttribute?.Name))
-            {
-                member.Name = memberAttribute.Name;
-            }
-
-            return true;
         }
     }
 }

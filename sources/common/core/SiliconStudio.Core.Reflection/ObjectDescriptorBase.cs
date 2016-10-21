@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using SiliconStudio.Core.Yaml.Serialization;
 
 namespace SiliconStudio.Core.Reflection
 {
@@ -11,22 +13,28 @@ namespace SiliconStudio.Core.Reflection
     public abstract class ObjectDescriptorBase : ITypeDescriptor
     {
         protected static readonly string SystemCollectionsNamespace = typeof(int).Namespace;
+        private static readonly Func<object, bool> ShouldSerializeDefault = o => true;
 
-        protected IMemberDescriptor[] members;
-        protected Dictionary<string, IMemberDescriptor> mapMembers;
+        private IMemberDescriptor[] members;
+        private Dictionary<string, IMemberDescriptor> mapMembers;
         private HashSet<string> remapMembers;
+        private static readonly object[] EmptyObjectArray = new object[0];
+        private readonly bool emitDefaultValues;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectDescriptorBase" /> class.
         /// </summary>
-        protected ObjectDescriptorBase(IAttributeRegistry attributeRegistry, Type type)
+        protected ObjectDescriptorBase(IAttributeRegistry attributeRegistry, Type type, bool emitDefaultValues, IMemberNamingConvention namingConvention)
         {
             if (attributeRegistry == null) throw new ArgumentNullException(nameof(attributeRegistry));
             if (type == null) throw new ArgumentNullException(nameof(type));
+            if (namingConvention == null) throw new ArgumentNullException(nameof(namingConvention));
 
             AttributeRegistry = attributeRegistry;
             Type = type;
             IsCompilerGenerated = AttributeRegistry.GetAttribute<CompilerGeneratedAttribute>(type) != null;
+            this.emitDefaultValues = emitDefaultValues;
+            NamingConvention = namingConvention;
         }
 
         protected IAttributeRegistry AttributeRegistry { get; }
@@ -39,7 +47,13 @@ namespace SiliconStudio.Core.Reflection
 
         public bool HasMembers => members?.Length > 0;
 
-        public abstract DescriptorCategory Category { get; }
+        public virtual DescriptorCategory Category => DescriptorCategory.Object;
+
+        /// <summary>
+        /// Gets the naming convention.
+        /// </summary>
+        /// <value>The naming convention.</value>
+        public IMemberNamingConvention NamingConvention { get; }
 
         public bool IsMemberRemapped(string name)
         {
@@ -121,6 +135,116 @@ namespace SiliconStudio.Core.Reflection
         }
 
         protected abstract List<IMemberDescriptor> PrepareMembers();
+
+        protected virtual bool PrepareMember(MemberDescriptorBase member)
+        {
+            var memberType = member.Type;
+
+            // The default mode is Content, which will not use the setter to restore value if the object is a class (but behave like Assign for value types)
+            member.Mode = DataMemberMode.Content;
+            if (!member.HasSet && (memberType == typeof(string) || !memberType.IsClass) && !memberType.IsInterface && !Type.IsAnonymous())
+            {
+                // If there is no setter, and the value is a string or a value type, we won't write the object at all.
+                member.Mode = DataMemberMode.Never;
+            }
+
+            // Gets the style
+            var styleAttribute = AttributeRegistry.GetAttribute<DataStyleAttribute>(member.MemberInfo); ;
+            member.Style = styleAttribute?.Style ?? DataStyle.Any;
+            member.Mask = 1;
+
+            // Handle member attribute
+            var memberAttribute = AttributeRegistry.GetAttribute<DataMemberAttribute>(member.MemberInfo);
+            if (memberAttribute != null)
+            {
+                ((IMemberDescriptor)member).Mask = memberAttribute.Mask;
+                if (!member.HasSet)
+                {
+                    if (memberAttribute.Mode == DataMemberMode.Assign ||
+                        (memberType.IsValueType && member.Mode == DataMemberMode.Content))
+                        throw new ArgumentException($"{memberType.FullName} {member.OriginalName} is not writeable by {memberAttribute.Mode.ToString()}.");
+                }
+
+                if (memberAttribute.Mode != DataMemberMode.Default)
+                {
+                    member.Mode = memberAttribute.Mode;
+                }
+                member.Order = memberAttribute.Order;
+            }
+
+            // Process all attributes just once instead of getting them one by one
+            var attributes = AttributeRegistry.GetAttributes(member.MemberInfo);
+            DefaultValueAttribute defaultValueAttribute = null;
+            foreach (var attribute in attributes)
+            {
+                var valueAttribute = attribute as DefaultValueAttribute;
+                if (valueAttribute != null)
+                {
+                    defaultValueAttribute = valueAttribute;
+                    continue;
+                }
+
+                var yamlRemap = attribute as DataAliasAttribute;
+                if (yamlRemap != null)
+                {
+                    if (member.AlternativeNames == null)
+                    {
+                        member.AlternativeNames = new List<string>();
+                    }
+                    if (!string.IsNullOrWhiteSpace(yamlRemap.Name))
+                    {
+                        member.AlternativeNames.Add(yamlRemap.Name);
+                    }
+                }
+            }
+
+
+            // If it's a private member, check it has a YamlMemberAttribute on it
+            if (!member.IsPublic)
+            {
+                if (memberAttribute == null)
+                    return false;
+            }
+
+            if (member.Mode == DataMemberMode.Binary)
+            {
+                if (!memberType.IsArray)
+                    throw new InvalidOperationException($"{memberType.FullName} {member.OriginalName} of {Type.FullName} is not an array. Can not be serialized as binary.");
+                if (!memberType.GetElementType().IsPureValueType())
+                    throw new InvalidOperationException($"{memberType.GetElementType()} is not a pure ValueType. {memberType.FullName} {member.OriginalName} of {Type.FullName} can not serialize as binary.");
+            }
+
+            // If this member cannot be serialized, remove it from the list
+            if (member.Mode == DataMemberMode.Never)
+            {
+                return false;
+            }
+
+            // ShouldSerialize
+            //	  YamlSerializeAttribute(Never) => false
+            //	  ShouldSerializeSomeProperty => call it
+            //	  DefaultValueAttribute(default) => compare to it
+            //	  otherwise => true
+            var shouldSerialize = Type.GetMethod("ShouldSerialize" + member.OriginalName, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            if (shouldSerialize != null && shouldSerialize.ReturnType == typeof(bool) && member.ShouldSerialize == null)
+                member.ShouldSerialize = obj => (bool)shouldSerialize.Invoke(obj, EmptyObjectArray);
+
+            if (defaultValueAttribute != null && member.ShouldSerialize == null && !emitDefaultValues)
+            {
+                object defaultValue = defaultValueAttribute.Value;
+                Type defaultType = defaultValue?.GetType();
+                if (defaultType.IsNumeric() && defaultType != memberType)
+                    defaultValue = memberType.CastToNumericType(defaultValue);
+                member.ShouldSerialize = obj => !Equals(defaultValue, member.Get(obj));
+            }
+
+            if (member.ShouldSerialize == null)
+                member.ShouldSerialize = ShouldSerializeDefault;
+
+            member.Name = !string.IsNullOrEmpty(memberAttribute?.Name) ? memberAttribute.Name : NamingConvention.Convert(member.OriginalName);
+
+            return true;
+        }
 
         protected bool IsMemberToVisit(MemberInfo memberInfo)
         {
