@@ -1,0 +1,27 @@
+!Package
+Id: bdd7a38f-3ff5-4279-b7b7-27a4c677f4d7
+SerializedVersion: {Assets: 0.0.2}
+Tags: []
+Meta:
+    Name: SamplesAssetPackage
+    Version: 1.0.0.0
+    Authors: []
+    Owners: []
+    Dependencies:
+        -   Name: Xenko
+            Version: 1.8.0-beta
+            RootAssets: []
+LocalDependencies: []
+Profiles:
+    -   Name: Shared
+        Platform: Shared
+        InheritProfiles: []
+        AssetFolders:
+            -   Path: Assets/Shared
+        OutputGroupDirectories: {}
+        Properties: {}
+        ProjectReferences: []
+ExplicitFolders: []
+Bundles: []
+TemplateFolders: []
+RootAssets: []
