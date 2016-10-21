@@ -45,6 +45,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace SiliconStudio.Core.Yaml.Serialization.Serializers
 {
@@ -55,6 +56,7 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
     {
         private readonly Dictionary<Type, IYamlSerializable> serializers = new Dictionary<Type, IYamlSerializable>();
         private readonly List<IYamlSerializableFactory> factories = new List<IYamlSerializableFactory>();
+        private readonly ReaderWriterLockSlim serializerLock = new ReaderWriterLockSlim();
 
         public void AddSerializer(Type type, IYamlSerializable serializer)
         {
@@ -85,17 +87,29 @@ namespace SiliconStudio.Core.Yaml.Serialization.Serializers
         internal IYamlSerializable GetSerializer(SerializerContext context, IYamlTypeDescriptor typeDescriptor)
         {
             IYamlSerializable serializer;
-            if (!serializers.TryGetValue(typeDescriptor.Type, out serializer))
+
+            // First try, with just a read lock
+            serializerLock.EnterReadLock();
+            var found = serializers.TryGetValue(typeDescriptor.Type, out serializer);
+            serializerLock.ExitReadLock();
+
+            if (!found)
             {
-                foreach (var factory in factories)
+                // Not found, let's take exclusive lock and try again
+                serializerLock.EnterWriteLock();
+                if (!serializers.TryGetValue(typeDescriptor.Type, out serializer))
                 {
-                    serializer = factory.TryCreate(context, typeDescriptor);
-                    if (serializer != null)
+                    foreach (var factory in factories)
                     {
-                        serializers.Add(typeDescriptor.Type, serializer);
-                        break;
+                        serializer = factory.TryCreate(context, typeDescriptor);
+                        if (serializer != null)
+                        {
+                            serializers.Add(typeDescriptor.Type, serializer);
+                            break;
+                        }
                     }
                 }
+                serializerLock.ExitWriteLock();
             }
 
             if (serializer == null)
