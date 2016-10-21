@@ -327,6 +327,31 @@ namespace SiliconStudio.Xenko.Assets
                 }
             }
 
+            if (dependency.Version.MinVersion < new PackageVersion("1.8.4-beta"))
+            {
+                // Add new generic parameter of MaterialSurfaceNormalMap to effect logs
+                var regex = new Regex(@"(?<=ClassName:\s+MaterialSurfaceNormalMap\s+GenericArguments:\s+\[[^\]]*)(?=\])");
+                foreach (var assetFile in assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkeffectlog"))
+                {
+                    var filePath = assetFile.FilePath;
+
+                    // Load asset data, so the renamed file will have it's AssetContent set
+                    if (assetFile.AssetContent == null)
+                        assetFile.AssetContent = File.ReadAllBytes(filePath);
+
+                    var sourceText = System.Text.Encoding.UTF8.GetString(assetFile.AssetContent);
+                    var newSourceText = regex.Replace(sourceText, ", true");
+                    var newAssetContent = System.Text.Encoding.UTF8.GetBytes(newSourceText);
+
+                    if (newSourceText != sourceText)
+                    {
+                        assetFile.AssetContent = newAssetContent;
+                    }
+
+                    //File.WriteAllBytes(newFileName, newAssetContent);
+                }
+            }
+
             //if (dependency.Version.MinVersion < new PackageVersion("1.9.0-alpha01"))
             //{
             //    var files = assetFiles.Where(f => f.FilePath.GetFileExtension() != ".xkpkg" && f.FilePath.GetFileExtension() != ".xktpl");

@@ -1,0 +1,37 @@
+!MaterialAsset
+Id: 0529a037-4021-47cc-b903-ec5a7111bf44
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+Attributes:
+    Surface: !MaterialNormalMapFeature
+        NormalMap: !ComputeTextureColor
+            Swizzle: null
+            Texture: 33596d89-73a8-4f8c-853b-6c1d33e77264/f42ac079-ee5c-4cf5-96b0-ec3d1b4f1248:c100_body_nm
+            FallbackValue:
+                Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+            Scale: {X: 1.0, Y: 1.0}
+            Offset: {X: 0.0, Y: 0.0}
+    Diffuse: !MaterialDiffuseMapFeature
+        DiffuseMap: !ComputeTextureColor
+            Swizzle: null
+            Texture: 4718737d-7a81-4370-b40b-65a5480a9230/43dcae88-4010-4ba9-8b36-6a906ce35de3:c100_body_cm
+            FallbackValue:
+                Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+            Scale: {X: 1.0, Y: 1.0}
+            Offset: {X: 0.0, Y: 0.0}
+    DiffuseModel: !MaterialDiffuseLambertModelFeature {}
+    Specular: !MaterialSpecularMapFeature
+        SpecularMap: !ComputeColor
+            Value: {R: 0.5, G: 0.5, B: 0.5, A: 1.0}
+        Intensity: !ComputeFloat
+            Value: 1.0
+    SpecularModel: !MaterialSpecularMicrofacetModelFeature
+        Fresnel: !MaterialSpecularMicrofacetFresnelSchlick
+            ~Id: 74e43db4-002a-42e8-a612-04e573ca6059
+        Visibility: !MaterialSpecularMicrofacetVisibilityImplicit
+            ~Id: cec3e0bb-ab13-49cc-b5cc-ca8bce6fe3ce
+        NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionBlinnPhong
+            ~Id: 0b445a3c-adfb-4bcf-a9d2-3cba0b2df0b3
+    Overrides:
+        UVScale: {X: 1.0, Y: 1.0}
+Layers: []

@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 14.0.23107.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "90-Tools", "90-Tools", "{1AE1AC60-5D2F-4CA7-AE20-888F44551185}"
 EndProject
@@ -411,6 +411,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core.Yaml.Tests", "..\sources\common\core\SiliconStudio.Core.Yaml.Tests\SiliconStudio.Core.Yaml.Tests.csproj", "{16D8043D-C3DB-4868-BFF3-B2EBDF537AAA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core.Reflection", "..\sources\common\core\SiliconStudio.Core.Reflection\SiliconStudio.Core.Reflection.csproj", "{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Physics.Tests.Windows", "..\sources\engine\SiliconStudio.Xenko.Physics.Tests\SiliconStudio.Xenko.Physics.Tests.Windows.csproj", "{4F0E7E04-F067-4CE8-B8C8-1105F319D123}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -2419,6 +2421,30 @@ Global
 		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
 		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}.Testing|Win32.ActiveCfg = Release|Any CPU
 		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE}.Testing|Win32.Build.0 = Release|Any CPU
+		{4F0E7E04-F067-4CE8-B8C8-1105F319D123}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{4F0E7E04-F067-4CE8-B8C8-1105F319D123}.AppStore|Any CPU.Build.0 = Release|Any CPU
+		{4F0E7E04-F067-4CE8-B8C8-1105F319D123}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{4F0E7E04-F067-4CE8-B8C8-1105F319D123}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
+		{4F0E7E04-F067-4CE8-B8C8-1105F319D123}.AppStore|Win32.ActiveCfg = Release|Any CPU
+		{4F0E7E04-F067-4CE8-B8C8-1105F319D123}.AppStore|Win32.Build.0 = Release|Any CPU
+		{4F0E7E04-F067-4CE8-B8C8-1105F319D123}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F0E7E04-F067-4CE8-B8C8-1105F319D123}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F0E7E04-F067-4CE8-B8C8-1105F319D123}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{4F0E7E04-F067-4CE8-B8C8-1105F319D123}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{4F0E7E04-F067-4CE8-B8C8-1105F319D123}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{4F0E7E04-F067-4CE8-B8C8-1105F319D123}.Debug|Win32.Build.0 = Debug|Any CPU
+		{4F0E7E04-F067-4CE8-B8C8-1105F319D123}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F0E7E04-F067-4CE8-B8C8-1105F319D123}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F0E7E04-F067-4CE8-B8C8-1105F319D123}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{4F0E7E04-F067-4CE8-B8C8-1105F319D123}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{4F0E7E04-F067-4CE8-B8C8-1105F319D123}.Release|Win32.ActiveCfg = Release|Any CPU
+		{4F0E7E04-F067-4CE8-B8C8-1105F319D123}.Release|Win32.Build.0 = Release|Any CPU
+		{4F0E7E04-F067-4CE8-B8C8-1105F319D123}.Testing|Any CPU.ActiveCfg = Release|Any CPU
+		{4F0E7E04-F067-4CE8-B8C8-1105F319D123}.Testing|Any CPU.Build.0 = Release|Any CPU
+		{4F0E7E04-F067-4CE8-B8C8-1105F319D123}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{4F0E7E04-F067-4CE8-B8C8-1105F319D123}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
+		{4F0E7E04-F067-4CE8-B8C8-1105F319D123}.Testing|Win32.ActiveCfg = Release|Any CPU
+		{4F0E7E04-F067-4CE8-B8C8-1105F319D123}.Testing|Win32.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -2530,5 +2556,6 @@ Global
 		{BF32DE1B-6276-4341-B212-F8862ADBBA7A} = {A2A4342E-024B-4063-B10C-1DA96CA3046D}
 		{16D8043D-C3DB-4868-BFF3-B2EBDF537AAA} = {9D5D9861-AE68-429C-8B21-2263F9DA07A1}
 		{0BE7189B-F04E-4C0C-BBE9-F347C0A59FEE} = {A2A4342E-024B-4063-B10C-1DA96CA3046D}
+		{4F0E7E04-F067-4CE8-B8C8-1105F319D123} = {A7ED9F01-7D78-4381-90A6-D50E51C17250}
 	EndGlobalSection
 EndGlobal

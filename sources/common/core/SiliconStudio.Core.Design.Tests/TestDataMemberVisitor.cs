@@ -199,5 +199,19 @@ namespace SiliconStudio.Core.Design.Tests
                     1,2,3,4
                 }, primitiveGrabber.Collected);
         }
+
+        [DataContract]
+        public class SelfRef
+        {
+            [DataMember]
+            public SelfRef Self { get; set; }
+        }
+
+        [Test]
+        public void TestSelfReferencingType()
+        {
+            var typeDescriptor = TypeDescriptorFactory.Default.Find(typeof(SelfRef));
+            Assert.AreEqual(typeDescriptor, typeDescriptor["Self"].TypeDescriptor);
+        }
     }
 }

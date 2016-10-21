@@ -1,17 +1,15 @@
 !SceneAsset
 Id: 2ae86742-ad72-46d3-a6b6-4358ea99b7a6
-SerializedVersion: {Xenko: 1.7.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta02}
 Tags: []
 SceneSettings:
-    ~Id: 22af20a7-9082-4801-9f21-b943e3647b4d
+    Id: 22af20a7-9082-4801-9f21-b943e3647b4d
     GraphicsCompositor: !SceneGraphicsCompositorLayers
         ~Id: c08da8bd-4b67-48dc-b72a-7d4a99eb7ff1
         Cameras:
             -   ~Id: 0a767450-d5ef-4677-bcbd-b6fb7afdf064
                 Name: null
-                Camera:
-                    Entity: {Id: 0f752020-4522-41f3-a645-cf0e27283cc4}
-                    Id: 1ad65a5d-a5da-40e1-a7e4-7d141c1b7119
+                Camera: 0f752020-4522-41f3-a645-cf0e27283cc4/1ad65a5d-a5da-40e1-a7e4-7d141c1b7119
         Layers: []
         Master:
             ~Id: b5fa159a-9544-44cf-9b59-626736584dce
@@ -53,10 +51,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 69b13420-1dca-4e28-8ee4-d74601b5aeef
-                        Position: {X: 0.0, Y: 0.0, Z: 4.5}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 4.5}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !CameraComponent
                         ~Id: 1ad65a5d-a5da-40e1-a7e4-7d141c1b7119
                         Projection: Perspective
@@ -66,10 +64,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: bbf8967a-5b3e-4672-a80a-a11d675910c3
-                        Position: {X: -2.0, Y: 2.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: -2.0, Y: 2.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !LightComponent
                         ~Id: c818318e-0449-4923-b51f-351f30ce0b22
                         Type: !LightAmbient
@@ -83,10 +81,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: c6870d10-245a-4ce3-8b89-2a5bd5ca8949
-                        Position: {X: 0.0, Y: 1.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 1.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !NativeLinking.AnimateScript,NativeLinking.Game
                         ~Id: b606cd7e-cd9b-4fd2-b6a4-a0bf28b8749c
                     - !ModelComponent
@@ -100,10 +98,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 582fec8e-6ddd-4e83-88dc-c640c3823a03
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !BackgroundComponent
                         ~Id: 47826b92-31c4-4ebd-b6e0-08c8640f6e47
                         Texture: 869ce64d-dff4-4cf7-a272-2a390dfa1ed6/deb728b5-1fdb-4194-af74-1dc78a8b572d:XenkoBackground

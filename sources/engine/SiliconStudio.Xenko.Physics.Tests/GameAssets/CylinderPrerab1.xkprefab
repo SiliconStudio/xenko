@@ -1,0 +1,38 @@
+!PrefabAsset
+Id: 68f7f7da-7055-4a20-8912-fa48ab1fd94b
+SerializedVersion: {Xenko: 1.8.3-beta01}
+Tags: []
+Hierarchy:
+    ~Id: 8616392f-9438-4440-999d-c4863a5234ec
+    RootPartIds:
+        - 8724cbeb-ed40-4ec7-bd6b-105d5180f8bf
+    Parts:
+        -   Entity:
+                Id: 8724cbeb-ed40-4ec7-bd6b-105d5180f8bf
+                Name: Cylinder
+                Components:
+                    - !TransformComponent
+                        ~Id: bd27d041-b557-4215-a428-575bca271c7d
+                        Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                    - !ModelComponent
+                        ~Id: b2e87ba8-9bc8-4a77-ab4d-d6306e2057f2
+                        Model: 40f0c621-3c62-499a-8529-0451b31cd473/f5f92ed9-b93d-4773-b0e6-b19201ba8ce3:Cylinder
+                        Materials:
+                            - null
+                    - !StaticColliderComponent
+                        ~Id: 8e803c64-ce98-4d1f-b1d0-fe9104779a1d
+                        CanSleep: false
+                        Restitution: 0.0
+                        Friction: 0.5
+                        RollingFriction: 0.0
+                        CcdMotionThreshold: 0.0
+                        CcdSweptSphereRadius: 0.0
+                        IsTrigger: false
+                        ColliderShapes:
+                            - !CylinderColliderShapeDesc
+                                ~Id: 72d1566d-cfa2-44f9-85fa-c1ff956eabf3
+                                LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
+                                LocalRotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}

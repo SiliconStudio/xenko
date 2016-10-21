@@ -223,7 +223,8 @@ namespace SiliconStudio.BuildEngine.Tests
 
             var builder1 = Utils.CreateBuilder(false);
             CommandBuildStep step = builder1.Root.Add(new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.File, Utils.GetSourcePath("input1")), OutputUrl = "/db/url1" });
-            CommandBuildStep childStep = builder1.Root.Add(new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.Content, "/db/url1"), OutputUrl = "/db/url2" });
+            builder1.Root.Add(new WaitBuildStep());
+            CommandBuildStep childStep = builder1.Root.Add(new InputOutputTestCommand { Delay = 100, Source = new ObjectUrl(UrlType.ContentLink, "/db/url1"), OutputUrl = "/db/url2" });
             BuildStep.LinkBuildSteps(step, childStep);
             builder1.Run(Builder.Mode.Build);
 

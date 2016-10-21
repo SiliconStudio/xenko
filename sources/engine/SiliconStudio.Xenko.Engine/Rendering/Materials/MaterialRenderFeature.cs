@@ -315,48 +315,38 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         public static unsafe bool UpdateMaterial(RenderSystem renderSystem, RenderDrawContext context, MaterialInfoBase materialInfo, int materialSlotIndex, RenderEffect renderEffect, ParameterCollection materialParameters)
         {
-            // Check if encountered first time this frame
-            if (materialInfo.LastFrameUsed == renderSystem.FrameCounter)
+            var resourceGroupDescription = renderEffect.Reflection.ResourceGroupDescriptions[materialSlotIndex];
+            if (resourceGroupDescription.DescriptorSetLayout == null)
+                return false;
+
+            // Check if this material was encountered for the first time this frame and mark it as used
+            if (Interlocked.Exchange(ref materialInfo.LastFrameUsed, renderSystem.FrameCounter) == renderSystem.FrameCounter)
                 return true;
 
-            // TODO: spinlock?
-            lock (materialInfo)
+            // First time we use the material with a valid effect, let's update layouts
+            if (materialInfo.PerMaterialLayout == null || materialInfo.PerMaterialLayout.Hash != renderEffect.Reflection.ResourceGroupDescriptions[materialSlotIndex].Hash)
             {
-                if (materialInfo.LastFrameUsed == renderSystem.FrameCounter)
-                    return true;
+                materialInfo.PerMaterialLayout = ResourceGroupLayout.New(renderSystem.GraphicsDevice, resourceGroupDescription, renderEffect.Effect.Bytecode);
 
-                // First time we use the material with a valid effect, let's update layouts
-                if (materialInfo.PerMaterialLayout == null || materialInfo.PerMaterialLayout.Hash != renderEffect.Reflection.ResourceGroupDescriptions[materialSlotIndex].Hash)
+                var parameterCollectionLayout = materialInfo.ParameterCollectionLayout = new ParameterCollectionLayout();
+                parameterCollectionLayout.ProcessResources(resourceGroupDescription.DescriptorSetLayout);
+                materialInfo.ResourceCount = parameterCollectionLayout.ResourceCount;
+
+                // Process material cbuffer (if any)
+                if (resourceGroupDescription.ConstantBufferReflection != null)
                 {
-                    var resourceGroupDescription = renderEffect.Reflection.ResourceGroupDescriptions[materialSlotIndex];
-                    if (resourceGroupDescription.DescriptorSetLayout == null)
-                        return false;
-
-                    materialInfo.PerMaterialLayout = ResourceGroupLayout.New(renderSystem.GraphicsDevice, resourceGroupDescription, renderEffect.Effect.Bytecode);
-
-                    var parameterCollectionLayout = materialInfo.ParameterCollectionLayout = new ParameterCollectionLayout();
-                    parameterCollectionLayout.ProcessResources(resourceGroupDescription.DescriptorSetLayout);
-                    materialInfo.ResourceCount = parameterCollectionLayout.ResourceCount;
-
-                    // Process material cbuffer (if any)
-                    if (resourceGroupDescription.ConstantBufferReflection != null)
-                    {
-                        materialInfo.ConstantBufferReflection = resourceGroupDescription.ConstantBufferReflection;
-                        parameterCollectionLayout.ProcessConstantBuffer(resourceGroupDescription.ConstantBufferReflection);
-                    }
-                    materialInfo.ParametersChanged = true;
+                    materialInfo.ConstantBufferReflection = resourceGroupDescription.ConstantBufferReflection;
+                    parameterCollectionLayout.ProcessConstantBuffer(resourceGroupDescription.ConstantBufferReflection);
                 }
+                materialInfo.ParametersChanged = true;
+            }
 
-                // If the parameters collection instance changed, we need to update it
-                if (materialInfo.ParametersChanged)
-                {
-                    materialInfo.ParameterCollection.UpdateLayout(materialInfo.ParameterCollectionLayout);
-                    materialInfo.ParameterCollectionCopier = new ParameterCollection.Copier(materialInfo.ParameterCollection, materialParameters);
-                    materialInfo.ParametersChanged = false;
-                }
-
-                // Mark this material as used during this frame
-                materialInfo.LastFrameUsed = renderSystem.FrameCounter;
+            // If the parameters collection instance changed, we need to update it
+            if (materialInfo.ParametersChanged)
+            {
+                materialInfo.ParameterCollection.UpdateLayout(materialInfo.ParameterCollectionLayout);
+                materialInfo.ParameterCollectionCopier = new ParameterCollection.Copier(materialInfo.ParameterCollection, materialParameters);
+                materialInfo.ParametersChanged = false;
             }
 
             // Copy back to ParameterCollection
