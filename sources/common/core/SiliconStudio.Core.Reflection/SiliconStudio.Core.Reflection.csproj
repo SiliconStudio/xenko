@@ -24,6 +24,9 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="MemberPath.cs" />
+    <Compile Include="MemberPathAction.cs" />
+    <Compile Include="MemberPathNode.cs" />
     <Compile Include="TypeDescriptorFactory.cs" />
     <Compile Include="TypeDescriptors\ArrayDescriptor.cs" />
     <Compile Include="AttributeRegistry.cs" />
@@ -43,10 +46,13 @@
     <Compile Include="TypeDescriptors\ObjectDescriptor.cs" />
     <Compile Include="TypeDescriptors\PrimitiveDescriptor.cs" />
     <Compile Include="MemberDescriptors\PropertyDescriptor.cs" />
-    <Compile Include="TypeDescriptorFactoryBase.cs" />
     <Compile Include="TypeExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
+      <Project>{5210FB81-B807-49BB-AF0D-31FB6A83A572}</Project>
+      <Name>SiliconStudio.Core.Serialization</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
       <Name>SiliconStudio.Core</Name>

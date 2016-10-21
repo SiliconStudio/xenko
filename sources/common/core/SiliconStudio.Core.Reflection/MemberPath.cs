@@ -292,45 +292,45 @@ namespace SiliconStudio.Core.Reflection
             return true;
         }
 
-        /// <summary>
-        /// Gets the value from the specified root object following this instance path.
-        /// </summary>
-        /// <param name="rootObject">The root object.</param>
-        /// <param name="value">The returned value.</param>
-        /// <param name="overrideType">Type of the override.</param>
-        /// <returns><c>true</c> if evaluation of the path succeeded and the value is valid, <c>false</c> otherwise.</returns>
-        /// <exception cref="System.ArgumentNullException">rootObject</exception>
-        public bool TryGetValue(object rootObject, out object value, out OverrideType overrideType)
-        {
-            if (rootObject == null) throw new ArgumentNullException("rootObject");
-            if (items.Count == 0) throw new InvalidOperationException("No items pushed via Push methods");
+        ///// <summary>
+        ///// Gets the value from the specified root object following this instance path.
+        ///// </summary>
+        ///// <param name="rootObject">The root object.</param>
+        ///// <param name="value">The returned value.</param>
+        ///// <param name="overrideType">Type of the override.</param>
+        ///// <returns><c>true</c> if evaluation of the path succeeded and the value is valid, <c>false</c> otherwise.</returns>
+        ///// <exception cref="System.ArgumentNullException">rootObject</exception>
+        //public bool TryGetValue(object rootObject, out object value, out OverrideType overrideType)
+        //{
+        //    if (rootObject == null) throw new ArgumentNullException("rootObject");
+        //    if (items.Count == 0) throw new InvalidOperationException("No items pushed via Push methods");
 
-            value = null;
-            overrideType = OverrideType.Base;
-            try
-            {
-                object nextObject = rootObject;
+        //    value = null;
+        //    overrideType = OverrideType.Base;
+        //    try
+        //    {
+        //        object nextObject = rootObject;
 
-                var lastItem = items[items.Count - 1];
-                var memberDescriptor = lastItem.MemberDescriptor;
+        //        var lastItem = items[items.Count - 1];
+        //        var memberDescriptor = lastItem.MemberDescriptor;
 
-                for (int i = 0; i < items.Count - 1; i++)
-                {
-                    var item = items[i];
-                    nextObject = item.GetValue(nextObject);
-                }
+        //        for (int i = 0; i < items.Count - 1; i++)
+        //        {
+        //            var item = items[i];
+        //            nextObject = item.GetValue(nextObject);
+        //        }
 
-                overrideType = nextObject.GetOverride(memberDescriptor);
-                value = lastItem.GetValue(nextObject);
+        //        overrideType = nextObject.GetOverride(memberDescriptor);
+        //        value = lastItem.GetValue(nextObject);
 
-            }
-            catch (Exception)
-            {
-                // If an exception occurred, we cannot resolve this member path to a valid property/field
-                return false;
-            }
-            return true;
-        }
+        //    }
+        //    catch (Exception)
+        //    {
+        //        // If an exception occurred, we cannot resolve this member path to a valid property/field
+        //        return false;
+        //    }
+        //    return true;
+        //}
 
         /// <summary>
         /// Get the nodes of the path of <paramref name="rootObject"/>
