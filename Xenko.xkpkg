@@ -121,5 +121,8 @@ TemplateFolders:
         - samples\UI\UIElementLink\UIElementLink.xktpl
         - samples\Others\NativeLinking\NativeLinking.xktpl
         - samples\Others\CustomAnimation\CustomAnimation.xktpl
+        - samples\Templates\FirstPersonShooter\FirstPersonShooter\FirstPersonShooter.xktpl
+        - samples\Templates\ThirdPersonPlatformer\ThirdPersonPlatformer\ThirdPersonPlatformer.xktpl
+        - samples\Templates\TopDownRPG\TopDownRPG\TopDownRPG.xktpl
 RootAssets:
     - c90f3988-0544-4cbe-993f-13af7d9c23c6:XenkoDefaultFont

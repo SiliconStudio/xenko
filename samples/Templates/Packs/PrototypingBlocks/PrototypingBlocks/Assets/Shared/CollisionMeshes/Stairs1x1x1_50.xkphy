@@ -1,0 +1,19 @@
+!ColliderShapeAsset
+Id: 0bbcc6fe-9120-44e5-b6e8-6976bfa64b2c
+SerializedVersion: {Xenko: 1.4.0-beta}
+Tags: []
+ColliderShapes:
+    - !ConvexHullColliderShapeDesc
+        ~Id: 60931bdd-804c-4fc2-a677-66d259000d5f
+        ConvexHulls: null
+        ConvexHullsIndices: null
+        Model: a5d07cec-0611-4c60-a705-d62279f76a96/026c2dd9-6f56-47d4-a4cc-c80a1a69d8a8:Models/Stairs1x1x1_50
+        SimpleWrap: true
+        Scaling: {X: 1.0, Y: 1.0, Z: 1.0}
+        Depth: 10
+        PosSampling: 10
+        AngleSampling: 10
+        PosRefine: 5
+        AngleRefine: 5
+        Alpha: 0.01
+        Threshold: 0.01

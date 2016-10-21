@@ -822,6 +822,12 @@ namespace SiliconStudio.Assets
                 var package = Package.LoadRaw(log, filePath);
                 package.IsSystem = isSystemPackage;
 
+                // Remove all missing dependencies if they are not required
+                if (!loadParameters.LoadMissingDependencies)
+                {
+                    package.LocalDependencies.Clear();
+                }
+
                 // Convert UPath to absolute (Package only)
                 // Removed for now because it is called again in PackageSession.LoadAssembliesAndAssets (and running it twice result in dirty package)
                 // If we remove it from here (and call it only in the other method), templates are not loaded (Because they are loaded via the package store that do not use PreLoadPackage)

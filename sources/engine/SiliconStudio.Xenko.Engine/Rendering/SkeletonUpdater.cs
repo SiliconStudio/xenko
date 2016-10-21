@@ -143,7 +143,7 @@ namespace SiliconStudio.Xenko.Rendering
         private static void UpdateLocalMatrix(ref ModelNodeTransformation node)
         {
             var scaling = node.Transform.Scale;
-            TransformComponent.CreateMatrixTRS(ref node.Transform.Position, ref node.Transform.Rotation, ref scaling, out node.LocalMatrix);
+            Matrix.Transformation(ref scaling, ref node.Transform.Rotation, ref node.Transform.Position, out node.LocalMatrix);
             node.IsScalingNegative = (scaling.X < 0.0f) ^ (scaling.Y < 0.0f) ^ (scaling.Z < 0.0f);
         }
     }
