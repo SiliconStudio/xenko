@@ -97,18 +97,6 @@ namespace SiliconStudio.Xenko.Input
 
             UiControl.KeyDownActions += e => OnKeyEvent(e, false);
             UiControl.KeyUpActions += e => OnKeyEvent(e, true);
-            UiControl.FocusGainedActions += e => OnUiControlGotFocus();
-            UiControl.FocusLostActions += e => OnUiControlLostFocus();
-            UiControl.MouseMoveActions += OnMouseMoveEvent;
-            UiControl.PointerButtonPressActions += e => { OnMouseInputEvent(new Vector2(e.x, e.y), ConvertMouseButton(e.button), KeyboardWinforms.InputEventType.Down); };
-            UiControl.PointerButtonReleaseActions += e => OnMouseInputEvent(new Vector2(e.x, e.y), ConvertMouseButton(e.button), KeyboardWinforms.InputEventType.Up);
-            UiControl.MouseWheelActions += e =>
-            {
-                Point pos = Cursor.Position;
-                // Only use `e.y` on SDL as this will be where the deltas will be.
-                OnMouseInputEvent(new Vector2(pos.X, pos.Y), MouseButton.Middle, KeyboardWinforms.InputEventType.Wheel, e.y);
-            };
-            UiControl.ResizeEndActions += UiWindowOnSizeChanged;
 
             ControlWidth = UiControl.ClientSize.Width;
             ControlHeight = UiControl.ClientSize.Height;

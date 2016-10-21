@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Input
 {
@@ -17,8 +18,14 @@ namespace SiliconStudio.Xenko.Input
         protected List<IInputDevice> registeredInputDevices = new List<IInputDevice>();
 
         public abstract void Initialize(InputManager inputManager);
+        public abstract bool IsEnabled(GameContext gameContext);
 
         public virtual void Update()
+        {
+            // Does nothing by default
+        }
+
+        public virtual void Scan()
         {
             // Does nothing by default
         }

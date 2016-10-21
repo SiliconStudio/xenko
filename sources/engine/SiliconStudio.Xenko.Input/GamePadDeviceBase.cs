@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using SharpDX.DirectInput;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Input
@@ -24,13 +25,14 @@ namespace SiliconStudio.Xenko.Input
         public EventHandler OnDisconnect { get; set; }
         public EventHandler<GamePadButtonEvent> OnButton { get; set; }
         public EventHandler<GamePadAxisEvent> OnAxisChanged { get; set; }
-        public EventHandler<GamePadAxisEvent> OnPovControllerChanged { get; set; }
+        public EventHandler<GamePadPovControllerEvent> OnPovControllerChanged { get; set; }
 
         internal int IndexInternal;
         private bool disposed;
-        private bool[] buttonStates;
-        private float[] axisStates;
-        private float[] povStates;
+        protected bool[] buttonStates;
+        protected float[] axisStates;
+        protected float[] povStates;
+        protected bool[] povEnabledStates;
 
         private readonly List<GamePadInputEvent> gamePadInputEvents = new List<GamePadInputEvent>();
         
@@ -63,6 +65,7 @@ namespace SiliconStudio.Xenko.Input
             buttonStates = new bool[ButtonInfos.Count];
             axisStates = new float[AxisInfos.Count];
             povStates = new float[PovControllerInfos.Count];
+            povEnabledStates = new bool[PovControllerInfos.Count];
         }
 
         public virtual bool GetButton(int index)
@@ -79,11 +82,23 @@ namespace SiliconStudio.Xenko.Input
             return axisStates[index];
         }
 
-        public virtual float GetPovController(int index)
+        public float GetPovController(int index)
         {
             if (index < 0 || index > povStates.Length)
                 return 0.0f;
             return povStates[index];
+        }
+
+        public bool GetPovControllerEnabled(int index)
+        {
+            if (index < 0 || index > povStates.Length)
+                return false;
+            return povEnabledStates[index];
+        }
+
+        public virtual bool GetGamePadState(ref GamePadState state)
+        {
+            return false;
         }
 
         /// <summary>
@@ -107,7 +122,8 @@ namespace SiliconStudio.Xenko.Input
                 else if (evt.Type == InputEventType.PovController)
                 {
                     povStates[evt.Index] = evt.Float;
-                    OnPovControllerChanged?.Invoke(this, new GamePadAxisEvent { Index = evt.Index, Value = evt.Float });
+                    povEnabledStates[evt.Index] = evt.Enabled;
+                    OnPovControllerChanged?.Invoke(this, new GamePadPovControllerEvent { Index = evt.Index, Value = evt.Float, Enabled = evt.Enabled});
                 }
             }
             gamePadInputEvents.Clear();
@@ -147,23 +163,28 @@ namespace SiliconStudio.Xenko.Input
                 });
         }
 
-        protected void HandlePovController(int index, float state)
+        protected void HandlePovController(int index, float state, bool enabled)
         {
             if (index < 0 || index > povStates.Length)
                 throw new IndexOutOfRangeException();
-            if (povStates[index] != state)
+            if (povStates[index] != state || povEnabledStates[index] != enabled)
+            {
                 gamePadInputEvents.Add(new GamePadInputEvent
                 {
                     Index = index,
                     Type = InputEventType.PovController,
-                    Float = state
+                    Float = enabled ? state : 0.0f,
+                    Enabled = enabled
                 });
+            }
         }
     
         protected struct GamePadInputEvent
         {
             public InputEventType Type;
             public float Float;
+            public int Int;
+            public bool Enabled;
             public GamePadButtonState State;
             public int Index;
         }

@@ -1,5 +1,6 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Runtime.InteropServices;
 
@@ -14,11 +15,6 @@ namespace SiliconStudio.Xenko.Input
     [StructLayout(LayoutKind.Sequential)]
     public struct GamePadState : IEquatable<GamePadState>
     {
-        /// <summary>
-        /// A boolean indicating the connect status of this gamepad. <c>true</c> if connected, otherwise <c>false</c>.
-        /// </summary>
-        public bool IsConnected;
-
         /// <summary>
         /// Bitmask of the gamepad buttons.
         /// </summary>
@@ -50,10 +46,6 @@ namespace SiliconStudio.Xenko.Input
         /// </remarks>
         public float RightTrigger;
 
-        public float[] AllAxes;
-        public bool[] AllButtons;
-        public int[] AllHats;
-
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
         /// </summary>
@@ -61,7 +53,7 @@ namespace SiliconStudio.Xenko.Input
         /// <returns>true if the current object is equal to the <paramref name="other" /> parameter; otherwise, false.</returns>
         public bool Equals(GamePadState other)
         {
-            return IsConnected.Equals(other.IsConnected) && Buttons.Equals(other.Buttons) && LeftThumb.Equals(other.LeftThumb) && RightThumb.Equals(other.RightThumb) && LeftTrigger.Equals(other.LeftTrigger) && RightTrigger.Equals(other.RightTrigger);
+            return Buttons.Equals(other.Buttons) && LeftThumb.Equals(other.LeftThumb) && RightThumb.Equals(other.RightThumb) && LeftTrigger.Equals(other.LeftTrigger) && RightTrigger.Equals(other.RightTrigger);
         }
 
         public override bool Equals(object obj)
@@ -74,8 +66,7 @@ namespace SiliconStudio.Xenko.Input
         {
             unchecked
             {
-                int hashCode = IsConnected.GetHashCode();
-                hashCode = (hashCode * 397) ^ Buttons.GetHashCode();
+                int hashCode = Buttons.GetHashCode();
                 hashCode = (hashCode * 397) ^ LeftThumb.GetHashCode();
                 hashCode = (hashCode * 397) ^ RightThumb.GetHashCode();
                 hashCode = (hashCode * 397) ^ LeftTrigger.GetHashCode();
@@ -108,7 +99,7 @@ namespace SiliconStudio.Xenko.Input
 
         public override string ToString()
         {
-            return string.Format("IsConnected: {0}, Buttons: {1}, LeftThumb: {2}, RightThumb: {3}, LeftTrigger: {4}, RightTrigger: {5}", IsConnected, Buttons, LeftThumb, RightThumb, LeftTrigger, RightTrigger);
+            return $"Buttons: {Buttons}, LeftThumb: {LeftThumb}, RightThumb: {RightThumb}, LeftTrigger: {LeftTrigger}, RightTrigger: {RightTrigger}";
         }
     }
 }

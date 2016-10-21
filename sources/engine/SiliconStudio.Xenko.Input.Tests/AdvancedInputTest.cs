@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -62,6 +63,10 @@ namespace SiliconStudio.Xenko.Input.Tests
         private string compositeEvent;
         private string tapEvent;
 
+        // Gamepads
+        private List<string> gamePadLog = new List<string>();
+        private Stopwatch checkNewDevicesStopwatch = new Stopwatch();
+
         private Tuple<GestureEvent, TimeSpan> lastFlickEvent = new Tuple<GestureEvent, TimeSpan>(null, TimeSpan.Zero);
         private Tuple<GestureEvent, TimeSpan> lastLongPressEvent = new Tuple<GestureEvent, TimeSpan>(null, TimeSpan.Zero);
         private Tuple<GestureEvent, TimeSpan> lastTapEvent = new Tuple<GestureEvent, TimeSpan>(null, TimeSpan.Zero);
@@ -81,12 +86,12 @@ namespace SiliconStudio.Xenko.Input.Tests
             GraphicsDeviceManager.PreferredDepthStencilFormat = PixelFormat.D24_UNorm_S8_UInt;
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.None;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_1 };
-            //GraphicsDeviceManager.SynchronizeWithVerticalRetrace = false;
+            GraphicsDeviceManager.SynchronizeWithVerticalRetrace = false;
 
             fontColor = Color.Black;
             mouseColor = Color.Gray;
 
-            this.IsDrawDesynchronized = true;
+            checkNewDevicesStopwatch.Start();
 
             displayPointerDuration = TimeSpan.FromSeconds(1.5f);
             displayGestureDuration = TimeSpan.FromSeconds(1f);
@@ -165,6 +170,10 @@ namespace SiliconStudio.Xenko.Input.Tests
             spriteBatch.DrawString(spriteFont11, "Composite: " + compositeEvent, textLeftTopCorner + new Vector2(TextSubSectionOffsetX, 14 * (textHeight + TextSpaceY)), fontColor);
             spriteBatch.DrawString(spriteFont11, "Tap: " + tapEvent, textLeftTopCorner + new Vector2(TextSubSectionOffsetX, 15 * (textHeight + TextSpaceY)), fontColor);
 
+            int offset = 16;
+            for(int i = 0; i < gamePadLog.Count; i++)
+                spriteBatch.DrawString(spriteFont11, gamePadLog[i], textLeftTopCorner + new Vector2(TextSubSectionOffsetX, offset++ * (textHeight + TextSpaceY)), fontColor);
+
             spriteBatch.End();
         }
 
@@ -187,6 +196,7 @@ namespace SiliconStudio.Xenko.Input.Tests
 
                 var currentTime = DrawTime.Total;
 
+                gamePadLog.Clear();
                 keyPressed = "";
                 keyDown = "";
                 keyReleased = "";
@@ -260,6 +270,35 @@ namespace SiliconStudio.Xenko.Input.Tests
                     RemoveOldPointerEventInfo(pointerReleased);
                 }
 
+                // GamePads
+                foreach (var gamePad in Input.GamePads)
+                {
+                    gamePadLog.Add($"GamePad Index:{gamePad.Index}, \"{gamePad.DeviceName}\"");
+                    string str = " Buttons: ";
+                    for (int i = 0; i < gamePad.ButtonInfos.Count; i++)
+                    {
+                        str += i + ":" + (gamePad.GetButton(i) ? "1 " : "0 ");
+                    }
+                    gamePadLog.Add(str);
+                    str = " Axes: ";
+                    for (int i = 0; i < gamePad.AxisInfos.Count; i++)
+                    {
+                        str += $"{i}:{gamePad.GetAxis(i):0.00} ";
+                    }
+                    gamePadLog.Add(str);
+                    str = " Pov: ";
+                    for (int i = 0; i < gamePad.PovControllerInfos.Count; i++)
+                    {
+                        str += $"{i}:{gamePad.GetPovController(i)}/{gamePad.GetPovControllerEnabled(i)} ";
+                    }
+                    gamePadLog.Add(str);
+                    GamePadState state = new GamePadState();
+                    if (gamePad.GetGamePadState(ref state))
+                    {
+                        gamePadLog.Add($" State: {state}");
+                    }
+                }
+
                 // Gestures
                 foreach (var gestureEvent in Input.GestureEvents)
                 {
@@ -317,8 +356,24 @@ namespace SiliconStudio.Xenko.Input.Tests
         {
             base.Update(gameTime);
 
+            if (checkNewDevicesStopwatch.Elapsed.TotalSeconds > 0.5f)
+            {
+                checkNewDevicesStopwatch.Restart();
+                Input.Scan();
+            }
+
             if (Input.IsKeyReleased(Keys.Escape))
                 Exit();
+            
+            foreach(var pad in Input.GamePads)
+            {
+                GamePadState state = new GamePadState();
+                if (pad.GetGamePadState(ref state))
+                {
+                    var vib = pad as IGamePadVibration;
+                    vib?.SetVibration(state.LeftTrigger);
+                }
+            }
         }
 
         [Test]

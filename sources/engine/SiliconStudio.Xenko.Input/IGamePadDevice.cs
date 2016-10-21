@@ -20,11 +20,11 @@ namespace SiliconStudio.Xenko.Input
 
     public class GamePadObjectInfo
     {
+        public int InstanceId;
         public string Name;
-        public int Index;
         public override string ToString()
         {
-            return $"GamePad Object {Index} {{{Name}}}";
+            return $"GamePad Object {{{Name}}}";
         }
     }
 
@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Input
         public GamePadButtonType Type;
         public override string ToString()
         {
-            return $"GamePad Button {Index} {{{Name}}} [{Type}]";
+            return $"GamePad Button {{{Name}}} [{Type}]";
         }
     }
 
@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.Input
         public GamePadAxisType Type;
         public override string ToString()
         {
-            return $"GamePad Axis {Index} {{{Name}}} [{Type}]";
+            return $"GamePad Axis {{{Name}}} [{Type}]";
         }
     }
 
@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Input
     {
         public override string ToString()
         {
-            return $"GamePad PovController {Index} {{{Name}}}";
+            return $"GamePad POVController {{{Name}}}";
         }
     }
 
@@ -79,6 +79,13 @@ namespace SiliconStudio.Xenko.Input
     public class GamePadAxisEvent : EventArgs
     {
         public int Index;
+        public float Value;
+    }
+
+    public class GamePadPovControllerEvent : EventArgs
+    {
+        public int Index;
+        public bool Enabled;
         public float Value;
     }
 
@@ -120,8 +127,8 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Raised when a point of view controller on the GamePad changes state
         /// </summary>
-        EventHandler<GamePadAxisEvent> OnPovControllerChanged { get; set; }
-
+        EventHandler<GamePadPovControllerEvent> OnPovControllerChanged { get; set; }
+        
         /// <summary>
         /// Retrieves the button state of a single button
         /// </summary>
@@ -139,8 +146,22 @@ namespace SiliconStudio.Xenko.Input
         /// <summary>
         /// Retrieves the state of a single point of view controller
         /// </summary>
-        /// <param name="index">The controller's index, as exposed in <see cref="PovControllerInfos"/></param>
-        /// <returns>a value from 0 to 1(excluded) indicating a direction starting from up going clockwise</returns>
+        /// <param name="index">The pov controller's index, as exposed in <see cref="PovControllerInfos"/></param>
+        /// <returns>The direction of the pov controller, starting from 0 being up, going clockwise</returns>
         float GetPovController(int index);
+
+        /// <summary>
+        /// Retrieves the state of a single point of view controller
+        /// </summary>
+        /// <param name="index">The pov controller's index, as exposed in <see cref="PovControllerInfos"/></param>
+        /// <returns><c>true</c> if the pov controller is enabled, <c>false</c> otherwise</returns>
+        bool GetPovControllerEnabled(int index);
+
+        /// <summary>
+        /// Tries to read the current state of the <see cref="IGamePadDevice"/> and writes it to <see cref="state"/> in the form of a generic gamepad
+        /// </summary>
+        /// <param name="state">The state to update with this GamePad</param>
+        /// <returns><c>true</c> if the state was retrieved, <c>false</c> if the device does not provide a mapping to GamePadState</returns>
+        bool GetGamePadState(ref GamePadState state);
     }
 }

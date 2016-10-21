@@ -1,32 +1,45 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
+#if SILICONSTUDIO_XENKO_UI_SDL
 using System;
 using System.Collections.Generic;
-using SharpDX.DirectInput;
+using SDL2;
 using SiliconStudio.Xenko.Games;
-using SiliconStudio.Xenko.Native.DirectInput;
+using SiliconStudio.Xenko.Graphics.SDL;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class InputSourceWindowsDirectInput : InputSourceBase
+    public class InputSourceSDL : InputSourceBase
     {
-        private DirectInput directInput;
-
-        // TODO: Merge with InputSourceBase maybe
-        private Dictionary<Guid, GamePadDirectInput> registeredDevices = new Dictionary<Guid, GamePadDirectInput>();
+        private Dictionary<Guid, GamePadSDL> registeredDevices = new Dictionary<Guid, GamePadSDL>();
         private HashSet<Guid> devicesToRemove = new HashSet<Guid>();
+
+        private GameContext<Window> context;
+        private Window uiControl;
+        private MouseSDL mouse;
+        private KeyboardSDL keyboard;
 
         public override void Initialize(InputManager inputManager)
         {
-            directInput = new DirectInput();
+            context = inputManager.Game.Context as GameContext<Window>;
+            uiControl = context.Control;
+
+            SDL.SDL_Init(SDL.SDL_INIT_JOYSTICK);
+
+            mouse = new MouseSDL(inputManager.Game, uiControl);
+            keyboard = new KeyboardSDL(uiControl);
+
+            RegisterDevice(mouse);
+            RegisterDevice(keyboard);
+
+            // Scan for gamepads
             Scan();
         }
 
         public override bool IsEnabled(GameContext gameContext)
-        { 
-            return gameContext is GameContext<System.Windows.Forms.Control>;
+        {
+            return gameContext is GameContext<Window>;
         }
 
         public override void Update()
@@ -44,35 +57,25 @@ namespace SiliconStudio.Xenko.Input
             devicesToRemove.Clear();
         }
 
-        /// <summary>
-        /// Scans for new devices
-        /// </summary>
         public override void Scan()
         {
-            var connectedDevices = directInput.GetDevices(DeviceClass.GameControl, DeviceEnumerationFlags.AttachedOnly);
-            foreach (var device in connectedDevices)
+            for (int i = 0; i < SDL.SDL_NumJoysticks(); i++)
             {
-                if (!registeredDevices.ContainsKey(device.InstanceGuid))
+                var joystickId = SDL.SDL_JoystickGetDeviceGUID(i);
+                if (!registeredDevices.ContainsKey(joystickId))
                 {
-                    OpenDevice(device);
+                    OpenDevice(i);
                 }
             }
         }
 
-        /// <summary>
-        /// Opens a new gamepad
-        /// </summary>
-        /// <param name="instance">The gamepad</param>
-        public void OpenDevice(DeviceInstance instance)
+        public void OpenDevice(int deviceIndex)
         {
-            // Ignore XInput devices since they are handled by XInput
-            if (XInputChecker.IsXInputDevice(ref instance.ProductGuid))
-                return;
+            var joystickId = SDL.SDL_JoystickGetDeviceGUID(deviceIndex);
+            if (registeredDevices.ContainsKey(joystickId))
+                throw new InvalidOperationException($"SDL GamePad already opened {deviceIndex}/{joystickId}");
 
-            if (registeredDevices.ContainsKey(instance.InstanceGuid))
-                throw new InvalidOperationException($"DirectInput GamePad already opened {instance.InstanceGuid}/{instance.InstanceName}");
-
-            var newGamepad = new GamePadDirectInput(directInput, instance);
+            var newGamepad = new GamePadSDL(deviceIndex);
             newGamepad.OnDisconnect += (sender, args) =>
             {
                 // Queue device for removal
@@ -92,9 +95,6 @@ namespace SiliconStudio.Xenko.Input
                 pair.Value.Dispose();
             }
             registeredDevices.Clear();
-
-            // Dispose DirectInput
-            directInput.Dispose();
         }
     }
 }

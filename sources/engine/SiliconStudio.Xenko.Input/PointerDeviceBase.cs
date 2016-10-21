@@ -46,6 +46,11 @@ namespace SiliconStudio.Xenko.Input
                 {
                     HandlePointerEvents(PointerState.Up);
                 }
+                else if (evt.Type == InputEventType.MoveDelta)
+                {
+                    Delta = evt.Position;
+                    HandlePointerEvents(PointerState.Move);
+                }
                 else
                 {
                     // Update delta
@@ -72,6 +77,12 @@ namespace SiliconStudio.Xenko.Input
         public void HandleMove(Vector2 newPosition)
         {
             pointerInputEvents.Add(new PointerInputEvent { Type = InputEventType.Move, Position = newPosition });
+        }
+
+        // Special move that only registers mouse delta
+        public void HandleMoveDelta(Vector2 delta)
+        {
+            pointerInputEvents.Add(new PointerInputEvent { Type = InputEventType.MoveDelta, Position = delta });
         }
 
         protected void ClearPointerEvents()
@@ -126,6 +137,7 @@ namespace SiliconStudio.Xenko.Input
             Up,
             Down,
             Move,
+            MoveDelta,
         }
     }
 }

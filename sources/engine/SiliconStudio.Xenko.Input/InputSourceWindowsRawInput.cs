@@ -1,24 +1,15 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
 using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using System.Windows.Interop;
 using SharpDX.Multimedia;
 using SharpDX.RawInput;
 using SiliconStudio.Xenko.Games;
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class KeyboardWindowsRawInput : KeyboardDeviceBase
-    {
-        public override string DeviceName => "Windows Keyboard (Raw Input)";
-        public override Guid Id => new Guid("d7437ff5-d14f-4491-9673-377b6d0e241c");
-    }
-
     public class InputSourceWindowsRawInput : InputSourceBase
     {
         private KeyboardWindowsRawInput keyboard;
@@ -35,6 +26,11 @@ namespace SiliconStudio.Xenko.Input
                 RegisterDevice(keyboard);
                 BindRawInputKeyboard(uiControl);
             }
+        }
+
+        public override bool IsEnabled(GameContext gameContext)
+        {
+            return gameContext is GameContext<Control>;
         }
 
         public override void Update()

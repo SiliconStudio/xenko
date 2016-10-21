@@ -7,175 +7,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
-using System.Windows.Interop;
-using SharpDX.Multimedia;
-using SharpDX.RawInput;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
-using Point = System.Drawing.Point;
 using WinFormsKeys = System.Windows.Forms.Keys;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class KeyboardWinforms : KeyboardDeviceBase
-    {
-        public override string DeviceName => "Windows Keyboard";
-        public override Guid Id => new Guid("027cf994-681f-4ed5-b38f-ce34fc295b8f");
-
-        internal void HandleKeyDown(WinFormsKeys winFormsKey)
-        {
-            // Translate from windows key enum to Xenko key enum
-            Keys xenkoKey;
-            if (WinKeys.mapKeys.TryGetValue(winFormsKey, out xenkoKey) && xenkoKey != Keys.None)
-            {
-                HandleKeyDown(xenkoKey);
-            }
-        }
-        internal void HandleKeyUp(WinFormsKeys winFormsKey)
-        {
-            // Translate from windows key enum to Xenko key enum
-            Keys xenkoKey;
-            if (WinKeys.mapKeys.TryGetValue(winFormsKey, out xenkoKey) && xenkoKey != Keys.None)
-            {
-                HandleKeyUp(xenkoKey);
-            }
-        }
-    }
-
-    public class MouseWinforms : MouseDeviceBase
-    {
-        public override string DeviceName => "Windows Mouse";
-        public override Guid Id => new Guid("699e35c5-c363-4bb0-8e8b-0474ea1a5cf1");
-        public override bool IsMousePositionLocked => isMousePositionLocked;
-        public override PointerType Type => PointerType.Mouse;
-        public override Vector2 SurfaceSize => surfaceSize;
-
-        private Vector2 surfaceSize;
-        private readonly GameBase game;
-        private readonly Control uiControl;
-        private bool isMousePositionLocked;
-        private bool wasMouseVisibleBeforeCapture;
-        private Point capturedPosition;
-
-        public MouseWinforms(GameBase game, Control uiControl)
-        {
-            this.game = game;
-            this.uiControl = uiControl;
-            surfaceSize = new Vector2(uiControl.ClientSize.Width, uiControl.ClientSize.Height);
-
-            uiControl.GotFocus += (_, e) => OnUiControlGotFocus();
-            uiControl.LostFocus += (_, e) => OnUiControlLostFocus();
-            uiControl.MouseMove += (_, e) => HandleMove(new Vector2(e.X, e.Y));
-            uiControl.MouseDown += (_, e) =>
-            {
-                uiControl.Focus();
-                HandleButtonDown(ConvertMouseButton(e.Button));
-            };
-            uiControl.MouseUp += (_, e) => HandleButtonUp(ConvertMouseButton(e.Button));
-            uiControl.MouseWheel += (_, e) => HandleMouseWheel(e.Delta);
-            uiControl.MouseCaptureChanged += (_, e) => OnLostMouseCaptureWinForms();
-            uiControl.SizeChanged += UiControlOnSizeChanged;
-        }
-
-        public override void Dispose()
-        {
-            base.Dispose();
-            uiControl.SizeChanged -= UiControlOnSizeChanged;
-        }
-
-        public override void Update()
-        {
-            base.Update();
-        }
-
-        public override void SetMousePosition(Vector2 absolutePosition)
-        {
-            var newPos = uiControl.PointToScreen(new System.Drawing.Point((int)absolutePosition.X, (int)absolutePosition.Y));
-            Cursor.Position = newPos;
-        }
-
-        public override void LockMousePosition(bool forceCenter = false)
-        {
-            if (!isMousePositionLocked)
-            {
-                wasMouseVisibleBeforeCapture = game.IsMouseVisible;
-                game.IsMouseVisible = false;
-                if (forceCenter)
-                {
-                    SetMousePosition(new Vector2(0.5f, 0.5f));
-                }
-                capturedPosition = Cursor.Position;
-                isMousePositionLocked = true;
-            }
-        }
-
-        public override void UnlockMousePosition()
-        {
-            if (isMousePositionLocked)
-            {
-                isMousePositionLocked = false;
-                capturedPosition = System.Drawing.Point.Empty;
-                game.IsMouseVisible = wasMouseVisibleBeforeCapture;
-            }
-        }
-
-        private void UiControlOnSizeChanged(object sender, EventArgs eventArgs)
-        {
-            surfaceSize = new Vector2(uiControl.ClientSize.Width, uiControl.ClientSize.Height);
-        }
-
-        private void OnLostMouseCaptureWinForms()
-        {
-            // On windows forms, the controls capture of the mouse button events at the first button pressed and release them at the first button released.
-            // This has for consequence that all up-events of button simultaneously pressed are lost after the release of first button (if outside of the window).
-            // This function fix the problem by forcing the mouse event capture if any mouse buttons are still down at the first button release.
-
-            //            foreach (MouseButton button in Enum.GetValues(typeof(MouseButton)))
-            //            {
-            //                var buttonId = (int)button;
-            //                if (MouseButtonCurrentlyDown[buttonId])
-            //                    UiControl.Capture = true;
-            //            }
-        }
-
-        private void OnUiControlGotFocus()
-        {
-            //lock (KeyboardInputEvents)
-            //{
-            //    foreach (var key in WinKeys.mapKeys)
-            //    {
-            //        var state = Win32Native.GetKeyState((int)key.Key);
-            //        if ((state & 0x8000) == 0x8000)
-            //            KeyboardInputEvents.Add(new KeyboardWinforms.KeyboardInputEvent { Key = key.Value, Type = KeyboardWinforms.InputEventType.Down, OutOfFocus = true });
-            //    }
-            //}
-            //LostFocus = false;
-        }
-
-        private void OnUiControlLostFocus()
-        {
-            //LostFocus = true;
-        }
-
-        private static MouseButton ConvertMouseButton(MouseButtons mouseButton)
-        {
-            switch (mouseButton)
-            {
-                case MouseButtons.Left:
-                    return MouseButton.Left;
-                case MouseButtons.Right:
-                    return MouseButton.Right;
-                case MouseButtons.Middle:
-                    return MouseButton.Middle;
-                case MouseButtons.XButton1:
-                    return MouseButton.Extended1;
-                case MouseButtons.XButton2:
-                    return MouseButton.Extended2;
-            }
-            return (MouseButton)(-1);
-        }
-    }
-
     public class InputSourceWindows : InputSourceBase
     {
         /// <summary>
@@ -198,29 +35,36 @@ namespace SiliconStudio.Xenko.Input
         private GameContext<Control> gameContext;
         private GameBase game;
         private Control uiControl;
+        private InputManager input;
 
         public override void Initialize(InputManager inputManager)
         {
+            input = inputManager;
             gameContext = inputManager.Game.Context as GameContext<Control>;
             game = inputManager.Game;
             uiControl = gameContext.Control;
+
+            // Hook window proc
+            defaultWndProc = Win32Native.GetWindowLong(uiControl.Handle, Win32Native.WindowLongType.WndProc);
+            // This is needed to prevent garbage collection of the delegate.
+            inputWndProc = WndProc;
+            var inputWndProcPtr = Marshal.GetFunctionPointerForDelegate(inputWndProc);
+            Win32Native.SetWindowLong(uiControl.Handle, Win32Native.WindowLongType.WndProc, inputWndProcPtr);
 
             // Do not register keyboard devices when using raw input instead
             if (!InputManager.UseRawInput)
             {
                 keyboard = new KeyboardWinforms();
-
-                defaultWndProc = Win32Native.GetWindowLong(uiControl.Handle, Win32Native.WindowLongType.WndProc);
-                // This is needed to prevent garbage collection of the delegate.
-                inputWndProc = WndProc;
-                var inputWndProcPtr = Marshal.GetFunctionPointerForDelegate(inputWndProc);
-                Win32Native.SetWindowLong(uiControl.Handle, Win32Native.WindowLongType.WndProc, inputWndProcPtr);
-
                 RegisterDevice(keyboard);
             }
 
             mouse = new MouseWinforms(game, uiControl);
             RegisterDevice(mouse);
+        }
+
+        public override bool IsEnabled(GameContext gameContext)
+        {
+            return gameContext is GameContext<Control>;
         }
 
         public override void Update()
@@ -288,16 +132,20 @@ namespace SiliconStudio.Xenko.Input
                 case Win32Native.WM_SYSKEYDOWN:
                     virtualKey = (WinFormsKeys)wParam.ToInt64();
                     virtualKey = GetCorrectExtendedKey(virtualKey, lParam.ToInt64());
-                    keyboard.HandleKeyDown(virtualKey);
+                    keyboard?.HandleKeyDown(virtualKey);
                     break;
                 case Win32Native.WM_KEYUP:
                 case Win32Native.WM_SYSKEYUP:
                     virtualKey = (WinFormsKeys)wParam.ToInt64();
                     virtualKey = GetCorrectExtendedKey(virtualKey, lParam.ToInt64());
-                    keyboard.HandleKeyUp(virtualKey);
+                    keyboard?.HandleKeyUp(virtualKey);
                     break;
                 case Win32Native.WM_CHAR:
                     // TODO: Handle text
+                    break;
+                case Win32Native.WM_DEVICECHANGE:
+                    // Trigger scan on device changed
+                    input.Scan();
                     break;
             }
 

@@ -1,4 +1,8 @@
-﻿using System;
+﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
+using System;
 using System.Runtime.InteropServices;
 using SharpDX.DirectInput;
 
@@ -27,7 +31,7 @@ namespace SiliconStudio.Xenko.Input
     {
         public bool[] Buttons;
         public float[] Axes;
-        public float[] PovControllers;
+        public int[] PovControllers;
 
         public unsafe void MarshalFrom(ref CustomGamePadStateRaw value)
         {
@@ -50,7 +54,7 @@ namespace SiliconStudio.Xenko.Input
             fixed (int* hatsPtr = value.PovControllers)
             {
                 for (int i = 0; i < PovControllers.Length; i++)
-                    PovControllers[i] = hatsPtr[i]/65535.0f;
+                    PovControllers[i] = hatsPtr[i];
             }
         }
 
@@ -59,3 +63,4 @@ namespace SiliconStudio.Xenko.Input
         }
     }
 }
+#endif

@@ -31,15 +31,15 @@ namespace SiliconStudio.Xenko.Input
             // Fire events
             foreach (var evt in mouseInputEvents)
             {
-                if (evt.Type == InputEventType.Down)
+                if (evt.Type == MouseInputEventType.Down)
                 {
                     OnMouseButton?.Invoke(this, new MouseButtonEvent { Button = evt.Button, State = MouseButtonState.Pressed });
                 }
-                else if (evt.Type == InputEventType.Up)
+                else if (evt.Type == MouseInputEventType.Up)
                 {
                     OnMouseButton?.Invoke(this, new MouseButtonEvent { Button = evt.Button, State = MouseButtonState.Released });
                 }
-                else if (evt.Type == InputEventType.Scroll)
+                else if (evt.Type == MouseInputEventType.Scroll)
                 {
                     OnMouseWheel?.Invoke(this, new MouseWheelEvent { WheelDelta = evt.WheelDelta });
                 }
@@ -57,7 +57,7 @@ namespace SiliconStudio.Xenko.Input
         public void HandleButtonDown(MouseButton button)
         {
             DownButtons.Add(button);
-            mouseInputEvents.Add(new MouseInputEvent { Button = button, Type = InputEventType.Down });
+            mouseInputEvents.Add(new MouseInputEvent { Button = button, Type = MouseInputEventType.Down });
 
             // Simulate tap on primary mouse button
             if(button == MouseButton.Left)
@@ -67,7 +67,7 @@ namespace SiliconStudio.Xenko.Input
         public void HandleButtonUp(MouseButton button)
         {
             DownButtons.Remove(button);
-            mouseInputEvents.Add(new MouseInputEvent { Button = button, Type = InputEventType.Up });
+            mouseInputEvents.Add(new MouseInputEvent { Button = button, Type = MouseInputEventType.Up });
 
             // Simulate tap on primary mouse button
             if (button == MouseButton.Left)
@@ -76,7 +76,7 @@ namespace SiliconStudio.Xenko.Input
 
         public void HandleMouseWheel(int wheelDelta)
         {
-            mouseInputEvents.Add(new MouseInputEvent { Type = InputEventType.Scroll, WheelDelta = wheelDelta });
+            mouseInputEvents.Add(new MouseInputEvent { Type = MouseInputEventType.Scroll, WheelDelta = wheelDelta });
         }
 
         public abstract void LockMousePosition(bool forceCenter = false);
@@ -85,11 +85,11 @@ namespace SiliconStudio.Xenko.Input
         protected struct MouseInputEvent
         {
             public MouseButton Button;
-            public InputEventType Type;
+            public MouseInputEventType Type;
             public int WheelDelta;
         }
 
-        protected enum InputEventType
+        protected enum MouseInputEventType
         {
             Up,
             Down,

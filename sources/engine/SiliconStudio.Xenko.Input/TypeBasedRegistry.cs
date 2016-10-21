@@ -17,10 +17,9 @@ namespace SiliconStudio.Xenko.Input
     /// <typeparam name="TBase">The base class of the type to use</typeparam>
     public class TypeBasedRegistry<TBase> where TBase : class
     {
-        public readonly Dictionary<Type, TBase> Instances = new Dictionary<Type, TBase>();
-
         private readonly Logger log = GlobalLogger.GetLogger("Input.TypeBasedRegistry");
 
+        private readonly HashSet<Type> registeredTypes = new HashSet<Type>();
         private readonly HashSet<Assembly> registeredAssemblies = new HashSet<Assembly>();
         private readonly HashSet<Assembly> assembliesToRegister = new HashSet<Assembly>();
         private readonly Type baseType = typeof(TBase);
@@ -43,18 +42,31 @@ namespace SiliconStudio.Xenko.Input
             AssemblyRegistry.AssemblyUnregistered += AssemblyUnregistered;
         }
 
-        public TBase GetInstance(Type type)
+        public TBase CreateInstance(Type type)
         {
             AssertType(type);
             EnsureTypes();
-
-            return Instances.ContainsKey(type) ? Instances[type] : null;
+            try
+            {
+                return (TBase)Activator.CreateInstance(type);
+            }
+            catch (Exception ex)
+            {
+                log.Error("Unable to instantiate type [{0}]", ex, type);
+                return null;
+            }
         }
 
-        public IEnumerable<TBase> GetAllInstances()
+        public IEnumerable<TBase> CreateAllInstances()
         {
             EnsureTypes();
-            return Instances.Select(x => x.Value);
+
+            List<TBase> instances = new List<TBase>();
+            foreach (var type in registeredTypes)
+            {
+                instances.Add(CreateInstance(type));
+            }
+            return instances;
         }
 
         private void RegisterTypesFromAssembly(Assembly assembly)
@@ -68,32 +80,21 @@ namespace SiliconStudio.Xenko.Input
                 if (!baseType.IsAssignableFrom(type) || type.IsAbstract || type.IsInterface || !type.IsClass || constructor == null)
                     continue;
 
-                try
-                {
-                    ProcessType(type);
-                }
-                catch (Exception ex)
-                {
-                    log.Error("Unable to instantiate type [{0}]", ex, type);
-                }
+                registeredTypes.Add(type);
             }
         }
 
         private void UnregisterTypesFromAssembly(Assembly assembly)
         {
-            foreach (var typeToRemove in Instances.Where(pair => pair.Key.Assembly == assembly || pair.Value.GetType().Assembly == assembly).Select(e => e.Key).ToList())
+            foreach (var typeToRemove in registeredTypes.Where(type => type.Assembly == assembly).ToList())
             {
-                Instances.Remove(typeToRemove);
+                registeredTypes.Remove(typeToRemove);
             }
         }
 
-        private void ProcessType(Type type)
-        {
-            var instance = (TBase)Activator.CreateInstance(type);
-            Instances[type] = instance;
-        }
-
-        private void EnsureTypes()
+        private
+            void EnsureTypes
+            ()
         {
             if (assembliesChanged)
             {
@@ -110,7 +111,10 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
-        private void AssertType(Type type)
+        private
+            void AssertType
+            (Type
+                type)
         {
             if (type == null)
                 throw new ArgumentNullException(nameof(type));
@@ -119,28 +123,38 @@ namespace SiliconStudio.Xenko.Input
                 throw new ArgumentException("Type [{0}] must be assignable to {1}".ToFormat(type, baseType), nameof(type));
         }
 
-        private void RegisterAssembly(Assembly assembly)
+        private
+            void RegisterAssembly
+            (Assembly
+                assembly)
         {
             if (assembly == null) throw new ArgumentNullException(nameof(assembly));
             assembliesToRegister.Add(assembly);
             assembliesChanged = true;
         }
 
-        private void UnregisterAssembly(Assembly assembly)
+        private
+            void UnregisterAssembly
+            (Assembly
+                assembly)
         {
             registeredAssemblies.Remove(assembly);
             UnregisterTypesFromAssembly(assembly);
             assembliesChanged = true;
         }
 
-        private void AssemblyRegistered(object sender, AssemblyRegisteredEventArgs e)
+        private
+            void AssemblyRegistered
+            (object sender, AssemblyRegisteredEventArgs e)
         {
             // Handle delay-loading assemblies
             if (e.Categories.Contains(AssemblyCommonCategories.Assets))
                 RegisterAssembly(e.Assembly);
         }
 
-        private void AssemblyUnregistered(object sender, AssemblyRegisteredEventArgs e)
+        private
+            void AssemblyUnregistered
+            (object sender, AssemblyRegisteredEventArgs e)
         {
             if (e.Categories.Contains(AssemblyCommonCategories.Assets))
                 UnregisterAssembly(e.Assembly);

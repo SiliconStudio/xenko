@@ -7,11 +7,19 @@ namespace SiliconStudio.Xenko.Input
 {
     public interface IInputDevice : IDisposable
     {
+        /// <summary>
+        /// Name for this device
+        /// </summary>
         string DeviceName { get; }
 
+        /// <summary>
+        /// Unique Id for this device
+        /// </summary>
         Guid Id { get; }
 
-        // TODO: Move to a more specific subclass?
+        /// <summary>
+        /// Updates the input device, all events sent from this input device must be sent from the Update function. Input devices are always updated after their respective input source
+        /// </summary>
         void Update();
     }
 }
