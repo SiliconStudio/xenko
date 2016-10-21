@@ -141,9 +141,29 @@ namespace SiliconStudio.Xenko.UI.Panels
         }
 
         /// <summary>
+        /// The actual definitions of the grid rows.
+        /// </summary>
+        /// <remarks>A grid always has at least one default row definition, even when <see cref="RowDefinitions"/> is empty.</remarks>
+        [DataMemberIgnore]
+        public StripDefinitionCollection ActualRowDefinitions  => stripDefinitions[1];
+
+        /// <summary>
+        /// The actual definitions of the grid columns.
+        /// </summary>
+        /// <remarks>A grid always has at least one default row definition, even when <see cref="ColumnDefinitions"/> is empty.</remarks>
+        [DataMemberIgnore]
+        public StripDefinitionCollection ActualColumnDefinitions => stripDefinitions[0];
+
+        /// <summary>
+        /// The actual definitions of the grid layers.
+        /// </summary>
+        /// <remarks>A grid always has at least one default row definition, even when <see cref="LayerDefinitions"/> is empty.</remarks>
+        [DataMemberIgnore]
+        public StripDefinitionCollection ActualLayerDefinitions => stripDefinitions[2];
+
+        /// <summary>
         /// The definitions of the grid rows.
         /// </summary>
-        /// <exception cref="ArgumentNullException">The provided value is null.</exception>
         /// <userdoc>The definitions of the grid rows.</userdoc>
         [DataMember]
         [Display(category: LayoutCategory)]
@@ -152,7 +172,6 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <summary>
         /// The definitions of the grid columns.
         /// </summary>
-        /// <exception cref="ArgumentNullException">The provided value is null.</exception>
         /// <userdoc>The definitions of the grid columns.</userdoc>
         [DataMember]
         [Display(category: LayoutCategory)]
@@ -161,7 +180,6 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// <summary>
         /// The definitions of the grid layers.
         /// </summary>
-        /// <exception cref="ArgumentNullException">The provided value is null.</exception>
         /// <userdoc>The definitions of the grid layers.</userdoc>
         [DataMember]
         [Display(category: LayoutCategory)]
@@ -673,7 +691,7 @@ namespace SiliconStudio.Xenko.UI.Panels
             }
         }
 
-        private void CreateDefaultStripIfNecessary(ref StripDefinitionCollection computedCollection, StripDefinitionCollection userCollection)
+        private static void CreateDefaultStripIfNecessary(ref StripDefinitionCollection computedCollection, StripDefinitionCollection userCollection)
         {
             if (userCollection.Count > 0)
             {
