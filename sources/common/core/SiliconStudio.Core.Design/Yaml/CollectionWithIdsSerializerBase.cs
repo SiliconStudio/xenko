@@ -190,16 +190,13 @@ namespace SiliconStudio.Core.Yaml
             var peek = objectContext.SerializerContext.Reader.Peek<Scalar>();
             if (Equals(peek?.Value, YamlDeletedKey))
             {
-                var valueResult = objectContext.ObjectSerializerBackend.ReadDictionaryValue(ref objectContext, typeof(string));
-                var id = ((IKeyWithId)keyResult).Id; // When there is no ~ on the key, the value read from Yaml is loaded as Key, not as Id.
-                return new KeyValuePair<object, object>(id, valueResult);
+                return ReadDeletedDictionaryItem(ref objectContext, keyResult);
             }
-            else
-            {
-                var valueResult = objectContext.ObjectSerializerBackend.ReadDictionaryValue(ref objectContext, keyValueTypes.Value);
-                return new KeyValuePair<object, object>(keyResult, valueResult);
-            }
+            var valueResult = objectContext.ObjectSerializerBackend.ReadDictionaryValue(ref objectContext, keyValueTypes.Value);
+            return new KeyValuePair<object, object>(keyResult, valueResult);
         }
+
+        protected abstract KeyValuePair<object, object> ReadDeletedDictionaryItem(ref ObjectContext objectContext, object keyResult);
 
         protected override bool CheckIsSequence(ref ObjectContext objectContext)
         {

@@ -157,5 +157,12 @@ namespace SiliconStudio.Core.Yaml
                 }
             }
         }
+
+        protected override KeyValuePair<object, object> ReadDeletedDictionaryItem(ref ObjectContext objectContext, object keyResult)
+        {
+            var valueResult = objectContext.ObjectSerializerBackend.ReadDictionaryValue(ref objectContext, typeof(string));
+            var id = (Guid)keyResult;
+            return new KeyValuePair<object, object>(id, valueResult);
+        }
     }
 }
