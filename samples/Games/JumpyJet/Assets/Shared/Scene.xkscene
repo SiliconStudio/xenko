@@ -1,17 +1,15 @@
 !SceneAsset
 Id: b07987b2-a262-45fb-9da6-ba05fc7aaf74
-SerializedVersion: {Xenko: 1.7.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta02}
 Tags: []
 SceneSettings:
-    ~Id: 142dc57f-0a87-4097-9abd-27d88e13bdb4
+    Id: 142dc57f-0a87-4097-9abd-27d88e13bdb4
     GraphicsCompositor: !SceneGraphicsCompositorLayers
         ~Id: 4efab6c9-ac48-42d9-9de8-dc9fa7fcf582
         Cameras:
             -   ~Id: 1b718559-63bb-4846-99a0-a2c3e8dbdf34
                 Name: null
-                Camera:
-                    Entity: {Id: 6ec17338-026d-4ad3-9615-4975281cf3ba}
-                    Id: 360f48ca-45bf-4b70-97ee-4d9531d642f6
+                Camera: 6ec17338-026d-4ad3-9615-4975281cf3ba/360f48ca-45bf-4b70-97ee-4d9531d642f6
         Layers: []
         Master:
             ~Id: 68d176f2-1aad-41c8-adef-c0e034bbaa7b
@@ -55,16 +53,17 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 967ef464-bd01-460a-bc76-0d28a790f231
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !JumpyJet.UIScript,JumpyJet.Game
                         ~Id: 00fd07e9-f2a1-4bc1-84bb-467e84daeb4a
                         Font: 95c3bbc3-96bd-45de-a542-7e2dae887d55/88f98b62-b02c-4569-8eee-0a91365f95bd:Font
                         UIImages: 26827b86-d441-40ae-afd7-61ff60545dd4/85da6663-b688-4a62-91f9-d8868f3a2d4f:UIImages
                     - !UIComponent
                         ~Id: 12345f03-43b5-4150-984c-31cfec3c914f
+                        Page: null
                         Resolution: {X: 640.0, Y: 1136.0, Z: 20.0}
                         Size: {X: 1.0, Y: 1.0, Z: 1.0}
                         ResolutionStretch: FixedWidthFixedHeight
@@ -74,10 +73,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 1ada68a9-5ffd-46ae-9f1c-b0c4575cbaf2
-                        Position: {X: 0.0, Y: 0.0, Z: 200.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 200.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !CameraComponent
                         ~Id: 360f48ca-45bf-4b70-97ee-4d9531d642f6
                         Projection: Orthographic
@@ -90,10 +89,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 3ae1ccc9-5234-4e5f-8644-4531ed6e4427
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !JumpyJet.BackgroundScript,JumpyJet.Game
                         ~Id: c1d170c8-1a09-4d67-bc8e-f4c843b5fbcd
                         ParallaxBackgrounds: 0ef4b8c6-f529-4cf0-828e-629fe01761a7/ca9993b7-1213-4037-8a77-333f3fa2e163:ParallaxBackgrounds
@@ -103,35 +102,27 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: ddf1cb8c-9fec-4ae5-9ca4-c27cd34606ef
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !JumpyJet.GameScript,JumpyJet.Game
                         ~Id: a48b5789-180f-4e2e-b061-6ac22108e376
+                        UI: 47550ad3-4887-4173-95e0-d98048465edd/00fd07e9-f2a1-4bc1-84bb-467e84daeb4a
+                        Background: c2306322-b9da-4756-8c50-0415142c6dd1/c1d170c8-1a09-4d67-bc8e-f4c843b5fbcd
+                        Character: ca4ad047-2db2-4ab1-baca-d8c4e9a469bb/75708204-1bb2-4d09-93ae-75057e2a88b0
+                        Pipes: d87ce433-90b0-4819-8f55-9d08330b581d/71cd41a9-093c-4595-8f02-918f1c0258bd
                         Priority: 10
-                        Background:
-                            Entity: {Id: c2306322-b9da-4756-8c50-0415142c6dd1}
-                            Id: c1d170c8-1a09-4d67-bc8e-f4c843b5fbcd
-                        Character:
-                            Entity: {Id: ca4ad047-2db2-4ab1-baca-d8c4e9a469bb}
-                            Id: 75708204-1bb2-4d09-93ae-75057e2a88b0
-                        Pipes:
-                            Entity: {Id: d87ce433-90b0-4819-8f55-9d08330b581d}
-                            Id: 71cd41a9-093c-4595-8f02-918f1c0258bd
-                        UI:
-                            Entity: {Id: 47550ad3-4887-4173-95e0-d98048465edd}
-                            Id: 00fd07e9-f2a1-4bc1-84bb-467e84daeb4a
         -   Entity:
                 Id: ca4ad047-2db2-4ab1-baca-d8c4e9a469bb
                 Name: Character
                 Components:
                     - !TransformComponent
                         ~Id: a3fe844b-085a-4d69-b070-0bb9ae1b6042
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !JumpyJet.CharacterScript,JumpyJet.Game
                         ~Id: 75708204-1bb2-4d09-93ae-75057e2a88b0
                     - !SpriteComponent
@@ -147,10 +138,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 89597dcc-5993-479e-b8cd-aee187fa3476
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !JumpyJet.PipesScript,JumpyJet.Game
                         ~Id: 71cd41a9-093c-4595-8f02-918f1c0258bd
                         Sprites: 517c52d5-f5f8-4485-8102-50a57dd1df53/3ad37051-9134-4cea-b756-569c895c0420:Sprites

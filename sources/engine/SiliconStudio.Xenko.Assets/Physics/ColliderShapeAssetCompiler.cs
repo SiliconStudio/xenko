@@ -91,7 +91,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
                     if (modelAsset.Skeleton == null)
                     {
                         Matrix baseMatrix;
-                        TransformComponent.CreateMatrixTRS(ref convexHullDesc.LocalOffset, ref convexHullDesc.LocalRotation, ref convexHullDesc.Scaling, out baseMatrix);
+                        Matrix.Transformation(ref convexHullDesc.Scaling, ref convexHullDesc.LocalRotation, ref convexHullDesc.LocalOffset, out baseMatrix);
                         nodeTransforms.Add(baseMatrix);
                     }
                     else
@@ -100,10 +100,10 @@ namespace SiliconStudio.Xenko.Assets.Physics
                         for (var i = 0; i < nodesLength; i++)
                         {
                             Matrix localMatrix;
-                            TransformComponent.CreateMatrixTRS(
-                                ref modelAsset.Skeleton.Nodes[i].Transform.Position,
+                            Matrix.Transformation(
+                                ref modelAsset.Skeleton.Nodes[i].Transform.Scale,
                                 ref modelAsset.Skeleton.Nodes[i].Transform.Rotation,
-                                ref modelAsset.Skeleton.Nodes[i].Transform.Scale, out localMatrix);
+                                ref modelAsset.Skeleton.Nodes[i].Transform.Position, out localMatrix);
 
                             Matrix worldMatrix;
                             if (modelAsset.Skeleton.Nodes[i].ParentIndex != -1)
@@ -119,7 +119,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
                             if (i == 0)
                             {
                                 Matrix baseMatrix;
-                                TransformComponent.CreateMatrixTRS(ref convexHullDesc.LocalOffset, ref convexHullDesc.LocalRotation, ref convexHullDesc.Scaling, out baseMatrix);
+                                Matrix.Transformation(ref convexHullDesc.Scaling, ref convexHullDesc.LocalRotation, ref convexHullDesc.LocalOffset, out baseMatrix);
                                 nodeTransforms.Add(baseMatrix*worldMatrix);
                             }
                             else

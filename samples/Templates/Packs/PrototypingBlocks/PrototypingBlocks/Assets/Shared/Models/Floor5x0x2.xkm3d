@@ -1,0 +1,13 @@
+!Model
+Id: ac849bac-7dd5-4a3d-af3b-4f0b83d432ab
+SerializedVersion: {Xenko: 1.5.0-alpha02}
+Tags: []
+Source: ../../../Resources/Models/Floor5x0x2.fbx
+PivotPosition: {X: 0.0, Y: 0.0, Z: 0.0}
+Materials:
+    -   ~Id: 50624c2a-842d-2c61-d0bc-56d6d0bc56d6
+        Name: GridMT
+        MaterialInstance:
+            ~Id: 00e6894b-9d12-41ea-b262-936342a858de
+            Material: 4044b2f4-80de-4eb5-80f7-db4d89de2ac2/12a5c5a3-ac04-48dc-9b6a-b15a44b0ef7f:Materials/GridMT
+Skeleton: null

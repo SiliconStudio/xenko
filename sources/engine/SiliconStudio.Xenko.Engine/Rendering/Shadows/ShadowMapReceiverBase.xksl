@@ -30,11 +30,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             //float3 shadowPositionWSddy = ddy_fine(shadowPositionWS);
 
             float4 shadowPosition = mul(float4(shadowPositionWS, 1), WorldToShadowCascadeUV[cascadeIndex + lightIndex * TCascadeCountBase]);
+            shadowPosition.z -= DepthBiases[lightIndex];
             shadowPosition.xyz /= shadowPosition.w;
-            var depthVS = shadowPosition.z;
-            depthVS -= DepthBiases[lightIndex];
 
-            return FilterShadow(shadowPosition.xy, depthVS);
+            return FilterShadow(shadowPosition.xy, shadowPosition.z);
         }
     };
 }

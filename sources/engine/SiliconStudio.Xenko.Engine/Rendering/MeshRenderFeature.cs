@@ -70,7 +70,6 @@ namespace SiliconStudio.Xenko.Rendering
         public override void PrepareEffectPermutationsImpl(RenderDrawContext context)
         {
             // Setup ActiveMeshDraw
-            //foreach (var objectNodeReference in ObjectNodeReferences)
             Dispatcher.ForEach(ObjectNodeReferences, objectNodeReference =>
             {
                 var objectNode = GetObjectNode(objectNodeReference);

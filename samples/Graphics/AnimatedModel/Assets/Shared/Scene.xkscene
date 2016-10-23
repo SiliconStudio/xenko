@@ -1,17 +1,15 @@
 !SceneAsset
 Id: 1d1214c6-8844-4fae-8142-1f986349f8d3
-SerializedVersion: {Xenko: 1.7.0-beta04}
+SerializedVersion: {Xenko: 1.9.0-beta02}
 Tags: []
 SceneSettings:
-    ~Id: ea4beb3a-6866-43b6-bcfc-8b8251d919b5
+    Id: ea4beb3a-6866-43b6-bcfc-8b8251d919b5
     GraphicsCompositor: !SceneGraphicsCompositorLayers
         ~Id: bcbb1b4b-7295-4d2f-b1e5-805014849e36
         Cameras:
             -   ~Id: 2dba9ddf-a75f-4695-b491-465de66097a7
                 Name: null
-                Camera:
-                    Entity: {Id: b5279763-d0ee-4fc2-bf4c-710ff412bd93}
-                    Id: 794a9a18-82e3-4894-aeaa-84772e97d29e
+                Camera: b5279763-d0ee-4fc2-bf4c-710ff412bd93/794a9a18-82e3-4894-aeaa-84772e97d29e
         Layers: []
         Master:
             ~Id: e246798a-4250-4c03-a5d4-159588546141
@@ -54,10 +52,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: dcef2e92-cb16-461d-8333-0db814c574fc
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !AnimationComponent
                         ~Id: 0b066f56-06f9-4fe5-9319-be71331e8664
                         Animations:
@@ -79,10 +77,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 1016e0de-228e-457a-b4b8-35659f15822d
-                        Position: {X: 0.0, Y: 3.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 3.0, Z: 0.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !LightComponent
                         ~Id: b784dbb9-c66b-430f-9a90-e38db970c853
                         Type: !LightDirectional
@@ -105,17 +103,17 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 265dc113-ade3-473c-8fe0-ebf23dd06797
-                        Position: {X: 0.0, Y: 0.0, Z: 1.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: 1.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !AnimatedModel.UIScript,AnimatedModel.Game
                         ~Id: acf594de-a7ed-4d13-9359-b9809a1ee083
+                        Knight: 069945be-764a-4de9-88f4-458740f821ff
                         Font: 4dcbcef6-a46a-407d-8711-dec0b15cf0aa/dc5e460a-ac52-45b9-a69f-cc5a5a5f9cf7:Font
-                        Knight:
-                            Id: 069945be-764a-4de9-88f4-458740f821ff
                     - !UIComponent
                         ~Id: d9db8bbf-c855-4183-a232-dc46cc190f54
+                        Page: null
                         Resolution: {X: 1136.0, Y: 640.0, Z: 1000.0}
                         Size: {X: 1.0, Y: 1.0, Z: 1.0}
                         ResolutionStretch: FixedWidthFixedHeight
@@ -125,10 +123,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: 435feba7-9081-44bb-9c7a-7989c2ec0faf
-                        Position: {X: 0.0, Y: 1.2, Z: 3.25}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 1.2, Z: 3.25}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !CameraComponent
                         ~Id: 794a9a18-82e3-4894-aeaa-84772e97d29e
                         Projection: Perspective
@@ -140,10 +138,10 @@ Hierarchy:
                 Components:
                     - !TransformComponent
                         ~Id: f95c6f57-f1e9-455b-8f97-cbd51f84a28f
-                        Position: {X: 0.0, Y: 0.0, Z: -1.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                        Position: {X: 0.0, Y: 0.0, Z: -1.0}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !BackgroundComponent
                         ~Id: 4a58a89d-ac9b-4066-afb8-0f4656231d6a
                         Texture: daae9484-2784-444e-a7e8-12b6a3f36a07/51b041a7-2f3e-4327-aa2f-9ac598ddedb1:XenkoBackground

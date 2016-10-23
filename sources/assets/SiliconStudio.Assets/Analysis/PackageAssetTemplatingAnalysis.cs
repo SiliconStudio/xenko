@@ -276,9 +276,16 @@ namespace SiliconStudio.Assets.Analysis
             existingAsset = session.FindAsset(baseId);
             if (existingAsset == null)
             {
+                existingAsset = session.FindAsset(assetBase.Location);
+            }
+
+            if (existingAsset == null)
+            {
                 log.Warning(package, assetBase, AssetMessageCode.AssetForPackageNotFound, assetBase, package.FullPath.GetFileName());
                 return false;
             }
+
+            baseId = existingAsset.Id;
 
             // If the base asset hasn't been processed, continue on next asset
             if (!assetsProcessed.ContainsKey(baseId))
@@ -320,7 +327,7 @@ namespace SiliconStudio.Assets.Analysis
             {
                 foreach (var assetBasePart in item.Asset.BaseParts)
                 {
-                    var existingBasePart = existingBaseParts.First(e => e.Id == assetBasePart.Asset.Id);
+                    var existingBasePart = existingBaseParts.First(e => (e.Id == assetBasePart.Id || e.Location == assetBasePart.Location));
                     if (!CompareAssets(assetBasePart.Asset, existingBasePart.Asset))
                     {
                         basePartsAreEqual = false;

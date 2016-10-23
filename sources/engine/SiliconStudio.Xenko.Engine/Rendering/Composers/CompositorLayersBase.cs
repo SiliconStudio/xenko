@@ -17,8 +17,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         /// <userdoc>The sequence of graphic layers to incorporate into the pipeline</userdoc>
         [DataMember(20)]
         [Category]
-        [MemberCollection(CanReorderItems = true)]
-        [NotNullItems]
+        [MemberCollection(CanReorderItems = true, NotNullItems = true)]
         public SceneGraphicsLayerCollection Layers { get; private set; }
 
         /// <summary>
