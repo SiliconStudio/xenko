@@ -1,28 +1,24 @@
 !PrefabAsset
-Id: 2603278e-1a16-4d57-a24c-563472a5b86b
+Id: a304527a-9930-4408-a636-a652d7252330
 SerializedVersion: {Xenko: 1.9.0-beta01}
 Tags: []
 Hierarchy:
-    ~Id: e29a41a1-54c5-4d5d-bab0-c4afaca25327
+    ~Id: be299a1b-2b49-45ba-9075-844aff0d5ca0
     RootPartIds:
-        - c016fcd8-5ab1-4212-9784-954709ca481d
+        - 7bab5198-56f2-4bda-8979-f5b7022b951a
     Parts:
         -   Entity:
-                Id: c016fcd8-5ab1-4212-9784-954709ca481d
-                Name: Ball
+                Id: 7bab5198-56f2-4bda-8979-f5b7022b951a
+                Name: crate
                 Components:
                     - !TransformComponent
-                        ~Id: 0901b52e-31e0-4802-9fb2-a602898cc11d
+                        ~Id: 2e3ef041-2f80-4db2-95a7-74c7f12119bd
                         Children: []
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {X: 0.0, Y: 0.0, Z: 0.3953296, W: 0.918539345}
+                        Rotation: {X: 0.0, Y: 0.0, Z: 0.0, W: 1.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                    - !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
-                        ~Id: b65bc8a4-795e-4679-ac12-5062f07f8507
-                        TriggerEntity: null
                     - !RigidbodyComponent
-                        ~Id: c495e000-fe10-43f1-bbac-85640eafd46e
-                        CanCollideWith: DefaultFilter, CharacterFilter
+                        ~Id: 88c5c6b8-61b5-4401-adb1-357b024c4015
                         CanSleep: false
                         Restitution: 0.0
                         Friction: 0.5
@@ -38,12 +34,15 @@ Hierarchy:
                         Gravity: {X: 0.0, Y: 0.0, Z: 0.0}
                         NodeName: null
                         ColliderShapes:
-                            - !SphereColliderShapeDesc
-                                ~Id: eb0ee44f-deb1-45f0-9086-bc680ce3386c
-                                Is2D: false
-                                LocalOffset: {X: 0.0, Y: 0.0, Z: 0.0}
+                            - !ColliderShapeAssetDesc
+                                ~Id: 942f107d-2b37-48b1-b144-2fd78041aa91
+                                Shape: 918235bb-443b-4a65-801f-4b2257e51633/cfd030c9-44df-401e-a192-32278a642f8b:ColliderShapes/crate_cs
                     - !ModelComponent
-                        ~Id: 25b6a499-09c6-4311-8f88-2cfb1100888d
-                        Model: 1d79c934-1273-410e-b13a-a82e46c92c4e/ad7e799e-d4fa-4bc2-8e00-49bf70e31434:Models/Ball
+                        ~Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
+                        Model: 0e60eb4d-1ef6-4042-ba63-443e4c98615c/e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
                         Materials:
                             - null
+                            - null
+                    - !PhysicsSample.AutoResetRigidbody,PhysicsSample.Game
+                        ~Id: 27a46512-0945-43e6-b3a1-43f3c17ccd84
+                        TriggerEntity: null

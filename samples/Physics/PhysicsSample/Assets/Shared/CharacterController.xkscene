@@ -68,7 +68,7 @@ Hierarchy:
                         ColliderShapes:
                             - !ColliderShapeAssetDesc
                                 ~Id: 004e8079-7573-4ff5-a12f-8c8ad2b31e69
-                                Shape: fb2cbffc-33d9-4fd4-bba3-133ed3f6d86c/e4708b46-77d6-4961-b2fe-c3401a7e5e65:ground_cs
+                                Shape: fb2cbffc-33d9-4fd4-bba3-133ed3f6d86c/e4708b46-77d6-4961-b2fe-c3401a7e5e65:ColliderShapes/ground_cs
         -   Entity:
                 Id: 2d5858c9-0df9-4c6c-a24d-65e699737666
                 Name: Enemy
@@ -93,7 +93,7 @@ Hierarchy:
                         ColliderShapes:
                             - !ColliderShapeAssetDesc
                                 ~Id: cec57efb-8df7-420e-8232-34805f8db18d
-                                Shape: 59527f73-653f-4162-9534-af5438e92e0c/e3030570-16a5-4ee6-b77b-37b4f19d16c7:enemy_cs
+                                Shape: 59527f73-653f-4162-9534-af5438e92e0c/e3030570-16a5-4ee6-b77b-37b4f19d16c7:ColliderShapes/enemy_cs
                     - !SpriteComponent
                         ~Id: 57d45718-9fd5-4fdf-8cc9-ef1d2aa5f5a6
                         SpriteProvider: !SpriteFromSheet
@@ -112,7 +112,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !BackgroundComponent
                         ~Id: b6361123-5213-472f-9ab4-46ce1f1e9556
-                        Texture: ea03aac1-7686-4c4a-bbd7-4ddfff9c1199/d46cb653-bbdb-4b7b-9449-37beb6774cfd:XenkoBackground
+                        Texture: ea03aac1-7686-4c4a-bbd7-4ddfff9c1199/d46cb653-bbdb-4b7b-9449-37beb6774cfd:Materials/XenkoBackground
         -   Entity:
                 Id: 996fb61d-3623-4019-8dfe-949fd5a5c3d2
                 Name: Camera
@@ -158,7 +158,7 @@ Hierarchy:
                         ColliderShapes:
                             - !ColliderShapeAssetDesc
                                 ~Id: 5cceb071-e3a7-4374-9204-1b79019a6114
-                                Shape: 4e19dae9-71a0-46a8-b186-3e5150f9e274/8ae92172-efa9-454c-9cf6-4b464c25356e:player_cs
+                                Shape: 4e19dae9-71a0-46a8-b186-3e5150f9e274/8ae92172-efa9-454c-9cf6-4b464c25356e:ColliderShapes/player_cs
                     - !SpriteComponent
                         ~Id: b20862b2-f1f9-4fea-88a3-162e0b9aa502
                         SpriteProvider: !SpriteFromSheet

@@ -61,7 +61,7 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !PhysicsSample.GuiScript,PhysicsSample.Game
                         ~Id: c780a5dd-7fbf-44b0-99b7-8a048d3b2557
-                        Font: 53a8eb8d-6e79-4e5c-965d-82de13339339/1aae175d-f34a-472e-b951-65e34f93c8e3:FontR
+                        Font: f6332b64-68d2-480a-9ac4-46e72ae460f6/62eec53a-f82a-460a-91c3-bf3c6ece95c2:Font
                     - !UIComponent
                         ~Id: ee506ad3-1840-42d1-a282-00ec4aca40b0
                         Page: null
@@ -79,12 +79,12 @@ Hierarchy:
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                     - !BackgroundComponent
                         ~Id: b3c27e3e-f14c-4851-95dc-a7b08a65791a
-                        Texture: 809d4b4f-851b-482e-baee-7a6dc3896408/d46cb653-bbdb-4b7b-9449-37beb6774cfd:XenkoBackground
+                        Texture: 809d4b4f-851b-482e-baee-7a6dc3896408/d46cb653-bbdb-4b7b-9449-37beb6774cfd:Materials/XenkoBackground
         -   BaseId: 7bab5198-56f2-4bda-8979-f5b7022b951a
             BasePartInstanceId: 0dcc68e0-d118-46d4-93f5-82a1be4434e6
             Entity:
                 Id: 8c4f3755-c248-48ed-8df8-b86730fe702b
-                Name: cube
+                Name: crate
                 Components:
                     - !TransformComponent
                         ~Id: 2e3ef041-2f80-4db2-95a7-74c7f12119bd
@@ -113,17 +113,18 @@ Hierarchy:
                         ColliderShapes:
                             - !ColliderShapeAssetDesc
                                 ~Id: 942f107d-2b37-48b1-b144-2fd78041aa91
-                                Shape: b1ecc6c8-dfe4-454d-b6d4-6605f4b68f64/353d6001-19b0-4883-b810-fe25b88c19ab:cube_csR
+                                Shape: 918235bb-443b-4a65-801f-4b2257e51633/cfd030c9-44df-401e-a192-32278a642f8b:ColliderShapes/crate_cs
                     - !ModelComponent
                         ~Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
-                        Model: 841764d7-dc26-40e4-a3fb-7062b1f484ba/226ee5dd-9c34-426a-8901-c217d0cd8a60:CubeR
+                        Model: 0e60eb4d-1ef6-4042-ba63-443e4c98615c/e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
                         Materials:
+                            - null
                             - null
         -   BaseId: 7bab5198-56f2-4bda-8979-f5b7022b951a
             BasePartInstanceId: 09b3d7ab-726d-42c5-ab53-049be5b46d6d
             Entity:
                 Id: 8d8f7cdf-a2d1-4832-8ab8-3245792e20d5
-                Name: cube
+                Name: crate
                 Components:
                     - !TransformComponent
                         ~Id: 2e3ef041-2f80-4db2-95a7-74c7f12119bd
@@ -152,17 +153,18 @@ Hierarchy:
                         ColliderShapes:
                             - !ColliderShapeAssetDesc
                                 ~Id: 942f107d-2b37-48b1-b144-2fd78041aa91
-                                Shape: b1ecc6c8-dfe4-454d-b6d4-6605f4b68f64/353d6001-19b0-4883-b810-fe25b88c19ab:cube_csR
+                                Shape: 918235bb-443b-4a65-801f-4b2257e51633/cfd030c9-44df-401e-a192-32278a642f8b:ColliderShapes/crate_cs
                     - !ModelComponent
                         ~Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
-                        Model: 841764d7-dc26-40e4-a3fb-7062b1f484ba/226ee5dd-9c34-426a-8901-c217d0cd8a60:CubeR
+                        Model: 0e60eb4d-1ef6-4042-ba63-443e4c98615c/e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
                         Materials:
+                            - null
                             - null
         -   BaseId: 7bab5198-56f2-4bda-8979-f5b7022b951a
             BasePartInstanceId: 5715ccce-6ff7-43c2-8294-2c9ab97926fa
             Entity:
                 Id: 95664a00-cbe6-40d4-b536-9d0bf74af845
-                Name: cube
+                Name: crate
                 Components:
                     - !TransformComponent
                         ~Id: 2e3ef041-2f80-4db2-95a7-74c7f12119bd
@@ -191,11 +193,12 @@ Hierarchy:
                         ColliderShapes:
                             - !ColliderShapeAssetDesc
                                 ~Id: 942f107d-2b37-48b1-b144-2fd78041aa91
-                                Shape: b1ecc6c8-dfe4-454d-b6d4-6605f4b68f64/353d6001-19b0-4883-b810-fe25b88c19ab:cube_csR
+                                Shape: 918235bb-443b-4a65-801f-4b2257e51633/cfd030c9-44df-401e-a192-32278a642f8b:ColliderShapes/crate_cs
                     - !ModelComponent
                         ~Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
-                        Model: 841764d7-dc26-40e4-a3fb-7062b1f484ba/226ee5dd-9c34-426a-8901-c217d0cd8a60:CubeR
+                        Model: 0e60eb4d-1ef6-4042-ba63-443e4c98615c/e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
                         Materials:
+                            - null
                             - null
         -   Entity:
                 Id: 98895305-2715-4532-badc-560f93aabf48
@@ -230,7 +233,7 @@ Hierarchy:
                         ColliderShapes:
                             - !ColliderShapeAssetDesc
                                 ~Id: 2eb9a1bd-11d4-4567-9987-b331ff903c26
-                                Shape: 60e43a0d-6b23-4bba-8966-c0512bcae79d/1a7f15af-ac01-4464-adfe-7689bd50966e:ground_csR
+                                Shape: 60e43a0d-6b23-4bba-8966-c0512bcae79d/1a7f15af-ac01-4464-adfe-7689bd50966e:ColliderShapes/ground_csR
         -   Entity:
                 Id: ab0676cc-90f4-4f72-b6c1-d53dbcb7bec1
                 Name: Cube1
@@ -302,7 +305,7 @@ Hierarchy:
                 Parts:
                     -   Entity:
                             Id: 7bab5198-56f2-4bda-8979-f5b7022b951a
-                            Name: cube
+                            Name: crate
                             Components:
                                 - !TransformComponent
                                     ~Id: 2e3ef041-2f80-4db2-95a7-74c7f12119bd
@@ -331,9 +334,10 @@ Hierarchy:
                                     ColliderShapes:
                                         - !ColliderShapeAssetDesc
                                             ~Id: 942f107d-2b37-48b1-b144-2fd78041aa91
-                                            Shape: b1ecc6c8-dfe4-454d-b6d4-6605f4b68f64/353d6001-19b0-4883-b810-fe25b88c19ab:cube_csR
+                                            Shape: 918235bb-443b-4a65-801f-4b2257e51633/cfd030c9-44df-401e-a192-32278a642f8b:ColliderShapes/crate_cs
                                 - !ModelComponent
                                     ~Id: 619893f8-b3c2-449c-94f0-61673c9dfdcd
-                                    Model: 841764d7-dc26-40e4-a3fb-7062b1f484ba/226ee5dd-9c34-426a-8901-c217d0cd8a60:CubeR
+                                    Model: 0e60eb4d-1ef6-4042-ba63-443e4c98615c/e51b50db-d4e0-45c1-bf2e-47440aab2217:Models/BoxE
                                     Materials:
+                                        - null
                                         - null
