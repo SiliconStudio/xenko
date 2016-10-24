@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Yaml.Events;
 using SiliconStudio.Core.Yaml.Serialization;
 using SiliconStudio.Core.Yaml.Serialization.Serializers;
 using IMemberDescriptor = SiliconStudio.Core.Reflection.IMemberDescriptor;
@@ -60,50 +61,35 @@ namespace SiliconStudio.Core.Yaml
 
         public override string ReadMemberName(ref ObjectContext objectContext, string memberName, out bool skipMember)
         {
-            var newMemberName = memberName.Trim(Override.PostFixSealed, Override.PostFixNew);
             var objectType = objectContext.Instance.GetType();
 
-            if (newMemberName.Length != memberName.Length)
+            OverrideType overrideType;
+            var realMemberName = TrimAndParseOverride(memberName, out overrideType);
+
+            if (overrideType != OverrideType.Base)
             {
-                var overrideType = OverrideType.Base;
-                if (memberName.Contains(Override.PostFixNewSealed) || memberName.EndsWith(Override.PostFixNewSealedAlt))
+                if (cachedDescriptor == null || cachedDescriptor.Type != objectType)
                 {
-                    overrideType = OverrideType.New | OverrideType.Sealed;
+                    cachedDescriptor = typeDescriptorFactory.Find(objectType);
                 }
-                else if (memberName.EndsWith(Override.PostFixNew))
+                var memberDescriptor = cachedDescriptor[realMemberName];
+
+                object property;
+                if (!objectContext.SerializerContext.Properties.TryGetValue(OverrideDictionaryKey, out property))
                 {
-                    overrideType = OverrideType.New;
+                    property = new Dictionary<MemberPath, OverrideType>();
+                    objectContext.SerializerContext.Properties.Add(OverrideDictionaryKey, property);
                 }
-                else if (memberName.EndsWith(Override.PostFixSealed))
-                {
-                    overrideType = OverrideType.Sealed;
-                }
+                var overrides = (Dictionary<MemberPath, OverrideType>)property;
 
-                if (overrideType != OverrideType.Base)
-                {
-                    if (cachedDescriptor == null || cachedDescriptor.Type != objectType)
-                    {
-                        cachedDescriptor = typeDescriptorFactory.Find(objectType);
-                    }
-                    var memberDescriptor = cachedDescriptor[newMemberName];
+                var memberPath = GetCurrentPath(ref objectContext, true);
+                memberPath.Push(memberDescriptor);
+                overrides.Add(memberPath, overrideType);
 
-                    object property;
-                    if (!objectContext.SerializerContext.Properties.TryGetValue(OverrideDictionaryKey, out property))
-                    {
-                        property = new Dictionary<MemberPath, OverrideType>();
-                        objectContext.SerializerContext.Properties.Add(OverrideDictionaryKey, property);
-                    }
-                    var overrides = (Dictionary<MemberPath, OverrideType>)property;
-
-                    var memberPath = GetCurrentPath(ref objectContext, true);
-                    memberPath.Push(memberDescriptor);
-                    overrides.Add(memberPath, overrideType);
-
-                    objectContext.Instance.SetOverride(memberDescriptor, overrideType);
-                }
+                objectContext.Instance.SetOverride(memberDescriptor, overrideType);
             }
 
-            var resultMemberName = base.ReadMemberName(ref objectContext, newMemberName, out skipMember);
+            var resultMemberName = base.ReadMemberName(ref objectContext, realMemberName, out skipMember);
             // If ~Id was not found as a member, don't generate an error, as we may have switched an object
             // to NonIdentifiable but we don't want to write an upgrader for this
             if (!IdentifiableHelper.IsIdentifiable(objectType) && memberName == IdentifiableHelper.YamlSpecialId)
@@ -154,7 +140,34 @@ namespace SiliconStudio.Core.Yaml
 
         public override object ReadDictionaryKey(ref ObjectContext objectContext, Type keyType)
         {
-            return base.ReadDictionaryKey(ref objectContext, keyType);
+            var key = objectContext.Reader.Peek<Scalar>();
+            OverrideType overrideType;
+            var keyName = TrimAndParseOverride(key.Value, out overrideType);
+            key.Value = keyName;
+
+            var keyValue = base.ReadDictionaryKey(ref objectContext, keyType);
+
+            if (overrideType != OverrideType.Base)
+            {
+                object property;
+                if (!objectContext.SerializerContext.Properties.TryGetValue(OverrideDictionaryKey, out property))
+                {
+                    property = new Dictionary<MemberPath, OverrideType>();
+                    objectContext.SerializerContext.Properties.Add(OverrideDictionaryKey, property);
+                }
+                var overrides = (Dictionary<MemberPath, OverrideType>)property;
+
+                var memberPath = GetCurrentPath(ref objectContext, true);
+                memberPath.Push(objectContext.Descriptor, keyValue);
+                overrides.Add(memberPath, overrideType);
+            }
+
+            return keyValue;
+        }
+
+        public override void WriteDictionaryKey(ref ObjectContext objectContext, object key, Type keyType)
+        {
+            base.WriteDictionaryKey(ref objectContext, key, keyType);
         }
 
         public override object ReadDictionaryValue(ref ObjectContext objectContext, Type valueType, object key)
@@ -180,6 +193,29 @@ namespace SiliconStudio.Core.Yaml
         private static void SetCurrentPath(ref ObjectContext objectContext, MemberPath path)
         {
             objectContext.Properties[MemberPathKey] = path;
+        }
+
+        private static string TrimAndParseOverride(string name, out OverrideType overrideType)
+        {
+            var realName = name.Trim(Override.PostFixSealed, Override.PostFixNew);
+
+            overrideType = OverrideType.Base;
+            if (realName.Length != name.Length)
+            {
+                if (name.Contains(Override.PostFixNewSealed) || name.EndsWith(Override.PostFixNewSealedAlt))
+                {
+                    overrideType = OverrideType.New | OverrideType.Sealed;
+                }
+                else if (name.EndsWith(Override.PostFixNew))
+                {
+                    overrideType = OverrideType.New;
+                }
+                else if (name.EndsWith(Override.PostFixSealed))
+                {
+                    overrideType = OverrideType.Sealed;
+                }
+            }
+            return realName;
         }
     }
 }

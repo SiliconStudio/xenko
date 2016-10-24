@@ -104,6 +104,25 @@ namespace SiliconStudio.Core.Reflection
             AddItem(descriptor is FieldDescriptor ? (MemberPathItem)new FieldPathItem((FieldDescriptor)descriptor) : new PropertyPathItem((PropertyDescriptor)descriptor));
         }
 
+        public void Push(ITypeDescriptor descriptor, object key)
+        {
+            var arrayDescriptor = descriptor as ArrayDescriptor;
+            var collectionDescriptor = descriptor as CollectionDescriptor;
+            var dictionaryDescriptor = descriptor as DictionaryDescriptor;
+            if (arrayDescriptor != null)
+            {
+                Push(arrayDescriptor, (int)key);
+            }
+            if (collectionDescriptor != null)
+            {
+                Push(collectionDescriptor, (int)key);
+            }
+            if (dictionaryDescriptor != null)
+            {
+                Push(dictionaryDescriptor, key);
+            }
+        }
+
         /// <summary>
         /// Pushes an array access on the path.
         /// </summary>

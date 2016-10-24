@@ -77,6 +77,21 @@ namespace SiliconStudio.Core.Yaml
             }
         }
 
+        public void DeleteAndShift(int index, bool markAsDeleted = true)
+        {
+            var id = keyToIdMap[index];
+            keyToIdMap.Remove(index);
+            for (var i = index + 1; i < keyToIdMap.Count; ++i)
+            {
+                keyToIdMap[i - 1] = keyToIdMap[i];
+                keyToIdMap.Remove(i);
+            }
+            if (markAsDeleted)
+            {
+                MarkAsDeleted(id);
+            }
+        }
+
         public void MarkAsDeleted(Guid id)
         {
             deletedItems.Add(id);
