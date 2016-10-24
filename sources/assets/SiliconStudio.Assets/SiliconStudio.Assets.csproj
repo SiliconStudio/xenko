@@ -330,6 +330,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
+    <None Include="packages.config" />
     <None Include="Diagrams\AssetsDiagram.cd" />
     <None Include="Diagrams\BuildCommands.cd" />
     <None Include="packages.config" />
