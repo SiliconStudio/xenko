@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Assets
@@ -17,15 +18,20 @@ namespace SiliconStudio.Assets
     [DataContract("SourceCodeAsset")]
     public abstract class SourceCodeAsset : Asset
     {
-        protected SourceCodeAsset()
-        {
-            // Default: fallback to internal storage
-            TextAccessor = new DefaultTextAccessor(this);
-        }
-
         [DataMemberIgnore]
         [Display(Browsable = false)]
-        public ITextAccessor TextAccessor { get; set; }
+        public ITextAccessor TextAccessor { get; set; } = new DefaultTextAccessor();
+
+        /// <summary>
+        /// Used internally by serialization.
+        /// </summary>
+        [DataMember(Mask = DataMemberAttribute.IgnoreMask)]
+        [Display(Browsable = false)]
+        public ISerializableTextAccessor InternalSerializableTextAccessor
+        {
+            get { return TextAccessor.GetSerializableVersion(); }
+            internal set { TextAccessor = value.Create(); }
+        }
 
         /// <summary>
         /// Gets the sourcecode text.
@@ -65,6 +71,11 @@ namespace SiliconStudio.Assets
             return ObjectId.FromBytes(Encoding.UTF8.GetBytes(location)).ToGuid();
         }
 
+        public interface ISerializableTextAccessor
+        {
+            ITextAccessor Create();
+        }
+
         public interface ITextAccessor
         {
             /// <summary>
@@ -84,17 +95,37 @@ namespace SiliconStudio.Assets
             /// </summary>
             /// <param name="streamWriter"></param>
             Task WriteTo(Stream streamWriter);
+
+            ISerializableTextAccessor GetSerializableVersion();
+        }
+
+        [DataContract]
+        public class FileTextAccessor : ISerializableTextAccessor
+        {
+            public string FilePath { get; set; }
+
+            public ITextAccessor Create()
+            {
+                return new DefaultTextAccessor { FilePath = FilePath };
+            }
+        }
+
+        [DataContract]
+        public class StringTextAccessor : ISerializableTextAccessor
+        {
+            public string Text { get; set; }
+
+            public ITextAccessor Create()
+            {
+                var result = new DefaultTextAccessor();
+                result.Set(Text);
+                return result;
+            }
         }
 
         public class DefaultTextAccessor : ITextAccessor
         {
-            private readonly SourceCodeAsset sourceCodeAsset;
             private string text;
-
-            public DefaultTextAccessor(SourceCodeAsset sourceCodeAsset)
-            {
-                this.sourceCodeAsset = sourceCodeAsset;
-            }
 
             public string FilePath { get; internal set; }
 
@@ -126,6 +157,15 @@ namespace SiliconStudio.Assets
                         await inputStream.CopyToAsync(stream);
                     }
                 }
+            }
+
+            public ISerializableTextAccessor GetSerializableVersion()
+            {
+                // Still not loaded?
+                if (text == null && FilePath != null)
+                    return new FileTextAccessor { FilePath = FilePath };
+
+                return new StringTextAccessor { Text = text };
             }
 
             private string LoadFromFile()
