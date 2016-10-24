@@ -33,8 +33,9 @@ Hierarchy:
                             Emitters:
                                 -   ~Id: 94b09d9f-eb0b-4f7d-83a1-a85eadf5852f
                                     EmitterName: smoke01
-                                    MaxParticlesOverride: 800
+                                    MaxParticlesOverride: 200
                                     ParticleLifetime: {X: 1.0, Y: 3.0}
+                                    SortingPolicy: ByDepth
                                     ShapeBuilder: !ShapeBuilderBillboard
                                         ~Id: eedd6edb-cc62-49f2-8ebd-4817875639b7
                                         SamplerPosition: null
@@ -83,13 +84,13 @@ Hierarchy:
                                             LoopCondition: Looping
                                             Delay: {X: 0.0, Y: 0.0}
                                             Duration: {X: 1.0, Y: 1.0}
-                                            SpawnCount: 100.0
+                                            SpawnCount: 20.0
                                         - !SpawnerPerSecond
                                             ~Id: 81874852-784b-40b5-a324-3c3a915012ee
                                             LoopCondition: Looping
                                             Delay: {X: 0.0, Y: 0.0}
                                             Duration: {X: 1.0, Y: 1.0}
-                                            SpawnCount: 50.0
+                                            SpawnCount: 5.0
                                     Initializers:
                                         - !InitialSizeSeed
                                             ~Id: 0d2c1749-4e4e-4473-afd5-efeae1e31d22
